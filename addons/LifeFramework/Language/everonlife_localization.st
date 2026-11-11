@@ -7136,6 +7136,266 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Every character slot on this account is taken."
      Comment "Character creation refused because the account already holds the configured maximum number of characters."
     }
+    CustomStringTableItem "{AD999D02320AA8DB}" {
+     Id "LF-PoliceApp_Action"
+     Target_en_us "Apply to the police"
+     Comment "Duty desk action."
+    }
+    CustomStringTableItem "{C1C8869AB5FF5BB9}" {
+     Id "LF-PoliceApp_ActionDesc"
+     Target_en_us "Fill in an application to join the police."
+     Comment "Duty desk action description."
+    }
+    CustomStringTableItem "{9F943D13BD5ABD5D}" {
+     Id "LF-PoliceApp_Review"
+     Target_en_us "Review applications (admin)"
+     Comment "Admin action at the duty desk: approves the oldest open application."
+    }
+    CustomStringTableItem "{3EC049CF5AD21E3C}" {
+     Id "LF-PoliceApp_ReviewDesc"
+     Target_en_us "Approve the application that has waited longest."
+     Comment "Admin review action description."
+    }
+    CustomStringTableItem "{B5EC482E2E329B9F}" {
+     Id "LF-PoliceApp_Title"
+     Target_en_us "Application to the Everon Police"
+     Comment "Police application form title."
+    }
+    CustomStringTableItem "{8AE64C101F1D0F7D}" {
+     Id "LF-PoliceApp_Intro"
+     Target_en_us "Fill in all three blanks. One application per person; an administrator decides."
+     Comment "Police application form instruction line."
+    }
+    CustomStringTableItem "{C80D8FA8411D1B2A}" {
+     Id "LF-PoliceApp_Name"
+     Target_en_us "Your name"
+     Comment "Police application blank: name."
+    }
+    CustomStringTableItem "{71121DE17F6CC779}" {
+     Id "LF-PoliceApp_Why"
+     Target_en_us "Why you want to serve"
+     Comment "Police application blank: reason."
+    }
+    CustomStringTableItem "{E16B433C3AC6E980}" {
+     Id "LF-PoliceApp_Availability"
+     Target_en_us "When you can be on duty"
+     Comment "Police application blank: availability."
+    }
+    CustomStringTableItem "{E8C273DCD90D9613}" {
+     Id "LF-PoliceApp_Submit"
+     Target_en_us "Hand it in"
+     Comment "Police application submit button."
+    }
+    CustomStringTableItem "{866A6764BE9188EB}" {
+     Id "LF-PoliceApp_Close"
+     Target_en_us "Put it away"
+     Comment "Police application close button."
+    }
+    CustomStringTableItem "{62BF90390E136693}" {
+     Id "LF-PoliceApp_Status"
+     Target_en_us "Police application"
+     Comment "Toast title for police application messages."
+    }
+    CustomStringTableItem "{F39424782E4C72BE}" {
+     Id "LF-PoliceApp_Receipt"
+     Target_en_us "Application received. An administrator will review it."
+     Comment "Receipt toast after filing."
+    }
+    CustomStringTableItem "{3B86E7A5E27354FE}" {
+     Id "LF-PoliceApp_Approved"
+     Target_en_us "Application approved. Clock in at the duty desk."
+     Comment "Toast when the application is approved on submit (playtest)."
+    }
+    CustomStringTableItem "{D85287BA39923646}" {
+     Id "LF-PoliceApp_ApprovedOther"
+     Target_en_us "Approved the application of %1."
+     Comment "Admin toast after approving; %1 is the applicant name."
+    }
+    CustomStringTableItem "{D17A6AB7C4AE46BE}" {
+     Id "LF-PoliceApp_NoneOpen"
+     Target_en_us "No open applications."
+     Comment "Admin review toast when none wait."
+    }
+    CustomStringTableItem "{B28597051ECFD842}" {
+     Id "LF-PoliceApp_NotAdmin"
+     Target_en_us "Only an administrator can approve applications."
+     Comment "Refusal toast for a non-admin review."
+    }
+    CustomStringTableItem "{176552BBA801A382}" {
+     Id "LF-PoliceApp_Error_Fields"
+     Target_en_us "Fill in all three blanks."
+     Comment "Form error: a blank is empty."
+    }
+    CustomStringTableItem "{128D4C6358A00BA9}" {
+     Id "LF-PoliceApp_Error_Length"
+     Target_en_us "One of the answers is too long."
+     Comment "Form error: too long."
+    }
+    CustomStringTableItem "{7F7AA537F0C237BB}" {
+     Id "LF-PoliceApp_Error_OnRoster"
+     Target_en_us "You are already on the police roster."
+     Comment "Refusal: applicant is already police."
+    }
+    CustomStringTableItem "{57C1C2B309431CF5}" {
+     Id "LF-PoliceApp_Error_AlreadyOpen"
+     Target_en_us "You already have an application waiting."
+     Comment "Refusal: one open application per player."
+    }
+    CustomStringTableItem "{EF03D310EECF0660}" {
+     Id "LF-PoliceApp_Error_NoAccount"
+     Target_en_us "Register at the civil registry first."
+     Comment "Refusal: no player identity."
+    }
+    CustomStringTableItem "{93B24FC92EC107AF}" {
+     Id "LF-Mission_PlaytestTown_Details"
+     Target_en_us "This is a playtest build. Your cash and bank top up when they run low, and every new character owns two test cars, one in the garage and one at the impound. Your first spawn opens form R-89; fill it in to start. The first player on a server with no police is added to the police roster, so you can clock in at the station desk. Progress is saved and carries over a restart. Report problems on the Life Framework Discord or GitHub."
+     Comment "Detailed scenario rules shown with the scenario."
+    }
+    CustomStringTableItem "{01B9D43100AC37E2}" {
+     Id "LF-SpawnHub_Title"
+     Target_en_us "Playtest travel"
+     Comment "Travel list title (spawn table globe)."
+    }
+    CustomStringTableItem "{D2F012D65C8132A6}" {
+     Id "LF-SpawnHub_Hint"
+     Target_en_us "Pick an area to be taken there. Playtest only."
+     Comment "Travel list hint line."
+    }
+    CustomStringTableItem "{64C91C9876BC49F4}" {
+     Id "LF-SpawnHub_Go"
+     Target_en_us "Go"
+     Comment "Travel list row button."
+    }
+    CustomStringTableItem "{134044FE4B970260}" {
+     Id "LF-SpawnHub_Close"
+     Target_en_us "Close"
+     Comment "Travel list close button."
+    }
+    CustomStringTableItem "{BEEAD653C82FCDCE}" {
+     Id "LF-SpawnHub_Open"
+     Target_en_us "Travel to a playtest area"
+     Comment "Globe action name."
+    }
+    CustomStringTableItem "{450BE9C116C859BD}" {
+     Id "LF-SpawnHub_Pt_spawn"
+     Target_en_us "Spawn square"
+     Comment "Travel list row: spawn."
+    }
+    CustomStringTableItem "{B6586A394D67B4AF}" {
+     Id "LF-SpawnHub_Pt_police"
+     Target_en_us "Police station"
+     Comment "Travel list row: police."
+    }
+    CustomStringTableItem "{B4232BB7C4308A82}" {
+     Id "LF-SpawnHub_Pt_jail"
+     Target_en_us "Jail"
+     Comment "Travel list row: jail."
+    }
+    CustomStringTableItem "{8AA2600D1543035B}" {
+     Id "LF-SpawnHub_Pt_bank"
+     Target_en_us "Bank"
+     Comment "Travel list row: bank."
+    }
+    CustomStringTableItem "{B20B273E74BFB5FC}" {
+     Id "LF-SpawnHub_Pt_cash_van"
+     Target_en_us "Cash van stop"
+     Comment "Travel list row: cash_van."
+    }
+    CustomStringTableItem "{CB3B602C123EDB3A}" {
+     Id "LF-SpawnHub_Pt_general_store"
+     Target_en_us "General store"
+     Comment "Travel list row: general_store."
+    }
+    CustomStringTableItem "{70A38A6809640B2F}" {
+     Id "LF-SpawnHub_Pt_market"
+     Target_en_us "Market traders"
+     Comment "Travel list row: market."
+    }
+    CustomStringTableItem "{F7342C42AF67BCAA}" {
+     Id "LF-SpawnHub_Pt_post_office"
+     Target_en_us "Post office and jobs"
+     Comment "Travel list row: post_office."
+    }
+    CustomStringTableItem "{4AF36AD0E0DCF596}" {
+     Id "LF-SpawnHub_Pt_car_lot"
+     Target_en_us "Car lot"
+     Comment "Travel list row: car_lot."
+    }
+    CustomStringTableItem "{69B85ADAEFBDBB9C}" {
+     Id "LF-SpawnHub_Pt_garage"
+     Target_en_us "Garage"
+     Comment "Travel list row: garage."
+    }
+    CustomStringTableItem "{B0C61257E5FB48B5}" {
+     Id "LF-SpawnHub_Pt_impound"
+     Target_en_us "Impound lot"
+     Comment "Travel list row: impound."
+    }
+    CustomStringTableItem "{4933783F01581685}" {
+     Id "LF-SpawnHub_Pt_chop_shop"
+     Target_en_us "Chop shop"
+     Comment "Travel list row: chop_shop."
+    }
+    CustomStringTableItem "{FB4A0D3B97262A9C}" {
+     Id "LF-SpawnHub_Pt_fuel_station"
+     Target_en_us "Fuel station"
+     Comment "Travel list row: fuel_station."
+    }
+    CustomStringTableItem "{DFCE41C7B190AA27}" {
+     Id "LF-SpawnHub_Pt_hospital"
+     Target_en_us "Hospital"
+     Comment "Travel list row: hospital."
+    }
+    CustomStringTableItem "{6D24484296F44B77}" {
+     Id "LF-SpawnHub_Pt_org_registry"
+     Target_en_us "Organization registry"
+     Comment "Travel list row: org_registry."
+    }
+    CustomStringTableItem "{180961ECD408F286}" {
+     Id "LF-SpawnHub_Pt_hideout"
+     Target_en_us "Hideout yard"
+     Comment "Travel list row: hideout."
+    }
+    CustomStringTableItem "{88BCEC3B8F0B96E6}" {
+     Id "LF-SpawnHub_Pt_fence"
+     Target_en_us "Fence (Vince)"
+     Comment "Travel list row: fence."
+    }
+    CustomStringTableItem "{3502F9E9ED2D4D43}" {
+     Id "LF-SpawnHub_Pt_lockup"
+     Target_en_us "Lockpick lock-up"
+     Comment "Travel list row: lockup."
+    }
+    CustomStringTableItem "{ACA4B36A252C8E65}" {
+     Id "LF-SpawnHub_Pt_moonshine"
+     Target_en_us "Moonshine camp"
+     Comment "Travel list row: moonshine."
+    }
+    CustomStringTableItem "{63BC79F23121554D}" {
+     Id "LF-SpawnHub_Pt_farm"
+     Target_en_us "Farm"
+     Comment "Travel list row: farm."
+    }
+    CustomStringTableItem "{77D8780E1D048421}" {
+     Id "LF-SpawnHub_Pt_orchard"
+     Target_en_us "Apple orchard"
+     Comment "Travel list row: orchard."
+    }
+    CustomStringTableItem "{9ECE67180191DEF9}" {
+     Id "LF-SpawnHub_Pt_mining"
+     Target_en_us "Mining yard"
+     Comment "Travel list row: mining."
+    }
+    CustomStringTableItem "{BA0368C4FE08E132}" {
+     Id "LF-SpawnHub_Pt_quarry"
+     Target_en_us "Quarry (lawless)"
+     Comment "Travel list row: quarry."
+    }
+    CustomStringTableItem "{D25E9BC45F9B3F3E}" {
+     Id "LF-SpawnHub_Pt_annex"
+     Target_en_us "Test annex"
+     Comment "Travel list row: annex."
+    }
   }
  }
 }

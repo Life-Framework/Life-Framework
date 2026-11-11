@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lf-storyboard/1",
+  "title": "Life Framework storyboard (lf-storyboard/1)",
+  "description": "One file a video is made from: tools/cli film-make video/<name>.json validates it, shoots each shot through the camera rig and scene presets, and post-produces the takes. tools/film/storyboard.mjs (validateStoryboard) is the check that names the wrong field; this file is the reference for editors. Unknown keys are kept and ignored (notes, issue links, blockedBy).",
+  "type": "object",
+  "required": ["format", "name", "output", "shots"],
+  "properties": {
+    "format": { "const": "lf-storyboard/1" },
+    "name": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "description": "Names the takes folder agent-box/reports/film/<name>/ and the output mp4." },
+    "title": { "type": "string" },
+    "transition": { "type": "number", "minimum": 0, "description": "Crossfade seconds between shots (default 0.6; every shot must be at least twice this long)." },
+    "output": { "$ref": "#/definitions/output" },
+    "variants": { "type": "array", "items": { "allOf": [{ "$ref": "#/definitions/output" }, { "required": ["name"] }] }, "description": "Other renders of the same shots, such as the 9:16 short." },
+    "scenes": { "type": "array", "items": { "$ref": "#/definitions/scene" }, "description": "Scene presets a shot's `scene` names; hour and weather override the preset for this film. Light-only presets exist for the trailer locations (LF_FilmSceneEnv); `street` also spawns a walker and a car." },
+    "music": { "type": "object", "description": "post.mjs music bed: file, gainDb, fadeIn, fadeOut." },
+    "voice": { "type": "object", "description": "post.mjs voice: speaker." },
+    "shots": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/shot" } }
+  },
+  "definitions": {
+    "vec3": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "description": "[x, y, z] world metres." },
+    "output": {
+      "type": "object",
+      "required": ["size"],
+      "properties": {
+        "size": { "type": "array", "items": { "type": "integer", "minimum": 2, "multipleOf": 2 }, "minItems": 2, "maxItems": 2 },
+        "fps": { "type": "number", "minimum": 1, "maximum": 60 },
+        "aspect": { "enum": ["16:9", "9:16", "1:1", "4:5"], "description": "Must match size." }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "required": ["name"],
+      "properties": { "name": { "type": "string" }, "hour": { "type": "number", "minimum": 0, "exclusiveMaximum": 24 }, "weather": { "type": "string" } }
+    },
+    "shot": {
+      "type": "object",
+      "required": ["id", "duration"],
+      "properties": {
+        "id": { "type": "string", "description": "Unique; `--shot <id>` re-shoots it." },
+        "group": { "type": "string", "description": "Location group; `--group <name>` shoots all its shots." },
+        "kind": { "enum": ["shot", "title"] },
+        "duration": { "type": "number", "minimum": 1, "description": "Seconds on screen; the camera move lasts exactly this long." },
+        "scene": { "type": "string" },
+        "lines": { "type": "array", "items": { "type": "string" }, "description": "A title shot: leading becomes the title card, trailing the end card." },
+        "setup": { "type": "array", "items": { "type": "object", "required": ["verb"] }, "description": "Harness commands sent to the shot's client before the take (stand, use, flow ...)." },
+        "hud": { "enum": ["on", "off"], "description": "Default off: HUD and hint pop-ups are hidden for the take." },
+        "captions": { "description": "post.mjs cues: a file or [[from, to, text]]." },
+        "vo": { "description": "post.mjs voice-over: a file or [[at, text]]." },
+        "camera": { "$ref": "#/definitions/camera" }
+      }
+    },
+    "camera": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["firstPerson", "follow", "orbit", "static", "drone", "still"] },
+        "pending": { "type": "string", "description": "Why the shot cannot be shot yet; film-make skips it and says so." },
+        "fov": { "type": "number", "minimum": 10, "maximum": 120 },
+        "client": { "type": "integer", "minimum": 1, "description": "firstPerson: the session client whose own view is recorded." },
+        "point": { "$ref": "#/definitions/vec3", "description": "orbit: the point circled. follow: a point near the vehicle to follow." },
+        "radius": { "type": "number", "minimum": 1 },
+        "azimuth": { "type": "number", "description": "orbit: degrees of the arc centre; 0 = +z side, 90 = +x, 180 = -z, 270 = -x." },
+        "arc": { "type": "number", "description": "orbit: degrees swept (default 140; negative sweeps the other way)." },
+        "height": { "type": "number", "description": "orbit: camera height above the point (default 5)." },
+        "distance": { "type": "number", "minimum": 1, "description": "follow: metres from the vehicle." },
+        "position": { "$ref": "#/definitions/vec3", "description": "static: where the camera stands." },
+        "lookAt": { "$ref": "#/definitions/vec3" },
+        "keys": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "object", "required": ["pos", "lookAt"], "properties": { "pos": { "$ref": "#/definitions/vec3" }, "lookAt": { "$ref": "#/definitions/vec3" } } }, "description": "drone: [from, to], eased." },
+        "source": { "type": "string", "description": "still: the gallery still (tools/cli shots ...) this shot uses; not shot by film-make." }
+      }
+    }
+  }
+}

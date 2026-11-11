@@ -18,7 +18,11 @@ it is, and what to do next. It does not sell.
    "Tagged links") or the plain one.
 2. **Rules screening.** They agree to the rules before they can post (already on).
 3. **Onboarding prompt** (new, below): one optional question that gives them a role.
-4. **#welcome** is the first channel they see. The bot does not DM anyone.
+4. **#welcome** is the first channel they see. Since 2026-11-11 the bot also DMs
+   each newcomer and posts a one-line welcome for them in #general (this replaces
+   "the bot does not DM anyone"). Both are written by the orchestrator, woken by the
+   [welcome relay](#welcome-relay), and follow the [bot playbook](bot-playbook.md).
+   A member who has DMs closed gets only the #general line (`dm.mjs` exits non-zero).
 5. **FAQ.** A pinned message in #welcome and in #general with the short answers
    ([faq.md](outreach/faq.md) is the source).
 6. **Playtest.** If they picked Playtester, #playtest-feedback opens for them.
@@ -81,6 +85,59 @@ Question: What brings you here?  (optional)
 - When asked "are you a bot / AI / real?", it says it is an AI and that staff are
   people. It never claims to be a person or to have played the game.
 - The #welcome text above says it in the open.
+
+## Welcome relay
+
+The bot cannot hear the server by itself. A small gateway listener
+(`tools/discord-mcp/welcome-relay.mjs`, Node 22+, no `npm install`) watches the
+Discord gateway and POSTs a JSON event to a webhook that wakes the orchestrator.
+Issue: #696.
+
+**It forwards only three things**, all from humans: a member joining
+(`member_join`), a message in #welcome (`welcome_message`), and a DM to the bot
+(`dm_message`). It drops bots, webhooks, the bot's own messages, other channels,
+other servers and system messages, so the bot never answers itself or another
+bot. The rules are in `tools/discord-mcp/relay-filter.mjs`;
+`tools\cli discord selftest` proves them.
+
+**Secrets live outside the repo**, in `%USERPROFILE%\.life-framework\`:
+
+| File | Holds | Override |
+| --- | --- | --- |
+| `discord-token` | The bot token (same file the MCP server uses) | `LF_DISCORD_TOKEN_FILE` |
+| `welcome-hook-url` | The webhook URL events are POSTed to. A secret: whoever has it can wake the orchestrator | `LF_WELCOME_HOOK_FILE` |
+
+Never commit either value, paste the URL into an issue, or print it in a log.
+
+**Run it:**
+
+```
+tools\cli discord relay start     # background process; refuses if a secret file is missing
+tools\cli discord relay status    # running or stopped, plus the last log lines
+tools\cli discord relay stop
+```
+
+State is in the checkout's `tmp/` (gitignored): `discord-relay.pid` and
+`discord-relay.log`. A stale pid file counts as stopped. The relay reconnects by
+itself after a dropped connection. It exits with code 2 when Server Members or
+Message Content intent is off in the Developer Portal (Bot page).
+
+Only one relay may run per bot: two would send every event twice. Run it from one
+checkout (the main one) and stop it before starting another elsewhere.
+
+**Restart on reboot** (once, in a normal PowerShell on the machine that hosts it):
+
+```
+schtasks /Create /TN "LF Discord relay" /SC ONLOGON /RL LIMITED /TR "cmd /c cd /d <main checkout> && tools\cli discord relay start"
+```
+
+**Replies** go out as the bot through two helpers (a text file in, the message
+out; both print the result and exit non-zero on failure):
+
+```
+node tools/discord-mcp/say.mjs <channelId> <replyToMessageId|-> <textFile>   # channel post or reply
+node tools/discord-mcp/dm.mjs  <userId> <textFile>                           # opens the DM and sends
+```
 
 ## Feedback becomes issues
 

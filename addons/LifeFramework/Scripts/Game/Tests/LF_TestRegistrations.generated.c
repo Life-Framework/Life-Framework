@@ -74,6 +74,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DebugMenuGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMoneyTopUp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugWorldCollision(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DebugWorldWeather(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AccountStateBits(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LicenseBits(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterCreationRules(), LF_TestTier.LOGIC);
@@ -183,6 +184,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_NpcClothesReplicate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcInteractionHeight(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_NpcWearsClothes(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcWitness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
@@ -195,6 +197,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlotLoop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceApplication(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceDutySwap(), LF_TestTier.WORLD);
@@ -299,6 +302,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SirenDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpawnHub(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);

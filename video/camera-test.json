@@ -1,0 +1,17 @@
+{
+  "format": "lf-storyboard/1",
+  "name": "camera-test",
+  "title": "Camera rig test",
+  "issue": 392,
+  "note": "Internal proof of the five camera modes (#392) on one scene. Not for posting. Needs a session with the character spawned: node agent-box/session.mjs up --clients 1 --mission playtest --profile full --res 1920x1080 --wait, then node agent-box/harness.mjs --client 1 flow ui-intake.",
+  "output": { "size": [1920, 1080], "fps": 30, "aspect": "16:9" },
+  "transition": 0.4,
+  "scenes": [{ "name": "street", "hour": 17.9, "weather": "Clear" }],
+  "shots": [
+    { "id": "fp", "group": "street", "scene": "street", "duration": 4, "camera": { "mode": "firstPerson", "client": 1 } },
+    { "id": "follow", "group": "street", "scene": "street", "duration": 4, "camera": { "mode": "follow", "point": [128, 0, 250], "distance": 10 } },
+    { "id": "orbit", "group": "street", "scene": "street", "duration": 4, "camera": { "mode": "orbit", "point": [125, 0, 250], "radius": 16, "azimuth": 270, "height": 7 } },
+    { "id": "drone", "group": "street", "scene": "street", "duration": 4, "camera": { "mode": "drone", "keys": [{ "pos": [110, 3, 252], "lookAt": [130, 1, 250] }, { "pos": [118, 14, 250], "lookAt": [170, 0, 250] }], "fov": 60 } },
+    { "id": "static", "group": "street", "scene": "street", "duration": 4, "camera": { "mode": "static", "position": [132, 2.2, 250], "lookAt": [200, 1.5, 248], "fov": 55 } }
+  ]
+}

@@ -29,21 +29,15 @@ async function runParcelProof() {
   const run = on(1, { verb: "use", className: "LF_JobStartRunAction", entityName: "Roadmap_Job_Depot" }, 10000);
   if (run.status !== "ok") fails.push(`start run returned ${run.status} ${run.detail}`);
   wait(2000);
-  on(2, { verb: "stand", entityName: "Roadmap_Job_Depot" });
-  wait(2500);
   const [x, y, z] = at(1);
-  on(2, { verb: "camera", args: `orbit ${x.toFixed(2)} ${(y + 1).toFixed(2)} ${z.toFixed(2)} 3 12` }, 10000);
-  wait(2500);
-  on(2, { verb: "capture", mode: "ui", name: `${prefix}_carry` }, 25000);
+  // The pose from outside: client 2 is placed two metres from the carrier, level with the chest.
+  on(2, { verb: "capture", mode: "world", name: `${prefix}_carry`, x: x, y: y + 1, z: z, ox: 2.2, oy: 0.4, oz: 0.8 }, 25000);
   wait(1500);
   on(1, { verb: "input", action: "Inventory" });
   wait(2500);
   on(1, { verb: "capture", mode: "ui", name: `${prefix}_inventory` }, 25000);
   on(1, { verb: "input", action: "Inventory" });
   wait(1500);
-  on(1, { verb: "stand", entityName: "Roadmap_Org_Desk" });
-  wait(2500);
-  on(1, { verb: "capture", mode: "ui", name: `${prefix}_desk` }, 25000);
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "parcel proof: FAIL" : "parcel proof: done (read the captures)");
   return fails.length ? 1 : 0;
