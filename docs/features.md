@@ -1824,6 +1824,14 @@
   pass `LF_DevGate` there. A bare world (Workbench play, `toolscli test`) has
   no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
   (2026-11-08).
+- ✅ **Workshop scenario (2026-11-10).** `LF_PlaytestTown.conf` is the Workshop item's scenario
+  "Life Framework: Playtest Town": plain-text name and description (the Workshop backend copies
+  them as text), the town picture `Missions/LF_PlaytestTown_Preview.edds` as icon, preview and
+  loading screen, 16 players, details from `#LF-Mission_PlaytestTown_Details`. `EL_DebugTest.conf`
+  and `EveronLifeGameMode.conf` set `m_bShowInScenarioMenu 0`. `tools\cli pack` packs the addon
+  as Workbench Publish bundles it. Proven from the packed addon in a clean profile: Scenarios
+  lists it, Play loads the town, form R-89 signs, top-up and test cars apply. Asserted in
+  `host/playtest-mission`. Publish steps: `docs/playtest/workshop-publish.md`.
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`

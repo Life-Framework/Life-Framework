@@ -6696,6 +6696,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
+    CustomStringTableItem "{93B24FC92EC107AF}" {
+     Id "LF-Mission_PlaytestTown_Details"
+     Target_en_us "This is a playtest build. Your cash and bank top up when they run low, and every new character owns two test cars, one in the garage and one at the impound. Your first spawn opens form R-89; fill it in to start. The first player on a server with no police is added to the police roster, so you can clock in at the station desk. Progress is saved and carries over a restart. Report problems on the Life Framework Discord or GitHub."
+     Comment "Detailed scenario rules shown with the scenario."
+    }
   }
  }
 }
