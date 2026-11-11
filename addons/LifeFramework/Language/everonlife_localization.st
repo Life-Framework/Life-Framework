@@ -6926,26 +6926,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
-    CustomStringTableItem "{EF124E70F7C349D7}" {
-     Id "LF-DebugJailMe_Action"
-     Target_en_us "Send me to jail (playtest)"
-     Comment "Debug-only board action outside the jail: jails you for 60 s."
-    }
-    CustomStringTableItem "{F7B900AAB3964016}" {
-     Id "LF-Sign_DebugJail_Title"
-     Target_en_us "Playtest: jail board"
-     Comment "Title of the debug board by the jail entrance."
-    }
-    CustomStringTableItem "{66031F4E19D748E0}" {
-     Id "LF-Sign_DebugJail_What"
-     Target_en_us "Playtest only. Use the action on this board to be jailed for 60 seconds through the real jail path, so you can try the cell, the visit window and the release alone."
-     Comment "Body of the debug jail board."
-    }
-    CustomStringTableItem "{1C23DAF5E8974D14}" {
-     Id "LF-Sign_DebugJail_Next"
-     Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
-     Comment "Next-step line of the debug jail board."
-    }
     CustomStringTableItem "{63E93D8FD582854D}" {
      Id "LF-Witness_Unsure1"
      Target_en_us "%1: Hey, I am not sure."
@@ -7130,6 +7110,171 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_CrimePolice_Next"
      Target_en_us "Clock on at the police station to arrest the suspect you made."
      Comment "Annex crime site sign crime_police, Next section."
+    }
+    CustomStringTableItem "{EF124E70F7C349D7}" {
+     Id "LF-DebugJailMe_Action"
+     Target_en_us "Send me to jail (playtest)"
+     Comment "Debug-only board action outside the jail: jails you for 60 s."
+    }
+    CustomStringTableItem "{F7B900AAB3964016}" {
+     Id "LF-Sign_DebugJail_Title"
+     Target_en_us "Playtest: jail board"
+     Comment "Title of the debug board by the jail entrance."
+    }
+    CustomStringTableItem "{66031F4E19D748E0}" {
+     Id "LF-Sign_DebugJail_What"
+     Target_en_us "Playtest only. Use the action on this board to be jailed for 60 seconds through the real jail path, so you can try the cell, the visit window and the release alone."
+     Comment "Body of the debug jail board."
+    }
+    CustomStringTableItem "{1C23DAF5E8974D14}" {
+     Id "LF-Sign_DebugJail_Next"
+     Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
+     Comment "Next-step line of the debug jail board."
+    }
+    CustomStringTableItem "{01B9D43100AC37E2}" {
+     Id "LF-SpawnHub_Title"
+     Target_en_us "Playtest travel"
+     Comment "Travel list title (spawn table globe)."
+    }
+    CustomStringTableItem "{D2F012D65C8132A6}" {
+     Id "LF-SpawnHub_Hint"
+     Target_en_us "Pick an area to be taken there. Playtest only."
+     Comment "Travel list hint line."
+    }
+    CustomStringTableItem "{64C91C9876BC49F4}" {
+     Id "LF-SpawnHub_Go"
+     Target_en_us "Go"
+     Comment "Travel list row button."
+    }
+    CustomStringTableItem "{134044FE4B970260}" {
+     Id "LF-SpawnHub_Close"
+     Target_en_us "Close"
+     Comment "Travel list close button."
+    }
+    CustomStringTableItem "{BEEAD653C82FCDCE}" {
+     Id "LF-SpawnHub_Open"
+     Target_en_us "Travel to a playtest area"
+     Comment "Globe action name."
+    }
+    CustomStringTableItem "{450BE9C116C859BD}" {
+     Id "LF-SpawnHub_Pt_spawn"
+     Target_en_us "Spawn square"
+     Comment "Travel list row: spawn."
+    }
+    CustomStringTableItem "{B6586A394D67B4AF}" {
+     Id "LF-SpawnHub_Pt_police"
+     Target_en_us "Police station"
+     Comment "Travel list row: police."
+    }
+    CustomStringTableItem "{B4232BB7C4308A82}" {
+     Id "LF-SpawnHub_Pt_jail"
+     Target_en_us "Jail"
+     Comment "Travel list row: jail."
+    }
+    CustomStringTableItem "{8AA2600D1543035B}" {
+     Id "LF-SpawnHub_Pt_bank"
+     Target_en_us "Bank"
+     Comment "Travel list row: bank."
+    }
+    CustomStringTableItem "{B20B273E74BFB5FC}" {
+     Id "LF-SpawnHub_Pt_cash_van"
+     Target_en_us "Cash van stop"
+     Comment "Travel list row: cash_van."
+    }
+    CustomStringTableItem "{CB3B602C123EDB3A}" {
+     Id "LF-SpawnHub_Pt_general_store"
+     Target_en_us "General store"
+     Comment "Travel list row: general_store."
+    }
+    CustomStringTableItem "{70A38A6809640B2F}" {
+     Id "LF-SpawnHub_Pt_market"
+     Target_en_us "Market traders"
+     Comment "Travel list row: market."
+    }
+    CustomStringTableItem "{F7342C42AF67BCAA}" {
+     Id "LF-SpawnHub_Pt_post_office"
+     Target_en_us "Post office and jobs"
+     Comment "Travel list row: post_office."
+    }
+    CustomStringTableItem "{4AF36AD0E0DCF596}" {
+     Id "LF-SpawnHub_Pt_car_lot"
+     Target_en_us "Car lot"
+     Comment "Travel list row: car_lot."
+    }
+    CustomStringTableItem "{69B85ADAEFBDBB9C}" {
+     Id "LF-SpawnHub_Pt_garage"
+     Target_en_us "Garage"
+     Comment "Travel list row: garage."
+    }
+    CustomStringTableItem "{B0C61257E5FB48B5}" {
+     Id "LF-SpawnHub_Pt_impound"
+     Target_en_us "Impound lot"
+     Comment "Travel list row: impound."
+    }
+    CustomStringTableItem "{4933783F01581685}" {
+     Id "LF-SpawnHub_Pt_chop_shop"
+     Target_en_us "Chop shop"
+     Comment "Travel list row: chop_shop."
+    }
+    CustomStringTableItem "{FB4A0D3B97262A9C}" {
+     Id "LF-SpawnHub_Pt_fuel_station"
+     Target_en_us "Fuel station"
+     Comment "Travel list row: fuel_station."
+    }
+    CustomStringTableItem "{DFCE41C7B190AA27}" {
+     Id "LF-SpawnHub_Pt_hospital"
+     Target_en_us "Hospital"
+     Comment "Travel list row: hospital."
+    }
+    CustomStringTableItem "{6D24484296F44B77}" {
+     Id "LF-SpawnHub_Pt_org_registry"
+     Target_en_us "Organization registry"
+     Comment "Travel list row: org_registry."
+    }
+    CustomStringTableItem "{180961ECD408F286}" {
+     Id "LF-SpawnHub_Pt_hideout"
+     Target_en_us "Hideout yard"
+     Comment "Travel list row: hideout."
+    }
+    CustomStringTableItem "{88BCEC3B8F0B96E6}" {
+     Id "LF-SpawnHub_Pt_fence"
+     Target_en_us "Fence (Vince)"
+     Comment "Travel list row: fence."
+    }
+    CustomStringTableItem "{3502F9E9ED2D4D43}" {
+     Id "LF-SpawnHub_Pt_lockup"
+     Target_en_us "Lockpick lock-up"
+     Comment "Travel list row: lockup."
+    }
+    CustomStringTableItem "{ACA4B36A252C8E65}" {
+     Id "LF-SpawnHub_Pt_moonshine"
+     Target_en_us "Moonshine camp"
+     Comment "Travel list row: moonshine."
+    }
+    CustomStringTableItem "{63BC79F23121554D}" {
+     Id "LF-SpawnHub_Pt_farm"
+     Target_en_us "Farm"
+     Comment "Travel list row: farm."
+    }
+    CustomStringTableItem "{77D8780E1D048421}" {
+     Id "LF-SpawnHub_Pt_orchard"
+     Target_en_us "Apple orchard"
+     Comment "Travel list row: orchard."
+    }
+    CustomStringTableItem "{9ECE67180191DEF9}" {
+     Id "LF-SpawnHub_Pt_mining"
+     Target_en_us "Mining yard"
+     Comment "Travel list row: mining."
+    }
+    CustomStringTableItem "{BA0368C4FE08E132}" {
+     Id "LF-SpawnHub_Pt_quarry"
+     Target_en_us "Quarry (lawless)"
+     Comment "Travel list row: quarry."
+    }
+    CustomStringTableItem "{D25E9BC45F9B3F3E}" {
+     Id "LF-SpawnHub_Pt_annex"
+     Target_en_us "Test annex"
+     Comment "Travel list row: annex."
     }
   }
  }
