@@ -1,3 +1,4 @@
+import { rosterHas } from "./scanner-proof.mjs";
 import { ROB_TARGET, arrive, clientBox, sessionDir } from "../session.mjs";
 
 async function runWitnessProof() {
@@ -6,7 +7,7 @@ async function runWitnessProof() {
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
-    console.log(`client ${n}: ${r.line.replace(/^d+ /, "")} -> ${r.status} ${r.detail}`);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
     return r;
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
@@ -16,6 +17,10 @@ async function runWitnessProof() {
     return r;
   };
 
+  if (!rosterHas(dir, 2)) {
+    console.log("witness proof: FAIL  client 2 is not on the police roster; run `session.mjs down`, `session.mjs roster 2`, then `up --clients 2` again");
+    return 1;
+  }
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
   // Client 2 stands at the till (a witness within a few metres), client 1 robs it.
@@ -57,6 +62,12 @@ async function runWitnessProof() {
   on(2, { verb: "capture", mode: "ui", name: "m2_266_witness_board_client2" }, 25000);
   on(2, { verb: "ui" });
   on(2, { verb: "click", widget: "Close" });
+  // Leave the session as found: an officer left on duty makes the next proof's clock-in a clock-out.
+  on(2, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+  wait(2500);
+  on(2, { verb: "look" });
+  must(on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000), "clock out");
+  wait(1500);
 
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "witness proof: FAIL" : "witness proof: PASS (a witness at the till described the suspect from the payphone; the officer's board shows it)");

@@ -1,4 +1,5 @@
-import { ROB_TARGET, TILL_COOLDOWN_MS, arrive, clientBox, sessionDir } from "../session.mjs";
+import { rosterHas } from "./scanner-proof.mjs";
+import { ROB_TARGET, TILL_COOLDOWN_MS, arrive, clientBox, judgeDispatch, sessionDir } from "../session.mjs";
 
 async function runDispatchProof() {
   const h = await import("../harness.mjs");
@@ -29,6 +30,10 @@ async function runDispatchProof() {
   };
   const fails = [];
 
+  if (!rosterHas(dir, 2)) {
+    console.log("dispatch proof: FAIL  client 2 is not on the police roster; run `session.mjs down`, `session.mjs roster 2`, then `up --clients 2` again");
+    return 1;
+  }
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
   if (duty(2).status !== "ok") fails.push("client 2 clock in failed");
