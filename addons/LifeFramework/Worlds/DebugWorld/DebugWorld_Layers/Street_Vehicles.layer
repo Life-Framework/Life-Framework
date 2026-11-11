@@ -97,6 +97,14 @@ GenericEntity Roadmap_Vehicle_Lot {
 }
 GenericEntity Roadmap_Garage {
  components {
+  MeshObject "{A1C1080A0000000A}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{A1C1080A0000000B}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
   LF_VehicleGarageComponent "{A1C1080A00000001}" {
    m_sPadId "roadmap-garage"
   }
@@ -112,9 +120,9 @@ GenericEntity Roadmap_Garage {
     UserActionContext "{A1C1080A00000003}" {
      ContextName "default"
      Position PointInfo "{A1C1080A00000004}" {
-      Offset 0 1.2 0
+      Offset 0 1.0 2.0
      }
-     Radius 2.5
+     Radius 3.5
     }
    }
    additionalActions {

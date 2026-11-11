@@ -38,3 +38,9 @@ export const External = ({ className = "w-3.5 h-3.5 inline-block align-[-0.1em]"
     <path d="M6 3H3v10h10v-3M9 3h4v4M13 3 7 9" />
   </svg>
 );
+
+export const DownloadIcon = ({ className = "w-5 h-5" }: P) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false">
+    <path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11" />
+  </svg>
+);

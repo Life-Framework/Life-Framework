@@ -160,7 +160,7 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -187,6 +187,20 @@ class LF_AgentCommand
 			return ParseType(parts, cmd);
 		if (cmd.Verb == "capture")
 			return ParseCapture(parts, cmd);
+		if (cmd.Verb == "previews")
+		{
+			// previews show <prefab,prefab,...> | hide
+			if (parts.Count() < 3 || (parts[2] == "show" && parts.Count() < 4))
+			{
+				cmd.Error = "need_previews_arg";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			if (parts.Count() > 3)
+				cmd.Arg2 = parts[3];
+			return true;
+		}
 		if (cmd.Verb == "film")
 			return ParseFilm(parts, cmd);
 		if (cmd.Verb == "scene" || cmd.Verb == "camera")
@@ -197,7 +211,7 @@ class LF_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//!   <id> scene start|stop|status [name]
+	//!   <id> scene start <name> [hour|-] [weather] | stop | reset | status   (reset = stop: despawn, restore clock and weather)
 	//!   <id> camera orbit|follow <x> <y> <z> <radius|distance> <seconds>
 	protected static bool ParseFilmDirect(array<string> parts, LF_AgentCommand cmd)
 	{
@@ -210,6 +224,13 @@ class LF_AgentCommand
 		cmd.Arg1 = parts[2];
 		if (parts.Count() > 3)
 			cmd.Arg2 = parts[3];
+		if (cmd.Verb == "scene")
+		{
+			if (parts.Count() > 4)
+				cmd.Arg3 = parts[4];
+			if (parts.Count() > 5)
+				cmd.Arg4 = parts[5];
+		}
 		if (cmd.Verb == "camera")
 		{
 			if (parts.Count() < 8)
@@ -722,7 +743,7 @@ class LF_AgentCommand
 		}
 
 		cmd.Arg1 = parts[2];
-		if (cmd.Arg1 == "stop" || cmd.Arg1 == "status")
+		if (cmd.Arg1 == "stop" || cmd.Arg1 == "status" || cmd.Arg1 == "slate")
 			return true;
 		if (cmd.Arg1 != "start")
 		{
@@ -1089,7 +1110,7 @@ class LF_AgentHarness
 			DoReport(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
@@ -1160,6 +1181,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "kit")
 		{
 			DoKit(cmd);
+			return;
+		}
+		if (cmd.Verb == "previews")
+		{
+			DoPreviews(cmd);
 			return;
 		}
 		if (cmd.Verb == "capture")
@@ -3159,6 +3185,28 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static void DoPreviews(LF_AgentCommand cmd)
+	{
+		if (cmd.Arg1 == "hide")
+		{
+			LF_ItemPreviewSheet.Hide();
+			WriteResult(cmd.Id, "ok", "closed");
+			return;
+		}
+
+		array<string> prefabs = {};
+		cmd.Arg2.Split(",", prefabs, true);
+		int shown = LF_ItemPreviewSheet.Show(prefabs);
+		if (shown < 0)
+		{
+			WriteResult(cmd.Id, "error", "previews_failed");
+			return;
+		}
+
+		WriteResult(cmd.Id, "ok", "cells_" + shown);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void DoCapture(LF_AgentCommand cmd)
 	{
 		LF_ScreenshotShot shot = new LF_ScreenshotShot();
@@ -3258,7 +3306,7 @@ class LF_AgentHarness
 			return;
 		}
 
-		character.LF_AskFilmScene(cmd.Id, cmd.Arg1, cmd.Arg2);
+		character.LF_AskFilmScene(cmd.Id, cmd.Arg1, cmd.Arg2, cmd.Arg3, cmd.Arg4);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3271,6 +3319,8 @@ class LF_AgentHarness
 			result = LF_FilmRecorder.Start(cmd.Arg2, cmd.Arg3.ToInt(), cmd.Arg4.ToInt());
 		else if (cmd.Arg1 == "stop")
 			result = LF_FilmRecorder.Stop();
+		else if (cmd.Arg1 == "slate")
+			result = LF_FilmRecorder.Slate();
 		else
 			result = "ok " + LF_FilmRecorder.Status();
 
