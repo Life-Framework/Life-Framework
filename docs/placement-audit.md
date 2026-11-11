@@ -80,8 +80,11 @@ largest side, in metres, per kind of prop:
 - The mesh box can include parts you do not see (a booth's roof, a pot's flowers), so check a surprising
   flag in a shot before widening.
 - Fixtures: `audit selftest` flags a 1.4 m money bag, passes a 0.55 m one and ignores a prefab outside the table.
-- When the check landed it found the four payphones (3.37 m), twelve geranium pots (1.37 m) and four
-  cabbage items (0.91 m). They are in the allowlist as "KNOWN ABSURD SIZE" until their layers are fixed; delete the entry with the fix.
+- When the check landed it found four payphones (3.37 m), twelve geranium window boxes (1.37 m) and four
+  cabbage items (0.91 m). All are fixed at the source: `LF_Payphone.et` carries `scale 0.8` (2.7 m box, about
+  2.3 m above ground), the layers use `FlowerpotFlowers_01_begonia_*` pots in place of the 1.37 m
+  `FlowerpotPelargonia` window box, and `Cabbage.et` carries `scale 0.5`. Vanilla has no cabbage-head mesh, so
+  the cabbage's `odd-scale` is allowlisted.
 
 ## Allowlist
 
