@@ -1,0 +1,6 @@
+{
+  "_note": "Placements that are meant to look this way. tools\\cli audit placement skips a problem whose kind matches and whose name or prefab matches the regex (docs/placement-audit.md). Give the reason a reviewer can check in a shot.",
+  "allow": [
+    { "match": "^Axe_", "kind": "tilted", "why": "The quarry axe lies flat on the ground by the logs (LoggingChain.layer angles 90)." }
+  ]
+}

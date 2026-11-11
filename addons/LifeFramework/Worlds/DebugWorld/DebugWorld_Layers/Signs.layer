@@ -286,7 +286,7 @@ GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sig
    m_vTextColor 0.65 0.1 0.1
   }
  }
- coords 172 0 200
+ coords 171.2 0 205
  angleY 0
 }
 GenericEntity Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -310,7 +310,7 @@ GenericEntity Sign_HospitalBay : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.75 0.08 0.08
   }
  }
- coords 261 0 252.6
+ coords 261 0 254.2
  angleY 270
 }
 GenericEntity Sign_LotPrice_s105 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
@@ -321,7 +321,7 @@ GenericEntity Sign_LotPrice_s105 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sig
    m_PriceVehicle "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
   }
  }
- coords 214.8 0 259.2
+ coords 214.8 0 258.4
  angleY 180
  scale 0.65
 }
@@ -333,7 +333,7 @@ GenericEntity Sign_LotPrice_uaz469 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
    m_PriceVehicle "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
   }
  }
- coords 219.3 0 259.2
+ coords 219.3 0 258.4
  angleY 180
  scale 0.65
 }
@@ -345,7 +345,7 @@ GenericEntity Sign_LotPrice_s1203 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Si
    m_PriceVehicle "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
   }
  }
- coords 223.8 0 259.2
+ coords 223.8 0 258.4
  angleY 180
  scale 0.65
 }
@@ -357,7 +357,7 @@ GenericEntity Sign_LotPrice_uaz452 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
    m_PriceVehicle "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
   }
  }
- coords 228.3 0 259.2
+ coords 228.3 0 258.4
  angleY 180
  scale 0.65
 }

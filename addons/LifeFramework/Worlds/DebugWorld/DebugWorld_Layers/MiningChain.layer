@@ -340,7 +340,7 @@ GenericEntity Quarry_Stone4 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteSt
  angleY 53
 }
 GenericEntity Quarry_Stone7 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
- coords 174.3 0 158.9
+ coords 170.2 0 154.6
  angleY 351
 }
 GenericEntity Quarry_Stone8 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {

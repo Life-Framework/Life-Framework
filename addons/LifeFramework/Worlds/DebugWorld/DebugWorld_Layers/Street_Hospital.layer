@@ -103,7 +103,7 @@ GenericEntity Roadmap_Hospital_Cabinet {
   }
  }
  Flags 0x403 0
- coords 266.5 0 258.2
+ coords 266.15 0 258.2
  angleY 180
 }
 GenericEntity Hospital_Bed_1 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
@@ -156,10 +156,10 @@ SCR_DestructibleEntity Hospital_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/D
  coords 257.9 0 258.1
 }
 SCR_DestructibleEntity Hospital_Flowerpot_2 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 263.1 0 258.1
+ coords 263.45 0 258.1
 }
 SCR_DestructibleEntity Hospital_WaitBench : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
- coords 260.5 0 258.0
+ coords 260.1 0 258.0
  angleY 180
 }
 GenericEntity Hospital_SupplyCrate_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
@@ -167,7 +167,7 @@ GenericEntity Hospital_SupplyCrate_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/B
  angleY 175
 }
 GenericEntity Hospital_SupplyCrate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 272.7 0 256.5
+ coords 272.3 0 256.5
  angleY 190
 }
 GenericEntity Hospital_Bin : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
