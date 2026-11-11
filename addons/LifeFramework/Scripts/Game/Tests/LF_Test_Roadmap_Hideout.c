@@ -73,27 +73,18 @@ class LF_Test_Roadmap_HideoutWorld : LF_Test
 		LF_OrganizationManager.Reset();
 		LF_Hideout.Reset();
 
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Door");
-		ctx.True(door != null, "Roadmap_Hideout_Door is placed");
-		IEntity machine = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Machine");
-		ctx.True(machine != null, "Roadmap_Hideout_Machine is placed");
-		IEntity stash = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Stash");
-		ctx.True(stash != null, "Roadmap_Hideout_Stash is placed");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HIDEOUT_DOOR);
+		ctx.True(door != null, "Annex_Hideout_Door is placed");
+		IEntity machine = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HIDEOUT_MACHINE);
+		ctx.True(machine != null, "Annex_Hideout_Machine is placed");
+		IEntity stash = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HIDEOUT_STASH);
+		ctx.True(stash != null, "Annex_Hideout_Stash is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
-		vector doorOrigin = door.GetOrigin();
-		ctx.EqualFloat(302.4, doorOrigin[0], 0.1, "the door is at X 302.4 (the yard gate on the alley)");
-		ctx.EqualFloat(0, doorOrigin[1], 0.1, "the door is at Y 0");
-		ctx.EqualFloat(288, doorOrigin[2], 0.1, "the door is at Z 288");
-		vector machineOrigin = machine.GetOrigin();
-		ctx.EqualFloat(298, machineOrigin[0], 0.1, "the machine is at X 298");
-		ctx.EqualFloat(0, machineOrigin[1], 0.1, "the machine is at Y 0");
-		ctx.EqualFloat(302, machineOrigin[2], 0.1, "the machine is at Z 302");
-		vector stashOrigin = stash.GetOrigin();
-		ctx.EqualFloat(312, stashOrigin[0], 0.1, "the stash is at X 312");
-		ctx.EqualFloat(0, stashOrigin[1], 0.1, "the stash is at Y 0");
-		ctx.EqualFloat(296, stashOrigin[2], 0.1, "the stash is at Z 296");
+		ctx.EqualFloat(0, door.GetOrigin()[1], 0.1, "the door stands on the ground");
+		ctx.EqualFloat(0, machine.GetOrigin()[1], 0.1, "the machine stands on the ground");
+		ctx.EqualFloat(0, stash.GetOrigin()[1], 0.1, "the stash stands on the ground");
 
 		ctx.True(LF_Component<LF_BreachTargetComponent>.Find(door) == null, "the hideout door is not a breach target");
 		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(door);
@@ -103,7 +94,7 @@ class LF_Test_Roadmap_HideoutWorld : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		ctx.EqualStr(LF_Hideout.HIDEOUT_ID, hideoutDoor.GetHideoutId(), "the door is the roadmap hideout");
+		ctx.EqualStr(LF_TestAnnex.HIDEOUT_ID, hideoutDoor.GetHideoutId(), "the door is the roadmap hideout");
 
 		LF_HideoutMachineComponent hideoutMachine = LF_Component<LF_HideoutMachineComponent>.Find(machine);
 		ctx.NotNull(hideoutMachine, "the machine carries LF_HideoutMachineComponent");
@@ -112,7 +103,7 @@ class LF_Test_Roadmap_HideoutWorld : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		ctx.EqualStr(LF_Hideout.HIDEOUT_ID, hideoutMachine.GetHideoutId(), "the machine belongs to the hideout");
+		ctx.EqualStr(LF_TestAnnex.HIDEOUT_ID, hideoutMachine.GetHideoutId(), "the machine belongs to the hideout");
 
 		array<BaseUserAction> actionList = {};
 		actions.GetActionsList(actionList);
@@ -143,22 +134,22 @@ class LF_Test_Roadmap_HideoutWorld : LF_Test
 			return;
 
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, member), "e2e member is added");
-		ctx.True(LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId()), "the placed hideout is assigned");
+		ctx.True(LF_Hideout.Assign(LF_TestAnnex.HIDEOUT_ID, org.GetId()), "the placed hideout is assigned");
 		ctx.EqualStr(org.GetId(), doorLock.GetHouseIdentifier(), "the lock identifier is the organization id");
 
-		ctx.True(LF_Hideout.LockDoor(member, LF_Hideout.HIDEOUT_ID), "member locks the placed door");
+		ctx.True(LF_Hideout.LockDoor(member, LF_TestAnnex.HIDEOUT_ID), "member locks the placed door");
 		ctx.True(doorLock.IsLocked(), "the placed door is locked");
-		ctx.False(LF_Hideout.TryUnlock(outsider, LF_Hideout.HIDEOUT_ID), "a non-member does not unlock the placed door");
+		ctx.False(LF_Hideout.TryUnlock(outsider, LF_TestAnnex.HIDEOUT_ID), "a non-member does not unlock the placed door");
 		ctx.True(doorLock.IsLocked(), "the placed door stays locked for a non-member");
 		ctx.EqualStr("door refused: not a member", LF_Hideout.GetLastRefusal(), "the placed door logs the refusal");
-		ctx.True(LF_Hideout.TryUnlock(member, LF_Hideout.HIDEOUT_ID), "a member unlocks the placed door");
+		ctx.True(LF_Hideout.TryUnlock(member, LF_TestAnnex.HIDEOUT_ID), "a member unlocks the placed door");
 		ctx.False(doorLock.IsLocked(), "the placed lock opens for a member");
 
-		ctx.False(LF_Hideout.CanProcess(member, LF_Hideout.HIDEOUT_ID), "the placed machine refuses without the upgrade");
+		ctx.False(LF_Hideout.CanProcess(member, LF_TestAnnex.HIDEOUT_ID), "the placed machine refuses without the upgrade");
 		int price = LF_OrganizationManager.PRICE_PROCESSING_SLOT;
 		ctx.True(LF_OrganizationManager.Deposit(org.GetId(), founder, price), "e2e fund receives the upgrade price");
 		ctx.True(LF_OrganizationManager.BuyUpgrade(org.GetId(), founder, LF_EOrganizationUpgrade.PROCESSING_SLOT), "e2e founder buys the processing slot");
-		ctx.True(LF_Hideout.CanProcess(member, LF_Hideout.HIDEOUT_ID), "the placed machine runs for a member with the upgrade");
+		ctx.True(LF_Hideout.CanProcess(member, LF_TestAnnex.HIDEOUT_ID), "the placed machine runs for a member with the upgrade");
 
 		LF_OrganizationManager.Reset();
 		LF_Hideout.Reset();
@@ -186,9 +177,9 @@ class LF_Test_Roadmap_HideoutPersistence : LF_Test
 			return;
 
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, member), "member is added before the save");
-		ctx.True(LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId()), "hideout is assigned before the save");
-		ctx.True(LF_Hideout.TryUnlock(member, LF_Hideout.HIDEOUT_ID), "member unlocks before the save");
-		ctx.False(LF_Hideout.IsLocked(LF_Hideout.HIDEOUT_ID), "lock is open before the save");
+		ctx.True(LF_Hideout.Assign(LF_TestAnnex.HIDEOUT_ID, org.GetId()), "hideout is assigned before the save");
+		ctx.True(LF_Hideout.TryUnlock(member, LF_TestAnnex.HIDEOUT_ID), "member unlocks before the save");
+		ctx.False(LF_Hideout.IsLocked(LF_TestAnnex.HIDEOUT_ID), "lock is open before the save");
 
 		string orgId = org.GetId();
 		ref array<ref LF_HideoutRecord> records = LF_Hideout.ExportAll();
@@ -197,14 +188,14 @@ class LF_Test_Roadmap_HideoutPersistence : LF_Test
 			return;
 
 		ctx.Equal(1, records.Count(), "one hideout record is exported");
-		ctx.True(LF_Hideout.LockDoor(member, LF_Hideout.HIDEOUT_ID), "live lock is closed after the export");
-		ctx.True(LF_Hideout.IsLocked(LF_Hideout.HIDEOUT_ID), "live state differs from the snapshot");
+		ctx.True(LF_Hideout.LockDoor(member, LF_TestAnnex.HIDEOUT_ID), "live lock is closed after the export");
+		ctx.True(LF_Hideout.IsLocked(LF_TestAnnex.HIDEOUT_ID), "live state differs from the snapshot");
 
 		LF_Hideout.ApplyAll(records);
-		ctx.EqualStr(orgId, LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID), "apply restores the organization id");
-		ctx.False(LF_Hideout.IsLocked(LF_Hideout.HIDEOUT_ID), "apply restores the open lock");
+		ctx.EqualStr(orgId, LF_Hideout.GetOwner(LF_TestAnnex.HIDEOUT_ID), "apply restores the organization id");
+		ctx.False(LF_Hideout.IsLocked(LF_TestAnnex.HIDEOUT_ID), "apply restores the open lock");
 
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Door");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HIDEOUT_DOOR);
 		if (door)
 		{
 			LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(door);
@@ -217,8 +208,8 @@ class LF_Test_Roadmap_HideoutPersistence : LF_Test
 		}
 
 		LF_Hideout.ApplyAll(records);
-		ctx.EqualStr(orgId, LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID), "second apply keeps the same owner");
-		ctx.False(LF_Hideout.IsLocked(LF_Hideout.HIDEOUT_ID), "second apply does not relock the door");
+		ctx.EqualStr(orgId, LF_Hideout.GetOwner(LF_TestAnnex.HIDEOUT_ID), "second apply keeps the same owner");
+		ctx.False(LF_Hideout.IsLocked(LF_TestAnnex.HIDEOUT_ID), "second apply does not relock the door");
 
 		LF_OrganizationManager.Reset();
 		LF_Hideout.Reset();

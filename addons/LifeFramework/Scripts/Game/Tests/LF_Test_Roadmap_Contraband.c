@@ -24,8 +24,8 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		ctx.False(LF_Contraband.NearDrop("160 0 284", drop), "getting out 28.5 m from the drop is leaving the vehicle");
 		ctx.True(LF_Contraband.NearDrop("131.5 40 284", drop), "height does not count toward the drop distance");
 
-		ctx.EqualStr("Roadmap_Convoy_Drop", LF_Contraband.DropIdFor(false), "the flagship keeps the pub drop");
-		ctx.EqualStr("Roadmap_Convoy_Drop_Near", LF_Contraband.DropIdFor(true), "the debug mode uses the near drop");
+		ctx.EqualStr(LF_Contraband.DROP_ID, LF_Contraband.DropIdFor(false), "the flagship keeps the pub drop");
+		ctx.EqualStr(LF_Contraband.DROP_NEAR_ID, LF_Contraband.DropIdFor(true), "the debug mode uses the near drop");
 
 		string founder = "roadmap-contraband-founder";
 		string member = "roadmap-contraband-member";

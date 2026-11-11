@@ -90,8 +90,10 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		Resource doorPrefab = Resource.Load(LF_Jail.DOOR_PREFAB);
 		ctx.True(doorPrefab.IsValid(), "prison door prefab loads");
 
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Jail_Door");
-		ctx.True(door != null, "Roadmap_Jail_Door is placed");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JAIL_DOOR);
+		ctx.True(door != null, "Annex_Jail_Door is placed");
+		IEntity cell = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JAIL_CELL);
+		ctx.True(cell != null, "Annex_Jail_Cell is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -120,7 +122,8 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		ctx.True(armWired, "arm action is on the jail door");
 		ctx.True(repairWired, "repair action is on the jail door");
 
-		LF_Jail.SyncPlacedCell();
+		LF_Jail.SetCellOrigin(cell.GetOrigin());
+		LF_Jail.SetDoorTarget(LF_TestAnnex.JAIL_DOOR);
 		LF_Jail.Configure(30, 120, 1, 6);
 
 		string officerUid = "roadmap-jailbreak-e2e-officer";
@@ -141,12 +144,12 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		float remaining = LF_Jail.GetRemaining(prisonerUid);
 		ctx.True(remaining > 0, "the prisoner still has time when the door opens");
 
-		ctx.True(LF_Breach.Arm("Roadmap_Jail_Door", breakerUid), "zero-fuse arm opens the jail door");
+		ctx.True(LF_Breach.Arm(LF_TestAnnex.JAIL_DOOR, breakerUid), "zero-fuse arm opens the jail door");
 		ctx.False(doorLock.IsLocked(), "jail door IsLocked() is false after the fuse");
 		ctx.False(LF_Jail.Confines(prisonerUid), "confinement predicate is false while the door is open");
 		ctx.True(LF_Jail.GetRemaining(prisonerUid) > 0, "opening the door does not zero the sentence");
 
-		ctx.True(LF_Breach.Repair("Roadmap_Jail_Door", officerUid), "police repair runs");
+		ctx.True(LF_Breach.Repair(LF_TestAnnex.JAIL_DOOR, officerUid), "police repair runs");
 		ctx.True(doorLock.IsLocked(), "repair sets the lock");
 		ctx.True(LF_Jail.Confines(prisonerUid), "repair makes the confinement predicate true");
 	}
