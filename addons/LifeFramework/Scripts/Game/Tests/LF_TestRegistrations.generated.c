@@ -67,6 +67,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DebugMenuGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMoneyTopUp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugWorldCollision(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DebugWorldWeather(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AccountStateBits(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LicenseBits(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterCreationRules(), LF_TestTier.LOGIC);

@@ -69,7 +69,7 @@ class LF_AgentCommand
 	//!   <id> capture ui <Name>
 	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz [hour]]
 	//!   <id> clean off: end a run of clean world shots (free camera, hidden HUD)
-	//!   <id> time <hour>: the server sets the clock to that LOCAL hour and clear weather
+	//!   <id> time <hour> [WeatherState]: the server sets the clock to that LOCAL hour and the weather (default Clear)
 	//!   <id> probe ground <x> <z> | trace <x1 y1 z1 x2 y2 z2> | cam <x y z> | ent <Name> <x y z>
 	//!   <id> film start <Name> <fps> [maxSeconds]
 	//!   <id> film stop|status
@@ -141,6 +141,9 @@ class LF_AgentCommand
 				cmd.Error = "bad_hour";
 				return false;
 			}
+
+			if (parts.Count() > 3)
+				cmd.Arg1 = parts[3];
 
 			return true;
 		}
@@ -1040,7 +1043,7 @@ class LF_AgentHarness
 			if (!clockUser)
 				WriteResult(cmd.Id, "error", "no_character");
 			else
-				clockUser.LF_AskHarnessTime(cmd.Id, cmd.PosX);
+				clockUser.LF_AskHarnessTime(cmd.Id, cmd.PosX, cmd.Arg1);
 			return;
 		}
 		if (cmd.Verb == "look")

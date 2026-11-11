@@ -37,6 +37,14 @@
   police inventory carried; the civilian inventory waits at the desk (M1-11).
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
+- ✅ **DebugWorld weather is pinned Clear (#602).** `GameMode_Roleplay_Debug.et`
+  carries the base-game `SCR_TimeAndWeatherHandlerComponent` with one predefined
+  start (Clear, 09:36 game time) and no random changes, so the server calls
+  `ForceWeatherTo(true, "Clear")` and the stock state machine never drifts into
+  Cloudy. Cloudy's volumetric clouds render as vertical streaks here, and swapping
+  in Eden's world, sky, light, fog, post-process, probe and weather prefabs (or
+  removing the terrain) did not change that. The harness `time <hour> [WeatherState]`
+  keeps the looping flag. Test `world/debugworld-weather-pinned-clear`.
 
 ### `LF_EventBus` — `Core/Events/` (#329, 2026-11-09)
 - ✅ Server event bus: typed events, `Subscribe`/`Unsubscribe`/`Publish`, subscribers

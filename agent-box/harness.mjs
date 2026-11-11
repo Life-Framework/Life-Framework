@@ -222,7 +222,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "time") {
     const hour = Number(spec.hour);
     if (!(hour >= 0 && hour < 24)) throw new Error(`time hour must be 0-24: ${spec.hour}`);
-    return `${id} time ${trimNum(hour)}`;
+    return spec.weather ? `${id} time ${trimNum(hour)} ${token(spec.weather, "weather state")}` : `${id} time ${trimNum(hour)}`;
   }
   if (spec.verb === "probe") {
     const nums = (list) => list.map((n) => { const v = Number(n); if (Number.isNaN(v)) throw new Error(`probe needs numbers: ${list}`); return trimNum(v); }).join(" ");
@@ -858,6 +858,7 @@ function selftest() {
   const clean = buildLine(8, { verb: "capture", mode: "world", name: "s", x: 1, y: 2, z: 3, ox: 4, oy: 5, oz: 6, hour: 18.5 });
   if (clean !== "8 capture world s 1 2 3 4 5 6 18.5") throw new Error(clean);
   if (buildLine(3, { verb: "time", hour: 18.5 }) !== "3 time 18.5") throw new Error("time line");
+  if (buildLine(3, { verb: "time", hour: 12, weather: "Cloudy" }) !== "3 time 12 Cloudy") throw new Error("time weather line");
   const probeEnt = buildLine(8, { verb: "probe", mode: "ent", name: "Hospital_Bed_1", x: 1, y: 0.2, z: 3 });
   if (probeEnt !== "8 probe ent Hospital_Bed_1 1 0.2 3") throw new Error(probeEnt);
   if (buildLine(8, { verb: "probe", mode: "ground", x: 5, z: 6 }) !== "8 probe ground 5 6") throw new Error("probe ground line");
