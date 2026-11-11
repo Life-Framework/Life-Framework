@@ -10,7 +10,7 @@ GenericEntity SurvivalStation {
      }
     }
    }
-   coords -3.2 0 0.4
+   coords -3.2 0 -1.6
   }
   Tree SurvivalPoint_Water : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
    components {
