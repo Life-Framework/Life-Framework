@@ -296,7 +296,9 @@ export function setup() {
   if (!piperPath()) {
     const zip = join(TTS_DIR, "piper.zip");
     dl("https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip", zip);
-    const r = run("tar", ["-xf", zip, "-C", TTS_DIR]);
+    // Windows' own bsdtar: from Git Bash, PATH finds GNU tar first, which reads "C:\..." as a remote host and fails.
+    const sysTar = join(process.env.SystemRoot || "C:\\Windows", "System32", "tar.exe");
+    const r = run(process.platform === "win32" && existsSync(sysTar) ? sysTar : "tar", ["-xf", zip, "-C", TTS_DIR]);
     if (r.status !== 0) throw new Error(`unzip failed: ${r.stderr}`);
     rmSync(zip, { force: true });
   }

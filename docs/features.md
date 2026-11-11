@@ -2038,6 +2038,11 @@
   closed, a client without the define is refused by the script checksum, and
   `host start` never passes it. `session.mjs restart` (playtest) stops with the
   host stop file (SHUTDOWN save), loads, and rejoins the same profiles.
+- (2026-11-11, #571) The stand-in verbs `drill`, `keycard`, `charge`, `shelf`, `crate`, `keys`,
+  `scanner`, `shoot`, `shootnpc`, `siren` and `die` pass `LF_DevGate.CheckHarnessRequest` too, so a
+  playtest-mission session can film the heists and the CPR; without `LF_HARNESS` they still need an
+  administrator or dev tools. The launch trailer is shot and cut with `video/trailer-v1/shoot.mjs` and
+  `video/trailer-v1/cut.mjs` (takes and cuts in the git-ignored `tmp/trailer-v1/`).
 - (2026-11-08, #108) `node agent-box/journey.mjs` plays the M1 journey on a
   two-client session from the player's view (job, parcel run, ATM keypad, price
   list, car, give cash, till robbery and alert, org desk, garage, and on the

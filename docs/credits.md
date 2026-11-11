@@ -8,6 +8,7 @@ this file is where video and audio credits are recorded until then. Every track 
 | Track | Author | Source | Licence | Used in |
 |---|---|---|---|---|
 | "Carefree" | Kevin MacLeod (incompetech.com) | https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3 | Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/) | `video/tooling-test.json` (internal tooling test, not posted) |
+| "Hitman" | Kevin MacLeod (incompetech.com) | https://incompetech.com/music/royalty-free/mp3-royaltyfree/Hitman.mp3 | Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/) | Launch trailer v1 and its cut-downs (`video/trailer-v1/cut.mjs`, #571; not posted until the maintainer signs it off) |
 
 Attribution text for a video description (CC BY 4.0 needs it wherever the music is published):
 
@@ -16,6 +17,8 @@ Music: "Carefree" by Kevin MacLeod (incompetech.com)
 Licensed under Creative Commons: By Attribution 4.0 License
 http://creativecommons.org/licenses/by/4.0/
 ```
+
+For the launch trailer, the same text with the track name "Hitman".
 
 Only music with a licence that allows use in a project video on any platform goes here: Kevin MacLeod (CC BY 4.0),
 Pixabay Music (Pixabay licence), CC0 tracks from the Free Music Archive. Never the YouTube Audio Library or anything

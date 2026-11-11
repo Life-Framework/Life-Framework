@@ -24,7 +24,10 @@ in `agent-box/`. See `agent-box/README.md`.
 
 On a dedicated server (`agent-box/session.mjs`) the server answers `stand`,
 `use`, and `state` over an owner RPC, so a client's harness gets the result or
-the refusal (`dev_gate_closed`). `state` reads the account, money, job, and
+the refusal (`dev_gate_closed`). In a build compiled with `-scrDefine LF_HARNESS` (session builds only) the
+stand-ins `drill`, `keycard`, `charge`, `shelf`, `crate`, `keys`, `scanner`, `shoot`, `shootnpc`, `siren` and `die`
+pass the harness gate like `stand` and `use`, so a playtest-mission session can film the heists (#571); any
+other build still needs an administrator or dev tools. `state` reads the account, money, job, and
 organization on the server and adds the client's last toast.
 
 `peers` is a client-local read of every streamed-in player body (`downed=`, vanilla `life=`), the
