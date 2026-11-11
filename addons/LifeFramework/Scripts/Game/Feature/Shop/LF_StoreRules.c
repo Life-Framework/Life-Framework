@@ -83,6 +83,9 @@ class LF_StoreRules
 {
 	//! A shelf item that moves this far from its slot (metres) was taken, even if it is not in a pocket.
 	static const float TAKEN_DISTANCE = 1.0;
+	//! The most a payer may stand from the till (metres) when the server takes the money (#582). The
+	//! action's own reach is 3 m; this is the server's own check, a little wider for lag.
+	static const float TILL_REACH = 3.5;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return How many display copies stand on the shelf: the stock, never more than the slots.
@@ -170,6 +173,13 @@ class LF_StoreRules
 		}
 
 		return total;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn True when a payer is close enough to the register for the server to take the money.
+	static bool TillInReach(float distance)
+	{
+		return distance >= 0 && distance <= TILL_REACH;
 	}
 
 	//------------------------------------------------------------------------------------------------

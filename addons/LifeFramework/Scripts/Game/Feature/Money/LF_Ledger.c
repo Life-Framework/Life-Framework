@@ -116,6 +116,7 @@ class LF_Ledger
 			return false;
 		}
 
+		int perfToken = LF_Perf.Begin();
 		LF_LedgerEntry entry = new LF_LedgerEntry();
 		s_iLastId++;
 		entry.m_iId = s_iLastId;
@@ -132,6 +133,7 @@ class LF_Ledger
 		Entries().Insert(entry);
 		LF_Debug.Info(FEATURE, string.Format("#%1 %2 %3 %4 (%5) balance %6 counterparty '%7'", entry.m_iId, entry.m_sPlayerUid, entry.m_sAccount, entry.m_iDelta, entry.m_sReason, entry.m_iBalanceAfter, entry.m_sCounterpartyUid));
 		Prune();
+		LF_Perf.End("Ledger.record", perfToken);
 		return true;
 	}
 

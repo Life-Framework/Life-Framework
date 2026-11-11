@@ -97,14 +97,6 @@ $grp GenericEntity {
        Description "#LF-Shop_OpenDesc_General"
       }
      }
-     LF_StoreTillAction "{5A4B0B84C86E284C}" {
-      ParentContextList {
-       "default"
-      }
-      UIInfo UIInfo "{5A4B0B84C86E284D}" {
-       Name "#LF-Store_Pay"
-      }
-     }
     }
    }
    RplComponent "{5A4B0B84C86E284A}" {
@@ -180,4 +172,33 @@ $grp GenericEntity {
   Flags 0x403 0
   coords 179 0 254
  }
+}
+GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86E4846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86E4847}" {
+      Offset 0 0.3 0.35
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{5A4B0B84C86E4848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86E4849}" {
+      Name "#LF-Store_Pay"
+     }
+     m_sStoreKey "general_store"
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 179.85 1.04 244.3
+ angleY 0
 }

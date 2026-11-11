@@ -6644,26 +6644,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The car left the yard. The job is off"
      Comment "Toast: the car moved before collection (#415)."
     }
-    CustomStringTableItem "{156BE656616C6972}" {
-     Id "LF-Sign_LotPrice_s105_Title"
-     Target_en_us "S105 $1,000"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
-    }
-    CustomStringTableItem "{E9ED41A91EBD6C79}" {
-     Id "LF-Sign_LotPrice_uaz469_Title"
-     Target_en_us "UAZ $2,500"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
-    }
-    CustomStringTableItem "{9E6DE5A330213AAE}" {
-     Id "LF-Sign_LotPrice_s1203_Title"
-     Target_en_us "Van $4,000"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
-    }
-    CustomStringTableItem "{CA7D25330BEB1CA1}" {
-     Id "LF-Sign_LotPrice_uaz452_Title"
-     Target_en_us "UAZ 452 $3,500"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
-    }
     CustomStringTableItem "{33B679F9679C9184}" {
      Id "LF-License_FarmerField_Name"
      Target_en_us "Field hand"
@@ -7430,6 +7410,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-JailWork_BadConfig"
      Target_en_us "This job is not set up."
      Comment "Jail job refused: no seconds configured."
+    }
+    CustomStringTableItem "{156BE656616C6972}" {
+     Id "LF-Sign_LotPrice_Title"
+     Target_en_us "%1 %2"
+     Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
+    }
+    CustomStringTableItem "{EF124E70F7C349D7}" {
+     Id "LF-DebugJailMe_Action"
+     Target_en_us "Send me to jail (playtest)"
+     Comment "Debug-only board action outside the jail: jails you for 60 s."
+    }
+    CustomStringTableItem "{F7B900AAB3964016}" {
+     Id "LF-Sign_DebugJail_Title"
+     Target_en_us "Playtest: jail board"
+     Comment "Title of the debug board by the jail entrance."
+    }
+    CustomStringTableItem "{66031F4E19D748E0}" {
+     Id "LF-Sign_DebugJail_What"
+     Target_en_us "Playtest only. Use the action on this board to be jailed for 60 seconds through the real jail path, so you can try the cell, the visit window and the release alone."
+     Comment "Body of the debug jail board."
+    }
+    CustomStringTableItem "{1C23DAF5E8974D14}" {
+     Id "LF-Sign_DebugJail_Next"
+     Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
+     Comment "Next-step line of the debug jail board."
+    }
+    CustomStringTableItem "{005CFE757CF202AB}" {
+     Id "LF-Store_UnpaidRestored"
+     Target_en_us "You still carry goods you have not paid for. Go back to the store and pay within %1 minute(s), or it counts as shoplifting."
+     Comment "Toast at spawn: unpaid store goods came back after a restart or a logout (#479). %1 = minutes left."
     }
   }
  }

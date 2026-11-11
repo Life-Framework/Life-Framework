@@ -90,7 +90,7 @@ type; no per-map scripting. See `docs/design.md` §4.
   store: shelf stock, unpaid tags, the till and receipt, the shoplifting sweep, restock and
   save (`storestock`, save version 21). Unpaid tags survive a restart and a logout (`storeunpaid`,
   save version 25, #479): keyed by the carrier's character key and the prefab, put back on the goods
-  at spawn, not swept until the carrier is back in the store. Flagship: the DebugWorld general store.
+  at spawn, not swept while the store's grace (`m_iRestoredGraceSeconds`) lets the carrier come back and pay. Flagship: the DebugWorld general store.
   Follow-ups: the market and the car lot on the same pattern (design note on #479), receipt text.
 - `LF_ShopPriceResolver` / `LF_ShopPricesConfig` / `LF_ShopRules` / `LF_ShopItem`
   — price resolution and rules scaffolding.

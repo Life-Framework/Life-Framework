@@ -60,6 +60,9 @@ class LF_StoreComponent : ScriptComponent
 	[Attribute("1", UIWidgets.Auto, "Wanted levels a shoplifter gets")]
 	protected int m_iWantedIncrease;
 
+	[Attribute("300", UIWidgets.Auto, "Seconds a shopper whose unpaid goods came back after a restart or a logout has to come back and pay. After that, carrying them outside the store is shoplifting")]
+	protected int m_iRestoredGraceSeconds;
+
 	//! Live stores by key. Lives here so the component's own OnDelete removes it.
 	protected static ref map<string, LF_StoreComponent> s_mLive;
 
@@ -157,6 +160,12 @@ class LF_StoreComponent : ScriptComponent
 	int GetWantedIncrease()
 	{
 		return m_iWantedIncrease;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetRestoredGraceSeconds()
+	{
+		return Math.Max(m_iRestoredGraceSeconds, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

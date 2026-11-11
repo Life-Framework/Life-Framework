@@ -70,6 +70,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugDispatch(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DebugJailMe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugActionValidation(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMenuGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMoneyTopUp(), LF_TestTier.LOGIC);
@@ -193,6 +194,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Pager(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlotLoop(), LF_TestTier.WORLD);
@@ -299,6 +301,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignMissingId(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignNext(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignPrefabs(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SignPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Siren(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SirenDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);

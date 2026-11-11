@@ -15,8 +15,10 @@ class LF_StoreUnpaidItem : Managed
 	string m_sCarrierKey;
 	bool m_bConsumed;
 	//! Put back after a restart or a reconnect, on a body that spawned away from the store: the exit
-	//! sweep leaves it alone until its carrier has stood in the store again (the till still charges it).
+	//! sweep leaves it alone until its carrier has stood in the store again or the store's grace runs
+	//! out (m_fRestoredUntilMs, world time). The till charges it either way.
 	bool m_bRestored;
+	float m_fRestoredUntilMs;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -36,8 +38,10 @@ class LF_StoreUnpaidItem : Managed
 //! payload) and parked on disconnect, keyed by the character record key, the store and the prefab.
 //! When that character's body spawns and its carried inventory is back, ReattachUnpaid puts each tag
 //! on an untagged item of that prefab it carries; a used-up item comes back as the same debt. A tag
-//! whose item or store is gone is dropped with a warning. A restored tag is not swept until its
-//! carrier has been inside the store again: the restart or the spawn point moved them, they did not walk out.
+//! whose item or store is gone is dropped with a warning. A restored tag is not swept while its carrier
+//! has the store's grace (m_iRestoredGraceSeconds) to come back and pay: the restart or the spawn point
+//! moved them, they did not walk out. Once they stand in the store, or the grace runs out, the sweep
+//! applies as usual, so logging out inside a store is no way to leave with the goods.
 class LF_Stores
 {
 	static const string FEATURE = "Store";
@@ -252,9 +256,11 @@ class LF_Stores
 		{
 			record.m_CarrierId = carrier;
 			record.m_sCarrierKey = "";
-			if (carrier != EntityID.INVALID)
-				record.m_sCarrierKey = LF_Utils.GetPlayerUID(root);
 		}
+
+		// Asked again while empty: a player whose identity was not resolved at the pickup gets it later.
+		if (carrier != EntityID.INVALID && record.m_sCarrierKey.IsEmpty())
+			record.m_sCarrierKey = LF_Utils.GetPlayerUID(root);
 
 		return true;
 	}
@@ -424,9 +430,14 @@ class LF_Stores
 				{
 					record.m_bRestored = false;
 					LF_Debug.Info(FEATURE, string.Format("store %1: %2 is back in the store with restored unpaid %3; walking out now is shoplifting", record.m_sStoreKey, CarrierText(record), record.m_Prefab));
+					continue;
 				}
 
-				continue;
+				if (GetGame().GetWorld().GetWorldTime() < record.m_fRestoredUntilMs)
+					continue;
+
+				record.m_bRestored = false;
+				LF_Debug.Info(FEATURE, string.Format("store %1: %2 did not come back to pay for restored unpaid %3 in time", record.m_sStoreKey, CarrierText(record), record.m_Prefab));
 			}
 
 			if (!inside)
@@ -825,11 +836,14 @@ class LF_Stores
 		}
 
 		InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		float nowMs = GetGame().GetWorld().GetWorldTime();
 		int bound;
 		int dropped;
+		int graceSeconds;
 		foreach (LF_StoreUnpaidRow row : mine)
 		{
-			if (!Find(row.m_sStoreKey))
+			LF_StoreComponent store = Find(row.m_sStoreKey);
+			if (!store)
 			{
 				LF_Debug.Warn(FEATURE, string.Format("store %1 is not in the world: unpaid %2 of %3 is dropped", row.m_sStoreKey, row.m_sPrefab, carrierKey));
 				dropped++;
@@ -861,11 +875,16 @@ class LF_Stores
 			record.m_sCarrierKey = carrierKey;
 			record.m_bConsumed = row.m_bConsumed;
 			record.m_bRestored = true;
+			record.m_fRestoredUntilMs = nowMs + store.GetRestoredGraceSeconds() * 1000;
+			graceSeconds = Math.Max(graceSeconds, store.GetRestoredGraceSeconds());
 			all.Insert(record);
 			bound++;
 		}
 
-		LF_Debug.Info(FEATURE, string.Format("%1 unpaid tag(s) back on %2, %3 dropped", bound, carrierKey, dropped));
+		LF_Debug.Info(FEATURE, string.Format("%1 unpaid tag(s) back on %2, %3 dropped; %4 s to come back and pay", bound, carrierKey, dropped, graceSeconds));
+		if (bound > 0)
+			LF_Utils.NotifyEntity(character, "#LF-Store_UnpaidRestored", "#LF-Store_Title", 8.0, ((graceSeconds + 59) / 60).ToString());
+
 		return bound;
 	}
 
@@ -891,8 +910,23 @@ class LF_Stores
 	//! \return Tags parked.
 	static int ParkCarrier(string carrierKey, IEntity character)
 	{
-		if (carrierKey.IsEmpty() || !character || !s_aUnpaid || !LF_StorageSnapshot.IsAlive(character))
+		if (!character || !s_aUnpaid || !LF_StorageSnapshot.IsAlive(character))
 			return 0;
+
+		if (carrierKey.IsEmpty())
+		{
+			array<LF_StoreUnpaidItem> carried = {};
+			foreach (LF_StoreUnpaidItem candidate : s_aUnpaid)
+			{
+				if (candidate.m_CarrierId == character.GetID())
+					carried.Insert(candidate);
+			}
+
+			if (!carried.IsEmpty())
+				LF_Debug.Warn(FEATURE, string.Format("a player with no character key left carrying %1 unpaid item(s); the tags are lost", carried.Count()));
+
+			return 0;
+		}
 
 		// A pickup the tick has not seen yet goes with them.
 		foreach (string key, LF_StoreComponent store : Stores())
@@ -920,14 +954,30 @@ class LF_Stores
 }
 
 //------------------------------------------------------------------------------------------------
-//! The till of a physical store (#202): "Pay for goods" on the counter. The server does all of it
-//! (LF_Stores.Pay); a client only asks, so the action performs on every machine and acts on the
-//! server alone.
+//! The till of a physical store (#202, #582): "Pay for goods" on the cash register itself. The
+//! register is its own entity on the counter and names its store by key; an action put straight on a
+//! store entity still works. The server does all of it (LF_Stores.Pay) and checks the payer stands at
+//! the register; a client only asks, so the action performs on every machine and acts on the server alone.
 class LF_StoreTillAction : ScriptedUserAction
 {
+	[Attribute("", UIWidgets.EditBox, "Key of the store this register belongs to (LF_StoreComponent.m_sStoreKey). Empty: the store component on this same entity")]
+	protected string m_sStoreKey;
+
+	//------------------------------------------------------------------------------------------------
+	protected LF_StoreComponent ResolveStore(IEntity owner)
+	{
+		if (!m_sStoreKey.IsEmpty())
+			return LF_Stores.Find(m_sStoreKey);
+
+		return LF_Component<LF_StoreComponent>.Find(owner);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
+		if (!m_sStoreKey.IsEmpty())
+			return true;
+
 		return LF_Component<LF_StoreComponent>.Find(GetOwner()) != null;
 	}
 
@@ -937,7 +987,17 @@ class LF_StoreTillAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		LF_StoreComponent store = LF_Component<LF_StoreComponent>.Find(pOwnerEntity);
+		LF_StoreComponent store = ResolveStore(pOwnerEntity);
+		if (store && pOwnerEntity && pUserEntity)
+		{
+			float distance = vector.Distance(pOwnerEntity.GetOrigin(), pUserEntity.GetOrigin());
+			if (!LF_StoreRules.TillInReach(distance))
+			{
+				LF_Debug.Warn(LF_Stores.FEATURE, string.Format("store %1: till refused %2, %3 m from the register", store.GetStoreKey(), LF_Stores.ThiefKey(pUserEntity), distance));
+				return;
+			}
+		}
+
 		int paid;
 		LF_EStorePay result = LF_Stores.Pay(store, pUserEntity, paid);
 		string key = LF_StoreRules.PayKey(result);

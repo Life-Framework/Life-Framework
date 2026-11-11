@@ -1,12 +1,15 @@
 // red-proof: observed 2026-11-11 with `tools\cli test --no-build --only LF_Test_StoreUnpaidPersist`: LF_Stores.ExportUnpaid not writing the live tags failed
 // `- both tags wait for the shopper (expected 2, got 0)` and `- the shopper owes the same after the restart (expected 16, got 0)`; restored, green.
+// red-proof: observed 2026-11-11, same loop: a restored tag that never leaves its grace (the reviewer's logout exploit) failed
+// `- after the grace, carrying the restored goods outside is shoplifting (expected 1, got 0)`; restored, green.
 
 // tier: PERSISTENCE
 //! Unpaid store tags ride the real save path (the "storeunpaid" payload, save version 25, #479): a
 //! shopper with one unpaid apple in the pocket and one eaten in the shop is saved, the session forgets
 //! the tags and the body, and the save loads. The tags wait under the shopper's character key; the
 //! new body with its carried inventory back takes both (the pocket apple tagged again, the eaten one
-//! still owed). A body that spawns away from the store is not a thief until it has been inside again.
+//! still owed). A body that spawns away from the store is not a thief while the store's grace runs;
+//! once it has been inside again, or the grace ran out, walking around outside with the goods is.
 //! A second load binds the same tags, never doubled. A tag whose item or store is gone is dropped.
 //! A version 24 save leaves the waiting tags alone. The test puts back what it found.
 class LF_Test_StoreUnpaidPersist : LF_Test
@@ -166,6 +169,19 @@ class LF_Test_StoreUnpaidPersist : LF_Test
 		back.SetOrigin(outside);
 		ctx.Equal(1, LF_Stores.SweepExits(), "walking out with the restored tags is shoplifting");
 		ctx.Equal(0, LF_Stores.UnpaidCount(), "the tags are closed");
+
+		// Logging out inside the store is no way out: once the grace runs out, the spawn point is the street.
+		JsonLoadContext third = new JsonLoadContext(false);
+		third.LoadFromString(saved);
+		LF_PersistenceComponentSerializer.DeserializeStore(persistence, third);
+		ctx.Equal(2, LF_Stores.ReattachUnpaid(SHOPPER_KEY, back), "the saved tags go back on the shopper again");
+		ctx.Equal(0, LF_Stores.SweepExits(), "within the grace the shopper may still come back and pay");
+		ctx.True(store.GetRestoredGraceSeconds() > 0, "the store gives a restored shopper time to come back");
+		foreach (LF_StoreUnpaidItem restored : LF_Stores.Unpaid())
+			restored.m_fRestoredUntilMs = 0;
+
+		ctx.Equal(1, LF_Stores.SweepExits(), "after the grace, carrying the restored goods outside is shoplifting");
+		ctx.Equal(0, LF_Stores.UnpaidCount(), "and those tags are closed too");
 
 		// A tag whose item is gone or whose store left the world is dropped, nothing else breaks.
 		array<ref LF_StoreUnpaidRow> odd = {};

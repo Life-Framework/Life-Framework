@@ -112,6 +112,16 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	[Attribute("Roadmap_Vehicle_Lot", desc: "Entity name of the car lot whose first two offers the test cars are.", category: "New character defaults")]
 	protected string m_sTestCarLot;
 
+	//! Playtest only: the "Send me to jail" board outside the jail works (LF_DebugJailMe). Off in the flagship mode.
+	[Attribute("0", desc: "Playtest: the board outside the jail jails you for a short sentence so the jail can be tried solo.", category: "Debug jail")]
+	protected bool m_bDebugJailMe;
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDebugJailMe()
+	{
+		return m_bDebugJailMe;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	bool GrantsTestCars()
 	{

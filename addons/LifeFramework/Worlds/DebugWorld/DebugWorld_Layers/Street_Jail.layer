@@ -84,6 +84,30 @@ GenericEntity Roadmap_Escort_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/U
  coords 247.5 0 238
  angleY 0
 }
+GenericEntity Sign_DebugJailMe : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+ components {
+  LF_SignComponent "{C8DC6C24E38F2C19}" {
+   m_sSignId "debug_jail"
+   m_vRimColor 0.45 0.05 0.05
+   m_vPaintColor 0.92 0.88 0.76
+   m_vTextColor 0.45 0.05 0.05
+  }
+  ActionsManagerComponent "{E98B19291CF15797}" {
+   additionalActions + {
+    LF_DebugJailMeAction "{B2E1080B00000011}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{B2E1080B00000012}" {
+      Name "#LF-DebugJailMe_Action"
+     }
+    }
+   }
+  }
+ }
+ coords 235.5 0 228.5
+ angleY 0
+}
 GenericEntity Roadmap_Jail_ScrubBucket {
  components {
   MeshObject "{B1A4C0D2E3F50601}" {
