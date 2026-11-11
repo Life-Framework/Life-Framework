@@ -145,21 +145,64 @@ class LF_FilmCameraPath : Managed
 			return true;
 		}
 
+		// Two keys (static, drone): one eased move.
+		if (count == 2)
+		{
+			float u = Ease((t - first.Time) / (last.Time - first.Time));
+			position = first.Position + (last.Position - first.Position) * u;
+			lookAt = first.LookAt + (last.LookAt - first.LookAt) * u;
+			fov = first.Fov + (last.Fov - first.Fov) * u;
+			return true;
+		}
+
+		// More keys (orbit, follow): ease the pass as a whole, then run a Catmull-Rom curve through the keys. Easing
+		// each segment instead stopped the camera at every key, a visible pulse once a second in a 12-key orbit.
+		float span = last.Time - first.Time;
+		float tp = first.Time + Ramp((t - first.Time) / span) * span;
 		for (int i = 1; i < count; i++)
 		{
 			LF_FilmKey b = m_aKeys[i];
-			if (t > b.Time)
+			if (tp > b.Time)
 				continue;
 
 			LF_FilmKey a = m_aKeys[i - 1];
-			float u = Ease((t - a.Time) / (b.Time - a.Time));
-			position = a.Position + (b.Position - a.Position) * u;
-			lookAt = a.LookAt + (b.LookAt - a.LookAt) * u;
-			fov = a.Fov + (b.Fov - a.Fov) * u;
+			LF_FilmKey before = m_aKeys[Math.Max(i - 2, 0)];
+			LF_FilmKey after = m_aKeys[Math.Min(i + 1, count - 1)];
+			float s = (tp - a.Time) / (b.Time - a.Time);
+			position = CatmullRom(before.Position, a.Position, b.Position, after.Position, s);
+			lookAt = CatmullRom(before.LookAt, a.LookAt, b.LookAt, after.LookAt, s);
+			fov = a.Fov + (b.Fov - a.Fov) * s;
 			return true;
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Share of the pass covered at u (0..1) with a steady speed in the middle and a quarter of the time spent
+	//! speeding up at the start and slowing down at the end (a trapezoid speed profile).
+	static float Ramp(float u)
+	{
+		if (u <= 0)
+			return 0;
+		if (u >= 1)
+			return 1;
+		float r = 0.25;
+		float top = 1 / (1 - r);
+		if (u < r)
+			return top * u * u / (2 * r);
+		if (u > 1 - r)
+			return 1 - top * (1 - u) * (1 - u) / (2 * r);
+		return top * (r * 0.5 + u - r);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Uniform Catmull-Rom point between b (s = 0) and c (s = 1), with a and d the neighbouring keys.
+	static vector CatmullRom(vector a, vector b, vector c, vector d, float s)
+	{
+		float s2 = s * s;
+		float s3 = s2 * s;
+		return ((b * 2) + (c - a) * s + (a * 2 - b * 5 + c * 4 - d) * s2 + (b * 3 - a - c * 3 + d) * s3) * 0.5;
 	}
 };
 
