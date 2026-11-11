@@ -812,6 +812,7 @@
 ## Gathering / Processing / Resources
 
 ### `LF_GatherAction` — `Feature/Gathering/LF_GatherAction.c`
+- ✅ **Carried tools count (pickaxe-count).** `LF_InventoryUtils.GetAmount`/`RemoveAmount` now also search the equipped-weapon storage (a pickaxe is a weapon-slot item the deposit count skips), each carried item once; `LF_GatherAction.HasToolIn` is the shared tool check (GUID compare). No shipped prefab sets the inventory mode and ore is mined by damage with the pickaxe in hand, so play was not affected. Test `tool/pickaxe-count`.
 - ✅ Interact action granting `m_GatherAmount` of `m_GatherItemPrefab` into
   the user inventory; tool requirement (right hand / left gadget / anywhere
   in inventory); per-resource gather counter + cooldown restock.
