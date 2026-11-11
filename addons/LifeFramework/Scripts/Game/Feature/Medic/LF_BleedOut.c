@@ -124,6 +124,7 @@ class LF_BleedOut
 	//! Server: `dt` seconds of bleeding for every downed character. Tests call it to skip the wait.
 	static void Advance(float dt)
 	{
+		int perfToken = LF_Perf.Begin();
 		array<SCR_ChimeraCharacter> expired = {};
 		for (int i = s_aDowned.Count() - 1; i >= 0; i--)
 		{
@@ -148,6 +149,9 @@ class LF_BleedOut
 			LF_Debug.Info(FEATURE, string.Format("player %1 bled out", LF_Utils.GetPlayerUID(dead)));
 			Finish(dead);
 		}
+
+		LF_Perf.Gauge("Medic.downed", s_aDowned.Count());
+		LF_Perf.End("Medic.bleedAdvance", perfToken);
 
 		if (s_aDowned.IsEmpty())
 			StopTicking();

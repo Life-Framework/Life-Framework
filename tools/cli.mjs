@@ -45,6 +45,7 @@ import * as session from "../agent-box/session.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
+import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
@@ -2476,6 +2477,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 (headless Workbench, ~10 s; test/dev/serve/session/e2e run it when stale)
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
+  perf [--log <file>] [test flags]   run the 128-character cost benchmark (LF_Test_PerfBudget), print the report vs Configs/Perf/LF_PerfBudget.conf; exit 1 over budget
   suite-stamp <tier>            print the newest tmp/test-results/summaries.jsonl line for a tier
   suite-valid <sha>             exit 0 when every file since <sha> is localization, the generated
                                 test registry, or docs/features.md; exit 1 for gameplay, a
@@ -3313,6 +3315,7 @@ const cmds = {
   },
   logs: (flags) => cmdLogs(flags),
   "suite-stamp": (flags) => cmdSuiteStamp(flags),
+  perf: (flags) => runPerf(ROOT, flags ?? []),
   "suite-valid": (flags) => cmdSuiteValid(flags),
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
@@ -3407,7 +3410,7 @@ try {
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

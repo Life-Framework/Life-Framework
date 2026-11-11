@@ -135,6 +135,7 @@ class LF_AccountReplication
 		if (uid.IsEmpty() || !playerManager)
 			return;
 
+		LF_Perf.Count("Account.publish");
 		array<int> playerIds = {};
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
@@ -185,6 +186,7 @@ class LF_AccountReplication
 		if (!playerManager)
 			return;
 
+		int perfToken = LF_Perf.Begin();
 		array<int> playerIds = {};
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
@@ -193,6 +195,7 @@ class LF_AccountReplication
 		}
 
 		RefreshPoliceOnDuty();
+		LF_Perf.End("Account.refreshAll", perfToken);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -291,6 +294,7 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		m_iLF_AccountState = state;
+		LF_Perf.Count("Replication.accountState");
 		Replication.BumpMe();
 	}
 

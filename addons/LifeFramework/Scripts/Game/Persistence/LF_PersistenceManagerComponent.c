@@ -87,6 +87,9 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	//! True between a save request made through this component and its completion callback.
 	protected bool m_bSaveInProgress;
 
+	//! LF_Perf token of the save point in flight (-1 none).
+	protected int m_iPerfSaveToken = -1;
+
 	//! True from LoadLatestSave() until the request has been handed to the engine or given
 	//! up. A successful load transitions the game state, which tears this component down.
 	protected bool m_bLoadInProgress;
@@ -736,6 +739,7 @@ class LF_PersistenceManagerComponent : ScriptComponent
 			flags = ESaveGameRequestFlags.BLOCKING;
 
 		m_bSaveInProgress = true;
+		m_iPerfSaveToken = LF_Perf.Begin();
 		LF_Debug.Info("Persistence", string.Format("requesting save point (%1)", typename.EnumToString(ESaveGameType, saveType)));
 		manager.RequestSavePoint(saveType, string.Empty, flags, new SaveGameOperationCallback(OnSavePointCompleted));
 	}
@@ -745,6 +749,8 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	//! \param success Whether the save point was committed.
 	protected void OnSavePointCompleted(bool success)
 	{
+		LF_Perf.End("Persistence.savePoint", m_iPerfSaveToken);
+		m_iPerfSaveToken = -1;
 		if (success)
 		{
 			m_bHasSaveGame = true;
