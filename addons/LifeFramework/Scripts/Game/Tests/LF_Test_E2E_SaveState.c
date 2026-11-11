@@ -36,6 +36,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
 	protected static const string GARAGED_ID = "e2e-garaged-car";
 	protected static const string STREET_ID = "e2e-street-car";
+	static const ResourceName JUICE_PREFAB = "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -119,6 +120,13 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 			LF_WantedReports.Add(SERIAL_BUYER_UID, LF_WantedReports.OFFENCE_ROBBERY, "", "", "Bank", false);
 		}
+
+		// An unpaid tag rides "storeunpaid" (#479): the carrier pockets a juice off the general store
+		// shelf and stays inside the store through the shutdown save, so the exit sweep leaves it alone.
+		LF_StoreComponent tagStore = LF_Stores.Find("general_store");
+		ctx.NotNull(tagStore, "e2e general store is placed for the unpaid tag");
+		if (carrier && tagStore)
+			PocketUnpaidJuice(ctx, tagStore, carrier);
 
 		if (carrier)
 			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
@@ -256,6 +264,30 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		manager.SaveGame();
 		ctx.True(manager.IsSaveInProgress(), "SaveGame() accepts the manual save request");
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The carrier takes a juice off the shelf inside the store; the tag is keyed by the carried
+	//! snapshot's character id (the fixture body has no player to give it a key).
+	protected void PocketUnpaidJuice(LF_TestContext ctx, LF_StoreComponent store, IEntity carrier)
+	{
+		store.FirstFill();
+		carrier.SetOrigin(store.GetOwner().GetOrigin() + "0 0.2 1.2");
+		ctx.True(store.Contains(carrier.GetOrigin()), "e2e the carrier stands in the general store");
+		IEntity juice = store.GetShelfItem(JUICE_PREFAB, 0);
+		InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(carrier);
+		ctx.True(juice != null && storage != null, "e2e a shelf juice and the carrier's inventory resolve");
+		if (!juice || !storage)
+			return;
+
+		ctx.True(storage.TryInsertItem(juice), "e2e the carrier pockets a juice off the shelf");
+		store.DetectTaken();
+		LF_Stores.RefreshAll();
+		array<LF_StoreUnpaidItem> tags = {};
+		LF_Stores.CollectFor(store.GetStoreKey(), carrier, tags);
+		ctx.Equal(1, tags.Count(), "e2e the juice is tagged unpaid before the save");
+		foreach (LF_StoreUnpaidItem tag : tags)
+			tag.m_sCarrierKey = CARRIED_CHARACTER_ID;
 	}
 }
 
@@ -412,6 +444,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 				ctx.Equal(0, LF_StorageSnapshot.Apply(restored, carried), "e2e second apply spawns nothing");
 				ctx.Equal(237, LF_MoneyUtils.GetCash(restored), "e2e cash unchanged by the second apply");
+				VerifyUnpaidJuice(ctx, restored);
 				LF_TestCharacterFixture.Delete(restored);
 			}
 		}
@@ -527,6 +560,46 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		}
 #else
 		ctx.Pass("runs in the reload boot");
+#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #479 after the restart: the juice taken off the shelf before the save comes back in the carried
+	//! inventory still unpaid. Its tag waited under the carried character id and goes back on the juice
+	//! when the body is restored; the spawn point is not a walk out; the till takes the same price.
+	protected void VerifyUnpaidJuice(LF_TestContext ctx, IEntity restored)
+	{
+		LF_StoreComponent store = LF_Stores.Find("general_store");
+		ctx.NotNull(store, "e2e general store is placed for the unpaid tag after the restart");
+		if (!store)
+			return;
+
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.Equal(0, LF_Stores.ReattachUnpaid(CARRIED_CHARACTER_ID, restored), "e2e a version 23 save has no unpaid tags: the juice comes back untagged");
+#else
+		ctx.True(LF_Stores.ParkedCount() >= 1, "e2e the unpaid tag waits for its carrier after the save load");
+		ctx.Equal(1, LF_Stores.ReattachUnpaid(CARRIED_CHARACTER_ID, restored), "e2e the unpaid tag goes back on the carried juice after the restart");
+		array<IEntity> juices = LF_InventoryUtils.FindItemsByPrefab(LF_InventoryUtils.GetResponsibleStorageManager(restored), LF_Test_E2E_SaveStateWrite.JUICE_PREFAB);
+		ctx.Equal(1, juices.Count(), "e2e the juice is carried after the restart");
+		if (!juices.IsEmpty())
+			ctx.True(LF_Stores.HoldsApart(juices[0]), "e2e the carried juice is still flagged unpaid after the restart");
+
+		LF_ShopComponent shop = LF_Component<LF_ShopComponent>.Find(store.GetOwner());
+		int price;
+		if (shop)
+			price = shop.GetBuyPrice(LF_Test_E2E_SaveStateWrite.JUICE_PREFAB);
+
+		ctx.True(price > 0, "e2e a juice has a price");
+		ctx.Equal(price, LF_Stores.OwedBy(store.GetStoreKey(), restored), "e2e the carrier still owes for the juice after the restart");
+		ctx.False(store.Contains(restored.GetOrigin()), "e2e the restored body spawned outside the store");
+		ctx.Equal(0, LF_Stores.SweepExits(), "e2e spawning away from the store after the restart is not shoplifting");
+
+		LF_MoneyUtils.AddCash(restored, price);
+		int paid;
+		ctx.Equal(LF_EStorePay.PAID, LF_Stores.Pay(store, restored, paid), "e2e the till takes the restored bill");
+		ctx.Equal(price, paid, "e2e the till charges the saved price");
+		ctx.Equal(0, LF_Stores.OwedBy(store.GetStoreKey(), restored), "e2e nothing is owed once paid");
+		LF_Stores.DeleteLooseReceipt();
 #endif
 	}
 

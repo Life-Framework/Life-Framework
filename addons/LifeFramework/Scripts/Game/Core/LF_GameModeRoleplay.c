@@ -130,6 +130,9 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		if (LF_StorageSnapshot.CapturePlayer(playerId))
 			LF_Debug.Info(LF_StorageSnapshot.FEATURE, string.Format("carried inventory captured on disconnect for player %1", playerId));
 
+		// Unpaid store goods leave with the snapshot; their tags wait for the next spawn (#479).
+		LF_Stores.ParkCarrier(uid, controlled);
+
 		string characterId;
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (accounts && !uid.IsEmpty())

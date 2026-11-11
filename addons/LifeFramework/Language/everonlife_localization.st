@@ -7436,6 +7436,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
      Comment "Next-step line of the debug jail board."
     }
+    CustomStringTableItem "{005CFE757CF202AB}" {
+     Id "LF-Store_UnpaidRestored"
+     Target_en_us "You still carry goods you have not paid for. Go back to the store and pay within %1 minute(s), or it counts as shoplifting."
+     Comment "Toast at spawn: unpaid store goods came back after a restart or a logout (#479). %1 = minutes left."
+    }
   }
  }
 }
