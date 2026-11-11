@@ -66,6 +66,11 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
     description: "What running Life Framework costs, where donations go, and how to give. A donation buys nothing in the game.",
     og: "home",
   },
+  "/credits": {
+    title: "Credits",
+    description: "The projects Life Framework builds on, the music and voice licences, the tools, and the people who have shipped code.",
+    og: "home",
+  },
   "/docs": {
     title: "Docs",
     description: "Direction, decisions, the roadmap scopes, and the community guides, rendered from the repository.",
