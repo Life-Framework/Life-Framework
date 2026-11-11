@@ -60,6 +60,19 @@ class LF_FilmCameraPath : Managed
 
 	//------------------------------------------------------------------------------------------------
 	//! Smoothstep ease so each segment starts and stops without a jolt.
+	//! One step of a first-order low-pass: the share of the way from the smoothed point to the target to move in
+	//! dt seconds with time constant tau. A followed car is driven in 100 ms velocity steps and its origin
+	//! jitters; the camera follows the smoothed point instead, so the pan is steady (tau <= 0 or dt <= 0: no lag).
+	static float SmoothAlpha(float dt, float tau)
+	{
+		if (dt <= 0)
+			return 0;
+		if (tau <= 0)
+			return 1;
+		return dt / (tau + dt);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static float Ease(float u)
 	{
 		if (u <= 0)
@@ -131,6 +144,8 @@ class LF_FilmCameraRunner
 	protected static bool s_bHudWasVisible;
 	protected static EntityID s_FollowId = EntityID.INVALID;
 	protected static vector s_vFollowLast;
+	protected static float s_fFollowMs;
+	protected static const float FOLLOW_SMOOTH_TAU = 0.25;   // seconds of lag on the followed point
 
 	//------------------------------------------------------------------------------------------------
 	static bool IsPlaying()
@@ -181,6 +196,7 @@ class LF_FilmCameraRunner
 				return false;
 			}
 			s_vFollowLast = followed.GetOrigin();
+			s_fFollowMs = game.GetWorld().GetWorldTime();
 			position += s_vFollowLast;
 			lookAt += s_vFollowLast;
 		}
@@ -257,8 +273,13 @@ class LF_FilmCameraRunner
 			if (s_FollowId != EntityID.INVALID)
 			{
 				IEntity followed = world.FindEntityByID(s_FollowId);
+				float nowMs = world.GetWorldTime();
 				if (followed)
-					s_vFollowLast = followed.GetOrigin();
+				{
+					float alpha = LF_FilmCameraPath.SmoothAlpha((nowMs - s_fFollowMs) / 1000.0, FOLLOW_SMOOTH_TAU);
+					s_vFollowLast = s_vFollowLast + (followed.GetOrigin() - s_vFollowLast) * alpha;
+				}
+				s_fFollowMs = nowMs;
 				position += s_vFollowLast;
 				lookAt += s_vFollowLast;
 			}

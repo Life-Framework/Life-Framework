@@ -18,6 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
+//   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
@@ -38,6 +39,8 @@ import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
+import { cmdPlaytestServer } from "./release/playtest-server.mjs";
+import { cmdPlaytestRelease } from "./release/release-playtest.mjs";
 import * as session from "../agent-box/session.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
@@ -1100,6 +1103,66 @@ function ensureResourceDatabase(root) {
   }
 }
 
+
+// tools/cli ui-image <svg|png> <name>: see tools/ui-image/ui-image.mjs and
+// docs/research/ui-illustration-pipeline.md.
+async function cmdUiImage(flags) {
+  const root = ROOT;
+  const pos = (flags ?? []).filter((f, i, a) => !f.startsWith("--") && a[i - 1] !== "--size");
+  const [src, name] = pos;
+  const sizeIdx = (flags ?? []).indexOf("--size");
+  const size = sizeIdx >= 0 ? Number(flags[sizeIdx + 1]) : 0;
+  if (!src || !name || !/^[A-Za-z0-9_]+$/.test(name)) {
+    console.log("usage: tools\cli ui-image <file.svg|file.png> <name> [--size N] [--no-imageset]");
+    return 2;
+  }
+  if (wt.isMainCheckout(root)) { console.log("FAIL  ui-image runs only in a worktree"); return 1; }
+  const ui = await import("./ui-image/ui-image.mjs");
+  const png = await ui.writeSource(root, resolve(src), name, size);
+  const dir = join(root, "addons", "LifeFramework", ui.ILLUSTRATION_DIR);
+  const edds = join(dir, name + ".edds");
+  const exe = workbenchExe();
+  if (!existsSync(exe)) { console.log("FAIL  Workbench not found: " + exe); return 1; }
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+    const profile = join(root, "server", "profile", "rdb");
+    mkdirSync(profile, { recursive: true });
+    const logFile = join(root, "tmp", "ui-image-" + name + ".log");
+    mkdirSync(join(root, "tmp"), { recursive: true });
+    const started = Date.now();
+    if (!existsSync(edds + ".meta")) ui.writeTextureMeta(edds + ".meta", name);
+    ui.installPlugin(root);
+    quietSpawnSync(exe, [
+      "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+      "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
+      "-plugin=LF_ImageImportPlugin", "-lfImage=" + png,
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "rdb"),
+    ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const meta = edds + ".meta";
+    if (!existsSync(edds) || !existsSync(meta)) {
+      console.log("FAIL  import produced no .edds/.meta after " + secs + "s; the Workbench was killed if it hung (see " + logFile + ")");
+      return 1;
+    }
+    const guid = ui.readMetaGuid(meta);
+    const rel = ui.ILLUSTRATION_DIR + "/" + name;
+    console.log("imported in " + secs + "s: {" + guid + "}" + rel + ".edds");
+    if (!(flags ?? []).includes("--no-imageset")) {
+      const { w, h } = await ui.imageSize(root, png);
+      const ig = ui.writeImageset(root, name, guid, w, h);
+      console.log("imageset: {" + ig + "}" + rel + ".imageset  (image name: full)");
+    }
+    return 0;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 // Every -server boot listens on 0.0.0.0:2001 whatever -bindPort says
 // (observed 2026-11-08 on 1.9.0.37). Two boots at once fail with "Unable to
 // start replication", so one machine-wide lock covers every server boot.
@@ -1510,7 +1573,9 @@ function cmdPlaytest(args) {
   if (sub === "stop") return cmdPlaytestStop(hostDir, playerDir);
   if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
   if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
-  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut");
+  if (sub === "server") return cmdPlaytestServer(list.slice(1));
+  if (sub === "release") return cmdPlaytestRelease(ROOT, list.slice(1), { ensureRdb: ensureResourceDatabase, isMain: wt.isMainCheckout(ROOT) });
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]");
   return 1;
 }
 
@@ -2370,7 +2435,11 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   serve                         boot the headless test server (blocks, worktree only)
   playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
                                 checkout (..\\Life-Framework-playtest), then open the game joined to it;
-                                stop closes the game and saves; shortcut adds a desktop icon
+                                stop closes the game and saves; shortcut adds a desktop icon;
+                                server <address>|off points the download's launcher at a host (PR to
+                                website/public/playtest-server.json, tools/release/playtest-server.mjs)
+                                release [--tag playtest-m2-N]: refresh the rdb, attach it to a pre-release,
+                                start the playtest-release workflow (worktree at origin/main)
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
@@ -2398,6 +2467,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
                                 (generated conflicts only), gates, pushes, re-queues auto-merge,
                                 and merges green PRs stuck open (see: cli prs help)
+  film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] | --setup | --selftest
+                                post-production: cards, crossfades, captions + .srt, offline voice-over,
+                                ducked music bed (docs/film-pipeline.md "Post-production")
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
   rdb                           register new .meta resources in this worktree's resourceDatabase.rdb
@@ -3218,6 +3290,7 @@ const cmds = {
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
+  "film-make": async (flags) => (await import("./film/post.mjs")).main(flags ?? []),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
     if (!existsSync(gen)) {
@@ -3245,6 +3318,7 @@ const cmds = {
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
   rdb: () => ensureResourceDatabase(ROOT),
+  "ui-image": () => cmdUiImage(rest),
   help: () => cmdHelp(),
 };
 

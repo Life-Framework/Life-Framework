@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Arrow, DiscordIcon, GitHubIcon } from "@/components/icons";
+import { PlaytestButtons } from "@/components/PlaytestButtons";
 import { Figure, GoLink, RouteMap, ScopeMeter, Section, Stamp } from "@/components/ui";
 import {
   CURRENT_MILESTONE,
@@ -87,26 +88,26 @@ const Home = () => {
     <>
       {/* Hero */}
       <div className="band border-b-2 border-ink">
-        <div className="wrap pt-10 pb-14 md:pt-16 md:pb-20 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+        <div className="wrap pt-10 pb-14 md:pt-16 md:pb-20 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-center">
           <div>
-            <img src="/brand/logo.svg" alt="" width={112} height={112} decoding="async" {...{ fetchpriority: "low" }} className="w-24 h-24 md:w-28 md:h-28 mb-6" />
+            <img src="/brand/logo.svg" alt="" width={112} height={112} decoding="async" {...{ fetchpriority: "low" }} className="w-16 h-16 md:w-20 md:h-20 mb-5" />
             <p className="kicker mb-4">Open-source life and roleplay for Arma Reforger</p>
-            <h1 className="font-display font-bold uppercase leading-[0.95] text-[clamp(2.5rem,7vw,4.75rem)] [text-wrap:balance]">
+            <h1 className="font-display font-bold uppercase leading-[0.95] text-[clamp(2.5rem,6vw,4.25rem)] [text-wrap:balance]">
               We are building the modern Life Framework
             </h1>
+            <p className="mt-5 font-semibold text-[1.125rem]">The playtest town is open. Download it and play tonight.</p>
+            <PlaytestButtons className="mt-4" />
             <p className="lede mt-6">
               Inspired by Altis Life, built for the next era. No janky menus: a town you play in, with real cash, keys in your
               pocket, and a fine on paper.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href={DISCORD_URL} className="btn btn-primary">
-                <DiscordIcon className="w-4 h-4" /> Join the Discord
-              </a>
-              <Link to="/contribute" className="btn btn-sign">
+            <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+              <Link to="/playtest" className="inline-flex items-center gap-2 font-mono text-[0.8125rem] uppercase tracking-[0.06em] link">
+                How to play <Arrow />
+              </Link>
+              <Link to="/contribute" className="inline-flex items-center gap-2 font-mono text-[0.8125rem] uppercase tracking-[0.06em] link">
                 Start contributing <Arrow />
               </Link>
-            </div>
-            <p className="mt-6">
               <a href={REPO_URL} className="inline-flex items-center gap-2 font-mono text-[0.8125rem] uppercase tracking-[0.06em] link">
                 <GitHubIcon className="w-4 h-4" /> The code on GitHub, MIT
               </a>
@@ -194,7 +195,7 @@ const Home = () => {
       </Section>
 
       {/* Where we are */}
-      <Section id="status" kicker="Where we are" title="Nothing to download yet">
+      <Section id="status" kicker="Where we are" title="A playtest town you can download">
         <div className="sheet p-5 md:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <h3 className="display-3">

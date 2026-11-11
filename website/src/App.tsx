@@ -12,6 +12,7 @@ import Support from "@/pages/Support";
 import Features from "@/pages/Features";
 import Gallery from "@/pages/Gallery";
 import Playtest from "@/pages/Playtest";
+import Join from "@/pages/Join";
 import { DocView, DocsIndex } from "@/pages/Docs";
 import NotFound from "@/pages/NotFound";
 
@@ -45,6 +46,8 @@ const App = () => (
       <Route path="/features" element={<Features />} />
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/playtest" element={<Playtest />} />
+      <Route path="/join" element={<Join />} />
+      <Route path="/join/:source" element={<Join />} />
       <Route path="/devlog" element={<Devlog />} />
       <Route path="/servers" element={<Servers />} />
       <Route path="/contribute" element={<Contribute />} />

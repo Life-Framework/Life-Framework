@@ -24,6 +24,9 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		ctx.False(LF_Contraband.NearDrop("160 0 284", drop), "getting out 28.5 m from the drop is leaving the vehicle");
 		ctx.True(LF_Contraband.NearDrop("131.5 40 284", drop), "height does not count toward the drop distance");
 
+		ctx.EqualStr("Roadmap_Convoy_Drop", LF_Contraband.DropIdFor(false), "the flagship keeps the pub drop");
+		ctx.EqualStr("Roadmap_Convoy_Drop_Near", LF_Contraband.DropIdFor(true), "the debug mode uses the near drop");
+
 		string founder = "roadmap-contraband-founder";
 		string member = "roadmap-contraband-member";
 		string outsider = "roadmap-contraband-outsider";
@@ -92,6 +95,20 @@ class LF_Test_Roadmap_ContrabandWorld : LF_Test
 		ctx.EqualFloat(466, startOrigin[0], 0.1, "the start marker is at X 466 (the barn out of town)");
 		ctx.EqualFloat(0, startOrigin[1], 0.1, "the start marker is at Y 0");
 		ctx.EqualFloat(331, startOrigin[2], 0.1, "the start marker is at Z 331");
+		IEntity nearDrop = GetGame().GetWorld().FindEntityByName(LF_Contraband.DROP_NEAR_ID);
+		ctx.True(nearDrop != null, "Roadmap_Convoy_Drop_Near is placed");
+		if (!nearDrop)
+			return;
+
+		float nearDist = vector.Distance(startOrigin, nearDrop.GetOrigin());
+		ctx.True(nearDist > LF_Contraband.DROP_RADIUS_M && nearDist < 80, "the near drop is a short drive from the barn");
+		ctx.True(HasAction(nearDrop, false), "the near drop uses the convoy deliver action");
+		LF_GameModeRoleplay mode = LF_GameModeRoleplay.Cast(GetGame().GetGameMode());
+		if (mode)
+		{
+			ctx.True(mode.IsConvoyNearDrop(), "the debug game mode picks the near drop");
+			ctx.EqualStr(LF_Contraband.DROP_NEAR_ID, LF_Contraband.ActiveDropId(), "the active drop in DebugWorld is the near one");
+		}
 		vector dropOrigin = drop.GetOrigin();
 		ctx.EqualFloat(131.5, dropOrigin[0], 0.1, "the drop marker is at X 131.5 (behind the pub on the square)");
 		ctx.EqualFloat(0, dropOrigin[1], 0.1, "the drop marker is at Y 0");
@@ -117,7 +134,7 @@ class LF_Test_Roadmap_ContrabandWorld : LF_Test
 		ctx.False(HasAction(drop, true), "the drop marker does not start a run");
 
 		CheckCrate(ctx);
-		CheckLeaveAtDrop(ctx, dropOrigin);
+		CheckLeaveAtDrop(ctx, nearDrop.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------

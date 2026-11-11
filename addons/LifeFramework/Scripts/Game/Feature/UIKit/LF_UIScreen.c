@@ -681,6 +681,15 @@ class LF_UIScreen
 			return;
 		}
 
+		if (part.GetKind() == LF_EUIPartKind.IMAGE)
+		{
+			ImageWidget picture = ImageWidget.Cast(widget);
+			if (!picture || !picture.LoadImageFromSet(0, part.GetText(), part.GetStatus()))
+				LF_Debug.Error("UIKit", "image part " + part.GetName() + " did not load: " + part.GetText() + " / " + part.GetStatus());
+
+			return;
+		}
+
 		if (part.GetKind() == LF_EUIPartKind.TITLE)
 		{
 			TextWidget title = TextWidget.Cast(widget);

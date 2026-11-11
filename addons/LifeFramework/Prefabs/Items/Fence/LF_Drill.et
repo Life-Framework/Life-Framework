@@ -8,12 +8,21 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7B5358BFBD1526AC}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 10
+      FOV 10
+     }
+    }
     ItemDisplayName UIInfo "{A8603D4A4EF634C5}" {
      Name "#LF-Item_Drill_Name"
      Description "#LF-Item_Drill_Description"
     }
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
      Weight 6
+     SizeSetupStrategy Volume
      ItemVolume 4000
      RestingUP Forward
     }
