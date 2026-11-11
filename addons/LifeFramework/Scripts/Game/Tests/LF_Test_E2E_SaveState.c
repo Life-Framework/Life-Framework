@@ -36,6 +36,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
 	protected static const string GARAGED_ID = "e2e-garaged-car";
 	protected static const string STREET_ID = "e2e-street-car";
+	//! Playtime (#692, save version 26): 90 min on police duty in two stretches and 30 min civilian.
+	static const string PLAYTIME_UID = "e2e-playtime-account";
 	static const ResourceName JUICE_PREFAB = "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et";
 
 	//------------------------------------------------------------------------------------------------
@@ -259,6 +261,12 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		ctx.False(slot2.GetRecordKey() == SLOTS_UID, "e2e slot 2 has its own key before the save");
 #endif
 
+		// Playtime accrues per account and job through the clock's write path; the restart must keep it.
+		LF_Playtime.Credit(PLAYTIME_UID, "POLICE", 3600);
+		LF_Playtime.Credit(PLAYTIME_UID, "POLICE", 1800);
+		LF_Playtime.Credit(PLAYTIME_UID, LF_Playtime.JOB_CIVILIAN, 1800);
+		ctx.Equal(7200, LF_Playtime.Total(PLAYTIME_UID), "e2e playtime account has 2 h before the save");
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -369,6 +377,22 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.NotNull(slot2Bank, "e2e slot 2 bank present after the save load");
 		if (slot2Bank)
 			ctx.Equal(480, slot2Bank.GetBalance(), "e2e slot 2 bank holds 480 after the restart");
+#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #692 after the restart: the playtime accrued before the save is back per job, not doubled. A
+	//! version 23 save (--legacy-save) has no playtime payload, so the account starts at zero.
+	protected void VerifyPlaytime(LF_TestContext ctx)
+	{
+		string uid = LF_Test_E2E_SaveStateWrite.PLAYTIME_UID;
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.Equal(0, LF_Playtime.Total(uid), "e2e the version 23 save has no playtime");
+#else
+		ctx.Equal(5400, LF_Playtime.JobSeconds(uid, "POLICE"), "e2e 90 min of police duty survive the restart");
+		ctx.Equal(1800, LF_Playtime.JobSeconds(uid, LF_Playtime.JOB_CIVILIAN), "e2e 30 min civilian survive the restart");
+		ctx.Equal(7200, LF_Playtime.Total(uid), "e2e the playtime total is 2 h after the restart");
+		LF_Debug.Info(LF_Playtime.FEATURE, string.Format("e2e restart: %1 has %2 s (POLICE %3 s, CIVILIAN %4 s)", uid, LF_Playtime.Total(uid), LF_Playtime.JobSeconds(uid, "POLICE"), LF_Playtime.JobSeconds(uid, LF_Playtime.JOB_CIVILIAN)));
 #endif
 	}
 
@@ -550,6 +574,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		}
 
 		VerifyCharacterSlots(ctx);
+		VerifyPlaytime(ctx);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

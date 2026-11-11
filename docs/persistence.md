@@ -62,6 +62,7 @@ Each of these must survive a server restart:
 15. Store stock (save version 21, payload `storestock`): units in stock per physical-store line, keyed by the store's stable key and the item prefab, never an entity id (`LF_Stores`). The shelf is rebuilt from it on load; a row for a store that is not in the world waits and is saved again. Unpaid-goods tags ride their own payload (item 17).
 16. Carried item serials (save version 22, payload `itemserials`): the fence serial of each stamped item in a stored inventory snapshot (carried, stash, vehicle), parallel to the snapshot item list and keyed by its owner key and slot, never an entity id (`LF_StorageSnapshot`). Applied after `carried`; a row whose snapshot is gone or resized is skipped with a warning and those items come back unstamped (#470).
 17. Unpaid store tags (save version 25, payload `storeunpaid`, #479): store key, item prefab, price, the carrier's character record key and whether the item was used up, never an entity id (`LF_Stores`). Only tags a living player carries are saved; a disconnect parks them the same way. They wait until that character's body spawns with its carried inventory back, then go on an untagged item of that prefab (`ReattachUnpaid`); a tag whose item or store is gone is dropped with a warning. A re-applied load replaces the tags of characters in the world now. A restored tag is not swept as shoplifting while its carrier has the store's grace (`m_iRestoredGraceSeconds`) to come back and pay; after that, or once back inside, the sweep applies.
+18. Playtime (save version 26, payload `playtime`, #692): seconds played per account uid and job (`CIVILIAN`, `POLICE`, `MEDIC`, a delivery job name), never replicated (`LF_Playtime`). The save holds the time up to the save: export credits the online clocks first. The clocks themselves are session-only; a load replaces the counts and leaves running clocks alone. A version 25 or older save loads every account at zero.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -134,6 +135,7 @@ Identity:
   | 20 | chain stations: a half-finished batch per station, by station key, chain, step, work done and work needed (`LF_ChainStations.ExportAll` / `ApplyAll`); only loaded stations are saved, site heat is not |
   | 24 | character slots (#331): each character's record key and wanted level, by account uid and character id (`LF_PlayerAccountManager.ExportCharacterSlots` / `ApplyCharacterSlots`) |
   | 25 | unpaid store tags (#479): by character record key, store key and prefab (`LF_Stores.ExportUnpaid` / `ApplyUnpaid`; `ReattachUnpaid` on each spawn, `ParkCarrier` on disconnect) |
+  | 26 | playtime per account and job (#692): account uid, job name, seconds (`LF_Playtime.ExportAll` / `ApplyAll`; export settles the online clocks) |
 
 - **Characters per account (#331, save version 24).** An account holds up to
   `LF_CharacterConfig.MaxPerAccount()` characters (`Configs/Account/LF_Characters.conf`,

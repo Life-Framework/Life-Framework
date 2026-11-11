@@ -129,7 +129,7 @@ class LF_Test_StoreUnpaidPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(25, version, "the save is written at version 25 (storeunpaid is payload 25)");
+		ctx.Equal(26, version, "the save is written at version 26 (storeunpaid is payload 25)");
 		JsonLoadContext load = new JsonLoadContext(false);
 		load.LoadFromString(saved);
 		ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, load), "the save loads");
