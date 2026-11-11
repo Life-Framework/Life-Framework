@@ -151,6 +151,8 @@ log that back them stay on the server and invisible.
 
 ### Known rough edges
 
+- Esc may not close a sheet the server opened (wanted card, ledger after
+  founding); press it again or use the close button. #199
 - If an arrest leaves you standing where you were instead of in the cell, say so.
 - Some NPCs may appear half-dressed.
 - Sign titles can be hard to read from the road.
