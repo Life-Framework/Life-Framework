@@ -176,7 +176,7 @@ modded class SCR_PlayerController
 			return;
 		}
 
-		string uid = LF_Utils.GetPlayerUID(GetPlayerId());
+		string uid = LF_PoliceApplications.ApplicantUid(GetPlayerId());
 		bool onRoster = LF_WhitelistManager.IsWhitelistedForFaction(uid, LF_EFactionType.POLICE);
 		string refusal = LF_PoliceApplications.Submit(uid, applicant, why, availability, onRoster);
 		if (!refusal.IsEmpty())

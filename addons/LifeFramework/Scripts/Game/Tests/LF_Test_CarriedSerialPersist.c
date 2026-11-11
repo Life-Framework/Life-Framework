@@ -59,7 +59,7 @@ class LF_Test_CarriedSerialPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(23, version, "the save is written at version 23 (itemserials is payload 22)");
+		ctx.Equal(24, version, "the save is written at version 24 (itemserials is payload 22)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "carried");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "itemstate");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "itemserials");

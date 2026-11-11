@@ -90,6 +90,15 @@ class LF_PoliceApplications
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The key an application is filed and approved under. The police roster is a whitelist, and
+	//! whitelists are per account (#331): LF_AccountStateBits.FromAccount reads the roster by the
+	//! account uid, so an application filed under a later character's key would never put anyone on it.
+	static string ApplicantUid(int playerId)
+	{
+		return LF_Utils.GetAccountUID(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: records an application. \return "" when filed, else the refusal key.
 	static string Submit(string uid, string name, string why, string availability, bool onRoster)
 	{

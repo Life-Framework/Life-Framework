@@ -44,6 +44,9 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
 - The faction and spawn-location menus are gone (M1-11), and so is the
   faction gate in `LF_CharacterCreationRules.RefuseCharacter`.
 - `LF_RegistrationForm` / `LF_RegistrationRules` — form R-89 and its checks.
+- `LF_CharacterSelectSheet` (#331) — with more than one character per account
+  (`LF_CharacterConfig`), the residents on file: pick one, or register another
+  while a slot is free. Server checks in `LF_CharacterCreationRules.RefusePick`.
 - `LF_IdCardComponent` / `LF_IdCard` — the card's printed identity and the
   grant: the town clerk hands it over (M1-18, `LF_QuestRewards.HandIdCard`), then
   `LF_SpawnLogic` reprints it on every spawn.
