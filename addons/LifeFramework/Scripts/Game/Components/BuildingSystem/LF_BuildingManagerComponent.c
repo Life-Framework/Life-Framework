@@ -36,6 +36,9 @@ class LF_BuildingManagerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	void RpcAsk_SpawnEntityPrefab(ResourceName resource, vector pos)
 	{
+		if (!LF_RateLimit.AllowCharacter(GetOwner(), LF_ERequestKind.SPAWN, "building placement"))
+			return;
+
 		PlaceHeldBuilding(resource, pos);
 	}
 
