@@ -223,6 +223,21 @@ const SHOTS = {
     body: async (at) => { await at(1.0); use(2, "LF_WantedBoardReadAction", "Roadmap_Police_WantedBoard"); },
     after: () => on(2, { verb: "click", widget: "Close" }),
     cam: { drone: [[238.9, 1.65, 247.6], [235.4, 1.3, 243.0], [238.4, 1.6, 247.0], [235.4, 1.3, 243.0]], fov: 45 } },
+  // ---- v3 polish (coordinator frame check, 2026-11-11)
+  O3: { film: 2, scene: "trailer-bank", seconds: 12, park2: "Roadmap_Garage", note: "cold open pulled back: van, robber and sacks at natural scale",
+    // The van drives its route, so the box is wherever the van stopped: frame it from the robber's live position.
+    prep: () => {
+      stand(1, "Roadmap_Cash_Van_Box"); on(1, { verb: "look" }); on(1, { verb: "drill" });
+      const r = posOf(1);
+      const look = [r[0] - 0.9, r[1] + 0.6, r[2]];
+      SHOTS.O3.cam = { drone: [[r[0] + 5.2, r[1] + 1.9, r[2] + 5.0], look, [r[0] + 4.6, r[1] + 1.8, r[2] + 4.5], look], fov: 42 };
+    },
+    body: async (at) => { await at(0.8); use(1, "LF_HeistRobAction", "Roadmap_Cash_Van_Box"); },
+    cam: { drone: [[203.6, 2.0, 260.2], [197.4, 0.7, 253.8], [203.0, 1.9, 259.6], [197.4, 0.65, 253.8]], fov: 42 } },
+  V3: { film: 2, scene: "trailer-bank", seconds: 12, park2: "Roadmap_Garage", note: "vault door and drill, tight, the beacon behind the robber",
+    prep: () => { stand(1, "Roadmap_Bank_Vault"); on(1, { verb: "look" }); on(1, { verb: "drill" }); },
+    body: async (at) => { await at(1.0); use(1, "LF_BankRobAction", "Roadmap_Bank_Vault"); },
+    cam: { drone: [[196.9, 1.55, 267.3], [193.2, 1.05, 265.0], [196.5, 1.5, 267.0], [193.2, 1.05, 265.0]], fov: 45 } },
   // ---- crime side
   S20: { film: 2, scene: "trailer-chop", hour: 17.9, seconds: 8, park2: "Roadmap_Hideout_Door", prep: () => stand(1, "Roadmap_Hideout_Door", "w"),
     cam: { orbit: { point: [322, 0.4, 301], r: 10, az: 180, arc: 90, h: 4.5 } } },

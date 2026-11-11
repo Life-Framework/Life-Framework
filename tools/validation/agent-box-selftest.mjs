@@ -1,6 +1,6 @@
 // Runs the agent-box selftests that need no game: the harness command lines and
 // screen-text parsing, the session addressing (a command never reaches another
-// checkout's session), the journey judges and report, and the placement audit's checks.
+// checkout's session), the journey judges and report, the placement audit's checks, and the `look` plan, status and flags.
 // red-proof: with session.mjs sessionAddress ignoring the recorded root this
 // printed "another checkout's session must be refused" and exited 1.
 import { spawnSync } from "node:child_process";
@@ -13,6 +13,7 @@ const runs = [
   ["session", ["agent-box/session.mjs", "selftest"]],
   ["journey", ["agent-box/journey.mjs", "selftest"]],
   ["place-audit", ["agent-box/place-audit.mjs", "selftest"]],
+  ["look", ["tools/visual/look.mjs", "selftest"]],
 ];
 let failed = 0;
 for (const [name, args] of runs) {
@@ -24,4 +25,4 @@ for (const [name, args] of runs) {
   }
 }
 if (failed) process.exit(1);
-console.log("agent-box-selftest: OK (harness, session, journey, place-audit)");
+console.log("agent-box-selftest: OK (harness, session, journey, place-audit, look)");

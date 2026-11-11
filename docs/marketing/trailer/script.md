@@ -328,3 +328,17 @@ A recut after an independent review, 1:25.2. `video/trailer-v1/cut.mjs` builds i
 - **Captions:** `<name>.srt` is the one caption track (what is burned in, plus the end card text), with no
   overlapping cues; `<name>.vo.srt` is the voice-over transcript.
 - **End card:** credit lines 32 px; the card is fully visible for 5.4 s before the 1 s fade.
+
+## The v3 cut (2026-11-11)
+
+Every shot reshot on the fixed town layout (#740 to #744; `tools\cli audit placement --strict` clean, 0 of 728
+entities flagged), cut with the same `video/trailer-v1/cut.mjs` into the git-ignored `tmp/trailer-v3/`.
+
+- **Cold open:** O3 frames the cash van box from the robber's live position (the van drives its route, so its stop
+  moves); the camera stands back far enough that the van, the robber and the sacks read at their real size.
+- **Vault:** V3, tight on the door and the drill. It is a door on the bank's outside wall, so the caption says what is
+  shown: "Heists: drill the bank".
+- **UI shots:** the form and the travel list sit at the top of the frame, smaller, so the lower-third caption band
+  stays clear of their buttons.
+- **Reshot:** every shot, on the layout after #740 to #744. The pickaxe shot ends before a 4-frame capture hitch.
+  The mix limiter is tighter (true peak about -2.4 dBFS; an earlier export hit -0.2 dBFS).

@@ -231,6 +231,7 @@ what the human's promotion checklist shows. `docs/worktrees.md` "Release gates".
 1. `tools\cli validate`: cheap, run it constantly. `validate --full` (adds the Workbench compile for every platform) runs in `wt gate`/`wt ship`.
 2. The `LF_Test` suite in your worktree: `--only` or `--tier fast` while iterating, `--tier all` once before calling work done.
 3. Drive the real path: DebugWorld play mode or `node agent-box/harness.mjs flow <name>`.
+   For how a place looks, `tools\cli look <area>` first (pictures in about 25 s, no session); a session only for UI, motion, a second player or PR pictures (`docs/visual-testing.md`).
 4. Read the specific log line (`SCRIPT (E)`, `VME:`, `Unable to find`), never an error count.
 
 Proof classes that survive the ladder: restart (a real save, restart, load),
