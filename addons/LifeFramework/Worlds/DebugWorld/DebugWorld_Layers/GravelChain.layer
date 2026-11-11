@@ -16,19 +16,21 @@ coords -2.6 0.9 0.7
     Flags 1027
    }
   GenericEntity GravelDisplayItems {
-    coords 0 1.14 0.7
+    coords 0 0.9 0.7
    {
     $grp GenericEntity : "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et" {
      GravelBag_01 {
-      coords 0 0 0
+      coords -0.25 0 0
+      angleY 90
      }
      GravelBag_02 {
-      coords 0.25 0 0.05
+      coords 0.25 0 0
+      angleY 90
      }
     }
     $grp GenericEntity : "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et" {
      GravelBrick_01 {
-      coords -0.15 0 0.15
+      coords 0 0 0.5
      }
     }
    }
