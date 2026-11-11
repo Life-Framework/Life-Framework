@@ -43,6 +43,12 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	protected static const int SHOT_TIMEOUT_MS = 5000;
 	protected static const int PLAY_TIMEOUT_MS = 90000;
 	protected static const float VERTICAL_FOV = 60;
+	// The wide lens also gets a fan of level rays across its view. A thin pole right in front of the
+	// lens (a lamp post, a sign) misses the one centre ray and ruins the picture (#814). The step is
+	// small enough that a 0.2 m pole 3 m away is still hit; tools/visual/look.mjs selftest checks it.
+	protected static const float FAN_STEP_DEG = 3;
+	protected static const float FAN_HALF_DEG = 42;
+	protected static const float FAN_REACH = 3.5;
 
 	protected ref array<string> m_aStatus = {};
 	protected int m_iStart;
@@ -311,6 +317,36 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Share of the way to the target at which the first thing inside the lens fan stands (1 = nothing).
+	//! Only the first FAN_REACH metres count, or half the distance when the camera is close.
+	protected float ClearFan(vector cam, vector target)
+	{
+		vector flat = target - cam;
+		float dist = flat.Length();
+		flat[1] = 0;
+		if (dist < 1 || flat.Length() < 0.01)
+			return 1;
+
+		flat.Normalize();
+		float reach = Math.Min(FAN_REACH, dist * 0.5);
+		float heading = Math.Atan2(flat[0], flat[2]);
+		float worst = 1;
+		for (float deg = -FAN_HALF_DEG; deg <= FAN_HALF_DEG + 0.01; deg += FAN_STEP_DEG)
+		{
+			float az = heading + deg * Math.DEG2RAD;
+			float free = Clear(cam, cam + Vector(Math.Sin(az), 0, Math.Cos(az)) * reach);
+			if (free >= 1)
+				continue;
+
+			float share = free * reach / dist;
+			if (share < worst)
+				worst = share;
+		}
+
+		return worst;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool TakeShot(string shot, int settleMs, bool first, int firstMs)
 	{
 		array<string> p = {};
@@ -333,6 +369,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 		vector target = Vector(tx, ty + p[5].ToFloat(), tz);
 		float accept = p[6].ToFloat();
+		bool wide = name.Contains("__wide");
 
 		array<string> candidates = {};
 		p[7].Split(",", candidates, true);
@@ -354,6 +391,14 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 				at[1] = ground + 0.4;
 
 			float free = Clear(at, target);
+			// Only the wide is taken from the ground; an oblique looks down over the trees.
+			if (wide)
+			{
+				float fan = ClearFan(at, target);
+				if (fan < free)
+					free = fan;
+			}
+
 			if (free > clear)
 			{
 				clear = free;
