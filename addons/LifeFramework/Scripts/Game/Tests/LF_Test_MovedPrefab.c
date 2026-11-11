@@ -12,6 +12,7 @@ class LF_Test_MovedPrefab : LF_Test
 	static const ResourceName S105 = "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et";
 	static const ResourceName DRILL = "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et";
 	static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
+	static const ResourceName DRESSING = "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et";
 	static const ResourceName HOUSE_KEY = "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et";
 	static const string STORE_COUNTER = "Shop_GeneralStore_Debug";
 
@@ -33,6 +34,7 @@ class LF_Test_MovedPrefab : LF_Test
 		ResourceName s105Moved = Moved(S105, "Prefabs/Moved/Vehicles/EL_S105_beige.et");
 		ResourceName drillMoved = Moved(DRILL, "Prefabs/Moved/Fence/LF_Drill.et");
 		ResourceName pickaxeMoved = Moved(PICKAXE, "Prefabs/Moved/Tools/Pickaxe.et");
+		ResourceName dressingMoved = Moved(DRESSING, "Prefabs/Moved/Medicine/FieldDressing_US_01.et");
 		ResourceName houseKeyMoved = Moved(HOUSE_KEY, "Prefabs/Moved/HouseKeyItem.et");
 		ctx.True(appleMoved != APPLE && LF_Utils.SamePrefab(appleMoved, APPLE), "the moved apple differs in path and shares the GUID");
 
@@ -79,6 +81,14 @@ class LF_Test_MovedPrefab : LF_Test
 		ctx.Equal(3, LF_InventoryUtils.GetAmount(body, appleMoved), "the moved name counts the carried apples");
 		ctx.Equal(1, LF_InventoryUtils.RemoveAmount(body, appleMoved, 1), "the moved name takes one apple");
 		ctx.Equal(2, LF_InventoryUtils.GetAmount(body, APPLE), "two apples are left");
+
+		// An item without LF_QuantityComponent (the revive dressing, a gather tool, a kit item) is
+		// counted apart from the stack walk.
+		ctx.Equal(2, LF_InventoryUtils.AddAmount(body, DRESSING, 2), "2 field dressings added");
+		ctx.Equal(2, LF_InventoryUtils.GetAmount(body, DRESSING), "the shipped name counts the dressings");
+		ctx.Equal(2, LF_InventoryUtils.GetAmount(body, dressingMoved), "the moved name counts the dressings");
+		ctx.Equal(1, LF_InventoryUtils.RemoveAmount(body, dressingMoved, 1), "the moved name takes one dressing");
+		ctx.Equal(1, LF_InventoryUtils.GetAmount(body, DRESSING), "one dressing is left");
 		LF_TestCharacterFixture.Delete(body);
 	}
 }

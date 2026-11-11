@@ -69,8 +69,9 @@ class LF_BuildingManagerComponent : ScriptComponent
 			return null;
 		}
 
-		LF_Debug.Log("Farming", string.Format("placement accepted: resource=%1 pos=%2", resource, pos));
-		return LF_Utils.SpawnEntityPrefab(resource, pos);
+		// Spawn the server's own prefab, never the string the client sent.
+		LF_Debug.Log("Farming", string.Format("placement accepted: resource=%1 pos=%2", performer.m_BuildingPrefab, pos));
+		return LF_Utils.SpawnEntityPrefab(performer.m_BuildingPrefab, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------

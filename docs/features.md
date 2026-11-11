@@ -193,7 +193,10 @@
   (`FindItemsByPrefab` uses `LF_SamePrefabPredicate`, the carried-item counts), stored inventories,
   store lines and unpaid-tag reattachment, shop catalog and curated lists, trader lists, restricted
   storages, gather and ore tools, breach charges, quest counts, chain goods, vehicle offers,
-  building placement, police kit lists, contraband, the item-count invokers. Saves are unchanged;
+  building placement (the server spawns its own performer prefab, never the client's string),
+  police kit lists, contraband, the item-count invokers (every subscribed name), GATHER/PROCESS
+  quest filters and job scope rewards. The shop catalog is a map keyed by GUID (build: 1339
+  items in about 230 ms). Saves are unchanged;
   a pre-move save matches on load. `ShopPrices.conf` rules for one prefab use `m_Prefab` (GUID);
   `m_sFind` stays for folders and name families and must be updated when those resources move,
   as must the shop's `LooksLikeItemPath` folder filter. Tests `prefab/same-prefab`,
