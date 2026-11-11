@@ -203,7 +203,7 @@ modded class SCR_ChimeraCharacter
 	protected void RpcAsk_LF_HarnessDie(int commandId)
 	{
 		// A client could otherwise end its own life outside the game's damage path.
-		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "die");
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "die");
 		LF_ApplyHarnessDie(commandId, gateOpen);
 	}
 
@@ -249,17 +249,10 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_HarnessScanner(int commandId, string tool)
 	{
-		bool gateOpen;
-		if (tool == "stash" || tool == "park" || tool == "apples" || tool == "nuggets")
-		{
-			// The playtest journey (#348) has no debug menu: the harness build's own gate lets the
-			// stand-ins for dragging an item, driving a car and picking apples through.
-			gateOpen = LF_DevGate.CheckHarnessRequest(this, tool);
-		}
-		else
-		{
-			gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "scanner");
-		}
+		// The playtest town has no debug menu, so the harness build's own gate (-scrDefine LF_HARNESS, session
+		// builds only) lets every stand-in through: the trailer (#571) films the drill heists on the playtest
+		// mission. Any other build still needs an administrator or dev tools.
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, tool);
 
 		LF_ApplyHarnessScanner(commandId, gateOpen, tool);
 	}
@@ -448,7 +441,7 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_HarnessShoot(int commandId, int targetPlayerId)
 	{
-		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "shoot");
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "shoot");
 		LF_ApplyHarnessShoot(commandId, targetPlayerId, gateOpen);
 	}
 
@@ -521,7 +514,7 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_HarnessShootNpc(int commandId, string entityName)
 	{
-		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "shootnpc");
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "shootnpc");
 		LF_ApplyHarnessShootNpc(commandId, entityName, gateOpen);
 	}
 
@@ -583,7 +576,7 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_HarnessSiren(int commandId, string entityName, int mode)
 	{
-		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "siren");
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "siren");
 		LF_ApplyHarnessSiren(commandId, entityName, mode, gateOpen);
 	}
 

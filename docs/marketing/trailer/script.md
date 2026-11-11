@@ -286,3 +286,25 @@ The storyboard lists every shot's path. In short:
   Only `street` exists today.
 - **Needs a flow:** mining (S11) has no proof verb yet; the convoy (S21) has
   no proof.
+
+## The v1 cut (2026-11-11)
+
+Shot on this PC in two `--profile full` sessions (1920x1080, 30 fps, HUD hidden) with
+`video/trailer-v1/shoot.mjs`, cut with `video/trailer-v1/cut.mjs` (takes and cuts go to the git-ignored
+`tmp/trailer-v1/`). 1:35.7. Where it differs from the script above:
+
+- **URL.** Captions, VO and end card say `life-framework.org/playtest` (the maintainer's brief), not `/join`.
+  The CTA caption reads "Playtest build 3 is live".
+- **S14** uses the fallback line "Bank it at the teller. Or risk it.": the teller model on camera is not
+  obviously Edith.
+- **Dropped:** S02 (the sacks land in the S01 take), S08 (Town Board), S10 (apple tree: no gather animation,
+  tree trunk in frame), S13 (till), S15 and S16 (the duty desk is hidden behind the wanted board from the street;
+  the dispatch board was empty), S18 (an NPC stands in front of the ambulance). Their VO lines are cut too,
+  except "Police clock in. The wanted board keeps score.", which runs over the second half of the S04 orbit
+  (the station with its wanted and dispatch boards).
+- **Moved:** S19 (vault) follows S14 (teller), so "Or risk it." leads into "Or skip the job.".
+- **Roadmap cards** are live slow drone moves, not gallery stills. R3 is the hideout yard, not the bench
+  (the pergola posts block every bench angle).
+- **Music** is "Hitman" by Kevin MacLeod (CC BY 4.0, `docs/credits.md`), from 15 s into the track.
+- **Fixes found on camera:** an orbit stopped at every key (#734), the drill spawned under the robber
+  (#735), the site alarm light washed the frame white (#736).
