@@ -13,7 +13,8 @@ enum LF_EShopRefusal
 	TOO_FAR,
 	NO_SHOP,
 	NOT_TRUSTED,
-	OUT_OF_STOCK
+	OUT_OF_STOCK,
+	CLOSED
 }
 
 class LF_ShopRefusal
@@ -48,6 +49,9 @@ class LF_ShopRefusal
 
 		if (reason == LF_EShopRefusal.NOT_TRUSTED)
 			return "#LF-Shop_RefuseNotTrusted";
+
+		if (reason == LF_EShopRefusal.CLOSED)
+			return "#LF-Shop_RefuseClosed";
 
 		if (reason == LF_EShopRefusal.OUT_OF_STOCK)
 			return "#LF-Shop_RefuseOutOfStock";

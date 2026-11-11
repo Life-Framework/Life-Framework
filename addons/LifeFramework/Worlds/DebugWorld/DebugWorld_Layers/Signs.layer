@@ -389,3 +389,12 @@ GenericEntity Sign_crime_police : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign
  coords 45.6 0 48.3
  angleY 180
 }
+GenericEntity Sign_Quarry_Info : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "quarry_info"
+  }
+ }
+ coords 184 0 189.8
+ angleY 0
+}
