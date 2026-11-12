@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
-import { ROB_TARGET, ROOT, arrive, clientBox, judgeCarry, parsePeer, parseState, sessionDir } from "../session.mjs";
+import { ROB_TARGET, ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeCarry, parsePeer, parseState, sessionDir } from "../session.mjs";
 
 async function runCarryProof() {
   const h = await import("../harness.mjs");
@@ -22,18 +22,15 @@ async function runCarryProof() {
   // or the body) up to several seconds late (QA: client 1 still read the body at the shot spot
   // 4 s on, another run client 2 read the carrier there). Read each client until the body sits
   // by the carrier, and print how long that took; a hold that never follows still fails.
+  // Every read is the client's own copy (#522): the carrier id is a replicated prop, the position the
+  // streamed body, so a hold the server keeps but never bumps fails here on the client that missed it.
   const settled = (n, carrierAt, budgetMs = 10000) => {
-    const t0 = Date.now();
-    let line = peers(n);
-    let f = judgeCarry(line, 2, 1, carrierAt, 4);
-    while (f.length && Date.now() - t0 < budgetMs) {
-      wait(1000);
-      line = peers(n);
-      f = judgeCarry(line, 2, 1, carrierAt, 4);
-    }
-    console.log(`client ${n}: body ${f.length ? "not " : ""}beside the carrier after ${((Date.now() - t0) / 1000).toFixed(1)} s more`);
-    return { line, fails: f };
+    const r = clientSees(on, wait, n, (line) => judgeCarry(line, 2, 1, carrierAt, 4), { verb: "peers", parse: (line) => line, budgetMs });
+    console.log(`client ${n}: body ${r.fails.length ? "not " : ""}beside the carrier after ${r.seconds.toFixed(1)} s more`);
+    return { line: r.line, fails: r.fails.map((f) => f.replace(/^client \d+ reads: /, "")) };
   };
+  // The body's carrier as client n reads it, polled: the replicated value lands a moment after the server writes it.
+  const carrierSeen = (n, want) => clientSeesPeer(on, wait, n, 2, (p) => (p.carrier === want ? [] : [`carrier=${p.carrier}, expected ${want}`]), { label: want ? "carried" : "dropped" });
 
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
@@ -53,8 +50,7 @@ async function runCarryProof() {
   const drag = on(1, { verb: "use", className: "LF_DragAction", entityName: patient }, 10000);
   need(drag.status === "ok", `drag returned ${drag.status} ${drag.detail}`);
   wait(1500);
-  const start1 = peers(1);
-  need(parsePeer(start1, 2)?.carrier === 1, `the body is not held by client 1 after the drag: ${start1}`);
+  for (const n of [1, 2]) fails.push(...carrierSeen(n, 1).fails);
   on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
   wait(4000);
   const carrierAt = at(1);
@@ -90,10 +86,10 @@ async function runCarryProof() {
   const drop = on(1, { verb: "use", className: "LF_DropAction", entityName: patient }, 10000);
   need(drop.status === "ok", `drop returned ${drop.status} ${drop.detail}`);
   wait(1500);
-  need(parsePeer(peers(2), 2)?.carrier === 0, "the body is still held after the drop");
+  for (const n of [1, 2]) fails.push(...carrierSeen(n, 0).fails);
   on(1, { verb: "use", className: "LF_CarryAction", entityName: patient }, 10000);
   wait(1500);
-  need(parsePeer(peers(2), 2)?.carrier === 1, "the carry did not take hold");
+  for (const n of [1, 2]) fails.push(...carrierSeen(n, 1).fails);
   on(1, { verb: "stand", entityName: "Roadmap_Escort_Car" });
   wait(4000);
   const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: patient }, 10000);

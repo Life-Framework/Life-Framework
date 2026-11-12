@@ -143,6 +143,11 @@ export function buildLine(id, spec) {
   if (spec.verb === "peers") {
     return `${id} peers`;
   }
+  if (spec.verb === "seen") {
+    const radius = Number(spec.radius ?? 0);
+    if (!Number.isFinite(radius) || radius < 0) throw new Error(`seen radius must be a number: ${spec.radius}`);
+    return radius > 0 ? `${id} seen ${radius}` : `${id} seen`;
+  }
   if (spec.verb === "shoot") {
     const target = Number(spec.playerId);
     if (!Number.isInteger(target) || target <= 0) throw new Error(`shoot needs a positive player id: ${spec.playerId}`);
@@ -1480,6 +1485,9 @@ function main(argv) {
     }
     if (cmd === "peers") {
       return printResult(sendCommand({ verb: "peers" }, 10000));
+    }
+    if (cmd === "seen") {
+      return printResult(sendCommand({ verb: "seen", radius: rest[0] }, 10000));
     }
     if (cmd === "shoot") {
       return printResult(sendCommand({ verb: "shoot", playerId: rest[0] }, 10000));

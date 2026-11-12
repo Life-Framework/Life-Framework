@@ -176,6 +176,12 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "peers")
 			return true;
+		if (cmd.Verb == "seen")
+		{
+			if (parts.Count() > 2)
+				cmd.PosX = parts[2].ToFloat();
+			return true;
+		}
 		if (cmd.Verb == "shoot")
 			return ParseShoot(parts, cmd);
 		if (cmd.Verb == "cpr")
@@ -1174,6 +1180,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "peers")
 		{
 			DoPeers(cmd);
+			return;
+		}
+		if (cmd.Verb == "seen")
+		{
+			WriteResult(cmd.Id, "ok", LF_HarnessSeen.Read(cmd.PosX));
 			return;
 		}
 		if (cmd.Verb == "shoot")
