@@ -3,6 +3,9 @@ GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
  components {
   LF_SignComponent "{44FC6FF960E3CDE5}" {
    m_sSignId "police_wanted"
+   m_bShowFace 0
+  }
+  LF_VisualBoardComponent "{9D3E71A45C0BFA03}" {
   }
   SCR_SoundDataComponent "{1E8C5E3C23DF47B3}" {
    m_aAudioSourceConfiguration {

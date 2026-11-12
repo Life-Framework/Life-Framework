@@ -522,6 +522,10 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 		// The entity and about its own width of surroundings on each side, whatever its size.
 		float fov = Math.Clamp(2 * Math.Atan2(radius * 2.4, dist) * Math.RAD2DEG, 24, VERTICAL_FOV);
+		// SPIKE visual-wanted: a tight frame on the board so the posters can be read.
+		if (name.Contains("WantedBoard"))
+			fov = fov * 0.42;
+
 		return Capture(name, cam, target, fov, string.Format("clear=%1 %2", clear, found), settleMs, first, firstMs);
 	}
 

@@ -206,6 +206,7 @@ class LF_StolenVehicles
 			return check;
 		}
 
+		LF_VisualBoardData.CaptureVehicle(PlateOf(vehicle), vehicle); // SPIKE
 		FileReport(vehicleId, PlateOf(vehicle), LF_VehicleOwnership.GetNameKey(vehicleId), ownerUid, LF_WantedReports.DescribePlace(vehicle.GetOrigin()));
 		LF_Utils.NotifyEntity(reporter, "#LF-Stolen_Reported", "#LF-Stolen_Title", 4.0);
 		return check;

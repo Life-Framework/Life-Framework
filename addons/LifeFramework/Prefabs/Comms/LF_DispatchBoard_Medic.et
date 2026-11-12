@@ -3,6 +3,7 @@ GenericEntity : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
  components {
   LF_SignComponent "{44FC6FF960E3CDE5}" {
    m_sSignId "dispatch_board"
+   m_bShowFace 1
   }
   ActionsManagerComponent "{6E065C9694DC3BE5}" {
    additionalActions {
