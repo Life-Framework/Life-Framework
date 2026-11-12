@@ -34,6 +34,12 @@ async function runHotwireProof() {
   wait(1500);
   const pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
   wait(23000);
+  // A pick can fail or snap (that is the design): work the lock again, up to three more times.
+  for (let attempt = 2; attempt <= 4 && clientSees(on, wait, 1, car((v) => (v.lock === "0" ? [] : ["locked"])), { radius: 8, budgetMs: 0 }).fails.length; attempt++) {
+    on(1, { verb: "lockpick" }, 10000);
+    on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
+    wait(23000);
+  }
   const unlocked = clientSees(on, wait, 2, car((v) => (v.lock === "0" ? [] : [`car still lock=${v.lock}`])), { radius: 8, label: "after the pick" });
   const getIn = on(1, { verb: "engine", entityName: "Roadmap_Lockpick_Car" }, 10000);
   wait(4000);
