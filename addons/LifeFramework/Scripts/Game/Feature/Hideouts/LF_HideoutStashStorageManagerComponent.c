@@ -17,6 +17,30 @@ class LF_HideoutStashStorageManagerComponent : ScriptedInventoryStorageManagerCo
 	protected string m_sHideoutId;
 
 	//------------------------------------------------------------------------------------------------
+	//! Returns the stash entity of a hideout that an organization owns, else the first stash, else
+	//! null. Stashes are found through the placed persistent storages (server only).
+	static IEntity FindOwnedStash()
+	{
+		array<IEntity> placed = {};
+		LF_PersistentStorageComponent.GetPlaced(placed);
+		IEntity first = null;
+		foreach (IEntity entity : placed)
+		{
+			LF_HideoutStashStorageManagerComponent stash = LF_Component<LF_HideoutStashStorageManagerComponent>.Find(entity);
+			if (!stash)
+				continue;
+
+			if (!first)
+				first = entity;
+
+			if (!LF_Hideout.GetOwner(stash.GetHideoutId()).IsEmpty())
+				return entity;
+		}
+
+		return first;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetHideoutId()
 	{
 		if (!m_sHideoutId.IsEmpty())
