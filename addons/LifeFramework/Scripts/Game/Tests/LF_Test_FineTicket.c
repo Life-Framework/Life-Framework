@@ -22,7 +22,7 @@ class LF_Test_FineTicket : LF_Test
 	{
 		array<ref LF_FineTicketRecord> before = LF_FineTickets.ExportAll();
 		LF_FineTickets.ApplyAll(null);
-		LF_FineTickets.Configure(120, 120, 2, 1);
+		LF_FineTickets.Configure(120, 120, 2);
 
 		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
 		if (!body)

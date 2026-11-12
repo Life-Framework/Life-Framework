@@ -323,7 +323,7 @@ class LF_Jail
 			return false;
 		}
 
-		return Imprison(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel()), prisoner.GetWantedLevel(), standIn);
+		return Imprison(prisonerUid, LF_CrimeCatalog.SentenceFor(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel())), prisoner.GetWantedLevel(), standIn);
 	}
 
 	//------------------------------------------------------------------------------------------------

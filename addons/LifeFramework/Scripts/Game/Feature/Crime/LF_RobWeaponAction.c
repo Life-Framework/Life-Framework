@@ -1,8 +1,5 @@
 class LF_RobWeaponAction : ScriptedUserAction
 {
-	//! Wanted levels an accepted weapon robbery adds. Higher than cash, lower than a vehicle.
-	static const int WANTED_INCREASE = 2;
-
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Weapon prefab to steal", "et")]
 	protected ResourceName m_WeaponPrefab;
 
@@ -60,7 +57,7 @@ class LF_RobWeaponAction : ScriptedUserAction
 
 	//------------------------------------------------------------------------------------------------
 	//! Server seam of PerformAction. Puts the weapon in the user's inventory. When that works and
-	//! an account resolves for playerUid, raises wanted by WANTED_INCREASE and alerts police.
+	//! an account resolves for playerUid, raises wanted by the catalog's weapon theft amount and alerts police.
 	//! Nothing is paid as cash and the bank is never touched.
 	//! \return True when the weapon was delivered.
 	static bool CommitWeaponRobbery(string playerUid, IEntity user, ResourceName weaponPrefab)
@@ -72,7 +69,7 @@ class LF_RobWeaponAction : ScriptedUserAction
 		LF_PlayerAccount account = LF_RobAction.FindAccount(playerUid);
 		if (account)
 		{
-			account.IncreaseWantedLevel(WANTED_INCREASE);
+			LF_CrimeCatalog.ApplyWanted(account, playerUid, LF_WantedReports.OFFENCE_WEAPON_THEFT);
 			LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 			LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_WEAPON_THEFT, user.GetOrigin());
 		}

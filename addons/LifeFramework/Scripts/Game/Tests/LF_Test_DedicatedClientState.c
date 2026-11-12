@@ -137,7 +137,7 @@ class LF_Test_RobNoAccount : LF_Test
 	{
 		LF_RobAction.ResetSession();
 		float next = 0;
-		int paid = LF_RobAction.CommitRobbery("dedicated-rob-no-account", null, 150, 1, 0, 0, 60, 0, 100000, next);
+		int paid = LF_RobAction.CommitRobbery("dedicated-rob-no-account", null, 150, 0, 0, 60, 0, 100000, next);
 		ctx.Equal(0, paid, "a robbery without an account pays nothing");
 		ctx.EqualStr("robbery refused: no account", LF_RobAction.GetLastRefusal(), "the no-account refusal is logged");
 		ctx.Equal(0, LF_RobAction.GetAlertCount(), "a refused robbery does not alert police");
