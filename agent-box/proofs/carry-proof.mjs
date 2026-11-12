@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
-import { ROB_TARGET, ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeCarry, parsePeer, parseState, sessionDir } from "../session.mjs";
+import { ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeCarry, parsePeer, parseState, sessionDir } from "../session.mjs";
 
 async function runCarryProof() {
   const h = await import("../harness.mjs");
@@ -34,16 +34,19 @@ async function runCarryProof() {
 
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
-  on(2, { verb: "stand", entityName: ROB_TARGET });
+  // An annex desk on open ground, not a town till: a till sits on a counter in a closed kiosk, and
+  // two characters teleported onto the same spot there overlapped and downed the shooter (#522).
+  // Each player takes its own side of the desk so the two capsules never overlap.
+  on(2, { verb: "stand", entityName: "Annex_Police_Desk", side: "n" });
   wait(2500);
-  on(1, { verb: "stand", entityName: ROB_TARGET });
+  on(1, { verb: "stand", entityName: "Annex_Police_Desk", side: "s" });
   wait(2500);
   on(1, { verb: "shoot", playerId: 2 }, 10000);
   wait(2500);
   const patient = `Player${parseState(state(2)).player}`;
   need(parseState(state(2)).downed === "1", "client 2 was not downed");
 
-  // Drag it to the hospital desk.
+  // Drag it a few metres across the annex (a 280 m teleport leaves the held body behind).
   on(1, { verb: "stand", entityName: patient });
   wait(2500);
   on(1, { verb: "look" });
@@ -51,7 +54,7 @@ async function runCarryProof() {
   need(drag.status === "ok", `drag returned ${drag.status} ${drag.detail}`);
   wait(1500);
   for (const n of [1, 2]) fails.push(...carrierSeen(n, 1).fails);
-  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  on(1, { verb: "stand", entityName: "Annex_Police_WantedBoard" });
   wait(4000);
   const carrierAt = at(1);
   const afterDrag = {};
@@ -72,7 +75,7 @@ async function runCarryProof() {
     } else {
       arrive(on, 3, wait);
       wait(8000);
-      on(3, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+      on(3, { verb: "stand", entityName: "Annex_Police_WantedBoard" });
       wait(4000);
       // Client 3 stands on the carrier's spot and shoves it a metre or two: judgeCarry takes the
       // carrier from client 3's own line.
@@ -90,7 +93,7 @@ async function runCarryProof() {
   on(1, { verb: "use", className: "LF_CarryAction", entityName: patient }, 10000);
   wait(1500);
   for (const n of [1, 2]) fails.push(...carrierSeen(n, 1).fails);
-  on(1, { verb: "stand", entityName: "Roadmap_Escort_Car" });
+  on(1, { verb: "stand", entityName: "Annex_Escort_Car" });
   wait(4000);
   const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: patient }, 10000);
   need(load.status === "ok", `load returned ${load.status} ${load.detail}`);
