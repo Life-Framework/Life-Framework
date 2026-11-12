@@ -4,7 +4,8 @@
 // got 7)". In LF_ConfigReader.BeginRecord check only for ABSENT instead of OBJECT and
 // config/merge-reject ends in "ENGINE (F): Crashed" on "Prefabs/Weapons/": 5; make KindOf report
 // lists as OBJECT and it fails "no kind but an object becomes a rule (expected 3, got 4)".
-// All observed 2026-11-12.
+// In LF_ShopPricesConfig.ApplyOwner drop the ReadString("prefab") line and config/merge-prefab fails
+// "the owner prefab is set (expected {C9D661E5B0714711}..., got )". All observed 2026-11-12.
 
 //------------------------------------------------------------------------------------------------
 //! Shared fixture: a core shops config built in script, shaped like Configs/Shop/ShopPrices.conf.
@@ -243,6 +244,50 @@ class LF_Test_ConfigMergeNoOwner : LF_Test
 		config = LF_Test_ConfigMergeFixture.Merge("{\"shops\":5}");
 		ctx.Equal(50, config.m_iDefaultBuyPrice, "a section that is not an object changes nothing");
 		ctx.Equal(3, config.m_aPriceRules.Count(), "a section that is not an object adds no rules");
+
+		LF_ConfigService.Reset();
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+//! An owner rule can set `prefab`: the rule then matches that prefab by GUID, whatever path either
+//! name carries, and merges field by field (the prefab on an existing rule leaves its prices alone).
+// tier: LOGIC
+class LF_Test_ConfigMergePrefab : LF_Test
+{
+	override string GetName()
+	{
+		return "config/merge-prefab";
+	}
+
+	override void Run(LF_TestContext ctx)
+	{
+		string apple = LF_Test_ConfigMergeFixture.APPLE;
+		string json = "{\"shops\":{\"priceRules\":{"
+			+ "\"Apple\":{\"prefab\":\"" + apple + "\",\"buyPrice\":3},"
+			+ "\"Handgun_M9\":{\"prefab\":\"{AAAAAAAAAAAAAAAA}Prefabs/Weapons/M9.et\"},"
+			+ "\"Prefabs/Weapons/\":{\"prefab\":5}"
+			+ "}}}";
+		LF_ShopPricesConfig config = LF_Test_ConfigMergeFixture.Merge(json);
+		ctx.Equal(4, config.m_aPriceRules.Count(), "one new key is added");
+		if (config.m_aPriceRules.Count() != 4)
+			return;
+
+		LF_ShopPriceRule added = config.m_aPriceRules[3];
+		ctx.EqualStr(apple, added.m_Prefab, "the owner prefab is set");
+		ctx.Equal(3, added.m_iBuyPrice, "the new rule keeps the owner's price");
+
+		LF_ShopPriceRule m9 = config.m_aPriceRules[2];
+		ctx.EqualStr("{AAAAAAAAAAAAAAAA}Prefabs/Weapons/M9.et", m9.m_Prefab, "an existing rule takes the prefab");
+		ctx.Equal(500, m9.m_iBuyPrice, "the prices it left out stay shipped");
+		ctx.True(config.m_aPriceRules[1].m_Prefab.IsEmpty(), "a wrong-type prefab changes nothing");
+
+		int buy;
+		int sell;
+		bool hidden;
+		string moved = "{C9D661E5B0714711}Prefabs/Items/Moved/Apple.et";
+		LF_ShopPriceResolver.ResolvePrices(config.m_aPriceRules, moved, 0, SCR_EArsenalItemMode.DEFAULT, config.m_iDefaultBuyPrice, config.m_iDefaultSellPrice, buy, sell, hidden);
+		ctx.Equal(3, buy, "the prefab rule matches by GUID after the prefab moved");
 
 		LF_ConfigService.Reset();
 	}

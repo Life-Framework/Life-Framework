@@ -37,7 +37,8 @@ for pack overlays and an `LF_ConfigReader` on its owner section.
     "priceRules": {
       "Prefabs/Items/Food/": { "buyPrice": 10, "sellPrice": 5 },
       "Prefabs/Weapons/": { "hidden": true },
-      "type:64,mode:2": { "buyPrice": 900 }
+      "type:64,mode:2": { "buyPrice": 900 },
+      "Apple": { "prefab": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "buyPrice": 12 }
     },
     "extraItemPrefabs": ["{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"]
   }

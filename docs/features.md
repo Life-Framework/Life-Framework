@@ -296,7 +296,7 @@
   shipped `.conf` defaults field by field: owner, then pack, then core. Records
   merge by a stable key (an object keyed by the key, not a list); a new key is
   appended. Shops are the first section (`shops`: default prices,
-  `priceRules`, `extraItemPrefabs`). A missing file boots on defaults and
+  `priceRules`, `extraItemPrefabs`; a rule may set `prefab`, matched by GUID). `validate-config-schema` fails when a schema field and the key list `ApplyOwner` declares for `WarnUnknownKeys` disagree. A missing file boots on defaults and
   writes `config.example.json` beside it, never over a file. A bad file,
   section, record or field logs `[LFDebug:Config]` and keeps the lower value;
   nothing crashes the server. Pack overlays come through `LF_ConfigPackSource`,
