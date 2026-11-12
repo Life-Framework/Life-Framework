@@ -110,3 +110,45 @@ class LF_PhoneHangUpAction : LF_PhoneActionBase
 		LF_PhoneCalls.ServerHangUp(user, phone);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Leave a call-back request: shown at an idle payphone to the caller whose call there rang out
+//! or found nobody on duty, while the offer lasts. Opens the message slip.
+class LF_PhoneLeaveRequestAction : LF_PhoneActionBase
+{
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		int talker;
+		if (LF_PhoneLineComponent.StateAt(GetOwner(), talker) != LF_EPhoneLineState.IDLE)
+			return false;
+
+		int offer = LF_PhoneLineComponent.OfferAt(GetOwner());
+		return offer > 0 && offer == PlayerIdOf(user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void ServerPerform(IEntity phone, IEntity user)
+	{
+		LF_PhoneCallBacks.ServerOpenSlip(user, phone);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Read the station's message pad: the call-back requests, each with a ring-back button. Shown at
+//! an idle station telephone; the server answers only the service's people on duty.
+class LF_PhoneReadPadAction : LF_PhoneActionBase
+{
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		int talker;
+		return LF_PhoneLineComponent.StateAt(GetOwner(), talker) == LF_EPhoneLineState.IDLE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void ServerPerform(IEntity phone, IEntity user)
+	{
+		LF_PhoneCallBacks.ServerOpenPad(user, phone);
+	}
+}

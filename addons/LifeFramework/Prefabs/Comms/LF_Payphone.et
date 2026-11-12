@@ -54,6 +54,15 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
         Description "#LF-Payphone_Title"
        }
       }
+      LF_PhoneLeaveRequestAction "{9A90E9BF9688EDC0}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{8CA4B4C43A835400}" {
+        Name "#LF-Phone_LeaveRequest"
+        Description "#LF-Payphone_Title"
+       }
+      }
       LF_PayphoneAction "{0F4B7E2A91C6D358}" {
        ParentContextList {
         "LF_Payphone"

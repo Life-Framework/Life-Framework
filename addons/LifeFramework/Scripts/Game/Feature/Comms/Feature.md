@@ -73,5 +73,14 @@ Design: `docs/architecture/phone-calls-spike.md`. Four pieces:
 - `LF_PhoneDialAction`, `LF_PhoneAnswerAction`, `LF_PhoneHangUpAction` (`LF_PhoneActions.c`) read
   the line to show only what applies; the server decides again.
 
+Call-back requests (the voicemail replacement): `LF_PhoneCallBackBook` is the pure book (offers
+per caller and phone, requests, the pad entries); `LF_PhoneCallBacks` feeds it. A MISSED call
+(rang out or nobody on duty) gives its caller an offer at that payphone, shown on the line
+(`m_iOfferId`) to that player only. `LF_PhoneLeaveRequestAction` opens `LF_PhoneSlipSheet`;
+`RpcAsk_LF_PhoneLeave` is checked for rate, offer, distance and length. `LF_PhoneReadPadAction`
+opens `LF_PhonePadSheet` for the service's people on duty; `RpcAsk_LF_PhoneCallBack` rings the
+payphone (`LF_PhoneCalls.CallBackAt`, a call with `m_bCallBack`). A picked-up ring-back closes the
+request; one nobody answers reopens it. Requests expire with the dispatch board; nothing is saved.
+
 Settings: `LF_PhoneConfig` (`Configs/Comms/LF_Phone.conf`). Never call
 `RadioManagerEntity.GetTransceiversInRange`: it crashed the dedicated server in the spike.

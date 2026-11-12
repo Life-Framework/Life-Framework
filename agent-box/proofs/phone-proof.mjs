@@ -3,7 +3,9 @@
 // Client 2 clocks in and stands at the station telephone; client 1 rings the station from the fuel
 // payphone. Judged on what each client's lines show (`harness phone`) and on the server's
 // [LFDebug:Phone] lines: the station rings, the officer picks up, both talk on busy lines, the
-// caller hangs up; a call where the caller walks off ends; an unanswered call rings out as MISSED.
+// caller hangs up; a call where the caller walks off ends; an unanswered call rings out as MISSED;
+// the caller leaves a call-back request with a message, the officer reads the pad and rings the
+// payphone back, the caller picks up.
 // The payphone cooldowns (60 s per player) set the pace: about four minutes.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -16,11 +18,11 @@ export const DESK = "Roadmap_Police_Desk";
 const PLAYER_COOLDOWN_MS = 62000;
 const RING_OUT_MS = 33000;
 
-/** "lines=2 253,230:RINGING:0:3 126,254:BUSY:1:0" -> [{ key, state, talker, rings }] */
+/** "lines=2 253,230:RINGING:0:3:0 126,254:BUSY:1:0:0" -> [{ key, state, talker, rings, offer }] */
 export function parseLines(detail) {
   return String(detail ?? "").trim().split(/\s+/).slice(1).map((part) => {
-    const [key, state, talker, rings] = part.split(":");
-    return { key, state, talker: Number(talker), rings: Number(rings) };
+    const [key, state, talker, rings, offer] = part.split(":");
+    return { key, state, talker: Number(talker), rings: Number(rings), offer: Number(offer ?? 0) };
   }).filter((l) => l.key);
 }
 
@@ -93,6 +95,29 @@ async function runPhoneProof() {
   wait(RING_OUT_MS);
   expect(!has(lines(2), "RINGING"), "the station still rings after the ring time");
 
+  console.log("\n== call-back: client 1 leaves a request at the payphone; client 2 rings it back from the pad");
+  expect(lines(1).some((l) => l.offer > 0), "the payphone line shows no call-back offer after the ring-out");
+  expect(use(1, "LF_PhoneLeaveRequestAction", PAYPHONE).status === "ok", "client 1 could not open the message slip");
+  wait(2500);
+  on(1, { verb: "type", widget: "PhoneSlipMessage", text: "Robbery_at_the_bank" });
+  expect(on(1, { verb: "click", widget: "PhoneSlipLeaveButton" }).status === "ok", "client 1 could not leave the message");
+  wait(3000);
+  expect(use(2, "LF_PhoneReadPadAction", STATION).status === "ok", "client 2 could not read the pad");
+  wait(2500);
+  const pad = on(2, { verb: "ui" }, 10000).detail;
+  const row = /PhoneRequest(\d+)/.exec(pad);
+  expect(row, "the pad lists no request");
+  if (row) {
+    expect(on(2, { verb: "click", widget: `PhoneRequest${row[1]}_Action` }).status === "ok", "client 2 could not press Ring back");
+    wait(5000);
+    expect(has(lines(1), "RINGING"), "the payphone does not ring back");
+    expect(use(1, "LF_PhoneAnswerAction", PAYPHONE).status === "ok", "client 1 could not pick up the ring-back");
+    wait(3000);
+    expect(has(lines(1), "BUSY") && has(lines(2), "BUSY"), "the ring-back did not connect both lines");
+    expect(use(2, "LF_PhoneHangUpAction", STATION).status === "ok", "client 2 could not hang up the ring-back");
+    wait(3000);
+  }
+
   const log = newestLog(join(sessionPaths(dir).server, "logs"));
   const server = log ? readFileSync(log, "utf8").split(/\r?\n/).filter((l) => l.includes("[LFDebug:Phone]")) : [];
   for (const l of server) console.log(`server: ${l.replace(/^.*\[LFDebug:Phone\] /, "")}`);
@@ -102,10 +127,13 @@ async function runPhoneProof() {
   saw(/call \d+ ENDED \(HUNG_UP\)/, "no ENDED (HUNG_UP) line");
   saw(/call \d+ ENDED \(WALKED_AWAY\)/, "no ENDED (WALKED_AWAY) line");
   saw(/call \d+ MISSED \(NO_ANSWER\)/, "no MISSED (NO_ANSWER) line");
+  saw(/call-back request \d+ left by .*'Robbery_at_the_bank'/, "no call-back request left line");
+  saw(/call-back request \d+ rung back by/, "no ring-back line");
+  saw(/call-back request \d+ answered at/, "no answered ring-back line");
   expect(!server.some((l) => /Error|refused after the coin/.test(l)), "server log: a phone error line");
 
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "phone proof: FAIL" : "phone proof: PASS (rings at the station, on-duty pick-up, hang-up, walk-away and ring-out end the call; lines follow on both clients)");
+  console.log(fails.length ? "phone proof: FAIL" : "phone proof: PASS (rings at the station, on-duty pick-up, hang-up, walk-away and ring-out end the call; call-back request left, read and rung back; lines follow on both clients)");
   return fails.length ? 1 : 0;
 }
 

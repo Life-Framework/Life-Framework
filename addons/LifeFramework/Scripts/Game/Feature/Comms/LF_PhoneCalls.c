@@ -67,6 +67,33 @@ class LF_PhoneCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The call table's clock in seconds, for the call-back book.
+	static float Clock()
+	{
+		return Now();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Is this body at the telephone, by the server's own reckoning?
+	static bool IsNear(IEntity body, LF_PhoneComponent phone)
+	{
+		if (!phone)
+			return false;
+
+		return Presence().IsAt(body, phone.GetOwner(), LF_PhoneConfig.CordMeters());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Is this player one of the service's people on duty right now (null players: the connected ones)?
+	static bool MayAnswerFor(int playerId, string service, array<ref LF_ServiceCandidate> players)
+	{
+		if (playerId <= 0 || service.IsEmpty())
+			return false;
+
+		return LF_ServiceCalls.Check(service, players).m_aReceivers.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void EnsureTicking()
 	{
 		if (s_bTicking || !GetGame() || !GetGame().GetCallqueue())
@@ -90,7 +117,10 @@ class LF_PhoneCalls
 			case LF_EPhoneRefusal.NOT_ON_DUTY: return "#LF-Phone_NotOnDuty";
 			case LF_EPhoneRefusal.TOO_FAR: return "#LF-Phone_TooFar";
 			case LF_EPhoneRefusal.NOT_YOUR_CALL: return "#LF-Phone_NotYourCall";
-			case LF_EPhoneRefusal.NOBODY_ON_DUTY: return LF_ServiceCalls.NO_ANSWER_KEY;
+			case LF_EPhoneRefusal.NOBODY_ON_DUTY: return "#LF-Phone_NobodyOffer";
+			case LF_EPhoneRefusal.NO_REQUEST: return "#LF-Phone_RequestGone";
+			case LF_EPhoneRefusal.REQUEST_CALLING: return "#LF-Phone_RequestCalling";
+			case LF_EPhoneRefusal.TARGET_BUSY: return "#LF-Phone_TargetBusy";
 			case LF_EPhoneRefusal.OK: return string.Empty;
 			case LF_EPhoneRefusal.PAYPHONE: return string.Empty;
 			case LF_EPhoneRefusal.TOO_FAST: return string.Empty;
@@ -110,7 +140,7 @@ class LF_PhoneCalls
 			case LF_EPhoneEnd.HUNG_UP: return "#LF-Phone_HungUp";
 			case LF_EPhoneEnd.WALKED_AWAY: return "#LF-Phone_WalkedAway";
 			case LF_EPhoneEnd.TOO_LONG: return "#LF-Phone_TooLong";
-			case LF_EPhoneEnd.NO_ANSWER: return "#LF-Phone_NoAnswer";
+			case LF_EPhoneEnd.NO_ANSWER: return "#LF-Phone_NoAnswerOffer";
 		}
 		return "#LF-Phone_LineDead";
 	}
@@ -191,6 +221,8 @@ class LF_PhoneCalls
 		{
 			LF_PhoneCall missed = Exchange().Missed(now, callerId, callerUid, fromKey, service);
 			missed.m_sPlace = phone.Place();
+			// The caller's line carries the call-back offer, so the phone needs one now.
+			phone.ServerLine();
 			Changed(missed, "nobody on duty");
 			return LF_EPhoneRefusal.NOBODY_ON_DUTY;
 		}
@@ -274,7 +306,7 @@ class LF_PhoneCalls
 
 		bool mayAnswer = true;
 		if (phone.IsDispatchPhone())
-			mayAnswer = LF_ServiceCalls.Check(phone.DispatchService(), players).m_aReceivers.Contains(playerId);
+			mayAnswer = MayAnswerFor(playerId, phone.DispatchService(), players);
 
 		LF_EPhoneRefusal refusal;
 		LF_PhoneCall call = Exchange().Answer(now, playerId, playerUid, key, mayAnswer, refusal);
@@ -285,6 +317,65 @@ class LF_PhoneCalls
 		}
 
 		Changed(call, string.Format("player %1 picked up at %2 after %3 s", playerId, key, call.RangSeconds()));
+		return LF_EPhoneRefusal.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An officer at the station telephone rings back the payphone a call-back request came from.
+	//! Free of charge; the payphone rings for anyone standing at it.
+	static LF_EPhoneRefusal CallBackAt(float now, int playerId, string playerUid, IEntity user, LF_PhoneComponent station, int requestId, array<ref LF_ServiceCandidate> players = null)
+	{
+		if (!Replication.IsServer())
+			return LF_EPhoneRefusal.NOT_SERVER;
+
+		if (!station || !user || playerId <= 0 || !station.IsDispatchPhone())
+		{
+			LF_Debug.Warn(FEATURE, string.Format("ring-back refused for player %1: no station telephone by that key or no body", playerId));
+			return LF_EPhoneRefusal.BAD_CALLER;
+		}
+
+		if (!IsNear(user, station))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("ring-back refused for player %1: not at station phone %2", playerId, station.Key()));
+			return LF_EPhoneRefusal.TOO_FAR;
+		}
+
+		if (!MayAnswerFor(playerId, station.DispatchService(), players))
+		{
+			LF_Debug.Info(FEATURE, string.Format("ring-back refused for player %1: not on duty for %2", playerId, station.DispatchService()));
+			return LF_EPhoneRefusal.NOT_ON_DUTY;
+		}
+
+		LF_EPhoneRequestRefusal claim;
+		LF_PhoneCallBackRequest request = LF_PhoneCallBacks.Book().Claimable(now, requestId, station.DispatchService(), claim);
+		if (!request)
+		{
+			LF_Debug.Info(FEATURE, string.Format("ring-back refused for player %1: request %2 %3", playerId, requestId, typename.EnumToString(LF_EPhoneRequestRefusal, claim)));
+			if (claim == LF_EPhoneRequestRefusal.CALLING)
+				return LF_EPhoneRefusal.REQUEST_CALLING;
+			return LF_EPhoneRefusal.NO_REQUEST;
+		}
+
+		if (!LF_PhoneComponent.ByKey(request.m_sPhoneKey))
+		{
+			LF_Debug.Error(FEATURE, string.Format("ring-back of request %1: the telephone at %2 is gone", requestId, request.m_sPhoneKey));
+			return LF_EPhoneRefusal.NO_LINE;
+		}
+
+		array<string> target = {request.m_sPhoneKey};
+		LF_EPhoneRefusal refusal;
+		LF_PhoneCall call = Exchange().Dial(now, playerId, playerUid, station.Key(), station.DispatchService(), target, true, refusal);
+		if (!call)
+		{
+			LF_Debug.Info(FEATURE, string.Format("ring-back refused for player %1 at %2: %3", playerId, station.Key(), typename.EnumToString(LF_EPhoneRefusal, refusal)));
+			if (refusal == LF_EPhoneRefusal.LINE_BUSY)
+				return LF_EPhoneRefusal.TARGET_BUSY;
+			return refusal;
+		}
+
+		call.m_sPlace = station.Place();
+		LF_PhoneCallBacks.Claimed(request, call, playerUid);
+		Changed(call, string.Format("player %1 rings back request %2 at %3", playerId, requestId, request.m_sPhoneKey));
 		return LF_EPhoneRefusal.OK;
 	}
 
@@ -344,6 +435,9 @@ class LF_PhoneCalls
 	//! The clock and the cord: rang out, too long, and every talker still at their phone.
 	static void TickAt(float now)
 	{
+		if (LF_PhoneCallBacks.Purge(now))
+			SyncLines();
+
 		if (!s_Exchange)
 			return;
 
@@ -387,6 +481,11 @@ class LF_PhoneCalls
 	protected static void Changed(notnull LF_PhoneCall call, string why, int byPlayer = 0)
 	{
 		EnsureTicking();
+		// The call's own time stamps, so a test's clock and the world's agree.
+		float at = call.m_fStarted;
+		if (call.m_fEnded >= 0)
+			at = call.m_fEnded;
+		LF_PhoneCallBacks.OnCallChanged(call, at);
 		SyncLines();
 		LF_EventBus.Publish(LF_OnPhoneCall.Create(call));
 
@@ -412,7 +511,11 @@ class LF_PhoneCalls
 				if (call.m_eEnd == LF_EPhoneEnd.NOBODY_ON_DUTY)
 					break;
 
-				Toast(call.m_iCallerId, EndKey(call.m_eEnd, byPlayer == call.m_iCallerId || call.m_eEnd == LF_EPhoneEnd.NO_ANSWER || call.m_eEnd == LF_EPhoneEnd.TOO_LONG));
+				string callerKey = EndKey(call.m_eEnd, byPlayer == call.m_iCallerId || call.m_eEnd == LF_EPhoneEnd.NO_ANSWER || call.m_eEnd == LF_EPhoneEnd.TOO_LONG);
+				// A ring-back nobody picked up offers no message: the officer simply tries again.
+				if (call.m_bCallBack && call.m_eEnd == LF_EPhoneEnd.NO_ANSWER)
+					callerKey = "#LF-Phone_NoAnswer";
+				Toast(call.m_iCallerId, callerKey);
 				Toast(call.m_iAnswererId, EndKey(call.m_eEnd, byPlayer == call.m_iAnswererId || call.m_eEnd == LF_EPhoneEnd.TOO_LONG));
 				break;
 			}
@@ -443,7 +546,10 @@ class LF_PhoneCalls
 
 			int talker;
 			LF_EPhoneLineState state = Exchange().LineState(line.GetPhoneKey(), talker);
-			line.ServerSet(state, talker);
+			int offered;
+			if (state == LF_EPhoneLineState.IDLE)
+				offered = LF_PhoneCallBacks.OfferedAt(line.GetPhoneKey());
+			line.ServerSet(state, talker, offered);
 		}
 	}
 }

@@ -121,3 +121,33 @@ class LF_OnPhoneCall : LF_Event
 		return e;
 	}
 }
+
+//! A call-back request changed (#147): m_sKind is "left" (a caller left it at a payphone), "rung"
+//! (an officer rings that payphone back), "answered" (someone picked up the call-back, it leaves
+//! the pad) or "expired" (it ran out with the dispatch board, unanswered). Published by
+//! LF_PhoneCallBacks on the server. m_sMessage is the caller's typed text, already cleaned and
+//! length-checked; it is logged like chat.
+class LF_OnPhoneCallBack : LF_Event
+{
+	string m_sKind;
+	int m_iRequestId;
+	string m_sService;
+	string m_sCallerUid;
+	//! Empty unless an officer rang it back.
+	string m_sOfficerUid;
+	string m_sPlace;
+	string m_sMessage;
+
+	static LF_OnPhoneCallBack Create(string kind, int requestId, string service, string callerUid, string officerUid, string place, string message)
+	{
+		LF_OnPhoneCallBack e = new LF_OnPhoneCallBack();
+		e.m_sKind = kind;
+		e.m_iRequestId = requestId;
+		e.m_sService = service;
+		e.m_sCallerUid = callerUid;
+		e.m_sOfficerUid = officerUid;
+		e.m_sPlace = place;
+		e.m_sMessage = message;
+		return e;
+	}
+}

@@ -62,7 +62,13 @@ enum LF_EPhoneRefusal
 	//! Nobody on duty: the call was placed and missed at once.
 	NOBODY_ON_DUTY,
 	//! The shared comms rate limit (LF_RateLimit) refused it; the limiter told the player.
-	TOO_FAST
+	TOO_FAST,
+	//! The call-back request is gone (expired, answered, another service's).
+	NO_REQUEST,
+	//! Someone is already ringing that request back.
+	REQUEST_CALLING,
+	//! The payphone a ring-back would ring is in use.
+	TARGET_BUSY
 }
 
 //------------------------------------------------------------------------------------------------
