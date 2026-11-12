@@ -13,36 +13,14 @@
  "LF_Test_CarryMeshes.c": [
   "Roadmap_Bank_Bag"
  ],
- "LF_Test_ChainStations.c": [
-  "Chains_Barrel_1",
-  "Chains_Barrel_2",
-  "Chains_Barrel_3"
- ],
- "LF_Test_ChainStationsPersist.c": [
-  "Chains_Barrel_2",
-  "Chains_Barrel_3"
- ],
  "LF_Test_CounterScreens.c": [
   "ATM_Debug"
- ],
- "LF_Test_DebugWorldCollision.c": [
-  "AppleTrader"
  ],
  "LF_Test_DispatchArea.c": [
   "Roadmap_Dispatch_Console",
   "Roadmap_Dispatch_MedicBoard",
   "Roadmap_Dispatch_PoliceBoard",
   "Roadmap_Test_Till"
- ],
- "LF_Test_E2E_Narrative.c": [
-  "AppleGatherTree",
-  "AppleTrader"
- ],
- "LF_Test_E2E_SaveState.c": [
-  "Chains_Barrel_3"
- ],
- "LF_Test_HarnessDevGate.c": [
-  "Roadmap_Fuel_Till"
  ],
  "LF_Test_HarnessProbe.c": [
   "Hospital_Bed_1"
@@ -57,34 +35,8 @@
  "LF_Test_Roadmap_Fuel.c": [
   "Roadmap_Fuel_Till"
  ],
- "LF_Test_Roadmap_Jobs.c": [
-  "Roadmap_Job_Drop",
-  "Roadmap_Job_FuelCan",
-  "Roadmap_Job_TaxiPad"
- ],
- "LF_Test_Roadmap_Organizations.c": [
-  "Roadmap_Org_Desk"
- ],
- "LF_Test_Roadmap_Resources.c": [
-  "Furnace"
- ],
- "LF_Test_Roadmap_Vehicles.c": [
-  "Roadmap_Vehicle_Lot",
-  "Roadmap_Vehicle_S105"
- ],
  "LF_Test_SafeZone.c": [
   "Sign_SafeZone_East",
   "Sign_SafeZone_Spawn"
- ],
- "LF_Test_ServiceRange.c": [
-  "ATM_Debug",
-  "Roadmap_Org_Desk"
- ],
- "LF_Test_TestCarsGrant.c": [
-  "Roadmap_Vehicle_Lot"
- ],
- "LF_Test_VehicleImpound.c": [
-  "Roadmap_Garage",
-  "Roadmap_Impound_Desk"
  ]
 }

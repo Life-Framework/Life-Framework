@@ -52,8 +52,8 @@ class LF_Test_DebugWorldCollision : LF_Test
 		s_aFailures = new array<string>();
 		s_aTraderTables = new array<EntityID>();
 		World world = GetGame().GetWorld();
-		IEntity trader = world.FindEntityByName("AppleTrader");
-		ctx.NotNull(trader, "AppleTrader exists");
+		IEntity trader = world.FindEntityByName(LF_TestAnnex.APPLE_TRADER);
+		ctx.NotNull(trader, "Annex_AppleTrader exists");
 		if (!trader)
 			return;
 		s_vTraderOrigin = trader.GetOrigin();
@@ -63,8 +63,8 @@ class LF_Test_DebugWorldCollision : LF_Test
 
 		ctx.True(s_iEntities > 0, "DebugWorld collision scan found entities");
 		ctx.Equal(0, s_iMissingTraceable, "DebugWorld entities are traceable: " + s_aFailures.ToString());
-		CheckObstacle(ctx, world.FindEntityByName("AppleTradeContainer"), "AppleTradeContainer", "0 0.15 0");
-		CheckObstacle(ctx, world.FindEntityByName("AppleTradeContainer3"), "AppleTradeContainer3", "0 0.15 0");
+		CheckObstacle(ctx, world.FindEntityByName(LF_TestAnnex.APPLE_TRADE_CONTAINER), LF_TestAnnex.APPLE_TRADE_CONTAINER, "0 0.15 0");
+		CheckObstacle(ctx, world.FindEntityByName(LF_TestAnnex.APPLE_TRADE_CONTAINER3), LF_TestAnnex.APPLE_TRADE_CONTAINER3, "0 0.15 0");
 
 		ctx.Equal(3, s_aTraderTables.Count(), "All three apple trader tables were found");
 		foreach (int index, EntityID id : s_aTraderTables)

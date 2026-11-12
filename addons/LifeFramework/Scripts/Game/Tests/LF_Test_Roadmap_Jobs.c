@@ -96,14 +96,14 @@ class LF_Test_Roadmap_JobsWorld : LF_Test
 			ctx.NotNull(carry, "parcel crate is the hand-carry prefab");
 		}
 
-		IEntity depot = GetGame().GetWorld().FindEntityByName("Roadmap_Job_Depot");
-		IEntity drop = GetGame().GetWorld().FindEntityByName("Roadmap_Job_Drop");
-		IEntity taxi = GetGame().GetWorld().FindEntityByName("Roadmap_Job_TaxiPad");
-		IEntity fuelCan = GetGame().GetWorld().FindEntityByName("Roadmap_Job_FuelCan");
-		ctx.True(depot != null, "Roadmap_Job_Depot is placed");
-		ctx.True(drop != null, "Roadmap_Job_Drop is placed");
-		ctx.True(taxi != null, "Roadmap_Job_TaxiPad is placed");
-		ctx.True(fuelCan != null, "Roadmap_Job_FuelCan is placed");
+		IEntity depot = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JOB_DEPOT);
+		IEntity drop = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JOB_DROP);
+		IEntity taxi = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JOB_TAXI_PAD);
+		IEntity fuelCan = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JOB_FUEL_CAN);
+		ctx.True(depot != null, "Annex_Job_Depot is placed");
+		ctx.True(drop != null, "Annex_Job_Drop is placed");
+		ctx.True(taxi != null, "Annex_Job_TaxiPad is placed");
+		ctx.True(fuelCan != null, "Annex_Job_FuelCan is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 

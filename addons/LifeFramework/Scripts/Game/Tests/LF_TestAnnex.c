@@ -33,6 +33,27 @@ class LF_TestAnnex
 	static const string HIDEOUT_DOOR = "Annex_Hideout_Door";
 	static const string HIDEOUT_MACHINE = "Annex_Hideout_Machine";
 	static const string HIDEOUT_STASH = "Annex_Hideout_Stash";
+	static const string JOB_DEPOT = "Annex_Job_Depot";
+	static const string JOB_DROP = "Annex_Job_Drop";
+	static const string JOB_TAXI_PAD = "Annex_Job_TaxiPad";
+	static const string JOB_FUEL_CAN = "Annex_Job_FuelCan";
+	static const string ORG_DESK = "Annex_Org_Desk";
+	static const string FURNACE = "Annex_Furnace";
+	static const string ATM = "Annex_ATM";
+	static const string VEHICLE_LOT = "Annex_Vehicle_Lot";
+	static const string LOT_ID = "annex-lot";
+	static const string GARAGE = "Annex_Garage";
+	static const string GARAGE_PAD_ID = "annex-garage";
+	static const string IMPOUND_DESK = "Annex_Impound_Desk";
+	static const string IMPOUND_PAD_ID = "annex-impound";
+	static const string CHAINS_BARREL_1 = "Annex_Chains_Barrel_1";
+	static const string CHAINS_BARREL_2 = "Annex_Chains_Barrel_2";
+	static const string CHAINS_BARREL_3 = "Annex_Chains_Barrel_3";
+	static const string CHAINS_SITE = "Annex_Chains_Site";
+	static const string APPLE_TRADER = "Annex_AppleTrader";
+	static const string APPLE_GATHER_TREE = "Annex_AppleGatherTree";
+	static const string APPLE_TRADE_CONTAINER = "Annex_AppleTradeContainer";
+	static const string APPLE_TRADE_CONTAINER3 = "Annex_AppleTradeContainer3";
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The annex fixture entity, or null (with an Error) when the layer does not place it.
