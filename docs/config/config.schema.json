@@ -335,6 +335,26 @@
       },
       "additionalProperties": false,
       "x-class": "LF_VehiclePricesConfig"
+    },
+    "wantedBoard": {
+      "type": "object",
+      "description": "The posters drawn on the wanted board's face (docs/architecture/visual-boards-budget.md): Configs/Police/LF_WantedPosters.conf with the owner's `wantedBoard` section layered over it.",
+      "properties": {
+        "posters": {
+          "type": "integer",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 8
+        },
+        "drawRadius": {
+          "type": "number",
+          "default": 30,
+          "minimum": 5,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_WantedPostersConfig"
     }
   },
   "additionalProperties": false

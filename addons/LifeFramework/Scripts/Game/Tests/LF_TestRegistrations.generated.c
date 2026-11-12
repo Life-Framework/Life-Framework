@@ -394,6 +394,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WantedPosterFace(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WantedPostersFeed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);

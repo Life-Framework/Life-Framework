@@ -1,0 +1,179 @@
+FrameWidgetClass {
+ Name "Poster"
+ Slot FrameWidgetSlot "{D3738A8B3339A2DE}" {
+  OffsetLeft 0
+  OffsetTop 0
+  SizeX 340
+  OffsetRight -340
+  SizeY 480
+  OffsetBottom -480
+ }
+ {
+  ImageWidgetClass "{C695C528A1C629A3}" {
+   Name "Paper"
+   Slot FrameWidgetSlot "{7D8F366752470384}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 100
+    OffsetBottom -100
+   }
+   Color 0.89 0.85 0.76 1
+  }
+  ImageWidgetClass "{93901520CDC9D13E}" {
+   Name "PhotoBack"
+   Slot FrameWidgetSlot "{2B7D96D5BC1F526B}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 100
+    OffsetBottom -100
+   }
+   Color 0.55 0.56 0.55 1
+  }
+  FrameWidgetClass "{2CF121171905E845}" {
+   Name "PhotoClip"
+   Slot FrameWidgetSlot "{4D66B462A5AC7D70}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 100
+    OffsetBottom -100
+   }
+   Clipping True
+   {
+    ItemPreviewWidgetClass "{63D2F16C0E21943F}" {
+     Name "Photo"
+     Slot FrameWidgetSlot "{B7828C115964BE66}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     "Use Engine Scale" 0
+     Filter Bilinear
+     Format LDR
+     "Clear Color" 0 0 0 0
+     "Blend mode" Blend
+    }
+   }
+  }
+  ImageWidgetClass "{894FA465CBD1ADD2}" {
+   Name "PlateBack"
+   Slot FrameWidgetSlot "{9A5318A936F4A365}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 100
+    OffsetBottom -100
+   }
+   Color 0.95 0.95 0.93 1
+  }
+  TextWidgetClass "{5E7B4C7630C4131D}" {
+   Name "Header"
+   Slot FrameWidgetSlot "{14D36D87A0E570B7}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 40
+    OffsetBottom -40
+   }
+   Color 0.55 0.07 0.05 1
+   Text ""
+   "Font Size" 84
+   "Min Font Size" 8
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{21C2A23D71DA1210}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{1B6C2C544565362B}" {
+   Name "Name"
+   Slot FrameWidgetSlot "{9546DCA804BBAD68}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 40
+    OffsetBottom -40
+   }
+   Color 0.08 0.07 0.06 1
+   Text ""
+   "Font Size" 50
+   "Min Font Size" 8
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{9577D77883DBF9B4}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{7B16D2E597FB1F2A}" {
+   Name "Offence"
+   Slot FrameWidgetSlot "{B33EA1A592766F8E}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 40
+    OffsetBottom -40
+   }
+   Color 0.08 0.07 0.06 1
+   Text ""
+   "Font Size" 34
+   "Min Font Size" 8
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{374D6764E14D63FB}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{DAEF4E250AC97ED5}" {
+   Name "Detail"
+   Slot FrameWidgetSlot "{5D3AA4E6425CD11A}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 40
+    OffsetBottom -40
+   }
+   Color 0.08 0.07 0.06 1
+   Text ""
+   "Font Size" 24
+   "Min Font Size" 8
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{590731D3E2D4ABAA}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{7BE26DBDAF769B38}" {
+   Name "Reward"
+   Slot FrameWidgetSlot "{15A7FC09DD2BCEF2}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 40
+    OffsetBottom -40
+   }
+   Color 0.55 0.07 0.05 1
+   Text ""
+   "Font Size" 34
+   "Min Font Size" 8
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{117BEF425487ECB0}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+ }
+}

@@ -7506,6 +7506,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Vehicle theft"
      Comment "Offence on a wanted poster: a vehicle was taken from its driver by force (crime catalog id; same words as LF-Offence_VehicleTheft today)."
     }
+    CustomStringTableItem "{4AD8545DB4254A00}" {
+     Id "LF-Wanted_PosterHeader"
+     Target_en_us "Wanted"
+     Comment "Headline printed at the top of a wanted poster on the board's face; shown in capitals."
+    }
+    CustomStringTableItem "{DB6449E40E448E46}" {
+     Id "LF-Wanted_PosterDriving"
+     Target_en_us "Driving %1"
+     Comment "Wanted poster on the board's face, when nothing was seen of the clothing: %1 is the vehicle name."
+    }
   }
  }
 }
