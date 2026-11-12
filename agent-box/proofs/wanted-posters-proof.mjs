@@ -84,7 +84,8 @@ async function runWantedPostersProof() {
     wait(6000);
     on(2, { verb: "stand", entityName: BOARD });
     expect(2, "the late joiner draws the poster it got on join", (p) => (p.count === 1 && p.face !== "released" ? [] : [`posters=${p.count}/${p.face}`]), 20000);
-    wait(4000);
+    // After the face's late refresh (30 s after it was built), so streamed-in textures are on it.
+    wait(33000);
     shot(2, "wanted_posters_late_client2");
 
     // Out of the draw radius and back: the face is released and rebuilt.

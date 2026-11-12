@@ -23,9 +23,11 @@ class LF_WantedPosterFace : Managed
 	static const int PER_ROW = 4;	// lf-fixed: the layout has two rows of four
 	//! How long a (re)drawn face renders before it freezes.
 	static const int LIVE_MS = 3000;	// lf-fixed: measured, docs/architecture/visual-boards-budget.md
-	//! A new face renders once more this long after it was built: textures that were still
-	//! streaming in (the cork, the clothes in a portrait) are on the frozen frame then.
+	//! A new face renders again this long after it was built, and again at twice that and more:
+	//! textures that were still streaming in (the cork, the clothes in a portrait) are on the
+	//! frozen frame then. A late joiner's cork was still at its lowest mip after 10 s.
 	static const int SETTLE_REFRESH_MS = 10000;	// lf-fixed: texture streaming, not tuning
+	static const int LATE_REFRESH_MS = 30000;	// lf-fixed: texture streaming, not tuning
 	//! The settle refresh's live window.
 	static const int REFRESH_LIVE_MS = 2000;	// lf-fixed: one frame at SetMaxFPS(1), with margin
 
@@ -80,7 +82,10 @@ class LF_WantedPosterFace : Managed
 		m_wTexture.SetMaxFPS(1);
 		m_wTexture.SetRenderTarget(m_Face);
 		if (GetGame().GetCallqueue())
+		{
 			GetGame().GetCallqueue().CallLater(Refresh, SETTLE_REFRESH_MS, false);
+			GetGame().GetCallqueue().CallLater(Refresh, LATE_REFRESH_MS, false);
+		}
 
 		return true;
 	}
@@ -393,6 +398,8 @@ class LF_WantedPosterBoardComponent : ScriptComponent
 	protected float m_fRadius = LF_WantedPostersConfig.DEFAULT_DRAW_RADIUS;
 	protected ref LF_WantedPosterFace m_Face;
 	protected bool m_bClient;
+	//! A face that failed to build (a missing resource, logged once) is not tried again.
+	protected bool m_bBuildFailed;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -556,12 +563,7 @@ class LF_WantedPosterBoardComponent : ScriptComponent
 		if (!reader.ReadInt(version) || !reader.ReadFloat(radius) || !reader.ReadInt(count))
 			return false;
 
-		if (version != FORMAT_VERSION)
-		{
-			LF_Debug.Error(LF_WantedPosters.FEATURE, string.Format("board posters dropped: the server sends format %1, this build reads %2", version, FORMAT_VERSION));
-			return true;
-		}
-
+		// The strings are read whatever the format, so the stream stays aligned for what follows.
 		array<string> entries = {};
 		for (int i = 0; i < count; i++)
 		{
@@ -570,6 +572,12 @@ class LF_WantedPosterBoardComponent : ScriptComponent
 				return false;
 
 			entries.Insert(entry);
+		}
+
+		if (version != FORMAT_VERSION)
+		{
+			LF_Debug.Error(LF_WantedPosters.FEATURE, string.Format("board posters dropped: the server sends format %1, this build reads %2", version, FORMAT_VERSION));
+			return true;
 		}
 
 		Apply(entries, radius, "jip");
@@ -593,6 +601,9 @@ class LF_WantedPosterBoardComponent : ScriptComponent
 		if (!owner || owner.IsDeleted())
 			return;
 
+		if (m_bBuildFailed)
+			return;
+
 		bool built = m_Face && m_Face.IsBuilt();
 		int decision = LF_WantedPosterFaces.Decide(vector.Distance(viewer, owner.GetOrigin()), m_fRadius, built);
 		if (decision > 0)
@@ -609,6 +620,7 @@ class LF_WantedPosterBoardComponent : ScriptComponent
 		if (!m_Face.Build(GetOwner(), m_vFaceOffset, m_vFaceAngles, m_fFaceScale))
 		{
 			m_Face = null;
+			m_bBuildFailed = true;
 			return;
 		}
 
