@@ -37,7 +37,8 @@ for pack overlays and an `LF_ConfigReader` on its owner section.
     "priceRules": {
       "Prefabs/Items/Food/": { "buyPrice": 10, "sellPrice": 5 },
       "Prefabs/Weapons/": { "hidden": true },
-      "type:64,mode:2": { "buyPrice": 900 }
+      "type:64,mode:2": { "buyPrice": 900 },
+      "Apple": { "prefab": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "buyPrice": 12 }
     },
     "extraItemPrefabs": ["{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"]
   }
@@ -92,17 +93,46 @@ that. A new section adds its key to `IsKnownTopLevelKey`.
 
 ## Schema version
 
-`LF_ConfigService.ClassifySchema` and `GetSchemaStatus` (#302). No migrations (#303).
+`LF_ConfigService.ClassifySchema` and `GetSchemaStatus` (#302). Migrations: next section (#303).
 
 | `schemaVersion` | Status | Log |
 |---|---|---|
 | missing or equal to the build's | `CURRENT` | Info |
-| below the build's | `OLDER` | Info: read as-is, migrations are #303 |
+| below the build's | `OLDER` | Migrated at boot first (below); `OLDER` only when `LoadOwnerString` is called without a migration |
 | above the build's | `NEWER` | `LF_Debug.Error`: update the server; the fields this build knows still apply, the rest warns as unknown |
 | not a whole number, or below 1 | `INVALID` | `LF_Debug.Error`; read as version 1 |
 
 Today the build reads version 1, so `OLDER` is reached in tests only
 (`LoadOwnerString(json, source, buildSchema)`).
+
+## Migrations (#303)
+
+`LF_ConfigMigration.c`. At boot `LoadOwnerFile` calls `LF_ConfigMigrator.MigrateFile` before
+parsing, only when the file's `schemaVersion` is below `SCHEMA_VERSION`:
+
+1. `PeekVersion` reads the version with `KindOf` first (no crashing call on a bad file).
+2. `RunChain` applies the steps in version order in memory. A step is an
+   `LF_ConfigMigration` subclass: `FromVersion()`, `GetName()`, `Apply(json)` returning the
+   new JSON text or an empty string on failure. It produces version `FromVersion() + 1`; the
+   migrator stamps `schemaVersion` after each step and refuses a result that does not parse
+   or carry the new version. Each step logs an Info line.
+3. The file is copied to `config.json.bak-v<N>-<yyyymmdd-hhmmss UTC>`; a name that exists
+   gets `-2`, `-3`, ... and is never overwritten. No backup, no migration.
+4. The migrated text is written to `config.json`, then loaded.
+
+A failure at any point (no step for a version, a step returns empty, a bad result, backup or
+write fails) logs `LF_Debug.Error`, leaves `config.json` exactly as it was, and gives no owner
+layer, so every section runs on shipped values. The server always boots. The unit is the whole
+file, not a section: a step works on text, so a half-migrated document is never loaded.
+
+A migrated file is at the build's version, so the next boot finds nothing to do and writes no
+backup. A file with no `schemaVersion` reads as 1 and is not migrated.
+
+**Adding a migration.** Bump `SCHEMA_VERSION`, write the step class, add it to
+`LF_ConfigMigrator.BuildShipped` (in version order), update `docs/config/config.schema.json`
+and the example, and add a test. None ship at schema 1. `LF_Test_MigrationV0ToV1` (a v0 file
+calls the section `shop`, v1 `shops`) is the test-only fixture; `V1ToV2` and `V2ToV3` prove
+ordering. Steps that read the document must keep the `KindOf`-first rule above.
 
 ## Why the engine parses and the reader is hand-written (the #278 probe)
 
@@ -163,17 +193,48 @@ The field-by-field merge (`LF_ShopPricesConfig.ApplyContainer`) does not change
 with D4. `LF_Test_ConfigPackOverlay` proves it with a stub source and a fixture
 overlay (`Configs/Tests/LF_Test_ShopPricesOverlay.conf`).
 
-## Clients
+## Clients: the config stream (#285)
 
-The owner layer is server-only. The server prices every buy and sell with the
-owner values. A client builds the shop catalog from the shipped `.conf` files,
-so on a dedicated server a client's price list shows shipped prices until #285
-streams the owner values. On a listen host the host sees owner prices.
+The owner layer is server-only; the server prices every buy and sell with it.
+`LF_ConfigStream` carries the server's effective values to the clients:
+
+- **What.** `BuildPayload` writes one JSON object: a header (`stream` format,
+  `schemaVersion`, `owner` = whether a `config.json` is behind the values) and
+  one object per client-relevant section, written from the typed fields
+  (shops: `LF_ShopPricesConfig.WriteStream`: the defaults, every rule in walk
+  order keyed `"0".."n-1"` with prefab, find, type, mode, prices and hidden,
+  and the extra prefabs). The owner document itself, other sections and
+  unknown keys never leave the server (`config/stream-client-only`).
+- **When.** On join: `LF_GameModeRoleplay.RplSave`/`RplLoad` append the format,
+  the payload's hash and the payload after the base game mode's state. On
+  change: `LF_PublishConfigStream` rebuilds it and, when the hash moved, sends a
+  reliable broadcast RPC. No `RplProp`; the payload is a string in a bit stream
+  or an RPC argument.
+- **Client.** `LF_ConfigStream.Receive` refuses another format, another
+  schema, a payload whose hash differs, or text that is not JSON
+  (`LF_Debug.Error`, current values kept). An accepted stream is the client's
+  last layer in `LF_ShopPricesConfig.ApplyLayers` (`ApplyStream` replaces the
+  values; one bad field and the whole section keeps the client's values), and
+  `LF_ShopManagerComponent.ReloadConfig` re-prices a built catalog. With no
+  `config.json` the server streams the shipped values and nothing changes.
+- **Change.** `/configreload` (chat; harness verb `configreload`) asks the
+  server to read `config.json` again. Administrators only on a live server
+  (`LF_DevGate`; dev worlds and harness builds open it). The server re-prices,
+  then streams. The client sends no config data, only the request.
+- **Size.** The shipped shops section is about 3.8 KB. The engine documents no
+  limit for one replicated string; above 32 KB the server logs a warning.
+- **A new section.** Write it in `BuildPayload`, read it with
+  `OpenReceivedSection` in the feature's apply step, and re-apply the feature in
+  `ApplyToFeatures`.
+
+On a listen host the host is the server and prices with the owner values directly.
 
 ## Files
 
 - `LF_ConfigService.c`: `LF_ConfigService`, `LF_ConfigPackSource`,
   `LF_EConfigJsonKind`, `LF_ConfigReader`.
+- `LF_ConfigStream.c`: `LF_ConfigStream`, `LF_EConfigStreamStatus` (#285).
+  `LF_ConfigReloadCommand.c`: `/configreload` and its server gate.
 - Shops: `Feature/Shop/LF_ShopPricesConfig.c` (`ApplyLayers`,
   `ApplyContainer`, `ApplyOwner`), `LF_ShopPriceResolver.c` (`RuleKey`,
   `ParseRuleKey`, `FindRule`), `LF_ShopManagerComponent.LoadConfig` calls
@@ -181,4 +242,5 @@ streams the owner values. On a listen host the host sees owner prices.
 - Tests: `LF_Test_ConfigJsonProbe`, `LF_Test_ConfigMerge` (fields, keyed,
   reject, no-owner), `LF_Test_ConfigOwnerFile`, `LF_Test_ConfigPackOverlay`,
   `LF_Test_ConfigReject` (range), `LF_Test_ConfigUnknownKeys`,
-  `LF_Test_ConfigSchemaVersion`.
+  `LF_Test_ConfigSchemaVersion`, `LF_Test_ConfigMigrationChain`, `LF_Test_ConfigMigrationFile`,
+  `LF_Test_ConfigStreamRoundTrip`, `LF_Test_ConfigStreamClientOnly`, `LF_Test_ConfigStreamReject`.

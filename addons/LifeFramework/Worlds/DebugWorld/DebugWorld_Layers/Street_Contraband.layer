@@ -98,6 +98,7 @@ GenericEntity Roadmap_Convoy_Drop_Near {
   LF_ConvoyMarkerComponent "{AA559AAD1A321A69}" {
    m_sMarkerId "Roadmap_Convoy_Drop_Near"
    m_bDrop 1
+   m_bNearDrop 1
   }
   ActionsManagerComponent "{3BD8DBAA5C1B9F2D}" {
    ActionContexts {

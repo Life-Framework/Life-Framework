@@ -77,11 +77,30 @@ class LF_VehicleLotComponent : ScriptComponent
 	[Attribute("", UIWidgets.Object, desc: "Vehicles for sale")]
 	protected ref array<ref LF_VehicleOffer> m_aOffers;
 
+	[Attribute("0", UIWidgets.CheckBox, desc: "Playtest: this lot's first two offers are the test cars a new character is granted (LF_SpawnLogic.m_bGrantTestCars). One lot per world.")]
+	protected bool m_bTestCarLot;
+
 	//! Every lot in the world, on every machine, so a price board can read its lot's price list (#540).
 	protected static ref array<LF_VehicleLotComponent> s_aLots;
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The lot with this shop id, or null.
+	//! Returns the lot flagged m_bTestCarLot, or null.
+	static LF_VehicleLotComponent FindTestCarLot()
+	{
+		if (!s_aLots)
+			return null;
+
+		foreach (LF_VehicleLotComponent lot : s_aLots)
+		{
+			if (lot && lot.m_bTestCarLot)
+				return lot;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Returns the lot with this shop id, or null.
 	static LF_VehicleLotComponent FindLot(string shopId)
 	{
 		if (!s_aLots)

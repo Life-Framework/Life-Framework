@@ -31,6 +31,11 @@ class LF_Test_TestCarsGrant : LF_Test
 			offers.Insert(lot.GetOfferAt(i));
 		}
 
+		LF_VehicleLotComponent testLot = LF_VehicleLotComponent.FindTestCarLot();
+		ctx.NotNull(testLot, "a placed lot is flagged m_bTestCarLot");
+		if (testLot && !offers.IsEmpty())
+			ctx.True(testLot.GetOffer(offers[0].GetPrefab()) != null, "the flagged lot sells the test cars");
+
 		string uid = "test-cars-" + System.GetTickCount().ToString();
 		ctx.Equal(2, LF_VehicleOwnership.GrantTestCars(uid, lotEntity, offers, lot.GetShopId()), "a new owner gets two test cars");
 

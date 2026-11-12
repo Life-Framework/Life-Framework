@@ -126,6 +126,9 @@ const Servers = () => {
                 </li>
               ))}
             </ul>
+            <p className="mt-4">
+              <GoLink to="/config">Config generator</GoLink>
+            </p>
           </div>
           <figure>
             <div className="terminal p-5 md:p-6 overflow-x-auto">

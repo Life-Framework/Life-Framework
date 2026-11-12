@@ -154,10 +154,10 @@ class LF_Test_Roadmap_HospitalWorld : LF_Test
 			ctx.True(medicine != null && medicine.IsValid(), "medicine prefab loads: " + prefab);
 		}
 
-		IEntity till = GetGame().GetWorld().FindEntityByName(LF_Hospital.TILL_ID);
-		ctx.True(till != null, "Roadmap_Hospital_Till is placed");
-		IEntity cabinet = GetGame().GetWorld().FindEntityByName(LF_Hospital.CABINET_ID);
-		ctx.True(cabinet != null, "Roadmap_Hospital_Cabinet is placed");
+		IEntity till = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HOSPITAL_TILL);
+		ctx.True(till != null, "Annex_Hospital_Till is placed");
+		IEntity cabinet = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HOSPITAL_CABINET);
+		ctx.True(cabinet != null, "Annex_Hospital_Cabinet is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -182,27 +182,27 @@ class LF_Test_Roadmap_HospitalWorld : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		int alertsBefore = LF_Hospital.GetTillAlertCount(LF_Hospital.TILL_ID);
-		ctx.True(LF_Hospital.CanRobTill(LF_Hospital.TILL_ID, uid), "placed till can be robbed");
-		ctx.Equal(alertsBefore, LF_Hospital.GetTillAlertCount(LF_Hospital.TILL_ID), "placed till offer refresh does not alert");
-		ctx.True(LF_Hospital.RobTill(LF_Hospital.TILL_ID, uid, null), "placed till pays once");
-		ctx.False(LF_Hospital.RobTill(LF_Hospital.TILL_ID, uid, null), "placed till refuses a second rob inside the cooldown");
+		int alertsBefore = LF_Hospital.GetTillAlertCount(LF_TestAnnex.HOSPITAL_TILL);
+		ctx.True(LF_Hospital.CanRobTill(LF_TestAnnex.HOSPITAL_TILL, uid), "placed till can be robbed");
+		ctx.Equal(alertsBefore, LF_Hospital.GetTillAlertCount(LF_TestAnnex.HOSPITAL_TILL), "placed till offer refresh does not alert");
+		ctx.True(LF_Hospital.RobTill(LF_TestAnnex.HOSPITAL_TILL, uid, null), "placed till pays once");
+		ctx.False(LF_Hospital.RobTill(LF_TestAnnex.HOSPITAL_TILL, uid, null), "placed till refuses a second rob inside the cooldown");
 		ctx.Equal(0, bank.GetBalance(), "placed till does not touch the bank");
-		ctx.Equal(alertsBefore + 1, LF_Hospital.GetTillAlertCount(LF_Hospital.TILL_ID), "placed till alerts once");
+		ctx.Equal(alertsBefore + 1, LF_Hospital.GetTillAlertCount(LF_TestAnnex.HOSPITAL_TILL), "placed till alerts once");
 
-		int cabinetAlerts = LF_Breach.GetPoliceNotifyCount(LF_Hospital.CABINET_ID);
-		ctx.True(LF_Hospital.CanBreach(LF_Hospital.CABINET_ID), "placed cabinet can be breached");
-		ctx.Equal(cabinetAlerts, LF_Breach.GetPoliceNotifyCount(LF_Hospital.CABINET_ID), "placed cabinet offer refresh does not alert");
-		ctx.True(LF_Hospital.BreachCabinet(LF_Hospital.CABINET_ID, uid), "placed cabinet breach opens it");
+		int cabinetAlerts = LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.HOSPITAL_CABINET);
+		ctx.True(LF_Hospital.CanBreach(LF_TestAnnex.HOSPITAL_CABINET), "placed cabinet can be breached");
+		ctx.Equal(cabinetAlerts, LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.HOSPITAL_CABINET), "placed cabinet offer refresh does not alert");
+		ctx.True(LF_Hospital.BreachCabinet(LF_TestAnnex.HOSPITAL_CABINET, uid), "placed cabinet breach opens it");
 		ctx.False(cabinetLock.IsLocked(), "placed cabinet IsLocked() is false after the zero fuse");
-		ctx.Equal(4, LF_Hospital.GetDeliveredCount(LF_Hospital.CABINET_ID), "placed cabinet yields four medicine prefabs");
-		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_Hospital.CABINET_ID, 0) == LF_Hospital.LOOT_FIELD_DRESSING, "placed loot 0 is field dressing");
-		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_Hospital.CABINET_ID, 1) == LF_Hospital.LOOT_MORPHINE, "placed loot 1 is morphine");
-		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_Hospital.CABINET_ID, 2) == LF_Hospital.LOOT_SALINE, "placed loot 2 is saline");
-		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_Hospital.CABINET_ID, 3) == LF_Hospital.LOOT_TOURNIQUET, "placed loot 3 is tourniquet");
-		ctx.False(LF_Hospital.BreachCabinet(LF_Hospital.CABINET_ID, uid), "placed cabinet refuses a second breach");
-		ctx.Equal(4, LF_Hospital.GetDeliveredCount(LF_Hospital.CABINET_ID), "placed cabinet does not spawn a second set");
-		ctx.Equal(cabinetAlerts + 1, LF_Breach.GetPoliceNotifyCount(LF_Hospital.CABINET_ID), "placed cabinet alerts once");
+		ctx.Equal(4, LF_Hospital.GetDeliveredCount(LF_TestAnnex.HOSPITAL_CABINET), "placed cabinet yields four medicine prefabs");
+		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_TestAnnex.HOSPITAL_CABINET, 0) == LF_Hospital.LOOT_FIELD_DRESSING, "placed loot 0 is field dressing");
+		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_TestAnnex.HOSPITAL_CABINET, 1) == LF_Hospital.LOOT_MORPHINE, "placed loot 1 is morphine");
+		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_TestAnnex.HOSPITAL_CABINET, 2) == LF_Hospital.LOOT_SALINE, "placed loot 2 is saline");
+		ctx.True(LF_Hospital.GetDeliveredPrefab(LF_TestAnnex.HOSPITAL_CABINET, 3) == LF_Hospital.LOOT_TOURNIQUET, "placed loot 3 is tourniquet");
+		ctx.False(LF_Hospital.BreachCabinet(LF_TestAnnex.HOSPITAL_CABINET, uid), "placed cabinet refuses a second breach");
+		ctx.Equal(4, LF_Hospital.GetDeliveredCount(LF_TestAnnex.HOSPITAL_CABINET), "placed cabinet does not spawn a second set");
+		ctx.Equal(cabinetAlerts + 1, LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.HOSPITAL_CABINET), "placed cabinet alerts once");
 		ctx.Equal(0, bank.GetBalance(), "placed cabinet does not touch the bank");
 	}
 

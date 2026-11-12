@@ -5,7 +5,7 @@
 // Also fails when an attribute's params range and the limits the apply step passes to ReadInt disagree.
 // Fix: node tools/config/schema.mjs --write
 import { existsSync, readFileSync } from "node:fs";
-import { build, render, rangeProblems, readScripts, validateJson, runtimeExample, SCHEMA_PATH, EXAMPLE_PATH, SERVICE } from "../config/schema.mjs";
+import { build, render, rangeProblems, readerProblems, readScripts, validateJson, runtimeExample, SCHEMA_PATH, EXAMPLE_PATH, SERVICE } from "../config/schema.mjs";
 
 const fails = [];
 let gen;
@@ -17,6 +17,7 @@ for (const [p, obj, name] of [[SCHEMA_PATH, gen.schema, "config.schema.json"], [
 }
 
 for (const m of rangeProblems(readScripts())) fails.push(`range: ${m}`);
+for (const m of readerProblems(readScripts(), gen.schema)) fails.push(`reader: ${m}`);
 
 if (existsSync(EXAMPLE_PATH) && existsSync(SCHEMA_PATH)) {
   const schema = JSON.parse(readFileSync(SCHEMA_PATH, "utf8"));

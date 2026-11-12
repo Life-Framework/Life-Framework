@@ -161,7 +161,7 @@ class LF_AgentCommand
 				cmd.Arg1 = parts[2];
 			return true;
 		}
-		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report")
+		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
 			return true;
 		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
 			return true;
@@ -1148,6 +1148,11 @@ class LF_AgentHarness
 			DoReport(cmd);
 			return;
 		}
+		if (cmd.Verb == "configreload")
+		{
+			DoConfigReload(cmd);
+			return;
+		}
 		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
@@ -1631,7 +1636,7 @@ class LF_AgentHarness
 		}
 
 		int stash = -1;
-		IEntity stashEntity = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Stash");
+		IEntity stashEntity = LF_HideoutStashStorageManagerComponent.FindOwnedStash();
 		if (stashEntity)
 		{
 			BaseInventoryStorageComponent storage = LF_Component<LF_HideoutStashStorageComponent>.Find(stashEntity);
@@ -1827,6 +1832,21 @@ class LF_AgentHarness
 
 		controller.LF_AskReport();
 		WriteResult(cmd.Id, "ok", "report asked");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The /configreload chat command: asks the server to read config.json again (#285).
+	protected static void DoConfigReload(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+		{
+			WriteResult(cmd.Id, "error", "no_controller");
+			return;
+		}
+
+		controller.LF_AskConfigReload();
+		WriteResult(cmd.Id, "ok", "config reload asked");
 	}
 
 	//------------------------------------------------------------------------------------------------

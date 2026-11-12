@@ -166,10 +166,6 @@ class LF_Contraband
 	static const int PAYOUT = 200;
 	//! A wooden crate of untaxed spirits, carried in both hands (vanilla BoxWooden_01 mesh).
 	static const ResourceName ITEM = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
-	static const string START_ID = "Roadmap_Convoy_Start";
-	static const string DROP_ID = "Roadmap_Convoy_Drop";
-	//! Test worlds only (LF_GameModeRoleplay.m_bConvoyNearDrop): a drop a short drive from the barn.
-	static const string DROP_NEAR_ID = "Roadmap_Convoy_Drop_Near";
 	//! Getting out of the vehicle this close to the drop is arriving, not abandoning the run.
 	static const float DROP_RADIUS_M = 25;
 	static const string PICKUP_SOUND = "SOUND_PICK_UP";
@@ -380,27 +376,30 @@ class LF_Contraband
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The drop marker the run uses: the near cage in a test world, the pub in the flagship.
-	static string DropIdFor(bool nearDrop)
-	{
-		if (nearDrop)
-			return DROP_NEAR_ID;
-
-		return DROP_ID;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! DropIdFor for the running game mode. A mode that is not the roleplay mode keeps the pub.
-	static string ActiveDropId()
+	//! True when the game mode wants the near drop (test worlds). A mode that is not the
+	//! roleplay mode keeps the far drop.
+	static bool IsNearDropActive()
 	{
 		LF_GameModeRoleplay mode = null;
 		if (GetGame())
 			mode = LF_GameModeRoleplay.Cast(GetGame().GetGameMode());
 
 		if (mode)
-			return DropIdFor(mode.IsConvoyNearDrop());
+			return mode.IsConvoyNearDrop();
 
-		return DROP_ID;
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The drop the run uses: the near drop marker in a test world, the far one in the flagship.
+	//! Returns null when the world places none.
+	static IEntity FindActiveDrop()
+	{
+		LF_ConvoyMarkerComponent marker = LF_ConvoyMarkerComponent.FindDrop(IsNearDropActive());
+		if (!marker)
+			return null;
+
+		return marker.GetOwner();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -422,13 +421,9 @@ class LF_Contraband
 		if (!run || run.m_iState != LF_EConvoyState.RUNNING)
 			return false;
 
-		string dropId = ActiveDropId();
-		IEntity drop = null;
-		if (GetGame() && GetGame().GetWorld())
-			drop = GetGame().GetWorld().FindEntityByName(dropId);
-
+		IEntity drop = FindActiveDrop();
 		if (!drop)
-			LF_Debug.Error("Contraband", "drop marker missing: " + dropId);
+			LF_Debug.Error("Contraband", "drop marker missing: no LF_ConvoyMarkerComponent drop for this mode");
 
 		if (drop && NearDrop(where, drop.GetOrigin()))
 		{

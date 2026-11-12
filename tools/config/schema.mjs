@@ -356,3 +356,50 @@ export function rangeProblems(files) {
   }
   return msgs;
 }
+
+/**
+ * Reader agreement (#279): the generated schema lists a record field from the attributes, but the
+ * owner reader only takes what `ApplyOwner` handles, so a field in one and not the other is
+ * accepted by config-check and ignored by the server. Each reader declares its handled keys as
+ * `array<string> x = {"a", "b"};` passed to `reader.WarnUnknownKeys(x)`: one list for the section,
+ * one per record level. Each list must equal the property keys of one schema level of its section,
+ * every schema level needs a list, and every listed key must be read (`Read*` or `BeginRecords`).
+ * `schema` is generate(...).schema; `files` are { path, text }.
+ */
+export function readerProblems(files, schema) {
+  const classes = parseClasses(files);
+  const text = new Map(files.map((f) => [f.path, f.text]));
+  const msgs = [];
+  for (const [section, node] of Object.entries(schema.properties || {})) {
+    const cls = node["x-class"] && classes.get(node["x-class"]);
+    if (!cls) continue;
+    const src = text.get(cls.path) || "";
+    if (!/\bApplyOwner\(/.test(src)) continue; // schema-only section, no owner reader yet
+    const levels = [{ name: section, keys: Object.keys(node.properties || {}) }];
+    for (const [k, p] of Object.entries(node.properties || {})) {
+      const rec = p.additionalProperties && p.additionalProperties.properties;
+      if (rec) levels.push({ name: `${section}.${k} records`, keys: Object.keys(rec) });
+    }
+    const lists = [];
+    for (const m of src.matchAll(/array<string>\s+(\w+)\s*=\s*\{([^}]*)\}\s*;/g)) {
+      if (new RegExp(String.raw`WarnUnknownKeys\(\s*${m[1]}\s*\)`).test(src)) {
+        lists.push([...m[2].matchAll(/"([^"]+)"/g)].map((q) => q[1]));
+      }
+    }
+    if (!lists.length) { msgs.push(`${section}: ${cls.name} declares no reader key list (array<string> ... passed to WarnUnknownKeys)`); continue; }
+    const used = new Set();
+    for (const list of lists) {
+      let best = null, bestHit = -1;
+      levels.forEach((lv, i) => { const hit = list.filter((k) => lv.keys.includes(k)).length + (used.has(i) ? 0 : 0.5); if (hit > bestHit) { best = i; bestHit = hit; } });
+      const lv = levels[best];
+      used.add(best);
+      for (const k of lv.keys) if (!list.includes(k)) msgs.push(`${lv.name}: the schema lists "${k}" but the reader in ${cls.name} does not handle it`);
+      for (const k of list) {
+        if (!lv.keys.includes(k)) msgs.push(`${lv.name}: the reader in ${cls.name} handles "${k}" but the schema has no such field`);
+        else if (!new RegExp(String.raw`\.(?:Read\w+|BeginRecords)\(\s*"${k}"`).test(src)) msgs.push(`${lv.name}: "${k}" is in the reader key list but no Read*/BeginRecords call reads it`);
+      }
+    }
+    levels.forEach((lv, i) => { if (!used.has(i)) msgs.push(`${lv.name}: the reader in ${cls.name} has no key list for this level`); });
+  }
+  return msgs;
+}

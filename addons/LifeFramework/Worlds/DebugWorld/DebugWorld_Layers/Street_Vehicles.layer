@@ -19,6 +19,7 @@ GenericEntity Roadmap_Vehicle_Lot {
   }
   LF_VehicleLotComponent "{E1B0E70100000003}" {
    m_sShopId "roadmap-lot"
+   m_bTestCarLot 1
    m_iCashCeiling 500
    m_iExtraKeyPrice 25
    m_aOffers {

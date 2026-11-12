@@ -10,6 +10,7 @@ import Contribute from "@/pages/Contribute";
 import Decisions from "@/pages/Decisions";
 import Support from "@/pages/Support";
 import Credits from "@/pages/Credits";
+import Config from "@/pages/Config";
 import Features from "@/pages/Features";
 import Gallery from "@/pages/Gallery";
 import Playtest from "@/pages/Playtest";
@@ -55,6 +56,7 @@ const App = () => (
       <Route path="/decisions" element={<Decisions />} />
       <Route path="/support" element={<Support />} />
       <Route path="/credits" element={<Credits />} />
+      <Route path="/config" element={<Config />} />
       <Route path="/docs/credits" element={<Navigate to="/credits" replace />} />
       <Route path="/docs" element={<DocsIndex />} />
       <Route path="/docs/decisions" element={<Navigate to="/decisions" replace />} />
