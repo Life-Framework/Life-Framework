@@ -15,7 +15,7 @@ class LF_Test_ConfigMergeFixture
 	static const string WEAPONS = "Prefabs/Weapons/";
 	static const string M9 = "Handgun_M9";
 	static const string APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
-	static const string APPLE_MOVED = "{C9D661E5B0714711}Prefabs/Items/Moved/Apple.et";
+	static const string APPLE_MOVED = "{C9D661E5B0714711}";
 	static const string PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 
 	//------------------------------------------------------------------------------------------------
