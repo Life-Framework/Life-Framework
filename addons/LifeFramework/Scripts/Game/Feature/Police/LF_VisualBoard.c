@@ -372,6 +372,14 @@ class LF_VisualPoster : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! MEASUREMENT: stop drawing the target (does the mesh keep the last frame?).
+	void Freeze()
+	{
+		if (m_wRoot)
+			m_wRoot.SetVisible(false);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Clear()
 	{
 		if (m_wTexture && m_Sheet && !m_Sheet.IsDeleted())
@@ -416,6 +424,9 @@ class LF_VisualBoardComponent : ScriptComponent
 	[Attribute("-0.007", UIWidgets.EditBox, "Sheet depth in front of the board face (local Z)")]
 	protected float m_fDepth;
 
+	//! MEASUREMENT (docs/architecture/visual-boards-budget.md): the wanted board on this client.
+	static ref array<LF_VisualBoardComponent> s_aInstances = {};
+
 	protected ref array<string> m_aEntries = {};
 	protected ref array<ref LF_VisualPoster> m_aPosters = {};
 	protected string m_sSignature;
@@ -436,6 +447,9 @@ class LF_VisualBoardComponent : ScriptComponent
 		LF_SignComponent sign = LF_SignComponent.Cast(owner.FindComponent(LF_SignComponent));
 		if (sign && sign.GetSignId() != "police_wanted")
 			return;
+
+		if (RplSession.Mode() != RplMode.Dedicated)
+			s_aInstances.Insert(this);
 
 		if (Replication.IsServer() && GetGame().GetCallqueue())
 		{
@@ -548,6 +562,103 @@ class LF_VisualBoardComponent : ScriptComponent
 		}
 
 		LF_Debug.Info(LF_VisualBoardData.FEATURE, string.Format("client: drew %1 of %2 poster(s) at %3", m_aPosters.Count(), count, owner.GetOrigin()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! MEASUREMENT: replace the board's posters with `boards` blocks of `posters` sheets in front of
+	//! the board (2 blocks across, rows of 4 sheets per block), each a dressed dummy of the local
+	//! character when `pictures`, else text and an empty frame. boards 0 clears.
+	static string Stress(int boards, int posters, int pictures)
+	{
+		IEntity me = LF_Utils.GetLocalCharacter();
+		LF_VisualBoardComponent best;
+		float bestDistance = 1000000;
+		foreach (LF_VisualBoardComponent board : s_aInstances)
+		{
+			if (!board || !board.GetOwner() || !me)
+				continue;
+
+			float distance = vector.Distance(board.GetOwner().GetOrigin(), me.GetOrigin());
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				best = board;
+			}
+		}
+
+		if (!best)
+			return "no_board";
+
+		return best.DoStress(boards, posters, pictures);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string DoStress(int boards, int posters, int pictures)
+	{
+		ClearPosters();
+		IEntity owner = GetOwner();
+		if (!owner)
+			return "no_owner";
+
+		string appearance;
+		IEntity me = LF_Utils.GetLocalCharacter();
+		if (pictures > 0 && me && me.GetPrefabData())
+		{
+			appearance = me.GetPrefabData().GetPrefabName();
+			EquipedLoadoutStorageComponent storage = EquipedLoadoutStorageComponent.Cast(me.FindComponent(EquipedLoadoutStorageComponent));
+			if (pictures == 2)
+				storage = null;
+
+			for (int i = 0; storage && i < storage.GetSlotsCount(); i++)
+			{
+				IEntity item = storage.Get(i);
+				if (item && item.GetPrefabData())
+					appearance += "|" + i.ToString() + "=" + item.GetPrefabData().GetPrefabName();
+			}
+		}
+
+		int rows = Math.Ceil(posters / 4.0);
+		float blockHeight = rows * 0.48;
+		int drawn;
+		for (int b = 0; b < boards; b++)
+		{
+			int side = b % 2;
+			int level = b / 2;
+			float blockX = (side - 0.5) * 1.5;
+			float blockY = 0.3 + level * blockHeight;
+			for (int p = 0; p < posters; p++)
+			{
+				int col = p % 4;
+				int row = p / 4;
+				string entry = LF_VisualBoardData.Encode(LF_VisualBoardData.KIND_PERSON, "Stress " + b.ToString() + "-" + p.ToString(), LF_WantedReports.OFFENCE_ROBBERY, 2, "", appearance);
+				vector offset = Vector(blockX + (1.5 - col) * 0.34, blockY + row * 0.48, m_fDepth);
+				LF_VisualPoster poster = new LF_VisualPoster();
+				if (poster.Build(owner, offset, m_fSheetScale, entry))
+				{
+					m_aPosters.Insert(poster);
+					drawn++;
+				}
+			}
+		}
+
+		if (pictures == 3 && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().CallLater(FreezeAll, 2500, false);
+
+		string result = string.Format("stress boards=%1 posters=%2 pictures=%3 drawn=%4 appearanceChars=%5", boards, posters, pictures, drawn, appearance.Length());
+		LF_Debug.Info(LF_VisualBoardData.FEATURE, result);
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FreezeAll()
+	{
+		foreach (LF_VisualPoster poster : m_aPosters)
+		{
+			if (poster)
+				poster.Freeze();
+		}
+
+		LF_Debug.Info(LF_VisualBoardData.FEATURE, string.Format("stress: froze %1 poster(s)", m_aPosters.Count()));
 	}
 
 	//------------------------------------------------------------------------------------------------

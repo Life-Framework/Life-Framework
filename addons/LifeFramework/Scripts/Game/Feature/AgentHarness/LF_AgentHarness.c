@@ -184,6 +184,20 @@ class LF_AgentCommand
 				cmd.PosX = parts[2].ToFloat();
 			return true;
 		}
+		if (cmd.Verb == "stress")
+		{
+			// MEASUREMENT: stress <boards> <posters> <pictures 0|1>
+			if (parts.Count() < 5)
+			{
+				cmd.Error = "need_boards_posters_pictures";
+				return false;
+			}
+
+			cmd.PosX = parts[2].ToFloat();
+			cmd.PosY = parts[3].ToFloat();
+			cmd.PosZ = parts[4].ToFloat();
+			return true;
+		}
 		if (cmd.Verb == "perf")
 		{
 			// perf <seconds> [label]: this client's frame time and memory over the window.
@@ -1232,6 +1246,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "seen")
 		{
 			WriteResult(cmd.Id, "ok", LF_HarnessSeen.Read(cmd.PosX));
+			return;
+		}
+		if (cmd.Verb == "stress")
+		{
+			WriteResult(cmd.Id, "ok", LF_VisualBoardComponent.Stress(cmd.PosX, cmd.PosY, cmd.PosZ));
 			return;
 		}
 		if (cmd.Verb == "perf")

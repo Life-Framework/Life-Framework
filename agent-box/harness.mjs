@@ -151,6 +151,7 @@ export function buildLine(id, spec) {
     if (!Number.isFinite(radius) || radius < 0) throw new Error(`seen radius must be a number: ${spec.radius}`);
     return radius > 0 ? `${id} seen ${radius}` : `${id} seen`;
   }
+  if (spec.verb === "stress") return `${id} stress ${spec.boards} ${spec.posters} ${Number(spec.pictures ?? 0)}`;
   if (spec.verb === "perf") {
     const seconds = Number(spec.seconds ?? 10);
     if (!Number.isFinite(seconds) || seconds <= 0 || seconds > 60) throw new Error(`perf seconds must be 0..60: ${spec.seconds}`);
