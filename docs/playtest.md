@@ -4,6 +4,8 @@ The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
 Feedback goes to #playtest-feedback on [Discord](https://discord.gg/MjMexJteqz) or to a GitHub issue.
 
+Licence: the Workshop build is under the Arma Public License (APL); the source on GitHub is MIT.
+
 Decision 2026-11-11 (#567): outsiders get the build from the Workshop upload (Unlisted, 0.1.0, see
 [playtest/workshop-publish.md](playtest/workshop-publish.md)), and from the website zip until that item is published.
 Until the Workshop item exists, the playtest is a download, and the Workshop steps below do not apply yet.
