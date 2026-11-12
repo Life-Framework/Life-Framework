@@ -32,22 +32,22 @@ class LF_VehiclePriceEntry
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Locked child the buyer gets (the chop shop and impound see this one). Empty: none", "et")]
 	ResourceName m_SpawnPrefab;
 
-	[Attribute("0", UIWidgets.Auto, "The one number: what the vehicle is worth")]
+	[Attribute("0", UIWidgets.Auto, "The one number: what the vehicle is worth", params: "0 1000000")]
 	int m_iBasePrice;
 
-	[Attribute("-1", UIWidgets.Auto, "Buy price override; -1 derives it")]
+	[Attribute("-1", UIWidgets.Auto, "Buy price override; -1 derives it", params: "-1 1000000")]
 	int m_iBuyOverride;
 
-	[Attribute("-1", UIWidgets.Auto, "Sell-back override; -1 derives it")]
+	[Attribute("-1", UIWidgets.Auto, "Sell-back override; -1 derives it", params: "-1 1000000")]
 	int m_iSellBackOverride;
 
-	[Attribute("-1", UIWidgets.Auto, "Chop payout override; -1 derives it")]
+	[Attribute("-1", UIWidgets.Auto, "Chop payout override; -1 derives it", params: "-1 1000000")]
 	int m_iChopOverride;
 
-	[Attribute("-1", UIWidgets.Auto, "Impound fee override; -1 derives it")]
+	[Attribute("-1", UIWidgets.Auto, "Impound fee override; -1 derives it", params: "-1 1000000")]
 	int m_iImpoundOverride;
 
-	[Attribute("-1", UIWidgets.Auto, "Garage fee override; -1 derives it")]
+	[Attribute("-1", UIWidgets.Auto, "Garage fee override; -1 derives it", params: "-1 1000000")]
 	int m_iGarageOverride;
 
 	//------------------------------------------------------------------------------------------------
@@ -86,6 +86,8 @@ class LF_VehiclePriceEntry
 //! The pure arithmetic. No config, no entities.
 class LF_VehiclePriceModel
 {
+	static const string HEX_DIGITS = "0123456789ABCDEF";
+
 	//------------------------------------------------------------------------------------------------
 	//! An override at or above 0 wins; otherwise base times percent. Never negative.
 	//! \param[in] basePrice The vehicle's base price.
@@ -115,6 +117,30 @@ class LF_VehiclePriceModel
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An owner record key as a prefab GUID: 16 hex digits, braces and case ignored.
+	//! \return True and the upper-case GUID when the key is one.
+	static bool ParseGuidKey(string key, out string guid)
+	{
+		string text = key;
+		text.Trim();
+		if (text.StartsWith("{") && text.EndsWith("}"))
+			text = text.Substring(1, text.Length() - 2);
+
+		text.ToUpper();
+		if (text.Length() != 16)
+			return false;
+
+		for (int i = 0; i < 16; i++)
+		{
+			if (HEX_DIGITS.IndexOf(text.Substring(i, 1)) < 0)
+				return false;
+		}
+
+		guid = text;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "{GUID}path" to "GUID" in upper case; a bare path comes back upper-cased whole.
 	static string GuidOf(ResourceName resource)
 	{
@@ -141,22 +167,29 @@ class LF_VehiclePricesConfig
 	//! The owner config.json section #283 will read.
 	static const string SECTION = "vehicles";
 
-	[Attribute("100", UIWidgets.Auto, "Percent of the base price the lot charges")]
+	//! The limits of the price attributes' `params`; the owner reader refuses a number outside them (#283).
+	static const int PRICE_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int PRICE_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int OVERRIDE_MIN = -1;	// lf-fixed: the schema limit, -1 is "derive it"
+	static const int PERCENT_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int PERCENT_MAX = 1000;	// lf-fixed: the schema limit, ten times the base price
+
+	[Attribute("100", UIWidgets.Auto, "Percent of the base price the lot charges", params: "0 1000")]
 	int m_iBuyPercent;
 
-	[Attribute("50", UIWidgets.Auto, "Percent of the base price a sell-back pays (no desk consumes it yet)")]
+	[Attribute("50", UIWidgets.Auto, "Percent of the base price a sell-back pays (no desk consumes it yet)", params: "0 1000")]
 	int m_iSellBackPercent;
 
-	[Attribute("30", UIWidgets.Auto, "Percent of the (capped) base price the chop shop pays")]
+	[Attribute("30", UIWidgets.Auto, "Percent of the (capped) base price the chop shop pays", params: "0 1000")]
 	int m_iChopPercent;
 
-	[Attribute("3000", UIWidgets.Auto, "The chop shop counts no vehicle for more than this; 0 for no cap")]
+	[Attribute("3000", UIWidgets.Auto, "The chop shop counts no vehicle for more than this; 0 for no cap", params: "0 1000000")]
 	int m_iChopValueCap;
 
-	[Attribute("10", UIWidgets.Auto, "Percent of the base price the impound desk charges")]
+	[Attribute("10", UIWidgets.Auto, "Percent of the base price the impound desk charges", params: "0 1000")]
 	int m_iImpoundPercent;
 
-	[Attribute("0", UIWidgets.Auto, "Percent of the base price a garage charges (free today)")]
+	[Attribute("0", UIWidgets.Auto, "Percent of the base price a garage charges (free today)", params: "0 1000")]
 	int m_iGaragePercent;
 
 	[Attribute("", UIWidgets.Object, "Per-vehicle base prices and overrides")]
@@ -183,8 +216,109 @@ class LF_VehiclePricesConfig
 		s_Config = LF_VehiclePricesConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error("Vehicles", string.Format("vehicle prices config has an unexpected root class: %1", CONFIG_PATH));
+		else
+			s_Config.ApplyLayers();
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges the owner's "vehicles" section over this instance, which holds the core `.conf`.
+	void ApplyLayers()
+	{
+		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
+		if (!reader)
+			return;
+
+		ApplyOwner(reader);
+		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("vehicles: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the owner's "vehicles" section field by field: a key the owner leaves out keeps the
+	//! shipped value. `vehicles` is an object keyed by the vehicle's prefab GUID (16 hex digits); a
+	//! record changes the entry whose lot prefab or locked child has that GUID, and a GUID no entry
+	//! has adds a vehicle, which must set basePrice (an unpriced vehicle would sell for nothing).
+	//! \param[in] reader A reader on the section.
+	void ApplyOwner(notnull LF_ConfigReader reader)
+	{
+		array<string> ownerKeys = {"buyPercent", "sellBackPercent", "chopPercent", "chopValueCap", "impoundPercent", "garagePercent", "vehicles"};
+		reader.WarnUnknownKeys(ownerKeys);
+		reader.ReadInt("buyPercent", m_iBuyPercent, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("sellBackPercent", m_iSellBackPercent, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("chopPercent", m_iChopPercent, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("chopValueCap", m_iChopValueCap, PRICE_MIN, PRICE_MAX);
+		reader.ReadInt("impoundPercent", m_iImpoundPercent, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("garagePercent", m_iGaragePercent, PERCENT_MIN, PERCENT_MAX);
+
+		if (!m_aVehicles)
+			m_aVehicles = new array<ref LF_VehiclePriceEntry>();
+
+		int count = reader.BeginRecords("vehicles");
+		for (int i = 0; i < count; i++)
+		{
+			string key = reader.GetRecordKey(i);
+			if (!reader.BeginRecord(key))
+				continue;
+
+			string guid;
+			if (!LF_VehiclePriceModel.ParseGuidKey(key, guid))
+			{
+				reader.RejectRecord("the key is not a prefab GUID (16 hex digits)");
+				reader.EndRecord();
+				continue;
+			}
+
+			LF_VehiclePriceEntry entry = FindByGuid(guid);
+			if (!entry && !reader.Has("basePrice"))
+			{
+				reader.RejectRecord("a vehicle the shipped prices do not list needs a basePrice");
+				reader.EndRecord();
+				continue;
+			}
+
+			if (!entry)
+			{
+				ResourceName added = "{" + guid + "}";
+				entry = LF_VehiclePriceEntry.Make(added, "", 0);
+				m_aVehicles.Insert(entry);
+			}
+
+			array<string> recordKeys = {"spawnPrefab", "basePrice", "buyOverride", "sellBackOverride", "chopOverride", "impoundOverride", "garageOverride"};
+			reader.WarnUnknownKeys(recordKeys);
+			string spawn = entry.m_SpawnPrefab;
+			if (reader.ReadString("spawnPrefab", spawn))
+				entry.m_SpawnPrefab = spawn;
+			reader.ReadInt("basePrice", entry.m_iBasePrice, PRICE_MIN, PRICE_MAX);
+			reader.ReadInt("buyOverride", entry.m_iBuyOverride, OVERRIDE_MIN, PRICE_MAX);
+			reader.ReadInt("sellBackOverride", entry.m_iSellBackOverride, OVERRIDE_MIN, PRICE_MAX);
+			reader.ReadInt("chopOverride", entry.m_iChopOverride, OVERRIDE_MIN, PRICE_MAX);
+			reader.ReadInt("impoundOverride", entry.m_iImpoundOverride, OVERRIDE_MIN, PRICE_MAX);
+			reader.ReadInt("garageOverride", entry.m_iGarageOverride, OVERRIDE_MIN, PRICE_MAX);
+			reader.EndRecord();
+		}
+
+		if (count >= 0)
+			reader.EndRecords();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The entry whose lot prefab or locked child has this upper-case GUID. Null when unlisted.
+	LF_VehiclePriceEntry FindByGuid(string guid)
+	{
+		if (!m_aVehicles)
+			return null;
+
+		foreach (LF_VehiclePriceEntry entry : m_aVehicles)
+		{
+			if (!entry)
+				continue;
+
+			if (LF_VehiclePriceModel.GuidOf(entry.m_Prefab) == guid || LF_VehiclePriceModel.GuidOf(entry.m_SpawnPrefab) == guid)
+				return entry;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
