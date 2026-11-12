@@ -55,6 +55,7 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
+import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
@@ -2497,6 +2498,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 dump [LFDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
+                                runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
   promote [--to sha] [--confirm]  stable branch: list PRs merged since stable and write the checklist;
                                 --confirm fast-forwards stable, verifies and closes their issues (cli promote --help)
   prs status|heal [--dry-run] [<n>...]
@@ -3500,6 +3503,8 @@ try {
     code = cmdPrs(ROOT, rest);
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
+  } else if (cmd === "release") {
+    code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
