@@ -200,6 +200,24 @@ class LF_WantedReports
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every player's reports come down (the harness's per-proof reset, #867). The sequence keeps
+	//! counting so a later report never reuses a number.
+	//! @return How many reports were removed.
+	static int ClearAll()
+	{
+		int removed = 0;
+		if (!s_mReports)
+			return 0;
+
+		for (int i = 0; i < s_mReports.Count(); i++)
+			removed += s_mReports.GetElement(i).Count();
+
+		s_mReports.Clear();
+		LF_Debug.Info(FEATURE, string.Format("all reports taken down: %1", removed));
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The wanted level went back to 0: the posters come down.
 	static void ClearFor(string playerUid)
 	{

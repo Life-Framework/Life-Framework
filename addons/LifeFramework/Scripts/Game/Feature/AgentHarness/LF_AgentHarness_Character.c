@@ -232,6 +232,60 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `resetcrime`: the server clears this player's wanted level and the crime stores an
+	//! earlier proof filled, behind the dev gate (#867).
+	void LF_AskHarnessResetCrime(int commandId)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessResetCrime(commandId, true);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessResetCrime, commandId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessResetCrime(int commandId)
+	{
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "resetcrime");
+		LF_ApplyHarnessResetCrime(commandId, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessResetCrime(int commandId, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		string uid = LF_Utils.GetPlayerUID(this);
+		LF_PlayerAccount account;
+		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
+		if (manager && !uid.IsEmpty())
+			account = manager.GetAccount(uid);
+
+		string cleared = "";
+		if (account)
+		{
+			// SetWantedLevel(0) also takes this player's posters down and publishes the account.
+			account.SetWantedLevel(0);
+			cleared = "wanted";
+		}
+
+		int reports = LF_WantedReports.ClearAll();
+		int dispatches = LF_Dispatch.ClearLog();
+		int tills = LF_RobAction.ResetCooldowns() + LF_Hospital.ResetTillCooldowns();
+		int vaults = LF_Bank.RestockAll();
+		int searches = LF_ChainSearch.ClearSearchCooldowns();
+		LF_HarnessReply(commandId, "ok", string.Format("cleared %1 reports=%2 dispatches=%3 tills=%4 vaults=%5 searches=%6", cleared, reports, dispatches, tills, vaults, searches));
+		LF_Debug.Info("AgentHarness", string.Format("crime state reset: reports=%1 dispatches=%2 tills=%3 vaults=%4 searches=%5", reports, dispatches, tills, vaults, searches));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `scanner`: the server puts a police scanner in this character's inventory, behind the
 	//! dev gate (the fence path needs a crime record and cash; the proof is about hearing).
 	void LF_AskHarnessScanner(int commandId, string tool = "scanner")
