@@ -163,22 +163,28 @@ class LF_GatherAction : ScriptedUserAction
 	//! anywhere in inventory when m_CheckInventoryForToolRequirement is set).
 	protected bool LF_HasGatherTool(IEntity user)
 	{
-		// If not required we dont need to check anything
-		if (!m_GatherToolRequirement) return true;
+		return HasToolIn(user, m_GatherToolRequirement, m_CheckInventoryForToolRequirement);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tool check behind LF_HasGatherTool. An empty requirement passes.
+	static bool HasToolIn(IEntity user, ResourceName tool, bool checkInventory)
+	{
+		if (!tool) return true;
 
 		CharacterControllerComponent characterController = LF_Component<CharacterControllerComponent>.Find(user);
 		if (characterController)
 		{
 			IEntity rightHandItem = characterController.GetRightHandItem();
-			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(rightHandItem), m_GatherToolRequirement)) return true;
+			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(rightHandItem), tool)) return true;
 
 			IEntity leftHandItem = characterController.GetAttachedGadgetAtLeftHandSlot();
-			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(leftHandItem), m_GatherToolRequirement)) return true;
+			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(leftHandItem), tool)) return true;
 		}
 
-		if (m_CheckInventoryForToolRequirement)
+		if (checkInventory)
 		{
-			if (LF_InventoryUtils.GetAmount(user, m_GatherToolRequirement) > 0) return true;
+			if (LF_InventoryUtils.GetAmount(user, tool) > 0) return true;
 		}
 
 		return false;
