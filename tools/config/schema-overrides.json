@@ -1,0 +1,16 @@
+{
+  "records": {
+    "LF_ShopPriceRule": {
+      "keyFields": ["m_sFind", "m_eItemType", "m_eItemMode"],
+      "key": "The rule's key is a prefab-path substring, or type:<flags>,mode:<mode> to match by arsenal type (mode defaults to 2, any). A key no shipped rule has adds a rule; an existing key changes only the fields given."
+    }
+  },
+  "examples": {
+    "shops": {
+      "priceRules": {
+        "Prefabs/Items/Food/": { "buyPrice": 10, "sellPrice": 5 },
+        "Prefabs/Weapons/": { "hidden": true }
+      }
+    }
+  }
+}

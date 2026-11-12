@@ -45,6 +45,11 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	protected override void OnGameStart()
 	{
 		super.OnGameStart();
+		// Owner config.json over the shipped .conf defaults (server); features read through it.
+		LF_ConfigService.Boot();
+		// The effective client-relevant values, for the config stream to joining clients (#285).
+		if (Replication.IsServer())
+			LF_ConfigStream.Publish();
 		LF_HostStop.StartIfRequested();
 		LF_IncidentLog.Install();
 		LF_AimIntent.Start();
@@ -77,6 +82,62 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 			GetGame().GetCallqueue().Remove(LF_RefreshAccountReplication);
 		if (m_bLF_AccountRefreshRunning && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(LF_Perf.Report);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! JIP: the config stream rides after the base game mode's state (#285). Positional: RplLoad
+	//! reads exactly what this writes, in this order.
+	override bool RplSave(ScriptBitWriter writer)
+	{
+		if (!super.RplSave(writer))
+			return false;
+
+		LF_ConfigStream.EnsurePublished();
+		writer.WriteInt(LF_ConfigStream.FORMAT_VERSION);
+		writer.WriteInt(LF_ConfigStream.GetPublishedHash());
+		writer.WriteString(LF_ConfigStream.GetPublishedPayload());
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool RplLoad(ScriptBitReader reader)
+	{
+		if (!super.RplLoad(reader))
+			return false;
+
+		int format;
+		int hash;
+		string payload;
+		if (!reader.ReadInt(format) || !reader.ReadInt(hash) || !reader.ReadString(payload))
+		{
+			LF_Debug.Error(LF_ConfigService.FEATURE, "stream: the join snapshot carries no config stream; the client keeps the shipped config values");
+			return false;
+		}
+
+		LF_ConfigStream.OnArrived(format, hash, payload);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: rebuilds the config stream and sends it to every connected client when it changed.
+	//! Joining clients get it through RplSave.
+	void LF_PublishConfigStream()
+	{
+		if (!Replication.IsServer())
+			return;
+
+		bool first = !LF_ConfigStream.IsPublished();
+		if (!LF_ConfigStream.Publish() || first)
+			return;
+
+		Rpc(RpcDo_LF_ConfigStream, LF_ConfigStream.FORMAT_VERSION, LF_ConfigStream.GetPublishedHash(), LF_ConfigStream.GetPublishedPayload());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	protected void RpcDo_LF_ConfigStream(int format, int hash, string payload)
+	{
+		LF_ConfigStream.OnArrived(format, hash, payload);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
-// Request audit (#693a). Every `RplRcver.Server` handler named RpcAsk_* takes a
-// request from a client, so the server must check it before acting: who sent it
+// Request audit (#693a). Every `RplRcver.Server` handler takes a request from a
+// client (RpcAsk_* by convention; #693b widened the scope to any name, which
+// brought in the three RPC_LF_* quantity handlers), so the server must check it before acting: who sent it
 // (ownership, role or duty), how far away it is (range), what it costs (money
 // or amount bounds), how often (cooldown), or a dev gate. AGENTS.md: "Validate
 // client requests on the server; never trust the client."
@@ -11,8 +12,10 @@
 //
 // request-audit-baseline.json lists the handlers that had no check when this
 // landed. A handler in it passes (known debt, fixed per area in #693b); any other
-// unchecked handler fails. A baseline entry that gained a check, or whose handler
-// is gone, is reported as stale; `--update-baseline` rewrites the file.
+// unchecked handler fails. A baselined handler that recorded a cooldown (the
+// LF_RateLimit helper, #693b) fails when the cooldown goes, even if other checks
+// remain. A baseline entry whose handler is gone is reported as stale;
+// `--update-baseline` rewrites the file.
 //
 //   node tools/validation/validate-request-audit.mjs                 check
 //   node tools/validation/validate-request-audit.mjs --list          every handler and its verdict
@@ -101,7 +104,7 @@ export function methodIndex(sources) {
 export function handlers(src, file) {
   const code = strip(src);
   const out = [];
-  const re = /RplRcver\s*\.\s*Server\s*\)\s*\]\s*(?:protected\s+|private\s+|static\s+)*void\s+(RpcAsk_\w+)\s*\(([^)]*)\)\s*\{/g;
+  const re = /RplRcver\s*\.\s*Server\s*\)\s*\]\s*(?:protected\s+|private\s+|static\s+)*void\s+(\w+)\s*\(([^)]*)\)\s*\{/g;
   let m;
   while ((m = re.exec(code))) {
     let cls = "";
@@ -176,6 +179,8 @@ export function compare(current, entries) {
       debt.push(h);
     } else if (!h.checks.length) {
       lost.push(h);
+    } else if ((e.checks || []).includes("cooldown") && !h.checks.includes("cooldown")) {
+      lost.push(h);
     }
   }
   const have = new Set(current.map(key));
@@ -190,7 +195,7 @@ function selftest() {
   }
   for (const n of files) {
     const hs = audit([join(fixtures, n)]);
-    if (!hs.length) return `selftest: ${n} has no RpcAsk_ handler`;
+    if (!hs.length) return `selftest: ${n} has no server RPC handler`;
     const unchecked = hs.filter((h) => h.checks.length === 0);
     if (n.includes(".bad.") && unchecked.length !== hs.length) return `selftest: ${n} should be all unchecked`;
     if (n.includes(".good.") && unchecked.length) return `selftest: ${n} flagged ${unchecked.map((h) => h.name).join(", ")}`;
@@ -202,6 +207,10 @@ function selftest() {
   if (compare([bare], [{ file: "f", handler: "RpcAsk_A", verdict: "unchecked" }]).fresh.length !== 0) return "selftest: baselined debt failed";
   if (compare([bare], [{ file: "f", handler: "RpcAsk_A", verdict: "checked" }]).lost.length !== 1) return "selftest: a removed check passed";
   if (compare([], [{ file: "f", handler: "RpcAsk_A", verdict: "checked" }]).stale.length !== 1) return "selftest: a gone handler was not reported stale";
+  if (compare([ok], [{ file: "f", handler: "RpcAsk_B", verdict: "checked", checks: ["cooldown", "range"] }]).lost.length !== 1) return "selftest: a removed rate limit passed";
+  if (compare([ok], [{ file: "f", handler: "RpcAsk_B", verdict: "checked", checks: ["range"] }]).lost.length !== 0) return "selftest: a handler that kept its checks failed";
+  const named = handlers("class C { [RplRpc(RplChannel.Reliable, RplRcver.Server)] protected void RPC_LF_X(int n) { } }", "f");
+  if (named.length !== 1) return "selftest: a server RPC not named RpcAsk_ was not audited";
   return null;
 }
 
@@ -237,7 +246,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   }
   const { fresh, lost, debt, stale } = compare(all, old);
   for (const h of fresh) console.log(`FAIL ${h.file}:${h.line} ${h.name} takes a client request with no server-side check (identity, range, money, cooldown or dev gate); see tools/validation/validate-request-audit.mjs`);
-  for (const h of lost) console.log(`FAIL ${h.file}:${h.line} ${h.name} lost the server-side check the baseline recorded`);
+  for (const h of lost) console.log(`FAIL ${h.file}:${h.line} ${h.name} lost the server-side check (or the rate limit) the baseline recorded`);
   for (const e of stale) console.log(`NOTE stale baseline entry ${e.file}#${e.handler} (handler gone); run --update-baseline`);
   console.log(`validate-request-audit: ${all.length} handlers, ${all.length - debt.length} checked, ${debt.length} unchecked (known debt, #693b), ${fresh.length + lost.length} failing`);
   process.exit(fresh.length + lost.length ? 1 : 0);

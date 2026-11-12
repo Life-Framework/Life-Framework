@@ -7,9 +7,19 @@
       "why": "The quarry axe lies flat on the ground by the logs (LoggingChain.layer angles 90)."
     },
     {
-      "match": "^Roadmap_Bank_Bag",
+      "match": "^(Roadmap|Annex)_Bank_Bag",
       "kind": "scaled",
       "why": "The small money bag on the bank floor is meant to be small (#740)."
+    },
+    {
+      "match": "^Annex_Bank_Bag_Cash",
+      "kind": "sunk",
+      "why": "The cash stack is the bag prefab's child, drawn inside the 0.4-scale bag the way the town bag is (#323 batch 0)."
+    },
+    {
+      "match": "^Annex_Bank_AlarmBox",
+      "kind": "floating",
+      "why": "The annex twin of the bank bell box hangs 1.5 m up beside the twin vault door: the annex has no wall for it, and the alarm mount test only needs the box above its door (#323 batch 0)."
     },
     {
       "match": "Bank_Teller",
@@ -17,19 +27,9 @@
       "why": "The teller stands on the bank wall plinth (y 0.16) behind the counter; the terrain probe misses the plinth. Seen in the Bank_Teller close-up, #679."
     },
     {
-      "match": "Payphone",
-      "kind": "size",
-      "why": "KNOWN ABSURD SIZE found when the size check landed (audit-sizes PR): LF_Payphone measures 3.37 m on its largest side; a phone booth is about 2.4 m. Fix it in the layer, then delete this entry."
-    },
-    {
-      "match": "FlowerpotPelargonia",
-      "kind": "size",
-      "why": "KNOWN ABSURD SIZE found when the size check landed (audit-sizes PR): a geranium pot measures 1.37 m; a real one is 0.3 to 0.6 m. Fix it in the layer, then delete this entry."
-    },
-    {
       "match": "^(Farm_StandCabbage|Cabbage_0)",
-      "kind": "size",
-      "why": "KNOWN ABSURD SIZE found when the size check landed (audit-sizes PR): a harvested cabbage item measures 0.91 m; a head is 0.2 to 0.3 m. Fix it in the layer, then delete this entry."
+      "kind": "odd-scale",
+      "why": "Vanilla has no cabbage-head mesh, only the whole-plant CabbageCrop_01 (0.84 x 0.91 m at scale 1). Cabbage.et scales it to 0.5, so the plant measures 0.46 m, inside the cabbage 0.15-0.6 m range. A larger scale would put a 0.9 m plant on a stall table."
     }
   ]
 }

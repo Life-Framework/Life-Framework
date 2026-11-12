@@ -44,7 +44,7 @@ class LF_JailCellComponent : ScriptComponent
 	[Attribute("1", UIWidgets.EditBox, desc: "Wanted levels removed when the sentence ends.")]
 	protected int m_iWantedReduction;
 
-	[Attribute("Roadmap_Jail_Door", UIWidgets.EditBox, desc: "Breach target id of the jail door. Confinement pauses while that door is open.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Breach target id of the jail door (its entity name). Confinement pauses while that door is open. Empty: no door gates the sentence.")]
 	protected string m_sDoorTargetId;
 
 	[Attribute("0 0 -5", UIWidgets.EditBox, desc: "Where a released prisoner stands, in this entity's local frame (outside the cell door).")]
@@ -58,6 +58,37 @@ class LF_JailCellComponent : ScriptComponent
 	//! (two cells = sentences run at double speed).
 	protected static LF_JailCellComponent s_TickOwner;
 	protected bool m_bTicking;
+
+	//! The first cell placed in the world. LF_Jail.SyncPlacedCell re-applies its door target and origin after a reset.
+	protected static LF_JailCellComponent s_Placed;
+
+	//------------------------------------------------------------------------------------------------
+	//! The first placed cell, or null when the world has none. One per world.
+	static LF_JailCellComponent GetPlaced()
+	{
+		return s_Placed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Re-applies the placed cell's door target and origin to LF_Jail.
+	//! Returns false when no placed cell exists.
+	static bool ReapplyPlaced()
+	{
+		if (!s_Placed || !s_Placed.GetOwner())
+			return false;
+
+		s_Placed.ApplyPlacement(s_Placed.GetOwner());
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyPlacement(IEntity owner)
+	{
+		if (!m_sDoorTargetId.IsEmpty())
+			LF_Jail.SetDoorTarget(m_sDoorTargetId);
+
+		LF_Jail.SetCellOrigin(owner.GetOrigin());
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! \return True when this cell owns the jail config and the repeating LF_Jail.Tick.
@@ -94,9 +125,9 @@ class LF_JailCellComponent : ScriptComponent
 		}
 
 		s_TickOwner = this;
+		s_Placed = this;
 		LF_Jail.Configure(m_iSecondsPerWanted, m_iMaxSeconds, m_iWantedReduction, m_fZoneRadius);
-		LF_Jail.SetDoorTarget(m_sDoorTargetId);
-		LF_Jail.SetCellOrigin(owner.GetOrigin());
+		ApplyPlacement(owner);
 		LF_Jail.SetReleaseOffset(owner.CoordToParent(m_vReleaseOffset) - owner.GetOrigin());
 
 		if (m_iTickIntervalMs <= 0)
@@ -130,6 +161,9 @@ class LF_JailCellComponent : ScriptComponent
 
 		if (s_TickOwner == this)
 			s_TickOwner = null;
+
+		if (s_Placed == this)
+			s_Placed = null;
 
 		super.OnDelete(owner);
 	}

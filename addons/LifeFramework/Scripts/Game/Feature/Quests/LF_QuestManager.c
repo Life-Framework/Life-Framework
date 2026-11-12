@@ -275,7 +275,7 @@ class LF_QuestManager
 		int total = 0;
 		foreach (IEntity item : items)
 		{
-			if (!item || LF_Utils.GetPrefabName(item) != prefab)
+			if (!item || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(item), prefab))
 				continue;
 
 			int quantity = 1;

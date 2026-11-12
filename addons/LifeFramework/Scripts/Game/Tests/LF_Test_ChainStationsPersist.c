@@ -22,8 +22,8 @@ class LF_Test_ChainStationsPersist : LF_Test
 
 		LF_PersistenceComponent persistence = LF_PersistenceComponent.Cast(gameMode.FindComponent(LF_PersistenceComponent));
 		ctx.NotNull(persistence, "the game mode carries LF_PersistenceComponent");
-		LF_ChainStationComponent barrel = LF_ChainStations.Find("Chains_Barrel_2");
-		LF_ChainStationComponent other = LF_ChainStations.Find("Chains_Barrel_3");
+		LF_ChainStationComponent barrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_2);
+		LF_ChainStationComponent other = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(barrel, "barrel 2 of the site is registered");
 		ctx.NotNull(other, "barrel 3 of the site is registered");
 		if (!persistence || !barrel || !other)
@@ -39,8 +39,8 @@ class LF_Test_ChainStationsPersist : LF_Test
 		JsonSaveContext saveContext = new JsonSaveContext(false);
 		ctx.True(LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext) == ESerializeResult.OK, "the store serializes");
 		string saved = saveContext.SaveToString();
-		ctx.True(saved.Contains("Chains_Barrel_2"), "the save carries the batch");
-		ctx.False(saved.Contains("Chains_Barrel_3"), "an empty barrel is not saved");
+		ctx.True(saved.Contains(LF_TestAnnex.CHAINS_BARREL_2), "the save carries the batch");
+		ctx.False(saved.Contains(LF_TestAnnex.CHAINS_BARREL_3), "an empty barrel is not saved");
 
 		// A restart: the world comes back with empty barrels.
 		LF_ChainStations.ApplyAll(null);
@@ -50,7 +50,7 @@ class LF_Test_ChainStationsPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(26, version, "the save is written at version 26 (chainstations is payload 20)");
+		ctx.Equal(27, version, "the save is written at version 27 (chainstations is payload 20)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "chainstations");
 		ctx.Equal(37, barrel.GetPercent(), "the half-finished batch is back at 37 percent");
 		ctx.Equal(3, barrel.GetProgress().GetWork(), "with the same 3 units of work");
@@ -82,7 +82,7 @@ class LF_Test_ChainStationsPersist : LF_Test
 
 		// A batch saved for a step the barrel no longer runs is dropped.
 		LF_ChainStationRow stale = new LF_ChainStationRow();
-		stale.m_sStationKey = "Chains_Barrel_2";
+		stale.m_sStationKey = LF_TestAnnex.CHAINS_BARREL_2;
 		stale.m_sChainId = "cider";
 		stale.m_sStepId = "a-step-that-was-removed";
 		stale.m_iWork = 4;

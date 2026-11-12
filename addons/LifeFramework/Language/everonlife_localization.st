@@ -7441,6 +7441,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You still carry goods you have not paid for. Go back to the store and pay within %1 minute(s), or it counts as shoplifting."
      Comment "Toast at spawn: unpaid store goods came back after a restart or a logout (#479). %1 = minutes left."
     }
+    CustomStringTableItem "{AB87B08750BA98B5}" {
+     Id "LF-RateLimit_Title"
+     Target_en_us "Slow down"
+     Comment "Toast title when the server refuses a request sent too fast (#693b)."
+    }
+    CustomStringTableItem "{A2D4831F96B7DC32}" {
+     Id "LF-RateLimit_Slow"
+     Target_en_us "Too many requests at once. Wait a moment and try again."
+     Comment "Toast body when the server refuses a request sent too fast (#693b)."
+    }
+    CustomStringTableItem "{2D906536332C3F77}" {
+     Id "LF-Shop_RefuseTooFast"
+     Target_en_us "One order at a time. Give the till a moment."
+     Comment "Shop refusal: too many orders in a short time (#693b rate limit)."
+    }
+    CustomStringTableItem "{C46B3F43B4495744}" {
+     Id "LF-SpawnHub_TooFar"
+     Target_en_us "Stand at the travel globe to travel."
+     Comment "Spawn hub refusal: the server found no travel globe next to the player (#693b)."
+    }
+    CustomStringTableItem "{D2D275382EC82003}" {
+     Id "LF-Org_RankOfficer"
+     Target_en_us "Officer"
+     Comment "Rank name: officer, between founder and member (#750a)."
+    }
+    CustomStringTableItem "{A6563FE55129377C}" {
+     Id "LF-Org_PromoteGeneric"
+     Target_en_us "Promote"
+     Comment "Interaction entry fallback: move a member one rank up."
+    }
+    CustomStringTableItem "{BA50E8C027423E0C}" {
+     Id "LF-Org_DemoteGeneric"
+     Target_en_us "Demote"
+     Comment "Interaction entry fallback: move a member one rank down."
+    }
+    CustomStringTableItem "{2814AA6686C5C43D}" {
+     Id "LF-Org_PromoteIn"
+     Target_en_us "Promote in %1"
+     Comment "Interaction entry: a member with the manage-ranks right moves the member faced one rank up. %1 is the organization."
+    }
+    CustomStringTableItem "{CCC520E4A6F14395}" {
+     Id "LF-Org_DemoteIn"
+     Target_en_us "Demote in %1"
+     Comment "Interaction entry: a member with the manage-ranks right moves the member faced one rank down. %1 is the organization."
+    }
+    CustomStringTableItem "{136AF5D9CB22A265}" {
+     Id "LF-Org_RankRefused"
+     Target_en_us "You cannot change their rank."
+     Comment "Toast: the server refused a promotion or demotion."
+    }
+    CustomStringTableItem "{C476CC4110DB9C80}" {
+     Id "LF-Org_RankGiven"
+     Target_en_us "Rank given: %1."
+     Comment "Toast to the one who promoted or demoted. %1 is the new rank."
+    }
+    CustomStringTableItem "{ECB3BBB991B9C5B9}" {
+     Id "LF-Org_YourRank"
+     Target_en_us "Your rank is now %1."
+     Comment "Toast to the promoted or demoted member. %1 is the new rank."
+    }
   }
  }
 }

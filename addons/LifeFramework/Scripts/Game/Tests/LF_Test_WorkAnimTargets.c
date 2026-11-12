@@ -13,8 +13,8 @@ class LF_Test_WorkAnimTargets : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity car = GetGame().GetWorld().FindEntityByName("Roadmap_Lockpick_Car");
-		ctx.True(car != null, "Roadmap_Lockpick_Car is placed");
+		IEntity car = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.LOCKPICK_CAR);
+		ctx.True(car != null, "Annex_Lockpick_Car is placed");
 		if (!car)
 			return;
 

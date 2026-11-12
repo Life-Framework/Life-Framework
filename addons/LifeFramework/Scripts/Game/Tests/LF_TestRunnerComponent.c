@@ -48,7 +48,13 @@ class LF_TestRunnerComponent : ScriptComponent
 		string reportFile = LF_TestManager.WriteReport(reportXml);
 		PrintFormat("[LF_Tests] runtime tests done, failures=%1, report=%2", failures, reportFile);
 
+#ifdef LF_E2E_HOST_STOP
+		// wt e2e pass 1 (#830): the harness closes this boot through the host stop file, the path
+		// tools\cli host stop takes, so the engine's SHUTDOWN save is what the reload boot loads.
+		Print("[LF_Tests] leaving the close to the host stop file (LF_E2E_HOST_STOP)");
+#else
 		GetGame().GetCallqueue().CallLater(Close, CLOSE_DELAY_MS, false);
+#endif
 	}
 
 	//------------------------------------------------------------------------------------------------

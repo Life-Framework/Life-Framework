@@ -21,6 +21,10 @@ export const DEFAULTS = {
   sessionHoldMin: 20,
   sessionGraceMin: 5,
   sessionHoldMaxMin: 45,
+  // Session folders older than this many hours (not in use, not film) are removed; a session or
+  // test refuses to start with less free disk than minFreeDiskGb (docs/worktrees.md "Disk hygiene").
+  sessionKeepHours: 24,
+  minFreeDiskGb: 5,
 };
 
 // "high" | "normal" | "low" (any case), or null when it is not one.
@@ -248,4 +252,26 @@ export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } 
     source += "+raised";
   }
   return { runS: Math.ceil(runS), source, rate };
+}
+
+// One session request per worktree (issue #542): a retry whose earlier `session up` is still
+// queued (its caller timed out but the process lives) must not stack. Given the live tickets and
+// the ticket a request just wrote, returns the files of the OTHER session tickets from the same
+// worktree (same slug, session lane, other pid) that the new request replaces.
+export function supersededTickets(tickets, mine) {
+  if (!mine?.slug || (mine.lane ?? "session") !== "session") return { drop: [] };
+  const same = tickets.filter((t) => t.file !== mine.file && t.pid !== mine.pid && t.slug === mine.slug && (t.lane ?? "session") === "session");
+  return { drop: same.map((t) => t.file) };
+}
+
+// Session tickets of one worktree beyond the first (arrival order): what `pool status` marks DUPLICATE.
+export function duplicateSessionTickets(tickets) {
+  const seen = new Set();
+  const dups = new Set();
+  for (const t of [...tickets].sort((a, b) => (String(a.file) < String(b.file) ? -1 : 1))) {
+    if ((t.lane ?? "session") !== "session" || !t.slug) continue;
+    if (seen.has(t.slug)) dups.add(t.file);
+    seen.add(t.slug);
+  }
+  return dups;
 }

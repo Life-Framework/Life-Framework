@@ -130,8 +130,8 @@ class LF_Test_Roadmap_OrganizationsWorld : LF_Test
 		Resource frame = Resource.Load(LF_UITheme.FRAME_LAYOUT);
 		ctx.True(frame != null && frame.IsValid(), "the ledger frame layout loads");
 
-		IEntity desk = GetGame().GetWorld().FindEntityByName("Roadmap_Org_Desk");
-		ctx.True(desk != null, "Roadmap_Org_Desk is placed");
+		IEntity desk = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ORG_DESK);
+		ctx.True(desk != null, "Annex_Org_Desk is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -179,6 +179,14 @@ class LF_Test_Roadmap_OrganizationsPersistence : LF_Test
 	}
 
 	override void Run(LF_TestContext ctx)
+	{
+		// The e2e save boot seeds an organization earlier in this tier; put it back at the end.
+		LF_TestOrgSnapshot kept = LF_TestOrgSnapshot.Take();
+		RunWiped(ctx);
+		kept.Restore();
+	}
+
+	protected void RunWiped(LF_TestContext ctx)
 	{
 		LF_OrganizationManager.Reset();
 

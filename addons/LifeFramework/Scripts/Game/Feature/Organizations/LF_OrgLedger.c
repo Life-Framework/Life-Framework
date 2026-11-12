@@ -20,9 +20,11 @@ class LF_OrgLedgerPage : Managed
 	int m_iLease;
 	//! "Name|RankKey" rows joined by ";".
 	string m_sMembers;
+	//! This player's rank name (a localization key for the default ranks); empty on the first paint.
+	string m_sRank;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_OrgLedgerPage Create(bool hasOrg, string name, int fund, int rights, bool processing, int lease, string members)
+	static LF_OrgLedgerPage Create(bool hasOrg, string name, int fund, int rights, bool processing, int lease, string members, string rank = "")
 	{
 		LF_OrgLedgerPage page = new LF_OrgLedgerPage();
 		page.m_bHasOrg = hasOrg;
@@ -32,7 +34,18 @@ class LF_OrgLedgerPage : Managed
 		page.m_bProcessing = processing;
 		page.m_iLease = lease;
 		page.m_sMembers = members;
+		page.m_sRank = rank;
 		return page;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rank the server named, or until it answers the founder/member guess from the rights.
+	string RankLabel()
+	{
+		if (!m_sRank.IsEmpty())
+			return m_sRank;
+
+		return LF_OrgRules.RankKey(m_iRights);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -292,7 +305,7 @@ class LF_OrgLedger
 			return;
 
 		m_Screen.SetLine(PART_NAME_LINE, WidgetManager.Translate("#LF-Org_NameLine", m_Page.m_sName));
-		m_Screen.SetLine(PART_RANK_LINE, WidgetManager.Translate("#LF-Org_RankLine", WidgetManager.Translate(LF_OrgRules.RankKey(m_Page.m_iRights))));
+		m_Screen.SetLine(PART_RANK_LINE, WidgetManager.Translate("#LF-Org_RankLine", WidgetManager.Translate(m_Page.RankLabel())));
 		m_Screen.SetStatusRow(PART_FUND, "#EL-Org_Fund", LF_MoneyFormat.FormatMoney(m_Page.m_iFund), "");
 
 		string processing = "#LF-Org_NotOwned";
@@ -317,7 +330,7 @@ class LF_OrgLedger
 			m_Screen.AddListRow(PART_MEMBERS, "OrgMember" + i.ToString(), names[i], ranks[i], "");
 		}
 
-		m_Screen.SetStatusRow(PART_MEMBERSHIP, "#LF-Org_Membership", LF_OrgRules.RankKey(m_Page.m_iRights), MembershipAction(m_Page));
+		m_Screen.SetStatusRow(PART_MEMBERSHIP, "#LF-Org_Membership", m_Page.RankLabel(), MembershipAction(m_Page));
 	}
 
 	//------------------------------------------------------------------------------------------------

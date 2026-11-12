@@ -29,8 +29,8 @@ class LF_Test_PoliceCarKey : LF_Test
 				ctx.True(kit.m_aDirectItems && kit.m_aDirectItems.Contains(KEY), "the POLICE kit carries the station car key");
 		}
 
-		IEntity car = GetGame().GetWorld().FindEntityByName("Roadmap_Escort_Car");
-		ctx.NotNull(car, "DebugWorld places the station car Roadmap_Escort_Car");
+		IEntity car = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ESCORT_CAR);
+		ctx.NotNull(car, "DebugWorld places the station car Annex_Escort_Car");
 		LF_VehicleLockComponent carLock;
 		if (car)
 			carLock = LF_Component<LF_VehicleLockComponent>.Find(car);

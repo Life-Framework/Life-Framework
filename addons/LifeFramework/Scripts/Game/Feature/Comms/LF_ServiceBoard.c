@@ -355,6 +355,9 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_ServiceBoard(string service)
 	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.COMMS, "service board read"))
+			return;
+
 		LF_ServiceBoard.ServerRead(this, service);
 	}
 

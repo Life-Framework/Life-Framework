@@ -297,7 +297,7 @@
   },
   {
    "id": "flowerpot",
-   "match": "FlowerpotPelargonia",
+   "match": "FlowerpotPelargonia|FlowerpotFlowers",
    "min": 0.2,
    "max": 0.9,
    "why": "A window or doorstep geranium pot is 0.3-0.6 m"

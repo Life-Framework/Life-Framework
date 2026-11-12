@@ -21,7 +21,7 @@ class LF_Test_DispatchAlarm : LF_Test
 		ctx.True(Replication.IsServer(), "the alarm test runs on the server");
 
 		vector site = "0 0 0";
-		IEntity till = GetGame().GetWorld().FindEntityByName(LF_RobAction.TILL_ENTITY_NAME);
+		IEntity till = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.FUEL_TILL);
 		if (till)
 			site = till.GetOrigin();
 		else

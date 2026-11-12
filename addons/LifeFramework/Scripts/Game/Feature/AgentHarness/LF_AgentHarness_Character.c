@@ -286,7 +286,7 @@ modded class SCR_ChimeraCharacter
 		{
 			// Stands in for dragging an apple into the stash on the inventory screen (#348): the same
 			// move the screen asks of the server, so the member check in CanStoreItem decides.
-			IEntity stash = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Stash");
+			IEntity stash = LF_HideoutStashStorageManagerComponent.FindOwnedStash();
 			BaseInventoryStorageComponent target;
 			if (stash)
 				target = LF_Component<LF_HideoutStashStorageComponent>.Find(stash);
@@ -316,10 +316,25 @@ modded class SCR_ChimeraCharacter
 		if (tool == "park")
 		{
 			// Stands in for driving the bought car to the garage (#348): the owner's car in the world
-			// is set down beside the Roadmap_Garage counter, where Store takes it.
+			// is set down beside the nearest placed garage, where Store takes it.
 			string vehicleId = LF_VehicleOwnership.LatestInWorld(LF_Utils.GetPlayerUid(this));
 			IEntity vehicle = LF_VehicleOwnership.GetVehicle(vehicleId);
-			IEntity garage = GetGame().GetWorld().FindEntityByName("Roadmap_Garage");
+			// The garage nearest this character: a world may place more than one.
+			IEntity garage = null;
+			float nearest = 1000000;
+			foreach (LF_VehicleGarageComponent candidate : LF_VehicleGarageComponent.GetAll())
+			{
+				if (!candidate || !candidate.GetOwner())
+					continue;
+
+				float dist = vector.Distance(candidate.GetOwner().GetOrigin(), GetOrigin());
+				if (dist < nearest)
+				{
+					nearest = dist;
+					garage = candidate.GetOwner();
+				}
+			}
+
 			if (!vehicle || !garage)
 			{
 				LF_HarnessReply(commandId, "error", "no_vehicle");
@@ -628,6 +643,13 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_HarnessState(int commandId)
 	{
+		// The state line holds wanted level, cash, bank balance and job: harness eyes only (#693b).
+		if (!LF_DevGate.CheckHarnessRequest(this, "state"))
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
 		LF_HarnessReply(commandId, "ok", LF_AgentHarness.StateLine(this));
 	}
 

@@ -145,6 +145,7 @@ addRepoDoc("docs/overthrow-survey.md", { slug: "overthrow-survey", group: "Resea
 addRepoDoc("docs/everonlife-forks.md", { slug: "everonlife-forks", group: "Research & community", order: 3 });
 addRepoDoc("docs/community/discord.md", { slug: "discord", group: "Research & community", order: 4 });
 addRepoDoc("docs/community/support.md", { slug: "support", group: "Research & community", order: 5 });
+addRepoDoc("docs/credits.md", { slug: "credits", group: "Research & community", order: 6 });
 
 const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
   .map((p) => toPosix(path.relative(repo, p)))
@@ -162,7 +163,7 @@ roadmapFiles.forEach((rel, i) => {
 });
 
 // Pages with their own route instead of /docs/<slug>.
-const ownRoute = { decisions: "/decisions" };
+const ownRoute = { decisions: "/decisions", credits: "/credits" };
 const docHref = (d) => ownRoute[d.slug] || `/docs/${d.slug}`;
 
 const bySlug = new Map();
@@ -635,6 +636,9 @@ const githubOut = { ...githubRest, latestPulls: pulls.slice(0, 5), playtestRelea
 const gallery = await buildGallery({ site, github, repoUrl: `https://github.com/${GITHUB_REPO}` });
 fs.writeFileSync(path.join(dataDir, "gallery.json"), JSON.stringify(gallery));
 console.log(`[content] gallery: ${gallery.count} pictures`);
+
+// The config page renders its form from this file, so it cannot drift from the schema.
+fs.copyFileSync(path.join(repo, "docs", "config", "config.schema.json"), path.join(dataDir, "config-schema.json"));
 
 fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
 fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));

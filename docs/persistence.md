@@ -63,6 +63,7 @@ Each of these must survive a server restart:
 16. Carried item serials (save version 22, payload `itemserials`): the fence serial of each stamped item in a stored inventory snapshot (carried, stash, vehicle), parallel to the snapshot item list and keyed by its owner key and slot, never an entity id (`LF_StorageSnapshot`). Applied after `carried`; a row whose snapshot is gone or resized is skipped with a warning and those items come back unstamped (#470).
 17. Unpaid store tags (save version 25, payload `storeunpaid`, #479): store key, item prefab, price, the carrier's character record key and whether the item was used up, never an entity id (`LF_Stores`). Only tags a living player carries are saved; a disconnect parks them the same way. They wait until that character's body spawns with its carried inventory back, then go on an untagged item of that prefab (`ReattachUnpaid`); a tag whose item or store is gone is dropped with a warning. A re-applied load replaces the tags of characters in the world now. A restored tag is not swept as shoplifting while its carrier has the store's grace (`m_iRestoredGraceSeconds`) to come back and pay; after that, or once back inside, the sweep applies.
 18. Playtime (save version 26, payload `playtime`, #692): seconds played per account uid and job (`CIVILIAN`, `POLICE`, `MEDIC`, a delivery job name), never replicated (`LF_Playtime`). The save holds the time up to the save: export credits the online clocks first. The clocks themselves are session-only; a load replaces the counts and leaves running clocks alone, so a live re-apply rolls playtime back to the save like every other payload. A version 1-25 save never reaches this payload and leaves the live counts alone: at a boot load they are empty, so every account starts at zero. One credit is capped at 300 s (a longer gap is a wall-clock jump); a player id that changes account settles the old clock and starts a new one.
+19. Organization ranks (save version 27, payload `orgranks`, #750a): each rank's rights bitmask and ladder order, keyed by organization id and rank id (`LF_OrganizationManager`). The `organizations` record keeps its layout: a positional record read through a changed class would misread every older save, so the mask that does not fit the four saved bools rides its own payload (the `itemstate` route). The record version is 2. A version 1-26 save has record version 1 organizations: `ApplyAll` turns each rank's four bools into a mask (the founder gets every right, any other rank its bools plus the stash every member already had), adds the officer rung between founder and member, keeps every member on their rank and logs `load migrated N organization(s) from record version 1`. Rows for a gone organization or rank are dropped with a warning; a rank with no row keeps the mask from its bools.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -136,6 +137,7 @@ Identity:
   | 24 | character slots (#331): each character's record key and wanted level, by account uid and character id (`LF_PlayerAccountManager.ExportCharacterSlots` / `ApplyCharacterSlots`) |
   | 25 | unpaid store tags (#479): by character record key, store key and prefab (`LF_Stores.ExportUnpaid` / `ApplyUnpaid`; `ReattachUnpaid` on each spawn, `ParkCarrier` on disconnect) |
   | 26 | playtime per account and job (#692): account uid, job name, seconds (`LF_Playtime.ExportAll` / `ApplyAll`; export settles the online clocks) |
+  | 27 | organization ranks (#750a): rights mask and ladder order per organization id and rank id (`LF_OrganizationManager.ExportRanks` / `ApplyRanks`, after `organizations`) |
 
 - **Characters per account (#331, save version 24).** An account holds up to
   `LF_CharacterConfig.MaxPerAccount()` characters (`Configs/Account/LF_Characters.conf`,
@@ -311,8 +313,21 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
 - `e2e/pass1-write-save` / `e2e/pass2-verify-load` (PERSISTENCE, two boots)
   also carry a jail sentence and a carried inventory (237 cash, 3 apples, a
   water bottle inside a backpack) across the real restart.
+- `tools\cli wt e2e` proves the SHUTDOWN save, the save a real server
+  writes when it stops (#830). Both boots run the suite's mission header
+  (`Missions/EL_DebugTest.conf`, an `LF_MissionHeader` watching the stop
+  file): on a bare world (`-server DebugWorld.ent`, no mission header) the
+  engine enters `SHUTDOWN` but writes no SHUTDOWN save, so pass 2 used to load
+  the manual save. Pass 1 (`LF_E2E_HOST_STOP`) ends through the host stop
+  file, as `host stop` does, and fails unless its log shows `stop requested`,
+  then `save completed (SHUTDOWN)`, then `feature statics reset`
+  (`tools/test/e2e-shutdown.mjs`); `session ended without a shutdown save`
+  fails it. `e2e/shutdown-save-loaded` opens a marker account only after the
+  manual save finished, so pass 2 finds it (77 and its ledger line) only when
+  it loaded the shutdown save and that save was written before the statics
+  reset.
 - `persist/carried-roundtrip` (PERSISTENCE) and `persist/carried-death-no-dupe`
   (WORLD) drive the carried payload through the real serializer and the death rule.
-- In-session round trips prove nothing; the restart is ground truth. The
-  restart pass (save -> shutdown -> boot -> load) stays manual because the
-  `LF_Test` runner cannot survive a game-state transition.
+- In-session round trips prove nothing; the restart is ground truth. `wt e2e`
+  covers save -> host-stop shutdown -> boot -> load with two processes; a
+  single `LF_Test` run cannot survive a game-state transition.

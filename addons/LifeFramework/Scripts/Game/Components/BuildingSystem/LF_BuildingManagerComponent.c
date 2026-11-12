@@ -36,6 +36,9 @@ class LF_BuildingManagerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	void RpcAsk_SpawnEntityPrefab(ResourceName resource, vector pos)
 	{
+		if (!LF_RateLimit.AllowCharacter(GetOwner(), LF_ERequestKind.SPAWN, "building placement"))
+			return;
+
 		PlaceHeldBuilding(resource, pos);
 	}
 
@@ -51,7 +54,7 @@ class LF_BuildingManagerComponent : ScriptComponent
 			return null;
 
 		LF_BuildingPerformerComponent performer = GetHeldBuildingPerformer(character);
-		if (!performer || performer.m_BuildingPrefab != resource)
+		if (!performer || !LF_Utils.SamePrefab(performer.m_BuildingPrefab, resource))
 		{
 			LF_Debug.Warn("Farming", string.Format("placement refused: resource=%1 (performer mismatch or none)", resource));
 			return null;
@@ -69,8 +72,9 @@ class LF_BuildingManagerComponent : ScriptComponent
 			return null;
 		}
 
-		LF_Debug.Log("Farming", string.Format("placement accepted: resource=%1 pos=%2", resource, pos));
-		return LF_Utils.SpawnEntityPrefab(resource, pos);
+		// Spawn the server's own prefab, never the string the client sent.
+		LF_Debug.Log("Farming", string.Format("placement accepted: resource=%1 pos=%2", performer.m_BuildingPrefab, pos));
+		return LF_Utils.SpawnEntityPrefab(performer.m_BuildingPrefab, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------

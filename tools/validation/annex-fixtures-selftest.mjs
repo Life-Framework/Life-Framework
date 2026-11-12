@@ -3,6 +3,9 @@
 // Proves validate-annex-fixtures lets a baselined village reference pass, fails
 // a new one (new file, or a new name in a baselined file), ignores annex names,
 // spawned prefabs and comments, and reports a retired baseline row as stale.
+// red-proof: with the nested-entity line in declaredNames (the `if (nested) names.push(...)` one) removed this printed
+// "FAIL a new test names a village entity inside a $grp" and "... a village child entity" with "(no errors)" and
+// exited 1 (2026-11-12); restored, it passes.
 // red-proof: with the baseline lookup in checkAnnexFixtures made always-true this
 // printed "FAIL a new test names a village entity: expected /names village
 // entity "Roadmap_Bank_Vault"/" and exited 1 (2026-11-11).
@@ -29,9 +32,27 @@ function tree() {
   put(root, `${TESTS}/LF_Test_Annex.c`, test(find("Annex_Desk")));
   return root;
 }
+const NESTED = `$grp GenericEntity : "{4444444444444444}Prefabs/Counter.et" {
+ Roadmap_Nested_Depot {
+  components {
+   MeshObject {
+    Object "{5555555555555555}a.xob"
+   }
+  }
+  children {
+   Roadmap_Nested_Child {
+    coords 0 0 1
+   }
+  }
+ }
+}
+`;
 const BASELINE = { "LF_Test_Old.c": ["Roadmap_Bank_Bag"] };
 
 const cases = [
+  { name: "a new test names a village entity inside a $grp", plant: (r) => { put(r, `${LAYERS}/Street_Nested.layer`, NESTED); put(r, `${TESTS}/LF_Test_Nest.c`, test(find("Roadmap_Nested_Depot"))); }, expect: /LF_Test_Nest.c: names village entity "Roadmap_Nested_Depot"/ },
+  { name: "a new test names a village child entity", plant: (r) => { put(r, `${LAYERS}/Street_Nested.layer`, NESTED); put(r, `${TESTS}/LF_Test_Kid.c`, test(find("Roadmap_Nested_Child"))); }, expect: /LF_Test_Kid.c: names village entity "Roadmap_Nested_Child"/ },
+  { name: "a component override name is not an entity", plant: (r) => { put(r, `${LAYERS}/Street_Nested.layer`, NESTED); put(r, `${TESTS}/LF_Test_Comp.c`, test('		ctx.True(c.GetClassName() == "MeshObject", "x");')); }, expect: /^$/ , none: true },
   { name: "a new test names a village entity", plant: (r) => put(r, `${TESTS}/LF_Test_New.c`, test(find("Roadmap_Bank_Vault"))), expect: /LF_Test_New\.c: names village entity "Roadmap_Bank_Vault"/ },
   { name: "a baselined test names a second village entity", plant: (r) => put(r, `${TESTS}/LF_Test_Old.c`, test(find("Roadmap_Bank_Bag") + "\n" + find("Roadmap_Bank_Vault"))), expect: /LF_Test_Old\.c: names village entity "Roadmap_Bank_Vault"/ },
 ];
@@ -60,7 +81,7 @@ try {
     roots.push(root);
     c.plant(root);
     const { errors } = checkAnnexFixtures(root, BASELINE);
-    if (!errors.some((e) => c.expect.test(e))) {
+    if (c.none ? errors.length : !errors.some((e) => c.expect.test(e))) {
       failed++;
       console.log(`FAIL ${c.name}: expected ${c.expect}, got:\n  ${errors.join("\n  ") || "(no errors)"}`);
     }

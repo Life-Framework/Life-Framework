@@ -12,7 +12,7 @@ class LF_Test_ChopShopSteal : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity bench = GetGame().GetWorld().FindEntityByName("Roadmap_ChopShop");
+		IEntity bench = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.CHOP_SHOP);
 		LF_ChopShopComponent shop = LF_Component<LF_ChopShopComponent>.Find(bench);
 		ctx.NotNull(shop, "the playtest bench is placed");
 		if (!shop)

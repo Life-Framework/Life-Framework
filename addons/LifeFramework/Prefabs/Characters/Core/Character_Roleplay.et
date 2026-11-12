@@ -148,6 +148,24 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      }
      m_sSlot "org_invite"
     }
+    LF_PlayerRoleAction "{BD73B5C7D7AA3BFF}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{08B5D169934266E1}" {
+      Name "#LF-Interact_RoleSlot"
+     }
+     m_sSlot "org_promote"
+    }
+    LF_PlayerRoleAction "{BD31872299879744}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{967F516AFF454628}" {
+      Name "#LF-Interact_RoleSlot"
+     }
+     m_sSlot "org_demote"
+    }
     LF_PlayerRoleAction "{0230FFB1A8EC4D43}" {
      ParentContextList {
       "LF_ID"

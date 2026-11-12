@@ -41,7 +41,6 @@ GenericEntity {
    m_fFuseSeconds 0
   }
   LF_CashVanRouteComponent "{AD90CF30B9D9615D}" {
-   m_sStops "Roadmap_Cash_Stop_Bank,Roadmap_Cash_Stop_Store,Roadmap_Cash_Stop_Fuel"
    m_fDwellSeconds 300
    m_fClearMetres 40
   }

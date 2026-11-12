@@ -266,6 +266,9 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_BuyVehicle(RplId lot, int index)
 	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.PURCHASE, "vehicle purchase"))
+			return;
+
 		LF_VehicleLot.Buy(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(lot), index);
 	}
 }

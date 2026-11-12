@@ -8,8 +8,8 @@ fails on a tunable constant that is neither baselined nor marked fixed (#277).
 
 - Config roots (a `.conf` file whose root class is script-defined): **20**
 - Config attributes (`[Attribute(` in the root's script file): **196**
-- Numeric constants in `Feature/`: **396**; tunable **234**, fixed **66**, unclassified **96**
-- Tunables that are config defaults or marked `// lf-fixed:`: **41**; baselined debt for #284: **193**
+- Numeric constants in `Feature/`: **397**; tunable **235**, fixed **66**, unclassified **96**
+- Tunables that are config defaults or marked `// lf-fixed:`: **42**; baselined debt for #284: **193**
 
 A constant is **tunable** when its name holds a time, range, price, cap or rate word
 (`_MS`, `_RADIUS`, `_FINE`, `MAX_`, ...). It is **fixed** when it holds a structural word
@@ -52,7 +52,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | vehicles | 8 | 8 |
 | zones | 16 | 11 |
 | persistence | 12 | 11 |
-| unrouted | 26 | 26 |
+| unrouted | 27 | 26 |
 
 ## Tunable constants by feature area
 
@@ -66,7 +66,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | CharacterCreation | persistence | 4 | 4 |
 | Comms | unrouted | 5 | 5 |
 | Crime | crime | 35 | 35 |
-| Debug | unrouted | 2 | 2 |
+| Debug | unrouted | 3 | 2 |
 | Farming | jobs | 1 | 1 |
 | Film | unrouted | 7 | 7 |
 | Gathering | jobs | 1 | 1 |
@@ -166,6 +166,7 @@ Owner is core for every row until the M3 move.
 | `Crime/LF_WorkAnim.c` | `WATCH_MS` | `400` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `CHECK_MS` | `1500` | crime | to move (#284) |
 | `Debug/LF_DebugMenu.c` | `ACTION_DEBOUNCE_MS` | `150` | unrouted | to move (#284) |
+| `Debug/LF_SpawnHub.c` | `GLOBE_RANGE` | `6.0` | unrouted | fixed (marked) |
 | `Debug/LF_SpawnHub.c` | `CLOSE_RANGE` | `4.0` | unrouted | to move (#284) |
 | `Farming/LF_FarmPlots.c` | `TICK_MS` | `1000` | jobs | to move (#284) |
 | `Film/LF_FilmActor.c` | `STUCK_SECONDS` | `6` | unrouted | to move (#284) |

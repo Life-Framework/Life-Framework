@@ -1,6 +1,5 @@
 class LF_RobAction : ScriptedUserAction
 {
-	static const string TILL_ENTITY_NAME = "Roadmap_Fuel_Till";
 	static const string TILL_ACTION_NAME = "#EL-Fuel_Till_Rob";
 
 	[Attribute(defvalue: "100", uiwidget: UIWidgets.Auto, desc: "Amount of money to steal when no range is set")]
@@ -20,6 +19,9 @@ class LF_RobAction : ScriptedUserAction
 
 	[Attribute(defvalue: "2", uiwidget: UIWidgets.Auto, desc: "Minimum police on duty required")]
 	protected int m_iMinPoliceOnDuty;
+
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Show the fuel till action name (TILL_ACTION_NAME) from script. Set on the fuel till and its annex twin.")]
+	protected bool m_bTillActionName;
 
 	protected float m_fLastRobTime;
 
@@ -191,7 +193,7 @@ class LF_RobAction : ScriptedUserAction
 		if (!owner)
 			return false;
 
-		if (owner.GetName() != TILL_ENTITY_NAME)
+		if (!m_bTillActionName)
 			return false;
 
 		outName = TILL_ACTION_NAME;

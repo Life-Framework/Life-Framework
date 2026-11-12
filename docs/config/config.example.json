@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "defaultBuyPrice": 50,
+    "defaultSellPrice": 25,
+    "priceRules": {
+      "Prefabs/Items/Food/": {
+        "buyPrice": 10,
+        "sellPrice": 5
+      },
+      "Prefabs/Weapons/": {
+        "hidden": true
+      }
+    },
+    "extraItemPrefabs": []
+  },
+  "vehicles": {
+    "buyPercent": 100,
+    "sellBackPercent": 50,
+    "chopPercent": 30,
+    "chopValueCap": 3000,
+    "impoundPercent": 10,
+    "garagePercent": 0,
+    "vehicles": {}
+  }
+}

@@ -56,7 +56,7 @@ class LF_Test_FarmPlotsPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(26, version, "the save is written at version 26 (farmplots is payload 23)");
+		ctx.Equal(27, version, "the save is written at version 27 (farmplots is payload 23)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "farmplots");
 		ctx.Equal(1, plot.GetStage(), "the crop is back half grown");
 		ctx.EqualFloat(75, plot.GetGrownSeconds(), 0.001, "with the same 75 seconds of growth");

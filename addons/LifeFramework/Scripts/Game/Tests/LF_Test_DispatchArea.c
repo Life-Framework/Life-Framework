@@ -30,8 +30,8 @@ class LF_Test_DispatchArea : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity console = GetGame().GetWorld().FindEntityByName("Roadmap_Dispatch_Console");
-		ctx.NotNull(console, "Roadmap_Dispatch_Console is placed");
+		IEntity console = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.DISPATCH_CONSOLE);
+		ctx.NotNull(console, "Annex_Dispatch_Console is placed");
 		IEntity radio = null;
 		if (console)
 			radio = LF_ActionSite.FindNear(console.GetOrigin(), 1.5, "LF_DebugDispatchAction");
@@ -39,18 +39,18 @@ class LF_Test_DispatchArea : LF_Test
 		if (radio)
 			ctx.Equal(2, CountOf(radio, LF_DebugDispatchAction), "the console offers a police and a medic test call");
 
-		IEntity police = GetGame().GetWorld().FindEntityByName("Roadmap_Dispatch_PoliceBoard");
-		ctx.NotNull(police, "Roadmap_Dispatch_PoliceBoard is placed");
+		IEntity police = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.DISPATCH_POLICE_BOARD);
+		ctx.NotNull(police, "Annex_Dispatch_PoliceBoard is placed");
 		if (police)
 			ctx.Equal(1, CountOf(police, LF_ServiceTakeAction), "the police board takes calls");
 
-		IEntity medic = GetGame().GetWorld().FindEntityByName("Roadmap_Dispatch_MedicBoard");
-		ctx.NotNull(medic, "Roadmap_Dispatch_MedicBoard is placed");
+		IEntity medic = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.DISPATCH_MEDIC_BOARD);
+		ctx.NotNull(medic, "Annex_Dispatch_MedicBoard is placed");
 		if (medic)
 			ctx.Equal(1, CountOf(medic, LF_ServiceTakeAction), "the medic board takes calls");
 
-		IEntity till = GetGame().GetWorld().FindEntityByName("Roadmap_Test_Till");
-		ctx.NotNull(till, "Roadmap_Test_Till is placed");
+		IEntity till = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.TEST_TILL);
+		ctx.NotNull(till, "Annex_Test_Till is placed");
 		if (till)
 			ctx.Equal(1, CountOf(till, LF_RobAction), "the test till offers the robbery action");
 	}

@@ -41,7 +41,7 @@ class LF_Test_OrgRegistry : LF_Test
 		ctx.True(LF_OrganizationManager.IsNameTaken("north dock"), "the name is taken whatever the case");
 		ctx.True(LF_OrganizationManager.Create(rival, "NORTH DOCK") == null, "a duplicate name is refused");
 		ctx.True(LF_OrganizationManager.Create(rival, "X") == null, "a bad name is refused by the manager too");
-		ctx.Equal(LF_OrgRules.RIGHT_INVITE | LF_OrgRules.RIGHT_KICK | LF_OrgRules.RIGHT_WITHDRAW | LF_OrgRules.RIGHT_BUY | LF_OrgRules.RIGHT_FOUNDER, LF_OrgRules.RightsOf(org, founder), "the founder holds every right");
+		ctx.Equal(LF_OrgRights.ALL | LF_OrgRules.RIGHT_FOUNDER, LF_OrgRules.RightsOf(org, founder), "the founder holds every right");
 		ctx.Equal(0, LF_OrgRules.RightsOf(org, outsider), "an outsider holds none");
 
 		// Offers: only a rank that may invite, never to a member, never to yourself.

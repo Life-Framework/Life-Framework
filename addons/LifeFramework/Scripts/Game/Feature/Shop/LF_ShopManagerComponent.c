@@ -18,9 +18,10 @@ class LF_ShopManagerComponentClass : GameComponentClass
 
 //------------------------------------------------------------------------------------------------
 //! Builds the priced catalog every shop shows: every in-game inventory item prefab from the
-//! resource database, priced from the LF_ShopPricesConfig. Lives on the game mode; the same game
-//! data (config + resources) exists on server and client, so both build the identical catalog and
-//! the menu's displayed prices can never drift from what the server charges.
+//! resource database, priced from the LF_ShopPricesConfig. Lives on the game mode; server and client
+//! build the same catalog from the same resources. The owner's config.json is read on the server
+//! only, so a client prices it with the server's effective values from the config stream
+//! (LF_ConfigStream, #285) and the menu's prices match what the server charges.
 //------------------------------------------------------------------------------------------------
 class LF_ShopManagerComponent : GameComponent
 {
@@ -30,7 +31,9 @@ class LF_ShopManagerComponent : GameComponent
 
 	protected ref LF_ShopPricesConfig m_Config;
 	protected ref array<ref LF_ShopCatalogItem> m_aCatalog;
+	protected ref map<string, ref LF_ShopCatalogItem> m_mCatalogByGuid;
 	protected bool m_bBuilt;
+	protected bool m_bConfigLoaded;
 
 	protected static LF_ShopManagerComponent s_Instance;
 
@@ -60,22 +63,18 @@ class LF_ShopManagerComponent : GameComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Finds one item in the priced catalog.
-	//! \param[in] prefab Prefab path of the item.
+	//! Finds one item in the priced catalog, by GUID (LF_Utils.PrefabGuid), so a name from before a
+	//! resource move finds the same row. One map lookup: the catalog holds over a thousand prefabs
+	//! and the build checks every new one against it.
+	//! \param[in] prefab Prefab of the item.
 	//! \return The catalog item, or null when the prefab is not catalogued.
 	LF_ShopCatalogItem GetItem(ResourceName prefab)
 	{
 		EnsureBuilt();
-		if (!m_aCatalog || prefab.IsEmpty())
+		if (!m_mCatalogByGuid || prefab.IsEmpty())
 			return null;
 
-		foreach (LF_ShopCatalogItem item : m_aCatalog)
-		{
-			if (item.m_ItemPrefab == prefab)
-				return item;
-		}
-
-		return null;
+		return m_mCatalogByGuid.Get(LF_Utils.PrefabGuid(prefab));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -144,16 +143,83 @@ class LF_ShopManagerComponent : GameComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The effective price config (core, pack, owner on the server; the server's stream on a client),
+	//! loaded on first use without building the catalog. Null when the feature is not configured.
+	LF_ShopPricesConfig GetConfig()
+	{
+		EnsureConfig();
+		return m_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads the config layers again and re-prices the catalog when it is built: a client after the
+	//! server's config stream arrives, the server after /configreload (#285). Before the first load
+	//! it does nothing; that load reads the current layers anyway.
+	void ReloadConfig()
+	{
+		if (!m_bConfigLoaded)
+			return;
+
+		if (!LoadConfig())
+			return;
+
+		if (m_aCatalog)
+			RepriceCatalog();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EnsureConfig()
+	{
+		if (m_bConfigLoaded)
+			return;
+		m_bConfigLoaded = true;
+
+		LoadConfig();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void EnsureBuilt()
 	{
 		if (m_bBuilt)
 			return;
 		m_bBuilt = true;
 
-		if (!LoadConfig())
+		EnsureConfig();
+		if (!m_Config)
 			return;
 
 		BuildCatalog();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Prices every catalogued item again from the current config and adds extra prefabs it now
+	//! lists. Cheap next to BuildCatalog: no resource search, one rule walk per item.
+	protected void RepriceCatalog()
+	{
+		int changed;
+		foreach (LF_ShopCatalogItem item : m_aCatalog)
+		{
+			if (!item)
+				continue;
+
+			int buyPrice;
+			int sellPrice;
+			bool hidden;
+			LF_ShopPriceResolver.ResolvePrices(m_Config.m_aPriceRules, item.m_ItemPrefab, item.m_eItemType, item.m_eItemMode, m_Config.m_iDefaultBuyPrice, m_Config.m_iDefaultSellPrice, buyPrice, sellPrice, hidden);
+			if (buyPrice != item.m_iBuyPrice || sellPrice != item.m_iSellPrice || hidden != item.m_bHidden)
+				changed++;
+
+			item.m_iBuyPrice = buyPrice;
+			item.m_iSellPrice = sellPrice;
+			item.m_bHidden = hidden;
+		}
+
+		int before = m_aCatalog.Count();
+		BuildExtraItems();
+		if (m_aCatalog.Count() != before)
+			SortByName();
+
+		LF_Debug.Info("Shop", string.Format("catalog repriced: %1 of %2 items changed price, %3 added", changed, before, m_aCatalog.Count() - before));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -179,6 +245,9 @@ class LF_ShopManagerComponent : GameComponent
 			return false;
 		}
 
+		// Pack overlays, then the owner's config.json "shops" section (LF_ConfigService); on a
+		// client, then the server's effective values from the config stream (LF_ConfigStream).
+		m_Config.ApplyLayers(m_sConfigPath);
 		return true;
 	}
 
@@ -190,7 +259,9 @@ class LF_ShopManagerComponent : GameComponent
 	//! config's extra list tops up anything living outside Prefabs/Items (tools, mined resources).
 	protected void BuildCatalog()
 	{
+		int started = System.GetTickCount();
 		m_aCatalog = new array<ref LF_ShopCatalogItem>();
+		m_mCatalogByGuid = new map<string, ref LF_ShopCatalogItem>();
 
 		SearchResourcesFilter filter();
 		filter.fileExtensions = { "et" };
@@ -217,7 +288,7 @@ class LF_ShopManagerComponent : GameComponent
 		BuildExtraItems();
 		SortByName();
 
-		LF_Debug.Log("Shop", string.Format("catalog built: %1 priced items", m_aCatalog.Count()));
+		LF_Debug.Log("Shop", string.Format("catalog built: %1 priced items in %2 ms", m_aCatalog.Count(), System.GetTickCount(started)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -287,6 +358,7 @@ class LF_ShopManagerComponent : GameComponent
 		catalogItem.m_bHidden = hidden;
 		catalogItem.m_sDisplayName = ResolveDisplayName(prefab);
 		m_aCatalog.Insert(catalogItem);
+		m_mCatalogByGuid.Set(LF_Utils.PrefabGuid(prefab), catalogItem);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -184,6 +184,7 @@ function Footer() {
         { label: "Gallery", href: "/gallery" },
         { label: "Devlog", href: "/devlog" },
         { label: "Decisions", href: "/decisions" },
+        { label: "Credits", href: "/credits" },
         { label: "Direction", href: "/docs/direction" },
       ],
     },
@@ -192,6 +193,7 @@ function Footer() {
       links: [
         { label: "Join the playtest", href: "/playtest" },
         { label: "Server owners", href: "/servers" },
+        { label: "Config generator", href: "/config" },
         { label: "Contribute", href: "/contribute" },
         { label: "Docs", href: "/docs" },
         { label: "Discord", href: DISCORD_URL },

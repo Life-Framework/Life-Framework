@@ -25,6 +25,29 @@ native assets.
 | **Roadmap** | [Current gameplay plan](docs/roadmap/README.md) |
 | **Website** | [life-framework.org](https://life-framework.org) · source in [website/](website/README.md) |
 
+## Credits
+
+Life Framework stands on other people's work. Full list, with licences and links: [docs/credits.md](docs/credits.md) and
+[life-framework.org/credits](https://life-framework.org/credits).
+
+| Credit | For | Licence |
+| --- | --- | --- |
+| [Everon Life](https://github.com/EveronLife/EveronLife) by Arkensor and its contributors | The framework this continues (`EL_` became `LF_` on 2026-11-09) | MIT |
+| [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) | Code used with its owner's permission, relicensed MIT for Life Framework | APL-SA upstream |
+| [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) by LNGCGenetic | Police, jail, garage and vehicle code | MIT |
+| Bohemia Interactive | Base-game assets and the Arma Reforger engine | Arma Public License |
+| Kevin MacLeod ([incompetech.com](https://incompetech.com)) | Trailer music | CC BY 4.0 |
+| [Piper](https://github.com/rhasspy/piper) and LJ Speech | Trailer voice-over | MIT; public domain |
+| [Contributors](https://github.com/Life-Framework/Life-Framework/graphs/contributors) | Everyone who has committed | n/a |
+
+Parts of the police, jail, garage, and vehicle code are ported from LNGCLifeRP_Public; each ported file keeps its notice. Third-party sources and
+the import policy: [docs/ecosystem.md](docs/ecosystem.md).
+
+Code from [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) is used
+with its owner's permission and relicensed under MIT for Life Framework; the
+repo's own APL-SA licence still applies to everyone else. Each derived file
+names its source in a header. Per-file credits: [THIRD_PARTY.md](THIRD_PARTY.md).
+
 ## Features
 
 What's implemented today (each backed by code and DebugWorld prefabs; most
@@ -113,22 +136,6 @@ assets-source/          Source asset licenses (LICENSES.md)
 .opencode/              AI skills and playbooks (opencode)
 AGENTS.md               Engineering contract for humans and AI agents
 ```
-
-## Credits
-
-Fork/continuation of the **Everon Life RPG Framework** by
-[Arkensor](https://github.com/EveronLife/EveronLife) (MIT). The upstream `EL_` class
-prefix became `LF_` on 2026-11-09; the credit stays.
-
-Parts of the police, jail, garage, and vehicle code are ported from
-[LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) by
-LNGCGenetic (MIT); each ported file keeps its notice. Third-party sources and
-the import policy: [docs/ecosystem.md](docs/ecosystem.md).
-
-Code from [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) is used
-with its owner's permission and relicensed under MIT for Life Framework; the
-repo's own APL-SA licence still applies to everyone else. Each derived file
-names its source in a header. Per-file credits: [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ## Support
 

@@ -24,6 +24,30 @@ modded class ScriptedInventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Queues a recount for every name a listener subscribed with for this prefab. A moved resource
+	//! reports a new path with the same GUID, so subscriptions match by GUID, and listeners that
+	//! used the old and the new name each hear about it.
+	//! \return True when anyone listens for the prefab.
+	protected bool LF_RecountSubscribed(ResourceName prefab)
+	{
+		if (!m_mELItemCountInvokers || prefab.IsEmpty())
+			return false;
+
+		bool any;
+		for (int i = 0; i < m_mELItemCountInvokers.Count(); i++)
+		{
+			ResourceName subscribed = m_mELItemCountInvokers.GetKey(i);
+			if (!LF_Utils.SamePrefab(subscribed, prefab))
+				continue;
+
+			LF_RecountItemsDebounced(subscribed);
+			any = true;
+		}
+
+		return any;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void LF_RecountItemsDebounced(ResourceName prefab)
 	{
 		if (!m_aELPendingItemRecountTypes) m_aELPendingItemRecountTypes = new set<ResourceName>();
@@ -57,11 +81,8 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		super.OnItemAdded(storageOwner, item);
 
-		ResourceName prefab = LF_Utils.GetPrefabName(item);
-		if (m_mELItemCountInvokers && m_mELItemCountInvokers.Contains(prefab))
+		if (LF_RecountSubscribed(LF_Utils.GetPrefabName(item)))
 		{
-			LF_RecountItemsDebounced(prefab);
-
 			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);
 			if (quantity) quantity.GetOnQuantityChanged().Insert(LF_HandleOnQuantityChanged);
 		}
@@ -72,11 +93,8 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		super.OnItemRemoved(storageOwner, item);
 
-		ResourceName prefab = LF_Utils.GetPrefabName(item);
-		if (m_mELItemCountInvokers && m_mELItemCountInvokers.Contains(prefab))
+		if (LF_RecountSubscribed(LF_Utils.GetPrefabName(item)))
 		{
-			LF_RecountItemsDebounced(prefab);
-
 			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);
 			if (quantity) quantity.GetOnQuantityChanged().Remove(LF_HandleOnQuantityChanged);
 		}
@@ -85,7 +103,7 @@ modded class ScriptedInventoryStorageManagerComponent
 	//------------------------------------------------------------------------------------------------
 	protected event void LF_HandleOnQuantityChanged(LF_QuantityComponent quantityComponent)
 	{
-		LF_RecountItemsDebounced(LF_Utils.GetPrefabName(quantityComponent.GetOwner()));
+		LF_RecountSubscribed(LF_Utils.GetPrefabName(quantityComponent.GetOwner()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -98,6 +116,9 @@ modded class ScriptedInventoryStorageManagerComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RPC_LF_RequestQuantitySplit(RplId quantitySourceRplId, int splitSize)
 	{
+		if (!LF_RateLimit.AllowCharacter(GetOwner(), LF_ERequestKind.INVENTORY, "quantity split"))
+			return;
+
 		LF_QuantityComponent quantitySource = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !LF_CanManipulate(quantitySource.GetOwner()))
 		{
@@ -131,6 +152,9 @@ modded class ScriptedInventoryStorageManagerComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RPC_LF_QuantityTransfer(RplId quantitySourceRplId, RplId quantityDestinationRplId, int amount)
 	{
+		if (!LF_RateLimit.AllowCharacter(GetOwner(), LF_ERequestKind.INVENTORY, "quantity transfer"))
+			return;
+
 		LF_QuantityComponent quantitySource = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !LF_CanManipulate(quantitySource.GetOwner()))
 		{
@@ -177,7 +201,12 @@ modded class ScriptedInventoryStorageManagerComponent
 	protected void RPC_LF_SetTransferIntent(RplId sourceRplId, bool keepSeperate)
 	{
 		IEntity sourceEntity = LF_NetworkUtils.FindEntityByRplId(sourceRplId);
-		if (!sourceEntity || !LF_CanManipulate(sourceEntity)) return;
+		if (!sourceEntity || !LF_CanManipulate(sourceEntity))
+		{
+			LF_Debug.Warn("Quantity", "Transfer intent refused: source not found or out of range");
+			return;
+		}
+
 		if (!LF_CanManipulateOwned(sourceEntity))
 		{
 			LF_Debug.Warn("Quantity", "Transfer intent refused: source not owned");

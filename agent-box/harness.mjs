@@ -137,7 +137,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "lockpick") {
     return `${id} lockpick`;
   }
-  if (spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report") {
+  if (spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "peers") {

@@ -125,10 +125,10 @@ class LF_Test_Roadmap_VehiclesWorld : LF_Test
 		ctx.True(garage.IsValid(), "Garage_E_01.et loads");
 		ctx.True(keyPrefab.IsValid(), "VehicleKey.et loads");
 
-		IEntity display = GetGame().GetWorld().FindEntityByName("Roadmap_Vehicle_S105");
-		ctx.True(display != null, "Roadmap_Vehicle_S105 is placed");
-		IEntity lotEntity = GetGame().GetWorld().FindEntityByName("Roadmap_Vehicle_Lot");
-		ctx.True(lotEntity != null, "Roadmap_Vehicle_Lot is placed");
+		IEntity display = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.VEHICLE_S105);
+		ctx.True(display != null, "Annex_Vehicle_S105 is placed");
+		IEntity lotEntity = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.VEHICLE_LOT);
+		ctx.True(lotEntity != null, "Annex_Vehicle_Lot is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -145,7 +145,7 @@ class LF_Test_Roadmap_VehiclesWorld : LF_Test
 		ctx.Equal(500, lot.GetCashCeiling(), "the cash ceiling is configured");
 		ctx.Equal(1000, lot.GetPrice(LF_VehicleCatalog.S105), "the S105 price is above the cash ceiling");
 		ctx.True(LF_Component<LF_VehicleGarageComponent>.Find(lotEntity) == null, "the lot sells; it is not a garage");
-		ctx.True(LF_VehicleSpawnPointComponent.CountForShop("roadmap-lot") > 0, "the lot has a spawn pad");
+		ctx.True(LF_VehicleSpawnPointComponent.CountForShop(LF_TestAnnex.LOT_ID) > 0, "the lot has a spawn pad");
 		LF_VehicleOffer firstOffer = lot.GetOfferAt(0);
 		ctx.NotNull(firstOffer, "the lot has a first offer");
 		if (firstOffer)
@@ -248,8 +248,8 @@ class LF_Test_Roadmap_VehiclesPersistence : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity lotEntity = GetGame().GetWorld().FindEntityByName("Roadmap_Vehicle_Lot");
-		ctx.True(lotEntity != null, "Roadmap_Vehicle_Lot is placed for the save round trip");
+		IEntity lotEntity = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.VEHICLE_LOT);
+		ctx.True(lotEntity != null, "Annex_Vehicle_Lot is placed for the save round trip");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -320,7 +320,7 @@ class LF_Test_Roadmap_VehiclesPersistence : LF_Test
 		array<ref LF_VehicleGarageRow> rows = LF_VehicleGarageDialog.StoredRows(uid);
 		ctx.True(rows.Count() > 0, "the garage picker lists the stored vehicle");
 
-		ctx.True(LF_VehicleOwnership.Retrieve(vehicleId, uid, "roadmap-garage"), "retrieve after apply-save onto the garage pad");
+		ctx.True(LF_VehicleOwnership.Retrieve(vehicleId, uid, LF_TestAnnex.GARAGE_PAD_ID), "retrieve after apply-save onto the garage pad");
 		ctx.False(LF_VehicleOwnership.IsStored(vehicleId), "retrieve brings it back");
 		ctx.EqualStr(LF_VehicleCatalog.S105, LF_VehicleOwnership.GetPrefab(vehicleId), "retrieve keeps the prefab");
 		ctx.False(LF_VehicleOwnership.IsLocked(vehicleId), "retrieve keeps the lock flag");
