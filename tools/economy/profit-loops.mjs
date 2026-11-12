@@ -279,7 +279,8 @@ export function checkProfitLoops(src = DEFAULT_SOURCES) {
   const read = (p) => readFileSync(p, "utf8");
   const maybe = (p) => (p && existsSync(p) ? parseConf(read(p)) : null);
   const shop = loadShop(parseConf(read(src.shop)));
-  if (src.owner) applyOwnerShops(shop, JSON.parse(read(src.owner)).shops);
+  const owner = src.ownerData ?? (src.owner ? JSON.parse(read(src.owner)) : null);
+  if (owner) applyOwnerShops(shop, owner.shops);
   const chains = parseConf(read(src.chains));
   const veh = loadVehicles(maybe(src.vehicles), maybe(src.chop), (src.layers || []).filter(existsSync).map(read));
   return [...findShopLoops(shop), ...findRecipeLoops(shop, chains), ...findVehicleLoops(shop, veh)]

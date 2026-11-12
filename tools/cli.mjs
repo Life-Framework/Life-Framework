@@ -2509,6 +2509,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] [--shot ids] [--group name] [--preview] [--client n] [--no-shoot] | --setup | --selftest
                                 post-production: cards, crossfades, captions + .srt, offline voice-over,
                                 ducked music bed (docs/film-pipeline.md "Post-production")
+  config-check <config.json> [--strict] [--no-loops] [--json]
+                                validate a server owner's config.json offline, as the server would at boot:
+                                JSON syntax (line:col), unknown keys, types, ranges, schemaVersion, record keys,
+                                profit loops; exit 1 on errors (docs/config/owner-config.md)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
   rdb                           register new .meta resources in this worktree's resourceDatabase.rdb
@@ -3366,6 +3370,7 @@ const cmds = {
   shots: (flags) => shots.main(flags ?? []),
   audit: async (flags) => (await import("../agent-box/place-audit.mjs")).main(flags ?? []),
   place: async (flags) => (await import("./place/place.mjs")).main(flags ?? []),
+  "config-check": async (flags) => (await import("./config/check.mjs")).main(flags ?? []),
   look: async (flags) => (await import("./visual/look.mjs")).main(flags ?? []),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
@@ -3508,7 +3513,7 @@ try {
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();
