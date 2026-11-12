@@ -26,7 +26,16 @@ class LF_DemoConfig
 
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
+		array<string> ownerKeys = {"cooldownSec", "chance", "enabled", "name", "mode", "records"};
+		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("cooldownSec", m_iCooldownSec, COOL_MIN, COOL_MAX);
+		reader.ReadFloat("chance", m_fChance);
+		reader.ReadBool("enabled", m_bEnabled);
+		reader.ReadString("name", m_sName);
+		reader.ReadInt("mode", m_eMode);
+		reader.BeginRecords("records");
+		array<string> recordKeys = {"amount"};
+		reader.WarnUnknownKeys(recordKeys);
 		reader.ReadInt("amount", rec.m_iAmount);
 	}
 };

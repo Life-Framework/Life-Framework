@@ -141,7 +141,7 @@ class LF_ShopPricesConfig
 	//! Applies the owner's "shops" section. Keys: defaultBuyPrice, defaultSellPrice, priceRules
 	//! and extraItemPrefabs (added to the shipped list). priceRules is an object keyed by
 	//! LF_ShopPriceResolver.RuleKey (the find substring, or "type:<flags>,mode:<mode>"); each record
-	//! may set buyPrice, sellPrice and hidden. A key no shipped rule has adds a rule.
+	//! may set prefab (a {GUID}path, matched by GUID), buyPrice, sellPrice and hidden. A key no shipped rule has adds a rule.
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
@@ -178,8 +178,11 @@ class LF_ShopPricesConfig
 				m_aPriceRules.Insert(rule);
 			}
 
-			array<string> ruleKeys = {"buyPrice", "sellPrice", "hidden"};
+			array<string> ruleKeys = {"prefab", "buyPrice", "sellPrice", "hidden"};
 			reader.WarnUnknownKeys(ruleKeys);
+			string prefab = rule.m_Prefab;
+			if (reader.ReadString("prefab", prefab))
+				rule.m_Prefab = prefab;
 			reader.ReadInt("buyPrice", rule.m_iBuyPrice, PRICE_MIN, PRICE_MAX);
 			reader.ReadInt("sellPrice", rule.m_iSellPrice, PRICE_MIN, PRICE_MAX);
 			reader.ReadBool("hidden", rule.m_bHidden);

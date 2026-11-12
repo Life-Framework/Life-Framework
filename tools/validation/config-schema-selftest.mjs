@@ -9,7 +9,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { rangeProblems, generate, readScripts, render, validateJson, jsonKey, runtimeExample, SERVICE } from "../config/schema.mjs";
+import { rangeProblems, readerProblems, generate, readScripts, render, validateJson, jsonKey, runtimeExample, SERVICE } from "../config/schema.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fx = join(here, "fixtures", "config-schema");
@@ -61,6 +61,15 @@ expect(rangeProblems(edit("COOL_MAX = 600", "COOL_MAX = 900")).some((m) => /chec
 expect(rangeProblems(edit(', params: "5 600 1"', "")).some((m) => /no params range/.test(m)), "range: a checked read without params must fail");
 expect(rangeProblems(edit('m_iCooldownSec, COOL_MIN, COOL_MAX', "m_iCooldownSec")).some((m) => /no ReadInt/.test(m)), "range: params without a checked read must fail");
 expect(rangeProblems(edit("COOL_MIN = 5", "COOL_MIN = x")).some((m) => /cannot resolve/.test(m)), "range: an unresolvable constant must fail");
+
+// Reader agreement: the schema's fields and the reader's key lists must match, both ways.
+const rp = (from, to) => readerProblems(edit(from, to), schema);
+expect(readerProblems(files, schema).length === 0, `reader: the fixture agrees, got ${readerProblems(files, schema)}`);
+expect(rp('{"amount"}', '{"amount", "ghost"}').some((m) => /handles "ghost"/.test(m)), "reader: a handled key with no schema field must fail");
+expect(rp('{"amount"}', '{"ghost"}').some((m) => /lists "amount" but the reader/.test(m)), "reader: a schema field the reader does not handle must fail");
+expect(rp('"name", "mode"', '"mode"').some((m) => /lists "name"/.test(m)), "reader: a missing section key must fail");
+expect(rp('reader.ReadBool("enabled", m_bEnabled);', "").some((m) => /no Read\*\/BeginRecords call reads it/.test(m)), "reader: a listed key nothing reads must fail");
+expect(rp("reader.WarnUnknownKeys(recordKeys);", "").some((m) => /no key list for this level/.test(m)), "reader: a level with no key list must fail");
 
 // The runtime example is rebuilt from the real service source and fits the real schema shape.
 const rt = runtimeExample(readFileSync(SERVICE, "utf8"));
