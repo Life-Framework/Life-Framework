@@ -33,6 +33,7 @@ tools\cli wt ship <slug> [--refs N]     # gate -> push -> PR -> auto-merge (merg
 tools\cli wt prune <slug>               # remove a merged worktree + branch
 tools\cli prs status|heal [--dry-run]   # open ws/* PRs; heal idle DIRTY/BEHIND and stuck-green ones (docs/worktrees.md)
 tools\cli promote [--to sha] [--confirm] # human: list PRs since stable + checklist; --confirm moves stable (docs/worktrees.md)
+tools\cli release <x.y.z> [--dry-run|--confirm [--push]] # human: stamp, gate, tag vX.Y.Z; dry run by default; never publishes
 tools\cli discord relay start|stop|status # Discord welcome relay in the background (docs/community/onboarding.md)
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)
 tools\cli validate [--full]             # run tools/validation/* checks (also in CI); --full adds the Workbench compile
