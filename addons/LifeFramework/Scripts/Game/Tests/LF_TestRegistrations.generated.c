@@ -63,12 +63,16 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigMergeKeyed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeNoOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigMergePrefab(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMigrationChain(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMigrationFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigOwnerFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSchemaVersion(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigStreamClientOnly(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigStreamReject(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigStreamRoundTrip(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigUnknownKeys(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
@@ -212,6 +216,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_Pager(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);

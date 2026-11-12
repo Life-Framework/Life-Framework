@@ -12,7 +12,7 @@
 //! (LF_Test_ConfigJsonProbe and Core/Config/Feature.md).
 //!
 //! The owner file is server-side. A client never reads its own profile's config.json; clients
-//! receive owner values through the stream in #285.
+//! receive the server's effective values through LF_ConfigStream (#285).
 //------------------------------------------------------------------------------------------------
 //! How an owner file's schemaVersion compares with the schema this build reads (#302).
 enum LF_EConfigSchemaStatus
@@ -56,7 +56,7 @@ class LF_ConfigService
 			s_iOwnerSchemaVersion = 0;
 			s_eSchemaStatus = LF_EConfigSchemaStatus.NONE;
 			s_bLoaded = true;
-			LF_Debug.Info(FEATURE, "client: no owner layer; shipped defaults until the server streams owner values (#285)");
+			LF_Debug.Info(FEATURE, "client: no owner layer; the server's values arrive with the config stream (#285)");
 			return;
 		}
 

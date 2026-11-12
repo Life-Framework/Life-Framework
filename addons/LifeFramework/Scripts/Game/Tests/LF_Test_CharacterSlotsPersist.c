@@ -30,6 +30,16 @@ class LF_Test_CharacterSlotsPersist : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
+		// An older-format save loaded here replaces the organizations with record version 1 ones,
+		// which drops rank masks only "orgranks" holds (#750a); put back what this test found.
+		LF_TestOrgSnapshot keptOrgs = LF_TestOrgSnapshot.Take();
+		RunKeptOrgs(ctx);
+		keptOrgs.Restore();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunKeptOrgs(LF_TestContext ctx)
+	{
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves");
 		if (!gameMode)

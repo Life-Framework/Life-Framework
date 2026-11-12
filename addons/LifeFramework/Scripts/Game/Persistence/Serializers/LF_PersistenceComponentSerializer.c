@@ -31,7 +31,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime. The written version is that list's length (26). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks. The written version is that list's length (27). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -60,6 +60,9 @@
 //! shelf before that restart come back untagged.
 //! A version 25 save includes the unpaid store tags and has no playtime (#692): every account's
 //! playtime starts at zero.
+//! A version 26 save includes the playtime and has no organization rank rows (#750a): its organization
+//! records are record version 1, so LF_OrganizationManager.ApplyAll turns each rank's four bools into
+//! a rights mask and adds the officer rung; members keep their rank.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -121,6 +124,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("characters");
 		order.Insert("storeunpaid");
 		order.Insert("playtime");
+		order.Insert("orgranks");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -154,7 +158,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 26);
+		context.WriteValue("version", 27);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -180,7 +184,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 		for (int index = 0; index < written; index++)
 		{
-			WritePersistencePayload(persistence, context, order.Get(index));
+			WritePersistencePayload(persistence, context, order.Get(index), written);
 		}
 
 		return ESerializeResult.OK;
@@ -288,7 +292,9 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] persistence Persistence component that owns survival stats.
 	//! \param[in] context Save context to write into.
 	//! \param[in] payload Name from RegisterPersistencePayloads.
-	static void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
+	//! \param[in] saveVersion The version an older-format save is written at (SerializeStoreAsVersion),
+	//! 0 for the current one. A payload whose records changed meaning writes the old meaning.
+	static void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload, int saveVersion = 0)
 	{
 		if (payload == "survival")
 		{
@@ -317,6 +323,18 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_OrganizationRecord> orgRecords = LF_OrganizationManager.ExportAll();
 			if (!orgRecords)
 				orgRecords = new array<ref LF_OrganizationRecord>();
+			// A save older than the "orgranks" payload has record version 1 (#750a): its ranks are
+			// only the four bools, which is what a build before the rights mask wrote.
+			array<string> order = new array<string>();
+			RegisterPersistencePayloads(order);
+			if (saveVersion > 0 && saveVersion <= order.Find("orgranks"))
+			{
+				foreach (LF_OrganizationRecord legacyRecord : orgRecords)
+				{
+					if (legacyRecord)
+						legacyRecord.m_iVersion = 1;
+				}
+			}
 			context.Write(orgRecords);
 		}
 		else if (payload == "hideout")
@@ -485,6 +503,12 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_PlaytimeRecord> playtimeRows = LF_Playtime.ExportAll();
 			context.Write(playtimeRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 playtime row(s)", playtimeRows.Count()));
+		}
+		else if (payload == "orgranks")
+		{
+			array<ref LF_OrganizationRankRow> rankRows = LF_OrganizationManager.ExportRanks();
+			context.Write(rankRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 organization rank row(s)", rankRows.Count()));
 		}
 		else
 		{
@@ -875,6 +899,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "playtime failed to read, leaving the live counts untouched");
+			}
+		}
+		else if (payload == "orgranks")
+		{
+			// Runs after "organizations" in the same load. A version 1-26 save never reaches this
+			// payload: its ranks keep the masks ApplyAll back-filled from the four bools.
+			array<ref LF_OrganizationRankRow> rankRows = new array<ref LF_OrganizationRankRow>();
+			if (context.Read(rankRows))
+			{
+				LF_OrganizationManager.ApplyRanks(rankRows);
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "organization rank rows failed to read, ranks keep the rights from their records");
 			}
 		}
 		else
