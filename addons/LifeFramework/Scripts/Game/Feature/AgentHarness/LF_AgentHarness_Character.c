@@ -53,28 +53,27 @@ modded class SCR_ChimeraCharacter
 		// the same). The listen host's own character is local.
 		if (LF_Utils.GetLocalCharacter() == this)
 		{
-			LF_MoveHarnessBody(destination, side);
+			LF_MoveHarnessBody(destination, LF_AgentHarness.LastStandYaw());
 			LF_HarnessReply(commandId, "ok", entityName);
 			return;
 		}
 
-		Rpc(RpcDo_LF_HarnessStand, commandId, entityName, destination, side);
+		Rpc(RpcDo_LF_HarnessStand, commandId, entityName, destination, LF_AgentHarness.LastStandYaw());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_HarnessStand(int commandId, string entityName, vector destination, string side)
+	protected void RpcDo_LF_HarnessStand(int commandId, string entityName, vector destination, float yaw)
 	{
-		LF_MoveHarnessBody(destination, side);
+		LF_MoveHarnessBody(destination, yaw);
 		LF_AgentHarness.Reply(commandId, "ok", entityName);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Stand at destination facing the entity (LF_AgentHarness.StandYaw), the way a player walks up
 	//! to a counter, so the interaction key aims at it.
-	protected void LF_MoveHarnessBody(vector destination, string side = "e")
+	protected void LF_MoveHarnessBody(vector destination, float yaw)
 	{
-		float yaw = LF_AgentHarness.StandYaw(side);
 		vector transform[4];
 		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
 		transform[3] = destination;

@@ -208,6 +208,9 @@ the game profile). Hooks:
 - `stand <EntityName>` asks the server to move the local character beside
   that entity so a 3m action radius can succeed, 1.2 m along +X and turned to
   face it, so `press F` aims at the entity. It does not inject movement keys.
+  The spot is snapped to the floor and checked clear of other characters and props;
+  when the side is taken (a second player at the same target) or blocked, `stand` steps
+  around the target, then out in wider rings, and logs `stand spot beside ... using ...`.
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
