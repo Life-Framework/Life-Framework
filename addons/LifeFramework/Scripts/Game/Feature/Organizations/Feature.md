@@ -31,7 +31,11 @@ processing upgrade are kept at the desk.
   deposit, withdraw, buy; `MemberLines` for the ledger.
 - `LF_OrganizationCharacter.c` — ledger RPCs; every register change is refused
   away from the desk (`DESK_RANGE` 5 m).
-- `LF_OrgRules` — fee, name rules, rights bits, `ModeFor` (which entry a pair sees).
+- `LF_OrgRules` — fee, name rules, rights bits, `ModeFor` and `RankModeFor` (which entry a pair sees).
+- `LF_OrgRights` — the rights bitmask (#750a): bit N is `LF_EOrganizationPermission` N, bits 0-3
+  are the four bools a rank saved before the mask. Ranks are a ladder (0 = founder); promote,
+  demote and kick only go down it. `LF_OrgRankRole` fills `org_promote` / `org_demote`.
+  The mask and order are saved in `orgranks` (save version 27); a version 1 record migrates on load.
 - `LF_OrgInvites` — session offers (not saved, 2 minute lapse);
   `LF_OrgHideoutLease` — the yard lease.
 - `LF_OrgReplication` — the organization copy on each character for the offer side.
@@ -40,5 +44,6 @@ processing upgrade are kept at the desk.
 ## Iteration path
 
 - A membership card item handed over on Join (the card prop and inventory slot).
-- Ranks beyond founder and member; a fee and rent for the yard.
+- A rank table editor at the desk (rename, set rights, add rungs) on top of `ApplyRankRow`;
+  pack ladders from config. A fee and rent for the yard. The stash gated by `USE_STASH`.
 - The stash (M1-15) reads membership the same way the gate does.

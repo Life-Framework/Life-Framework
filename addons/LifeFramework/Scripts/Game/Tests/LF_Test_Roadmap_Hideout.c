@@ -166,6 +166,14 @@ class LF_Test_Roadmap_HideoutPersistence : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
+		// The e2e save boot seeds an organization earlier in this tier; put it back at the end.
+		LF_TestOrgSnapshot kept = LF_TestOrgSnapshot.Take();
+		RunWiped(ctx);
+		kept.Restore();
+	}
+
+	protected void RunWiped(LF_TestContext ctx)
+	{
 		LF_OrganizationManager.Reset();
 		LF_Hideout.Reset();
 
