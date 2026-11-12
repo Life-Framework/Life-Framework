@@ -13,5 +13,14 @@
       }
     },
     "extraItemPrefabs": []
+  },
+  "vehicles": {
+    "buyPercent": 100,
+    "sellBackPercent": 50,
+    "chopPercent": 30,
+    "chopValueCap": 3000,
+    "impoundPercent": 10,
+    "garagePercent": 0,
+    "vehicles": {}
   }
 }

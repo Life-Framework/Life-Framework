@@ -18,12 +18,16 @@
         "defaultBuyPrice": {
           "type": "integer",
           "description": "Default buy price when no rule matches",
-          "default": 50
+          "default": 50,
+          "minimum": 0,
+          "maximum": 1000000
         },
         "defaultSellPrice": {
           "type": "integer",
           "description": "Default sell price when no rule matches",
-          "default": 25
+          "default": 25,
+          "minimum": 0,
+          "maximum": 1000000
         },
         "priceRules": {
           "type": "object",
@@ -31,15 +35,23 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "prefab": {
+                "type": "string",
+                "default": ""
+              },
               "buyPrice": {
                 "type": "integer",
                 "description": "Buy price: what the player pays",
-                "default": 100
+                "default": 100,
+                "minimum": 0,
+                "maximum": 1000000
               },
               "sellPrice": {
                 "type": "integer",
                 "description": "Sell price: what the shop pays the player",
-                "default": 50
+                "default": 50,
+                "minimum": 0,
+                "maximum": 1000000
               },
               "hidden": {
                 "type": "boolean",
@@ -61,6 +73,80 @@
       },
       "additionalProperties": false,
       "x-class": "LF_ShopPricesConfig"
+    },
+    "vehicles": {
+      "type": "object",
+      "description": "Vehicle prices.",
+      "properties": {
+        "buyPercent": {
+          "type": "integer",
+          "default": 100
+        },
+        "sellBackPercent": {
+          "type": "integer",
+          "default": 50
+        },
+        "chopPercent": {
+          "type": "integer",
+          "default": 30
+        },
+        "chopValueCap": {
+          "type": "integer",
+          "default": 3000
+        },
+        "impoundPercent": {
+          "type": "integer",
+          "default": 10
+        },
+        "garagePercent": {
+          "type": "integer",
+          "default": 0
+        },
+        "vehicles": {
+          "type": "object",
+          "description": "",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "prefab": {
+                "type": "string",
+                "default": ""
+              },
+              "spawnPrefab": {
+                "type": "string",
+                "default": ""
+              },
+              "basePrice": {
+                "type": "integer",
+                "default": 0
+              },
+              "buyOverride": {
+                "type": "integer",
+                "default": -1
+              },
+              "sellBackOverride": {
+                "type": "integer",
+                "default": -1
+              },
+              "chopOverride": {
+                "type": "integer",
+                "default": -1
+              },
+              "impoundOverride": {
+                "type": "integer",
+                "default": -1
+              },
+              "garageOverride": {
+                "type": "integer",
+                "default": -1
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_VehiclePricesConfig"
     }
   },
   "additionalProperties": false
