@@ -82,13 +82,14 @@ class LF_OrgView : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Same organization and strictly higher on its ladder.
+	//! Same organization and strictly higher on its ladder. A member with no rung (a rank missing from
+	//! the table) sits below every rung, as on the server (LF_Organization.Outranks).
 	bool Outranks(LF_OrgView other)
 	{
-		if (!other || !HasOrg() || other.m_sOrgId != m_sOrgId)
+		if (!other || !HasOrg() || other.m_sOrgId != m_sOrgId || m_iRankPosition < 0)
 			return false;
-		if (m_iRankPosition < 0 || other.m_iRankPosition < 0)
-			return false;
+		if (other.m_iRankPosition < 0)
+			return true;
 
 		return m_iRankPosition < other.m_iRankPosition;
 	}
@@ -207,7 +208,7 @@ class LF_OrgRules
 	//! below user, and the new rung still below user and on the ladder.
 	static LF_EOrgRankMode RankModeFor(LF_OrgView user, LF_OrgView target, bool promote)
 	{
-		if (!user || !target || !user.Can(RIGHT_MANAGE_RANKS) || !user.Outranks(target))
+		if (!user || !target || !user.Can(RIGHT_MANAGE_RANKS) || !user.Outranks(target) || target.m_iRankPosition < 0)
 			return LF_EOrgRankMode.NONE;
 
 		if (promote)

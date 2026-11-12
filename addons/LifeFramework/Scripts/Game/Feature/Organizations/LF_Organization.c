@@ -541,13 +541,17 @@ class LF_Organization : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True when actor's rank is strictly above target's. Equal ranks outrank nobody.
+	//! True when actor's rank is strictly above target's. Equal ranks outrank nobody. A member whose
+	//! rank is not in the table (a damaged save) sits below every rung, so they can still be removed.
 	bool Outranks(string actorCharacterId, string targetCharacterId)
 	{
 		int actor = RankPosition(actorCharacterId);
-		int target = RankPosition(targetCharacterId);
-		if (actor < 0 || target < 0)
+		if (actor < 0 || !IsMember(targetCharacterId))
 			return false;
+
+		int target = RankPosition(targetCharacterId);
+		if (target < 0)
+			return true;
 
 		return actor < target;
 	}

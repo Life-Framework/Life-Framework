@@ -30,6 +30,7 @@ class LF_Test_OrgRights : LF_Test
 		CheckBits(ctx);
 		CheckLegacy(ctx);
 		CheckServer(ctx);
+		CheckDamagedRank(ctx);
 
 		LF_OrgInvites.Reset();
 		LF_OrganizationManager.Reset();
@@ -156,6 +157,37 @@ class LF_Test_OrgRights : LF_Test
 			ctx.False(LF_OrganizationManager.Promote(orgId, RIVAL, MEMBER), "a rival founder cannot promote here");
 			ctx.False(LF_OrganizationManager.Kick(orgId, RIVAL, MEMBER), "a rival founder cannot kick here");
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A member saved on a rank the table lacks (a damaged save) has no rights and no rung; the founder
+	//! can still remove them, nobody can promote them.
+	protected void CheckDamagedRank(LF_TestContext ctx)
+	{
+		LF_OrganizationManager.Reset();
+		LF_OrganizationRecord record = LF_OrganizationRecord.Create("org-rights-damaged", "Damaged Outfit", 0, false, false, false);
+		record.m_aRanks.Insert(LF_OrganizationRankRecord.Create(LF_OrganizationConfig.RANK_FOUNDER, "Founder", true, true, true, true));
+		record.m_aMembers.Insert(LF_OrganizationMemberRecord.Create(FOUNDER, LF_OrganizationConfig.RANK_FOUNDER));
+		record.m_aMembers.Insert(LF_OrganizationMemberRecord.Create(MEMBER, "ghost"));
+		array<ref LF_OrganizationRecord> records = {};
+		records.Insert(record);
+		LF_OrganizationManager.ApplyAll(records);
+		LF_Organization org = LF_OrganizationManager.Get("org-rights-damaged");
+		ctx.NotNull(org, "the damaged organization loads");
+		if (!org)
+			return;
+
+		ctx.True(org.IsMember(MEMBER), "the member on a missing rank is kept");
+		ctx.Equal(0, org.RightsOf(MEMBER), "a missing rank grants nothing");
+		ctx.Equal(-1, org.RankPosition(MEMBER), "a missing rank has no rung");
+		ctx.True(org.Outranks(FOUNDER, MEMBER), "every rung outranks a member with no rung");
+		ctx.False(org.Outranks(MEMBER, FOUNDER), "a member with no rung outranks nobody");
+		ctx.False(org.Outranks(FOUNDER, OUTSIDER), "nobody outranks a non-member");
+		LF_OrgView founder = ViewOf(org, FOUNDER);
+		LF_OrgView ghost = ViewOf(org, MEMBER);
+		ctx.Equal(LF_EOrgRankMode.NONE, LF_OrgRules.RankModeFor(founder, ghost, false), "nobody is offered a rank change on a member with no rung");
+		ctx.False(LF_OrganizationManager.Promote(org.GetId(), FOUNDER, MEMBER), "nobody promotes a member with no rung");
+		ctx.True(LF_OrganizationManager.Kick(org.GetId(), FOUNDER, MEMBER), "the founder removes a member with no rung");
 	}
 
 	//------------------------------------------------------------------------------------------------

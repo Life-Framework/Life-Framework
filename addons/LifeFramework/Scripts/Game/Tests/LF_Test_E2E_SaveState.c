@@ -21,6 +21,11 @@
 // `- e2e senior officer stays senior after the save load (expected 1, got 0)`,
 // `- e2e turned-in quest stays done after the save load`. Restored; both passes green.
 
+// e2e/pass2-verify-load (save version 27, organization ranks, #750a), observed 2026-11-12 with
+// `tools\cli wt e2e m3-org-rights`: the rank masks did not survive (persist/character-slots, before
+// this test, re-applied a version 23 save of the live store) and pass 2 failed with
+// `- e2e officer keeps the territory right only orgranks holds`, `- e2e member stays without the stash right`.
+// The legacy-loading tests now put the organizations back; both passes green, and green with --legacy-save.
 // tier: PERSISTENCE
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
