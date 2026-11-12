@@ -23,7 +23,7 @@ class LF_Test_OrgRights : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		LF_TestOrgSnapshot kept = LF_TestOrgSnapshot.Take();
+		LF_TestLegacySnapshot kept = LF_TestLegacySnapshot.Take();
 		LF_OrganizationManager.Reset();
 		LF_OrgInvites.Reset();
 

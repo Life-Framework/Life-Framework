@@ -13,8 +13,8 @@ X." No buying licenses from a menu anywhere.
 ## Interaction pattern
 
 Rung 4 today: `LF_LicenseManagerComponent` holds a 26-entry catalog,
-`CanUnlockLicense` (owned/config/whitelist/level), `CanAffordLicense` (SP
-cost), `PurchaseLicense` (spends SP + unlock), `HasLicense`, persistence
+`CanUnlockLicense` (owned/config/whitelist/job level), `PurchaseLicense`
+(checks, then unlocks; skill points no longer exist since #749), `HasLicense`, persistence
 restore.
 
 Target: rung 3 — a DMV / agency counter where the player requests a license,
@@ -24,7 +24,9 @@ in-world document; a license is another document you carry.
 ## V1 (shippable)
 
 1. **Fix the double-charge — DONE** (verified 2026-08-30): `PurchaseLicense`
-   validates before `UnlockLicense` spends SP.
+   validates before `UnlockLicense`. Since #749 the level gate is a job level
+   (`LF_LicenseGate`): the licence family's job at the catalog level, or a
+   `jobs.licenceGates` config row.
 2. **Fix the hard-coded POLICE whitelist — DONE**: license types map to their
    correct whitelist job, including MEDIC.
 3. Keep `SetUnlockedLicenses` as the persistence restore seam; it is not a

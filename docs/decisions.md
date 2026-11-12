@@ -755,3 +755,14 @@ questions in section 6 of `docs/roadmap/m3-plan.md`. Each answer is below.
   read job levels.
 - **Profit loops:** the gold furnace (+30) and cement plant (+24) stay
   baselined for now, the maintainer's choice.
+
+**2026-11-12 — #749: a pre-job-levels save keeps its progress on CIVILIAN and
+DELIVERY.** D12 replaced the single player level with per-job XP. A version 7-27
+save has no per-job XP, so the load maps what it has: the single level's total
+XP onto CIVILIAN (quests, fruit picking and debug grants all fed that one number,
+so it cannot be split by job) and the delivery career's onto DELIVERY. The
+shipped CIVILIAN and DELIVERY thresholds are the old curves, so nobody loses a
+level; every other job starts at 0. Skill points are dropped: nothing spends
+them any more. The issue's first draft started every job at 0; that would have
+reset every courier's fuel and taxi access, so it was not taken. Detail:
+`docs/persistence.md` item 20.

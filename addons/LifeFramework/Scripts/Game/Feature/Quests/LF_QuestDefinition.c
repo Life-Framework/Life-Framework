@@ -31,8 +31,11 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Quest id that must be turned in first (empty = none)")]
 	string m_sRequiredPreviousQuestId;
 
-	[Attribute(defvalue: "0", UIWidgets.EditBox, "Minimum player level (0 = none)")]
+	[Attribute(defvalue: "0", UIWidgets.EditBox, "Minimum job level in m_sJob (0 = none)")]
 	int m_iMinLevel;
+
+	[Attribute(defvalue: "CIVILIAN", UIWidgets.EditBox, "Job id whose level m_iMinLevel reads and which earns the reward XP (#749)")]
+	string m_sJob;
 
 	[Attribute(defvalue: "0", UIWidgets.ComboBox, "Required job (UNEMPLOYED = none)", "", ParamEnumArray.FromEnum(LF_EJobType))]
 	LF_EJobType m_eRequiredJob;

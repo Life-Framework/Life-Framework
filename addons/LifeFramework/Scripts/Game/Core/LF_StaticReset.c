@@ -46,6 +46,9 @@ class LF_StaticReset
 		LF_Ledger.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
 		LF_Playtime.ResetStatics();
+		LF_JobLevels.ResetStatics();
+		LF_JobLevelSync.ResetStatics();
+		LF_JobsConfig.Reload();
 		LF_FenceSerials.ResetStatics();
 		LF_EvidenceLocker.ResetStatics();
 		LF_Evidence.ResetStatics();

@@ -25,7 +25,7 @@ class LF_Test_StoreUnpaidPersist : LF_Test
 	{
 		// An older-format save loaded here replaces the organizations with record version 1 ones,
 		// which drops rank masks only "orgranks" holds (#750a); put back what this test found.
-		LF_TestOrgSnapshot keptOrgs = LF_TestOrgSnapshot.Take();
+		LF_TestLegacySnapshot keptOrgs = LF_TestLegacySnapshot.Take();
 		RunKeptOrgs(ctx);
 		keptOrgs.Restore();
 	}
@@ -139,7 +139,7 @@ class LF_Test_StoreUnpaidPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(27, version, "the save is written at version 27 (storeunpaid is payload 25)");
+		ctx.Equal(28, version, "the save is written at version 28 (storeunpaid is payload 25)");
 		JsonLoadContext load = new JsonLoadContext(false);
 		load.LoadFromString(saved);
 		ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, load), "the save loads");
