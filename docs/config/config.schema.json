@@ -80,65 +80,85 @@
       "properties": {
         "buyPercent": {
           "type": "integer",
-          "default": 100
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000
         },
         "sellBackPercent": {
           "type": "integer",
-          "default": 50
+          "default": 50,
+          "minimum": 0,
+          "maximum": 1000
         },
         "chopPercent": {
           "type": "integer",
-          "default": 30
+          "default": 30,
+          "minimum": 0,
+          "maximum": 1000
         },
         "chopValueCap": {
           "type": "integer",
-          "default": 3000
+          "default": 3000,
+          "minimum": 0,
+          "maximum": 1000000
         },
         "impoundPercent": {
           "type": "integer",
-          "default": 10
+          "default": 10,
+          "minimum": 0,
+          "maximum": 1000
         },
         "garagePercent": {
           "type": "integer",
-          "default": 0
+          "default": 0,
+          "minimum": 0,
+          "maximum": 1000
         },
         "vehicles": {
           "type": "object",
-          "description": "",
+          "description": "Records are an object keyed by a stable key. The key is the vehicle's prefab GUID (16 hex digits, the lot's vanilla car or its locked child). A GUID no shipped vehicle has adds one, which must set basePrice. An existing key changes only the fields given; an override of -1 derives the price.",
           "additionalProperties": {
             "type": "object",
             "properties": {
-              "prefab": {
-                "type": "string",
-                "default": ""
-              },
               "spawnPrefab": {
                 "type": "string",
                 "default": ""
               },
               "basePrice": {
                 "type": "integer",
-                "default": 0
+                "default": 0,
+                "minimum": 0,
+                "maximum": 1000000
               },
               "buyOverride": {
                 "type": "integer",
-                "default": -1
+                "default": -1,
+                "minimum": -1,
+                "maximum": 1000000
               },
               "sellBackOverride": {
                 "type": "integer",
-                "default": -1
+                "default": -1,
+                "minimum": -1,
+                "maximum": 1000000
               },
               "chopOverride": {
                 "type": "integer",
-                "default": -1
+                "default": -1,
+                "minimum": -1,
+                "maximum": 1000000
               },
               "impoundOverride": {
                 "type": "integer",
-                "default": -1
+                "default": -1,
+                "minimum": -1,
+                "maximum": 1000000
               },
               "garageOverride": {
                 "type": "integer",
-                "default": -1
+                "default": -1,
+                "minimum": -1,
+                "maximum": 1000000
               }
             },
             "additionalProperties": false

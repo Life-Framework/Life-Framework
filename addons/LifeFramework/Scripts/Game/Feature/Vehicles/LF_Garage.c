@@ -189,7 +189,11 @@ class LF_Garage
 		array<string> plates = {};
 		array<int> places = {};
 		CollectLedger(uid, nameKeys, plates, places);
-		controller.LF_ShowGarageLedger(nameKeys, plates, places, LF_GarageConfig.ImpoundFee(), LF_NetworkUtils.GetRplId(desk));
+		int ledgerFee = LF_GarageConfig.ImpoundFee();
+		string nextOut = LF_VehicleOwnership.LatestImpounded(uid);
+		if (!nextOut.IsEmpty())
+			ledgerFee = LF_VehicleOwnership.ImpoundFeeOf(nextOut);
+		controller.LF_ShowGarageLedger(nameKeys, plates, places, ledgerFee, LF_NetworkUtils.GetRplId(desk));
 		LF_Debug.Info("Garage", string.Format("ledger shown to %1: %2 vehicle(s)", uid, nameKeys.Count()));
 		return true;
 	}
@@ -396,9 +400,11 @@ class LF_ImpoundCollectAction : ScriptedUserAction
 			return;
 		}
 
-		int fee = LF_GarageConfig.ImpoundFee();
 		string reasonKey = "#LF-Impound_NothingHere";
 		string vehicleId = LF_VehicleOwnership.LatestImpounded(uid);
+		int fee = LF_GarageConfig.ImpoundFee();
+		if (!vehicleId.IsEmpty())
+			fee = LF_VehicleOwnership.ImpoundFeeOf(vehicleId);
 		bool collected = false;
 		if (!vehicleId.IsEmpty())
 			collected = LF_VehicleOwnership.CollectFromImpound(vehicleId, uid, pUserEntity, fee, desk.GetPadId(), reasonKey);
