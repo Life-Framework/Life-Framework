@@ -13,6 +13,8 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
     }
    }
   }
+  LF_PhoneComponent "{AD801B5B763A9927}" {
+  }
   ActionsManagerComponent "{E15B8A3C6D702F94}" {
    ActionContexts {
     UserActionContext "{58C0D2A7B9E13F46}" {
@@ -24,6 +26,34 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
     }
    }
    additionalActions {
+      LF_PhoneDialAction "{F35A2C9683011E8B}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{336E70526E7DB772}" {
+        Name "#LF-Phone_DialPolice"
+        Description "#LF-Payphone_Title"
+       }
+       m_sService "police"
+      }
+      LF_PhoneAnswerAction "{D662B50694A7BE26}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{1C943BE1D08A9120}" {
+        Name "#LF-Phone_PickUp"
+        Description "#LF-Payphone_Title"
+       }
+      }
+      LF_PhoneHangUpAction "{2497ED85258162EC}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{97F963025A4305FF}" {
+        Name "#LF-Phone_HangUp"
+        Description "#LF-Payphone_Title"
+       }
+      }
       LF_PayphoneAction "{0F4B7E2A91C6D358}" {
        ParentContextList {
         "LF_Payphone"

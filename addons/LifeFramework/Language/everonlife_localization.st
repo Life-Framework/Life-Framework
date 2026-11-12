@@ -7506,6 +7506,116 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Vehicle theft"
      Comment "Offence on a wanted poster: a vehicle was taken from its driver by force (crime catalog id; same words as LF-Offence_VehicleTheft today)."
     }
+    CustomStringTableItem "{E7D83B6B552680AE}" {
+     Id "LF-Phone_Title"
+     Target_en_us "Telephone"
+     Comment "Title of every telephone toast (#147)."
+    }
+    CustomStringTableItem "{329AA4071D9D4E53}" {
+     Id "LF-Phone_StationTitle"
+     Target_en_us "Station telephone"
+     Comment "Description line of the station telephone's actions."
+    }
+    CustomStringTableItem "{724AB80720A9B1ED}" {
+     Id "LF-Phone_DialPolice"
+     Target_en_us "Ring the police station"
+     Comment "Payphone action: lift the receiver and ring the station telephone (a voice call)."
+    }
+    CustomStringTableItem "{9D830AA1DCE7D2B2}" {
+     Id "LF-Phone_PickUp"
+     Target_en_us "Pick up the receiver"
+     Comment "Telephone action: answer a ringing telephone."
+    }
+    CustomStringTableItem "{511F17E96A45A274}" {
+     Id "LF-Phone_HangUp"
+     Target_en_us "Hang up"
+     Comment "Telephone action: put the receiver down and end the call."
+    }
+    CustomStringTableItem "{AF38AF3C3E652AC0}" {
+     Id "LF-Phone_Ringing"
+     Target_en_us "It is ringing at the other end."
+     Comment "Toast to the caller: the call is ringing at the station."
+    }
+    CustomStringTableItem "{FDD324D5C2537635}" {
+     Id "LF-Phone_StationRinging"
+     Target_en_us "The station telephone is ringing."
+     Comment "Toast to everyone on duty for the service: a call is ringing at the station telephone."
+    }
+    CustomStringTableItem "{3CD776C95F970C59}" {
+     Id "LF-Phone_Connected"
+     Target_en_us "Someone picked up. The line is open."
+     Comment "Toast to both talkers: the call was answered."
+    }
+    CustomStringTableItem "{F4812934650FC09F}" {
+     Id "LF-Phone_HungUp"
+     Target_en_us "You put the receiver down."
+     Comment "Toast to the talker who hung up."
+    }
+    CustomStringTableItem "{E465752BE2E0AD2D}" {
+     Id "LF-Phone_LineDead"
+     Target_en_us "The line went dead."
+     Comment "Toast to a talker: the other end hung up, walked off, went down or left."
+    }
+    CustomStringTableItem "{F5AAE9C32EB617FE}" {
+     Id "LF-Phone_WalkedAway"
+     Target_en_us "You walked away from the telephone. The call is over."
+     Comment "Toast to a talker who went further than the receiver cord."
+    }
+    CustomStringTableItem "{C7D5CA3226CB67B4}" {
+     Id "LF-Phone_TooLong"
+     Target_en_us "The exchange cut the call. It ran too long."
+     Comment "Toast to both talkers: the call reached the configured maximum length."
+    }
+    CustomStringTableItem "{BC90AE92BE14E820}" {
+     Id "LF-Phone_NoAnswer"
+     Target_en_us "Nobody picked up."
+     Comment "Toast to the caller: the call rang out unanswered."
+    }
+    CustomStringTableItem "{BA03409293F966F8}" {
+     Id "LF-Phone_OnACall"
+     Target_en_us "You are already on a call."
+     Comment "Telephone refusal: the player is talking on another call."
+    }
+    CustomStringTableItem "{CD75E1603F385300}" {
+     Id "LF-Phone_PhoneBusy"
+     Target_en_us "This telephone is in use."
+     Comment "Telephone refusal: someone else is using this telephone."
+    }
+    CustomStringTableItem "{A3F52DC9AD380D5E}" {
+     Id "LF-Phone_LineBusy"
+     Target_en_us "Busy signal. The station line is engaged."
+     Comment "Telephone refusal: every station telephone of the service is already on a call."
+    }
+    CustomStringTableItem "{E141F35D692DD238}" {
+     Id "LF-Phone_NoLine"
+     Target_en_us "The line is dead. No telephone answers that number here."
+     Comment "Telephone refusal: no station telephone for the service exists in this world."
+    }
+    CustomStringTableItem "{1631B276C9DBC6BF}" {
+     Id "LF-Phone_NotRinging"
+     Target_en_us "This telephone is not ringing."
+     Comment "Telephone refusal: picked up a telephone with no call on it."
+    }
+    CustomStringTableItem "{BCE2B941D51071CA}" {
+     Id "LF-Phone_NotOnDuty"
+     Target_en_us "Only an officer on duty answers the station telephone."
+     Comment "Telephone refusal: the player is not on duty for the service of this station telephone."
+    }
+    CustomStringTableItem "{458C896F6A964243}" {
+     Id "LF-Phone_TooFar"
+     Target_en_us "Stand at the telephone to use it."
+     Comment "Telephone refusal: the server found the player too far from the telephone."
+    }
+    CustomStringTableItem "{EB9C965AE30ACFF5}" {
+     Id "LF-Phone_NotYourCall"
+     Target_en_us "You are not on this line."
+     Comment "Telephone refusal: hung up a telephone the player is not talking on."
+    }
+    CustomStringTableItem "{D0D0E6843F18276B}" {
+     Id "LF-Payphone_Summary_Call"
+     Target_en_us "Phoned the station"
+     Comment "Summary the police radio, the dispatch board and the pagers show for a voice call to the station telephone."
+    }
   }
  }
 }

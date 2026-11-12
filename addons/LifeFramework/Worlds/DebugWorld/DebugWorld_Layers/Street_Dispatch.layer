@@ -10,3 +10,7 @@ GenericEntity Roadmap_Dispatch_MedicBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_
  coords 256.6 0 232.5
  angleY 0
 }
+GenericEntity Roadmap_Dispatch_Phone : "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et" {
+ coords 252.834 0.907 229.852
+ angleY 180
+}

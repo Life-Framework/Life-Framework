@@ -166,6 +166,10 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[LFDebug:Config] stream: the server sends format N, this build reads M` / `... their hash is ...` / `... are not valid JSON` / `the server's config schema is N` / `N shop values from the server did not read` | ERROR | #285: the client refused the stream and keeps its current prices, so its price list may differ from what the server charges. Server and client run different builds, or the stream was cut. Expected in a test run (`config/stream-reject`). |
 | `[LFDebug:Config] stream: N bytes is above the 32768 this stream was proven with` | WARN | #285: the owner's `priceRules` make the stream large. If clients show shipped prices, trim it. |
 | `[LFDebug:Config] reload asked by player N` / `reload refused for player N: administrators only` | INFO / BY DESIGN | #285: `/configreload`. Refused for a player who is not an administrator on a world without dev tools. |
+| `[LFDebug:Phone] call N RINGING: ...` / `call N CONNECTED: ...` / `call N ENDED (<reason>): ...` / `call N MISSED (NO_ANSWER\|NOBODY_ON_DUTY): ...` | INFO | #147: one line per telephone call transition on the server; the reason is `LF_EPhoneEnd`. |
+| `[LFDebug:Phone] dial refused for player N at <key>: <refusal>` / `pick-up refused ...` / `hang-up refused ...` | BY DESIGN | #147: the server refused a telephone action (busy, not ringing, not on duty, too far, payphone cooldown or coin). The player got a toast. |
+| `[LFDebug:Phone] dial refused for player N at <key>: no telephone in this world answers '<service>'` | WARN | #147: no station telephone (`LF_PhoneComponent.m_sDispatchService`) for that service is placed; the voice dial cannot ring anything. Place one or drop the dial action. |
+| `[LFDebug:Phone] line spawned for phone <key> (<place>)` / `phone <key> rings on this machine (at the phone prop=1)` | INFO | #147: the server spawned a phone's replicated line on first use; a client heard its first ring. `prop=0` means the client did not have the phone prop and rang from the line entity. |
 
 ## How to add a row
 
