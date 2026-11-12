@@ -57,6 +57,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
 		LF_ChainTrace.Install();
+		// The replicated DELIVERY level follows every job level change (server only, #749).
+		LF_JobLevelSync.EnsureSubscribed();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
 		LF_HoldUpRole.Register();

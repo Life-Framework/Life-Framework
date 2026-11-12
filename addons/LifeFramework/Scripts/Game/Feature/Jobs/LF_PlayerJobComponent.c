@@ -421,7 +421,7 @@ class LF_PlayerJobComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Copy the civilian career level and XP onto this component.
+	//! Copy the civilian career (DELIVERY) level and XP onto this component.
 	void PullCareer()
 	{
 		IEntity owner = GetOwner();
@@ -429,6 +429,17 @@ class LF_PlayerJobComponent : ScriptComponent
 			return;
 
 		string uid = LF_Utils.GetPlayerUID(owner);
+		if (uid.IsEmpty())
+			return;
+
+		PullCareerFor(uid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Copy the DELIVERY level and XP of the character with this record key onto this component and
+	//! replicate it (LF_JobLevelSync calls it on a level change; a test calls it on a fixture body).
+	void PullCareerFor(string uid)
+	{
 		if (uid.IsEmpty())
 			return;
 
@@ -773,14 +784,8 @@ class LF_PlayerJobComponent : ScriptComponent
 			return 0;
 		}
 
-		// Give XP (e.g. 5 XP per fruit)
-		float xpAmount = rewardCount * 5.0;
-		
-		LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-		if (levelComp)
-		{
-			levelComp.AddExperience(xpAmount, "fruit picking");
-		}
+		// FARMER XP per fruit: the jobs config's fruit_pick award (#749).
+		LF_JobLevels.Award(LF_Utils.GetPlayerUID(owner), LF_JobLevels.ACTION_FRUIT_PICK, rewardCount);
 		
 		int actuallyAdded = 0;
 		

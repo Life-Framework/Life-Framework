@@ -240,6 +240,26 @@ The owner layer is server-only; the server prices every buy and sell with it.
 
 On a listen host the host is the server and prices with the owner values directly.
 
+## Jobs section (#749, D8)
+
+`LF_JobsConfig` (`Configs/Jobs/LF_Jobs.conf`) is the `jobs` section: duty pay, the
+unemployment benefit, and the job XP tables of `LF_JobLevels`.
+
+- `tracks`, keyed by job id: `levelThresholds` (total XP to reach level 2, 3, ...; a list
+  of whole numbers, each 1 or more) and `dailyXpCap` (0 = none). A new job must set
+  `levelThresholds`.
+- `xpAwards`, keyed by the action id the game awards (`delivery_run`, `fruit_pick`,
+  `gather`): `job`, `xp` per unit, `cooldownSeconds`. A new action must set `job`.
+- `licenceGates`, keyed by licence name (`LF_ELicenseType`): `job` and `minLevel`. A
+  licence with no row keeps its shipped gate; a new row must set both.
+- Server-side only, so no stream: `ApplyToFeatures` drops the cached instance
+  (`LF_JobsConfig.Reload`) and the next read layers the owner file again. The DELIVERY
+  level the sign-up offer needs reaches clients through `LF_PlayerJobComponent`.
+- `ReadFloat` takes `2` as well as `0.5`. `ReadInts` reads an int list with the class
+  reader, which refuses a list holding a string (no crash, proven in
+  `config/jobs-owner`), then checks each number against the range; one bad element
+  refuses the whole list.
+
 ## Files
 
 - `LF_ConfigService.c`: `LF_ConfigService`, `LF_ConfigPackSource`,
@@ -256,4 +276,4 @@ On a listen host the host is the server and prices with the owner values directl
   `LF_Test_ConfigReject` (range), `LF_Test_ConfigUnknownKeys`,
   `LF_Test_ConfigSchemaVersion`, `LF_Test_ConfigMigrationChain`, `LF_Test_ConfigMigrationFile`,
   `LF_Test_ConfigStreamRoundTrip`, `LF_Test_ConfigStreamClientOnly`, `LF_Test_ConfigStreamReject`,
-  `LF_Test_ConfigStreamVehicles`.
+  `LF_Test_ConfigStreamVehicles`, `LF_Test_JobLevelsConfig` (jobs).

@@ -13,6 +13,24 @@
         "m_Prefab"
       ],
       "key": "The key is the vehicle's prefab GUID (16 hex digits, the lot's vanilla car or its locked child). A GUID no shipped vehicle has adds one, which must set basePrice. An existing key changes only the fields given; an override of -1 derives the price."
+    },
+    "LF_JobTrackDef": {
+      "keyFields": [
+        "m_sJob"
+      ],
+      "key": "The key is the job id (CIVILIAN, DELIVERY, FARMER, ...). A job no shipped track has adds one, which must set levelThresholds; an existing key changes only the fields given. The level is 1 plus the thresholds a character's XP has reached, so a changed table reaches existing saves."
+    },
+    "LF_JobXpAwardDef": {
+      "keyFields": [
+        "m_sAction"
+      ],
+      "key": "The key is the action id the game awards (delivery_run, fruit_pick, gather). An action no shipped award has adds one, which must set job; an existing key changes only the fields given."
+    },
+    "LF_JobLicenceGateDef": {
+      "keyFields": [
+        "m_sLicence"
+      ],
+      "key": "The key is a licence name (LF_ELicenseType, e.g. MINER_GOLD). A licence with no row keeps its shipped gate (its family job, its catalog level); a new row must set job and minLevel."
     }
   },
   "examples": {
@@ -32,6 +50,31 @@
         "54C3CC22DEBD57BE": {
           "basePrice": 1200,
           "impoundOverride": 200
+        }
+      }
+    },
+    "jobs": {
+      "tracks": {
+        "FARMER": {
+          "dailyXpCap": 3000
+        },
+        "DELIVERY": {
+          "levelThresholds": [
+            400,
+            1200,
+            3000
+          ]
+        }
+      },
+      "xpAwards": {
+        "delivery_run": {
+          "xp": 120
+        }
+      },
+      "licenceGates": {
+        "MINER_GOLD": {
+          "job": "MINER",
+          "minLevel": 4
         }
       }
     }

@@ -3,8 +3,9 @@
 //! quieter than a charge, and it can fail. The server decides the time, the roll, the wear and the
 //! noise; a client only asks (the door action).
 //!
-//! SKILL. One lockpicking skill, read from the character's level (LF_PlayerLevelComponent, already
-//! replicated and saved), so no new save data. Skill 0 is a level 1 character, MAX_SKILL a level 11+.
+//! SKILL. One lockpicking skill, read from the character's CIVILIAN job level (LF_JobLevels, #749;
+//! the job the pre-#749 single level became), so no save data of its own. Skill 0 is a level 1
+//! character, MAX_SKILL a level 11+.
 //!
 //! USES. The pick is a stack (LF_QuantityComponent): the stack count is its uses. An opened lock and
 //! a snapped pick each wear one use; a plain failed attempt wears none. At zero the item is gone.
@@ -235,12 +236,7 @@ class LF_Lockpick
 	//! \return The lockpicking skill of this character.
 	static int SkillOf(IEntity user)
 	{
-		int level = 1;
-		LF_PlayerLevelComponent levelComponent = LF_Component<LF_PlayerLevelComponent>.Find(user);
-		if (levelComponent)
-			level = levelComponent.GetLevel();
-
-		return LF_LockpickRules.SkillFromLevel(level);
+		return LF_LockpickRules.SkillFromLevel(LF_JobLevels.LevelOfBody(user, LF_JobLevels.JOB_CIVILIAN));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -63,8 +63,11 @@ class LF_ChainStepDef
 	[Attribute(defvalue: "0", UIWidgets.ComboBox, "Licence the worker must hold. UNEMPLOYED (everyone has it) means no licence gate", "", ParamEnumArray.FromEnum(LF_ELicenseType))]
 	LF_ELicenseType m_eLicense;
 
-	[Attribute("0", UIWidgets.Auto, "Minimum player level. 0 means no level gate")]
+	[Attribute("0", UIWidgets.Auto, "Minimum job level in m_sLevelJob. 0 means no level gate")]
 	int m_iMinLevel;
+
+	[Attribute("CIVILIAN", UIWidgets.EditBox, "Job id whose level m_iMinLevel reads (#749): a track of the jobs config")]
+	string m_sLevelJob;
 
 	[Attribute("", UIWidgets.EditBox, "Equipment id from the chain's equipment list. Empty means none needed")]
 	string m_sEquipmentId;

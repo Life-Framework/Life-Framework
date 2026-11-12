@@ -178,10 +178,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		}
 
 		IEntity owner = GetOwner();
-		int level = 1;
-		LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-		if (levelComp)
-			level = levelComp.GetPlayerLevel();
+		int level = LF_JobLevels.LevelOfBody(owner, JobOf(def));
 
 		LF_EJobType job = LF_EJobType.UNEMPLOYED;
 		LF_PlayerJobComponent jobComp = LF_Component<LF_PlayerJobComponent>.Find(owner);
@@ -414,6 +411,16 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! eturn The job a quest's level gate reads and its reward XP goes to; CIVILIAN when none.
+	static string JobOf(notnull LF_QuestDefinition def)
+	{
+		if (def.m_sJob.IsEmpty())
+			return LF_JobLevels.JOB_CIVILIAN;
+
+		return def.m_sJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void GrantReward(LF_QuestDefinition def)
 	{
 		IEntity owner = GetOwner();
@@ -432,9 +439,11 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		if (def.m_fRewardXp > 0)
 		{
-			LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-			if (levelComp)
-				levelComp.AddExperience(def.m_fRewardXp, "Quest");
+			string uid = LF_Utils.GetPlayerUID(owner);
+			if (uid.IsEmpty())
+				LF_Debug.Warn("Quests", string.Format("turn-in %1: no player behind the body, %2 reward xp not given", def.m_sQuestId, def.m_fRewardXp));
+			else
+				LF_JobLevels.AddXp(uid, JobOf(def), Math.Round(def.m_fRewardXp), "quest " + def.m_sQuestId);
 		}
 
 		if (def.m_aRewardItems)
