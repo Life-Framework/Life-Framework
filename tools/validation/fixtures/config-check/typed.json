@@ -1,0 +1,1 @@
+{ "shops": { "priceRules": { "type:64": { "buyPrice": 5 }, "type:64,mode:2": { "hidden": true } } } }
