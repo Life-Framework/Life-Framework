@@ -335,6 +335,19 @@ class LF_Zones
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The first registered zone with this rule (the first one the world placed), or null.
+	static LF_ZoneArea FindFirstByRule(LF_ZoneRule rule)
+	{
+		foreach (LF_ZoneArea area : Zones())
+		{
+			if (area.m_eRule == rule)
+				return area;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The rule set at a position. Overlaps resolve strictest first: SAFE, LAWLESS, NORMAL.
 	static LF_ZoneRule RuleAt(vector position)
 	{

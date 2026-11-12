@@ -106,11 +106,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 	//! Playtest only: a new character owns two cars from the start, one in the garage and one at the
 	//! impound lot, so both flows can be tried at once. Off in the flagship game mode.
-	[Attribute("0", desc: "Playtest: a new character owns one car in the garage and one at the impound lot (from the lot named below).", category: "New character defaults")]
+	[Attribute("0", desc: "Playtest: a new character owns one car in the garage and one at the impound lot (from the lot flagged m_bTestCarLot).", category: "New character defaults")]
 	protected bool m_bGrantTestCars;
-
-	[Attribute("Roadmap_Vehicle_Lot", desc: "Entity name of the car lot whose first two offers the test cars are.", category: "New character defaults")]
-	protected string m_sTestCarLot;
 
 	//! Playtest only: the "Send me to jail" board outside the jail works (LF_DebugJailMe). Off in the flagship mode.
 	[Attribute("0", desc: "Playtest: the board outside the jail jails you for a short sentence so the jail can be tried solo.", category: "Debug jail")]
@@ -126,12 +123,6 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	bool GrantsTestCars()
 	{
 		return m_bGrantTestCars;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	string GetTestCarLot()
-	{
-		return m_sTestCarLot;
 	}
 
 	[Attribute("0", desc: "Give every spawned character their ID card (LF_IdCard), registered at the clerk or not. Off: only players who turned in the clerk's ID card quest.", category: "New character defaults")]

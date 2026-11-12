@@ -1452,3 +1452,238 @@ GenericEntity Annex_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_F
  coords 66.056 0 58.02
  angleY 0
 }
+GenericEntity Annex_Hospital_Till {
+ components {
+  MeshObject "{8F3A1C2D4B5E6071}" {
+   Object "{2D6DB9D5AFEAB643}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01.xob"
+  }
+  RigidBody "{8F3A1C2D4B5E6072}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{8F3A1C2D4B5E6073}" {
+   ActionContexts {
+    UserActionContext "{8F3A1C2D4B5E6074}" {
+     ContextName "default"
+     Position PointInfo "{8F3A1C2D4B5E6075}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{8F3A1C2D4B5E6076}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8F3A1C2D4B5E6077}" {
+      Name "#EL-Hospital_RobTill"
+     }
+     m_iMoneyAmount 200
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+  RplComponent "{8F3A1C2D4B5E6078}" {
+   Enabled 1
+  }
+  LF_HospitalTillComponent "{8F3A1C2D4B5E6079}" {
+   m_sTargetId "Annex_Hospital_Till"
+   m_iPayout 200
+   m_fCooldown 60
+   m_iMinPolice 0
+  }
+ }
+ Flags 0x403 0
+ coords 57 0 40
+ angleY 0
+}
+GenericEntity Annex_Hospital_Cabinet {
+ components {
+  MeshObject "{91C4E0A7B2D34819}" {
+   Object "{3169A0CB357D3854}Assets/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.xob"
+  }
+  RigidBody "{91C4E0A7B2D3481A}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_LockComponent "{91C4E0A7B2D34810}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{91C4E0A7B2D34811}" {
+   ActionContexts {
+    UserActionContext "{91C4E0A7B2D34812}" {
+     ContextName "default"
+     Position PointInfo "{91C4E0A7B2D34813}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_HospitalCabinetAction "{91C4E0A7B2D34814}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{91C4E0A7B2D34815}" {
+      Name "#EL-Hospital_BreachCabinet"
+     }
+    }
+    LF_BreachRepairAction "{91C4E0A7B2D34816}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{91C4E0A7B2D3481B}" {
+   Enabled 1
+  }
+  LF_BreachTargetComponent "{91C4E0A7B2D34817}" {
+   m_sTargetId "Annex_Hospital_Cabinet"
+   m_fFuseSeconds 0
+  }
+  LF_HospitalCabinetComponent "{91C4E0A7B2D34818}" {
+   m_sTargetId "Annex_Hospital_Cabinet"
+   m_aLootPrefabs {
+    "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+    "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+    "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
+    "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 57 0 46
+ angleY 0
+}
+GenericEntity Annex_Convoy_Start {
+ components {
+  MeshObject "{3555E824DE9411E1}" {
+   Object "{0CE0D7F17F50BAB7}Assets/Props/Industrial/Pallets/WoodenPalletBox_01.xob"
+  }
+  RigidBody "{38239B99D1131463}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{F8BDED58219781CB}" {
+   Enabled 1
+  }
+  LF_ConvoyMarkerComponent "{25C2D7236C4A29B1}" {
+   m_sMarkerId "Annex_Convoy_Start"
+   m_bDrop 0
+  }
+  ActionsManagerComponent "{9B8D994BDBAEF726}" {
+   ActionContexts {
+    UserActionContext "{9D7C3F60241AD015}" {
+     ContextName "default"
+     Position PointInfo "{94355C47E2CDDF70}" {
+      Offset 0 0.6 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyStartAction "{42568856A7E966E3}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C3E27FF4A4014650}" {
+      Name "#EL-Contraband_Start"
+     }
+    }
+   }
+  }
+ }
+ coords 57 0 70
+ Flags 0x403 0
+}
+GenericEntity Annex_Convoy_Drop {
+ components {
+  MeshObject "{8568209C50142DBA}" {
+   Object "{0CE0D7F17F50BAB7}Assets/Props/Industrial/Pallets/WoodenPalletBox_01.xob"
+  }
+  RigidBody "{2D9E62AD556D891C}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{0770E8FD84A78601}" {
+   Enabled 1
+  }
+  LF_ConvoyMarkerComponent "{4BB744212552420B}" {
+   m_sMarkerId "Annex_Convoy_Drop"
+   m_bDrop 1
+  }
+  ActionsManagerComponent "{F1C18E37EDE2CFCE}" {
+   ActionContexts {
+    UserActionContext "{AE28098525A07FB3}" {
+     ContextName "default"
+     Position PointInfo "{165C9C429ADC7093}" {
+      Offset 0 0.6 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyDeliverAction "{EF0CFB2B88BD4BF0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{137D64E55A2FF5E1}" {
+      Name "#EL-Contraband_Deliver"
+     }
+    }
+   }
+  }
+ }
+ coords 60 0 70
+ Flags 0x403 0
+}
+GenericEntity Annex_Convoy_Drop_Near {
+ components {
+  MeshObject "{08016A8536F7C89C}" {
+   Object "{0CE0D7F17F50BAB7}Assets/Props/Industrial/Pallets/WoodenPalletBox_01.xob"
+  }
+  RigidBody "{0376CF2DBE7CEDD6}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{90ACB6AF25F3845C}" {
+   Enabled 1
+  }
+  LF_ConvoyMarkerComponent "{AA559AAD1A321A69}" {
+   m_sMarkerId "Annex_Convoy_Drop_Near"
+   m_bDrop 1
+   m_bNearDrop 1
+  }
+  ActionsManagerComponent "{3BD8DBAA5C1B9F2D}" {
+   ActionContexts {
+    UserActionContext "{D258323E386AB972}" {
+     ContextName "default"
+     Position PointInfo "{BA707F77C0B9CD34}" {
+      Offset 0 0.6 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyDeliverAction "{6FE3AE685310D8C2}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{44938E88F9B47F76}" {
+      Name "#EL-Contraband_Deliver"
+     }
+    }
+   }
+  }
+ }
+ coords 63 0 70
+ Flags 0x403 0
+}

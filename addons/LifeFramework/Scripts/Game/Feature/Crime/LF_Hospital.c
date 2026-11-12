@@ -34,8 +34,6 @@ class LF_HospitalCabinetState : Managed
 //------------------------------------------------------------------------------------------------
 class LF_Hospital
 {
-	static const string TILL_ID = "Roadmap_Hospital_Till";
-	static const string CABINET_ID = "Roadmap_Hospital_Cabinet";
 	static const int DEFAULT_PAYOUT = 200;
 	static const float DEFAULT_COOLDOWN = 60;
 

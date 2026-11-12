@@ -348,14 +348,11 @@ class LF_CharacterCreationManager : Managed
 			return;
 
 		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		IEntity lotEntity = GetGame().GetWorld().FindEntityByName(spawnLogic.GetTestCarLot());
-		LF_VehicleLotComponent lot;
-		if (lotEntity)
-			lot = LF_Component<LF_VehicleLotComponent>.Find(lotEntity);
+		LF_VehicleLotComponent lot = LF_VehicleLotComponent.FindTestCarLot();
 
 		if (!body || !lot)
 		{
-			LF_Debug.Error("CharacterCreation", string.Format("test cars not granted to player %1: no body or no lot named %2", playerId, spawnLogic.GetTestCarLot()));
+			LF_Debug.Error("CharacterCreation", string.Format("test cars not granted to player %1: no body or no lot flagged m_bTestCarLot", playerId));
 			return;
 		}
 

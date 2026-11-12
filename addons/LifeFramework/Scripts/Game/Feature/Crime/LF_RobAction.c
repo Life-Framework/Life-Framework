@@ -1,6 +1,5 @@
 class LF_RobAction : ScriptedUserAction
 {
-	static const string TILL_ENTITY_NAME = "Roadmap_Fuel_Till";
 	static const string TILL_ACTION_NAME = "#EL-Fuel_Till_Rob";
 
 	[Attribute(defvalue: "100", uiwidget: UIWidgets.Auto, desc: "Amount of money to steal when no range is set")]
