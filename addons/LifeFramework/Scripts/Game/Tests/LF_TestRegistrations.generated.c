@@ -74,6 +74,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigStreamClientOnly(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamRoundTrip(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigStreamVehicles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigUnknownKeys(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);

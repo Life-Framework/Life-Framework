@@ -208,7 +208,9 @@ The owner layer is server-only; the server prices every buy and sell with it.
   one object per client-relevant section, written from the typed fields
   (shops: `LF_ShopPricesConfig.WriteStream`: the defaults, every rule in walk
   order keyed `"0".."n-1"` with prefab, find, type, mode, prices and hidden,
-  and the extra prefabs). The owner document itself, other sections and
+  and the extra prefabs; vehicles: `LF_VehiclePricesConfig.WriteStream`: the percents, the chop
+  cap and every vehicle keyed `"0".."n-1"` with prefab, spawn prefab, base price and the five
+  overrides). The owner document itself, other sections and
   unknown keys never leave the server (`config/stream-client-only`).
 - **When.** On join: `LF_GameModeRoleplay.RplSave`/`RplLoad` append the format,
   the payload's hash and the payload after the base game mode's state. On
@@ -228,6 +230,10 @@ The owner layer is server-only; the server prices every buy and sell with it.
   then streams. The client sends no config data, only the request.
 - **Size.** The shipped shops section is about 3.8 KB. The engine documents no
   limit for one replicated string; above 32 KB the server logs a warning.
+- **Vehicles.** `LF_VehiclePricesConfig.ApplyLayers` ends with the stream layer like shops; the
+  class caches one instance, so `ApplyToFeatures` calls `LF_VehiclePricesConfig.Reload()` and the
+  next price read (chalkboard price boards, lot, chop shop, impound) layers the new values. The
+  format stays 1: adding a section is additive and an older reader ignores it.
 - **A new section.** Write it in `BuildPayload`, read it with
   `OpenReceivedSection` in the feature's apply step, and re-apply the feature in
   `ApplyToFeatures`.
@@ -249,4 +255,5 @@ On a listen host the host is the server and prices with the owner values directl
   reject, no-owner), `LF_Test_ConfigOwnerFile`, `LF_Test_ConfigPackOverlay`, `LF_Test_ConfigPackHeader`,
   `LF_Test_ConfigReject` (range), `LF_Test_ConfigUnknownKeys`,
   `LF_Test_ConfigSchemaVersion`, `LF_Test_ConfigMigrationChain`, `LF_Test_ConfigMigrationFile`,
-  `LF_Test_ConfigStreamRoundTrip`, `LF_Test_ConfigStreamClientOnly`, `LF_Test_ConfigStreamReject`.
+  `LF_Test_ConfigStreamRoundTrip`, `LF_Test_ConfigStreamClientOnly`, `LF_Test_ConfigStreamReject`,
+  `LF_Test_ConfigStreamVehicles`.

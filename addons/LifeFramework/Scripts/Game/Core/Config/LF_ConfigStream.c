@@ -56,8 +56,9 @@ class LF_ConfigStream
 	//! Serialises the client-relevant sections. Pure: tests call it with a config built in script.
 	//! \param[in] shops The effective shop prices, or null to leave the section out.
 	//! \param[in] ownerLayer Whether an owner config.json is behind these values (logged by the client).
+	//! \param[in] vehicles The effective vehicle prices, or null to leave the section out.
 	//! \return The payload text.
-	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer)
+	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null)
 	{
 		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext(false);
 		ctx.WriteValue(KEY_FORMAT, FORMAT_VERSION);
@@ -67,6 +68,12 @@ class LF_ConfigStream
 		{
 			ctx.StartObject(LF_ShopPricesConfig.SECTION);
 			shops.WriteStream(ctx);
+			ctx.EndObject();
+		}
+		if (vehicles)
+		{
+			ctx.StartObject(LF_VehiclePricesConfig.SECTION);
+			vehicles.WriteStream(ctx);
 			ctx.EndObject();
 		}
 		return ctx.ExportToString();
@@ -84,7 +91,11 @@ class LF_ConfigStream
 		if (!shops)
 			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no shop config on the server; clients keep their shipped shop prices");
 
-		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer());
+		LF_VehiclePricesConfig vehicles = LF_VehiclePricesConfig.Get();
+		if (!vehicles)
+			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no vehicle price config on the server; clients keep their shipped vehicle prices");
+
+		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles);
 		int hash = payload.Hash();
 		bool changed = !s_bPublished || hash != s_iPublishedHash;
 		s_sPublished = payload;
@@ -193,6 +204,9 @@ class LF_ConfigStream
 		LF_ShopManagerComponent shopManager = LF_ShopManagerComponent.GetInstance();
 		if (shopManager)
 			shopManager.ReloadConfig();
+
+		// The vehicle prices are one cached instance; drop it so the next price read layers the stream.
+		LF_VehiclePricesConfig.Reload();
 	}
 
 	//------------------------------------------------------------------------------------------------

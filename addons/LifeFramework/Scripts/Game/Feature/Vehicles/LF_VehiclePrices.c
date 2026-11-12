@@ -223,15 +223,141 @@ class LF_VehiclePricesConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "vehicles" section over this instance, which holds the core `.conf`.
+	//! Drops the cached instance so the next Get() loads the core file and layers it again (a client
+	//! after the config stream arrives, the server after /configreload).
+	static void Reload()
+	{
+		s_Config = null;
+		s_bLoadAttempted = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges the owner's "vehicles" section over this instance, which holds the core `.conf`, then
+	//! (on a client) the server's streamed values over that.
 	void ApplyLayers()
 	{
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
-		if (!reader)
-			return;
+		if (reader)
+		{
+			ApplyOwner(reader);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("vehicles: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		}
 
-		ApplyOwner(reader);
-		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("vehicles: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		// Client: the server's effective values replace the result (#285). Null on the server.
+		LF_ConfigReader streamed = LF_ConfigStream.OpenReceivedSection(SECTION);
+		if (streamed && ApplyStream(streamed))
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("vehicles: using the server's values (%1 vehicles, buy %2 percent)", m_aVehicles.Count(), m_iBuyPercent));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Writes the effective values a client reads into the config stream (#285): the percents, the
+	//! chop cap and every vehicle in list order, keyed "0".."n-1" (ApplyStream replaces the list).
+	//! \param[in] ctx A save context with this section's object open.
+	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	{
+		ctx.WriteValue("buyPercent", m_iBuyPercent);
+		ctx.WriteValue("sellBackPercent", m_iSellBackPercent);
+		ctx.WriteValue("chopPercent", m_iChopPercent);
+		ctx.WriteValue("chopValueCap", m_iChopValueCap);
+		ctx.WriteValue("impoundPercent", m_iImpoundPercent);
+		ctx.WriteValue("garagePercent", m_iGaragePercent);
+
+		ctx.StartObject("vehicles");
+		if (m_aVehicles)
+		{
+			int index;
+			foreach (LF_VehiclePriceEntry entry : m_aVehicles)
+			{
+				if (!entry)
+					continue;
+
+				ctx.StartObject(index.ToString());
+				string prefab = entry.m_Prefab;
+				string spawn = entry.m_SpawnPrefab;
+				ctx.WriteValue("prefab", prefab);
+				ctx.WriteValue("spawnPrefab", spawn);
+				ctx.WriteValue("basePrice", entry.m_iBasePrice);
+				ctx.WriteValue("buyOverride", entry.m_iBuyOverride);
+				ctx.WriteValue("sellBackOverride", entry.m_iSellBackOverride);
+				ctx.WriteValue("chopOverride", entry.m_iChopOverride);
+				ctx.WriteValue("impoundOverride", entry.m_iImpoundOverride);
+				ctx.WriteValue("garageOverride", entry.m_iGarageOverride);
+				ctx.EndObject();
+				index++;
+			}
+		}
+		ctx.EndObject();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces this instance's values with the server's from the config stream. Reads into locals
+	//! and commits only when every field read: a stream with a bad field changes nothing (logged).
+	//! \param[in] reader A reader on the stream's "vehicles" section.
+	//! \return True when the server's values were applied.
+	bool ApplyStream(notnull LF_ConfigReader reader)
+	{
+		int buy = m_iBuyPercent;
+		int sellBack = m_iSellBackPercent;
+		int chop = m_iChopPercent;
+		int chopCap = m_iChopValueCap;
+		int impound = m_iImpoundPercent;
+		int garage = m_iGaragePercent;
+		reader.ReadInt("buyPercent", buy, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("sellBackPercent", sellBack, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("chopPercent", chop, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("chopValueCap", chopCap, PRICE_MIN, PRICE_MAX);
+		reader.ReadInt("impoundPercent", impound, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadInt("garagePercent", garage, PERCENT_MIN, PERCENT_MAX);
+
+		array<ref LF_VehiclePriceEntry> vehicles;
+		int count = reader.BeginRecords("vehicles");
+		if (count >= 0)
+		{
+			vehicles = new array<ref LF_VehiclePriceEntry>();
+			for (int i = 0; i < count; i++)
+			{
+				string key = reader.GetRecordKey(i);
+				if (key != i.ToString())
+				{
+					reader.RejectRecord(string.Format("record %1 is keyed '%2', not '%1'", i, key));
+					continue;
+				}
+
+				if (!reader.BeginRecord(key))
+					continue;
+
+				string prefab;
+				string spawn;
+				reader.ReadString("prefab", prefab);
+				reader.ReadString("spawnPrefab", spawn);
+				LF_VehiclePriceEntry entry = LF_VehiclePriceEntry.Make(prefab, spawn, 0);
+				reader.ReadInt("basePrice", entry.m_iBasePrice, PRICE_MIN, PRICE_MAX);
+				reader.ReadInt("buyOverride", entry.m_iBuyOverride, OVERRIDE_MIN, PRICE_MAX);
+				reader.ReadInt("sellBackOverride", entry.m_iSellBackOverride, OVERRIDE_MIN, PRICE_MAX);
+				reader.ReadInt("chopOverride", entry.m_iChopOverride, OVERRIDE_MIN, PRICE_MAX);
+				reader.ReadInt("impoundOverride", entry.m_iImpoundOverride, OVERRIDE_MIN, PRICE_MAX);
+				reader.ReadInt("garageOverride", entry.m_iGarageOverride, OVERRIDE_MIN, PRICE_MAX);
+				vehicles.Insert(entry);
+				reader.EndRecord();
+			}
+			reader.EndRecords();
+		}
+
+		if (reader.GetRejectedCount() > 0)
+		{
+			LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("stream: %1 vehicle values from the server did not read; the client keeps its own vehicle prices", reader.GetRejectedCount()));
+			return false;
+		}
+
+		m_iBuyPercent = buy;
+		m_iSellBackPercent = sellBack;
+		m_iChopPercent = chop;
+		m_iChopValueCap = chopCap;
+		m_iImpoundPercent = impound;
+		m_iGaragePercent = garage;
+		if (vehicles)
+			m_aVehicles = vehicles;
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
