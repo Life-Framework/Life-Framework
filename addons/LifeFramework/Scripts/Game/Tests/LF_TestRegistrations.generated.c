@@ -67,6 +67,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigMigrationChain(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMigrationFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigOwnerFile(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigPackHeader(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSchemaVersion(), LF_TestTier.LOGIC);

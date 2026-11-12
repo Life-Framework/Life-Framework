@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7A2C94E10D5B38F6}Configs/Tests/LF_Test_ShopPricesOverlay2.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
