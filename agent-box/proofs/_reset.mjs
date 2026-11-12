@@ -13,7 +13,9 @@ export function planReset(st) {
   if (st.life && st.life !== "ALIVE") steps.push("revive");
   else if (st.downed === "1") steps.push("revive");
   if (st.duty === "1") steps.push("clockout");
-  if (Number(st.wanted || 0) > 0) steps.push("wanted");
+  // `resetcrime` (a dev-gated harness verb) clears wanted, the posters and dispatch log, the till and
+  // vault cooldowns and this client's dispatch count (#867). The debug menu refuses a non-admin.
+  if (Number(st.wanted || 0) > 0 || Number(st.dispatch || 0) > 0) steps.push("crime");
   if (st.faction && st.faction !== "CIVILIAN" && st.faction !== "none") steps.push("faction");
   return steps;
 }
@@ -23,7 +25,8 @@ export function selftestReset() {
   const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "0", wanted: "0", faction: "CIVILIAN" }), [])) f.push("clean state planned work");
   if (!eq(planReset({ life: "INCAPACITATED", downed: "1", duty: "0", wanted: "0", faction: "CIVILIAN" }), ["revive"])) f.push("downed body not revived");
-  if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "1", wanted: "3", faction: "POLICE" }), ["clockout", "wanted", "faction"])) f.push("duty, wanted and faction not all planned");
+  if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "1", wanted: "3", faction: "POLICE" }), ["clockout", "crime", "faction"])) f.push("duty, wanted and faction not all planned");
+  if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "0", wanted: "0", dispatch: "2", faction: "CIVILIAN" }), ["crime"])) f.push("leftover dispatch count not planned");
   f.push(...selftestDowner());
   return f;
 }
@@ -43,7 +46,11 @@ function selftestDowner() {
       st[1].wanted = "3";
     }
     if (spec.verb === "open" && spec.mode === "show") menuFor = n;
-    if (spec.verb === "click" && spec.widget === "Wanted0Button") st[menuFor].wanted = "0";
+    if (spec.verb === "resetcrime") {
+      st[n].wanted = "0";
+      st[n].dispatch = "0";
+      return { status: "ok", detail: "cleared wanted reports=0 dispatches=0 tills=1 vaults=0" };
+    }
     return { status: "ok", detail: "" };
   };
   resetClients(on, () => {}, 2);
@@ -68,7 +75,11 @@ export function resetClient(on, wait, n, phase = "all") {
     if (!st) return [...notes, "no character after respawn, skipped"];
   }
 
-  for (const step of planReset(st)) {
+  const steps = planReset(st);
+  // The server-side stores (till, vault and search cooldowns) are not on the state line, and one
+  // client's call clears them for the whole session, so client 1 always asks (#867).
+  if (phase === "rest" && n === 1 && !steps.includes("crime")) steps.push("crime");
+  for (const step of steps) {
     if (phase === "body" && step !== "revive") continue;
     if (phase === "rest" && step === "revive") continue;
     if (step === "revive") {
@@ -92,18 +103,22 @@ export function resetClient(on, wait, n, phase = "all") {
       on(n, { verb: "use", className: "LF_DutyAction", entityName: desk }, 10000);
       wait(2500);
       notes.push(`clocked out of ${st.faction}`);
-    } else if (step === "wanted" || step === "faction") {
-      // The debug menu is the only way to clear wanted or leave a faction; the playtest mission closes it.
+    } else if (step === "crime") {
+      const r = on(n, { verb: "resetcrime" }, 10000);
+      notes.push(r.status === "ok" ? `crime state cleared (${r.detail})` : `crime state not reset: ${r.status} ${r.detail}`);
+    } else if (step === "faction") {
+      // The debug menu is the only way to leave a faction; the playtest mission closes it. The
+      // server refuses it for a non-admin, so the "still dirty" check below is the truth.
       const open = on(n, { verb: "open", menu: "DebugMenu", mode: "show" });
       if (open.status !== "ok") {
         notes.push(`${step} not reset: the debug menu is closed on this mission`);
         continue;
       }
       wait(800);
-      on(n, { verb: "click", widget: step === "wanted" ? "Wanted0Button" : "FactionCivilianButton" });
+      on(n, { verb: "click", widget: "FactionCivilianButton" });
       on(n, { verb: "open", menu: "DebugMenu", mode: "hide" });
       wait(1200);
-      notes.push(step === "wanted" ? "wanted cleared" : "faction set to civilian");
+      notes.push("faction set to civilian");
     }
   }
 

@@ -155,6 +155,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "giveup")
 			return true;
+		if (cmd.Verb == "resetcrime")
+			return true;
 		if (cmd.Verb == "gm")
 		{
 			if (parts.Count() > 2)
@@ -1134,6 +1136,11 @@ class LF_AgentHarness
 			DoGiveUp(cmd);
 			return;
 		}
+		if (cmd.Verb == "resetcrime")
+		{
+			DoResetCrime(cmd);
+			return;
+		}
 		if (cmd.Verb == "gm")
 		{
 			DoGm(cmd);
@@ -1476,6 +1483,23 @@ class LF_AgentHarness
 		}
 
 		character.LF_AskHarnessSiren(cmd.Id, cmd.Arg1, cmd.Arg2.ToInt());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `resetcrime` (#867): the per-proof reset's way to clear this player's wanted level and
+	//! the crime stores an earlier proof filled (the debug menu refuses a non-admin).
+	protected static void DoResetCrime(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		// The count this client heard is client state; the server clears the rest.
+		SCR_PlayerController.LF_ResetDispatchCount();
+		character.LF_AskHarnessResetCrime(cmd.Id);
 	}
 
 	//------------------------------------------------------------------------------------------------

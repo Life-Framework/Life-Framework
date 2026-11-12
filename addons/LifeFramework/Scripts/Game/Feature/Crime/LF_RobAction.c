@@ -28,6 +28,39 @@ class LF_RobAction : ScriptedUserAction
 	protected static string s_sLastRefusal;
 	protected static int s_iCashPaid;
 	protected static int s_iAlertCount;
+	//! Every till in the world, so the harness's per-proof reset can end their cooldowns (#867). Weak refs.
+	protected static ref array<LF_RobAction> s_aTills;
+
+	//------------------------------------------------------------------------------------------------
+	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
+	{
+		if (!s_aTills)
+			s_aTills = {};
+
+		if (s_aTills.Find(this) < 0)
+			s_aTills.Insert(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: ends every till's robbery cooldown (the harness's per-proof reset, #867).
+	//! @return How many tills were reset.
+	static int ResetCooldowns()
+	{
+		if (!s_aTills)
+			return 0;
+
+		int reset = 0;
+		foreach (LF_RobAction till : s_aTills)
+		{
+			if (!till)
+				continue;
+
+			till.m_fLastRobTime = 0;
+			reset++;
+		}
+
+		return reset;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetSession()
