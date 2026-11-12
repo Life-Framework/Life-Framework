@@ -60,7 +60,7 @@ class LF_Test_FineTicketRules : LF_Test
 
 		array<ref LF_FineTicketRecord> before = LF_FineTickets.ExportAll();
 		LF_FineTickets.ApplyAll(null);
-		LF_FineTickets.Configure(60, 60, 2, 1);
+		LF_FineTickets.Configure(60, 60, 2);
 		LF_PlayerAccount holder = LF_PlayerAccountManager.GetOrCreate(HOLDER);
 		holder.SetWantedLevel(0);
 		LF_PlayerAccount offline = LF_PlayerAccountManager.GetOrCreate(OFFLINE);

@@ -15,7 +15,6 @@ class LF_Test_Roadmap_Fuel : LF_Test
 	{
 		// The DebugWorld till pins min and max at 150 so the roll is this amount.
 		const int PAYOUT = 150;
-		const int WANTED = 1;
 
 		ctx.True(Replication.IsServer(), "fuel till test runs on the server");
 		ctx.Equal(PAYOUT, LF_RobAction.ResolvePayout(0, PAYOUT, PAYOUT, 0), "fixed range pays the configured cash");
@@ -37,7 +36,7 @@ class LF_Test_Roadmap_Fuel : LF_Test
 
 		float last = 0;
 		float next = 0;
-		int paid = LF_RobAction.CommitRobbery(uid, null, PAYOUT, WANTED, 0, 0, 60, last, 100000, next);
+		int paid = LF_RobAction.CommitRobbery(uid, null, PAYOUT, 0, 0, 60, last, 100000, next);
 		ctx.Equal(PAYOUT, paid, "cash up by the fixed payout");
 		ctx.Equal(PAYOUT, LF_RobAction.GetCashPaid(), "cash paid tracks the payout");
 		LF_BankAccount bank = atm.GetAccount(uid);
@@ -53,7 +52,7 @@ class LF_Test_Roadmap_Fuel : LF_Test
 		ctx.Equal(1, LF_RobAction.GetAlertCount(), "one police alert");
 		last = next;
 
-		int second = LF_RobAction.CommitRobbery(uid, null, PAYOUT, WANTED, 0, 0, 60, last, 101000, next);
+		int second = LF_RobAction.CommitRobbery(uid, null, PAYOUT, 0, 0, 60, last, 101000, next);
 		ctx.Equal(0, second, "cooldown refuses");
 		ctx.Equal(PAYOUT, LF_RobAction.GetCashPaid(), "refused attempt does not pay again");
 		ctx.EqualStr("robbery refused: cooldown", LF_RobAction.GetLastRefusal(), "cooldown refusal is logged");
@@ -65,7 +64,7 @@ class LF_Test_Roadmap_Fuel : LF_Test
 			ctx.Equal(0, bank.GetBalance(), "refused attempt does not touch the bank");
 
 		LF_RobAction.ResetSession();
-		int blocked = LF_RobAction.CommitRobbery(uid, null, PAYOUT, WANTED, 0, 2, 60, 0, 200000, next);
+		int blocked = LF_RobAction.CommitRobbery(uid, null, PAYOUT, 0, 2, 60, 0, 200000, next);
 		ctx.Equal(0, blocked, "minimum police gate refuses");
 		ctx.EqualStr("robbery refused: not enough police on duty", LF_RobAction.GetLastRefusal(), "police refusal is logged");
 		ctx.Equal(0, LF_RobAction.GetCashPaid(), "police refusal pays nothing");
@@ -76,13 +75,13 @@ class LF_Test_Roadmap_Fuel : LF_Test
 		police.SetFaction(LF_Faction.POLICE);
 		atm.CreateAccount(policeUid);
 		LF_RobAction.ResetSession();
-		int civilianGate = LF_RobAction.CommitRobbery(policeUid, null, PAYOUT, WANTED, 1, 0, 60, 0, 300000, next);
+		int civilianGate = LF_RobAction.CommitRobbery(policeUid, null, PAYOUT, 1, 0, 60, 0, 300000, next);
 		ctx.Equal(0, civilianGate, "police faction refuses");
 		ctx.EqualStr("robbery refused: only civilians can rob", LF_RobAction.GetLastRefusal(), "civilian refusal is logged");
 		ctx.Equal(0, police.GetWantedLevel(), "refused officer stays at wanted 0");
 
 		LF_RobAction.ResetSession();
-		int unconfigured = LF_RobAction.CommitRobbery(uid, null, 0, WANTED, 0, 0, 60, 0, 400000, next);
+		int unconfigured = LF_RobAction.CommitRobbery(uid, null, 0, 0, 0, 60, 0, 400000, next);
 		ctx.Equal(0, unconfigured, "unconfigured payout refuses");
 		ctx.EqualStr("robbery refused: payout is not configured", LF_RobAction.GetLastRefusal(), "unconfigured payout is logged");
 
@@ -94,7 +93,7 @@ class LF_Test_Roadmap_Fuel : LF_Test
 		float clampNext = 0;
 		for (int i = 0; i < 6; i++)
 		{
-			int clampPaid = LF_RobAction.CommitRobbery(clampUid, null, PAYOUT, WANTED, 0, 0, 0, clampLast, 500000 + i, clampNext);
+			int clampPaid = LF_RobAction.CommitRobbery(clampUid, null, PAYOUT, 0, 0, 0, clampLast, 500000 + i, clampNext);
 			clampLast = clampNext;
 			ctx.Equal(PAYOUT, clampPaid, "cooldown of 0 still pays cash");
 		}

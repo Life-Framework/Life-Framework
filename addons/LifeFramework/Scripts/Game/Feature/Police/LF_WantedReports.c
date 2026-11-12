@@ -44,6 +44,7 @@ class LF_WantedReports
 	static const string FEATURE = "Wanted";
 	static const string OFFENCE_ROBBERY = "#LF-Offence_Robbery";
 	static const string OFFENCE_VEHICLE_THEFT = "#LF-Offence_VehicleTheft";
+	static const string OFFENCE_CARJACKING = "#LF-Offence_Carjacking";
 	static const string OFFENCE_WEAPON_THEFT = "#LF-Offence_WeaponTheft";
 	static const string OFFENCE_BREAK_IN = "#LF-Offence_BreakIn";
 	static const string OFFENCE_HOSPITAL = "#LF-Offence_HospitalRobbery";

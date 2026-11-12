@@ -7501,6 +7501,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{18003FE63D1892AD}" {
+     Id "LF-Offence_Carjacking"
+     Target_en_us "Vehicle theft"
+     Comment "Offence on a wanted poster: a vehicle was taken from its driver by force (crime catalog id; same words as LF-Offence_VehicleTheft today)."
+    }
   }
  }
 }

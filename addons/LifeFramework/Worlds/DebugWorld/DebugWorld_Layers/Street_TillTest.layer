@@ -26,7 +26,6 @@ GenericEntity Roadmap_Test_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL
      m_iMoneyAmount 150
      m_iMinPayout 150
      m_iMaxPayout 150
-     m_iWantedIncrease 1
      m_fCooldown 5
      m_iMinPoliceOnDuty 0
     }

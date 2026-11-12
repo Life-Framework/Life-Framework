@@ -136,7 +136,6 @@ class LF_Hotwire
 {
 	static const string FEATURE = "Hotwire";
 	static const float TICK_SECONDS = 0.5;
-	static const int THEFT_WANTED = 1;
 
 	//! Test seam: a value >= 0 replaces the skill-based attempt time.
 	static float s_fSecondsOverride = -1;
@@ -358,15 +357,14 @@ class LF_Hotwire
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A stolen car is a crime: the thief's wanted level rises by one so the board entry
+	//! A stolen car is a crime: the thief's wanted level rises by the catalog's amount so the board entry
 	//! (reported when the engine is heard) never reads "wanted level 0". Returns the new level.
-	static int ApplyTheft(LF_PlayerAccount account, bool success)
+	static int ApplyTheft(LF_PlayerAccount account, string playerUid, bool success)
 	{
 		if (!account || !success)
 			return 0;
 
-		account.IncreaseWantedLevel(THEFT_WANTED);
-		return account.GetWantedLevel();
+		return LF_CrimeCatalog.ApplyWanted(account, playerUid, LF_WantedReports.OFFENCE_VEHICLE_THEFT);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -395,7 +393,7 @@ class LF_Hotwire
 		{
 			vehicleLock.SetHotwiredBy(PlayerIdOf(user));
 			vehicleLock.SetStolen(true);
-			ApplyTheft(LF_RobAction.FindAccount(attempt.m_sPlayerUid), true);
+			ApplyTheft(LF_RobAction.FindAccount(attempt.m_sPlayerUid), attempt.m_sPlayerUid, true);
 		}
 
 		LF_Debug.Info(FEATURE, string.Format("%1 on %2: success=%3 (skill %4, roll %5)", attempt.m_sPlayerUid, vehicleLock.GetVehicleIdentifier(), success, attempt.m_iSkill, roll));

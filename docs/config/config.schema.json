@@ -11,6 +11,54 @@
       "default": 1,
       "description": "Owner file schema version. A file without it is version 1."
     },
+    "crime": {
+      "type": "object",
+      "description": "The crime catalog config: Configs/Crime/LF_CrimeCatalog.conf, with the owner's `crime` section layered over it.",
+      "properties": {
+        "crimes": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the crime id, a localization key such as #LF-Offence_Robbery; saved crime records use the same string. An id no shipped entry has adds an offence at the end; an existing id changes only the fields given.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "wantedAdd": {
+                "type": "integer",
+                "default": 1,
+                "minimum": 0,
+                "maximum": 5
+              },
+              "fine": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "sentenceSeconds": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 86400
+              },
+              "repeatThreshold": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "repeatWantedAdd": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 5
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_CrimeCatalogConfig"
+    },
     "shops": {
       "type": "object",
       "description": "Price table for the shop system.",

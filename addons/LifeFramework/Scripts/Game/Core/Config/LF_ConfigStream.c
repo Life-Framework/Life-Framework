@@ -207,6 +207,9 @@ class LF_ConfigStream
 
 		// The vehicle prices are one cached instance; drop it so the next price read layers the stream.
 		LF_VehiclePricesConfig.Reload();
+
+		// The crime catalog is server only and cached the same way; /configreload layers it again.
+		LF_CrimeCatalogConfig.Reload();
 	}
 
 	//------------------------------------------------------------------------------------------------

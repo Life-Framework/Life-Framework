@@ -41,7 +41,7 @@ class LF_Test_Dispatch : LF_Test
 		float next = 0;
 
 		// One officer on duty: one dispatch, the normal alarm.
-		int paid = LF_RobAction.CommitRobbery(ROBBER, null, 100, 1, 1, 0, COOLDOWN_S, 0, now, next);
+		int paid = LF_RobAction.CommitRobbery(ROBBER, null, 100, 1, 0, COOLDOWN_S, 0, now, next);
 		ctx.Equal(100, paid, "the till robbery is accepted");
 		ctx.Equal(1, LF_Dispatch.CallCount(), "one accepted robbery is one dispatch");
 		ctx.Equal(1, LF_WantedReports.CountFor(ROBBER), "one accepted robbery is one crime report");
@@ -56,16 +56,16 @@ class LF_Test_Dispatch : LF_Test
 
 		// Inside the cooldown the till refuses: no dispatch, no report.
 		float last = next;
-		ctx.Equal(0, LF_RobAction.CommitRobbery(ROBBER, null, 100, 1, 1, 0, COOLDOWN_S, last, now + 1000, next), "the till refuses inside the cooldown");
+		ctx.Equal(0, LF_RobAction.CommitRobbery(ROBBER, null, 100, 1, 0, COOLDOWN_S, last, now + 1000, next), "the till refuses inside the cooldown");
 		ctx.Equal(1, LF_Dispatch.CallCount(), "a refused robbery dispatches nothing");
 		ctx.Equal(1, LF_WantedReports.CountFor(ROBBER), "a refused robbery reports nothing");
 
 		// A server that sets a minimum still refuses below it (framework gate kept).
-		ctx.Equal(0, LF_RobAction.CommitRobbery(ROBBER, null, 100, 1, 0, 1, COOLDOWN_S, last, now + COOLDOWN_S * 1000 + 1, next), "a configured minimum of one refuses with nobody on duty");
+		ctx.Equal(0, LF_RobAction.CommitRobbery(ROBBER, null, 100, 0, 1, COOLDOWN_S, last, now + COOLDOWN_S * 1000 + 1, next), "a configured minimum of one refuses with nobody on duty");
 		ctx.Equal(1, LF_Dispatch.CallCount(), "the minimum refusal dispatches nothing");
 
 		// The flagship minimum is 0: nobody on duty still robs, and the alarm is the loud one.
-		paid = LF_RobAction.CommitRobbery(ROBBER, null, 100, 1, 0, 0, COOLDOWN_S, last, now + COOLDOWN_S * 1000 + 1, next);
+		paid = LF_RobAction.CommitRobbery(ROBBER, null, 100, 0, 0, COOLDOWN_S, last, now + COOLDOWN_S * 1000 + 1, next);
 		ctx.Equal(100, paid, "with nobody on duty the robbery still happens");
 		ctx.Equal(2, LF_Dispatch.CallCount(), "the second accepted robbery is the second dispatch");
 		LF_DispatchRecord second = LF_Dispatch.Last();
