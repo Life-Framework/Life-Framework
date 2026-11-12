@@ -140,7 +140,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "lockpick") {
     return `${id} lockpick`;
   }
-  if (spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload") {
+  if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "peers") {
@@ -1486,7 +1486,7 @@ function main(argv) {
     if (cmd === "lockpick") {
       return printResult(sendCommand({ verb: "lockpick" }, 10000));
     }
-    if (cmd === "radio" || cmd === "pager" || cmd === "report") {
+    if (cmd === "phone" || cmd === "radio" || cmd === "pager" || cmd === "report") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "peers") {

@@ -167,6 +167,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		if (Replication.IsServer())
 		{
 			LF_BleedOut.OnPlayerDisconnected(playerId);
+			LF_PhoneCalls.OnPlayerDisconnected(playerId);
 			ReleaseDisconnectedPlayer(playerId);
 		}
 
