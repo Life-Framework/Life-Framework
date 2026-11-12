@@ -51,6 +51,7 @@ hydrates the static HTML. Moving between pages after that is client-side.
 | Devlog (`/devlog`) | Merged pull requests into `main` from GitHub (title and the first prose line of the body) and every entry in `docs/decisions.md`, grouped by day |
 | Server owners (`/servers`) | The "Features" list in `README.md`, the M3 milestone from GitHub, and copy in `src/pages/Servers.tsx` (the core/pack split and config model from `docs/roadmap/m3-outline.md`, the M4 hosting plan) |
 | Contribute (`/contribute`) | Open `good first issue` issues, else unassigned issues in the current milestone, and the contributor list, from GitHub |
+| Config generator (`/config`) | `docs/config/config.schema.json`, copied to `src/generated/data/config-schema.json` at build time. The form, defaults, ranges and validation are all derived from it (`src/lib/configgen.ts`), so a schema change shows up on the next build. The download holds only values changed from the defaults plus `schemaVersion`. `node scripts/configgen-selftest.mjs` tests that logic. Linked from `/servers` and the footer |
 | Credits (`/credits`) | `docs/credits.md` rendered at build time (a doc with its own route, like decisions), plus the GitHub contributor list. Linked from the footer. Add a credit in `docs/credits.md`, never in the page |
 | Decisions (`/decisions`) | `docs/decisions.md`, split into its sections and dated entries |
 | Docs (`/docs`, `/docs/:slug`) | Setup and playtest guides, direction and decisions, engineering references, research and community docs, and every `docs/roadmap/**/*.md` |
