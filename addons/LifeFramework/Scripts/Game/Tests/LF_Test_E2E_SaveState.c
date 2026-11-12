@@ -193,13 +193,13 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		lockerRows.Insert(lockerRow);
 		LF_EvidenceLocker.ApplyAll(lockerRows);
 
-		// A half-finished chain batch (#417) must come back: barrel 3 of the Chains_Site, 3 of 8 units in.
-		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find("Chains_Barrel_3");
+		// A half-finished chain batch (#417) must come back: barrel 3 of the Annex_Chains_Site, 3 of 8 units in.
+		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed before the save");
 		if (chainBarrel)
 		{
 			LF_ChainStationRow chainRow = new LF_ChainStationRow();
-			chainRow.m_sStationKey = "Chains_Barrel_3";
+			chainRow.m_sStationKey = LF_TestAnnex.CHAINS_BARREL_3;
 			chainRow.m_sChainId = "cider";
 			chainRow.m_sStepId = "press";
 			chainRow.m_iWork = 3;
@@ -491,7 +491,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(1, LF_WantedReports.CountFor(ACCOUNT_UID), "e2e wanted report present after the save load");
 		ctx.True(LF_WantedReports.IsIdentified(ACCOUNT_UID), "e2e wanted report stays identified after the save load");
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
-		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find("Chains_Barrel_3");
+		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
 		if (chainBarrel)
 		{

@@ -109,12 +109,12 @@ class LF_Test_VehicleImpound : LF_Test
 
 		int fee = LF_GarageConfig.ImpoundFee();
 		ctx.Equal(250, fee, "the impound fee comes from LF_Garage.conf");
-		ctx.True(LF_VehicleSpawnPointComponent.CountForShop("roadmap-garage") > 0, "the garage has its own pad");
-		ctx.True(LF_VehicleSpawnPointComponent.CountForShop("roadmap-impound") > 0, "the impound yard has a pad");
+		ctx.True(LF_VehicleSpawnPointComponent.CountForShop(LF_TestAnnex.GARAGE_PAD_ID) > 0, "the garage has its own pad");
+		ctx.True(LF_VehicleSpawnPointComponent.CountForShop(LF_TestAnnex.IMPOUND_PAD_ID) > 0, "the impound yard has a pad");
 
 		array<ref LF_VehicleRecord> before = LF_VehicleOwnership.ExportAll();
-		LF_VehicleOwnership.Register(KEPT, OWNER, KEPT, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, "roadmap-lot", KEPT_PLATE, "#EL-Vehicle_S105", true);
-		LF_VehicleOwnership.Register(STREET, OWNER, STREET, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, "roadmap-lot", STREET_PLATE, "#EL-Vehicle_S105", true);
+		LF_VehicleOwnership.Register(KEPT, OWNER, KEPT, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, LF_TestAnnex.LOT_ID, KEPT_PLATE, "#EL-Vehicle_S105", true);
+		LF_VehicleOwnership.Register(STREET, OWNER, STREET, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, LF_TestAnnex.LOT_ID, STREET_PLATE, "#EL-Vehicle_S105", true);
 		ctx.True(LF_VehicleOwnership.Store(KEPT, OWNER), "the owner garages one car before the save");
 
 		JsonSaveContext saveContext = new JsonSaveContext(false);
@@ -145,21 +145,21 @@ class LF_Test_VehicleImpound : LF_Test
 
 		LF_MoneyUtils.AddCash(owner, fee - 1);
 		string reasonKey;
-		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, "roadmap-impound", reasonKey), "short cash does not release the car");
+		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "short cash does not release the car");
 		ctx.EqualStr("#LF-Impound_CannotAfford", reasonKey, "the owner is told the fee is short");
 		ctx.Equal(fee - 1, LF_MoneyUtils.GetCash(owner), "a refused collect takes no cash");
 		ctx.True(LF_VehicleOwnership.IsImpounded(STREET), "the car stays impounded");
 
 		LF_MoneyUtils.AddCash(owner, 101);
 		int cashBefore = LF_MoneyUtils.GetCash(owner);
-		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, "impound-stranger", owner, fee, "roadmap-impound", reasonKey), "a stranger cannot collect the car");
-		ctx.True(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, "roadmap-impound", reasonKey), "the owner pays and collects");
+		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, "impound-stranger", owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "a stranger cannot collect the car");
+		ctx.True(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "the owner pays and collects");
 		ctx.Equal(cashBefore - fee, LF_MoneyUtils.GetCash(owner), "the fee is taken from carried cash");
 		ctx.False(LF_VehicleOwnership.IsImpounded(STREET), "the collected car left the impound lot");
 		IEntity released = LF_VehicleOwnership.GetVehicle(STREET);
 		ctx.True(released != null, "the collected car is on the impound pad");
-		IEntity desk = GetGame().GetWorld().FindEntityByName("Roadmap_Impound_Desk");
-		ctx.True(desk != null, "Roadmap_Impound_Desk is placed");
+		IEntity desk = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.IMPOUND_DESK);
+		ctx.True(desk != null, "Annex_Impound_Desk is placed");
 		if (released && desk)
 			ctx.True(vector.Distance(released.GetOrigin(), desk.GetOrigin()) < 20, "the car is released inside the impound yard");
 
@@ -173,13 +173,13 @@ class LF_Test_VehicleImpound : LF_Test
 
 		// The owner can afford a second fee, so only the impound state stops a second release.
 		LF_MoneyUtils.AddCash(owner, fee);
-		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, "roadmap-impound", reasonKey), "the car is collected only once");
+		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "the car is collected only once");
 		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(owner), "the fee is charged once");
 
 		// The garaged car comes out on the garage pad, in front of the shell.
-		ctx.True(LF_VehicleOwnership.Retrieve(KEPT, OWNER, "roadmap-garage", owner), "the owner retrieves the garaged car");
+		ctx.True(LF_VehicleOwnership.Retrieve(KEPT, OWNER, LF_TestAnnex.GARAGE_PAD_ID, owner), "the owner retrieves the garaged car");
 		IEntity retrieved = LF_VehicleOwnership.GetVehicle(KEPT);
-		IEntity garage = GetGame().GetWorld().FindEntityByName("Roadmap_Garage");
+		IEntity garage = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.GARAGE);
 		ctx.True(retrieved != null && garage != null, "the retrieved car and the garage are in the world");
 		if (retrieved && garage)
 			ctx.True(vector.Distance(retrieved.GetOrigin(), garage.GetOrigin()) < 10, "the retrieved car stands at the garage");
