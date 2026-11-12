@@ -29,6 +29,7 @@ GenericEntity Roadmap_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL
      m_iWantedIncrease 1
      m_fCooldown 60
      m_iMinPoliceOnDuty 0
+     m_bTillActionName 1
     }
    }
   }

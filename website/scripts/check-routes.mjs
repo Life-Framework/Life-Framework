@@ -28,6 +28,8 @@ const pages = {
   "/contribute": "Join the Discord",
   "/decisions": "The calls that set the taste",
   "/support": "Where the money goes",
+  "/config": "Build your server config",
+  "/credits": "Projects we build on and borrow from",
   "/docs": "The paperwork",
   "/docs/direction": "What we are building",
   "/docs/playtest": "Open the playtest",
@@ -41,6 +43,7 @@ const redirects = {
   "/team": "/contribute",
   "/documentation": "/docs",
   "/docs/decisions": "/decisions",
+  "/docs/credits": "/credits",
 };
 
 let failed = 0;

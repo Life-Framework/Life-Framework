@@ -31,6 +31,9 @@ modded class SCR_ChimeraCharacter
 		if (!officer)
 			return;
 
+		if (!LF_RateLimit.AllowCharacter(officer, LF_ERequestKind.SPAWN, "arrest"))
+			return;
+
 		int officerPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
 		LF_PlayerAccount officerAccount = LF_PoliceUtils.GetAccountForEntity(officer);
 		if (!LF_PoliceUtils.IsOnDutyOfficer(officerAccount))
@@ -83,7 +86,7 @@ modded class SCR_ChimeraCharacter
 //! suite can exercise them without a world.
 class LF_PoliceUtils
 {
-	//! The largest fine a senior officer may write on a ticket (LF_PoliceRanks.FineCap).
+	//! The built-in senior fine cap. Each rank's cap is LF_PoliceRanks.FineCap, from the ladder in LF_Police.conf.
 	static const int MAX_FINE = 5000;
 
 	//! How close the officer must stand to arrest or fine from the police menu. Matches the

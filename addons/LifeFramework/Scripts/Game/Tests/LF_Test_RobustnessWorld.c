@@ -14,15 +14,12 @@ class LF_Test_RobustnessWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity placed = GetGame().GetWorld().FindEntityByName(LF_Jail.CELL_ID);
-		ctx.True(placed != null, "Roadmap_Jail_Cell is placed");
+		LF_JailCellComponent placedCell = LF_JailCellComponent.GetPlaced();
+		ctx.True(placedCell != null, "the world places a jail cell (LF_JailCellComponent)");
 		if (ctx.FailureCount() > 0)
 			return;
 
-		LF_JailCellComponent placedCell = LF_Component<LF_JailCellComponent>.Find(placed);
-		ctx.True(placedCell != null, "the placed cell carries LF_JailCellComponent");
-		if (ctx.FailureCount() > 0)
-			return;
+		IEntity placed = placedCell.GetOwner();
 
 		ctx.True(placedCell.IsTickOwner(), "the placed cell owns the jail tick");
 

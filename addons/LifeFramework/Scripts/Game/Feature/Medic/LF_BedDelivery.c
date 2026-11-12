@@ -63,16 +63,6 @@ class LF_BedDelivery
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: is `name` ("{GUID}path") the same resource as `configured`? Compares the GUID part.
-	static bool SameResource(string name, string configured)
-	{
-		if (name.Length() < 18 || configured.Length() < 18)
-			return false;
-
-		return name.Substring(0, 18) == configured.Substring(0, 18);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The vehicle's prefab, or one it inherits, is in the config's stretcher list.
 	static bool IsStretcherVehicle(IEntity vehicle)
 	{
@@ -90,7 +80,7 @@ class LF_BedDelivery
 			string name = prefab.GetResourceName();
 			foreach (ResourceName configured : stretchers)
 			{
-				if (SameResource(name, configured))
+				if (LF_Utils.SamePrefab(name, configured))
 					return true;
 			}
 

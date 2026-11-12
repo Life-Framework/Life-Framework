@@ -332,7 +332,7 @@ function entityBlockOf(text, target) {
 }
 
 // Rewrite one entity's `coords` and `angleY` lines (in its parent's frame); every other byte stays.
-export function setTransform(text, target, { coords, yaw }) {
+export function setTransform(text, target, { coords, yaw, scale = null }) {
   const name = typeof target === "string" ? target : baseOf(target.prefab);
   const span = entityBlockOf(text, target);
   const body = text.slice(span.open, span.end);
@@ -352,6 +352,19 @@ export function setTransform(text, target, { coords, yaw }) {
   const yawText = num(normYaw(yaw));
   if (yawAt >= 0) lines[yawAt] = `${indent}angleY ${yawText}`;
   else if (yawText !== "0") lines.splice(coordsAt + 1, 0, `${indent}angleY ${yawText}`);
+  // --scale on a move: rewrite the scale line, or add one after coords/angleY.
+  if (scale != null) {
+    let d = 0;
+    let scaleLine = -1;
+    let after = coordsAt;
+    for (let i = 0; i < lines.length; i++) {
+      if (d === 1 && /^\s*scale\s/.test(lines[i])) scaleLine = i;
+      if (d === 1 && /^\s*(coords|angleY)\s/.test(lines[i])) after = i;
+      d += (lines[i].match(/\{/g) || []).length - (lines[i].match(/\}/g) || []).length;
+    }
+    if (scaleLine >= 0) lines[scaleLine] = `${indent}scale ${num(scale)}`;
+    else lines.splice(after + 1, 0, `${indent}scale ${num(scale)}`);
+  }
   return text.slice(0, span.open) + lines.join("\n") + text.slice(span.end);
 }
 
@@ -758,7 +771,14 @@ function serverRun(rayLines = []) {
   return { records, outText: run.outText, rays, doors };
 }
 
-// `exclude`: the name of the entity being re-placed, which the ray passes through.
+// `exclude`: what the ray passes through, the entity being re-placed: its name, or for an unnamed one
+// `@<prefab>:x,y,z` (excludeOf), which LF_PlacementAudit.FindExcluded resolves to the entity at that spot.
+export const excludeOf = (item) => {
+  if (item.mode !== "move") return "";
+  if (item.name) return item.name;
+  const e = item.ent;
+  return `@${baseOf(item.prefab)}:${r3(e.x)},${r3(e.y)},${r3(e.z)}`;
+};
 const rayLine = (id, from, to, exclude = "") => `ray ${id} ${from.map(r3).join(" ")} ${to.map(r3).join(" ")}${exclude ? ` ${exclude}` : ""}`;
 
 // The placement audit on the entities just written. Fails on any problem the audit ranks for one of them or
@@ -837,11 +857,11 @@ function openWorld(flags) {
 function itemsOf(ctx, prefabArgs, flags) {
   const items = [];
   if (flags.move) {
-    for (const name of String(flags.move).split(",")) {
+    for (const name of String(flags.move).split(/,(?=[^\d.-])/)) {
       const ent = findEntity(ctx.ents, name);
       if (!ent.bounds) throw new PlaceError(`${name} has no mesh bounds (${ent.prefab || "no prefab"}): nothing to rest on a surface`);
       if (ent.tilted) throw new PlaceError(`${name} is tilted (angleX/angleZ): the tool places upright props only`);
-      items.push({ mode: "move", ent, name: ent.name, prefab: ent.prefab, bounds: ent.bounds, scale: flags.scale ? Number(flags.scale) : ent.scale, dynamic: ent.dynamic });
+      items.push({ mode: "move", ent, name: ent.name, prefab: ent.prefab, bounds: ent.bounds, scale: flags.scale ? Number(flags.scale) : ent.scale, setScale: flags.scale ? Number(flags.scale) : null, dynamic: ent.dynamic });
     }
     return items;
   }
@@ -950,7 +970,7 @@ function commit(ctx, plans, flags) {
         coords = [lx, p.y - par.y, lz];
         yaw = p.yaw - par.yaw;
       }
-      edit(ctx.prefabFile ?? join(LAYERS_DIR, it.ent.file), (t) => setTransform(t, it.ent.name || it.ent, { coords, yaw }));
+      edit(ctx.prefabFile ?? join(LAYERS_DIR, it.ent.file), (t) => setTransform(t, it.ent.name || it.ent, { coords, yaw, scale: it.setScale ?? null }));
     } else {
       edit(join(LAYERS_DIR, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, p.y, p.z], yaw: p.yaw, scale: it.setScale }));
     }
@@ -1073,7 +1093,7 @@ function groundPlans(ctx, wants, flags) {
     const pts = [w.at, ...footprintCorners(w.item.bounds, w.item.scale, w.yaw).map((p) => [w.pivot[0] + mid[0] + (p[0] - mid[0]) * 0.9, w.pivot[1] + mid[1] + (p[1] - mid[1]) * 0.9])];
     const y0 = hintOf(w.at);
     early.push({ x: w.pivot[0], y: y0 - w.item.bounds.min[1] * w.item.scale, z: w.pivot[1], yaw: w.yaw, item: w.item });
-    pts.forEach((p, k) => lines.push(rayLine(`g${i}_${k}`, [p[0], y0 + 3, p[1]], [p[0], y0 - 8, p[1]], w.item.mode === "move" ? w.item.name : "")));
+    pts.forEach((p, k) => lines.push(rayLine(`g${i}_${k}`, [p[0], y0 + 3, p[1]], [p[0], y0 - 8, p[1]], excludeOf(w.item))));
   });
   // Roads, doors and neighbours do not depend on the exact height: refuse those before booting the server.
   if (review(ctx, early, flags, { quiet: true }) && !flags.force) {
@@ -1141,7 +1161,7 @@ function cmdAgainst(args, flags) {
   for (let h = y0 - 0.5; h <= y0 + (hang ?? 0) + height + 1.0; h += 0.15) hs.push(h);
   const lines = [];
   const meta = [];
-  const exclude = item.mode === "move" ? item.name : "";
+  const exclude = excludeOf(item);
   lats.forEach((lat, i) => hs.forEach((h, j) => {
     const from = [start[0] + t[0] * lat, h, start[1] + t[1] * lat];
     lines.push(rayLine(`w${i}_${j}`, from, [from[0] - n[0] * reach, h, from[2] - n[1] * reach], exclude));

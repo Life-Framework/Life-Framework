@@ -1,0 +1,1 @@
+{ "shops": { "priceRules": { "Prefabs/Items/Resources/Ore": { "buyPrice": 2, "sellPrice": 9 } } } }

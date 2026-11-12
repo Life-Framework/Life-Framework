@@ -399,8 +399,8 @@ class LF_Progression
 			return rank;
 
 		int clamped = LF_PoliceRanks.PATROL;
-		if (rank > LF_PoliceRanks.SENIOR)
-			clamped = LF_PoliceRanks.SENIOR;
+		if (rank > LF_PoliceRanks.TopRank())
+			clamped = LF_PoliceRanks.TopRank();
 
 		LF_Debug.Warn("Progression", string.Format("saved police rank %1 for %2 is not on the ladder, using %3", rank, playerUid, clamped));
 		return clamped;

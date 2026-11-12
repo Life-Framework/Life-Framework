@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "defaultBuyPrice": 50,
+  }
+}

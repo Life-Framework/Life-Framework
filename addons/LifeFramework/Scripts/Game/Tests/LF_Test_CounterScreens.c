@@ -83,6 +83,9 @@ class LF_Test_CounterRefusalText : LF_Test
 		}
 
 		ctx.Equal(LF_EShopRefusal.NO_SHOP, LF_ShopRefusal.FromWire(-3), "an unknown shop reason is a refusal");
+		ctx.Equal(LF_EShopRefusal.CLOSED, LF_ShopRefusal.FromWire(LF_EShopRefusal.CLOSED), "a shut back room survives the wire");
+		ctx.Equal(LF_EShopRefusal.TOO_FAST, LF_ShopRefusal.FromWire(LF_EShopRefusal.TOO_FAST), "a rate-limited order survives the wire");
+		ctx.True(LF_ShopRefusal.Key(LF_EShopRefusal.TOO_FAST) != "", "a rate-limited order has a slip line");
 
 		ctx.Equal(1, LF_ShopRefusal.StepQuantity(1, -1), "the slip never goes below 1");
 		ctx.Equal(3, LF_ShopRefusal.StepQuantity(2, 1), "One more adds one");
@@ -104,7 +107,7 @@ class LF_Test_CounterRefusalText : LF_Test
 //------------------------------------------------------------------------------------------------
 //! The ATM and shop screens open only on the machine of the player who used the counter: both
 //! placed actions run PerformAction on the acting machine only, and the owner check refuses
-//! anyone else. Reads the DebugWorld placements ATM_Debug and Shop_GeneralStore_Debug.
+//! anyone else. Reads the DebugWorld placements Annex_ATM and Shop_GeneralStore_Debug.
 // tier: WORLD
 class LF_Test_CounterLocalOnly : LF_Test
 {
@@ -115,16 +118,16 @@ class LF_Test_CounterLocalOnly : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity atm = GetGame().GetWorld().FindEntityByName("ATM_Debug");
+		IEntity atm = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ATM);
 		IEntity shop = GetGame().GetWorld().FindEntityByName("Shop_GeneralStore_Debug");
-		ctx.NotNull(atm, "DebugWorld places ATM_Debug");
+		ctx.NotNull(atm, "DebugWorld places Annex_ATM");
 		ctx.NotNull(shop, "DebugWorld places Shop_GeneralStore_Debug");
 		if (!atm || !shop)
 			return;
 
 		ScriptedUserAction atmAction = FindAction(atm, "LF_ATMAction");
 		ScriptedUserAction shopAction = FindAction(shop, "LF_ShopAction");
-		ctx.NotNull(atmAction, "ATM_Debug carries LF_ATMAction");
+		ctx.NotNull(atmAction, "Annex_ATM carries LF_ATMAction");
 		ctx.NotNull(shopAction, "Shop_GeneralStore_Debug carries LF_ShopAction");
 		if (atmAction)
 			ctx.True(atmAction.HasLocalEffectOnlyScript(), "the ATM action runs only on the acting player's machine");

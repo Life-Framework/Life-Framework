@@ -55,6 +55,21 @@
   `OnVehicleBought`, `OnPlayerDowned` (the downed state, below). Test `core/event-bus`.
   See `docs/architecture/events.md`.
 
+### `LF_RateLimit` — `Core/LF_RateLimit.c` (#693b, 2026-11-12)
+- ✅ Server-side request rate limit, per player and per request kind (`LF_ERequestKind`
+  PURCHASE, TRAVEL, COMMS, SPAWN, INVENTORY): a fixed window admits a small burst
+  (purchases 4 per 2 s, travel 2 per 10 s, comms 3 per 5 s, spawn or move 4 per 1 s,
+  inventory 8 per 1 s; named `// lf-fixed:` constants until the #278 config service lands).
+  The first refusal in a window logs `[LFDebug:RateLimit]` Warn and toasts the player
+  (`LF-RateLimit_Slow`); later refusals in that window are counted and logged once when it
+  rolls over. A request with no player (server-local) is not counted. Applied in: shop buy and sell (the slip prints `LF-Shop_RefuseTooFast`, no
+  toast), vehicle lot, organization upgrade and founding, spawn hub travel, service board,
+  building placement, give cash and give item, arrest, quantity split and transfer. Not
+  applied where a state gate already makes spam a no-op (character create and select,
+  respawn) or to admin-only reads (incident feed). The `validate-request-audit` lint now
+  covers every `RplRcver.Server` handler (59) and fails when a baselined rate limit is
+  removed. Test `ratelimit/window`.
+
 ### `LF_IncidentLog` — `Feature/Moderation/` (#239, 2026-11-09)
 - ✅ Server-only, append-only incident log, a subscriber on `LF_EventBus`
   (`OnPlayerKilled` with killer, weapon, position, murder flag; `OnPlayerDamaged`,
@@ -185,6 +200,22 @@
   1e6→`M`, 1e9→`B`), typed component finders.
 - ⚠️ `LF_ComponentData.Get` strips the last 5 chars of the class name
   (`XxxClass`→`Xxx`); breaks for any data class not ending in `Class`.
+- ✅ (2026-11-12, #323 batch 0) `LF_Utils.SamePrefab(a, b)` and `PrefabGuid(name)`: two resource
+  names are one prefab when their GUIDs match, whatever path text they carry; only a name without
+  a GUID falls back to its path (case-insensitive); empty never matches. A resource moved into the
+  pack keeps its GUID but `GetPrefabName()` reports the new path, so every prefab comparison
+  against a saved or configured name goes through it: chop shop values, `LF_InventoryUtils`
+  (`FindItemsByPrefab` uses `LF_SamePrefabPredicate`, the carried-item counts), stored inventories,
+  store lines and unpaid-tag reattachment, shop catalog and curated lists, trader lists, restricted
+  storages, gather and ore tools, breach charges, quest counts, chain goods, vehicle offers,
+  building placement (the server spawns its own performer prefab, never the client's string),
+  police kit lists, contraband, the item-count invokers (every subscribed name), GATHER/PROCESS
+  quest filters and job scope rewards. The shop catalog is a map keyed by GUID (build: 1339
+  items in about 230 ms). Saves are unchanged;
+  a pre-move save matches on load. `ShopPrices.conf` rules for one prefab use `m_Prefab` (GUID);
+  `m_sFind` stays for folders and name families and must be updated when those resources move,
+  as must the shop's `LooksLikeItemPath` folder filter. Tests `prefab/same-prefab`,
+  `prefab/moved-path`.
 
 ### `LF_InventoryUtils` (Core) / `LF_BuildingManagerComponent` / `LF_ChatManagerComponent`
 - ✅ (2026-11-08) `LF_InventoryUtils.AddItem` spawns through
@@ -258,6 +289,55 @@
   pack holds script; `addon-boundary-selftest.mjs` proves each case. The rule
   is `docs/architecture/core-vs-pack.md`; the tree is classified in
   `docs/architecture/core-pack-inventory.md`.
+
+### Config service — `Scripts/Game/Core/Config/LF_ConfigService.c` (#278)
+- ✅ (2026-11-12) The server reads the owner's
+  `$profile:LifeFramework/config.json` at game start and merges it over the
+  shipped `.conf` defaults field by field: owner, then pack, then core. Records
+  merge by a stable key (an object keyed by the key, not a list); a new key is
+  appended. Shops are the first section (`shops`: default prices,
+  `priceRules`, `extraItemPrefabs`; a rule may set `prefab`, matched by GUID). `validate-config-schema` fails when a schema field and the key list `ApplyOwner` declares for `WarnUnknownKeys` disagree. A missing file boots on defaults and
+  writes `config.example.json` beside it, never over a file. A bad file,
+  section, record or field logs `[LFDebug:Config]` and keeps the lower value;
+  nothing crashes the server. Pack overlays come through `LF_ConfigPackSource`,
+  the seam D4 decides; the default supplies none. Detail and the
+  `SCR_JsonLoadContext` probe results: `Core/Config/Feature.md`. Tests
+  `config/json-probe`, `config/merge-fields`, `config/merge-keyed`,
+  `config/merge-reject`, `config/merge-no-owner`, `config/owner-file`,
+  `config/pack-overlay`.
+- ✅ (2026-11-12) `config.schema.json` and `config.example.json` in
+  `docs/config/` are generated from the config classes' `[Attribute]`
+  declarations (name, type, default, min and max, description; keys follow the
+  Hungarian-prefix rule). `node tools/config/schema.mjs --write` regenerates
+  them; `validate-config-schema` fails on a stale copy, validates the example
+  and the example the service writes at runtime against the schema, and
+  `config-schema-selftest` proves it red on a stale schema and a bad example.
+  Tools only, no game code (#280).
+- ✅ (2026-11-12, #279 #302) Per-field reject: a price outside its attribute's
+  `params: "min max"` (0 to 1000000) is refused with the value, limit and kept
+  value logged, and the rest still applies; an unknown key (top level, section
+  or record) warns and is ignored; `schemaVersion` above the build's logs an
+  error (known fields still apply), below it logs an info line, a bad one reads
+  as 1. Tests `config/reject`, `config/unknown-keys`, `config/schema-version`.
+- ✅ (2026-11-12, #303) Config migrations at boot: an owner `config.json` older than
+  the build's schema is backed up (`config.json.bak-v<N>-<UTC timestamp>`, never over an
+  existing backup), stepped through ordered `LF_ConfigMigration` steps, rewritten, and each
+  step logged. A failed step, a missing step, or a failed backup keeps the original file,
+  logs an error, and the server boots on shipped values. Schema is still v1, so none ship
+  yet; the v0 to v1 step is a test fixture. Tests `config/migration-chain`,
+  `config/migration-file`.
+- ✅ (2026-11-12, #285) Config stream: the server serialises the effective
+  client-relevant values (the `shops` section: defaults, every rule in walk
+  order, extra prefabs) with a format version and a hash. Clients get them on
+  join through the game mode's `RplSave`/`RplLoad` and again through a
+  broadcast RPC when they change; the client's `LF_ShopPricesConfig.ApplyLayers`
+  uses them as its last layer and the catalog re-prices. Another format or
+  schema, a hash mismatch or a bad value logs `LF_Debug.Error` and keeps the
+  client's values. `/configreload` (administrators; dev worlds and harness
+  builds) re-reads `config.json` on a running server and streams the change.
+  Only typed client fields are written; the owner file never leaves the server.
+  Proof verb `config-stream-proof`. Tests `config/stream-roundtrip`,
+  `config/stream-client-only`, `config/stream-reject`.
 
 ## Character & Survival
 
@@ -496,6 +576,18 @@
   its `version` field. `account/save-roundtrip` covers the
   export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
+### `LF_Playtime` — `Feature/Account/LF_Playtime.c` (#692)
+- ✅ Playtime per account and per job or service, counted on the server and never
+  replicated. Each connected player has a clock; every 15 s, on disconnect and
+  before each save the seconds since its last credit go to the account's job now
+  (`JobFor`: on-duty `POLICE`/`MEDIC`, else the signed-up delivery job such as
+  `PARCEL`, else `CIVILIAN`), read through `LF_PlayerAccount` and
+  `LF_CivilianJob.GetSignedUpJob` only. One credit is capped at 300 s (a wall-clock
+  jump is not playtime). Keyed by the account uid, so gates read the person across
+  characters. Read with `Total(uid)`, `JobSeconds(uid, job)`, `CollectJobs`.
+  Persisted as the `playtime` payload (save version 26, `LF_PlaytimeRecord`).
+  `account/playtime` and the `e2e/pass*` pair cover it.
+
 ### `LF_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `LF_SaveSelection`), manual saves,
@@ -507,7 +599,11 @@
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual
   `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race against
-  the persistence teardown on the Workbench (fixed 2026-08-30).
+  the persistence teardown on the Workbench (fixed 2026-08-30). The engine
+  writes it only under a mission header; a bare `DebugWorld.ent` boot writes
+  none. `wt e2e` pass 1 ends through the host stop file on
+  `EL_DebugTest.conf`, asserts the SHUTDOWN save landed before the statics
+  reset, and pass 2 loads it (test `e2e/shutdown-save-loaded`, #830).
 - ✅ Persistence system resolution is stable across reloads: the systems config
   is now `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, referenced
   explicitly from both missions), replacing the GUID-colliding
@@ -715,6 +811,11 @@
   attributes. `LF_ShopAction` opens only on the acting machine for its own
   character. Closes on Leave, MenuBack, death, or 3.5 m from the counter.
   Tests: `shop/refusal-reasons`, `counter/local-only`, `counter/screen-layout`.
+- ✅ (2026-11-12, #278) `ShopPrices.conf` is the core layer of
+  the config service: `LF_ShopManagerComponent.LoadConfig` applies pack
+  overlays and the owner's `shops` section before it builds the catalog
+  (`LF_ShopPricesConfig.ApplyLayers`). The server charges and pays the owner's
+  prices.
 
 ### `LF_TraderManagerComponent` + `LF_InventoryStorageManagerComponent` — `Components/InventorySystem/`
 - ✅ Sell-to-trader pays **cash** (verified 2026-10-11): inserting into a
@@ -734,6 +835,7 @@
 ## Gathering / Processing / Resources
 
 ### `LF_GatherAction` — `Feature/Gathering/LF_GatherAction.c`
+- ✅ **Carried tools count (pickaxe-count).** `LF_InventoryUtils.GetAmount`/`RemoveAmount` now also search the equipped-weapon storage (a pickaxe is a weapon-slot item the deposit count skips), each carried item once; `LF_GatherAction.HasToolIn` is the shared tool check (GUID compare). No shipped prefab sets the inventory mode and ore is mined by damage with the pickaxe in hand, so play was not affected. Test `tool/pickaxe-count`.
 - ✅ Interact action granting `m_GatherAmount` of `m_GatherItemPrefab` into
   the user inventory; tool requirement (right hand / left gadget / anywhere
   in inventory); per-resource gather counter + cooldown restock.
@@ -1194,6 +1296,13 @@
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
+- ✅ **Zone rule sets as data** (#755; tests `zones/rules`, `zones/ruleset-backcompat`). `LF_Zones.conf`
+  holds a per-rule table `m_aRuleSets` of `LF_ZoneRuleSet` (rule, blocksPlayerDamage, suppressesWanted,
+  allowsRobbery, allowsVehicleTheft, allowsWeaponDraw, fineMultiplier, copsEnter). Shipped: SAFE blocks
+  player damage, LAWLESS and NORMAL change nothing. A rule with no entry falls back to the old
+  `m_bSafeBlocksPlayerDamage` / `m_bLawlessSuppressesWanted` flags. Callers ask
+  `LF_Zones.RuleSetAt(pos)`; today only blocksPlayerDamage and suppressesWanted have consumers (hit
+  refusal, `LF_Murder`). The `EVENT` rule waits on D5 (#757); ids stay NORMAL 0, SAFE 1, LAWLESS 2.
 - ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_ZoneComponent` (rule SAFE) on
   `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
   the component attribute) registers a flat circle. The modded
@@ -1627,12 +1736,33 @@
   held offer; RplProps written on spawn, on change, and every 10 s); the
   server decides from the registry. Two-client proof:
   `node agent-box/session.mjs org [--shot]`.
+- ✅ (2026-11-12, #750a) Ranks are a ladder with a rights bitmask
+  (`LF_OrgRights`; bit = `LF_EOrganizationPermission`: withdraw, invite, kick,
+  buy upgrade, manage ranks, and the reserved declare war, use stash, manage
+  territory, spend fund). A new organization gets founder (every right), officer
+  (invite, kick, stash) and member (stash); an invite joins on the bottom rung.
+  Face to face, a member with manage ranks sees "Promote in <org>" on a member
+  whose next rung up is still below them and "Demote in <org>" on one who has a
+  rung below (`org_promote` / `org_demote` slots, `LF_OrgRankRole`); nobody
+  reaches their own rung or the founder's. Kick also needs the actor to outrank
+  the target, so an officer removes members but not another officer. Every move
+  is re-checked on the server (`LF_OrganizationManager.Promote/Demote/Kick`) and
+  logged with the new rights. The ledger shows the rank's own name. The view
+  replicates the ladder position. LOGIC `org/rights`.
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
   clear a live fund. Version 3 appends hideout ownership after these records.
   Version 4 appends owned vehicles after the hideout records. Version 5 appends
   serving jail sentences after the vehicles.
+- ✅ (2026-11-12, #750a) Save version 27 appends `orgranks`: each rank's whole
+  rights mask and ladder order, keyed by organization id and rank id. The
+  `organizations` record layout is unchanged (its rank still saves four bools,
+  bits 0-3 of the mask); the record version is 2. A version 26 or older save has
+  record version 1: load turns the bools into masks (founder every right, any
+  other rank its bools plus the stash), adds the officer rung, and keeps every
+  member on their rank. PERSISTENCE `org/rights-persist`; `wt e2e` carries a
+  founder, a promoted officer and a member across the restart.
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock
@@ -2237,7 +2367,7 @@
 ## Hidden crime record (#270)
 
 - ✅ `LF_CrimeRecord` (`Feature/Crime/LF_CrimeRecord.c`) subscribes to `LF_OnCrimeCommitted` (`EnsureSubscribed`, game-mode start) and counts completed crimes per account uid and offence key, so one robbery counts once. An unpaid ticket is not counted. Server only, never replicated, no UI. Read with `LF_CrimeRecord.Count(uid, offence)` / `Total(uid)` (the fence #271 and serials #272 use these). Persisted as the `crimerecord` payload (save version 15). Tests `crime/record`, `crime/record-persist`. Crime paths wired to the event today: robbery, vehicle and weapon theft, break-in, hospital, murder; gas station and contraband run count once their success path reports through `LF_Dispatch.Report`.
-- ✅ Fence (#271): an NPC (`Prefabs/Characters/Npcs/LF_Fence.et`, DebugWorld `FenceNpc`) with an `LF_ShopComponent` set to `m_bFence`. Each `LF_ShopItem.m_iMinCrimes` is the completed crimes the buyer needs on the hidden record (`LF_CrimeRecord.Total`): drill 3, charge 5, keycard 8. `LF_ShopComponent.Buy` asks `LF_FenceRules.Check` before any cash moves; a refusal logs `[LFDebug:Fence] refused ...` and prints `#LF-Shop_RefuseNotTrusted` on the order slip. Prices are the `ShopPrices.conf` rules for `Prefabs/Items/Fence/`. Each sale publishes `LF_OnFenceSale`. Test `crime/fence-gate`.
+- ✅ Fence (#271): an NPC (`Prefabs/Characters/Npcs/LF_Fence.et`, DebugWorld `FenceNpc`) with an `LF_ShopComponent` set to `m_bFence`. Each `LF_ShopItem.m_iMinCrimes` is the completed crimes the buyer needs on the hidden record (`LF_CrimeRecord.Total`): drill 3, charge 5, keycard 8. `LF_ShopComponent.Buy` asks `LF_FenceRules.Check` before any cash moves; a refusal logs `[LFDebug:Fence] refused ...` and prints `#LF-Shop_RefuseNotTrusted` on the order slip. Prices are the per-prefab `ShopPrices.conf` rules (`m_Prefab`, matched by GUID). Each sale publishes `LF_OnFenceSale`. Test `crime/fence-gate`.
 - ✅ Fence serials (#272): each tool the fence sells carries an `LF_SerialComponent` (`Prefabs/Items/Fence/`; saved with the item by `LF_SerialComponentSerializer`, readable through the Read serial action). `LF_FenceSerials` subscribes to `LF_OnFenceSale`, stamps the delivered tools and books each serial to the buyer's account (server only). `LF_FenceSerials.Identify(serial)` / `IdentifyItem(item)` mark the buyer's wanted reports identified; the evidence locker (#269) calls it when it checks a bagged tool (not wired until #269 lands). Persisted as the `fenceserials` payload (save version 16). Carried tools keep their serial across a restart (#470): `LF_StorageSnapshot` captures it per snapshot item and saves it as the `itemserials` payload (save version 22), restored onto the re-spawned item on apply; a stale row is skipped and the item comes back unstamped. Tests `investigation/serial`, `investigation/serial-persist`, `persist/carried-serial`.
 
 ## Payphone (#247)
@@ -2284,7 +2414,7 @@
 - ✅ Keys are created at their holder (#620, WORLD `vehicles/key-inventory`): `LF_VehicleOwnership.KeySpawnOrigin` puts a purchased, collected or retrieved key at the holder's feet before the inventory insert, never at the lot or impound pad. A key made at a far pad was unresolved on the holder's client, and the key and ID card moves hung on the loading throbber. A key that does not fit logs a warning.
 - Debug money top-up (LF_DebugMoneyTopUp, `LF_SpawnLogic.m_bDebugMoneyTopUp`, on only in GameMode_Roleplay_Debug): on spawn and every 60 s, bank under 100k fills to 1M and carried cash under 5k fills to 20k, ledger reason `debug-topup`; opening bank is 1M.
 - Debug "Send me to jail" (LF_DebugJailMe, `LF_SpawnLogic.m_bDebugJailMe`, on only in GameMode_Roleplay_Debug): a red-rimmed board (Sign_DebugJailMe, about 235.5, 228.5) outside the jail whose action jails you for 60 s through the real sentence path (`LF_Jail.Imprison`, server side; the same call Arrest now uses). Refused with a log line when the flag is off, no cell is placed or you already serve.
-- Spawn hub (#607, LOGIC/WORLD `spawnhub/travel`, `Feature/Debug/LF_SpawnHub.c`): the globe on the spawn-square table opens an LF_UIScreen list of every area in `Configs/Debug/LF_SpawnHub.conf` (one `LF_SpawnHubPoint` row per area, name `LF-SpawnHub_Pt_<id>`); a pick sends `RpcAsk_LF_SpawnHubTravel(id)` on the owned character and the server moves the body with `LF_Jail.MoveBody` (dismounts a seated player). Gate: `LF_SpawnLogic.m_bPlaytestHub` (on only in GameMode_Roleplay_Debug); a disabled mode, unknown id or missing body is refused with an `LF_Debug.Warn`. The time and weather actions of the old annex globe now live on the same globe (`Street_SpawnHub.layer`). Proof: `spawn-hub-proof`.
+- Spawn hub (#607, LOGIC/WORLD `spawnhub/travel`, `Feature/Debug/LF_SpawnHub.c`): the globe on the spawn-square table opens an LF_UIScreen list of every area in `Configs/Debug/LF_SpawnHub.conf` (one `LF_SpawnHubPoint` row per area, name `LF-SpawnHub_Pt_<id>`); a pick sends `RpcAsk_LF_SpawnHubTravel(id)` on the owned character and the server moves the body with `LF_Jail.MoveBody` (dismounts a seated player). Gate: `LF_SpawnLogic.m_bPlaytestHub` (on only in GameMode_Roleplay_Debug); a disabled mode, unknown id or missing body is refused with an `LF_Debug.Warn`. Since #693b the server also requires the body within 6 m of a travel globe (`LF_SpawnHub.MayTravelFrom`, found with `LF_ActionSite`; administrators and `LF_HARNESS` builds are exempt), refuses with `TOO_FAR` plus a toast (`LF-SpawnHub_TooFar`), and rate-limits travel to 2 per 10 s. The time and weather actions of the old annex globe now live on the same globe (`Street_SpawnHub.layer`). Proof: `spawn-hub-proof`.
 - ✅ NPC damage and witness dialogue (#610, #615; WORLD `npc/damage`, LOGIC `investigation/witness-dialogue`): town NPCs are scripted entities with no character damage manager, so bullets did nothing. Only a prefab that carries an `LF_NpcHitZone` takes damage: ambient civilians (`Npc_Civilian_01.et`, `Roadmap_Civilian_1`/`_2` in `Street_Fuel.layer`) die to lethal damage (`LF_NpcDamage`, removed after 1.5 s), and the kill is murder through `LF_Murder` for a player killer. Protected on purpose, no hit zone: shop clerks and every `Npc_Default_01.et` child (quest givers, the fence, the police sergeant), because players need them. Root cause of the empty answers: `LF_Witness.CollectNpc` skipped every NPC as not alive (`IsAlive` is false for a non-character), so no town NPC had ever been recorded as a witness; fixed. Asking a witness (`LF_WitnessAskAction`, `LF_WitnessRole`) now names the NPC (`LF_WitnessDialogue.NameOf`, stable from its position) and one that saw nothing answers with one of four noncommittal lines (`#LF-Witness_Unsure1..4`: no confirm, no deny) instead of "You didn't see anything". Any NPC can be asked, clerks included. Harness: `shootnpc <EntityName>` (dev gate). Demo: `node agent-box/session.mjs npc-witness-proof`. Manual: a real bullet on a civilian.
 - ✅ **Fenced crime site regroup (#608, #609, 2026-11-10).** The safe, weapon rack, tyre pile (steal a vehicle), evidence table with the wanted suspect, and the practice police desk now stand in one row at z 50 in the test annex (x 30, 34, 38, 42, 48), with four chalk info boards at the first, second, third and fifth (`crime_safe`, `crime_rack`, `crime_car`, `crime_police` in `LF_Signs.conf`: what it is, how, what you need, what next). The evidence table no longer clips the safe, the police desk table is spaced off its panel, and the PR-feature table moved out from under the lock-test police car. The robbery and apple-gather actions in the layers were hard-coded Spanish (`Robar Dinero`); they are now `#LF-Crime_Rob*` and `#LF-Job_GatherApples_*` keys. `validate-en-text.mjs` fails a Spanish-looking `Target_en_us` or literal layer/prefab `Name`/`Description`. No save change.
 - ✅ **Quarry regroup (#618, area 11 follow-up).** The cement, gravel and sand chains and the logging chain (stand, sawmill, log pile, three cuttable pines) moved into the quarry pit; the cement plant no longer overlaps the east cliff and the cement NPC no longer stands in rock. Overlapping stones, spoil heaps, tyres, pallets and gravel dressing were cleared from the work spots. New `quarry_info` sign (`Sign_Quarry_Info`, `LF-Sign_QuarryInfo_*`) at the gate. Layer-only change (`CementChain`, `GravelChain`, `SandChain`, `LoggingChain`, `MiningChain`, `Signs`); mining (#596) and smelter (#598) code untouched.
@@ -2297,3 +2427,15 @@
 - ✅ **Police application (#128).** Duty desk action `LF_PoliceApplyAction` opens a paper form (`LF_PoliceApplicationForm`: name, why, availability) that `RpcAsk_LF_PoliceApplication` sends to the server. `LF_PoliceApplications` validates through `LF_PoliceApplicationRules` (one open application per player, not for an officer, field length), appends `STATUS|uid|name|why|availability|unix` to `$profile:LifeFramework/police_applications.txt` (not part of the save, no persistence bump), logs `[LFDebug:Police]` and toasts a receipt. Approval writes the police roster through `LF_WhitelistManager.AddFactionWhitelist`: an administrator picks `LF_PoliceReviewAction` (oldest open first; server re-checks the role), or a mission with `m_bLF_InstantPoliceApproval` (the playtest town) approves on submit. Test `police/application`; `session.mjs police-application-proof`. Not done from the issue: reject with cooldown, a letter at the desk, chief-rank approval.
 - ✅ **Fuel till reachable (#729).** The till moved from inside the closed kiosk to `Roadmap_Fuel_Counter` (a `CounterShop_01` at the south service window, 283.6 237.2); the clerk stays behind the window mesh. The rob action faces -Z (anchors.json), so a robber standing south of the counter gets "Rob the till" with the till and clerk in view. `harness.mjs stand Roadmap_Fuel_Till s`; `crime/rob-reward` unchanged.
 - ✅ **Props on counters (validate-prop-on-surface).** The general store register, the police and hospital duty-desk punch clock, the dispatch console radio and a market crate are placed wholly on their surface; `tools/validation/validate-prop-on-surface.mjs` fails a prop whose footprint hangs over 0.1 m past an edge (docs/agent-area-polish.md).
+
+- ✅ **Police rank ladder is config (#754a, M3).** `m_aRanks` in `Configs/Police/LF_Police.conf` is the ladder: per rank `m_sId`, `m_sTitleKey`, `m_iFineCap`, `m_fPayPerSecond` (negative defers to `m_fPoliceDutyPayPerSecond`), `m_iDutySecondsForNext` and `m_aKit`. A rank is its index and a saved index never changes meaning, so `PATROL` 0 and `SENIOR` 1 stay first and a pack appends. `LF_PoliceRanks.FineCap/TitleKey/DutySecondsForNext/CollectKit` and `LF_DutyPay.RateForAccount` read the row; an unknown index clamps to the nearest rung, and a saved rank above the ladder loads as the top rank. A missing config falls back to the built-in two ranks. Test `police/rank-table`. Qualifications are #754b.
+- ✅ (2026-11-12, #323 batch 0a) Annex twins for the crime and police fixtures. `Annex.layer` now holds `Annex_*` copies of the bank vault, bag, bell box and rob kit, the cash van and its box, the breach and lockpick doors and car, the chop bench, the S105 and the police escort car, the police desk, armory, wanted board and evidence locker, the hideout door, machine and stash, and the jail door and a bare jail cell marker, all placed with `tools\cli place` in the fixture yard at x 70..100, z 35..60 and each with its own breach, vault, hideout and shop id (`Annex_Hideout`, `annex-chop`). `LF_TestAnnex` (Tests) names them. 21 test files stopped quoting `Roadmap_*` names, so the village can move to the pack without them; `validate-annex-fixtures` baseline 45 files / 73 pairs to 24 / 40. Tests only, no gameplay or save change. The convoy drop ids and the placed jail cell lookup in `LF_Jail.SyncPlacedCell` still name the town (production lookups by name, a later batch).
+
+- ✅ **Vehicle prices: one base price, per-action multipliers (#688, M3).** `Configs/Vehicles/LF_VehiclePrices.conf` (`LF_VehiclePricesConfig`, `Feature/Vehicles/LF_VehiclePrices.c`) lists each vehicle once (`m_Prefab` the lot's vanilla car, `m_SpawnPrefab` its locked child, found by GUID) with `m_iBasePrice`; buy, sell-back, chop, impound and garage are percent multipliers (`m_iBuyPercent` 100, `m_iSellBackPercent` 50, `m_iChopPercent` 30 with `m_iChopValueCap` 3000, `m_iImpoundPercent` 10, `m_iGaragePercent` 0) and an optional per-vehicle `m_i<Action>Override` (-1 derives it; 0 is free) wins. `LF_VehiclePricesConfig.PriceFor` returns -1 for an unlisted vehicle. Shipped numbers equal today's: lot 1000/2500/4000/3500/8000, chop 30 percent capped at 3000, impound 250 (an override per car). ⚠️ Not yet consumed: the lot offers, `LF_ChopShopConfig` and `LF_GarageConfig` still read their own values (test `vehicles/price-model` pins them equal); the consumers and the `vehicles` config.json section move over in #283. Sell-back has no desk yet.
+
+- ✅ **Two-addon tooling (M3, #322).** Every repo launcher passes the addon folders as one comma-separated `-addonsDir` (`tools/lib/addons.mjs addonsDirArgs`; Workbench keeps only the last repeated flag, so the pack could not find the core), and `validate-addonsdir` rejects a repeat. `tools\cli build [addon]` and `tools\cli pack [addon] [--out dir]` take `LifeFramework` (default) or `LF_Everon1989` by name or GUID; `pack` now honours `--out` and defaults to `tmp/workshop-pack/<addon>`, so a second pack no longer replaces the first. The rdb refresh, `validate-rdb-fresh`, `copyResourceDatabase` and the playtest release rdb check cover a list of addons: the core always, another addon once it declares a resource, so an empty pack changes nothing. Offline selftest in `validate-rdb-fresh` and `validate-addonsdir`; build and pack of both addons proven headless.
+- ✅ (2026-11-12, #323 batch 0b) Annex twins for the jobs, chains, vehicles and organization fixtures. `Annex.layer` gains `Annex_Job_Depot/Drop/TaxiPad/FuelCan`, `Annex_Org_Desk`, `Annex_ATM`, `Annex_Furnace`, `Annex_Vehicle_Lot` with `Annex_Garage` and `Annex_Impound_Desk` (pad ids `annex-lot`, `annex-garage`, `annex-impound`), `Annex_Chains_Barrel_1..3` (site `Annex_Chains_Site`) and `Annex_AppleTrader` with its tables and containers plus `Annex_AppleGatherTree`, in the fixture yard at x 70..104, z 66..100. A mesh-less twin is placed by putting a crate with `tools\cli place`, copying its ground coords and removing the crate. 13 test files stopped quoting village names; `validate-annex-fixtures` baseline 24 files / 40 pairs to 11 / 18. Tests only. `LF_Test_Roadmap_Fuel` keeps its row: `LF_RobAction.GetActionNameScript` only answers for the entity named `Roadmap_Fuel_Till`.
+- ✅ (2026-11-12, #323 batch 0c) Annex twins for the medic, dispatch, carry, sign and ATM fixtures, which retires the last `validate-annex-fixtures` baseline rows (batch 0 total: 45 test files / 73 pairs to none; the baseline is `{}` and the check only fails on a new village name). `Annex.layer` gains `Annex_Hospital_Bed_1/Ambulance/Duty_Desk`, `Annex_Dispatch_Console/PoliceBoard/MedicBoard`, `Annex_Test_Till`, `Annex_Fuel_Till`, and the four zone notices `Annex_Sign_SafeZone_Spawn/East` and `Annex_Sign_Lawless_Entry/Pit`, placed with `tools\cli place` at x 56..70, z 36..62. The safe-zone and quarry tests now check that a notice carries the `safe_zone` / `lawless_zone` sign id instead of that a town sign exists. `LF_RobAction` shows the fuel till action name from the new `m_bTillActionName` attribute (set on `Roadmap_Fuel_Till` and its twin) in place of testing the entity name; behaviour in the town is unchanged. Tests, one attribute, no save change.
+- ✅ **No-profit-loop check (#686, M3).** `tools/economy/profit-loops.mjs`, run by `tools\cli validate` as `validate-profit-loops.mjs`, reads every price offline (`ShopPrices.conf` plus an owner `config.json` `shops` section, `ResourceChains.conf`, `LF_VehiclePrices.conf`, `LF_ChopShop.conf`, the lot offers in the DebugWorld layers) and fails on any loop: an item that buys for less than it sells for, a machine or chain step (and a whole chain, intermediates netted) whose bought inputs cost less than its outputs sell for, a car bought then sold back or chopped (cash plus the car parts) for more. It is offline, not a WORLD test, because every price is a text file; it mirrors `LF_ShopPriceResolver` and `LF_ChopShopRules.Payout`, and arsenal-type rules cannot be resolved offline. Labour is not priced (a loop counts even though a player would smelt or chop). Out of scope: gathered nodes, stolen cars, duty pay (per second on duty) and quest rewards. Items the shop never lists (the contraband crate) have no price to loop on. Today's loops are in `tools/validation/profit-loop-baseline.json` with a reason and a margin ratchet (a baselined loop that grows fails): `furnace-gold` +30 and `cement-plant` +24. `node tools/validation/validate-profit-loops.mjs --report` lists every loop; `--owner config.json` checks an owner's file. Red-proof `profit-loop-selftest.mjs` (planted shop, recipe, sell-back, chop loops).
+- ✅ **Owner config check (#281, M3).** `tools\cli config-check <config.json>` (`tools/config/check.mjs`) validates a server owner's file offline and prints one `line:col` line per problem in the words `LF_ConfigService` logs at boot: JSON syntax errors (own position-tracking reader, strict like the engine), unknown keys (warn), wrong types and values outside the schema range (errors), `schemaVersion` too new or below 1 (error) or older than the build (warn), record keys no shipped record has (warn) or the server cannot parse (error), and the profit loops the owner's prices create (warn, reusing `tools/economy/profit-loops.mjs` with the refused values left out; a baselined or shipped loop is not the owner's). Types, ranges and known keys come from `docs/config/config.schema.json`; only the `shops.priceRules` key grammar and the shipped-key sources are in the checker. Exit 1 on any error, 0 on warnings only (`--strict` fails on warnings). Owner guide `docs/config/owner-config.md`; red-proof `tools/validation/config-check-selftest.mjs`. Known gap: the schema lists `prefab` as a `priceRules` record field that `LF_ShopPricesConfig.ApplyOwner` warns about as unknown.
+- ✅ (2026-11-12, #323 batch 0d) Core scripts stop naming village entities. The convoy start and drop are found through `LF_ConvoyMarkerComponent` (`m_bDrop`, new `m_bNearDrop`), the playtest test-car lot is the `LF_VehicleLotComponent` with `m_bTestCarLot`, `LF_Jail.SyncPlacedCell` re-applies the placed `LF_JailCellComponent` (its `m_sDoorTargetId` now defaults empty and the village cell sets it), the cash van route names its stops and van on the placed box instead of in the prefab and script, and the agent harness finds the stash (`LF_PersistentStorageComponent.GetPlaced`) and the nearest garage by component. The hospital till and cabinet and the convoy markers moved onto annex twins (`Annex_Hospital_Till/Cabinet`, `Annex_Convoy_*`), and the safe and quarry zone tests read the placed zone back or use fixture zones instead of town coordinates. `validate-annex-fixtures` now reads entities inside a `$grp` or children (`Shops` counts as a core layer), and the new `validate-core-village-names` fails when a core script quotes a village entity name (baseline `{}`). No save change; the village entities keep working through the new attributes.

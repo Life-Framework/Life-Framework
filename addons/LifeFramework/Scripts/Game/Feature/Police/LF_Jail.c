@@ -114,8 +114,6 @@ class LF_JailMoveRules
 //------------------------------------------------------------------------------------------------
 class LF_Jail
 {
-	static const string CELL_ID = "Roadmap_Jail_Cell";
-	static const string DOOR_ID = "Roadmap_Jail_Door";
 	static const ResourceName DOOR_PREFAB = "{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et";
 
 	static const int RELEASE_DOOR_OPEN_MS = 5000;
@@ -214,25 +212,12 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Points the sentence back at the named DebugWorld cell and jail door.
+	//! Points the sentence back at the placed cell (the entity carrying LF_JailCellComponent)
+	//! and the jail door that cell names. Tests call this after a reset.
 	static void SyncPlacedCell()
 	{
-		s_sDoorId = DOOR_ID;
-
-		if (!GetGame() || !GetGame().GetWorld())
-		{
-			LF_Debug.Error("Jail", "placed cell skipped: no world");
-			return;
-		}
-
-		IEntity cell = GetGame().GetWorld().FindEntityByName(CELL_ID);
-		if (!cell)
-		{
-			LF_Debug.Error("Jail", "placed cell missing: " + CELL_ID);
-			return;
-		}
-
-		SetCellOrigin(cell.GetOrigin());
+		if (!LF_JailCellComponent.ReapplyPlaced())
+			LF_Debug.Error("Jail", "placed cell missing: no entity carries LF_JailCellComponent");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -677,11 +662,10 @@ class LF_Jail
 	//------------------------------------------------------------------------------------------------
 	protected static bool DoorIsLocked()
 	{
-		string doorId = s_sDoorId;
-		if (doorId.IsEmpty())
-			doorId = DOOR_ID;
+		if (s_sDoorId.IsEmpty())
+			return false;
 
-		return LF_Breach.IsLocked(doorId);
+		return LF_Breach.IsLocked(s_sDoorId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -950,11 +934,10 @@ class LF_Jail
 		if (!GetGame() || !GetGame().GetWorld())
 			return null;
 
-		string doorId = s_sDoorId;
-		if (doorId.IsEmpty())
-			doorId = DOOR_ID;
+		if (s_sDoorId.IsEmpty())
+			return null;
 
-		IEntity door = GetGame().GetWorld().FindEntityByName(doorId);
+		IEntity door = GetGame().GetWorld().FindEntityByName(s_sDoorId);
 		if (!door)
 			return null;
 

@@ -12,8 +12,8 @@
 //! Shared helpers for the hideout stash tests and the restart e2e.
 class LF_TestHideoutStashKit
 {
-	static const string STASH_NAME = "Roadmap_Hideout_Stash";
-	static const string STASH_KEY = "hideout:Roadmap_Hideout";
+	static const string STASH_NAME = "Annex_Hideout_Stash";
+	static const string STASH_KEY = "hideout:Annex_Hideout";
 	static const ResourceName MONEY_PREFAB = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";
 	static const ResourceName APPLE_PREFAB = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 	static const ResourceName WATER_PREFAB = "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et";
@@ -153,7 +153,7 @@ class LF_Test_HideoutStash : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		IEntity stash = LF_TestHideoutStashKit.FindStash();
-		ctx.NotNull(stash, "Roadmap_Hideout_Stash is placed");
+		ctx.NotNull(stash, "Annex_Hideout_Stash is placed");
 		if (!stash)
 			return;
 
@@ -166,7 +166,7 @@ class LF_Test_HideoutStash : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		ctx.EqualStr(LF_Hideout.HIDEOUT_ID, stashManager.GetHideoutId(), "the stash belongs to the roadmap hideout");
+		ctx.EqualStr(LF_TestAnnex.HIDEOUT_ID, stashManager.GetHideoutId(), "the stash belongs to the roadmap hideout");
 		ctx.EqualStr(LF_TestHideoutStashKit.STASH_KEY, persistent.GetStorageKey(), "the stash persists under hideout:<id>, not an entity id");
 
 		LF_StorageSnapshotRecord before = LF_StorageSnapshot.Capture("stash-test", "before", stash);
@@ -182,14 +182,14 @@ class LF_Test_HideoutStash : LF_Test
 			return;
 
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, member), "founder adds a member");
-		ctx.False(LF_Hideout.AllowsStash(member, LF_Hideout.HIDEOUT_ID, true), "an unowned hideout's stash opens for nobody");
-		ctx.True(LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId()), "the organization owns the hideout");
+		ctx.False(LF_Hideout.AllowsStash(member, LF_TestAnnex.HIDEOUT_ID, true), "an unowned hideout's stash opens for nobody");
+		ctx.True(LF_Hideout.Assign(LF_TestAnnex.HIDEOUT_ID, org.GetId()), "the organization owns the hideout");
 
-		ctx.False(LF_Hideout.AllowsStash(outsider, LF_Hideout.HIDEOUT_ID, true), "a non-member is refused at the stash");
+		ctx.False(LF_Hideout.AllowsStash(outsider, LF_TestAnnex.HIDEOUT_ID, true), "a non-member is refused at the stash");
 		ctx.EqualStr("stash refused: not a member", LF_Hideout.GetLastRefusal(), "the stash refusal is logged");
-		ctx.True(LF_Hideout.AllowsStash(member, LF_Hideout.HIDEOUT_ID, true), "a member opens the stash");
-		ctx.True(LF_Hideout.TryUnlock(member, LF_Hideout.HIDEOUT_ID), "the hideout door stands open");
-		ctx.False(LF_Hideout.AllowsStash(outsider, LF_Hideout.HIDEOUT_ID, true), "an open (or breached) door does not open the stash");
+		ctx.True(LF_Hideout.AllowsStash(member, LF_TestAnnex.HIDEOUT_ID, true), "a member opens the stash");
+		ctx.True(LF_Hideout.TryUnlock(member, LF_TestAnnex.HIDEOUT_ID), "the hideout door stands open");
+		ctx.False(LF_Hideout.AllowsStash(outsider, LF_TestAnnex.HIDEOUT_ID, true), "an open (or breached) door does not open the stash");
 
 		IEntity memberCharacter = LF_TestCharacterFixture.Spawn(ctx);
 		IEntity outsiderCharacter = LF_TestCharacterFixture.Spawn(ctx);

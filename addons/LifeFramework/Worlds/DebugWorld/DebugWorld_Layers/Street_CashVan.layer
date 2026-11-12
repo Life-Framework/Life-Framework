@@ -24,6 +24,10 @@ GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_Cash
   LF_HeistVaultComponent "{6C2C6ED0D7BD0D97}" {
    m_fJamChance 0
   }
+  LF_CashVanRouteComponent "{AD90CF30B9D9615D}" {
+   m_sStops "Roadmap_Cash_Stop_Bank,Roadmap_Cash_Stop_Store,Roadmap_Cash_Stop_Fuel"
+   m_sVanEntity "Roadmap_Cash_Van"
+  }
  }
  coords 197.4 0 253.75
 }

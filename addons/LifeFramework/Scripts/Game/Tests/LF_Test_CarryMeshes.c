@@ -20,8 +20,8 @@ class LF_Test_CarryMeshes : LF_Test
 		ExpectMesh(ctx, LF_CivilianJob.FUEL_PREFAB, "the fuel can");
 		ExpectMesh(ctx, LF_Bank.BAG_PREFAB, "the bank bag");
 
-		IEntity placed = GetGame().GetWorld().FindEntityByName("Roadmap_Bank_Bag");
-		ctx.True(placed != null, "Roadmap_Bank_Bag is placed");
+		IEntity placed = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BANK_BAG);
+		ctx.True(placed != null, "Annex_Bank_Bag is placed");
 		if (placed)
 		{
 			ctx.True(placed.GetVObject() != null, "the placed bank bag has a mesh");

@@ -83,7 +83,7 @@ class LF_StorageSnapshotRecord : Managed
 		int total;
 		foreach (LF_StorageItemRecord item : m_aItems)
 		{
-			if (item && item.m_sPrefab == prefab)
+			if (item && LF_Utils.SamePrefab(item.m_sPrefab, prefab))
 				total += item.m_iQuantity;
 		}
 
@@ -521,7 +521,7 @@ class LF_StorageSnapshot
 			if (exactSlot && occupantSlot[index] != item.m_iSlot)
 				continue;
 
-			if (LF_Utils.GetPrefabName(occupants[index]) == item.m_sPrefab)
+			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(occupants[index]), item.m_sPrefab))
 				return index;
 		}
 

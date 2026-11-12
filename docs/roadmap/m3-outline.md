@@ -9,6 +9,7 @@ This file is an outline. Workstreams 2 to 8 are broken into sub-issues on
 GitHub, listed under each section (workstream 1, #223, is planned separately);
 they get full scope cards after M2 closes.
 Read it with [direction](../direction.md) and [decisions](../decisions.md).
+The build order, waves and open decisions are in [m3-plan.md](m3-plan.md).
 
 **Done when.** A stranger with a dedicated server and no Workbench installs the
 two Workshop items, writes one `config.json` with the web generator, changes

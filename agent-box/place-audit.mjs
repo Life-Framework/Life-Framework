@@ -10,7 +10,7 @@
 // In-game (LF_PlacementAudit.c): floating / sunk (a trace down from the bounds base), corners hanging
 // off a surface edge, clips through walls and other surfaces, tilt, scale, reach, oriented boxes, doors.
 // Here: overlaps between oriented boxes, props in a door's swing, props on a carriageway, absurd scale,
-// what is exempt (a hung sign, a sack laid down, a shelf's contents), the allowlist, and the ranking.
+// the largest side against tools/place/expected-sizes.json, what is exempt (a hung sign, a sack laid down, a shelf's contents), the allowlist, and the ranking.
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -21,6 +21,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LAYERS_DIR = join(ROOT, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
 const ALLOW_FILE = join(ROOT, "agent-box", "place-audit-allow.json");
 const AREAS_FILE = join(ROOT, "agent-box", "areas.json");
+const SIZES_FILE = join(ROOT, "tools", "place", "expected-sizes.json");
 // The test server's $profile: (test-e2e.ps1 recreates it on every boot and copies LF_PLACE_AUDIT_IN in).
 export const PROFILE_DIR = join(ROOT, "server", "profile", "test", "profile", "place-audit");
 export const TOWN = { x: 220, z: 260, r: 320 }; // door query circle: the whole town and its outskirts
@@ -209,7 +210,38 @@ const label = (e) => e.name || (e.prefab ? e.prefab.split("/").pop().replace(/\.
 // ----------------------------------------------------------------------------- checks
 
 // Severity points per problem kind; the rank sums them and weights interactables and named areas.
-export const WEIGHT = { floating: 10, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, tilted: 2, unreachable: 6 };
+export const WEIGHT = { floating: 10, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, size: 6, tilted: 2, unreachable: 6 };
+
+// Expected sizes (tools/place/expected-sizes.json): the first entry whose regex matches the prefab file name
+// (or, for a bare mesh entity, the mesh file name) gives the sane range for the largest side, in metres, in
+// world space (the measured box has scale applied). An entity no entry matches is not checked.
+let sizesCache = null;
+export function loadSizes(file = SIZES_FILE) {
+  if (file === SIZES_FILE && sizesCache) return sizesCache;
+  let list = [];
+  try {
+    list = (JSON.parse(readFileSync(file, "utf8")).sizes ?? []).map((s) => ({ ...s, rx: new RegExp(s.match, "i") }));
+  } catch (e) {
+    console.log(`audit placement: no size table (${e.message})`);
+  }
+  if (file === SIZES_FILE) sizesCache = list;
+  return list;
+}
+
+export function sizeEntry(sizes, e) {
+  const text = (e.prefab || e.mesh || "").split("/").pop().replace(/.(et|xob)$/, "");
+  return sizes.find((s) => s.rx.test(text)) ?? null;
+}
+
+// One problem when the largest side is outside the entry's range; null when covered and sane or not covered.
+export function sizeProblem(e, m, sizes) {
+  const s = sizeEntry(sizes, e);
+  if (!s) return { covered: false, problem: null };
+  const side = 2 * Math.max(...m.box.h);
+  if (side >= s.min && side <= s.max) return { covered: true, problem: null };
+  const amount = side > s.max ? side / s.max - 1 : s.min / side - 1;
+  return { covered: true, problem: { kind: "size", amount, text: `size ${r2(side)} m outside ${s.min}-${s.max} m for ${s.id} (${s.why})` } };
+}
 
 // Problems for one measured entity, before pairs (overlaps, doors, roads) are added.
 export function singleProblems(e, m) {
@@ -352,7 +384,7 @@ export function rank(rows) {
   return rows.filter((r) => r.problems.length).sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
 }
 
-export function analyse(records, outText, { allow = [], areas = [], roads = [] } = {}) {
+export function analyse(records, outText, { allow = [], areas = [], roads = [], sizes = loadSizes() } = {}) {
   const list = [];
   const doors = [];
   for (const raw of outText.split(/\r?\n/)) {
@@ -373,18 +405,24 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [] }
   const pairs = [overlapProblems(list), doorProblems(list, doors), roadProblems(list, roads)];
   const rows = [];
   const missing = [];
+  let covered = 0;
   for (const { idx, e, m } of list) {
     if (m.missing) {
       missing.push(e);
       continue;
     }
     let problems = singleProblems(e, m);
+    if (!m.point) {
+      const sz = sizeProblem(e, m, sizes);
+      if (sz.covered) covered++;
+      if (sz.problem) problems.push(sz.problem);
+    }
     for (const p of pairs) problems.push(...(p.get(idx) ?? []));
     const suppressed = problems.filter((p) => allowed(allow, e, p));
     problems = problems.filter((p) => !allowed(allow, e, p));
     rows.push({ name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z, actions: e.actions, area: areaOf(areas, e), problems, allowed: suppressed.map((p) => p.kind) });
   }
-  return { ranked: rank(rows), measured: list.length, missing, doors: doors.length };
+  return { ranked: rank(rows), measured: list.length, sizeCovered: covered, missing, doors: doors.length };
 }
 
 // ----------------------------------------------------------------------------- inputs
@@ -491,7 +529,7 @@ async function placement(argv) {
   const byKind = {};
   for (const r of res.ranked) for (const p of r.problems) byKind[p.kind] = (byKind[p.kind] ?? 0) + 1;
   const lines = [
-    `placement audit: ${res.ranked.length} of ${res.measured} entities flagged (${res.missing.length} not found in the world, ${res.doors} door leaves checked), ${((Date.now() - t0) / 1000).toFixed(0)} s`,
+    `placement audit: ${res.ranked.length} of ${res.measured} entities flagged (${res.missing.length} not found in the world, ${res.doors} door leaves checked, sizes: ${res.sizeCovered} covered by expected-sizes.json), ${((Date.now() - t0) / 1000).toFixed(0)} s`,
     `by kind: ${Object.entries(byKind).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(", ") || "none"}`,
     ...res.ranked.map(fmt),
   ];
@@ -541,6 +579,9 @@ function selftest() {
     { name: "Sign_Hung", layer: "T.layer", x: 40, y: 2, z: 0, prefab: "Prefabs/Props/Sign_01.et" },
     { name: "BigCrate", layer: "T.layer", x: 50, y: 0, z: 0, prefab: "Prefabs/Props/Crates/BoxWooden_01.et" },
     { name: "PathBoard", layer: "T.layer", x: 30, y: 0, z: 2.5, prefab: "Prefabs/Comms/LF_DispatchBoard.et" },
+    { name: "BigBag", layer: "T.layer", x: 60, y: 0, z: 0, prefab: "Prefabs/Items/Roleplay/LF_MoneyBag.et" },
+    { name: "GoodBag", layer: "T.layer", x: 62, y: 0, z: 0, prefab: "Prefabs/Items/Roleplay/LF_MoneyBag.et" },
+    { name: "Mystery", layer: "T.layer", x: 64, y: 0, z: 0, prefab: "Prefabs/Props/Mystery_01.et" },
   ];
   const out = [
     `0 ${row({ c: [0, 1.3, 0], gap: 1, pgap: 1 })}`,
@@ -553,6 +594,9 @@ function selftest() {
     `7 ${row({ c: [40, 2.3, 0], gap: 2, pgap: 2, backed: 1 })}`,
     `8 ${row({ c: [50, 0.9, 0], h: [0.9, 0.9, 0.9], scale: 3 })}`,
     `9 ${row({ c: [30, 0.6, 2.5], h: [0.9, 0.6, 0.02] })}`,
+    `10 ${row({ c: [60, 0.7, 0], h: [0.4, 0.7, 0.4] })}`,
+    `11 ${row({ c: [62, 0.275, 0], h: [0.15, 0.275, 0.1] })}`,
+    `12 ${row({ c: [64, 5, 0], h: [5, 5, 5] })}`,
     "door name=Door_01 root=House_01 rp=30,0,-5 c=30,1,0 h=0.5,1,0.03 a0=1,0,0 a1=0,1,0 a2=0,0,1",
   ].join("\n");
   const res = analyse(recs, out, { roads: [{ name: "Lane", pts: [[0, 20], [30, 20]], width: 4 }] });
@@ -566,6 +610,11 @@ function selftest() {
   if (kinds("Sign_Hung").length) fail(`hung sign flagged: ${kinds("Sign_Hung")}`);
   if (!kinds("BigCrate").includes("scaled")) fail(`scaled crate: ${kinds("BigCrate")}`);
   if (!kinds("PathBoard").includes("door-path")) fail(`board in front of the door: ${kinds("PathBoard")}`);
+  if (!kinds("BigBag").includes("size")) fail(`1.4 m money bag: ${kinds("BigBag")}`);
+  if (kinds("GoodBag").length) fail(`0.55 m money bag flagged: ${kinds("GoodBag")}`);
+  if (kinds("Mystery").length) fail("a prefab outside the size table is flagged");
+  if (kinds("GroundCrate").includes("size") || kinds("BigCrate").includes("size") === false) fail(`crate sizes: ${kinds("BigCrate")}`);
+  if (res.sizeCovered !== 11) fail(`size coverage ${res.sizeCovered}`);
   if (res.ranked[0]?.name !== "FloatCrate") fail(`rank order: ${res.ranked.map((r) => r.name)}`);
   const suppressed = analyse(recs, out, { allow: [{ match: "^FloatCrate", kind: "floating", why: "test" }] });
   if (suppressed.ranked.some((r) => r.name === "FloatCrate")) fail("the allowlist suppresses a problem");

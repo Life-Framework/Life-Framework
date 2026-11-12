@@ -57,7 +57,7 @@ write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml
 // Old addresses from the 2025 site and the first in-repo site.
 write(
   "_redirects",
-  ["/philosophy / 301", "/team /contribute 301", "/documentation /docs 301", "/docs/decisions /decisions 301", "/docs/ /docs 301", "/join/* /join 200"].join("\n") + "\n",
+  ["/philosophy / 301", "/team /contribute 301", "/documentation /docs 301", "/docs/decisions /decisions 301", "/docs/credits /credits 301", "/docs/ /docs 301", "/join/* /join 200"].join("\n") + "\n",
   // "/join/* /join 200" serves the join page at /join/<community> and keeps the address, so analytics sees the tag.
 );
 

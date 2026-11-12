@@ -194,12 +194,12 @@ class LF_Test_AccountReplicationWorld : LF_Test
 		ctx.Equal(state, character.LF_GetAccountState(), "the character carries the written account state");
 		SCR_EntityHelper.DeleteEntityAndChildren(character);
 
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Breach_Door");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BREACH_DOOR);
 		LF_BreachTargetComponent target;
 		if (door)
 			target = LF_Component<LF_BreachTargetComponent>.Find(door);
 
-		ctx.NotNull(target, "Roadmap_Breach_Door carries LF_BreachTargetComponent");
+		ctx.NotNull(target, "Annex_Breach_Door carries LF_BreachTargetComponent");
 		if (!target)
 			return;
 
@@ -208,13 +208,13 @@ class LF_Test_AccountReplicationWorld : LF_Test
 		LF_PlayerAccountManager.GetOrCreate(uid);
 		LF_PlayerAccountManager.GetOrCreate(policeUid).SetFaction(LF_Faction.POLICE);
 
-		LF_Breach.Repair("Roadmap_Breach_Door", policeUid);
+		LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);
 		ctx.False(target.IsReplicatedOpen(), "repair clears the replicated open flag");
 		ctx.True(target.CanArmForOffer(), "a locked door offers arm");
-		ctx.True(LF_Breach.Arm("Roadmap_Breach_Door", uid), "zero-fuse arm opens the door");
+		ctx.True(LF_Breach.Arm(LF_TestAnnex.BREACH_DOOR, uid), "zero-fuse arm opens the door");
 		ctx.True(target.IsReplicatedOpen(), "arm sets the replicated open flag for clients");
 		ctx.False(target.CanArmForOffer(), "an open door does not offer arm");
-		ctx.True(LF_Breach.Repair("Roadmap_Breach_Door", policeUid), "police repair runs");
+		ctx.True(LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid), "police repair runs");
 		ctx.False(target.IsReplicatedOpen(), "repair clears the replicated open flag again");
 	}
 }

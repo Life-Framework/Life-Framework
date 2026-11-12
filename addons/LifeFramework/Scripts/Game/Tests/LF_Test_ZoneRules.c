@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_ZoneRules`: asserting the lawless zone reads "safe" instead of "lawless" failed (`the lawless zone stamps lawless`); restored.
+// red-proof: Observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_ZoneRules`: asserting the lawless zone reads "safe" instead of "lawless" failed (`the lawless zone stamps lawless`); restored. Also 2026-11-12: asserting the table fine multiplier is 2.0 instead of 2.5 failed (`a lawless entry scales fines`); restored.
 
 // tier: LOGIC
 //! zones/rules: rule lookup by shape (circle, box turned by yaw, polyline corridor), strictest rule
@@ -73,6 +73,24 @@ class LF_Test_ZoneRules : LF_Test
 
 		// Wanted stays on in lawless unless config says so (the shipped config says no).
 		ctx.False(LF_Zones.WantedSuppressedAt("5001 0 5001"), "lawless does not switch off wanted by default");
+
+		// The per-rule table (#755): an entry changes what its rule does, one answer for every caller.
+		LF_ZoneConfig table = new LF_ZoneConfig();
+		table.m_aRuleSets = {};
+		LF_ZoneRuleSet lawlessSet = new LF_ZoneRuleSet();
+		lawlessSet.m_eRule = LF_ZoneRule.LAWLESS;
+		lawlessSet.m_bSuppressesWanted = true;
+		lawlessSet.m_bAllowsRobbery = false;
+		lawlessSet.m_fFineMultiplier = 2.5;
+		lawlessSet.m_bCopsEnter = false;
+		table.m_aRuleSets.Insert(lawlessSet);
+		LF_ZoneRuleSet resolved = LF_ZoneConfig.Resolve(table, LF_ZoneRule.LAWLESS);
+		ctx.True(resolved.m_bSuppressesWanted, "a lawless entry can suppress wanted");
+		ctx.False(resolved.m_bAllowsRobbery, "a lawless entry can forbid robbery");
+		ctx.True(resolved.m_fFineMultiplier == 2.5, "a lawless entry scales fines");
+		ctx.False(resolved.m_bCopsEnter, "a lawless entry can keep cops out");
+		ctx.True(LF_ZoneConfig.Resolve(table, LF_ZoneRule.SAFE).m_bBlocksPlayerDamage, "a rule with no entry keeps its default");
+		ctx.True(LF_ZoneRule.NORMAL == 0 && LF_ZoneRule.SAFE == 1 && LF_ZoneRule.LAWLESS == 2, "rule ids are stable");
 
 		// A zone change reaches the bus.
 		LF_ZoneChangeProbe probe = new LF_ZoneChangeProbe();

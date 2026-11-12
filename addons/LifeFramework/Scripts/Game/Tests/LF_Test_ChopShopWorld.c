@@ -13,8 +13,8 @@ class LF_Test_ChopShopWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity bench = GetGame().GetWorld().FindEntityByName("Roadmap_ChopShop");
-		ctx.True(bench != null, "Roadmap_ChopShop is placed");
+		IEntity bench = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.CHOP_SHOP);
+		ctx.True(bench != null, "Annex_ChopShop is placed");
 		if (!bench)
 			return;
 
@@ -23,7 +23,7 @@ class LF_Test_ChopShopWorld : LF_Test
 		if (!shop)
 			return;
 
-		ctx.EqualStr("roadmap-chop", shop.GetShopId(), "the yard has its id");
+		ctx.EqualStr(LF_TestAnnex.CHOP_SHOP_ID, shop.GetShopId(), "the yard has its id");
 		ctx.Equal(LF_StationProgress.EMPTY, shop.GetPercent(), "the bench starts empty");
 
 		ActionsManagerComponent actions = LF_Component<ActionsManagerComponent>.Find(bench);

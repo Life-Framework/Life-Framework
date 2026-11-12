@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "mystery": 1,
+  "shops": {
+    "defaultBuyPrice": "cheap",
+    "defaultSellPrice": -5,
+    "bogus": true,
+    "priceRules": {
+      "Prefabs/Items/Food/": { "buyPrice": 2000000, "hidden": "yes", "colour": 1 },
+      "Prefabs/Items/Typo/": { "buyPrice": 1 },
+      "type:x": { "buyPrice": 1 },
+      "Prefabs/Weapons/": 5
+    },
+    "extraItemPrefabs": [1]
+  },
+  "vehicles": []
+}

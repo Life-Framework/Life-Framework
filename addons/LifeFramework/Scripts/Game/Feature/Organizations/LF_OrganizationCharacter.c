@@ -59,6 +59,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationCreate(string name)
 	{
+		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization founding"))
+			return;
+
 		if (LF_RefuseAwayFromOrganizationDesk("found", 0))
 		{
 			LF_PushOrganizationView("#EL-Org_TooFar");
@@ -155,6 +158,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationBuy(int upgrade)
 	{
+		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization upgrade"))
+			return;
+
 		LF_EOrganizationUpgrade kind = LF_EOrganizationUpgrade.PROCESSING_SLOT;
 		if (upgrade == LF_EOrganizationUpgrade.EXTRA_STORAGE)
 			kind = LF_EOrganizationUpgrade.EXTRA_STORAGE;
@@ -181,13 +187,13 @@ modded class SCR_ChimeraCharacter
 		if (!Replication.IsServer())
 			return;
 
-		bool hasOrg = false;
 		string name = "";
 		int fund = 0;
 		int rights = 0;
 		bool processing = false;
 		int lease = LF_EOrgLease.FREE;
 		string members = "";
+		string rank = "";
 
 		string characterId = LF_OrganizationPlayer.CharacterId(this);
 		LF_Organization org;
@@ -196,26 +202,27 @@ modded class SCR_ChimeraCharacter
 
 		if (org)
 		{
-			hasOrg = true;
 			name = org.GetName();
 			fund = org.GetFund();
 			rights = LF_OrgRules.RightsOf(org, characterId);
 			processing = org.HasProcessingSlot();
 			lease = LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID);
 			members = LF_OrganizationPlayer.MemberLines(org);
+			rank = org.GetRankName(characterId);
 		}
 
-		Rpc(RpcDo_LF_OrganizationLedger, hasOrg, name, fund, rights, processing, lease, members, notice);
+		// No hasOrg argument: a registered name is never empty, so the name says it (Rpc takes eight).
+		Rpc(RpcDo_LF_OrganizationLedger, name, fund, rights, processing, lease, members, rank, notice);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_OrganizationLedger(bool hasOrg, string name, int fund, int rights, bool processing, int lease, string members, string notice)
+	protected void RpcDo_LF_OrganizationLedger(string name, int fund, int rights, bool processing, int lease, string members, string rank, string notice)
 	{
 		LF_OrgLedger ledger = LF_OrgLedger.Current();
 		if (!ledger)
 			return;
 
-		ledger.ApplyView(LF_OrgLedgerPage.Create(hasOrg, name, fund, rights, processing, lease, members), notice);
+		ledger.ApplyView(LF_OrgLedgerPage.Create(!name.IsEmpty(), name, fund, rights, processing, lease, members, rank), notice);
 	}
 }

@@ -109,8 +109,8 @@ class LF_Test_MedicDutyDesk : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity desk = GetGame().GetWorld().FindEntityByName("Roadmap_Hospital_Duty_Desk");
-		ctx.NotNull(desk, "Roadmap_Hospital_Duty_Desk is placed");
+		IEntity desk = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HOSPITAL_DUTY_DESK);
+		ctx.NotNull(desk, "Annex_Hospital_Duty_Desk is placed");
 		if (!desk)
 			return;
 

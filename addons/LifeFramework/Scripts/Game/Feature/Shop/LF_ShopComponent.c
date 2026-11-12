@@ -145,7 +145,7 @@ class LF_ShopComponent : ScriptComponent
 		{
 			foreach (LF_ShopItem curated : m_aShopItems)
 			{
-				if (curated && curated.GetItemPrefab() == prefab)
+				if (curated && LF_Utils.SamePrefab(curated.GetItemPrefab(), prefab))
 					return true;
 			}
 
@@ -455,7 +455,7 @@ class LF_ShopComponent : ScriptComponent
 
 		foreach (LF_ShopItem curated : m_aShopItems)
 		{
-			if (curated && curated.GetItemPrefab() == prefab)
+			if (curated && LF_Utils.SamePrefab(curated.GetItemPrefab(), prefab))
 				return curated;
 		}
 

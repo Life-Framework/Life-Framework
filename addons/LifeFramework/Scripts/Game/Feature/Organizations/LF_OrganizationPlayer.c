@@ -128,7 +128,7 @@ class LF_OrganizationPlayer
 			if (!lines.IsEmpty())
 				lines += ";";
 
-			lines += memberName + "|" + LF_OrgRules.RankKey(LF_OrgRules.RightsOf(org, memberId));
+			lines += memberName + "|" + org.GetRankName(memberId);
 		}
 
 		return lines;

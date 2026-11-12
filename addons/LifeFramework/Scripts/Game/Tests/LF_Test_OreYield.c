@@ -65,8 +65,8 @@ class LF_Test_OreYield : LF_Test
 		ctx.EqualFloat(30000, LF_OreYield.RespawnDelayMs(0, 30), 0.1, "a row with no cooldown uses the rock's seconds");
 		ctx.EqualFloat(LF_OreYield.DEFAULT_RESPAWN_MS, LF_OreYield.RespawnDelayMs(0, 0), 0.1, "no cooldown anywhere means five minutes");
 
-		ctx.True(LF_OreNodeComponent.SameResource("{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et", "{23341e2840f5acb4}prefabs/tools/pickaxe.et"), "the tool match ignores casing");
-		ctx.False(LF_OreNodeComponent.SameResource("{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et", "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et"), "the axe is not the pickaxe");
-		ctx.False(LF_OreNodeComponent.SameResource("{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et", ""), "no tool is not the pickaxe");
+		ctx.True(LF_Utils.SamePrefab("{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et", "{23341e2840f5acb4}prefabs/tools/pickaxe.et"), "the tool match ignores casing");
+		ctx.False(LF_Utils.SamePrefab("{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et", "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et"), "the axe is not the pickaxe");
+		ctx.False(LF_Utils.SamePrefab("{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et", ""), "no tool is not the pickaxe");
 	}
 }

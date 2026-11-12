@@ -12,8 +12,8 @@ class LF_Test_LockpickKeepsPick : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Lockpick_Door");
-		ctx.True(door != null, "Roadmap_Lockpick_Door is placed");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.LOCKPICK_DOOR);
+		ctx.True(door != null, "Annex_Lockpick_Door is placed");
 		if (!door)
 			return;
 

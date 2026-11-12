@@ -89,6 +89,7 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `toolscli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
 - `toolscli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
 - `toolscli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
+- **`toolscli release <x.y.z>` (#369), human step.** Run from `main` or `stable` (or a detached HEAD at `origin/main` or `origin/stable`) on a clean tree. Without flags it is a dry run: it prints the plan, names every refusal (dirty tree, wrong branch, bad version, tag taken) and runs the cheap `release-ready --strict` check; nothing changes. `--confirm` stamps the version in both `.gproj` files and both Workshop kit READMEs, runs `validate --full`, `release-ready --strict`, the full suite, `audit placement --strict` and a `pack` of each addon, writes `tmp/release/notes-<x.y.z>.md` from the PRs merged since the previous `v*` tag, and tags `v<x.y.z>` on a release commit that no branch points at. A failed gate restores the files and tags nothing. `--push` also pushes that one tag; without it nothing leaves the machine. It never uploads to the Workshop (#370, by hand in Workbench). Agents run the dry run only, never `--confirm`.
 - **Issue states.** `agent:working` (being built) to `in-dev` (merged to `main`) to `needs-playtest` (merged, and the PR has a `## Manual testing` section with real steps) to `verified`. Only `verified` closes an issue; `regression` marks a failed one. The `issue-state` workflow (`tools/issue-state.mjs`) runs when a PR merges into `main`: every issue it refs (`Refs/Closes/Fixes/Resolves #N`) gets `in-dev` or `needs-playtest` and stays open; an issue an older CLI's `Closes #N` closed is reopened, a `verified` one is left alone, and a merged `Reverts #P` PR sets `regression` on P's issues. `promote --confirm` sets `verified` and closes. The website reads `verified` (or closed) as done and `in-dev`/`needs-playtest` as "built, not verified".
 - **Quorum sign-off (#575).** `docs/playtest/quorum.json` switches a rule that is off by default: when `"enabled": true`, `promote --confirm` needs `--confirmations <file>` and moves `stable` only when every issue whose PR lists manual steps has enough distinct roster testers (`docs/playtest/testers.json`) reporting pass, and none reporting fail. Rule, roster and disputes: `docs/playtest/quorum.md`. Session logistics: `docs/playtest/session-playbook.md`. Until the maintainer approves the rule, agents still never run `promote`.
 - Risky changes ship behind a config flag that defaults off, so one unverified feature does not block the rest.
@@ -136,7 +137,7 @@ tools\cli prs heal [<n>...]              # do it (maintainer/lead)
 ```
 
 `prs status` lists number, state, auto-merge on/off, checks, age, and the
-worktree: `LIVE` when any file in it changed in the last 15 minutes
+worktree: `LIVE` when an edit, commit or session log landed in the last 15 minutes (directory and git-metadata touches from prune or fetch do not count)
 (modified or untracked files, the worktree's git index/HEAD/reflog, `tmp/`,
 server logs), `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
 API, which makes GitHub compute it.
@@ -304,6 +305,18 @@ it, picks a lane and a budget, and prints one line per outcome.
   machine without `lanes` (the box) keeps one shared lane. Old CLIs keep using
   `server-2001` for everything, so the old lock is still honoured during the
   switch.
+- **Disk hygiene (#675).** Every `session up` and local `test`/`e2e` start first removes
+  session folders under `%LOCALAPPDATA%\LifeFramework\session` untouched for `sessionKeepHours`
+  (24) hours, except one in use (live pids in `session.json`), this checkout's own, and any
+  named for film (`film` in the folder name). Deletion is `safeRemoveTree`, the function behind
+  `tools/safe-rm.mjs`, so junctions are unlinked, never followed. It then refuses with one line
+  when free disk on that volume is under `minFreeDiskGb` (5). Both are settings: `tools/pool.json`,
+  the `pool` key of `lf.local.json`, or `LF_POOL_SESSION_KEEP_H` / `LF_POOL_MIN_FREE_DISK_GB`.
+  `pool status` prints the free disk.
+- **One request per worktree (#542).** A new `session up` from a worktree whose earlier request is
+  still queued drops the earlier queue entry (the older process exits with "a newer session request
+  replaced this one") and keeps the first request's age. `pool status` marks any leftover
+  duplicate.
 - **Second session RAM gate.** A session starting beside another live session also
   needs its own reserve: free RAM minus `sessionReserveServerMb` (600) minus
   `sessionReserveClientMb` (850) per client, minus the same for any session still booting,

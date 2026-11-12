@@ -50,6 +50,17 @@ off:
   is the account. `LF_CharacterStanding` (wanted, rank, duty totals) is per character;
   the account's getters read the active one. Keys and wanted levels are the
   `characters` payload (save version 24); an older save's one character is slot 1.
+- `LF_Playtime` + `Persistence/LF_PlaytimeRecord.c` (#692) — seconds played per
+  account uid and job (`CIVILIAN`, on-duty `POLICE`/`MEDIC`, a signed-up delivery
+  job), credited on the server by a 15 s clock, on disconnect and before each save.
+  A gap of more than 300 s between two credits is clamped to 300 s (a wall-clock
+  jump or a suspended host is not playtime). The disconnect credit runs from the
+  game mode's `GetOnPlayerDisconnected` invoker, after `ReleaseDisconnectedPlayer`;
+  the account stays cached there, and if it ever is not, the last stretch goes to
+  the job of the previous credit.
+  Reads duty and sign-up state through accessors only. The `playtime` payload at
+  save version 26. Hidden: read by staff tools and config gates through `Total` /
+  `JobSeconds`.
 - `LF_Progression` + `Persistence/LF_ProgressionRecord.c` — per-uid progression
   (career, police rank and duty, benefit cooldown, level, licences, quest
   turn-ins), the `progression` payload at save version 7. Hidden: no UI.

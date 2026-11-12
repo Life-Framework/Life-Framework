@@ -39,15 +39,15 @@ class LF_Test_BedDelivery : LF_Test
 		ctx.Equal(LF_EDeliveryRefusal.NO_PATIENT, LF_BedDelivery.Decide(false, false, true, 1, range), "no patient is refused");
 		ctx.Equal(LF_EDeliveryRefusal.NOT_DOWNED, LF_BedDelivery.Decide(true, false, true, 1, range), "a standing patient is refused");
 		ctx.Equal(LF_EDeliveryRefusal.TOO_FAR, LF_BedDelivery.Decide(true, true, true, range + 1, range), "a medic far from the bed is refused");
-		ctx.True(LF_BedDelivery.SameResource("{1111111111111111}Prefabs/a.et", "{1111111111111111}Prefabs/Vehicles/b.et"), "the GUID decides");
-		ctx.False(LF_BedDelivery.SameResource("{1111111111111112}Prefabs/a.et", "{1111111111111111}Prefabs/a.et"), "another GUID is another prefab");
+		ctx.True(LF_Utils.SamePrefab("{1111111111111111}Prefabs/a.et", "{1111111111111111}Prefabs/Vehicles/b.et"), "the GUID decides");
+		ctx.False(LF_Utils.SamePrefab("{1111111111111112}Prefabs/a.et", "{1111111111111111}Prefabs/a.et"), "another GUID is another prefab");
 
-		IEntity ambulance = GetGame().GetWorld().FindEntityByName("Roadmap_Hospital_Ambulance");
-		IEntity car = GetGame().GetWorld().FindEntityByName("Roadmap_Escort_Car");
-		IEntity bed = GetGame().GetWorld().FindEntityByName("Hospital_Bed_1");
+		IEntity ambulance = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HOSPITAL_AMBULANCE);
+		IEntity car = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ESCORT_CAR);
+		IEntity bed = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.HOSPITAL_BED_1);
 		ctx.NotNull(ambulance, "DebugWorld has the hospital ambulance");
 		ctx.NotNull(car, "DebugWorld has the escort car");
-		ctx.NotNull(bed, "DebugWorld has Hospital_Bed_1");
+		ctx.NotNull(bed, "DebugWorld has Annex_Hospital_Bed_1");
 		if (!ambulance || !car || !bed)
 			return;
 

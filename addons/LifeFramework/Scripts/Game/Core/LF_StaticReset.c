@@ -45,6 +45,7 @@ class LF_StaticReset
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
+		LF_Playtime.ResetStatics();
 		LF_FenceSerials.ResetStatics();
 		LF_EvidenceLocker.ResetStatics();
 		LF_Evidence.ResetStatics();
@@ -61,6 +62,8 @@ class LF_StaticReset
 		LF_ChainStations.ResetStatics();
 		LF_Stores.ResetStatics();
 		LF_OrgInvites.Reset();
+		LF_RateLimit.ResetStatics();
+		LF_ConfigStream.Reset();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

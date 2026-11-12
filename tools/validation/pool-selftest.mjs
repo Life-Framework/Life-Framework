@@ -11,6 +11,7 @@
 //      record in runs.jsonl, and a retried request keeping its queue age;
 //   5. runtime budgets: learned 3x p95 with a 30 s floor, seeded defaults,
 //      machine multiplier, self-raise after timeouts, --budget.
+// red-proof 2026-11-12 (#542, #675): with supersededTickets returning no drops it printed "3 stacked requests from one worktree are not one queue entry"; with the age test removed from planSessionGc it printed "gc plan removes the wrong folders"; with diskVerdict always null "hygiene gate does not refuse a start under the disk floor".
 // red-proof 2026-11-10 (bundle heal): with the retry fetch removed from psCheckout it printed "bundle fetch failure does not fetch origin and retry once".
 // red-proof 2026-11-10: dropping the hostname branch in loadMachines printed "an entry whose hostname is this machine is not the local machine with its own lanes".
 // red-proof: with remoteOwnerGone returning null it printed "dead owner pid on
@@ -27,15 +28,18 @@
 // floor "3x p95 of 9 s runs is under the 30 s floor but was not floored"; with the
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import * as q from "../lib/pool-queue.mjs";
+import * as gc from "../lib/session-gc.mjs";
 import { takeHoldWarning } from "../lib/session-lease.mjs";
 import * as pool from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { trimScript } from "../lib/ws-trim.mjs";
 
+// This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
+process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
@@ -392,6 +396,98 @@ try {
     rmSync(rdir, { recursive: true, force: true });
   }
 
+  // #542: three stacked requests from one worktree are one queue entry; the older ones are dropped.
+  {
+    const sk = (file, slug, pid, lane = "session") => ({ file, slug, pid, lane, at: new Date(T0).toISOString() });
+    const three = [sk("1", "shots-pick", 11), sk("2", "shots-pick", 12), sk("3", "shots-pick", 13), sk("4", "other", 14)];
+    const sup = q.supersededTickets(three, three[2]);
+    check(sup.drop.join() === "1,2", "3 requests from one worktree do not collapse to the newest (drops " + sup.drop.join() + ")");
+    check(q.supersededTickets(three, three[3]).drop.length === 0, "another worktree's request was dropped as a duplicate");
+    check(q.supersededTickets([sk("1", "a", 1, "test"), sk("2", "a", 2, "test")], sk("2", "a", 2, "test")).drop.length === 0, "test-lane tickets were collapsed");
+    check([...q.duplicateSessionTickets(three)].join() === "2,3", "pool status does not mark the duplicate session tickets");
+    // end to end through the real queue dir: 3 live tickets from one worktree collapse to the newest
+    const kids = [0, 1].map(() => spawn(process.execPath, ["-e", "setTimeout(()=>{},30000)"], { stdio: "ignore", windowsHide: true }));
+    try {
+      const body = (pid) => ({ pid, at: new Date().toISOString(), slug: "dedupe-wt", purpose: "session", lane: "session", machines: ["local"], waitingOn: [] });
+      const f1 = pool.writeTicket(dir, body(kids[0].pid), Date.now() - 2000);
+      const f2 = pool.writeTicket(dir, body(kids[1].pid), Date.now() - 1000);
+      const f3 = pool.writeTicket(dir, body(process.pid));
+      const n = pool.collapseRetries(dir, f3, "dedupe-wt");
+      const left = pool.liveTickets(dir).filter((t) => t.slug === "dedupe-wt").map((t) => t.file);
+      check(n === 2 && left.length === 1 && left[0] === f3 && ![f1, f2].includes(left[0]), "3 stacked requests from one worktree are not one queue entry (left " + left.length + ")");
+      pool.dropTicket(dir, f3);
+    } finally {
+      for (const k of kids) k.kill();
+    }
+  }
+  // #675: old session folders are removed (never in use, film, or this checkout's), and a low disk refuses.
+  {
+    const base = mkdtempSync(join(tmpdir(), "lf-gc-"));
+    try {
+      const nowMs = Date.now();
+      const mk = (name, ageH, session) => {
+        const d = join(base, name);
+        mkdirSync(join(d, "client1"), { recursive: true });
+        writeFileSync(join(d, "up.log"), "x");
+        if (session) writeFileSync(join(d, "session.json"), JSON.stringify(session));
+        const t = new Date(nowMs - ageH * 3600000);
+        utimesSync(join(d, "up.log"), t, t);
+        if (session) utimesSync(join(d, "session.json"), t, t);
+        utimesSync(join(d, "client1"), t, t);
+        utimesSync(d, t, t);
+      };
+      mk("wt-old", 30);
+      mk("wt-new", 2);
+      mk("wt-live", 30, { serverPid: 777, clients: [] });
+      mk("wt-stopped", 30, { serverPid: 777, clients: [], stoppedAt: "x" });
+      mk("wt-film-take", 30);
+      mk("wt-mine", 30);
+      // a junction inside an old folder must not be followed: its target survives
+      const target = mkdtempSync(join(tmpdir(), "lf-gc-target-"));
+      writeFileSync(join(target, "keep.txt"), "keep");
+      mk("wt-linked", 30);
+      symlinkSync(target, join(base, "wt-linked", "link"), "junction");
+      const t30 = new Date(nowMs - 30 * 3600000);
+      utimesSync(join(base, "wt-linked"), t30, t30);
+      const alive = (pid) => pid === 777;
+      const plan = gc.planSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
+      check(plan.remove.map((r) => r.name).sort().join() === "wt-linked,wt-old,wt-stopped", "gc plan removes the wrong folders: " + plan.remove.map((r) => r.name).sort().join());
+      check(plan.keep.find((k) => k.name === "wt-live")?.why === "in use" && plan.keep.find((k) => k.name === "wt-film-take")?.why === "film" && plan.keep.find((k) => k.name === "wt-new")?.why === "recent", "gc kept reasons are wrong");
+      const run = gc.runSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
+      check(run.removed.length === 3 && !existsSync(join(base, "wt-old")) && existsSync(join(base, "wt-live")) && existsSync(join(base, "wt-film-take")) && existsSync(join(base, "wt-mine")) && existsSync(join(base, "wt-new")), "gc run did not remove exactly the old idle folders");
+      check(existsSync(join(target, "keep.txt")), "gc followed a junction and deleted its target");
+      rmSync(target, { recursive: true, force: true });
+      check(gc.diskVerdict(3, 10) !== null && /free disk 3\.0 GB is under the 10 GB floor/.test(gc.diskVerdict(3, 10)) && gc.diskVerdict(50, 10) === null && gc.diskVerdict(null, 10) === null, "disk verdict does not refuse under the floor");
+      const savedFloor = process.env.LF_POOL_MIN_FREE_DISK_GB;
+      delete process.env.LF_POOL_MIN_FREE_DISK_GB;
+      let refused = null;
+      try {
+        pool.hygieneGate(base, { log: () => {}, base, freeGb: 1 });
+      } catch (e) {
+        refused = e;
+      }
+      check(refused?.poolHeld && refused.refusal && /free disk/.test(refused.message), "hygiene gate does not refuse a start under the disk floor");
+      let passed = true;
+      try {
+        pool.hygieneGate(base, { log: () => {}, base, freeGb: 500 });
+      } catch {
+        passed = false;
+      }
+      check(passed, "hygiene gate refused a start with plenty of disk");
+      process.env.LF_POOL_MIN_FREE_DISK_GB = savedFloor;
+      process.env.LF_POOL_MIN_FREE_DISK_GB = "600";
+      process.env.LF_POOL_SESSION_KEEP_H = "7";
+      check(pool.poolSettings(base).minFreeDiskGb === 600 && pool.poolSettings(base).sessionKeepHours === 7, "disk floor / keep hours are not configurable");
+      delete process.env.LF_POOL_MIN_FREE_DISK_GB;
+      delete process.env.LF_POOL_SESSION_KEEP_H;
+      process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
+      delete process.env.LF_POOL_MIN_FREE_DISK_GB;
+      check(pool.poolSettings(base).minFreeDiskGb === 5 && pool.poolSettings(base).sessionKeepHours === 24, "disk defaults are not 5 GB / 24 h");
+      process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
+    } finally {
+      rmSync(base, { recursive: true, force: true });
+    }
+  }
   // 5. runtime budgets: learned from history, floor, seeded default, self-correcting.
   const passRuns = (kind, durS, n, machine = "local") => Array.from({ length: n }, () => ({ purpose: kind, machine, result: "pass", durS }));
   check(q.budgetSeconds([], "test only", "local").runS === 30 && q.budgetSeconds([], "test all", "local").runS === 90 && q.budgetSeconds([], "test persistence", "local").runS === 120, "seeded budgets are not 30/90/120 s");
@@ -437,4 +533,4 @@ if (failures.length) {
   for (const f of failures) console.log(`  ${f}`);
   process.exit(1);
 }
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine, a failed bundle fetch shows git's error, retries, then asks for a full bundle)");
+console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine, a failed bundle fetch shows git's error, retries, then asks for a full bundle, stacked session requests collapse to one, old session folders are removed link-safely, a low disk refuses a start)");
