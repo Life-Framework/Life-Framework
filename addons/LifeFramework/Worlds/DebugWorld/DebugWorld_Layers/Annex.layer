@@ -1308,3 +1308,147 @@ GenericEntity Annex_Chains_Barrel_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_Chain
  }
  coords 78 0.017 73.001
 }
+GenericEntity Annex_Hospital_Bed_1 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+ coords 62 0 36.004
+ angleY 0
+}
+GenericEntity Annex_Hospital_Ambulance : "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et" {
+ coords 63 -0.277 42.156
+ angleY 0
+}
+GenericEntity Annex_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
+ Flags 0x403 0
+ coords 62.851 0 47.627
+ angleY 0
+}
+GenericEntity Annex_Dispatch_Console : "{503B0EA32328591E}Prefabs/Comms/LF_DispatchConsole.et" {
+ coords 62.851 0 52.627
+ angleY 0
+}
+GenericEntity Annex_Dispatch_PoliceBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
+ coords 65.99 0 53.009
+ angleY 0
+}
+GenericEntity Annex_Dispatch_MedicBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+ coords 69.99 0 53.009
+ angleY 0
+}
+GenericEntity Annex_Test_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{0EB5E90B59B96E16}" {
+   ActionContexts {
+    UserActionContext "{1CEC34C252323DE8}" {
+     ContextName "default"
+     Position PointInfo "{31CB98D3A58C97E8}" {
+      Offset 0 0.3 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{D9F0223A3372D263}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1DAD1EDD42FE3031}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_iWantedIncrease 1
+     m_fCooldown 5
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 62.056 0 58.02
+ angleY 0
+}
+GenericEntity Annex_Sign_SafeZone_Spawn : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "safe_zone"
+   m_vRimColor 0.1 0.45 0.2
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.1 0.45 0.2
+  }
+ }
+ coords 56 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Sign_SafeZone_East : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "safe_zone"
+   m_vRimColor 0.1 0.45 0.2
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.1 0.45 0.2
+  }
+ }
+ coords 60 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 64 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 68 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{D97D7ED02B9C4E1A}" {
+   ActionContexts {
+    UserActionContext "{85653734FAE04F9E}" {
+     ContextName "default"
+     Position PointInfo "{2514C1ACD78CF71D}" {
+      Offset -0.0559 0.5 -0.2756
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_RobAction "{4F8CAEB46DCDC14A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B715433AF152941C}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_iWantedIncrease 1
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+     m_bTillActionName 1
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 66.056 0 58.02
+ angleY 0
+}

@@ -21,8 +21,8 @@ class LF_Test_HarnessProbe : LF_Test
 		ctx.EqualFloat(2, cmd.PosY, 0.001, "trace start y");
 		ctx.EqualFloat(6, cmd.CamZ, 0.001, "trace end z");
 
-		ctx.True(LF_AgentCommand.Parse("23 probe ent Hospital_Bed_1 270.5 0.2 261.5", cmd), "probe ent parses");
-		ctx.EqualStr("Hospital_Bed_1", cmd.Arg2, "probe ent name");
+		ctx.True(LF_AgentCommand.Parse("23 probe ent Annex_Hospital_Bed_1 270.5 0.2 261.5", cmd), "probe ent parses");
+		ctx.EqualStr(LF_TestAnnex.HOSPITAL_BED_1, cmd.Arg2, "probe ent name");
 		ctx.EqualFloat(270.5, cmd.PosX, 0.001, "probe ent x");
 
 		ctx.False(LF_AgentCommand.Parse("24 probe ent Bad-Name 1 2 3", cmd), "a bad entity token is rejected");
