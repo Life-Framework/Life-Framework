@@ -15,6 +15,9 @@ class LF_PhoneConfig
 	static const int DEFAULT_MAX_CALL_SECONDS = 600;
 	static const ResourceName DEFAULT_RING_SOUND_PROJECT = "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp";
 	static const string DEFAULT_RING_SOUND_EVENT = "SOUND_RADIO_SIGNAL_2";
+	static const int DEFAULT_CALL_BACK_OFFER_SECONDS = 120;
+	static const int DEFAULT_MESSAGE_MAX_CHARS = 120;
+	static const int DEFAULT_MAX_CALL_BACKS = 20;
 
 	[Attribute("30", UIWidgets.Auto, "Seconds a call rings at the far end before it counts as missed", params: "5 300")]
 	int m_iRingSeconds = DEFAULT_RING_SECONDS;
@@ -33,6 +36,15 @@ class LF_PhoneConfig
 
 	[Attribute("SOUND_RADIO_SIGNAL_2", UIWidgets.EditBox, "Sound event of the ring")]
 	string m_sRingSoundEvent = DEFAULT_RING_SOUND_EVENT;
+
+	[Attribute("120", UIWidgets.Auto, "Seconds a caller whose call rang out, or found nobody on duty, may leave a call-back request at that telephone", params: "10 900")]
+	int m_iCallBackOfferSeconds = DEFAULT_CALL_BACK_OFFER_SECONDS;
+
+	[Attribute("120", UIWidgets.Auto, "Longest typed message on a call-back request, in characters. 0 allows no message, only the request", params: "0 200")]
+	int m_iMessageMaxChars = DEFAULT_MESSAGE_MAX_CHARS;
+
+	[Attribute("20", UIWidgets.Auto, "Most call-back requests waiting at once, all services together; the oldest goes first. They expire with the dispatch board (m_iBoardExpirySeconds)", params: "1 100")]
+	int m_iMaxCallBacks = DEFAULT_MAX_CALL_BACKS;
 
 	protected static ref LF_PhoneConfig s_Config;
 
@@ -84,6 +96,24 @@ class LF_PhoneConfig
 	static int MaxCallSeconds()
 	{
 		return Math.Max(Get().m_iMaxCallSeconds, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int CallBackOfferSeconds()
+	{
+		return Math.Max(Get().m_iCallBackOfferSeconds, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int MessageMaxChars()
+	{
+		return Math.Max(Get().m_iMessageMaxChars, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int MaxCallBacks()
+	{
+		return Math.Max(Get().m_iMaxCallBacks, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------

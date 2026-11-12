@@ -198,6 +198,10 @@ class LF_PhoneLineComponent : ScriptComponent
 	[RplProp(onRplName: "OnLineReplicated")]
 	protected int m_iTalkerId;
 
+	//! Player id of the caller who may leave a call-back request at this idle phone; 0 for nobody.
+	[RplProp()]
+	protected int m_iOfferId;
+
 	protected static ref array<LF_PhoneLineComponent> s_aLines;
 	protected bool m_bRinging;
 	protected int m_iRings;
@@ -263,6 +267,27 @@ class LF_PhoneLineComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	int GetOfferId()
+	{
+		return m_iOfferId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client side of the leave action: who holds a call-back offer at this phone; 0 for nobody.
+	static int OfferAt(IEntity phone)
+	{
+		LF_PhoneComponent component = LF_PhoneComponent.Of(phone);
+		if (!component)
+			return 0;
+
+		LF_PhoneLineComponent line = component.Line();
+		if (!line)
+			return 0;
+
+		return line.m_iOfferId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetPhoneKey()
 	{
 		return m_sPhoneKey;
@@ -276,14 +301,14 @@ class LF_PhoneLineComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every line on this machine as "key:STATE:talker:rings", for the harness `phone` verb.
+	//! Every line on this machine as "key:STATE:talker:rings:offer", for the harness `phone` verb.
 	static string DescribeAll()
 	{
 		string text = string.Format("lines=%1", Lines().Count());
 		foreach (LF_PhoneLineComponent line : Lines())
 		{
 			if (line)
-				text += string.Format(" %1:%2:%3:%4", line.m_sPhoneKey, typename.EnumToString(LF_EPhoneLineState, line.m_iState), line.m_iTalkerId, line.m_iRings);
+				text += string.Format(" %1:%2:%3:%4:%5", line.m_sPhoneKey, typename.EnumToString(LF_EPhoneLineState, line.m_iState), line.m_iTalkerId, line.m_iRings, line.m_iOfferId);
 		}
 		return text;
 	}
@@ -301,16 +326,17 @@ class LF_PhoneLineComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: show the call table's view of this phone. Bumps only on a change.
-	void ServerSet(LF_EPhoneLineState state, int talkerId)
+	void ServerSet(LF_EPhoneLineState state, int talkerId, int offerId = 0)
 	{
 		if (!Replication.IsServer())
 			return;
 
-		if (m_iState == state && m_iTalkerId == talkerId)
+		if (m_iState == state && m_iTalkerId == talkerId && m_iOfferId == offerId)
 			return;
 
 		m_iState = state;
 		m_iTalkerId = talkerId;
+		m_iOfferId = offerId;
 		Replication.BumpMe();
 		// A listen server's own player hears the ring too; RplProp handlers do not run on the server.
 		OnLineReplicated();

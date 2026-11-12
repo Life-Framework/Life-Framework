@@ -7616,6 +7616,141 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Phoned the station"
      Comment "Summary the police radio, the dispatch board and the pagers show for a voice call to the station telephone."
     }
+    CustomStringTableItem "{24435758A5CF028C}" {
+     Id "LF-Phone_LeaveRequest"
+     Target_en_us "Leave a message for a call back"
+     Comment "Payphone action: after a call rang out or found nobody on duty, leave a call-back request (#147)."
+    }
+    CustomStringTableItem "{DF8387B5D8AB3DA0}" {
+     Id "LF-Phone_ReadPad"
+     Target_en_us "Read the message pad"
+     Comment "Station telephone action: list the call-back requests left at payphones."
+    }
+    CustomStringTableItem "{2F6EBB4F95048920}" {
+     Id "LF-Phone_NoAnswerOffer"
+     Target_en_us "Nobody picked up. Leave a message here and the station will ring back."
+     Comment "Toast to the caller: the call rang out; a call-back request may be left at that payphone."
+    }
+    CustomStringTableItem "{3D04C4CC444D598D}" {
+     Id "LF-Phone_NobodyOffer"
+     Target_en_us "Nobody is at the station. Leave a message here and they will ring back."
+     Comment "Toast to the caller: nobody is on duty; a call-back request may be left at that payphone."
+    }
+    CustomStringTableItem "{C4782A22D7EDB5DA}" {
+     Id "LF-Phone_NoOffer"
+     Target_en_us "You have no missed call from this telephone to leave a message for."
+     Comment "Refusal: the player has no call-back offer at this payphone (no missed call, or the offer ran out)."
+    }
+    CustomStringTableItem "{8D1F5DAFD398EAF5}" {
+     Id "LF-Phone_RequestTooLong"
+     Target_en_us "The message is too long."
+     Comment "Refusal: the server found the typed message longer than the configured limit."
+    }
+    CustomStringTableItem "{2A96C07D4D496947}" {
+     Id "LF-Phone_RequestTooLongBy"
+     Target_en_us "Too long by %1 characters."
+     Comment "Message slip error line. %1 is how many characters to cut."
+    }
+    CustomStringTableItem "{DF38F94D73120112}" {
+     Id "LF-Phone_RequestGone"
+     Target_en_us "That message is no longer on the pad."
+     Comment "Refusal: the call-back request expired, was answered, or belongs to another service."
+    }
+    CustomStringTableItem "{257CE64B80315E01}" {
+     Id "LF-Phone_RequestCalling"
+     Target_en_us "Someone is already ringing that telephone back."
+     Comment "Refusal: another officer is ringing this request back."
+    }
+    CustomStringTableItem "{E48722D4B403267E}" {
+     Id "LF-Phone_RequestLeft"
+     Target_en_us "Message left. The station will ring this telephone back."
+     Comment "Toast to the caller: the call-back request is on the station pad."
+    }
+    CustomStringTableItem "{C42B50D4E2C64F7C}" {
+     Id "LF-Phone_RequestOnPad"
+     Target_en_us "A call-back request is on the station pad."
+     Comment "Toast to everyone on duty for the service: a caller left a call-back request."
+    }
+    CustomStringTableItem "{C5B665DD46E8ECE5}" {
+     Id "LF-Phone_RingingBack"
+     Target_en_us "The station is ringing back the telephone you called from."
+     Comment "Toast to the caller who left a request: an officer rings that payphone now."
+    }
+    CustomStringTableItem "{C2EB7CAD98723360}" {
+     Id "LF-Phone_PadNotOnDuty"
+     Target_en_us "Only an officer on duty reads the station pad."
+     Comment "Refusal: the player is not on duty for the station telephone's service."
+    }
+    CustomStringTableItem "{BC2E18872DCB8DB9}" {
+     Id "LF-Phone_SlipTitle"
+     Target_en_us "Message for the station"
+     Comment "Title of the message slip a caller fills in at a payphone."
+    }
+    CustomStringTableItem "{95315859351CA873}" {
+     Id "LF-Phone_SlipHint"
+     Target_en_us "The station will ring this telephone back. A few words help; you may leave none."
+     Comment "Hint line on the message slip."
+    }
+    CustomStringTableItem "{256554EEA5E89F45}" {
+     Id "LF-Phone_SlipField"
+     Target_en_us "Message (up to %1 characters)"
+     Comment "Label of the message field on the slip. %1 is the length limit."
+    }
+    CustomStringTableItem "{12ED03DE459A7FC8}" {
+     Id "LF-Phone_SlipLeave"
+     Target_en_us "Leave the message"
+     Comment "Message slip button: send the call-back request."
+    }
+    CustomStringTableItem "{87FE88A4ADBE1096}" {
+     Id "LF-Phone_SlipCancel"
+     Target_en_us "Hang up"
+     Comment "Message slip close button: leave no request."
+    }
+    CustomStringTableItem "{7AA1CB1952D2EA8E}" {
+     Id "LF-Phone_PadTitle"
+     Target_en_us "While you were out"
+     Comment "Title of the station message pad (the period call-back slip)."
+    }
+    CustomStringTableItem "{D0F1DC66613DA0C1}" {
+     Id "LF-Phone_PadHint"
+     Target_en_us "Call-back requests left at payphones. Ring one back from this telephone."
+     Comment "Hint line on the station message pad."
+    }
+    CustomStringTableItem "{2FE54F022DB5CA14}" {
+     Id "LF-Phone_PadNone"
+     Target_en_us "No messages."
+     Comment "Station message pad with no call-back requests."
+    }
+    CustomStringTableItem "{5BD8A3BD5B8F473D}" {
+     Id "LF-Phone_PadLine"
+     Target_en_us "%1  %2, rang %3 s"
+     Comment "One request on the pad. %1 the in-game time it was left, %2 the place of the payphone, %3 seconds it rang."
+    }
+    CustomStringTableItem "{DE961B312ED56923}" {
+     Id "LF-Phone_PadNoMessage"
+     Target_en_us "No message"
+     Comment "Pad line status: the caller typed nothing."
+    }
+    CustomStringTableItem "{6B69BDA7166DD69D}" {
+     Id "LF-Phone_PadCalling"
+     Target_en_us "%1 (ringing back)"
+     Comment "Pad line status while someone rings that payphone back. %1 is the message."
+    }
+    CustomStringTableItem "{F95D32253E487FB1}" {
+     Id "LF-Phone_PadCallBack"
+     Target_en_us "Ring back"
+     Comment "Pad line button: ring the payphone the request came from."
+    }
+    CustomStringTableItem "{42FDE23CF0AC3481}" {
+     Id "LF-Phone_PadClose"
+     Target_en_us "Put the pad down"
+     Comment "Station message pad close button."
+    }
+    CustomStringTableItem "{12ACDFB2A237C258}" {
+     Id "LF-Phone_TargetBusy"
+     Target_en_us "Busy signal. That telephone is in use."
+     Comment "Refusal: the payphone a call-back request came from is in use; try again later."
+    }
   }
  }
 }

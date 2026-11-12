@@ -35,6 +35,16 @@ GenericEntity : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et
      }
      "Sort Priority" 2
     }
+    LF_PhoneReadPadAction "{D7DC31FD6D1AA79A}" {
+     ParentContextList {
+      "LF_DispatchPhone"
+     }
+     UIInfo UIInfo "{ECD54FB29B3A2E20}" {
+      Name "#LF-Phone_ReadPad"
+      Description "#LF-Phone_StationTitle"
+     }
+     "Sort Priority" 3
+    }
    }
   }
  }
