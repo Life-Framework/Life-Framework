@@ -160,7 +160,10 @@ class LF_WantedReports
 		}
 
 		if (changed > 0)
+		{
 			LF_Debug.Info(FEATURE, string.Format("%1 identified by %2: %3 report(s) now name them", playerUid, how, changed));
+			LF_EventBus.Publish(LF_OnSuspectIdentified.Create(playerUid, how, changed));
+		}
 
 		return changed;
 	}
@@ -284,6 +287,9 @@ class LF_WantedReports
 
 		if (!cleared.IsEmpty())
 			LF_Debug.Info(FEATURE, string.Format("load took down the reports of %1 character(s) no longer wanted", cleared.Count()));
+
+		// Not an event: the save restored the whole store, so the board's posters are rebuilt from it.
+		LF_WantedPosters.MarkDirty("load");
 
 		return cleared.Count();
 	}

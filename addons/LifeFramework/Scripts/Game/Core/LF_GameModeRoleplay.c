@@ -69,6 +69,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CrimeRecord.EnsureSubscribed();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
+		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).
+		LF_WantedPosters.Install();
 		// Playtime per account and job, credited to online players (server only, #692).
 		LF_Playtime.Start();
 	}

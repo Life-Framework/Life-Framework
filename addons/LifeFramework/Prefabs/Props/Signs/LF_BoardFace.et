@@ -1,0 +1,15 @@
+GenericEntity {
+ ID "70073252DCB04484"
+ components {
+  MeshObject "{945DE40F9BB0AE4C}" {
+   Object "{3293B26FEF00FA65}Assets/Signs/LF_BoardFace.xob"
+   Materials {
+    MaterialAssignClass "{B99E146437875F02}" {
+     SourceMaterial "everon_titeliimg"
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
+   }
+   CastShadow 0
+  }
+ }
+}

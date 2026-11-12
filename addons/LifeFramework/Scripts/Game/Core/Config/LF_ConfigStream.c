@@ -213,6 +213,10 @@ class LF_ConfigStream
 
 		// Job XP, levels and licence gates are server-side; the next read layers the owner file again.
 		LF_JobsConfig.Reload();
+
+		// The wanted board's poster count and draw radius (server); the boards send the new list.
+		LF_WantedPostersConfig.Reload();
+		LF_WantedPosters.MarkDirty("config reload");
 	}
 
 	//------------------------------------------------------------------------------------------------
