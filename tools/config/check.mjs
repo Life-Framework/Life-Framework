@@ -123,10 +123,16 @@ export function parseJson(text) {
 // shipped keys come from the shipped .conf. The key grammar a reader insists on (a record it cannot
 // parse is skipped) is not in the schema, so it lives here beside the table.
 const typeKey = (type, mode) => `type:${type},mode:${mode}`;
+/** LF_ShopPriceResolver.RuleKey for a prefab rule: the GUID (or the bare path), upper-cased. */
+const prefabKey = (res) => `prefab:${String(res).replace(/^\{([0-9A-Fa-f]+)\}.*$/s, "$1").toUpperCase()}`;
 
 /** LF_ShopPriceResolver.ParseRuleKey, normalised the way RuleKey does ("type:64" is "type:64,mode:2"). */
 export function parseShopRuleKey(key) {
   if (!key) return null;
+  if (key.startsWith("prefab:")) {
+    const id = key.slice(7);
+    return id ? { find: "", norm: prefabKey(id) } : null;
+  }
   if (!key.startsWith("type:")) return { find: key, norm: key };
   const parts = key.split(",");
   let type = 0, mode = 2;
@@ -149,7 +155,8 @@ function shippedKeys(sources) {
   keys["shops.priceRules"] = new Set();
   for (const r of shop?.props.m_aPriceRules?.list ?? []) {
     const p = r.props;
-    if (p.m_sFind) keys["shops.priceRules"].add(p.m_sFind);
+    if (p.m_Prefab) keys["shops.priceRules"].add(prefabKey(p.m_Prefab));
+    else if (p.m_sFind) keys["shops.priceRules"].add(p.m_sFind);
     else if (typeof p.m_eItemType === "number" && p.m_eItemType !== 0) keys["shops.priceRules"].add(typeKey(p.m_eItemType, typeof p.m_eItemMode === "number" ? p.m_eItemMode : 2));
   }
   const veh = read(sources.vehicles);
@@ -228,7 +235,7 @@ export function checkOwner(root, schema, source, shipped = {}) {
       if (p.val.t !== "obj") { add("error", p, `${where} is not a record (an object); record skipped`, [...path, p.key]); continue; }
       const key = grammar(p.key);
       if (!key) {
-        add("error", p, `${dotted(path)}.${p.key}: the key is neither a prefab-path substring nor type:<flags>,mode:<mode>; record skipped`, [...path, p.key]);
+        add("error", p, `${dotted(path)}.${p.key}: the key is neither a prefab-path substring, prefab:<GUID> nor type:<flags>,mode:<mode>; record skipped`, [...path, p.key]);
         continue;
       }
       if (have && have.size && !have.has(key.norm)) {

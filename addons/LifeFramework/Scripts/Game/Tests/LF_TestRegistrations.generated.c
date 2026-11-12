@@ -323,6 +323,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopPriceResolve(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopPriceHidden(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopCatalog(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ShopRuleKey(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignBoardFace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignCardFormat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignCatalog(), LF_TestTier.LOGIC);

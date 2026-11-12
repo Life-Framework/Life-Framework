@@ -56,7 +56,7 @@ class LF_Test_ConfigMergeFixture
 	//------------------------------------------------------------------------------------------------
 	static LF_ShopPriceRule Find(LF_ShopPricesConfig config, string find)
 	{
-		return LF_ShopPriceResolver.FindRule(config.m_aPriceRules, LF_ShopPriceResolver.RuleKey(find, 0, SCR_EArsenalItemMode.DEFAULT));
+		return LF_ShopPriceResolver.FindRule(config.m_aPriceRules, LF_ShopPriceResolver.RuleKey(string.Empty, find, 0, SCR_EArsenalItemMode.DEFAULT));
 	}
 };
 
@@ -139,7 +139,7 @@ class LF_Test_ConfigMergeKeyed : LF_Test
 		ctx.Equal(50, added.m_iSellPrice, "a new rule's missing sell price is the .conf attribute default");
 
 		LF_ShopPriceRule byType = config.m_aPriceRules[4];
-		ctx.EqualStr("type:64,mode:2", LF_ShopPriceResolver.RuleKey(byType.m_sFind, byType.m_eItemType, byType.m_eItemMode), "a rule without find is keyed by type and mode");
+		ctx.EqualStr("type:64,mode:2", LF_ShopPriceResolver.RuleKey(byType.m_Prefab, byType.m_sFind, byType.m_eItemType, byType.m_eItemMode), "a rule without find is keyed by type and mode");
 		ctx.Equal(3, byType.m_iBuyPrice, "the type rule has the owner's buy price");
 
 		int buy;
