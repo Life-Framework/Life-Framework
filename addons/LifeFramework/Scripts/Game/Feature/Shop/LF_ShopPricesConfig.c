@@ -69,11 +69,143 @@ class LF_ShopPricesConfig
 		}
 
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
-		if (!reader)
-			return;
+		if (reader)
+		{
+			ApplyOwner(reader);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("shops: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		}
 
-		ApplyOwner(reader);
-		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("shops: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		// Client: the server's effective values replace the result (#285). Null on the server.
+		LF_ConfigReader streamed = LF_ConfigStream.OpenReceivedSection(SECTION);
+		if (streamed && ApplyStream(streamed))
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("shops: using the server's values (%1 rules, default buy %2, sell %3)", m_aPriceRules.Count(), m_iDefaultBuyPrice, m_iDefaultSellPrice));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Writes the effective values a client reads into the config stream (LF_ConfigStream, #285):
+	//! the defaults, every rule in walk order, and the extra prefabs. Every field here is client
+	//! visible (the price list shows it). Rules are keyed "0".."n-1", not by RuleKey: prefab rules
+	//! share a key, and ApplyStream replaces the list instead of merging it.
+	//! \param[in] ctx A save context with this section's object open.
+	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	{
+		ctx.WriteValue("defaultBuyPrice", m_iDefaultBuyPrice);
+		ctx.WriteValue("defaultSellPrice", m_iDefaultSellPrice);
+
+		ctx.StartObject("priceRules");
+		if (m_aPriceRules)
+		{
+			int index;
+			foreach (LF_ShopPriceRule rule : m_aPriceRules)
+			{
+				if (!rule)
+					continue;
+
+				ctx.StartObject(index.ToString());
+				string rulePrefab = rule.m_Prefab;
+				if (!rulePrefab.IsEmpty())
+					ctx.WriteValue("prefab", rulePrefab);
+				if (!rule.m_sFind.IsEmpty())
+					ctx.WriteValue("find", rule.m_sFind);
+				int itemType = rule.m_eItemType;
+				if (itemType != 0)
+					ctx.WriteValue("type", itemType);
+				int itemMode = rule.m_eItemMode;
+				if (itemMode != SCR_EArsenalItemMode.DEFAULT)
+					ctx.WriteValue("mode", itemMode);
+				ctx.WriteValue("buyPrice", rule.m_iBuyPrice);
+				ctx.WriteValue("sellPrice", rule.m_iSellPrice);
+				if (rule.m_bHidden)
+					ctx.WriteValue("hidden", true);
+				ctx.EndObject();
+				index++;
+			}
+		}
+		ctx.EndObject();
+
+		array<string> extra = {};
+		if (m_aExtraItemPrefabs)
+		{
+			foreach (ResourceName extraPrefab : m_aExtraItemPrefabs)
+			{
+				extra.Insert(extraPrefab);
+			}
+		}
+		ctx.WriteValue("extraItemPrefabs", extra);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces this instance's values with the server's from the config stream. Reads into a copy
+	//! and commits only when every field read: a stream with a bad field changes nothing (logged).
+	//! A key the stream leaves out keeps this instance's value.
+	//! \param[in] reader A reader on the stream's "shops" section.
+	//! \return True when the server's values were applied.
+	bool ApplyStream(notnull LF_ConfigReader reader)
+	{
+		int defaultBuy = m_iDefaultBuyPrice;
+		int defaultSell = m_iDefaultSellPrice;
+		reader.ReadInt("defaultBuyPrice", defaultBuy, PRICE_MIN, PRICE_MAX);
+		reader.ReadInt("defaultSellPrice", defaultSell, PRICE_MIN, PRICE_MAX);
+
+		array<ref LF_ShopPriceRule> rules;
+		int count = reader.BeginRecords("priceRules");
+		if (count >= 0)
+		{
+			rules = new array<ref LF_ShopPriceRule>();
+			for (int i = 0; i < count; i++)
+			{
+				string key = reader.GetRecordKey(i);
+				if (key != i.ToString())
+				{
+					reader.RejectRecord(string.Format("record %1 is keyed '%2', not '%1'", i, key));
+					continue;
+				}
+
+				if (!reader.BeginRecord(key))
+					continue;
+
+				string prefab;
+				string find;
+				int itemType = 0;
+				int itemMode = SCR_EArsenalItemMode.DEFAULT;
+				reader.ReadString("prefab", prefab);
+				reader.ReadString("find", find);
+				reader.ReadInt("type", itemType);
+				reader.ReadInt("mode", itemMode);
+
+				LF_ShopPriceRule rule = LF_ShopPriceRule.Create(find, itemType, itemMode);
+				rule.m_Prefab = prefab;
+				reader.ReadInt("buyPrice", rule.m_iBuyPrice, PRICE_MIN, PRICE_MAX);
+				reader.ReadInt("sellPrice", rule.m_iSellPrice, PRICE_MIN, PRICE_MAX);
+				reader.ReadBool("hidden", rule.m_bHidden);
+				rules.Insert(rule);
+				reader.EndRecord();
+			}
+			reader.EndRecords();
+		}
+
+		array<string> extraRead = {};
+		bool hasExtra = reader.ReadStrings("extraItemPrefabs", extraRead);
+
+		if (reader.GetRejectedCount() > 0)
+		{
+			LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("stream: %1 shop values from the server did not read; the client keeps its own shop prices", reader.GetRejectedCount()));
+			return false;
+		}
+
+		m_iDefaultBuyPrice = defaultBuy;
+		m_iDefaultSellPrice = defaultSell;
+		if (rules)
+			m_aPriceRules = rules;
+		if (hasExtra)
+		{
+			m_aExtraItemPrefabs = new array<ResourceName>();
+			foreach (string extra : extraRead)
+			{
+				m_aExtraItemPrefabs.Insert(extra);
+			}
+		}
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
