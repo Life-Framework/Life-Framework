@@ -20,6 +20,16 @@ class LF_Test_PlaytimePersist : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
+		// An older-format save loaded here replaces the organizations with record version 1 ones,
+		// which drops rank masks only "orgranks" holds (#750a); put back what this test found.
+		LF_TestOrgSnapshot keptOrgs = LF_TestOrgSnapshot.Take();
+		RunKeptOrgs(ctx);
+		keptOrgs.Restore();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunKeptOrgs(LF_TestContext ctx)
+	{
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves");
 		if (!gameMode)
@@ -61,7 +71,7 @@ class LF_Test_PlaytimePersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(26, version, "the save is written at version 26 (playtime is payload 26)");
+			ctx.Equal(27, version, "the save is written at version 27 (playtime is payload 26)");
 			LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "playtime");
 			string tag = string.Format(" (load %1)", pass);
 			ctx.Equal(3600, LF_Playtime.JobSeconds(UID, "POLICE"), "the police hour is back" + tag);

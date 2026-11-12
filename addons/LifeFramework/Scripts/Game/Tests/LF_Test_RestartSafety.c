@@ -128,7 +128,7 @@ class LF_Test_RestartJailSerializerRoundtrip : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(26, version, "the save is written at version 26 (jail is payload 5)");
+		ctx.Equal(27, version, "the save is written at version 27 (jail is payload 5)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "jail");
 		ctx.True(LF_Jail.IsServing(PRISONER_UID), "the sentence is served again after the load");
 		ctx.EqualFloat(240, LF_Jail.GetRemaining(PRISONER_UID), 0.01, "the remaining time survives the load");
