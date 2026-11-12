@@ -31,6 +31,9 @@ class LF_JobManager : Managed
 	//------------------------------------------------------------------------------------------------
 	void OnGatherCompleted(IEntity user, ResourceName gatheredItem)
 	{
+		// Job XP for the gather: the jobs config's gather award (#749).
+		LF_JobLevels.Award(LF_Utils.GetPlayerUID(user), LF_JobLevels.ACTION_GATHER);
+
 		// Give reward based on item
 		int reward = GetGatherReward(gatheredItem);
 		if (reward > 0)

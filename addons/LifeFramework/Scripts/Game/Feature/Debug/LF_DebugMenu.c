@@ -30,7 +30,6 @@ class LF_DebugMenu : ChimeraMenuBase
 	protected ButtonWidget m_wSurvivalFullButton;
 	protected ButtonWidget m_wSurvivalEmptyButton;
 	protected ButtonWidget m_wGrantXpButton;
-	protected ButtonWidget m_wGrantSpButton;
 	protected ButtonWidget m_wJobFarmerButton;
 	protected ButtonWidget m_wJobUnemployedButton;
 
@@ -52,7 +51,6 @@ class LF_DebugMenu : ChimeraMenuBase
 		m_wSurvivalFullButton = ButtonWidget.Cast(root.FindAnyWidget("SurvivalFullButton"));
 		m_wSurvivalEmptyButton = ButtonWidget.Cast(root.FindAnyWidget("SurvivalEmptyButton"));
 		m_wGrantXpButton = ButtonWidget.Cast(root.FindAnyWidget("GrantXpButton"));
-		m_wGrantSpButton = ButtonWidget.Cast(root.FindAnyWidget("GrantSpButton"));
 		m_wJobFarmerButton = ButtonWidget.Cast(root.FindAnyWidget("JobFarmerButton"));
 		m_wJobUnemployedButton = ButtonWidget.Cast(root.FindAnyWidget("JobUnemployedButton"));
 
@@ -73,7 +71,6 @@ class LF_DebugMenu : ChimeraMenuBase
 		if (w == m_wSurvivalFullButton) { AskAction(LF_EDebugAction.SET_SURVIVAL, 100); return true; }
 		if (w == m_wSurvivalEmptyButton) { AskAction(LF_EDebugAction.SET_SURVIVAL, 0); return true; }
 		if (w == m_wGrantXpButton) { AskAction(LF_EDebugAction.ADD_XP, 500); return true; }
-		if (w == m_wGrantSpButton) { AskAction(LF_EDebugAction.ADD_SP, 5); return true; }
 		if (w == m_wJobFarmerButton) { AskAction(LF_EDebugAction.SET_JOB, LF_EJobType.FARMER); return true; }
 		if (w == m_wJobUnemployedButton) { AskAction(LF_EDebugAction.SET_JOB, LF_EJobType.UNEMPLOYED); return true; }
 
@@ -207,7 +204,6 @@ enum LF_EDebugAction
 	SET_FACTION,
 	SET_SURVIVAL,
 	ADD_XP,
-	ADD_SP,
 	SET_JOB,
 	COUNT
 }
@@ -275,10 +271,6 @@ class LF_DebugActionUtils
 
 			case LF_EDebugAction.ADD_XP:
 				ApplyXp(character, Math.AbsInt(value));
-				break;
-
-			case LF_EDebugAction.ADD_SP:
-				ApplySkillPoints(character, Math.AbsInt(value));
 				break;
 
 			case LF_EDebugAction.SET_JOB:
@@ -374,27 +366,12 @@ class LF_DebugActionUtils
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Debug grant: CIVILIAN job XP (#749), the job the old single level became.
 	static void ApplyXp(IEntity character, int amount)
 	{
-		LF_PlayerLevelComponent level = LF_Component<LF_PlayerLevelComponent>.Find(character);
-		if (!level)
-		{
-			LF_Debug.Error("DebugMenu", "xp action failed: no level component");
-			return;
-		}
-		level.AddExperience(amount, "DebugMenu");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void ApplySkillPoints(IEntity character, int amount)
-	{
-		LF_PlayerLevelComponent level = LF_Component<LF_PlayerLevelComponent>.Find(character);
-		if (!level)
-		{
-			LF_Debug.Error("DebugMenu", "sp action failed: no level component");
-			return;
-		}
-		level.AddSkillPoints(amount, "DebugMenu");
+		string uid = LF_Utils.GetPlayerUID(character);
+		if (LF_JobLevels.AddXp(uid, LF_JobLevels.JOB_CIVILIAN, amount, "DebugMenu") <= 0)
+			LF_Debug.Error("DebugMenu", string.Format("xp action gave nothing to '%1' (no player, no CIVILIAN track, or capped)", uid));
 	}
 
 	//------------------------------------------------------------------------------------------------

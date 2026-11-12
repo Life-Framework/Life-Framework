@@ -47,9 +47,8 @@ class LF_Test_QuestWorld : LF_Test
 		ctx.True(tracker.GetTracker().GetStatus("intro_talk") == LF_EQuestStatus.COMPLETED, "talk quest completes on giver interaction");
 		tracker.TurnInQuest("intro_talk");
 		ctx.True(tracker.GetTracker().GetStatus("intro_talk") == LF_EQuestStatus.TURNED_IN, "talk quest turned in");
-		LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(character);
-		if (levelComp)
-			ctx.True(levelComp.GetPlayerExperience() >= 10, "turn-in granted reward XP");
+		// The fixture body has no player, so the reward XP has no character to go to (#749); the
+		// XP grant itself is LF_Test_JobLevels.
 
 		// Gather quest: three gather reports complete it.
 		tracker.AcceptQuest("intro_gather");

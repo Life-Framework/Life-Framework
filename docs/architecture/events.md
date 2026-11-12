@@ -62,6 +62,7 @@ The bus keeps its own strong reference.
 | `LF_OnPlayerDamaged` | `m_sVictimUid`, `m_sAttackerUid`, `m_fDamage` (total in the window), `m_vPosition`, `m_sWeapon` | `LF_IncidentDamage.OnHit` from `SCR_CharacterDamageManagerComponent.HijackDamageHandling`: player-on-player only, at most one per victim/attacker pair per `m_fDamageSampleSeconds` (default 5), never per hit |
 | `LF_OnArrested` | `m_sPlayerUid`, `m_iSentenceSeconds`, `m_iWantedLevel` | `LF_Jail` when a sentence starts |
 | `LF_OnJobCompleted` | `m_sPlayerUid`, `m_iJob`, `m_iPay` | `LF_JobWorker` run completion (`LF_CivilianJob.CompleteRun`) |
+| `LF_OnJobLevelChanged` | `m_sPlayerUid`, `m_sJob`, `m_iLevelBefore`, `m_iLevel` | A character's level in one job rose (`LF_JobLevels.AddXp`, #749, whatever granted the XP). `LF_JobLevelSync` subscribes and refreshes the replicated DELIVERY level |
 | `LF_OnVehicleChopped` | `m_sChopperUid`, `m_sShopId`, `m_sVehicleId`, `m_sPlate`, `m_sOwnerUid`, `m_iPayout`, `m_iParts` | `LF_ChopShopComponent.ServerCollect`: a chop shop paid out and the vehicle is gone (#415) |
 | `LF_OnVehicleReportedStolen` | `m_sOwnerUid`, `m_sVehicleId`, `m_sPlate` | `LF_StolenVehicles.Report`: the owner reported a stolen car (#414) |
 | `LF_OnVehicleRecovered` | `m_sOfficerUid`, `m_sOwnerUid`, `m_sVehicleId`, `m_sPlate` | `LF_StolenVehicles.Recover`: an officer sent a reported car to the owner's garage (#414) |

@@ -291,6 +291,12 @@
   `docs/architecture/core-pack-inventory.md`.
 
 ### Config service — `Scripts/Game/Core/Config/LF_ConfigService.c` (#278)
+- ✅ (2026-11-12, #749) The `jobs` section (D8): duty pay, the benefit, and the job XP
+  tables (`tracks` by job id with `levelThresholds` and `dailyXpCap`, `xpAwards` by action
+  id, `licenceGates` by licence name), read by `LF_JobsConfig.ApplyOwner` with ranges.
+  `ReadFloat` takes a whole number or a fraction; `ReadInts` refuses a list holding a
+  non-number or a number out of range whole. `vehicles` and `jobs` are known top-level
+  keys now (`vehicles` warned as unknown before). Test `config/jobs-owner`.
 - ✅ (2026-11-12) The server reads the owner's
   `$profile:LifeFramework/config.json` at game start and merges it over the
   shipped `.conf` defaults field by field: owner, then pack, then core. Records
@@ -525,14 +531,17 @@
   `persist/progression-roundtrip`, `persist/progression-old-save`, and
   `e2e/pass2-verify-load` across a real two-boot restart). The `progression`
   payload, appended at save version 7, holds one `LF_ProgressionRecord` per
-  player uid: the civilian delivery career (level, XP, paid total), police rank,
+  player uid: the civilian delivery career pay total, police rank,
   on-duty seconds and unpaid duty seconds, seconds since the last benefit
-  collection, the player level (level, XP, skill points), licences by enum name,
-  and turned-in quest ids. A courier at level 2 still opens fuel delivery and a
-  senior officer stays senior.
-- ✅ Level, licences, and turn-ins live on the character, so their owners write
+  collection, licences by enum name, and turned-in quest ids. Since #749 its
+  career level and XP and its single player level are a mirror of the DELIVERY
+  and CIVILIAN jobs (`LF_JobLevels`, own payload), written in the pre-#749 curves; a
+  version 7-27 save's job XP comes from them. A courier at level 2 still opens fuel
+  delivery and a senior officer stays senior.
+- ✅ Licences and turn-ins live on the character, so their owners write
   through to the store and `LF_SpawnLogic` applies the record to every new body.
-  They now survive death as well; only carried items drop.
+  They now survive death as well; only carried items drop. Job levels are keyed by
+  the character, not the body.
 - ✅ Tolerant load: an unknown licence name is skipped with a warning, an unknown
   quest id is kept with a warning, a rank above the ladder clamps to senior. A
   version 6 save leaves live rank and duty totals alone (the account apply
@@ -953,7 +962,8 @@
   catalog, extended). A chain has a tier (1 to 5), steps in order, equipment, and heat settings.
   A step names the station type it needs, its inputs and outputs (the `LF_ProcessAction`
   recipe rows), the hands-on work units one batch takes (`m_iWork`), a licence
-  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum player level, and an equipment id.
+  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum level in the job it names
+  (`m_sLevelJob`, CIVILIAN by default; #749), and an equipment id.
   A pack adds a chain by overriding the `.conf`; there is no script.
 - ✅ **A bad chain disables only itself.** `LF_ChainCatalog.Build` validates each row (no id,
   tier out of range, no steps, no station, no work, a malformed recipe, unlisted equipment,
@@ -1125,24 +1135,48 @@
 - ✅ `#EL-Job_Earned` is `Earned $%1 for work!` and `GiveReward` passes the
   paid amount through `WidgetManager.Translate` (verified 2026-10-11).
 
-### `LF_PlayerLevelComponent` — `Feature/Level/LF_PlayerLevelComponent.c`
-- ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;
-  passive bonuses (`gatheringSpeed 1+(level-1)*0.1`, `gatheringAmount` same,
-  `saleBonus 1+(level-1)*0.05`); `CheckLevelUp` drains XP cascades, +1 SP and
-  +1 total SP per level.
-- ⚠️ `SetLevel`/`SetExperience`/`SetSkillPoints`/`SetTotalSkillPointsEarned`
-  have no server guard, no validation, no recompute (inconsistent state
-  possible). Saves on every XP gain (DB-write hazard). `GetBonusesText`
-  returns a Spanish literal.
+### `LF_JobLevels` — `Feature/Level/LF_JobLevels.c` (#749, D12)
+- ✅ (2026-11-12) **Per-job XP replaces the single player level.** One XP track per job
+  (CIVILIAN, DELIVERY, FARMER, MINER, LUMBERJACK, MEDIC, POLICE in the core config), keyed by
+  the character record key. The store holds total XP; the level is 1 plus the job's
+  thresholds reached (`LF_JobsConfig.m_aTracks`, owner key `jobs.tracks`), so a rebalance
+  reaches old saves. `LF_PlayerLevelComponent`, its skill points and its unused passive
+  bonuses are gone (component removed from `Character_Roleplay.et`; the debug menu's skill
+  point button too). Tests `jobs/job-levels`, `jobs/job-level-gates`, `config/jobs-owner`,
+  `persist/job-levels`, `e2e/pass2-verify-load`.
+- ✅ XP is added only by the server: `AddXp(uid, job, amount, reason)` (quest reward XP to the
+  quest's `m_sJob`, debug grants to CIVILIAN) and `Award(uid, action, units)` for in-world
+  actions whose XP, job and cooldown are config (`jobs.xpAwards`: `delivery_run` 100 DELIVERY,
+  `fruit_pick` 5 FARMER a fruit, `gather` 2 FARMER). An action inside its cooldown earns
+  nothing; a job's `dailyXpCap` (FARMER 2000) drops the part over the cap per day of server
+  time. Both clocks are session state. An unknown job or action earns nothing and logs
+  `[LFDebug:JobLevels]`.
+- ✅ Gates read job levels: delivery sign-up (DELIVERY: fuel level 2, taxi level 3, the old
+  pacing), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
+  or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
+  default), lockpicking skill (CIVILIAN).
+- ✅ **Saved as the `joblevels` payload (save version 28)**: one `LF_JobXpRow` per (character,
+  job). A version 7-27 save migrates: the single level goes onto CIVILIAN and the delivery
+  career onto DELIVERY at the same levels; every other job starts at 0. Load is idempotent.
+- ✅ A level rise from any grant publishes `LF_OnJobLevelChanged`; `LF_JobLevelSync` refreshes
+  the replicated DELIVERY level on the character's live body, so a quest's DELIVERY XP opens fuel
+  delivery on the client too (`jobs/job-level-sync`). A capped or refused award does not start
+  its cooldown. The pre-#749 career curve stays config (`jobXpFirstLevel`, `jobXpLevelGrowth`,
+  read only to migrate), and the single level migrates whole at any level.
+- ⚠️ Only the DELIVERY level reaches a client (`LF_PlayerJobComponent`'s replicated level, for
+  the sign-up offer); no client reads another job's level yet, so no level is shown. There is
+  no XP source yet for MINER, LUMBERJACK, MEDIC or POLICE, and no player-facing licence
+  purchase, so those licence gates are reachable only through config and tests.
 
 ### `LF_LicenseManagerComponent` — `Feature/License/LF_LicenseManagerComponent.c`
 - ✅ License catalog (26 entries), `CanUnlockLicense` (owned/config/whitelist/
-  level), `CanAffordLicense` (SP cost), `PurchaseLicense` (spends SP +
-  unlock), `HasLicense`, persistence restore.
+  job level), `PurchaseLicense` (checks, then unlocks; nothing is spent since #749),
+  `HasLicense`, persistence restore. The level gate is `LF_LicenseGate` (#749): the
+  licence family's job (FARMER_* in FARMER, ..., criminal licences in CIVILIAN) at the
+  catalog's `m_iMinLevelRequired`, unless the jobs config has a `licenceGates` row.
 - ✅ **Whitelist mapping and purchase ordering fixed** (verified 2026-08-30):
   `GetLicenseWhitelistJob` maps MEDIC access to MEDIC and police licenses to
-  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`
-  spends skill points. `SetUnlockedLicenses` is the persistence restore seam,
+  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`. `SetUnlockedLicenses` is the persistence restore seam,
   not a player purchase path. Remaining: not localized; `m_bIsInitialLicense`
   is used for initial grants.
 - ✅ **Replicates as a bitmask** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the old `[RplProp] ref array` broke the
@@ -2021,7 +2055,7 @@
   removed; `EHarvestJobType` moved to `Feature/Jobs/LF_HarvestJobType.c`.
 - ✅ `LF_DebugMenu` is a development menu opened with F10 (or its rebind),
   with server-routed controls for cash, wanted state, faction, jobs, survival,
-  XP, and skill points. Actions affect only the requesting player's state
+  and CIVILIAN job XP (#749; skill points no longer exist). Actions affect only the requesting player's state
   (verified 2026-08-30). `LF_DevGate` (`Core/LF_DevGate.c`) checks every
   action on the server. It logs `[LFDebug:DebugMenu] debug action refused: ...`
   and refuses unless the game mode sets `m_bDevToolsEnabled` or the sender

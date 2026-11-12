@@ -1,13 +1,19 @@
 //------------------------------------------------------------------------------------------------
-//! Progression that survives a restart, keyed by player uid: the civilian delivery career, police
-//! rank and duty seconds, the benefit cooldown, the player level, licences, and quest turn-ins.
-//! Saved as the "progression" payload (save version 7).
+//! Progression that survives a restart, keyed by player uid: the civilian delivery career pay, police
+//! rank and duty seconds, the benefit cooldown, licences, and quest turn-ins. Saved as the
+//! "progression" payload (save version 7).
 //!
 //! OWNERS. Career, police, and benefit state stay with their owners (LF_CivilianJob,
 //! LF_PlayerAccount, LF_UnemploymentBenefit); ExportAll reads them and ApplyAll writes them back.
-//! Level, licences, and quest turn-ins live on the character entity, which is replaced on every
-//! spawn, so their owners write through to this store (Note*) and LF_SpawnLogic applies the
-//! record to each new body (ApplyToCharacter). Death keeps progression; only carried items drop.
+//! Licences and quest turn-ins live on the character entity, which is replaced on every spawn, so
+//! their owners write through to this store (Note*) and LF_SpawnLogic applies the record to each
+//! new body (ApplyToCharacter). Death keeps progression; only carried items drop.
+//!
+//! JOB LEVELS (#749). Per-job XP is LF_JobLevels and its own "joblevels" payload (save version 28).
+//! The record keeps its pre-#749 layout (positional save): ExportAll mirrors CIVILIAN XP into the
+//! old single-level fields and DELIVERY XP into the career fields, and ApplyAll seeds LF_JobLevels
+//! from them (LF_JobLevels.SeedFromLegacy). A version 7-27 save has nothing else, so that seed is
+//! its migration; a version 28 save then replaces it with its "joblevels" rows.
 //!
 //! TOLERANCE. A licence name the enum no longer has is skipped and logged. A quest id no giver
 //! defines is kept. A rank above the ladder clamps to the top usable rank.
@@ -86,21 +92,6 @@ class LF_Progression
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Write-through from LF_PlayerLevelComponent.
-	static void NoteLevel(string playerUid, int level, float experience, int skillPoints, int totalSkillPoints)
-	{
-		if (playerUid.IsEmpty())
-			return;
-
-		LF_ProgressionRecord record = Entry(playerUid);
-		record.m_bHasLevel = true;
-		record.m_iPlayerLevel = level;
-		record.m_fPlayerExperience = experience;
-		record.m_iSkillPoints = skillPoints;
-		record.m_iTotalSkillPoints = totalSkillPoints;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Write-through from LF_LicenseManagerComponent.UnlockLicense: the whole unlocked list.
 	static void NoteLicenses(string playerUid, notnull array<LF_ELicenseType> licenses)
 	{
@@ -151,6 +142,7 @@ class LF_Progression
 
 		LF_CivilianJob.ForgetCareer(playerUid);
 		LF_UnemploymentBenefit.ForgetCollection(playerUid);
+		LF_JobLevels.Forget(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -175,6 +167,7 @@ class LF_Progression
 		array<string> owners = {};
 		LF_CivilianJob.CollectCareerUids(owners);
 		LF_UnemploymentBenefit.CollectLedgerUids(owners);
+		LF_JobLevels.CollectUids(owners);
 		foreach (string ownerUid : owners)
 		{
 			AddUid(ownerUid, uids, seen);
@@ -227,11 +220,9 @@ class LF_Progression
 				record = LF_ProgressionRecord.Create(uid);
 
 			if (LF_CivilianJob.HasCareer(uid))
-			{
-				record.m_iCareerLevel = LF_CivilianJob.GetLevel(uid);
-				record.m_fCareerExperience = LF_CivilianJob.GetExperience(uid);
 				record.m_iCareerPaidTotal = LF_CivilianJob.GetPaidTotal(uid);
-			}
+
+			MirrorJobLevels(uid, record);
 
 			LF_CharacterStanding standing;
 			if (accounts)
@@ -259,6 +250,10 @@ class LF_Progression
 		s_mRecords = new map<string, ref LF_ProgressionRecord>();
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 
+		// Job XP from the record's pre-#749 fields; a version 28 save's "joblevels" payload, read
+		// later in the same load, replaces it.
+		int seeded = LF_JobLevels.SeedFromLegacy(records);
+
 		int applied = 0;
 		foreach (LF_ProgressionRecord record : records)
 		{
@@ -271,7 +266,7 @@ class LF_Progression
 			string uid = record.m_sPlayerUid;
 			s_mRecords.Set(uid, record.Copy());
 
-			LF_CivilianJob.RestoreCareer(uid, record.m_iCareerLevel, record.m_fCareerExperience, record.m_iCareerPaidTotal);
+			LF_CivilianJob.RestoreCareer(uid, record.m_iCareerPaidTotal);
 			LF_UnemploymentBenefit.RestoreElapsedSinceCollection(uid, record.m_fBenefitElapsedSeconds, now);
 
 			// The standing of the character saved under this key (#331), not the account's active one.
@@ -294,7 +289,7 @@ class LF_Progression
 		}
 
 		int bodies = ApplyToLivePlayers();
-		LF_Debug.Info("Progression", string.Format("applied %1 progression record(s), %2 live body(ies)", applied, bodies));
+		LF_Debug.Info("Progression", string.Format("applied %1 progression record(s), %2 live body(ies), job xp seeded for %3 character(s)", applied, bodies, seeded));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -320,7 +315,8 @@ class LF_Progression
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gives a new body the player's saved level, licences, and turned-in quests.
+	//! Gives a new body the player's saved licences and turned-in quests. Job levels are keyed by the
+	//! character, not the body (LF_JobLevels), so a new body has them already.
 	//! \return true when the store had a record for the player.
 	static bool ApplyToCharacter(string playerUid, IEntity character)
 	{
@@ -330,18 +326,6 @@ class LF_Progression
 		LF_ProgressionRecord record = Get(playerUid);
 		if (!record)
 			return false;
-
-		if (record.m_bHasLevel)
-		{
-			LF_PlayerLevelComponent level = LF_Component<LF_PlayerLevelComponent>.Find(character);
-			if (level)
-			{
-				level.SetLevel(record.m_iPlayerLevel);
-				level.SetExperience(record.m_fPlayerExperience);
-				level.SetSkillPoints(record.m_iSkillPoints);
-				level.SetTotalSkillPointsEarned(record.m_iTotalSkillPoints);
-			}
-		}
 
 		if (!record.m_aLicenses.IsEmpty())
 		{
@@ -362,7 +346,7 @@ class LF_Progression
 				quests = tracker.RestoreTurnedIn(record.m_aTurnedInQuests);
 		}
 
-		LF_Debug.Info("Progression", string.Format("progression applied to %1: level %2, %3 licence(s), %4 quest(s) restored", playerUid, record.m_iPlayerLevel, record.m_aLicenses.Count(), quests));
+		LF_Debug.Info("Progression", string.Format("progression applied to %1: %2 licence(s), %3 quest(s) restored", playerUid, record.m_aLicenses.Count(), quests));
 		return true;
 	}
 
@@ -390,6 +374,27 @@ class LF_Progression
 		}
 
 		return bodies;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Writes the character's CIVILIAN and DELIVERY XP into the record's pre-#749 fields, in the old
+	//! curves (LF_JobLevels.XpToLegacyLevel / XpToLegacyCareer), so the record means what a version
+	//! 7-27 build wrote. Skill points no longer exist and are written as 0.
+	protected static void MirrorJobLevels(string uid, notnull LF_ProgressionRecord record)
+	{
+		int civilian = LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_CIVILIAN);
+		record.m_bHasLevel = civilian > 0;
+		int level;
+		float experience;
+		LF_JobLevels.XpToLegacyLevel(civilian, level, experience);
+		record.m_iPlayerLevel = level;
+		record.m_fPlayerExperience = experience;
+		record.m_iSkillPoints = 0;
+		record.m_iTotalSkillPoints = 0;
+
+		LF_JobLevels.XpToLegacyCareer(LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_DELIVERY), level, experience);
+		record.m_iCareerLevel = level;
+		record.m_fCareerExperience = experience;
 	}
 
 	//------------------------------------------------------------------------------------------------
