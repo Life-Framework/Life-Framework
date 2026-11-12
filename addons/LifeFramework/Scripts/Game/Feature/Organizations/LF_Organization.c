@@ -5,6 +5,9 @@
 //! second currency and not a personal ATM balance. Cash enters and leaves only
 //! through LF_OrganizationPlayer, which moves MoneyStack.
 //!
+//! Ranks (#750a) are a ladder: position 0 is the top (the founder), and a rank carries a rights
+//! bitmask (LF_OrgRights). Rank changes and removals only go down the ladder.
+//!
 //! Identity is PersistenceIdUtils, never an EntityID. One membership per character.
 //! Load replaces the cache, so ApplyAll is idempotent on a live session.
 //------------------------------------------------------------------------------------------------
@@ -15,22 +18,79 @@ enum LF_EOrganizationUpgrade
 	PARKED_VEHICLE
 }
 
+//------------------------------------------------------------------------------------------------
+//! The value is the bit index in a rank's rights mask. Append only: bits 0-3 are the four bools
+//! saved before #750a, and a saved mask keeps its meaning only while no value moves.
 enum LF_EOrganizationPermission
 {
 	WITHDRAW,
 	INVITE,
 	KICK,
-	BUY_UPGRADE
+	BUY_UPGRADE,
+	//! Promote and demote members below you on the ladder.
+	MANAGE_RANKS,
+	//! Reserved for the war record (#750b).
+	DECLARE_WAR,
+	//! Reserved: the hideout stash still opens for every member.
+	USE_STASH,
+	//! Reserved for territory (#751).
+	MANAGE_TERRITORY,
+	//! Reserved: spending the fund on something other than an upgrade.
+	SPEND_FUND
 }
 
 //------------------------------------------------------------------------------------------------
+//! The core default ladder. A new organization gets all three rungs; a version 1 organization
+//! (founder and member only) gets the officer rung on load.
 class LF_OrganizationConfig
 {
 	static const string RANK_FOUNDER = "founder";
+	static const string RANK_OFFICER = "officer";
 	static const string RANK_MEMBER = "member";
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[out] ids Default rank ids, top first.
+	static void DefaultLadder(notnull array<string> ids)
+	{
+		ids.Clear();
+		ids.Insert(RANK_FOUNDER);
+		ids.Insert(RANK_OFFICER);
+		ids.Insert(RANK_MEMBER);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Display name (a localization key) of a default rank, or empty for any other id.
+	static string DefaultName(string rankId)
+	{
+		if (rankId == RANK_FOUNDER)
+			return "#LF-Org_RankFounder";
+		if (rankId == RANK_OFFICER)
+			return "#LF-Org_RankOfficer";
+		if (rankId == RANK_MEMBER)
+			return "#LF-Org_RankMember";
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int DefaultRights(string rankId)
+	{
+		if (rankId == RANK_FOUNDER)
+			return LF_OrgRights.ALL;
+		if (rankId == RANK_OFFICER)
+			return LF_OrgRights.Bit(LF_EOrganizationPermission.INVITE) | LF_OrgRights.Bit(LF_EOrganizationPermission.KICK) | LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
+		if (rankId == RANK_MEMBER)
+			return LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
+
+		return 0;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
+//! The rank as the "organizations" payload has saved it since save version 2. Field order is the
+//! binary layout and must not change: a pre-#750a save is read through this class. The four bools
+//! are bits 0-3 of the rank's rights, written so an older build still reads a newer save; the
+//! whole mask and the ladder order ride the "orgranks" payload (LF_OrganizationRankRow).
 class LF_OrganizationRankRecord
 {
 	string m_sId;
@@ -55,6 +115,33 @@ class LF_OrganizationRankRecord
 }
 
 //------------------------------------------------------------------------------------------------
+//! One rank's ladder position and full rights mask ("orgranks" payload, save version 27, #750a).
+//! Keyed by organization id and rank id, both stable strings. Field order is the binary layout.
+//! Version is first.
+class LF_OrganizationRankRow
+{
+	static const int VERSION = 1;
+
+	int m_iVersion;
+	string m_sOrgId;
+	string m_sRankId;
+	int m_iOrder;
+	int m_iRights;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_OrganizationRankRow Create(string orgId, string rankId, int order, int rights)
+	{
+		LF_OrganizationRankRow row();
+		row.m_iVersion = VERSION;
+		row.m_sOrgId = orgId;
+		row.m_sRankId = rankId;
+		row.m_iOrder = order;
+		row.m_iRights = rights;
+		return row;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class LF_OrganizationMemberRecord
 {
 	string m_sCharacterId;
@@ -71,10 +158,12 @@ class LF_OrganizationMemberRecord
 }
 
 //------------------------------------------------------------------------------------------------
-//! Field order is the binary layout. Version is first.
+//! Field order is the binary layout. Version is first. Version 1: written before #750a, when a rank
+//! was its four bools; load back-fills the rights mask and adds the officer rung. Version 2: the
+//! same layout, and the save also carries the "orgranks" rows that hold the whole mask and order.
 class LF_OrganizationRecord
 {
-	static const int VERSION = 1;
+	static const int VERSION = 2;
 
 	int m_iVersion;
 	string m_sId;
@@ -108,10 +197,9 @@ class LF_OrganizationRank : Managed
 {
 	protected string m_sId;
 	protected string m_sName;
-	protected bool m_bCanWithdraw;
-	protected bool m_bCanInvite;
-	protected bool m_bCanKick;
-	protected bool m_bCanBuyUpgrade;
+	//! Ladder position: 0 is the top. LF_Organization keeps it equal to the index in its ladder.
+	protected int m_iOrder;
+	protected int m_iRights;
 
 	//------------------------------------------------------------------------------------------------
 	string GetId()
@@ -120,51 +208,81 @@ class LF_OrganizationRank : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	string GetName()
+	{
+		return m_sName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetOrder()
+	{
+		return m_iOrder;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetRights()
+	{
+		return m_iRights;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool Allows(LF_EOrganizationPermission permission)
 	{
-		if (permission == LF_EOrganizationPermission.WITHDRAW)
-			return m_bCanWithdraw;
-		if (permission == LF_EOrganizationPermission.INVITE)
-			return m_bCanInvite;
-		if (permission == LF_EOrganizationPermission.KICK)
-			return m_bCanKick;
-		if (permission == LF_EOrganizationPermission.BUY_UPGRADE)
-			return m_bCanBuyUpgrade;
-		return false;
+		return LF_OrgRights.Has(m_iRights, permission);
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void SetOrder(int order)
+	{
+		m_iOrder = order;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetRights(int rights)
+	{
+		m_iRights = LF_OrgRights.Clean(rights);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetName(string name)
+	{
+		m_sName = name;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The positional record: bits 0-3 as the four bools.
 	LF_OrganizationRankRecord ToRecord()
 	{
-		return LF_OrganizationRankRecord.Create(m_sId, m_sName, m_bCanWithdraw, m_bCanInvite, m_bCanKick, m_bCanBuyUpgrade);
+		return LF_OrganizationRankRecord.Create(m_sId, m_sName, Allows(LF_EOrganizationPermission.WITHDRAW), Allows(LF_EOrganizationPermission.INVITE),
+			Allows(LF_EOrganizationPermission.KICK), Allows(LF_EOrganizationPermission.BUY_UPGRADE));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static LF_OrganizationRank FromRecord(LF_OrganizationRankRecord record)
+	LF_OrganizationRankRow ToRow(string orgId)
+	{
+		return LF_OrganizationRankRow.Create(orgId, m_sId, m_iOrder, m_iRights);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rank from its record alone: the four bools as a mask (LF_OrgRights.MigrateLegacy). A save
+	//! with "orgranks" rows then sets the whole mask and the order (LF_Organization.ApplyRankRow).
+	static LF_OrganizationRank FromRecord(LF_OrganizationRankRecord record, int order)
 	{
 		if (!record)
 			return null;
 
-		LF_OrganizationRank rank();
-		rank.m_sId = record.m_sId;
-		rank.m_sName = record.m_sName;
-		rank.m_bCanWithdraw = record.m_bCanWithdraw;
-		rank.m_bCanInvite = record.m_bCanInvite;
-		rank.m_bCanKick = record.m_bCanKick;
-		rank.m_bCanBuyUpgrade = record.m_bCanBuyUpgrade;
-		return rank;
+		int rights = LF_OrgRights.MigrateLegacy(record.m_sId, record.m_bCanWithdraw, record.m_bCanInvite, record.m_bCanKick, record.m_bCanBuyUpgrade);
+		return Create(record.m_sId, record.m_sName, order, rights);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static LF_OrganizationRank Create(string id, string name, bool canWithdraw, bool canInvite, bool canKick, bool canBuyUpgrade)
+	static LF_OrganizationRank Create(string id, string name, int order, int rights)
 	{
 		LF_OrganizationRank rank();
 		rank.m_sId = id;
 		rank.m_sName = name;
-		rank.m_bCanWithdraw = canWithdraw;
-		rank.m_bCanInvite = canInvite;
-		rank.m_bCanKick = canKick;
-		rank.m_bCanBuyUpgrade = canBuyUpgrade;
+		rank.m_iOrder = order;
+		rank.m_iRights = LF_OrgRights.Clean(rights);
 		return rank;
 	}
 }
@@ -185,6 +303,12 @@ class LF_OrganizationMember : Managed
 	string GetRankId()
 	{
 		return m_sRankId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetRankId(string rankId)
+	{
+		m_sRankId = rankId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -345,6 +469,193 @@ class LF_Organization : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The rights mask of a character's rank, 0 for a non-member.
+	int RightsOf(string characterId)
+	{
+		LF_OrganizationRank rank = FindRank(RankIdOf(characterId));
+		if (!rank)
+			return 0;
+
+		return rank.GetRights();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ladder position of a character's rank (0 is the top), or -1 for a non-member or a member whose
+	//! rank is not in the table.
+	int RankPosition(string characterId)
+	{
+		LF_OrganizationRank rank = FindRank(RankIdOf(characterId));
+		if (!rank)
+			return -1;
+
+		return m_aRanks.Find(rank);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetRankCount()
+	{
+		return m_aRanks.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[out] outIds Rank ids, top of the ladder first.
+	void GetRankIds(notnull array<string> outIds)
+	{
+		outIds.Clear();
+		foreach (LF_OrganizationRank rank : m_aRanks)
+		{
+			outIds.Insert(rank.GetId());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rank id at a ladder position, or empty.
+	string RankIdAt(int position)
+	{
+		if (position < 0 || position >= m_aRanks.Count())
+			return string.Empty;
+
+		return m_aRanks.Get(position).GetId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rights mask of a rank, or 0 when the organization has no such rank.
+	int GetRankRights(string rankId)
+	{
+		LF_OrganizationRank rank = FindRank(rankId);
+		if (!rank)
+			return 0;
+
+		return rank.GetRights();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Display name of a character's rank (a localization key for the default ranks), or empty.
+	string GetRankName(string characterId)
+	{
+		LF_OrganizationRank rank = FindRank(RankIdOf(characterId));
+		if (!rank)
+			return string.Empty;
+
+		return rank.GetName();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when actor's rank is strictly above target's. Equal ranks outrank nobody.
+	bool Outranks(string actorCharacterId, string targetCharacterId)
+	{
+		int actor = RankPosition(actorCharacterId);
+		int target = RankPosition(targetCharacterId);
+		if (actor < 0 || target < 0)
+			return false;
+
+		return actor < target;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rung a new member joins on: the bottom of the ladder.
+	string EntryRankId()
+	{
+		if (m_aRanks.IsEmpty())
+			return string.Empty;
+
+		return m_aRanks.Get(m_aRanks.Count() - 1).GetId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts a member on another rank of this organization. Rights are the manager's check.
+	bool SetMemberRank(string characterId, string rankId)
+	{
+		if (!FindRank(rankId))
+			return false;
+
+		foreach (LF_OrganizationMember member : m_aMembers)
+		{
+			if (member && member.GetCharacterId() == characterId)
+			{
+				member.SetRankId(rankId);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Load: one "orgranks" row sets a rank's whole rights mask and its order. Call SortLadder after
+	//! the last row. \return false when this organization has no such rank.
+	bool ApplyRankRow(notnull LF_OrganizationRankRow row)
+	{
+		LF_OrganizationRank rank = FindRank(row.m_sRankId);
+		if (!rank)
+			return false;
+
+		rank.SetOrder(row.m_iOrder);
+		rank.SetRights(row.m_iRights);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sorts the ranks by order (stable, so equal orders keep their saved sequence) and renumbers
+	//! them 0..n-1, so a rank's order is always its ladder position.
+	void SortLadder()
+	{
+		for (int i = 1; i < m_aRanks.Count(); i++)
+		{
+			int j = i;
+			while (j > 0 && m_aRanks.Get(j - 1).GetOrder() > m_aRanks.Get(j).GetOrder())
+			{
+				m_aRanks.SwapItems(j - 1, j);
+				j--;
+			}
+		}
+
+		for (int position = 0; position < m_aRanks.Count(); position++)
+		{
+			m_aRanks.Get(position).SetOrder(position);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A version 1 organization had a founder and a member rank, each four bools. FromRecord already
+	//! turned the bools into masks (LF_OrgRights.MigrateLegacy); this adds the default rungs it lacks
+	//! (the officer), names the default ranks by their localization key and orders the ladder
+	//! founder, officer, member, then any other rank in its saved sequence. Members keep their rank.
+	//! \return The number of rungs added.
+	int MigrateLegacyLadder()
+	{
+		array<string> ladder = {};
+		LF_OrganizationConfig.DefaultLadder(ladder);
+		int added = 0;
+		foreach (string rankId : ladder)
+		{
+			if (FindRank(rankId))
+				continue;
+
+			m_aRanks.Insert(LF_OrganizationRank.Create(rankId, LF_OrganizationConfig.DefaultName(rankId), 0, LF_OrganizationConfig.DefaultRights(rankId)));
+			added++;
+		}
+
+		int extra = ladder.Count();
+		foreach (LF_OrganizationRank rank : m_aRanks)
+		{
+			int position = ladder.Find(rank.GetId());
+			if (position < 0)
+			{
+				rank.SetOrder(extra);
+				extra++;
+				continue;
+			}
+
+			rank.SetOrder(position);
+			rank.SetName(LF_OrganizationConfig.DefaultName(rank.GetId()));
+		}
+
+		SortLadder();
+		return added;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool AddMember(string characterId, string rankId)
 	{
 		if (characterId.IsEmpty() || rankId.IsEmpty())
@@ -419,10 +730,26 @@ class LF_Organization : Managed
 		org.m_iFund = 0;
 		org.m_aRanks = {};
 		org.m_aMembers = {};
-		org.m_aRanks.Insert(LF_OrganizationRank.Create(LF_OrganizationConfig.RANK_FOUNDER, "Founder", true, true, true, true));
-		org.m_aRanks.Insert(LF_OrganizationRank.Create(LF_OrganizationConfig.RANK_MEMBER, "Member", false, false, false, false));
+		array<string> ladder = {};
+		LF_OrganizationConfig.DefaultLadder(ladder);
+		foreach (int position, string rankId : ladder)
+		{
+			org.m_aRanks.Insert(LF_OrganizationRank.Create(rankId, LF_OrganizationConfig.DefaultName(rankId), position, LF_OrganizationConfig.DefaultRights(rankId)));
+		}
+
 		org.AddMember(founderCharacterId, LF_OrganizationConfig.RANK_FOUNDER);
 		return org;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[out] outRows One "orgranks" row per rank, top first.
+	void ExportRankRows(notnull array<ref LF_OrganizationRankRow> outRows)
+	{
+		foreach (LF_OrganizationRank rank : m_aRanks)
+		{
+			if (rank)
+				outRows.Insert(rank.ToRow(m_sId));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -441,13 +768,21 @@ class LF_Organization : Managed
 		org.m_bProcessingSlot = record.m_bProcessingSlot;
 		org.m_bParkedVehicle = record.m_bParkedVehicle;
 
+		// The saved sequence is the ladder (top first) until "orgranks" rows say otherwise.
 		if (record.m_aRanks)
 		{
 			foreach (LF_OrganizationRankRecord rankRecord : record.m_aRanks)
 			{
-				LF_OrganizationRank rank = LF_OrganizationRank.FromRecord(rankRecord);
-				if (rank && !rank.GetId().IsEmpty())
-					org.m_aRanks.Insert(rank);
+				LF_OrganizationRank rank = LF_OrganizationRank.FromRecord(rankRecord, org.m_aRanks.Count());
+				if (!rank || rank.GetId().IsEmpty())
+					continue;
+				if (org.FindRank(rank.GetId()))
+				{
+					LF_Debug.Warn("Organizations", string.Format("load dropped a second rank %1 in %2", rank.GetId(), record.m_sId));
+					continue;
+				}
+
+				org.m_aRanks.Insert(rank);
 			}
 		}
 
@@ -587,12 +922,34 @@ class LF_OrganizationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The "orgranks" payload: every rank's whole rights mask and ladder order.
+	static array<ref LF_OrganizationRankRow> ExportRanks()
+	{
+		array<ref LF_OrganizationRankRow> rows = new array<ref LF_OrganizationRankRow>();
+		if (!s_Instance)
+			return rows;
+
+		foreach (string orgId, LF_Organization org : s_Instance.m_mOrganizations)
+		{
+			if (org)
+				org.ExportRankRows(rows);
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces every organization. A rank's rights start from its record's four bools
+	//! (LF_OrgRights.MigrateLegacy); a version 1 record also gets the default rungs it lacks. A save
+	//! from version 27 on then sets the whole masks and the order through ApplyRanks.
 	static void ApplyAll(notnull array<ref LF_OrganizationRecord> records)
 	{
 		LF_OrganizationManager instance = GetInstance();
 		instance.m_mOrganizations.Clear();
 		instance.m_mMembership.Clear();
 
+		int migrated = 0;
+		int rungs = 0;
 		foreach (LF_OrganizationRecord record : records)
 		{
 			if (!record)
@@ -607,9 +964,65 @@ class LF_OrganizationManager : Managed
 			if (!org)
 				continue;
 
+			if (record.m_iVersion < 2)
+			{
+				rungs += org.MigrateLegacyLadder();
+				migrated++;
+			}
+
 			instance.m_mOrganizations.Set(org.GetId(), org);
 			instance.IndexMembers(org);
 		}
+
+		if (migrated > 0)
+			LF_Debug.Info("Organizations", string.Format("load migrated %1 organization(s) from record version 1: rank bools became rights masks, %2 default rung(s) added, members kept their rank", migrated, rungs));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets each saved rank's rights mask and order. Runs after ApplyAll in the same load, so it
+	//! sets values and never adds: a second pass gives the same ladder. A row whose organization or
+	//! rank is gone is dropped with a warning; a rank with no row keeps the mask from its record.
+	static void ApplyRanks(notnull array<ref LF_OrganizationRankRow> rows)
+	{
+		LF_OrganizationManager instance = GetInstance();
+		set<string> touched = new set<string>();
+		int applied = 0;
+		int dropped = 0;
+		foreach (LF_OrganizationRankRow row : rows)
+		{
+			if (!row || row.m_iVersion < 1 || row.m_sOrgId.IsEmpty() || row.m_sRankId.IsEmpty())
+			{
+				LF_Debug.Error("Organizations", "rank load skipped a row with no version, organization or rank");
+				dropped++;
+				continue;
+			}
+
+			LF_Organization org = instance.m_mOrganizations.Get(row.m_sOrgId);
+			if (!org)
+			{
+				LF_Debug.Warn("Organizations", string.Format("rank load dropped %1: organization %2 is gone", row.m_sRankId, row.m_sOrgId));
+				dropped++;
+				continue;
+			}
+			if (!org.ApplyRankRow(row))
+			{
+				LF_Debug.Warn("Organizations", string.Format("rank load dropped %1: %2 has no such rank", row.m_sRankId, row.m_sOrgId));
+				dropped++;
+				continue;
+			}
+
+			touched.Insert(row.m_sOrgId);
+			applied++;
+		}
+
+		foreach (string orgId : touched)
+		{
+			LF_Organization sorted = instance.m_mOrganizations.Get(orgId);
+			if (sorted)
+				sorted.SortLadder();
+		}
+
+		LF_Debug.Info("Organizations", string.Format("rank load applied %1 row(s) to %2 organization(s), dropped %3", applied, touched.Count(), dropped));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -721,7 +1134,7 @@ class LF_OrganizationManager : Managed
 			LF_Debug.Error("Organizations", string.Format("invite refused: %1 already belongs to an organization", targetCharacterId));
 			return false;
 		}
-		if (!org.AddMember(targetCharacterId, RANK_MEMBER))
+		if (!org.AddMember(targetCharacterId, org.EntryRankId()))
 		{
 			LF_Debug.Error("Organizations", string.Format("invite refused: %1 was not added", targetCharacterId));
 			return false;
@@ -764,6 +1177,11 @@ class LF_OrganizationManager : Managed
 			LF_Debug.Error("Organizations", "kick refused: the founder stays");
 			return false;
 		}
+		if (!org.Outranks(actorCharacterId, targetCharacterId))
+		{
+			LF_Debug.Error("Organizations", string.Format("kick refused: %1 does not outrank %2", actorCharacterId, targetCharacterId));
+			return false;
+		}
 		if (!org.RemoveMember(targetCharacterId))
 		{
 			LF_Debug.Error("Organizations", string.Format("kick refused: %1 was not removed", targetCharacterId));
@@ -772,6 +1190,78 @@ class LF_OrganizationManager : Managed
 
 		GetInstance().m_mMembership.Remove(targetCharacterId);
 		LF_Debug.Log("Organizations", string.Format("kick org=%1 member=%2", orgId, targetCharacterId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One rung up for a member below the actor. The actor needs MANAGE_RANKS and must stay above the
+	//! new rank: nobody promotes to their own rung or past it, so the founder rung is never given.
+	static bool Promote(string orgId, string actorCharacterId, string targetCharacterId)
+	{
+		return MoveRank(orgId, actorCharacterId, targetCharacterId, -1, "promote");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One rung down for a member below the actor. The actor needs MANAGE_RANKS.
+	static bool Demote(string orgId, string actorCharacterId, string targetCharacterId)
+	{
+		return MoveRank(orgId, actorCharacterId, targetCharacterId, 1, "demote");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[in] step -1 one rung up, 1 one rung down.
+	protected static bool MoveRank(string orgId, string actorCharacterId, string targetCharacterId, int step, string verb)
+	{
+		if (!Server())
+			return false;
+
+		LF_Organization org = Get(orgId);
+		if (!org)
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: no organization %2", verb, orgId));
+			return false;
+		}
+		if (actorCharacterId.IsEmpty() || actorCharacterId == targetCharacterId)
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: %2 cannot change their own rank", verb, actorCharacterId));
+			return false;
+		}
+		if (!org.IsMember(targetCharacterId))
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: %2 is not a member", verb, targetCharacterId));
+			return false;
+		}
+		if (!org.Allows(actorCharacterId, LF_EOrganizationPermission.MANAGE_RANKS))
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: %2 lacks the manage-ranks right", verb, actorCharacterId));
+			return false;
+		}
+		if (!org.Outranks(actorCharacterId, targetCharacterId))
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: %2 does not outrank %3", verb, actorCharacterId, targetCharacterId));
+			return false;
+		}
+
+		int position = org.RankPosition(targetCharacterId) + step;
+		if (position <= org.RankPosition(actorCharacterId))
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: %2 would reach the rank of %3", verb, targetCharacterId, actorCharacterId));
+			return false;
+		}
+
+		string rankId = org.RankIdAt(position);
+		if (rankId.IsEmpty())
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: %2 is already on the last rung", verb, targetCharacterId));
+			return false;
+		}
+		if (!org.SetMemberRank(targetCharacterId, rankId))
+		{
+			LF_Debug.Error("Organizations", string.Format("%1 refused: %2 was not moved", verb, targetCharacterId));
+			return false;
+		}
+
+		LF_Debug.Info("Organizations", string.Format("%1 org=%2 actor=%3 member=%4 rank=%5 rights=%6", verb, orgId, actorCharacterId, targetCharacterId, rankId, LF_OrgRights.Describe(org.RightsOf(targetCharacterId))));
 		return true;
 	}
 

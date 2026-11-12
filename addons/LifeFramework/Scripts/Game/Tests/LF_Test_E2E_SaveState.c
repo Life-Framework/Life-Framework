@@ -38,6 +38,12 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string STREET_ID = "e2e-street-car";
 	//! Playtime (#692, save version 26): 90 min on police duty in two stretches and 30 min civilian.
 	static const string PLAYTIME_UID = "e2e-playtime-account";
+	//! Organization ranks (#750a, "orgranks" payload, save version 27): a founder, an officer
+	//! promoted face to face, and a member, with masks the four saved bools cannot hold.
+	static const string ORG_NAME = "E2E Ladder";
+	static const string ORG_FOUNDER = "e2e-org-founder";
+	static const string ORG_OFFICER = "e2e-org-officer";
+	static const string ORG_MEMBER = "e2e-org-member";
 	static const ResourceName JUICE_PREFAB = "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et";
 
 	//------------------------------------------------------------------------------------------------
@@ -267,11 +273,37 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_Playtime.Credit(PLAYTIME_UID, LF_Playtime.JOB_CIVILIAN, 1800);
 		ctx.Equal(7200, LF_Playtime.Total(PLAYTIME_UID), "e2e playtime account has 2 h before the save");
 
+		SeedOrgLadder(ctx);
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
 		ctx.True(manager.IsSaveInProgress(), "SaveGame() accepts the manual save request");
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #750a: the founder promotes the officer through the server path; the pack-style masks (the
+	//! officer may manage territory, the member may not open the stash) only the "orgranks" rows hold.
+	protected void SeedOrgLadder(LF_TestContext ctx)
+	{
+		LF_Organization org = LF_OrganizationManager.Create(ORG_FOUNDER, ORG_NAME);
+		ctx.NotNull(org, "e2e organization founded before the save");
+		if (!org)
+			return;
+
+		string orgId = org.GetId();
+		ctx.True(LF_OrganizationManager.Invite(orgId, ORG_FOUNDER, ORG_OFFICER), "e2e officer-to-be joins before the save");
+		ctx.True(LF_OrganizationManager.Invite(orgId, ORG_FOUNDER, ORG_MEMBER), "e2e member joins before the save");
+		ctx.True(LF_OrganizationManager.Promote(orgId, ORG_FOUNDER, ORG_OFFICER), "e2e founder promotes the officer before the save");
+
+		int officerRights = LF_OrganizationConfig.DefaultRights(LF_OrganizationConfig.RANK_OFFICER) | LF_OrgRights.Bit(LF_EOrganizationPermission.MANAGE_TERRITORY);
+		array<ref LF_OrganizationRankRow> rows = {};
+		rows.Insert(LF_OrganizationRankRow.Create(orgId, LF_OrganizationConfig.RANK_OFFICER, 1, officerRights));
+		rows.Insert(LF_OrganizationRankRow.Create(orgId, LF_OrganizationConfig.RANK_MEMBER, 2, 0));
+		LF_OrganizationManager.ApplyRanks(rows);
+		ctx.True(org.Allows(ORG_OFFICER, LF_EOrganizationPermission.MANAGE_TERRITORY), "e2e officer may manage territory before the save");
+		ctx.False(org.Allows(ORG_MEMBER, LF_EOrganizationPermission.USE_STASH), "e2e member may not use the stash before the save");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -394,6 +426,43 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(7200, LF_Playtime.Total(uid), "e2e the playtime total is 2 h after the restart");
 		LF_Debug.Info(LF_Playtime.FEATURE, string.Format("e2e restart: %1 has %2 s (POLICE %3 s, CIVILIAN %4 s)", uid, LF_Playtime.Total(uid), LF_Playtime.JobSeconds(uid, "POLICE"), LF_Playtime.JobSeconds(uid, LF_Playtime.JOB_CIVILIAN)));
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #750a after the restart: the three members on their rungs, rights checked through the
+	//! manager. A version 27 save brings the whole masks back from "orgranks"; a version 23 save
+	//! (--legacy-save) has record version 1 organizations, so the masks come from the four bools.
+	protected void VerifyOrgLadder(LF_TestContext ctx)
+	{
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(LF_Test_E2E_SaveStateWrite.ORG_FOUNDER);
+		ctx.NotNull(org, "e2e organization is back after the restart");
+		if (!org)
+			return;
+
+		string founder = LF_Test_E2E_SaveStateWrite.ORG_FOUNDER;
+		string officer = LF_Test_E2E_SaveStateWrite.ORG_OFFICER;
+		string member = LF_Test_E2E_SaveStateWrite.ORG_MEMBER;
+		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.ORG_NAME, org.GetName(), "e2e organization keeps its name");
+		ctx.Equal(3, org.GetMemberCount(), "e2e organization keeps its three members");
+		ctx.Equal(3, org.GetRankCount(), "e2e organization keeps its three rungs");
+		ctx.EqualStr(LF_OrganizationConfig.RANK_FOUNDER, org.GetRankId(founder), "e2e founder is still founder");
+		ctx.EqualStr(LF_OrganizationConfig.RANK_OFFICER, org.GetRankId(officer), "e2e promoted officer is still officer");
+		ctx.EqualStr(LF_OrganizationConfig.RANK_MEMBER, org.GetRankId(member), "e2e member is still member");
+		ctx.Equal(0, org.RankPosition(founder), "e2e founder tops the ladder");
+		ctx.Equal(1, org.RankPosition(officer), "e2e officer is the second rung");
+		ctx.Equal(2, org.RankPosition(member), "e2e member is the bottom rung");
+		ctx.Equal(LF_OrgRights.ALL, org.RightsOf(founder), "e2e founder holds every right");
+		ctx.True(org.Allows(officer, LF_EOrganizationPermission.INVITE), "e2e officer may still invite");
+		ctx.False(org.Allows(officer, LF_EOrganizationPermission.WITHDRAW), "e2e officer still may not withdraw");
+		ctx.False(org.Allows(officer, LF_EOrganizationPermission.MANAGE_RANKS), "e2e officer still may not manage ranks");
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.False(org.Allows(officer, LF_EOrganizationPermission.MANAGE_TERRITORY), "e2e the version 23 save has no mask past the four bools");
+		ctx.True(org.Allows(member, LF_EOrganizationPermission.USE_STASH), "e2e the version 23 member gets the stash every member had");
+#else
+		ctx.True(org.Allows(officer, LF_EOrganizationPermission.MANAGE_TERRITORY), "e2e officer keeps the territory right only orgranks holds");
+		ctx.False(org.Allows(member, LF_EOrganizationPermission.USE_STASH), "e2e member stays without the stash right");
+#endif
+		LF_Debug.Info("Organizations", string.Format("e2e restart: %1 founder=%2 officer=%3 member=%4", org.GetName(), LF_OrgRights.Describe(org.RightsOf(founder)), LF_OrgRights.Describe(org.RightsOf(officer)), LF_OrgRights.Describe(org.RightsOf(member))));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -575,6 +644,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 		VerifyCharacterSlots(ctx);
 		VerifyPlaytime(ctx);
+		VerifyOrgLadder(ctx);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

@@ -16,6 +16,8 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 	//! Every machine, once per world (LF_GameModeRoleplay.OnGameStart). Idempotent.
 	static void Register()
 	{
+		// The rank entries (#750a) share this registration so the game mode keeps one call.
+		LF_OrgRankRole.Register();
 		if (LF_OrgInviteRole.Cast(LF_PlayerInteraction.GetRole(SLOT)))
 			return;
 

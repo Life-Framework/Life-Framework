@@ -1721,12 +1721,33 @@
   held offer; RplProps written on spawn, on change, and every 10 s); the
   server decides from the registry. Two-client proof:
   `node agent-box/session.mjs org [--shot]`.
+- ✅ (2026-11-12, #750a) Ranks are a ladder with a rights bitmask
+  (`LF_OrgRights`; bit = `LF_EOrganizationPermission`: withdraw, invite, kick,
+  buy upgrade, manage ranks, and the reserved declare war, use stash, manage
+  territory, spend fund). A new organization gets founder (every right), officer
+  (invite, kick, stash) and member (stash); an invite joins on the bottom rung.
+  Face to face, a member with manage ranks sees "Promote in <org>" on a member
+  whose next rung up is still below them and "Demote in <org>" on one who has a
+  rung below (`org_promote` / `org_demote` slots, `LF_OrgRankRole`); nobody
+  reaches their own rung or the founder's. Kick also needs the actor to outrank
+  the target, so an officer removes members but not another officer. Every move
+  is re-checked on the server (`LF_OrganizationManager.Promote/Demote/Kick`) and
+  logged with the new rights. The ledger shows the rank's own name. The view
+  replicates the ladder position. LOGIC `org/rights`.
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
   clear a live fund. Version 3 appends hideout ownership after these records.
   Version 4 appends owned vehicles after the hideout records. Version 5 appends
   serving jail sentences after the vehicles.
+- ✅ (2026-11-12, #750a) Save version 27 appends `orgranks`: each rank's whole
+  rights mask and ladder order, keyed by organization id and rank id. The
+  `organizations` record layout is unchanged (its rank still saves four bools,
+  bits 0-3 of the mask); the record version is 2. A version 26 or older save has
+  record version 1: load turns the bools into masks (founder every right, any
+  other rank its bools plus the stash), adds the officer rung, and keeps every
+  member on their rank. PERSISTENCE `org/rights-persist`; `wt e2e` carries a
+  founder, a promoted officer and a member across the restart.
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock

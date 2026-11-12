@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
-//! Server -> every client: each player's organization (id, name, rights bits) and the offer they
-//! hold, as plain RplProps on their character. The offer side (interaction menu entry name, the
+//! Server -> every client: each player's organization (id, name, rights bits, ladder position) and
+//! the offer they hold, as plain RplProps on their character. The offer side (interaction menu entry name, the
 //! hideout gate prompt, the ledger's first paint) reads them; the server decides from
 //! LF_OrganizationManager and never from these copies. Same shape as LF_AccountReplication: written
 //! on the server only, bumped only on a change, refreshed on spawn and by the periodic pass, so a
@@ -16,6 +16,8 @@ class LF_OrgReplication
 		string orgId;
 		string orgName;
 		int rights;
+		int position = -1;
+		int ladderSize;
 		string offerName;
 		int offerFrom;
 
@@ -25,6 +27,8 @@ class LF_OrgReplication
 			orgId = org.GetId();
 			orgName = org.GetName();
 			rights = LF_OrgRules.RightsOf(org, characterId);
+			position = org.RankPosition(characterId);
+			ladderSize = org.GetRankCount();
 		}
 
 		LF_OrgOffer offer = LF_OrgInvites.Pending(characterId, LF_OrgInvites.Now());
@@ -38,7 +42,7 @@ class LF_OrgReplication
 			}
 		}
 
-		return LF_OrgView.Create(orgId, orgName, rights, offerName, offerFrom);
+		return LF_OrgView.Create(orgId, orgName, rights, offerName, offerFrom).SetLadder(position, ladderSize);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,14 +139,19 @@ modded class SCR_ChimeraCharacter
 	[RplProp()]
 	protected int m_iLF_OrgOfferFrom;
 
+	//! LF_OrgView.PackLadder: rank position and ladder size (#750a).
+	[RplProp()]
+	protected int m_iLF_OrgLadder;
+
 	//------------------------------------------------------------------------------------------------
 	void LF_SetOrgView(LF_OrgView view)
 	{
 		if (!Replication.IsServer() || !view)
 			return;
 
+		int ladder = view.PackLadder();
 		if (view.m_sOrgId == m_sLF_OrgId && view.m_sOrgName == m_sLF_OrgName && view.m_iRights == m_iLF_OrgRights
-			&& view.m_sOfferOrgName == m_sLF_OrgOffer && view.m_iOfferFromPlayerId == m_iLF_OrgOfferFrom)
+			&& view.m_sOfferOrgName == m_sLF_OrgOffer && view.m_iOfferFromPlayerId == m_iLF_OrgOfferFrom && ladder == m_iLF_OrgLadder)
 			return;
 
 		m_sLF_OrgId = view.m_sOrgId;
@@ -150,12 +159,15 @@ modded class SCR_ChimeraCharacter
 		m_iLF_OrgRights = view.m_iRights;
 		m_sLF_OrgOffer = view.m_sOfferOrgName;
 		m_iLF_OrgOfferFrom = view.m_iOfferFromPlayerId;
+		m_iLF_OrgLadder = ladder;
 		Replication.BumpMe();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	LF_OrgView LF_GetOrgView()
 	{
-		return LF_OrgView.Create(m_sLF_OrgId, m_sLF_OrgName, m_iLF_OrgRights, m_sLF_OrgOffer, m_iLF_OrgOfferFrom);
+		LF_OrgView view = LF_OrgView.Create(m_sLF_OrgId, m_sLF_OrgName, m_iLF_OrgRights, m_sLF_OrgOffer, m_iLF_OrgOfferFrom);
+		view.UnpackLadder(m_iLF_OrgLadder);
+		return view;
 	}
 }

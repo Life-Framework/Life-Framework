@@ -15,11 +15,11 @@ class LF_Test_OrgInviteRole : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		int leaderRights = LF_OrgRules.RIGHT_INVITE | LF_OrgRules.RIGHT_KICK | LF_OrgRules.RIGHT_WITHDRAW | LF_OrgRules.RIGHT_BUY | LF_OrgRules.RIGHT_FOUNDER;
-		LF_OrgView leader = LF_OrgView.Create("org-a", "North Dock", leaderRights, "", 0);
-		LF_OrgView member = LF_OrgView.Create("org-a", "North Dock", 0, "", 0);
+		LF_OrgView leader = LF_OrgView.Create("org-a", "North Dock", leaderRights, "", 0).SetLadder(0, 3);
+		LF_OrgView member = LF_OrgView.Create("org-a", "North Dock", 0, "", 0).SetLadder(2, 3);
 		LF_OrgView stranger = LF_OrgView.Create("", "", 0, "", 0);
 		LF_OrgView invited = LF_OrgView.Create("", "", 0, "North Dock", 7);
-		LF_OrgView rival = LF_OrgView.Create("org-b", "South Dock", leaderRights, "", 0);
+		LF_OrgView rival = LF_OrgView.Create("org-b", "South Dock", leaderRights, "", 0).SetLadder(0, 3);
 
 		ctx.Equal(LF_EOrgRoleMode.INVITE, LF_OrgRules.ModeFor(leader, stranger, 9), "a leader facing a stranger is offered Invite");
 		ctx.Equal(LF_EOrgRoleMode.NONE, LF_OrgRules.ModeFor(member, stranger, 9), "a member without the rank is offered nothing");

@@ -15,6 +15,15 @@ enum LF_EOrgRoleMode
 }
 
 //------------------------------------------------------------------------------------------------
+//! The `org_promote` and `org_demote` entries (#750a): one rung up or down for a member below you.
+enum LF_EOrgRankMode
+{
+	NONE,
+	PROMOTE,
+	DEMOTE
+}
+
+//------------------------------------------------------------------------------------------------
 //! What one character's organization looks like from the offer side. The server fills it from
 //! LF_OrganizationManager; a client reads the copy replicated on the character.
 class LF_OrgView : Managed
@@ -26,6 +35,10 @@ class LF_OrgView : Managed
 	string m_sOfferOrgName;
 	//! Player id of whoever made that offer, or 0.
 	int m_iOfferFromPlayerId;
+	//! Ladder position of this character's rank (0 is the top), or -1 without one.
+	int m_iRankPosition = -1;
+	//! Number of rungs on this character's organization's ladder.
+	int m_iLadderSize;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_OrgView Create(string orgId, string orgName, int rights, string offerOrgName, int offerFromPlayerId)
@@ -40,9 +53,44 @@ class LF_OrgView : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Sets the ladder fields. \return this, so a test can chain it on Create.
+	LF_OrgView SetLadder(int position, int size)
+	{
+		m_iRankPosition = position;
+		m_iLadderSize = size;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ladder fields as one replicated int: size in bits 8-15, position + 1 in bits 0-7.
+	int PackLadder()
+	{
+		return (Math.ClampInt(m_iLadderSize, 0, 255) << 8) | Math.ClampInt(m_iRankPosition + 1, 0, 255);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void UnpackLadder(int packed)
+	{
+		m_iRankPosition = (packed & 255) - 1;
+		m_iLadderSize = (packed >> 8) & 255;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool HasOrg()
 	{
 		return !m_sOrgId.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same organization and strictly higher on its ladder.
+	bool Outranks(LF_OrgView other)
+	{
+		if (!other || !HasOrg() || other.m_sOrgId != m_sOrgId)
+			return false;
+		if (m_iRankPosition < 0 || other.m_iRankPosition < 0)
+			return false;
+
+		return m_iRankPosition < other.m_iRankPosition;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -63,11 +111,14 @@ class LF_OrgRules
 	static const int OFFER_MS = 120000;
 	protected static const string NAME_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -'&.";
 
-	static const int RIGHT_INVITE = 1;
-	static const int RIGHT_KICK = 2;
-	static const int RIGHT_WITHDRAW = 4;
+	//! Replicated rights: the rank's mask (bit = LF_EOrganizationPermission, LF_OrgRights) plus
+	//! RIGHT_FOUNDER, which is view only and never saved.
+	static const int RIGHT_WITHDRAW = 1;
+	static const int RIGHT_INVITE = 2;
+	static const int RIGHT_KICK = 4;
 	static const int RIGHT_BUY = 8;
-	static const int RIGHT_FOUNDER = 16;
+	static const int RIGHT_MANAGE_RANKS = 16;
+	static const int RIGHT_FOUNDER = 65536;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return Empty when the typed name may be registered (uniqueness is the manager's check),
@@ -111,15 +162,7 @@ class LF_OrgRules
 		if (!org || characterId.IsEmpty() || !org.IsMember(characterId))
 			return 0;
 
-		int rights = 0;
-		if (org.Allows(characterId, LF_EOrganizationPermission.INVITE))
-			rights = rights | RIGHT_INVITE;
-		if (org.Allows(characterId, LF_EOrganizationPermission.KICK))
-			rights = rights | RIGHT_KICK;
-		if (org.Allows(characterId, LF_EOrganizationPermission.WITHDRAW))
-			rights = rights | RIGHT_WITHDRAW;
-		if (org.Allows(characterId, LF_EOrganizationPermission.BUY_UPGRADE))
-			rights = rights | RIGHT_BUY;
+		int rights = org.RightsOf(characterId);
 		if (org.GetRankId(characterId) == LF_OrganizationConfig.RANK_FOUNDER)
 			rights = rights | RIGHT_FOUNDER;
 
@@ -152,10 +195,33 @@ class LF_OrgRules
 		if (target.m_sOrgId != user.m_sOrgId)
 			return LF_EOrgRoleMode.NONE;
 
-		if (user.Can(RIGHT_KICK) && !target.Can(RIGHT_FOUNDER))
+		if (user.Can(RIGHT_KICK) && !target.Can(RIGHT_FOUNDER) && user.Outranks(target))
 			return LF_EOrgRoleMode.REMOVE;
 
 		return LF_EOrgRoleMode.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether user may move target one rung (promote: up, else down). The same rule the server
+	//! applies in LF_OrganizationManager.Promote/Demote: the manage-ranks right, target strictly
+	//! below user, and the new rung still below user and on the ladder.
+	static LF_EOrgRankMode RankModeFor(LF_OrgView user, LF_OrgView target, bool promote)
+	{
+		if (!user || !target || !user.Can(RIGHT_MANAGE_RANKS) || !user.Outranks(target))
+			return LF_EOrgRankMode.NONE;
+
+		if (promote)
+		{
+			if (target.m_iRankPosition - 1 > user.m_iRankPosition)
+				return LF_EOrgRankMode.PROMOTE;
+
+			return LF_EOrgRankMode.NONE;
+		}
+
+		if (target.m_iRankPosition + 1 < user.m_iLadderSize)
+			return LF_EOrgRankMode.DEMOTE;
+
+		return LF_EOrgRankMode.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
