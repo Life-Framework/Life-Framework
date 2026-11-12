@@ -320,9 +320,18 @@
   error (known fields still apply), below it logs an info line, a bad one reads
   as 1. No migrations (#303). Tests `config/reject`, `config/unknown-keys`,
   `config/schema-version`.
-- ⚠️ Owner values are server-side: a client's price list shows shipped prices
-  on a dedicated server until #285 streams them. Unknown keys are not warned
-  yet (#279); `schemaVersion` is read but not acted on (#302).
+- ✅ (2026-11-12, #285) Config stream: the server serialises the effective
+  client-relevant values (the `shops` section: defaults, every rule in walk
+  order, extra prefabs) with a format version and a hash. Clients get them on
+  join through the game mode's `RplSave`/`RplLoad` and again through a
+  broadcast RPC when they change; the client's `LF_ShopPricesConfig.ApplyLayers`
+  uses them as its last layer and the catalog re-prices. Another format or
+  schema, a hash mismatch or a bad value logs `LF_Debug.Error` and keeps the
+  client's values. `/configreload` (administrators; dev worlds and harness
+  builds) re-reads `config.json` on a running server and streams the change.
+  Only typed client fields are written; the owner file never leaves the server.
+  Proof verb `config-stream-proof`. Tests `config/stream-roundtrip`,
+  `config/stream-client-only`, `config/stream-reject`.
 
 ## Character & Survival
 
