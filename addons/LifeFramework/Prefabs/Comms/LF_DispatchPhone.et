@@ -1,0 +1,41 @@
+GenericEntity : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
+ ID "51EBC42D1C409AAA"
+ components {
+  LF_PhoneComponent "{EA4455759DFFD17A}" {
+   m_sDispatchService "police"
+  }
+  ActionsManagerComponent "{FE8EF1EFB24FC3DD}" {
+   ActionContexts {
+    UserActionContext "{77CD5505C73552AC}" {
+     ContextName "LF_DispatchPhone"
+     Position PointInfo "{BF53F70628F75A3A}" {
+      Offset 0 0.08 0
+     }
+     Radius 1.2
+    }
+   }
+   additionalActions {
+    LF_PhoneAnswerAction "{D3B64486196175BC}" {
+     ParentContextList {
+      "LF_DispatchPhone"
+     }
+     UIInfo UIInfo "{88DBDBC104B84A1D}" {
+      Name "#LF-Phone_PickUp"
+      Description "#LF-Phone_StationTitle"
+     }
+     "Sort Priority" 1
+    }
+    LF_PhoneHangUpAction "{55921D5D7667468F}" {
+     ParentContextList {
+      "LF_DispatchPhone"
+     }
+     UIInfo UIInfo "{B02E1225C5A2AD1F}" {
+      Name "#LF-Phone_HangUp"
+      Description "#LF-Phone_StationTitle"
+     }
+     "Sort Priority" 2
+    }
+   }
+  }
+ }
+}

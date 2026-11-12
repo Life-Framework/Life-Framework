@@ -60,6 +60,10 @@ class LF_StaticReset
 		LF_Payphone.ResetStatics();
 		LF_ServiceCallDispatch.ResetStatics();
 		LF_ServiceBoard.ResetStatics();
+		LF_PhoneCalls.ResetStatics();
+		LF_PhoneConfig.ResetStatics();
+		LF_PhoneComponent.ResetStatics();
+		LF_PhoneLineComponent.ResetStatics();
 		LF_ChainSites.ResetStatics();
 		LF_ChainTrace.ResetStatics();
 		LF_ChainStations.ResetStatics();
