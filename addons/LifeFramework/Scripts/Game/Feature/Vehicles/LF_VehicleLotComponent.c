@@ -41,9 +41,25 @@ class LF_VehicleOffer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What the lot charges: the vehicle prices config (#283) when it lists this vehicle, else the
+	//! price written on the offer.
 	int GetPrice()
 	{
-		return m_iPrice;
+		return PriceIn(LF_VehiclePricesConfig.Get());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! GetPrice against a given config; null or an unlisted vehicle keeps the offer's own price.
+	int PriceIn(LF_VehiclePricesConfig config)
+	{
+		if (!config)
+			return m_iPrice;
+
+		int configured = config.PriceFor(LF_EVehiclePriceAction.BUY, m_sPrefab);
+		if (configured < 0)
+			return m_iPrice;
+
+		return configured;
 	}
 
 	//------------------------------------------------------------------------------------------------

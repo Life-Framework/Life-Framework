@@ -418,7 +418,10 @@ class LF_ChopShopComponent : ScriptComponent
 		if (prefabData)
 			m_sPrefabName = prefabData.GetPrefabName();
 
-		m_iPayout = LF_ChopShopRules.Payout(LF_ChopShopConfig.ValueOf(m_sPrefabName), LF_ChopShopConfig.Cap(), LF_ChopShopConfig.Percent());
+		// The vehicle prices config (#283) prices a listed vehicle; an unlisted one keeps the yard's own value.
+		m_iPayout = LF_VehiclePricesConfig.Lookup(LF_EVehiclePriceAction.CHOP, m_sPrefabName);
+		if (m_iPayout < 0)
+			m_iPayout = LF_ChopShopRules.Payout(LF_ChopShopConfig.ValueOf(m_sPrefabName), LF_ChopShopConfig.Cap(), LF_ChopShopConfig.Percent());
 
 		// The car is held for the job: engine off, doors locked.
 		VehicleControllerComponent controller = LF_Component<VehicleControllerComponent>.Find(vehicle);

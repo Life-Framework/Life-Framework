@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_SignPrice`: LF_SignCatalog.PricedTitle ignoring its price argument failed `- a changed price changes the board (expected 'UAZ $3,100', got 'UAZ $2,500')`; restored, green.
+// red-proof: observed with `tools\cli test --no-build --only LF_Test_SignPrice`: LF_SignCatalog.PricedTitle ignoring its price argument failed `- a changed price changes the board (expected 'UAZ $3,100', got 'UAZ $2,500')`; restored, green.
 
 // tier: LOGIC
 //! Price boards at the car lot read the lot's price list (#540): the title is a template filled from
@@ -29,9 +29,14 @@ class LF_Test_SignPrice : LF_Test
 
 		ctx.EqualStr("UAZ $2,500", LF_SignCatalog.PricedTitle("%1 %2", offer.GetNameKey(), offer.GetPrice()), "the board title carries the name and the grouped price");
 
-		// The server owner changes the price in config: the same board now reads the new number.
-		LF_VehicleOffer repriced = LF_VehicleOffer.Make(uaz, 3100, "UAZ");
-		ctx.EqualStr("UAZ $3,100", LF_SignCatalog.PricedTitle("%1 %2", repriced.GetNameKey(), repriced.GetPrice()), "a changed price changes the board");
+		// The server owner changes the price in config (#283 moved the lot's price into the vehicle
+		// prices config): the same offer, against a config pricing the UAZ at 3100, reads the new number.
+		LF_VehiclePricesConfig repricedConfig = new LF_VehiclePricesConfig();
+		repricedConfig.m_iBuyPercent = 100;
+		repricedConfig.m_aVehicles = {};
+		repricedConfig.m_aVehicles.Insert(LF_VehiclePriceEntry.Make(uaz, "", 3100));
+		ctx.EqualStr("UAZ $3,100", LF_SignCatalog.PricedTitle("%1 %2", offer.GetNameKey(), offer.PriceIn(repricedConfig)), "a changed price changes the board");
+		ctx.Equal(2500, offer.PriceIn(null), "no config: the board keeps the price written on the offer");
 
 		LF_SignDef def = new LF_SignDef();
 		def.m_sId = "lot_price_test";

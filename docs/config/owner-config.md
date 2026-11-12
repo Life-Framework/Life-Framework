@@ -53,7 +53,7 @@ Types, ranges and the set of known keys are read from `docs/config/config.schema
 generated from the config classes (`node tools/config/schema.mjs --write`). A new field, or a
 changed `params: "min max"` range, reaches this check with no edit to it. The two things the schema
 cannot say live in `tools/config/check.mjs`: the grammar of a record key (`shops.priceRules` accepts
-a prefab-path substring or `type:<flags>,mode:<mode>`) and where shipped record keys come from.
+a prefab-path substring, `prefab:<GUID>` or `type:<flags>,mode:<mode>`) and where shipped record keys come from.
 
 `docs/config/config.example.json` is a file that passes clean. Proof of the rules:
 `node tools/validation/config-check-selftest.mjs`.

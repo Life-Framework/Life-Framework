@@ -7,15 +7,19 @@
 class LF_ShopPriceResolver
 {
 	//------------------------------------------------------------------------------------------------
-	//! The stable key a config layer uses to address a rule: the find substring when set, else the
-	//! type and mode it matches. Layers merge rules by this key, never by list position; it is also
-	//! the record key in the owner's "priceRules" object.
+	//! The stable key a config layer uses to address a rule: "prefab:<GUID>" for a prefab rule, else
+	//! the find substring when set, else the type and mode it matches. Layers merge rules by this
+	//! key, never by list position; it is also the record key in the owner's "priceRules" object.
+	//! \param[in] prefab The rule's m_Prefab (matched by GUID; wins over find and type).
 	//! \param[in] find The rule's prefab-path substring.
 	//! \param[in] itemType The rule's arsenal type flags.
 	//! \param[in] itemMode The rule's arsenal mode.
-	//! \return The key, e.g. "Prefabs/Items/Food/" or "type:64,mode:2".
-	static string RuleKey(string find, int itemType, int itemMode)
+	//! \return The key, e.g. "prefab:C9D661E5B0714711", "Prefabs/Items/Food/" or "type:64,mode:2".
+	static string RuleKey(string prefab, string find, int itemType, int itemMode)
 	{
+		if (!prefab.IsEmpty())
+			return PREFAB_KEY_PREFIX + LF_Utils.PrefabGuid(prefab);
+
 		if (!find.IsEmpty())
 			return find;
 
@@ -23,18 +27,32 @@ class LF_ShopPriceResolver
 	}
 
 	static const string TYPE_KEY_PREFIX = "type:";
+	static const string PREFAB_KEY_PREFIX = "prefab:";
 
 	//------------------------------------------------------------------------------------------------
 	//! Reverses RuleKey. "type:<flags>" or "type:<flags>,mode:<mode>" is a type rule (mode defaults
-	//! to DEFAULT); any other non-empty key is a find substring.
+	//! to DEFAULT); "prefab:<GUID>" is a prefab rule; any other non-empty key is a find substring.
 	//! \return False for an empty key or a type key whose numbers do not parse.
-	static bool ParseRuleKey(string key, out string find, out int itemType, out int itemMode)
+	static bool ParseRuleKey(string key, out string prefab, out string find, out int itemType, out int itemMode)
 	{
+		prefab = string.Empty;
 		find = string.Empty;
 		itemType = 0;
 		itemMode = SCR_EArsenalItemMode.DEFAULT;
 		if (key.IsEmpty())
 			return false;
+
+		if (key.StartsWith(PREFAB_KEY_PREFIX))
+		{
+			string id = key.Substring(PREFAB_KEY_PREFIX.Length(), key.Length() - PREFAB_KEY_PREFIX.Length());
+			if (id.IsEmpty())
+				return false;
+
+			prefab = id;
+			if (id.Length() == 16)
+				prefab = "{" + id + "}";
+			return true;
+		}
 
 		if (!key.StartsWith(TYPE_KEY_PREFIX))
 		{
@@ -90,7 +108,7 @@ class LF_ShopPriceResolver
 		for (int i = rules.Count() - 1; i >= 0; i--)
 		{
 			LF_ShopPriceRule rule = rules[i];
-			if (rule && RuleKey(rule.m_sFind, rule.m_eItemType, rule.m_eItemMode) == key)
+			if (rule && RuleKey(rule.m_Prefab, rule.m_sFind, rule.m_eItemType, rule.m_eItemMode) == key)
 				return rule;
 		}
 

@@ -38,6 +38,7 @@ for pack overlays and an `LF_ConfigReader` on its owner section.
       "Prefabs/Items/Food/": { "buyPrice": 10, "sellPrice": 5 },
       "Prefabs/Weapons/": { "hidden": true },
       "type:64,mode:2": { "buyPrice": 900 },
+      "prefab:C9D661E5B0714711": { "buyPrice": 12 },
       "Apple": { "prefab": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "buyPrice": 12 }
     },
     "extraItemPrefabs": ["{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"]
@@ -50,7 +51,7 @@ for pack overlays and an `LF_ConfigReader` on its owner section.
   schema from the attributes with that one rule.
 - Records are an **object keyed by the record's stable key**, not a list (see
   "Why records are keyed objects"). A shop rule's key is its `find` substring,
-  or `type:<flags>,mode:<mode>` for a rule that matches by arsenal type
+  `prefab:<GUID>` for a rule that matches one prefab (`m_Prefab`; the GUID without braces, upper case), or `type:<flags>,mode:<mode>` for a rule that matches by arsenal type
   (`LF_ShopPriceResolver.RuleKey` / `ParseRuleKey`; mode defaults to 2, any).
 - A new rule that leaves out `buyPrice` or `sellPrice` gets 100 and 50, the
   same defaults as a rule written in a `.conf`.

@@ -308,6 +308,24 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What the impound desk charges for this vehicle: the vehicle prices config (#283), else the
+	//! desk's flat fee (LF_GarageConfig).
+	static int ImpoundFeeOf(string vehicleId)
+	{
+		LF_VehicleRecord record = Records().Get(vehicleId);
+		if (record)
+		{
+			int fee = LF_VehiclePricesConfig.Lookup(LF_EVehiclePriceAction.IMPOUND, record.m_sSpawnPrefab);
+			if (fee < 0)
+				fee = LF_VehiclePricesConfig.Lookup(LF_EVehiclePriceAction.IMPOUND, record.m_sPrefab);
+			if (fee >= 0)
+				return fee;
+		}
+
+		return LF_GarageConfig.ImpoundFee();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string LatestImpounded(string ownerUid)
 	{
 		for (int i = Order().Count() - 1; i >= 0; i--)
