@@ -17,6 +17,9 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("0", desc: "A police application is approved the moment it is filed, so a solo tester can try the form (the desk). Off for real servers: an administrator approves.")]
 	bool m_bLF_InstantPoliceApproval;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, desc: "Config overlays (.conf) this mission layers over the shipped defaults, lowest precedence first: a later file wins over an earlier one, the server owner's config.json wins over all. Each overlay is a .conf of the same class as the core file it changes and sets only the fields it names. Read by LF_MissionConfigPackSource (D4 option b, #278).", params: "conf")]
+	ref array<ResourceName> m_aLF_ConfigOverlays;
+
 	//------------------------------------------------------------------------------------------------
 	//! \return the running mission's header when it is an LF_MissionHeader, else null.
 	static LF_MissionHeader GetCurrent()

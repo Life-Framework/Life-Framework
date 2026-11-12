@@ -284,12 +284,12 @@ class LF_ConfigService
 	static LF_ConfigPackSource GetPackSource()
 	{
 		if (!s_PackSource)
-			s_PackSource = new LF_ConfigPackSource();
+			s_PackSource = new LF_MissionConfigPackSource();
 		return s_PackSource;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Replaces the pack source. D4 decides the real one; tests install a stub.
+	//! Replaces the pack source (tests install a stub or a fixed header).
 	//! \param[in] source The new source, or null for the default.
 	static void SetPackSource(LF_ConfigPackSource source)
 	{

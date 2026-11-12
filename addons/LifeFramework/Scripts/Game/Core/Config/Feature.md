@@ -175,24 +175,28 @@ String lists (`extraItemPrefabs`) are read whole by the class reader, which is
 safe for them: it refuses a list with a non-string, and the reader checks the
 target for `null` (a JSON `null` replaces it).
 
-## D4 seam: where pack defaults come from
+## D4 seam: where pack defaults come from (option b, decided 2026-11-12)
 
-Maintainer decision D4 (`docs/roadmap/m3-plan.md`) is open. The merge is built;
-only the source of pack files waits:
+The mission header lists the pack's config overlays:
 
-- `LF_ConfigPackSource.GetOverlays(coreConf, overlays)` returns the pack
-  `.conf` files that overlay a core `.conf`, lowest precedence first. The
-  default returns none.
-- (a) Same-path override: nothing to do; the engine loads the pack file in place
-  of the core one and the default source stays.
-- (b) Header-listed overlays (recommended): a subclass reads an overlay array
-  from the pack-owned `LF_MissionHeader` and is installed with
-  `LF_ConfigService.SetPackSource`.
-- (c) Manifest: a subclass reads the manifest; same install.
+- `LF_MissionHeader.m_aLF_ConfigOverlays` is an array of `.conf` resources, lowest
+  precedence first (a later file wins over an earlier one).
+- `LF_MissionConfigPackSource` (`LF_MissionConfigPackSource.c`) is the default
+  `LF_ConfigPackSource`. `GetOverlays` returns the running mission's list
+  (`LF_MissionHeader.GetCurrent()`). A bare world or a header with no list gives none.
+  The core names no pack: a world picks its pack by picking a mission whose header names
+  the overlay files.
+- Each feature's apply step keeps the overlays whose class matches its own core file and
+  logs the rest as skipped (`LF_ShopPricesConfig.ApplyLayers`), so one list can carry
+  overlays for several sections. A header that lists the core file itself as an overlay is
+  skipped with an error.
+- Precedence is owner over pack over core, per field and per key. Several overlays apply in
+  list order.
+- `LF_ConfigService.SetPackSource` still replaces the source (tests).
 
-The field-by-field merge (`LF_ShopPricesConfig.ApplyContainer`) does not change
-with D4. `LF_Test_ConfigPackOverlay` proves it with a stub source and a fixture
-overlay (`Configs/Tests/LF_Test_ShopPricesOverlay.conf`).
+Proven in the core test annex, with no pack resource: `LF_Test_ConfigPackHeader` loads
+`Configs/Tests/LF_Test_PackHeader.conf` (a header listing two shops overlays) and checks
+the merge order; `LF_Test_ConfigPackOverlay` proves the field-by-field merge with a stub.
 
 ## Clients: the config stream (#285)
 
@@ -233,6 +237,7 @@ On a listen host the host is the server and prices with the owner values directl
 ## Files
 
 - `LF_ConfigService.c`: `LF_ConfigService`, `LF_ConfigPackSource`,
+  `LF_MissionConfigPackSource.c` (the header-backed source),
   `LF_EConfigJsonKind`, `LF_ConfigReader`.
 - `LF_ConfigStream.c`: `LF_ConfigStream`, `LF_EConfigStreamStatus` (#285).
   `LF_ConfigReloadCommand.c`: `/configreload` and its server gate.
@@ -241,7 +246,7 @@ On a listen host the host is the server and prices with the owner values directl
   `ParseRuleKey`, `FindRule`), `LF_ShopManagerComponent.LoadConfig` calls
   `ApplyLayers`.
 - Tests: `LF_Test_ConfigJsonProbe`, `LF_Test_ConfigMerge` (fields, keyed,
-  reject, no-owner), `LF_Test_ConfigOwnerFile`, `LF_Test_ConfigPackOverlay`,
+  reject, no-owner), `LF_Test_ConfigOwnerFile`, `LF_Test_ConfigPackOverlay`, `LF_Test_ConfigPackHeader`,
   `LF_Test_ConfigReject` (range), `LF_Test_ConfigUnknownKeys`,
   `LF_Test_ConfigSchemaVersion`, `LF_Test_ConfigMigrationChain`, `LF_Test_ConfigMigrationFile`,
   `LF_Test_ConfigStreamRoundTrip`, `LF_Test_ConfigStreamClientOnly`, `LF_Test_ConfigStreamReject`.
