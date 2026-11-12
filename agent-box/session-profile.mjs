@@ -73,6 +73,9 @@ export const LEVERS = {
   st: { client: { args: ["-singleThreadedUpdate"] }, server: { args: ["-singleThreadedUpdate"] } },
   // Server frame cap (CPU only).
   sfps: { server: { maxFps: 20 } },
+  // No useful client frame cap: a frame-time probe (`perf`) reads frames the 30 fps cap would hide.
+  // Measuring only; never in a profile.
+  uncapped: { client: { maxFps: 500 } },
 };
 
 // What each profile turns on. `full` is the session as it always was.

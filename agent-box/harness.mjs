@@ -151,6 +151,11 @@ export function buildLine(id, spec) {
     if (!Number.isFinite(radius) || radius < 0) throw new Error(`seen radius must be a number: ${spec.radius}`);
     return radius > 0 ? `${id} seen ${radius}` : `${id} seen`;
   }
+  if (spec.verb === "perf") {
+    const seconds = Number(spec.seconds ?? 10);
+    if (!Number.isFinite(seconds) || seconds <= 0 || seconds > 60) throw new Error(`perf seconds must be 0..60: ${spec.seconds}`);
+    return spec.label ? `${id} perf ${seconds} ${token(spec.label, "label")}` : `${id} perf ${seconds}`;
+  }
   if (spec.verb === "shoot") {
     const target = Number(spec.playerId);
     if (!Number.isInteger(target) || target <= 0) throw new Error(`shoot needs a positive player id: ${spec.playerId}`);
@@ -891,6 +896,8 @@ function selftest() {
   if (stand !== "10 stand ATM_Debug") throw new Error(stand);
   const state = buildLine(11, { verb: "state" });
   if (state !== "11 state") throw new Error(state);
+  if (buildLine(12, { verb: "perf", seconds: 8, label: "boards_4" }) !== "12 perf 8 boards_4") throw new Error("perf line");
+  if (buildLine(12, { verb: "perf" }) !== "12 perf 10") throw new Error("perf default line");
   setBoxes(["X"]);
   const boxes = profileBoxes();
   setBoxes(null);
@@ -1494,6 +1501,10 @@ function main(argv) {
     }
     if (cmd === "seen") {
       return printResult(sendCommand({ verb: "seen", radius: rest[0] }, 10000));
+    }
+    if (cmd === "perf") {
+      const seconds = Number(rest[0] ?? 10);
+      return printResult(sendCommand({ verb: "perf", seconds, label: rest[1] }, (seconds + 15) * 1000));
     }
     if (cmd === "shoot") {
       return printResult(sendCommand({ verb: "shoot", playerId: rest[0] }, 10000));
