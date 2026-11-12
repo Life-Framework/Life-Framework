@@ -110,7 +110,7 @@ chain, because #300 also needs the client stream (#285).
 
 ## 4. Proposed issue edits
 
-Nothing is edited yet. Each row is the edit to make once the maintainer agrees.
+Section 6 is decided. On 2026-11-12 the edits those decisions settle were applied: #367 (D2), #685 and its split #861 (D9), #750, #752 and #754 with their splits #858, #859 and #860 (D5), #761 (D6, D7, D12), #283 and #284 (D5, D8), #481 (D10). The other rows are still proposed.
 
 ### Stale
 
@@ -266,9 +266,9 @@ count.
 | #371 Clean dedicated server from the Workshop | S plus maintainer | #370, #295 |
 | #381 Server bundle export | S | #287 |
 
-## 6. Decisions needed from the maintainer
+## 6. Decisions (decided 2026-11-12)
 
-Each has a recommendation; the plan above assumes it.
+The maintainer answered every question on 2026-11-12; the answer is on the line marked **Decided**, and the full list is in `docs/decisions.md`. Also decided: the two profit loops (gold furnace +30, cement plant +24) stay baselined for now. The text of each question is kept as asked.
 
 **D1. Does M3 work start while M2 is open?** `direction.md` says a
 milestone's features wait until the previous one is done; M2 has 48 open
@@ -279,6 +279,7 @@ W1-9) now; code waits for M2.
 (c) Wait for M2 to close.
 *Recommend (a).* Wave 1 adds no gameplay, and #278 and the spike sit on the
 critical path. #322 and the freeze still wait for M1 sign-off.
+**Decided:** (a). Waves 0 and 1 start now at low priority.
 
 **D2. Which licence does the Workshop build carry?** `decisions.md` holds two
 2026-11-08 entries that disagree: "The Workshop build is APL; the GitHub repo
@@ -289,6 +290,7 @@ only.
 (b) MIT everywhere (the Workshop terms appear to forbid it).
 (c) A custom non-commercial licence on the Workshop.
 *Recommend (a).* It unblocks #367 and the licence check in #368.
+**Decided:** (a). Workshop build APL, source MIT. The MIT entry is amended to cover the GitHub source only.
 
 **D3. What happens to M1 hosts when the playtest header moves to the pack?**
 #109 publishes the core item with `LF_PlaytestTown.conf` inside. After batch
@@ -300,6 +302,7 @@ loses the scenario.
 exception (this breaks the 2026-11-09 "no temporary exception rows" decision).
 (c) Freeze Workshop updates from batch 1 until the M3 release.
 *Recommend (a).*
+**Decided:** (a). The pack item publishes in the same release as batch 1; the host doc and `playtest-server.json` list both IDs; Discord is told one session ahead.
 
 **D4. How does a pack supply its `.conf` defaults?** The outline's precedence
 (owner, then pack, then core) needs a mechanism, and the core may not name the
@@ -313,6 +316,7 @@ config service merges them per field and per key.
 (c) A manifest at a fixed core path that each pack overrides.
 *Recommend (b).* The header is already pack-owned, and a world picks its pack
 explicitly. W1-1 builds the layer stack so either fits.
+**Decided:** (b). `LF_MissionHeader` gets an array of `.conf` overlays; the config service merges them field by field.
 
 **D5. Trim #746 to what is expensive after release?** Only reshapes of
 existing records and changes to existing config fields cost a migration
@@ -325,6 +329,7 @@ Move to M5 Framework (#632): #748, #753, #757, #758, #759, #760, #750b,
 and #757.
 *Recommend (a).* It removes about ten agent-issues from M3. #757 also
 contradicts "Events: Parked" in `direction.md`.
+**Decided:** (a). Kept: #685a, #688, #749, #750a, #751, #752a, #754a, #755, #761. Moved to M5 Flagship Story (the milestone #632 sits in): #748, #753, #757, #758, #759, #760, #750b (#858), #752b (#859), #754b (#860). #756 moved to M6 Homes and Land.
 
 **D6. Record reshapes: one save reset, or one per PR?**
 (a) Each reshape is its own PR on the persistence lane, bumping the version.
@@ -334,6 +339,7 @@ and one `wt e2e`.
 (b) One combined PR for every reshape (#761 as written), which is large and
 blocks the lane for days.
 *Recommend (a).*
+**Decided:** (a). One PR per reshape with its own bump; one announced reset at a release boundary; #761 is the close-out.
 
 **D7. Must a pre-move save load after the move (#327)?** Before #556 a save
 reset is allowed; the EL_ to LF_ rename set the precedent.
@@ -342,6 +348,7 @@ need for 1.x.
 (b) No: declare a reset at batch 1, and keep only the spike's evidence.
 *Recommend (a) if SPIKE-A shows saved `{GUID}path` strings resolve after a
 path change; (b) if it needs loader rewrites.*
+**Decided:** (a). Pre-move saves must load after every move batch.
 
 **D8. How many config sections?** The specs add `organizations`, `police`,
 `property`, `lockers` and `events` beside the outline's seven.
@@ -351,6 +358,7 @@ crime, police, organizations, licences, vehicles, zones, persistence.
 lockers under `shops`).
 (c) One section per config root, generated.
 *Recommend (a).* Folding police ranks into `crime` hides them from owners.
+**Decided:** (a). Nine core sections: jobs, shops, crime, police, organizations, licences, vehicles, zones, persistence.
 
 **D9. Crime catalog shape (#685).**
 (a) The spec comment: the catalog lives in config, the saved
@@ -359,6 +367,7 @@ id, and the licence seizure sidecar moves to M5 (#685b).
 (b) The issue body: a list of charges per account, with the wanted level
 derived (a reshape of the wanted and crime records).
 *Recommend (a).* Same owner value, no reshape.
+**Decided:** (a). The catalog lives in config; the saved `{uid, offence, count}` is unchanged; licence seizure is #685b (#861, M5).
 
 **D10. Strays in the milestone.**
 #583 (store 3D previews) to M5 with #339. #716 (account publish cost) to M2
@@ -366,16 +375,19 @@ with #335. #603 (town grid) to after the move, as pack-world work in M4 or
 M2.5. #481 (credits screen) stays in M3 as release polish, once it has the
 issue template and a link to the credits-source issue.
 *Agree or move individually.*
+**Decided:** As proposed. #583 to M5, #716 to M2 Living Town, #603 to M4 Flagship Live, #481 stays in M3 with the issue template and a link to #480.
 
 **D11. M1 sign-off for the freeze.** #322 needs it, and #101, #109 and #199
 are open. Is M1 signed off once #109's publish lands, or does the freeze wait
 for all three?
+**Decided:** Not signed off. The freeze (#322) waits for all three open M1 issues: #101, #109 and #199.
 
 **D12. Skills on job levels (#749): replace or sit under?**
 (a) The per-job XP map replaces `LF_PlayerLevelComponent`'s single level (the
 spec's preference), and licence gates read job levels.
 (b) It sits under the single level, which stays as the licence gate.
 *Recommend (a),* because it is the shape owners will configure.
+**Decided:** (a). Per-job XP replaces the single level; licence gates read job levels.
 
 ## 7. The riskiest unknown, and SPIKE-A
 

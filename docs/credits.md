@@ -9,7 +9,7 @@ person's role is added when the maintainer confirms it.
 | Project | Author | Licence | What we took | Where it is recorded |
 |---|---|---|---|---|
 | [Everon Life RPG Framework](https://github.com/EveronLife/EveronLife) | Arkensor and its contributors | MIT | Life Framework is a fork and continuation of it. The upstream `EL_` class prefix became `LF_` on 2026-11-09; the credit stays. | `README.md`, `docs/ecosystem.md` |
-| [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) | Overthrow owner | Arma Public License Share Alike upstream; used with the owner's permission and relicensed MIT for Life Framework only | Money, resource and shop data code; the persistence lessons in `AGENTS.md`. Each derived file names its source in a header. | `THIRD_PARTY.md`, `docs/overthrow-survey.md` |
+| [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) | Aaron Static, the maintainer of Overthrow | Arma Public License Share Alike upstream; used with the owner's permission and relicensed MIT for Life Framework only | Money, resource and shop data code; the persistence lessons in `AGENTS.md`. Each derived file names its source in a header. | `THIRD_PARTY.md`, `docs/overthrow-survey.md` |
 | [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) | LNGCGenetic | MIT | Police, jail, garage and vehicle code. Each ported file keeps its notice. | `THIRD_PARTY.md`, `docs/ecosystem.md` |
 | Bohemia Interactive | Bohemia Interactive | Arma Public License (the Workshop build); game assets belong to Bohemia Interactive | Base-game assets, and the Arma Reforger engine. Life Framework is not affiliated with Bohemia Interactive. | `README.md`, `assets-source/LICENSES.md` |
 
