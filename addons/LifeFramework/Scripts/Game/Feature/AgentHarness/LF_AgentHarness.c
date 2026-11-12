@@ -918,6 +918,10 @@ class LF_AgentHarness
 	protected static const int UI_TEXT_MAX = 80;
 	//! stand puts the character this far along +X from the entity, facing it.
 	static const float STAND_SIDE = 1.2;
+	// lf-fixed: dev-harness geometry, the width of a character capsule
+	static const float STAND_CAPSULE_RADIUS = 0.4;
+	// lf-fixed: dev-harness geometry, a counter top is higher than this above the floor
+	static const float STAND_MAX_STEP = 0.6;
 	//! Metres in front of a sign's face (its local +Z) where stand puts the reader.
 	static const float SIGN_STAND_FRONT = 1.4;
 	//! How far an unnamed part may sit from the named prop it belongs to (CollectActionEntity).
@@ -928,6 +932,18 @@ class LF_AgentHarness
 	protected static int s_iEnsureTries;
 	protected static int s_iCaptureId;
 	protected static vector s_vShotStand;
+	protected static float s_fStandYaw;
+	protected static IEntity s_StandSelf;
+	protected static vector s_vStandCentre;
+	protected static bool s_bStandBlocked;
+	// Characters the harness already stood, with the spot and when. The spatial query and the traces
+	// do not see a body moved this frame (or one whose owner has not applied the teleport yet), so
+	// a second stand in a burst would otherwise pick the same spot.
+	protected static ref array<EntityID> s_aStoodIds = {};
+	protected static ref array<vector> s_aStoodSpots = {};
+	protected static ref array<int> s_aStoodTicks = {};
+	// lf-fixed: dev-harness bookkeeping, how long a stood spot counts as occupied
+	protected static const int STAND_REMEMBER_MS = 15000;
 	protected static vector s_vShotAngles;
 	protected static bool s_bShotPose;
 	protected static string s_sHeldAction;
@@ -1357,7 +1373,10 @@ class LF_AgentHarness
 
 		// One metre to the side keeps the character inside a 3m action radius
 		// without planting them inside the prop.
-		destination = target.GetOrigin() + StandOffset(side);
+		// The spot is snapped to the ground and stepped around the target until no other
+		// character or prop fills the capsule, so two players sent to one target do not
+		// overlap and a raised target (a till) does not lift the player to its height.
+		destination = ClearStandSpot(character, target, side);
 
 		// A sign is read from the front: a wall plate or fascia hangs above the
 		// pavement with the wall right behind it, so beside it is inside the wall
@@ -1369,10 +1388,187 @@ class LF_AgentHarness
 			vector front = target.GetOrigin() + transform[2] * SIGN_STAND_FRONT;
 			front[1] = world.GetSurfaceY(front[0], front[2]);
 			destination = front;
+			s_fStandYaw = StandYaw(side);
 		}
 
 		LF_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Yaw the last ServerStand chose (it faces the target from the spot it picked).
+	static float LastStandYaw()
+	{
+		return s_fStandYaw;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ground under (x, z), searching down from startY past characters. False when there is no floor.
+	protected static bool StandGround(IEntity self, float x, float z, float startY, out float groundY)
+	{
+		float y = startY;
+		float floorY = startY - 12;
+		for (int i = 0; i < 4; i++)
+		{
+			IEntity hit;
+			float d = LF_PlacementAudit.Trace(Vector(x, y, z), Vector(x, floorY, z), self, hit);
+			if (d >= y - floorY - 0.01)
+				return false;
+
+			y = y - d;
+			if (!ChimeraCharacter.Cast(hit))
+			{
+				groundY = y;
+				return true;
+			}
+
+			y = y - 0.05;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a standing capsule at feet (spot) holds no other character and no prop.
+	protected static bool StandSpotClear(IEntity self, vector spot)
+	{
+		s_StandSelf = self;
+		s_vStandCentre = spot;
+		s_bStandBlocked = false;
+		GetGame().GetWorld().QueryEntitiesBySphere(spot + "0 0.9 0", STAND_CAPSULE_RADIUS * 2 + 0.3, StandQueryHit, null, EQueryEntitiesFlags.ALL);
+		if (s_bStandBlocked)
+			return false;
+
+		if (StandSpotRemembered(self, spot))
+			return false;
+
+		IEntity hit;
+		array<float> heights = {0.4, 1.0, 1.6};
+		foreach (float height : heights)
+		{
+			for (int a = 0; a < 8; a++)
+			{
+				float rad = a * Math.PI / 4;
+				vector from = spot + Vector(0, height, 0);
+				vector to = from + Vector(Math.Cos(rad), 0, Math.Sin(rad)) * STAND_CAPSULE_RADIUS;
+				if (LF_PlacementAudit.Trace(from, to, self, hit) < STAND_CAPSULE_RADIUS - 0.01)
+					return false;
+			}
+		}
+
+		// Head room: a low ceiling or a shelf over the spot.
+		return LF_PlacementAudit.Trace(spot + "0 0.2 0", spot + "0 1.8 0", self, hit) >= 1.6 - 0.01;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool StandSpotRemembered(IEntity self, vector spot)
+	{
+		int now = System.GetTickCount();
+		for (int i = s_aStoodIds.Count() - 1; i >= 0; i--)
+		{
+			if (now - s_aStoodTicks[i] > STAND_REMEMBER_MS)
+			{
+				s_aStoodIds.Remove(i);
+				s_aStoodSpots.Remove(i);
+				s_aStoodTicks.Remove(i);
+				continue;
+			}
+
+			if (s_aStoodIds[i] == self.GetID())
+				continue;
+
+			vector delta = s_aStoodSpots[i] - spot;
+			delta[1] = 0;
+			if (delta.Length() < STAND_CAPSULE_RADIUS * 2)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RememberStand(IEntity character, vector spot)
+	{
+		for (int i = s_aStoodIds.Count() - 1; i >= 0; i--)
+		{
+			if (s_aStoodIds[i] != character.GetID())
+				continue;
+
+			s_aStoodIds.Remove(i);
+			s_aStoodSpots.Remove(i);
+			s_aStoodTicks.Remove(i);
+		}
+
+		s_aStoodIds.Insert(character.GetID());
+		s_aStoodSpots.Insert(spot);
+		s_aStoodTicks.Insert(System.GetTickCount());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool StandQueryHit(IEntity entity)
+	{
+		if (entity == s_StandSelf || !ChimeraCharacter.Cast(entity))
+			return true;
+
+		vector delta = entity.GetOrigin() - s_vStandCentre;
+		delta[1] = 0;
+		if (delta.Length() < STAND_CAPSULE_RADIUS * 2)
+			s_bStandBlocked = true;
+
+		return !s_bStandBlocked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot stand uses: the requested side first, then the other seven directions around the
+	//! target, then wider rings. Each spot is snapped down to the floor; a spot on a counter top
+	//! (higher than the lowest floor of its ring) is passed over. Falls back to the plain side offset.
+	protected static vector ClearStandSpot(IEntity character, IEntity target, string side)
+	{
+		vector origin = target.GetOrigin();
+		vector plain = origin + StandOffset(side);
+		s_fStandYaw = StandYaw(side);
+
+		float startRad = Math.Atan2(plain[2] - origin[2], plain[0] - origin[0]);
+		for (int ring = 0; ring < 3; ring++)
+		{
+			float radius = STAND_SIDE + ring * 0.6;
+			array<vector> spots = {};
+			array<float> yaws = {};
+			float lowest = 1000;
+			for (int a = 0; a < 8; a++)
+			{
+				float rad = startRad + a * Math.PI / 4;
+				float x = origin[0] + Math.Cos(rad) * radius;
+				float z = origin[2] + Math.Sin(rad) * radius;
+				float groundY;
+				if (!StandGround(character, x, z, origin[1] + 0.3, groundY))
+					continue;
+
+				spots.Insert(Vector(x, groundY, z));
+				yaws.Insert(Math.Atan2(origin[0] - x, origin[2] - z) * Math.RAD2DEG);
+				if (groundY < lowest)
+					lowest = groundY;
+			}
+
+			for (int i = 0; i < spots.Count(); i++)
+			{
+				if (spots[i][1] > lowest + STAND_MAX_STEP)
+					continue;
+
+				if (!StandSpotClear(character, spots[i]))
+					continue;
+
+				s_fStandYaw = yaws[i];
+				if (i != 0 || ring != 0)
+					LF_Debug.Log(FEATURE, string.Format("stand spot beside %1 was taken or blocked; using ring %2 step %3 at %4", origin, ring, i, spots[i]));
+
+				RememberStand(character, spots[i]);
+				return spots[i];
+			}
+		}
+
+		LF_Debug.Warn(FEATURE, string.Format("stand found no clear spot around %1; using %2", origin, plain));
+		return plain;
 	}
 
 	//------------------------------------------------------------------------------------------------
