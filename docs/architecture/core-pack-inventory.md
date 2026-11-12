@@ -38,10 +38,16 @@ and the DebugWorld village, which the tests depend on.
    every test still passes). Each fixture needs a neutral twin in the annex
    first. **Done (#323 batch 0, 2026-11-12):** `Annex.layer` holds an `Annex_*`
    twin of every fixture a test finds by name, `LF_TestAnnex` names them, and
-   `validate-annex-fixtures` keeps an empty baseline. Production code still
-   names a few town entities (`LF_Contraband` marker ids, `LF_SpawnLogic`
-   `m_sTestCarLot`, `LF_Jail.SyncPlacedCell`, harness stash lookups); those
-   move with the batches that split them.
+   `validate-annex-fixtures` keeps an empty baseline (it reads nested
+   `$grp` and child entities too). **Done (#323 batch 0d, 2026-11-12):** core
+   Scripts no longer quote a village entity name: convoy markers carry
+   `m_bDrop`/`m_bNearDrop`, the test car lot is the lot flagged
+   `m_bTestCarLot`, `LF_Jail.SyncPlacedCell` re-applies the placed
+   `LF_JailCellComponent`, the cash van route names its stops and van on the
+   placed box, and the harness finds the stash and garage through components.
+   `validate-core-village-names` keeps that list empty. Hideout ids
+   (`Roadmap_Hideout`) are ids, not entity names, and still default in the
+   core; the hideout batch moves them.
 2. **Every config loads one hard-coded core path.** `LF_JobsConfig`,
    `LF_PoliceConfig`, `LF_SignCatalog`, `LF_GarageConfig`, `LF_SurvivalConfig`,
    `LF_RespawnConfig`, and `LF_ResourceChainCatalog` each hold a
