@@ -19,7 +19,7 @@ enum LF_EConfigSchemaStatus
 {
 	NONE,		//!< No owner file, or the client.
 	CURRENT,	//!< Same version, or no schemaVersion (version 1).
-	OLDER,		//!< Written for an older schema; read as-is, migrations are #303.
+	OLDER,		//!< Written for an older schema and not migrated (LoadOwnerString alone); read as-is.
 	NEWER,		//!< Written for a newer schema; known fields still apply, the rest warns.
 	INVALID		//!< Not a whole number of at least 1; read as version 1.
 };
@@ -66,8 +66,14 @@ class LF_ConfigService
 	//------------------------------------------------------------------------------------------------
 	//! Reads an owner file. A missing file boots on shipped defaults and writes the example at
 	//! examplePath when nothing is there yet; an existing file is never written.
+	//! An owner file older than the build is migrated first (LF_ConfigMigrator, #303): backed up,
+	//! stepped to the current schema, written. A failed migration leaves the file as it was and no
+	//! owner layer, so every section runs on shipped values.
+	//! \param[in] steps The migration steps; null uses the ones this build ships. Tests pass fixtures.
+	//! \param[in] buildSchema The schema this build reads; a test passes another.
+	//! \param[in] backupStamp Fixed backup timestamp for tests; empty uses the current UTC time.
 	//! \return True when an owner layer is active.
-	static bool LoadOwnerFile(string path, string examplePath)
+	static bool LoadOwnerFile(string path, string examplePath, array<ref LF_ConfigMigration> steps = null, int buildSchema = SCHEMA_VERSION, string backupStamp = string.Empty)
 	{
 		s_sOwnerJson = string.Empty;
 		s_sOwnerSource = path;
@@ -97,7 +103,16 @@ class LF_ConfigService
 		}
 		handle.Close();
 
-		return LoadOwnerString(text, path);
+		array<ref LF_ConfigMigration> chain = steps;
+		if (!chain)
+		{
+			chain = {};
+			LF_ConfigMigrator.BuildShipped(chain);
+		}
+		if (LF_ConfigMigrator.MigrateFile(path, text, chain, buildSchema, backupStamp) == LF_EConfigMigrationResult.FAILED)
+			return false;
+
+		return LoadOwnerString(text, path, buildSchema);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -149,7 +164,7 @@ class LF_ConfigService
 		if (s_eSchemaStatus == LF_EConfigSchemaStatus.NEWER)
 			LF_Debug.Error(FEATURE, string.Format("%1 is written for schemaVersion %2 but this build reads up to %3; update the server. Fields this build knows still apply, anything else is ignored with a warning", source, schemaVersion, buildSchema));
 		else if (s_eSchemaStatus == LF_EConfigSchemaStatus.OLDER)
-			LF_Debug.Info(FEATURE, string.Format("%1 is written for schemaVersion %2, older than this build's %3; read as-is (migrations are #303)", source, schemaVersion, buildSchema));
+			LF_Debug.Info(FEATURE, string.Format("%1 is written for schemaVersion %2, older than this build's %3; read as-is (no migration reached it)", source, schemaVersion, buildSchema));
 		else
 			LF_Debug.Info(FEATURE, string.Format("owner config loaded from %1 (schemaVersion %2, this build reads %3)", source, schemaVersion, buildSchema));
 

@@ -318,8 +318,14 @@
   value logged, and the rest still applies; an unknown key (top level, section
   or record) warns and is ignored; `schemaVersion` above the build's logs an
   error (known fields still apply), below it logs an info line, a bad one reads
-  as 1. No migrations (#303). Tests `config/reject`, `config/unknown-keys`,
-  `config/schema-version`.
+  as 1. Tests `config/reject`, `config/unknown-keys`, `config/schema-version`.
+- ✅ (2026-11-12, #303) Config migrations at boot: an owner `config.json` older than
+  the build's schema is backed up (`config.json.bak-v<N>-<UTC timestamp>`, never over an
+  existing backup), stepped through ordered `LF_ConfigMigration` steps, rewritten, and each
+  step logged. A failed step, a missing step, or a failed backup keeps the original file,
+  logs an error, and the server boots on shipped values. Schema is still v1, so none ship
+  yet; the v0 to v1 step is a test fixture. Tests `config/migration-chain`,
+  `config/migration-file`.
 - ⚠️ Owner values are server-side: a client's price list shows shipped prices
   on a dedicated server until #285 streams them. Unknown keys are not warned
   yet (#279); `schemaVersion` is read but not acted on (#302).
