@@ -106,7 +106,7 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 		if (refusal != LF_ETicketRefusal.NONE)
 		{
 			LF_Debug.Warn(LF_FineTickets.FEATURE, string.Format("ticket refused for player %1 -> %2 offence %3: %4", officerId, holderUid, offenceIndex, typename.EnumToString(LF_ETicketRefusal, refusal)));
-			LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", RefusalKey(refusal), 4.0, LF_ENotificationType.WARNING, LF_FineTickets.MAX_OPEN_PER_HOLDER.ToString());
+			LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", RefusalKey(refusal), 4.0, LF_ENotificationType.WARNING, LF_PoliceConfig.TicketMaxOpen().ToString());
 			return null;
 		}
 

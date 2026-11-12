@@ -65,10 +65,7 @@ enum LF_EBillPay
 class LF_TreatmentBills
 {
 	static const string FEATURE = "Bill";
-	//! A patient carries at most this many unpaid bills; a further one is not written.
-	static const int MAX_OPEN_PER_PATIENT = 5;
-	//! Paid bills kept per patient, so a receipt reprints after a restart.
-	static const int KEEP_PAID_PER_PATIENT = 3;
+	//! The open-bill cap per patient, the paid bills kept, and the debt sweep period are LF_MedicConfig fields.
 
 	protected static ref array<ref LF_TreatmentBillRecord> s_aBills;
 	protected static int s_iLastNumber;
@@ -118,9 +115,9 @@ class LF_TreatmentBills
 			return null;
 		}
 
-		if (CountOpen(patientUid) >= MAX_OPEN_PER_PATIENT)
+		if (CountOpen(patientUid) >= LF_MedicConfig.Get().m_iBillMaxOpenPerPatient)
 		{
-			LF_Debug.Warn(FEATURE, string.Format("bill not written: %1 already carries %2 unpaid bills", patientUid, MAX_OPEN_PER_PATIENT));
+			LF_Debug.Warn(FEATURE, string.Format("bill not written: %1 already carries %2 unpaid bills", patientUid, LF_MedicConfig.Get().m_iBillMaxOpenPerPatient));
 			return null;
 		}
 
@@ -331,7 +328,7 @@ class LF_TreatmentBills
 				continue;
 
 			paidSeen++;
-			if (paidSeen > KEEP_PAID_PER_PATIENT && (record.m_bShareTaken || record.m_iShare <= 0))
+			if (paidSeen > LF_MedicConfig.Get().m_iBillKeepPaidPerPatient && (record.m_bShareTaken || record.m_iShare <= 0))
 				Bills().Remove(i);
 		}
 	}
@@ -342,7 +339,6 @@ class LF_TreatmentBills
 	//! not change. The bank pays it off as soon as it holds money (ledger reason DEBT_REASON).
 	static const string DEBT_MARK = "debt:";
 	static const string DEBT_REASON = "hospital-debt";
-	protected static const int DEBT_SWEEP_MS = 60000;
 	protected static bool s_bDebtSweepRunning;
 
 	static bool IsDebt(notnull LF_TreatmentBillRecord record)
@@ -501,7 +497,7 @@ class LF_TreatmentBills
 			return;
 
 		s_bDebtSweepRunning = true;
-		GetGame().GetCallqueue().CallLater(DebtSweepTick, DEBT_SWEEP_MS, true);
+		GetGame().GetCallqueue().CallLater(DebtSweepTick, LF_MedicConfig.Get().m_iDebtSweepSeconds * 1000, true);
 	}
 
 	//------------------------------------------------------------------------------------------------

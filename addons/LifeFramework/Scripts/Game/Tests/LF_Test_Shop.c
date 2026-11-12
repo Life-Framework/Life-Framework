@@ -53,7 +53,7 @@ class LF_Test_ATMAmountGuard : LF_Test
 	{
 		ctx.False(LF_ATMManager.IsValidAmount(0), "zero amount is rejected");
 		ctx.False(LF_ATMManager.IsValidAmount(-1), "negative amount is rejected");
-		ctx.True(LF_ATMManager.IsValidAmount(LF_ATMManager.MAX_TRANSACTION_AMOUNT), "max amount is accepted");
-		ctx.False(LF_ATMManager.IsValidAmount(LF_ATMManager.MAX_TRANSACTION_AMOUNT + 1), "oversized amount is rejected");
+		ctx.True(LF_ATMManager.IsValidAmount(LF_LedgerConfig.AtmMaxTransaction()), "max amount is accepted");
+		ctx.False(LF_ATMManager.IsValidAmount(LF_LedgerConfig.AtmMaxTransaction() + 1), "oversized amount is rejected");
 	}
 };

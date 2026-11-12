@@ -218,8 +218,6 @@ class LF_ZoneArea : Managed
 class LF_Zones
 {
 	static const string FEATURE = "Zones";
-	//! Seconds between two "your shot did nothing" notes to the same shooter.
-	static const float NOTICE_INTERVAL = 8;
 
 	protected static ref array<ref LF_ZoneArea> s_aZones;
 	protected static ref map<int, float> s_mLastNotice;
@@ -463,7 +461,7 @@ class LF_Zones
 			now = GetGame().GetWorld().GetWorldTime() / 1000;
 
 		float last;
-		if (s_mLastNotice.Find(attackerId, last) && now - last < NOTICE_INTERVAL)
+		if (s_mLastNotice.Find(attackerId, last) && now - last < LF_IncidentConfig.ZoneNoticeSeconds())
 			return;
 
 		s_mLastNotice.Set(attackerId, now);

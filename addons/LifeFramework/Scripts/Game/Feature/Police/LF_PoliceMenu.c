@@ -56,7 +56,7 @@ modded class SCR_ChimeraCharacter
 		{
 			// The menu lists every wanted player on the server. The arrest is a hands-on act:
 			// no connected body, or a body beyond reach, is not arrestable from the menu.
-			LF_Debug.Warn("Jail", string.Format("arrest refused: %1 is not within %2 m of officer %3", targetPlayerUid, LF_PoliceUtils.POLICE_REACH, officerUid));
+			LF_Debug.Warn("Jail", string.Format("arrest refused: %1 is not within %2 m of officer %3", targetPlayerUid, LF_PoliceConfig.ArrestReach(), officerUid));
 			if (officerPlayerId > 0)
 				LF_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Police_TooFar", 3.0, LF_ENotificationType.WARNING);
 			return;
@@ -89,22 +89,21 @@ class LF_PoliceUtils
 	//! The built-in senior fine cap. Each rank's cap is LF_PoliceRanks.FineCap, from the ladder in LF_Police.conf.
 	static const int MAX_FINE = 5000;
 
-	//! How close the officer must stand to arrest or fine from the police menu. Matches the
-	//! in-world arrest action's range. There is no restraint state in the framework or in
-	//! vanilla Reforger, so reach is the hands-on requirement.
-	static const float POLICE_REACH = 5.0;
+	//! How close the officer must stand to arrest or fine from the police menu is
+	//! LF_PoliceConfig.ArrestReach(), the same range as the in-world arrest action. There is no
+	//! restraint state in the framework or in vanilla Reforger, so reach is the hands-on requirement.
 
 	//------------------------------------------------------------------------------------------------
 	//! \param officerPos Officer's world position.
 	//! \param targetPos Target's world position.
-	//! \return true when the two are within POLICE_REACH.
+	//! \return true when the two are within LF_PoliceConfig.ArrestReach().
 	static bool IsWithinReach(vector officerPos, vector targetPos)
 	{
-		return vector.Distance(officerPos, targetPos) <= POLICE_REACH;
+		return vector.Distance(officerPos, targetPos) <= LF_PoliceConfig.ArrestReach();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return true when both bodies exist and stand within POLICE_REACH. A missing body is out of reach.
+	//! \return true when both bodies exist and stand within LF_PoliceConfig.ArrestReach(). A missing body is out of reach.
 	static bool IsTargetInReach(IEntity officer, IEntity target)
 	{
 		if (!officer || !target)

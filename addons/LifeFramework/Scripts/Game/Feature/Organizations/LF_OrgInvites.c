@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Server-side membership offers (M1-17). A leader facing someone makes an offer; the invitee
 //! joins only by facing that leader and choosing Join. The offer is session state: it is not
-//! saved, and it lapses after LF_OrgRules.OFFER_MS. Joining goes through
+//! saved, and it lapses after LF_OrgConfig.OfferMs(). Joining goes through
 //! LF_OrganizationManager.Invite, which checks the leader's rank again at that moment.
 //------------------------------------------------------------------------------------------------
 enum LF_EOrgOfferResult
@@ -69,7 +69,7 @@ class LF_OrgInvites
 		offer.m_sOrgId = org.GetId();
 		offer.m_sInviterCharacterId = inviterCharacterId;
 		offer.m_iInviterPlayerId = inviterPlayerId;
-		offer.m_fExpiresMs = nowMs + LF_OrgRules.OFFER_MS;
+		offer.m_fExpiresMs = nowMs + LF_OrgConfig.OfferMs();
 		if (!s_mOffers)
 			s_mOffers = new map<string, ref LF_OrgOffer>();
 

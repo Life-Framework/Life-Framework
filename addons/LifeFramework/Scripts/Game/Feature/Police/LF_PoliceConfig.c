@@ -31,6 +31,11 @@ class LF_PoliceConfig
 	static const int DEFAULT_MURDER_WANTED = 3;
 	static const bool DEFAULT_OFFICER_KILL_OF_WANTED_EXEMPT = true;
 	static const int DEFAULT_SEARCH_COOLDOWN_SECONDS = 120;
+	static const int DEFAULT_TICKET_MAX_OPEN = 3;
+	static const int DEFAULT_TICKET_KEEP_PAID = 3;
+	static const float DEFAULT_ARREST_REACH = 5;
+	static const float DEFAULT_JAIL_ARRIVAL_RADIUS = 8;
+	static const float DEFAULT_APPLY_DESK_RANGE = 6;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -98,6 +103,21 @@ class LF_PoliceConfig
 	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again (#472). 0 disables")]
 	int m_iSearchCooldownSeconds;
 
+	[Attribute("3", UIWidgets.Auto, "Unpaid tickets one holder may carry; a further ticket is refused", params: "1 20")]
+	int m_iTicketMaxOpen = 3;
+
+	[Attribute("3", UIWidgets.Auto, "Paid tickets kept per holder so a receipt reprints after a restart", params: "0 20")]
+	int m_iTicketKeepPaid = 3;
+
+	[Attribute("5", UIWidgets.Auto, "Metres an officer may stand from a suspect to arrest or fine from the police menu or the arrest action", params: "1 30")]
+	float m_fArrestReach = 5;
+
+	[Attribute("8", UIWidgets.Auto, "Metres from the cell a jail escort counts as arrived", params: "1 50")]
+	float m_fJailArrivalRadius = 8;
+
+	[Attribute("6", UIWidgets.Auto, "Metres a player may stand from the police application desk for the form to open", params: "1 30")]
+	float m_fApplyDeskRange = 6;
+
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -121,6 +141,56 @@ class LF_PoliceConfig
 			LF_Debug.Error("Ranks", string.Format("police config has an unexpected root class, using defaults: %1", CONFIG_PATH));
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketMaxOpen()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_TICKET_MAX_OPEN;
+
+		return Math.Max(config.m_iTicketMaxOpen, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketKeepPaid()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_TICKET_KEEP_PAID;
+
+		return Math.Max(config.m_iTicketKeepPaid, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float ArrestReach()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_ARREST_REACH;
+
+		return config.m_fArrestReach;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float JailArrivalRadius()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_JAIL_ARRIVAL_RADIUS;
+
+		return config.m_fJailArrivalRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float ApplyDeskRange()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_APPLY_DESK_RANGE;
+
+		return config.m_fApplyDeskRange;
 	}
 
 	//------------------------------------------------------------------------------------------------

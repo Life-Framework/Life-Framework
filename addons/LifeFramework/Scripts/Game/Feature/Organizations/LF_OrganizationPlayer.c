@@ -6,16 +6,12 @@
 //------------------------------------------------------------------------------------------------
 class LF_OrganizationPlayer
 {
-	//! How far the player may stand from the desk's origin when the server moves fund cash.
-	//! The desk action shows at 3 m; the extra 2 m absorbs movement and latency.
-	static const float DESK_RANGE = 5.0;
-
 	//------------------------------------------------------------------------------------------------
 	//! \param origin World position of the player.
-	//! \return true when an organization desk stands within DESK_RANGE of origin.
+	//! \return true when an organization desk stands within the configured desk range of origin.
 	static bool IsAtDesk(vector origin)
 	{
-		return LF_ActionSite.IsNear(origin, DESK_RANGE, "LF_OrganizationDeskAction");
+		return LF_ActionSite.IsNear(origin, LF_OrgConfig.DeskRange(), "LF_OrganizationDeskAction");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -52,7 +48,7 @@ class LF_OrganizationPlayer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Founds an organization: the name is checked, then LF_OrgRules.FOUNDING_FEE leaves the
+	//! Founds an organization: the name is checked, then LF_OrgConfig.FoundingFee() leaves the
 	//! founder's carried MoneyStack. A refused registration gives the fee back.
 	//! \return Empty on success, else the localization key the ledger shows.
 	static string Found(IEntity user, string name)
@@ -80,7 +76,7 @@ class LF_OrganizationPlayer
 			return "#LF-Org_NameTaken";
 		}
 
-		int fee = LF_OrgRules.FOUNDING_FEE;
+		int fee = LF_OrgConfig.FoundingFee();
 		int removed = LF_MoneyUtils.RemoveCash(user, fee, "org-fee");
 		if (removed != fee)
 		{

@@ -26,8 +26,6 @@
 //------------------------------------------------------------------------------------------------
 class LF_JailArrestAction : ScriptedUserAction
 {
-	protected static const float MAX_RANGE = 5.0;
-
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
@@ -60,7 +58,7 @@ class LF_JailArrestAction : ScriptedUserAction
 			return false;
 		}
 
-		if (vector.Distance(GetOwner().GetOrigin(), user.GetOrigin()) > MAX_RANGE)
+		if (vector.Distance(GetOwner().GetOrigin(), user.GetOrigin()) > LF_PoliceConfig.ArrestReach())
 		{
 			SetCannotPerformReason("#EL-Jail_NotWanted");
 			return false;

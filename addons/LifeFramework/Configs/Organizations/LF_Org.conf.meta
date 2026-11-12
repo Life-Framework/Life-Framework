@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{EA86F8E6A6BCA687}Configs/Organizations/LF_Org.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

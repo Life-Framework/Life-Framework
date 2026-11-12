@@ -21,7 +21,6 @@ class LF_VehicleGarageComponentClass : ScriptComponentClass
 class LF_VehicleGarageComponent : ScriptComponent
 {
 	static const ResourceName GARAGE_SHELL = "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et";
-	static const float INTERACT_RADIUS = 15.0;
 
 	[Attribute("", UIWidgets.EditBox, desc: "Pad id of the LF_VehicleSpawnPointComponent a retrieved vehicle is placed on, in front of this garage.")]
 	protected string m_sPadId;
@@ -64,7 +63,7 @@ class LF_VehicleGarageComponent : ScriptComponent
 			if (!garage || !garage.GetOwner())
 				continue;
 
-			if (vector.Distance(origin, garage.GetOwner().GetOrigin()) <= INTERACT_RADIUS)
+			if (vector.Distance(origin, garage.GetOwner().GetOrigin()) <= LF_GarageConfig.GarageRadius())
 				return garage;
 		}
 
@@ -99,12 +98,12 @@ class LF_VehicleGarageComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	//! Storing takes the vehicle off the map, so the vehicle has to be at the garage the player is
 	//! using. Checking only the player let an owner store a car from anywhere.
-	//! \return true when both the player and the vehicle stand within INTERACT_RADIUS of garageOrigin.
+	//! \return true when both the player and the vehicle stand within the garage radius of garageOrigin.
 	static bool SharesGarage(vector garageOrigin, vector playerOrigin, vector vehicleOrigin)
 	{
-		if (vector.Distance(playerOrigin, garageOrigin) > INTERACT_RADIUS)
+		if (vector.Distance(playerOrigin, garageOrigin) > LF_GarageConfig.GarageRadius())
 			return false;
 
-		return vector.Distance(vehicleOrigin, garageOrigin) <= INTERACT_RADIUS;
+		return vector.Distance(vehicleOrigin, garageOrigin) <= LF_GarageConfig.GarageRadius();
 	}
 }

@@ -25,7 +25,7 @@ class LF_Test_OrgRegistry : LF_Test
 		ctx.EqualStr("#LF-Org_NameLong", LF_OrgRules.RefuseName("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFG"), "33 letters are refused");
 		ctx.EqualStr("#LF-Org_NameChars", LF_OrgRules.RefuseName("Red|Hand"), "a separator character is refused");
 		ctx.EqualStr("#LF-Org_NameChars", LF_OrgRules.RefuseName("Red  Hand"), "a double space is refused");
-		ctx.True(LF_OrgRules.FOUNDING_FEE > 0, "founding costs a fee");
+		ctx.True(LF_OrgConfig.FoundingFee() > 0, "founding costs a fee");
 
 		string founder = "org-reg-founder";
 		string member = "org-reg-member";
@@ -62,7 +62,7 @@ class LF_Test_OrgRegistry : LF_Test
 		ctx.Equal(LF_EOrgOfferResult.REFUSED_ALREADY_MEMBER, LF_OrgInvites.Offer(founder, 1, member, now), "a member cannot be offered again");
 
 		ctx.Equal(LF_EOrgOfferResult.OFFERED, LF_OrgInvites.Offer(founder, 1, outsider, now), "the founder offers the outsider");
-		ctx.Equal(LF_EOrgOfferResult.REFUSED_NO_OFFER, LF_OrgInvites.Accept(outsider, founder, now + LF_OrgRules.OFFER_MS + 1), "a lapsed offer cannot be taken");
+		ctx.Equal(LF_EOrgOfferResult.REFUSED_NO_OFFER, LF_OrgInvites.Accept(outsider, founder, now + LF_OrgConfig.OfferMs() + 1), "a lapsed offer cannot be taken");
 		ctx.False(org.IsMember(outsider), "the lapsed offer did not join");
 
 		// Removal: the founder removes a member; a member cannot remove; nobody removes the founder.

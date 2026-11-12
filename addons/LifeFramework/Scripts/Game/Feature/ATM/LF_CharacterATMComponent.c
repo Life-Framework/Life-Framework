@@ -5,10 +5,6 @@ class LF_CharacterATMComponentClass : ScriptComponentClass
 
 class LF_CharacterATMComponent : ScriptComponent
 {
-	//! How far the player may stand from an ATM's origin when the server takes a deposit or
-	//! withdraw. The ATM action shows at 3 m; the extra 2 m absorbs movement and latency.
-	static const float ATM_RANGE = 5.0;
-
 	//! World cue when cash changes hands at the machine: the character handling notes, played on
 	//! the character for everyone nearby (vanilla inventory sound, same as the counter pay-outs).
 	static const string CASH_SOUND = "SOUND_PICK_UP";
@@ -67,11 +63,11 @@ class LF_CharacterATMComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! \param origin World position of the player.
-	//! \return true when an ATM stands within ATM_RANGE of origin. The server checks this on every
+	//! \return true when an ATM stands within the configured ATM range of origin. The server checks this on every
 	//! deposit and withdraw, so a screen kept open (or a forged RPC) cannot bank cash away from an ATM.
 	static bool IsAtATM(vector origin)
 	{
-		return LF_ActionSite.IsNear(origin, ATM_RANGE, "LF_ATMAction");
+		return LF_ActionSite.IsNear(origin, LF_LedgerConfig.AtmRange(), "LF_ATMAction");
 	}
 
 	//------------------------------------------------------------------------------------------------

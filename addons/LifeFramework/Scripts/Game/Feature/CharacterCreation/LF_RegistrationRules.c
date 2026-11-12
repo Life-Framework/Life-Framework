@@ -10,8 +10,6 @@
 class LF_RegistrationRules
 {
 	static const int NAME_MAX_LENGTH = 32;
-	static const int MIN_AGE = 18;
-	static const int MAX_AGE = 80;
 
 	//------------------------------------------------------------------------------------------------
 	//! \param name Already trimmed.
@@ -68,7 +66,7 @@ class LF_RegistrationRules
 	//------------------------------------------------------------------------------------------------
 	static string RefuseAge(int age)
 	{
-		if (age < MIN_AGE || age > MAX_AGE)
+		if (age < LF_CharacterConfig.MinAge() || age > LF_CharacterConfig.MaxAge())
 			return "#EL-CC_Error_Age";
 
 		return "";

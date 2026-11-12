@@ -173,10 +173,6 @@ class LF_FineTickets
 {
 	static const string FEATURE = "Ticket";
 	static const string OFFENCE_UNPAID = "#LF-Offence_UnpaidFine";
-	//! A holder carries at most this many unpaid tickets; one more is refused.
-	static const int MAX_OPEN_PER_HOLDER = 3;
-	//! Paid tickets kept per holder, so a receipt reprints after a restart.
-	static const int KEEP_PAID_PER_HOLDER = 3;
 	static const int TICK_MS = 1000;
 
 	protected static ref array<ref LF_FineTicketRecord> s_aTickets;
@@ -424,7 +420,7 @@ class LF_FineTickets
 		if (officer)
 			cap = LF_PoliceRanks.FineCap(officer.GetPoliceRank());
 
-		return LF_FineTicketRules.CheckWrite(onDuty, cap, amount, valid, !holderUid.IsEmpty(), holderUid == officerUid, CountOpen(holderUid), MAX_OPEN_PER_HOLDER);
+		return LF_FineTicketRules.CheckWrite(onDuty, cap, amount, valid, !holderUid.IsEmpty(), holderUid == officerUid, CountOpen(holderUid), LF_PoliceConfig.TicketMaxOpen());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -552,7 +548,7 @@ class LF_FineTickets
 				continue;
 
 			paidSeen++;
-			if (paidSeen > KEEP_PAID_PER_HOLDER)
+			if (paidSeen > LF_PoliceConfig.TicketKeepPaid())
 				Tickets().Remove(i);
 		}
 	}
