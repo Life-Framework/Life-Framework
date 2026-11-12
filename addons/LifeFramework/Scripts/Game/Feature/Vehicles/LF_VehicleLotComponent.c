@@ -110,7 +110,7 @@ class LF_VehicleLotComponent : ScriptComponent
 				continue;
 
 			string offerPrefab = offer.GetPrefab();
-			if (offerPrefab == wanted)
+			if (LF_Utils.SamePrefab(offerPrefab, wanted))
 				return offer;
 		}
 

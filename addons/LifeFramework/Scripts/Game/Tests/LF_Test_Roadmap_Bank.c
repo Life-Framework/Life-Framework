@@ -148,10 +148,10 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 		Resource crate = Resource.Load(LF_Bank.CRATE_MESH);
 		ctx.True(crate.IsValid(), "Crate_01.xob loads");
 
-		IEntity vault = GetGame().GetWorld().FindEntityByName("Roadmap_Bank_Vault");
-		ctx.True(vault != null, "Roadmap_Bank_Vault is placed");
-		IEntity bag = GetGame().GetWorld().FindEntityByName("Roadmap_Bank_Bag");
-		ctx.True(bag != null, "Roadmap_Bank_Bag is placed");
+		IEntity vault = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BANK_VAULT);
+		ctx.True(vault != null, "Annex_Bank_Vault is placed");
+		IEntity bag = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BANK_BAG);
+		ctx.True(bag != null, "Annex_Bank_Bag is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -180,8 +180,8 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 		}
 
 		ctx.True(robWired, "rob action is on the vault");
-		ctx.Equal(1, LF_Bank.GetConfiguredBagCount("Roadmap_Bank_Vault"), "world vault spawns one bag");
-		ctx.Equal(500, LF_Bank.GetCashPerBag("Roadmap_Bank_Vault"), "world vault cash per bag is 500");
+		ctx.Equal(1, LF_Bank.GetConfiguredBagCount(LF_TestAnnex.BANK_VAULT), "world vault spawns one bag");
+		ctx.Equal(500, LF_Bank.GetCashPerBag(LF_TestAnnex.BANK_VAULT), "world vault cash per bag is 500");
 
 		string uid = "roadmap-bank-e2e";
 		string policeUid = "roadmap-bank-e2e-police";
@@ -193,26 +193,26 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 		bank.SetBalance(0);
 
 		if (!doorLock.IsLocked())
-			LF_Breach.Repair("Roadmap_Bank_Vault", policeUid);
+			LF_Breach.Repair(LF_TestAnnex.BANK_VAULT, policeUid);
 
 		ctx.True(doorLock.IsLocked(), "vault is locked before the zero-fuse robbery");
 
-		int notifiesBefore = LF_Breach.GetPoliceNotifyCount("Roadmap_Bank_Vault");
+		int notifiesBefore = LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.BANK_VAULT);
 		if (robAction)
 			robAction.CanBePerformedScript(vault);
 
-		ctx.Equal(notifiesBefore, LF_Breach.GetPoliceNotifyCount("Roadmap_Bank_Vault"), "live offer refresh does not notify");
-		ctx.True(LF_Bank.Rob("Roadmap_Bank_Vault", uid), "zero-fuse vault opens");
+		ctx.Equal(notifiesBefore, LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.BANK_VAULT), "live offer refresh does not notify");
+		ctx.True(LF_Bank.Rob(LF_TestAnnex.BANK_VAULT, uid), "zero-fuse vault opens");
 		ctx.False(doorLock.IsLocked(), "vault IsLocked() is false after the fuse");
-		ctx.Equal(1, LF_Bank.GetSpawnedBagCount("Roadmap_Bank_Vault"), "one bag exists");
+		ctx.Equal(1, LF_Bank.GetSpawnedBagCount(LF_TestAnnex.BANK_VAULT), "one bag exists");
 		ctx.Equal(500, LF_Bank.ReadWorldBagCash(bag), "bag MoneyStack quantity is the config value");
 		ctx.NotNull(LF_Component<LF_HandCarryComponent>.Find(bag), "the filled bag is still hand-carry");
 		ctx.Equal(0, bank.GetBalance(), "world haul leaves the bank balance at 0");
 		ctx.Equal(1, account.GetWantedLevel(), "world haul raises wanted once");
 
 		int cashAfter = LF_Bank.ReadWorldBagCash(bag);
-		ctx.False(LF_Bank.Rob("Roadmap_Bank_Vault", uid), "second world breach inside the cooldown refuses");
-		ctx.Equal(1, LF_Bank.GetSpawnedBagCount("Roadmap_Bank_Vault"), "second world breach spawns nothing");
+		ctx.False(LF_Bank.Rob(LF_TestAnnex.BANK_VAULT, uid), "second world breach inside the cooldown refuses");
+		ctx.Equal(1, LF_Bank.GetSpawnedBagCount(LF_TestAnnex.BANK_VAULT), "second world breach spawns nothing");
 		ctx.Equal(cashAfter, LF_Bank.ReadWorldBagCash(bag), "second world breach does not add cash");
 		ctx.Equal(0, bank.GetBalance(), "second world breach leaves the bank balance at 0");
 	}
@@ -228,13 +228,13 @@ class LF_Test_Roadmap_BankPersistence : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity bag = GetGame().GetWorld().FindEntityByName("Roadmap_Bank_Bag");
-		ctx.True(bag != null, "Roadmap_Bank_Bag is placed for the save round trip");
+		IEntity bag = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BANK_BAG);
+		ctx.True(bag != null, "Annex_Bank_Bag is placed for the save round trip");
 		if (ctx.FailureCount() > 0)
 			return;
 
 		string uid = "roadmap-bank-save";
-		string vaultId = "Roadmap_Bank_Vault";
+		string vaultId = LF_TestAnnex.BANK_VAULT;
 		LF_BankAccount bank = LF_ATMManager.GetOrCreate(uid);
 		bank.SetBalance(0);
 

@@ -9,6 +9,16 @@ class LF_RestrictedInventoryStorageComponent : SCR_UniversalInventoryStorageComp
     
     override bool CanStoreItem(IEntity item, int slotID)
     {   
-        return m_TradablePrefabs.Contains(item.GetPrefabData().GetPrefabName());
+        if (!m_TradablePrefabs || !item || !item.GetPrefabData())
+            return false;
+
+        ResourceName prefab = item.GetPrefabData().GetPrefabName();
+        foreach (ResourceName tradable : m_TradablePrefabs)
+        {
+            if (LF_Utils.SamePrefab(tradable, prefab))
+                return true;
+        }
+
+        return false;
     }
 }

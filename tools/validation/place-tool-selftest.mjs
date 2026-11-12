@@ -9,9 +9,12 @@
 //   offlineProblems road test inverted  -> FAIL offline: a sign on the carriageway is refused
 //   setTransform writing every depth    -> FAIL edit: a child's coords stay
 //   judge without the gap test          -> FAIL judge: a base 0.2 m above its support fails
+// red-proof: 2026-11-12, one line broken per move bug (#833 follow-up), each restored after its FAIL was seen:
+//   setTransform ignoring `scale`       -> FAIL edit: --scale on a move writes the scale line
+//   excludeOf returning item.name only  -> FAIL exclude: an unnamed moved entity is excluded by prefab and spot
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { obbPenetration } from "../../agent-box/place-audit.mjs";
-import { PlaceError, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
+import { PlaceError, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -200,6 +203,16 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   ok(moved.replace(" coords 179.056 1.039 244.276\n angleY 90\n", " coords 179.85 1.04 244.33\n") === LAYER, "edit: no other byte changes");
   const again = setTransform(moved, "Shop_Till", { coords: [179, 1.039, 244], yaw: 0 });
   ok(again.includes(" coords 179 1.039 244\n angleY 0\n"), "edit: an existing angleY line is rewritten, not doubled");
+  // `place ground --move X --scale S` kept the old scale: the move wrote coords and angleY only.
+  const scaled = setTransform(LAYER, "Shop_Till", { coords: [179.0561, 1.039, 244.2764], yaw: 90, scale: 0.8 });
+  ok(scaled.includes(" coords 179.056 1.039 244.276\n angleY 90\n scale 0.8\n"), "edit: --scale on a move writes the scale line after angleY");
+  const rescaled = setTransform(scaled, "Shop_Till", { coords: [179, 1.039, 244], yaw: 90, scale: 0.5 });
+  ok(rescaled.includes(" angleY 90\n scale 0.5\n") && !rescaled.includes("scale 0.8"), "edit: an existing scale line is rewritten, not doubled");
+  ok(setTransform(LAYER, "Shop_Till", { coords: [1, 2, 3], yaw: 0 }) === setTransform(LAYER, "Shop_Till", { coords: [1, 2, 3], yaw: 0, scale: null }) && !setTransform(LAYER, "Shop_Till", { coords: [1, 2, 3], yaw: 0 }).includes("scale"), "edit: no --scale leaves the scale alone");
+  // The ground probe stood on the collision of the pot being moved: an unnamed one had no exclude.
+  const pot = { mode: "move", name: "", prefab: "Prefabs/Props/FlowerPot.et", ent: { x: 241.4, y: 0.1234, z: 241.3 } };
+  ok(excludeOf(pot) === "@FlowerPot:241.4,0.123,241.3", `exclude: an unnamed moved entity is excluded by prefab and spot (got ${excludeOf(pot)})`);
+  ok(excludeOf({ ...pot, name: "Pot_1" }) === "Pot_1" && excludeOf({ ...pot, mode: "new" }) === "", "exclude: a named entity by name, a new one not at all");
   const lamp = setTransform(LAYER, { prefab: "Prefabs/Lamps/LampStreet.et", coordsText: "196 0 255.4" }, { coords: [199, 0, 255.4], yaw: 0 });
   ok(lamp.includes(" coords 199 0 255.4\n") && lamp.includes(" coords 204.5 0 255.4\n") && !lamp.includes("coords 196 "), "edit: an unnamed entity is found by its prefab and coords");
   refuses(() => setTransform(LAYER, "Shop_Nope", { coords: [0, 0, 0], yaw: 0 }), /0 entity blocks/, "edit: an unknown entity is refused");

@@ -311,8 +311,21 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
 - `e2e/pass1-write-save` / `e2e/pass2-verify-load` (PERSISTENCE, two boots)
   also carry a jail sentence and a carried inventory (237 cash, 3 apples, a
   water bottle inside a backpack) across the real restart.
+- `tools\cli wt e2e` proves the SHUTDOWN save, the save a real server
+  writes when it stops (#830). Both boots run the suite's mission header
+  (`Missions/EL_DebugTest.conf`, an `LF_MissionHeader` watching the stop
+  file): on a bare world (`-server DebugWorld.ent`, no mission header) the
+  engine enters `SHUTDOWN` but writes no SHUTDOWN save, so pass 2 used to load
+  the manual save. Pass 1 (`LF_E2E_HOST_STOP`) ends through the host stop
+  file, as `host stop` does, and fails unless its log shows `stop requested`,
+  then `save completed (SHUTDOWN)`, then `feature statics reset`
+  (`tools/test/e2e-shutdown.mjs`); `session ended without a shutdown save`
+  fails it. `e2e/shutdown-save-loaded` opens a marker account only after the
+  manual save finished, so pass 2 finds it (77 and its ledger line) only when
+  it loaded the shutdown save and that save was written before the statics
+  reset.
 - `persist/carried-roundtrip` (PERSISTENCE) and `persist/carried-death-no-dupe`
   (WORLD) drive the carried payload through the real serializer and the death rule.
-- In-session round trips prove nothing; the restart is ground truth. The
-  restart pass (save -> shutdown -> boot -> load) stays manual because the
-  `LF_Test` runner cannot survive a game-state transition.
+- In-session round trips prove nothing; the restart is ground truth. `wt e2e`
+  covers save -> host-stop shutdown -> boot -> load with two processes; a
+  single `LF_Test` run cannot survive a game-state transition.

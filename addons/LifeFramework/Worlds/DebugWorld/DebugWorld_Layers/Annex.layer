@@ -280,3 +280,1175 @@ SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFenc
  coords 20 0 107
  angleY -90
 }
+GenericEntity Annex_Bank_Vault : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  MeshObject "{309366462BDAFB24}" {
+   Object "{ED2F500AB16EFD41}Assets/Structures/BuildingsParts/Doors/Door_Metal/Door_Metal_01_LEFT_EXT_COV_B.xob"
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 0.8441 1.1849 -0.0102
+     }
+     Radius 0.6
+     Height 2.3596
+    }
+   }
+   additionalActions {
+    LF_BankRobAction "{7C31A9E04B18D6A1}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{7C31A9E04B18D6A2}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{7C31A9E04B18D6A3}" {
+   m_sTargetId "Annex_Bank_Vault"
+   m_fFuseSeconds 0
+  }
+  LF_BankVaultComponent "{7C31A9E04B18D6A4}" {
+   m_sVaultId "Annex_Bank_Vault"
+   m_sBagEntity "Annex_Bank_Bag"
+   m_fJamChance 0
+   m_iBagCount 1
+   m_iCashPerBag 500
+   m_fCooldownSeconds 60
+   m_iMinPoliceOnDuty 0
+   m_fFuseSeconds 0
+  }
+ }
+ coords 71.534 -0.005 36.01
+ angleY 0
+}
+GenericEntity Annex_Bank_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{E6EBA17EFBFBA4A4}" {
+   m_vOffset 0 0.167 0.065
+  }
+ }
+ coords 71.5 1.667 35.977
+ angleY 180
+}
+GenericEntity Annex_Bank_Bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
+ Flags 0x403 0
+ coords 72.002 0.025 40.987
+ angleY 0
+ {
+  GenericEntity Annex_Bank_Bag_Cash : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+   coords 0 0.15 0
+  }
+ }
+}
+GenericEntity Annex_Bank_RobKit : "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et" {
+ coords 76 0 40.999
+ angleY 0
+}
+GenericEntity Annex_Cash_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
+ components {
+  LF_AlarmMountComponent "{E7C1AAFA98829903}" {
+   m_vOffset 0 1.885 -0.6
+  }
+ }
+ coords 92 -0.18 56.995
+ angleY 0
+}
+GenericEntity Annex_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et" {
+ components {
+  LF_HeistVaultComponent "{6C2C6ED0D7BD0D97}" {
+   m_fJamChance 0
+  }
+ }
+ coords 97 0 56.999
+}
+GenericEntity Annex_Breach_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   additionalActions {
+    LF_BreachArmAction "{9FC39D1FD2D5C563}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{34F9DEEE60EE9A85}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{15EB1954E0E42179}" {
+   m_sTargetId "Annex_Breach_Door"
+   m_fFuseSeconds 0
+  }
+ }
+ coords 77.363 -0.001 35.957
+}
+GenericEntity Annex_Breach_Charge : "{E78C99E5029D52A5}Prefabs/Items/Fence/LF_Charge.et" {
+ coords 79.998 0.001 40.999
+}
+GenericEntity Annex_Lockpick_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_sDebugIdentifier "annex-lockpick-door"
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   additionalActions {
+    LF_LockpickAction "{2D7E41B9C60A38F5}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_LockpickTargetComponent "{A3F5106D9E2B7C84}" {
+  }
+ }
+ coords 83.363 -0.001 35.957
+}
+GenericEntity Annex_Lockpick_Car : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 1
+   m_bDebugLocked 1
+  }
+ }
+ coords 72 -0.132 57.012
+ angleY 0
+}
+GenericEntity Annex_ChopShop : "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.et" {
+ components {
+  LF_ChopShopComponent "{2B2DF07E2B55506C}" {
+   m_sShopId "annex-chop"
+  }
+ }
+ coords 95.999 0.005 40.995
+ angleY 0
+}
+GenericEntity Annex_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 0
+  }
+ }
+ coords 78 -0.132 57.012
+ angleY 0
+}
+GenericEntity Annex_Police_Desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ Flags 0x403 0
+ coords 72.851 0 46.627
+}
+GenericEntity Annex_Police_Armory {
+ components {
+  MeshObject "{A7C31A9B04D25011}" {
+   Object "{138FB8A2D71B1603}Assets/Props/Furniture/CabinetMetal_01/CabinetMetal_01.xob"
+   Materials {
+    MaterialAssignClass "{A7C31A9B04D25019}" {
+     SourceMaterial "CabinetMetal_01"
+     AssignedMaterial "{50729867FFC0AF7F}Assets/Props/Furniture/CabinetMetal_01/Data/CabinetMetal_01_V1.emat"
+    }
+   }
+  }
+  RigidBody "{A7C31A9B04D25012}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C31A9B04D25013}" {
+   ActionContexts {
+    UserActionContext "{A7C31A9B04D25014}" {
+     ContextName "default"
+     Position PointInfo "{A7C31A9B04D25015}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ArmoryDrawAction "{A7C31A9B04D25016}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RankPromoteAction "{A7C31A9B04D25017}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C31A9B04D25018}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 76 0 46.978
+}
+GenericEntity Annex_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
+ coords 79.99 0 47.009
+ angleY 0
+}
+GenericEntity Annex_Police_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
+ coords 84 0 46.978
+}
+GenericEntity Annex_Escort_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_sDebugIdentifier "POLICE"
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_JailPutInVehicleAction "{B2E1080B00000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{B2E1080B00000002}" {
+      Name "#EL-Escort_PutIn"
+     }
+    }
+   }
+  }
+ }
+ coords 84.024 -0.212 56.831
+ angleY 0
+}
+GenericEntity Annex_Hideout_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
+   m_sHideoutId "Annex_Hideout"
+  }
+ }
+ coords 89.363 -0.001 35.957
+}
+GenericEntity Annex_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ components {
+  MeshObject "{598F21A867C4015C}" {
+   Object "{8CCFA9079E967BB2}Assets/Props/Commercial/CoffeeGrinderShop_01/CoffeeGrinderShop_01.xob"
+  }
+  LF_HideoutMachineComponent "{724A0A6E41985D0F}" {
+   m_sHideoutId "Annex_Hideout"
+  }
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   ActionContexts {
+    UserActionContext "{598F21A871DA7304}" {
+     ContextName "default"
+     Position PointInfo "{598F21A875320722}" {
+      Offset 0 0.3718 0.1281
+     }
+     Radius 1
+    }
+   }
+   additionalActions {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A5AA4F6D4DB83652}" {
+      Name "#EL-Hideout_Process"
+     }
+     m_aProcessingInputs {
+      LF_ProcessingInput "{53E2575C89C0AF7C}" {
+       m_InputPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
+       m_iInputAmount 1
+      }
+     }
+     m_aProcessingOutputs {
+      LF_ProcessingOutput "{D5F5BDAE187E0DD3}" {
+       m_OutputPrefab "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et"
+       m_iOutputAmount 1
+      }
+     }
+    }
+   }
+  }
+ }
+ coords 86 0 41.017
+}
+GenericEntity Annex_Hideout_Stash : "{FD1CCD705B12BBCB}Prefabs/Props/Hideouts/LF_HideoutStash.et" {
+ components {
+  LF_HideoutStashStorageManagerComponent "{E7B14A09000C5EB1}" {
+   m_sHideoutId "Annex_Hideout"
+  }
+  LF_PersistentStorageComponent "{DFF89A3BB63551AE}" {
+   m_sStorageKey "hideout:Annex_Hideout"
+  }
+ }
+ coords 90 0 40.999
+}
+GenericEntity Annex_Jail_Door : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 1.1594 1.205 0.0196
+     }
+     Radius 0.6528
+     Height 2.41
+    }
+   }
+   additionalActions {
+    LF_BreachArmAction "{30DA080036F318AA}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{C82C7E9C610EFB5D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{D2FC9663261624B6}" {
+   m_sTargetId "Annex_Jail_Door"
+   m_fFuseSeconds 0
+  }
+ }
+ Flags 0x403 0
+ coords 95.363 0 46.98
+}
+GenericEntity Annex_Jail_Cell {
+ components {
+  MeshObject "{A8A8F0F320D87587}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{A60BB662C605A567}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 89.999 0.003 47
+}
+GenericEntity Annex_Job_Depot : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et" {
+ components {
+  ActionsManagerComponent "{B0B5A00100000001}" {
+   ActionContexts {
+    UserActionContext "{B0B5A00100000002}" {
+     ContextName "default"
+     Position PointInfo "{B0B5A00100000003}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_JobSignUpAction "{B0B5A00100000011}" {
+     ParentContextList {
+      "default"
+     }
+     m_eJob PARCEL
+    }
+    LF_JobSignUpAction "{B0B5A00100000013}" {
+     ParentContextList {
+      "default"
+     }
+     m_eJob FUEL_DELIVERY
+    }
+    LF_JobSignUpAction "{B0B5A00100000015}" {
+     ParentContextList {
+      "default"
+     }
+     m_eJob TAXI
+    }
+    LF_JobStartRunAction "{B0B5A00100000017}" {
+     ParentContextList {
+      "default"
+     }
+     m_eJob PARCEL
+    }
+    LF_JobAbandonAction "{B0B5A00100000019}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_CollectBenefitAction "{B0B5A0010000001D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_JobSiteComponent "{B0B5A0010000001C}" {
+   m_eSite DEPOT
+  }
+ }
+ coords 69.246 0 66.195
+ angleY 0
+}
+GenericEntity Annex_Job_Drop {
+ components {
+  MeshObject "{B0B5A00200000001}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{B0B5A00200000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{B0B5A00200000003}" {
+   ActionContexts {
+    UserActionContext "{B0B5A00200000004}" {
+     ContextName "default"
+     Position PointInfo "{B0B5A00200000005}" {
+      Offset 0 0.5 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_JobDropoffAction "{B0B5A00200000006}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_JobSiteComponent "{B0B5A00200000009}" {
+   m_eSite DROP
+  }
+  RplComponent "{B0B5A00200000008}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 75.999 0.003 66
+}
+GenericEntity Annex_Job_TaxiPad {
+ components {
+  ActionsManagerComponent "{B0B5A00300000001}" {
+   ActionContexts {
+    UserActionContext "{B0B5A00300000002}" {
+     ContextName "default"
+     Position PointInfo "{B0B5A00300000003}" {
+      Offset 0 1 0
+     }
+     Radius 4
+    }
+   }
+   additionalActions {
+    LF_JobStartRunAction "{B0B5A00300000004}" {
+     ParentContextList {
+      "default"
+     }
+     m_eJob TAXI
+    }
+   }
+  }
+  LF_JobSiteComponent "{B0B5A00300000007}" {
+   m_eSite TAXI
+  }
+  RplComponent "{B0B5A00300000006}" {
+   Enabled 1
+  }
+ }
+ coords 81.997 0 66.002
+ {
+  $grp GenericEntity : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
+   {
+    coords 0 0 4
+   }
+  }
+ }
+}
+GenericEntity Annex_Job_FuelCan {
+ components {
+  ActionsManagerComponent "{B0B5A00400000001}" {
+   ActionContexts {
+    UserActionContext "{B0B5A00400000002}" {
+     ContextName "default"
+     Position PointInfo "{B0B5A00400000003}" {
+      Offset 0 0.4 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_JobStartRunAction "{B0B5A00400000004}" {
+     ParentContextList {
+      "default"
+     }
+     m_eJob FUEL_DELIVERY
+    }
+   }
+  }
+  LF_JobSiteComponent "{B0B5A00400000007}" {
+   m_eSite FUEL
+  }
+  RplComponent "{B0B5A00400000006}" {
+   Enabled 1
+  }
+ }
+ coords 87.997 0 66.002
+ {
+  $grp GenericEntity : "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et" {
+   Annex_Job_FuelItem {
+    coords 0 0 0
+   }
+  }
+ }
+}
+GenericEntity Annex_Org_Desk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ components {
+  ActionsManagerComponent "{84F263DF01236A06}" {
+   ActionContexts {
+    UserActionContext "{3F6AF5F26DCE3739}" {
+     ContextName "default"
+     Position PointInfo "{7B23E0D8F24C1C76}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_OrganizationDeskAction "{A400B8708D3E8AFE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8CFE7804D25C87CE}" {
+      Name "#EL-Org_Open"
+     }
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 94.851 0 65.627
+}
+GenericEntity Annex_Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
+ coords 104 0 65.932
+}
+GenericEntity Annex_Vehicle_Lot {
+ components {
+  MeshObject "{E1B0E70100000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{E1B0E70100000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_VehicleLotComponent "{E1B0E70100000003}" {
+   m_sShopId "annex-lot"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_aOffers {
+    LF_VehicleOffer "{E1B0E70100000011}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
+     m_iPrice 1000
+     m_sNameKey "#EL-Vehicle_S105"
+    }
+    LF_VehicleOffer "{E1B0E70100000012}" {
+     m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+     m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
+     m_iPrice 2500
+     m_sNameKey "#EL-Vehicle_UAZ469"
+    }
+    LF_VehicleOffer "{E1B0E70100000013}" {
+     m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+     m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
+     m_iPrice 4000
+     m_sNameKey "#EL-Vehicle_S1203"
+    }
+    LF_VehicleOffer "{E1B0E70100000014}" {
+     m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+     m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
+     m_iPrice 3500
+     m_sNameKey "#EL-Vehicle_UAZ452"
+    }
+    LF_VehicleOffer "{E1B0E70100000015}" {
+     m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
+     m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
+     m_iPrice 8000
+     m_sNameKey "#EL-Vehicle_M923"
+    }
+   }
+  }
+  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+   m_sShopId "annex-lot"
+   m_vOffset -5 0 -5
+  }
+  ActionsManagerComponent "{E1B0E70100000006}" {
+   ActionContexts {
+    UserActionContext "{E1B0E70100000007}" {
+     ContextName "default"
+     Position PointInfo "{E1B0E70100000008}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{E1B0E70100000021}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{E1B0E70100000009}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 96 0 83.964
+}
+GenericEntity Annex_Garage {
+ components {
+  MeshObject "{A1C1080A0000000A}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{A1C1080A0000000B}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_VehicleGarageComponent "{A1C1080A00000001}" {
+   m_sPadId "annex-garage"
+  }
+  LF_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
+   m_sShopId "annex-garage"
+   m_vOffset 0 0 -2
+   m_iSlots 3
+   m_vSlotStep -7 0 0
+   m_vAngles 90 0 0
+  }
+  ActionsManagerComponent "{A1C1080A00000002}" {
+   ActionContexts {
+    UserActionContext "{A1C1080A00000003}" {
+     ContextName "default"
+     Position PointInfo "{A1C1080A00000004}" {
+      Offset 0 1.0 2.0
+     }
+     Radius 3.5
+    }
+   }
+   additionalActions {
+    LF_VehicleStoreAction "{A1C1080A00000005}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A1C1080A00000006}" {
+      Name "#EL-Vehicle_Store"
+     }
+    }
+    LF_VehicleRetrieveAction "{A1C1080A00000007}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A1C1080A00000008}" {
+      Name "#EL-Vehicle_Retrieve"
+     }
+    }
+    LF_GarageLedgerAction "{C9A69B1164585666}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{006BD8DCF53DEDC6}" {
+      Name "#LF-Garage_ReadLedger"
+     }
+    }
+   }
+  }
+  RplComponent "{A1C1080A00000009}" {
+   Enabled 1
+  }
+ }
+ coords 96 0 97.964
+ {
+  GenericEntity : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
+   coords 0 0 5.9
+   angleY 180
+  }
+ }
+}
+GenericEntity Annex_Impound_Desk {
+ components {
+  MeshObject "{DE98802C17B46422}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{5F5D1789B1447AD1}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ImpoundDeskComponent "{B7547E5E3F7A5535}" {
+   m_sPadId "annex-impound"
+  }
+  LF_VehicleSpawnPointComponent "{853E602F9A3F24EC}" {
+   m_sShopId "annex-impound"
+   m_vOffset 6 0 8
+   m_iSlots 3
+   m_vSlotStep -6 0 0
+   m_vAngles 180 0 0
+  }
+  ActionsManagerComponent "{47EB65DDFAE5E427}" {
+   ActionContexts {
+    UserActionContext "{BFA166AD194CF220}" {
+     ContextName "default"
+     Position PointInfo "{52BBA330E1E12774}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ImpoundCollectAction "{2D594A0A83AE40B7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2426F79B9E22C4CB}" {
+      Name "#LF-Impound_Collect"
+     }
+    }
+    LF_GarageLedgerAction "{AB18B805A523E985}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3AE5CC43C788D6EE}" {
+      Name "#LF-Garage_ReadLedger"
+     }
+    }
+   }
+  }
+  RplComponent "{9C41D07E2B85F3A6}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 72 0 81.964
+}
+GenericEntity Annex_ATM {
+ components {
+  ActionsManagerComponent "{5A4B0B84C86D5845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86D5846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86D5847}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ATMAction "{5A4B0B84C86D5848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86D5849}" {
+      Name "#EL-ATM_Title"
+      Description "Gestionar cuenta bancaria"
+     }
+    }
+   }
+  }
+  RplComponent "{5A4B0B84C86D584A}" {
+   Enabled 1
+  }
+ }
+  Flags 0x403 0
+ coords 99.997 0 66.002
+ angleY 180
+}
+GenericEntity Annex_AppleTrader {
+ coords 99.997 0 75.002
+ {
+  $grp GenericEntity {
+   Annex_AppleTradeContainer {
+    components {
+     LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
+      Attributes SCR_ItemAttributeCollection "{59693C53B153D96B}" {
+       ItemDisplayName UIInfo "{59693C53AAB06F2D}" {
+        Name "Apple Trade"
+        Description "Trade apples for ammo"
+       }
+       ItemPhysAttributes ItemPhysicalAttributes "{59693C53A3873124}" {
+       }
+       CustomAttributes {
+        PreviewRenderAttributes "{59693C53D4D18183}" {
+         CameraOrbitAngles 330 30 0
+         CameraDistanceToItem 1
+        }
+       }
+       CommonItemType "NONE"
+       m_Size SLOT_3x3
+       m_SlotType SLOT_ANY
+      }
+      m_fMaxWeight 1000
+      m_TradablePrefabs {
+       "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+      }
+     }
+     LF_TraderManagerComponent "{59693C53B6A5EFC0}" {
+      m_aTradableItems {
+       LF_TraderItem "{58CA092EB7FD6143}" {
+        m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+        m_ValuePerItem 5
+       }
+      }
+     }
+     MeshObject "{59670CE9C98E5BAF}" {
+      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+     }
+     RigidBody "{59670CE9C98E5B27}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{59670CE9C98E5814}" {
+      ActionContexts {
+       UserActionContext "{59670CE9C98E5829}" {
+        ContextName "default"
+        Position PointInfo "{59670CE9C98E582A}" {
+         Offset 0 0.0873 0
+        }
+        Radius 1.5
+       }
+      }
+      additionalActions {
+       LF_OpenTraderAction "{59670CE9FBF3C749}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{59670CE9F9F9794D}" {
+         Name "Trade Apples"
+         Description "Trade apples for ammo"
+        }
+       }
+      }
+     }
+     RplComponent "{59670CE9C98E581E}" {
+      Enabled 1
+     }
+    }
+    Flags 0x403 0
+    coords -2.6 0.9 0.7
+   }
+   Annex_AppleTraderTestItems {
+     coords 0 0.9 0.7
+    {
+     $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
+      Annex_Apple_5A0E821DC5FD6433 {
+       coords -0.137 -0.036 -0.08
+      }
+      Annex_Apple_5A0E821DC5FD1C61 {
+       coords -0.074 -0.043 0.152
+      }
+      Annex_Apple_5A0E821DC5FD1115 {
+       coords 0.168 -0.036 0.057
+      }
+      Annex_Apple_5A0E821DC5FD1220 {
+       coords -0.002 -0.036 0.074
+      }
+      Annex_Apple_5A0E821DC5FD1706 {
+       coords -0.165 -0.036 0.08
+      }
+      Annex_Apple_5A0E821DC5FD082C {
+       coords -0.052 -0.036 -0.034
+      }
+      Annex_Apple_5A0E821DC5FD0D6E {
+       coords 0.1 -0.036 -0.035
+      }
+     }
+    }
+   }
+   Annex_AppleTradeContainer3 {
+    components {
+     LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
+      Attributes SCR_ItemAttributeCollection "{59693C53B153D96B}" {
+       ItemDisplayName UIInfo "{59693C53AAB06F2D}" {
+        Name "Apple Juice Trade"
+        Description "Trade apple juice for ammo"
+       }
+       ItemPhysAttributes ItemPhysicalAttributes "{59693C53A3873124}" {
+       }
+       CustomAttributes {
+        PreviewRenderAttributes "{59693C53D4D18183}" {
+         CameraOrbitAngles 330 30 0
+         CameraDistanceToItem 1
+        }
+       }
+       CommonItemType "NONE"
+       m_Size SLOT_3x3
+       m_SlotType SLOT_ANY
+      }
+      m_fMaxWeight 1000
+      m_TradablePrefabs {
+       "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+      }
+     }
+     LF_TraderManagerComponent "{59693C53B6A5EFC0}" {
+      m_aTradableItems {
+       LF_TraderItem "{813045BD92EF6A7C}" {
+        m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+        m_ValuePerItem 15
+       }
+      }
+     }
+     MeshObject "{59670CE9C98E5BAF}" {
+      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+     }
+     RigidBody "{59670CE9C98E5B27}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{59670CE9C98E5814}" {
+      ActionContexts {
+       UserActionContext "{59670CE9C98E5829}" {
+        ContextName "default"
+        Position PointInfo "{59670CE9C98E582A}" {
+         Offset 0 0.0873 0
+        }
+        Radius 1.5
+       }
+      }
+      additionalActions {
+       LF_OpenTraderAction "{59670CE9FBF3C749}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{59670CE9F9F9794D}" {
+         Name "Trade Apple Juice"
+         Description "Trade apple juice for ammo"
+        }
+       }
+      }
+     }
+     RplComponent "{59670CE9C98E581E}" {
+      Enabled 1
+     }
+    }
+    Flags 0x403 0
+    coords -4.1 0.9 0.7
+   }
+  }
+   SCR_DestructibleEntity Annex_TableRecreation_01_1 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    Flags 0x403 0
+     coords 0 0 0.7
+   }
+   SCR_DestructibleEntity Annex_TableRecreation_01_2 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    Flags 0x403 0
+    coords -2.6 0 0.7
+   }
+   SCR_DestructibleEntity Annex_TableRecreation_01_3 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    Flags 0x403 0
+    coords -4.1 0 0.7
+   }
+ }
+}
+Tree Annex_AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ components {
+  ActionsManagerComponent "{596540948BBDD481}" {
+   additionalActions {
+    LF_GatherAction "{59654094806921B6}" {
+    }
+   }
+  }
+ }
+ coords 83.997 0 73.002
+}
+GenericEntity Annex_Chains_Barrel_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Annex_Chains_Barrel_1"
+   m_sSiteId "Annex_Chains_Site"
+  }
+ }
+ coords 70 0.017 73.001
+}
+GenericEntity Annex_Chains_Barrel_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Annex_Chains_Barrel_2"
+   m_sSiteId "Annex_Chains_Site"
+  }
+ }
+ coords 74 0.017 73.001
+}
+GenericEntity Annex_Chains_Barrel_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Annex_Chains_Barrel_3"
+   m_sSiteId "Annex_Chains_Site"
+  }
+ }
+ coords 78 0.017 73.001
+}
+GenericEntity Annex_Hospital_Bed_1 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+ coords 62 0 36.004
+ angleY 0
+}
+GenericEntity Annex_Hospital_Ambulance : "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et" {
+ coords 63 -0.277 42.156
+ angleY 0
+}
+GenericEntity Annex_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
+ Flags 0x403 0
+ coords 62.851 0 47.627
+ angleY 0
+}
+GenericEntity Annex_Dispatch_Console : "{503B0EA32328591E}Prefabs/Comms/LF_DispatchConsole.et" {
+ coords 62.851 0 52.627
+ angleY 0
+}
+GenericEntity Annex_Dispatch_PoliceBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
+ coords 65.99 0 53.009
+ angleY 0
+}
+GenericEntity Annex_Dispatch_MedicBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+ coords 69.99 0 53.009
+ angleY 0
+}
+GenericEntity Annex_Test_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{0EB5E90B59B96E16}" {
+   ActionContexts {
+    UserActionContext "{1CEC34C252323DE8}" {
+     ContextName "default"
+     Position PointInfo "{31CB98D3A58C97E8}" {
+      Offset 0 0.3 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{D9F0223A3372D263}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1DAD1EDD42FE3031}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_iWantedIncrease 1
+     m_fCooldown 5
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 62.056 0 58.02
+ angleY 0
+}
+GenericEntity Annex_Sign_SafeZone_Spawn : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "safe_zone"
+   m_vRimColor 0.1 0.45 0.2
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.1 0.45 0.2
+  }
+ }
+ coords 56 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Sign_SafeZone_East : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "safe_zone"
+   m_vRimColor 0.1 0.45 0.2
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.1 0.45 0.2
+  }
+ }
+ coords 60 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 64 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 68 0.505 61.998
+ angleY 0
+}
+GenericEntity Annex_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{D97D7ED02B9C4E1A}" {
+   ActionContexts {
+    UserActionContext "{85653734FAE04F9E}" {
+     ContextName "default"
+     Position PointInfo "{2514C1ACD78CF71D}" {
+      Offset -0.0559 0.5 -0.2756
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_RobAction "{4F8CAEB46DCDC14A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B715433AF152941C}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_iWantedIncrease 1
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+     m_bTillActionName 1
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 66.056 0 58.02
+ angleY 0
+}

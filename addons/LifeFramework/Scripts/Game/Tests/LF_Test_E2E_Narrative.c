@@ -83,13 +83,13 @@ class LF_Test_E2E_Narrative : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		IEntity tree = GetGame().GetWorld().FindEntityByName("AppleGatherTree");
-		ctx.NotNull(tree, "AppleGatherTree resolves in the DebugWorld");
+		IEntity tree = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.APPLE_GATHER_TREE);
+		ctx.NotNull(tree, "Annex_AppleGatherTree resolves in the DebugWorld");
 		if (ctx.FailureCount() > 0)
 			return;
 
 		LF_GatherAction gather = FindGatherAction(tree);
-		ctx.NotNull(gather, "AppleGatherTree carries an LF_GatherAction");
+		ctx.NotNull(gather, "Annex_AppleGatherTree carries an LF_GatherAction");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -109,18 +109,18 @@ class LF_Test_E2E_Narrative : LF_Test
 
 		ctx.Equal(5, LF_InventoryUtils.GetAmount(character, APPLE_PREFAB), "gather leaves 5 apples");
 
-		IEntity traderEntity = GetGame().GetWorld().FindEntityByName("AppleTrader");
-		ctx.NotNull(traderEntity, "AppleTrader resolves in the DebugWorld");
+		IEntity traderEntity = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.APPLE_TRADER);
+		ctx.NotNull(traderEntity, "Annex_AppleTrader resolves in the DebugWorld");
 		if (ctx.FailureCount() > 0)
 			return;
 
-		IEntity appleTradeContainer = GetGame().GetWorld().FindEntityByName("AppleTradeContainer");
-		ctx.NotNull(appleTradeContainer, "AppleTradeContainer child of AppleTrader resolves by name");
+		IEntity appleTradeContainer = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.APPLE_TRADE_CONTAINER);
+		ctx.NotNull(appleTradeContainer, "Annex_AppleTradeContainer child of Annex_AppleTrader resolves by name");
 		if (ctx.FailureCount() > 0)
 			return;
 
 		LF_TraderManagerComponent trader = LF_Component<LF_TraderManagerComponent>.Find(appleTradeContainer);
-		ctx.NotNull(trader, "AppleTradeContainer carries the trader manager");
+		ctx.NotNull(trader, "Annex_AppleTradeContainer carries the trader manager");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -129,12 +129,12 @@ class LF_Test_E2E_Narrative : LF_Test
 			foreach (LF_TraderItem tradable : trader.m_aTradableItems)
 			{
 				if (tradable && tradable.m_ItemPrefab == APPLE_PREFAB)
-					ctx.Equal(5, tradable.m_ValuePerItem, "apple sells for 5 at the AppleTrader");
+					ctx.Equal(5, tradable.m_ValuePerItem, "apple sells for 5 at the Annex_AppleTrader");
 			}
 		}
 
 		BaseInventoryStorageComponent traderStorage = LF_Component<LF_RestrictedInventoryStorageComponent>.Find(appleTradeContainer);
-		ctx.NotNull(traderStorage, "AppleTradeContainer exposes a restricted storage");
+		ctx.NotNull(traderStorage, "Annex_AppleTradeContainer exposes a restricted storage");
 		if (ctx.FailureCount() > 0)
 			return;
 

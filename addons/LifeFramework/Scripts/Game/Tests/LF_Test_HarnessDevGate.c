@@ -35,12 +35,12 @@ class LF_Test_HarnessDevGate : LF_Test
 		ctx.False(gateOpen, "the dev gate is closed for a non-admin on the playtest mission");
 
 		vector destination;
-		string refused = LF_AgentHarness.ServerStand(null, "Roadmap_Fuel_Till", gateOpen, destination);
+		string refused = LF_AgentHarness.ServerStand(null, LF_TestAnnex.ORG_DESK, gateOpen, destination);
 		ctx.EqualStr(LF_AgentHarness.REFUSED_DEV_GATE, refused, "stand is refused with dev_gate_closed");
 
 		// With the gate open the same call goes past the gate (and stops at the missing character),
 		// so the refusal above is the gate and not a side effect of the null character.
-		string open = LF_AgentHarness.ServerStand(null, "Roadmap_Fuel_Till", true, destination);
+		string open = LF_AgentHarness.ServerStand(null, LF_TestAnnex.ORG_DESK, true, destination);
 		ctx.EqualStr("no_character", open, "an open gate reaches the character check");
 
 		// The harness opens its gate on the playtest mission only in a build compiled with

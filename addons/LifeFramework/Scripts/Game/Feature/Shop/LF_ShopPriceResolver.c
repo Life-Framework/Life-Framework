@@ -99,6 +99,7 @@ class LF_ShopPriceResolver
 
 	//------------------------------------------------------------------------------------------------
 	//! Whether one rule applies to one item.
+	//! A prefab rule (m_Prefab) matches that one prefab by GUID, whatever path either name carries.
 	//! A name filter wins over type/mode: a rule with m_sFind set matches by prefab-path substring
 	//! regardless of arsenal data. A rule without one matches when the item's type flags intersect
 	//! the rule's type (or the rule matches any type) and the mode matches (or the rule matches any
@@ -112,6 +113,9 @@ class LF_ShopPriceResolver
 	{
 		if (!rule)
 			return false;
+
+		if (!rule.m_Prefab.IsEmpty())
+			return LF_Utils.SamePrefab(rule.m_Prefab, prefabName);
 
 		if (!rule.m_sFind.IsEmpty())
 			return prefabName.IndexOf(rule.m_sFind) > -1;

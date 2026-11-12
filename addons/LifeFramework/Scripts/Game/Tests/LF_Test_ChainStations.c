@@ -35,7 +35,7 @@ class LF_TestChainRecorder : LF_EventSubscriber
 }
 
 // tier: WORLD
-//! The three placed barrels of the Chains_Site (#417) on DebugWorld, driven through the server
+//! The three placed barrels of the Annex_Chains_Site (#417) on DebugWorld, driven through the server
 //! methods the held actions call: loading takes the step's inputs, work from two workers adds up on
 //! one barrel, a worker who asks faster than a hold can finish is refused, someone out of reach is
 //! refused, the site heats, the bus hears the load, ready and collect, and collecting hands over
@@ -44,7 +44,7 @@ class LF_Test_ChainStations : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 	protected static const ResourceName JUICE = "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et";
-	protected static const string SITE = "Chains_Site";
+	protected static const string SITE = "Annex_Chains_Site";
 
 	override string GetName()
 	{
@@ -54,9 +54,9 @@ class LF_Test_ChainStations : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
-		LF_ChainStationComponent barrelA = LF_ChainStations.Find("Chains_Barrel_1");
-		LF_ChainStationComponent barrelB = LF_ChainStations.Find("Chains_Barrel_2");
-		LF_ChainStationComponent barrelC = LF_ChainStations.Find("Chains_Barrel_3");
+		LF_ChainStationComponent barrelA = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_1);
+		LF_ChainStationComponent barrelB = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_2);
+		LF_ChainStationComponent barrelC = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(barrelA, "barrel 1 of the site is registered");
 		ctx.NotNull(barrelB, "barrel 2 of the site is registered");
 		ctx.NotNull(barrelC, "barrel 3 of the site is registered");

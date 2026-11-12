@@ -92,8 +92,8 @@ class LF_Test_Carry : LF_Test
 			return;
 		}
 
-		IEntity car = GetGame().GetWorld().FindEntityByName("Roadmap_Escort_Car");
-		ctx.NotNull(car, "DebugWorld has Roadmap_Escort_Car");
+		IEntity car = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ESCORT_CAR);
+		ctx.NotNull(car, "DebugWorld has Annex_Escort_Car");
 		if (!car)
 			return;
 

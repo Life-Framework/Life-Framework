@@ -63,7 +63,7 @@ class LF_JobManager : Managed
 		if (!m_mScopeProcessRewards)
 			m_mScopeProcessRewards = new map<string, int>();
 
-		string key = item;
+		string key = LF_Utils.PrefabGuid(item);
 		if (gatherReward > 0)
 			m_mScopeGatherRewards.Set(key, gatherReward);
 		else if (m_mScopeGatherRewards.Contains(key))
@@ -100,7 +100,7 @@ class LF_JobManager : Managed
 		if (!rewards || !item || item.IsEmpty())
 			return 0;
 
-		string key = item;
+		string key = LF_Utils.PrefabGuid(item);
 		int reward;
 		if (!rewards.Find(key, reward))
 			return 0;

@@ -200,6 +200,22 @@
   1e6→`M`, 1e9→`B`), typed component finders.
 - ⚠️ `LF_ComponentData.Get` strips the last 5 chars of the class name
   (`XxxClass`→`Xxx`); breaks for any data class not ending in `Class`.
+- ✅ (2026-11-12, #323 batch 0) `LF_Utils.SamePrefab(a, b)` and `PrefabGuid(name)`: two resource
+  names are one prefab when their GUIDs match, whatever path text they carry; only a name without
+  a GUID falls back to its path (case-insensitive); empty never matches. A resource moved into the
+  pack keeps its GUID but `GetPrefabName()` reports the new path, so every prefab comparison
+  against a saved or configured name goes through it: chop shop values, `LF_InventoryUtils`
+  (`FindItemsByPrefab` uses `LF_SamePrefabPredicate`, the carried-item counts), stored inventories,
+  store lines and unpaid-tag reattachment, shop catalog and curated lists, trader lists, restricted
+  storages, gather and ore tools, breach charges, quest counts, chain goods, vehicle offers,
+  building placement (the server spawns its own performer prefab, never the client's string),
+  police kit lists, contraband, the item-count invokers (every subscribed name), GATHER/PROCESS
+  quest filters and job scope rewards. The shop catalog is a map keyed by GUID (build: 1339
+  items in about 230 ms). Saves are unchanged;
+  a pre-move save matches on load. `ShopPrices.conf` rules for one prefab use `m_Prefab` (GUID);
+  `m_sFind` stays for folders and name families and must be updated when those resources move,
+  as must the shop's `LooksLikeItemPath` folder filter. Tests `prefab/same-prefab`,
+  `prefab/moved-path`.
 
 ### `LF_InventoryUtils` (Core) / `LF_BuildingManagerComponent` / `LF_ChatManagerComponent`
 - ✅ (2026-11-08) `LF_InventoryUtils.AddItem` spawns through
@@ -297,6 +313,13 @@
   and the example the service writes at runtime against the schema, and
   `config-schema-selftest` proves it red on a stale schema and a bad example.
   Tools only, no game code (#280).
+- ✅ (2026-11-12, #279 #302) Per-field reject: a price outside its attribute's
+  `params: "min max"` (0 to 1000000) is refused with the value, limit and kept
+  value logged, and the rest still applies; an unknown key (top level, section
+  or record) warns and is ignored; `schemaVersion` above the build's logs an
+  error (known fields still apply), below it logs an info line, a bad one reads
+  as 1. No migrations (#303). Tests `config/reject`, `config/unknown-keys`,
+  `config/schema-version`.
 - ⚠️ Owner values are server-side: a client's price list shows shipped prices
   on a dedicated server until #285 streams them. Unknown keys are not warned
   yet (#279); `schemaVersion` is read but not acted on (#302).
@@ -561,7 +584,11 @@
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual
   `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race against
-  the persistence teardown on the Workbench (fixed 2026-08-30).
+  the persistence teardown on the Workbench (fixed 2026-08-30). The engine
+  writes it only under a mission header; a bare `DebugWorld.ent` boot writes
+  none. `wt e2e` pass 1 ends through the host stop file on
+  `EL_DebugTest.conf`, asserts the SHUTDOWN save landed before the statics
+  reset, and pass 2 loads it (test `e2e/shutdown-save-loaded`, #830).
 - ✅ Persistence system resolution is stable across reloads: the systems config
   is now `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, referenced
   explicitly from both missions), replacing the GUID-colliding
@@ -793,6 +820,7 @@
 ## Gathering / Processing / Resources
 
 ### `LF_GatherAction` — `Feature/Gathering/LF_GatherAction.c`
+- ✅ **Carried tools count (pickaxe-count).** `LF_InventoryUtils.GetAmount`/`RemoveAmount` now also search the equipped-weapon storage (a pickaxe is a weapon-slot item the deposit count skips), each carried item once; `LF_GatherAction.HasToolIn` is the shared tool check (GUID compare). No shipped prefab sets the inventory mode and ore is mined by damage with the pickaxe in hand, so play was not affected. Test `tool/pickaxe-count`.
 - ✅ Interact action granting `m_GatherAmount` of `m_GatherItemPrefab` into
   the user inventory; tool requirement (right hand / left gadget / anywhere
   in inventory); per-resource gather counter + cooldown restock.
@@ -2303,7 +2331,7 @@
 ## Hidden crime record (#270)
 
 - ✅ `LF_CrimeRecord` (`Feature/Crime/LF_CrimeRecord.c`) subscribes to `LF_OnCrimeCommitted` (`EnsureSubscribed`, game-mode start) and counts completed crimes per account uid and offence key, so one robbery counts once. An unpaid ticket is not counted. Server only, never replicated, no UI. Read with `LF_CrimeRecord.Count(uid, offence)` / `Total(uid)` (the fence #271 and serials #272 use these). Persisted as the `crimerecord` payload (save version 15). Tests `crime/record`, `crime/record-persist`. Crime paths wired to the event today: robbery, vehicle and weapon theft, break-in, hospital, murder; gas station and contraband run count once their success path reports through `LF_Dispatch.Report`.
-- ✅ Fence (#271): an NPC (`Prefabs/Characters/Npcs/LF_Fence.et`, DebugWorld `FenceNpc`) with an `LF_ShopComponent` set to `m_bFence`. Each `LF_ShopItem.m_iMinCrimes` is the completed crimes the buyer needs on the hidden record (`LF_CrimeRecord.Total`): drill 3, charge 5, keycard 8. `LF_ShopComponent.Buy` asks `LF_FenceRules.Check` before any cash moves; a refusal logs `[LFDebug:Fence] refused ...` and prints `#LF-Shop_RefuseNotTrusted` on the order slip. Prices are the `ShopPrices.conf` rules for `Prefabs/Items/Fence/`. Each sale publishes `LF_OnFenceSale`. Test `crime/fence-gate`.
+- ✅ Fence (#271): an NPC (`Prefabs/Characters/Npcs/LF_Fence.et`, DebugWorld `FenceNpc`) with an `LF_ShopComponent` set to `m_bFence`. Each `LF_ShopItem.m_iMinCrimes` is the completed crimes the buyer needs on the hidden record (`LF_CrimeRecord.Total`): drill 3, charge 5, keycard 8. `LF_ShopComponent.Buy` asks `LF_FenceRules.Check` before any cash moves; a refusal logs `[LFDebug:Fence] refused ...` and prints `#LF-Shop_RefuseNotTrusted` on the order slip. Prices are the per-prefab `ShopPrices.conf` rules (`m_Prefab`, matched by GUID). Each sale publishes `LF_OnFenceSale`. Test `crime/fence-gate`.
 - ✅ Fence serials (#272): each tool the fence sells carries an `LF_SerialComponent` (`Prefabs/Items/Fence/`; saved with the item by `LF_SerialComponentSerializer`, readable through the Read serial action). `LF_FenceSerials` subscribes to `LF_OnFenceSale`, stamps the delivered tools and books each serial to the buyer's account (server only). `LF_FenceSerials.Identify(serial)` / `IdentifyItem(item)` mark the buyer's wanted reports identified; the evidence locker (#269) calls it when it checks a bagged tool (not wired until #269 lands). Persisted as the `fenceserials` payload (save version 16). Carried tools keep their serial across a restart (#470): `LF_StorageSnapshot` captures it per snapshot item and saves it as the `itemserials` payload (save version 22), restored onto the re-spawned item on apply; a stale row is skipped and the item comes back unstamped. Tests `investigation/serial`, `investigation/serial-persist`, `persist/carried-serial`.
 
 ## Payphone (#247)
@@ -2365,3 +2393,10 @@
 - ✅ **Props on counters (validate-prop-on-surface).** The general store register, the police and hospital duty-desk punch clock, the dispatch console radio and a market crate are placed wholly on their surface; `tools/validation/validate-prop-on-surface.mjs` fails a prop whose footprint hangs over 0.1 m past an edge (docs/agent-area-polish.md).
 
 - ✅ **Police rank ladder is config (#754a, M3).** `m_aRanks` in `Configs/Police/LF_Police.conf` is the ladder: per rank `m_sId`, `m_sTitleKey`, `m_iFineCap`, `m_fPayPerSecond` (negative defers to `m_fPoliceDutyPayPerSecond`), `m_iDutySecondsForNext` and `m_aKit`. A rank is its index and a saved index never changes meaning, so `PATROL` 0 and `SENIOR` 1 stay first and a pack appends. `LF_PoliceRanks.FineCap/TitleKey/DutySecondsForNext/CollectKit` and `LF_DutyPay.RateForAccount` read the row; an unknown index clamps to the nearest rung, and a saved rank above the ladder loads as the top rank. A missing config falls back to the built-in two ranks. Test `police/rank-table`. Qualifications are #754b.
+- ✅ (2026-11-12, #323 batch 0a) Annex twins for the crime and police fixtures. `Annex.layer` now holds `Annex_*` copies of the bank vault, bag, bell box and rob kit, the cash van and its box, the breach and lockpick doors and car, the chop bench, the S105 and the police escort car, the police desk, armory, wanted board and evidence locker, the hideout door, machine and stash, and the jail door and a bare jail cell marker, all placed with `tools\cli place` in the fixture yard at x 70..100, z 35..60 and each with its own breach, vault, hideout and shop id (`Annex_Hideout`, `annex-chop`). `LF_TestAnnex` (Tests) names them. 21 test files stopped quoting `Roadmap_*` names, so the village can move to the pack without them; `validate-annex-fixtures` baseline 45 files / 73 pairs to 24 / 40. Tests only, no gameplay or save change. The convoy drop ids and the placed jail cell lookup in `LF_Jail.SyncPlacedCell` still name the town (production lookups by name, a later batch).
+
+- ✅ **Vehicle prices: one base price, per-action multipliers (#688, M3).** `Configs/Vehicles/LF_VehiclePrices.conf` (`LF_VehiclePricesConfig`, `Feature/Vehicles/LF_VehiclePrices.c`) lists each vehicle once (`m_Prefab` the lot's vanilla car, `m_SpawnPrefab` its locked child, found by GUID) with `m_iBasePrice`; buy, sell-back, chop, impound and garage are percent multipliers (`m_iBuyPercent` 100, `m_iSellBackPercent` 50, `m_iChopPercent` 30 with `m_iChopValueCap` 3000, `m_iImpoundPercent` 10, `m_iGaragePercent` 0) and an optional per-vehicle `m_i<Action>Override` (-1 derives it; 0 is free) wins. `LF_VehiclePricesConfig.PriceFor` returns -1 for an unlisted vehicle. Shipped numbers equal today's: lot 1000/2500/4000/3500/8000, chop 30 percent capped at 3000, impound 250 (an override per car). ⚠️ Not yet consumed: the lot offers, `LF_ChopShopConfig` and `LF_GarageConfig` still read their own values (test `vehicles/price-model` pins them equal); the consumers and the `vehicles` config.json section move over in #283. Sell-back has no desk yet.
+
+- ✅ **Two-addon tooling (M3, #322).** Every repo launcher passes the addon folders as one comma-separated `-addonsDir` (`tools/lib/addons.mjs addonsDirArgs`; Workbench keeps only the last repeated flag, so the pack could not find the core), and `validate-addonsdir` rejects a repeat. `tools\cli build [addon]` and `tools\cli pack [addon] [--out dir]` take `LifeFramework` (default) or `LF_Everon1989` by name or GUID; `pack` now honours `--out` and defaults to `tmp/workshop-pack/<addon>`, so a second pack no longer replaces the first. The rdb refresh, `validate-rdb-fresh`, `copyResourceDatabase` and the playtest release rdb check cover a list of addons: the core always, another addon once it declares a resource, so an empty pack changes nothing. Offline selftest in `validate-rdb-fresh` and `validate-addonsdir`; build and pack of both addons proven headless.
+- ✅ (2026-11-12, #323 batch 0b) Annex twins for the jobs, chains, vehicles and organization fixtures. `Annex.layer` gains `Annex_Job_Depot/Drop/TaxiPad/FuelCan`, `Annex_Org_Desk`, `Annex_ATM`, `Annex_Furnace`, `Annex_Vehicle_Lot` with `Annex_Garage` and `Annex_Impound_Desk` (pad ids `annex-lot`, `annex-garage`, `annex-impound`), `Annex_Chains_Barrel_1..3` (site `Annex_Chains_Site`) and `Annex_AppleTrader` with its tables and containers plus `Annex_AppleGatherTree`, in the fixture yard at x 70..104, z 66..100. A mesh-less twin is placed by putting a crate with `tools\cli place`, copying its ground coords and removing the crate. 13 test files stopped quoting village names; `validate-annex-fixtures` baseline 24 files / 40 pairs to 11 / 18. Tests only. `LF_Test_Roadmap_Fuel` keeps its row: `LF_RobAction.GetActionNameScript` only answers for the entity named `Roadmap_Fuel_Till`.
+- ✅ (2026-11-12, #323 batch 0c) Annex twins for the medic, dispatch, carry, sign and ATM fixtures, which retires the last `validate-annex-fixtures` baseline rows (batch 0 total: 45 test files / 73 pairs to none; the baseline is `{}` and the check only fails on a new village name). `Annex.layer` gains `Annex_Hospital_Bed_1/Ambulance/Duty_Desk`, `Annex_Dispatch_Console/PoliceBoard/MedicBoard`, `Annex_Test_Till`, `Annex_Fuel_Till`, and the four zone notices `Annex_Sign_SafeZone_Spawn/East` and `Annex_Sign_Lawless_Entry/Pit`, placed with `tools\cli place` at x 56..70, z 36..62. The safe-zone and quarry tests now check that a notice carries the `safe_zone` / `lawless_zone` sign id instead of that a town sign exists. `LF_RobAction` shows the fuel till action name from the new `m_bTillActionName` attribute (set on `Roadmap_Fuel_Till` and its twin) in place of testing the entity name; behaviour in the town is unchanged. Tests, one attribute, no save change.

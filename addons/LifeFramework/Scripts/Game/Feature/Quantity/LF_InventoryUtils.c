@@ -182,31 +182,57 @@ modded class LF_InventoryUtils
 		if (!owner)
 			return 0;
 
-		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(owner);
-		if (!controller)
-			return 0;
-
-		int total = AmountOfCarried(controller.GetRightHandItem(), prefab, alreadyFound);
-		IEntity left = controller.GetAttachedGadgetAtLeftHandSlot();
-		if (left != controller.GetRightHandItem())
-			total += AmountOfCarried(left, prefab, alreadyFound);
-
-		LF_HandInventoryStorageComponent hands = LF_Component<LF_HandInventoryStorageComponent>.Find(owner);
-		if (hands)
-		{
-			array<IEntity> stored();
-			hands.GetAll(stored);
-			foreach (IEntity storedItem : stored)
-				total += AmountOfCarried(storedItem, prefab, alreadyFound);
-		}
+		int total;
+		array<IEntity> carried = CollectCarried(owner);
+		foreach (IEntity item : carried)
+			total += AmountOfCarried(item, prefab, alreadyFound);
 
 		return total;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every item the character holds outside the storages FindItems walks, each once: right hand,
+	//! left gadget, the hand storage, and the equipped-weapon storage (a pickaxe is a weapon-slot
+	//! item that GetDepositItemCountByResource never searches).
+	static array<IEntity> CollectCarried(IEntity owner)
+	{
+		array<IEntity> carried = {};
+		if (!owner)
+			return carried;
+
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(owner);
+		if (controller)
+		{
+			AddUnique(carried, controller.GetRightHandItem());
+			AddUnique(carried, controller.GetAttachedGadgetAtLeftHandSlot());
+		}
+
+		array<IEntity> stored = {};
+		LF_HandInventoryStorageComponent hands = LF_Component<LF_HandInventoryStorageComponent>.Find(owner);
+		if (hands)
+			hands.GetAll(stored);
+
+		EquipedWeaponStorageComponent weaponStorage = LF_Component<EquipedWeaponStorageComponent>.Find(owner);
+		if (weaponStorage)
+			weaponStorage.GetAll(stored);
+
+		foreach (IEntity storedItem : stored)
+			AddUnique(carried, storedItem);
+
+		return carried;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void AddUnique(array<IEntity> list, IEntity item)
+	{
+		if (item && list.Find(item) < 0)
+			list.Insert(item);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int AmountOfCarried(IEntity item, ResourceName prefab, array<IEntity> alreadyFound)
 	{
-		if (!item || LF_Utils.GetPrefabName(item) != prefab)
+		if (!item || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(item), prefab))
 			return 0;
 
 		if (alreadyFound)
@@ -238,27 +264,10 @@ modded class LF_InventoryUtils
 		if (!controller)
 			return remainingAmount;
 
-		remainingAmount = ConsumeOneCarried(controller, controller.GetRightHandItem(), prefab, remainingAmount);
-		if (remainingAmount <= 0)
-			return 0;
-
-		IEntity left = controller.GetAttachedGadgetAtLeftHandSlot();
-		if (left != controller.GetRightHandItem())
-			remainingAmount = ConsumeOneCarried(controller, left, prefab, remainingAmount);
-		if (remainingAmount <= 0)
-			return 0;
-
-		LF_HandInventoryStorageComponent hands = LF_Component<LF_HandInventoryStorageComponent>.Find(owner);
-		if (!hands)
-			return remainingAmount;
-
-		array<IEntity> stored();
-		hands.GetAll(stored);
-		foreach (IEntity storedItem : stored)
+		array<IEntity> carried = CollectCarried(owner);
+		foreach (IEntity item : carried)
 		{
-			if (storedItem == controller.GetRightHandItem() || storedItem == left)
-				continue;
-			remainingAmount = ConsumeOneCarried(controller, storedItem, prefab, remainingAmount);
+			remainingAmount = ConsumeOneCarried(controller, item, prefab, remainingAmount);
 			if (remainingAmount <= 0)
 				return 0;
 		}
@@ -269,7 +278,7 @@ modded class LF_InventoryUtils
 	//------------------------------------------------------------------------------------------------
 	static int ConsumeOneCarried(CharacterControllerComponent controller, IEntity item, ResourceName prefab, int remainingAmount)
 	{
-		if (!item || remainingAmount <= 0 || LF_Utils.GetPrefabName(item) != prefab)
+		if (!item || remainingAmount <= 0 || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(item), prefab))
 			return remainingAmount;
 
 		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);

@@ -41,9 +41,20 @@ class LF_QuestObjective
 			return false;
 		if (questEvent.m_eType != m_eType)
 			return false;
-		if (!m_sFilter.IsEmpty() && questEvent.m_sFilter != m_sFilter)
+		if (!m_sFilter.IsEmpty() && !FilterMatches(questEvent.m_sFilter))
 			return false;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A GATHER or PROCESS filter names a prefab and matches by GUID (LF_Utils.SamePrefab), so it
+	//! survives a resource move. Other filters (an NPC, an area, a signal) are plain ids.
+	protected bool FilterMatches(string filter)
+	{
+		if (m_eType == LF_EQuestEventType.GATHER || m_eType == LF_EQuestEventType.PROCESS)
+			return LF_Utils.SamePrefab(filter, m_sFilter);
+
+		return filter == m_sFilter;
 	}
 
 	//------------------------------------------------------------------------------------------------

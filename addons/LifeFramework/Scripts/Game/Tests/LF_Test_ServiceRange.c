@@ -5,7 +5,7 @@
 
 // tier: WORLD
 //! The ATM and organization desk RPCs only move cash at the placed site. Reads the DebugWorld
-//! placements ATM_Debug and Roadmap_Org_Desk.
+//! placements Annex_ATM and Roadmap_Org_Desk.
 class LF_Test_ServiceRange : LF_Test
 {
 	override string GetName()
@@ -21,8 +21,8 @@ class LF_Test_ServiceRange : LF_Test
 			return;
 		}
 
-		IEntity atm = GetGame().GetWorld().FindEntityByName("ATM_Debug");
-		ctx.True(atm != null, "DebugWorld places ATM_Debug");
+		IEntity atm = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ATM);
+		ctx.True(atm != null, "DebugWorld places Annex_ATM");
 		if (atm)
 		{
 			vector atmOrigin = atm.GetOrigin();
@@ -32,8 +32,8 @@ class LF_Test_ServiceRange : LF_Test
 			ctx.False(LF_CharacterATMComponent.IsAtATM(atmOrigin + atmFar), "an ATM 200 m away does not serve the player");
 		}
 
-		IEntity desk = GetGame().GetWorld().FindEntityByName("Roadmap_Org_Desk");
-		ctx.True(desk != null, "DebugWorld places Roadmap_Org_Desk");
+		IEntity desk = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ORG_DESK);
+		ctx.True(desk != null, "DebugWorld places Annex_Org_Desk");
 		if (desk)
 		{
 			vector deskOrigin = desk.GetOrigin();

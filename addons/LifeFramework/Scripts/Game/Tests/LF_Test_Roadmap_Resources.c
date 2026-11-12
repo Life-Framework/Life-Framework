@@ -168,13 +168,13 @@ class LF_Test_Roadmap_ResourcesWorld : LF_Test
 		ctx.EqualStr(BAR, machine.m_aOutputs[0].m_OutputPrefab, "furnace produces an iron bar");
 		ctx.Equal(1, machine.m_aOutputs[0].m_iOutputAmount, "furnace produces one bar");
 
-		IEntity furnace = GetGame().GetWorld().FindEntityByName("Furnace");
-		ctx.True(furnace != null, "Furnace is placed");
+		IEntity furnace = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.FURNACE);
+		ctx.True(furnace != null, "Annex_Furnace is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
 		LF_ProcessAction ironProcess = FindIronProcess(furnace);
-		ctx.NotNull(ironProcess, "Furnace carries the furnace-iron action");
+		ctx.NotNull(ironProcess, "Annex_Furnace carries the furnace-iron action");
 		if (ctx.FailureCount() > 0)
 			return;
 

@@ -105,12 +105,32 @@ class LF_InventoryUtils
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Items of one prefab, matched by GUID (LF_Utils.SamePrefab), so a name saved or configured
+	//! before the resource moved still finds the items spawned after.
 	static array<IEntity> FindItemsByPrefab(notnull InventoryStorageManagerComponent storageManager, ResourceName prefab)
 	{
 		array<IEntity> foundItems();
-		SCR_PrefabNamePredicate prefabNamePredicate();
-		prefabNamePredicate.prefabName = prefab;
-		storageManager.FindItems(foundItems, prefabNamePredicate);
+		LF_SamePrefabPredicate predicate();
+		predicate.m_sPrefab = prefab;
+		storageManager.FindItems(foundItems, predicate);
 		return foundItems;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! SCR_PrefabNamePredicate compares the path text, which a moved resource changes. This one
+//! compares the GUID.
+class LF_SamePrefabPredicate : InventorySearchPredicate
+{
+	string m_sPrefab;
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool IsMatch(BaseInventoryStorageComponent storage, IEntity item, array<GenericComponent> queriedComponents, array<BaseItemAttributeData> queriedAttributes)
+	{
+		EntityPrefabData data = item.GetPrefabData();
+		if (!data)
+			return false;
+
+		return LF_Utils.SamePrefab(data.GetPrefabName(), m_sPrefab);
 	}
 }

@@ -130,8 +130,8 @@ class LF_Test_Roadmap_OrganizationsWorld : LF_Test
 		Resource frame = Resource.Load(LF_UITheme.FRAME_LAYOUT);
 		ctx.True(frame != null && frame.IsValid(), "the ledger frame layout loads");
 
-		IEntity desk = GetGame().GetWorld().FindEntityByName("Roadmap_Org_Desk");
-		ctx.True(desk != null, "Roadmap_Org_Desk is placed");
+		IEntity desk = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ORG_DESK);
+		ctx.True(desk != null, "Annex_Org_Desk is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 

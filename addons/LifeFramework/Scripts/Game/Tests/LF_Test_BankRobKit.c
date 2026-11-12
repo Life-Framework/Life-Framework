@@ -17,7 +17,7 @@ class LF_Test_BankRobKit : LF_Test
 		ctx.True(items.Find(LF_Bank.KEYCARD_PREFAB) != -1, "the kit holds the keycard");
 		ctx.True(items.Find(LF_Breach.FENCE_CHARGE_PREFAB) != -1, "the kit holds the fence charge");
 
-		ctx.NotNull(GetGame().GetWorld().FindEntityByName("Roadmap_Bank_RobKit"), "the stand is placed in the playtest town");
+		ctx.NotNull(GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BANK_ROB_KIT), "the stand is placed in the playtest town");
 
 		IEntity robber = LF_TestCharacterFixture.Spawn(ctx);
 		if (!robber)

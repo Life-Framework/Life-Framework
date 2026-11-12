@@ -318,7 +318,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 					// control, or the real character never receives ownership.
 					SCR_ChimeraCharacter existingCharacter = SCR_ChimeraCharacter.Cast(controlled);
 					ResourceName existingPrefab = LF_Utils.GetPrefabName(controlled);
-					if (!existingCharacter || existingPrefab != activeCharacter.GetPrefab())
+					if (!existingCharacter || !LF_Utils.SamePrefab(existingPrefab, activeCharacter.GetPrefab()))
 					{
 						LF_Debug.Warn("Spawn", "replacing Workbench controlled entity with the account character");
 						SCR_EntityHelper.DeleteEntityAndChildren(controlled);

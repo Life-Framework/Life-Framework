@@ -651,6 +651,60 @@ class LF_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The GUID of "{GUID}path", upper-cased. A name without a GUID (a bare path) comes back whole,
+	//! upper-cased: its path is the only key it has.
+	static string PrefabGuid(string resourceName)
+	{
+		string text = resourceName;
+		int close = GuidEnd(text);
+		if (close > 1)
+			text = text.Substring(1, close - 1);
+
+		text.ToUpper();
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same prefab: two resource names that name one resource. A resource keeps its GUID when it
+	//! moves to another folder or addon, but GetPrefabName() then reports the new path
+	//! (docs/architecture/pack-move-spike.md section 3). So the GUID decides, and a name saved or
+	//! configured before the move still matches the live entity after it. Only when a side has no
+	//! GUID does the path decide, ignoring case. An empty name is never the same as anything.
+	static bool SamePrefab(string a, string b)
+	{
+		if (a.IsEmpty() || b.IsEmpty())
+			return false;
+
+		if (GuidEnd(a) > 1 && GuidEnd(b) > 1)
+			return PrefabGuid(a) == PrefabGuid(b);
+
+		return PrefabPathKey(a) == PrefabPathKey(b);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The index of the "}" closing a leading "{GUID}", or -1 when the name has none.
+	protected static int GuidEnd(string resourceName)
+	{
+		if (!resourceName.StartsWith("{"))
+			return -1;
+
+		return resourceName.IndexOf("}");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The path of "{GUID}path" (the whole name when it has no GUID), upper-cased.
+	protected static string PrefabPathKey(string resourceName)
+	{
+		string text = resourceName;
+		int close = GuidEnd(text);
+		if (close > 0)
+			text = text.Substring(close + 1, text.Length() - close - 1);
+
+		text.ToUpper();
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsAnyInherited(typename type, notnull array<typename> from)
 	{
 		if (type)

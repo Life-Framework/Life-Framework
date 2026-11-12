@@ -23,7 +23,20 @@ class LF_Test_QuarryZone : LF_Test
 		ctx.EqualStr("normal", LF_Zones.RuleName(LF_Zones.RuleAt("179 0 244.3")), "the general store stays normal");
 		ctx.EqualStr("normal", LF_Zones.RuleName(LF_Zones.RuleAt("229 0 244.3")), "the police station stays normal");
 
-		ctx.True(world.FindEntityByName("Sign_Lawless_Entry") != null, "the lane entry carries a lawless sign");
-		ctx.True(world.FindEntityByName("Sign_Lawless_Pit") != null, "the quarry carries a lawless sign");
+		ctx.True(CarriesSignId(world.FindEntityByName(LF_TestAnnex.SIGN_LAWLESS_ENTRY), "lawless_zone"), "the lane entry sign carries the lawless_zone sign id");
+		ctx.True(CarriesSignId(world.FindEntityByName(LF_TestAnnex.SIGN_LAWLESS_PIT), "lawless_zone"), "the quarry sign carries the lawless_zone sign id");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool CarriesSignId(IEntity sign, string signId)
+	{
+		if (!sign)
+			return false;
+
+		LF_SignComponent component = LF_Component<LF_SignComponent>.Find(sign);
+		if (!component)
+			return false;
+
+		return component.GetSignId() == signId;
 	}
 }

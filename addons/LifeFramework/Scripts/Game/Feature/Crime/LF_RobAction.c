@@ -21,6 +21,9 @@ class LF_RobAction : ScriptedUserAction
 	[Attribute(defvalue: "2", uiwidget: UIWidgets.Auto, desc: "Minimum police on duty required")]
 	protected int m_iMinPoliceOnDuty;
 
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Show the fuel till action name (TILL_ACTION_NAME) from script. Set on the fuel till and its annex twin.")]
+	protected bool m_bTillActionName;
+
 	protected float m_fLastRobTime;
 
 	protected static string s_sLastRefusal;
@@ -191,7 +194,7 @@ class LF_RobAction : ScriptedUserAction
 		if (!owner)
 			return false;
 
-		if (owner.GetName() != TILL_ENTITY_NAME)
+		if (!m_bTillActionName)
 			return false;
 
 		outName = TILL_ACTION_NAME;

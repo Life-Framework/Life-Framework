@@ -189,7 +189,7 @@ class LF_StoreComponent : ScriptComponent
 	{
 		foreach (LF_StoreLineState state : m_aState)
 		{
-			if (state.m_Prefab == prefab)
+			if (LF_Utils.SamePrefab(state.m_Prefab, prefab))
 				return state;
 		}
 
@@ -545,7 +545,7 @@ class LF_StoreComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected static bool CollectStray(IEntity entity)
 	{
-		if (!entity || LF_Utils.GetPrefabName(entity) != s_StrayPrefab)
+		if (!entity || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), s_StrayPrefab))
 			return true;
 
 		if (LF_InventoryUtils.GetStorageHierachyRoot(entity) != entity || LF_Stores.HoldsApart(entity))
