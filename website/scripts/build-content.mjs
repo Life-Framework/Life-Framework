@@ -640,6 +640,16 @@ console.log(`[content] gallery: ${gallery.count} pictures`);
 // The config page renders its form from this file, so it cannot drift from the schema.
 fs.copyFileSync(path.join(repo, "docs", "config", "config.schema.json"), path.join(dataDir, "config-schema.json"));
 
+// The reference page (/config/reference) lists every field from the same schema, plus the example
+// file for its snippets, so neither can drift from the docs.
+fs.writeFileSync(
+  path.join(dataDir, "config-reference.json"),
+  JSON.stringify({
+    schema: JSON.parse(fs.readFileSync(path.join(repo, "docs", "config", "config.schema.json"), "utf8")),
+    example: JSON.parse(fs.readFileSync(path.join(repo, "docs", "config", "config.example.json"), "utf8")),
+  }),
+);
+
 fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
 fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));
 fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));
