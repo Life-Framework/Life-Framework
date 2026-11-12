@@ -11,9 +11,6 @@ class LF_RobAction : ScriptedUserAction
 	[Attribute(defvalue: "0", uiwidget: UIWidgets.Auto, desc: "Maximum cash payout. Equal to min pays that fixed amount")]
 	protected int m_iMaxPayout;
 
-	[Attribute(defvalue: "1", uiwidget: UIWidgets.Auto, desc: "Wanted levels added when the robbery is accepted")]
-	protected int m_iWantedIncrease;
-
 	[Attribute(defvalue: "10", uiwidget: UIWidgets.Auto, desc: "Cooldown in seconds")]
 	protected float m_fCooldown;
 
@@ -28,6 +25,39 @@ class LF_RobAction : ScriptedUserAction
 	protected static string s_sLastRefusal;
 	protected static int s_iCashPaid;
 	protected static int s_iAlertCount;
+	//! Every till in the world, so the harness's per-proof reset can end their cooldowns (#867). Weak refs.
+	protected static ref array<LF_RobAction> s_aTills;
+
+	//------------------------------------------------------------------------------------------------
+	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
+	{
+		if (!s_aTills)
+			s_aTills = {};
+
+		if (s_aTills.Find(this) < 0)
+			s_aTills.Insert(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: ends every till's robbery cooldown (the harness's per-proof reset, #867).
+	//! @return How many tills were reset.
+	static int ResetCooldowns()
+	{
+		if (!s_aTills)
+			return 0;
+
+		int reset = 0;
+		foreach (LF_RobAction till : s_aTills)
+		{
+			if (!till)
+				continue;
+
+			till.m_fLastRobTime = 0;
+			reset++;
+		}
+
+		return reset;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetSession()
@@ -110,7 +140,7 @@ class LF_RobAction : ScriptedUserAction
 	//! receive, and nothing is deposited to an account. Gates that refuse log
 	//! LF_Debug.Error and leave cash, wanted, and the cooldown where they were.
 	//! An accepted robbery starts the cooldown and alerts police once.
-	static int CommitRobbery(string playerUid, IEntity user, int payout, int wantedIncrease, int policeOnDuty, int minPolice, float cooldownSeconds, float lastRobTimeMs, float nowMs, out float outLastRobTimeMs)
+	static int CommitRobbery(string playerUid, IEntity user, int payout, int policeOnDuty, int minPolice, float cooldownSeconds, float lastRobTimeMs, float nowMs, out float outLastRobTimeMs)
 	{
 		outLastRobTimeMs = lastRobTimeMs;
 
@@ -150,14 +180,7 @@ class LF_RobAction : ScriptedUserAction
 		outLastRobTimeMs = nowMs;
 		s_sLastRefusal = "";
 
-		int bump = wantedIncrease;
-		if (bump < 1)
-		{
-			LF_Debug.Error("Crime", "robbery wanted increase was not configured; using 1");
-			bump = 1;
-		}
-
-		account.IncreaseWantedLevel(bump);
+		LF_CrimeCatalog.ApplyWanted(account, playerUid, LF_WantedReports.OFFENCE_ROBBERY);
 		LF_Debug.Log("Crime", string.Format("wanted level increased for %1", playerUid));
 		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (accountManager)
@@ -246,7 +269,7 @@ class LF_RobAction : ScriptedUserAction
 		string playerUid = LF_Utils.GetPlayerUid(pUserEntity);
 		int policeOnDuty = LF_AccountReplication.CountPoliceOnDuty();
 		float nextLast = m_fLastRobTime;
-		int paid = CommitRobbery(playerUid, pUserEntity, payout, m_iWantedIncrease, policeOnDuty, m_iMinPoliceOnDuty, m_fCooldown, m_fLastRobTime, nowMs, nextLast);
+		int paid = CommitRobbery(playerUid, pUserEntity, payout, policeOnDuty, m_iMinPoliceOnDuty, m_fCooldown, m_fLastRobTime, nowMs, nextLast);
 		m_fLastRobTime = nextLast;
 
 		if (paid > 0)

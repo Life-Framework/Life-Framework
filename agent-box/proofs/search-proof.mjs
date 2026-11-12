@@ -43,6 +43,8 @@ async function runSearchProof() {
   on(1, { verb: "capture", mode: "ui", name: "m2_419_carrying_client1" }, 25000);
   let seized = 0;
   for (let i = 0; i < 6 && !seized; i++) {
+    // Each search starts the per-person cooldown; the proof is about the roll, so end it first.
+    on(1, { verb: "resetcrime" }, 10000);
     on(2, { verb: "use", className: "LF_ConfiscateAction", entityName: other }, 10000);
     wait(1500);
     seized = count(/person search seized/g);
@@ -50,6 +52,7 @@ async function runSearchProof() {
   on(2, { verb: "capture", mode: "ui", name: "m2_419_found_client2" }, 25000);
   const reports = count(/Carrying contraband goods|Offence_ChainGoods/g);
   const againBefore = count(/person search found nothing/g);
+  on(1, { verb: "resetcrime" }, 10000);
   on(2, { verb: "use", className: "LF_ConfiscateAction", entityName: other }, 10000);
   wait(1500);
   const again = count(/person search found nothing/g) - againBefore;

@@ -26,6 +26,7 @@ export function routeDataKey(pathname: string): string | null {
   if (pathname === "/gallery") return "gallery";
   if (pathname === "/credits") return "doc-credits";
   if (pathname === "/config") return "config-schema";
+  if (pathname === "/config/reference") return "config-reference";
   const m = /^\/docs\/([^/]+)\/?$/.exec(pathname);
   return m ? `doc-${m[1]}` : null;
 }

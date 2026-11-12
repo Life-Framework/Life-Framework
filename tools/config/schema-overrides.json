@@ -14,6 +14,12 @@
       ],
       "key": "The key is the vehicle's prefab GUID (16 hex digits, the lot's vanilla car or its locked child). A GUID no shipped vehicle has adds one, which must set basePrice. An existing key changes only the fields given; an override of -1 derives the price."
     },
+    "LF_CrimeEntry": {
+      "keyFields": [
+        "m_sCrimeId"
+      ],
+      "key": "The key is the crime id, a localization key such as #LF-Offence_Robbery; saved crime records use the same string. An id no shipped entry has adds an offence at the end; an existing id changes only the fields given."
+    },
     "LF_JobTrackDef": {
       "keyFields": [
         "m_sJob"
@@ -50,6 +56,18 @@
         "54C3CC22DEBD57BE": {
           "basePrice": 1200,
           "impoundOverride": 200
+        }
+      }
+    },
+    "crime": {
+      "crimes": {
+        "#LF-Offence_Robbery": {
+          "wantedAdd": 2,
+          "repeatThreshold": 3,
+          "repeatWantedAdd": 1
+        },
+        "#LF-Offence_Shoplifting": {
+          "sentenceSeconds": 600
         }
       }
     },

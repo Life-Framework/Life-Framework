@@ -478,7 +478,7 @@ class LF_Stores
 		LF_PlayerAccount account = LF_RobAction.FindAccount(uid);
 		if (account)
 		{
-			account.IncreaseWantedLevel(Math.Max(store.GetWantedIncrease(), 1));
+			LF_CrimeCatalog.ApplyWanted(account, uid, LF_WantedReports.OFFENCE_SHOPLIFTING);
 			LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 			if (accountManager)
 				accountManager.SaveAndReleaseAccount(account);

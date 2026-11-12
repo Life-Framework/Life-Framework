@@ -82,6 +82,17 @@ class LF_Hospital
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: ends every till's robbery cooldown (the harness's per-proof reset, #867).
+	//! @return How many tills were reset.
+	static int ResetTillCooldowns()
+	{
+		for (int i = 0; i < Tills().Count(); i++)
+			Tills().GetElement(i).m_fLastRobTime = -1;
+
+		return Tills().Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True while a successful rob is still inside cooldownSeconds. A negative lastRobTime
 	//! means the till has not been robbed. A cooldown of 0 never blocks.
 	static bool CooldownActive(float lastRobTime, float now, float cooldownSeconds)
@@ -221,7 +232,7 @@ class LF_Hospital
 		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(playerUid);
 		if (account)
 		{
-			account.IncreaseWantedLevel(1);
+			LF_CrimeCatalog.ApplyWanted(account, playerUid, LF_WantedReports.OFFENCE_HOSPITAL);
 			LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 			if (accountManager)
 				accountManager.SaveAndReleaseAccount(account);

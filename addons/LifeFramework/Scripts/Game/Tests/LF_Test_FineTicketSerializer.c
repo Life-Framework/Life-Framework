@@ -28,7 +28,7 @@ class LF_Test_FineTicketSerializer : LF_Test
 
 		array<ref LF_FineTicketRecord> before = LF_FineTickets.ExportAll();
 		LF_FineTickets.ApplyAll(null);
-		LF_FineTickets.Configure(60, 60, 2, 1);
+		LF_FineTickets.Configure(60, 60, 2);
 		LF_FineTicketRecord open = LF_FineTickets.Issue(HOLDER, "Ada Holder", "ticket-save-officer", "Bo Officer", LF_PoliceRanks.PATROL, "#LF-Ticket_OffenceSpeeding", 200, "08/11/1989 12:00");
 		array<string> online = {HOLDER};
 		LF_FineTickets.TickOnline(75, online);

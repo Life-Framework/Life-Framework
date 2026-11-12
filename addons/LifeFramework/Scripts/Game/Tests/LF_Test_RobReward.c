@@ -61,7 +61,7 @@ class LF_Test_RobReward : LF_Test
 		float nowMs = GetGame().GetWorld().GetWorldTime() + 1000;
 		float last = 0;
 		float next = 0;
-		int paid = LF_RobAction.CommitRobbery(uid, robber, PAYOUT, 1, 0, 0, COOLDOWN_S, last, nowMs, next);
+		int paid = LF_RobAction.CommitRobbery(uid, robber, PAYOUT, 0, 0, COOLDOWN_S, last, nowMs, next);
 		ctx.Equal(PAYOUT, paid, "accepted robbery reports the payout");
 		ctx.Equal(PAYOUT, LF_MoneyUtils.GetCash(robber), "payout lands in the robber's inventory as MoneyStack");
 		ctx.Equal(PAYOUT, LF_InventoryUtils.GetAmount(robber, LF_MoneyUtils.PREFAB_CASH), "the cash is the MoneyStack prefab");
@@ -77,7 +77,7 @@ class LF_Test_RobReward : LF_Test
 
 		// Cooldown: one second later the same till refuses and nothing moves.
 		last = next;
-		int second = LF_RobAction.CommitRobbery(uid, robber, PAYOUT, 1, 0, 0, COOLDOWN_S, last, nowMs + 1000, next);
+		int second = LF_RobAction.CommitRobbery(uid, robber, PAYOUT, 0, 0, COOLDOWN_S, last, nowMs + 1000, next);
 		ctx.Equal(0, second, "robbery inside the cooldown is refused");
 		ctx.EqualStr("robbery refused: cooldown", LF_RobAction.GetLastRefusal(), "cooldown refusal is logged");
 		ctx.Equal(PAYOUT, LF_MoneyUtils.GetCash(robber), "refused robbery pays no more cash");
@@ -85,13 +85,13 @@ class LF_Test_RobReward : LF_Test
 		ctx.EqualFloat(last, next, 0.5, "refused robbery keeps the original cooldown start");
 
 		// After the cooldown the till pays again.
-		int third = LF_RobAction.CommitRobbery(uid, robber, PAYOUT, 1, 0, 0, COOLDOWN_S, last, nowMs + COOLDOWN_S * 1000 + 1, next);
+		int third = LF_RobAction.CommitRobbery(uid, robber, PAYOUT, 0, 0, COOLDOWN_S, last, nowMs + COOLDOWN_S * 1000 + 1, next);
 		ctx.Equal(PAYOUT, third, "robbery after the cooldown is accepted");
 		ctx.Equal(PAYOUT * 2, LF_MoneyUtils.GetCash(robber), "second accepted robbery adds a second payout");
 		ctx.Equal(2, account.GetWantedLevel(), "second accepted robbery raises wanted to 2");
 
 		// Civilian gate: an officer is refused, gets no cash and no wanted.
-		int officerPaid = LF_RobAction.CommitRobbery(policeUid, officer, PAYOUT, 1, 0, 0, COOLDOWN_S, 0, nowMs, next);
+		int officerPaid = LF_RobAction.CommitRobbery(policeUid, officer, PAYOUT, 0, 0, COOLDOWN_S, 0, nowMs, next);
 		ctx.Equal(0, officerPaid, "a police account cannot rob");
 		ctx.EqualStr("robbery refused: only civilians can rob", LF_RobAction.GetLastRefusal(), "civilian refusal is logged");
 		ctx.Equal(0, LF_MoneyUtils.GetCash(officer), "refused officer receives no cash");

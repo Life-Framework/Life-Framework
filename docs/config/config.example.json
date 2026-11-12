@@ -1,5 +1,17 @@
 {
   "schemaVersion": 1,
+  "crime": {
+    "crimes": {
+      "#LF-Offence_Robbery": {
+        "wantedAdd": 2,
+        "repeatThreshold": 3,
+        "repeatWantedAdd": 1
+      },
+      "#LF-Offence_Shoplifting": {
+        "sentenceSeconds": 600
+      }
+    }
+  },
   "jobs": {
     "policeDutyPayPerSecond": 0.5,
     "medicDutyPayPerSecond": 0.4,

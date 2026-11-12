@@ -189,7 +189,6 @@ class LF_FineTickets
 	protected static int s_iFirstDeadline;
 	protected static int s_iSecondDeadline;
 	protected static float s_fLateMultiplier;
-	protected static int s_iLateWanted;
 
 	//------------------------------------------------------------------------------------------------
 	protected static array<ref LF_FineTicketRecord> Tickets()
@@ -246,8 +245,9 @@ class LF_FineTickets
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Deadlines and the late rule. Tests call it with short deadlines; otherwise the config loads.
-	static void Configure(int firstDeadline, int secondDeadline, float lateMultiplier, int lateWanted)
+	//! Deadlines and the late multiplier. Tests call it with short deadlines; otherwise the config loads.
+	//! The wanted an unpaid ticket adds is the catalog's (OFFENCE_UNPAID).
+	static void Configure(int firstDeadline, int secondDeadline, float lateMultiplier)
 	{
 		if (firstDeadline < 1)
 			firstDeadline = 1;
@@ -258,13 +258,9 @@ class LF_FineTickets
 		if (lateMultiplier < 1)
 			lateMultiplier = 1;
 
-		if (lateWanted < 0)
-			lateWanted = 0;
-
 		s_iFirstDeadline = firstDeadline;
 		s_iSecondDeadline = secondDeadline;
 		s_fLateMultiplier = lateMultiplier;
-		s_iLateWanted = lateWanted;
 		s_bConfigured = true;
 	}
 
@@ -281,7 +277,7 @@ class LF_FineTickets
 		if (s_bConfigured)
 			return;
 
-		Configure(LF_PoliceConfig.TicketFirstDeadline(), LF_PoliceConfig.TicketSecondDeadline(), LF_PoliceConfig.TicketLateMultiplier(), LF_PoliceConfig.TicketLateWanted());
+		Configure(LF_PoliceConfig.TicketFirstDeadline(), LF_PoliceConfig.TicketSecondDeadline(), LF_PoliceConfig.TicketLateMultiplier());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -500,14 +496,15 @@ class LF_FineTickets
 			return;
 		}
 
-		account.IncreaseWantedLevel(s_iLateWanted);
+		int lateWanted = LF_CrimeCatalog.WantedFor(record.m_sHolderUid, OFFENCE_UNPAID);
+		account.IncreaseWantedLevel(lateWanted);
 		LF_WantedReports.Report(record.m_sHolderUid, holder, OFFENCE_UNPAID);
 		LF_WantedReports.Identify(record.m_sHolderUid, "unpaid ticket");
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (accounts)
 			accounts.SaveAndReleaseAccount(account);
 
-		LF_Debug.Info(FEATURE, string.Format("ticket #%1 unpaid past the second deadline: %2 wanted +%3, now %4", record.m_iNumber, record.m_sHolderUid, s_iLateWanted, account.GetWantedLevel()));
+		LF_Debug.Info(FEATURE, string.Format("ticket #%1 unpaid past the second deadline: %2 wanted +%3, now %4", record.m_iNumber, record.m_sHolderUid, lateWanted, account.GetWantedLevel()));
 		if (holderId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(holderId, "#LF-Ticket_Title", "#LF-Ticket_NowWanted", 6.0, LF_ENotificationType.WARNING);
 	}
@@ -612,7 +609,7 @@ class LF_FineTickets
 
 		s_bTicking = true;
 		GetGame().GetCallqueue().CallLater(OnTick, TICK_MS, true);
-		LF_Debug.Info(FEATURE, string.Format("ticket clock started: first deadline %1 s, second %2 s, x%3, +%4 wanted", FirstDeadline(), SecondDeadline(), LateMultiplier(), s_iLateWanted));
+		LF_Debug.Info(FEATURE, string.Format("ticket clock started: first deadline %1 s, second %2 s, x%3, +%4 wanted", FirstDeadline(), SecondDeadline(), LateMultiplier(), LF_CrimeCatalog.BaseWanted(OFFENCE_UNPAID)));
 	}
 
 	//------------------------------------------------------------------------------------------------

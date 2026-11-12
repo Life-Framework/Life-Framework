@@ -1,8 +1,5 @@
 class LF_RobVehicleAction : ScriptedUserAction
 {
-	//! Wanted levels an accepted vehicle robbery adds. The highest of the three rob actions.
-	static const int WANTED_INCREASE = 3;
-
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Vehicle prefab to steal", "et")]
 	protected ResourceName m_VehiclePrefab;
 
@@ -60,7 +57,7 @@ class LF_RobVehicleAction : ScriptedUserAction
 
 	//------------------------------------------------------------------------------------------------
 	//! Server seam of PerformAction. Spawns the vehicle 5 m from the user. When that works and an
-	//! account resolves for playerUid, raises wanted by WANTED_INCREASE and alerts police.
+	//! account resolves for playerUid, raises wanted by the catalog's carjacking amount and alerts police.
 	//! Nothing is paid as cash and the bank is never touched.
 	//! \return The spawned vehicle, or null when nothing spawned.
 	static IEntity CommitVehicleRobbery(string playerUid, IEntity user, ResourceName vehiclePrefab)
@@ -85,9 +82,9 @@ class LF_RobVehicleAction : ScriptedUserAction
 		LF_PlayerAccount account = LF_RobAction.FindAccount(playerUid);
 		if (account)
 		{
-			account.IncreaseWantedLevel(WANTED_INCREASE);
+			LF_CrimeCatalog.ApplyWanted(account, playerUid, LF_WantedReports.OFFENCE_CARJACKING);
 			LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
-			LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_VEHICLE_THEFT, user.GetOrigin());
+			LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_CARJACKING, user.GetOrigin());
 		}
 
 		return vehicle;

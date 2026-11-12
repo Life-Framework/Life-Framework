@@ -44,6 +44,7 @@ class LF_WantedReports
 	static const string FEATURE = "Wanted";
 	static const string OFFENCE_ROBBERY = "#LF-Offence_Robbery";
 	static const string OFFENCE_VEHICLE_THEFT = "#LF-Offence_VehicleTheft";
+	static const string OFFENCE_CARJACKING = "#LF-Offence_Carjacking";
 	static const string OFFENCE_WEAPON_THEFT = "#LF-Offence_WeaponTheft";
 	static const string OFFENCE_BREAK_IN = "#LF-Offence_BreakIn";
 	static const string OFFENCE_HOSPITAL = "#LF-Offence_HospitalRobbery";
@@ -197,6 +198,24 @@ class LF_WantedReports
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every player's reports come down (the harness's per-proof reset, #867). The sequence keeps
+	//! counting so a later report never reuses a number.
+	//! @return How many reports were removed.
+	static int ClearAll()
+	{
+		int removed = 0;
+		if (!s_mReports)
+			return 0;
+
+		for (int i = 0; i < s_mReports.Count(); i++)
+			removed += s_mReports.GetElement(i).Count();
+
+		s_mReports.Clear();
+		LF_Debug.Info(FEATURE, string.Format("all reports taken down: %1", removed));
+		return removed;
 	}
 
 	//------------------------------------------------------------------------------------------------

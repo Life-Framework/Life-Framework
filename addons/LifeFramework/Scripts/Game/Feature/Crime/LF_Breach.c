@@ -222,7 +222,11 @@ class LF_Breach
 		if (chargeCarrier && !TakeCharge(chargeCarrier, targetId))
 			return false;
 
-		account.IncreaseWantedLevel(1);
+		string offence = target.m_sOffence;
+		if (offence.IsEmpty())
+			offence = LF_WantedReports.OFFENCE_BREAK_IN;
+
+		LF_CrimeCatalog.ApplyWanted(account, playerUid, offence);
 		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (accountManager)
 			accountManager.SaveAndReleaseAccount(account);
@@ -231,10 +235,6 @@ class LF_Breach
 		// The alarm sounds at the door or vault and on-duty officers are radioed (LF_Dispatch).
 		if (!suspect)
 			suspect = chargeCarrier;
-
-		string offence = target.m_sOffence;
-		if (offence.IsEmpty())
-			offence = LF_WantedReports.OFFENCE_BREAK_IN;
 
 		LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId), -1, target.m_bLoud);
 		LF_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));

@@ -61,6 +61,10 @@ Without the flag the town starts fresh. The save lives in the profile folder; ba
   is expected: the file is created when the first player joins.
 - The debug menu is closed for everyone except logged-in admins.
 
+## Licence
+
+The Workshop build you run is under the Arma Public License (APL). The source on GitHub is MIT.
+
 ## Problems
 
 Send the server's `console.log` (under `<profile>/logs/`) with the problem on the Life Framework

@@ -198,6 +198,7 @@ function Form({ schema }: { schema: Schema }) {
           </a>
           , read at build time.
         </p>
+        <GoLink to="/config/reference">Field reference</GoLink>
         <GoLink to="/servers">Back to server owners</GoLink>
       </aside>
     </div>
