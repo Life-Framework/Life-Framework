@@ -15,6 +15,7 @@ class LF_Test_ConfigMergeFixture
 	static const string WEAPONS = "Prefabs/Weapons/";
 	static const string M9 = "Handgun_M9";
 	static const string APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+	static const string APPLE_MOVED = "{C9D661E5B0714711}Prefabs/Items/Moved/Apple.et";
 	static const string PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 
 	//------------------------------------------------------------------------------------------------
@@ -285,8 +286,7 @@ class LF_Test_ConfigMergePrefab : LF_Test
 		int buy;
 		int sell;
 		bool hidden;
-		string moved = "{C9D661E5B0714711}Prefabs/Items/Moved/Apple.et";
-		LF_ShopPriceResolver.ResolvePrices(config.m_aPriceRules, moved, 0, SCR_EArsenalItemMode.DEFAULT, config.m_iDefaultBuyPrice, config.m_iDefaultSellPrice, buy, sell, hidden);
+		LF_ShopPriceResolver.ResolvePrices(config.m_aPriceRules, LF_Test_ConfigMergeFixture.APPLE_MOVED, 0, SCR_EArsenalItemMode.DEFAULT, config.m_iDefaultBuyPrice, config.m_iDefaultSellPrice, buy, sell, hidden);
 		ctx.Equal(3, buy, "the prefab rule matches by GUID after the prefab moved");
 
 		LF_ConfigService.Reset();
