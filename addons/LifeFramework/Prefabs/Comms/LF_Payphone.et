@@ -13,6 +13,8 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
     }
    }
   }
+  LF_PhoneComponent "{5C5CB9B248F1FD9D}" {
+  }
   ActionsManagerComponent "{E15B8A3C6D702F94}" {
    ActionContexts {
     UserActionContext "{58C0D2A7B9E13F46}" {
@@ -78,6 +80,43 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
        }
        m_sService "taxi"
        m_sSummary "#LF-Payphone_Summary_Taxi"
+      }
+      LF_PhoneDialAction "{DE32FC2E941AD667}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{1F48A0132FD713FE}" {
+        Name "Call the police (voice)"
+        Description "Phone (spike)"
+       }
+       m_sService "police"
+      }
+      LF_PhoneAnswerAction "{409F609699824970}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{049BC8F876D10517}" {
+        Name "Pick up"
+        Description "Phone (spike)"
+       }
+      }
+      LF_PhoneHangUpAction "{C3DD405B2ED09160}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{64F666C0D92617F1}" {
+        Name "Hang up"
+        Description "Phone (spike)"
+       }
+      }
+      LF_PhoneLeaveMessageAction "{466E0ACD6AA7B1C9}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{675CD0FCDB5E807C}" {
+        Name "Leave a message for the police"
+        Description "Phone (spike)"
+       }
       }
       LF_WitnessPayphoneAction "{AAA067F069F06A90}" {
        ParentContextList {

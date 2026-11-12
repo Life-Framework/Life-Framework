@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "8E64791C920DC450"
+ components {
+  BaseRadioComponent "{345FFB3B81B7460D}" {
+   "Encryption key" "LF_line_idle"
+   Transceivers {
+    RadioTransceiver "{A67F58CC1A139B06}" {
+     ChannelFrequency 100000
+     "Transmitting Range" 60000
+     "Min tunable frequency" 100000
+     "Max tunable frequency" 165000
+     "Frequency resolution" 1
+    }
+   }
+  }
+  RplComponent "{1768B54ADB940EF0}" {
+   Enabled 1
+  }
+ }
+}

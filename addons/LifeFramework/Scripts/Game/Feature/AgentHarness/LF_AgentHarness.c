@@ -161,7 +161,7 @@ class LF_AgentCommand
 				cmd.Arg1 = parts[2];
 			return true;
 		}
-		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
+		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
 			return true;
 		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
 			return true;
@@ -1137,6 +1137,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "gm")
 		{
 			DoGm(cmd);
+			return;
+		}
+		if (cmd.Verb == "phone")
+		{
+			WriteResult(cmd.Id, "ok", LF_PhoneVoice.Describe());
 			return;
 		}
 		if (cmd.Verb == "radio")

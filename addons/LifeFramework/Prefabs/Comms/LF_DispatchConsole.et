@@ -7,6 +7,9 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
     MeshObject "{91D35EB6206030B1}" {
      Object "{77C9FCF3FB1246E9}Assets/Items/Equipment/Radios/Radio_R107M/Radio_R107M_01_item.xob"
     }
+    LF_PhoneComponent "{E5C671F9E4138652}" {
+     m_sDispatchService "police"
+    }
     ActionsManagerComponent "{F0BE841E7B09C8AF}" {
      ActionContexts {
       UserActionContext "{3F94A47F4C97907B}" {
@@ -18,6 +21,51 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
       }
      }
      additionalActions {
+      LF_PhoneAnswerAction "{B62F8535F8900270}" {
+       ParentContextList {
+        "LF_DispatchConsole"
+       }
+       UIInfo UIInfo "{181FE156B17EC396}" {
+        Name "Pick up the dispatch phone"
+        Description "Phone (spike)"
+       }
+      }
+      LF_PhoneHangUpAction "{6A39158398FB4C8B}" {
+       ParentContextList {
+        "LF_DispatchConsole"
+       }
+       UIInfo UIInfo "{644ADD708CB7A7DA}" {
+        Name "Hang up"
+        Description "Phone (spike)"
+       }
+      }
+      LF_PhoneMessagesAction "{A1A6189EF208C12B}" {
+       ParentContextList {
+        "LF_DispatchConsole"
+       }
+       UIInfo UIInfo "{B90374F6FDC28B86}" {
+        Name "Phone messages"
+        Description "Phone (spike)"
+       }
+      }
+      LF_PhoneCallBackAction "{9C720A37F00E54C0}" {
+       ParentContextList {
+        "LF_DispatchConsole"
+       }
+       UIInfo UIInfo "{90FAE3DD6B374A53}" {
+        Name "Call back the oldest message"
+        Description "Phone (spike)"
+       }
+      }
+      LF_PhoneModeAction "{A6E108CEBDADECE5}" {
+       ParentContextList {
+        "LF_DispatchConsole"
+       }
+       UIInfo UIInfo "{E77295B84A521BA2}" {
+        Name "Spike: switch voice mode"
+        Description "Phone (spike)"
+       }
+      }
       LF_DebugDispatchAction "{8AD8ABDEEABA81AB}" {
        ParentContextList {
         "LF_DispatchConsole"
