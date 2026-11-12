@@ -55,6 +55,7 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
+import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
@@ -2497,6 +2498,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 dump [LFDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
+                                runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
   promote [--to sha] [--confirm]  stable branch: list PRs merged since stable and write the checklist;
                                 --confirm fast-forwards stable, verifies and closes their issues (cli promote --help)
   prs status|heal [--dry-run] [<n>...]
@@ -2506,6 +2509,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] [--shot ids] [--group name] [--preview] [--client n] [--no-shoot] | --setup | --selftest
                                 post-production: cards, crossfades, captions + .srt, offline voice-over,
                                 ducked music bed (docs/film-pipeline.md "Post-production")
+  config-check <config.json> [--strict] [--no-loops] [--json]
+                                validate a server owner's config.json offline, as the server would at boot:
+                                JSON syntax (line:col), unknown keys, types, ranges, schemaVersion, record keys,
+                                profit loops; exit 1 on errors (docs/config/owner-config.md)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
   rdb                           register new .meta resources in this worktree's resourceDatabase.rdb
@@ -3363,6 +3370,7 @@ const cmds = {
   shots: (flags) => shots.main(flags ?? []),
   audit: async (flags) => (await import("../agent-box/place-audit.mjs")).main(flags ?? []),
   place: async (flags) => (await import("./place/place.mjs")).main(flags ?? []),
+  "config-check": async (flags) => (await import("./config/check.mjs")).main(flags ?? []),
   look: async (flags) => (await import("./visual/look.mjs")).main(flags ?? []),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
@@ -3500,10 +3508,12 @@ try {
     code = cmdPrs(ROOT, rest);
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
+  } else if (cmd === "release") {
+    code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

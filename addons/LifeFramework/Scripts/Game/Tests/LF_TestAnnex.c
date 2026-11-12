@@ -57,6 +57,8 @@ class LF_TestAnnex
 	static const string HOSPITAL_BED_1 = "Annex_Hospital_Bed_1";
 	static const string HOSPITAL_AMBULANCE = "Annex_Hospital_Ambulance";
 	static const string HOSPITAL_DUTY_DESK = "Annex_Hospital_Duty_Desk";
+	static const string HOSPITAL_TILL = "Annex_Hospital_Till";
+	static const string HOSPITAL_CABINET = "Annex_Hospital_Cabinet";
 	static const string DISPATCH_CONSOLE = "Annex_Dispatch_Console";
 	static const string DISPATCH_POLICE_BOARD = "Annex_Dispatch_PoliceBoard";
 	static const string DISPATCH_MEDIC_BOARD = "Annex_Dispatch_MedicBoard";

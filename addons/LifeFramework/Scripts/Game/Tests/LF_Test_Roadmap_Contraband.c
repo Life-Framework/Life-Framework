@@ -24,8 +24,6 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		ctx.False(LF_Contraband.NearDrop("160 0 284", drop), "getting out 28.5 m from the drop is leaving the vehicle");
 		ctx.True(LF_Contraband.NearDrop("131.5 40 284", drop), "height does not count toward the drop distance");
 
-		ctx.EqualStr(LF_Contraband.DROP_ID, LF_Contraband.DropIdFor(false), "the flagship keeps the pub drop");
-		ctx.EqualStr(LF_Contraband.DROP_NEAR_ID, LF_Contraband.DropIdFor(true), "the debug mode uses the near drop");
 
 		string founder = "roadmap-contraband-founder";
 		string member = "roadmap-contraband-member";
@@ -84,49 +82,36 @@ class LF_Test_Roadmap_ContrabandWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity start = GetGame().GetWorld().FindEntityByName(LF_Contraband.START_ID);
-		ctx.True(start != null, "Roadmap_Convoy_Start is placed");
-		IEntity drop = GetGame().GetWorld().FindEntityByName(LF_Contraband.DROP_ID);
-		ctx.True(drop != null, "Roadmap_Convoy_Drop is placed");
+		LF_ConvoyMarkerComponent startMarker = LF_ConvoyMarkerComponent.FindStart();
+		LF_ConvoyMarkerComponent dropMarker = LF_ConvoyMarkerComponent.FindDrop(false);
+		LF_ConvoyMarkerComponent nearMarker = LF_ConvoyMarkerComponent.FindDrop(true);
+		ctx.NotNull(startMarker, "the world places a convoy start (LF_ConvoyMarkerComponent, not a drop)");
+		ctx.NotNull(dropMarker, "the world places a convoy drop");
+		ctx.NotNull(nearMarker, "the world places a near convoy drop for test modes");
 		if (ctx.FailureCount() > 0)
 			return;
 
-		vector startOrigin = start.GetOrigin();
-		ctx.EqualFloat(466, startOrigin[0], 0.1, "the start marker is at X 466 (the barn out of town)");
-		ctx.EqualFloat(0, startOrigin[1], 0.1, "the start marker is at Y 0");
-		ctx.EqualFloat(331, startOrigin[2], 0.1, "the start marker is at Z 331");
-		IEntity nearDrop = GetGame().GetWorld().FindEntityByName(LF_Contraband.DROP_NEAR_ID);
-		ctx.True(nearDrop != null, "Roadmap_Convoy_Drop_Near is placed");
-		if (!nearDrop)
-			return;
+		IEntity start = startMarker.GetOwner();
+		IEntity drop = dropMarker.GetOwner();
+		IEntity nearDrop = nearMarker.GetOwner();
+		ctx.False(startMarker.IsDrop(), "the start marker is not the drop");
+		ctx.True(dropMarker.IsDrop(), "the drop marker is the drop");
+		ctx.True(nearMarker.IsDrop(), "the near drop marker is a drop");
+		ctx.True(nearMarker.IsNearDrop(), "the near drop marker is flagged near");
+		ctx.False(dropMarker.IsNearDrop(), "the far drop marker is not flagged near");
+		ctx.True(nearDrop != drop, "the near and far drops are two markers");
 
-		float nearDist = vector.Distance(startOrigin, nearDrop.GetOrigin());
-		ctx.True(nearDist > LF_Contraband.DROP_RADIUS_M && nearDist < 80, "the near drop is a short drive from the barn");
-		ctx.True(HasAction(nearDrop, false), "the near drop uses the convoy deliver action");
 		LF_GameModeRoleplay mode = LF_GameModeRoleplay.Cast(GetGame().GetGameMode());
 		if (mode)
 		{
 			ctx.True(mode.IsConvoyNearDrop(), "the debug game mode picks the near drop");
-			ctx.EqualStr(LF_Contraband.DROP_NEAR_ID, LF_Contraband.ActiveDropId(), "the active drop in DebugWorld is the near one");
+			ctx.True(LF_Contraband.IsNearDropActive(), "the active drop in DebugWorld is the near one");
+			ctx.True(LF_Contraband.FindActiveDrop() == nearDrop, "the active drop entity is the near marker");
 		}
-		vector dropOrigin = drop.GetOrigin();
-		ctx.EqualFloat(131.5, dropOrigin[0], 0.1, "the drop marker is at X 131.5 (behind the pub on the square)");
-		ctx.EqualFloat(0, dropOrigin[1], 0.1, "the drop marker is at Y 0");
-		ctx.EqualFloat(284, dropOrigin[2], 0.1, "the drop marker is at Z 284");
+
+		ctx.True(HasAction(nearDrop, false), "the near drop uses the convoy deliver action");
 		ctx.True(start.GetVObject() != null, "the pickup has a mesh");
 		ctx.True(drop.GetVObject() != null, "the drop has a mesh");
-
-		LF_ConvoyMarkerComponent startMarker = LF_Component<LF_ConvoyMarkerComponent>.Find(start);
-		ctx.NotNull(startMarker, "the start marker carries LF_ConvoyMarkerComponent");
-		LF_ConvoyMarkerComponent dropMarker = LF_Component<LF_ConvoyMarkerComponent>.Find(drop);
-		ctx.NotNull(dropMarker, "the drop marker carries LF_ConvoyMarkerComponent");
-		if (ctx.FailureCount() > 0)
-			return;
-
-		ctx.EqualStr(LF_Contraband.START_ID, startMarker.GetMarkerId(), "the start id is the placed name");
-		ctx.False(startMarker.IsDrop(), "the start marker is not the drop");
-		ctx.EqualStr(LF_Contraband.DROP_ID, dropMarker.GetMarkerId(), "the drop id is the placed name");
-		ctx.True(dropMarker.IsDrop(), "the drop marker is the drop");
 
 		ctx.True(HasAction(start, true), "the start marker uses the convoy start action");
 		ctx.False(HasAction(start, false), "the start marker does not pay out");

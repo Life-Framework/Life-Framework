@@ -63,6 +63,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigMergeKeyed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeNoOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigMigrationChain(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigMigrationFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigOwnerFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
@@ -150,6 +152,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HaulTidy(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBillOnce(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBedPick(), LF_TestTier.LOGIC);
@@ -172,6 +175,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IntroductionsSerializer(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ItemVolume(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailOnlineTime(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JailPlacedCell(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailSlip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailVehicleArrest(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JailWork(), LF_TestTier.LOGIC);

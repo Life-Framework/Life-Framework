@@ -32,19 +32,38 @@ import { fileURLToPath } from "node:url";
 // until the clerk moves).
 export const ANNEX_LAYERS = new Set([
   "Annex", "Crimes", "HousesKeys", "Jobs", "NPCs", "PRFeatures", "Police", "Tests", "WhitelistChat",
-  "Factions", "Gamemode", "default",
+  "Factions", "Gamemode", "default", "Shops",
 ]);
 
 export const LAYERS = "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers";
 export const TESTS = "addons/LifeFramework/Scripts/Game/Tests";
 export const BASELINE = "tools/validation/annex-fixtures-baseline.json";
 
-// Top-level declarations look like `GenericEntity Roadmap_Bank_Vault : "{GUID}prefab" {`.
-function declaredNames(text) {
+// Declarations look like `GenericEntity Roadmap_Bank_Vault : "{GUID}prefab" {` at the top
+// level; inside a `$grp` or a children block the type is dropped and the line is
+// `Roadmap_Job_Depot {` (or `Name : "{GUID}prefab" {`, or `Type Name {`). A
+// `components { ... }` block holds component overrides, not entities, so it is
+// skipped by indent (an unnamed override reads `MeshObject {`).
+export function declaredNames(text) {
   const names = [];
+  let skipIndent = -1;
   for (const line of text.split("\n")) {
-    const m = line.match(/^[A-Za-z_]\w*\s+([A-Za-z_]\w*)\s*(?::|\{)/);
-    if (m) names.push(m[1]);
+    const indent = line.length - line.trimStart().length;
+    if (skipIndent >= 0) {
+      if (indent > skipIndent || line.trim() === "") continue;
+      skipIndent = -1;
+    }
+    if (/^\s*components\s*\{/.test(line)) {
+      skipIndent = indent;
+      continue;
+    }
+    const typed = line.match(/^\s*[A-Za-z_]\w*\s+([A-Za-z_]\w*)\s*(?::|\{)/);
+    if (typed) {
+      names.push(typed[1]);
+      continue;
+    }
+    const nested = line.match(/^\s+([A-Z]\w*)\s*(?::|\{)/);
+    if (nested) names.push(nested[1]);
   }
   return names;
 }

@@ -28,6 +28,7 @@ const pages = {
   "/contribute": "Join the Discord",
   "/decisions": "The calls that set the taste",
   "/support": "Where the money goes",
+  "/config": "Build your server config",
   "/credits": "Projects we build on and borrow from",
   "/docs": "The paperwork",
   "/docs/direction": "What we are building",

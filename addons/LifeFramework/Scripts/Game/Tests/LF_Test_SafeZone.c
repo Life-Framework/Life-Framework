@@ -26,18 +26,15 @@ class LF_Test_SafeZone : LF_Test
 		if (!world)
 			return;
 
-		IEntity square = world.FindEntityByName("LF_SafeZone_Square");
-		ctx.True(square != null, "LF_SafeZone_Square is placed in DebugWorld");
+		// The placed safe zone, whichever world places it: read it back, no town coordinates.
+		LF_ZoneArea square = LF_Zones.FindFirstByRule(LF_ZoneRule.SAFE);
+		ctx.True(square != null, "the world places a safe zone that registered itself");
 		if (square)
 		{
-			LF_ZoneComponent zone = LF_ZoneComponent.Cast(square.FindComponent(LF_ZoneComponent));
-			ctx.True(zone != null, "the square carries LF_ZoneComponent");
-			if (zone)
-				ctx.InRange(zone.GetRadius(), 25, 40, "the square zone radius covers the square");
+			ctx.True(square.m_fRadius > 0, "the placed safe zone has a radius");
+			ctx.True(LF_Zones.IsSafe(square.m_vCenter), "the centre of the placed safe zone is safe");
+			ctx.True(LF_Zones.IsSafe(square.m_vCenter + "0 6 0"), "a roof above the placed safe zone is safe");
 		}
-
-		ctx.True(LF_Zones.Find("LF_SafeZone_Square") != null, "the square zone registered itself");
-		ctx.True(LF_Zones.IsSafe("126 0 246"), "the civilian spawn point is inside the zone");
 
 		// Every civilian arrival lands in a zone, whichever spawn point the game picks.
 		int civilianPoints;
@@ -55,10 +52,6 @@ class LF_Test_SafeZone : LF_Test
 		}
 
 		ctx.True(civilianPoints > 0, "DebugWorld has civilian spawn points");
-		ctx.True(LF_Zones.IsSafe("113 0 250"), "the fountain is inside the zone");
-		ctx.True(LF_Zones.IsSafe("113 6 250"), "a roof above the fountain is inside the zone");
-		ctx.False(LF_Zones.IsSafe("179 0 244.3"), "the general store is outside the zone");
-		ctx.False(LF_Zones.IsSafe("229 0 244.3"), "the police station is outside the zone");
 
 		// A zone registers and unregisters by name; a bad radius is refused.
 		ctx.False(LF_Zones.RegisterCircle("test-zone-bad", LF_ZoneRule.SAFE, "0 0 0", 0), "a zero radius zone is refused");

@@ -1,0 +1,5 @@
+    LF_VehicleOffer "{E1B0E70100000011}" {
+     m_sPrefab "{BBBB000000000001}Prefabs/Vehicles/Car.et"
+     m_sSpawnPrefab "{BBBB000000000002}Prefabs/Vehicles/LF_Car.et"
+     m_iPrice 1000
+    }

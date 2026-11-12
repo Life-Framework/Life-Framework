@@ -50,6 +50,21 @@ class LF_PersistentStorageComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Adds every placed, registered storage entity that still exists to result (server only).
+	static void GetPlaced(notnull array<IEntity> result)
+	{
+		if (!s_mPlaced || !GetGame() || !GetGame().GetWorld())
+			return;
+
+		foreach (string key, EntityID id : s_mPlaced)
+		{
+			IEntity entity = GetGame().GetWorld().FindEntityByID(id);
+			if (entity)
+				result.Insert(entity);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);

@@ -1,0 +1,12 @@
+[
+ {
+  "id": "machine:furnace-gold",
+  "margin": 30,
+  "reason": "Shipped prices (#686 audit): 2 GoldNugget at 60 buy = 120, the furnace makes 1 GoldBar that sells for 150. A design decision to retune (nugget buy 80 or bar sell 100 closes it); not changed here. Smelting is the only labour and the check counts none."
+ },
+ {
+  "id": "machine:cement-plant",
+  "margin": 24,
+  "reason": "Shipped prices (#686 audit): sand, gravel and cement bags are 12 each under the Prefabs/Items/Resources rule = 36; the plant makes 10 Brick that sell for 6 each = 60. A design decision to retune (Brick sell 3 closes it); not changed here."
+ }
+]

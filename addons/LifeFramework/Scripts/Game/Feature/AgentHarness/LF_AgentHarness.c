@@ -1636,7 +1636,7 @@ class LF_AgentHarness
 		}
 
 		int stash = -1;
-		IEntity stashEntity = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Stash");
+		IEntity stashEntity = LF_HideoutStashStorageManagerComponent.FindOwnedStash();
 		if (stashEntity)
 		{
 			BaseInventoryStorageComponent storage = LF_Component<LF_HideoutStashStorageComponent>.Find(stashEntity);
