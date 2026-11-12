@@ -628,12 +628,14 @@ flagship keep player progress across updates; a broken save is a lost community.
 time, UI fan-out. Budget and gate in #335. Why: the target sets every
 replication and persistence choice, and raising it later means rework.
 
-**2026-11-08 — Both addons are MIT; only the pack may change later.** The core
-and the flagship pack ship under MIT. The project keeps the option to license
+**2026-11-08 — Both addons are MIT; only the pack may change later.** The source
+of the core and the flagship pack on GitHub is MIT. The project keeps the option to license
 future versions of the pack differently; the core stays MIT for good.
 CONTRIBUTING.md asks pack contributors to agree to that relicensing, since
-without it the option would need every contributor's consent. Published
-releases stay MIT. Assets pulled in under CC-BY or similar keep their own terms.
+without it the option would need every contributor's consent. Amended
+2026-11-12: this covers the GitHub source only. The Workshop build is APL (entry
+"The Workshop build is APL; the GitHub repo stays MIT", 2026-11-08), so
+"published releases stay MIT" no longer applies to the Workshop. Assets pulled in under CC-BY or similar keep their own terms.
 
 **2026-11-09 — The core's DebugWorld holds neutral fixtures only.** When the
 pack move happens (M3 workstream 1), village and period content go to
@@ -719,3 +721,37 @@ switches, a world cleanup service, disconnect rules, playtime tracking, and a
 server-side request audit go into M3 (epic #684). Altis Life is CC BY-NC-ND, so
 we take ideas only. Why: these shape saved data and the owner schema, which get
 expensive to change once owners build on M3 and the flagship stops wiping.
+
+**2026-11-12 — M3 maintainer decisions D1 to D12.** Jasper answered the open
+questions in section 6 of `docs/roadmap/m3-plan.md`. Each answer is below.
+
+- **D1 (a): M3 waves 0 and 1 start now, at low priority** so M2 keeps the pool.
+- **D2 (a): the Workshop build is APL and the source is MIT.** The conflicting
+  "Both addons are MIT" entry (2026-11-08) is amended to cover the GitHub source
+  only. Unblocks #367 and the licence check in #368.
+- **D3 (a): the pack Workshop item is published in the same release as move
+  batch 1.** The host doc and `playtest-server.json` list both addon IDs, and
+  Discord is told one session ahead.
+- **D4 (b): the mission header lists config overlays.** `LF_MissionHeader` gets
+  an array of `.conf` resources and the config service merges them field by
+  field. No core path names a pack.
+- **D5 (a): #746 is trimmed to what is expensive after release.** Kept in M3:
+  #685a, #688, #749, #750a, #751, #752a, #754a, #755, #761. Moved to the M5
+  milestone: #748, #753, #757, #758, #759, #760, #750b, #752b, #754b. #756 moves
+  to "M6 Homes and Land".
+- **D6 (a): one PR per save reshape, each with its own version bump,** and one
+  announced reset at a release boundary. #761 becomes the close-out.
+- **D7 (a): pre-move saves must load after every move batch.**
+- **D8 (a): nine core config sections:** jobs, shops, crime, police,
+  organizations, licences, vehicles, zones, persistence.
+- **D9 (a): the crime catalog lives in config.** The saved
+  `{uid, offence, count}` is unchanged. Licence seizure moves to M5 (#685b).
+- **D10: as proposed.** #583 moves to M5, #716 to "M2 Living Town", #603 to
+  after the move (M4 Flagship Live). #481 stays in M3 and gets the issue
+  template and a link to the credits-source issue.
+- **D11: not signed off.** The move freeze (#322) waits for all three open M1
+  issues: #101, #109 and #199.
+- **D12 (a): per-job XP replaces the single player level,** and licence gates
+  read job levels.
+- **Profit loops:** the gold furnace (+30) and cement plant (+24) stay
+  baselined for now, the maintainer's choice.
