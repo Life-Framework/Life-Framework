@@ -36,7 +36,12 @@ and the DebugWorld village, which the tests depend on.
    live in the `Street_*`, `Signs`, and chain layers, not in the annex. Moving
    the village takes those tests with it, which breaks test 1 (delete the pack,
    every test still passes). Each fixture needs a neutral twin in the annex
-   first.
+   first. **Done (#323 batch 0, 2026-11-12):** `Annex.layer` holds an `Annex_*`
+   twin of every fixture a test finds by name, `LF_TestAnnex` names them, and
+   `validate-annex-fixtures` keeps an empty baseline. Production code still
+   names a few town entities (`LF_Contraband` marker ids, `LF_SpawnLogic`
+   `m_sTestCarLot`, `LF_Jail.SyncPlacedCell`, harness stash lookups); those
+   move with the batches that split them.
 2. **Every config loads one hard-coded core path.** `LF_JobsConfig`,
    `LF_PoliceConfig`, `LF_SignCatalog`, `LF_GarageConfig`, `LF_SurvivalConfig`,
    `LF_RespawnConfig`, and `LF_ResourceChainCatalog` each hold a

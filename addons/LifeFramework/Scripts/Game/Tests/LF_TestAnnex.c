@@ -54,6 +54,18 @@ class LF_TestAnnex
 	static const string APPLE_GATHER_TREE = "Annex_AppleGatherTree";
 	static const string APPLE_TRADE_CONTAINER = "Annex_AppleTradeContainer";
 	static const string APPLE_TRADE_CONTAINER3 = "Annex_AppleTradeContainer3";
+	static const string HOSPITAL_BED_1 = "Annex_Hospital_Bed_1";
+	static const string HOSPITAL_AMBULANCE = "Annex_Hospital_Ambulance";
+	static const string HOSPITAL_DUTY_DESK = "Annex_Hospital_Duty_Desk";
+	static const string DISPATCH_CONSOLE = "Annex_Dispatch_Console";
+	static const string DISPATCH_POLICE_BOARD = "Annex_Dispatch_PoliceBoard";
+	static const string DISPATCH_MEDIC_BOARD = "Annex_Dispatch_MedicBoard";
+	static const string TEST_TILL = "Annex_Test_Till";
+	static const string FUEL_TILL = "Annex_Fuel_Till";
+	static const string SIGN_SAFE_ZONE_SPAWN = "Annex_Sign_SafeZone_Spawn";
+	static const string SIGN_SAFE_ZONE_EAST = "Annex_Sign_SafeZone_East";
+	static const string SIGN_LAWLESS_ENTRY = "Annex_Sign_Lawless_Entry";
+	static const string SIGN_LAWLESS_PIT = "Annex_Sign_Lawless_Pit";
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The annex fixture entity, or null (with an Error) when the layer does not place it.

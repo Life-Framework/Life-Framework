@@ -133,8 +133,8 @@ class LF_Test_Roadmap_FuelWorld : LF_Test
 		Resource cash = Resource.Load(LF_MoneyUtils.PREFAB_CASH);
 		ctx.True(cash.IsValid(), "MoneyStack.et loads");
 
-		IEntity till = GetGame().GetWorld().FindEntityByName("Roadmap_Fuel_Till");
-		ctx.True(till != null, "Roadmap_Fuel_Till is placed");
+		IEntity till = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.FUEL_TILL);
+		ctx.True(till != null, "Annex_Fuel_Till is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 

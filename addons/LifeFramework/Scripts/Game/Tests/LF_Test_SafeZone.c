@@ -67,8 +67,21 @@ class LF_Test_SafeZone : LF_Test
 		LF_Zones.Unregister("test-zone");
 		ctx.False(LF_Zones.IsSafe("72 0 72"), "an unregistered zone protects nothing");
 
-		// Both safe zone notices stand at the square.
-		ctx.True(world.FindEntityByName("Sign_SafeZone_Spawn") != null, "a safe zone notice stands at the spawn");
-		ctx.True(world.FindEntityByName("Sign_SafeZone_East") != null, "a safe zone notice stands where the street enters the square");
+		// The safe zone notice is a sign carrying the safe_zone id (the annex twins of the two town notices).
+		ctx.True(CarriesSignId(world.FindEntityByName(LF_TestAnnex.SIGN_SAFE_ZONE_SPAWN), "safe_zone"), "the safe zone notice carries the safe_zone sign id");
+		ctx.True(CarriesSignId(world.FindEntityByName(LF_TestAnnex.SIGN_SAFE_ZONE_EAST), "safe_zone"), "the second safe zone notice carries the safe_zone sign id");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool CarriesSignId(IEntity sign, string signId)
+	{
+		if (!sign)
+			return false;
+
+		LF_SignComponent component = LF_Component<LF_SignComponent>.Find(sign);
+		if (!component)
+			return false;
+
+		return component.GetSignId() == signId;
 	}
 }

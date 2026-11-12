@@ -73,8 +73,8 @@ class LF_Test_AgentHarness : LF_Test
 		ctx.EqualFloat(180, angles[0], 1, "world shot yaws toward the target");
 		ctx.True(angles[1] < -20 && angles[1] > -28, "world shot pitches down toward the target");
 
-		ctx.True(LF_AgentCommand.Parse("10 stand ATM_Debug", cmd), "stand parses");
-		ctx.EqualStr("ATM_Debug", cmd.Arg1, "stand entity");
+		ctx.True(LF_AgentCommand.Parse("10 stand Annex_ATM", cmd), "stand parses");
+		ctx.EqualStr(LF_TestAnnex.ATM, cmd.Arg1, "stand entity");
 
 		ctx.True(LF_AgentCommand.Parse("14 ui", cmd), "ui list parses");
 		ctx.True(LF_AgentCommand.Parse("12 click CivilianButton", cmd), "click parses");
