@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROB_TARGET, ROOT, arrive, clientBox, judgeBleed, judgeDowned, parseState, sessionDir } from "../session.mjs";
+import { ROB_TARGET, ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeBleed, judgeDowned, parseState, sessionDir } from "../session.mjs";
 
 async function runDownedProof() {
   const h = await import("../harness.mjs");
@@ -20,6 +20,19 @@ async function runDownedProof() {
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const state = (n) => on(n, { verb: "state" }, 10000).detail;
   const fails = [];
+  // Client side (#522): every state below is also read from the client's own copy: the victim's own
+  // body (`seen`: replicated downed flag, life state, bleed clock) and the other player's view of it
+  // (`peers`). `state` is the server's word; these reads fail when a flag was written but never bumped.
+  const ownSees = (n, want, label) => {
+    const r = clientSees(on, wait, n, (s) => (s.downed === want.downed && want.life.includes(s.life) ? [] : [`downed=${s.downed} life=${s.life}, expected downed=${want.downed} life=${want.life}`]), { label, budgetMs: 15000 });
+    console.log(`client sees: ${label} ${r.line}`);
+    fails.push(...r.fails);
+    return r;
+  };
+  const peerSees = (n, want, label) => {
+    const r = clientSeesPeer(on, wait, n, 2, (p) => (p.downed === want.downed && want.life.includes(p.life) ? [] : [`player 2 downed=${p.downed} life=${p.life}, expected downed=${want.downed} life=${want.life}`]), { label, budgetMs: 15000 });
+    fails.push(...r.fails);
+  };
 
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
@@ -42,6 +55,7 @@ async function runDownedProof() {
   const [bx, by, bz] = String(parseState(victim).pos ?? "0,0,0").split(",").map(Number);
   if (Number.isFinite(bx)) on(1, { verb: "capture", mode: "world", name: "m2_255_downed_body", x: bx, y: by + 0.3, z: bz, ox: 2.5, oy: 1.2, oz: 0 }, 25000);
   for (const f of judgeDowned(shot.detail, victim, shooter, peers1, peers2)) fails.push(f);
+  ownSees(2, { downed: "1", life: ["INCAPACITATED"] }, "after the downing");
 
   // A second lethal hit changes nothing: a downed player takes no further damage.
   const again = on(1, { verb: "shoot", playerId: 2 }, 10000);
@@ -101,6 +115,8 @@ async function runDownedProof() {
     wait(2000);
     revived = parseState(state(2));
   }
+  ownSees(2, { downed: "0", life: ["ALIVE"] }, "after the revive");
+  peerSees(1, { downed: "0", life: ["ALIVE"] }, "after the revive");
   on(2, { verb: "capture", mode: "ui", name: "m2_259_revived_client2" }, 25000);
   seeBody("m2_259_after_revive_world");
   on(1, { verb: "stand", entityName: patientName });
@@ -120,6 +136,8 @@ async function runDownedProof() {
   on(1, { verb: "shoot", playerId: 2 }, 10000);
   wait(2500);
   if (parseState(state(2)).downed !== "1") fails.push("client 2 was not downed again after the revive");
+  ownSees(2, { downed: "1", life: ["INCAPACITATED"] }, "after the second downing");
+  peerSees(1, { downed: "1", life: ["INCAPACITATED"] }, "after the second downing");
   console.log(`revive   client 2: ${JSON.stringify(revived)} (civilian try: ${civilianTry.detail})`);
 
   // The real death of a downed player (what the bleed-out will call): the death screen, the
@@ -131,6 +149,10 @@ async function runDownedProof() {
   const giveUpDelay = Number(/m_fGiveUpDelaySeconds\s+(\d+)/.exec(bleedConf)?.[1] ?? 30);
   const bleedRead = parseState(state(2)).bleed;
   for (const f of judgeBleed(bleedRead, bleedSeconds)) fails.push(f);
+  // The clock as client 2 reads it: the throttled replicated copy, not the server's own count.
+  const clockSeen = clientSees(on, wait, 2, (s) => judgeBleed(String(s.bleed), bleedSeconds), { label: "bleed clock" });
+  console.log(`client sees: bleed clock ${clockSeen.line}`);
+  fails.push(...clockSeen.fails);
   const early = on(2, { verb: "giveup" }, 10000);
   wait(2000);
   const afterEarly = parseState(state(2));
@@ -153,6 +175,8 @@ async function runDownedProof() {
   wait(12000);
   const respawned = parseState(state(2));
   if (respawned.downed !== "0" || respawned.life !== "ALIVE") fails.push(`after the respawn: downed=${respawned.downed} life=${respawned.life}`);
+  ownSees(2, { downed: "0", life: ["ALIVE"] }, "after the respawn");
+  peerSees(1, { downed: "0", life: ["ALIVE"] }, "after the respawn");
 
   // #256: the bleed-out timer. Down client 2 again and leave them alone: the time runs out, the
   // death is the same real death, and the respawn is the normal one.

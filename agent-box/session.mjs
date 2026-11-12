@@ -489,6 +489,20 @@ export function selftestSession() {
   if (judgeBleed("120", 180).length) failures.push("judgeBleed failed a good read");
   if (!judgeBleed("-1", 180).length) failures.push("judgeBleed passed a client that reads no clock");
   if (!judgeBleed("200", 180).length) failures.push("judgeBleed passed a time above the config");
+  const sn = "me=MEDIC/1/0 cash=300 downed=0 life=ALIVE bleed=-1 veh=Car:d=1.2:eng=1:lock=0:ign=0:stolen=1|Van:d=5:eng=0:lock=1:ign=1:stolen=0 door=Door:d=2:locked=0 bags=3 chop=-2 toast=Paid dispatches=1 lastdispatch=Robbery";
+  const pseen = parseSeen(sn);
+  if (!pseen || pseen.faction !== "MEDIC" || pseen.duty !== "1" || pseen.cash !== 300 || pseen.veh.length !== 2 || pseen.veh[0].eng !== "1" || pseen.veh[1].lock !== "1" || pseen.door[0].locked !== "0" || pseen.bags !== 3 || pseen.dispatches !== 1) failures.push(`parseSeen read ${JSON.stringify(pseen)}`);
+  if (parseSeen("no_character") !== null) failures.push("parseSeen accepted a non-line");
+  if (parseSeen(sn.replace(/veh=\S+/, "veh=none")).veh.length !== 0) failures.push("parseSeen did not read veh=none as empty");
+  {
+    const reads = [sn.replace("bags=3", "bags=0"), sn];
+    const on = () => ({ detail: reads.shift() ?? sn });
+    const ok = clientSees(on, () => {}, 2, (s) => (s.bags === 3 ? [] : [`bags=${s.bags}`]), { budgetMs: 5000 });
+    if (ok.fails.length) failures.push(`clientSees did not wait for the replicated value: ${ok.fails}`);
+    const never = clientSees(() => ({ detail: sn.replace("bags=3", "bags=0") }), () => {}, 2, (s) => (s.bags === 3 ? [] : [`bags=${s.bags}`]), { budgetMs: 0 });
+    if (never.fails.length !== 1 || !never.fails[0].includes("client 2 reads")) failures.push("clientSees passed a value that never replicated");
+    if (!clientSees(() => ({ detail: "no_character" }), () => {}, 2, () => [], { budgetMs: 0 }).fails.length) failures.push("clientSees passed an unreadable line");
+  }
   failures.push(...selftestProfile());
   return failures;
 }
@@ -692,6 +706,40 @@ export function judgeCarry(peerLine, id, carrierId, carrierAt, maxGap) {
   if (!(gap <= maxGap)) fails.push(`player ${id} is ${gap.toFixed(1)} m from the carrier, expected within ${maxGap}`);
   return fails;
 }
+
+// `seen [radius]` runs on the asking client and reports what ITS copy of the world says: the replicated
+// account state, carried cash, vehicles (engine, lock, ignition, stolen), doors, loose bags, the chop
+// yard percent, the last toast and the radio calls heard. A broken RplProp or a missed BumpMe shows here
+// and nowhere on the server, which is why a proof of a player-visible result reads it on the OTHER client.
+export function parseSeen(detail) {
+  const text = String(detail ?? "");
+  const m = /^me=(\w+)\/(\d)\/(\d+) cash=(-?\d+) downed=(\d) life=(\w+) bleed=(-?\d+) veh=(\S*) door=(\S*) bags=(\d+) chop=(-?\d+) toast=(\S*) dispatches=(\d+) lastdispatch=(\S*)/.exec(text);
+  if (!m) return null;
+  const list = (raw) => (raw === "none" ? [] : raw.split("|").map((e) => Object.fromEntries(e.split(":").map((x, i) => (i === 0 ? ["name", x] : x.split("=")))))); 
+  return { faction: m[1], duty: m[2], wanted: Number(m[3]), cash: Number(m[4]), downed: m[5], life: m[6], bleed: Number(m[7]), veh: list(m[8]), door: list(m[9]), bags: Number(m[10]), chop: Number(m[11]), toast: m[12], dispatches: Number(m[13]), lastdispatch: m[14] };
+}
+
+// Read client n (`seen` by default) until judge(parsed) returns no failures or the budget runs out (a
+// replicated value lands a moment after the server writes it). Returns { line, fails, seconds }; an
+// unparsable line is a failure, never a pass. `verb: "peers"` with `parse` reads the other players' bodies.
+export function clientSees(on, wait, n, judge, { radius = 12, budgetMs = 10000, label = "", verb = "seen", parse = parseSeen } = {}) {
+  const t0 = Date.now();
+  let line;
+  let fails;
+  do {
+    line = on(n, { verb, radius }, 10000).detail;
+    const read = parse(line);
+    fails = read ? judge(read, line) : [`no ${verb} line: ${line}`];
+    if (!fails.length) break;
+    wait(1000);
+  } while (Date.now() - t0 < budgetMs);
+  const seconds = (Date.now() - t0) / 1000;
+  const what = label ? `${label}, ` : "";
+  return { line, fails: fails.map((f) => `${what}client ${n} reads: ${f}`), seconds };
+}
+
+// Client n reads player `id`'s body in `peers` (downed, life, carrier, seat, position) until judge(peer) is clean.
+export const clientSeesPeer = (on, wait, n, id, judge, opts = {}) => clientSees(on, wait, n, (peer) => judge(peer), { ...opts, verb: "peers", parse: (line) => parsePeer(line, id) });
 
 // M2 #252 on a running `up --clients 2` session: client 2 clocks in at the hospital desk and its
 // own client reads a radio on the medic frequency (the replicated tuning); client 1, a civilian,
