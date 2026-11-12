@@ -210,6 +210,9 @@ class LF_ConfigStream
 
 		// The crime catalog is server only and cached the same way; /configreload layers it again.
 		LF_CrimeCatalogConfig.Reload();
+
+		// Job XP, levels and licence gates are server-side; the next read layers the owner file again.
+		LF_JobsConfig.Reload();
 	}
 
 	//------------------------------------------------------------------------------------------------

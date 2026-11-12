@@ -50,7 +50,7 @@ class LF_Test_ChainStationsPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(27, version, "the save is written at version 27 (chainstations is payload 20)");
+		ctx.Equal(28, version, "the save is written at version 28 (chainstations is payload 20)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "chainstations");
 		ctx.Equal(37, barrel.GetPercent(), "the half-finished batch is back at 37 percent");
 		ctx.Equal(3, barrel.GetProgress().GetWork(), "with the same 3 units of work");

@@ -19,6 +19,24 @@
         "m_sCrimeId"
       ],
       "key": "The key is the crime id, a localization key such as #LF-Offence_Robbery; saved crime records use the same string. An id no shipped entry has adds an offence at the end; an existing id changes only the fields given."
+    },
+    "LF_JobTrackDef": {
+      "keyFields": [
+        "m_sJob"
+      ],
+      "key": "The key is the job id (CIVILIAN, DELIVERY, FARMER, ...). A job no shipped track has adds one, which must set levelThresholds; an existing key changes only the fields given. The level is 1 plus the thresholds a character's XP has reached, so a changed table reaches existing saves."
+    },
+    "LF_JobXpAwardDef": {
+      "keyFields": [
+        "m_sAction"
+      ],
+      "key": "The key is the action id the game awards (delivery_run, fruit_pick, gather). An action no shipped award has adds one, which must set job; an existing key changes only the fields given."
+    },
+    "LF_JobLicenceGateDef": {
+      "keyFields": [
+        "m_sLicence"
+      ],
+      "key": "The key is a licence name (LF_ELicenseType, e.g. MINER_GOLD). A licence with no row keeps its shipped gate (its family job, its catalog level); a new row must set job and minLevel."
     }
   },
   "examples": {
@@ -50,6 +68,31 @@
         },
         "#LF-Offence_Shoplifting": {
           "sentenceSeconds": 600
+        }
+      }
+    },
+    "jobs": {
+      "tracks": {
+        "FARMER": {
+          "dailyXpCap": 3000
+        },
+        "DELIVERY": {
+          "levelThresholds": [
+            400,
+            1200,
+            3000
+          ]
+        }
+      },
+      "xpAwards": {
+        "delivery_run": {
+          "xp": 120
+        }
+      },
+      "licenceGates": {
+        "MINER_GOLD": {
+          "job": "MINER",
+          "minLevel": 4
         }
       }
     }

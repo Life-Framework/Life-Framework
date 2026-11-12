@@ -42,8 +42,8 @@ Target: the resource is a **stateful physical object**:
 - **V2** — visible depletion/regrowth on trees and nodes; area-scoped yields.
 - **V3** — tool durability; resource quality/rarity (better yields from richer
   nodes).
-- **V4** — gathering perks from `Level` (speed/amount bonuses already defined on
-  `LF_PlayerLevelComponent`) and jobs.
+- **V4** — gathering perks from job levels (`LF_JobLevels`, #749; a gather already
+  awards FARMER XP through the `gather` award).
 
 ## Current state
 

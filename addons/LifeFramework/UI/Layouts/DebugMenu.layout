@@ -253,26 +253,6 @@ FrameWidgetClass {
           }
          }
         }
-        ButtonWidgetClass "{EF2C9979A557BA1C}" {
-         Name "GrantSpButton"
-         Slot LayoutSlot "{F044800C21E3BF3C}" {
-          SizeMode Fill
-          FillWeight 1
-          Padding 5 0 0 0
-         }
-         {
-          TextWidgetClass "{10E33BCDFDE04FF6}" {
-           Name "GrantSpButtonLabel"
-           Text "#EL-DebugMenu_GrantSp"
-           "Font Size" 15
-           "Min Font Size" 15
-           Slot LayoutSlot "{CFBB5B8D537BEFFF}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-          }
-         }
-        }
        }
       }
       HorizontalLayoutWidgetClass "{50D93C321CE73A10}" {
