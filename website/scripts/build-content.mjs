@@ -637,6 +637,9 @@ const gallery = await buildGallery({ site, github, repoUrl: `https://github.com/
 fs.writeFileSync(path.join(dataDir, "gallery.json"), JSON.stringify(gallery));
 console.log(`[content] gallery: ${gallery.count} pictures`);
 
+// The config page renders its form from this file, so it cannot drift from the schema.
+fs.copyFileSync(path.join(repo, "docs", "config", "config.schema.json"), path.join(dataDir, "config-schema.json"));
+
 fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
 fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));
 fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));
