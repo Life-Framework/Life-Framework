@@ -59,7 +59,7 @@ class LF_ConvoyDeliverAction : ScriptedUserAction
 		if (!marker)
 			return true;
 
-		return marker.GetMarkerId() == LF_Contraband.ActiveDropId();
+		return marker.IsNearDrop() == LF_Contraband.IsNearDropActive();
 	}
 
 	//------------------------------------------------------------------------------------------------
