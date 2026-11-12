@@ -9,8 +9,8 @@
 
 class LF_HarnessPerf
 {
-	static const int MAX_SECONDS = 60;
-	static const int MAX_SAMPLES = 20000;
+	static const int MAX_SECONDS = 60; // lf-fixed: harness probe limit, not gameplay
+	static const int MAX_SAMPLES = 20000; // lf-fixed: harness probe memory bound
 
 	protected static int s_iId;
 	protected static string s_sLabel;
