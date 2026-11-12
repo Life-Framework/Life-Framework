@@ -233,13 +233,15 @@ class LF_ShopPricesConfig
 					continue;
 
 				string find;
+				string prefabName;
 				int itemType;
 				int itemMode;
+				ruleContainer.Get("m_Prefab", prefabName);
 				ruleContainer.Get("m_sFind", find);
 				ruleContainer.Get("m_eItemType", itemType);
 				ruleContainer.Get("m_eItemMode", itemMode);
 
-				LF_ShopPriceRule rule = LF_ShopPriceResolver.FindRule(m_aPriceRules, LF_ShopPriceResolver.RuleKey(find, itemType, itemMode));
+				LF_ShopPriceRule rule = LF_ShopPriceResolver.FindRule(m_aPriceRules, LF_ShopPriceResolver.RuleKey(prefabName, find, itemType, itemMode));
 				if (!rule)
 				{
 					rule = LF_ShopPriceRule.Cast(BaseContainerTools.CreateInstanceFromContainer(ruleContainer));
@@ -272,7 +274,7 @@ class LF_ShopPricesConfig
 	//------------------------------------------------------------------------------------------------
 	//! Applies the owner's "shops" section. Keys: defaultBuyPrice, defaultSellPrice, priceRules
 	//! and extraItemPrefabs (added to the shipped list). priceRules is an object keyed by
-	//! LF_ShopPriceResolver.RuleKey (the find substring, or "type:<flags>,mode:<mode>"); each record
+	//! LF_ShopPriceResolver.RuleKey ("prefab:<GUID>" for a prefab rule, the find substring, or "type:<flags>,mode:<mode>"); each record
 	//! may set prefab (a {GUID}path, matched by GUID), buyPrice, sellPrice and hidden. A key no shipped rule has adds a rule.
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
@@ -292,10 +294,11 @@ class LF_ShopPricesConfig
 			if (!reader.BeginRecord(key))
 				continue;
 
+			string keyPrefab;
 			string find;
 			int itemType;
 			int itemMode;
-			if (!LF_ShopPriceResolver.ParseRuleKey(key, find, itemType, itemMode))
+			if (!LF_ShopPriceResolver.ParseRuleKey(key, keyPrefab, find, itemType, itemMode))
 			{
 				reader.RejectRecord("the key is neither a prefab-path substring nor type:<flags>,mode:<mode>");
 				reader.EndRecord();
@@ -303,10 +306,11 @@ class LF_ShopPricesConfig
 			}
 
 			// "type:64" and "type:64,mode:2" address the same rule.
-			LF_ShopPriceRule rule = LF_ShopPriceResolver.FindRule(m_aPriceRules, LF_ShopPriceResolver.RuleKey(find, itemType, itemMode));
+			LF_ShopPriceRule rule = LF_ShopPriceResolver.FindRule(m_aPriceRules, LF_ShopPriceResolver.RuleKey(keyPrefab, find, itemType, itemMode));
 			if (!rule)
 			{
 				rule = LF_ShopPriceRule.Create(find, itemType, itemMode);
+				rule.m_Prefab = keyPrefab;
 				m_aPriceRules.Insert(rule);
 			}
 

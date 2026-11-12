@@ -50,7 +50,7 @@ expect(has(find(bad, 9, 44), "error", "= 2000000 is above the maximum 1000000"),
 expect(has(find(bad, 9, 63), "error", ".hidden is not true or false"), "bad: bool type error");
 expect(has(find(bad, 9, 70), "warn", ".colour is not a known key; ignored"), "bad: unknown record field");
 expect(has(find(bad, 10, 7), "warn", "no shipped record has this key"), "bad: record key not in the shipped config");
-expect(has(find(bad, 11, 7), "error", "neither a prefab-path substring nor type:"), "bad: malformed type key");
+expect(has(find(bad, 11, 7), "error", "neither a prefab-path substring, prefab:<GUID> nor type:"), "bad: malformed type key");
 expect(has(find(bad, 12, 7), "error", "is not a record (an object); record skipped"), "bad: record that is not an object");
 expect(has(find(bad, 14, 25), "error", "shops.extraItemPrefabs is not a list of strings"), "bad: list of non-strings");
 expect(has(find(bad, 16, 15), "error", "section vehicles is not an object"), "bad: section not an object");
@@ -60,6 +60,8 @@ expect(!bad.problems.some((p) => p.line === 8 || p.line === 13), "bad: a valid l
 expect(run("typed.json").problems.length === 0, `typed: ${JSON.stringify(run("typed.json").problems)}`);
 expect(parseShopRuleKey("type:64").norm === "type:64,mode:2" && parseShopRuleKey("type:64,mode:1").norm === "type:64,mode:1", "ruleKey normalisation");
 expect(parseShopRuleKey("type:64,mode:2,x:1") === null && parseShopRuleKey("") === null && parseShopRuleKey("mode:1,type:64").norm === "mode:1,type:64" && parseShopRuleKey("type:") === null, "ruleKey grammar");
+
+expect(parseShopRuleKey("prefab:c9d661e5b0714711").norm === "prefab:C9D661E5B0714711" && parseShopRuleKey("prefab:") === null, "prefab ruleKey");
 
 // schemaVersion: too new, below 1, and, against a newer build, older.
 expect(has(run("too-new.json").problems[0], "error", "schemaVersion 9 but this build reads up to 1"), "too-new");
