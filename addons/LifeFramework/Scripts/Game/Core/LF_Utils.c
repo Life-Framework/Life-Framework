@@ -343,55 +343,55 @@ class LF_Utils : Managed
 		if (playerId <= 0)
 			return "";
 
+		// The backend can answer with "", or transiently with the NULL UUID ("00000000-..."), and on
+		// a non-dedicated host vanilla turns "" into a name-derived "00bbbddd-" stand-in. None of
+		// them is the player's own identity, which can still arrive seconds later on a listen host:
+		// LF_PlayerIdentity decides whether to wait or what stands in for it.
 		string identity = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
 
-		// The backend can transiently answer the per-player lookup with the NULL UUID
-		// ("00000000-...") instead of an empty string - it is non-empty, so it defeats both
-		// vanilla's name-hash fallback and the empty-identity guards in every caller.
-		// ChooseIdentityFallback decides what stands in for it.
-		UUID identityUuid = identity;
-		if (identity.IsEmpty() || identityUuid.IsNull())
-		{
-			bool sessionDefine = false;
+		bool sessionDefine = false;
 #ifdef LF_SESSION_IDENTITY
-			sessionDefine = true;
+		sessionDefine = true;
 #endif
-			LF_EIdentityFallback fallback = ChooseIdentityFallback(RplSession.Mode() == RplMode.Dedicated, sessionDefine, System.IsCLIParam("noBackend"));
-			if (fallback == LF_EIdentityFallback.SESSION_SLOT)
-				return BuildSessionIdentity(playerId);
-			if (fallback == LF_EIdentityFallback.PLAYER_NAME)
-				return BuildLocalIdentity(playerId);
+		bool noBackend = System.IsCLIParam("noBackend");
+#ifdef WORKBENCH
+		// Workbench play has no online service: vanilla's peer-tool polyfill is all it gets.
+		noBackend = true;
+#endif
+		// A client never learns platform identities (vanilla answers NULL there): it keeps the name
+		// stand-in, and GetPlayerUID reads the key the server replicated instead.
+		if (!Replication.IsServer())
+			noBackend = true;
 
-			return "";
-		}
-
-		return identity;
+		return LF_PlayerIdentity.Resolve(playerId, identity, RplSession.Mode() == RplMode.Dedicated, sessionDefine, noBackend, System.GetTickCount());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! What stands in for a missing platform identity. Pure, so it is LOGIC-tier tested
 	//! (LF_Test_IdentityFallback).
-	//! - Not dedicated (Workbench play, listen host): no backend will ever answer, so the player
-	//!   name keys the account, like vanilla's peer-tool polyfill.
 	//! - Dedicated with LF_SESSION_IDENTITY (agent-box/session.mjs): every client is the same
 	//!   Steam account with the same name, so the player id keys it, for one server run.
-	//! - Dedicated with -noBackend (toolscli host start): no backend will ever answer either.
-	//!   Each friend joins with their own Steam name, so the name keys the account and survives a
+	//! - -noBackend (tools\cli host start) or Workbench play: no identity will ever arrive. Each
+	//!   friend joins with their own Steam name, so the name keys the account and survives a
 	//!   restart. Two players with the same name share one account.
-	//! - Dedicated with a backend: the identity is still resolving; wait for it (the spawn flow
-	//!   retries on an empty identity).
-	static LF_EIdentityFallback ChooseIdentityFallback(bool dedicated, bool sessionDefine, bool noBackend)
+	//! - Dedicated with a backend: wait for the identity (the creation flow and the spawn retry on
+	//!   an empty key). A dedicated server never keys a player by a name anyone can take.
+	//! - Listen host with a backend: the identity arrives late (about 15 s on playtest build 4), so
+	//!   wait for it; after LF_PlayerIdentity.LISTEN_WAIT_MS with no answer the online service is
+	//!   down, and the name keys the account as in offline play.
+	//! \param waitedMs How long this player has been waiting for a real identity.
+	static LF_EIdentityFallback ChooseIdentityFallback(bool dedicated, bool sessionDefine, bool noBackend, int waitedMs)
 	{
-		if (!dedicated)
-			return LF_EIdentityFallback.PLAYER_NAME;
-
-		if (sessionDefine)
+		if (dedicated && sessionDefine)
 			return LF_EIdentityFallback.SESSION_SLOT;
 
 		if (noBackend)
 			return LF_EIdentityFallback.PLAYER_NAME;
 
-		return LF_EIdentityFallback.WAIT;
+		if (dedicated || waitedMs < LF_PlayerIdentity.LISTEN_WAIT_MS)
+			return LF_EIdentityFallback.WAIT;
+
+		return LF_EIdentityFallback.PLAYER_NAME;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -648,6 +648,17 @@
   `LF_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
   `-noBackend` dedicated server: stable across restarts, one character per name
   (`spawn/identity-fallback`; join, restart, rejoin seen live).
+  Listen host with the online service (launcher "Play on my own", hosting from the
+  game menu, a friend joining it): the platform identity arrives about a second after
+  the join. Playtest build 4 opened the account under a name stand-in first, so the
+  signed form R-89 found no account ("Your account is still loading") and nobody
+  spawned. `LF_PlayerIdentity` now waits for the real identity (the splash stays up;
+  a toast after 3 s), keys by name only after 30 s with no answer, and moves a
+  stand-in account onto the real key when the identity turns up late (records keep
+  their keys; an empty stand-in beside a returning account is dropped, two accounts
+  with characters are both kept). A signed form with no account opens one, and with
+  no identity it comes back with the reason (`persist/late-identity`,
+  `node agent-box/listen-host.mjs`).
 - ✅ **One-command playtest** (`tools\cli playtest [stop|status|shortcut]`,
   `Play Life Framework.cmd`, `tools/host/playtest.mjs`): fast-forwards the detached
   checkout `..\Life-Framework-playtest` to `origin/main` (only while no host runs),

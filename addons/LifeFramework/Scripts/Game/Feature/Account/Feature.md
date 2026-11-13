@@ -38,6 +38,13 @@ off:
   re-clamps the active index and `SetActiveCharacter` ignores a non-member.
   Fields effectively public (BIS ticket T174113 workaround).
 - `LF_PlayerAccountManager` — load + cache + save/release.
+- `LF_PlayerIdentity` — the key a connected player's account opens under
+  (`LF_Utils.GetAccountUID`). Waits ("") while the platform identity can still
+  arrive (a listen host gets it about a second after the join), keys by name on
+  `-noBackend`, in Workbench, or after 30 s with no answer on a listen host, and on a
+  late identity moves the stand-in account onto the real key
+  (`LF_PlayerAccountManager.AdoptStandIn`; character record keys stay).
+  `persist/late-identity`.
   `SaveAndReleaseAccount` keeps the account resident (no eviction churn).
 - Persistence: `Feature/Account/Persistence/LF_PlayerAccountRecord.c` — a
   dedicated record (no EPF). `LF_PlayerAccountManager.ExportAll` / `ApplyAll`

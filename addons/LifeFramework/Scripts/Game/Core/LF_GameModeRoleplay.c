@@ -176,6 +176,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 			LF_BleedOut.OnPlayerDisconnected(playerId);
 			LF_PhoneCalls.OnPlayerDisconnected(playerId);
 			ReleaseDisconnectedPlayer(playerId);
+			// After the release, which still reads the account key: the identity wait ends with the connection.
+			LF_PlayerIdentity.Forget(playerId);
 		}
 
 		super.OnPlayerDisconnected(playerId, cause, timeout);
