@@ -8151,6 +8151,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
      Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
     }
+    CustomStringTableItem "{D8050889F5E6497E}" {
+     Id "LF-DebugMenu_ResetWorld"
+     Target_en_us "Reset world"
+     Comment "Debug menu: first press of the reset-world button (asks again before it resets)."
+    }
+    CustomStringTableItem "{42E123AF9D0648DA}" {
+     Id "LF-DebugMenu_ResetWorldSure"
+     Target_en_us "Press again: reset for everyone"
+     Comment "Debug menu: reset-world button after the first press."
+    }
+    CustomStringTableItem "{A3B9C629E6434881}" {
+     Id "LF-SpawnHub_ResetWorld"
+     Target_en_us "Reset the world"
+     Comment "Travel globe list row: puts the playtest world back as it was for everyone."
+    }
+    CustomStringTableItem "{F2285D38E5F14032}" {
+     Id "LF-SpawnHub_Reset"
+     Target_en_us "Reset"
+     Comment "Travel globe reset row button."
+    }
+    CustomStringTableItem "{EE3AD272B57D4B3B}" {
+     Id "LF-SpawnHub_ResetSure"
+     Target_en_us "Sure? Resets for everyone"
+     Comment "Travel globe reset row after the first press."
+    }
+    CustomStringTableItem "{E33402A8CE6644F4}" {
+     Id "LF-SpawnHub_ResetYes"
+     Target_en_us "Yes, reset"
+     Comment "Travel globe reset row button after the first press."
+    }
   }
  }
 }

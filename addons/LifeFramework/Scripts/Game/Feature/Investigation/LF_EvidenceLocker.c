@@ -72,6 +72,16 @@ class LF_EvidenceLocker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the locker's log is emptied (the world reset). Numbering restarts.
+	//! eturn How many entries were dropped.
+	static int ClearAll()
+	{
+		int dropped = Count();
+		ResetStatics();
+		return dropped;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int Count()
 	{
 		return Rows().Count();

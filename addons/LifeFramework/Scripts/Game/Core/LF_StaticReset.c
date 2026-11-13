@@ -89,6 +89,7 @@ class LF_StaticReset
 		LF_PhotoIdCard.ResetStatics();
 		LF_IdCardView.ResetStatics();
 		LF_IdCheck.ResetStatics();
+		LF_WorldReset.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

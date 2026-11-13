@@ -82,6 +82,30 @@ class LF_Evidence
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: every scene closes and every marker and casing lying about is removed (the world
+	//! reset). The shooters being watched stay watched.
+	//! eturn How many pieces of evidence were removed.
+	static int ClearAll()
+	{
+		int removed = 0;
+		if (s_aRows && GetGame() && GetGame().GetWorld())
+		{
+			foreach (LF_EvidenceRow row : s_aRows)
+			{
+				IEntity marker = GetGame().GetWorld().FindEntityByID(row.m_Marker);
+				if (marker && !marker.GetParent())
+					SCR_EntityHelper.DeleteEntityAndChildren(marker);
+
+				removed++;
+			}
+		}
+
+		s_aRows = null;
+		s_aScenes = null;
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: a player body spawned. Its shots can now leave casings. Called from the spawn logic.
 	static void WatchShooter(IEntity body)
 	{
