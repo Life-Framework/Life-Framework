@@ -88,7 +88,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
    the hideout door, and store something in the stash. Run contraband from the
    barn to the drop (in the debug game mode a second crate cage 27 m south of the barn pallet at `466 0 304`; the flagship keeps the pub).
    Where: the walled yard at the end of the cobbled alley (about 302, 288, door on the alley); inside are the machine, the stash, a workbench, crates, barrels and a parked van. The registry desk is at 289, 256 and carries a phone, files, notebooks and a clock, with an office chair behind it (props on the desk top at y 0.907). Demo: `session.mjs org` (proof `agent-box/proofs/org.mjs`) (2 clients: found the org, take the lease, open the gate).
-   Courier parcel: take a run at the post counter, then open the inventory; the parcel's description says where to deliver it (the porch past the brick-walled lock-up). Demo: `session.mjs parcel-proof`.
+   Courier parcel: take a run at the post counter, then open the inventory; the parcel's description says where to deliver it (the porch past the brick-walled lock-up). Demo: `session.mjs parcel-proof`. A carried parcel stays in the hands while you sprint; drop it from the inventory and it glows on the ground with a toast. Demo: `session.mjs parcel-drop-proof`.
 8. **Restart.** Leave and rejoin: your cash, bank, job, organization, and cars
    should be back.
 
