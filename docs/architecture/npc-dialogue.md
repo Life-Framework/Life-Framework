@@ -68,6 +68,12 @@ built the missing parts.
   up from behind still gets the face (the first version used the player's side and filmed the back
   of the clerk's head). **Shoulder**, while the player chooses: behind and beside the player's
   head, 42 degrees.
+- The ease between shots is a straight line, which used to cut through the player's own head (a
+  filmed clip showed the back of the head and hair strands filling the frame). The shoulder shot now
+  stands further out and up (0.75 behind, 0.5 aside, 0.22 up), and every eased position is kept out
+  of a sphere around the player's head bone (`HEAD_KEEP_OUT`, 0.85 m): a path through the head slides
+  round the shoulder side. The sphere grows from the start distance, so the face shot does not pop,
+  and is skipped when the blend starts inside it (a first person view).
 - Collision is a script trace (`BaseWorld.TraceMove`) from the subject to the camera; a hit pulls
   the camera in. There is no built-in collision for a free camera.
 - While the scene is open the character's movement, view and weapon controls are disabled
