@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A795096DB7F9F55D}Sounds/Atmosphere/Atmosphere_Quarry.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

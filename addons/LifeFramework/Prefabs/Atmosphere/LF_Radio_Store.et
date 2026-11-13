@@ -1,0 +1,9 @@
+GenericEntity : "{16C2DFD610CC7AFB}Prefabs/Atmosphere/LF_Radio.et" {
+ ID "399F7ED7AB521DC6"
+ components {
+  LF_AmbientEmitterComponent "{D06D909C939BCF74}" {
+   m_sSoundProject "{F81D983989C40DCD}Sounds/Atmosphere/Atmosphere_StoreRadio.acp"
+   m_fRadius 23
+  }
+ }
+}

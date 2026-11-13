@@ -54,6 +54,15 @@ name of the person who ran the agent.
 |---|---|---|---|---|
 | Taser sounds: shot, dry fire, cartridge out and in, stun buzz (`Sounds/Weapons/Handguns/Taser/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-13 on the maintainer's Starter plan, a paid plan with a commercial licence. The output may be used in the project and in published builds as part of the mod; it may not be distributed as stand-alone audio files or a sample pack (`docs/decisions.md`, 2026-11-13) | `tools/assets/taser/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
 
+## Generated audio
+
+Music and ambience generated with ElevenLabs.
+
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Store radio and pub music (`Sounds/Atmosphere/Samples/Atmosphere_StoreRadio_LP.wav`, `Atmosphere_PubRadio_LP.wav`) | ElevenLabs Music (`music_v1`, instrumental), generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan, Music Terms of 2026-10-09: use inside the mod; no attribution required. **Not under this repository's MIT licence**: the tracks may not be taken out of the mod and reused or offered as a music library | `tools/assets/atmosphere/ambience.json` (prompts, dates, credits) |
+| Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square (`Sounds/Atmosphere/Samples/`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan (commercial use allowed) | `tools/assets/atmosphere/ambience.json` |
+
 ## Generated voices
 
 | Asset | Tool | Source | Terms | Recorded in |

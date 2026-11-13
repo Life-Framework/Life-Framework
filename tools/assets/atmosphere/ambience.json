@@ -1,0 +1,439 @@
+{
+  "_note": "Spec and credit record of the town's music and background loops. toolscli asset ambience reads it; docs/architecture/atmosphere.md explains it. Prompts never name an artist, a song or a label.",
+  "budget": {
+    "credits": 12000
+  },
+  "sounds": [
+    {
+      "id": "store_radio",
+      "name": "StoreRadio",
+      "kind": "music",
+      "radio": true,
+      "seconds": 70,
+      "rate": 24000,
+      "volume_db": -8,
+      "inner_m": 2,
+      "outer_m": 24,
+      "seam_ms": 2500,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental late-1980s Eastern European radio pop tune: bright analog synthesizer melody, drum machine with a gated snare, bouncy synth bass, clean chorus electric guitar, light optimistic variety-show feel, mid-tempo around 112 bpm. Instrumental only, no vocals, no speech.",
+      "pick": 1,
+      "reason": "Only take. Dense steady arrangement with one quieter passage; no silent stretch, loop step 0.07."
+    },
+    {
+      "id": "pub_radio",
+      "name": "PubRadio",
+      "kind": "music",
+      "radio": true,
+      "seconds": 70,
+      "rate": 24000,
+      "volume_db": -7,
+      "inner_m": 3,
+      "outer_m": 34,
+      "seam_ms": 2500,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental Central European village pub dance music of the 1980s: accordion lead, clarinet and trumpet melody, tuba bass and brushed snare in a lively polka two-step, warm and a little rough like a small folk dance band playing live. Instrumental only, no vocals, no speech.",
+      "pick": 1,
+      "reason": "Only take. Steady band texture, one short break mid-track; loop step 0.14."
+    },
+    {
+      "id": "furnace",
+      "name": "Furnace",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -9,
+      "inner_m": 2,
+      "outer_m": 36,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "Large coal-fired industrial furnace roaring steadily: deep constant fire roar, forced air draught, low rumble, occasional soft crackle of coal. Continuous even level, recorded close, no voices, no music, no metal clanks.",
+      "pick": 1,
+      "reason": "Only take. Even broadband roar with a strong low band, no events that would mark the loop."
+    },
+    {
+      "id": "sawmill",
+      "name": "Sawmill",
+      "kind": "loop",
+      "seconds": 15,
+      "rate": 48000,
+      "volume_db": -8,
+      "inner_m": 2,
+      "outer_m": 45,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "Electric circular sawmill running and cutting timber: steady motor whine and a spinning blade ripping through a wooden log, constant level. Outdoors, no voices, no music.",
+      "pick": 1,
+      "reason": "Only take. Constant motor and blade noise end to end."
+    },
+    {
+      "id": "quarry",
+      "name": "Quarry",
+      "kind": "loop",
+      "seconds": 22,
+      "rate": 48000,
+      "volume_db": -9,
+      "inner_m": 8,
+      "outer_m": 55,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "Open stone quarry ambience: a few workers striking rock with pickaxes at irregular intervals, small stones tumbling down, light wind across open ground. Sparse and a little distant, no voices, no engines, no music.",
+      "pick": 1,
+      "reason": "Only take. Sparse strikes over quiet wind.",
+      "even": true
+    },
+    {
+      "id": "farm",
+      "name": "Farm",
+      "kind": "loop",
+      "seconds": 22,
+      "rate": 48000,
+      "volume_db": -10,
+      "inner_m": 8,
+      "outer_m": 45,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "Busy village henhouse yard: a dozen hens clucking and scratching continuously, steady and even from start to end, a soft breeze in leaves behind them. Close and constant, no rooster crow, no loud single calls, no voices, no engines, no music.",
+      "pick": 2,
+      "reason": "Take 2 of 2. Take 1 was near silence with one loud call that would repeat every 18 s; take 2 clucks from start to end. One louder call in its first second is evened out in processing.",
+      "even": true
+    },
+    {
+      "id": "still",
+      "name": "Still",
+      "kind": "loop",
+      "seconds": 15,
+      "rate": 48000,
+      "volume_db": -11,
+      "inner_m": 1.5,
+      "outer_m": 18,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "A copper moonshine still at work: liquid bubbling and gurgling steadily in a pot, a soft hiss of steam, a slow drip into a metal bucket, a small wood fire crackling underneath. Close, continuous, no voices, no music.",
+      "pick": 1,
+      "reason": "Only take. Regular bubbling with one steam hiss."
+    },
+    {
+      "id": "police_desk",
+      "name": "PoliceDesk",
+      "kind": "loop",
+      "seconds": 22,
+      "rate": 48000,
+      "volume_db": -13,
+      "inner_m": 1.5,
+      "outer_m": 14,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "A 1980s police station desk: quiet steady two-way radio static from a small speaker with short bursts of garbled unintelligible dispatcher speech and squelch clicks, and a mechanical typewriter typed slowly nearby. No clear words, no music.",
+      "radio": false,
+      "pick": 1,
+      "reason": "Only take. Low static with one loud burst at 4 s; evened out in processing, still a retake candidate after listening.",
+      "even": true
+    },
+    {
+      "id": "chop_shop",
+      "name": "ChopShop",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -11,
+      "inner_m": 2,
+      "outer_m": 30,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "Backyard car workshop: an air compressor chugging steadily, a ratchet wrench clicking, an occasional metal tool clinking on concrete, a short hiss of compressed air. Continuous, outdoors, no voices, no music, no engine revving.",
+      "pick": 1,
+      "reason": "Only take. The compressor cycles on and off four times, tools between."
+    },
+    {
+      "id": "square",
+      "name": "Square",
+      "kind": "loop",
+      "seconds": 22,
+      "rate": 48000,
+      "volume_db": -12,
+      "inner_m": 6,
+      "outer_m": 36,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "Quiet small-town square in the afternoon: a stone fountain trickling, the indistinct murmur of a few people talking far away, pigeons cooing and a flutter of wings, a bicycle bell once. Calm, no clear words, no traffic, no music.",
+      "pick": 1,
+      "reason": "Only take. Quiet bed, three bell strokes at the start and one louder event at 15 s.",
+      "even": true
+    }
+  ],
+  "generations": [
+    {
+      "id": "store_radio",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs Music",
+      "model": "music_v1",
+      "prompt": "Original instrumental late-1980s Eastern European radio pop tune: bright analog synthesizer melody, drum machine with a gated snare, bouncy synth bass, clean chorus electric guitar, light optimistic variety-show feel, mid-tempo around 112 bpm. Instrumental only, no vocals, no speech.",
+      "seconds": 70,
+      "bytes": 1120592,
+      "credits": 875,
+      "processed": {
+        "seconds": 59.64,
+        "peak_db": -3,
+        "rms_db": -24.4,
+        "wrap": 0.07
+      }
+    },
+    {
+      "id": "pub_radio",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs Music",
+      "model": "music_v1",
+      "prompt": "Original instrumental Central European village pub dance music of the 1980s: accordion lead, clarinet and trumpet melody, tuba bass and brushed snare in a lively polka two-step, warm and a little rough like a small folk dance band playing live. Instrumental only, no vocals, no speech.",
+      "seconds": 70,
+      "bytes": 1121010,
+      "credits": 875,
+      "processed": {
+        "seconds": 64.89,
+        "peak_db": -3,
+        "rms_db": -17.9,
+        "wrap": 0.14
+      }
+    },
+    {
+      "id": "furnace",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Large coal-fired industrial furnace roaring steadily: deep constant fire roar, forced air draught, low rumble, occasional soft crackle of coal. Continuous even level, recorded close, no voices, no music, no metal clanks.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.6,
+        "peak_db": -3,
+        "rms_db": -17.1,
+        "wrap": 0.44
+      }
+    },
+    {
+      "id": "sawmill",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Electric circular sawmill running and cutting timber: steady motor whine and a spinning blade ripping through a wooden log, constant level. Outdoors, no voices, no music.",
+      "seconds": 15,
+      "bytes": 241205,
+      "credits": 150,
+      "processed": {
+        "seconds": 14.6,
+        "peak_db": -3,
+        "rms_db": -19.7,
+        "wrap": 0.47
+      }
+    },
+    {
+      "id": "quarry",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Open stone quarry ambience: a few workers striking rock with pickaxes at irregular intervals, small stones tumbling down, light wind across open ground. Sparse and a little distant, no voices, no engines, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 20.98,
+        "peak_db": -3,
+        "rms_db": -32.2,
+        "wrap": 0.01
+      }
+    },
+    {
+      "id": "farm",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Small village farmyard on a calm day: hens clucking softly, one distant rooster, one far away cow, a light breeze in the leaves. Gentle and sparse, no voices, no engines, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 18.5,
+        "peak_db": -3,
+        "rms_db": -27.7,
+        "wrap": 0
+      }
+    },
+    {
+      "id": "still",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A copper moonshine still at work: liquid bubbling and gurgling steadily in a pot, a soft hiss of steam, a slow drip into a metal bucket, a small wood fire crackling underneath. Close, continuous, no voices, no music.",
+      "seconds": 15,
+      "bytes": 241205,
+      "credits": 150,
+      "processed": {
+        "seconds": 14.6,
+        "peak_db": -3,
+        "rms_db": -24.8,
+        "wrap": 0.05
+      }
+    },
+    {
+      "id": "police_desk",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s police station desk: quiet steady two-way radio static from a small speaker with short bursts of garbled unintelligible dispatcher speech and squelch clicks, and a mechanical typewriter typed slowly nearby. No clear words, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 21.6,
+        "peak_db": -3,
+        "rms_db": -28.3,
+        "wrap": 0.03
+      }
+    },
+    {
+      "id": "chop_shop",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Backyard car workshop: an air compressor chugging steadily, a ratchet wrench clicking, an occasional metal tool clinking on concrete, a short hiss of compressed air. Continuous, outdoors, no voices, no music, no engine revving.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.6,
+        "peak_db": -3,
+        "rms_db": -18.2,
+        "wrap": 0.21
+      }
+    },
+    {
+      "id": "square",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Quiet small-town square in the afternoon: a stone fountain trickling, the indistinct murmur of a few people talking far away, pigeons cooing and a flutter of wings, a bicycle bell once. Calm, no clear words, no traffic, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 21.6,
+        "peak_db": -3,
+        "rms_db": -27.9,
+        "wrap": 0
+      }
+    },
+    {
+      "id": "farm",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Busy village henhouse yard: a dozen hens clucking and scratching continuously, steady and even from start to end, a soft breeze in leaves behind them. Close and constant, no rooster crow, no loud single calls, no voices, no engines, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 20.57,
+        "peak_db": -3,
+        "rms_db": -27.1,
+        "wrap": 0.08
+      }
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-13",
+      "generations": 10,
+      "plan": "starter",
+      "credits_before": 667,
+      "credits_after": 3997,
+      "credits": 3330,
+      "by_rate": 3330,
+      "note": "The after value was read ten minutes after the run, once the counter had caught up."
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 1,
+      "plan": "starter",
+      "credits_before": 3997,
+      "credits_after": 4217,
+      "credits": 220,
+      "by_rate": 220
+    }
+  ],
+  "wired": {
+    "store_radio": {
+      "project": "{F81D983989C40DCD}Sounds/Atmosphere/Atmosphere_StoreRadio.acp",
+      "sample": "{998CC3741CC5B13C}Sounds/Atmosphere/Samples/Atmosphere_StoreRadio_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "pub_radio": {
+      "project": "{2BC9B5C5F72B71E7}Sounds/Atmosphere/Atmosphere_PubRadio.acp",
+      "sample": "{CA82BCAE7FF2D511}Sounds/Atmosphere/Samples/Atmosphere_PubRadio_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "furnace": {
+      "project": "{9D9DC60799E815A4}Sounds/Atmosphere/Atmosphere_Furnace.acp",
+      "sample": "{A3F5907EF4F3EBAB}Sounds/Atmosphere/Samples/Atmosphere_Furnace_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "sawmill": {
+      "project": "{7D137D89A4BD8A95}Sounds/Atmosphere/Atmosphere_Sawmill.acp",
+      "sample": "{CCD8134A169BC396}Sounds/Atmosphere/Samples/Atmosphere_Sawmill_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "quarry": {
+      "project": "{A795096DB7F9F55D}Sounds/Atmosphere/Atmosphere_Quarry.acp",
+      "sample": "{FC61277CC7625205}Sounds/Atmosphere/Samples/Atmosphere_Quarry_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "farm": {
+      "project": "{64724EE52851E9CA}Sounds/Atmosphere/Atmosphere_Farm.acp",
+      "sample": "{7B2B58597F4E82D7}Sounds/Atmosphere/Samples/Atmosphere_Farm_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "still": {
+      "project": "{371B46E27DAC90B8}Sounds/Atmosphere/Atmosphere_Still.acp",
+      "sample": "{7A353C3493112B0A}Sounds/Atmosphere/Samples/Atmosphere_Still_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "police_desk": {
+      "project": "{78589B4D585BFBA4}Sounds/Atmosphere/Atmosphere_PoliceDesk.acp",
+      "sample": "{DF723F7AEFD12E1D}Sounds/Atmosphere/Samples/Atmosphere_PoliceDesk_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "chop_shop": {
+      "project": "{C992ED4AD7C05169}Sounds/Atmosphere/Atmosphere_ChopShop.acp",
+      "sample": "{5FFB1E10105062E8}Sounds/Atmosphere/Samples/Atmosphere_ChopShop_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "square": {
+      "project": "{B80322D3F895D4CB}Sounds/Atmosphere/Atmosphere_Square.acp",
+      "sample": "{0C2AD5F65C589857}Sounds/Atmosphere/Samples/Atmosphere_Square_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    }
+  }
+}

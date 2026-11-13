@@ -1,4 +1,13 @@
 SCR_DestructibleBuildingEntity : "{4D6D06CAD0439114}Prefabs/Structures/Cultural/Fountains/Fountain_01.et" {
+ components {
+  LF_AmbientEmitterComponent "{D64DEA311EE6BD59}" {
+   m_sSoundProject "{B80322D3F895D4CB}Sounds/Atmosphere/Atmosphere_Square.acp"
+   m_fRadius 35
+   m_fHourFrom 6
+   m_fHourTo 22
+   m_vOffset 0 1 0
+  }
+ }
  coords 113 0 250
 }
 SCR_DestructibleBuildingEntity Village_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {

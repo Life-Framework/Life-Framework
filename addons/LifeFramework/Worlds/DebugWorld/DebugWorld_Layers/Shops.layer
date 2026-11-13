@@ -202,3 +202,6 @@ GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commerci
  coords 179.056 1.039 244.276
  angleY 0
 }
+GenericEntity Shop_GeneralStore_Radio : "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et" {
+ coords 178.465 1.038 244.249
+}

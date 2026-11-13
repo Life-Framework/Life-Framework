@@ -4,6 +4,11 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
   RplComponent "{5624A88DC2D9928D}" {
    Enabled 1
   }
+  LF_AmbientEmitterComponent "{0E22F63132093424}" {
+   m_sSoundProject "{78589B4D585BFBA4}Sounds/Atmosphere/Atmosphere_PoliceDesk.acp"
+   m_fRadius 13
+   m_vOffset 0 0.9 0
+  }
  }
  {
   GenericEntity DutyClock : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {

@@ -788,6 +788,19 @@ refine task) are recorded per asset in `tools/assets/<slug>/meshy.json`, which t
 `generate` stage writes. An asset made some other way (a CC0 model, a Blender
 script, a human modeller) does not need the credit but keeps its source in the spec.
 
+**2026-11-13 — Atmosphere: sound comes from things in the world, runs on the client, and the music is generated.**
+Background sound is a component on the prop that makes it (`LF_AmbientEmitterComponent`),
+never a 2D bed or menu music, and the server replicates state only (a radio's on/off, a
+station's percent). The furnace sounds always: processing is an instant action with no
+"smelting" state, so a furnace that roared only while smelting would be silent when a player
+walks up to it; the sawmill shows the other choice (it runs for 12 s after each log). The two
+radio tracks and eight loops were generated with ElevenLabs on the Starter plan (3550 credits)
+and are credited in `docs/credits.md`. The prompts name a style, never an artist or a song.
+Open for the maintainer: (1) listen to every file before a public build, since no agent has
+heard them; (2) confirm the licence reading in `docs/architecture/atmosphere.md` "Licence":
+the music is used inside a free mod, is carved out of the repository's MIT licence, and is
+not to be used as a trailer's music bed on a streaming service under the Starter terms.
+
 **2026-11-13 — #664: ElevenLabs-generated sound effects may be used in the project
 and in published builds.** The asset pipeline's sound stage (`tools\cli asset sound`,
 `docs/asset-pipeline/sounds.md`) generates an asset's sound effects with the

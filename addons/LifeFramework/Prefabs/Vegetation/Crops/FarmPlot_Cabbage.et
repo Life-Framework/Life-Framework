@@ -72,5 +72,12 @@ GenericEntity {
   }
   RplComponent "{F73344905A269C08}" {
   }
+  LF_AmbientEmitterComponent "{66985DDBF11EFA02}" {
+   m_sSoundProject "{64724EE52851E9CA}Sounds/Atmosphere/Atmosphere_Farm.acp"
+   m_fRadius 44
+   m_sGroup "farm"
+   m_fHourFrom 5
+   m_fHourTo 21
+  }
  }
 }

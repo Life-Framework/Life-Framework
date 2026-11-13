@@ -111,6 +111,14 @@ GenericEntity Pickaxe_Debug : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
  coords 182.079 0 169.373
 }
 LF_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
+ components {
+  LF_AmbientEmitterComponent "{912906787112CD93}" {
+   m_sSoundProject "{A795096DB7F9F55D}Sounds/Atmosphere/Atmosphere_Quarry.acp"
+   m_fRadius 54
+   m_fHourFrom 6
+   m_fHourTo 20
+  }
+ }
  coords 185 0 178
  m_vSize 3 1 3
  m_iAmount 5

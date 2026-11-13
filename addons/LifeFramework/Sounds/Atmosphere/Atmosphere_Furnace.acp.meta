@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9D9DC60799E815A4}Sounds/Atmosphere/Atmosphere_Furnace.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
