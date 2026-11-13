@@ -603,6 +603,9 @@ class LF_SpikeStripComponent : ScriptComponent
 	[Attribute("1", UIWidgets.CheckBox, "Despawn after LF_PoliceConfig.SpikeStripLifetimeSeconds. Off for a strip placed in a world layer")]
 	protected bool m_bExpires;
 
+	[Attribute("1", UIWidgets.CheckBox, "Puncture the wheels that cross it. Off for a display strip in a world layer")]
+	protected bool m_bArmed;
+
 	//! Server tick of the wheel check.
 	static const int TICK_MS = 50; // lf-fixed: sampling period of a physical check, not a gameplay knob
 	//! A wheel centre this far above or below the strip's middle does not touch it.
@@ -630,7 +633,8 @@ class LF_SpikeStripComponent : ScriptComponent
 		if (!Replication.IsServer() || !GetGame() || !GetGame().InPlayMode())
 			return;
 
-		GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
+		if (m_bArmed)
+			GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
 		if (m_bExpires)
 			GetGame().GetCallqueue().CallLater(Expire, LF_PoliceConfig.SpikeStripLifetimeSeconds() * 1000, false);
 	}

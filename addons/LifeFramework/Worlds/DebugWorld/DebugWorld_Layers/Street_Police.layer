@@ -84,8 +84,9 @@ GenericEntity Roadmap_Police_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Rolep
  components {
   LF_SpikeStripComponent "{EDD34B7850C70B44}" {
    m_bExpires 0
+   m_bArmed 0
   }
  }
- coords 250 0.002 245.4
+ coords 234 0.002 245.4
  angleY 90
 }

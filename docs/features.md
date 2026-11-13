@@ -1785,7 +1785,7 @@
   twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
 - ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
   The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). DebugWorld shows one
-  on the police station verge (`Roadmap_Police_SpikeStrip`, never expires).
+  on the police station verge (`Roadmap_Police_SpikeStrip`: `m_bArmed 0`, `m_bExpires 0`; an officer can still pick it up).
 - Model: one Meshy link repeated by the asset pipeline's deployable kind (`tools/assets/spike-strip`).
   Tests `police/spike-strip`, `police/spike-strip-geometry`; proof `session.mjs spike-strip-proof`.
 - ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in
