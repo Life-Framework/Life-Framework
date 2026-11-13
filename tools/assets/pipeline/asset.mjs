@@ -2,7 +2,7 @@
 // Playbook for the judgement steps: docs/asset-pipeline/README.md.
 //
 //   asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name N] [--no-run]
-//   asset run <slug> [--from <stage>] [--only <stage>] [--force]
+//   asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
 //   asset status [<slug>]      asset doctor      asset selftest
 //
 // The spec is tools/assets/<slug>/spec.json (tracked). Everything a stage produces is cached in
@@ -13,9 +13,12 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import * as meshy from "./meshy.mjs";
 import { KINDS } from "./kinds.mjs";
+import * as concepts from "./concepts.mjs";
+import { pickedImage } from "./concepts.mjs";
+import { resolveFfmpeg } from "../../film/film.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGES = ["concept", "generate", "clean", "import", "prefab"];
+export const STAGES = ["spec", "concept", "generate", "clean", "import", "prefab"];
 
 export const specFile = (root, slug) => join(root, "tools", "assets", slug, "spec.json");
 export const cacheDir = (root, slug) => join(root, "tmp", "assets", slug);
@@ -26,7 +29,7 @@ export function loadSpec(root, slug) {
   return JSON.parse(readFileSync(file, "utf8"));
 }
 
-// Everything wrong with a spec, as a list. Empty means the concept stage passes.
+// Everything wrong with a spec, as a list. Empty means the spec stage passes.
 export function specProblems(spec) {
   const out = [];
   if (!/^[a-z][a-z0-9-]*$/.test(spec.slug || "")) out.push("slug must be lowercase letters, digits and dashes");
@@ -65,7 +68,7 @@ function writeState(dir, state) {
 }
 
 // ---------------------------------------------------------------- stages
-async function stageConcept(ctx) {
+async function stageSpec(ctx) {
   const problems = specProblems(ctx.spec);
   if (problems.length) throw new Error("spec problems:\n  " + problems.join("\n  "));
   const est = meshy.estimate(ctx.spec);
@@ -81,10 +84,15 @@ export function recordProvenance(root, spec, ids, now = new Date()) {
   const file = join(root, "tools", "assets", spec.slug, "meshy.json");
   const rec = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { slug: spec.slug, generations: [] };
   const row = {
-    date: now.toISOString().slice(0, 10), tool: "Meshy text-to-3D", model: spec.meshy?.ai_model || "meshy-6-lite",
+    date: now.toISOString().slice(0, 10), tool: ids.imageTaskId ? "Meshy image-to-3D" : "Meshy text-to-3D", model: spec.meshy?.ai_model || "meshy-6-lite",
     previewId: ids.previewId, refineId: ids.refineId, prompt: spec.prompt, texturePrompt: spec.texture_prompt,
   };
-  const at = rec.generations.findIndex((x) => x.refineId === row.refineId);
+  if (ids.imageTaskId) { // image-to-3D: one task, from a concept picture (tools/assets/<slug>/concepts.json)
+    delete row.previewId; delete row.refineId; delete row.prompt;
+    Object.assign(row, { imageTaskId: ids.imageTaskId, concept: ids.concept, conceptTaskId: ids.conceptTaskId, conceptPrompt: ids.conceptPrompt });
+  }
+  const same = (x) => (ids.imageTaskId ? x.imageTaskId === ids.imageTaskId : x.refineId === row.refineId);
+  const at = rec.generations.findIndex(same);
   if (at >= 0) rec.generations[at] = { ...rec.generations[at], ...row };
   else rec.generations.push(row);
   writeFileSync(file, JSON.stringify(rec, null, 2) + "\n");
@@ -96,48 +104,71 @@ async function stageGenerate(ctx) {
   const g = state.generate || (state.generate = {});
   const raw = join(dir, "raw");
   const before = meshy.spent(ledger);
-  const est = (g.previewId ? 0 : meshy.COST.preview[spec.meshy?.ai_model || "meshy-6-lite"] ?? 20) + (g.refineId ? 0 : meshy.COST.refine);
+  const model = spec.meshy?.ai_model || "meshy-6-lite";
+  const concept = pickedImage(ctx.root, spec.slug, dir); // a picked concept picture means image-to-3D
+  const est = concept
+    ? (g.imageTaskId ? 0 : meshy.COST.imageTo3d[model] ?? 30)
+    : (g.previewId ? 0 : meshy.COST.preview[model] ?? 20) + (g.refineId ? 0 : meshy.COST.refine);
   if (before + est > spec.budget.credits) {
     throw new Error(`this asset has spent ${before} credits and the next attempt needs about ${est}; the cap is ${spec.budget.credits}. Stop and report (docs/asset-pipeline/README.md "Credits").`);
   }
   const bal0 = await meshy.balance();
-  console.log(`Meshy balance ${bal0} credits; spent on ${spec.slug} so far ${before}`);
+  console.log(`Meshy balance ${bal0} credits; spent on ${spec.slug} so far ${before}; ${concept ? `image-to-3D from concept ${concept.pick.n} (${concept.pick.label})` : "text-to-3D"}`);
   const save = () => writeState(dir, ctx.fullState);
   const progress = (label) => (t) => console.log(`  ${label} ${t.status} ${t.progress}%`);
 
-  if (!g.previewId) {
-    g.previewId = (await meshy.call("POST", "/openapi/v2/text-to-3d", meshy.previewBody(spec))).result;
-    save();
-  }
-  const preview = await meshy.waitTask(g.previewId, { onProgress: progress("preview") });
-  if (!g.previewLogged) {
-    meshy.logCredits(ledger, { call: "text-to-3d preview", model: spec.meshy?.ai_model || "meshy-6-lite", task: g.previewId, credits: preview.consumed_credits ?? meshy.COST.preview[spec.meshy?.ai_model || "meshy-6-lite"] });
-    g.previewLogged = true;
-    save();
-  }
-  if (preview.thumbnail_url) await meshy.download(preview.thumbnail_url, join(raw, "preview.png"));
+  let final;
+  const ids = {};
+  if (concept) {
+    if (!g.imageTaskId) {
+      const uri = "data:image/png;base64," + readFileSync(concept.file).toString("base64");
+      g.imageTaskId = (await meshy.call("POST", "/openapi/v1/image-to-3d", meshy.imageTo3dBody(spec, uri), { timeoutMs: 120000 })).result;
+      save();
+    }
+    final = await meshy.waitTask(g.imageTaskId, { path: "/openapi/v1/image-to-3d", onProgress: progress("image-to-3d") });
+    if (!g.imageLogged) {
+      meshy.logCredits(ledger, { call: "image-to-3d", model, task: g.imageTaskId, credits: final.consumed_credits ?? meshy.COST.imageTo3d[model] ?? 30 });
+      g.imageLogged = true;
+      save();
+    }
+    Object.assign(ids, { imageTaskId: g.imageTaskId, concept: concept.pick.n, conceptTaskId: concept.variant.taskId, conceptPrompt: concept.variant.prompt });
+    if (final.thumbnail_url) await meshy.download(final.thumbnail_url, join(raw, "refined.png"));
+  } else {
+    if (!g.previewId) {
+      g.previewId = (await meshy.call("POST", "/openapi/v2/text-to-3d", meshy.previewBody(spec))).result;
+      save();
+    }
+    const preview = await meshy.waitTask(g.previewId, { onProgress: progress("preview") });
+    if (!g.previewLogged) {
+      meshy.logCredits(ledger, { call: "text-to-3d preview", model, task: g.previewId, credits: preview.consumed_credits ?? meshy.COST.preview[model] });
+      g.previewLogged = true;
+      save();
+    }
+    if (preview.thumbnail_url) await meshy.download(preview.thumbnail_url, join(raw, "preview.png"));
 
-  if (!g.refineId) {
-    g.refineId = (await meshy.call("POST", "/openapi/v2/text-to-3d", meshy.refineBody(spec, g.previewId))).result;
-    save();
+    if (!g.refineId) {
+      g.refineId = (await meshy.call("POST", "/openapi/v2/text-to-3d", meshy.refineBody(spec, g.previewId))).result;
+      save();
+    }
+    final = await meshy.waitTask(g.refineId, { onProgress: progress("refine") });
+    if (!g.refineLogged) {
+      meshy.logCredits(ledger, { call: "text-to-3d refine", task: g.refineId, credits: final.consumed_credits ?? meshy.COST.refine });
+      g.refineLogged = true;
+      save();
+    }
+    Object.assign(ids, { previewId: g.previewId, refineId: g.refineId });
+    if (final.thumbnail_url) await meshy.download(final.thumbnail_url, join(raw, "refined.png"));
   }
-  const refine = await meshy.waitTask(g.refineId, { onProgress: progress("refine") });
-  if (!g.refineLogged) {
-    meshy.logCredits(ledger, { call: "text-to-3d refine", task: g.refineId, credits: refine.consumed_credits ?? meshy.COST.refine });
-    g.refineLogged = true;
-    save();
-  }
-  if (!refine.model_urls?.glb) throw new Error("Meshy refine returned no GLB");
-  await meshy.download(refine.model_urls.glb, join(raw, "model.glb"));
-  if (refine.thumbnail_url) await meshy.download(refine.thumbnail_url, join(raw, "refined.png"));
-  const tex = refine.texture_urls?.[0] || {};
+  if (!final.model_urls?.glb) throw new Error("Meshy returned no GLB");
+  await meshy.download(final.model_urls.glb, join(raw, "model.glb"));
+  const tex = final.texture_urls?.[0] || {};
   for (const [k, url] of Object.entries(tex)) await meshy.download(url, join(raw, `tex_${k}.png`));
   const bal1 = await meshy.balance();
   const total = meshy.spent(ledger);
-  recordProvenance(ctx.root, spec, { previewId: g.previewId, refineId: g.refineId });
+  recordProvenance(ctx.root, spec, ids);
   console.log(`generated ${join(raw, "model.glb")}; balance ${bal0} -> ${bal1}; ${spec.slug} total ${total} credits`);
   console.log(`review ${join(raw, "refined.png")} against docs/asset-pipeline/review-generation.md before the clean stage`);
-  return { previewId: g.previewId, refineId: g.refineId, credits: total, balance: bal1, maps: Object.keys(tex) };
+  return { ...ids, credits: total, balance: bal1, maps: Object.keys(tex) };
 }
 
 export function blenderExe() {
@@ -186,9 +217,13 @@ async function stagePrefab(ctx) {
   return writePrefabs(ctx);
 }
 
-const RUN = { concept: stageConcept, generate: stageGenerate, clean: stageClean, import: stageImport, prefab: stagePrefab };
+async function stageConcepts(ctx) {
+  return concepts.stageConcept(ctx, { writeState, resolveFfmpeg });
+}
 
-export async function run(root, slug, { from, only, force, workbench } = {}) {
+const RUN = { spec: stageSpec, concept: stageConcepts, generate: stageGenerate, clean: stageClean, import: stageImport, prefab: stagePrefab };
+
+export async function run(root, slug, { from, only, force, workbench, pick } = {}) {
   const spec = loadSpec(root, slug);
   const dir = cacheDir(root, slug);
   const fullState = readState(dir);
@@ -203,7 +238,7 @@ export async function run(root, slug, { from, only, force, workbench } = {}) {
     }
     rerun = true; // a rerun stage invalidates every later one
     const started = Date.now();
-    const ctx = { root, slug, spec, dir, fullState, workbench, state: (fullState.work ||= {}) };
+    const ctx = { root, slug, spec, dir, fullState, workbench, pick, state: (fullState.work ||= {}) };
     console.log(`--- ${stage}`);
     if (stage === "generate" && force && ctx.state.generate?.refineLogged) {
       // A forced generate is a new attempt: keep the old download beside it and start new tasks.
@@ -288,6 +323,8 @@ export async function main(flags, { workbench } = {}) {
   const root = ROOT;
   if (sub === "selftest") return (await import("../../validation/asset-pipeline-selftest.mjs")).main(rest);
   if (sub === "dialogue") return (await import("./dialogue.mjs")).main(rest);
+  if (sub === "pick") return concepts.cmdPick(root, rest);
+  if (sub === "score") return concepts.cmdScore(root, rest);
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "sound") return (await import("./sound.mjs")).main(root, rest); // docs/asset-pipeline/sounds.md
@@ -296,11 +333,11 @@ export async function main(flags, { workbench } = {}) {
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
     if (sub === "new") return cmdNew(root, rest, workbench);
     const slug = rest.find((f) => !f.startsWith("--") && f !== flag(rest, "--from") && f !== flag(rest, "--only"));
-    if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]"); return 2; }
-    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), workbench });
+    if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]"); return 2; }
+    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench });
   }
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
-       tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
+       tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
        tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
        tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)

@@ -2,7 +2,8 @@
 
 The generator is paid per attempt and cannot be corrected afterwards, so the spec is where the
 thinking goes. Write `tools/assets/<slug>/spec.json` (start it with `tools\cli asset new <slug> ...
---no-run`), then run the `concept` stage alone: `tools\cli asset run <slug> --only concept`.
+--no-run`), then run the `spec` stage alone: `tools\cli asset run <slug> --only spec`. For a shape that is hard to get right
+(the taser took three text-to-3D tries) explore it as pictures first: [concepts.md](concepts.md).
 
 ## From the roadmap item
 
@@ -20,7 +21,7 @@ thinking goes. Write `tools/assets/<slug>/spec.json` (start it with `tools\cli a
 
 ## The prompt
 
-Meshy allows 800 characters. The concept stage enforces that and "no text, no logos".
+Meshy allows 800 characters. The spec stage enforces that and "no text, no logos".
 
 - **Name the object first, in the plainest words.** "1980s police taser stun gun" came out as a
   pocket pistol twice: the generator knows pistols much better than it knows a 1980s taser, and
@@ -51,6 +52,6 @@ detailed modern pistol; `latest` gave a simpler, boxier shape closer to the prom
 `target_polycount` is what Meshy remeshes to before the clean stage decimates. 20,000 leaves
 enough to decimate to 8,000 without holes.
 
-## When the concept stage refuses
+## When the spec stage refuses
 
 It prints every problem at once. Fix the spec; nothing has been paid yet.

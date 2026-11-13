@@ -1,0 +1,157 @@
+{
+  "slug": "taser",
+  "subject": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle.",
+  "variants": [
+    {
+      "label": "Black, yellow nose",
+      "detail": "Long rectangular body with flat sides, sharp edges, matte black polymer, the front dart cartridge in safety yellow, a slim vertical grip with a square trigger guard",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Long rectangular body with flat sides, sharp edges, matte black polymer, the front dart cartridge in safety yellow, a slim vertical grip with a square trigger guard. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-94d9-7358-84dd-a57827c79555",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "clean slab body, yellow nose reads well; slots and top switch are fine detail"
+    },
+    {
+      "label": "Cream beige plastic",
+      "detail": "Chunky short body in cream beige ABS plastic of the kind used on 1980s office equipment, rounded corners, a dark grey cartridge, a ribbed vertical grip, a red safety switch on the side",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Chunky short body in cream beige ABS plastic of the kind used on 1980s office equipment, rounded corners, a dark grey cartridge, a ribbed vertical grip, a red safety switch on the side. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-95a6-713d-8423-d5b8d1476f40",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "very 1980s office plastic; grip is long; red switch and ribs are small detail"
+    },
+    {
+      "label": "Tall slab with window",
+      "detail": "Tall narrow slab body, taller than it is long, dark gunmetal grey, a small clear cartridge window on the side, a thick straight grip, a large oval trigger guard",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Tall narrow slab body, taller than it is long, dark gunmetal grey, a small clear cartridge window on the side, a thick straight grip, a large oval trigger guard. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-9668-71c8-8ef0-3c79d9968bf2",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "oversized trigger guard, grip leans back, window is fine detail"
+    },
+    {
+      "label": "Grey and orange",
+      "detail": "Light grey body with a bright orange nose cartridge and an orange safety tab, flat panels, a slightly flared straight grip with horizontal grooves",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Light grey body with a bright orange nose cartridge and an orange safety tab, flat panels, a slightly flared straight grip with horizontal grooves. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-9718-7775-9436-e0fec9fbc324",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "looks like a late-2000s pistol; many panel seams"
+    },
+    {
+      "label": "Flashlight hybrid",
+      "detail": "A long thin cylindrical-looking body with flattened sides like a police torch, black rubber, the dart cartridge forming a square front end, a straight grip under the rear, a short wrist lanyard loop",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. A long thin cylindrical-looking body with flattened sides like a police torch, black rubber, the dart cartridge forming a square front end, a straight grip under the rear, a short wrist lanyard loop. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-97d5-74a3-b048-46f6d8fc2b6c",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "torch look; the thin lanyard is bad for image-to-3D"
+    },
+    {
+      "label": "Hard-edged olive",
+      "detail": "Angular olive green body with chamfered edges like a military radio, matte finish, a black cartridge, a straight textured grip, a metal trigger and a small metal safety lever",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Angular olive green body with chamfered edges like a military radio, matte finish, a black cartridge, a straight textured grip, a metal trigger and a small metal safety lever. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-98a1-70dc-b205-724f318e0e8a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "chunky, chamfered, solid; the nose block hides the dart holes"
+    },
+    {
+      "label": "Blue police issue",
+      "detail": "Dark navy blue body with a pale blue cartridge, a long low profile, a thin straight grip with a wide trigger guard, a slim raised rail along the top",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Dark navy blue body with a pale blue cartridge, a long low profile, a thin straight grip with a wide trigger guard, a slim raised rail along the top. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-9951-76ed-8f18-0b09caae30f6",
+      "scores": {
+        "silhouette": 1,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "reads as a carbine, the cartridge is small and the rail is thin"
+    },
+    {
+      "label": "Steel plates, black",
+      "detail": "Black body with brushed steel side plates held by visible screws, a black cartridge with a steel collar, a straight grip with finger grooves, a steel trigger",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Black body with brushed steel side plates held by visible screws, a black cartridge with a steel collar, a straight grip with finger grooves, a steel trigger. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-9a13-7499-aef3-056225ca26c5",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "steel plates and black cartridge match the real period device; solid form, no thin parts"
+    },
+    {
+      "label": "White and red",
+      "detail": "Glossy white body with a red cartridge and red trigger, smooth rounded edges like a cordless appliance, a short thick straight grip, a small round indicator light on the top",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Glossy white body with a red cartridge and red trigger, smooth rounded edges like a cordless appliance, a short thick straight grip, a small round indicator light on the top. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-9acc-7504-881f-ac9c7ddc9610",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "glossy white reads as a 2000s appliance; solid form"
+    },
+    {
+      "label": "Worn black, tape grip",
+      "detail": "Scuffed matte black body with edge wear, a dark grey cartridge, the straight grip wrapped in black cloth tape, a squared trigger guard, a plain flat top",
+      "prompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Scuffed matte black body with edge wear, a dark grey cartridge, the straight grip wrapped in black cloth tape, a squared trigger guard, a plain flat top. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d61a-9b85-740d-89d6-0c1d7cbd9721",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "worn black with a clear boxy cartridge; tape wrap is fine detail"
+    }
+  ],
+  "image_model": "nano-banana-2-1"
+}

@@ -7,7 +7,9 @@ is the playbook for those. What the first run taught us is in
 
 ```
 tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--roadmap #N] [--no-run]
-tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]
+tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
+tools\cli asset score <slug> <n> <silhouette,era,scale_grip,background,no_text,image_to_3d> [note]
+tools\cli asset pick <slug> <n> [--why "..."]     the human's choice from the concept sheet
 tools\cli asset status [<slug>]
 tools\cli asset sound <slug>  generated sound effects, after the prefab stage: sounds.md
 tools\cli asset doctor        Blender, the Meshy key file, the credit balance
@@ -24,8 +26,9 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 
 | Stage | Does | Who judges the result |
 |---|---|---|
-| `concept` | Checks the spec: prompt length, size, triangle and credit budgets, part bones | The agent writes the spec: [prompt-writing.md](prompt-writing.md) |
-| `generate` | Meshy text-to-3D preview, then refine with PBR maps; downloads the GLB, the maps and two thumbnails; logs credits | The agent reads `raw/refined.png`: [review-generation.md](review-generation.md) |
+| `spec` | Checks the spec: prompt length, size, triangle and credit budgets, part bones | The agent writes the spec: [prompt-writing.md](prompt-writing.md) |
+| `concept` | Optional. 10 prompts become 10 Meshy text-to-image pictures and a numbered 5x2 contact sheet; each is scored against a rubric; one is picked. No `concepts.json`, no stage. [concepts.md](concepts.md) | A human picks (`asset pick`), or the agent with `--pick` |
+| `generate` | With a picked concept: Meshy image-to-3D from that picture (one task, PBR maps). Otherwise text-to-3D preview, then refine. Downloads the GLB, the maps and a thumbnail; logs credits | The agent reads `raw/refined.png`: [review-generation.md](review-generation.md) |
 | `clean` | Headless Blender: orientation, scale in metres, origin, floaters, decimation to LODs, one UV atlas packed as `_BCR` and `_NMO`, collider, and for a weapon the vanilla pistol skeleton, sockets and moving parts | The tool checks the numbers; the agent reads `clean/review/*.png`: [review-clean.md](review-clean.md), [socket-checks.md](socket-checks.md) |
 | `import` | Copies the sources into the addon, writes every `.meta` with fresh GUIDs and the `.emat`, rebuilds them in a hidden Workbench, then reads the `.xob` back and checks bones, sockets, material and collider | The tool |
 | `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry; a gadget: one held item; a deployable: the deployed prop and the carried item). Every kind but `weapon` has its own `prefab-<kind>.mjs` | The agent finishes them: strings, feature component, placement |
@@ -43,10 +46,13 @@ waiting resumes the same task and pays nothing twice.
 
 Read this before any `generate`.
 
-- One attempt is a preview plus a refine: 15 credits on `meshy-6-lite`, 30 on `latest`
+- A concept batch is 10 images: 4 credits each on `nano-banana-2-1`, 40 in all (`concepts.mjs`; `nano-banana` is 3,
+  `nano-banana-2` 6, GPT Image 9). Image-to-3D from the picked picture is one task: 30 credits on `latest` / `meshy-6`,
+  15 on `meshy-6-lite`. Both are in `credits.jsonl` and count against `budget.credits`.
+- One text-to-3D attempt is a preview plus a refine: 15 credits on `meshy-6-lite`, 30 on `latest`
   (`meshy.mjs` `COST`, read from the Meshy pricing page on 2026-11-12; a task's own
   `consumed_credits` wins when it reports one).
-- Every generation's task ids and prompt are written to `tools/assets/<slug>/meshy.json` (committed; the asset's credit in `docs/credits.md` points at it).
+- Every generation's task ids and prompt (for image-to-3D: the image task, the concept number, its task id and prompt) are written to `tools/assets/<slug>/meshy.json` (committed; the asset's credit in `docs/credits.md` points at it).
 - Every paid call is appended to `tmp/assets/<slug>/credits.jsonl`. `asset status` prints the sum.
 - `budget.credits` in the spec is the cap for the asset and cannot be set above 300. `generate`
   refuses to start an attempt that would cross it. When that happens, stop and report: the prompt
