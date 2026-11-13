@@ -237,6 +237,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PhoneCallBackWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneCallWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneExchange(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PhoneVoiceBand(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PhoneVoiceWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PickaxeCount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
