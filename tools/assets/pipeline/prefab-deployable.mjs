@@ -21,6 +21,13 @@ const ITEM_NAME = "5222EB4D07D865FA";
 
 const fmt = (n) => String(+Number(n).toFixed(4));
 
+// The radius a player standing 0.5 m off the mesh reaches from chest height (1 m), plus 5 cm:
+// tools/actions/action-anchor.mjs reachDistance, which validate-action-contexts checks.
+export function reach(min, max, y) {
+  const across = Math.min(max[0] - min[0], max[2] - min[2]) / 2 + 0.5;
+  return Math.round((Math.hypot(across, Math.abs(y - 1)) + 0.05) * 100) / 100;
+}
+
 // "$deployed" and "$item" in a string value become the two prefabs' {GUID}paths, so the item can
 // name what it deploys into and the prop what it folds back into.
 export function props(p = {}, indent, refs = {}) {
@@ -63,7 +70,7 @@ ${comps}  ActionsManagerComponent "{${guid()}}" {
      Position PointInfo "{${guid()}}" {
       Offset 0 ${fmt(max[1])} 0
      }
-     Radius ${fmt(half + 0.4)}
+     Radius ${fmt(Math.max(half + 0.4, reach(min, max, max[1])))}
     }
    }
    additionalActions {
@@ -120,7 +127,7 @@ ${comps}  ActionsManagerComponent "{${ITEM_ACTIONS}}" {
      Position PointInfo "{508AC2ABEAC4A0F5}" {
       Offset 0 ${fmt((min[1] + max[1]) / 2)} 0
      }
-     Radius ${fmt(Math.max(max[0] - min[0], max[2] - min[2]) / 2 + 0.1)}
+     Radius ${fmt(reach(min, max, (min[1] + max[1]) / 2))}
     }
    }
    additionalActions {

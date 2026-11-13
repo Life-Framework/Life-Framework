@@ -41,7 +41,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
      Position PointInfo "{508AC2ABEAC4A0F5}" {
       Offset 0 0.2119 0
      }
-     Radius 0.35
+     Radius 1.07
     }
    }
    additionalActions {

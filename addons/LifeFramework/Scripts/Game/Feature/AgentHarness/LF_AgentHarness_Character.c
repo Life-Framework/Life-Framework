@@ -366,6 +366,24 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "spikeverge" || tool == "spikecar" || tool == "spikecheck")
+		{
+			// The spike strip proof's stand-ins (LF_SpikeStripHarness, #646).
+			string spike;
+			if (tool == "spikeverge")
+				spike = "ok " + LF_SpikeStripHarness.Verge(this);
+			else if (tool == "spikecar")
+				spike = LF_SpikeStripHarness.LaunchCar(this);
+			else
+				spike = LF_SpikeStripHarness.Check();
+
+			if (spike.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", spike.Substring(3, spike.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", spike);
+			return;
+		}
+
 		if (tool == "park")
 		{
 			// Stands in for driving the bought car to the garage (#348): the owner's car in the world

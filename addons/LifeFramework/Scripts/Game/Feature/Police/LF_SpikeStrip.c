@@ -194,58 +194,20 @@ class LF_SpikeStrips
 	//! A road whose centre line is this close to the strip's middle turns the strip across it.
 	static const float ROAD_REACH = 12; // lf-fixed: geometry, how far a road is looked for around the officer
 
-	//! Every deployed strip on this machine, for the harness and the tests.
-	protected static ref array<LF_SpikeStripComponent> s_aStrips;
 	protected static string s_sLastRefusal;
 
 	//------------------------------------------------------------------------------------------------
-	static void Register(LF_SpikeStripComponent strip)
-	{
-		if (!s_aStrips)
-			s_aStrips = new array<LF_SpikeStripComponent>();
-		if (strip && s_aStrips.Find(strip) < 0)
-			s_aStrips.Insert(strip);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void Unregister(LF_SpikeStripComponent strip)
-	{
-		if (s_aStrips && strip)
-			s_aStrips.RemoveItem(strip);
-	}
-
-	//------------------------------------------------------------------------------------------------
+	//! Deployed strips on this machine (the harness and the tests read them).
 	static int Count()
 	{
-		if (!s_aStrips)
-			return 0;
-
-		return s_aStrips.Count();
+		return LF_SpikeStripComponent.CountAll();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The deployed strip nearest to pos within radius, or null.
 	static LF_SpikeStripComponent Nearest(vector pos, float radius)
 	{
-		LF_SpikeStripComponent best;
-		float bestDistance = radius;
-		if (!s_aStrips)
-			return null;
-
-		foreach (LF_SpikeStripComponent strip : s_aStrips)
-		{
-			if (!strip || !strip.GetOwner())
-				continue;
-
-			float d = vector.Distance(strip.GetOwner().GetOrigin(), pos);
-			if (d <= bestDistance)
-			{
-				bestDistance = d;
-				best = strip;
-			}
-		}
-
-		return best;
+		return LF_SpikeStripComponent.NearestTo(pos, radius);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -257,7 +219,7 @@ class LF_SpikeStrips
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
-		s_aStrips = null;
+		LF_SpikeStripComponent.ResetAll();
 		s_sLastRefusal = "";
 	}
 
@@ -648,6 +610,9 @@ class LF_SpikeStripComponent : ScriptComponent
 	//! Vehicles are looked for inside this distance of the strip's middle, beyond its half length.
 	static const float QUERY_MARGIN = 8; // lf-fixed: geometry, larger than any car
 
+	//! Every strip on this machine; OnPostInit adds, OnDelete removes.
+	protected static ref array<LF_SpikeStripComponent> s_aAll;
+
 	protected string m_sDeployer;
 	protected ref array<ref LF_SpikeStripTrack> m_aTracks = {};
 	protected ref array<IEntity> m_aFound = {};
@@ -657,7 +622,11 @@ class LF_SpikeStripComponent : ScriptComponent
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);
-		LF_SpikeStrips.Register(this);
+		if (!s_aAll)
+			s_aAll = new array<LF_SpikeStripComponent>();
+		if (s_aAll.Find(this) < 0)
+			s_aAll.Insert(this);
+
 		if (!Replication.IsServer() || !GetGame() || !GetGame().InPlayMode())
 			return;
 
@@ -669,7 +638,9 @@ class LF_SpikeStripComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnDelete(IEntity owner)
 	{
-		LF_SpikeStrips.Unregister(this);
+		if (s_aAll)
+			s_aAll.RemoveItem(this);
+
 		if (GetGame() && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().Remove(Tick);
@@ -677,6 +648,45 @@ class LF_SpikeStripComponent : ScriptComponent
 		}
 
 		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int CountAll()
+	{
+		if (!s_aAll)
+			return 0;
+
+		return s_aAll.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static LF_SpikeStripComponent NearestTo(vector pos, float radius)
+	{
+		LF_SpikeStripComponent best;
+		float bestDistance = radius;
+		if (!s_aAll)
+			return null;
+
+		foreach (LF_SpikeStripComponent strip : s_aAll)
+		{
+			if (!strip || !strip.GetOwner())
+				continue;
+
+			float d = vector.Distance(strip.GetOwner().GetOrigin(), pos);
+			if (d <= bestDistance)
+			{
+				bestDistance = d;
+				best = strip;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetAll()
+	{
+		s_aAll = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
