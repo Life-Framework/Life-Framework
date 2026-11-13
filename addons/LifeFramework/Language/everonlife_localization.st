@@ -8166,20 +8166,10 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Reset the world"
      Comment "Travel globe list row: puts the playtest world back as it was for everyone."
     }
-    CustomStringTableItem "{F2285D38E5F14032}" {
-     Id "LF-SpawnHub_Reset"
-     Target_en_us "Reset"
-     Comment "Travel globe reset row button."
-    }
     CustomStringTableItem "{EE3AD272B57D4B3B}" {
      Id "LF-SpawnHub_ResetSure"
      Target_en_us "Sure? Resets for everyone"
      Comment "Travel globe reset row after the first press."
-    }
-    CustomStringTableItem "{E33402A8CE6644F4}" {
-     Id "LF-SpawnHub_ResetYes"
-     Target_en_us "Yes, reset"
-     Comment "Travel globe reset row button after the first press."
     }
   }
  }

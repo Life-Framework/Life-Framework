@@ -290,6 +290,8 @@ class LF_SpawnHubMenu
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, "#LF-SpawnHub_Title"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_HINT, "#LF-SpawnHub_Hint"));
 		parts.Insert(LF_UIPart.CreateList(PART_LIST));
+		// Resets the whole world for everyone, so it asks twice (the dev gate decides on the server).
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, ROW_RESET, "#LF-SpawnHub_ResetWorld"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, PART_CLOSE, "#LF-SpawnHub_Close"));
 		return parts;
 	}
@@ -312,9 +314,6 @@ class LF_SpawnHubMenu
 		{
 			menu.m_Screen.AddListRow(PART_LIST, ROW_PREFIX + point.m_sId, LF_SpawnHubRules.NameKey(point.m_sId), "", "#LF-SpawnHub_Go");
 		}
-
-		// Resets the whole world for everyone, so it asks twice (the dev gate decides on the server).
-		menu.m_Screen.AddListRow(PART_LIST, ROW_RESET, "#LF-SpawnHub_ResetWorld", "", "#LF-SpawnHub_Reset");
 
 		menu.m_Screen.GetOnButton().Insert(menu.OnButton);
 		menu.m_Screen.GetOnClosed().Insert(menu.OnClosed);
@@ -381,7 +380,7 @@ class LF_SpawnHubMenu
 		if (!armed)
 		{
 			m_iResetArmedAt = now;
-			m_Screen.SetStatusRow(ROW_RESET, "#LF-SpawnHub_ResetSure", "", "#LF-SpawnHub_ResetYes");
+			m_Screen.SetButtonText(ROW_RESET, "#LF-SpawnHub_ResetSure");
 			return;
 		}
 
