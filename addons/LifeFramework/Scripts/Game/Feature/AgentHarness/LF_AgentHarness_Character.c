@@ -476,6 +476,24 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "parceldrop")
+		{
+			// The carried courier parcel leaves the hands on purpose: the marker and the toast follow (#920).
+			InventoryStorageManagerComponent parcelStorage = LF_InventoryUtils.GetResponsibleStorageManager(this);
+			array<IEntity> parcels;
+			if (parcelStorage)
+				parcels = LF_InventoryUtils.FindItemsByPrefab(parcelStorage, LF_CivilianJob.PARCEL_PREFAB);
+			if (!parcels || parcels.IsEmpty())
+			{
+				LF_HarnessReply(commandId, "error", "no parcel carried");
+				return;
+			}
+
+			bool dropped = LF_InventoryUtils.DropItem(this, parcels[0]);
+			LF_HarnessReply(commandId, "ok", string.Format("parcel dropped=%1 at=%2", dropped, GetOrigin().ToString(false)));
+			return;
+		}
+
 		if (tool == "crate")
 		{
 			// Chain goods (#419): one contraband crate, what the moonshine still makes.

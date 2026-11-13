@@ -67,7 +67,13 @@ class LF_HandInventoryStorageComponent : UniversalInventoryStorageComponent
 
 		if (m_eState >= LF_EHandCarryState.ACTIVE && (!isInHand || isOnGround))
 		{
-			StopCarry(gadget);
+			// Only a deliberate action (the drop on the ground, a weapon taken, a swap) or a downed
+			// or dead carrier lets go. Sprinting or a stance change that lowers the item for a
+			// moment puts it back in the hands (#920).
+			if (ShouldKeepCarrying(gadget, isInHand, isOnGround))
+				RetakeToHands(gadget);
+			else
+				StopCarry(gadget);
 		}
 		else if(m_eState != LF_EHandCarryState.ACTIVE && isInHand)
 		{
@@ -82,6 +88,35 @@ class LF_HandInventoryStorageComponent : UniversalInventoryStorageComponent
 				}
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the engine lowered a carried item that the player did not let go of.
+	protected bool ShouldKeepCarrying(IEntity gadget, bool isInHand, bool isOnGround)
+	{
+		if (isInHand || isOnGround || !gadget || m_eState != LF_EHandCarryState.ACTIVE)
+			return false;
+
+		if (LF_ParcelComponent.CarrierIsDown(GetOwner()))
+			return false;
+
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(GetOwner());
+		BaseWeaponManagerComponent weapons = null;
+		if (controller)
+			weapons = controller.GetWeaponManagerComponent();
+		if (weapons && weapons.GetCurrent())
+			return false;
+
+		return LF_ParcelComponent.InSlot(gadget);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RetakeToHands(IEntity gadget)
+	{
+		LF_Debug.Info("HandCarry", "carried item lowered without a drop; back to the hands");
+		m_pNextCarryItem = gadget;
+		m_eState = LF_EHandCarryState.READY;
+		TakeToHands();
 	}
 
 	//------------------------------------------------------------------------------------------------
