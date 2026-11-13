@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { KINDS } from "./kinds.mjs";
 import { writeAssetMetas } from "./meta.mjs";
 import { checkModel, parse } from "./xob.mjs";
+import { withAnim } from "./anim.mjs";
 
 const PLUGIN = "LF_AssetImportPlugin";
 
@@ -53,7 +54,7 @@ function newestLog(profile) {
 export async function importAsset(ctx) {
   const { root, spec, dir } = ctx;
   if (!ctx.workbench) throw new Error("the import stage needs the Workbench launcher; run it through tools\\cli asset");
-  const kind = KINDS[spec.kind];
+  const { kind } = withAnim(KINDS[spec.kind], spec); // the anim block adds bones, sockets and the skinning flags
   const clean = join(dir, "clean");
   const report = JSON.parse(readFileSync(join(clean, "report.json"), "utf8"));
   const addon = join(root, "addons", "LifeFramework");

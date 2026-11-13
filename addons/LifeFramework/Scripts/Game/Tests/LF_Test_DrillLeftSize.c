@@ -4,9 +4,10 @@
 //   [LFTEST]   - the left drill is a safe drill's size (1.16937 m tall, want 0.3 to 0.6)
 //   and the server log: [LFDebug:Bank] drill out of the inventory at scale 1 (prefab 0.4). Restored; green.
 // tier: WORLD
-//! crime/drill-left-size: a drill left at a vault or the cash van box lies at the drill prefab's size (a 0.47 m
-//! safe drill), upright, with its serial. The prefab is the vanilla bench drill at 0.4, but an item that leaves an
-//! inventory is back at scale 1, so the left drill stood there as a 1.2 m green pillar drill (#571 review).
+//! crime/drill-left-size: a drill left at a vault or the cash van box lies at the drill prefab's size, upright,
+//! with its serial. The prefab used to be the vanilla bench drill at 0.4, and an item that leaves an inventory is
+//! back at scale 1, so the left drill stood there as a 1.2 m green pillar drill (#571 review). Since #340 the
+//! drill is its own 0.62 m model at scale 1; SetDown still has to keep any scaled tool's size.
 class LF_Test_DrillLeftSize : LF_Test
 {
 	//------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ class LF_Test_DrillLeftSize : LF_Test
 			vector maxs;
 			left.GetWorldBounds(mins, maxs);
 			float tall = maxs[1] - mins[1];
-			ctx.True(tall > 0.3 && tall < 0.6, string.Format("the left drill is a safe drill's size (%1 m tall, want 0.3 to 0.6)", tall));
+			ctx.True(tall > 0.15 && tall < 0.35, string.Format("the left drill is a hand drill's size (%1 m tall, want 0.15 to 0.35)", tall));
 			ctx.True(vector.DistanceXZ(left.GetOrigin(), spot) < 0.01, "it lies at the spot");
 			ctx.EqualFloat(30, left.GetYawPitchRoll()[0], 0.5, "it faces the way it was set down");
 			LF_SerialComponent kept = LF_SerialComponent.Cast(left.FindComponent(LF_SerialComponent));

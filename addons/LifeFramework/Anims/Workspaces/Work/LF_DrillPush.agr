@@ -1,0 +1,21 @@
+AnimSrcGraph {
+ AnimSetTemplate "{621FC2071DD7E522}Anims/Workspaces/Work/LF_DrillPush.ast"
+ ControlTemplate AnimSrcGCT "{DDCAD179E64D3D64}" {
+  Variables {
+   AnimSrcGCTVarInt Gestures {
+    DefaultValue -1
+    MinValue -2
+    MaxValue 1000
+   }
+  }
+  Commands {
+   AnimSrcGCTCmd CMD_Gestures {
+   }
+  }
+ }
+ Debug AnimSrcGD "{4F51196ECC79AF8C}" {
+ }
+ GraphFilesResourceNames {
+  "{6593316F492C3B3A}Anims/Workspaces/Work/LF_DrillPush.agf"
+ }
+}

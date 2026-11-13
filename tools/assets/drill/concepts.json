@@ -1,0 +1,164 @@
+{
+  "slug": "drill",
+  "subject": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door.",
+  "variants": [
+    {
+      "label": "Pistol grip, green",
+      "detail": "Pistol-grip hand drill, dark olive green enamel housing, long exposed bit, a loop side handle, black rubber grip",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Pistol-grip hand drill, dark olive green enamel housing, long exposed bit, a loop side handle, black rubber grip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-8112-7235-bf30-9c735a593c0a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "olive pistol grip, bit and clamp read; trailing cable"
+    },
+    {
+      "label": "Magnetic base rig",
+      "detail": "Drill motor on a rectangular steel magnetic base plate with a vertical column, grey hammertone paint, a three-spoke feed lever on the side",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Drill motor on a rectangular steel magnetic base plate with a vertical column, grey hammertone paint, a three-spoke feed lever on the side. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-81d5-73d2-b712-a2c6edf6102c",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "stationary magnetic drill, not carried"
+    },
+    {
+      "label": "Tripod clamp rig",
+      "detail": "Short motor on three folding steel legs with a ring clamp, bare steel and dull orange motor housing, a hand-wheel feed",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Short motor on three folding steel legs with a ring clamp, bare steel and dull orange motor housing, a hand-wheel feed. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-8295-71c3-8bf6-a08b37ccc50d",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "thin tripod legs, open wheel"
+    },
+    {
+      "label": "Cream and brown",
+      "detail": "Cream beige plastic housing with brown trim, chunky rounded body, a D-shaped rear handle, a long bit with a chuck",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Cream beige plastic housing with brown trim, chunky rounded body, a D-shaped rear handle, a long bit with a chuck. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-8348-7782-b0fe-cdec034a3615",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "cream body, loose clamp and cable"
+    },
+    {
+      "label": "Heavy red industrial",
+      "detail": "Red painted cast housing, very thick body, two side bar handles, a stubby thick diamond bit",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Red painted cast housing, very thick body, two side bar handles, a stubby thick diamond bit. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-8403-71ba-96d0-8512b71dbabc",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "heavy red, cable loops"
+    },
+    {
+      "label": "Blue steel brace",
+      "detail": "Blue-grey painted drill with a rear chest-plate brace and a side crank handle, riveted metal body",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Blue-grey painted drill with a rear chest-plate brace and a side crank handle, riveted metal body. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-84b8-7001-84a8-04eb59c521ac",
+      "scores": {
+        "silhouette": 1,
+        "era": 1,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "open wire frame, thin parts"
+    },
+    {
+      "label": "Black, yellow bands",
+      "detail": "Matte black body with two safety-yellow bands, a vertical front handle, a long stepped bit",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Matte black body with two safety-yellow bands, a vertical front handle, a long stepped bit. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-8580-70b0-81dc-d702ed6c8bc3",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "clean and solid but a modern SDS look"
+    },
+    {
+      "label": "Bare steel and wood",
+      "detail": "Unpainted steel motor casing with a wooden rear handle and wooden side knob, visible bolts, a long bit",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Unpainted steel motor casing with a wooden rear handle and wooden side knob, visible bolts, a long bit. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-8630-7284-957b-947e24a3cd59",
+      "scores": {
+        "silhouette": 1,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "busy gearbox, thin long bit"
+    },
+    {
+      "label": "Clamp-on frame",
+      "detail": "A square steel clamp frame with a screw-in drill motor mounted in its centre, grey paint, a T-handle on the screw",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. A square steel clamp frame with a screw-in drill motor mounted in its centre, grey paint, a T-handle on the screw. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-86ee-724c-b2d4-5a53fefd352c",
+      "scores": {
+        "silhouette": 1,
+        "era": 1,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "square frame hides the drill"
+    },
+    {
+      "label": "Compact grey box",
+      "detail": "Compact box-shaped grey metal housing with a small pistol grip and a short thick bit, ventilation slots on the side",
+      "prompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Compact box-shaped grey metal housing with a small pistol grip and a short thick bit, ventilation slots on the side. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-87b2-7091-9778-35059ac888c9",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "compact grey body with clamp bracket"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 1,
+    "label": "Pistol grip, green",
+    "by": "human",
+    "why": "\"maintainer pick\"",
+    "at": "2026-11-13"
+  }
+}

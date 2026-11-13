@@ -187,6 +187,8 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
 			return true;
+		if (cmd.Verb == "animseen" || cmd.Verb == "animhold" || cmd.Verb == "animoff")
+			return true;
 		if (cmd.Verb == "engine")
 		{
 			if (parts.Count() > 2)
@@ -1258,6 +1260,21 @@ class LF_AgentHarness
 		if (cmd.Verb == "engine")
 		{
 			DoEngine(cmd);
+			return;
+		}
+		if (cmd.Verb == "animhold" || cmd.Verb == "animoff")
+		{
+			SCR_ChimeraCharacter animCharacter = LF_Utils.GetLocalCharacter();
+			if (!animCharacter)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				animCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
+			return;
+		}
+		if (cmd.Verb == "animseen")
+		{
+			// What this client shows of the nearest animated asset (LF_AssetAnimHarness, #340).
+			WriteResult(cmd.Id, "ok", LF_AssetAnimHarness.Seen());
 			return;
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
