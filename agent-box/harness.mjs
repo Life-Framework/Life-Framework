@@ -206,7 +206,9 @@ export function buildLine(id, spec) {
     return `${id} input ${spec.action}`;
   }
   if (spec.verb === "open") {
-    if (spec.menu !== "DebugMenu") throw new Error("only DebugMenu can be opened by name");
+    // IdCard: Inspect on the carried identity card (#902), the inventory button's request.
+    if (spec.menu === "IdCard") return `${id} open IdCard`;
+    if (spec.menu !== "DebugMenu") throw new Error("only DebugMenu and IdCard can be opened by name");
     const mode = spec.mode || "toggle";
     if (mode !== "show" && mode !== "hide" && mode !== "toggle") {
       throw new Error(`open mode must be show, hide, or toggle: ${mode}`);
@@ -952,6 +954,7 @@ function selftest() {
   const bmp = decodeBmp(syntheticBmp());
   if (bmp.width !== 2 || bmp.height !== 2) throw new Error("bmp size");
   if (bmp.pixels[0] !== 255 || bmp.pixels[1] !== 0 || bmp.pixels[2] !== 0) throw new Error("bmp top pixel");
+  if (buildLine(12, { verb: "open", menu: "IdCard" }) !== "12 open IdCard") throw new Error("open IdCard");
   const shown = buildLine(11, { verb: "open", menu: "DebugMenu", mode: "show" });
   if (shown !== "11 open DebugMenu show") throw new Error(shown);
   const click = buildLine(12, { verb: "click", widget: "CivilianButton" });

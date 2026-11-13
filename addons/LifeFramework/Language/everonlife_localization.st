@@ -8106,6 +8106,141 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The evidence locker keeps every logged bag; the wanted board shows the suspects to the public."
      Comment "Case board Read card (#148)."
     }
+    CustomStringTableItem "{6A2F03A535260E7C}" {
+     Id "LF-Dialogue_Clerk_SayLost"
+     Target_en_us "I have lost my identity card."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{3D747C82D484541D}" {
+     Id "LF-IdCard_ItemName"
+     Target_en_us "Identity card"
+     Comment "Inventory name of the identity card item (#902)."
+    }
+    CustomStringTableItem "{591F38DE83F87F4C}" {
+     Id "LF-IdCard_ItemDesc"
+     Target_en_us "A laminated identity card from the civil registry. Inspect it to read it."
+     Comment "Inventory description of the identity card item (#902)."
+    }
+    CustomStringTableItem "{1252EACF4F5E22BC}" {
+     Id "LF-IdCard_Registry"
+     Target_en_us "CIVIL REGISTRY  -  FORM R-89"
+     Comment "Identity card sheet, the issuing office under the title (#902)."
+    }
+    CustomStringTableItem "{BF0E296814553E0D}" {
+     Id "LF-IdCard_Surname"
+     Target_en_us "SURNAME"
+     Comment "Identity card sheet, label over the holder's last name (#902)."
+    }
+    CustomStringTableItem "{D2242585051FB370}" {
+     Id "LF-IdCard_GivenName"
+     Target_en_us "GIVEN NAMES"
+     Comment "Identity card sheet, label over the holder's first name (#902)."
+    }
+    CustomStringTableItem "{8974AB0F3FDA7050}" {
+     Id "LF-IdCard_Age"
+     Target_en_us "AGE"
+     Comment "Identity card sheet, label over the holder's age (#902)."
+    }
+    CustomStringTableItem "{9068B20753AD311C}" {
+     Id "LF-IdCard_Issued"
+     Target_en_us "DATE OF ISSUE"
+     Comment "Identity card sheet, label over the in-game date the card was printed (#902)."
+    }
+    CustomStringTableItem "{C7EC358FCA8548A2}" {
+     Id "LF-IdCard_Number"
+     Target_en_us "CARD NO."
+     Comment "Identity card sheet, label over the card number (#902)."
+    }
+    CustomStringTableItem "{7B00DCF639B7E3D1}" {
+     Id "LF-IdCard_VoidLabel"
+     Target_en_us "STATUS"
+     Comment "Identity card sheet, label of the line shown on a replaced card (#902)."
+    }
+    CustomStringTableItem "{FEFDDA5887179920}" {
+     Id "LF-IdCard_Void"
+     Target_en_us "VOID - REPLACED"
+     Comment "Identity card sheet: this card was replaced at the clerk and is no longer valid (#902)."
+    }
+    CustomStringTableItem "{891051F242392738}" {
+     Id "LF-IdCard_PutAway"
+     Target_en_us "Put it away"
+     Comment "Closes your own identity card sheet (inventory Inspect, #902)."
+    }
+    CustomStringTableItem "{AB210173D6113649}" {
+     Id "LF-IdCard_Request"
+     Target_en_us "Request ID"
+     Comment "Player interaction menu entry for an on-duty officer: ask the person for their identity card (#902)."
+    }
+    CustomStringTableItem "{5D662C6CCD9417A1}" {
+     Id "LF-IdCard_RequestSent"
+     Target_en_us "You ask to see their identity card."
+     Comment "Toast to the officer after Request ID (#902)."
+    }
+    CustomStringTableItem "{62D648A2CF6FBFB3}" {
+     Id "LF-IdCard_RequestRefused"
+     Target_en_us "They refuse to show their identity card."
+     Comment "Toast to the officer when the citizen refuses (#902)."
+    }
+    CustomStringTableItem "{F33F94AF0E77E59B}" {
+     Id "LF-IdCard_RequestTitle"
+     Target_en_us "ID CHECK"
+     Comment "Title of the sheet on the citizen's screen when an officer asks for their card (#902)."
+    }
+    CustomStringTableItem "{447080BA06948A97}" {
+     Id "LF-IdCard_RequestBody"
+     Target_en_us "A police officer asks to see your identity card."
+     Comment "Body of the ID check sheet (#902)."
+    }
+    CustomStringTableItem "{6E11F94962BCC683}" {
+     Id "LF-IdCard_RequestShow"
+     Target_en_us "Show my card"
+     Comment "ID check sheet button: hold the card up to the officer (#902)."
+    }
+    CustomStringTableItem "{E3DEB3917A55F4DC}" {
+     Id "LF-IdCard_RequestRefuse"
+     Target_en_us "Refuse"
+     Comment "ID check sheet button: refuse to show the card (#902)."
+    }
+    CustomStringTableItem "{547D1993FB0A4B30}" {
+     Id "LF-IdCard_ClerkReplaced"
+     Target_en_us "Here is your new card, with a new photograph. The old one is void now."
+     Comment "Clerk's answer after printing a replacement card (#902). Shown as a caption."
+    }
+    CustomStringTableItem "{D8E1C5B11C9D2A03}" {
+     Id "LF-IdCard_ClerkStillCarried"
+     Target_en_us "You have your card with you. I cannot issue a second one."
+     Comment "Clerk's answer: the player still carries their valid card (#902)."
+    }
+    CustomStringTableItem "{180AD6EEE0179AC7}" {
+     Id "LF-IdCard_ClerkNoCash"
+     Target_en_us "A new card costs the fee, in cash. Come back when you have it."
+     Comment "Clerk's answer: not enough carried cash for the replacement fee (#902)."
+    }
+    CustomStringTableItem "{71C47D0D3468E849}" {
+     Id "LF-IdCard_ClerkNeverIssued"
+     Target_en_us "You are not in the register yet. Tell me you are new in town."
+     Comment "Clerk's answer: the player was never issued a card (#902)."
+    }
+    CustomStringTableItem "{2BF7801852A79CB9}" {
+     Id "LF-IdCard_ReplacedToast"
+     Target_en_us "New identity card issued for %1. Your old card is void."
+     Comment "Toast after a replacement card. %1 is the fee paid (#902)."
+    }
+    CustomStringTableItem "{5D9A5929885AD937}" {
+     Id "LF-IdCard_FeeToast"
+     Target_en_us "A replacement card costs %1 in cash."
+     Comment "Toast when the player cannot pay the replacement fee. %1 is the fee (#902)."
+    }
+    CustomStringTableItem "{A04900D7D79EB946}" {
+     Id "LF-IdCard_RequestWaiting"
+     Target_en_us "You have already asked. Give them a moment."
+     Comment "Toast to an officer who asks again while the citizen's ID check is still open (#902)."
+    }
+    CustomStringTableItem "{B2CC8FC403E5B834}" {
+     Id "LF-IdCard_RequestNoCard"
+     Target_en_us "They are willing, but cannot show you a card."
+     Comment "Toast to the officer: the citizen agreed to show their card but carries none, or walked out of reach (#902)."
+    }
   }
  }
 }

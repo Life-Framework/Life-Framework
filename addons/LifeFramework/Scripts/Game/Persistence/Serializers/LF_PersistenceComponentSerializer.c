@@ -31,7 +31,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, caseboard. The written version is that list's length (30). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard. The written version is that list's length (31). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -69,9 +69,12 @@
 //! A version 28 save includes the job XP rows and has no wanted looks (#758): its reports load with
 //! no look, so their posters on the wanted board's face show an empty photo frame until the
 //! suspect's next crime.
-//! A version 29 save includes the wanted looks and has no case board (#148): its open cases come
-//! back with no time and no pinned cards; the evidence stays logged in the locker, and an officer
-//! pins it again at the board.
+//! A version 29 save includes the wanted looks and has no identity card registry (#902): every card
+//! carried then is printed blank after the load, and a resident who earned a card has one printed
+//! (the blank one, else a new one) at their next spawn, with the photo taken then.
+//! A version 30 save includes the identity card registry and has no case board (#148): its open
+//! cases come back with no time and no pinned cards; the evidence stays logged in the locker, and an
+//! officer pins it again at the board.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -136,6 +139,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("orgranks");
 		order.Insert("joblevels");
 		order.Insert("wantedlooks");
+		order.Insert("idcards");
 		order.Insert("caseboard");
 	}
 
@@ -170,7 +174,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 30);
+		context.WriteValue("version", 31);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -538,6 +542,12 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_WantedLookRow> lookRows = LF_WantedReports.ExportLooks();
 			context.Write(lookRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 wanted look(s)", lookRows.Count()));
+		}
+		else if (payload == "idcards")
+		{
+			array<ref LF_PhotoIdRow> cardRows = LF_PhotoIdCard.ExportAll();
+			context.Write(cardRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 identity card row(s)", cardRows.Count()));
 		}
 		else if (payload == "caseboard")
 		{
@@ -981,9 +991,24 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 				LF_Debug.Warn("Persistence", "wanted looks failed to read, the posters show no picture until the next crime");
 			}
 		}
+		else if (payload == "idcards")
+		{
+			// The registry behind every printed card (#902). A version 1-29 save never reaches this
+			// payload: its cards print again at the holder's next spawn, as new rows.
+			array<ref LF_PhotoIdRow> cardRows = new array<ref LF_PhotoIdRow>();
+			if (context.Read(cardRows))
+			{
+				int cardsApplied = LF_PhotoIdCard.ApplyAll(cardRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 identity card row(s)", cardsApplied, cardRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "identity card rows failed to read; carried cards print again at the next spawn");
+			}
+		}
 		else if (payload == "caseboard")
 		{
-			// Runs after "wanted" and "evidencelocker" in the same load. A version 1-29 save never reaches
+			// Runs after "wanted" and "evidencelocker" in the same load. A version 1-30 save never reaches
 			// this payload: its cases have no time and nothing pinned.
 			array<ref LF_CaseBoardRow> caseRows = new array<ref LF_CaseBoardRow>();
 			if (context.Read(caseRows))

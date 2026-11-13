@@ -71,5 +71,44 @@
         "class": "LF_SpikeStripDeployAction"
       }
     ]
+  },
+  "materials": {
+    "default": "rubber",
+    "regions": [
+      {
+        "class": "spike_steel",
+        "above_height_m": 0.0505
+      }
+    ],
+    "classes": {
+      "rubber": {
+        "base_lum": [
+          0.035,
+          0.105
+        ],
+        "rough": [
+          0.9,
+          0.9
+        ],
+        "metal": [
+          0,
+          0
+        ]
+      },
+      "spike_steel": {
+        "base_lum": [
+          0.12,
+          0.57
+        ],
+        "rough": [
+          0.42,
+          0.42
+        ],
+        "metal": [
+          0.85,
+          0.85
+        ]
+      }
+    }
   }
 }

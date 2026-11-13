@@ -22,7 +22,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AlarmMount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AlarmRests(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AmbientFuelPump(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmbientSwitch(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AmbientTown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
@@ -77,6 +79,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSchemaVersion(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigSectionsA(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigSectionsB(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigSectionsBackcompat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamClientOnly(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamRoundTrip(), LF_TestTier.LOGIC);
@@ -249,6 +254,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PhoneExchange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhoneVoiceBand(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhoneVoiceWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PhotoIdCard(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PhotoIdCardsPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PhotoIdCardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PickaxeCount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);

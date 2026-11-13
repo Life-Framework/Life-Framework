@@ -34,7 +34,11 @@ Every fix is a spec edit followed by `tools\cli asset run <slug> --from clean`. 
 (flipped to DirectX), metallic, and ambient occlusion in alpha. `report.json` `textures` lists
 which source maps were found and their means. A mean metallic near 1 on a plastic object, or a
 mean roughness under 0.2, means the generator's maps are wrong: the object will look like chrome.
-Fix the texture prompt and regenerate, or edit the map.
+Meshy's maps do that to everything, so the clean stage remaps them per material class
+([README "Materials"](README.md)); `report.json` `materials` has the before and after means and each
+region's share of the atlas. If the object still looks wrong, change its classes in the spec's
+`materials` block (a region too, if one part is another material) and rerun `--from clean`. Do not
+write a one-off script.
 
 ## What a pass means
 

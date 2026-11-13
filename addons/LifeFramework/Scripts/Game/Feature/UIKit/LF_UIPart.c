@@ -20,7 +20,11 @@ enum LF_EUIPartKind
 	//! Body text that reads RichTextWidget markup (<color>, <br/>). The text is markup, not plain.
 	RICH,
 	//! A picture: text = imageset resource, status = image name in it (tools/cli ui-image makes both).
-	IMAGE
+	IMAGE,
+	//! A photo of a person (head and shoulders, drawn by the feature into LF_UIScreen.GetPortrait)
+	//! with an optional stamp over its corner and up to LF_UIScreen.PORTRAIT_LINES label and value
+	//! lines beside it: the face of an identity card. text = stamp imageset, status = its image name.
+	PORTRAIT
 }
 
 class LF_UIPart
@@ -38,6 +42,9 @@ class LF_UIPart
 	//! KEYS: one button per key, named and labelled in order.
 	protected ref array<string> m_aKeyNames = {};
 	protected ref array<string> m_aKeyTexts = {};
+	//! PORTRAIT: the printed lines beside the photo, a small label over each value.
+	protected ref array<string> m_aLabels = {};
+	protected ref array<string> m_aValues = {};
 
 	//------------------------------------------------------------------------------------------------
 	static LF_UIPart Create(LF_EUIPartKind kind, string name, string text)
@@ -55,6 +62,36 @@ class LF_UIPart
 		LF_UIPart part = Create(LF_EUIPartKind.IMAGE, name, imageset);
 		part.m_sStatus = imageName;
 		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A portrait with the stamp image over its corner (empty imageset: no stamp) and one label and
+	//! value per line beside it, at most LF_UIScreen.PORTRAIT_LINES.
+	static LF_UIPart CreatePortrait(string name, ResourceName stampImageset, string stampImage, array<string> labels, array<string> values)
+	{
+		LF_UIPart part = Create(LF_EUIPartKind.PORTRAIT, name, stampImageset);
+		part.m_sStatus = stampImage;
+		if (!labels || !values || labels.Count() != values.Count())
+		{
+			LF_Debug.Error("UIKit", "portrait " + name + " needs one value per label");
+			return part;
+		}
+
+		part.m_aLabels.Copy(labels);
+		part.m_aValues.Copy(values);
+		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetLabels()
+	{
+		return m_aLabels;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetValues()
+	{
+		return m_aValues;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -244,6 +281,9 @@ class LF_UIPart
 			return LF_UITheme.RICH_LAYOUT;
 		if (kind == LF_EUIPartKind.IMAGE)
 			return LF_UITheme.IMAGE_LAYOUT;
+
+		if (kind == LF_EUIPartKind.PORTRAIT)
+			return LF_UITheme.PORTRAIT_LAYOUT;
 
 		return string.Empty;
 	}

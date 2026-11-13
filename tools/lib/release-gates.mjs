@@ -107,6 +107,10 @@ export async function onPrMerged(gh, prNumber, log = () => {}) {
   const manual = hasManualSteps(pr.body);
   const done = [];
   for (const n of parseRefs(pr.body)) {
+    if (await gh.isPullRequest(n)) {
+      log(`#${n}: is a pull request, skipped (PR #${prNumber} refs it)`);
+      continue;
+    }
     const issue = await gh.getIssue(n);
     if (!issue) {
       log(`#${n}: not found (PR #${prNumber} refs it)`);
@@ -126,6 +130,10 @@ export async function onPrMerged(gh, prNumber, log = () => {}) {
   for (const reverted of parseReverts(pr.body)) {
     const old = await gh.getPr(reverted);
     for (const n of parseRefs(old?.body)) {
+      if (await gh.isPullRequest(n)) {
+        log(`#${n}: is a pull request, skipped (PR #${reverted} refs it)`);
+        continue;
+      }
       const issue = await gh.getIssue(n);
       if (!issue || issue.labels.includes("verified")) continue;
       const remove = ["in-dev", "needs-playtest"].filter((l) => issue.labels.includes(l));
@@ -338,6 +346,11 @@ export function realGh(cwd) {
       const i = json(["issue", "view", String(n), "--json", "number,state,stateReason,labels"]);
       if (!i) return null;
       return { number: i.number, state: String(i.state).toLowerCase(), stateReason: String(i.stateReason ?? "").toLowerCase(), labels: i.labels.map((l) => l.name) };
+    },
+    // A PR ref (`Refs #896` where 896 is a PR) gets no labels: the labels call is refused for PRs.
+    async isPullRequest(n) {
+      const r = json(["api", `repos/{owner}/{repo}/issues/${n}`]);
+      return Boolean(r && r.pull_request);
     },
     async addLabels(n, labels) {
       await this.ensureLabels(labels);

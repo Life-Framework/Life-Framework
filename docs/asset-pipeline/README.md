@@ -123,6 +123,31 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   into. Nothing else is written: the deploy, the pick-up and what the prop does are feature code
   (`Feature/Police/LF_SpikeStrip.c` for the strip).
 
+## Materials
+
+Meshy's roughness and metallic maps come out near chrome for every object, so the clean stage remaps
+them by material class. The spec's `materials` block declares it; without one, everything is plastic
+and only what Meshy's own metallic map marks above 0.5 stays metal.
+
+```json
+"materials": {
+  "default": "rubber",
+  "regions": [{ "class": "spike_steel", "above_height_m": 0.0505 }],
+  "classes": { "rubber": { "base_lum": [0.035, 0.105], "rough": [0.9, 0.9], "metal": [0, 0] },
+               "spike_steel": { "base_lum": [0.12, 0.57], "rough": [0.42, 0.42], "metal": [0.85, 0.85] } }
+}
+```
+
+- Built-in classes: `plastic` (rough 0.75 to 0.85, metal 0 to 0.03), `rubber`, `metal`, `fabric`
+  (`materials.mjs`). `classes` overrides or adds one.
+- `rough` and `metal` are `[lo, hi]`: Meshy's value 0..1 maps linearly onto it, so `[0.8, 0.8]` pins it.
+  Colour is `base_scale` (darken, keep the hue) or `base_lum` (grey from the original luminance, scuffs kept).
+- A region picks pixels by `metallic_above` (Meshy's metallic map) or `above_height_m` (faces whose centre
+  is higher than that after the fit, found through their UVs). A later region wins.
+- Edit the spec and rerun `asset run <slug> --from clean`; the raw maps stay Meshy's. The handcuffs and
+  the spike strip are the worked examples. Selftest: `tools\cli asset selftest`
+  (`validation/asset-materials-selftest.mjs`).
+
 ## What the tool does not do
 
 - It does not decide whether the model looks like the thing. That is the generation review.

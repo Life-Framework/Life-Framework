@@ -71,7 +71,7 @@ class LF_Test_PlaytimePersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(30, version, "the save is written at version 30 (playtime is payload 26)");
+			ctx.Equal(31, version, "the save is written at version 31 (playtime is payload 26)");
 			LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "playtime");
 			string tag = string.Format(" (load %1)", pass);
 			ctx.Equal(3600, LF_Playtime.JobSeconds(UID, "POLICE"), "the police hour is back" + tag);

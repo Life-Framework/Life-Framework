@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! One row of the case board's store, persisted as is in the "caseboard" payload (save version 30).
+//! One row of the case board's store, persisted as is in the "caseboard" payload (save version 31).
 //! A report's own row (m_iNumber 0) holds the time of the crime; an evidence card's row holds the
 //! locker row it stands for, what the piece says and whether it is pinned. Plain values only.
 class LF_CaseBoardRow

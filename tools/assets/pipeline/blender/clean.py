@@ -253,6 +253,45 @@ base = pixels(maps["base_color"], px, (0.5, 0.5, 0.5, 1))
 rough = pixels(maps["roughness"], px, (0.6, 0.6, 0.6, 1))
 metal = pixels(maps["metallic"], px, (0, 0, 0, 1))
 normal = pixels(maps["normal"], px, (0.5, 0.5, 1, 1))
+
+
+def height_mask(above_m):
+    # Faces whose centre is above this height (Blender Z, metres, after the fit), rasterised through
+    # their UV triangles. Rows are flipped like pixels(): Blender UV v runs up, the TIFF runs down.
+    me = obj.data
+    me.calc_loop_triangles()
+    uv = np.empty(len(me.loops) * 2, np.float32)
+    me.uv_layers[0].data.foreach_get("uv", uv)
+    uv = uv.reshape(-1, 2).astype(np.float64)
+    mask = np.zeros((px, px), dtype=bool)
+    for t in me.loop_triangles:
+        if me.polygons[t.polygon_index].center.z <= above_m:
+            continue
+        p = uv[list(t.loops)] * px
+        x0, x1 = int(max(0, np.floor(p[:, 0].min()))), int(min(px - 1, np.ceil(p[:, 0].max())))
+        y0, y1 = int(max(0, np.floor(p[:, 1].min()))), int(min(px - 1, np.ceil(p[:, 1].max())))
+        xs, ys = np.meshgrid(np.arange(x0, x1 + 1) + 0.5, np.arange(y0, y1 + 1) + 0.5)
+        a, b, c = p
+        d = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1])
+        if abs(d) < 1e-12:
+            continue
+        w1 = ((b[1] - c[1]) * (xs - c[0]) + (c[0] - b[0]) * (ys - c[1])) / d
+        w2 = ((c[1] - a[1]) * (xs - c[0]) + (a[0] - c[0]) * (ys - c[1])) / d
+        mask[y0:y1 + 1, x0:x1 + 1] |= (w1 >= -0.02) & (w2 >= -0.02) & (1 - w1 - w2 >= -0.02)
+    return mask[::-1]
+
+
+# Material classes (tools/assets/pipeline/materials.mjs): Meshy's roughness and metallic remapped per
+# declared region, so nothing reaches the game as polished chrome.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import materials
+plan = job["materials"]
+masks = materials.region_masks(plan, metal[:, :, 0], height_mask)
+base3, rough1, metal1 = materials.apply(plan, base[:, :, :3], rough[:, :, 0], metal[:, :, 0], masks)
+report["materials"] = {"default": plan["default"], "regions": [{"class": g["class"], "share": float(m.mean())} for g, m in zip(plan["regions"], masks)],
+                       "before": {"rough": float(rough[:, :, 0].mean()), "metal": float(metal[:, :, 0].mean())},
+                       "after": {"rough": float(rough1.mean()), "metal": float(metal1.mean())}}
+base[:, :, :3], rough[:, :, 0], metal[:, :, 0] = base3, rough1, metal1
 bcr = np.dstack([base[:, :, :3], rough[:, :, 0]])
 nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal[:, :, 0], np.ones((px, px), np.float32)])
 write_tiff(os.path.join(out, name + "_BCR.tif"), (np.clip(bcr, 0, 1) * 255 + 0.5).astype(np.uint8))

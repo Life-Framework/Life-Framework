@@ -141,7 +141,7 @@ class LF_Test_OrgRightsPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the version 27 save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(30, version, "the save is written at version 30 (orgranks is payload 27)");
+			ctx.Equal(31, version, "the save is written at version 31 (orgranks is payload 27)");
 
 			JsonLoadContext load = new JsonLoadContext(false);
 			load.LoadFromString(saved);
@@ -195,6 +195,8 @@ class LF_TestLegacySnapshot : Managed
 	//! The crime reports with their looks (#758): an older save has no "wantedlooks", so loading
 	//! one wipes the looks the shutdown save of `wt e2e` pass 1 must still hold.
 	protected ref array<ref LF_WantedReportRecord> m_aWanted;
+	//! The identity card registry (#902): a test that resets it must not take the e2e card's row.
+	protected ref array<ref LF_PhotoIdRow> m_aIdCards;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_TestLegacySnapshot Take()
@@ -204,6 +206,7 @@ class LF_TestLegacySnapshot : Managed
 		snapshot.m_aRanks = LF_OrganizationManager.ExportRanks();
 		snapshot.m_aJobXp = LF_JobLevels.ExportAll();
 		snapshot.m_aWanted = LF_WantedReports.ExportAll();
+		snapshot.m_aIdCards = LF_PhotoIdCard.ExportAll();
 		return snapshot;
 	}
 
@@ -214,5 +217,6 @@ class LF_TestLegacySnapshot : Managed
 		LF_OrganizationManager.ApplyRanks(m_aRanks);
 		LF_JobLevels.ApplyAll(m_aJobXp);
 		LF_WantedReports.ApplyAll(m_aWanted);
+		LF_PhotoIdCard.ApplyAll(m_aIdCards);
 	}
 }

@@ -66,5 +66,14 @@
         }
       }
     ]
+  },
+  "materials": {
+    "default": "plastic",
+    "regions": [
+      {
+        "class": "metal",
+        "metallic_above": 0.6
+      }
+    ]
   }
 }

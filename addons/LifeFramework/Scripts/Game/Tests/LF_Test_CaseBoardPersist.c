@@ -1,6 +1,6 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_CaseBoardPersist`: commenting out `LF_CaseBoard.ApplyAll(caseRows)` in the load failed `- the pinned cards are back (expected 2, got 0)` and `- the time of the crime is back (expected '09:36', got '')`. Restored; green. Restart path stays with wt e2e.
 // tier: PERSISTENCE
-//! The case board rides the real save path (the "caseboard" payload, save version 30, payload 30):
+//! The case board rides the real save path (the "caseboard" payload, save version 31, payload 31):
 //! the time of the crime, the pinned cards and their notes are back after the store is wiped and read
 //! back, the pin order goes on after the highest loaded pin, and loading twice adds nothing.
 class LF_Test_CaseBoardPersist : LF_Test
@@ -50,7 +50,7 @@ class LF_Test_CaseBoardPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(30, version, "the save is written at version 30 (caseboard is payload 30)");
+		ctx.Equal(31, version, "the save is written at version 31 (caseboard is payload 31)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "caseboard");
 		ctx.Equal(2, LF_CaseBoard.PinnedCount(robbery.m_iSequence), "the pinned cards are back");
 		ctx.EqualStr(time, LF_CaseBoard.TimeOf(robbery.m_iSequence), "the time of the crime is back");

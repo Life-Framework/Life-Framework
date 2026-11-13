@@ -21,8 +21,12 @@ Rung 1. A radio has one action, "Switch off" / "Switch on"
 - `LF_Atmosphere` + `LF_AtmosphereMix`: the 500 ms tick and the pure choice
   (range, allowed, one per group, voice cap).
 - `LF_AmbientCondition`: `LF_AmbientConditionSwitch`,
-  `LF_AmbientConditionChainWorking`. A feature adds its own subclass in its own
+  `LF_AmbientConditionChainWorking`, and `LF_AmbientConditionPhoneLine` (Comms: the
+  payphone hum while its line is BUSY). A feature adds its own subclass in its own
   folder; it may read only state that is replicated to clients.
+- `LF_AmbientFuelPump`: a modded `SCR_FuelSupportStationComponent.OnExecutedServer`
+  pulses the nearest switch in 8 m (`Prefabs/Atmosphere/LF_FuelPumpHum.et`) for 4 s
+  per fuelling step.
 - `LF_AmbientSwitchComponent`: the one replicated bool. `SetOn`, `Pulse`,
   `PulseOn(entity, seconds)` for a feature whose machine was just used.
 
@@ -36,5 +40,5 @@ Rung 1. A radio has one action, "Switch off" / "Switch on"
 
 ## Iteration path
 
-- **V2**: the remaining places (bank, hospital, payphones, fuel station, cash
-  van), more radio tracks, persisted radio state.
+- **V2** (done): bank, hospital, payphones, fuel station, cash van, a pub terrace radio.
+- **V3**: more radio tracks, a hideout cassette player, persisted radio state.

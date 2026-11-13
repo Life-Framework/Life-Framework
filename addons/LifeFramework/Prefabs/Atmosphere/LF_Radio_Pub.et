@@ -1,0 +1,13 @@
+GenericEntity : "{16C2DFD610CC7AFB}Prefabs/Atmosphere/LF_Radio.et" {
+ ID "F1BBA9287B799E9D"
+ components {
+  LF_AmbientEmitterComponent "{D06D909C939BCF74}" {
+   m_sSoundProject "{2BC9B5C5F72B71E7}Sounds/Atmosphere/Atmosphere_PubRadio.acp"
+   m_fRadius 33
+   m_iPriority 3
+   m_sGroup "pub_music"
+   m_fHourFrom 10
+   m_fHourTo 2
+  }
+ }
+}

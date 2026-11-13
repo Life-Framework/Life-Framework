@@ -93,12 +93,19 @@ The bot cannot hear the server by itself. A small gateway listener
 Discord gateway and POSTs a JSON event to a webhook that wakes the orchestrator.
 Issue: #696.
 
-**It forwards only three things**, all from humans: a member joining
+**The welcome hook gets three things**, all from humans: a member joining
 (`member_join`), a message in #welcome (`welcome_message`), and a DM to the bot
 (`dm_message`). It drops bots, webhooks, the bot's own messages, other channels,
 other servers and system messages, so the bot never answers itself or another
 bot. The rules are in `tools/discord-mcp/relay-filter.mjs`;
 `tools\cli discord selftest` proves them.
+
+**#feedback forum.** It also forwards the #feedback forum (channel
+`1568938441637499080`) to a second webhook: a new thread's starter message as
+`feedback_post`, later messages in a forum thread as `feedback_reply` (both carry
+`threadId`, `threadName`, `attachments`; `id` is the message id). Threads are tracked
+from `THREAD_CREATE` and the `GUILD_CREATE` thread list. Bots and our own replies are
+dropped. Without `feedback-hook-url` the relay logs that and forwards no feedback.
 
 **Secrets live outside the repo**, in `%USERPROFILE%\.life-framework\`:
 
@@ -106,8 +113,9 @@ bot. The rules are in `tools/discord-mcp/relay-filter.mjs`;
 | --- | --- | --- |
 | `discord-token` | The bot token (same file the MCP server uses) | `LF_DISCORD_TOKEN_FILE` |
 | `welcome-hook-url` | The webhook URL events are POSTed to. A secret: whoever has it can wake the orchestrator | `LF_WELCOME_HOOK_FILE` |
+| `feedback-hook-url` | Optional. The webhook for #feedback events | `LF_FEEDBACK_HOOK_FILE` |
 
-Never commit either value, paste the URL into an issue, or print it in a log.
+Never commit any of these values, paste the URL into an issue, or print it in a log.
 
 **Run it:**
 

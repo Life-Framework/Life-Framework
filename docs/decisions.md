@@ -788,7 +788,7 @@ late joiner on duty asks at its first tick). Everyone else draws no face and see
 cork, whatever the police have on it, so the board tells a civilian nothing, not even how busy the
 police are (the reason the dispatch boards kept the Read card). The board adds no crime model: a
 case is a crime report, a card is an evidence locker row, the portrait is the wanted board's look;
-it stores only the time of each crime and which cards are pinned (`caseboard`, save version 30).
+it stores only the time of each crime and which cards are pinned (`caseboard`, save version 31).
 Detail: `docs/architecture/visual-boards.md` "The case board".
 
 **2026-11-13 — #664: Meshy-generated 3D assets may be used in the project and in

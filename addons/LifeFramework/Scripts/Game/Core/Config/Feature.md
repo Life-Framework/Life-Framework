@@ -260,6 +260,45 @@ unemployment benefit, and the job XP tables of `LF_JobLevels`.
   `config/jobs-owner`), then checks each number against the range; one bad element
   refuses the whole list.
 
+## Zones, police, organizations, persistence and licences sections (#282, #283, D8)
+
+Each is a config class with a `SECTION`, an `ApplyOwner` with a handled-key list and ranges
+(`params` on the attribute, the same numbers as constants), and `ApplyLayers`, so the generated
+schema, `/config` form and reference page list them. A `config.json` that names none of them changes nothing.
+
+- `zones` (`LF_ZoneConfig`): `ruleSets` keyed by rule name (`NORMAL`, `SAFE`, `LAWLESS`), plus
+  `safeBlocksPlayerDamage` and `lawlessSuppressesWanted` (read for a rule with no table entry; the
+  shipped table has all three). Server only: the damage hook and the crime features read it on the
+  server and the HUD reads the rule, not its rule set.
+- `police` (`LF_PoliceConfig`): every tunable, and `ranks` keyed by rank id. An id the ladder has
+  changes only the fields given; an id it lacks appends a rung (a saved rank is its index, so a
+  rung never moves). Prefab and sound names go through `ReadResource`: a name that does not load is
+  refused and the shipped one stays. Streamed to clients (arrest reach, desk range, ladder, ...);
+  the alarm prefabs and each rank's kit stay on the server.
+- `organizations` (`LF_OrgConfig`): the tunables, and `rankDefaults` keyed by `founder`, `officer`
+  or `member`: a bool per permission, starting from the shipped rights
+  (`LF_OrganizationConfig.ShippedRights`). `LF_OrganizationConfig.DefaultRights` returns the
+  configured mask, so a new organization gets it; a saved organization keeps its ranks. A
+  `nameMin` above `nameMax` is refused (no name would be valid). The tunables are streamed; the
+  rank defaults are not (the server builds an organization's ranks and replicates them).
+- `persistence` (`LF_PersistenceConfig`, no `.conf`): `enableAutosave` and `autosaveInterval`.
+  The shipped values are the `LF_PersistenceManagerComponent` attributes; `Resolve` starts from them,
+  so a prefab edit still works. Read once when the timer is scheduled, so it needs a restart
+  (`/configreload` does not move the timer). There is no retention setting: an autosave overwrites
+  the one AUTO slot of the playthrough.
+- `licences` (`LF_LicencesConfig`, no `.conf`): `rules` keyed by licence name with
+  `isInitialLicense` and `requiresWhitelist`, layered over the catalog the licence manager builds.
+  `GiveInitialLicenses` reads the initial flags, in `LF_LicenseBits.Order`. The level a licence
+  needs stays `jobs.licenceGates`. Server only; a character spawned after the change picks it up.
+- Tests: `LF_Test_ConfigSectionsA`, `LF_Test_ConfigSectionsB`, `LF_Test_ConfigSectionsBackcompat`.
+
+## Identity card section (#902)
+
+- `idCard` (`LF_PhotoIdCardConfig`, `Configs/Identity/LF_PhotoIdCard.conf`): `replacementFee`
+  (0 to 100000, the town clerk's cash price for a lost card) and `showSeconds` (2 to 60, how long a
+  card held up to someone stays on their screen; the server sends it with the card). Server only;
+  `/configreload` drops the cached instance (`LF_ConfigStream.ApplyToFeatures`).
+
 ## Files
 
 - `LF_ConfigService.c`: `LF_ConfigService`, `LF_ConfigPackSource`,

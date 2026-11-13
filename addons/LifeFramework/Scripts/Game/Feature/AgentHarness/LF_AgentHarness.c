@@ -676,6 +676,10 @@ class LF_AgentCommand
 		}
 
 		cmd.Arg1 = parts[2];
+		// IdCard: Inspect on the carried identity card, the request the inventory button sends (#902).
+		if (cmd.Arg1 == "IdCard")
+			return true;
+
 		if (cmd.Arg1 != "DebugMenu")
 		{
 			cmd.Error = "menu_not_allowed";
@@ -3045,6 +3049,12 @@ class LF_AgentHarness
 	//! Same toggle the LF_OpenDebugMenu key uses.
 	protected static void DoOpen(LF_AgentCommand cmd)
 	{
+		if (cmd.Arg1 == "IdCard")
+		{
+			DoInspectIdCard(cmd);
+			return;
+		}
+
 		MenuManager menuManager = GetGame().GetMenuManager();
 		if (!menuManager)
 		{
@@ -3092,6 +3102,27 @@ class LF_AgentHarness
 
 		menuManager.OpenMenu(ChimeraMenuPreset.DebugMenu);
 		WriteResult(cmd.Id, "ok", "opened");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `open IdCard`: asks the server for the card this client's character carries, exactly as
+	//! Inspect in the inventory does (SCR_PlayerController.LF_InspectIdCard).
+	protected static void DoInspectIdCard(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		IEntity character;
+		if (controller)
+			character = controller.GetControlledEntity();
+
+		LF_IdCardComponent card = LF_IdCard.FindShown(character, string.Empty);
+		if (!controller || !card)
+		{
+			WriteResult(cmd.Id, "error", "no_card");
+			return;
+		}
+
+		controller.LF_InspectIdCard(LF_NetworkUtils.GetRplId(card.GetOwner()));
+		WriteResult(cmd.Id, "ok", "inspect_sent");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -206,6 +206,13 @@ card ("Republic of Everon, Identity Card"), the police station line ("the
 Everon police"), the org ledger ("Organization Register - 1989 ledger"), the
 arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 
+The photo identity card (#902) is core: the registry, the card sheet, the UI kit `PORTRAIT`
+part, the neutral registry stamp (`Assets/UI/Illustrations/LF_IdStamp.*`, "CIVIL REGISTRY,
+OFFICIAL, R-89") and `Configs/Identity/LF_PhotoIdCard.conf` (fee and show time). One piece is
+flagship: the card number prefix `EV ` (`LF_PhotoIdCard.NUMBER_PREFIX`), a split. Saved card
+numbers carry the prefix, so the move makes it a pack value that a server keeps for the life of
+its save.
+
 ## Missions
 
 | Path | Class | Reason |
@@ -256,7 +263,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Anims/` | core | Generic carry and NPC graphs |
 | `Particles/` | core | Gather effects |
 | `Sounds/` | core | Siren |
-| `Sounds/Atmosphere/` | pack | The Everon town's two radio tracks and eight background loops (`docs/architecture/atmosphere.md`); the emitter scripts and `Prefabs/Atmosphere/` that play them are core |
+| `Sounds/Atmosphere/` | pack | The Everon town's two radio tracks and fifteen background loops (`docs/architecture/atmosphere.md`); the emitter scripts and `Prefabs/Atmosphere/` that play them are core |
 | `Sounds/Weapons/Handguns/Taser/` | split | Sounds of the stun weapon (shot, handling, stun buzz): they follow the taser, example in core, police-issue item in pack |
 | `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |

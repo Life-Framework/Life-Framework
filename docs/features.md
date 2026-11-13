@@ -188,7 +188,8 @@
 ### `LF_ShowIDAction` — `Feature/CharacterCreation/LF_ShowIDAction.c`
 - ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
   the first printed one) to the player they face: the server reads the item
-  and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
+  and opens `LF_IdCardView` on the viewer's machine (#902: the photo card,
+  closing by itself after `idCard.showSeconds`, 8 s). No card: not performable,
   reason `#LF-ID_NoCard`. Offered by the player interaction reach rule
   (`LF_PlayerInteraction.CanOffer`, 2 m, both alive, a player); the server
   re-checks it. The shower points (`Gesture_Point`) and the viewer hears
@@ -248,6 +249,9 @@
   spawn a card for a mode with no clerk. A character already carrying their own
   card is refused a second; a blank carried card is printed instead of adding
   one. The DebugWorld civilian starter kit no longer carries a blank card.
+- ✅ (#902, 2026-11-13) Superseded in part: spawning no longer prints a fresh card
+  each time. A card lost at death or stolen stays lost and the clerk replaces it
+  for a fee; see `LF_PhotoIdCard` below.
 
 ### `LF_NpcBaseEntity` station NPCs — `Prefabs/Characters/Core/Npc_Base.et`
 - ✅ **Dressed on every machine** (2026-11-08, #150): `BaseLoadoutManagerComponent`
@@ -291,6 +295,7 @@
   `docs/architecture/core-pack-inventory.md`.
 
 ### Config service — `Scripts/Game/Core/Config/LF_ConfigService.c` (#278)
+- ✅ (2026-11-13, #282 #283) The rest of the D8 sections are owner-readable: `zones` (rule sets keyed by NORMAL/SAFE/LAWLESS, plus the two legacy flags), `police` (the #875 tunables and the rank ladder keyed by rank id, where an unlisted id appends a rung and a saved rank index never moves), `organizations` (the #875 tunables and the #857 default-rank rights as a bool per permission, applied to organizations founded afterwards), `persistence` (`enableAutosave`, `autosaveInterval`, read once at game start, so a restart applies it; there is no retention setting, the autosave overwrites one AUTO slot) and `licences` (`isInitialLicense` and `requiresWhitelist` per licence name; the level gate is `jobs.licenceGates`). `police` and `organizations` ride the config stream (`BuildPayload` takes them as the fourth and fifth argument; the client applies them with the same `ApplyOwner`; alarm prefabs, rank kits and rank defaults stay on the server); `zones`, `persistence` and `licences` are server-only. `LF_ConfigReader.ReadResource` refuses a `{GUID}path` that does not load. With no `config.json` every value is the one the code carried before (`config/sections-backcompat`). Tests `config/sections-a` (police, licences, police stream), `config/sections-b` (zones, organizations, persistence, organizations stream) and `config/sections-backcompat`.
 - ✅ (2026-11-12, #749) The `jobs` section (D8): duty pay, the benefit, and the job XP
   tables (`tracks` by job id with `levelThresholds` and `dailyXpCap`, `xpAwards` by action
   id, `licenceGates` by licence name), read by `LF_JobsConfig.ApplyOwner` with ranges.
@@ -2573,6 +2578,7 @@
 - ✅ **Ambient emitters (2026-11-13).** `LF_AmbientEmitterComponent` (`Feature/Atmosphere`) is a looped positional sound on a prop or an area entity: sound project, start radius, stop margin, priority, group, hours of the day (local solar time) and an optional `LF_AmbientCondition`. Every machine that renders runs `LF_Atmosphere`: a 500 ms tick reads each emitter's distance to the listener (`AudioSystem.GetDistance`) and `LF_AtmosphereMix.Select` picks which sound: in range, allowed, one per group, at most `s_iMaxVoices` (6), higher priority then nearer. Voices go through `SCR_SoundManagerModule`, so a source inside a building is muffled outside. A dedicated server runs none of it. Logs `[LFDebug:Atmosphere] start|voice up|stop|mix`. Tests: `atmosphere/mix` (LOGIC), `atmosphere/switch` (WORLD), `atmosphere-selftest` in `tools\cli validate`, `session.mjs atmosphere-proof` (needs `session up --profile full --sound`).
 - ✅ **Radio switch.** `LF_AmbientSwitchComponent` is the only replicated state: one `RplProp` bool, written by the server in `SetOn` (the radio's `LF_AmbientSwitchAction`, "Switch off" / "Switch on", anyone may use it) and `Pulse(seconds)`. `LF_ProcessAction` calls `LF_AmbientSwitchComponent.PulseOn` after a successful process (`m_fRunSoundSeconds`, 12), so the sawmill is heard running after each log. ⚠️ Not persisted: a radio switched off is on again after a restart.
 - ✅ **Ten places in the playtest town.** Store radio (`Shop_GeneralStore_Radio`, `Prefabs/Atmosphere/LF_Radio_Store.et`, placed with `tools\cli place on`), pub music from inside the pub building (10:00 to 02:00), furnace (`Furnace.et`, always), sawmill (`Sawmill.et`, after a cut), quarry bed (`MiningArea_Debug`, 06:00 to 20:00), farm hens (`FarmPlot_Cabbage.et`, group `farm`, 05:00 to 21:00), moonshine still (`LF_ChainStill.et`, while a batch is in it: `LF_AmbientConditionChainWorking` reads the station percent), police duty desk (`LF_PoliceDutyDesk.et`), chop shop (`LF_ChopBench.et`), spawn square (the fountain, 06:00 to 22:00). The ranked survey and what is left: `docs/architecture/atmosphere.md`.
+- ✅ **Seven more sounds and a terrace radio (#897, 2026-11-13).** Bank (the two counters in `ATM.layer`: `Atmosphere_BankMurmur` and `Atmosphere_BankTill`, a clock tick with a till drawer), hospital (`LF_HospitalBed.et`: equipment hum, group `hospital_equipment`; `LF_MedicDutyDesk.et`: a quiet ward, overriding the police desk sound it inherited), payphones (`LF_Payphone.et`: `LF_AmbientConditionPhoneLine`, the line hum while `LF_PhoneLineComponent` is BUSY, receiver up), fuel station (`Prefabs/Atmosphere/LF_FuelPumpHum.et` at the pumps: a modded `SCR_FuelSupportStationComponent.OnExecutedServer` pulses its `LF_AmbientSwitchComponent` for 4 s per fuelling step, `LF_AmbientFuelPump`), cash van (the van's cash box `Roadmap_Cash_Van_Box` in `Street_CashVan.layer`, which stands 1.9 m from the van and moves with it: engine idle, always, because the route only ever parks the van; an emitter put on the vehicle entity itself never registered on the client), and a radio on a table outside the pub (`Prefabs/Atmosphere/LF_Radio_Pub.et`, priority 3, group `pub_music` shared with the building so one voice plays: the radio, or the building when it is switched off). Tests `LF_Test_AmbientTown`, `LF_Test_AmbientFuelPump`. 1950 credits. ⚠️ Nobody has heard the audio; the hospital equipment take is hum without the beep.
 - ✅ **Ambience pipeline.** `tools\cli asset ambience [--only generate|process|wire] [--again id] [--status]` (`tools/assets/pipeline/ambience.mjs`, spec and credit record `tools/assets/atmosphere/ambience.json`): ElevenLabs Music for the two radio tracks and text-to-sound-effects loops for the rest, ffmpeg decode, a crossfaded loop point, 16-bit mono WAV with its `.meta`, and one sound project per sound under `Sounds/Atmosphere/` with an inline distance curve. 3550 credits spent. ⚠️ No agent has heard the audio; a human listens before a public build.
 
 ## NPC dialogue scenes (spike, 2026-11-13)
@@ -2605,7 +2611,28 @@
   real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
 
 ### `LF_CaseBoard` — `Feature/Investigation/LF_CaseBoard.c` (#148, 2026-11-13)
-- ✅ A cork board in the police station porch shows on-duty officers the open cases: the crime, the place, the time, the suspect's portrait once identified, the pinned evidence cards and a red string from each card to the suspect. Officers pin (carried bags are logged at the locker first) and unpin at the board. Civilians see plain cork: the list goes to on-duty officers only, by an owner RPC. Pins and times survive a restart (`caseboard` payload, save version 30). Tests: `investigation/case-board` (LOGIC), `investigation/case-board-world` (WORLD), `investigation/case-board-persist` (PERSISTENCE); session proof `case-board-proof`.
+- ✅ A cork board in the police station porch shows on-duty officers the open cases: the crime, the place, the time, the suspect's portrait once identified, the pinned evidence cards and a red string from each card to the suspect. Officers pin (carried bags are logged at the locker first) and unpin at the board. Civilians see plain cork: the list goes to on-duty officers only, by an owner RPC. Pins and times survive a restart (`caseboard` payload, save version 31). Tests: `investigation/case-board` (LOGIC), `investigation/case-board-world` (WORLD), `investigation/case-board-persist` (PERSISTENCE); session proof `case-board-proof`.
 
 ### `LF_ScenePieces` — `Feature/Investigation/LF_ScenePieces.c` (#148, 2026-11-13)
 - ✅ Crimes leave physical evidence on the ground, placed with the placement probe: a footprint card behind a robber on foot, casings spread around a shooter, a witness statement at the feet of a witness an officer asked. Every piece is police-only (not an inventory item; only "Bag as evidence"), capped and expiring with the scene evidence, and bags with a note that becomes its card on the case board. Tests: `investigation/scene-pieces` (LOGIC), `investigation/scene-pieces-world` (WORLD); session proof `case-board-proof`.
+
+### `LF_PhotoIdCard` — `Feature/Identity/LF_PhotoIdCard.c` (#902, 2026-11-13)
+- ✅ The identity card is a photo card: Inspect it in the inventory and a laminated card sheet
+  opens (UI kit `PORTRAIT` part): the holder's head and shoulders drawn client-side from their
+  look at the date of issue (`LF_WantedPortrait`), surname, given names, age, date of issue
+  (in-game), card number (`EV 000042`) and the civil registry stamp. Show ID opens the same
+  sheet on the other player's screen for `idCard.showSeconds` (8 s). An on-duty officer has
+  *Request ID* in the interaction menu (`request_id` slot): the citizen is asked on an ID CHECK
+  sheet and shows the card or refuses (30 s window); reading a wanted player's own valid card
+  identifies them, as before.
+- ✅ Every printed card is a registry row (number, holder, name, age, date, look), the `idcards`
+  payload (save version 30); the item carries only its number (`LF_SerialComponent`, which
+  persists with it anywhere) and is printed again from the row after a restart.
+- ✅ Lost or stolen: spawning hands out no new card. Talking to the town clerk, *I have lost my
+  identity card.* (offered while you were issued one and do not carry it) prints a new card
+  with a new number, a new photo and today's date for `idCard.replacementFee` (50, carried
+  cash, ledger reason `id-card`); the old card reads VOID - REPLACED. A mode with
+  `m_bGrantIdAtSpawn` replaces it free at the next spawn.
+- Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
+  `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
+  session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.

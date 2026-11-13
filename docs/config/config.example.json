@@ -12,6 +12,10 @@
       }
     }
   },
+  "idCard": {
+    "replacementFee": 50,
+    "showSeconds": 8
+  },
   "jobs": {
     "policeDutyPayPerSecond": 0.5,
     "medicDutyPayPerSecond": 0.4,
@@ -43,6 +47,63 @@
         "minLevel": 4
       }
     }
+  },
+  "licences": {
+    "rules": {
+      "POLICE_FINE": {
+        "requiresWhitelist": false
+      }
+    }
+  },
+  "organizations": {
+    "foundingFee": 500,
+    "nameMin": 3,
+    "nameMax": 32,
+    "offerMs": 120000,
+    "maxCashMove": 1000000,
+    "priceExtraStorage": 500,
+    "priceProcessingSlot": 250,
+    "priceParkedVehicle": 750,
+    "deskRange": 5,
+    "rankDefaults": {
+      "officer": {
+        "withdraw": true
+      }
+    }
+  },
+  "persistence": {
+    "autosaveInterval": 600
+  },
+  "police": {
+    "arrestMinRank": 0,
+    "escortMinRank": 0,
+    "ranks": {
+      "patrol": {
+        "fineCap": 1500
+      }
+    },
+    "catchInActRadius": 10,
+    "placeRadius": 80,
+    "boardReadDistance": 4,
+    "boardMaxPosters": 8,
+    "alarmSeconds": 30,
+    "loudAlarmSeconds": 60,
+    "alarmPrefab": "{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et",
+    "loudAlarmPrefab": "{8E15F0B7A26C4D93}Prefabs/Police/LF_SiteAlarm_Loud.et",
+    "radioSoundProject": "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp",
+    "radioSoundEvent": "SOUND_RADIO_SIGNAL_2",
+    "dispatchLogLines": 5,
+    "ticketFirstDeadline": 1800,
+    "ticketSecondDeadline": 1800,
+    "ticketLateMultiplier": 2,
+    "searchCooldownSeconds": 120,
+    "ticketMaxOpen": 5,
+    "ticketKeepPaid": 3,
+    "arrestReach": 6,
+    "jailArrivalRadius": 8,
+    "applyDeskRange": 6,
+    "compliantSeconds": 60,
+    "spikeStripLifetimeSeconds": 600
   },
   "shops": {
     "defaultBuyPrice": 50,
@@ -76,5 +137,15 @@
     "posters": 4,
     "stolenPosters": 1,
     "drawRadius": 30
+  },
+  "zones": {
+    "ruleSets": {
+      "SAFE": {
+        "fineMultiplier": 2
+      },
+      "LAWLESS": {
+        "suppressesWanted": true
+      }
+    }
   }
 }
