@@ -287,6 +287,7 @@ export async function main(flags, { workbench } = {}) {
   const [sub, ...rest] = flags;
   const root = ROOT;
   if (sub === "selftest") return (await import("../../validation/asset-pipeline-selftest.mjs")).main(rest);
+  if (sub === "dialogue") return (await import("./dialogue.mjs")).main(rest);
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "new" || sub === "run") {
@@ -300,6 +301,7 @@ export async function main(flags, { workbench } = {}) {
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
+       tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)
 playbook: docs/asset-pipeline/README.md`);
   return sub ? 2 : 0;
 }

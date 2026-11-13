@@ -52,6 +52,11 @@ class LF_QuestAction : ScriptedUserAction
 		// A converse giver (the town clerk) talks in person: the server moves the quests along.
 		if (giver.IsConverse())
 		{
+			// With a dialogue on the NPC the talk is a scene; its reply runs the same server talk
+			// (LF_DialogueHook_QuestConverse). A broken dialogue falls back to the plain talk.
+			if (LF_DialogueComponent.ConfigOf(pOwnerEntity) && LF_DialogueScene.Begin(pOwnerEntity))
+				return;
+
 			LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(pUserEntity);
 			if (tracker)
 				tracker.AskConverse(giver.GetGiverId());

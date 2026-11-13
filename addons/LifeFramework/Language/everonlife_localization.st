@@ -7816,6 +7816,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The receiver of the call you are on. It goes back when you hang up."
      Comment "Inventory description of the telephone receiver item."
     }
+    CustomStringTableItem "{63D92EC5F37B85A8}" {
+     Id "LF-Dialogue_Clerk_Greet"
+     Target_en_us "Good day. This is the town clerk's desk. What can I do for you?"
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{CB45DD686F00C171}" {
+     Id "LF-Dialogue_Clerk_Register"
+     Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{5DFED210FA00C577}" {
+     Id "LF-Dialogue_Clerk_Board"
+     Target_en_us "Now read the town board on the square, right beside me. It shows where everything in town is."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{D60A962F84ED553E}" {
+     Id "LF-Dialogue_Clerk_WorkErrand"
+     Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{D90DCDEF90A1C933}" {
+     Id "LF-Dialogue_Clerk_Bank"
+     Target_en_us "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{08B7665F0C1963C1}" {
+     Id "LF-Dialogue_Clerk_Done"
+     Target_en_us "Welcome to Everon. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{C74D628DF7469E2D}" {
+     Id "LF-Dialogue_Clerk_Idle"
+     Target_en_us "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{CC089999560B9785}" {
+     Id "LF-Dialogue_Clerk_AboutWork"
+     Target_en_us "The post office always needs couriers. For anything else, read the town board. It lists who is hiring."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{94AAB43F98726DB0}" {
+     Id "LF-Dialogue_Clerk_AboutTown"
+     Target_en_us "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{93CF95EE9BA6015C}" {
+     Id "LF-Dialogue_Clerk_Bye"
+     Target_en_us "Good day to you."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{4DDB701E3B9C046A}" {
+     Id "LF-Dialogue_Clerk_SayNew"
+     Target_en_us "I am new in town."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{BCE0D0B87758A6FA}" {
+     Id "LF-Dialogue_Clerk_SayNext"
+     Target_en_us "What should I do now?"
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{BBD914A5709DB653}" {
+     Id "LF-Dialogue_Clerk_SayWork"
+     Target_en_us "Where can I find work?"
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{53AB451CE6742B73}" {
+     Id "LF-Dialogue_Clerk_SayTown"
+     Target_en_us "Tell me about this town."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{50187032E73CA183}" {
+     Id "LF-Dialogue_Clerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{B3D8A9678B34F5A7}" {
+     Id "LF-Dialogue_HintLine"
+     Target_en_us "Confirm: skip    Back: leave"
+     Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
+    }
+    CustomStringTableItem "{857383630EAB1A5D}" {
+     Id "LF-Dialogue_HintChoose"
+     Target_en_us "1 to 4, or Up, Down and Confirm: answer    Back: leave"
+     Comment "Conversation scene, small hint under the numbered replies."
+    }
   }
  }
 }

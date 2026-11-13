@@ -46,6 +46,12 @@ name of the person who ran the agent.
 |---|---|---|---|---|
 | Taser model (`Assets/Weapons/Handguns/Taser/Taser.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/taser/meshy.json` (generation ids), `tools/assets/taser/spec.json` (prompt) |
 
+## Generated voices
+
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Town clerk's spoken lines (`Sounds/Dialogue/clerk/*.wav`) | ElevenLabs text-to-speech, voices generated with ElevenLabs; voice "JC" from the voice library | https://elevenlabs.io | The maintainer's paid plan (Starter): commercial use allowed, no attribution required; use in the project and published builds per `docs/decisions.md` 2026-11-13 | `tools/assets/dialogue/clerk/elevenlabs.json` (request ids, voice, model, text), `tools/assets/dialogue/clerk/dialogue.json` |
+
 ## Music
 
 | Track | Author | Source | Licence | Used in |

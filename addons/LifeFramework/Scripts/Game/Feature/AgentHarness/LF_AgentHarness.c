@@ -165,6 +165,14 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
 			return true;
+		if (cmd.Verb == "dialogue")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			if (parts.Count() > 3)
+				cmd.Arg2 = parts[3];
+			return true;
+		}
 		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
 			return true;
 		if (cmd.Verb == "lockpick")
@@ -1179,6 +1187,12 @@ class LF_AgentHarness
 		if (cmd.Verb == "gm")
 		{
 			DoGm(cmd);
+			return;
+		}
+		if (cmd.Verb == "dialogue")
+		{
+			// The conversation scene on this machine: its state, or a mouth pose to look at.
+			WriteResult(cmd.Id, "ok", LF_DialogueScene.Harness(cmd.Arg1, cmd.Arg2));
 			return;
 		}
 		if (cmd.Verb == "phone")

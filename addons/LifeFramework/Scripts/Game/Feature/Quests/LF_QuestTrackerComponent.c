@@ -15,6 +15,8 @@ class LF_QuestTrackerComponentClass : ScriptComponentClass
 class LF_QuestTrackerComponent : ScriptComponent
 {
 	protected ref LF_QuestTracker m_Tracker = new LF_QuestTracker();
+	//! Set for the length of one ConverseSpoken call: story slips are collected here.
+	protected ref array<string> m_aSpoken;
 	protected ref map<string, bool> m_mInsideAreas = new map<string, bool>();
 	protected float m_fTickAccumulator;
 	protected string m_sClientLogCache;
@@ -732,6 +734,18 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: RequestConverse for a conversation scene (LF_DialogueHook_QuestConverse). The
+	//! giver's story lines (hand-in, the next errand, the idle line) go into `spoken` as their
+	//! keys, in order, instead of being shown as slips. Everything else is the same talk.
+	bool ConverseSpoken(string giverId, notnull array<string> spoken)
+	{
+		m_aSpoken = spoken;
+		bool acted = RequestConverse(giverId);
+		m_aSpoken = null;
+		return acted;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether the quest asks only for a talk with this giver: taken on and done in one breath,
 	//! so its errand text is not worth a toast.
 	protected bool IsTalkOnly(LF_QuestDefinition def, string giverId)
@@ -867,6 +881,13 @@ class LF_QuestTrackerComponent : ScriptComponent
 	{
 		if (!Replication.IsServer())
 			return;
+
+		// In a conversation the giver speaks its story lines; they are not also shown as slips.
+		if (m_aSpoken && duration >= STORY_SECONDS)
+		{
+			m_aSpoken.Insert(message);
+			return;
+		}
 
 		LF_Utils.NotifyEntity(GetOwner(), message, title, duration);
 	}

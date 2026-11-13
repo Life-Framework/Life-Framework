@@ -41,3 +41,4 @@ docs/asset-inventory.md merge=lf-table-rows
 docs/playtest.md merge=lf-markdown
 website/content/gallery.json merge=lf-json-keys
 agent-box/areas.json merge=lf-json-keys
+*.wav -text
