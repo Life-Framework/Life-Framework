@@ -1,0 +1,60 @@
+MetaFileClass {
+ Name "{4B8B8F99644EBC69}Assets/Props/Roleplay/BankVault/VaultDoor.xob"
+ Configurations {
+  FBXResourceClass PC {
+   ExportSkinning 1
+   ExportSceneHierarchy 1
+   MaterialAssigns {
+    MaterialAssignClass "{48CA2F0A7AD2DEAF}" {
+     SourceMaterial "BankVault_Paint"
+     AssignedMaterial "{D0802AB317A8F26B}Assets/Props/Roleplay/BankVault/Data/BankVault_Paint.emat"
+    }
+    MaterialAssignClass "{2257C9954028E486}" {
+     SourceMaterial "BankVault_Steel"
+     AssignedMaterial "{A4FE49A2AE03F45F}Assets/Props/Roleplay/BankVault/Data/BankVault_Steel.emat"
+    }
+    MaterialAssignClass "{7DF1C309451E850F}" {
+     SourceMaterial "BankVault_Door"
+     AssignedMaterial "{3E4BC3A1E93BAD54}Assets/Props/Roleplay/BankVault/Data/BankVault_Door.emat"
+    }
+   }
+   MeshParams {
+    MeshParam VaultDoor {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_VaultDoor_00 {
+     LayerPreset "DoorFireView"
+     SurfaceProperties {
+      "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{9D949D8A5232B292}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{EE69758456E45485}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{254D08E2C4F15B96}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{A6AE29BC97E857AB}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{3982C46196338BA4}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

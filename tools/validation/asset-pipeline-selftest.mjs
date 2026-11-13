@@ -16,6 +16,7 @@
 //   sheetLayout using rows for columns       -> FAIL concepts: ten cells make a 5x2 grid, numbered left to right
 //   pickByRubric breaking ties on the high n -> FAIL concepts: a tie goes to the lower number
 //   conceptRequest ignoring the reference    -> FAIL concepts: a reference sends image-to-image with the picture
+//   checkKitModel skipping the bone check    -> FAIL kit: a model missing a material, a collider or the door bone is flagged
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -30,6 +31,7 @@ import * as meshy from "../assets/pipeline/meshy.mjs";
 import { ematText, freshGuid, textureMeta, usedGuids, writeAssetMetas, xobMeta, xobMetaIds } from "../assets/pipeline/meta.mjs";
 import { ammoListWith, ammoPrefab, magazinePrefab, weaponPrefab } from "../assets/pipeline/prefab.mjs";
 import { checkModel, parse, worldPositions } from "../assets/pipeline/xob.mjs";
+import { checkKitModel, kitModelMeta, kitProblems } from "../assets/pipeline/kit.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -389,6 +391,25 @@ export async function main() {
     recordProvenance(prov, spec(), { imageTaskId: "i1", concept: 3, conceptTaskId: "c3", conceptPrompt: "p" }, new Date("2026-11-13T11:00:00Z"));
     const pg = JSON.parse(readFileSync(join(prov, "tools", "assets", "stick", "meshy.json"), "utf8")).generations;
     ok(pg.length === 1 && pg[0].tool === "Meshy image-to-3D" && pg[0].imageTaskId === "i1" && pg[0].conceptTaskId === "c3", "concepts: meshy.json records the image-to-3D task and the concept it came from, once");
+  }
+
+  // ---- kits: several models, shared materials, a meta per model with every material and collider --
+  {
+    const kit = JSON.parse(readFileSync(join(ROOT, "tools", "assets", "bank-vault", "kit.json"), "utf8"));
+    ok(kitProblems(kit).length === 0, `kit: the bank vault kit.json passes (${kitProblems(kit)[0]})`);
+    ok(kitProblems({ ...kit, colliders: { VaultFront: { layerPreset: "BuildingFireView", gamemat: "concrete.gamemat" } } }).some((m) => /gamemat/.test(m)), "kit: a collider game material without a GUID is refused");
+    const used = new Set();
+    const mats = ["A", "B", "C"].map((n, i) => ({ source: `Kit_${n}`, emat: `{${"1".repeat(15)}${i}}Assets/K/Data/Kit_${n}.emat` }));
+    const cols = ["UBX_K_00", "UBX_K_01"].map((name) => ({ name, layerPreset: "BuildingFireView", gamemat: "{1A05231C3FD1627A}Common/Materials/Game/concrete.gamemat" }));
+    const text = kitModelMeta("", used, { res: "Assets/K/K.xob", guid: "2222222222222222", materials: mats, colliders: cols, flags: { ExportSkinning: true } });
+    const assigns = [...text.matchAll(/MaterialAssignClass "\{([0-9A-F]{16})\}"/g)].map((m) => m[1]);
+    ok(assigns.length === 3 && new Set(assigns).size === 3 && (text.match(/GeometryParam UBX_K_0/g) || []).length === 2 && /ExportSkinning 1/.test(text), "kit: a model meta assigns every material once and lists every collider");
+    const again = kitModelMeta(text, used, { res: "Assets/K/K.xob", guid: "2222222222222222", materials: mats, colliders: cols, flags: {} });
+    ok([...again.matchAll(/MaterialAssignClass "\{([0-9A-F]{16})\}"/g)].map((m) => m[1]).join() === assigns.join(), "kit: a re-import keeps the material assign ids");
+    const model = { materials: [{ path: "Assets/K/Data/Kit_A.emat" }], colliders: ["UBX_K_00"], nodes: [] };
+    const emats = Object.fromEntries(mats.map((m) => [m.source, m.emat]));
+    const found = checkKitModel(model, { fbx: "K.fbx", materials: ["Kit_A", "Kit_B"], colliders: ["UBX_K_00", "UBX_K_01"], bones: [{ name: "door" }] }, emats);
+    ok(found.some((m) => /Kit_B/.test(m)) && found.some((m) => /UBX_K_01/.test(m)) && found.some((m) => /bone door/.test(m)) && !found.some((m) => /Kit_A\.emat/.test(m)), `kit: a model missing a material, a collider or the door bone is flagged (${found.join("; ")})`);
   }
 
   if (failed) {

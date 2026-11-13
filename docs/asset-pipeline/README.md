@@ -160,6 +160,29 @@ and only what Meshy's own metallic map marks above 0.5 stays metal.
 - It does not classify the asset core or pack. Do that by the red line
   (`docs/architecture/core-vs-pack.md`) and add the inventory rows.
 
+## Kits
+
+`tools\cli asset kit <slug> [--only build|import]` is for a set of models that share materials and are
+mostly plain geometry: a room, a wall with a tunnel, furniture made of boxes. A generated wall is
+solid behind its door and a grid of small doors comes out of image-to-3D as mush, so a kit is built by
+its own headless Blender script (`tools/assets/<slug>/kit.json` names it) and only the detail that
+needs it is generated, through the usual `concept` and `generate` stages of its own slug.
+
+- `build` runs the script. It writes one `.fbx` per model (LODs, `UBX_` box colliders, bones), the
+  shared materials as `_BCR`/`_NMO` TIFFs, review renders and `report.json` into
+  `tmp/assets/<slug>/kit/`.
+- `import` copies them into `asset_dir`, writes every texture, `.emat` and `.xob.meta` (one
+  `MaterialAssign` per material, one `GeometryParam` per collider with the layer preset and game
+  material from `kit.json`), rebuilds each source in a hidden Workbench and checks every `.xob` for
+  its materials, colliders and bones.
+- Prefabs and placement are written by hand, as after the `prefab` stage.
+
+The first kit is the bank vault (`tools/assets/bank-vault/`): the round door #1 generated with Meshy
+image-to-3D (`tools/assets/vault-front`) and split from its frame by radius and depth, on a `door`
+bone at the hinge pivot; the wall block with a round tunnel, the collar, the step, the steel room,
+the deposit box wall and the cash trolley are geometry, with procedural tiling materials (concrete,
+painted steel in the door's own colour, brushed steel panels, banknote bricks).
+
 ## Music and background loops
 
 `tools\cli asset ambience` is a sibling of the stages above for sounds that belong to a place

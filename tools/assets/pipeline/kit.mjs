@@ -121,20 +121,22 @@ function importKit(root, kit, out, report, { workbench }) {
     const one = dirs.length ? runLog(dirs[0]) : "";
     return /LF_ASSET_IMPORT done/.test(one) ? one : `LF_ASSET_IMPORT rebuilding\nLF_ASSET_IMPORT FAIL no done line for ${source}\n${one}`;
   };
+  // An output counts when it is newer than its source copied above. The first Workbench run often
+  // imports every new source it finds at start-up; a later rebuild of an unchanged source does not
+  // rewrite the file, so "newer than before this rebuild" would fail a good import.
+  const fresh = (out, src) => existsSync(out) && statSync(out).mtimeMs >= statSync(src).mtimeMs;
   const problems = [];
   for (const src of sources) {
     const edds = src.replace(/\.tif$/, ".edds");
-    const before = existsSync(edds) ? statSync(edds).mtimeMs : 0;
     const log = rebuild(src);
     problems.push(...logProblems(log));
-    if (!existsSync(edds) || statSync(edds).mtimeMs <= before) problems.push(`Workbench did not rebuild ${edds}`);
+    if (!fresh(edds, src)) problems.push(`Workbench did not build ${edds}`);
     console.log(`  texture ${src.split(/[\\/]/).pop()} ${existsSync(edds) ? "ok" : "MISSING"}`);
   }
   for (const m of models) {
     for (let attempt = 1; attempt <= 2; attempt++) {
-      const before = existsSync(m.xob) ? statSync(m.xob).mtimeMs : 0;
       const found = [...logProblems(rebuild(m.fbx), m.name)];
-      if (!existsSync(m.xob) || statSync(m.xob).mtimeMs <= before) found.push(`Workbench did not rebuild ${m.xob}`);
+      if (!fresh(m.xob, m.fbx)) found.push(`Workbench did not build ${m.xob}`);
       else found.push(...checkKitModel(parse(readFileSync(m.xob)), report.models[m.name], refs.emats));
       if (!found.length || attempt === 2) {
         problems.push(...found);

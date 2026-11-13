@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{68C47ED515B362B8}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Open.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -20,6 +20,13 @@ shape the generator gets wrong from words (a 1980s taser comes out as a pistol o
 - Describe the object, not its category (see [prompt-writing.md](prompt-writing.md)): say what the body,
   the front and the grip look like.
 
+- **A kit that must match a piece already chosen** (a vault frame around a picked door) adds
+  `"reference": { "file": "tools/assets/<slug>/reference.jpg", "why": "..." }`. The ten prompts then go
+  to Meshy image-to-image with that picture (same price as text-to-image on the nano-banana models), so
+  the round keeps its style. Commit a small copy of the picture (the vault used a 640 px JPEG).
+- Meshy refuses more than about ten queued tasks at once (`HTTP 429 NoMorePendingTasks`): run one
+  concept round at a time.
+
 ## 2. Run the stage
 
 `tools\cli asset run <slug> --only concept` makes the ten images (`nano-banana-2-1`, 4 credits each,
