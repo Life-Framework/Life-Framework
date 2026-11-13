@@ -31,9 +31,45 @@
       0
     ],
     "stretch": true,
-    "repeat": 7
+    "repeat": 7,
+    "fold": true
   },
   "parts": [],
   "asset_dir": "Assets/Props/Roleplay/SpikeStrip",
-  "prefab_dir": "Prefabs/Props/Roleplay/SpikeStrip"
+  "prefab_dir": "Prefabs/Props/Roleplay/SpikeStrip",
+  "deployable": {
+    "name_key": "#LF-SpikeStrip_Name",
+    "description_key": "#LF-SpikeStrip_Description",
+    "weight": 6,
+    "item_volume": 2500,
+    "components": [
+      {
+        "class": "LF_SpikeStripComponent",
+        "props": {
+          "m_sItemPrefab": "$item",
+          "m_fHalfLength": 1.75,
+          "m_fHalfWidth": 0.15
+        }
+      }
+    ],
+    "actions": [
+      {
+        "class": "LF_SpikeStripPickUpAction"
+      }
+    ],
+    "item_components": [
+      {
+        "class": "LF_DeployableItemComponent",
+        "props": {
+          "m_sDeployedPrefab": "$deployed",
+          "m_fDeployedLength": 3.5
+        }
+      }
+    ],
+    "item_actions": [
+      {
+        "class": "LF_SpikeStripDeployAction"
+      }
+    ]
+  }
 }

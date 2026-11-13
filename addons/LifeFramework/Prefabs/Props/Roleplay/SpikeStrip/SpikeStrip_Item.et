@@ -1,0 +1,59 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "BE0C5E2574E7101E"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 1.4999
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-SpikeStrip_Name"
+     Description "#LF-SpikeStrip_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 6
+     SizeSetupStrategy Volume
+     ItemVolume 2500
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{743D79EAD6CD0B4E}Assets/Props/Roleplay/SpikeStrip/SpikeStrip_Folded.xob"
+  }
+  LF_DeployableItemComponent "{AB368E29C85278A9}" {
+   m_sDeployedPrefab "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et"
+   m_fDeployedLength 3.5
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.2119 0
+     }
+     Radius 0.35
+    }
+   }
+   additionalActions {
+    LF_SpikeStripDeployAction "{7143B0D0A967F5B1}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}

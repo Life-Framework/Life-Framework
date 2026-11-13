@@ -2439,10 +2439,8 @@
   vector and does not call `SetVelocity`. Ported from EveronLife
   `EL_JumpTrigger` (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
 
-### `LF_SpikeStrip` — `Feature/Toys/LF_SpikeStrip.c`
-- ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
-  box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
-  (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+### `LF_SpikeStrip` — moved to `Feature/Police/LF_SpikeStrip.c` (#646)
+- The trigger version is gone; the police spike strip below replaced it.
 
 ## Service calls (#248)
 

@@ -119,7 +119,7 @@ under "Hard-coded flagship values in script".
 | `Feature/Signs` | core | Sign system; titles are pack data |
 | `Feature/SirenLights` | core | System |
 | `Feature/Survival` | core | System |
-| `Feature/Toys` | core | Jump pad, spike strip |
+| `Feature/Toys` | core | Jump pad |
 | `Feature/UIKit` | split | The kit is core; `LF_UITheme` and `LF_UISkin` hard-code the 1989 look |
 | `Feature/VehicleLock` | core | System |
 | `Feature/Vehicles` | split | Lot, garage, and impound are core; `LF_VehicleCatalog` is the flagship catalogue |

@@ -148,6 +148,7 @@ function listAmmo(addon, ammo) {
 
 export async function writePrefabs(ctx) {
   const { root, spec, dir } = ctx;
+  if (spec.kind === "deployable") return (await import("./prefab-deployable.mjs")).writeDeployablePrefabs(ctx);
   if (spec.kind !== "weapon") {
     console.log(`prefab: no scaffold for kind ${spec.kind} yet; write the prefab by hand on Item_Base.et (docs/asset-pipeline/README.md "Kinds")`);
     return { skipped: true };
