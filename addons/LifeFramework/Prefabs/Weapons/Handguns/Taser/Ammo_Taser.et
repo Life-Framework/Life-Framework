@@ -1,0 +1,14 @@
+Projectile : "{9D290AA75ADA4618}Prefabs/Weapons/Ammo/Ammo_9x19_Ball_M882.et" {
+ ID "2FE0B72D5651DEA4"
+ components {
+  ShellMoveComponent "{851AA4A2AE0A5691}" {
+   InitSpeed 100
+   InitSpeedVariation 0
+   ProjectileEffects {
+    ProjectileDamage "{5168BBF3DBD79134}" {
+     DamageValue 1
+    }
+   }
+  }
+ }
+}

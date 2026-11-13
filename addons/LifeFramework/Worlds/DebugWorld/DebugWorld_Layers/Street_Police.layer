@@ -76,3 +76,7 @@ SCR_DestructibleEntity Police_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Dec
 GenericEntity Police_TrashBin_1 : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
  coords 241.411 0 241.28
 }
+GenericEntity Roadmap_Police_Taser : "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et" {
+ coords 232.852 0.99 239.959
+ angleY 0
+}

@@ -137,6 +137,7 @@ under "Hard-coded flagship values in script".
 | `Characters/Quests/QuestGiver_Start.et` | core | Test quests |
 | `Characters/Quests/QuestGiver_Clerk.et` | split | Carries the arrival story; `LF_Test_ArrivalChain` needs a neutral example |
 | `Crafting/` | core | Station prefabs a system depends on |
+| `Weapons/Handguns/Taser/` | split | The stun weapon `LF_Test_Stun` loads is the core's example; the police-issue taser and its strings are pack (#341) |
 | `Debug/` | core | Test fixtures |
 | `Items/Core/` | core | Item bases |
 | `Items/Currencies/`, `Items/Roleplay/` | core | Cash, ID card, ticket, slip, keys |
@@ -161,6 +162,7 @@ under "Hard-coded flagship values in script".
 | `Vehicles/LicensePlate/`, `Vehicles/SirenLights/` | core | System parts |
 | `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
 | `Vehicles/Wheeled/M151A2/` | split | The police car; core needs a police-car slot, the model is a catalogue pick |
+| `Weapons/Handguns/Taser/` | split | Mesh of the stun weapon above: example in core, police-issue item in pack |
 | `Configs/Vehicles/LF_VehiclePrices.conf` | split | The multiplier shape is core; the five vehicle rows are the flagship catalogue's prices (#688) |
 
 ## Configs
@@ -169,6 +171,7 @@ under "Hard-coded flagship values in script".
 | --- | --- | --- |
 | `Chat/` | core | Channels |
 | `Core/EditorManagerCore.conf` | core | Engine setup |
+| `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
 | `NameTags/` | core | Tag rules |
 | `System/` | core | Inputs, menus, key binding menu |
