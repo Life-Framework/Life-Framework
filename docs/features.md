@@ -2647,4 +2647,11 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+
+## World reset (debug and playtest, #937)
+- ✅ A service puts the playtest world back as a tester found it (`Core/LF_WorldReset.c`). It owns no list: a feature writes `Feature/<Area>/LF_<Area>WorldReset.c` with a step class and a `modded class LF_WorldResetRegistry` that adds it, and Enforce Script stacks the layers. Steps today: `crime` (wanted levels of every account, till, hospital till and vault cooldowns and stock, search cooldowns), `loot` (loose money bags, drills, keycards, charges), `police` (wanted reports, dispatch log, poster board), `spikes` (deployed strips), `evidence` (scenes, casings, markers, loose bags, locker log), `calls` (service board, finished calls, call-back book; a live call stays), `vehicles` (every vehicle present at game start returns to its spot; the cash van keeps its route), `farm` (plots emptied), `ore` (rocks regrown).
+- ✅ Triggers, all server side and only when `LF_SpawnHub.IsEnabled()` (the debug game mode prefab, so never a real server) and the dev gate is open (`LF_DevGate`, or an `LF_HARNESS` build): a death-screen respawn resets the world when that player is alone on the server; the debug menu's and the travel globe's *Reset world* button resets it for everyone after a second press within 5 s.
+- ✅ The harness `resetcrime` runs the crime-state steps of the same service, so a proof's reset never moves a car or regrows a rock.
+- Not covered: items players hold or carry, containers' contents, persisted vehicles bought after start, dropped ore pieces, hospital cabinet stock. Vehicle damage and fuel are not restored, only position.
+- Tests: `worldreset/gate` (LOGIC), `worldreset/service` (WORLD). Logs `[LFDebug:WorldReset]`.
 - ✅ (2026-11-14, #919) The placement audit also measures the stock a physical store spawns on its shelves (`LF_PlacementAudit.StockRows`) and holds two props standing on the same surface to a 0.02 m overlap limit (0.08 m elsewhere). The general store counter is re-placed: radio left, register right, goods in rows between. Red-proof: `place-audit.mjs selftest` (two cups on one counter).

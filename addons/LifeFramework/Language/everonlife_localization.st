@@ -8141,6 +8141,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are willing, but cannot show you a card."
      Comment "Toast to the officer: the citizen agreed to show their card but carries none, or walked out of reach (#902)."
     }
+    CustomStringTableItem "{EF99F8D0F3808C85}" {
+     Id "LF-CC_Wait_Identity"
+     Target_en_us "Connecting to the online service. Your registration form opens in a moment."
+     Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
+    }
+    CustomStringTableItem "{7724C0B2311D85FD}" {
+     Id "LF-CC_Error_NoIdentity"
+     Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
+     Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
+    }
+    CustomStringTableItem "{D8050889F5E6497E}" {
+     Id "LF-DebugMenu_ResetWorld"
+     Target_en_us "Reset world"
+     Comment "Debug menu: first press of the reset-world button (asks again before it resets)."
+    }
+    CustomStringTableItem "{42E123AF9D0648DA}" {
+     Id "LF-DebugMenu_ResetWorldSure"
+     Target_en_us "Press again: reset for everyone"
+     Comment "Debug menu: reset-world button after the first press."
+    }
+    CustomStringTableItem "{A3B9C629E6434881}" {
+     Id "LF-SpawnHub_ResetWorld"
+     Target_en_us "Reset the world"
+     Comment "Travel globe list row: puts the playtest world back as it was for everyone."
+    }
+    CustomStringTableItem "{EE3AD272B57D4B3B}" {
+     Id "LF-SpawnHub_ResetSure"
+     Target_en_us "Sure? Resets for everyone"
+     Comment "Travel globe reset row after the first press."
+    }
     CustomStringTableItem "{960E19EA6B5BB672}" {
      Id "LF-CaseBoard_Title"
      Target_en_us "Case board"
@@ -8240,16 +8270,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_PoliceCases_Next"
      Target_en_us "The evidence locker keeps every logged bag; the wanted board shows the suspects to the public."
      Comment "Case board Read card (#148)."
-    }
-    CustomStringTableItem "{EF99F8D0F3808C85}" {
-     Id "LF-CC_Wait_Identity"
-     Target_en_us "Connecting to the online service. Your registration form opens in a moment."
-     Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
-    }
-    CustomStringTableItem "{7724C0B2311D85FD}" {
-     Id "LF-CC_Error_NoIdentity"
-     Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
-     Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
     }
     CustomStringTableItem "{7D3A91E4C2B8F650}" {
      Id "LF-Parcel_DroppedTitle"
