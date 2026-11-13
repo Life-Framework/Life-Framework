@@ -2641,3 +2641,4 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+- ✅ **Cash is always the money mesh** (#932). `MoneyStack.et` no longer swaps to a backpack mesh at 1000 and 10000; the playtest top-up carries 20000, so every cash item in the inventory showed as a field pack. `LF_Test_QuantityOperations` pins it. No save change.
