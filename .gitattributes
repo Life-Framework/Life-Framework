@@ -43,3 +43,7 @@ docs/playtest.md merge=lf-markdown
 website/content/gallery.json merge=lf-json-keys
 agent-box/areas.json merge=lf-json-keys
 *.wav -text
+# Append-only lists features add one line to: both sides' new lines are kept (tools/merge/merge-markdown.mjs).
+addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c merge=lf-markdown
+docs/architecture/core-pack-inventory.md merge=lf-markdown
+docs/decisions.md merge=lf-markdown

@@ -13,7 +13,10 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    (`tmp\pr-body.md`), never a shared session dir.
 2. **Read.** The issue (`gh issue view <n>`) or PR, `AGENTS.md`, the
    `docs/decisions.md` entries for your area, and the area's `Feature.md`.
-3. **Red first.** Write the `LF_Test` (see **el-tdd**), break it once, and record
+3. **Scaffold, then red first.** A feature starts with
+   `tools\cli feature new <Area> <Name> --kind logic|world|ui|item --issue <n>` and follows
+   `tmp/feature-<name>.md` (the **life-mode** feature playbook); anything a player sees follows
+   **polish**. Write the `LF_Test` (see **el-tdd**), break it once, and record
    the observed failure line in `// red-proof:`. Loop with
    `tools\cli test --no-build --only <LF_Test_Class>` (~10 s); run
    `tools\cli validate` as often as you like (it skips the Workbench compile; a
@@ -26,6 +29,11 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body.md`. It
    checks the tree, merges main only on conflict, runs `validate --full` +
    build + `--tier all`, pushes, opens the PR, and queues auto-merge.
+   Ship checks the body before the gate and refuses: an `addons/` change with no
+   body file, a `TODO(scaffold)` left in it, no `## Manual testing` section, a
+   player-visible change with no embedded picture (`tools\cli evidence` prints
+   the markdown; `No screenshots: <reason>` waives it), or an open finding in
+   `tmp/review-<slug>.md` (**interrogate**), which ship appends to the PR.
    The body has: what changed, one line on how it is in-world first (or why
    it needs UI; `docs/decisions.md` "In-world first"), red and green evidence
    with the observed lines, manual steps for anything automation cannot
