@@ -2641,3 +2641,4 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+- ✅ (2026-11-14, #921) The player HUD root layout (`UI/Layouts/HUD/HUDLayouts/EL_HUDManagerRoot.layout`) has the vanilla `Slot_Vehicle`, `Slot_WeaponInfo` and `Slot_AvailableActions` slots again, so the vehicle dashboard indicators (lights, high beams) draw bottom-left instead of mid-screen. `validate-hud-root-slots` keeps them there. Harness `input` accepts `VehicleLightsToggle` and `CarLightsHiBeamToggle`; proof verb `vehicle-hud-proof`.
