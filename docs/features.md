@@ -2600,3 +2600,10 @@
   Session proof: `node agent-box/session.mjs dialogue-proof`; harness verb `dialogue`.
 - Not verified by automation: how the voice sounds and its level in the mix; number keys and a
   real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
+
+### `LF_Credits` — `Feature/Signs/LF_Credits.c`, `tools/credits/gen.mjs` (#481, 2026-11-13)
+- ✅ In-game credits as a notice in the world: `Sign_Credits` on the post office wall in the spawn square; Read opens a paper card listing every row of `docs/credits.md` (the source of the website's /credits page) by section, then "The full list with licences: life-framework.org/credits".
+- ✅ One source: `node tools/credits/gen.mjs --write` generates the string rows and `LF_CreditsRows.generated.c`; `validate-credits` fails when they drift from `docs/credits.md`.
+- ✅ A credit key the string table lacks is logged (`LF_Debug.Error`) and left out; the card still opens.
+- Tests: `signs/credits` (LOGIC), `signs/credits-world` (WORLD); session proof `credits-proof`.
+- ⚠️ Not reachable from the pause or main menu (the issue allows either; in-world first). Pack credits wait for the pack (M3).

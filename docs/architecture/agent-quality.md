@@ -143,8 +143,65 @@ for both, no session.
 
 ## 6. Measured: one feature built with the scaffold
 
-The proof feature is #481, the in-game credits, built as a notice a player reads in the town.
-Its numbers against the table in section 2 are in section 8, added by the PR that ships it.
+The proof feature is #481, the in-game credits, built in-world: a notice headed CREDITS on the
+post office wall in the spawn square, whose card lists every row of `docs/credits.md`.
+
+| Before | After |
+|---|---|
+| ![post office wall before](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/481/post-office-wall-before.png) | ![the notice on the wall](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/481/post-office-wall-after.png) |
+| | ![the notice up close](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/481/credits-notice-after.png) |
+| | ![the card a player reads](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/481/credits-card-after.png) |
+
+**How it went, in playbook order** (clock started at `wt new`, 19:37:58):
+
+1. `tools\cli feature new Signs Credits --kind world --issue 481`: 12 files written or edited, both
+   regenerations run, 12 markers to replace. The action stub was deleted again (the notice uses
+   the sign's own Read action) and so was the `ResetStatics` call (no statics): subtracting two
+   generated pieces took one line each.
+2. `look spawn-square` (25 s) to pick the wall; `place against` put the notice on plain wall. The
+   tool refused a 1.8 m cork board (a window behind it) and an A4 at its real 0.3 m (under the
+   sign size table), which is how the notice came to be a poster at scale 1.8.
+3. Build: one script (`LF_Credits`), a five-line switch in `LF_SignCard`, a generator
+   (`tools/credits/gen.mjs`) and its check (`validate-credits`).
+4. Tests compiled and passed on the first run; both then observed red (`[LFTEST] FAIL signs/credits`
+   / `- a missing key is not printed on the card`), restored.
+5. `look` after, the polish checklist against the pictures, then one `--profile full` session for
+   the card: `credits-proof: OK` on the first run, two shots, `session down`.
+6. The card picture showed "Bohemia Interactive. Bohemia Interactive."; the generator now prints
+   a self-made thing once. Found by looking, before merge.
+
+**Numbers** (`node tools/feature/effort.mjs credits-notice`, against section 2):
+
+| | credits notice (#481) | board-stolen (#888, the smallest earlier visible feature) | median of the ten |
+|---|---|---|---|
+| Sessions | 1 | 2 | 2 |
+| Session minutes | 0.8 | 3.7 | 9 |
+| Queue minutes | 0.4 | 0.2 | 2 |
+| Pool test runs | 15, of which 11 are `place` probes and `look` is not counted; 4 suite runs | 5 | 10 |
+| Failed runs | 1, the deliberate red | 1 | 2 |
+| First pool run to last | 9 min | 12 min | 26 min |
+| Merges of `main` before shipping | 0 | 2 | 1 |
+| Pictures embedded in the PR | 5, with a before and after pair | 0 (one path named) | 0 |
+| Wall clock, `wt new` to proof green | 11.5 min | not recorded | not recorded |
+
+Read these with care. The credits notice is client-only with no replication or persistence, so it
+is at the easy end; #888 fed a replicated board. The generator was drafted while the tooling PR's
+gate ran, before the clock, and the agent that built it had just written the tools. What the
+comparison does show: the boilerplate step is one command, the look steps cost about 25 s each and
+no session, one session was enough because everything but the card was judged from `look`, and
+the PR carries its pictures because ship would have refused it otherwise. A fair test is the next
+three features built by `lf-builder` agents that have only the playbook.
+
+**Friction the run found** (the first three are fixed in the same PR or noted below):
+
+- `evidence` did not take a session capture (`.bmp`); it does now.
+- `look <area>` shows at most 12 close-ups and signs come last, so the new notice was not in the
+  spawn-square sheet. `look <x,z>` centred on it works; a `--entity <Name>` close-up would be
+  better.
+- `place against` says "something stands between the start and the face" when the real cause is a
+  window behind part of the prop. The message should name the opening.
+- The sign card shrinks its type to fit 27 lines. It is legible at 1280x720 and small. A second
+  column or a wider sheet for long notices is a UI kit change, not made here.
 
 ## 7. What remains
 
@@ -167,14 +224,15 @@ Ordered by how much jank or time each would remove.
    one are not called today, so that needs a pass over each before it is switched.
 6. **GitHub ignores merge drivers** (#722), so a PR can still show `CONFLICTING` on files the
    drivers resolve locally; `prs heal` covers it.
-7. **UI pictures still need a session.** `look` cannot capture a sheet. A client started with
+7. **`look` close-ups and `place` messages**: a `look --entity <Name>` close-up for a thing outside the first 12, and a `place against` message that names the window it hit (section 6, friction).
+8. **UI pictures still need a session.** `look` cannot capture a sheet. A client started with
    `-world` and no server (listed as untried in `docs/visual-testing.md`) would give UI shots in
    about the time of a `look`.
-8. **The scaffold does not write a config class.** A new tunable still follows
+9. **The scaffold does not write a config class.** A new tunable still follows
    `tools/config/schema.mjs` by hand (attribute, handled-keys list, schema and inventory regen).
    Worth adding once two more features show the common shape.
-9. **A size table per prefab** would turn "a 1.4 m sack" from a judgment into a number
+10. **A size table per prefab** would turn "a 1.4 m sack" from a judgment into a number
    (`docs/visual-testing.md` already notes it).
-10. **Nothing judges taste.** The checklist makes an agent look and tick; a second agent reading
+11. **Nothing judges taste.** The checklist makes an agent look and tick; a second agent reading
     only the pictures (the area-polish reviewer) is the next step for anything headed to a
     trailer.

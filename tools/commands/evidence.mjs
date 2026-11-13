@@ -23,7 +23,7 @@ const DIR = "website/public/docs-images";
 const MAX_W = 1280;
 const MAX_KB = 500;
 
-const USAGE = `usage: tools\\cli evidence <key> before|after <area | image.png|jpg> [--shot wide|top|c03...] [--name n]
+const USAGE = `usage: tools\\cli evidence <key> before|after <area | image.png|jpg|bmp> [--shot wide|top|<Entity>] [--name n]
        tools\\cli evidence <key> table
   <key>  the issue number, or a short slug when there is no issue`;
 
@@ -72,7 +72,7 @@ export function fitWidth(width, height, rgb, max = MAX_W) {
 }
 
 function resolveSource(root, src, shot) {
-  if (/\.(png|jpe?g)$/i.test(src)) {
+  if (/\.(png|jpe?g|bmp)$/i.test(src)) {
     const p = existsSync(src) ? src : join(root, src);
     return existsSync(p) ? { path: p, name: null } : null;
   }
@@ -128,9 +128,9 @@ export async function main(args, ctx) {
   mkdirSync(outDir, { recursive: true });
   const ext = extname(found.path).toLowerCase();
   let file;
-  if (ext === ".png") {
+  if (ext === ".png" || ext === ".bmp") {
     const bmp = await import("../../agent-box/bmp.mjs");
-    const img = bmp.decodePng(readFileSync(found.path));
+    const img = ext === ".bmp" ? bmp.decodeBmp(readFileSync(found.path)) : bmp.decodePng(readFileSync(found.path));
     const fit = fitWidth(img.width, img.height, img.pixels);
     file = `${name}-${verb}.png`;
     writeFileSync(join(outDir, file), bmp.pngUnder(fit.width, fit.height, fit.rgb, MAX_KB).png);

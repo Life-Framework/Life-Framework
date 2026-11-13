@@ -96,3 +96,11 @@ picture under the title. Made with `tools\cli ui-image`; see
 
 `Worlds/DebugWorld/DebugWorld_Layers/Signs.layer`, one per town manifest site
 (`agent-box/town.mjs`, `requireSigns` true), within 8 m and facing the street.
+
+## Credits (#481)
+
+- **Player sees:** a notice headed CREDITS on the post office wall in the spawn square (`Sign_Credits`). Read opens a paper card: one label per section of the credits and one line per credit, ending with where the full list is.
+- **Owner and side:** client only. `LF_SignCard.Open` asks `LF_Credits.BuildParts` for the parts when the sign id is `credits`; every other sign keeps the What / How / Needs card. No RPC, nothing persisted.
+- **Data:** `docs/credits.md` is the one source (the website's /credits page reads it too). `node tools/credits/gen.mjs --write` turns every table row and every bullet that starts with a link into a string row keyed by a hash of its text, and writes the ordered key list to `LF_CreditsRows.generated.c`. `validate-credits` fails when the game's list is out of date. A key the string table lacks logs `[LFDebug:Signs] credits: the string table has no ...` and that line is left out.
+- **Core and pack:** core. A pack's own credits would be a second generated list appended in `BuildParts`; not built until the pack loads (M3).
+- **Proof:** `signs/credits` (LOGIC), `signs/credits-world` (WORLD), `node agent-box/session.mjs credits-proof`.

@@ -8006,6 +8006,156 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "1 to 4, or Up, Down and Confirm: answer    Back: leave"
      Comment "Conversation scene, small hint under the numbered replies."
     }
+    CustomStringTableItem "{A181A6ACFB4C34BF}" {
+     Id "LF-Credits_Title"
+     Target_en_us "Credits"
+     Comment "Title of the credits notice beside the post office and of the card it opens (#481)."
+    }
+    CustomStringTableItem "{4AFF1B1A715A3258}" {
+     Id "LF-Credits_What"
+     Target_en_us "Who and what Life Framework is built on."
+     Comment "Fallback body of the credits sign entry; the card shows the generated credit lines instead (#481)."
+    }
+    CustomStringTableItem "{4C1D7E5A9B3F6209}" {
+     Id "LF-Credits_More"
+     Target_en_us "The full list with licences: life-framework.org/credits"
+     Comment "Last line of the credits card (#481)."
+    }
+    CustomStringTableItem "{53F3B042B9E40B11}" {
+     Id "LF-Credits_H_0ADC07BC"
+     Target_en_us "Projects we build on and borrow from"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{4EF376520DFF19F4}" {
+     Id "LF-Credits_R_B7B6626D"
+     Target_en_us "Everon Life RPG Framework. Arkensor and its contributors."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{96804A1296F3664D}" {
+     Id "LF-Credits_R_EAA8267A"
+     Target_en_us "Overthrow. Aaron Static, the maintainer of Overthrow."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{394212F95AF3C539}" {
+     Id "LF-Credits_R_46A24BB9"
+     Target_en_us "LNGCLifeRP_Public. LNGCGenetic."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{A3E8413779795459}" {
+     Id "LF-Credits_R_7C01D211"
+     Target_en_us "Bohemia Interactive."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{EEF443029CA68243}" {
+     Id "LF-Credits_R_4C635A7D"
+     Target_en_us "thebonbon/EveronLife: roleplay chat, mining, jump pad and spike strip code."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{822FACBFAD09046E}" {
+     Id "LF-Credits_R_B47C2A98"
+     Target_en_us "rekterakathom/EveronLife: parts of the inventory storage manager and the shop rules."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{C3880E914B94AD26}" {
+     Id "LF-Credits_R_14024A4D"
+     Target_en_us "Jacob-Mango/EveronLife: parts of the quantity component."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{662FE5856DF00675}" {
+     Id "LF-Credits_H_A501890E"
+     Target_en_us "Tools"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{5FF45B94301B08B5}" {
+     Id "LF-Credits_R_A14A2F46"
+     Target_en_us "Piper makes the trailer voice-over."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{E4B884B25C3282E0}" {
+     Id "LF-Credits_H_7AAD53A9"
+     Target_en_us "Generated 3D assets"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{CB5C2EC028FA7833}" {
+     Id "LF-Credits_R_A71E8A38"
+     Target_en_us "Taser model. Meshy text-to-3D, generated with Meshy."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{A1A5CA445170AFC0}" {
+     Id "LF-Credits_R_1EB773F4"
+     Target_en_us "Handcuffs model. Meshy text-to-3D, generated with Meshy."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{DACA18D668928A1B}" {
+     Id "LF-Credits_R_1D79E80D"
+     Target_en_us "Spike strip model. Meshy text-to-3D, generated with Meshy."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{DA470540E92F4B0F}" {
+     Id "LF-Credits_H_FC2A46BD"
+     Target_en_us "Generated sound effects"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{2CBB734C4F8ACF82}" {
+     Id "LF-Credits_R_CE33828E"
+     Target_en_us "Taser sounds. ElevenLabs text-to-sound-effects, generated with ElevenLabs."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{5D4FBBE0DA64B111}" {
+     Id "LF-Credits_H_E7081CE8"
+     Target_en_us "Generated audio"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{AA877E4EDA2EAA4D}" {
+     Id "LF-Credits_R_83388203"
+     Target_en_us "Store radio and pub music. ElevenLabs Music, generated with ElevenLabs."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{182E2503834A1F3A}" {
+     Id "LF-Credits_R_DD063FF0"
+     Target_en_us "Background loops. ElevenLabs text-to-sound-effects, generated with ElevenLabs."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{E46B5F7BC7FCCFDD}" {
+     Id "LF-Credits_H_278C0B75"
+     Target_en_us "Generated voices"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{84F05BA298687C79}" {
+     Id "LF-Credits_R_25A56724"
+     Target_en_us "Town clerk's spoken lines. ElevenLabs text-to-speech, voices generated with ElevenLabs; voice 'JC' from the voice library."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{65BA4351A6237D95}" {
+     Id "LF-Credits_H_4730221D"
+     Target_en_us "Music"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{AA6C0300DD990D19}" {
+     Id "LF-Credits_R_27F419A5"
+     Target_en_us "'Carefree'. Kevin MacLeod (incompetech.com)."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{B4DCAF79005069DD}" {
+     Id "LF-Credits_R_8D1E40AA"
+     Target_en_us "'Hitman'. Kevin MacLeod (incompetech.com)."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{10B7696C4692A59D}" {
+     Id "LF-Credits_H_D13FAF1D"
+     Target_en_us "Voice-over"
+     Comment "Credits notice: a section heading. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{71675384EEB6C5A9}" {
+     Id "LF-Credits_R_258357B9"
+     Target_en_us "Piper (offline TTS binary, release 2023.11.14-2). Michael Hansen / Rhasspy."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
+    CustomStringTableItem "{F1DA530904E846F7}" {
+     Id "LF-Credits_R_D33A5D09"
+     Target_en_us "Voice en_US-ljspeech-high. Trained from scratch on LJ Speech (Keith Ito)."
+     Comment "Credits notice: one credit. Generated from docs/credits.md (tools/credits/gen.mjs)."
+    }
   }
  }
 }

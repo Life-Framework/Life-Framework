@@ -86,6 +86,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopRefusalReasons(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CounterScreenLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CraftingAssets(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Credits(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CreditsWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CrimeCatalogBackcompat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CrimeCatalogOwner(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CrimeRecord(), LF_TestTier.LOGIC);

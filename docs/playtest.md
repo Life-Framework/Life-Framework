@@ -152,6 +152,7 @@ log that back them stay on the server and invisible.
 - **Farm plots (#614).** At the farm (about 148, 299) stand three dirt plots, a seed crate and a *Vegetable plots* chalkboard (read it). *Take Cabbage seeds* at the crate (four packets, then it refills after two minutes), walk to an empty plot and *Plant Cabbage seeds*. Six sprouts appear; after a minute they are half grown and after two minutes full cabbages (the prompt reads *Growing: sprouts* / *Growing: half grown* until then). *Harvest Cabbage* gives three cabbages and empties the plot. Sell them at the general store (*Sell these*). A planted plot keeps its growth across a server restart (growth only counts while the server runs). Demo: `node agent-box/session.mjs farm-proof`.
 
 - **Evidence.** After a crime, shots near it leave casings and dropped items get a paper marker. Clock in, pick "Bag as evidence" on one, then use "Log evidence bags" at the locker beside the armory in the police station. If the piece was a serial'd fence tool, the buyer's wanted card now shows their name. "Read case file" lists what is on file.
+- **Credits (#481).** A notice headed CREDITS hangs on the post office wall in the spawn square (`Sign_Credits`, 154.6, 258.5), to the right of the yellow POST OFFICE plate. Walk up, press F on "Read: Credits": a paper card lists who and what the town is built on, section by section. Close, or walk away, shuts it. Demo: `node agent-box/session.mjs credits-proof`.
 
 ### Known rough edges
 

@@ -21,7 +21,12 @@ class LF_SignCard
 		if (!skin)
 			skin = LF_SignCatalog.CardSkin(false, vector.Zero, vector.Zero, vector.Zero);
 
-		array<ref LF_UIPart> parts = LF_SignCatalog.BuildParts(sign, skin);
+		array<ref LF_UIPart> parts;
+		if (LF_Credits.IsCreditsSign(sign))
+			parts = LF_Credits.BuildParts(sign);
+		else
+			parts = LF_SignCatalog.BuildParts(sign, skin);
+
 		skin.m_fTypeScale = LF_SignCatalog.FitScale(parts, skin.m_fWidth);
 		s_Screen = LF_UIScreen.Open(parts, skin);
 		if (!s_Screen)
