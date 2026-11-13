@@ -82,5 +82,17 @@ opens `LF_PhonePadSheet` for the service's people on duty; `RpcAsk_LF_PhoneCallB
 payphone (`LF_PhoneCalls.CallBackAt`, a call with `m_bCallBack`). A picked-up ring-back closes the
 request; one nobody answers reopens it. Requests expire with the dispatch board; nothing is saved.
 
+Voice (`LF_PhoneVoice.c`, `LF_PhoneVoiceClient.c`): on CONNECTED the server makes a
+`LF_PhoneVoiceLink` (frequency `FrequencyFor(callId)` in the private band, a random key) and asks
+the configured `LF_PhoneVoiceTransport` for two powered radios: the line entities' radios
+(`LF_PhoneLineTransport`, default) or a handset item per talker (`LF_PhoneHandsetTransport`). Each
+talker gets an owner RPC with the radio's RplId; `LF_PhoneVoiceClient` waits for it to stream in,
+adds an `LF_PhoneVONEntry` to the vanilla `SCR_VONController` and makes it active. The entry is a
+plain `SCR_VONEntry` (an `SCR_VONEntryRadio` would be refused for its non-faction key in
+`ActivateVON` and would crash the radial menu's gadget preview); the modded
+`SCR_VONController.SetActiveTransmit` sets SQUAD_RADIO and its transceiver. Re-check that override
+on every game update. When the call is over the entry goes, the previous entry is active again,
+the lines are powered off with new idle keys, or the handsets are deleted wherever they are.
+
 Settings: `LF_PhoneConfig` (`Configs/Comms/LF_Phone.conf`). Never call
 `RadioManagerEntity.GetTransceiversInRange`: it crashed the dedicated server in the spike.

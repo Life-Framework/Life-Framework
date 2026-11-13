@@ -7751,6 +7751,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Busy signal. That telephone is in use."
      Comment "Refusal: the payphone a call-back request came from is in use; try again later."
     }
+    CustomStringTableItem "{4C1C8D5F5970AE54}" {
+     Id "LF-Phone_VonEntry"
+     Target_en_us "Telephone"
+     Comment "Name of the telephone entry in the voice menu and on the voice hint while a call is connected (#147)."
+    }
+    CustomStringTableItem "{B9F7280CFE2131EE}" {
+     Id "LF-Phone_ConnectedTalk"
+     Target_en_us "Someone picked up. Hold your radio key to talk."
+     Comment "Toast to both talkers: the call was answered; the radio push-to-talk key now talks into the telephone."
+    }
+    CustomStringTableItem "{4E79AEAA1ECC6CF6}" {
+     Id "LF-Phone_HandsetName"
+     Target_en_us "Telephone receiver"
+     Comment "Inventory name of the receiver a talker holds for the length of a call (the handset voice transport)."
+    }
+    CustomStringTableItem "{647E1213753F5C49}" {
+     Id "LF-Phone_HandsetDescription"
+     Target_en_us "The receiver of the call you are on. It goes back when you hang up."
+     Comment "Inventory description of the telephone receiver item."
+    }
   }
  }
 }
