@@ -49,7 +49,12 @@ function fakeGh(prs, issues) {
     prs, issues,
     async getPr(n) { return prs[n] ?? null; },
     async getIssue(n) { const i = issues[n]; return i ? { number: n, state: i.state, stateReason: i.stateReason ?? "", labels: [...i.labels] } : null; },
-    async addLabels(n, l) { for (const x of l) if (!issues[n].labels.includes(x)) issues[n].labels.push(x); },
+    // A PR number is an issue to gh issue view, but the labels call on it is refused (the #896 failure).
+    async isPullRequest(n) { return Boolean(issues[n]?.pr); },
+    async addLabels(n, l) {
+      if (issues[n].pr) throw new Error(`label #${n}: GraphQL: Resource not accessible by integration (addLabelsToLabelable)`);
+      for (const x of l) if (!issues[n].labels.includes(x)) issues[n].labels.push(x);
+    },
     async removeLabels(n, l) { issues[n].labels = issues[n].labels.filter((x) => !l.includes(x)); },
     async close(n) { issues[n].state = "closed"; },
     async reopen(n) { issues[n].state = "open"; },
@@ -115,6 +120,20 @@ try {
   // re-run is idempotent; needs-playtest is never downgraded
   await rg.onPrMerged(gh, 12, log); await rg.onPrMerged(gh, 11, log);
   check(issues[102].labels.filter((l) => l === "needs-playtest").length === 1, "re-run duplicated a label");
+
+  // ---- 4c. a ref to another PR is skipped with a note; real issues beside it are still labelled
+  {
+    const prsB = { 20: { number: 20, title: "Refs a PR", body: "Refs #21, #22\n", mergedAt: "t" } };
+    const issuesB = { 21: { state: "open", labels: ["scope"], pr: true }, 22: { state: "open", labels: ["scope"] } };
+    const ghB = fakeGh(prsB, issuesB);
+    const notes = [];
+    let refused = null;
+    try { await rg.onPrMerged(ghB, 20, (s) => notes.push(s)); } catch (err) { refused = err; }
+    check(!refused, `a PR ref failed the whole run: ${refused?.message}`);
+    check(issuesB[21].labels.join() === "scope" && issuesB[21].state === "open", `a PR ref was labelled: ${issuesB[21].labels}`);
+    check(issuesB[22].labels.includes("in-dev"), `a real issue beside a PR ref was not labelled: ${issuesB[22].labels}`);
+    check(notes.some((s) => /#21/.test(s) && /pull request/i.test(s) && /skipp?ed/i.test(s)), `no one-line skip note for PR #21: ${notes}`);
+  }
 
   // text helpers
   check(rg.parseRefs("Closes #5, #6 and #7. Fixes #8\nPart of #9\nRefs #10").join() === "5,6,7,8,10", `parseRefs: ${rg.parseRefs("Closes #5, #6 and #7. Fixes #8\nPart of #9\nRefs #10")}`);

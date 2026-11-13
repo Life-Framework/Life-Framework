@@ -179,6 +179,333 @@
       "additionalProperties": false,
       "x-class": "LF_JobsConfig"
     },
+    "licences": {
+      "type": "object",
+      "description": "The owner's `licences` section (D8): which licences a new character starts with and which need the job whitelist.",
+      "properties": {
+        "rules": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is a licence name as LF_ELicenseType spells it (POLICE_ACCESS, MINER_GOLD, ...). A name that is not a licence is refused. The job level a licence needs is jobs.licenceGates.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "isInitialLicense": {
+                "type": "boolean"
+              },
+              "requiresWhitelist": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_LicencesConfig"
+    },
+    "organizations": {
+      "type": "object",
+      "description": "Organization tuning: the founding fee, name length, offer lifetime, fund cash limit, upgrade prices and the desk reach.",
+      "properties": {
+        "foundingFee": {
+          "type": "integer",
+          "default": 250,
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "nameMin": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 64
+        },
+        "nameMax": {
+          "type": "integer",
+          "default": 32,
+          "minimum": 1,
+          "maximum": 64
+        },
+        "offerMs": {
+          "type": "integer",
+          "default": 120000,
+          "minimum": 5000,
+          "maximum": 3600000
+        },
+        "maxCashMove": {
+          "type": "integer",
+          "default": 1000000,
+          "minimum": 1,
+          "maximum": 100000000
+        },
+        "priceExtraStorage": {
+          "type": "integer",
+          "default": 500,
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "priceProcessingSlot": {
+          "type": "integer",
+          "default": 250,
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "priceParkedVehicle": {
+          "type": "integer",
+          "default": 750,
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "deskRange": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 30
+        },
+        "rankDefaults": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is a default rank id: founder, officer or member. The entry starts from the shipped rights, so only the permissions written change. It applies to organizations founded afterwards; a saved organization keeps its own ranks.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "withdraw": {
+                "type": "boolean"
+              },
+              "invite": {
+                "type": "boolean"
+              },
+              "kick": {
+                "type": "boolean"
+              },
+              "buyUpgrade": {
+                "type": "boolean"
+              },
+              "manageRanks": {
+                "type": "boolean"
+              },
+              "declareWar": {
+                "type": "boolean"
+              },
+              "useStash": {
+                "type": "boolean"
+              },
+              "manageTerritory": {
+                "type": "boolean"
+              },
+              "spendFund": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_OrgConfig"
+    },
+    "persistence": {
+      "type": "object",
+      "description": "The owner's `persistence` section: how the autosave runs.",
+      "properties": {
+        "enableAutosave": {
+          "type": "boolean"
+        },
+        "autosaveInterval": {
+          "type": "number",
+          "default": 600,
+          "minimum": 30,
+          "maximum": 86400
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_PersistenceConfig"
+    },
+    "police": {
+      "type": "object",
+      "description": "Police tuning: per-rank permissions, the wanted board and crime reports (M1-11), and the paper ticket (M1-19): offences with fixed amounts, both deadlines, and the late rule.",
+      "properties": {
+        "arrestMinRank": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 20
+        },
+        "escortMinRank": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 20
+        },
+        "ranks": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the rank id (patrol, senior). An id the ladder has changes that rank only in the fields given; an id it lacks appends a rung at the end, because a saved rank is its index and never moves. A rank written in the stream leaves out kit.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "titleKey": {
+                "type": "string",
+                "default": ""
+              },
+              "fineCap": {
+                "type": "integer",
+                "default": 1000,
+                "minimum": 0,
+                "maximum": 10000000
+              },
+              "payPerSecond": {
+                "type": "number",
+                "default": -1,
+                "minimum": -1,
+                "maximum": 1000
+              },
+              "dutySecondsForNext": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 10000000
+              },
+              "kit": {
+                "type": "array",
+                "description": "",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "catchInActRadius": {
+          "type": "number",
+          "default": 10,
+          "minimum": 0,
+          "maximum": 200
+        },
+        "placeRadius": {
+          "type": "number",
+          "default": 80,
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "boardReadDistance": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 30
+        },
+        "boardMaxPosters": {
+          "type": "integer",
+          "default": 8,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "alarmSeconds": {
+          "type": "number",
+          "default": 30,
+          "minimum": 1,
+          "maximum": 600
+        },
+        "loudAlarmSeconds": {
+          "type": "number",
+          "default": 60,
+          "minimum": 1,
+          "maximum": 600
+        },
+        "alarmPrefab": {
+          "type": "string",
+          "default": "{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et"
+        },
+        "loudAlarmPrefab": {
+          "type": "string",
+          "default": "{8E15F0B7A26C4D93}Prefabs/Police/LF_SiteAlarm_Loud.et"
+        },
+        "radioSoundProject": {
+          "type": "string",
+          "default": "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp"
+        },
+        "radioSoundEvent": {
+          "type": "string",
+          "default": "SOUND_RADIO_SIGNAL_2"
+        },
+        "dispatchLogLines": {
+          "type": "integer",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "ticketFirstDeadline": {
+          "type": "integer",
+          "default": 1800,
+          "minimum": 1,
+          "maximum": 86400
+        },
+        "ticketSecondDeadline": {
+          "type": "integer",
+          "default": 1800,
+          "minimum": 1,
+          "maximum": 86400
+        },
+        "ticketLateMultiplier": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 10
+        },
+        "officerKillOfWantedExempt": {
+          "type": "boolean"
+        },
+        "searchCooldownSeconds": {
+          "type": "integer",
+          "default": 120,
+          "minimum": 0,
+          "maximum": 3600
+        },
+        "ticketMaxOpen": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "ticketKeepPaid": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 0,
+          "maximum": 20
+        },
+        "arrestReach": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 30
+        },
+        "jailArrivalRadius": {
+          "type": "number",
+          "default": 8,
+          "minimum": 1,
+          "maximum": 50
+        },
+        "applyDeskRange": {
+          "type": "number",
+          "default": 6,
+          "minimum": 1,
+          "maximum": 30
+        },
+        "compliantSeconds": {
+          "type": "integer",
+          "default": 60,
+          "minimum": 0,
+          "maximum": 600
+        },
+        "spikeStripLifetimeSeconds": {
+          "type": "integer",
+          "default": 600,
+          "minimum": 30,
+          "maximum": 7200
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_PoliceConfig"
+    },
     "shops": {
       "type": "object",
       "description": "Price table for the shop system.",
@@ -361,6 +688,54 @@
       },
       "additionalProperties": false,
       "x-class": "LF_WantedPostersConfig"
+    },
+    "zones": {
+      "type": "object",
+      "description": "The zone rule sets: Configs/Moderation/LF_Zones.conf with the owner's `zones` section layered over it.",
+      "properties": {
+        "ruleSets": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the rule name: NORMAL, SAFE or LAWLESS. A rule changes only the fields given. A rule with no shipped entry starts from what the two legacy flags say.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "blocksPlayerDamage": {
+                "type": "boolean"
+              },
+              "suppressesWanted": {
+                "type": "boolean"
+              },
+              "allowsRobbery": {
+                "type": "boolean"
+              },
+              "allowsVehicleTheft": {
+                "type": "boolean"
+              },
+              "allowsWeaponDraw": {
+                "type": "boolean"
+              },
+              "fineMultiplier": {
+                "type": "number",
+                "default": 1,
+                "minimum": 0,
+                "maximum": 10
+              },
+              "copsEnter": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "safeBlocksPlayerDamage": {
+          "type": "boolean"
+        },
+        "lawlessSuppressesWanted": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_ZoneConfig"
     }
   },
   "additionalProperties": false

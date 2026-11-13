@@ -196,7 +196,7 @@ class LF_ConfigService
 	//! adds its key here when its feature reads it (#282, #283).
 	static bool IsKnownTopLevelKey(string key)
 	{
-		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION;
+		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -667,6 +667,31 @@ class LF_ConfigReader
 		string read;
 		if (!m_Ctx.ReadValue(key, read))
 			return Reject(key, "a string", "\"" + value + "\"");
+
+		value = read;
+		m_iApplied++;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads a `{GUID}path` resource name when present. A name that does not load (a typo, a pack the
+	//! server lacks) is refused like a bad number: it logs, and the lower layer's value stays.
+	//! eturn True when the value was taken.
+	bool ReadResource(string key, inout ResourceName value)
+	{
+		if (!m_Ctx.DoesKeyExist(key))
+			return false;
+
+		string read;
+		if (!m_Ctx.ReadValue(key, read))
+			return Reject(key, "a resource name", "\"" + value + "\"");
+
+		if (read.IsEmpty())
+			return RejectValue(key, "\"\"", "empty", "\"" + value + "\"");
+
+		Resource resource = Resource.Load(read);
+		if (!resource || !resource.IsValid())
+			return RejectValue(key, "\"" + read + "\"", "not a resource that loads", "\"" + value + "\"");
 
 		value = read;
 		m_iApplied++;
