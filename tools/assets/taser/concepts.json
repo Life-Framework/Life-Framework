@@ -153,5 +153,12 @@
       "note": "worn black with a clear boxy cartridge; tape wrap is fine detail"
     }
   ],
-  "image_model": "nano-banana-2-1"
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 1,
+    "label": "Black, yellow nose",
+    "by": "human",
+    "why": "maintainer pick: cleanest silhouette, yellow cartridge reads as taser",
+    "at": "2026-11-13"
+  }
 }

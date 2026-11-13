@@ -22,6 +22,16 @@
       "note": "v2 attempt 2: the shipped model",
       "prompt": "Handheld electroshock stun gun for police, 1980s, L-shaped like a cordless drill or a staple gun in side view. The upper part is a long horizontal rectangular box, three times longer than it is tall, with flat sides and sharp angular edges. At the front end of that box is a smaller square cartridge block with two small round dart holes in its front face. On each flat side of the long box, in its front half, is a large flat rectangular plate. Hanging straight down from the rear half of the long box is a slim vertical handle, narrow front to back, with a small trigger and a square trigger guard at its front edge. No slide, no hammer, no barrel, no sights, no rail, no carry handle on top. Clean hard-surface industrial design, single object, no text, no logos, no hands, no stand.",
       "texturePrompt": "No text, no logos. Matte black fine-grain polymer body and handle. The two large flat side panels on the body are safety yellow. The front dart cartridge block is dark grey with black dart holes. Dull steel trigger and screws, light edge wear, flat neutral lighting."
+    },
+    {
+      "date": "2026-11-13",
+      "tool": "Meshy image-to-3D",
+      "model": "latest",
+      "texturePrompt": "No text, no logos. Matte black fine-grain polymer body and handle. The two large flat side panels on the body are safety yellow. The front dart cartridge block is dark grey with black dart holes. Dull steel trigger and screws, light edge wear, flat neutral lighting.",
+      "imageTaskId": "01a1d627-d633-768e-b46a-fb21785de34c",
+      "concept": 1,
+      "conceptTaskId": "01a1d61a-94d9-7358-84dd-a57827c79555",
+      "conceptPrompt": "Late-1980s police stun gun, a handheld electroshock dart weapon: a boxy body, a square dart cartridge at the front with two small round dart holes, and a straight grip hanging from the rear of the body, set at roughly a right angle. Long rectangular body with flat sides, sharp edges, matte black polymer, the front dart cartridge in safety yellow, a slim vertical grip with a square trigger guard. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
     }
   ]
 }
