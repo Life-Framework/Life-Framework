@@ -12,11 +12,19 @@ wait 7000
 shot ui arrival_0_spawn_hint
 state
 shot world Quest_Clerk
+# Talking to the clerk is a conversation scene: the greeting plays, the first reply
+# ("I am new in town.") runs the talk, the clerk answers, Back leaves.
 layer Quest_Clerk LF_QuestAction
-wait 600
+wait 5000
+shot ui arrival_1_replies
+input MenuSelect
+wait 2000
 shot ui arrival_1_card_handed
-wait 3000
+input MenuSelect
+wait 1500
 shot ui arrival_2_errand
+input MenuBack
+wait 1500
 state
 layer Sign_TownMap LF_SignReadAction
 wait 1000
@@ -43,9 +51,17 @@ input MenuBack
 wait 1500
 shot ui arrival_5_errand
 layer Quest_Clerk LF_QuestAction
-wait 600
+wait 5000
+input MenuSelect
+wait 2000
 shot ui arrival_5_welcome
+input MenuBack
+wait 1500
 state
 layer Quest_Clerk LF_QuestAction
-wait 600
+wait 5000
+input MenuSelect
+wait 2000
 shot ui arrival_6_clerk_idle
+input MenuBack
+wait 1500

@@ -14,6 +14,9 @@ tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
 ```
 
+Voiced NPC conversations are a separate stage with its own data file: `tools\cli asset dialogue <npc>`,
+[dialogue.md](dialogue.md).
+
 Run it in a worktree. The spec is `tools/assets/<slug>/spec.json` and is committed. Everything a
 stage produces is cached in `tmp/assets/<slug>/`, which is not.
 

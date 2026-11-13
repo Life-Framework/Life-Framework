@@ -2106,7 +2106,10 @@
   Accepting at a giver counts that giver's talk objective at once. No waypoints.
   The clerk is a converse giver (`m_bConverse`): "Talk to the clerk" opens no menu; one talk
   turns in what is done, takes on the next quest, and the clerk's lines show as slips
-  (`RequestConverse`); mid-errand he repeats the errand, after the chain his idle line
+  (`RequestConverse`). Since 2026-11-13 the talk is a conversation scene ("NPC dialogue scenes"
+  below): the reply "I am new in town" / "What should I do now?" runs the same `RequestConverse`
+  through `LF_DialogueHook_QuestConverse` (`ConverseSpoken`), and the story lines are spoken, not
+  shown as slips; mid-errand he repeats the errand, after the chain his idle line
   (`m_sIdleKey`). A second NPC with a placed giver's id no longer takes the giver over.
   Harness: `agent-box/flows/arrival-chain.txt`; `state` adds `idcard=` and `quests=`;
   `stand`/`use` reach a replicated NPC (no layer name on a client).
@@ -2563,3 +2566,29 @@
 - ✅ **Owner config check (#281, M3).** `tools\cli config-check <config.json>` (`tools/config/check.mjs`) validates a server owner's file offline and prints one `line:col` line per problem in the words `LF_ConfigService` logs at boot: JSON syntax errors (own position-tracking reader, strict like the engine), unknown keys (warn), wrong types and values outside the schema range (errors), `schemaVersion` too new or below 1 (error) or older than the build (warn), record keys no shipped record has (warn) or the server cannot parse (error), and the profit loops the owner's prices create (warn, reusing `tools/economy/profit-loops.mjs` with the refused values left out; a baselined or shipped loop is not the owner's). Types, ranges and known keys come from `docs/config/config.schema.json`; only the `shops.priceRules` key grammar and the shipped-key sources are in the checker. Exit 1 on any error, 0 on warnings only (`--strict` fails on warnings). Owner guide `docs/config/owner-config.md`; red-proof `tools/validation/config-check-selftest.mjs`. Known gap: the schema lists `prefab` as a `priceRules` record field that `LF_ShopPricesConfig.ApplyOwner` warns about as unknown.
 - ✅ (2026-11-12, #323 batch 0d) Core scripts stop naming village entities. The convoy start and drop are found through `LF_ConvoyMarkerComponent` (`m_bDrop`, new `m_bNearDrop`), the playtest test-car lot is the `LF_VehicleLotComponent` with `m_bTestCarLot`, `LF_Jail.SyncPlacedCell` re-applies the placed `LF_JailCellComponent` (its `m_sDoorTargetId` now defaults empty and the village cell sets it), the cash van route names its stops and van on the placed box instead of in the prefab and script, and the agent harness finds the stash (`LF_PersistentStorageComponent.GetPlaced`) and the nearest garage by component. The hospital till and cabinet and the convoy markers moved onto annex twins (`Annex_Hospital_Till/Cabinet`, `Annex_Convoy_*`), and the safe and quarry zone tests read the placed zone back or use fixture zones instead of town coordinates. `validate-annex-fixtures` now reads entities inside a `$grp` or children (`Shops` counts as a core layer), and the new `validate-core-village-names` fails when a core script quotes a village entity name (baseline `{}`). No save change; the village entities keep working through the new attributes.
 - ✅ **Crime catalog (#685a, M3).** One config table of offences, `Configs/Crime/LF_CrimeCatalog.conf` (`LF_CrimeCatalogConfig`, owner section `crime`, records keyed by the crime id such as `#LF-Offence_Robbery`): `m_iWantedAdd`, `m_iFine` (above 0 the offence is on the officer's ticket form), `m_iSentenceSeconds` (a floor on the jail time when the offence is on the prisoner's reports; 0 keeps the wanted-scaled sentence), `m_iRepeatThreshold` and `m_iRepeatWantedAdd` (from that many completed crimes of the kind on the account's crime record, a repeat adds wanted). Every call site (robbery, hotwire, carjacking, weapon theft, breach and heist, hospital till, murder, shoplifting, unpaid ticket, jail sentence, ticket form) reads `LF_CrimeCatalog`; the old `m_iMurderWanted`, `m_iTicketLateWanted`, `m_aTicketOffences`, store and robbery `m_iWantedIncrease`, `THEFT_WANTED` and `WANTED_INCREASE` values are gone. The saved `{uid, offence, count}` crime record is unchanged (the offence string is the crime id; no save-format change). Today's offences add what they added before; carjacking is its own id `#LF-Offence_Carjacking` (3 wanted, same words on the poster) so it no longer shares the hotwire theft's 1. An id the catalog does not list adds 1 wanted and logs one warning. Server only, not in the config stream. Tests `crime/catalog-backcompat`, `crime/catalog-owner`. Licence seizure and a bail rule are not here (#685b, M5). (merged, in-dev)
+
+## NPC dialogue scenes (spike, 2026-11-13)
+
+### `LF_Dialogue` / `LF_DialogueScene` — `Scripts/Game/Feature/Dialogue/`
+
+- 🟡 **Talking to an NPC is a scene.** The camera eases to the NPC (face shot while it speaks,
+  over the shoulder while the player chooses) and back; the line is a caption at the bottom with
+  a recorded voice; replies are a numbered list (1 to 4, or up, down and confirm; Back leaves;
+  confirm skips a line). Movement, view and weapon controls are held and the HUD is hidden
+  for the length of it. Only the talker's client changes.
+- The server owns the conversation (`LF_Dialogue`): the client sends an NPC, then a reply
+  index; the server checks reach (4 m), that it offered that reply, and its condition again, runs
+  the reply's action, and answers with node and line ids. Sessions are not saved.
+- Data: `Configs/Dialogue/LF_Dialogue_<Name>.conf` (`LF_DialogueConfig`) on the NPC's
+  `LF_DialogueComponent`, generated by `tools\cli asset dialogue <npc>` from
+  `tools/assets/dialogue/<npc>/dialogue.json` (`docs/asset-pipeline/dialogue.md`).
+- A reply's condition or action is a hook class `LF_DialogueHook_<Name>` in the owning feature;
+  the quests have `QuestConverse`, `QuestTurnedIn`, `QuestNotTurnedIn`.
+- Voice and lips (`LF_DialogueVoice`): `AudioSystem.PlayEvent` from the NPC's head; the lip
+  bones follow the line's loudness envelope. Players within `m_fHearRange` (12 m) hear it too.
+- Converted: the town clerk (`QuestGiver_Clerk.et`), voice generated with ElevenLabs.
+  Not converted: witness, bank teller, shop clerks.
+- Tests: `dialogue/flow` (LOGIC), `dialogue/clerk` (WORLD); `dialogue-pipeline-selftest.mjs`.
+  Session proof: `node agent-box/session.mjs dialogue-proof`; harness verb `dialogue`.
+- Not verified by automation: how the voice sounds and its level in the mix; number keys and a
+  real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
