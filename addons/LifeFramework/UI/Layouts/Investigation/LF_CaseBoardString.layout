@@ -1,0 +1,47 @@
+FrameWidgetClass {
+ Name "String"
+ Slot FrameWidgetSlot "{4F4608C075CF8649}" {
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 1080
+  OffsetBottom -1080
+ }
+ {
+  ImageWidgetClass "{7339BAF895D3487B}" {
+   Name "Thread"
+   Slot FrameWidgetSlot "{893B114D44EB8A47}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 5
+    OffsetBottom -5
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{3F6F401B57F31760}" {
+   Name "PinA"
+   Slot FrameWidgetSlot "{095BDFB8D677448D}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 16
+    OffsetRight -16
+    SizeY 16
+    OffsetBottom -16
+   }
+   Color 0.42 0.05 0.04 1
+  }
+  ImageWidgetClass "{14D3D97119F56248}" {
+   Name "PinB"
+   Slot FrameWidgetSlot "{83145FD6C060DC8B}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 16
+    OffsetRight -16
+    SizeY 16
+    OffsetBottom -16
+   }
+   Color 0.42 0.05 0.04 1
+  }
+ }
+}

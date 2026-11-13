@@ -68,6 +68,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	//! The look on the robbery report (#758, "wantedlooks" payload, save version 29): the robber's
 	//! character and jacket as GUIDs, for the portrait on the wanted board's face.
 	static const string WANTED_LOOK = "9B5BB216CC7FF18E|1=9F546CCA2582D16F";
+	//! The time on the robbery's case (#148, "caseboard" payload, save version 30).
+	static const string CASE_TIME = "14:05";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -210,6 +212,22 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 		LF_WantedReportRecord robbery = LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
 		robbery.m_sAppearance = WANTED_LOOK;
+
+		// The case board (#148, "caseboard" payload, save version 30): the robbery's time and one
+		// pinned footprint card must come back.
+		array<ref LF_CaseBoardRow> caseRows = {};
+		LF_CaseBoardRow caseTime = new LF_CaseBoardRow();
+		caseTime.m_iReport = robbery.m_iSequence;
+		caseTime.m_sNote = CASE_TIME;
+		caseRows.Insert(caseTime);
+		LF_CaseBoardRow caseCard = new LF_CaseBoardRow();
+		caseCard.m_iReport = robbery.m_iSequence;
+		caseCard.m_iNumber = 9;
+		caseCard.m_sKind = LF_Evidence.KIND_FOOTPRINT;
+		caseCard.m_sNote = "#AR-Boots_Jungle";
+		caseCard.m_iPinned = 1;
+		caseRows.Insert(caseCard);
+		LF_CaseBoard.ApplyAll(caseRows);
 
 		// A logged evidence bag (#269) must be on file after the restart.
 		LF_EvidenceLockerRow lockerRow = new LF_EvidenceLockerRow();
@@ -619,6 +637,16 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.WANTED_LOOK, robberyLook, "e2e the robber's look survives the restart");
 #endif
 		LF_Debug.Info(LF_WantedPosters.FEATURE, "e2e restart: robbery report look '" + robberyLook + "'");
+		int robberyReport;
+		if (robberyReports && !robberyReports.IsEmpty())
+			robberyReport = robberyReports[0].m_iSequence;
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.Equal(0, LF_CaseBoard.PinnedCount(robberyReport), "e2e the version 23 save has nothing pinned on the case board");
+#else
+		ctx.Equal(1, LF_CaseBoard.PinnedCount(robberyReport), "e2e the pinned card stays on the case board after the restart");
+		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.CASE_TIME, LF_CaseBoard.TimeOf(robberyReport), "e2e the case keeps the time of the crime after the restart");
+#endif
+		LF_Debug.Info(LF_CaseBoard.FEATURE, string.Format("e2e restart: case #%1 time '%2' pinned %3", robberyReport, LF_CaseBoard.TimeOf(robberyReport), LF_CaseBoard.PinnedCount(robberyReport)));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");

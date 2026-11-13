@@ -779,6 +779,18 @@ police are. Not worth it: the dispatch boards keep their painted DISPATCH face a
 the per-read card. The wanted board's face carries only what its public Read card
 already showed. Detail: `docs/architecture/visual-boards.md`.
 
+**2026-11-13 — #148: the case board draws police detail on a prop, for on-duty officers only.**
+The case board shows what the dispatch boards keep on the Read card (the place, the evidence, the
+suspect), so it cannot ride the prop's replication the way the wanted board's posters do: every
+client that streams the prop in would hold it. The list goes instead by an owner RPC on each on-duty
+officer's player controller, pushed when it changes and asked for when a client comes on duty (a
+late joiner on duty asks at its first tick). Everyone else draws no face and sees the board's plain
+cork, whatever the police have on it, so the board tells a civilian nothing, not even how busy the
+police are (the reason the dispatch boards kept the Read card). The board adds no crime model: a
+case is a crime report, a card is an evidence locker row, the portrait is the wanted board's look;
+it stores only the time of each crime and which cards are pinned (`caseboard`, save version 30).
+Detail: `docs/architecture/visual-boards.md` "The case board".
+
 **2026-11-13 — #664: Meshy-generated 3D assets may be used in the project and in
 published builds.** The maintainer signed off the licence gate on 2026-11-13.
 Models made with Meshy text-to-3D on the account's plan may go into the repository

@@ -71,6 +71,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_FenceSerials.EnsureSubscribed();
 		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).
 		LF_WantedPosters.Install();
+		// The case board rebuilds for on-duty officers on the same events (server only, #148).
+		LF_CaseBoard.Install();
 		// Playtime per account and job, credited to online players (server only, #692).
 		LF_Playtime.Start();
 	}

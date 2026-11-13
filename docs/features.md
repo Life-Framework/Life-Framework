@@ -2603,3 +2603,9 @@
   Session proof: `node agent-box/session.mjs dialogue-proof`; harness verb `dialogue`.
 - Not verified by automation: how the voice sounds and its level in the mix; number keys and a
   real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
+
+### `LF_CaseBoard` — `Feature/Investigation/LF_CaseBoard.c` (#148, 2026-11-13)
+- ✅ A cork board in the police station porch shows on-duty officers the open cases: the crime, the place, the time, the suspect's portrait once identified, the pinned evidence cards and a red string from each card to the suspect. Officers pin (carried bags are logged at the locker first) and unpin at the board. Civilians see plain cork: the list goes to on-duty officers only, by an owner RPC. Pins and times survive a restart (`caseboard` payload, save version 30). Tests: `investigation/case-board` (LOGIC), `investigation/case-board-world` (WORLD), `investigation/case-board-persist` (PERSISTENCE); session proof `case-board-proof`.
+
+### `LF_ScenePieces` — `Feature/Investigation/LF_ScenePieces.c` (#148, 2026-11-13)
+- ✅ Crimes leave physical evidence on the ground, placed with the placement probe: a footprint card behind a robber on foot, casings spread around a shooter, a witness statement at the feet of a witness an officer asked. Every piece is police-only (not an inventory item; only "Bag as evidence"), capped and expiring with the scene evidence, and bags with a note that becomes its card on the case board. Tests: `investigation/scene-pieces` (LOGIC), `investigation/scene-pieces-world` (WORLD); session proof `case-board-proof`.

@@ -1,0 +1,8 @@
+GenericEntity : "{1DA051139753C894}Prefabs/Investigation/LF_EvidencePiece_Base.et" {
+ ID "30B7A7381D31EA83"
+ components {
+  MeshObject "{85C81781C5D78CFD}" {
+   Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
+  }
+ }
+}

@@ -106,3 +106,27 @@ on-duty staff may read (`LF_ServiceBoard.MayRead`). Anything drawn on a prop is
 sent to every client that has the board streamed in, and a client-side filter
 does not keep it from a modified client, so the calls stay on the per-read card.
 `docs/decisions.md`, 2026-11-13.
+
+## The case board
+
+The police case board (#148, `Prefabs/Investigation/LF_CaseBoard.et`, in the station porch) is the
+same render target with another layout of paper: up to three case columns, each a sheet for the
+suspect (the wanted poster layout: CASE n, the portrait once identified, the offence, the place and
+the time) and up to four index cards under it (the same layout with the photo parts hidden). A red
+string runs from each card's pin to the suspect sheet's pin: `LF_CaseBoardString.layout` is one thin
+image and two pin heads; the image is sized to the distance between the pins, centred between them
+and turned about its centre (`ImageWidget.SetPivot(0.5, 0.5)`, `SetRotation`), as the sign faces
+turn a title. The spike's question, whether a turned widget draws in the render target, is answered
+by the session shots below; a `CanvasWidget` line was the fallback and was not needed.
+
+| Piece | Where | Does |
+|---|---|---|
+| `LF_CaseBoard` | `Feature/Investigation/LF_CaseBoard.c` | Server: builds the list from the crime reports and the pinned locker rows, coalesced like the posters, and sends it to on-duty officers only (`LF_SendCaseBoard`, an owner RPC on each officer's controller) |
+| `LF_CaseBoardView` | `Feature/Investigation/LF_CaseBoardFace.c` | Client: the list this officer holds; once a second a duty check (coming on duty asks for the list, going off duty drops it and releases the faces) and the distance gate |
+| `LF_CaseBoardFace` | same file | Client: `LF_WantedPosterFace` with case columns, cards and strings; the same live window, freeze and settle refreshes |
+| `LF_CaseBoardComponent` | same file, on `LF_CaseBoard.et` | The prop: holds no case data; draws the face within 15 m for an on-duty officer |
+
+An entry is `C;report;offence;place;time;name;look;identified` for a case, followed by
+`E;report;kind;note` for each of its cards. The name and the look are sent only once the suspect is
+identified. Why the list does not ride the prop: `docs/decisions.md` 2026-11-13 "#148".
+

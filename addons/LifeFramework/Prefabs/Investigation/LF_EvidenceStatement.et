@@ -1,0 +1,8 @@
+GenericEntity : "{1DA051139753C894}Prefabs/Investigation/LF_EvidencePiece_Base.et" {
+ ID "C8999C5A02C33D14"
+ components {
+  MeshObject "{85C81781C5D78CFD}" {
+   Object "{1BF8C5BE3DEEC82C}Assets/Items/Identity/Belongings_Personal/Papers_Personal.xob"
+  }
+ }
+}

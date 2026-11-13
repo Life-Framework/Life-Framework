@@ -8006,6 +8006,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "1 to 4, or Up, Down and Confirm: answer    Back: leave"
      Comment "Conversation scene, small hint under the numbered replies."
     }
+    CustomStringTableItem "{960E19EA6B5BB672}" {
+     Id "LF-CaseBoard_Title"
+     Target_en_us "Case board"
+     Comment "Toast title for the police case board (#148)."
+    }
+    CustomStringTableItem "{0B29DE154C616F79}" {
+     Id "LF-CaseBoard_Pin_Action"
+     Target_en_us "Pin evidence"
+     Comment "F-key action on the case board: pin carried evidence bags, or the next logged card (#148)."
+    }
+    CustomStringTableItem "{576F32E08182B47E}" {
+     Id "LF-CaseBoard_Unpin_Action"
+     Target_en_us "Unpin evidence"
+     Comment "F-key action on the case board: take down the card pinned last (#148)."
+    }
+    CustomStringTableItem "{88E53769C33A742A}" {
+     Id "LF-CaseBoard_Pinned"
+     Target_en_us "%1 card(s) pinned to the case board."
+     Comment "Toast after pinning; %1 is the number of cards (#148)."
+    }
+    CustomStringTableItem "{7B64365A819C2F84}" {
+     Id "LF-CaseBoard_NothingToPin"
+     Target_en_us "No evidence to pin. Bag it at the scene or log it at the locker first."
+     Comment "Toast when pinning finds nothing (#148)."
+    }
+    CustomStringTableItem "{E3F153BC2DA3B463}" {
+     Id "LF-CaseBoard_Unpinned"
+     Target_en_us "Card taken down. It stays logged in the locker."
+     Comment "Toast after unpinning (#148)."
+    }
+    CustomStringTableItem "{EDC95AB6DCC1E098}" {
+     Id "LF-CaseBoard_NothingPinned"
+     Target_en_us "Nothing is pinned to the board."
+     Comment "Toast when unpinning finds nothing (#148)."
+    }
+    CustomStringTableItem "{78EF82E35BB73ADD}" {
+     Id "LF-CaseBoard_CaseHeader"
+     Target_en_us "Case %1"
+     Comment "Header of a case sheet on the board face; %1 is the report number. Printed in capitals (#148)."
+    }
+    CustomStringTableItem "{676FF529BB3B6D09}" {
+     Id "LF-CaseBoard_PlaceTime"
+     Target_en_us "%1, %2"
+     Comment "A case's place and the time of the crime on the board face (#148)."
+    }
+    CustomStringTableItem "{B601E7BA839D3417}" {
+     Id "LF-CaseBoard_NoNote"
+     Target_en_us "Found at the scene"
+     Comment "Evidence card line when the piece says nothing more (#148)."
+    }
+    CustomStringTableItem "{498C53D90C725BD5}" {
+     Id "LF-CaseBoard_FootprintNote"
+     Target_en_us "Print of %1"
+     Comment "Footprint card line; %1 is the suspect's footwear (#148)."
+    }
+    CustomStringTableItem "{F5143D4581991E31}" {
+     Id "LF-CaseBoard_Kind_casing"
+     Target_en_us "Shell casing"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{6A7F76059AF3CDD5}" {
+     Id "LF-CaseBoard_Kind_dropped"
+     Target_en_us "Dropped item"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{CC4F6A7D13DA03D0}" {
+     Id "LF-CaseBoard_Kind_footprint"
+     Target_en_us "Footprint"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{B9E3D8B120B88890}" {
+     Id "LF-CaseBoard_Kind_statement"
+     Target_en_us "Witness statement"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{296D485ED962E190}" {
+     Id "LF-Sign_PoliceCases_Title"
+     Target_en_us "Case board"
+     Comment "Sign Read card title for the police case board (#148)."
+    }
+    CustomStringTableItem "{9CB43F394C2650F6}" {
+     Id "LF-Sign_PoliceCases_What"
+     Target_en_us "Open cases, one column each: the crime, where and when, the suspect, and the evidence pinned against it."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{F33E84A46C3A3659}" {
+     Id "LF-Sign_PoliceCases_How"
+     Target_en_us "Bag what a scene left (casings, footprint cards, dropped items, witness statements), then Pin evidence here. Unpin takes down the last card."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{FCBCE38D272C85F0}" {
+     Id "LF-Sign_PoliceCases_Rules"
+     Target_en_us "On-duty police only. A case closes when the suspect is no longer wanted."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{2306825FF804F997}" {
+     Id "LF-Sign_PoliceCases_Next"
+     Target_en_us "The evidence locker keeps every logged bag; the wanted board shows the suspects to the public."
+     Comment "Case board Read card (#148)."
+    }
   }
  }
 }
