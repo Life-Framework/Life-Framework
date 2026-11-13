@@ -21,6 +21,12 @@ class LF_WantedPosterFace : Managed
 	//! The poster's own design units (the spike's 512 x 724 sheet), scaled to POSTER_WIDTH.
 	static const float DESIGN_WIDTH = 512;	// lf-fixed: the layout size
 	static const int PER_ROW = 4;	// lf-fixed: the layout has two rows of four
+	//! The preview inside the 320 x 340 photo frame, design units: three frames wide, nudged up so
+	//! the head and shoulders fill the frame.
+	static const float MUGSHOT_X = -320;	// lf-fixed: the layout's mugshot window
+	static const float MUGSHOT_Y = -24;	// lf-fixed: the layout's mugshot window
+	static const float MUGSHOT_WIDTH = 960;	// lf-fixed: the layout's mugshot window
+	static const float MUGSHOT_HEIGHT = 1020;	// lf-fixed: the layout's mugshot window
 	//! How long a (re)drawn face renders before it freezes.
 	static const int LIVE_MS = 3000;	// lf-fixed: measured, docs/architecture/visual-boards-budget.md
 	//! A new face renders again this long after it was built, and again at twice that and more:
@@ -30,12 +36,16 @@ class LF_WantedPosterFace : Managed
 	static const int LATE_REFRESH_MS = 30000;	// lf-fixed: texture streaming, not tuning
 	//! The settle refresh's live window.
 	static const int REFRESH_LIVE_MS = 2000;	// lf-fixed: one frame at SetMaxFPS(1), with margin
+	//! The dummies are freed once the late refresh has frozen; the face keeps their pictures.
+	static const int DUMMY_RELEASE_MS = 33000;	// lf-fixed: after LATE_REFRESH_MS + REFRESH_LIVE_MS
 
 	protected IEntity m_Face;
 	protected Widget m_wRoot;
 	protected RTTextureWidget m_wTexture;
 	protected Widget m_wPosters;
+	protected ImageWidget m_wCork;
 	protected ref array<Widget> m_aPosters = {};
+	protected ref array<ref LF_WantedPortrait> m_aPortraits = {};
 	protected bool m_bFrozen;
 
 	//------------------------------------------------------------------------------------------------
@@ -74,19 +84,13 @@ class LF_WantedPosterFace : Managed
 		// The face covers the board's cork, so it draws the cork the vanilla board is made of, tinted
 		// in the layout to the vanilla board's colour under the scene light (the texture alone reads
 		// pale through the render target). Without the texture the tint alone stays.
-		ImageWidget cork = ImageWidget.Cast(m_wRoot.FindAnyWidget("Cork"));
-		if (!cork || !cork.LoadImageTexture(0, CORK_TEXTURE))
+		m_wCork = ImageWidget.Cast(m_wRoot.FindAnyWidget("Cork"));
+		if (!m_wCork || !m_wCork.LoadImageTexture(0, CORK_TEXTURE, true))
 			LF_Debug.Warn(LF_WantedPosters.FEATURE, "cork texture does not load, the face is plain: " + CORK_TEXTURE);
 
 		// Paper does not move: one frame a second while live, none once frozen.
 		m_wTexture.SetMaxFPS(1);
 		m_wTexture.SetRenderTarget(m_Face);
-		if (GetGame().GetCallqueue())
-		{
-			GetGame().GetCallqueue().CallLater(Refresh, SETTLE_REFRESH_MS, false);
-			GetGame().GetCallqueue().CallLater(Refresh, LATE_REFRESH_MS, false);
-		}
-
 		return true;
 	}
 
@@ -155,6 +159,18 @@ class LF_WantedPosterFace : Managed
 		}
 
 		Thaw(LIVE_MS);
+		// Textures still streaming in (the cork, the clothes) reach the frozen frame by these
+		// refreshes; then the dummies go.
+		ScriptCallQueue queue = GetGame().GetCallqueue();
+		if (queue)
+		{
+			queue.Remove(Refresh);
+			queue.Remove(ReleaseDummies);
+			queue.CallLater(Refresh, SETTLE_REFRESH_MS, false);
+			queue.CallLater(Refresh, LATE_REFRESH_MS, false);
+			queue.CallLater(ReleaseDummies, DUMMY_RELEASE_MS, false);
+		}
+
 		return m_aPosters.Count();
 	}
 
@@ -194,7 +210,23 @@ class LF_WantedPosterFace : Managed
 		float scale = POSTER_WIDTH / DESIGN_WIDTH;
 		Place(poster.FindAnyWidget("Paper"), 0, 0, DESIGN_WIDTH, 724, scale);
 		Place(poster.FindAnyWidget("PhotoBack"), 96, 112, 320, 340, scale);
-		Place(poster.FindAnyWidget("PhotoClip"), 96, 112, 320, 340, scale);
+		Widget clip = poster.FindAnyWidget("PhotoClip");
+		Place(clip, 96, 112, 320, 340, scale);
+		if (clip)
+			clip.SetFlags(WidgetFlags.CLIPCHILDREN);
+
+		// A mugshot for everyone: the preview is three frames wide and the frame shows its top
+		// middle, the head and shoulders (the spike's clipped window).
+		ItemPreviewWidget photo = ItemPreviewWidget.Cast(poster.FindAnyWidget("Photo"));
+		Place(photo, MUGSHOT_X, MUGSHOT_Y, MUGSHOT_WIDTH, MUGSHOT_HEIGHT, scale);
+		LF_WantedPortrait portrait = new LF_WantedPortrait();
+		int dressed = portrait.Show(photo, entry.m_sAppearance);
+		m_aPortraits.Insert(portrait);
+		if (dressed < 0)
+			LF_Debug.Log(LF_WantedPosters.FEATURE, "poster without a picture: no look on the report");
+		else
+			LF_Debug.Info(LF_WantedPosters.FEATURE, string.Format("portrait: dressed dummy with %1 item(s)", dressed));
+
 		Widget plate = poster.FindAnyWidget("PlateBack");
 		if (plate)
 			plate.SetVisible(false);
@@ -232,8 +264,14 @@ class LF_WantedPosterFace : Managed
 	//! The settle refresh after a build: one more short live window.
 	protected void Refresh()
 	{
-		if (IsBuilt() && m_bFrozen)
-			Thaw(REFRESH_LIVE_MS);
+		if (!IsBuilt() || !m_bFrozen)
+			return;
+
+		// A texture loaded while the client was still streaming can stay at a low mip; load it again.
+		if (m_wCork)
+			m_wCork.LoadImageTexture(0, CORK_TEXTURE, true);
+
+		Thaw(REFRESH_LIVE_MS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -248,8 +286,22 @@ class LF_WantedPosterFace : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Free the portraits' dummies; a frozen face keeps their pictures.
+	void ReleaseDummies()
+	{
+		foreach (LF_WantedPortrait portrait : m_aPortraits)
+		{
+			if (portrait)
+				portrait.Clear();
+		}
+
+		m_aPortraits.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void ClearPosters()
 	{
+		ReleaseDummies();
 		foreach (Widget poster : m_aPosters)
 		{
 			if (poster)
@@ -267,6 +319,7 @@ class LF_WantedPosterFace : Managed
 		{
 			GetGame().GetCallqueue().Remove(Freeze);
 			GetGame().GetCallqueue().Remove(Refresh);
+			GetGame().GetCallqueue().Remove(ReleaseDummies);
 		}
 
 		ClearPosters();
@@ -275,6 +328,7 @@ class LF_WantedPosterFace : Managed
 
 		m_wTexture = null;
 		m_wPosters = null;
+		m_wCork = null;
 		if (m_wRoot)
 			m_wRoot.RemoveFromHierarchy();
 

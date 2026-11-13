@@ -1611,8 +1611,17 @@
   config section `wantedBoard`: `posters` (4, at most 8 in two rows) and `drawRadius`.
   The Read card and the police-only lines are unchanged; the dispatch boards keep their
   painted face (`m_bDrawPosters 0`). Tests `police/wanted-posters-feed`,
-  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`. Portraits and
-  stolen cars follow (spike issues 3 and 4).
+  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`. Stolen cars
+  follow (spike issue 5).
+- ✅ **Portraits on the wanted posters** (#758, spike issue 4): the server records the
+  suspect's look at the crime (`LF_WantedLook.Capture`: the character prefab and each
+  loadout slot's item as prefab GUIDs, no paths) on the report and in the poster entry.
+  Each client dresses a dummy of that character in the preview world and the poster's
+  `ItemPreviewWidget` draws it as a head-and-shoulders mugshot (a preview three frames
+  wide, clipped by the photo frame), the same framing for a named and an unknown suspect.
+  A report without a look keeps the empty photo frame. The face re-renders at 10 s and
+  30 s after a change so streamed textures land, then the dummies are deleted. The look
+  is session state until the save carries it (spike issue 2). Test `police/wanted-look`.
 
 ### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
 - ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`

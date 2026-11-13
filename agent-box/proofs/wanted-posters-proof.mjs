@@ -73,8 +73,13 @@ async function runWantedPostersProof() {
   wait(6000);
   on(1, { verb: "stand", entityName: BOARD });
   expect(1, "the robber's poster reaches the robber's board", (p) => (p.count === 1 ? [] : [`posters=${p.count}/${p.face}`]));
+  // The live window's cost (one portrait) against the frozen face, on `--levers uncapped`.
+  on(1, { verb: "perf", seconds: 2, label: "face_live" }, 20000);
   expect(1, "the face freezes after its live window", (p) => (p.face === "frozen" ? [] : [`face=${p.face}`]), 10000);
   shot(1, "wanted_posters_robbery_client1");
+  shot(1, "wanted_posters_portrait_client1", 0.75, 0.15);
+  wait(25000);
+  on(1, { verb: "perf", seconds: 5, label: "face_frozen" }, 25000);
   shot(1, "wanted_posters_street_client1", 6, 1.1);
 
   const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "2"], { windowsHide: true, stdio: "inherit" });
@@ -102,6 +107,7 @@ async function runWantedPostersProof() {
   const log1 = clientLog(dir, 1);
   const log2 = clientLog(dir, 2);
   if (!/WantedPosters\] client: 1 poster\(s\) from rpc/.test(log1)) fails.push("client 1 never logged the poster arriving by broadcast");
+  if (!/WantedPosters\] portrait: dressed dummy with [1-9]\d* item\(s\)/.test(log1)) fails.push("client 1 never drew the robber's portrait as a dressed dummy");
   if (!/WantedPosters\] client: 1 poster\(s\) from jip/.test(log2)) fails.push("client 2 never logged the poster arriving on join (jip)");
   if (!/WantedPosters\] client: face released at <235\.4/.test(log2)) fails.push("client 2 never released the Roadmap face out of range");
   for (const f of fails) console.log(`FAIL  ${f}`);
