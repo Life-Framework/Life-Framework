@@ -57,8 +57,10 @@ class LF_ConfigStream
 	//! \param[in] shops The effective shop prices, or null to leave the section out.
 	//! \param[in] ownerLayer Whether an owner config.json is behind these values (logged by the client).
 	//! \param[in] vehicles The effective vehicle prices, or null to leave the section out.
+	//! \param[in] police The effective police tunables and ranks, or null to leave the section out.
+	//! \param[in] organizations The effective organization tunables, or null to leave the section out.
 	//! \return The payload text.
-	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null)
+	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null)
 	{
 		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext(false);
 		ctx.WriteValue(KEY_FORMAT, FORMAT_VERSION);
@@ -74,6 +76,18 @@ class LF_ConfigStream
 		{
 			ctx.StartObject(LF_VehiclePricesConfig.SECTION);
 			vehicles.WriteStream(ctx);
+			ctx.EndObject();
+		}
+		if (police)
+		{
+			ctx.StartObject(LF_PoliceConfig.SECTION);
+			police.WriteStream(ctx);
+			ctx.EndObject();
+		}
+		if (organizations)
+		{
+			ctx.StartObject(LF_OrgConfig.SECTION);
+			organizations.WriteStream(ctx);
 			ctx.EndObject();
 		}
 		return ctx.ExportToString();
@@ -95,7 +109,15 @@ class LF_ConfigStream
 		if (!vehicles)
 			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no vehicle price config on the server; clients keep their shipped vehicle prices");
 
-		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles);
+		LF_PoliceConfig police = LF_PoliceConfig.Get();
+		if (!police)
+			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no police config on the server; clients keep their shipped police values");
+
+		LF_OrgConfig organizations = LF_OrgConfig.Get();
+		if (!organizations)
+			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no organization config on the server; clients keep their shipped organization values");
+
+		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations);
 		int hash = payload.Hash();
 		bool changed = !s_bPublished || hash != s_iPublishedHash;
 		s_sPublished = payload;
@@ -213,6 +235,14 @@ class LF_ConfigStream
 
 		// Job XP, levels and licence gates are server-side; the next read layers the owner file again.
 		LF_JobsConfig.Reload();
+
+		// Police tunables and ranks, organization tunables: one cached instance each, layered with the
+		// owner file (server) or the stream (client) again on the next read.
+		LF_PoliceConfig.Reload();
+		LF_OrgConfig.Reload();
+
+		// Zone rule sets are server-only and cached the same way.
+		LF_ZoneConfig.Reload();
 
 		// The wanted board's poster count and draw radius (server); the boards send the new list.
 		LF_WantedPostersConfig.Reload();

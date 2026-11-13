@@ -2,6 +2,7 @@
   "_note": "Named areas for the shots area command. n is the order in docs/agent-area-polish.md; x,y,z is the centre (y is looked up in-game); radius in metres; front is the compass heading (0 = +z, 90 = +x) from the centre to the side players approach from and the main facade faces: the wide shot is taken from there. Centres come from the DebugWorld layers.",
   "areas": [
     { "n": 1, "name": "spawn-square", "front": 270, "avoid": [[115, 224, 9]], "x": 125, "y": 0, "z": 252, "radius": 30 },
+    { "n": 18, "name": "pub", "front": 0, "x": 118, "y": 0, "z": 283, "radius": 10, "note": "the Hostinec pub from its front lawn; the terrace radio stands by the door", "wideCands": [{ "az": 0, "dist": 11, "up": 2.6 }, { "az": 25, "dist": 11, "up": 2.6 }, { "az": -25, "dist": 11, "up": 2.6 }] },
     { "n": 2, "name": "bank", "front": 180, "x": 188, "y": 0, "z": 260, "radius": 18 },
     { "n": 3, "name": "general-store", "front": 0, "x": 182, "y": 0, "z": 246, "radius": 20 },
     { "n": 4, "name": "car-lot", "front": 180, "x": 225, "y": 0, "z": 262, "radius": 28 },

@@ -395,13 +395,16 @@ export function stepProcess(root) {
     for (const g of (rec.generations || []).filter((x) => x.id === s.id)) {
       const name = takeName(s, g.take);
       const raw = join(cache, "raw", `${name}.mp3`);
+      // A sound with a pick is not re-judged take by take: its other takes are history in the record.
+      if (!existsSync(raw) && (g.processed || (s.pick && g.take !== s.pick))) continue;
       if (!existsSync(raw)) { console.log(`  ${name}: raw take missing at ${raw} (the cache is per worktree)`); bad++; continue; }
       const wav = join(cache, "wav", `${name}.wav`);
-      const samples = processTake(root, s, raw);
+      let samples;
+      try { samples = processTake(root, s, raw); } catch (e) { const history = s.pick && g.take !== s.pick; console.log(`${history ? "note  " : "FAIL  "}${name}: ${e.message}${history ? " (not the pick)" : ""}`); if (!history) bad++; continue; }
       writeFileSync(wav, encodeWav(samples, s.rate));
       const info = { ...wavInfo(readFileSync(wav)), wrap: wrapRatio(samples) };
       const problems = loopProblems(info, s);
-      bad += problems.length;
+      if (!(s.pick && g.take !== s.pick)) bad += problems.length;
       // An agent cannot listen: waveform above, spectrogram below.
       ffmpeg(root, ["-i", wav, "-filter_complex", `[0:a]asplit[a][b];[a]showwavespic=s=1200x160:colors=white,format=rgb24[w];[b]showspectrumpic=s=1200x340:legend=0:stop=${Math.min(16000, s.rate / 2)},format=rgb24[s];[w][s]vstack`, "-frames:v", "1", join(cache, "review", `${name}.png`)]);
       g.processed = { seconds: Math.round(info.seconds * 100) / 100, peak_db: Math.round(info.peakDb * 10) / 10, rms_db: Math.round(info.rmsDb * 10) / 10, wrap: Math.round(info.wrap * 100) / 100 };

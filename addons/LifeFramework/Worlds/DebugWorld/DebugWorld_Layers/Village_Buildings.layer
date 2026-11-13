@@ -8,6 +8,7 @@ SCR_DestructibleBuildingEntity : "{1B68F3EE279C97A1}Prefabs/Structures/Commercia
    m_sSoundProject "{2BC9B5C5F72B71E7}Sounds/Atmosphere/Atmosphere_PubRadio.acp"
    m_fRadius 33
    m_iPriority 2
+   m_sGroup "pub_music"
    m_fHourFrom 10
    m_fHourTo 2
    m_vOffset 0 1.5 0

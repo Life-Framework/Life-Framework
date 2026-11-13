@@ -40,6 +40,11 @@ GenericEntity Bank_Counter_West {
    ModelGeometry 1
    Static 1
   }
+  LF_AmbientEmitterComponent "{C91E5F69BE9C12FE}" {
+   m_sSoundProject "{6539B71BA4BFA1FC}Sounds/Atmosphere/Atmosphere_BankTill.acp"
+   m_fRadius 11
+   m_vOffset 0 1.1 0
+  }
  }
   Flags 0x403 0
  coords 177 0 258.7
@@ -54,6 +59,11 @@ GenericEntity Bank_Counter_East {
    Mass 10
    ModelGeometry 1
    Static 1
+  }
+  LF_AmbientEmitterComponent "{D25A477E7141C287}" {
+   m_sSoundProject "{9E627437CDE85DF1}Sounds/Atmosphere/Atmosphere_BankMurmur.acp"
+   m_fRadius 15
+   m_vOffset 0 1.1 0
   }
  }
   Flags 0x403 0

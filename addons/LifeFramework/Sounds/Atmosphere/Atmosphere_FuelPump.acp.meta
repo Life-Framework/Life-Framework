@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{EC2B286A4A5D758A}Sounds/Atmosphere/Atmosphere_FuelPump.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{ED0EA6116B7FA7AF}Sounds/Atmosphere/Atmosphere_HospitalEquipment.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

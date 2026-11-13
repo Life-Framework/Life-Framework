@@ -55,3 +55,6 @@ LF_NpcBaseEntity Roadmap_Civilian_2 : "{6E8EF026940F3841}Prefabs/Characters/Npcs
  coords 266 0 244.5
  angleY 200
 }
+GenericEntity Fuel_PumpHum : "{D88D0B05DF83772F}Prefabs/Atmosphere/LF_FuelPumpHum.et" {
+ coords 273.2 0 235.3
+}

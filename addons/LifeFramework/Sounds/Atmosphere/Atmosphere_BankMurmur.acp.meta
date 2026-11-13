@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9E627437CDE85DF1}Sounds/Atmosphere/Atmosphere_BankMurmur.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

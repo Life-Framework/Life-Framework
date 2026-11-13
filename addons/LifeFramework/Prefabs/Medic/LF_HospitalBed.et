@@ -10,6 +10,12 @@ GenericEntity {
   }
   LF_HospitalBedComponent "{B0B0E6A525816A48}" {
   }
+  LF_AmbientEmitterComponent "{7280A898307422C5}" {
+   m_sSoundProject "{ED0EA6116B7FA7AF}Sounds/Atmosphere/Atmosphere_HospitalEquipment.acp"
+   m_fRadius 13
+   m_sGroup "hospital_equipment"
+   m_vOffset 0 1.2 0
+  }
   ActionsManagerComponent "{E775B15405FD81EC}" {
    ActionContexts {
     UserActionContext "{AA4AA1C613964286}" {

@@ -172,6 +172,121 @@
       "pick": 1,
       "reason": "Only take. Quiet bed, three bell strokes at the start and one louder event at 15 s.",
       "even": true
+    },
+    {
+      "id": "bank_murmur",
+      "name": "BankMurmur",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -14,
+      "inner_m": 2,
+      "outer_m": 16,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.5,
+      "prompt": "Quiet interior of a small 1980s bank hall: the low indistinct murmur of two or three people talking far apart, a soft shuffle of shoes on a stone floor, paper rustling, room tone. Calm, even level, no clear words, no music, no phone ringing.",
+      "even": true,
+      "pick": 1,
+      "reason": "First take. Low murmur bed with gentle swells, no clear words; loop step 0.02."
+    },
+    {
+      "id": "bank_till",
+      "name": "BankTill",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -13,
+      "inner_m": 1.5,
+      "outer_m": 12,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.6,
+      "prompt": "An old wooden wall clock ticking and tocking clearly and steadily once per second throughout, in a quiet room. Once in the middle a metal cash drawer slides open with a short bell ring and coins, then slides shut. No voices, no music.",
+      "even": true,
+      "pick": 2,
+      "reason": "Second take; the first was two loud events in silence. A clock tick every second for 15.7 s with a drawer and coins at 9 to 12 s; very quiet, so it is levelled (even). Loop step 0.01."
+    },
+    {
+      "id": "hospital_equipment",
+      "name": "HospitalEquipment",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -14,
+      "inner_m": 1.5,
+      "outer_m": 14,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.4,
+      "prompt": "Electronic ECG heart monitor beep repeating steadily once per second, with a medical machine motor humming and an air pump softly pulsing under it. Hospital bedside, clean close recording.",
+      "pick": 3,
+      "reason": "Third take; the first two were near silence (peaks under -47 dB). A steady machine hum with two tonal lines, no alarm; the beep did not come through, so it is hum only."
+    },
+    {
+      "id": "hospital_ward",
+      "name": "HospitalWard",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -15,
+      "inner_m": 2,
+      "outer_m": 16,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.4,
+      "prompt": "Hospital ward room tone: a constant low air-conditioning hum, a nurse and a patient murmuring softly in the next room, footsteps on linoleum passing in a corridor, a trolley wheel squeaking now and then, a door closing. Clearly audible, calm, no clear words, no alarms, no music.",
+      "even": true,
+      "pick": 2,
+      "reason": "Second take; the first kept 2 s above the silence floor. Quiet room tone with footsteps and a door at 10 and 12.5 s, levelled; weakest of the batch, listen to it."
+    },
+    {
+      "id": "payphone_line",
+      "name": "PayphoneLine",
+      "kind": "loop",
+      "seconds": 8,
+      "rate": 48000,
+      "volume_db": -18,
+      "inner_m": 0.5,
+      "outer_m": 6,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.7,
+      "prompt": "Old telephone handset held to the ear: a faint steady dial tone line hum with a little electrical buzz and static, very quiet. No voices, no ringing, no music.",
+      "pick": 1,
+      "reason": "First take. Steady low line hum with electrical buzz, no tone events; loop step 0.53 is hum, not an event."
+    },
+    {
+      "id": "fuel_pump",
+      "name": "FuelPump",
+      "kind": "loop",
+      "seconds": 12,
+      "rate": 48000,
+      "volume_db": -12,
+      "inner_m": 1.5,
+      "outer_m": 14,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.6,
+      "prompt": "Roadside fuel pump dispensing: a steady electric pump motor hum with the gurgle of fuel flowing through a hose. Outdoors, constant level, no voices, no music, no engine.",
+      "pick": 1,
+      "reason": "First take. Even motor hum with a gurgle; loop step 0.09."
+    },
+    {
+      "id": "van_idle",
+      "name": "VanIdle",
+      "kind": "loop",
+      "seconds": 15,
+      "rate": 48000,
+      "volume_db": -11,
+      "inner_m": 2,
+      "outer_m": 24,
+      "seam_ms": 400,
+      "takes": 1,
+      "prompt_influence": 0.6,
+      "prompt": "A small diesel delivery van engine idling at a kerb: a steady low diesel tick-over with a slight rattle and a faint exhaust rumble. Outdoors, constant level, no revving, no voices, no music.",
+      "pick": 1,
+      "reason": "First take. Even diesel tick-over, no revving; loop step 0.32 is engine texture."
     }
   ],
   "generations": [
@@ -361,6 +476,181 @@
         "rms_db": -27.1,
         "wrap": 0.08
       }
+    },
+    {
+      "id": "bank_murmur",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Quiet interior of a small 1980s bank hall: the low indistinct murmur of two or three people talking far apart, a soft shuffle of shoes on a stone floor, paper rustling, room tone. Calm, even level, no clear words, no music, no phone ringing.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 15.89,
+        "peak_db": -3,
+        "rms_db": -16.1,
+        "wrap": 0.02
+      }
+    },
+    {
+      "id": "bank_till",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Bank counter: a slow wall clock ticking steadily once a second, with an old mechanical cash drawer sliding open and shut with a small bell ring twice during the clip, coins clinking briefly. Quiet indoor room, no voices, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 14.59,
+        "peak_db": -3,
+        "rms_db": -25,
+        "wrap": 0.66
+      }
+    },
+    {
+      "id": "hospital_equipment",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Quiet hospital room: a soft steady electronic monitor beep about once every second, a low hum of medical equipment and a ventilation fan. Calm and clinical but not tense, even level, no alarms, no voices, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200
+    },
+    {
+      "id": "hospital_ward",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Quiet hospital ward at night: gentle room tone, far-off muffled footsteps on linoleum in a corridor, a faint cough, a distant door closing softly, rustle of bedsheets. Calm and peaceful, no clear words, no alarms, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 1.98,
+        "peak_db": -3,
+        "rms_db": -17.7,
+        "wrap": 0.03
+      }
+    },
+    {
+      "id": "payphone_line",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Old telephone handset held to the ear: a faint steady dial tone line hum with a little electrical buzz and static, very quiet. No voices, no ringing, no music.",
+      "seconds": 8,
+      "bytes": 129192,
+      "credits": 80,
+      "processed": {
+        "seconds": 7.6,
+        "peak_db": -3,
+        "rms_db": -10.4,
+        "wrap": 0.53
+      }
+    },
+    {
+      "id": "fuel_pump",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Roadside fuel pump dispensing: a steady electric pump motor hum with the gurgle of fuel flowing through a hose. Outdoors, constant level, no voices, no music, no engine.",
+      "seconds": 12,
+      "bytes": 193140,
+      "credits": 120,
+      "processed": {
+        "seconds": 11.6,
+        "peak_db": -3,
+        "rms_db": -16.7,
+        "wrap": 0.09
+      }
+    },
+    {
+      "id": "van_idle",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small diesel delivery van engine idling at a kerb: a steady low diesel tick-over with a slight rattle and a faint exhaust rumble. Outdoors, constant level, no revving, no voices, no music.",
+      "seconds": 15,
+      "bytes": 241205,
+      "credits": 150,
+      "processed": {
+        "seconds": 14.6,
+        "peak_db": -3,
+        "rms_db": -9.4,
+        "wrap": 0.32
+      }
+    },
+    {
+      "id": "hospital_equipment",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A hospital heart monitor beeping clearly and softly once every second, over the steady audible hum and gentle air pulse of an oxygen concentrator machine beside a bed. Close recording, clearly audible, constant level, calm, no alarms, no voices, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200
+    },
+    {
+      "id": "hospital_equipment",
+      "take": 3,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Electronic ECG heart monitor beep repeating steadily once per second, with a medical machine motor humming and an air pump softly pulsing under it. Hospital bedside, clean close recording.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.59,
+        "peak_db": -3,
+        "rms_db": -11.1,
+        "wrap": 0.29
+      }
+    },
+    {
+      "id": "hospital_ward",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Hospital ward room tone: a constant low air-conditioning hum, a nurse and a patient murmuring softly in the next room, footsteps on linoleum passing in a corridor, a trolley wheel squeaking now and then, a door closing. Clearly audible, calm, no clear words, no alarms, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.6,
+        "peak_db": -3,
+        "rms_db": -32.2,
+        "wrap": 0.07
+      }
+    },
+    {
+      "id": "bank_till",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "An old wooden wall clock ticking and tocking clearly and steadily once per second throughout, in a quiet room. Once in the middle a metal cash drawer slides open with a short bell ring and coins, then slides shut. No voices, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 15.75,
+        "peak_db": -3,
+        "rms_db": -36.1,
+        "wrap": 0.01
+      }
     }
   ],
   "runs": [
@@ -382,6 +672,51 @@
       "credits_after": 4217,
       "credits": 220,
       "by_rate": 220
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 7,
+      "plan": "starter",
+      "credits_before": 4217,
+      "credits_after": 5367,
+      "credits": 1150,
+      "by_rate": 1150
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 1,
+      "plan": "starter",
+      "credits_before": 5367,
+      "credits_after": 5567,
+      "credits": 200,
+      "by_rate": 200
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 1,
+      "plan": "starter",
+      "credits_before": 5567,
+      "credits_after": 5767,
+      "credits": 200,
+      "by_rate": 200
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 1,
+      "plan": "starter",
+      "credits_before": 5767,
+      "credits_after": 5967,
+      "credits": 200,
+      "by_rate": 200
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 1,
+      "plan": "starter",
+      "credits_before": 5967,
+      "credits_after": 6167,
+      "credits": 200,
+      "by_rate": 200
     }
   ],
   "wired": {
@@ -433,6 +768,41 @@
     "square": {
       "project": "{B80322D3F895D4CB}Sounds/Atmosphere/Atmosphere_Square.acp",
       "sample": "{0C2AD5F65C589857}Sounds/Atmosphere/Samples/Atmosphere_Square_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "bank_murmur": {
+      "project": "{9E627437CDE85DF1}Sounds/Atmosphere/Atmosphere_BankMurmur.acp",
+      "sample": "{C5FB9BCE7915685F}Sounds/Atmosphere/Samples/Atmosphere_BankMurmur_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "bank_till": {
+      "project": "{6539B71BA4BFA1FC}Sounds/Atmosphere/Atmosphere_BankTill.acp",
+      "sample": "{25DB60A9C7437B28}Sounds/Atmosphere/Samples/Atmosphere_BankTill_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "hospital_equipment": {
+      "project": "{ED0EA6116B7FA7AF}Sounds/Atmosphere/Atmosphere_HospitalEquipment.acp",
+      "sample": "{959318E0E91F886B}Sounds/Atmosphere/Samples/Atmosphere_HospitalEquipment_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "hospital_ward": {
+      "project": "{EB0DB92516AB336C}Sounds/Atmosphere/Atmosphere_HospitalWard.acp",
+      "sample": "{0EA17DA20C44FBB3}Sounds/Atmosphere/Samples/Atmosphere_HospitalWard_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "payphone_line": {
+      "project": "{4F67E8DF29241102}Sounds/Atmosphere/Atmosphere_PayphoneLine.acp",
+      "sample": "{8179B1AE81EEEE34}Sounds/Atmosphere/Samples/Atmosphere_PayphoneLine_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "fuel_pump": {
+      "project": "{EC2B286A4A5D758A}Sounds/Atmosphere/Atmosphere_FuelPump.acp",
+      "sample": "{12C97599B3E6847B}Sounds/Atmosphere/Samples/Atmosphere_FuelPump_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "van_idle": {
+      "project": "{676F8D61F536FDD2}Sounds/Atmosphere/Atmosphere_VanIdle.acp",
+      "sample": "{0E26CD428A38A60B}Sounds/Atmosphere/Samples/Atmosphere_VanIdle_LP.wav",
       "event": "SOUND_LF_AMBIENT_LP"
     }
   }

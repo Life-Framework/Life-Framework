@@ -75,6 +75,17 @@ class LF_OrganizationConfig
 	//------------------------------------------------------------------------------------------------
 	static int DefaultRights(string rankId)
 	{
+		int configured;
+		if (LF_OrgConfig.RankRights(rankId, configured))
+			return configured;
+
+		return ShippedRights(rankId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rights a default rank has with no owner config.
+	static int ShippedRights(string rankId)
+	{
 		if (rankId == RANK_FOUNDER)
 			return LF_OrgRights.ALL;
 		if (rankId == RANK_OFFICER)

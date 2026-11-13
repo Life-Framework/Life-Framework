@@ -615,3 +615,9 @@ GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pi
 GenericEntity : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
  coords 313.6 0 242.6
 }
+GenericEntity Pub_Terrace_Table : "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et" {
+ coords 121.994 0.003 287.077
+}
+GenericEntity Pub_Terrace_Radio : "{C6AF6D2D6EA3CBF9}Prefabs/Atmosphere/LF_Radio_Pub.et" {
+ coords 122.002 0.903 287.074
+}

@@ -18,6 +18,12 @@ how that works, which places have it, which do not yet, and what it cost. Spiked
 | 8 | Police duty desk | Radio static with garbled chatter, a typewriter | Always | `Prefabs/Police/LF_PoliceDutyDesk.et` |
 | 9 | Chop shop | A compressor cycling, a ratchet, tools | Always | `Prefabs/Crime/LF_ChopBench.et` |
 | 10 | Spawn square | The fountain, a far murmur of people, pigeons | 06:00 to 22:00 | The fountain in `Village_Dressing.layer` |
+| 11 | Bank | A quiet murmur at the east counter; a clock tick with a till drawer at the west counter | Always | `Bank_Counter_East`, `Bank_Counter_West` in `ATM.layer` |
+| 12 | Hospital | Equipment hum at the beds; a quiet ward at the duty desk | Always | `Prefabs/Medic/LF_HospitalBed.et` (group, one voice for three beds), `Prefabs/Medic/LF_MedicDutyDesk.et` |
+| 13 | Payphones | A faint line hum | While the receiver is up (the line is BUSY: dialling, ringing out or talking) | `Prefabs/Comms/LF_Payphone.et`, `LF_AmbientConditionPhoneLine` |
+| 14 | Fuel station | A pump motor and the gurgle of fuel | For 4 s after each fuelling step | `Fuel_PumpHum` (`Prefabs/Atmosphere/LF_FuelPumpHum.et`), pulsed by `LF_AmbientFuelPump` |
+| 15 | Cash van | A diesel engine idling | Always: the route teleports the van between stops, so it is only ever stopped | `Roadmap_Cash_Van_Box` in `Street_CashVan.layer` (the box stands at the van's door and follows it) |
+| 2b | Pub terrace | The pub music from a radio on a table beside the door, unmuffled | 10:00 to 02:00, or until switched off; then the building plays | `Pub_Terrace_Radio` (`Prefabs/Atmosphere/LF_Radio_Pub.et`) in `Village_Dressing.layer` |
 
 Hours are local solar time (noon is the sun at its highest), the same clock the film scenes use.
 
@@ -53,11 +59,11 @@ Ranked by how much a new player notices, and how cheap the spot was:
 | 8 | Chop shop | done | A hidden yard should be heard before it is seen |
 | 9 | Police duty desk | done | Where officers stand around between calls |
 | 10 | Moonshine still | done | The only machine with a real "working" state |
-| 11 | Bank | next | A clock, a stamp, low voices; add when the bank is a room |
-| 12 | Hospital | next | Equipment hum at the duty desk; needs a sound that is not grim |
-| 13 | Payphones | next | A line hum is in reach only at 1 m; the ring is already there (`LF_PhoneLine`) |
-| 14 | Fuel station | next | A second radio, a pump motor while fuelling |
-| 15 | Cash van | next | An engine idling while it is parked at a stop (`LF_CashVanRoute` has no engine state; the stop itself is the state) |
+| 11 | Bank | done | A clock, a stamp, low voices; add when the bank is a room |
+| 12 | Hospital | done | Equipment hum at the duty desk; needs a sound that is not grim |
+| 13 | Payphones | done | A line hum is in reach only at 1 m; the ring is already there (`LF_PhoneLine`) |
+| 14 | Fuel station | done | A second radio, a pump motor while fuelling |
+| 15 | Cash van | done | An engine idling while it is parked at a stop (`LF_CashVanRoute` has no engine state; the stop itself is the state) |
 | 16 | Market stand, car lot | later | A third music track or a crowd bed; low value until the market has stalls |
 | 17 | Hideout, lock-up, jail, fence | later | Quiet is right for these; a cassette player in the hideout is the one worth doing |
 
@@ -127,7 +133,7 @@ stage's sample maths, WAV writer and `.meta` text (`sound.mjs`).
   point against the steps inside the take. **Listen to them before a public build**; the picks'
   `reason` fields name the two weakest (police desk, quarry).
 
-Files to listen to (20 MB in the repo):
+Files to listen to (about 25 MB in the repo):
 
 | Sound | File under `addons/LifeFramework/Sounds/Atmosphere/Samples/` | Length | Range | Volume |
 |---|---|---|---|---|
@@ -141,6 +147,13 @@ Files to listen to (20 MB in the repo):
 | Police desk | `Atmosphere_PoliceDesk_LP.wav` | 21.6 s | 1.5 to 14 m | -13 dB |
 | Chop shop | `Atmosphere_ChopShop_LP.wav` | 19.6 s | 2 to 30 m | -11 dB |
 | Square | `Atmosphere_Square_LP.wav` | 21.6 s | 6 to 36 m | -12 dB |
+| Bank murmur | `Atmosphere_BankMurmur_LP.wav` | 15.9 s | 2 to 16 m | -14 dB |
+| Bank till and clock | `Atmosphere_BankTill_LP.wav` | 15.7 s | 1.5 to 12 m | -13 dB |
+| Hospital equipment | `Atmosphere_HospitalEquipment_LP.wav` | 19.6 s | 1.5 to 14 m | -14 dB |
+| Hospital ward | `Atmosphere_HospitalWard_LP.wav` | 19.6 s | 2 to 16 m | -15 dB |
+| Payphone line | `Atmosphere_PayphoneLine_LP.wav` | 7.6 s | 0.5 to 6 m | -18 dB |
+| Fuel pump | `Atmosphere_FuelPump_LP.wav` | 11.6 s | 1.5 to 14 m | -12 dB |
+| Cash van idle | `Atmosphere_VanIdle_LP.wav` | 14.6 s | 2 to 24 m | -11 dB |
 
 To change a level or a range, edit `volume_db`, `inner_m` or `outer_m` in `ambience.json` and run
 `tools\cli asset ambience --only wire` (free). To replace a take, edit the prompt and run
@@ -153,7 +166,12 @@ To change a level or a range, edit `volume_db`, `inner_m` or `outer_m` in `ambie
 | Music, 2 tracks | 140 | 1750 |
 | Loops, 8 first takes | 158 | 1580 |
 | Farm, second take | 22 | 220 |
-| **Total** | 320 | **3550** of the 12,000 budgeted |
+| Second batch: 7 loops, first takes | 108 | 1150 |
+| Hospital equipment, two retakes (the first two were near silence) | 40 | 400 |
+| Hospital ward and bank till, one retake each | 40 | 400 |
+| **Total** | 508 | **5500** of the 12,000 budgeted |
+
+The second batch (#897) cost 1950 credits; the account read 4217 used before and 6167 after (other agents share it).
 
 Account balance: 667 used before the first call, 4217 after the last (40,000 a month, shared with
 the sound and dialogue stages). Measured rates on Starter: 12.5 credits per second of music, 10
@@ -209,6 +227,27 @@ Two things for the maintainer to decide, recorded in `docs/decisions.md`:
 | Pub sign | pub and square start | mean -33.7 dB |
 | Clock to 23:00 | square and farm stop (hours); pub plays on | mean -32.6 dB |
 
+### Second batch (#897)
+
+`node agent-box/session.mjs atmosphere-town-proof` on `session up --profile full --sound --clients 2` (client 2 on the police roster so a payphone call can ring; the payphone is BUSY only when someone can be rung): PASS on 2026-11-13. From client 1's own log:
+
+| Step | Client log |
+|---|---|
+| Bank west counter | till and clock start (1.2 m), murmur at the east counter (8.9 m), voices up |
+| Hospital beds | one bed voice for the three beds (the group), the ward at the duty desk; walking away swaps the bed (`voice cap or group`) |
+| Payphone, receiver down | no start |
+| Dial from the payphone | `start Roadmap_Hospital_Payphone`, `voice up` |
+| Hang up | `stop Roadmap_Hospital_Payphone (condition)` |
+| Cash van stop | `start Roadmap_Cash_Van_Box` (the box carries the idle), `voice up` |
+| Fuel pumps, nothing fuelling | no start |
+| Pub terrace radio | the radio starts, the building does not (group) |
+| Radio switched off | radio stops (condition), the building starts, `voice up` |
+| Radio switched on | the building stops (`voice cap or group`), the radio starts |
+
+The process-loopback levels of that run are not evidence: with two clients up the capture of client 1 read silence at most steps (-91 dB), so only the log lines count. A first emitter put on the van entity itself never registered on the client (no start, no error, nothing in the log); the cash box beside it carries the sound now.
+
+Not driven: a real fuelling step (needs a vehicle and the vanilla refuel action; the server half is `LF_Test_AmbientFuelPump`, and the hook is a modded `SCR_FuelSupportStationComponent.OnExecutedServer`, which compiled and loaded), and the van being driven off.
+
 Not proven by an agent: how any of it sounds, the pub's occlusion by ear, a second player hearing
 the radio switch (the bool is a plain `RplProp`; the proof's own client is a network client of a
 dedicated server and followed it), and the sawmill after a real cut log (the pulse is tested on
@@ -229,7 +268,7 @@ the server only).
 ## Next
 
 1. Listen, then retake or re-level what sounds wrong. This is the real gate.
-2. The remaining spots in the survey table, bank and hospital first.
+2. The remaining survey spots (market stand, car lot, hideout cassette). Bank, hospital, payphones, fuel station and cash van are done. Known weak takes: the hospital equipment loop has no beep (the model returned hum), the ward is sparse, the pump hum is judged from its spectrogram only.
 3. A second and third radio track, so two radios in earshot do not play the same tune, and a
    cassette player for the hideout.
 4. Persist the radio switch if players care.
