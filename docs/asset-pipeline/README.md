@@ -40,6 +40,7 @@ Read this before any `generate`.
 - One attempt is a preview plus a refine: 15 credits on `meshy-6-lite`, 30 on `latest`
   (`meshy.mjs` `COST`, read from the Meshy pricing page on 2026-11-12; a task's own
   `consumed_credits` wins when it reports one).
+- Every generation's task ids and prompt are written to `tools/assets/<slug>/meshy.json` (committed; the asset's credit in `docs/credits.md` points at it).
 - Every paid call is appended to `tmp/assets/<slug>/credits.jsonl`. `asset status` prints the sum.
 - `budget.credits` in the spec is the cap for the asset and cannot be set above 300. `generate`
   refuses to start an attempt that would cross it. When that happens, stop and report: the prompt
@@ -97,12 +98,6 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   (`rotation`, `translation`: the `HandAdditive*` values; the default is the lockpick's). Vanilla held gadgets have no
   bones or sockets (`Gauze_01_packed.xob`): the hand holds the model at its origin, so move the grip there with `fit.offset`.
 - A gadget is scaled on its length, so the size check holds the length to 5 % and the height and width to 40 %.
-
-## Provenance
-
-The `generate` stage writes `tools/assets/<slug>/provenance.json`: the Meshy task ids, model, date, credits, prompt and
-the credit line "generated with Meshy". Commit it with the spec, and add the asset's row to `docs/credits.md`
-"Generated 3D assets" (the #664 sign-off asks for both).
 
 ## What the tool does not do
 

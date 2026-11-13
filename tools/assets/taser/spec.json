@@ -4,8 +4,8 @@
   "kind": "weapon",
   "roadmap": "#341",
   "concept": "Police stun pistol for 1989 Everon: a boxy two-shot dart stun gun in the style of late-1980s police electroshock weapons. One cartridge, then reload. Downs the target without lethal damage.",
-  "prompt": "1980s police taser stun gun, handheld electroshock dart pistol. Chunky boxy body, much bulkier than a firearm: a large rectangular bright yellow cartridge block at the front with two square dart ports instead of a barrel, matte black polymer frame behind it with flat sides, short straight black pistol grip, trigger inside a square trigger guard, no slide, no hammer, no sights rail. Realistic police equipment prop, clean hard-surface industrial design, single object, no text, no logos, no hands, no stand.",
-  "texture_prompt": "Bright safety-yellow moulded plastic front cartridge block, matte black fine-grain polymer frame and grip, dull steel screws and trigger, light edge wear, no text, no logos, flat neutral lighting.",
+  "prompt": "Handheld electroshock stun gun for police, 1980s, L-shaped like a cordless drill or a staple gun in side view. The upper part is a long horizontal rectangular box, three times longer than it is tall, with flat sides and sharp angular edges. At the front end of that box is a smaller square cartridge block with two small round dart holes in its front face. On each flat side of the long box, in its front half, is a large flat rectangular plate. Hanging straight down from the rear half of the long box is a slim vertical handle, narrow front to back, with a small trigger and a square trigger guard at its front edge. No slide, no hammer, no barrel, no sights, no rail, no carry handle on top. Clean hard-surface industrial design, single object, no text, no logos, no hands, no stand.",
+  "texture_prompt": "No text, no logos. Matte black fine-grain polymer body and handle. The two large flat side panels on the body are safety yellow. The front dart cartridge block is dark grey with black dart holes. Dull steel trigger and screws, light edge wear, flat neutral lighting.",
   "meshy": {
     "ai_model": "latest",
     "target_polycount": 20000
@@ -22,7 +22,7 @@
       0.2
     ],
     "texture_px": 1024,
-    "credits": 300
+    "credits": 60
   },
   "fit": {
     "offset": [
@@ -32,7 +32,18 @@
     ]
   },
   "parts": [
-    { "name": "trigger", "bone": "w_trigger", "box": [-0.012, -0.0195, 0.036, 0.012, 0.0075, 0.0525] }
+    {
+      "name": "trigger",
+      "bone": "w_trigger",
+      "box": [
+        -0.012,
+        -0.0195,
+        0.036,
+        0.012,
+        0.0075,
+        0.0525
+      ]
+    }
   ],
   "asset_dir": "Assets/Weapons/Handguns/Taser",
   "prefab_dir": "Prefabs/Weapons/Handguns/Taser",
@@ -47,7 +58,13 @@
     "init_speed": 100,
     "weight": 0.5,
     "components": [
-      { "class": "LF_StunWeaponComponent", "props": { "m_fStunSeconds": 8, "m_fRange": 10 } }
+      {
+        "class": "LF_StunWeaponComponent",
+        "props": {
+          "m_fStunSeconds": 8,
+          "m_fRange": 10
+        }
+      }
     ]
   }
 }

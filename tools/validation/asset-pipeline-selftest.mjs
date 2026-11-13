@@ -11,12 +11,13 @@
 //   checkModel without the material test     -> FAIL xob: a model that bakes another material is flagged
 //   logProblems counting lines before start  -> FAIL log: lines before the plugin starts do not count
 //   runLog joining console, script and error -> FAIL log: a run's own start-up lines do not count
+//   recordProvenance dropping the refine id  -> FAIL provenance: meshy.json keeps both generations and the refine ids
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { STAGES, run, specProblems } from "../assets/pipeline/asset.mjs";
+import { STAGES, recordProvenance, run, specProblems } from "../assets/pipeline/asset.mjs";
 import { checkReport, checkSockets } from "../assets/pipeline/checks.mjs";
 import { logProblems, runLog } from "../assets/pipeline/import.mjs";
 import { KINDS } from "../assets/pipeline/kinds.mjs";
@@ -252,6 +253,18 @@ export async function main() {
       const cut = { ...model, nodes: model.nodes.filter((n) => n.name !== "barrel_muzzle") };
       ok(checkModel(cut, weapon, {}).some((p) => /no node barrel_muzzle/.test(p)), "xob: a missing socket is flagged");
     }
+  }
+
+  // ---- provenance: tools/assets/<slug>/meshy.json keeps every generation id --------------------------
+  {
+    const root = mkdtempSync(join(tmpdir(), "lf-prov-"));
+    mkdirSync(join(root, "tools", "assets", "stick"), { recursive: true });
+    const spec = { slug: "stick", prompt: "a stick", texture_prompt: "brown", meshy: { ai_model: "latest" } };
+    recordProvenance(root, spec, { previewId: "p1", refineId: "r1" }, new Date("2026-11-13T10:00:00Z"));
+    recordProvenance(root, spec, { previewId: "p2", refineId: "r2" }, new Date("2026-11-14T10:00:00Z"));
+    recordProvenance(root, spec, { previewId: "p2", refineId: "r2" }, new Date("2026-11-14T11:00:00Z"));
+    const rec = JSON.parse(readFileSync(join(root, "tools", "assets", "stick", "meshy.json"), "utf8"));
+    ok(rec.generations.length === 2 && rec.generations.map((g) => g.refineId).join() === "r1,r2" && rec.generations[0].model === "latest", "provenance: meshy.json keeps both generations and the refine ids, and a rerun adds none");
   }
 
   // ---- Workbench log: only the plugin's own window counts ----------------------------------------

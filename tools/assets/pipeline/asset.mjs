@@ -74,6 +74,22 @@ async function stageConcept(ctx) {
   return { estimate: est };
 }
 
+// tools/assets/<slug>/meshy.json is the committed provenance record: one row per paid generation,
+// kept across attempts. docs/credits.md credits the asset "generated with Meshy"; this file is
+// where its generation ids live (docs/decisions.md, 2026-11-13).
+export function recordProvenance(root, spec, ids, now = new Date()) {
+  const file = join(root, "tools", "assets", spec.slug, "meshy.json");
+  const rec = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { slug: spec.slug, generations: [] };
+  const row = {
+    date: now.toISOString().slice(0, 10), tool: "Meshy text-to-3D", model: spec.meshy?.ai_model || "meshy-6-lite",
+    previewId: ids.previewId, refineId: ids.refineId, prompt: spec.prompt, texturePrompt: spec.texture_prompt,
+  };
+  const at = rec.generations.findIndex((x) => x.refineId === row.refineId);
+  if (at >= 0) rec.generations[at] = { ...rec.generations[at], ...row };
+  else rec.generations.push(row);
+  writeFileSync(file, JSON.stringify(rec, null, 2) + "\n");
+}
+
 async function stageGenerate(ctx) {
   const { spec, dir, state } = ctx;
   const ledger = join(dir, "credits.jsonl");
@@ -118,6 +134,7 @@ async function stageGenerate(ctx) {
   for (const [k, url] of Object.entries(tex)) await meshy.download(url, join(raw, `tex_${k}.png`));
   const bal1 = await meshy.balance();
   const total = meshy.spent(ledger);
+  recordProvenance(ctx.root, spec, { previewId: g.previewId, refineId: g.refineId });
   console.log(`generated ${join(raw, "model.glb")}; balance ${bal0} -> ${bal1}; ${spec.slug} total ${total} credits`);
   console.log(`review ${join(raw, "refined.png")} against docs/asset-pipeline/review-generation.md before the clean stage`);
   return { previewId: g.previewId, refineId: g.refineId, credits: total, balance: bal1, maps: Object.keys(tex) };

@@ -42,13 +42,10 @@ name of the person who ran the agent.
 
 ## Generated 3D assets
 
-AI-generated models are allowed in the project and in published builds under the account's Meshy plan terms (signed off by the
-maintainer on #664, 2026-11-13). Each one is credited "generated with Meshy" here, and the asset pipeline records its generation
-ids in `tools/assets/<slug>/provenance.json`.
-
-| Asset | Credit | Generation (Meshy task ids) | Where it is used |
-|---|---|---|---|
-| Handcuffs | generated with Meshy (text-to-3D `latest`, 2026-11-13, 30 credits) | preview `01a1d331-1940-76e1-806c-1f15b6b77fab`, refine `01a1d331-c93f-74f9-a5e6-917ef7864e43` | `Assets/Items/Roleplay/Handcuffs/`, `Prefabs/Items/Roleplay/Handcuffs.et` |
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Taser model (`Assets/Weapons/Handguns/Taser/Taser.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/taser/meshy.json` (generation ids), `tools/assets/taser/spec.json` (prompt) |
+| Handcuffs model (`Assets/Items/Roleplay/Handcuffs/Handcuffs.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/handcuffs/meshy.json` (generation ids), `tools/assets/handcuffs/spec.json` (prompt) |
 
 ## Music
 

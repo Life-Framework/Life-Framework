@@ -5,6 +5,7 @@
 //   gadgetPrefab with a fresh InventoryItemComponent id -> FAIL gadget: the inventory item overrides Item_Base's component by its id
 //   writePrefabs without the prefab-<kind>.mjs dispatch  -> FAIL gadget: the prefab stage writes the gadget scaffold
 //   checkReport with the pistol tolerances for a gadget  -> FAIL gadget: a gadget 10 % off its length is flagged
+//   no tools/assets/handcuffs/meshy.json (before it was written) -> FAIL gadget: the handcuffs record their accepted Meshy generation id
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
