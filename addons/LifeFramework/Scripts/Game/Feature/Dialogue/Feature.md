@@ -13,8 +13,9 @@ Adding an NPC: `docs/asset-pipeline/dialogue.md`.
 | `LF_Dialogue.c` | server | Sessions: start, choose, end; tells bystanders what to hear |
 | `LF_DialoguePlayerController.c` | both | The RPCs, on the player's controller |
 | `LF_DialogueScene.c` | client | Captions, replies, input, freezing the character, the harness hook |
-| `LF_DialogueCamera.c` | client | The scripted camera: two shots, easing, collision, hand-back |
-| `LF_DialogueVoice.c` | client | Plays a line from the NPC's head and drives the lip bones |
+| `LF_DialogueCamera.c` | client | The scripted camera: one over-the-shoulder shot, ease in and out, collision, hand-back |
+| `LF_DialogueVoice.c` | client | Plays a line from the NPC's head and poses the face bones (lips, jaw, nod, blink) |
+| `LF_DialogueMouth.c` | client | Pure face maths: envelope smoothing, opening cap, syllable size, nod and blink timing |
 
 Rules:
 

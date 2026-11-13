@@ -82,7 +82,7 @@ Run it in a worktree. Speech is generated here and committed. The game never cal
    action does what the old interaction did. Red-proof it.
 6. **Look and listen.** `session up --profile full --clients 2 --sound`, then drive it as
    `agent-box/proofs/dialogue-proof.mjs` does. `node agent-box/harness.mjs dialogue` prints the
-   scene's state; `dialogue pick 0`, `dialogue skip`, `dialogue face 1`, `dialogue mouth 1` drive
+   scene's state; `dialogue pick 0`, `dialogue skip`, `dialogue closeup 1`, `dialogue mouth 1` drive
    it. An agent cannot hear: list the wav paths in the PR for the maintainer.
 7. **Classify.** The dialogue file, conf and sounds of a town NPC are pack content: add the rows
    to `docs/architecture/core-pack-inventory.md`. Credit the voice in `docs/credits.md`.

@@ -2579,8 +2579,9 @@
 
 ### `LF_Dialogue` / `LF_DialogueScene` — `Scripts/Game/Feature/Dialogue/`
 
-- 🟡 **Talking to an NPC is a scene.** The camera eases to the NPC (face shot while it speaks,
-  over the shoulder while the player chooses) and back; the line is a caption at the bottom with
+- 🟡 **Talking to an NPC is a scene.** The camera eases to the NPC and back, and keeps ONE
+  framing for the whole talk (over the player's shoulder, the NPC from about the chest up: no zoom on a
+  line, no cut); the line is a caption at the bottom with
   a recorded voice; replies are a numbered list (1 to 4, or up, down and confirm; Back leaves;
   confirm skips a line). Movement, view and weapon controls are held and the HUD is hidden
   for the length of it. Only the talker's client changes.
@@ -2593,10 +2594,12 @@
 - A reply's condition or action is a hook class `LF_DialogueHook_<Name>` in the owning feature;
   the quests have `QuestConverse`, `QuestTurnedIn`, `QuestNotTurnedIn`.
 - Voice and lips (`LF_DialogueVoice`): `AudioSystem.PlayEvent` from the NPC's head; the lip
-  bones follow the line's loudness envelope. Players within `m_fHearRange` (12 m) hear it too.
+  lips and jaw follow the line's loudness envelope, smoothed (40 ms attack, 100 ms release), capped, a
+  little different per syllable and shut in pauses; the NPC blinks while the scene is open and nods
+  its head on stressed peaks (`LF_DialogueMouth`). Players within `m_fHearRange` (12 m) hear it too.
 - Converted: the town clerk (`QuestGiver_Clerk.et`), voice generated with ElevenLabs.
   Not converted: witness, bank teller, shop clerks.
-- Tests: `dialogue/flow` (LOGIC), `dialogue/clerk` (WORLD); `dialogue-pipeline-selftest.mjs`.
+- Tests: `dialogue/flow` and `dialogue/mouth` (LOGIC), `dialogue/clerk` (WORLD); `dialogue-pipeline-selftest.mjs`.
   Session proof: `node agent-box/session.mjs dialogue-proof`; harness verb `dialogue`.
 - Not verified by automation: how the voice sounds and its level in the mix; number keys and a
   real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
