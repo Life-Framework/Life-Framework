@@ -165,9 +165,11 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
 			return true;
 		if (cmd.Verb == "lockpick")
+			return true;
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
 			return true;
 		if (cmd.Verb == "engine")
 		{
@@ -1207,7 +1209,7 @@ class LF_AgentHarness
 			DoConfigReload(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
@@ -1219,6 +1221,19 @@ class LF_AgentHarness
 		if (cmd.Verb == "engine")
 		{
 			DoEngine(cmd);
+			return;
+		}
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		{
+			string seen;
+			if (cmd.Verb == "spikeverge")
+				seen = LF_SpikeStripHarness.Verge();
+			else
+				seen = LF_SpikeStripHarness.Seen();
+			if (seen.StartsWith("ok "))
+				WriteResult(cmd.Id, "ok", seen.Substring(3, seen.Length() - 3));
+			else
+				WriteResult(cmd.Id, "error", seen);
 			return;
 		}
 		if (cmd.Verb == "lockpick")

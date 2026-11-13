@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{73F6042A977F2EB3}Assets/Props/Roleplay/SpikeStrip/Data/SpikeStrip.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

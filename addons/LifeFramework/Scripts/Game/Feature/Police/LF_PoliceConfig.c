@@ -29,6 +29,7 @@ class LF_PoliceConfig
 	static const float DEFAULT_TICKET_LATE_MULTIPLIER = 2;
 	static const bool DEFAULT_OFFICER_KILL_OF_WANTED_EXEMPT = true;
 	static const int DEFAULT_SEARCH_COOLDOWN_SECONDS = 120;
+	static const int DEFAULT_SPIKE_STRIP_LIFETIME_SECONDS = 600;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -87,6 +88,9 @@ class LF_PoliceConfig
 	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again (#472). 0 disables")]
 	int m_iSearchCooldownSeconds;
 
+	[Attribute("600", UIWidgets.Auto, "Seconds a deployed spike strip stays before it goes away by itself (#646). An officer can pick it up sooner", params: "30 7200")]
+	int m_iSpikeStripLifetimeSeconds;
+
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -120,6 +124,16 @@ class LF_PoliceConfig
 			return DEFAULT_SEARCH_COOLDOWN_SECONDS;
 
 		return Math.Max(config.m_iSearchCooldownSeconds, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int SpikeStripLifetimeSeconds()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_SPIKE_STRIP_LIFETIME_SECONDS;
+
+		return Math.ClampInt(config.m_iSpikeStripLifetimeSeconds, 30, 7200);
 	}
 
 	//------------------------------------------------------------------------------------------------

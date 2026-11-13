@@ -119,7 +119,7 @@ under "Hard-coded flagship values in script".
 | `Feature/Signs` | core | Sign system; titles are pack data |
 | `Feature/SirenLights` | core | System |
 | `Feature/Survival` | core | System |
-| `Feature/Toys` | core | Jump pad, spike strip |
+| `Feature/Toys` | core | Jump pad |
 | `Feature/UIKit` | split | The kit is core; `LF_UITheme` and `LF_UISkin` hard-code the 1989 look |
 | `Feature/VehicleLock` | core | System |
 | `Feature/Vehicles` | split | Lot, garage, and impound are core; `LF_VehicleCatalog` is the flagship catalogue |
@@ -155,6 +155,8 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/LF_BoardFace.et` | core | The 16:9 render-target face a board draws on (wanted posters, #758) |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
+| `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
+| `Assets/Props/Roleplay/SpikeStrip/` | split | Mesh of the strip above (generated with Meshy, `docs/credits.md`): example in core, the police stinger in pack |
 | `Resources/` | core | Ore, trees, logs |
 | `Structures/` | core | Doors, jail door, bank, concrete plant |
 | `Tools/` | core | Axe, pickaxe |

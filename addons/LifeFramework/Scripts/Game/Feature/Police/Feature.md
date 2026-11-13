@@ -71,6 +71,10 @@ is the entry point.
   count online time: x2 once, then +1 wanted and an Unpaid fine poster.
   Records persist (save version 12).
 - `LF_ConfiscateAction` — weapon confiscation; ⚠️ mutation-during-iteration.
+- Spike strip (#646): every rank's armory kit carries the folded strip. Deploy it from the
+  ground in front of you (on-duty police, rate limited); the server punctures each wheel whose path
+  crosses it through the vanilla wheel damage, and an officer picks it up again. It goes after
+  `m_iSpikeStripLifetimeSeconds`. `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
 
 ## Dependencies
 
