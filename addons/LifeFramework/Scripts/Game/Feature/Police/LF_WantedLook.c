@@ -164,6 +164,13 @@ class LF_WantedPortrait : Managed
 				continue;
 
 			slot.AttachEntity(item);
+			// An item the slot refused is no child of the dummy, so Clear would miss it.
+			if (slot.GetAttachedEntity() != item)
+			{
+				SCR_EntityHelper.DeleteEntityAndChildren(item);
+				continue;
+			}
+
 			dressed++;
 		}
 
