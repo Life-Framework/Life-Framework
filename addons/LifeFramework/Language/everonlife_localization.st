@@ -7786,6 +7786,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Busy signal. That telephone is in use."
      Comment "Refusal: the payphone a call-back request came from is in use; try again later."
     }
+    CustomStringTableItem "{6299E3E0908A6C21}" {
+     Id "LF-Wanted_PosterStolen"
+     Target_en_us "Stolen"
+     Comment "Headline of a stolen-car poster on the wanted board's face; shown in capitals."
+    }
+    CustomStringTableItem "{E060F7BC110E80EE}" {
+     Id "LF-Wanted_PosterStolenTip"
+     Target_en_us "Seen it? Tell the police."
+     Comment "Stolen-car poster on the wanted board's face: the appeal under the plate and the car's name."
+    }
   }
  }
 }

@@ -41,6 +41,17 @@ empty photo frame until that lands.
 Measured on the session (one portrait, RTX 3080, 1280x720, uncapped): 6.08 ms
 mean, 8.03 ms p95 while live, 5.91 / 7.57 frozen.
 
+## Stolen cars
+
+A car its owner reported stolen takes one of the last places on the row
+(`wantedBoard.stolenPosters`, 1 by default; 0 keeps cars off the face, and they
+stay on the officers' Read card): STOLEN, the model drawn from its prefab (the
+default colour, not a respray), the plate on a white strip, the car's name and
+an appeal to tell the police. The stolen report stores the vehicle prefab's GUID
+when the owner reports it; the place and the owner stay with the police.
+
+![A stolen car on the face](visual-boards/stolen-close.jpg)
+
 ## The live window
 
 A face renders live for 3 s after it is drawn or changed, then hides its widget
@@ -62,7 +73,7 @@ the full cork (right):
 
 ## Not here yet
 
-Stolen cars (spike issue 5), the look on the saved report (issue 2), and the
-night and distance checks (issue 7). The dispatch
+The look on the saved report (spike issue 2), and the night and distance checks
+(issue 7). The dispatch
 boards inherit the wanted board and keep their painted face
 (`m_bDrawPosters 0`).

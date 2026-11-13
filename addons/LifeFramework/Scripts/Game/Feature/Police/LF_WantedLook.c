@@ -179,6 +179,27 @@ class LF_WantedPortrait : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Draw a prefab as it is (a stolen car: the model in its default colour). False when nothing
+	//! could be drawn; the poster keeps its empty frame.
+	bool ShowPrefab(ItemPreviewWidget photo, ResourceName prefab)
+	{
+		Clear();
+		if (!photo || prefab.IsEmpty())
+			return false;
+
+		Resource resource = Resource.Load(prefab);
+		ItemPreviewManagerEntity manager = Manager();
+		if (!resource || !resource.IsValid() || !manager)
+		{
+			LF_Debug.Error(LF_WantedPosters.FEATURE, "poster picture: the prefab does not load: " + prefab);
+			return false;
+		}
+
+		manager.SetPreviewItemFromPrefab(photo, prefab, null, true);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static ItemPreviewManagerEntity Manager()
 	{
 		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());

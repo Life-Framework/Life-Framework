@@ -43,6 +43,8 @@ class LF_StolenReport : Managed
 	//! Where the report was made (a sign title key or "grid" text).
 	string m_sPlace;
 	int m_iSequence;
+	//! The vehicle prefab's GUID (LF_WantedLook.GuidOf), for the picture on the wanted board's face.
+	string m_sPrefabGuid;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -206,7 +208,9 @@ class LF_StolenVehicles
 			return check;
 		}
 
-		FileReport(vehicleId, PlateOf(vehicle), LF_VehicleOwnership.GetNameKey(vehicleId), ownerUid, LF_WantedReports.DescribePlace(vehicle.GetOrigin()));
+		LF_StolenReport filed = FileReport(vehicleId, PlateOf(vehicle), LF_VehicleOwnership.GetNameKey(vehicleId), ownerUid, LF_WantedReports.DescribePlace(vehicle.GetOrigin()));
+		if (filed && vehicle.GetPrefabData())
+			filed.m_sPrefabGuid = LF_WantedLook.GuidOf(vehicle.GetPrefabData().GetPrefabName());
 		LF_Utils.NotifyEntity(reporter, "#LF-Stolen_Reported", "#LF-Stolen_Title", 4.0);
 		return check;
 	}
@@ -324,6 +328,8 @@ class LF_StolenVehicles
 
 		s_mReports.Remove(vehicleId);
 		LF_Debug.Info(FEATURE, string.Format("report on %1 closed: %2", vehicleId, how));
+		// Not every close is an event (a test, a future cause); the wanted board's face rebuilds.
+		LF_WantedPosters.MarkDirty("stolen report closed");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -339,13 +345,13 @@ class LF_StolenVehicles
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the reports as wanted-board entries for an officer, newest first.
-	static void BoardEntries(int maxLines, notnull array<string> outEntries)
+	//! Server: the open reports, newest first.
+	static void CollectNewestFirst(notnull array<LF_StolenReport> ordered)
 	{
+		ordered.Clear();
 		if (!s_mReports)
 			return;
 
-		array<LF_StolenReport> ordered = {};
 		foreach (string vehicleId, LF_StolenReport report : s_mReports)
 		{
 			if (!report)
@@ -357,7 +363,14 @@ class LF_StolenVehicles
 
 			ordered.InsertAt(report, at);
 		}
+	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Server: the reports as wanted-board entries for an officer, newest first.
+	static void BoardEntries(int maxLines, notnull array<string> outEntries)
+	{
+		array<LF_StolenReport> ordered = {};
+		CollectNewestFirst(ordered);
 		foreach (LF_StolenReport ordered_report : ordered)
 		{
 			if (maxLines > 0 && outEntries.Count() >= maxLines)

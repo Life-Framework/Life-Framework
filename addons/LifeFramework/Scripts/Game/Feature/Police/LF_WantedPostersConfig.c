@@ -12,15 +12,21 @@ class LF_WantedPostersConfig
 	static const string SECTION = "wantedBoard";
 
 	static const int DEFAULT_POSTERS = 4;
+	static const int DEFAULT_STOLEN_POSTERS = 1;
 	static const float DEFAULT_DRAW_RADIUS = 30;
 
 	static const int POSTERS_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int POSTERS_MAX = 8;	// lf-fixed: the layout has two rows of four
+	static const int STOLEN_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int STOLEN_MAX = 8;	// lf-fixed: the layout has two rows of four
 	static const float RADIUS_MIN = 5;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float RADIUS_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	[Attribute("4", UIWidgets.Auto, "Posters on the wanted board's face, newest first: one row up to 4, two rows up to 8. Each picture costs the viewer a few ms for 3 s after a change (docs/architecture/visual-boards-budget.md)", params: "1 8")]
 	int m_iPosters;
+
+	[Attribute("1", UIWidgets.Auto, "How many of those places reported stolen cars may take, newest first, after the wanted people. 0 keeps stolen cars off the face (they stay on the officers' Read card)", params: "0 8")]
+	int m_iStolenPosters;
 
 	[Attribute("30", UIWidgets.Auto, "Metres from the board within which a player's game draws the posters; beyond it plus 5 m they are released", params: "5 100")]
 	float m_fDrawRadius;
@@ -85,9 +91,10 @@ class LF_WantedPostersConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"posters", "drawRadius"};
+		array<string> ownerKeys = {"posters", "stolenPosters", "drawRadius"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("posters", m_iPosters, POSTERS_MIN, POSTERS_MAX);
+		reader.ReadInt("stolenPosters", m_iStolenPosters, STOLEN_MIN, STOLEN_MAX);
 		reader.ReadFloat("drawRadius", m_fDrawRadius, RADIUS_MIN, RADIUS_MAX);
 	}
 
@@ -100,6 +107,18 @@ class LF_WantedPostersConfig
 			return DEFAULT_POSTERS;
 
 		return Math.ClampInt(config.m_iPosters, POSTERS_MIN, POSTERS_MAX);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Places a stolen car may take, never more than the face has.
+	static int StolenPosters()
+	{
+		int stolen = DEFAULT_STOLEN_POSTERS;
+		LF_WantedPostersConfig config = Get();
+		if (config)
+			stolen = config.m_iStolenPosters;
+
+		return Math.ClampInt(stolen, STOLEN_MIN, Posters());
 	}
 
 	//------------------------------------------------------------------------------------------------

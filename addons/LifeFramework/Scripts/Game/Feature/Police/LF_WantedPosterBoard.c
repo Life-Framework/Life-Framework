@@ -154,7 +154,10 @@ class LF_WantedPosterFace : Managed
 
 			vector slot = SlotPosition(i, count);
 			Place(poster, slot[0], slot[1], POSTER_WIDTH, POSTER_HEIGHT, 1);
-			FillPerson(poster, entry);
+			if (entry.m_sKind == LF_WantedPosters.KIND_VEHICLE)
+				FillVehicle(poster, entry);
+			else
+				FillPerson(poster, entry);
 			m_aPosters.Insert(poster);
 		}
 
@@ -243,6 +246,38 @@ class LF_WantedPosterFace : Managed
 		Line(poster, "Offence", LF_WantedBoard.ResolveKey(entry.m_sOffence), 528, 56, 36);
 		Line(poster, "Detail", LF_WantedPosters.Description(entry.m_sClothing, entry.m_sVehicle), 584, 78, 24);
 		Line(poster, "Reward", WidgetManager.Translate("#LF-Wanted_Level", entry.m_iLevel), 664, 50, 34);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! STOLEN, a picture of the model, the plate on its own white strip, the car's name, the appeal.
+	protected void FillVehicle(notnull Widget poster, notnull LF_WantedPosterEntry entry)
+	{
+		float scale = POSTER_WIDTH / DESIGN_WIDTH;
+		Place(poster.FindAnyWidget("Paper"), 0, 0, DESIGN_WIDTH, 724, scale);
+		Place(poster.FindAnyWidget("PhotoBack"), 96, 112, 320, 340, scale);
+		Widget clip = poster.FindAnyWidget("PhotoClip");
+		Place(clip, 96, 112, 320, 340, scale);
+		if (clip)
+			clip.SetFlags(WidgetFlags.CLIPCHILDREN);
+
+		// The whole car in the frame: the prefab's own preview camera.
+		ItemPreviewWidget photo = ItemPreviewWidget.Cast(poster.FindAnyWidget("Photo"));
+		Place(photo, 0, 0, 320, 340, scale);
+		LF_WantedPortrait picture = new LF_WantedPortrait();
+		if (picture.ShowPrefab(photo, LF_WantedLook.ResourceOf(entry.m_sAppearance)))
+			LF_Debug.Info(LF_WantedPosters.FEATURE, "stolen car poster: picture of " + entry.m_sAppearance);
+
+		m_aPortraits.Insert(picture);
+		Place(poster.FindAnyWidget("PlateBack"), 76, 466, 360, 84, scale);
+		string header = WidgetManager.Translate("#LF-Wanted_PosterStolen");
+		header.ToUpper();
+		string plate = entry.m_sName;
+		plate.ToUpper();
+		Line(poster, "Header", header, 10, 96, 88);
+		Line(poster, "Name", plate, 466, 84, 64);
+		Line(poster, "Offence", LF_WantedBoard.ResolveKey(entry.m_sVehicle), 560, 56, 36);
+		Line(poster, "Detail", WidgetManager.Translate("#LF-Wanted_PosterStolenTip"), 620, 50, 26);
+		Line(poster, "Reward", string.Empty, 664, 50, 34);
 	}
 
 	//------------------------------------------------------------------------------------------------

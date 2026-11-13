@@ -3,7 +3,7 @@
 class LF_WantedPosterEntry : Managed
 {
 	string m_sKind;
-	//! Empty until the server marked the report identified.
+	//! A person: empty until the server marked the report identified. A stolen car: the plate.
 	string m_sName;
 	//! The crime catalog id (#685a), a localization key such as #LF-Offence_Robbery.
 	string m_sOffence;
@@ -32,11 +32,14 @@ class LF_WantedPosters
 {
 	static const string FEATURE = "WantedPosters";
 	static const string KIND_PERSON = "P";
+	static const string KIND_VEHICLE = "V";
 	static const string FIELD = ";";
 	//! Wait after the first change so a burst (a crime, then its wanted level) makes one broadcast.
 	static const int COALESCE_MS = 1500;	// lf-fixed: replication batching, not gameplay
 	//! The fields of a person entry.
 	static const int PERSON_FIELDS = 6;	// lf-fixed: the entry format
+	//! The fields of a stolen car entry: "V;plate;name key;prefab GUID".
+	static const int VEHICLE_FIELDS = 4;	// lf-fixed: the entry format
 
 	protected static ref array<string> s_aEntries;
 	protected static string s_sSignature;
@@ -71,6 +74,9 @@ class LF_WantedPosters
 		bool ok = LF_EventBus.Subscribe(LF_OnCrimeCommitted, s_Subscriber);
 		ok = LF_EventBus.Subscribe(LF_OnWantedChanged, s_Subscriber) && ok;
 		ok = LF_EventBus.Subscribe(LF_OnSuspectIdentified, s_Subscriber) && ok;
+		ok = LF_EventBus.Subscribe(LF_OnVehicleReportedStolen, s_Subscriber) && ok;
+		ok = LF_EventBus.Subscribe(LF_OnVehicleRecovered, s_Subscriber) && ok;
+		ok = LF_EventBus.Subscribe(LF_OnVehicleChopped, s_Subscriber) && ok;
 		return ok;
 	}
 
@@ -110,7 +116,7 @@ class LF_WantedPosters
 	{
 		s_bScheduled = false;
 		array<string> entries = {};
-		BuildEntries(LF_WantedPostersConfig.Posters(), entries);
+		BuildEntries(LF_WantedPostersConfig.Posters(), entries, LF_WantedPostersConfig.StolenPosters());
 		float radius = LF_WantedPostersConfig.DrawRadius();
 		string signature = Signature(entries, radius);
 		if (s_aEntries && signature == s_sSignature)
@@ -157,18 +163,24 @@ class LF_WantedPosters
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the public posters, one per wanted suspect (their newest report), newest first.
+	//! Server: the public posters, one per wanted suspect (their newest report), newest first, then
+	//! up to `maxStolen` reported stolen cars, newest first, in the last places. People take the
+	//! places the cars leave free.
 	//! \return Number of posters.
-	static int BuildEntries(int maxPosters, notnull array<string> outEntries)
+	static int BuildEntries(int maxPosters, notnull array<string> outEntries, int maxStolen = 0)
 	{
 		outEntries.Clear();
+		array<LF_StolenReport> stolen = {};
+		LF_StolenVehicles.CollectNewestFirst(stolen);
+		int cars = Math.Min(Math.Min(stolen.Count(), maxStolen), maxPosters);
+		int people = maxPosters - cars;
 		array<LF_WantedReportRecord> reports = {};
 		LF_WantedReports.CollectNewestFirst(reports);
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		array<string> seen = {};
 		foreach (LF_WantedReportRecord report : reports)
 		{
-			if (outEntries.Count() >= maxPosters)
+			if (outEntries.Count() >= people)
 				break;
 
 			if (seen.Contains(report.m_sPlayerUid))
@@ -194,6 +206,9 @@ class LF_WantedPosters
 			outEntries.Insert(EncodePerson(name, report.m_sOffence, level, report.m_sClothing, report.m_sVehicle, report.m_sAppearance));
 		}
 
+		for (int i = 0; i < cars; i++)
+			outEntries.Insert(EncodeVehicle(stolen[i].m_sPlate, stolen[i].m_sNameKey, stolen[i].m_sPrefabGuid));
+
 		return outEntries.Count();
 	}
 
@@ -214,11 +229,28 @@ class LF_WantedPosters
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A reported stolen car: its plate, its name key and its prefab GUID, for the picture.
+	static string EncodeVehicle(string plate, string nameKey, string prefabGuid)
+	{
+		return KIND_VEHICLE + FIELD + Clean(plate) + FIELD + Clean(nameKey) + FIELD + Clean(prefabGuid);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: an entry back into its fields; null (logged) when malformed.
 	static LF_WantedPosterEntry Decode(string entry)
 	{
 		array<string> fields = {};
 		entry.Split(FIELD, fields, false);
+		if (fields.Count() >= VEHICLE_FIELDS && fields[0] == KIND_VEHICLE)
+		{
+			LF_WantedPosterEntry car = new LF_WantedPosterEntry();
+			car.m_sKind = KIND_VEHICLE;
+			car.m_sName = fields[1];
+			car.m_sVehicle = fields[2];
+			car.m_sAppearance = fields[3];
+			return car;
+		}
+
 		if (fields.Count() < PERSON_FIELDS || fields[0] != KIND_PERSON)
 		{
 			LF_Debug.Error(FEATURE, "poster dropped, malformed entry: " + entry);
