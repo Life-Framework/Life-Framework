@@ -7,15 +7,771 @@ FrameWidgetClass {
   OffsetBottom -1080
  }
  {
-  ImageWidgetClass "{7339BAF895D3487B}" {
-   Name "Thread"
-   Slot FrameWidgetSlot "{893B114D44EB8A47}" {
+  ImageWidgetClass "{0F812666099BE46C}" {
+   Name "Bead0"
+   Slot FrameWidgetSlot "{A56CE0A981C31A8D}" {
     OffsetLeft 0
     OffsetTop 0
-    SizeX 100
-    OffsetRight -100
-    SizeY 5
-    OffsetBottom -5
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{DBFDFF74D468E07A}" {
+   Name "Bead1"
+   Slot FrameWidgetSlot "{3A0D153298478468}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{04F329ED368D32E3}" {
+   Name "Bead2"
+   Slot FrameWidgetSlot "{B0DDC9B1548D4A80}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{3289F36E73DA7207}" {
+   Name "Bead3"
+   Slot FrameWidgetSlot "{4FDE1E156FB9F0B0}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{C5397C09497CEC2B}" {
+   Name "Bead4"
+   Slot FrameWidgetSlot "{226544CF1B7485E2}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{F8325BFC5846F21C}" {
+   Name "Bead5"
+   Slot FrameWidgetSlot "{E128000F2ECFB1BF}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{08100EE9B3CB65DE}" {
+   Name "Bead6"
+   Slot FrameWidgetSlot "{50E97A8D0DADCFF7}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{F9FF5762CC5B384C}" {
+   Name "Bead7"
+   Slot FrameWidgetSlot "{85E1DB776CDD0B16}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{B3151E8D77476F71}" {
+   Name "Bead8"
+   Slot FrameWidgetSlot "{50DE26B5253E5305}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{527137A8CCC396C5}" {
+   Name "Bead9"
+   Slot FrameWidgetSlot "{FC80AD6EA0EDEADE}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{A1DCB7FB35824CE8}" {
+   Name "Bead10"
+   Slot FrameWidgetSlot "{0FFF08ABCDE0A3FA}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{A112301641539CEF}" {
+   Name "Bead11"
+   Slot FrameWidgetSlot "{F15FFE8609942E87}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{1A4E5D1D8BCD08E7}" {
+   Name "Bead12"
+   Slot FrameWidgetSlot "{467B6FF256390A30}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{7A3461E585F1BC35}" {
+   Name "Bead13"
+   Slot FrameWidgetSlot "{07DB8803522F0D81}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{F81AA56DB0D0BC03}" {
+   Name "Bead14"
+   Slot FrameWidgetSlot "{A8CE4575D209684B}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{57AA0878E13C9450}" {
+   Name "Bead15"
+   Slot FrameWidgetSlot "{CB02850F7D72B978}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{F86BC02C5DE259EF}" {
+   Name "Bead16"
+   Slot FrameWidgetSlot "{CB2EDF55210BFB5B}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{F581DFE95FB37696}" {
+   Name "Bead17"
+   Slot FrameWidgetSlot "{3040EA019E01391D}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{5DFEEFA6C7A85BC8}" {
+   Name "Bead18"
+   Slot FrameWidgetSlot "{8030B9769143854A}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{50D5E716A77C6F55}" {
+   Name "Bead19"
+   Slot FrameWidgetSlot "{6697B875349726FB}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{0FD6DD2FF97F6AC7}" {
+   Name "Bead20"
+   Slot FrameWidgetSlot "{4A31C9D9C711FEBC}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{89C018C2187E67C7}" {
+   Name "Bead21"
+   Slot FrameWidgetSlot "{C23E822DD280ADC8}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{B3A2BB8319DA9AD4}" {
+   Name "Bead22"
+   Slot FrameWidgetSlot "{5E15E911036BF5D6}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{B7BDC1ACFC1B98D1}" {
+   Name "Bead23"
+   Slot FrameWidgetSlot "{CFD21879D38B7522}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{B767F2953D276F8F}" {
+   Name "Bead24"
+   Slot FrameWidgetSlot "{54B54888DABAF768}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{9B089C0B29B72C2A}" {
+   Name "Bead25"
+   Slot FrameWidgetSlot "{242AC9AAD9C55F75}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{ED1ECEB851710897}" {
+   Name "Bead26"
+   Slot FrameWidgetSlot "{3CD5975A6CD6929A}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{2358AA4C1FB21017}" {
+   Name "Bead27"
+   Slot FrameWidgetSlot "{4951C2401156F660}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{4F1746E3E23D1E47}" {
+   Name "Bead28"
+   Slot FrameWidgetSlot "{176E4380AC337FEE}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{3AFD998A1D097F63}" {
+   Name "Bead29"
+   Slot FrameWidgetSlot "{87B31489D58C37DB}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{59D76A71A4B9A6AD}" {
+   Name "Bead30"
+   Slot FrameWidgetSlot "{FE9A66383F1D1ED1}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{02342F7763215280}" {
+   Name "Bead31"
+   Slot FrameWidgetSlot "{65CAD23D051444E3}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{8A9E57017F487465}" {
+   Name "Bead32"
+   Slot FrameWidgetSlot "{5434EC49F4C012D3}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{F8F414D956C093FF}" {
+   Name "Bead33"
+   Slot FrameWidgetSlot "{CF0E6EA0E4988017}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{E3569B7485E29C4D}" {
+   Name "Bead34"
+   Slot FrameWidgetSlot "{07548E17BECF09FF}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{FAEB1E68CADFD03F}" {
+   Name "Bead35"
+   Slot FrameWidgetSlot "{304B212E8586A989}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{F3B394DB5BAEDDA5}" {
+   Name "Bead36"
+   Slot FrameWidgetSlot "{FC709F6B525A2F5B}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{3C31FDE4D3466C6A}" {
+   Name "Bead37"
+   Slot FrameWidgetSlot "{72BD5768C86E16D3}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{897850FF56C77FFE}" {
+   Name "Bead38"
+   Slot FrameWidgetSlot "{BFDAD3E2A2F1D1A8}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{3DAE7B68AB17B4F8}" {
+   Name "Bead39"
+   Slot FrameWidgetSlot "{9F4CD898C69DC640}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{17137B26F4D7278D}" {
+   Name "Bead40"
+   Slot FrameWidgetSlot "{5976D54BDA51FC82}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{CC360AC463CD275D}" {
+   Name "Bead41"
+   Slot FrameWidgetSlot "{7D15EB1E38CD8B18}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{45EE05F55C025550}" {
+   Name "Bead42"
+   Slot FrameWidgetSlot "{DB44ED3517C4968E}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{48087A5D3A537170}" {
+   Name "Bead43"
+   Slot FrameWidgetSlot "{D6E9DBF185C7CD93}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{61C579CBE4D37A7C}" {
+   Name "Bead44"
+   Slot FrameWidgetSlot "{175DB1B157568FDE}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{4E98C4BBCAEA7666}" {
+   Name "Bead45"
+   Slot FrameWidgetSlot "{DFA8454461E8BB8C}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{436B1E72DBE4AE40}" {
+   Name "Bead46"
+   Slot FrameWidgetSlot "{62A20D4B6B9C1207}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{E6523BD48627C2B4}" {
+   Name "Bead47"
+   Slot FrameWidgetSlot "{9A21CB1794B7AC88}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{445251F9D73786D1}" {
+   Name "Bead48"
+   Slot FrameWidgetSlot "{A15E69076BD34CAE}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{14ED2C5ED2DBE680}" {
+   Name "Bead49"
+   Slot FrameWidgetSlot "{F758BEEBB2C80990}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{CA9DE16F34743EBD}" {
+   Name "Bead50"
+   Slot FrameWidgetSlot "{7C10360106A90F7F}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{27B0F87118B74B88}" {
+   Name "Bead51"
+   Slot FrameWidgetSlot "{3093B62458919399}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{B17C759C4ECFFE16}" {
+   Name "Bead52"
+   Slot FrameWidgetSlot "{AF2A1157378148D4}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{FA5A526FDD1E51BB}" {
+   Name "Bead53"
+   Slot FrameWidgetSlot "{91B602D4269EA64D}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{C69FE5B56663C007}" {
+   Name "Bead54"
+   Slot FrameWidgetSlot "{A9262D2128EFDCBB}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{13EA301CA294E7F3}" {
+   Name "Bead55"
+   Slot FrameWidgetSlot "{D96205AC57824975}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{B6EFC93478B30AC0}" {
+   Name "Bead56"
+   Slot FrameWidgetSlot "{5F2F6D55466166C0}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{4FCB9237120A3718}" {
+   Name "Bead57"
+   Slot FrameWidgetSlot "{55AD3000F0EE8913}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{7DF8E9D03F2F87EA}" {
+   Name "Bead58"
+   Slot FrameWidgetSlot "{97A9C385F8DABC9B}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{9FB64498EF9866AF}" {
+   Name "Bead59"
+   Slot FrameWidgetSlot "{9C5A682D24E18C37}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{D02831B80028CB24}" {
+   Name "Bead60"
+   Slot FrameWidgetSlot "{B848BEC2D544E12A}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{B6FBA64B308461AE}" {
+   Name "Bead61"
+   Slot FrameWidgetSlot "{88DE08AFFEEFB571}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{44FA2EF628DEEF68}" {
+   Name "Bead62"
+   Slot FrameWidgetSlot "{5F0C1A36377E2FAD}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
+   }
+   Color 0.62 0.08 0.06 1
+  }
+  ImageWidgetClass "{2961B01EF0A562C7}" {
+   Name "Bead63"
+   Slot FrameWidgetSlot "{21A9D0544DA77599}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 6
+    OffsetRight -6
+    SizeY 6
+    OffsetBottom -6
    }
    Color 0.62 0.08 0.06 1
   }

@@ -11,6 +11,7 @@ import { ROB_TARGET, arrive, clientBox, clientSees, sessionDir } from "../sessio
 // strings; client 1 at the same board draws nothing (police detail never reaches a civilian). Client 2
 // clocks out (the face goes) and back in (the list is asked for again: the path a late joiner on duty
 // takes). Shots: the card on the ground, the board, a close-up, the civilian's plain cork.
+//   node agent-box/session.mjs roster 2      (before up: client 2 on the police roster)
 //   node agent-box/session.mjs up --clients 2 --profile full --wait
 //   node agent-box/session.mjs case-board-proof
 //   node agent-box/session.mjs down
@@ -20,9 +21,12 @@ const BOARD_AT = { x: 234.72, y: 1.555, z: 239.19 };
 const DESK = "Roadmap_Police_Desk";
 const CLERK = "Roadmap_Fuel_Clerk";
 
+// This boot's log only: the session folder keeps the logs of earlier boots.
 function logsOf(dir) {
   if (!existsSync(dir)) return "";
-  return readdirSync(dir).sort().map((d) => join(dir, d, "console.log")).filter(existsSync).map((p) => readFileSync(p, "utf8")).join("\n");
+  const runs = readdirSync(dir).filter((d) => d.startsWith("logs_")).sort();
+  const newest = runs.length ? join(dir, runs[runs.length - 1], "console.log") : "";
+  return newest && existsSync(newest) ? readFileSync(newest, "utf8") : "";
 }
 
 export function casesOf(seen) {
@@ -55,7 +59,12 @@ async function runCaseBoardProof() {
     return r;
   };
   const serverLog = () => logsOf(join(dir, "server", "logs"));
-  const shot = (n, name, from, to, fov = 60) => {
+  const shot = (n, name, from, to, fov = 60, away = "Roadmap_Police_ArmoryStore") => {
+    // The character steps out of the picture first (it stood in front of the board).
+    if (away) {
+      on(n, { verb: "stand", entityName: away });
+      wait(1500);
+    }
     on(n, { verb: "camera", args: "hud off" });
     on(n, { verb: "camera", args: "stop" });
     on(n, { verb: "camera", args: `static ${from.x} ${from.y} ${from.z} ${to.x} ${to.y} ${to.z} ${fov} 50` });
@@ -90,7 +99,7 @@ async function runCaseBoardProof() {
   const card = left ? { x: Number(left[2]), y: Number(left[3]), z: Number(left[4]) } : null;
   if (card) {
     console.log(`ok    footprint card for report #${left[1]} at ${card.x}, ${card.y}, ${card.z}`);
-    shot(2, "case_board_footprint_card_client2", { x: card.x + 1.1, y: card.y + 0.9, z: card.z + 0.6 }, card, 50);
+    shot(2, "case_board_footprint_card_client2", { x: card.x + 1.1, y: card.y + 0.9, z: card.z + 0.6 }, card, 50, null);
   }
 
   // A civilian cannot bag it; the officer can.
@@ -107,9 +116,13 @@ async function runCaseBoardProof() {
   on(2, { verb: "stand", entityName: CLERK });
   wait(2500);
   on(2, { verb: "look" });
-  must(on(2, { verb: "use", className: "LF_WitnessAskAction", entityName: CLERK }, 10000), "ask the clerk");
-  wait(2000);
-  let statement = /\[LFDebug:Evidence\] statement left as evidence/.test(serverLog());
+  // An NPC remembers each thing with the configured accuracy; one that said nothing can be asked again.
+  let statement = false;
+  for (let ask = 0; ask < 4 && !statement; ask++) {
+    must(on(2, { verb: "use", className: "LF_WitnessAskAction", entityName: CLERK }, 10000), "ask the clerk");
+    wait(2000);
+    statement = /\[LFDebug:Evidence\] statement left as evidence/.test(serverLog());
+  }
   if (statement) {
     must(on(2, { verb: "use", className: "LF_BagEvidenceAction" }, 10000), "officer bags the statement");
     wait(2000);
@@ -125,7 +138,7 @@ async function runCaseBoardProof() {
   const cards = statement ? 2 : 1;
   expect(2, `the officer's board draws the case with ${cards} card(s)`, (c) => (c.cases === 1 && c.cards === cards && c.face !== "released" ? [] : [`cases=${c.cases}/${c.cards}/${c.face}`]), 20000);
   // Toward the board from the porch, then the cards up close (after the settle refresh).
-  wait(11000);
+  wait(14000);
   shot(2, "case_board_officer_client2", { x: BOARD_AT.x - 2.0, y: BOARD_AT.y + 0.1, z: BOARD_AT.z + 0.2 }, BOARD_AT, 60);
   shot(2, "case_board_close_client2", { x: BOARD_AT.x - 0.95, y: BOARD_AT.y, z: BOARD_AT.z }, BOARD_AT, 60);
 

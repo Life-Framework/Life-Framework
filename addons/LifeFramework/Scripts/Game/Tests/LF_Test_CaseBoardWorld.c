@@ -43,6 +43,7 @@ class LF_Test_CaseBoardWorld : LF_Test
 		}
 
 		ctx.True(LF_SignCatalog.IsUsable(LF_SignCatalog.Find("police_cases")), "the board's Read card is in LF_Signs.conf");
+		RunBagsDoNotStack(ctx);
 
 		array<ref LF_WantedReportRecord> reportsBefore = LF_WantedReports.ExportAll();
 		array<ref LF_EvidenceLockerRow> lockerBefore = LF_EvidenceLocker.ExportAll();
@@ -85,5 +86,31 @@ class LF_Test_CaseBoardWorld : LF_Test
 		LF_EvidenceLocker.ApplyAll(lockerBefore);
 		LF_CaseBoard.ResetStatics();
 		LF_CaseBoard.ApplyAll(boardBefore);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Two evidence bags in one inventory stay two: a bag that stacked onto another lost its stamp, so
+	//! an officer carrying a footprint and a statement pinned one card (session, 2026-11-13).
+	protected void RunBagsDoNotStack(LF_TestContext ctx)
+	{
+		IEntity first = LF_Utils.SpawnEntityPrefab(LF_Evidence.BAG_PREFAB, "1000 0 1012");
+		IEntity second = LF_Utils.SpawnEntityPrefab(LF_Evidence.BAG_PREFAB, "1000 0 1013");
+		LF_QuantityComponent firstQuantity;
+		LF_QuantityComponent secondQuantity;
+		if (first)
+			firstQuantity = LF_QuantityComponent.Cast(first.FindComponent(LF_QuantityComponent));
+
+		if (second)
+			secondQuantity = LF_QuantityComponent.Cast(second.FindComponent(LF_QuantityComponent));
+
+		ctx.True(firstQuantity && secondQuantity, "the evidence bag carries a quantity component");
+		if (firstQuantity && secondQuantity)
+			ctx.False(firstQuantity.CanCombine(secondQuantity), "two evidence bags never stack: each keeps its own stamp");
+
+		if (first)
+			SCR_EntityHelper.DeleteEntityAndChildren(first);
+
+		if (second)
+			SCR_EntityHelper.DeleteEntityAndChildren(second);
 	}
 }

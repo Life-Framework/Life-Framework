@@ -4,7 +4,7 @@
 //! case columns instead of a row of posters: the suspect's sheet on top (the portrait once
 //! identified, else an empty photo frame and UNKNOWN PERSON), the pinned evidence cards under it,
 //! and a red string from each card's pin to the suspect's. A string is one LF_CaseBoardString.layout:
-//! a thin image turned about its centre (ImageWidget.SetRotation, as the sign faces turn a title).
+//! two pin heads and a chain of beads between them.
 class LF_CaseBoardFace : LF_WantedPosterFace
 {
 	static const ResourceName STRING_LAYOUT = "{22DB59D5A86C7CD0}UI/Layouts/Investigation/LF_CaseBoardString.layout";
@@ -21,8 +21,12 @@ class LF_CaseBoardFace : LF_WantedPosterFace
 	//! The pin on a card, from its top edge; the pin on the suspect's sheet, from its bottom edge.
 	static const float CARD_PIN = 16;	// lf-fixed: the layout size
 	static const float CASE_PIN = 22;	// lf-fixed: the layout size
-	static const float THREAD = 5;	// lf-fixed: a red thread at board scale
 	static const float PIN = 16;	// lf-fixed: the pin head
+	//! The beads of a string (LF_CaseBoardString.layout has BEADS of them), BEAD units square, one
+	//! every BEAD_STEP units at most; a longer string spaces them out.
+	static const int BEADS = 64;	// lf-fixed: the layout has 64 beads
+	static const float BEAD = 6;	// lf-fixed: the layout size
+	static const float BEAD_STEP = 5;	// lf-fixed: close enough to read as one thread
 
 	protected int m_iCases;
 	protected int m_iCards;
@@ -48,8 +52,8 @@ class LF_CaseBoardFace : LF_WantedPosterFace
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The string from a card's pin to the suspect sheet's pin: centre, length and angle (degrees).
-	//! A layout-unit line turned about its centre, so it starts and ends on the two pins.
+	//! The string from a card's pin to the suspect sheet's pin: centre, length and angle (degrees,
+	//! clockwise on the face, y down). The line starts on the card's pin and turns about it.
 	static void StringBetween(vector from, vector to, out vector centre, out float length, out float angle)
 	{
 		centre = (from + to) * 0.5;
@@ -169,12 +173,26 @@ class LF_CaseBoardFace : LF_WantedPosterFace
 		float length;
 		float angle;
 		StringBetween(from, to, centre, length, angle);
-		ImageWidget strand = ImageWidget.Cast(root.FindAnyWidget("Thread"));
-		if (strand)
+		// The thread is a chain of beads: small squares along the line, close enough to read as one
+		// string. A single image turned in the render target is shrunk to fit its own unturned box (a
+		// 1 cm dash between the pins), whatever size it is given (docs/architecture/visual-boards.md).
+		int steps = Math.Ceil(length / BEAD_STEP);
+		int beads = Math.ClampInt(steps + 1, 2, BEADS);
+		for (int i = 0; i < BEADS; i++)
 		{
-			Place(strand, centre[0] - length * 0.5, centre[1] - THREAD * 0.5, length, THREAD, 1);
-			strand.SetPivot(0.5, 0.5);
-			strand.SetRotation(angle);
+			Widget bead = root.FindAnyWidget("Bead" + i.ToString());
+			if (!bead)
+				continue;
+
+			if (i >= beads)
+			{
+				bead.SetVisible(false);
+				continue;
+			}
+
+			float along = i / (beads - 1.0);
+			vector at = from + (to - from) * along;
+			Place(bead, at[0] - BEAD * 0.5, at[1] - BEAD * 0.5, BEAD, BEAD, 1);
 		}
 
 		Place(root.FindAnyWidget("PinA"), from[0] - PIN * 0.5, from[1] - PIN * 0.5, PIN, PIN, 1);
@@ -261,7 +279,7 @@ class LF_CaseBoardFace : LF_WantedPosterFace
 		if (text.IsEmpty())
 			text = WidgetManager.Translate("#LF-CaseBoard_NoNote");
 
-		SheetLine(card, "Header", title, 12, CARD_PIN + 12, CARD_WIDTH - 24, 40, 30);
+		SheetLine(card, "Header", title, 12, CARD_PIN + 12, CARD_WIDTH - 24, 40, 24);
 		SheetLine(card, "Name", string.Empty, 12, 0, CARD_WIDTH - 24, 1, 8);
 		SheetLine(card, "Offence", string.Empty, 12, 0, CARD_WIDTH - 24, 1, 8);
 		SheetLine(card, "Detail", text, 12, CARD_PIN + 58, CARD_WIDTH - 24, CARD_HEIGHT - CARD_PIN - 66, 24);
@@ -471,7 +489,10 @@ class LF_CaseBoardComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: a new list. A built face redraws.
+	//! Client: a new list. A built face is built again with it: a fresh render target draws its first
+	//! frame every time, where redrawing a frozen one sometimes kept the old frame on a busy client
+	//! (session, 2026-11-13: the pinned cards never reached the frozen face). A change is a pin, a
+	//! crime or an identification, so this is rare; a build takes about 2 ms.
 	static void ChangedAll()
 	{
 		if (!s_aBoards)
@@ -480,7 +501,10 @@ class LF_CaseBoardComponent : ScriptComponent
 		foreach (LF_CaseBoardComponent board : s_aBoards)
 		{
 			if (board && board.m_Face && board.m_Face.IsBuilt())
-				board.m_Face.Show(LF_CaseBoardView.Entries());
+			{
+				board.ReleaseFace("new list");
+				board.BuildFace();
+			}
 		}
 	}
 

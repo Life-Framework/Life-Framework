@@ -113,11 +113,25 @@ The police case board (#148, `Prefabs/Investigation/LF_CaseBoard.et`, in the sta
 same render target with another layout of paper: up to three case columns, each a sheet for the
 suspect (the wanted poster layout: CASE n, the portrait once identified, the offence, the place and
 the time) and up to four index cards under it (the same layout with the photo parts hidden). A red
-string runs from each card's pin to the suspect sheet's pin: `LF_CaseBoardString.layout` is one thin
-image and two pin heads; the image is sized to the distance between the pins, centred between them
-and turned about its centre (`ImageWidget.SetPivot(0.5, 0.5)`, `SetRotation`), as the sign faces
-turn a title. The spike's question, whether a turned widget draws in the render target, is answered
-by the session shots below; a `CanvasWidget` line was the fallback and was not needed.
+string runs from each card's pin to the suspect sheet's pin: `LF_CaseBoardString.layout` is two pin
+heads and a chain of 64 beads, 6 units square, laid along the line at most 5 units apart, so it reads
+as one thread and needs no turned widget.
+
+The spike (#148) tried the turned line first. An `ImageWidget` turned with `SetRotation` in the
+render target is shrunk to fit its own unturned box: sized as a long thin slot (the gap between the
+pins by 5 units) it drew a 1 cm dash at the midpoint; setting the image's own size
+(`ImageWidget.SetSize`, as the vanilla map's drawing line does) or the vanilla line texture with
+`SizeToContent` drew nothing better. The beads cost 64 small images a string (12 strings at most
+on a face), drawn only while the face is live. A `CanvasWidget` `LineDrawCommand` is the
+untried alternative if a face ever needs a smoother thread.
+
+A new list builds the face again rather than redrawing it in place. On the session client (0.7 GB
+of RAM free with two full-profile clients and a server) a frozen face that was redrawn kept its old
+frame through the live window and both settle refreshes; a freshly built face draws its first frame
+every time. A change is a pin, a crime or an identification, so the rebuild is rare. The frozen
+frame still has the cork at a low mip on such a busy client (the wanted board's face shares it).
+
+![The officer's case board: one case, two cards, two strings](../../website/public/docs-images/148/case-board-close-after.png)
 
 | Piece | Where | Does |
 |---|---|---|
