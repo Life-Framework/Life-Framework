@@ -21,8 +21,9 @@ export const VANILLA = {
 // Ids of Item_Base.et objects the scaffold overrides; a new id would add a second component or object
 // (its ItemPhysAttributes is the named object PhysicalAttributes, as LF_Lockpick.et overrides it).
 const BASE = { inventory: "5222EB4D0C73006B", attributes: "5222EB4D0A2B466B", display: "5222EB4D07D865FA" };
-// The lockpick's hand offsets: a small object held between thumb and fingers.
-export const DEFAULT_HAND = { rotation: [-65, -60, -60], translation: [-0.07, 0.03, -0.01] };
+// The lockpick's hand rotation. The translation is zero: the clean stage centres a gadget on its grip, and the
+// lockpick's -0.07 0.03 -0.01 floated the centred handcuffs 12 cm above the fingers (look 2026-11-13).
+export const DEFAULT_HAND = { rotation: [-65, -60, -60], translation: [0, 0, 0] };
 
 const fmt = (n) => String(+Number(n).toFixed(4));
 const vec = (v) => v.map(fmt).join(" ");
