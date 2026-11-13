@@ -80,6 +80,10 @@ GenericEntity Roadmap_Police_Taser : "{6D583A40C5C5C150}Prefabs/Weapons/Handguns
  coords 232.852 0.99 239.959
  angleY 0
 }
+GenericEntity Roadmap_Police_Handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
+ coords 232.451 0.922 239.75
+ angleY 20
+}
 GenericEntity Roadmap_Police_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et" {
  components {
   LF_SpikeStripComponent "{EDD34B7850C70B44}" {

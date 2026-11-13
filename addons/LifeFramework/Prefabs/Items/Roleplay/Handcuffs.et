@@ -1,0 +1,50 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "4FB072B7EFD76970"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_Handcuffs_Name"
+     Description "#LF-Item_Handcuffs_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.3
+     SizeSetupStrategy Volume
+     ItemVolume 150
+     RestingUP Up
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{6A7E08711057A50F}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{600D21DBE6A40875}" {
+       AnimGraph "{883777E45A6C4DA1}Assets/Items/Medicine/Workspaces/Gauze_01.agr"
+       AnimInstance "{79BD98038DD60F88}Assets/Items/Medicine/Workspaces/Gauze_01_player.asi"
+       BindingName "Gadget"
+      }
+     }
+     HandAdditiveRotation -65 -60 -60
+     HandAdditiveTranslation -0.07 0.03 -0.01
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{51B4D3B0BBEC9E87}" {
+      CameraOrbitAngles -25 -25 0
+      CameraDistanceToItem 0.54
+      FOV 20
+     }
+    }
+    CommonItemType "LF_ITEM"
+   }
+  }
+  MeshObject "{AA3638EBE16B42E8}" {
+   Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
+  }
+  RigidBody "{B5484A1808205AE5}" {
+   LayerPreset "ItemFireView"
+   ModelGeometry 1
+  }
+  SCR_GadgetComponent "{73D7E3E8DB91E0B1}" {
+   m_eAnimVariable LF_ITEM
+  }
+  LF_HandcuffsComponent "{F3D6B1A411654CB0}" {
+  }
+ }
+}

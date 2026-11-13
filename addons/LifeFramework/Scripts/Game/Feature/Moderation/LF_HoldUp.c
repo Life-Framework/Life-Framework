@@ -23,11 +23,24 @@ class LF_HoldUp
 	static const string SLOT = "holdup";
 
 	protected static ref map<string, int> s_mLast;
+	//! Target uid -> unix seconds of the last hold-up aimed at them (LF_Restraint reads it).
+	protected static ref map<string, int> s_mHeldUpAt;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mLast = null;
+		s_mHeldUpAt = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: when targetUid was last held up, or -1 for never.
+	static int HeldUpAt(string targetUid)
+	{
+		if (!s_mHeldUpAt || !s_mHeldUpAt.Contains(targetUid))
+			return -1;
+
+		return s_mHeldUpAt.Get(targetUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -68,6 +81,10 @@ class LF_HoldUp
 		}
 
 		s_mLast.Set(actorUid, now);
+		if (!s_mHeldUpAt)
+			s_mHeldUpAt = new map<string, int>();
+
+		s_mHeldUpAt.Set(targetUid, now);
 		LF_Debug.Info(FEATURE, string.Format("hold-up: %1 -> %2 at %3", actorUid, targetUid, position));
 		LF_EventBus.Publish(LF_OnHoldUp.Create(actorUid, targetUid, position));
 		return result;

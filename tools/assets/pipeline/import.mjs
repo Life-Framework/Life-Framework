@@ -28,13 +28,24 @@ export function logProblems(text, name = "") {
   return [...new Set(out)];
 }
 
+// One run's log. console.log already holds every line of script.log and error.log in order; joining
+// the three put error.log's start-up lines ("metafile without corresponding resource" for each
+// resource not built yet) after script.log's last line, inside the window logProblems reads, and
+// failed a clean import of the handcuffs (2026-11-13).
+export function runLog(dir) {
+  for (const n of ["console.log", "script.log", "error.log"]) {
+    if (existsSync(join(dir, n))) return readFileSync(join(dir, n), "utf8");
+  }
+  return "";
+}
+
 function newestLog(profile) {
   const logs = join(profile, "logs");
   if (!existsSync(logs)) return "";
   const dirs = readdirSync(logs).map((d) => join(logs, d)).filter((d) => statSync(d).isDirectory()).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
   for (const d of dirs) {
-    const f = ["console.log", "script.log", "error.log"].map((n) => join(d, n)).filter(existsSync);
-    if (f.length) return f.map((p) => readFileSync(p, "utf8")).join("\n");
+    const text = runLog(d);
+    if (text) return text;
   }
   return "";
 }
