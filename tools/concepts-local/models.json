@@ -1,0 +1,24 @@
+{
+  "model": "FLUX.1 [schnell], GGUF Q4_K_S",
+  "id": "flux1-schnell-q4_k_s",
+  "runtime": {
+    "name": "stable-diffusion.cpp",
+    "release": "master-1094-3bad892",
+    "licence": "MIT",
+    "repo": "leejet/stable-diffusion.cpp",
+    "assets": [
+      { "name": "sd-master-3bad892-bin-win-cuda12-x64.zip", "bytes": 369797459, "sha256": "4f0000ad9acf686468703132ec63ba8d37c3746f5eece4ebba014e79b322da1b" },
+      { "name": "cudart-sd-bin-win-cu12-x64.zip", "bytes": 563452046, "sha256": "fe20366827d357c00797eebb58244dddab7fd9a348d70090c3871004c320f38d" }
+    ]
+  },
+  "files": [
+    { "name": "flux1-schnell-Q4_K_S.gguf", "role": "diffusion", "bytes": 6783943712, "sha256": "4fd16477b3a5296d0cf722c4b92a9fd7f30d09ac7495826e4465d8de9c9fd973",
+      "url": "https://huggingface.co/city96/FLUX.1-schnell-gguf/resolve/main/flux1-schnell-Q4_K_S.gguf", "licence": "Apache-2.0 (city96 GGUF quantisation of black-forest-labs/FLUX.1-schnell)" },
+    { "name": "t5-v1_1-xxl-encoder-Q5_K_M.gguf", "role": "t5xxl", "bytes": 3386856640,
+      "url": "https://huggingface.co/city96/t5-v1_1-xxl-encoder-gguf/resolve/main/t5-v1_1-xxl-encoder-Q5_K_M.gguf", "licence": "Apache-2.0 (Google T5 v1.1 XXL encoder, city96 GGUF)" },
+    { "name": "clip_l.safetensors", "role": "clip_l", "bytes": 246144152,
+      "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors", "licence": "Apache-2.0 (CLIP ViT-L/14 text encoder as shipped with FLUX.1 [schnell])" },
+    { "name": "ae.safetensors", "role": "vae", "bytes": 335304388,
+      "url": "https://huggingface.co/Comfy-Org/Lumina_Image_2.0_Repackaged/resolve/main/split_files/vae/ae.safetensors", "licence": "Apache-2.0 (FLUX.1 [schnell] autoencoder; the official repo is gated, this is the identical public copy)" }
+  ]
+}

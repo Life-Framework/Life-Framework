@@ -27,7 +27,7 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | Stage | Does | Who judges the result |
 |---|---|---|
 | `spec` | Checks the spec: prompt length, size, triangle and credit budgets, part bones | The agent writes the spec: [prompt-writing.md](prompt-writing.md) |
-| `concept` | Optional. 10 prompts become 10 Meshy text-to-image pictures and a numbered 5x2 contact sheet; each is scored against a rubric; one is picked. No `concepts.json`, no stage. [concepts.md](concepts.md) | A human picks (`asset pick`), or the agent with `--pick` |
+| `concept` | Optional. 10 prompts become 10 Meshy pictures (`nano-banana-2-lite`), then one final render of the pick (`gpt-image-2-6-flare`) that feeds image-to-3D; `--provider local` is the free FLUX.1 [schnell] option and a numbered 5x2 contact sheet; each is scored against a rubric; one is picked. No `concepts.json`, no stage. [concepts.md](concepts.md) | A human picks (`asset pick`), or the agent with `--pick` |
 | `generate` | With a picked concept: Meshy image-to-3D from that picture (one task, PBR maps). Otherwise text-to-3D preview, then refine. Downloads the GLB, the maps and a thumbnail; logs credits | The agent reads `raw/refined.png`: [review-generation.md](review-generation.md) |
 | `clean` | Headless Blender: orientation, scale in metres, origin, floaters, decimation to LODs, one UV atlas packed as `_BCR` and `_NMO`, collider, and for a weapon the vanilla pistol skeleton, sockets and moving parts | The tool checks the numbers; the agent reads `clean/review/*.png`: [review-clean.md](review-clean.md), [socket-checks.md](socket-checks.md) |
 | `import` | Copies the sources into the addon, writes every `.meta` with fresh GUIDs and the `.emat`, rebuilds them in a hidden Workbench, then reads the `.xob` back and checks bones, sockets, material and collider | The tool |
@@ -46,7 +46,7 @@ waiting resumes the same task and pays nothing twice.
 
 Read this before any `generate`.
 
-- A concept batch is 10 images: 4 credits each on `nano-banana-2-1`, 40 in all (`concepts.mjs`; `nano-banana` is 3,
+- A concept round is 10 images at 3 credits on `nano-banana-2-lite` (30), plus one final render of the pick at 9 on `gpt-image-2-6-flare`: 39 in all. `--provider local` costs nothing (`concepts.mjs`; `nano-banana` is 3,
   `nano-banana-2` 6, GPT Image 9). Image-to-3D from the picked picture is one task: 30 credits on `latest` / `meshy-6`,
   15 on `meshy-6-lite`. Both are in `credits.jsonl` and count against `budget.credits`.
 - One text-to-3D attempt is a preview plus a refine: 15 credits on `meshy-6-lite`, 30 on `latest`

@@ -2,7 +2,7 @@
 // Playbook for the judgement steps: docs/asset-pipeline/README.md.
 //
 //   asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name N] [--no-run]
-//   asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
+//   asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--provider local|meshy]
 //   asset status [<slug>]      asset doctor      asset selftest
 //
 // The spec is tools/assets/<slug>/spec.json (tracked). Everything a stage produces is cached in
@@ -133,7 +133,7 @@ async function stageGenerate(ctx) {
       g.imageLogged = true;
       save();
     }
-    Object.assign(ids, { imageTaskId: g.imageTaskId, concept: concept.pick.n, conceptTaskId: concept.variant.taskId, conceptPrompt: concept.variant.prompt });
+    Object.assign(ids, { imageTaskId: g.imageTaskId, concept: concept.pick.n, conceptTaskId: concept.final?.taskId ?? concept.variant.taskId, conceptPrompt: concept.variant.prompt });
     if (final.thumbnail_url) await meshy.download(final.thumbnail_url, join(raw, "refined.png"));
   } else {
     if (!g.previewId) {
@@ -225,7 +225,7 @@ async function stageConcepts(ctx) {
 
 const RUN = { spec: stageSpec, concept: stageConcepts, generate: stageGenerate, clean: stageClean, import: stageImport, prefab: stagePrefab };
 
-export async function run(root, slug, { from, only, force, workbench, pick } = {}) {
+export async function run(root, slug, { from, only, force, workbench, pick, provider, wait, conceptOnly } = {}) {
   const spec = loadSpec(root, slug);
   const dir = cacheDir(root, slug);
   const fullState = readState(dir);
@@ -240,7 +240,7 @@ export async function run(root, slug, { from, only, force, workbench, pick } = {
     }
     rerun = true; // a rerun stage invalidates every later one
     const started = Date.now();
-    const ctx = { root, slug, spec, dir, fullState, workbench, pick, state: (fullState.work ||= {}) };
+    const ctx = { root, slug, spec, dir, fullState, workbench, pick, provider, waitS: wait, conceptOnly, state: (fullState.work ||= {}) };
     console.log(`--- ${stage}`);
     if (stage === "generate" && force && ctx.state.generate?.refineLogged) {
       // A forced generate is a new attempt: keep the old download beside it and start new tasks.
@@ -336,11 +336,12 @@ export async function main(flags, { workbench } = {}) {
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
     if (sub === "new") return cmdNew(root, rest, workbench);
     const slug = rest.find((f) => !f.startsWith("--") && f !== flag(rest, "--from") && f !== flag(rest, "--only"));
-    if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]"); return 2; }
-    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench });
+    if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--provider local|meshy]"); return 2; }
+    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench,
+      provider: flag(rest, "--provider"), wait: Number(flag(rest, "--wait") || 0), conceptOnly: (flag(rest, "--concepts") || "").split(",").filter(Boolean).map(Number) });
   }
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
-       tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]     stages: ${STAGES.join(", ")}
+       tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--provider local|meshy]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
        tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
        tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)

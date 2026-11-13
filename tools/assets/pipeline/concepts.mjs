@@ -7,9 +7,26 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import * as meshy from "./meshy.mjs";
 
+// The picture provider. "meshy" is the default: ten cheap exploration pictures, then one clean final
+// render of the pick. "local" is FLUX.1 [schnell] on this PC (tools/concepts-local, free, optional,
+// asked for with --provider local).
+export const PROVIDERS = ["meshy", "local"];
+export const DEFAULT_PROVIDER = "meshy";
+export const LOCAL_MODEL = "flux1-schnell-q4_k_s";
+export function resolveProvider(flag) {
+  const p = flag ?? DEFAULT_PROVIDER;
+  if (!PROVIDERS.includes(p)) throw new Error(`unknown concept provider "${p}"; use --provider ${PROVIDERS.join(" or ")}`);
+  return p;
+}
+const localLib = () => import(new URL("../../concepts-local/local.mjs", import.meta.url).href);
+
 export const COUNT = 10;
 export const COLS = 5;
-export const IMAGE_MODEL = "nano-banana-2-1"; // 4 credits; nano-banana is 3, nano-banana-2 is 6
+// Exploration: ten pictures on the cheapest model that reads well (3 credits each). The pick then gets ONE
+// final render on the cleanest model for image-to-3D (9 credits), and that image feeds image-to-3D.
+// The comparison is in docs/asset-pipeline/concepts.md "Which models".
+export const IMAGE_MODEL = "nano-banana-2-lite";
+export const FINAL_MODEL = "gpt-image-2-6-flare";
 // Every picture is the same kind of shot, because image-to-3D reads a plain product photo best.
 export const FRAME = "Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.";
 export const RUBRIC = [
@@ -123,7 +140,9 @@ export function pickedImage(root, slug, dir) {
   const rec = loadConcepts(root, slug);
   if (!rec?.pick) return null;
   const img = join(conceptsDir(dir), `${pad(rec.pick.n)}.png`);
-  return existsSync(img) ? { file: img, pick: rec.pick, variant: rec.variants[rec.pick.n - 1], model: rec.image_model || IMAGE_MODEL } : null;
+  const fin = join(conceptsDir(dir), "final.png"); // the clean render of the pick, when it exists, feeds image-to-3D
+  const useFinal = rec.final?.n === rec.pick.n && existsSync(fin);
+  return existsSync(img) ? { file: useFinal ? fin : img, final: useFinal ? rec.final : null, pick: rec.pick, variant: rec.variants[rec.pick.n - 1], model: rec.image_model || IMAGE_MODEL } : null;
 }
 
 export const imageCost = (model = IMAGE_MODEL) => meshy.COST.image[model] ?? 9;
@@ -135,22 +154,30 @@ export function loadConcepts(root, slug) {
 }
 export const saveConcepts = (root, slug, rec) => writeFileSync(conceptsFile(root, slug), JSON.stringify(rec, null, 2) + "\n");
 
-export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
-  const { root, spec, dir } = ctx;
-  const rec = loadConcepts(root, spec.slug);
-  if (!rec) {
-    console.log(`no tools/assets/${spec.slug}/concepts.json: the generate stage uses text-to-3D from spec.prompt`);
-    return { skipped: true };
+// ---- providers ---------------------------------------------------------------------------------
+// Local: one FLUX.1 [schnell] picture at a time through tools/concepts-local. A concepts.json
+// `reference` picture becomes the image-to-image start (reference.strength, default 0.7). A busy GPU
+// stops the stage with the reason; rerun when the game session is closed (or --wait).
+async function localImages(ctx, rec, todo, folder) {
+  const out = {};
+  if (!todo.length) return out;
+  const lib = await localLib();
+  const refFile = rec.reference?.file ? join(ctx.root, rec.reference.file) : null;
+  if (refFile && !existsSync(refFile)) throw new Error(`concepts.json reference ${rec.reference.file} does not exist`);
+  console.log(`local ${LOCAL_MODEL}: ${todo.length} concept image(s), no credits${refFile ? `, image-to-image from ${rec.reference.file}` : ""}`);
+  for (const p of todo) {
+    const file = join(folder, `${pad(p.n)}.png`);
+    const r = await lib.generate({ prompt: p.prompt, out: file, seed: 1000 + p.n, init: refFile, strength: rec.reference?.strength ?? 0.7 }, { waitS: ctx.waitS || 0 });
+    out[p.n] = { provider: "local", model: LOCAL_MODEL, seconds: r.seconds, vram_peak_mib: r.peakMiB, ...(refFile ? { reference: rec.reference.file } : {}) };
+    console.log(`  concept ${p.n} ${p.label} ok (${r.seconds}s, +${r.peakMiB} MiB VRAM)`);
   }
-  const problems = conceptProblems(rec);
-  if (problems.length) throw new Error("concepts.json problems:\n  " + problems.join("\n  "));
-  const model = rec.image_model || IMAGE_MODEL;
-  const folder = conceptsDir(dir);
-  mkdirSync(folder, { recursive: true });
+  return out;
+}
+
+async function meshyImages(ctx, todo, model, prompts, folder, writeState) {
+  const { spec, dir } = ctx;
   const ledger = join(dir, "credits.jsonl");
   const st = (ctx.state.concepts ||= {});
-  const prompts = buildPrompts(rec.subject, rec.variants);
-  const todo = prompts.filter((p) => !existsSync(join(folder, `${pad(p.n)}.png`)));
   const need = todo.filter((p) => !st[p.n]?.taskId).length * imageCost(model);
   const before = meshy.spent(ledger);
   if (before + need > spec.budget.credits) throw new Error(`concepts need about ${need} credits and ${before} are spent; the cap is ${spec.budget.credits}. Stop and report.`);
@@ -162,6 +189,7 @@ export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
     st[p.n] = { taskId: (await meshy.call("POST", "/openapi/v1/text-to-image", { ai_model: model, prompt: p.prompt, aspect_ratio: "1:1" })).result };
     save();
   }
+  const out = {};
   for (const p of todo) {
     const t = await meshy.waitTask(st[p.n].taskId, { path: "/openapi/v1/text-to-image", budgetS: 600 });
     if (!t.image_urls?.[0]) throw new Error(`concept ${p.n}: Meshy returned no image`);
@@ -171,14 +199,82 @@ export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
       st[p.n].logged = true;
     }
     save();
+    out[p.n] = { provider: "meshy", model, taskId: st[p.n].taskId };
     console.log(`  concept ${p.n} ${p.label} ok`);
   }
-  rec.image_model = model;
-  rec.variants.forEach((v, i) => { v.prompt = prompts[i].prompt; if (st[i + 1]?.taskId) v.taskId = st[i + 1].taskId; });
+  for (const p of prompts) if (!out[p.n] && st[p.n]?.taskId) out[p.n] = { provider: "meshy", model, taskId: st[p.n].taskId };
+  return out;
+}
+
+// The final sub-step, after the pick: one render of the chosen concept's prompt on FINAL_MODEL (Meshy,
+// 9 credits) or FLUX (local, free) into concepts/final.png. A finished final for the same pick is kept;
+// a new pick makes a new one. pickedImage hands this picture to image-to-3D.
+async function finalRender(ctx, rec, provider, folder, writeState) {
+  const { spec, dir } = ctx;
+  const n = rec.pick.n;
+  const file = join(folder, "final.png");
+  if (rec.final?.n === n && existsSync(file)) { console.log(`final render of concept ${n} already made (${rec.final.provider} ${rec.final.model})`); return rec.final; }
+  const prompt = buildPrompts(rec.subject, rec.variants)[n - 1].prompt;
+  const st = (ctx.state.final ||= {});
+  if (st.n !== n) for (const k of Object.keys(st)) delete st[k];
+  st.n = n;
+  if (provider === "local") {
+    const r = await (await localLib()).generate({ prompt, out: file, seed: 7000 + n }, { waitS: ctx.waitS || 0 });
+    rec.final = { n, provider: "local", model: LOCAL_MODEL, seconds: r.seconds, credits: 0, prompt };
+    console.log(`final render of concept ${n} ok (local, ${r.seconds}s)`);
+    return rec.final;
+  }
+  const ledger = join(dir, "credits.jsonl");
+  const cost = imageCost(FINAL_MODEL);
+  const before = meshy.spent(ledger);
+  if (!st.taskId && before + cost > spec.budget.credits) throw new Error(`the final render needs ${cost} credits and ${before} are spent; the cap is ${spec.budget.credits}. Stop and report.`);
+  if (!st.taskId) {
+    console.log(`Meshy balance ${await meshy.balance()} credits; final render of concept ${n} on ${FINAL_MODEL} at ${cost}`);
+    st.taskId = (await meshy.call("POST", "/openapi/v1/text-to-image", { ai_model: FINAL_MODEL, prompt }, { timeoutMs: 120000 })).result; // no aspect_ratio: the tested call had none
+    writeState(dir, ctx.fullState);
+  }
+  const t = await meshy.waitTask(st.taskId, { path: "/openapi/v1/text-to-image", budgetS: 600 });
+  if (!t.image_urls?.[0]) throw new Error("final render: Meshy returned no image");
+  await meshy.download(t.image_urls[0], file);
+  const credits = t.consumed_credits ?? cost;
+  if (!st.logged) { meshy.logCredits(ledger, { call: "text-to-image-final", model: FINAL_MODEL, task: st.taskId, credits }); st.logged = true; }
+  rec.final = { n, provider: "meshy", model: FINAL_MODEL, taskId: st.taskId, credits, prompt };
+  writeState(dir, ctx.fullState);
+  console.log(`final render of concept ${n} ok (${FINAL_MODEL}, ${credits} credits)`);
+  return rec.final;
+}
+
+
+export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
+  const { root, spec, dir } = ctx;
+  const rec = loadConcepts(root, spec.slug);
+  if (!rec) {
+    console.log(`no tools/assets/${spec.slug}/concepts.json: the generate stage uses text-to-3D from spec.prompt`);
+    return { skipped: true };
+  }
+  const problems = conceptProblems(rec);
+  if (problems.length) throw new Error("concepts.json problems:\n  " + problems.join("\n  "));
+  const provider = resolveProvider(ctx.provider);
+  const model = provider === "local" ? LOCAL_MODEL : rec.image_model || IMAGE_MODEL;
+  const folder = conceptsDir(dir);
+  mkdirSync(folder, { recursive: true });
+  const prompts = buildPrompts(rec.subject, rec.variants);
+  const wanted = ctx.conceptOnly?.length ? prompts.filter((p) => ctx.conceptOnly.includes(p.n)) : prompts;
+  const todo = wanted.filter((p) => !existsSync(join(folder, `${pad(p.n)}.png`)));
+  const made = provider === "local" ? await localImages(ctx, rec, todo, folder) : await meshyImages(ctx, todo, model, prompts, folder, writeState);
+  if (todo.length) rec.image_model = model; // what made the newest pictures; each variant also records its own
+  rec.variants.forEach((v, i) => {
+    v.prompt = prompts[i].prompt;
+    if (made[i + 1]) { if (made[i + 1].provider !== "meshy") delete v.taskId; Object.assign(v, made[i + 1]); }
+    else if (v.taskId && !v.provider) v.provider = "meshy"; // pictures made before providers were recorded
+  });
+  if (ctx.conceptOnly?.length) { saveConcepts(root, spec.slug, rec); console.log(`made concepts ${ctx.conceptOnly.join(",")}; no sheet or pick for a partial run`); return { partial: true }; }
   const ff = resolveFfmpeg();
   if (!ff) throw new Error("ffmpeg not found (tools/film/.bin, or set FFMPEG_PATH): node tools/film/film.mjs fetch");
   const sheet = buildSheet(ff.path, folder, rec, "sheet.png");
   console.log(`contact sheet ${sheet}`);
+  // A JPEG copy is what goes in a PR or a chat: a tenth of the size.
+  spawnSync(ff.path, ["-y", "-hide_banner", "-loglevel", "error", "-i", "sheet.png", "-q:v", "3", "sheet.jpg"], { cwd: folder, windowsHide: true, timeout: 60000 });
   if (!rec.pick && ctx.pick) {
     pickByRubric(rec);
     console.log(`picked ${rec.pick.n} (${rec.pick.label}) by rubric: ${rec.pick.why}`);
@@ -188,7 +284,9 @@ export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
     const ranked = ranking(rec).filter((r) => r.total >= 0).slice(0, 3).map((r) => `${r.n}=${r.total}`).join(" ");
     throw new Error(`awaiting a pick. Look at ${sheet}${ranked ? ` (rubric leaders ${ranked})` : ", then score each concept: tools\\cli asset score <slug> <n> <scores>"}; choose with: tools\\cli asset pick ${spec.slug} <n>   (or rerun with --pick)`);
   }
-  return { pick: rec.pick, credits: meshy.spent(ledger), sheet };
+  const final = await finalRender(ctx, rec, provider, folder, writeState);
+  saveConcepts(root, spec.slug, rec);
+  return { pick: rec.pick, final, credits: meshy.spent(join(dir, "credits.jsonl")), sheet };
 }
 
 // tools\cli asset pick <slug> <n> [--why text]   and   asset score <slug> <n> a,b,c,d,e,f [note]

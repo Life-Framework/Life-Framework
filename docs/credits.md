@@ -38,6 +38,7 @@ name of the person who ran the agent.
 - Arma Reforger Tools and the Workbench IDE by Bohemia Interactive build and test the mod.
 - [Piper](https://github.com/rhasspy/piper) makes the trailer voice-over (see Voice-over below).
 - The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (`website/README.md`).
+- [FLUX.1 [schnell]](https://huggingface.co/black-forest-labs/FLUX.1-schnell) by Black Forest Labs (Apache-2.0), as a GGUF quantisation by city96 (Apache-2.0), with the Google T5 v1.1 XXL and OpenAI CLIP-L text encoders (Apache-2.0), run by [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) (MIT) on the maintainer's own GPU, are the optional free provider (`--provider local`) for the concept pictures that come before 3D generation (`tools/concepts-local/`). The pictures are reference only; no picture ships. Each concept records its provider in `tools/assets/<slug>/concepts.json`.
 - Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (`docs/community/support.md`).
 
 ## Generated 3D assets

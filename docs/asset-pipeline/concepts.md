@@ -22,10 +22,41 @@ shape the generator gets wrong from words (a 1980s taser comes out as a pistol o
 
 ## 2. Run the stage
 
-`tools\cli asset run <slug> --only concept` makes the ten images (`nano-banana-2-1`, 4 credits each,
-`image_model` in the file overrides), saves each task id before waiting (a dead run resumes and pays
-nothing twice), and builds `tmp/assets/<slug>/concepts/sheet.png`: a numbered 5x2 grid with each label,
-using ffmpeg from `tools/film/.bin` (`FFMPEG_PATH` overrides). It then stops with `awaiting a pick`.
+`toolscli asset run <slug> --only concept` makes the ten exploration pictures on Meshy `nano-banana-2-lite` (3 credits
+each; `image_model` in the file overrides), saves each task id before waiting (a dead run resumes and pays nothing twice),
+and builds `tmp/assets/<slug>/concepts/sheet.png` (plus a small `sheet.jpg`): a numbered 5x2 grid with each label, using
+ffmpeg from `tools/film/.bin` (`FFMPEG_PATH` overrides). It then stops with `awaiting a pick`. Each variant in
+`concepts.json` records its `provider`, `model` and task id.
+
+**After the pick there is one more step, the final render.** Rerun `asset run <slug> --only concept` (or `--from concept`)
+once a pick is recorded, or use `--pick`: the stage renders the picked concept's prompt once on `gpt-image-2-6-flare`
+(9 credits, no aspect ratio set) into `concepts/final.png` and records it as `final` in `concepts.json`. **That image,
+not the cheap exploration picture, is what `generate` sends to image-to-3D.** A new pick makes a new final; a finished final
+for the same pick is kept and costs nothing. Both steps count against `budget.credits`: ten pictures and the final are 39.
+
+### Which models
+
+Same prompt, ten Meshy image models, 2026-11-14 (credits are what Meshy charged):
+
+| Model | Credits | Seconds | Reads as |
+|---|---|---|---|
+| nano-banana | 3 | 7 | good ideas, a loose shape |
+| **nano-banana-2-lite** | **3** | 13 | the cheapest that still explores well: **exploration default** |
+| nano-banana-2-1 | 4 | 18 | the old default |
+| nano-banana-2, nano-banana-pro | 6, 9 | 17 to 33 | no cleaner than lite for the price |
+| gpt-image-2, 2-5-flare, 2-5-sunburst, 2-6-sunburst | 9 | 16 to 55 | clean forms; sunburst is slow |
+| **gpt-image-2-6-flare** | **9** | 8 | the cleanest, most solid form and the fastest: **final render default** |
+
+![pager, ten models](model-compare/pager-compare.jpg)
+![vault, ten models](model-compare/vault-compare.jpg)
+
+### Optional: the local provider (free)
+
+`--provider local` makes the pictures on this PC with FLUX.1 [schnell] (`tools/concepts-local/README.md`) and costs no
+credits. It is not the default and is not tuned for image-to-3D the way the final render is. First `node
+tools/concepts-local/local.mjs fetch` (about 11 GB, outside the repo). It refuses to start while a game session or Workbench
+holds the GPU (under 7.6 GB VRAM free); close it, or add `--wait <seconds>`. `--concepts 1,2,3` makes only those
+pictures (no sheet, no pick).
 
 ## 3. Score, then pick
 

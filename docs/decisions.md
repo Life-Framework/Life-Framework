@@ -848,3 +848,17 @@ client. The voice and the moving lips are also played for players within the NPC
 `hear_range_m` (12 m by default; 0 makes an NPC private). Why: it is a town, and the world
 does not stop for one player's conversation. A default from the spike, for the maintainer
 to confirm per NPC.
+
+**2026-11-14 — Concept stage: cheap exploration, one clean final render; a local provider is optional.**
+Ten exploration pictures go on Meshy `nano-banana-2-lite` (3 credits each); the picked concept gets
+one final render on `gpt-image-2-6-flare` (9 credits, the cleanest shapes in the 10-model
+comparison, `docs/asset-pipeline/concepts.md`), and that image feeds image-to-3D. The maintainer chose
+this over local-only generation. `--provider local` is kept as a free option: FLUX.1 [schnell]
+(GGUF Q4_K_S, Apache-2.0) on stable-diffusion.cpp (MIT) on the RTX 3080. Licence check: the model
+cards of `black-forest-labs/FLUX.1-schnell`, the city96 GGUF and the text encoders all say
+`apache-2.0`, which allows commercial use and puts no terms on output; FLUX.1 [dev]
+(non-commercial) is not used. The black-forest-labs repo is gated behind a login, so the VAE comes
+from a public identical copy. The local run refuses to start unless 7.6 GB of VRAM is free, so it
+never competes with a game session; weights live in `%LOCALAPPDATA%LifeFramework`, fetched by
+`node tools/concepts-local/local.mjs fetch`. SDXL base (CreativeML Open RAIL++-M) is the fallback
+if FLUX stops fitting.

@@ -14,7 +14,7 @@ export const COST = {
   preview: { "meshy-6-lite": 5, "meshy-t2": 5, "meshy-t2.5": 5, "meshy-6": 20, "meshy-7.1": 20, latest: 20 },
   refine: 10,
   remesh: 5,
-  image: { "nano-banana": 3, "nano-banana-2": 6, "nano-banana-2-lite": 3, "nano-banana-2-1": 4, "nano-banana-pro": 9 }, // text-to-image
+  image: { "nano-banana": 3, "nano-banana-2": 6, "nano-banana-2-lite": 3, "nano-banana-2-1": 4, "nano-banana-pro": 9, "gpt-image-2": 9, "gpt-image-2-5-flare": 9, "gpt-image-2-6-flare": 9, "gpt-image-2-6-sunburst": 9 }, // text-to-image; credits measured 2026-11-14 (docs/asset-pipeline/concepts.md "Which models")
   // image-to-3D with a 2K texture, one call (no refine): 30 on meshy-6 / meshy-7.1 / latest, 15 on meshy-6-lite (pricing page, 2026-11-13)
   imageTo3d: { "meshy-6-lite": 15, "meshy-6": 30, "meshy-7.1": 30, latest: 30 },
 };
