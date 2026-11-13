@@ -40,6 +40,12 @@ name of the person who ran the agent.
 - The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (`website/README.md`).
 - Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (`docs/community/support.md`).
 
+## Generated 3D assets
+
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Taser model (`Assets/Weapons/Handguns/Taser/Taser.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/taser/meshy.json` (generation ids), `tools/assets/taser/spec.json` (prompt) |
+
 ## Music
 
 | Track | Author | Source | Licence | Used in |
