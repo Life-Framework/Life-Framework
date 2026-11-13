@@ -4,8 +4,9 @@
 //   2. a human's message in #welcome;
 //   3. a human's DM to the bot;
 // and drops bots and webhooks, the bot itself, other channels, other guilds, system messages.
+//   4. a human's new post and later replies in the #feedback forum (feedback_post / feedback_reply).
 // red-proof: with `if (d.author.bot)` removed from isHuman() it printed
-// "bot join forwarded" and "bot DM forwarded".
+// "bot join forwarded" and "bot DM forwarded"; with the `thread.parentId === FEEDBACK_FORUM_ID` test removed it printed "thread under another channel forwarded".
 import { classifyEvent } from "../discord-mcp/relay-filter.mjs";
 
 const failures = [];
@@ -56,9 +57,28 @@ check(!classifyEvent({ op: 11 }, ctx), "heartbeat ack forwarded");
 check(!classifyEvent(null, ctx), "null frame forwarded");
 check(!classifyEvent(msg({ id: "BOT", username: "x" }, { channel_id: "W1" }), ctx), "own id without bot flag forwarded");
 
+// #feedback forum: threads tracked from THREAD_CREATE and GUILD_CREATE, posts and replies forwarded
+const FORUM = "1568938441637499080";
+const fctx = { ...ctx, threads: new Map() };
+check(!classifyEvent({ t: "THREAD_CREATE", d: { id: "T1", guild_id: "G1", parent_id: FORUM, name: "Bug" } }, fctx), "THREAD_CREATE forwarded");
+const post = classifyEvent(msg(human, { id: "T1", channel_id: "T1", attachments: [{ url: "u", filename: "a.png", size: 1 }] }), fctx);
+check(post?.type === "feedback_post" && post.id === "T1" && post.threadId === "T1" && post.threadName === "Bug" && post.messageId === "T1" && post.user.id === "U1" && post.attachments[0].url === "u" && post.attachments[0].filename === "a.png" && Object.keys(post.attachments[0]).length === 2, "starter message not forwarded as feedback_post");
+const rep = classifyEvent(msg(human, { id: "M2", channel_id: "T1" }), fctx);
+check(rep?.type === "feedback_reply" && rep.id === "M2" && rep.threadId === "T1" && rep.attachments.length === 0, "thread message not forwarded as feedback_reply");
+check(!classifyEvent(msg(bot, { id: "M3", channel_id: "T1" }), fctx), "bot reply in feedback thread forwarded");
+check(!classifyEvent(msg(self, { id: "M4", channel_id: "T1" }), fctx), "own reply in feedback thread forwarded");
+check(!classifyEvent(msg(human, { id: "M5", channel_id: "T1", webhook_id: "H1" }), fctx), "webhook message in feedback thread forwarded");
+classifyEvent({ t: "THREAD_CREATE", d: { id: "T2", guild_id: "G1", parent_id: "OTHERFORUM", name: "x" } }, fctx);
+check(!classifyEvent(msg(human, { id: "M6", channel_id: "T2" }), fctx), "thread under another channel forwarded");
+check(!classifyEvent(msg(human, { id: "M7", channel_id: "T9" }), fctx), "message in unknown thread forwarded");
+classifyEvent({ t: "GUILD_CREATE", d: { id: "G1", threads: [{ id: "T3", parent_id: FORUM, name: "Old" }] } }, fctx);
+check(classifyEvent(msg(human, { id: "M8", channel_id: "T3" }), fctx)?.threadName === "Old", "GUILD_CREATE active thread not tracked");
+check(!classifyEvent(msg(human, { id: "M9", channel_id: "T3", guild_id: "OTHER" }), fctx), "feedback thread id from another guild forwarded");
+check(!classifyEvent(msg(human, { id: "M10", channel_id: "T1" }), ctx), "thread message forwarded without a thread map");
+
 if (failures.length) {
   for (const f of failures) console.log(`FAIL  ${f}`);
   console.log("discord-relay-selftest: FAIL");
   process.exit(1);
 }
-console.log("discord-relay-selftest: OK (joins, #welcome and DMs forwarded; bots, webhooks, self, other channels and guilds, system messages dropped)");
+console.log("discord-relay-selftest: OK (joins, #welcome, DMs and #feedback forum posts and replies forwarded; bots, webhooks, self, other channels and guilds, system messages dropped)");

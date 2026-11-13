@@ -11,11 +11,13 @@
 // and MESSAGE_CONTENT are privileged: switch on Server Members and Message Content in the
 // Developer Portal (the gateway closes with code 4014 otherwise).
 
-import { GUILD_ID, readHookUrl, readToken } from "./secrets.mjs";
+import { GUILD_ID, readFeedbackHookUrl, readHookUrl, readToken } from "./secrets.mjs";
 import { classifyEvent } from "./relay-filter.mjs";
 
 const token = readToken();
 const hook = readHookUrl();
+const feedbackHook = readFeedbackHookUrl();
+const threads = new Map();
 const log = (...a) => console.log(new Date().toISOString(), ...a);
 const api = (path) =>
   fetch(`https://discord.com/api/v10${path}`, { headers: { Authorization: `Bot ${token}` } }).then((r) => r.json());
@@ -27,6 +29,7 @@ if (!welcome) {
   process.exit(1);
 }
 log("welcome channel", welcome.id);
+log(feedbackHook ? "feedback forwarding on" : "no feedback-hook-url: #feedback not forwarded");
 
 const INTENTS = (1 << 0) | (1 << 1) | (1 << 9) | (1 << 12) | (1 << 15);
 let selfId = null;
@@ -34,7 +37,9 @@ let seq = null;
 let heartbeat = null;
 
 function forward(body) {
-  return fetch(hook, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+  const url = body.type.startsWith("feedback_") ? feedbackHook : hook;
+  if (!url) return Promise.resolve();
+  return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
     .then((r) => log("hook", body.type, r.status))
     .catch((e) => log("hook error", e.message));
 }
@@ -58,7 +63,7 @@ function connect() {
       selfId = m.d.user.id;
       log("ready as", m.d.user.username);
     }
-    const body = classifyEvent(m, { guildId: GUILD_ID, welcomeId: welcome.id, selfId });
+    const body = classifyEvent(m, { guildId: GUILD_ID, welcomeId: welcome.id, selfId, threads });
     if (body) forward(body);
   };
   ws.onclose = (ev) => {

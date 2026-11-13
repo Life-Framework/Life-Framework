@@ -4,7 +4,9 @@
 //   discord-token       the bot token (same file the MCP server uses)
 //   welcome-hook-url    the webhook URL the welcome relay posts events to; a secret,
 //                       because anyone holding it can wake the orchestrator
-// LF_DISCORD_TOKEN_FILE / LF_WELCOME_HOOK_FILE point at other files.
+//   feedback-hook-url   optional second webhook for the #feedback forum; without it the
+//                       relay forwards no feedback
+// LF_DISCORD_TOKEN_FILE / LF_WELCOME_HOOK_FILE / LF_FEEDBACK_HOOK_FILE point at other files.
 // Never commit either value or print the URL.
 
 import { readFileSync } from "node:fs";
@@ -21,6 +23,10 @@ export function hookFile() {
   return process.env.LF_WELCOME_HOOK_FILE || join(homedir(), ".life-framework", "welcome-hook-url");
 }
 
+export function feedbackHookFile() {
+  return process.env.LF_FEEDBACK_HOOK_FILE || join(homedir(), ".life-framework", "feedback-hook-url");
+}
+
 function readSecret(file, what) {
   let text;
   try {
@@ -34,3 +40,12 @@ function readSecret(file, what) {
 
 export const readToken = () => readSecret(tokenFile(), "Discord bot token");
 export const readHookUrl = () => readSecret(hookFile(), "welcome webhook URL");
+
+// Null when the file is absent or empty: the feedback hook is optional.
+export function readFeedbackHookUrl() {
+  try {
+    return readSecret(feedbackHookFile(), "feedback webhook URL");
+  } catch {
+    return null;
+  }
+}
