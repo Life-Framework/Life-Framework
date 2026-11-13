@@ -78,7 +78,7 @@ GenericEntity Roadmap_Org_Desk_Clock {
   }
  }
  Flags 0x403 0
- coords 287.6 0.906 255.939
+ coords 287.53 0.906 255.839
 }
 GenericEntity Roadmap_Org_Desk_Chair {
  components {
