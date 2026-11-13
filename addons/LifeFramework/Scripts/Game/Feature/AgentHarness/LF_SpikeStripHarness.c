@@ -18,8 +18,8 @@ class LF_SpikeStripHarness
 	static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
 	static const vector VERGE = "300 0 245.5";
 	//! Metres before the strip the car starts, and its speed across (m/s).
-	static const float RUN_UP = 6;
-	static const float SPEED = 14;
+	static const float RUN_UP = 6; // lf-fixed: harness geometry, not a gameplay knob
+	static const float SPEED = 14; // lf-fixed: harness push speed, not a gameplay knob
 
 	protected static EntityID s_LastCar;
 	protected static vector s_vPush;
