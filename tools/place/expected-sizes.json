@@ -261,8 +261,15 @@
    "why": "A brick is 0.22-0.25 m"
   },
   {
+   "id": "apple-juice",
+   "match": "AppleJuice(?!r)",
+   "min": 0.15,
+   "max": 0.35,
+   "why": "A juice bottle is 0.26 m tall (place bounds AppleJuice.et)"
+  },
+  {
    "id": "apple",
-   "match": "Apple(?!Juicer)",
+   "match": "Apple(?!Juic)",
    "min": 0.04,
    "max": 0.15,
    "why": "An apple is 0.08 m"

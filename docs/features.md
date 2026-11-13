@@ -1112,7 +1112,7 @@
   (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
   `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
   in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
-  hands were empty on a client). Test: `items/carry-meshes`. Fuel cargo is
+  hands were empty on a client). Test: `items/carry-meshes`. A hand-carried item stays in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop and `LF_HandInventoryStorageComponent` takes it back to the hands when the engine lowers it (sprint), so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920). A parcel that lands on the ground glows (`LF_ParcelComponent` light, every machine), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
@@ -2621,6 +2621,12 @@
 - Not verified by automation: how the voice sounds and its level in the mix; number keys and a
   real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
 
+### `LF_CaseBoard` — `Feature/Investigation/LF_CaseBoard.c` (#148, 2026-11-13)
+- ✅ A cork board in the police station porch shows on-duty officers the open cases: the crime, the place, the time, the suspect's portrait once identified, the pinned evidence cards and a red string from each card to the suspect. Officers pin (carried bags are logged at the locker first) and unpin at the board. Civilians see plain cork: the list goes to on-duty officers only, by an owner RPC. Pins and times survive a restart (`caseboard` payload, save version 31). Tests: `investigation/case-board` (LOGIC), `investigation/case-board-world` (WORLD), `investigation/case-board-persist` (PERSISTENCE); session proof `case-board-proof`.
+
+### `LF_ScenePieces` — `Feature/Investigation/LF_ScenePieces.c` (#148, 2026-11-13)
+- ✅ Crimes leave physical evidence on the ground, placed with the placement probe: a footprint card behind a robber on foot, casings spread around a shooter, a witness statement at the feet of a witness an officer asked. Every piece is police-only (not an inventory item; only "Bag as evidence"), capped and expiring with the scene evidence, and bags with a note that becomes its card on the case board. Tests: `investigation/scene-pieces` (LOGIC), `investigation/scene-pieces-world` (WORLD); session proof `case-board-proof`.
+
 ### `LF_PhotoIdCard` — `Feature/Identity/LF_PhotoIdCard.c` (#902, 2026-11-13)
 - ✅ The identity card is a photo card: Inspect it in the inventory and a laminated card sheet
   opens (UI kit `PORTRAIT` part): the holder's head and shoulders drawn client-side from their
@@ -2644,3 +2650,11 @@
 
 ### `LF_BackRoomDoor` — `Feature/Shop/LF_BackRoomDoor.c` (#933, 2026-11-14)
 - ✅ **The back room explains itself.** The black-market stall (`m_bBackRoom`) has no gate of its own (any hour, no licence, no contact, 500 cash for the M9), so the door says what it is: the prompt reads *Knock to buy a handgun*, and once a police search has shut it, *Back room (shut)* with the reason "The back room is shut. Police have been through it. Come back in a few minutes." The shutter is now an `RplProp` on `LF_ShopComponent` (`IsShutShown`, set by `Raid`, cleared by a `CallLater` after the shut time) so a client sees it before it knocks; the server's `m_iClosedUntilMs` is still the authority for buy and sell. The general store's sheet gains the shopkeeper's pointer (`LF_ShopComponent.m_sShopHint`, a key; the DebugWorld store sets `#LF-Shop_Hint_General`), and the back room's chalkboard card gives the price and the police rule. Test `shop/back-room-door` (LOGIC); session proof `back-room-door-proof`. ⚠️ Follow-ups: there is no time-of-day, standing or contact gate (a design call, not added here); the shut flag is not saved, so a restart reopens the room as before.
+
+## World reset (debug and playtest, #937)
+- ✅ A service puts the playtest world back as a tester found it (`Core/LF_WorldReset.c`). It owns no list: a feature writes `Feature/<Area>/LF_<Area>WorldReset.c` with a step class and a `modded class LF_WorldResetRegistry` that adds it, and Enforce Script stacks the layers. Steps today: `crime` (wanted levels of every account, till, hospital till and vault cooldowns and stock, search cooldowns), `loot` (loose money bags, drills, keycards, charges), `police` (wanted reports, dispatch log, poster board), `spikes` (deployed strips), `evidence` (scenes, casings, markers, loose bags, locker log), `calls` (service board, finished calls, call-back book; a live call stays), `vehicles` (every vehicle present at game start returns to its spot; the cash van keeps its route), `farm` (plots emptied), `ore` (rocks regrown).
+- ✅ Triggers, all server side and only when `LF_SpawnHub.IsEnabled()` (the debug game mode prefab, so never a real server) and the dev gate is open (`LF_DevGate`, or an `LF_HARNESS` build): a death-screen respawn resets the world when that player is alone on the server; the debug menu's and the travel globe's *Reset world* button resets it for everyone after a second press within 5 s.
+- ✅ The harness `resetcrime` runs the crime-state steps of the same service, so a proof's reset never moves a car or regrows a rock.
+- Not covered: items players hold or carry, containers' contents, persisted vehicles bought after start, dropped ore pieces, hospital cabinet stock. Vehicle damage and fuel are not restored, only position.
+- Tests: `worldreset/gate` (LOGIC), `worldreset/service` (WORLD). Logs `[LFDebug:WorldReset]`.
+- ✅ (2026-11-14, #919) The placement audit also measures the stock a physical store spawns on its shelves (`LF_PlacementAudit.StockRows`) and holds two props standing on the same surface to a 0.02 m overlap limit (0.08 m elsewhere). The general store counter is re-placed: radio left, register right, goods in rows between. Red-proof: `place-audit.mjs selftest` (two cups on one counter).

@@ -45,6 +45,19 @@ class LF_ServiceBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: takes every call off the board (the world reset); the subscription stays.
+	//! eturn How many calls were on it.
+	static int ClearCalls()
+	{
+		if (!s_aCalls)
+			return 0;
+
+		int cleared = s_aCalls.Count();
+		s_aCalls.Clear();
+		return cleared;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: subscribe the board to service calls (idempotent, also after a bus reset).
 	static void Install()
 	{

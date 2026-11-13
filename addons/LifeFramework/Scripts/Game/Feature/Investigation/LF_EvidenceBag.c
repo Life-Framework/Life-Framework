@@ -26,6 +26,10 @@ class LF_EvidenceBagComponent : ScriptComponent
 	[RplProp()]
 	protected int m_iMinutes;
 
+	//! What the piece says (LF_EvidenceRow.m_sNote); the locker hands it to the case board.
+	[RplProp()]
+	protected string m_sNote;
+
 	//------------------------------------------------------------------------------------------------
 	int GetReport()
 	{
@@ -58,6 +62,12 @@ class LF_EvidenceBagComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	string GetNote()
+	{
+		return m_sNote;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True once the server stamped a report on it.
 	bool IsStamped()
 	{
@@ -66,7 +76,7 @@ class LF_EvidenceBagComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: writes the record on the bag.
-	void Stamp(int report, string offence, string place, string kind, int minutes)
+	void Stamp(int report, string offence, string place, string kind, int minutes, string note = "")
 	{
 		if (!Replication.IsServer())
 			return;
@@ -76,6 +86,7 @@ class LF_EvidenceBagComponent : ScriptComponent
 		m_sPlace = place;
 		m_sKind = kind;
 		m_iMinutes = minutes;
+		m_sNote = note;
 		Replication.BumpMe();
 	}
 
