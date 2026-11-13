@@ -2641,3 +2641,4 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+- ✅ (2026-11-14, #919) The placement audit also measures the stock a physical store spawns on its shelves (`LF_PlacementAudit.StockRows`) and holds two props standing on the same surface to a 0.02 m overlap limit (0.08 m elsewhere). The general store counter is re-placed: radio left, register right, goods in rows between. Red-proof: `place-audit.mjs selftest` (two cups on one counter).
