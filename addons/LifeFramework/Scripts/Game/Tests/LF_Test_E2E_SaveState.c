@@ -733,9 +733,16 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The pocket card comes back with its number and nothing printed; the registry prints it again.
-	//! A version 23 save (--legacy-save) has the number (itemserials) but no registry: it stays blank
-	//! until the holder's next spawn prints a new card.
+	//! The pocket card comes back with its number, and the restore prints it again from the registry:
+	//! LF_SerialComponent.RestoreSerial looks the number up as the snapshot is applied (#902), so the
+	//! card is never seen blank and RepairCarried finds nothing left to print (#909: this test still
+	//! expected a blank card and a repair, from before RestoreSerial printed it). A version 23 save
+	//! (--legacy-save) has the number (itemserials) but no registry: it stays blank until the holder's
+	//! next spawn prints a new card.
+	//! red-proof: Observed 2026-11-14 with `tools\cli wt e2e fix-909`: with RestoreSerial no longer printing
+	//! (its EnsurePrinted call removed) pass 2 failed `- e2e the restore prints the card again from the registry`
+	//! and `- e2e a printed card leaves the repair nothing to print (expected 0, got 1)`. Restored; green, and
+	//! green with `--legacy-save`.
 	protected void VerifyIdCard(LF_TestContext ctx, IEntity restored)
 	{
 		array<LF_IdCardComponent> cards = {};
@@ -747,11 +754,12 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		LF_IdCardComponent card = cards[0];
 		string number = LF_IdCard.NumberOf(card);
 		ctx.False(number.IsEmpty(), "e2e the identity card keeps its number after the restart");
-		ctx.False(card.IsIssued(), "e2e the restored card comes back with nothing printed");
 #ifdef LF_E2E_LEGACY_SAVE
+		ctx.False(card.IsIssued(), "e2e a version 23 save has no registry: the restored card comes back blank");
 		ctx.Equal(0, LF_IdCard.RepairCarried(restored), "e2e a version 23 save has no registry: the card stays blank");
 #else
-		ctx.Equal(1, LF_IdCard.RepairCarried(restored), "e2e the registry prints the restored card again");
+		ctx.True(card.IsIssued(), "e2e the restore prints the card again from the registry");
+		ctx.Equal(0, LF_IdCard.RepairCarried(restored), "e2e a printed card leaves the repair nothing to print");
 		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.ID_HOLDER, card.GetHolderId(), "e2e the card is printed for its holder after the restart");
 		ctx.EqualStr("Register", card.GetLastName(), "e2e the card's surname survives the restart");
 		ctx.True(LF_IdCard.IsValid(card), "e2e the restored card is still the holder's valid card");
