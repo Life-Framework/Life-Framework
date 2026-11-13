@@ -1628,7 +1628,10 @@
   wide, clipped by the photo frame), the same framing for a named and an unknown suspect.
   A report without a look keeps the empty photo frame. The face re-renders at 10 s and
   30 s after a change so streamed textures land, then the dummies are deleted. The look
-  is session state until the save carries it (spike issue 2). Test `police/wanted-look`.
+  is saved as the `wantedlooks` payload (save version 29, keyed by report sequence), so
+  the portraits come back after a restart; a version 28 save loads its reports without a
+  picture. Tests `police/wanted-look`, `persist/wanted-looks`; `wt e2e` checks the look
+  across a real restart.
 
 ### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
 - ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`

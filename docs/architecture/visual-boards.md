@@ -35,8 +35,10 @@ dresses it slot by slot and hands it to the poster's `ItemPreviewWidget`. The
 widget is three photo frames wide and the frame clips it to the head and
 shoulders, for every suspect. The dummy is deleted once the face has frozen for
 the last time (33 s after a change); the frozen face keeps the picture. The
-look is not yet in the save (spike issue 2): after a restart a poster has an
-empty photo frame until that lands.
+look is saved in its own payload, `wantedlooks` (save version 29), matched to
+the reports by sequence after `wanted` loads, so the portraits come back after a
+restart. A version 28 or older save has no looks: its posters show an empty
+photo frame until the suspect's next crime.
 
 Measured on the session (one portrait, RTX 3080, 1280x720, uncapped): 6.08 ms
 mean, 8.03 ms p95 while live, 5.91 / 7.57 frozen.
