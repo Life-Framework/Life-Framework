@@ -33,6 +33,11 @@
 // pass 2 failed with `- e2e farmer xp survives the restart (expected 120, got 0)` and
 // `- e2e miner xp survives the restart (expected 650, got 0)`. LF_TestLegacySnapshot and the
 // progression tests now put the job XP back; both passes green, and green with --legacy-save.
+// e2e/pass2-verify-load (save version 29, wanted looks, #758), observed 2026-11-13 with
+// `tools\cli wt e2e board-looks-save`: a legacy-loading test after this one reloaded a version 23
+// save of the live store, which has no "wantedlooks", and pass 2 failed with
+// `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
+// LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
 // tier: PERSISTENCE
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
@@ -60,6 +65,9 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string ORG_OFFICER = "e2e-org-officer";
 	static const string ORG_MEMBER = "e2e-org-member";
 	static const ResourceName JUICE_PREFAB = "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et";
+	//! The look on the robbery report (#758, "wantedlooks" payload, save version 29): the robber's
+	//! character and jacket as GUIDs, for the portrait on the wanted board's face.
+	static const string WANTED_LOOK = "9B5BB216CC7FF18E|1=9F546CCA2582D16F";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -200,7 +208,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			ctx.EqualStr("", LF_DutyLocker.ClockOut(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks out before the save");
 		}
 
-		LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
+		LF_WantedReportRecord robbery = LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
+		robbery.m_sAppearance = WANTED_LOOK;
 
 		// A logged evidence bag (#269) must be on file after the restart.
 		LF_EvidenceLockerRow lockerRow = new LF_EvidenceLockerRow();
@@ -600,6 +609,16 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		VerifyMedicInventory(ctx);
 		ctx.Equal(1, LF_WantedReports.CountFor(ACCOUNT_UID), "e2e wanted report present after the save load");
 		ctx.True(LF_WantedReports.IsIdentified(ACCOUNT_UID), "e2e wanted report stays identified after the save load");
+		array<ref LF_WantedReportRecord> robberyReports = LF_WantedReports.GetFor(ACCOUNT_UID);
+		string robberyLook;
+		if (robberyReports && !robberyReports.IsEmpty())
+			robberyLook = robberyReports[0].m_sAppearance;
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.EqualStr("", robberyLook, "e2e the version 23 save has no look on the report");
+#else
+		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.WANTED_LOOK, robberyLook, "e2e the robber's look survives the restart");
+#endif
+		LF_Debug.Info(LF_WantedPosters.FEATURE, "e2e restart: robbery report look '" + robberyLook + "'");
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
