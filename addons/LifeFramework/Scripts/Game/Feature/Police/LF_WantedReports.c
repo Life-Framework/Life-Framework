@@ -19,6 +19,10 @@ class LF_WantedReportRecord : Managed
 	bool m_bIdentified;
 	//! Report order across the server's life; newest has the highest number.
 	int m_iSequence;
+	//! The suspect's look at the crime (LF_WantedLook), for the portrait on the board's face. Not
+	//! part of the "wanted" payload: changing that payload's fields would change its save format.
+	[NonSerialized()]
+	string m_sAppearance;
 
 	//------------------------------------------------------------------------------------------------
 	LF_WantedReportRecord Copy()
@@ -31,6 +35,7 @@ class LF_WantedReportRecord : Managed
 		copy.m_sPlace = m_sPlace;
 		copy.m_bIdentified = m_bIdentified;
 		copy.m_iSequence = m_iSequence;
+		copy.m_sAppearance = m_sAppearance;
 		return copy;
 	}
 }
@@ -104,6 +109,7 @@ class LF_WantedReports
 
 		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
 		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
+		record.m_sAppearance = LF_WantedLook.Capture(suspect);
 		LF_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
 		if (suspect)
 		{
@@ -160,7 +166,10 @@ class LF_WantedReports
 		}
 
 		if (changed > 0)
+		{
 			LF_Debug.Info(FEATURE, string.Format("%1 identified by %2: %3 report(s) now name them", playerUid, how, changed));
+			LF_EventBus.Publish(LF_OnSuspectIdentified.Create(playerUid, how, changed));
+		}
 
 		return changed;
 	}
@@ -284,6 +293,9 @@ class LF_WantedReports
 
 		if (!cleared.IsEmpty())
 			LF_Debug.Info(FEATURE, string.Format("load took down the reports of %1 character(s) no longer wanted", cleared.Count()));
+
+		// Not an event: the save restored the whole store, so the board's posters are rebuilt from it.
+		LF_WantedPosters.MarkDirty("load");
 
 		return cleared.Count();
 	}

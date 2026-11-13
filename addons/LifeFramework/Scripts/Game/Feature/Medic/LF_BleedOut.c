@@ -172,6 +172,12 @@ class LF_BleedOut
 			return false;
 		}
 
+		if (character.LF_IsStunned())
+		{
+			LF_Debug.Info(FEATURE, string.Format("give up refused for %1: stunned, not dying", LF_Utils.GetPlayerUID(character)));
+			return false;
+		}
+
 		float delay = LF_MedicConfig.Get().m_fGiveUpDelaySeconds;
 		if (!CanGiveUp(character.LF_GetDownedForSeconds(), delay))
 		{
@@ -199,6 +205,10 @@ class LF_BleedOut
 
 		IEntity controlled = playerManager.GetPlayerControlledEntity(playerId);
 		if (!LF_Downed.IsDowned(controlled))
+			return;
+
+		// A stun is not a death in waiting: it never kills, whatever the player does.
+		if (LF_Stun.IsStunned(controlled))
 			return;
 
 		LF_Debug.Info(FEATURE, string.Format("player %1 disconnected while downed: death", LF_Utils.GetPlayerUID(playerId)));

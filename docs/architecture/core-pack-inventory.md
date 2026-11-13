@@ -137,6 +137,7 @@ under "Hard-coded flagship values in script".
 | `Characters/Quests/QuestGiver_Start.et` | core | Test quests |
 | `Characters/Quests/QuestGiver_Clerk.et` | split | Carries the arrival story; `LF_Test_ArrivalChain` needs a neutral example |
 | `Crafting/` | core | Station prefabs a system depends on |
+| `Weapons/Handguns/Taser/` | split | The stun weapon `LF_Test_Stun` loads is the core's example; the police-issue taser and its strings are pack (#341) |
 | `Comms/` | core | Payphone, station telephone, phone line and dispatch boards: interactables the Comms system depends on (#147). Which props are phones in the village is layer data |
 | `Debug/` | core | Test fixtures |
 | `Items/Core/` | core | Item bases |
@@ -151,6 +152,7 @@ under "Hard-coded flagship values in script".
 | `Props/Commercial/`, `Props/Construction/`, `Props/Hideouts/` | core | Interactables |
 | `Props/Debug/` | core | Playtest-only stands (bank robbery kit, #605), gated by the debug flag |
 | `Props/Signs/LF_Sign*.et` (10) | core | Generic boards and faces |
+| `Props/Signs/LF_BoardFace.et` | core | The 16:9 render-target face a board draws on (wanted posters, #758) |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
 | `Resources/` | core | Ore, trees, logs |
@@ -162,6 +164,7 @@ under "Hard-coded flagship values in script".
 | `Vehicles/LicensePlate/`, `Vehicles/SirenLights/` | core | System parts |
 | `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
 | `Vehicles/Wheeled/M151A2/` | split | The police car; core needs a police-car slot, the model is a catalogue pick |
+| `Weapons/Handguns/Taser/` | split | Mesh of the stun weapon above: example in core, police-issue item in pack |
 | `Configs/Vehicles/LF_VehiclePrices.conf` | split | The multiplier shape is core; the five vehicle rows are the flagship catalogue's prices (#688) |
 
 ## Configs
@@ -170,6 +173,7 @@ under "Hard-coded flagship values in script".
 | --- | --- | --- |
 | `Chat/` | core | Channels |
 | `Core/EditorManagerCore.conf` | core | Engine setup |
+| `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
 | `NameTags/` | core | Tag rules |
 | `System/` | core | Inputs, menus, key binding menu |
@@ -179,6 +183,7 @@ under "Hard-coded flagship values in script".
 | `Vehicles/VehicleSettings.conf` | core | Plate generator choice |
 | `Jobs/LF_Jobs.conf` | split | Holds the flagship duty pay and benefit (decision 2026-11-08) |
 | `Police/LF_Police.conf` | split | Holds the flagship ticket deadlines and caps |
+| `Police/LF_WantedPosters.conf` | core | Neutral budget: 4 posters, 30 m draw radius (#758) |
 | `Shop/ShopPrices.conf` | split | Flagship prices; path-matched rules |
 | `Resources/ResourceChains.conf` | split | Chain shape is core; yields and prices are pack |
 | `Signs/LF_Signs.conf` | split | Sign defs tests use; the titles are the village's |
@@ -233,7 +238,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Props/GreenScreen/` | core | Filming tooling |
 | `Props/TitlePoster/` | pack | Everon title poster |
 | `Resources/` | core | Ore and wood meshes |
-| `Signs/` | core | Sign face material |
+| `Signs/` | core | Sign face material; `LF_BoardFace.xob`, a copy of the title poster's 16:9 quad with its own GUID (the title poster itself is pack) |
 | `Tools/` | core | Axe, pickaxe |
 | `UI/` | core | Stats bars, chat icons |
 | `UI/Illustrations/medic_flow.*` | pack | The hospital's CALL, TREAT, BED diagram; the `tools\cli ui-image` route that made it is core (#579) |

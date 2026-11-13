@@ -370,6 +370,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StoreShoplift(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreStacks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreUnpaidPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_Stun(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Survival(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalSaveData(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalLight(), LF_TestTier.LOGIC);
@@ -400,6 +401,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WantedLook(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WantedPosterFace(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WantedPostersFeed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);

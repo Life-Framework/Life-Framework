@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{2E5EB5F9C3BC3278}Assets/Weapons/Handguns/Taser/Data/Taser_BCR.edds"
+ NMOMap "{23853C5FC1F1B20C}Assets/Weapons/Handguns/Taser/Data/Taser_NMO.edds"
+}
