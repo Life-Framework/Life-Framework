@@ -40,6 +40,7 @@ Read this before any `generate`.
 - One attempt is a preview plus a refine: 15 credits on `meshy-6-lite`, 30 on `latest`
   (`meshy.mjs` `COST`, read from the Meshy pricing page on 2026-11-12; a task's own
   `consumed_credits` wins when it reports one).
+- Every generation's task ids and prompt are written to `tools/assets/<slug>/meshy.json` (committed; the asset's credit in `docs/credits.md` points at it).
 - Every paid call is appended to `tmp/assets/<slug>/credits.jsonl`. `asset status` prints the sum.
 - `budget.credits` in the spec is the cap for the asset and cannot be set above 300. `generate`
   refuses to start an attempt that would cross it. When that happens, stop and report: the prompt

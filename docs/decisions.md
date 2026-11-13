@@ -778,3 +778,12 @@ other players see blank or with a call count, which still tells them how busy th
 police are. Not worth it: the dispatch boards keep their painted DISPATCH face and
 the per-read card. The wanted board's face carries only what its public Read card
 already showed. Detail: `docs/architecture/visual-boards.md`.
+
+**2026-11-13 — #664: Meshy-generated 3D assets may be used in the project and in
+published builds.** The maintainer signed off the licence gate on 2026-11-13.
+Models made with Meshy text-to-3D on the account's plan may go into the repository
+and into the Workshop build under that plan's terms. Each one is credited
+"generated with Meshy" in `docs/credits.md`, and its generation ids (preview and
+refine task) are recorded per asset in `tools/assets/<slug>/meshy.json`, which the
+`generate` stage writes. An asset made some other way (a CC0 model, a Blender
+script, a human modeller) does not need the credit but keeps its source in the spec.
