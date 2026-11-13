@@ -47,5 +47,21 @@
       }
     ]
   },
-  "maps_note": "The generated maps read as polished chrome in daylight. tone-maps.py (beside this spec) darkens the base colour, roughens and lowers the metallic before the clean stage; rerun it after any new generate."
+  "materials": {
+    "default": "cuff_steel",
+    "regions": [],
+    "classes": {
+      "cuff_steel": {
+        "rough": [
+          0.25,
+          1.15
+        ],
+        "metal": [
+          0,
+          0.85
+        ],
+        "base_scale": 0.55
+      }
+    }
+  }
 }
