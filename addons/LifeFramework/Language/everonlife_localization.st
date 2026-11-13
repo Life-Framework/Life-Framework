@@ -8151,6 +8151,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
      Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
     }
+    CustomStringTableItem "{77F083725C2B630B}" {
+     Id "LF-Police_NpcStunned"
+     Target_en_us "%1 is stunned"
+     Comment "Toast to the officer whose taser dart downed a town NPC (#922). %1 is the NPC's name."
+    }
   }
  }
 }

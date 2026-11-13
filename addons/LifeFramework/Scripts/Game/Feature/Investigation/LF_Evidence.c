@@ -459,7 +459,11 @@ class LF_EvidenceShooter : Managed
 	void OnProjectileShot(int playerId, BaseWeaponComponent weapon, IEntity projectile)
 	{
 		IEntity body = GetGame().GetWorld().FindEntityByID(m_Body);
-		if (body)
-			LF_Evidence.OnShot(body.GetOrigin(), System.GetTickCount());
+		if (!body)
+			return;
+
+		LF_Evidence.OnShot(body.GetOrigin(), System.GetTickCount());
+		// The taser's dart finds no hit zone on a town NPC, so its shot is read here (LF_NpcStun).
+		LF_NpcStun.OnShot(body, projectile);
 	}
 }

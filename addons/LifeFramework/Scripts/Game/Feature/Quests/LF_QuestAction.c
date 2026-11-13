@@ -8,7 +8,7 @@ class LF_QuestAction : ScriptedUserAction
 			return false;
 
 		IEntity owner = GetOwner();
-		if (!owner)
+		if (!owner || LF_NpcStun.BlocksTalk(owner))
 			return false;
 
 		return LF_Component<LF_QuestGiverComponent>.Find(owner) != null;

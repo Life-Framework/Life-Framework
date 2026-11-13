@@ -620,6 +620,17 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		// A stun weapon in hand: the shot is a dart (LF_NpcStun), not a lethal hit.
+		if (LF_Stun.HeldStunWeapon(this))
+		{
+			int stunned = 0;
+			if (LF_NpcStun.HarnessShot(this, target))
+				stunned = 1;
+
+			LF_HarnessReply(commandId, "ok", string.Format("shotnpc dart=1 stunned=%1", stunned));
+			return;
+		}
+
 		SCR_DamageManagerComponent damage = SCR_DamageManagerComponent.Cast(target.FindComponent(SCR_DamageManagerComponent));
 		if (!damage || !damage.GetDefaultHitZone())
 		{

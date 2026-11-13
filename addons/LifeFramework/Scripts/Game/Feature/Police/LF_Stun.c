@@ -160,7 +160,7 @@ class LF_Stun
 
 	//------------------------------------------------------------------------------------------------
 	//! The stun weapon in a character's hands, or null.
-	protected static LF_StunWeaponComponent HeldStunWeapon(notnull IEntity shooter)
+	static LF_StunWeaponComponent HeldStunWeapon(notnull IEntity shooter)
 	{
 		BaseWeaponManagerComponent weapons = BaseWeaponManagerComponent.Cast(shooter.FindComponent(BaseWeaponManagerComponent));
 		if (!weapons)
