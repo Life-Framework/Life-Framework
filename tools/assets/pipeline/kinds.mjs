@@ -42,10 +42,11 @@ export const KINDS = {
     requiredSockets: ["eye", "barrel_muzzle", "barrel_chamber", "slot_magazine"],
     requiredBones: ["w_root", "w_trigger", "w_slide", "w_hammer", "w_fire_mode", "w_slide_release"],
   },
-  // The two profiles below are written from the item conventions in docs/research/asset-pipeline.md
-  // and are not proven end to end yet (docs/architecture/asset-pipeline-spike.md "Issue breakdown").
+  // A held item. Vanilla held gadgets (Gauze_01_packed.xob) have no bones or sockets: the hand
+  // attachment holds the model at its origin, which the "centre" fit puts in the middle of the mesh.
+  // The scaffold is prefab-gadget.mjs. Proven with the handcuffs (#664, 2026-11-13).
   gadget: {
-    proven: false,
+    proven: true,
     assetRoot: "Assets/Items/Roleplay",
     prefabRoot: "Prefabs/Items/Roleplay",
     defaultSize: { length: 0.15, height: 0.08, width: 0.03 },
@@ -56,15 +57,19 @@ export const KINDS = {
     requiredSockets: [],
     requiredBones: [],
   },
+  // Proven with the police spike strip (tools/assets/spike-strip): one generated link, repeated
+  // along the length by fit.repeat, stacked into a folded model by fit.fold, a world prefab and
+  // a carried item scaffolded by prefab.mjs.
   deployable: {
-    proven: false,
+    proven: true,
     assetRoot: "Assets/Props/Roleplay",
     prefabRoot: "Prefabs/Props/Roleplay",
     defaultSize: { length: 3.0, height: 0.05, width: 0.3 },
     defaultTris: 4000,
     maxTris: 12000,
     fit: "ground",
-    collider: { prefix: "UBX_", layerPreset: "ItemFireView", gamemat: "{13581C35484F3000}Common/Materials/Game/fabric.gamemat" },
+    // maxHeight: the box covers the base only, so a wheel rolls over the strip instead of climbing it.
+    collider: { prefix: "UBX_", layerPreset: "ItemFireView", gamemat: "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat", maxHeight: 0.03 },
     requiredSockets: [],
     requiredBones: [],
   },

@@ -96,11 +96,6 @@
  },
  {
   "rule": "L4",
-  "file": "Scripts/Game/Tests/LF_Test_AreaSpawner.c",
-  "text": "protected static ref array<IEntity> s_aFound = {};"
- },
- {
-  "rule": "L4",
   "file": "Scripts/Game/Tests/LF_Test_Roadmap_Resources.c",
   "text": "protected static ref array<IEntity> s_aBars = {};"
  },

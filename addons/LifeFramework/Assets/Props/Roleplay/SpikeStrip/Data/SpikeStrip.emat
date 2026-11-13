@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{6D2187064F77199F}Assets/Props/Roleplay/SpikeStrip/Data/SpikeStrip_BCR.edds"
+ NMOMap "{8711FEF958D30070}Assets/Props/Roleplay/SpikeStrip/Data/SpikeStrip_NMO.edds"
+}

@@ -163,7 +163,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 
 	//------------------------------------------------------------------------------------------------
 	//! Releases per-player server state the player can no longer act on: escort holds where they
-	//! are officer or prisoner, and a running convoy (fails it and drops the vehicle watch).
+	//! are officer or prisoner, handcuffs on them (LF_Restraint), and a running convoy (fails it and drops the vehicle watch).
 	//! Jail sentences are kept on purpose: they persist and resume on reconnect. The carried
 	//! inventory is captured before the base game deletes the character.
 	override void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
@@ -194,6 +194,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		}
 
 		int escorts = LF_JailEscort.ReleasePlayer(uid);
+		int restraints = LF_Restraint.ReleasePlayer(uid);
 
 		if (LF_StorageSnapshot.CapturePlayer(playerId))
 			LF_Debug.Info(LF_StorageSnapshot.FEATURE, string.Format("carried inventory captured on disconnect for player %1", playerId));
@@ -211,7 +212,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		}
 
 		LF_Contraband.ReleasePlayer(characterId, controlled);
-		LF_Debug.Log("Session", string.Format("disconnect cleanup player=%1 escorts=%2", playerId, escorts));
+		LF_Debug.Log("Session", string.Format("disconnect cleanup player=%1 escorts=%2 restraints=%3", playerId, escorts, restraints));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -230,6 +231,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 			victimPlayerId = playerManager.GetPlayerIdFromControlledEntity(victim);
 
 		LF_Murder.OnCharacterKilled(victim, instigatorContextData.GetKillerEntity(), victimPlayerId, instigatorContextData.GetKillerPlayerID());
+		LF_Restraint.OnDied(victim);
 	}
 
 	//------------------------------------------------------------------------------------------------

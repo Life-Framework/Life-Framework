@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{95630948A570E53D}Assets/Items/Roleplay/Handcuffs/Data/Handcuffs_BCR.edds"
+ NMOMap "{A5ED4A34DE9BAAC1}Assets/Items/Roleplay/Handcuffs/Data/Handcuffs_NMO.edds"
+}

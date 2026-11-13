@@ -1,0 +1,50 @@
+MetaFileClass {
+ Name "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{4089BF380DE73033}" {
+     SourceMaterial "Handcuffs"
+     AssignedMaterial "{9D038FD02BA14CEF}Assets/Items/Roleplay/Handcuffs/Data/Handcuffs.emat"
+    }
+   }
+   MeshParams {
+    MeshParam Handcuffs {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_Handcuffs {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{13581C35484F3000}Common/Materials/Game/fabric.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{F31A14256718EFF3}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{04578722A64D6E7A}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{22AE2D6E3976F177}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{30860E241AFAB360}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{DA63120E80F4CA01}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

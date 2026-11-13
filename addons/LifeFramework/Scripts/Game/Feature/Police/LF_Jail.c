@@ -323,7 +323,12 @@ class LF_Jail
 			return false;
 		}
 
-		return Imprison(prisonerUid, LF_CrimeCatalog.SentenceFor(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel())), prisoner.GetWantedLevel(), standIn);
+		if (!Imprison(prisonerUid, LF_CrimeCatalog.SentenceFor(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel())), prisoner.GetWantedLevel(), standIn))
+			return false;
+
+		// The cuffs come off in the cell and go back to the arresting officer.
+		LF_Restraint.OnJailed(prisonerUid, officerUid, standIn);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -162,9 +162,18 @@ report["orientation"] = orient
 
 co, lo, hi = bounds(obj)
 ext = hi - lo
-scale = (size["height"] / ext[2]) if kind["fit"] == "pistol" else (size["length"] / ext[1])
+# A deployable can be made of one generated link repeated along its length (fit.repeat): the
+# generator makes the link, this stage tiles it, so size_m stays the size of the whole thing.
+repeat = max(int(fit.get("repeat", 1)), 1)
+link_length = size["length"] / repeat
+scale = (size["height"] / ext[2]) if kind["fit"] == "pistol" else (link_length / ext[1])
 scale *= fit.get("scale", 1.0)
-obj.data.transform(Matrix.Scale(scale, 4))
+if fit.get("stretch") and kind["fit"] != "pistol":
+    # Fit each axis to size_m on its own: right for a flat prop whose height the generator guesses.
+    obj.data.transform(Matrix.Diagonal((size["width"] / ext[0], link_length / ext[1], size["height"] / ext[2], 1.0)))
+    report["stretch"] = [float(size["width"] / ext[0] / scale), 1.0, float(size["height"] / ext[2] / scale)]
+else:
+    obj.data.transform(Matrix.Scale(scale, 4))
 co, lo, hi = bounds(obj)
 if kind["fit"] == "pistol":
     ref = kind["reference"]["bounds"]
@@ -264,7 +273,8 @@ for p in obj.data.polygons:
     p.material_index = 0
 
 # ---------------------------------------------------------------- LODs
-budget = spec["budget"]["lod0_tris"]
+# With fit.repeat the budget is for the whole strip, so each link gets its share.
+budget = spec["budget"]["lod0_tris"] / repeat
 
 
 def decimate(o, ratio):
@@ -291,11 +301,55 @@ for i, ratio in enumerate(spec["budget"].get("lod_ratios", []), start=1):
     lod.data.name = lod.name
     decimate(lod, ratio)
     lods.append(lod)
+
+
+def tile(o, count, axis):
+    # Repeat the mesh `count` times end to end along a Blender axis (1 = length, 2 = height).
+    if count <= 1:
+        return
+    activate(o)
+    mod = o.modifiers.new("tile", "ARRAY")
+    mod.count = count
+    mod.use_relative_offset = True
+    mod.relative_offset_displace = [1.0 if k == axis else 0.0 for k in range(3)]
+    bpy.ops.object.modifier_apply(modifier="tile")
+
+
+folded = []
+if repeat > 1:
+    if fit.get("fold"):
+        # The folded state: the same links stacked flat on each other, as a strip is carried.
+        for i, lod in enumerate(lods):
+            activate(lod)
+            bpy.ops.object.duplicate()
+            f = bpy.context.view_layer.objects.active
+            f.name = "%s_Folded_LOD%d" % (name, i)
+            f.data.name = f.name
+            tile(f, repeat, 2)
+            folded.append(f)
+    link = float(bounds(obj)[2][1] - bounds(obj)[1][1])
+    for lod in lods:
+        tile(lod, repeat, 1)
+        # Centre the strip on the origin along its length again.
+        lod.data.transform(Matrix.Translation(Vector((0, -link * (repeat - 1) / 2, 0))))
+    co, lo, hi = bounds(obj)
+    report["size"] = [float(hi[1] - lo[1]), float(hi[2] - lo[2]), float(hi[0] - lo[0])]
+    report["bounds"] = {"min": b2e(lo), "max": b2e(hi)}
+    report["repeat"] = {"count": repeat, "link_m": link}
 report["lods"] = [{"name": o.name, "tris": tri_count(o), "verts": len(o.data.vertices)} for o in lods]
 co, lo, hi = bounds(obj)
 
 # ---------------------------------------------------------------- collider
 col_cfg = kind["collider"]
+
+
+def box_into(cm, lo, hi):
+    bmesh.ops.create_cube(cm, size=1)
+    for v in cm.verts:
+        v.co = Vector(((lo[0] + hi[0]) / 2 + v.co.x * (hi[0] - lo[0]), (lo[1] + hi[1]) / 2 + v.co.y * (hi[1] - lo[1]),
+                       (lo[2] + hi[2]) / 2 + v.co.z * (hi[2] - lo[2])))
+
+
 cm = bmesh.new()
 if col_cfg["prefix"] == "UCX_":
     # Support points along 42 fixed directions: the hull of a subset of hull points is convex.
@@ -336,23 +390,31 @@ if col_cfg["prefix"] == "UCX_":
         bmesh.ops.triangulate(cm, faces=cm.faces)
     bmesh.ops.recalc_face_normals(cm, faces=cm.faces)
 else:
-    bmesh.ops.create_cube(cm, size=1)
-    for v in cm.verts:
-        v.co = Vector(((lo[0] + hi[0]) / 2 + v.co.x * (hi[0] - lo[0]), (lo[1] + hi[1]) / 2 + v.co.y * (hi[1] - lo[1]),
-                       (lo[2] + hi[2]) / 2 + v.co.z * (hi[2] - lo[2])))
-cmesh = bpy.data.meshes.new(col_cfg["prefix"] + name)
-cm.to_mesh(cmesh)
-report["collider"] = {"name": cmesh.name, "verts": len(cm.verts), "faces": len(cm.faces), "usage": col_cfg["layerPreset"]}
-cm.free()
-collider = bpy.data.objects.new(cmesh.name, cmesh)
-bpy.context.scene.collection.objects.link(collider)
-collider["usage"] = col_cfg["layerPreset"]
-collider.display_type = "WIRE"
-collider.hide_render = True
-if col_cfg["prefix"] == "UBX_":
-    # A box collider's own origin is its centre (wiki: FBX Import).
-    activate(collider)
-    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")
+    top = hi[2]
+    if col_cfg.get("maxHeight"):
+        # A thin box over the base: a strip a wheel rolls over, not a kerb it climbs.
+        top = min(hi[2], lo[2] + col_cfg["maxHeight"])
+    box_into(cm, lo, Vector((hi[0], hi[1], top)))
+
+
+def collider_object(cm, cname):
+    cmesh = bpy.data.meshes.new(cname)
+    cm.to_mesh(cmesh)
+    info = {"name": cmesh.name, "verts": len(cm.verts), "faces": len(cm.faces), "usage": col_cfg["layerPreset"]}
+    cm.free()
+    o = bpy.data.objects.new(cmesh.name, cmesh)
+    bpy.context.scene.collection.objects.link(o)
+    o["usage"] = col_cfg["layerPreset"]
+    o.display_type = "WIRE"
+    o.hide_render = True
+    if col_cfg["prefix"] == "UBX_":
+        # A box collider's own origin is its centre (wiki: FBX Import).
+        activate(o)
+        bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")
+    return o, info
+
+
+collider, report["collider"] = collider_object(cm, col_cfg["prefix"] + name)
 
 # ---------------------------------------------------------------- skeleton, skin, sockets
 export = lods + [collider]
@@ -451,6 +513,32 @@ bpy.ops.export_scene.fbx(filepath=fbx, check_existing=False, use_selection=True,
                          use_custom_props=True, add_leaf_bones=False, bake_anim=False)
 report["fbx"] = {"file": fbx, "bytes": os.path.getsize(fbx), "objects": sorted(o.name for o in export)}
 
+# The folded state is a second model with the same material: its own LODs and box collider.
+report["variants"] = []
+if folded:
+    fname = name + "_Folded"
+    fco, flo, fhi = bounds(folded[0])
+    fcm = bmesh.new()
+    box_into(fcm, flo, fhi)
+    fcollider, finfo = collider_object(fcm, col_cfg["prefix"] + fname)
+    fexport = folded + [fcollider]
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in fexport:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = folded[0]
+    ffbx = os.path.join(out, fname + ".fbx")
+    bpy.ops.export_scene.fbx(filepath=ffbx, check_existing=False, use_selection=True,
+                             object_types={"MESH", "OTHER", "EMPTY"}, use_custom_props=True,
+                             add_leaf_bones=False, bake_anim=False)
+    report["variants"].append({
+        "name": fname, "fbx": ffbx, "collider": finfo,
+        "lods": [{"name": o.name, "tris": tri_count(o), "verts": len(o.data.vertices)} for o in folded],
+        "size": [float(fhi[1] - flo[1]), float(fhi[2] - flo[2]), float(fhi[0] - flo[0])],
+        "bounds": {"min": b2e(flo), "max": b2e(fhi)},
+    })
+    for o in folded:
+        o.hide_render = True
+
 # ---------------------------------------------------------------- review renders
 scene = bpy.context.scene
 scene.render.engine = "BLENDER_WORKBENCH"
@@ -533,6 +621,13 @@ shot(os.path.join(review, "clean_side.png"), (-1, 0, 0))
 lods[0].hide_render = True
 lods[-1].hide_render = False
 shot(os.path.join(review, "lod_last.png"), (-0.8, 0.9, 0.5), ortho=False)
+if folded:
+    lods[-1].hide_render = True
+    folded[0].hide_render = False
+    co, lo, hi = bounds(folded[0])
+    centre = Vector(((lo + hi) / 2).tolist())
+    span = float(max(hi - lo))
+    shot(os.path.join(review, "folded.png"), (-0.8, 0.9, 0.5), ortho=False)
 
 bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, name + ".blend"))
 with open(os.path.join(out, "report.json"), "w") as f:

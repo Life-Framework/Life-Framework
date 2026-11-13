@@ -7816,6 +7816,101 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The receiver of the call you are on. It goes back when you hang up."
      Comment "Inventory description of the telephone receiver item."
     }
+    CustomStringTableItem "{6B316884EEFB27FF}" {
+     Id "LF-Item_Handcuffs_Name"
+     Target_en_us "Handcuffs"
+     Comment "Inventory name of the police handcuffs."
+    }
+    CustomStringTableItem "{E0C70F7F81117F7D}" {
+     Id "LF-Item_Handcuffs_Description"
+     Target_en_us "Steel chain handcuffs. Hold them and face a downed or held-up suspect to cuff them."
+     Comment "Inventory description of the police handcuffs."
+    }
+    CustomStringTableItem "{C96808FBA0407AFE}" {
+     Id "LF-Restrain_Action"
+     Target_en_us "Cuff"
+     Comment "Interaction menu entry for an on-duty officer holding handcuffs: cuff the person in front of you."
+    }
+    CustomStringTableItem "{1069F4CF50C7B5A1}" {
+     Id "LF-Restrain_Release"
+     Target_en_us "Uncuff"
+     Comment "Interaction menu entry for an on-duty officer facing a cuffed player: take the handcuffs off."
+    }
+    CustomStringTableItem "{421ECB9A8B26A772}" {
+     Id "LF-Restrain_Title"
+     Target_en_us "Handcuffs"
+     Comment "Toast title for cuffing and uncuffing."
+    }
+    CustomStringTableItem "{43F938FE3194371E}" {
+     Id "LF-Restrain_NotOfficer"
+     Target_en_us "Only an on-duty officer can do that."
+     Comment "Cuff refusal: the player is not clocked in as police."
+    }
+    CustomStringTableItem "{677F023211DC8C42}" {
+     Id "LF-Restrain_NoCuffs"
+     Target_en_us "Hold handcuffs in your hand first."
+     Comment "Cuff refusal: the officer holds no handcuffs."
+    }
+    CustomStringTableItem "{B261D371541EF2AF}" {
+     Id "LF-Restrain_NotCompliant"
+     Target_en_us "Only a downed suspect, or one held up who holds no weapon, can be cuffed."
+     Comment "Cuff refusal: the target is standing, not held up, or armed."
+    }
+    CustomStringTableItem "{8865F05A2F144187}" {
+     Id "LF-Restrain_Already"
+     Target_en_us "Already in handcuffs."
+     Comment "Cuff refusal: the target is cuffed already."
+    }
+    CustomStringTableItem "{4F1BD3FDEFA49623}" {
+     Id "LF-Restrain_NotCuffed"
+     Target_en_us "Not in handcuffs."
+     Comment "Uncuff refusal: the target is not cuffed."
+    }
+    CustomStringTableItem "{A39AC47B9AF1F8B0}" {
+     Id "LF-Restrain_Cuffed"
+     Target_en_us "Suspect cuffed."
+     Comment "Toast to the officer after cuffing someone."
+    }
+    CustomStringTableItem "{4861834BE14FFC3F}" {
+     Id "LF-Restrain_YouAreCuffed"
+     Target_en_us "You are in handcuffs."
+     Comment "Toast to the player who was just cuffed."
+    }
+    CustomStringTableItem "{5E8975FFDDC6A07C}" {
+     Id "LF-Restrain_Released"
+     Target_en_us "The handcuffs are off."
+     Comment "Toast to both the officer and the player when the handcuffs come off."
+    }
+    CustomStringTableItem "{70EF9362784F2066}" {
+     Id "LF-SpikeStrip_Name"
+     Target_en_us "Spike strip"
+     Comment "Inventory name of the folded police stinger (#646)."
+    }
+    CustomStringTableItem "{633CC534006B5907}" {
+     Id "LF-SpikeStrip_Description"
+     Target_en_us "Folding tyre-deflation strip. Drop it at the roadside and deploy it across the road; a tyre that crosses it goes flat. On-duty police only."
+     Comment "Inventory description of the folded police stinger."
+    }
+    CustomStringTableItem "{C9A02C030858FF1F}" {
+     Id "LF-SpikeStrip_Deploy"
+     Target_en_us "Deploy spike strip"
+     Comment "Action on the folded strip: lays it across the road in front of the officer."
+    }
+    CustomStringTableItem "{4CC146840395573D}" {
+     Id "LF-SpikeStrip_PickUp"
+     Target_en_us "Pick up spike strip"
+     Comment "Action on a deployed strip: folds it back into the officer inventory."
+    }
+    CustomStringTableItem "{C73AA5808AE4125F}" {
+     Id "LF-SpikeStrip_PoliceOnly"
+     Target_en_us "Only an on-duty officer can handle the spike strip."
+     Comment "Toast and greyed-out reason when someone who is not on-duty police tries the strip."
+    }
+    CustomStringTableItem "{A09B30F6281E5E2E}" {
+     Id "LF-SpikeStrip_NoGround"
+     Target_en_us "There is no flat ground in front of you for the strip."
+     Comment "Toast when the ground ahead rises or falls too much along the strip (a kerb, a car, a slope)."
+    }
   }
  }
 }

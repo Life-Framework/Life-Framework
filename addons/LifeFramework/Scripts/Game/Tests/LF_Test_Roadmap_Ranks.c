@@ -31,15 +31,16 @@ class LF_Test_Roadmap_Ranks : LF_Test
 
 		array<ResourceName> patrolKit = {};
 		LF_PoliceRanks.CollectKit(LF_PoliceRanks.PATROL, patrolKit);
-		ctx.Equal(1, patrolKit.Count(), "patrol kit is the rank's prefabs only");
-		if (patrolKit.Count() == 1)
+		ctx.Equal(2, patrolKit.Count(), "patrol kit is the rank's prefabs only");
+		if (patrolKit.Count() == 2)
 			ctx.True(patrolKit.Get(0) == LF_PoliceRanks.SIDEARM, "patrol kit is the M9");
+		ctx.True(KitHas(patrolKit, LF_PoliceRanks.SPIKE_STRIP), "patrol kit includes the spike strip");
 		ctx.False(KitHas(patrolKit, LF_PoliceRanks.LONG_GUN), "patrol kit does not include the rifle");
 
 		array<ResourceName> seniorKit = {};
 		LF_PoliceRanks.CollectKit(LF_PoliceRanks.SENIOR, seniorKit);
-		ctx.Equal(1, seniorKit.Count(), "senior kit is the rank's prefabs only");
-		if (seniorKit.Count() == 1)
+		ctx.Equal(2, seniorKit.Count(), "senior kit is the rank's prefabs only");
+		if (seniorKit.Count() == 2)
 			ctx.True(seniorKit.Get(0) == LF_PoliceRanks.LONG_GUN, "senior kit is the M16A2");
 		ctx.False(KitHas(seniorKit, LF_PoliceRanks.SIDEARM), "senior kit does not include the sidearm");
 
