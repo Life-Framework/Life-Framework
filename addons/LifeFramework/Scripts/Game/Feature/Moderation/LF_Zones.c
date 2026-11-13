@@ -58,7 +58,7 @@ class LF_ZoneRuleSet
 	[Attribute("1", UIWidgets.CheckBox, "Drawing a weapon is allowed inside")]
 	bool m_bAllowsWeaponDraw = true;
 
-	[Attribute("1", UIWidgets.EditBox, "Multiplier on fines for crimes committed inside")]
+	[Attribute("1", UIWidgets.EditBox, "Multiplier on fines for crimes committed inside", params: "0 10")]
 	float m_fFineMultiplier = 1;
 
 	[Attribute("1", UIWidgets.CheckBox, "Police may enter and act inside")]
@@ -66,10 +66,19 @@ class LF_ZoneRuleSet
 }
 
 //------------------------------------------------------------------------------------------------
+//! The zone rule sets: Configs/Moderation/LF_Zones.conf with the owner's `zones` section layered
+//! over it. Server only: the damage hook and the crime features read it on the server, and the HUD
+//! reads the rule, not its rule set, so nothing here is in the config stream.
 [BaseContainerProps(configRoot: true)]
 class LF_ZoneConfig
 {
 	static const ResourceName CONFIG_PATH = "{7C41D2A95E0B38F6}Configs/Moderation/LF_Zones.conf";
+
+	//! The owner config.json section this class reads (LF_ConfigService).
+	static const string SECTION = "zones";
+
+	static const float FINE_MULTIPLIER_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float FINE_MULTIPLIER_MAX = 10;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	protected static ref LF_ZoneConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -111,8 +120,98 @@ class LF_ZoneConfig
 		s_Config = LF_ZoneConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error(LF_Zones.FEATURE, string.Format("zone config has an unexpected root class, using defaults: %1", CONFIG_PATH));
+		else
+			s_Config.ApplyLayers();
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the cached instance so the next Get() layers the owner file again (/configreload).
+	static void Reload()
+	{
+		ResetStatics();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges the owner's "zones" section over this instance, which holds the core `.conf`.
+	void ApplyLayers()
+	{
+		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
+		if (!reader)
+			return;
+
+		ApplyOwner(reader);
+		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("zones: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the owner's "zones" section: the two legacy flags, then `ruleSets`, an object keyed by
+	//! the rule name (NORMAL, SAFE, LAWLESS). A record changes that rule's entry field by field; a
+	//! rule with no entry gets one built from what the legacy flags say, then the owner's fields.
+	//! \param[in] reader A reader on the section.
+	void ApplyOwner(notnull LF_ConfigReader reader)
+	{
+		array<string> ownerKeys = {"ruleSets", "safeBlocksPlayerDamage", "lawlessSuppressesWanted"};
+		reader.WarnUnknownKeys(ownerKeys);
+		reader.ReadBool("safeBlocksPlayerDamage", m_bSafeBlocksPlayerDamage);
+		reader.ReadBool("lawlessSuppressesWanted", m_bLawlessSuppressesWanted);
+
+		int count = reader.BeginRecords("ruleSets");
+		for (int i = 0; i < count; i++)
+		{
+			string key = reader.GetRecordKey(i);
+			if (!reader.BeginRecord(key))
+				continue;
+
+			LF_ZoneRule rule = typename.StringToEnum(LF_ZoneRule, key);
+			if (typename.EnumToString(LF_ZoneRule, rule) != key)
+			{
+				reader.RejectRecord("the key is not a rule name (NORMAL, SAFE or LAWLESS)");
+				reader.EndRecord();
+				continue;
+			}
+
+			LF_ZoneRuleSet entry = FindRuleSet(rule);
+			if (!entry)
+			{
+				if (!m_aRuleSets)
+					m_aRuleSets = new array<ref LF_ZoneRuleSet>();
+
+				entry = Resolve(this, rule);
+				m_aRuleSets.Insert(entry);
+			}
+
+			array<string> recordKeys = {"blocksPlayerDamage", "suppressesWanted", "allowsRobbery", "allowsVehicleTheft", "allowsWeaponDraw", "fineMultiplier", "copsEnter"};
+			reader.WarnUnknownKeys(recordKeys);
+			reader.ReadBool("blocksPlayerDamage", entry.m_bBlocksPlayerDamage);
+			reader.ReadBool("suppressesWanted", entry.m_bSuppressesWanted);
+			reader.ReadBool("allowsRobbery", entry.m_bAllowsRobbery);
+			reader.ReadBool("allowsVehicleTheft", entry.m_bAllowsVehicleTheft);
+			reader.ReadBool("allowsWeaponDraw", entry.m_bAllowsWeaponDraw);
+			reader.ReadFloat("fineMultiplier", entry.m_fFineMultiplier, FINE_MULTIPLIER_MIN, FINE_MULTIPLIER_MAX);
+			reader.ReadBool("copsEnter", entry.m_bCopsEnter);
+			reader.EndRecord();
+		}
+
+		if (count >= 0)
+			reader.EndRecords();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The table entry for a rule, or null.
+	LF_ZoneRuleSet FindRuleSet(LF_ZoneRule rule)
+	{
+		if (!m_aRuleSets)
+			return null;
+
+		foreach (LF_ZoneRuleSet entry : m_aRuleSets)
+		{
+			if (entry && entry.m_eRule == rule)
+				return entry;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------

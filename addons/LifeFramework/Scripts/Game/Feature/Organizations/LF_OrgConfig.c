@@ -7,6 +7,20 @@ class LF_OrgConfig
 {
 	static const ResourceName CONFIG_PATH = "{EA86F8E6A6BCA687}Configs/Organizations/LF_Org.conf";
 
+	//! The owner config.json section this class reads (LF_ConfigService).
+	static const string SECTION = "organizations";
+
+	static const int FEE_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int FEE_MAX = 10000000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int NAME_LENGTH_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int NAME_LENGTH_MAX = 64;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int OFFER_MS_MIN = 5000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int OFFER_MS_MAX = 3600000;	// lf-fixed: the schema limit, one hour
+	static const int CASH_MOVE_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int CASH_MOVE_MAX = 100000000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float DESK_RANGE_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float DESK_RANGE_MAX = 30;	// lf-fixed: the schema limit, mirrors the attribute params
+
 	static const int DEFAULT_FOUNDING_FEE = 250;
 	static const int DEFAULT_NAME_MIN = 3;
 	static const int DEFAULT_NAME_MAX = 32;
@@ -44,6 +58,9 @@ class LF_OrgConfig
 	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from an organization desk when the server moves fund cash", params: "1 30")]
 	float m_fDeskRange = 5;
 
+	[Attribute("", UIWidgets.Object, "Rights of the default ranks a new organization starts with, one entry per rank id (founder, officer, member). A rank with no entry keeps its shipped rights. Applies to organizations founded after the change; a saved organization keeps its own ranks")]
+	ref array<ref LF_OrgRankDefault> m_aRankDefaults;
+
 	protected static ref LF_OrgConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -65,8 +82,171 @@ class LF_OrgConfig
 		s_Config = LF_OrgConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error("Org", string.Format("organization config has an unexpected root class, using defaults: %1", CONFIG_PATH));
+		else
+			s_Config.ApplyLayers();
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the cached instance so the next Get() layers the owner file again (/configreload).
+	static void Reload()
+	{
+		s_Config = null;
+		s_bLoadAttempted = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: makes `config` the one Get returns until Reload.
+	static void UseForTest(LF_OrgConfig config)
+	{
+		s_Config = config;
+		s_bLoadAttempted = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges the owner's "organizations" section over this instance, which holds the core `.conf`,
+	//! then (on a client) the server's streamed values over that.
+	void ApplyLayers()
+	{
+		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
+		if (reader)
+		{
+			ApplyOwner(reader);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("organizations: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		}
+
+		// Client: the server's effective values replace the result (#285). Null on the server.
+		LF_ConfigReader streamed = LF_ConfigStream.OpenReceivedSection(SECTION);
+		if (streamed)
+		{
+			ApplyOwner(streamed);
+			LF_Debug.Info(LF_ConfigService.FEATURE, "organizations: using the server's values");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the owner's "organizations" section field by field; a key left out keeps the shipped
+	//! value. `rankDefaults` is keyed by default rank id (founder, officer, member) and sets that
+	//! rung's rights for organizations founded afterwards (#857).
+	//! \param[in] reader A reader on the section.
+	void ApplyOwner(notnull LF_ConfigReader reader)
+	{
+		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "rankDefaults"};
+		reader.WarnUnknownKeys(ownerKeys);
+		int nameMin = m_iNameMin;
+		int nameMax = m_iNameMax;
+		reader.ReadInt("foundingFee", m_iFoundingFee, FEE_MIN, FEE_MAX);
+		reader.ReadInt("nameMin", m_iNameMin, NAME_LENGTH_MIN, NAME_LENGTH_MAX);
+		reader.ReadInt("nameMax", m_iNameMax, NAME_LENGTH_MIN, NAME_LENGTH_MAX);
+		reader.ReadInt("offerMs", m_iOfferMs, OFFER_MS_MIN, OFFER_MS_MAX);
+		reader.ReadInt("maxCashMove", m_iMaxCashMove, CASH_MOVE_MIN, CASH_MOVE_MAX);
+		reader.ReadInt("priceExtraStorage", m_iPriceExtraStorage, FEE_MIN, FEE_MAX);
+		reader.ReadInt("priceProcessingSlot", m_iPriceProcessingSlot, FEE_MIN, FEE_MAX);
+		reader.ReadInt("priceParkedVehicle", m_iPriceParkedVehicle, FEE_MIN, FEE_MAX);
+		reader.ReadFloat("deskRange", m_fDeskRange, DESK_RANGE_MIN, DESK_RANGE_MAX);
+
+		if (m_iNameMin > m_iNameMax)
+		{
+			LF_Debug.Error("Org", string.Format("organizations: nameMin %1 is above nameMax %2, so no name would be valid; keeping %3 and %4", m_iNameMin, m_iNameMax, nameMin, nameMax));
+			m_iNameMin = nameMin;
+			m_iNameMax = nameMax;
+		}
+
+		if (!m_aRankDefaults)
+			m_aRankDefaults = new array<ref LF_OrgRankDefault>();
+
+		int count = reader.BeginRecords("rankDefaults");
+		for (int i = 0; i < count; i++)
+		{
+			string key = reader.GetRecordKey(i);
+			if (!reader.BeginRecord(key))
+				continue;
+
+			array<string> ladder = {};
+			LF_OrganizationConfig.DefaultLadder(ladder);
+			if (!ladder.Contains(key))
+			{
+				reader.RejectRecord("the key is not a default rank (founder, officer or member)");
+				reader.EndRecord();
+				continue;
+			}
+
+			LF_OrgRankDefault entry = FindRankDefault(key);
+			if (!entry)
+			{
+				entry = LF_OrgRankDefault.FromRights(key, LF_OrganizationConfig.ShippedRights(key));
+				m_aRankDefaults.Insert(entry);
+			}
+
+			array<string> recordKeys = {"withdraw", "invite", "kick", "buyUpgrade", "manageRanks", "declareWar", "useStash", "manageTerritory", "spendFund"};
+			reader.WarnUnknownKeys(recordKeys);
+			reader.ReadBool("withdraw", entry.m_bWithdraw);
+			reader.ReadBool("invite", entry.m_bInvite);
+			reader.ReadBool("kick", entry.m_bKick);
+			reader.ReadBool("buyUpgrade", entry.m_bBuyUpgrade);
+			reader.ReadBool("manageRanks", entry.m_bManageRanks);
+			reader.ReadBool("declareWar", entry.m_bDeclareWar);
+			reader.ReadBool("useStash", entry.m_bUseStash);
+			reader.ReadBool("manageTerritory", entry.m_bManageTerritory);
+			reader.ReadBool("spendFund", entry.m_bSpendFund);
+			reader.EndRecord();
+		}
+
+		if (count >= 0)
+			reader.EndRecords();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The owner's rights entry for a default rank, or null.
+	LF_OrgRankDefault FindRankDefault(string rankId)
+	{
+		if (!m_aRankDefaults)
+			return null;
+
+		foreach (LF_OrgRankDefault entry : m_aRankDefaults)
+		{
+			if (entry && entry.m_sRank == rankId)
+				return entry;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[in] rankId A default rank id.
+	//! \param[out] rights The configured rights mask, set only when the config has an entry.
+	//! \return True when the config sets that rank's rights.
+	static bool RankRights(string rankId, out int rights)
+	{
+		LF_OrgConfig config = Get();
+		if (!config)
+			return false;
+
+		LF_OrgRankDefault entry = config.FindRankDefault(rankId);
+		if (!entry)
+			return false;
+
+		rights = entry.Rights();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Writes the effective values a client reads into the config stream (#285), under the owner
+	//! section's own keys so the client applies them with ApplyOwner. The rank defaults stay on the
+	//! server: a new organization's ranks are built there and replicated as the organization's own.
+	//! \param[in] ctx A save context with this section's object open.
+	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	{
+		ctx.WriteValue("foundingFee", m_iFoundingFee);
+		ctx.WriteValue("nameMin", m_iNameMin);
+		ctx.WriteValue("nameMax", m_iNameMax);
+		ctx.WriteValue("offerMs", m_iOfferMs);
+		ctx.WriteValue("maxCashMove", m_iMaxCashMove);
+		ctx.WriteValue("priceExtraStorage", m_iPriceExtraStorage);
+		ctx.WriteValue("priceProcessingSlot", m_iPriceProcessingSlot);
+		ctx.WriteValue("priceParkedVehicle", m_iPriceParkedVehicle);
+		ctx.WriteValue("deskRange", m_fDeskRange);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -157,5 +337,92 @@ class LF_OrgConfig
 			return DEFAULT_DESK_RANGE;
 
 		return config.m_fDeskRange;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One default rank's rights as the owner config states them (#857): a bool per permission. The
+//! saved form stays the rights mask (LF_OrgRights), so no save format changes.
+[BaseContainerProps()]
+class LF_OrgRankDefault
+{
+	[Attribute("", UIWidgets.EditBox, "The default rank id: founder, officer or member")]
+	string m_sRank;
+
+	[Attribute("0", UIWidgets.CheckBox, "May take cash out of the fund")]
+	bool m_bWithdraw;
+
+	[Attribute("0", UIWidgets.CheckBox, "May invite players")]
+	bool m_bInvite;
+
+	[Attribute("0", UIWidgets.CheckBox, "May kick members below this rank")]
+	bool m_bKick;
+
+	[Attribute("0", UIWidgets.CheckBox, "May buy upgrades from the fund")]
+	bool m_bBuyUpgrade;
+
+	[Attribute("0", UIWidgets.CheckBox, "May promote and demote members below this rank")]
+	bool m_bManageRanks;
+
+	[Attribute("0", UIWidgets.CheckBox, "Reserved for the war record: no effect yet")]
+	bool m_bDeclareWar;
+
+	[Attribute("0", UIWidgets.CheckBox, "Reserved: the hideout stash opens for every member today")]
+	bool m_bUseStash;
+
+	[Attribute("0", UIWidgets.CheckBox, "Reserved for territory: no effect yet")]
+	bool m_bManageTerritory;
+
+	[Attribute("0", UIWidgets.CheckBox, "Reserved: spending the fund on something other than an upgrade")]
+	bool m_bSpendFund;
+
+	//------------------------------------------------------------------------------------------------
+	//! An entry holding exactly the permissions a rights mask grants.
+	static LF_OrgRankDefault FromRights(string rankId, int rights)
+	{
+		LF_OrgRankDefault entry = new LF_OrgRankDefault();
+		entry.m_sRank = rankId;
+		entry.m_bWithdraw = Has(rights, LF_EOrganizationPermission.WITHDRAW);
+		entry.m_bInvite = Has(rights, LF_EOrganizationPermission.INVITE);
+		entry.m_bKick = Has(rights, LF_EOrganizationPermission.KICK);
+		entry.m_bBuyUpgrade = Has(rights, LF_EOrganizationPermission.BUY_UPGRADE);
+		entry.m_bManageRanks = Has(rights, LF_EOrganizationPermission.MANAGE_RANKS);
+		entry.m_bDeclareWar = Has(rights, LF_EOrganizationPermission.DECLARE_WAR);
+		entry.m_bUseStash = Has(rights, LF_EOrganizationPermission.USE_STASH);
+		entry.m_bManageTerritory = Has(rights, LF_EOrganizationPermission.MANAGE_TERRITORY);
+		entry.m_bSpendFund = Has(rights, LF_EOrganizationPermission.SPEND_FUND);
+		return entry;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Has(int rights, LF_EOrganizationPermission permission)
+	{
+		return (rights & LF_OrgRights.Bit(permission)) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The rights mask this entry grants.
+	int Rights()
+	{
+		int rights;
+		if (m_bWithdraw)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.WITHDRAW);
+		if (m_bInvite)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.INVITE);
+		if (m_bKick)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.KICK);
+		if (m_bBuyUpgrade)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.BUY_UPGRADE);
+		if (m_bManageRanks)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.MANAGE_RANKS);
+		if (m_bDeclareWar)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.DECLARE_WAR);
+		if (m_bUseStash)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
+		if (m_bManageTerritory)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.MANAGE_TERRITORY);
+		if (m_bSpendFund)
+			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.SPEND_FUND);
+		return rights;
 	}
 }

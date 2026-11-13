@@ -486,14 +486,19 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalClothes.m_sDescription = "#LF-License_CriminalClothes_Desc";
 		criminalClothes.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_CLOTHES, criminalClothes);
+
+		// The owner's `licences` section (D8): initial and whitelist flags.
+		LF_LicencesConfig.ApplyTo(m_mLicenseConfigs);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	protected void GiveInitialLicenses()
 	{
-		// Dar licencias iniciales gratuitas
-		UnlockLicense(LF_ELicenseType.UNEMPLOYED, true);
-		UnlockLicense(LF_ELicenseType.FARMER_FIELD, true);
+		// Dar licencias iniciales gratuitas: the catalog's initial flags (UNEMPLOYED and FARMER_FIELD unless the owner says otherwise)
+		array<LF_ELicenseType> initial = {};
+		LF_LicencesConfig.InitialLicences(m_mLicenseConfigs, initial);
+		foreach (LF_ELicenseType licence : initial)
+			UnlockLicense(licence, true);
 		
 		LF_Debug.Log("License", "Initial licenses granted");
 	}

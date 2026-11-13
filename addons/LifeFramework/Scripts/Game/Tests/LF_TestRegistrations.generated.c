@@ -74,6 +74,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSchemaVersion(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigSectionsA(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigSectionsB(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigSectionsBackcompat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamClientOnly(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamRoundTrip(), LF_TestTier.LOGIC);

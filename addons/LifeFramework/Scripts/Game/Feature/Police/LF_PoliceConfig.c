@@ -11,6 +11,50 @@ class LF_PoliceConfig
 {
 	static const ResourceName CONFIG_PATH = "{916BDC092C01B7D1}Configs/Police/LF_Police.conf";
 
+	//! The owner config.json section this class reads (LF_ConfigService).
+	static const string SECTION = "police";
+
+	static const int RANK_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int RANK_MAX = 20;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float CATCH_RADIUS_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float CATCH_RADIUS_MAX = 200;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float PLACE_RADIUS_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float PLACE_RADIUS_MAX = 2000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float BOARD_READ_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float BOARD_READ_MAX = 30;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int BOARD_POSTERS_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int BOARD_POSTERS_MAX = 20;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float ALARM_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float ALARM_MAX = 600;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DISPATCH_LINES_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DISPATCH_LINES_MAX = 20;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEADLINE_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEADLINE_MAX = 86400;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float LATE_MULTIPLIER_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float LATE_MULTIPLIER_MAX = 10;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int SEARCH_COOLDOWN_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int SEARCH_COOLDOWN_MAX = 3600;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int TICKET_OPEN_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int TICKET_OPEN_MAX = 20;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int TICKET_PAID_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int TICKET_PAID_MAX = 20;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float REACH_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float REACH_MAX = 30;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float JAIL_RADIUS_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float JAIL_RADIUS_MAX = 50;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float DESK_RANGE_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float DESK_RANGE_MAX = 30;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int COMPLIANT_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int COMPLIANT_MAX = 600;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int SPIKE_LIFETIME_MIN = 30;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int SPIKE_LIFETIME_MAX = 7200;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int FINE_CAP_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int FINE_CAP_MAX = 10000000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float RANK_PAY_MIN = -1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float RANK_PAY_MAX = 1000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int RANK_DUTY_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int RANK_DUTY_MAX = 10000000;	// lf-fixed: the schema limit, mirrors the attribute params
+
 	static const int DEFAULT_ARREST_MIN_RANK = 0;
 	static const int DEFAULT_ESCORT_MIN_RANK = 0;
 	static const float DEFAULT_CATCH_IN_ACT_RADIUS = 10;
@@ -37,31 +81,31 @@ class LF_PoliceConfig
 	static const int DEFAULT_COMPLIANT_SECONDS = 60;
 	static const int DEFAULT_SPIKE_STRIP_LIFETIME_SECONDS = 600;
 
-	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
+	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)", params: "0 20")]
 	int m_iArrestMinRank;
 
-	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may escort a suspect (0 patrol, 1 senior)")]
+	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may escort a suspect (0 patrol, 1 senior)", params: "0 20")]
 	int m_iEscortMinRank;
 
 	[Attribute("", UIWidgets.Object, "The rank ladder, lowest first. A rank is its index here and a saved index never changes meaning: append, never reorder. Index 0 is patrol and 1 is senior")]
 	ref array<ref LF_PoliceRank> m_aRanks;
 
-	[Attribute("10", UIWidgets.Auto, "An on-duty officer this close (metres) when a crime is committed catches the suspect in the act: the report is identified at once")]
+	[Attribute("10", UIWidgets.Auto, "An on-duty officer this close (metres) when a crime is committed catches the suspect in the act: the report is identified at once", params: "0 200")]
 	float m_fCatchInActRadius;
 
-	[Attribute("80", UIWidgets.Auto, "A crime report names the nearest sign within this many metres as the place; beyond it the place is a map grid square")]
+	[Attribute("80", UIWidgets.Auto, "A crime report names the nearest sign within this many metres as the place; beyond it the place is a map grid square", params: "0 2000")]
 	float m_fPlaceRadius;
 
-	[Attribute("4", UIWidgets.Auto, "How close (metres) a player must stand to the wanted board for the server to answer a read")]
+	[Attribute("4", UIWidgets.Auto, "How close (metres) a player must stand to the wanted board for the server to answer a read", params: "1 30")]
 	float m_fBoardReadDistance;
 
-	[Attribute("8", UIWidgets.Auto, "Most posters the wanted board shows, newest first")]
+	[Attribute("8", UIWidgets.Auto, "Most posters the wanted board shows, newest first", params: "1 20")]
 	int m_iBoardMaxPosters;
 
-	[Attribute("30", UIWidgets.Auto, "Seconds the site alarm sounds when at least one officer is on duty (M1-20)")]
+	[Attribute("30", UIWidgets.Auto, "Seconds the site alarm sounds when at least one officer is on duty (M1-20)", params: "1 600")]
 	float m_fAlarmSeconds;
 
-	[Attribute("60", UIWidgets.Auto, "Seconds the site alarm sounds when nobody is on duty: the louder, longer alarm")]
+	[Attribute("60", UIWidgets.Auto, "Seconds the site alarm sounds when nobody is on duty: the louder, longer alarm", params: "1 600")]
 	float m_fLoudAlarmSeconds;
 
 	[Attribute("{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et", UIWidgets.ResourceNamePicker, "Alarm spawned at the site when officers are on duty. Its LF_SiteAlarmComponent sets the sound, hear range, and light", "et")]
@@ -76,22 +120,22 @@ class LF_PoliceConfig
 	[Attribute("SOUND_RADIO_SIGNAL_2", UIWidgets.EditBox, "Sound event of the radio chirp")]
 	string m_sRadioSoundEvent;
 
-	[Attribute("5", UIWidgets.Auto, "Dispatch lines the wanted board shows to on-duty police, newest first")]
+	[Attribute("5", UIWidgets.Auto, "Dispatch lines the wanted board shows to on-duty police, newest first", params: "1 20")]
 	int m_iDispatchLogLines;
 
-	[Attribute("1800", UIWidgets.Auto, "Online seconds a ticket holder has to pay at the police desk before the amount goes up")]
+	[Attribute("1800", UIWidgets.Auto, "Online seconds a ticket holder has to pay at the police desk before the amount goes up", params: "1 86400")]
 	int m_iTicketFirstDeadline;
 
-	[Attribute("1800", UIWidgets.Auto, "Further online seconds after the first deadline before an unpaid ticket makes the holder wanted")]
+	[Attribute("1800", UIWidgets.Auto, "Further online seconds after the first deadline before an unpaid ticket makes the holder wanted", params: "1 86400")]
 	int m_iTicketSecondDeadline;
 
-	[Attribute("2", UIWidgets.Auto, "The amount is multiplied by this once, at the first deadline")]
+	[Attribute("2", UIWidgets.Auto, "The amount is multiplied by this once, at the first deadline", params: "1 10")]
 	float m_fTicketLateMultiplier;
 
 	[Attribute("1", UIWidgets.Auto, "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder")]
 	bool m_bOfficerKillOfWantedExempt;
 
-	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again (#472). 0 disables")]
+	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again (#472). 0 disables", params: "0 3600")]
 	int m_iSearchCooldownSeconds;
 
 	[Attribute("3", UIWidgets.Auto, "Unpaid tickets one holder may carry; a further ticket is refused", params: "1 20")]
@@ -135,8 +179,194 @@ class LF_PoliceConfig
 		s_Config = LF_PoliceConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error("Ranks", string.Format("police config has an unexpected root class, using defaults: %1", CONFIG_PATH));
+		else
+			s_Config.ApplyLayers();
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the cached instance so the next Get() layers the owner file again (/configreload).
+	static void Reload()
+	{
+		s_Config = null;
+		s_bLoadAttempted = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: makes `config` the one Get returns until Reload.
+	static void UseForTest(LF_PoliceConfig config)
+	{
+		s_Config = config;
+		s_bLoadAttempted = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges the owner's "police" section over this instance, which holds the core `.conf`, then
+	//! (on a client) the server's streamed values over that.
+	void ApplyLayers()
+	{
+		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
+		if (reader)
+		{
+			ApplyOwner(reader);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("police: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		}
+
+		// Client: the server's effective values replace the result (#285). Null on the server.
+		LF_ConfigReader streamed = LF_ConfigStream.OpenReceivedSection(SECTION);
+		if (streamed)
+		{
+			ApplyOwner(streamed);
+			LF_Debug.Info(LF_ConfigService.FEATURE, "police: using the server's values");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the owner's "police" section field by field; a key left out keeps the shipped value.
+	//! `ranks` is keyed by rank id: an id the ladder has changes that rank field by field, an id it
+	//! lacks appends a rung (a saved rank is its index, so the ladder only ever grows).
+	//! \param[in] reader A reader on the section.
+	void ApplyOwner(notnull LF_ConfigReader reader)
+	{
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds"};
+		reader.WarnUnknownKeys(ownerKeys);
+		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
+		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
+		reader.ReadFloat("catchInActRadius", m_fCatchInActRadius, CATCH_RADIUS_MIN, CATCH_RADIUS_MAX);
+		reader.ReadFloat("placeRadius", m_fPlaceRadius, PLACE_RADIUS_MIN, PLACE_RADIUS_MAX);
+		reader.ReadFloat("boardReadDistance", m_fBoardReadDistance, BOARD_READ_MIN, BOARD_READ_MAX);
+		reader.ReadInt("boardMaxPosters", m_iBoardMaxPosters, BOARD_POSTERS_MIN, BOARD_POSTERS_MAX);
+		reader.ReadFloat("alarmSeconds", m_fAlarmSeconds, ALARM_MIN, ALARM_MAX);
+		reader.ReadFloat("loudAlarmSeconds", m_fLoudAlarmSeconds, ALARM_MIN, ALARM_MAX);
+		reader.ReadResource("alarmPrefab", m_sAlarmPrefab);
+		reader.ReadResource("loudAlarmPrefab", m_sLoudAlarmPrefab);
+		reader.ReadResource("radioSoundProject", m_sRadioSoundProject);
+		reader.ReadString("radioSoundEvent", m_sRadioSoundEvent);
+		reader.ReadInt("dispatchLogLines", m_iDispatchLogLines, DISPATCH_LINES_MIN, DISPATCH_LINES_MAX);
+		reader.ReadInt("ticketFirstDeadline", m_iTicketFirstDeadline, DEADLINE_MIN, DEADLINE_MAX);
+		reader.ReadInt("ticketSecondDeadline", m_iTicketSecondDeadline, DEADLINE_MIN, DEADLINE_MAX);
+		reader.ReadFloat("ticketLateMultiplier", m_fTicketLateMultiplier, LATE_MULTIPLIER_MIN, LATE_MULTIPLIER_MAX);
+		reader.ReadBool("officerKillOfWantedExempt", m_bOfficerKillOfWantedExempt);
+		reader.ReadInt("searchCooldownSeconds", m_iSearchCooldownSeconds, SEARCH_COOLDOWN_MIN, SEARCH_COOLDOWN_MAX);
+		reader.ReadInt("ticketMaxOpen", m_iTicketMaxOpen, TICKET_OPEN_MIN, TICKET_OPEN_MAX);
+		reader.ReadInt("ticketKeepPaid", m_iTicketKeepPaid, TICKET_PAID_MIN, TICKET_PAID_MAX);
+		reader.ReadFloat("arrestReach", m_fArrestReach, REACH_MIN, REACH_MAX);
+		reader.ReadFloat("jailArrivalRadius", m_fJailArrivalRadius, JAIL_RADIUS_MIN, JAIL_RADIUS_MAX);
+		reader.ReadFloat("applyDeskRange", m_fApplyDeskRange, DESK_RANGE_MIN, DESK_RANGE_MAX);
+		reader.ReadInt("compliantSeconds", m_iCompliantSeconds, COMPLIANT_MIN, COMPLIANT_MAX);
+		reader.ReadInt("spikeStripLifetimeSeconds", m_iSpikeStripLifetimeSeconds, SPIKE_LIFETIME_MIN, SPIKE_LIFETIME_MAX);
+
+		if (!m_aRanks)
+			m_aRanks = new array<ref LF_PoliceRank>();
+
+		int count = reader.BeginRecords("ranks");
+		for (int i = 0; i < count; i++)
+		{
+			string key = reader.GetRecordKey(i);
+			if (!reader.BeginRecord(key))
+				continue;
+
+			if (key.IsEmpty())
+			{
+				reader.RejectRecord("the key is empty; it is the rank id");
+				reader.EndRecord();
+				continue;
+			}
+
+			LF_PoliceRank rank = FindRank(key);
+			if (!rank)
+			{
+				rank = LF_PoliceRank.Create(key, key, 1000, -1, 0, ResourceName.Empty);
+				rank.m_aKit.Clear();
+				m_aRanks.Insert(rank);
+			}
+
+			array<string> recordKeys = {"titleKey", "fineCap", "payPerSecond", "dutySecondsForNext", "kit"};
+			reader.WarnUnknownKeys(recordKeys);
+			reader.ReadString("titleKey", rank.m_sTitleKey);
+			reader.ReadInt("fineCap", rank.m_iFineCap, FINE_CAP_MIN, FINE_CAP_MAX);
+			reader.ReadFloat("payPerSecond", rank.m_fPayPerSecond, RANK_PAY_MIN, RANK_PAY_MAX);
+			reader.ReadInt("dutySecondsForNext", rank.m_iDutySecondsForNext, RANK_DUTY_MIN, RANK_DUTY_MAX);
+			array<string> kit = {};
+			if (reader.ReadStrings("kit", kit))
+			{
+				rank.m_aKit = {};
+				foreach (string prefab : kit)
+					rank.m_aKit.Insert(prefab);
+			}
+			reader.EndRecord();
+		}
+
+		if (count >= 0)
+			reader.EndRecords();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rung with this id, or null.
+	LF_PoliceRank FindRank(string id)
+	{
+		if (!m_aRanks)
+			return null;
+
+		foreach (LF_PoliceRank rank : m_aRanks)
+		{
+			if (rank && rank.m_sId == id)
+				return rank;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Writes the effective values a client reads into the config stream (#285), under the owner
+	//! section's own keys so the client applies them with ApplyOwner. Left out: the alarm prefabs
+	//! (the server spawns them) and each rank's kit (the armory draws on the server).
+	//! \param[in] ctx A save context with this section's object open.
+	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	{
+		ctx.WriteValue("arrestMinRank", m_iArrestMinRank);
+		ctx.WriteValue("escortMinRank", m_iEscortMinRank);
+		ctx.WriteValue("catchInActRadius", m_fCatchInActRadius);
+		ctx.WriteValue("placeRadius", m_fPlaceRadius);
+		ctx.WriteValue("boardReadDistance", m_fBoardReadDistance);
+		ctx.WriteValue("boardMaxPosters", m_iBoardMaxPosters);
+		ctx.WriteValue("alarmSeconds", m_fAlarmSeconds);
+		ctx.WriteValue("loudAlarmSeconds", m_fLoudAlarmSeconds);
+		string radioProject = m_sRadioSoundProject;
+		ctx.WriteValue("radioSoundProject", radioProject);
+		ctx.WriteValue("radioSoundEvent", m_sRadioSoundEvent);
+		ctx.WriteValue("dispatchLogLines", m_iDispatchLogLines);
+		ctx.WriteValue("ticketFirstDeadline", m_iTicketFirstDeadline);
+		ctx.WriteValue("ticketSecondDeadline", m_iTicketSecondDeadline);
+		ctx.WriteValue("ticketLateMultiplier", m_fTicketLateMultiplier);
+		ctx.WriteValue("officerKillOfWantedExempt", m_bOfficerKillOfWantedExempt);
+		ctx.WriteValue("searchCooldownSeconds", m_iSearchCooldownSeconds);
+		ctx.WriteValue("ticketMaxOpen", m_iTicketMaxOpen);
+		ctx.WriteValue("ticketKeepPaid", m_iTicketKeepPaid);
+		ctx.WriteValue("arrestReach", m_fArrestReach);
+		ctx.WriteValue("jailArrivalRadius", m_fJailArrivalRadius);
+		ctx.WriteValue("applyDeskRange", m_fApplyDeskRange);
+		ctx.WriteValue("compliantSeconds", m_iCompliantSeconds);
+		ctx.WriteValue("spikeStripLifetimeSeconds", m_iSpikeStripLifetimeSeconds);
+
+		ctx.StartObject("ranks");
+		if (m_aRanks)
+		{
+			foreach (LF_PoliceRank rank : m_aRanks)
+			{
+				if (!rank || rank.m_sId.IsEmpty())
+					continue;
+
+				ctx.StartObject(rank.m_sId);
+				ctx.WriteValue("titleKey", rank.m_sTitleKey);
+				ctx.WriteValue("fineCap", rank.m_iFineCap);
+				ctx.WriteValue("payPerSecond", rank.m_fPayPerSecond);
+				ctx.WriteValue("dutySecondsForNext", rank.m_iDutySecondsForNext);
+				ctx.EndObject();
+			}
+		}
+		ctx.EndObject();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -462,13 +692,13 @@ class LF_PoliceRank
 	[Attribute("", UIWidgets.EditBox, "Localization key of the title, without the leading #")]
 	string m_sTitleKey;
 
-	[Attribute("1000", UIWidgets.Auto, "Largest fine an officer of this rank may write")]
+	[Attribute("1000", UIWidgets.Auto, "Largest fine an officer of this rank may write", params: "0 10000000")]
 	int m_iFineCap;
 
-	[Attribute("-1", UIWidgets.Auto, "Cash per on-duty second at clock-out. Negative uses the jobs config police rate")]
+	[Attribute("-1", UIWidgets.Auto, "Cash per on-duty second at clock-out. Negative uses the jobs config police rate", params: "-1 1000")]
 	float m_fPayPerSecond;
 
-	[Attribute("0", UIWidgets.Auto, "On-duty seconds that promote an officer to the next rank. 0 means no time promotion")]
+	[Attribute("0", UIWidgets.Auto, "On-duty seconds that promote an officer to the next rank. 0 means no time promotion", params: "0 10000000")]
 	int m_iDutySecondsForNext;
 
 	[Attribute("", UIWidgets.ResourceNamePicker, "Kit prefabs drawn at the armory. Only prefabs in the station catalog are issued")]
