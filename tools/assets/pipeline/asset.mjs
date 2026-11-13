@@ -15,6 +15,7 @@ import * as meshy from "./meshy.mjs";
 import { KINDS } from "./kinds.mjs";
 import * as concepts from "./concepts.mjs";
 import { pickedImage } from "./concepts.mjs";
+import { materialProblems, resolveMaterials } from "./materials.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -53,6 +54,7 @@ export function specProblems(spec) {
     if (!p.name || !p.bone || !Array.isArray(p.box) || p.box.length !== 6) out.push(`part ${p.name || "?"} needs name, bone and box [x0,y0,z0,x1,y1,z1]`);
     else if (kind && !kind.skeleton?.some((n) => n.name === p.bone)) out.push(`part ${p.name}: bone ${p.bone} is not in the ${spec.kind} skeleton`);
   }
+  out.push(...materialProblems(spec));
   if (!/^Assets\//.test(spec.asset_dir || "")) out.push("asset_dir must start with Assets/");
   if (!/^Prefabs\//.test(spec.prefab_dir || "")) out.push("prefab_dir must start with Prefabs/");
   return out;
@@ -196,7 +198,7 @@ async function stageClean(ctx) {
   const out = join(dir, "clean");
   mkdirSync(out, { recursive: true });
   const job = join(out, "job.json");
-  writeFileSync(job, JSON.stringify({ spec, kind: KINDS[spec.kind], glb, raw: join(dir, "raw"), out }, null, 1));
+  writeFileSync(job, JSON.stringify({ spec, kind: KINDS[spec.kind], materials: resolveMaterials(spec), glb, raw: join(dir, "raw"), out }, null, 1));
   runBlender(join(dirname(fileURLToPath(import.meta.url)), "blender", "clean.py"), [job], { log: join(out, "blender.log") });
   const report = JSON.parse(readFileSync(join(out, "report.json"), "utf8"));
   const { checkReport } = await import("./checks.mjs");
