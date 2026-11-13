@@ -26,6 +26,13 @@
 // this test, re-applied a version 23 save of the live store) and pass 2 failed with
 // `- e2e officer keeps the territory right only orgranks holds`, `- e2e member stays without the stash right`.
 // The legacy-loading tests now put the organizations back; both passes green, and green with --legacy-save.
+
+// e2e/pass2-verify-load (save version 28, job XP, #749), observed 2026-11-12 with
+// `tools\cli wt e2e m3-job-levels`: the shutdown save held 2 job xp rows instead of 4 (tests after
+// this one reloaded "progression" or an older save, which seeds only CIVILIAN and DELIVERY) and
+// pass 2 failed with `- e2e farmer xp survives the restart (expected 120, got 0)` and
+// `- e2e miner xp survives the restart (expected 650, got 0)`. LF_TestLegacySnapshot and the
+// progression tests now put the job XP back; both passes green, and green with --legacy-save.
 // tier: PERSISTENCE
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
@@ -43,6 +50,9 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string STREET_ID = "e2e-street-car";
 	//! Playtime (#692, save version 26): 90 min on police duty in two stretches and 30 min civilian.
 	static const string PLAYTIME_UID = "e2e-playtime-account";
+	//! Job levels (#749, "joblevels" payload, save version 28): XP in three jobs, one of which
+	//! (CIVILIAN) the progression record's pre-#749 single level also carries.
+	static const string JOBS_UID = "e2e-job-levels";
 	//! Organization ranks (#750a, "orgranks" payload, save version 27): a founder, an officer
 	//! promoted face to face, and a member, with masks the four saved bools cannot hold.
 	static const string ORG_NAME = "E2E Ladder";
@@ -280,6 +290,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 		SeedOrgLadder(ctx);
 
+		LF_JobLevels.Forget(JOBS_UID);
+		ctx.Equal(340, LF_JobLevels.AddXp(JOBS_UID, LF_JobLevels.JOB_CIVILIAN, 340, "e2e"), "e2e worker earns 340 civilian xp before the save");
+		ctx.Equal(120, LF_JobLevels.AddXp(JOBS_UID, LF_JobLevels.JOB_FARMER, 120, "e2e"), "e2e worker earns 120 farmer xp before the save");
+		ctx.Equal(650, LF_JobLevels.AddXp(JOBS_UID, "MINER", 650, "e2e"), "e2e worker earns 650 miner xp before the save");
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -431,6 +446,27 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(7200, LF_Playtime.Total(uid), "e2e the playtime total is 2 h after the restart");
 		LF_Debug.Info(LF_Playtime.FEATURE, string.Format("e2e restart: %1 has %2 s (POLICE %3 s, CIVILIAN %4 s)", uid, LF_Playtime.Total(uid), LF_Playtime.JobSeconds(uid, "POLICE"), LF_Playtime.JobSeconds(uid, LF_Playtime.JOB_CIVILIAN)));
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #749 after the restart: the job XP is back and the levels derive from it. A version 23 save
+	//! (--legacy-save) has no "joblevels" rows: CIVILIAN migrates from the progression record's
+	//! single level, and the jobs that level never held start at 0.
+	protected void VerifyJobLevels(LF_TestContext ctx)
+	{
+		string uid = LF_Test_E2E_SaveStateWrite.JOBS_UID;
+		ctx.Equal(340, LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_CIVILIAN), "e2e civilian xp survives the restart");
+		ctx.Equal(3, LF_JobLevels.LevelOf(uid, LF_JobLevels.JOB_CIVILIAN), "e2e worker is civilian level 3 after the restart");
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.Equal(0, LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_FARMER), "e2e the version 23 save has no farmer xp");
+		ctx.Equal(0, LF_JobLevels.XpOf(uid, "MINER"), "e2e the version 23 save has no miner xp");
+#else
+		ctx.Equal(120, LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_FARMER), "e2e farmer xp survives the restart");
+		ctx.Equal(2, LF_JobLevels.LevelOf(uid, LF_JobLevels.JOB_FARMER), "e2e worker is farmer level 2 after the restart");
+		ctx.Equal(650, LF_JobLevels.XpOf(uid, "MINER"), "e2e miner xp survives the restart");
+		ctx.Equal(4, LF_JobLevels.LevelOf(uid, "MINER"), "e2e worker is miner level 4 after the restart");
+#endif
+		LF_Debug.Info(LF_JobLevels.FEATURE, string.Format("e2e restart: %1 CIVILIAN %2 xp level %3, FARMER %4 xp, MINER %5 xp; courier DELIVERY %6 xp level %7", uid, LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_CIVILIAN), LF_JobLevels.LevelOf(uid, LF_JobLevels.JOB_CIVILIAN), LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_FARMER), LF_JobLevels.XpOf(uid, "MINER"), LF_CivilianJob.GetExperience(COURIER_UID), LF_CivilianJob.GetLevel(COURIER_UID)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -649,6 +685,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 		VerifyCharacterSlots(ctx);
 		VerifyPlaytime(ctx);
+		VerifyJobLevels(ctx);
 		VerifyOrgLadder(ctx);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());

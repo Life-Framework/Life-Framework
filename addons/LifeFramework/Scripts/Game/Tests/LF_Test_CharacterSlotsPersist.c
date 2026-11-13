@@ -32,7 +32,7 @@ class LF_Test_CharacterSlotsPersist : LF_Test
 	{
 		// An older-format save loaded here replaces the organizations with record version 1 ones,
 		// which drops rank masks only "orgranks" holds (#750a); put back what this test found.
-		LF_TestOrgSnapshot keptOrgs = LF_TestOrgSnapshot.Take();
+		LF_TestLegacySnapshot keptOrgs = LF_TestLegacySnapshot.Take();
 		RunKeptOrgs(ctx);
 		keptOrgs.Restore();
 	}

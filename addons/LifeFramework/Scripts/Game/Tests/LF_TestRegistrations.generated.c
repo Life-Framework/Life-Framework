@@ -151,6 +151,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HarnessPerf(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessProbe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessScreenText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessSessionScope(), LF_TestTier.LOGIC);
@@ -186,6 +187,11 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JailVehicleArrest(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JailWork(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobClientOffers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobLevelGates(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobLevels(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobLevelsConfig(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobLevelsPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_JobLevelSync(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
@@ -227,6 +233,10 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PhoneCallBackBook(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PhoneCallBackWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PhoneCallWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PhoneExchange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PickaxeCount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
@@ -389,6 +399,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WantedPosterFace(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WantedPostersFeed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);

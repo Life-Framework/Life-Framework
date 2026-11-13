@@ -291,6 +291,12 @@
   `docs/architecture/core-pack-inventory.md`.
 
 ### Config service — `Scripts/Game/Core/Config/LF_ConfigService.c` (#278)
+- ✅ (2026-11-12, #749) The `jobs` section (D8): duty pay, the benefit, and the job XP
+  tables (`tracks` by job id with `levelThresholds` and `dailyXpCap`, `xpAwards` by action
+  id, `licenceGates` by licence name), read by `LF_JobsConfig.ApplyOwner` with ranges.
+  `ReadFloat` takes a whole number or a fraction; `ReadInts` refuses a list holding a
+  non-number or a number out of range whole. `vehicles` and `jobs` are known top-level
+  keys now (`vehicles` warned as unknown before). Test `config/jobs-owner`.
 - ✅ (2026-11-12) The server reads the owner's
   `$profile:LifeFramework/config.json` at game start and merges it over the
   shipped `.conf` defaults field by field: owner, then pack, then core. Records
@@ -525,14 +531,17 @@
   `persist/progression-roundtrip`, `persist/progression-old-save`, and
   `e2e/pass2-verify-load` across a real two-boot restart). The `progression`
   payload, appended at save version 7, holds one `LF_ProgressionRecord` per
-  player uid: the civilian delivery career (level, XP, paid total), police rank,
+  player uid: the civilian delivery career pay total, police rank,
   on-duty seconds and unpaid duty seconds, seconds since the last benefit
-  collection, the player level (level, XP, skill points), licences by enum name,
-  and turned-in quest ids. A courier at level 2 still opens fuel delivery and a
-  senior officer stays senior.
-- ✅ Level, licences, and turn-ins live on the character, so their owners write
+  collection, licences by enum name, and turned-in quest ids. Since #749 its
+  career level and XP and its single player level are a mirror of the DELIVERY
+  and CIVILIAN jobs (`LF_JobLevels`, own payload), written in the pre-#749 curves; a
+  version 7-27 save's job XP comes from them. A courier at level 2 still opens fuel
+  delivery and a senior officer stays senior.
+- ✅ Licences and turn-ins live on the character, so their owners write
   through to the store and `LF_SpawnLogic` applies the record to every new body.
-  They now survive death as well; only carried items drop.
+  They now survive death as well; only carried items drop. Job levels are keyed by
+  the character, not the body.
 - ✅ Tolerant load: an unknown licence name is skipped with a warning, an unknown
   quest id is kept with a warning, a rank above the ladder clamps to senior. A
   version 6 save leaves live rank and duty totals alone (the account apply
@@ -953,7 +962,8 @@
   catalog, extended). A chain has a tier (1 to 5), steps in order, equipment, and heat settings.
   A step names the station type it needs, its inputs and outputs (the `LF_ProcessAction`
   recipe rows), the hands-on work units one batch takes (`m_iWork`), a licence
-  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum player level, and an equipment id.
+  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum level in the job it names
+  (`m_sLevelJob`, CIVILIAN by default; #749), and an equipment id.
   A pack adds a chain by overriding the `.conf`; there is no script.
 - ✅ **A bad chain disables only itself.** `LF_ChainCatalog.Build` validates each row (no id,
   tier out of range, no steps, no station, no work, a malformed recipe, unlisted equipment,
@@ -1125,24 +1135,48 @@
 - ✅ `#EL-Job_Earned` is `Earned $%1 for work!` and `GiveReward` passes the
   paid amount through `WidgetManager.Translate` (verified 2026-10-11).
 
-### `LF_PlayerLevelComponent` — `Feature/Level/LF_PlayerLevelComponent.c`
-- ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;
-  passive bonuses (`gatheringSpeed 1+(level-1)*0.1`, `gatheringAmount` same,
-  `saleBonus 1+(level-1)*0.05`); `CheckLevelUp` drains XP cascades, +1 SP and
-  +1 total SP per level.
-- ⚠️ `SetLevel`/`SetExperience`/`SetSkillPoints`/`SetTotalSkillPointsEarned`
-  have no server guard, no validation, no recompute (inconsistent state
-  possible). Saves on every XP gain (DB-write hazard). `GetBonusesText`
-  returns a Spanish literal.
+### `LF_JobLevels` — `Feature/Level/LF_JobLevels.c` (#749, D12)
+- ✅ (2026-11-12) **Per-job XP replaces the single player level.** One XP track per job
+  (CIVILIAN, DELIVERY, FARMER, MINER, LUMBERJACK, MEDIC, POLICE in the core config), keyed by
+  the character record key. The store holds total XP; the level is 1 plus the job's
+  thresholds reached (`LF_JobsConfig.m_aTracks`, owner key `jobs.tracks`), so a rebalance
+  reaches old saves. `LF_PlayerLevelComponent`, its skill points and its unused passive
+  bonuses are gone (component removed from `Character_Roleplay.et`; the debug menu's skill
+  point button too). Tests `jobs/job-levels`, `jobs/job-level-gates`, `config/jobs-owner`,
+  `persist/job-levels`, `e2e/pass2-verify-load`.
+- ✅ XP is added only by the server: `AddXp(uid, job, amount, reason)` (quest reward XP to the
+  quest's `m_sJob`, debug grants to CIVILIAN) and `Award(uid, action, units)` for in-world
+  actions whose XP, job and cooldown are config (`jobs.xpAwards`: `delivery_run` 100 DELIVERY,
+  `fruit_pick` 5 FARMER a fruit, `gather` 2 FARMER). An action inside its cooldown earns
+  nothing; a job's `dailyXpCap` (FARMER 2000) drops the part over the cap per day of server
+  time. Both clocks are session state. An unknown job or action earns nothing and logs
+  `[LFDebug:JobLevels]`.
+- ✅ Gates read job levels: delivery sign-up (DELIVERY: fuel level 2, taxi level 3, the old
+  pacing), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
+  or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
+  default), lockpicking skill (CIVILIAN).
+- ✅ **Saved as the `joblevels` payload (save version 28)**: one `LF_JobXpRow` per (character,
+  job). A version 7-27 save migrates: the single level goes onto CIVILIAN and the delivery
+  career onto DELIVERY at the same levels; every other job starts at 0. Load is idempotent.
+- ✅ A level rise from any grant publishes `LF_OnJobLevelChanged`; `LF_JobLevelSync` refreshes
+  the replicated DELIVERY level on the character's live body, so a quest's DELIVERY XP opens fuel
+  delivery on the client too (`jobs/job-level-sync`). A capped or refused award does not start
+  its cooldown. The pre-#749 career curve stays config (`jobXpFirstLevel`, `jobXpLevelGrowth`,
+  read only to migrate), and the single level migrates whole at any level.
+- ⚠️ Only the DELIVERY level reaches a client (`LF_PlayerJobComponent`'s replicated level, for
+  the sign-up offer); no client reads another job's level yet, so no level is shown. There is
+  no XP source yet for MINER, LUMBERJACK, MEDIC or POLICE, and no player-facing licence
+  purchase, so those licence gates are reachable only through config and tests.
 
 ### `LF_LicenseManagerComponent` — `Feature/License/LF_LicenseManagerComponent.c`
 - ✅ License catalog (26 entries), `CanUnlockLicense` (owned/config/whitelist/
-  level), `CanAffordLicense` (SP cost), `PurchaseLicense` (spends SP +
-  unlock), `HasLicense`, persistence restore.
+  job level), `PurchaseLicense` (checks, then unlocks; nothing is spent since #749),
+  `HasLicense`, persistence restore. The level gate is `LF_LicenseGate` (#749): the
+  licence family's job (FARMER_* in FARMER, ..., criminal licences in CIVILIAN) at the
+  catalog's `m_iMinLevelRequired`, unless the jobs config has a `licenceGates` row.
 - ✅ **Whitelist mapping and purchase ordering fixed** (verified 2026-08-30):
   `GetLicenseWhitelistJob` maps MEDIC access to MEDIC and police licenses to
-  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`
-  spends skill points. `SetUnlockedLicenses` is the persistence restore seam,
+  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`. `SetUnlockedLicenses` is the persistence restore seam,
   not a player purchase path. Remaining: not localized; `m_bIsInitialLicense`
   is used for initial grants.
 - ✅ **Replicates as a bitmask** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the old `[RplProp] ref array` broke the
@@ -1561,6 +1595,24 @@
   on identified reports. The card is an `LF_UIScreen` paper sheet that closes
   4 m from the board; reading plays the map pick-up sound and gesture.
   On-duty police also see the dispatch log under the posters (M1-20).
+- ✅ **Posters on the wanted board's face** (#758, `docs/architecture/visual-boards-spike.md`
+  issue 1, budget in `docs/architecture/visual-boards-budget.md`): every player near the
+  board sees a paper poster per wanted suspect pinned on the cork, without reading it:
+  WANTED, the name once identified (else UNKNOWN PERSON), the offence, what was seen
+  (`Wearing ...; driving ...`, the line left off when nothing was seen) and the wanted
+  level. `LF_WantedPosters` builds the public list on the server (one poster per suspect,
+  newest first, no place) on bus events (`LF_OnCrimeCommitted`, the new `LF_OnWantedChanged`
+  and `LF_OnSuspectIdentified`) and after a load, coalesced to one broadcast; the board's
+  `LF_WantedPosterBoardComponent` sends it by `RplSave`/`RplLoad` (late join, stream-in)
+  and a reliable broadcast. Each client draws one render target over the cork
+  (`Prefabs/Props/Signs/LF_BoardFace.et`, a 16:9 quad, the vanilla cork texture under the
+  posters) within `drawRadius` (30 m) and releases it 5 m beyond; the face renders live for
+  3 s after a change and then freezes, which the budget measured as nearly free. Owner
+  config section `wantedBoard`: `posters` (4, at most 8 in two rows) and `drawRadius`.
+  The Read card and the police-only lines are unchanged; the dispatch boards keep their
+  painted face (`m_bDrawPosters 0`). Tests `police/wanted-posters-feed`,
+  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`. Portraits and
+  stolen cars follow (spike issues 3 and 4).
 
 ### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
 - ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`
@@ -2027,7 +2079,7 @@
   removed; `EHarvestJobType` moved to `Feature/Jobs/LF_HarvestJobType.c`.
 - ✅ `LF_DebugMenu` is a development menu opened with F10 (or its rebind),
   with server-routed controls for cash, wanted state, faction, jobs, survival,
-  XP, and skill points. Actions affect only the requesting player's state
+  and CIVILIAN job XP (#749; skill points no longer exist). Actions affect only the requesting player's state
   (verified 2026-08-30). `LF_DevGate` (`Core/LF_DevGate.c`) checks every
   action on the server. It logs `[LFDebug:DebugMenu] debug action refused: ...`
   and refuses unless the game mode sets `m_bDevToolsEnabled` or the sender
@@ -2384,6 +2436,11 @@
 ## Payphone (#247)
 
 - ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset: report a crime, an emergency or someone suspicious (police), ring for a doctor (medic), ring for a cab (taxi; mechanic waits for a mechanic job). The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.Receive`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the square, the fuel station, the hospital and the police station (#254), with a police dispatch board (`Prefabs/Comms/LF_DispatchBoard_Police.et`) beside the wanted board.
+
+## Telephone calls (#147)
+
+- ✅ **Call core** (LOGIC `comms/phone-exchange`, WORLD `comms/phone-call-world`, `session.mjs phone-proof`). A payphone's *Ring the police station* (`LF_PhoneDialAction`) goes through `LF_Payphone.UseAt` first (coin, cooldowns, duty check, `LF_OnServiceCall`, so the radio dispatch, the board and the pagers still get it), then `LF_PhoneCalls` puts a call in the server table (`LF_PhoneExchange`: RINGING, CONNECTED, ENDED, MISSED) and rings every idle station telephone of the service (`Prefabs/Comms/LF_DispatchPhone.et`, the base-game rotary desk phone, `Roadmap_Dispatch_Phone` on the dispatch-room desk). Every phone gets a replicated line (`Prefabs/Comms/LF_PhoneLine.et`, spawned on first use) carrying idle/ringing/busy and the talker's player id: the actions show only when they apply and each client rings a ringing line itself (`m_iRingPulseSeconds`), so a late joiner or a passer-by hears it. On-duty officers get a toast. Only an on-duty officer picks up the station telephone; anyone picks up a ringing payphone. Hang-up, walking past the cord (`m_fCordMeters` 6), going down, dying, disconnecting, a destroyed phone and `m_iMaxCallSeconds` (600) end the call; `m_iRingSeconds` (30) unanswered is MISSED, nobody on duty is MISSED at once with no coin taken. Every transition is `LF_OnPhoneCall` on the bus and a `[LFDebug:Phone]` line. Settings: `Configs/Comms/LF_Phone.conf` (Comms has no owner config section yet). ⚠️ No voice yet (PR 3 of #147); the ring is the radio chirp until a bell sound exists.
+- ✅ **Call-back requests, the voicemail replacement** (LOGIC `comms/phone-callback-book`, WORLD `comms/phone-callback-world`, `session.mjs phone-proof`). Script cannot record a voice, so a caller whose call rang out, or found nobody on duty, may leave a request at that payphone for `m_iCallBackOfferSeconds` (120): *Leave a message for a call back* (shown only to that caller, from the line's replicated offer) opens a paper message slip with an optional typed message (`m_iMessageMaxChars` 120). The server checks the offer, the caller's distance, the length (before and after cleaning out markup and separators) and the comms rate limit (#834), logs the text with the uid like chat, and toasts the officers on duty. At the station telephone *Read the message pad* opens a paper "While you were out" pad (on-duty only) with one line per request (time, place, how long it rang, the message) and a *Ring back* button: the payphone rings, anyone there picks up, and the request leaves the pad; a ring-back nobody answers puts it back. One open request per caller, at most `m_iMaxCallBacks` (20), expiring with the dispatch board (`m_iBoardExpirySeconds`); never saved. `LF_OnPhoneCallBack` (left, rung, answered, expired) on the bus.
 
 ## Dispatch board (#250)
 

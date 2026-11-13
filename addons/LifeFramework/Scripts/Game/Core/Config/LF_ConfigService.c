@@ -196,7 +196,7 @@ class LF_ConfigService
 	//! adds its key here when its feature reads it (#282, #283).
 	static bool IsKnownTopLevelKey(string key)
 	{
-		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION;
+		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -578,6 +578,65 @@ class LF_ConfigReader
 			return RejectValue(key, read.ToString(), string.Format("above the maximum %1", max), value.ToString());
 
 		value = read;
+		m_iApplied++;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads a number when present: a whole number (`2`) reads as well as a fraction (`0.5`). A value
+	//! outside min..max is refused like ReadInt's.
+	//! \return True when the value was taken.
+	bool ReadFloat(string key, inout float value, float min = -1000000000.0, float max = 1000000000.0)
+	{
+		if (!m_Ctx.DoesKeyExist(key))
+			return false;
+
+		float read;
+		int whole;
+		if (m_Ctx.ReadValue(key, whole))
+			read = whole;
+		else if (!m_Ctx.ReadValue(key, read))
+			return Reject(key, "a number", value.ToString());
+
+		if (read < min)
+			return RejectValue(key, read.ToString(), string.Format("below the minimum %1", min), value.ToString());
+		if (read > max)
+			return RejectValue(key, read.ToString(), string.Format("above the maximum %1", max), value.ToString());
+
+		value = read;
+		m_iApplied++;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads a list of whole numbers when present. The whole list is refused when it is not a list,
+	//! holds anything but whole numbers, or holds a number outside min..max; the lower layer's list
+	//! stays.
+	//! \return True when the list was taken.
+	bool ReadInts(string key, notnull array<int> values, int min = int.MIN, int max = int.MAX)
+	{
+		LF_EConfigJsonKind kind = KindOf(m_Ctx, key);
+		if (kind == LF_EConfigJsonKind.ABSENT)
+			return false;
+
+		if (kind != LF_EConfigJsonKind.LIST)
+			return Reject(key, "a list of whole numbers", "the shipped list");
+
+		// Like a string list, the engine fills an int list up to its first bad element and then
+		// reports failure (LF_Test_ConfigReadInts).
+		array<int> read = {};
+		if (!m_Ctx.ReadValue(key, read) || !read)
+			return Reject(key, "a list of whole numbers", "the shipped list");
+
+		foreach (int number : read)
+		{
+			if (number < min)
+				return RejectValue(key, number.ToString(), string.Format("below the minimum %1", min), "the shipped list");
+			if (number > max)
+				return RejectValue(key, number.ToString(), string.Format("above the maximum %1", max), "the shipped list");
+		}
+
+		values.Copy(read);
 		m_iApplied++;
 		return true;
 	}

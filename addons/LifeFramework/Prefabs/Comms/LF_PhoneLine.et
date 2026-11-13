@@ -1,0 +1,10 @@
+GenericEntity {
+ ID "56E65DC9EBFCAF0B"
+ components {
+  LF_PhoneLineComponent "{E45CD91B8645F4CD}" {
+  }
+  RplComponent "{E870E5EC7993D785}" {
+   Enabled 1
+  }
+ }
+}

@@ -34,7 +34,7 @@ class LF_Test_OrgRightsPersist : LF_Test
 		if (!persistence)
 			return;
 
-		LF_TestOrgSnapshot kept = LF_TestOrgSnapshot.Take();
+		LF_TestLegacySnapshot kept = LF_TestLegacySnapshot.Take();
 		CheckVersion26(ctx, persistence);
 		CheckVersion27(ctx, persistence);
 		CheckDroppedRows(ctx);
@@ -141,7 +141,7 @@ class LF_Test_OrgRightsPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the version 27 save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(27, version, "the save is written at version 27 (orgranks is payload 27)");
+			ctx.Equal(28, version, "the save is written at version 28 (orgranks is payload 27)");
 
 			JsonLoadContext load = new JsonLoadContext(false);
 			load.LoadFromString(saved);
@@ -183,19 +183,23 @@ class LF_Test_OrgRightsPersist : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-//! What a test found in the organization registry, put back when it is done. Persistence-tier tests
-//! wipe the registry; the e2e save boot seeds an organization earlier in that tier (#750a).
-class LF_TestOrgSnapshot : Managed
+//! What a test found in the stores an older-format or partial save of the live store drops, put back
+//! when it is done: the organization registry with its rank masks (#750a) and the job XP only the
+//! "joblevels" payload holds (#749; a "progression" load seeds just CIVILIAN and DELIVERY).
+//! Persistence-tier tests reload such saves; the e2e save boot seeds both earlier in that tier.
+class LF_TestLegacySnapshot : Managed
 {
 	protected ref array<ref LF_OrganizationRecord> m_aRecords;
 	protected ref array<ref LF_OrganizationRankRow> m_aRanks;
+	protected ref array<ref LF_JobXpRow> m_aJobXp;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_TestOrgSnapshot Take()
+	static LF_TestLegacySnapshot Take()
 	{
-		LF_TestOrgSnapshot snapshot = new LF_TestOrgSnapshot();
+		LF_TestLegacySnapshot snapshot = new LF_TestLegacySnapshot();
 		snapshot.m_aRecords = LF_OrganizationManager.ExportAll();
 		snapshot.m_aRanks = LF_OrganizationManager.ExportRanks();
+		snapshot.m_aJobXp = LF_JobLevels.ExportAll();
 		return snapshot;
 	}
 
@@ -204,5 +208,6 @@ class LF_TestOrgSnapshot : Managed
 	{
 		LF_OrganizationManager.ApplyAll(m_aRecords);
 		LF_OrganizationManager.ApplyRanks(m_aRanks);
+		LF_JobLevels.ApplyAll(m_aJobXp);
 	}
 }

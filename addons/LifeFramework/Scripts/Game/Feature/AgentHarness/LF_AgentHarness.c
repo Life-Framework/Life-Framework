@@ -163,7 +163,7 @@ class LF_AgentCommand
 				cmd.Arg1 = parts[2];
 			return true;
 		}
-		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
+		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
 			return true;
 		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
 			return true;
@@ -182,6 +182,21 @@ class LF_AgentCommand
 		{
 			if (parts.Count() > 2)
 				cmd.PosX = parts[2].ToFloat();
+			return true;
+		}
+		if (cmd.Verb == "perf")
+		{
+			// perf <seconds> [label]: this client's frame time and memory over the window.
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_seconds";
+				return false;
+			}
+
+			cmd.PosX = parts[2].ToFloat();
+			if (parts.Count() > 3)
+				cmd.Arg1 = parts[3];
+
 			return true;
 		}
 		if (cmd.Verb == "shoot")
@@ -1023,6 +1038,10 @@ class LF_AgentHarness
 	static void Poll()
 	{
 		FinishCapture();
+		string perfDetail;
+		int perfId = LF_HarnessPerf.TakeResult(perfDetail);
+		if (perfId > 0)
+			WriteResult(perfId, "ok", perfDetail);
 
 		if (!FileIO.FileExists(COMMAND_PATH))
 			return;
@@ -1162,6 +1181,12 @@ class LF_AgentHarness
 			DoGm(cmd);
 			return;
 		}
+		if (cmd.Verb == "phone")
+		{
+			// What this machine's telephone lines show (#147): state, talker, rings heard.
+			WriteResult(cmd.Id, "ok", LF_PhoneLineComponent.DescribeAll());
+			return;
+		}
 		if (cmd.Verb == "radio")
 		{
 			DoRadio(cmd);
@@ -1213,6 +1238,14 @@ class LF_AgentHarness
 		if (cmd.Verb == "seen")
 		{
 			WriteResult(cmd.Id, "ok", LF_HarnessSeen.Read(cmd.PosX));
+			return;
+		}
+		if (cmd.Verb == "perf")
+		{
+			string perfError;
+			if (!LF_HarnessPerf.Start(cmd.Id, cmd.PosX, cmd.Arg1, perfError))
+				WriteResult(cmd.Id, "error", perfError);
+
 			return;
 		}
 		if (cmd.Verb == "shoot")

@@ -12,6 +12,38 @@
       }
     }
   },
+  "jobs": {
+    "policeDutyPayPerSecond": 0.5,
+    "medicDutyPayPerSecond": 0.4,
+    "benefitBalanceThreshold": 500,
+    "benefitAmount": 100,
+    "benefitCooldownSeconds": 1200,
+    "jobXpFirstLevel": 500,
+    "jobXpLevelGrowth": 2,
+    "tracks": {
+      "FARMER": {
+        "dailyXpCap": 3000
+      },
+      "DELIVERY": {
+        "levelThresholds": [
+          400,
+          1200,
+          3000
+        ]
+      }
+    },
+    "xpAwards": {
+      "delivery_run": {
+        "xp": 120
+      }
+    },
+    "licenceGates": {
+      "MINER_GOLD": {
+        "job": "MINER",
+        "minLevel": 4
+      }
+    }
+  },
   "shops": {
     "defaultBuyPrice": 50,
     "defaultSellPrice": 25,
@@ -39,5 +71,9 @@
         "impoundOverride": 200
       }
     }
+  },
+  "wantedBoard": {
+    "posters": 4,
+    "drawRadius": 30
   }
 }

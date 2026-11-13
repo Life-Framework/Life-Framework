@@ -46,7 +46,14 @@ class LF_StaticReset
 		LF_Ledger.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
 		LF_Playtime.ResetStatics();
+		LF_JobLevels.ResetStatics();
+		LF_JobLevelSync.ResetStatics();
+		LF_JobsConfig.Reload();
 		LF_FenceSerials.ResetStatics();
+		LF_WantedPosters.ResetStatics();
+		LF_WantedPosterFaces.ResetStatics();
+		LF_WantedPosterBoardComponent.ResetStatics();
+		LF_WantedPostersConfig.Reload();
 		LF_EvidenceLocker.ResetStatics();
 		LF_Evidence.ResetStatics();
 		LF_Witness.ResetStatics();
@@ -57,6 +64,11 @@ class LF_StaticReset
 		LF_Payphone.ResetStatics();
 		LF_ServiceCallDispatch.ResetStatics();
 		LF_ServiceBoard.ResetStatics();
+		LF_PhoneCalls.ResetStatics();
+		LF_PhoneCallBacks.ResetStatics();
+		LF_PhoneConfig.ResetStatics();
+		LF_PhoneComponent.ResetStatics();
+		LF_PhoneLineComponent.ResetStatics();
 		LF_ChainSites.ResetStatics();
 		LF_ChainTrace.ResetStatics();
 		LF_ChainStations.ResetStatics();

@@ -57,6 +57,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
 		LF_ChainTrace.Install();
+		// The replicated DELIVERY level follows every job level change (server only, #749).
+		LF_JobLevelSync.EnsureSubscribed();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
 		LF_HoldUpRole.Register();
@@ -67,6 +69,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CrimeRecord.EnsureSubscribed();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
+		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).
+		LF_WantedPosters.Install();
 		// Playtime per account and job, credited to online players (server only, #692).
 		LF_Playtime.Start();
 	}
@@ -167,6 +171,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		if (Replication.IsServer())
 		{
 			LF_BleedOut.OnPlayerDisconnected(playerId);
+			LF_PhoneCalls.OnPlayerDisconnected(playerId);
 			ReleaseDisconnectedPlayer(playerId);
 		}
 

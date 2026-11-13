@@ -59,6 +59,126 @@
       "additionalProperties": false,
       "x-class": "LF_CrimeCatalogConfig"
     },
+    "jobs": {
+      "type": "object",
+      "description": "Job pay, job XP and job levels.",
+      "properties": {
+        "policeDutyPayPerSecond": {
+          "type": "number",
+          "default": 0.5,
+          "minimum": 0,
+          "maximum": 100
+        },
+        "medicDutyPayPerSecond": {
+          "type": "number",
+          "default": 0.4,
+          "minimum": 0,
+          "maximum": 100
+        },
+        "benefitBalanceThreshold": {
+          "type": "integer",
+          "default": 500,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "benefitAmount": {
+          "type": "integer",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "benefitCooldownSeconds": {
+          "type": "number",
+          "default": 1200,
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "jobXpFirstLevel": {
+          "type": "integer",
+          "default": 500,
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "jobXpLevelGrowth": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 10
+        },
+        "tracks": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the job id (CIVILIAN, DELIVERY, FARMER, ...). A job no shipped track has adds one, which must set levelThresholds; an existing key changes only the fields given. The level is 1 plus the thresholds a character's XP has reached, so a changed table reaches existing saves.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "levelThresholds": {
+                "type": "array",
+                "description": "",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "dailyXpCap": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 100000000
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "xpAwards": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the action id the game awards (delivery_run, fruit_pick, gather). An action no shipped award has adds one, which must set job; an existing key changes only the fields given.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "job": {
+                "type": "string",
+                "default": ""
+              },
+              "xp": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 100000
+              },
+              "cooldownSeconds": {
+                "type": "number",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 86400
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "licenceGates": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is a licence name (LF_ELicenseType, e.g. MINER_GOLD). A licence with no row keeps its shipped gate (its family job, its catalog level); a new row must set job and minLevel.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "job": {
+                "type": "string",
+                "default": ""
+              },
+              "minLevel": {
+                "type": "integer",
+                "default": 1,
+                "minimum": 1,
+                "maximum": 100
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_JobsConfig"
+    },
     "shops": {
       "type": "object",
       "description": "Price table for the shop system.",
@@ -215,6 +335,26 @@
       },
       "additionalProperties": false,
       "x-class": "LF_VehiclePricesConfig"
+    },
+    "wantedBoard": {
+      "type": "object",
+      "description": "The posters drawn on the wanted board's face (docs/architecture/visual-boards-budget.md): Configs/Police/LF_WantedPosters.conf with the owner's `wantedBoard` section layered over it.",
+      "properties": {
+        "posters": {
+          "type": "integer",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 8
+        },
+        "drawRadius": {
+          "type": "number",
+          "default": 30,
+          "minimum": 5,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_WantedPostersConfig"
     }
   },
   "additionalProperties": false

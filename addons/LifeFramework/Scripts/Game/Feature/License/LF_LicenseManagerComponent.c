@@ -59,10 +59,7 @@ class LF_LicenseConfig
 	[Attribute(defvalue: "No description", UIWidgets.EditBox, "License description")]
 	string m_sDescription;
 	
-	[Attribute(defvalue: "1", UIWidgets.EditBox, "Skill points cost")]
-	int m_iSkillPointCost;
-	
-	[Attribute(defvalue: "1", UIWidgets.EditBox, "Minimum level required")]
+	[Attribute(defvalue: "1", UIWidgets.EditBox, "Job level required, in the job LF_LicenseGate.JobOf names; the jobs config's licenceGates override it")]
 	int m_iMinLevelRequired;
 	
 	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Is this an initial license (free at start)")]
@@ -70,6 +67,75 @@ class LF_LicenseConfig
 	
 	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Requires whitelist")]
 	bool m_bRequiresWhitelist;
+}
+
+//------------------------------------------------------------------------------------------------
+//! The job-level gate of a licence (#749, D12: licence gates read job levels). A licence needs a
+//! level in one job: the jobs config's licenceGates row for it when there is one, else the
+//! catalog's m_iMinLevelRequired in its family's job (FARMER_* in FARMER, MINER_* in MINER, ...;
+//! the criminal licences and UNEMPLOYED in CIVILIAN). Skill points no longer exist.
+class LF_LicenseGate
+{
+	//------------------------------------------------------------------------------------------------
+	//! \return The job a licence family levels in.
+	static string JobOf(LF_ELicenseType licenseType)
+	{
+		if (licenseType >= LF_ELicenseType.FARMER_FIELD && licenseType <= LF_ELicenseType.FARMER_SPEED)
+			return "FARMER";
+		if (licenseType >= LF_ELicenseType.MINER_COAL && licenseType <= LF_ELicenseType.MINER_SPEED)
+			return "MINER";
+		if (licenseType >= LF_ELicenseType.LUMBERJACK_BASIC && licenseType <= LF_ELicenseType.LUMBERJACK_SPEED)
+			return "LUMBERJACK";
+		if (licenseType >= LF_ELicenseType.MEDIC_ACCESS && licenseType <= LF_ELicenseType.MEDIC_REVIVE)
+			return "MEDIC";
+		if (licenseType >= LF_ELicenseType.POLICE_ACCESS && licenseType <= LF_ELicenseType.POLICE_SEARCH)
+			return "POLICE";
+
+		return LF_JobLevels.JOB_CIVILIAN;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job and level a licence needs: the config row, else the catalog level in its family's job.
+	static void Resolve(LF_ELicenseType licenseType, int catalogMinLevel, out string job, out int minLevel)
+	{
+		job = JobOf(licenseType);
+		minLevel = Math.Max(1, catalogMinLevel);
+
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return;
+
+		LF_JobLicenceGateDef gate = config.FindLicenceGate(typename.EnumToString(LF_ELicenseType, licenseType));
+		if (!gate)
+			return;
+
+		if (!gate.m_sJob.IsEmpty())
+			job = gate.m_sJob;
+		minLevel = Math.Max(1, gate.m_iMinLevel);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server only: whether the character's job level meets the licence's gate. Logs a refusal.
+	//! Job XP lives on the server (LF_JobLevels); a client has none, so a client call refuses
+	//! instead of answering from an empty store. The server re-checks every unlock.
+	static bool Allows(string playerUid, LF_ELicenseType licenseType, int catalogMinLevel)
+	{
+		if (Replication.IsRunning() && !Replication.IsServer())
+		{
+			LF_Debug.Warn("License", string.Format("licence %1 gate asked on a client; only the server holds job levels", typename.EnumToString(LF_ELicenseType, licenseType)));
+			return false;
+		}
+
+		string job;
+		int minLevel;
+		Resolve(licenseType, catalogMinLevel, job, minLevel);
+		int level = LF_JobLevels.LevelOf(playerUid, job);
+		if (level >= minLevel)
+			return true;
+
+		LF_Debug.Info("License", string.Format("licence %1 refused for '%2': %3 level %4 below %5", typename.EnumToString(LF_ELicenseType, licenseType), playerUid, job, level, minLevel));
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -216,7 +282,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		unemployed.m_eLicenseType = LF_ELicenseType.UNEMPLOYED;
 		unemployed.m_sLicenseName = "#LF-License_Unemployed_Name";
 		unemployed.m_sDescription = "#LF-License_Unemployed_Desc";
-		unemployed.m_iSkillPointCost = 0;
 		unemployed.m_iMinLevelRequired = 1;
 		unemployed.m_bIsInitialLicense = true;
 		m_mLicenseConfigs.Set(LF_ELicenseType.UNEMPLOYED, unemployed);
@@ -226,7 +291,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		farmerField.m_eLicenseType = LF_ELicenseType.FARMER_FIELD;
 		farmerField.m_sLicenseName = "#LF-License_FarmerField_Name";
 		farmerField.m_sDescription = "#LF-License_FarmerField_Desc";
-		farmerField.m_iSkillPointCost = 0;
 		farmerField.m_iMinLevelRequired = 1;
 		farmerField.m_bIsInitialLicense = true;
 		m_mLicenseConfigs.Set(LF_ELicenseType.FARMER_FIELD, farmerField);
@@ -235,7 +299,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		farmerApple.m_eLicenseType = LF_ELicenseType.FARMER_APPLE;
 		farmerApple.m_sLicenseName = "#LF-License_FarmerApple_Name";
 		farmerApple.m_sDescription = "#LF-License_FarmerApple_Desc";
-		farmerApple.m_iSkillPointCost = 1;
 		farmerApple.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(LF_ELicenseType.FARMER_APPLE, farmerApple);
 		
@@ -243,7 +306,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		farmerPlum.m_eLicenseType = LF_ELicenseType.FARMER_PLUM;
 		farmerPlum.m_sLicenseName = "#LF-License_FarmerPlum_Name";
 		farmerPlum.m_sDescription = "#LF-License_FarmerPlum_Desc";
-		farmerPlum.m_iSkillPointCost = 2;
 		farmerPlum.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.FARMER_PLUM, farmerPlum);
 		
@@ -251,7 +313,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		farmerWater.m_eLicenseType = LF_ELicenseType.FARMER_WATER;
 		farmerWater.m_sLicenseName = "#LF-License_FarmerWater_Name";
 		farmerWater.m_sDescription = "#LF-License_FarmerWater_Desc";
-		farmerWater.m_iSkillPointCost = 1;
 		farmerWater.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(LF_ELicenseType.FARMER_WATER, farmerWater);
 		
@@ -259,7 +320,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		farmerSpeed.m_eLicenseType = LF_ELicenseType.FARMER_SPEED;
 		farmerSpeed.m_sLicenseName = "#LF-License_FarmerSpeed_Name";
 		farmerSpeed.m_sDescription = "#LF-License_FarmerSpeed_Desc";
-		farmerSpeed.m_iSkillPointCost = 3;
 		farmerSpeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(LF_ELicenseType.FARMER_SPEED, farmerSpeed);
 		
@@ -268,7 +328,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		minerCoal.m_eLicenseType = LF_ELicenseType.MINER_COAL;
 		minerCoal.m_sLicenseName = "#LF-License_MinerCoal_Name";
 		minerCoal.m_sDescription = "#LF-License_MinerCoal_Desc";
-		minerCoal.m_iSkillPointCost = 1;
 		minerCoal.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MINER_COAL, minerCoal);
 		
@@ -276,7 +335,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		minerCopper.m_eLicenseType = LF_ELicenseType.MINER_COPPER;
 		minerCopper.m_sLicenseName = "#LF-License_MinerCopper_Name";
 		minerCopper.m_sDescription = "#LF-License_MinerCopper_Desc";
-		minerCopper.m_iSkillPointCost = 2;
 		minerCopper.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MINER_COPPER, minerCopper);
 		
@@ -284,7 +342,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		minerIron.m_eLicenseType = LF_ELicenseType.MINER_IRON;
 		minerIron.m_sLicenseName = "#LF-License_MinerIron_Name";
 		minerIron.m_sDescription = "#LF-License_MinerIron_Desc";
-		minerIron.m_iSkillPointCost = 2;
 		minerIron.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MINER_IRON, minerIron);
 		
@@ -292,7 +349,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		minerGold.m_eLicenseType = LF_ELicenseType.MINER_GOLD;
 		minerGold.m_sLicenseName = "#LF-License_MinerGold_Name";
 		minerGold.m_sDescription = "#LF-License_MinerGold_Desc";
-		minerGold.m_iSkillPointCost = 3;
 		minerGold.m_iMinLevelRequired = 6;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MINER_GOLD, minerGold);
 		
@@ -300,7 +356,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		minerSpeed.m_eLicenseType = LF_ELicenseType.MINER_SPEED;
 		minerSpeed.m_sLicenseName = "#LF-License_MinerSpeed_Name";
 		minerSpeed.m_sDescription = "#LF-License_MinerSpeed_Desc";
-		minerSpeed.m_iSkillPointCost = 3;
 		minerSpeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MINER_SPEED, minerSpeed);
 		
@@ -309,7 +364,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		lumberjackBasic.m_eLicenseType = LF_ELicenseType.LUMBERJACK_BASIC;
 		lumberjackBasic.m_sLicenseName = "#LF-License_LumberjackBasic_Name";
 		lumberjackBasic.m_sDescription = "#LF-License_LumberjackBasic_Desc";
-		lumberjackBasic.m_iSkillPointCost = 1;
 		lumberjackBasic.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(LF_ELicenseType.LUMBERJACK_BASIC, lumberjackBasic);
 		
@@ -317,7 +371,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		lumberjackProcess.m_eLicenseType = LF_ELicenseType.LUMBERJACK_PROCESS;
 		lumberjackProcess.m_sLicenseName = "#LF-License_LumberjackProcess_Name";
 		lumberjackProcess.m_sDescription = "#LF-License_LumberjackProcess_Desc";
-		lumberjackProcess.m_iSkillPointCost = 2;
 		lumberjackProcess.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.LUMBERJACK_PROCESS, lumberjackProcess);
 		
@@ -325,7 +378,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		lumberjackSpeed.m_eLicenseType = LF_ELicenseType.LUMBERJACK_SPEED;
 		lumberjackSpeed.m_sLicenseName = "#LF-License_LumberjackSpeed_Name";
 		lumberjackSpeed.m_sDescription = "#LF-License_LumberjackSpeed_Desc";
-		lumberjackSpeed.m_iSkillPointCost = 3;
 		lumberjackSpeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(LF_ELicenseType.LUMBERJACK_SPEED, lumberjackSpeed);
 		
@@ -334,7 +386,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		medicAccess.m_eLicenseType = LF_ELicenseType.MEDIC_ACCESS;
 		medicAccess.m_sLicenseName = "#LF-License_MedicAccess_Name";
 		medicAccess.m_sDescription = "#LF-License_MedicAccess_Desc";
-		medicAccess.m_iSkillPointCost = 0;
 		medicAccess.m_iMinLevelRequired = 1;
 		medicAccess.m_bRequiresWhitelist = true; // Assuming EMS also needs whitelist or at least license
 		m_mLicenseConfigs.Set(LF_ELicenseType.MEDIC_ACCESS, medicAccess);
@@ -343,7 +394,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		medicBasic.m_eLicenseType = LF_ELicenseType.MEDIC_BASIC;
 		medicBasic.m_sLicenseName = "#LF-License_MedicBasic_Name";
 		medicBasic.m_sDescription = "#LF-License_MedicBasic_Desc";
-		medicBasic.m_iSkillPointCost = 2;
 		medicBasic.m_iMinLevelRequired = 3;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MEDIC_BASIC, medicBasic);
 		
@@ -351,7 +401,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		medicAdvanced.m_eLicenseType = LF_ELicenseType.MEDIC_ADVANCED;
 		medicAdvanced.m_sLicenseName = "#LF-License_MedicAdvanced_Name";
 		medicAdvanced.m_sDescription = "#LF-License_MedicAdvanced_Desc";
-		medicAdvanced.m_iSkillPointCost = 3;
 		medicAdvanced.m_iMinLevelRequired = 6;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MEDIC_ADVANCED, medicAdvanced);
 		
@@ -359,7 +408,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		medicRevive.m_eLicenseType = LF_ELicenseType.MEDIC_REVIVE;
 		medicRevive.m_sLicenseName = "#LF-License_MedicRevive_Name";
 		medicRevive.m_sDescription = "#LF-License_MedicRevive_Desc";
-		medicRevive.m_iSkillPointCost = 4;
 		medicRevive.m_iMinLevelRequired = 8;
 		m_mLicenseConfigs.Set(LF_ELicenseType.MEDIC_REVIVE, medicRevive);
 		
@@ -368,7 +416,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		policeAccess.m_eLicenseType = LF_ELicenseType.POLICE_ACCESS;
 		policeAccess.m_sLicenseName = "#LF-License_PoliceAccess_Name";
 		policeAccess.m_sDescription = "#LF-License_PoliceAccess_Desc";
-		policeAccess.m_iSkillPointCost = 0;
 		policeAccess.m_iMinLevelRequired = 1;
 		policeAccess.m_bRequiresWhitelist = true;
 		m_mLicenseConfigs.Set(LF_ELicenseType.POLICE_ACCESS, policeAccess);
@@ -377,7 +424,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		policeArrest.m_eLicenseType = LF_ELicenseType.POLICE_ARREST;
 		policeArrest.m_sLicenseName = "#LF-License_PoliceArrest_Name";
 		policeArrest.m_sDescription = "#LF-License_PoliceArrest_Desc";
-		policeArrest.m_iSkillPointCost = 2;
 		policeArrest.m_iMinLevelRequired = 5;
 		policeArrest.m_bRequiresWhitelist = true;
 		m_mLicenseConfigs.Set(LF_ELicenseType.POLICE_ARREST, policeArrest);
@@ -386,7 +432,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		policeFine.m_eLicenseType = LF_ELicenseType.POLICE_FINE;
 		policeFine.m_sLicenseName = "#LF-License_PoliceFine_Name";
 		policeFine.m_sDescription = "#LF-License_PoliceFine_Desc";
-		policeFine.m_iSkillPointCost = 2;
 		policeFine.m_iMinLevelRequired = 5;
 		policeFine.m_bRequiresWhitelist = true;
 		m_mLicenseConfigs.Set(LF_ELicenseType.POLICE_FINE, policeFine);
@@ -395,7 +440,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		policeSearch.m_eLicenseType = LF_ELicenseType.POLICE_SEARCH;
 		policeSearch.m_sLicenseName = "#LF-License_PoliceSearch_Name";
 		policeSearch.m_sDescription = "#LF-License_PoliceSearch_Desc";
-		policeSearch.m_iSkillPointCost = 3;
 		policeSearch.m_iMinLevelRequired = 7;
 		policeSearch.m_bRequiresWhitelist = true;
 		m_mLicenseConfigs.Set(LF_ELicenseType.POLICE_SEARCH, policeSearch);
@@ -405,7 +449,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalWeed.m_eLicenseType = LF_ELicenseType.CRIMINAL_WEED;
 		criminalWeed.m_sLicenseName = "#LF-License_CriminalWeed_Name";
 		criminalWeed.m_sDescription = "#LF-License_CriminalWeed_Desc";
-		criminalWeed.m_iSkillPointCost = 3;
 		criminalWeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_WEED, criminalWeed);
 		
@@ -413,7 +456,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalRobbery.m_eLicenseType = LF_ELicenseType.CRIMINAL_ROBBERY;
 		criminalRobbery.m_sLicenseName = "#LF-License_CriminalRobbery_Name";
 		criminalRobbery.m_sDescription = "#LF-License_CriminalRobbery_Desc";
-		criminalRobbery.m_iSkillPointCost = 3;
 		criminalRobbery.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_ROBBERY, criminalRobbery);
 		
@@ -421,7 +463,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalBlackmarket.m_eLicenseType = LF_ELicenseType.CRIMINAL_BLACKMARKET;
 		criminalBlackmarket.m_sLicenseName = "#LF-License_CriminalBlackmarket_Name";
 		criminalBlackmarket.m_sDescription = "#LF-License_CriminalBlackmarket_Desc";
-		criminalBlackmarket.m_iSkillPointCost = 2;
 		criminalBlackmarket.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_BLACKMARKET, criminalBlackmarket);
 		
@@ -429,7 +470,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalWeapons.m_eLicenseType = LF_ELicenseType.CRIMINAL_WEAPONS;
 		criminalWeapons.m_sLicenseName = "#LF-License_CriminalWeapons_Name";
 		criminalWeapons.m_sDescription = "#LF-License_CriminalWeapons_Desc";
-		criminalWeapons.m_iSkillPointCost = 4;
 		criminalWeapons.m_iMinLevelRequired = 6;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_WEAPONS, criminalWeapons);
 		
@@ -437,7 +477,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalVehicles.m_eLicenseType = LF_ELicenseType.CRIMINAL_VEHICLES;
 		criminalVehicles.m_sLicenseName = "#LF-License_CriminalVehicles_Name";
 		criminalVehicles.m_sDescription = "#LF-License_CriminalVehicles_Desc";
-		criminalVehicles.m_iSkillPointCost = 3;
 		criminalVehicles.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_VEHICLES, criminalVehicles);
 		
@@ -445,7 +484,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalClothes.m_eLicenseType = LF_ELicenseType.CRIMINAL_CLOTHES;
 		criminalClothes.m_sLicenseName = "#LF-License_CriminalClothes_Name";
 		criminalClothes.m_sDescription = "#LF-License_CriminalClothes_Desc";
-		criminalClothes.m_iSkillPointCost = 2;
 		criminalClothes.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_CLOTHES, criminalClothes);
 	}
@@ -489,39 +527,12 @@ class LF_LicenseManagerComponent : ScriptComponent
 				return false;
 		}
 		
-		// Verificar nivel mínimo
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-			if (levelComp && levelComp.GetPlayerLevel() < config.m_iMinLevelRequired)
-				return false;
-		}
-		
-		return true;
+		// The job level the licence needs (#749).
+		return LF_LicenseGate.Allows(LF_Utils.GetPlayerUID(GetOwner()), licenseType, config.m_iMinLevelRequired);
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
-	//! Verificar si el jugador tiene puntos suficientes para comprar
-	bool CanAffordLicense(LF_ELicenseType licenseType)
-	{
-		LF_LicenseConfig config = m_mLicenseConfigs.Get(licenseType);
-		if (!config)
-			return false;
-		
-		IEntity owner = GetOwner();
-		if (!owner)
-			return false;
-		
-		LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-		if (!levelComp)
-			return false;
-		
-		return levelComp.GetSkillPoints() >= config.m_iSkillPointCost;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Comprar/desbloquear una licencia
+	//! Unlocks a licence whose requirements are met (whitelist, job level). Nothing is spent.
 	bool PurchaseLicense(LF_ELicenseType licenseType)
 	{
 		if (!CanUnlockLicense(licenseType))
@@ -530,14 +541,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 			return false;
 		}
 
-		if (!CanAffordLicense(licenseType))
-		{
-			LF_Debug.Log("License", string.Format("purchase rejected (cannot afford): %1", typename.EnumToString(LF_ELicenseType, licenseType)));
-			return false;
-		}
-
-		// UnlockLicense spends the skill points itself after all checks pass;
-		// spending here as well would charge the player twice.
 		return UnlockLicense(licenseType);
 	}
 
@@ -578,27 +581,15 @@ if (!Replication.IsServer())
 			return false;
 		}
 		
-		// Si no es gratis, verificar requisitos y gastar SP
+		// A paid unlock checks the job level and the whitelist; nothing is spent (#749).
 		if (!isFree)
 		{
 			IEntity owner = GetOwner();
 			if (!owner)
 				return false;
-			
-			// Verificar nivel
-			LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-			if (!levelComp)
-			{
-				LF_Debug.Error("License", "Player level component not found!");
+
+			if (!LF_LicenseGate.Allows(LF_Utils.GetPlayerUID(owner), licenseType, config.m_iMinLevelRequired))
 				return false;
-			}
-			
-			if (levelComp.GetLevel() < config.m_iMinLevelRequired)
-			{
-				LF_Debug.Warn("License", string.Format("Player level %1 is below required level %2", 
-					levelComp.GetLevel(), config.m_iMinLevelRequired));
-				return false;
-			}
 			
 			// Verificar whitelist si es necesario
 			if (config.m_bRequiresWhitelist)
@@ -616,12 +607,6 @@ if (!Replication.IsServer())
 					LF_Debug.Warn("License", "Player not whitelisted for this license");
 					return false;
 				}
-			}
-			
-			// Gastar skill points
-			if (!levelComp.SpendSkillPoints(config.m_iSkillPointCost, config.m_sLicenseName))
-			{
-				return false;
 			}
 		}
 		

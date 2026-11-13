@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{20A9CE2A32DFF4FB}Prefabs/Props/Signs/LF_BoardFace.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

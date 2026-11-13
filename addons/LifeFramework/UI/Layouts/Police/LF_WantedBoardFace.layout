@@ -1,0 +1,56 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{B32B5FECBF8EAB8E}" {
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 1080
+  OffsetBottom -1080
+ }
+ {
+  RTTextureWidgetClass "{B308D33FACC1D371}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{D54641DD9CDB222A}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1920
+    OffsetRight -1920
+    SizeY 1080
+    OffsetBottom -1080
+   }
+   {
+    ImageWidgetClass "{462EC2AAAA05D7B1}" {
+     Name "CorkBase"
+     Slot FrameWidgetSlot "{B3FFDA10BE21BBBE}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.62 0.45 0.3 1
+    }
+    ImageWidgetClass "{D83F8320D7745E5A}" {
+     Name "Cork"
+     Slot FrameWidgetSlot "{39228CA1D571977A}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.62 0.45 0.3 1
+    }
+    FrameWidgetClass "{3997ED4759BDCB69}" {
+     Name "Posters"
+     Slot FrameWidgetSlot "{30E469241FFBD662}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+    }
+   }
+  }
+ }
+}
