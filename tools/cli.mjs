@@ -1136,6 +1136,29 @@ function ensureAddonResourceDatabase(root, name) {
 }
 
 
+// One headless Workbench run of a ResourceManager plugin under the build lock, bounded by
+// timeoutMs (a hung Workbench is killed with its job). Used by tools\cli asset (stage import).
+function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile }) {
+  const exe = workbenchExe();
+  if (!existsSync(exe)) throw new Error("Workbench not found: " + exe);
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(root, "server", "profile", "rdb");
+  mkdirSync(profile, { recursive: true });
+  wt.acquireLock(root, "build", { waitMs: 900000 });
+  try {
+    const res = quietSpawnSync(exe, [
+      "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+      "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
+      "-plugin=" + plugin, ...pluginArgs,
+      "-profile", profile,
+      ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
+    ], { cwd: gameDir, timeoutMs, stdout: logFile, stderr: logFile });
+    return { status: res.status, profile };
+  } finally {
+    wt.releaseLock(root, "build");
+  }
+}
+
 // tools/cli ui-image <svg|png> <name>: see tools/ui-image/ui-image.mjs and
 // docs/research/ui-illustration-pipeline.md.
 async function cmdUiImage(flags) {
@@ -2517,6 +2540,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   regen-localization            regenerate the runtime string tables from the .st source
   rdb                           register new .meta resources in this worktree's resourceDatabase.rdb
                                 (headless Workbench, ~10 s; test/dev/serve/session/e2e run it when stale)
+  asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
+                                roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
+                                Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
   look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
@@ -3372,6 +3398,7 @@ const cmds = {
   place: async (flags) => (await import("./place/place.mjs")).main(flags ?? []),
   "config-check": async (flags) => (await import("./config/check.mjs")).main(flags ?? []),
   look: async (flags) => (await import("./visual/look.mjs")).main(flags ?? []),
+  asset: async (flags) => (await import("./assets/pipeline/asset.mjs")).main(flags ?? [], { workbench: runWorkbenchPlugin }),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
@@ -3513,7 +3540,7 @@ try {
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "asset" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();
