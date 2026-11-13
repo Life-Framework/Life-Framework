@@ -175,6 +175,7 @@ under "Hard-coded flagship values in script".
 | --- | --- | --- |
 | `Chat/` | core | Channels |
 | `Core/EditorManagerCore.conf` | core | Engine setup |
+| `Dialogue/LF_Dialogue_Clerk.conf` | pack | The town clerk's conversation (generated from `tools/assets/dialogue/clerk/`); the scene system in `Feature/Dialogue/` is core |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
 | `NameTags/` | core | Tag rules |
@@ -257,6 +258,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Sounds/` | core | Siren |
 | `Sounds/Atmosphere/` | pack | The Everon town's two radio tracks and eight background loops (`docs/architecture/atmosphere.md`); the emitter scripts and `Prefabs/Atmosphere/` that play them are core |
 | `Sounds/Weapons/Handguns/Taser/` | split | Sounds of the stun weapon (shot, handling, stun buzz): they follow the taser, example in core, police-issue item in pack |
+| `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |
 

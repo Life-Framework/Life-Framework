@@ -288,6 +288,7 @@ export async function main(flags, { workbench } = {}) {
   const root = ROOT;
   if (sub === "ambience") return (await import("./ambience.mjs")).main(root, rest); // docs/architecture/atmosphere.md
   if (sub === "selftest") return (await import("../../validation/asset-pipeline-selftest.mjs")).main(rest);
+  if (sub === "dialogue") return (await import("./dialogue.mjs")).main(rest);
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "sound") return (await import("./sound.mjs")).main(root, rest); // docs/asset-pipeline/sounds.md
@@ -303,6 +304,7 @@ export async function main(flags, { workbench } = {}) {
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
        tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
+       tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)
 playbook: docs/asset-pipeline/README.md`);
   return sub ? 2 : 0;
 }

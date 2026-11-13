@@ -63,6 +63,12 @@ Music and ambience generated with ElevenLabs.
 | Store radio and pub music (`Sounds/Atmosphere/Samples/Atmosphere_StoreRadio_LP.wav`, `Atmosphere_PubRadio_LP.wav`) | ElevenLabs Music (`music_v1`, instrumental), generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan, Music Terms of 2026-10-09: use inside the mod; no attribution required. **Not under this repository's MIT licence**: the tracks may not be taken out of the mod and reused or offered as a music library | `tools/assets/atmosphere/ambience.json` (prompts, dates, credits) |
 | Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square (`Sounds/Atmosphere/Samples/`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan (commercial use allowed) | `tools/assets/atmosphere/ambience.json` |
 
+## Generated voices
+
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Town clerk's spoken lines (`Sounds/Dialogue/clerk/*.wav`) | ElevenLabs text-to-speech, voices generated with ElevenLabs; voice "JC" from the voice library | https://elevenlabs.io | The maintainer's paid plan (Starter): commercial use allowed, no attribution required; use in the project and published builds per `docs/decisions.md` 2026-11-13 | `tools/assets/dialogue/clerk/elevenlabs.json` (request ids, voice, model, text), `tools/assets/dialogue/clerk/dialogue.json` |
+
 ## Music
 
 | Track | Author | Source | Licence | Used in |

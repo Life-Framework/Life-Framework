@@ -1,0 +1,141 @@
+{
+  "id": "clerk",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "1dd93c8bee8c4a43",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day. This is the town clerk's desk. What can I do for you?",
+      "chars": 63,
+      "chars_total": 25,
+      "request_id": "hx5fqZbWKaX6mLihsC2I",
+      "seconds": 3.79,
+      "mouth": "1596899978522110001369768544843898743699435417644412113852376746643543311100"
+    },
+    "register": {
+      "hash": "57bab08d35cb7827",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it.",
+      "chars": 114,
+      "chars_total": 46,
+      "request_id": "j5UqHrnKP1Zmq248hz1t",
+      "seconds": 7.11,
+      "mouth": "14973221111110004999999999686889979964554289843235995866554597467536885432432388853224754634676432111000000005329876553886467442254545543221000"
+    },
+    "board": {
+      "hash": "3d61b98f01ec613a",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "Now read the town board on the square, right beside me. It shows where everything in town is.",
+      "chars": 93,
+      "chars_total": 37,
+      "request_id": "VxiCkJVNUR0ysC4q8Ebt",
+      "seconds": 5.83,
+      "mouth": "599989853954589876996358865631689953211369853255447763443212101000001745886999965423688642785644677885366785433221000"
+    },
+    "work_errand": {
+      "hash": "c2e8a1d64fbb3c7c",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run.",
+      "chars": 192,
+      "chars_total": 77,
+      "request_id": "6zn6SBG38FKhZu0xd8CR",
+      "seconds": 12.7,
+      "mouth": "59998537865998789843798634898454333221000000000000004734998588466656542799995655137532111000111000029984334999999799646425522898645885421110003735954632499965467774311110000289867632757633699953742523555425887643544138653211100368633784368542666643221100"
+    },
+    "bank": {
+      "hash": "5dc86ca6b53d663b",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office.",
+      "chars": 161,
+      "chars_total": 64,
+      "request_id": "SaO7ihwPHZEKp78oI2tF",
+      "seconds": 11.87,
+      "mouth": "5979996499995332798536632344210000000000100028867646873399337632266535899653155337547753211110111110001899997777964897763354468742111110000000003942897685356987436446327867457667567964379654697853499985322278544254643998442442222332101000"
+    },
+    "done": {
+      "hash": "b7f4ef2a222d7f5c",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "Welcome to Everon. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board.",
+      "chars": 175,
+      "chars_total": 70,
+      "request_id": "MsEMXuHUoAi9xf6HT2aI",
+      "seconds": 13.31,
+      "mouth": "389995499637586576533111100000000000149999654887345424441698422677532111000000000004534887774459975375443211100000000000044676998323432100126322899889984322111011100036289765565179678556421368674328975886557767564499435644421111000278536999734787653367899455532211000"
+    },
+    "idle": {
+      "hash": "8bfd36490e92ec5d",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office.",
+      "chars": 136,
+      "chars_total": 54,
+      "request_id": "J1eCVVhjMdzhHbVHP0bj",
+      "seconds": 10.44,
+      "mouth": "46999955578438856542211100110110000138533899995799833378675551279997456689754387763332111210000000026576689623443100236323899879632121011000263299766565179757656642211110015987367995899557976757555223233332100"
+    },
+    "about_work": {
+      "hash": "a045f5e34cf4c5e7",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "The post office always needs couriers. For anything else, read the town board. It lists who is hiring.",
+      "chars": 102,
+      "chars_total": 41,
+      "request_id": "8uc1UeJCGdnUCNtFA1IN",
+      "seconds": 7.69,
+      "mouth": "8849998689436552299977663897554269997533332100000000000001285698636888997454321368843954688899565432211000000003743689867522543100000178866358899854321100"
+    },
+    "about_town": {
+      "hash": "d6e28941933c3210",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well.",
+      "chars": 113,
+      "chars_total": 45,
+      "request_id": "OmVAP8uL0tIRARVDk1zd",
+      "seconds": 7.87,
+      "mouth": "99499998532464555538999645654432211111100035763887538999999995488957996336856886889888576324764432332210000000024259974798765542211101588668864487566432111000"
+    },
+    "bye": {
+      "hash": "bd2070efa082ed27",
+      "date": "2026-11-13",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day to you.",
+      "chars": 16,
+      "chars_total": 6,
+      "request_id": "btHj8vaUMSONr0Z5Svhw",
+      "seconds": 1.13,
+      "mouth": "64997799864455443221000"
+    }
+  },
+  "voice": {
+    "id": "pB0wYnYoA5t7xU302lqw",
+    "name": "JC - Deep, Thoughful and Encouraging",
+    "source": "voice library"
+  }
+}

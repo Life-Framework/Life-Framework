@@ -150,6 +150,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload") {
     return `${id} ${spec.verb}`;
   }
+  if (spec.verb === "dialogue") {
+    return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
+  }
   if (spec.verb === "peers") {
     return `${id} peers`;
   }
@@ -1487,6 +1490,9 @@ function main(argv) {
     }
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
+    }
+    if (cmd === "dialogue") {
+      return printResult(sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 15000));
     }
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));

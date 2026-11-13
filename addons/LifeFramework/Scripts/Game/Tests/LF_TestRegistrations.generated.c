@@ -105,6 +105,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CharacterCreationRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobNoAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountReplicationWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DialogueClerk(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DialogueFlow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);

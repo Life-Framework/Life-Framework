@@ -829,3 +829,22 @@ Not confirmed: the help-centre articles on publishing and attribution could not 
 read (HTTP 403 to an automated client), and the EU terms were not read. Each
 generation's prompt, parameters and date, and the takes that ship with the reason,
 are recorded per asset in `tools/assets/<slug>/sounds.json`, which the stage writes.
+
+**2026-11-13 — NPC voices are generated with ElevenLabs at build time, and may ship.**
+The maintainer moved the ElevenLabs account to the Starter plan on 2026-11-13. Paid plans
+allow commercial use and require no attribution, and the output is ours (terms of use read
+the same day; `docs/architecture/npc-dialogue.md` "Licence"). Spoken lines made on that plan
+may go into the repository and published builds. Each voiced NPC is credited "voices generated
+with ElevenLabs" in `docs/credits.md`, and every line's request id, voice, model and text is
+recorded in `tools/assets/dialogue/<npc>/elevenlabs.json`, which the dialogue stage writes.
+Speech is never generated at run time: the game holds no key and calls no service. A
+voice-library voice can be withdrawn by its owner; lines already made stay usable, so a
+withdrawn voice means revoicing that NPC when its text next changes. Open: whether the
+licence for existing audio survives a downgrade to the free plan; keep the plan or ask first.
+
+**2026-11-13 — An NPC's line is heard by players nearby, the scene is the talker's alone.**
+The camera, captions and replies of a conversation exist only on the talking player's
+client. The voice and the moving lips are also played for players within the NPC's
+`hear_range_m` (12 m by default; 0 makes an NPC private). Why: it is a town, and the world
+does not stop for one player's conversation. A default from the spike, for the maintainer
+to confirm per NPC.
