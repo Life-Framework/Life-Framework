@@ -160,7 +160,7 @@ class LF_Test_Roadmap_OrganizationsWorld : LF_Test
 			return;
 
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, member), "add a member");
-		int amount = LF_OrganizationManager.PRICE_PROCESSING_SLOT;
+		int amount = LF_OrgConfig.PriceProcessingSlot();
 		ctx.True(LF_OrganizationManager.Deposit(org.GetId(), founder, amount), "deposit a fixed cash amount");
 		ctx.Equal(amount, org.GetFund(), "fund holds the fixed deposit");
 		ctx.True(LF_OrganizationManager.BuyUpgrade(org.GetId(), founder, LF_EOrganizationUpgrade.PROCESSING_SLOT), "buy the processing-slot flag");

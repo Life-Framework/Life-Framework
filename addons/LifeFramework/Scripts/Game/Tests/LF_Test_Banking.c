@@ -185,7 +185,7 @@ class LF_Test_ATMManagerGuards : LF_Test
 
 		ctx.False(manager.Deposit("test-guards", 0), "Deposit of zero through the manager fails");
 		ctx.False(manager.Deposit("test-guards", -1), "Deposit of a negative amount through the manager fails");
-		ctx.False(manager.Deposit("test-guards", LF_ATMManager.MAX_TRANSACTION_AMOUNT + 1), "Deposit above the cap through the manager fails");
+		ctx.False(manager.Deposit("test-guards", LF_LedgerConfig.AtmMaxTransaction() + 1), "Deposit above the cap through the manager fails");
 		ctx.Equal(500, account.GetBalance(), "rejected manager deposits leave the balance unchanged");
 
 		ctx.False(manager.Withdraw("test-guards", 0), "Withdraw of zero through the manager fails");

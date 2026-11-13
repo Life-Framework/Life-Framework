@@ -47,7 +47,7 @@ class LF_Test_Roadmap_Hideout : LF_Test
 		ctx.False(LF_Hideout.CanProcess(member, hideoutId), "the machine refuses without the processing upgrade");
 		ctx.EqualStr("process refused: no processing upgrade", LF_Hideout.GetLastRefusal(), "the missing upgrade is logged");
 
-		int price = LF_OrganizationManager.PRICE_PROCESSING_SLOT;
+		int price = LF_OrgConfig.PriceProcessingSlot();
 		ctx.True(LF_OrganizationManager.Deposit(org.GetId(), founder, price), "founder deposits the upgrade price");
 		ctx.Equal(price, org.GetFund(), "fund holds the processing price");
 		ctx.True(LF_OrganizationManager.BuyUpgrade(org.GetId(), founder, LF_EOrganizationUpgrade.PROCESSING_SLOT), "founder buys the processing slot");
@@ -146,7 +146,7 @@ class LF_Test_Roadmap_HideoutWorld : LF_Test
 		ctx.False(doorLock.IsLocked(), "the placed lock opens for a member");
 
 		ctx.False(LF_Hideout.CanProcess(member, LF_TestAnnex.HIDEOUT_ID), "the placed machine refuses without the upgrade");
-		int price = LF_OrganizationManager.PRICE_PROCESSING_SLOT;
+		int price = LF_OrgConfig.PriceProcessingSlot();
 		ctx.True(LF_OrganizationManager.Deposit(org.GetId(), founder, price), "e2e fund receives the upgrade price");
 		ctx.True(LF_OrganizationManager.BuyUpgrade(org.GetId(), founder, LF_EOrganizationUpgrade.PROCESSING_SLOT), "e2e founder buys the processing slot");
 		ctx.True(LF_Hideout.CanProcess(member, LF_TestAnnex.HIDEOUT_ID), "the placed machine runs for a member with the upgrade");

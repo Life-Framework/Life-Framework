@@ -12,9 +12,7 @@ enum LF_EBackRoomRefusal
 //! how long a raided room stays shut. The shop component applies them on the server.
 class LF_BackRoomRules
 {
-	static const float REACH = 4.0;
-	//! A raided room stays shut this long (world ms).
-	static const int SHUT_MS = 600000;
+	//! The reach and the shut time are LF_ShopLimitsConfig fields.
 
 	//------------------------------------------------------------------------------------------------
 	static bool IsClosed(int closedUntilMs, int nowMs)
@@ -25,7 +23,7 @@ class LF_BackRoomRules
 	//------------------------------------------------------------------------------------------------
 	static int ClosedUntil(int nowMs)
 	{
-		return nowMs + SHUT_MS;
+		return nowMs + LF_ShopLimitsConfig.BackRoomShutMs();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -37,7 +35,7 @@ class LF_BackRoomRules
 		if (!isBackRoom)
 			return LF_EBackRoomRefusal.NOT_A_BACK_ROOM;
 
-		if (distance > REACH)
+		if (distance > LF_ShopLimitsConfig.BackRoomReach())
 			return LF_EBackRoomRefusal.TOO_FAR;
 
 		if (IsClosed(closedUntilMs, nowMs))

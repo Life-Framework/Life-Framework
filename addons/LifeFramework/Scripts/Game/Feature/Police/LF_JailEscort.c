@@ -59,8 +59,6 @@ class LF_JailEscortHold : Managed
 //------------------------------------------------------------------------------------------------
 class LF_JailEscort
 {
-	protected static const float ARRIVAL_RADIUS = 8;
-
 	protected static ref map<string, ref LF_JailEscortVehicle> s_mVehicles;
 	protected static ref map<string, ref LF_JailEscortSeat> s_mSeats;
 	protected static ref map<string, ref LF_JailEscortHold> s_mHolds;
@@ -426,7 +424,7 @@ class LF_JailEscort
 		if (!LF_Jail.HasCell())
 			return false;
 
-		return vector.Distance(position, LF_Jail.GetCellOrigin()) <= ARRIVAL_RADIUS;
+		return vector.Distance(position, LF_Jail.GetCellOrigin()) <= LF_PoliceConfig.JailArrivalRadius();
 	}
 
 	//------------------------------------------------------------------------------------------------

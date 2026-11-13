@@ -21,8 +21,6 @@ class LF_VehicleSpawnPointComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_VehicleSpawnPointComponent : ScriptComponent
 {
-	protected static const float OCCUPIED_RADIUS = 3.0;
-
 	[Attribute("", UIWidgets.EditBox, desc: "Pad id. The lot, a garage, or an impound desk names the pads it spawns on.")]
 	protected string m_sShopId;
 
@@ -149,7 +147,7 @@ class LF_VehicleSpawnPointComponent : ScriptComponent
 		{
 			float steps = i;
 			vector slot = base + m_vSlotStep * steps;
-			array<IEntity> nearby = LF_Utils.GetNearbyVehicles(slot, OCCUPIED_RADIUS);
+			array<IEntity> nearby = LF_Utils.GetNearbyVehicles(slot, LF_GarageConfig.PadOccupiedRadius());
 			if (!nearby || nearby.Count() == 0)
 			{
 				origin = slot;

@@ -8,12 +8,20 @@ class LF_LedgerConfig
 
 	static const int DEFAULT_MAX_ENTRIES = 20000;
 	static const int DEFAULT_MAX_AGE_DAYS = 30;
+	static const int DEFAULT_ATM_MAX_TRANSACTION = 1000000;
+	static const float DEFAULT_ATM_RANGE = 5;
 
 	[Attribute("20000", UIWidgets.Auto, "Most transactions kept. The oldest are dropped first")]
 	int m_iMaxEntries;
 
 	[Attribute("30", UIWidgets.Auto, "Transactions older than this many days are dropped. 0 keeps them until the count limit")]
 	int m_iMaxAgeDays;
+
+	[Attribute("1000000", UIWidgets.Auto, "Largest single ATM deposit or withdrawal the server accepts. Also guards balances against oversized payloads", params: "1 100000000")]
+	int m_iAtmMaxTransaction = 1000000;
+
+	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from an ATM when the server takes a deposit or withdrawal", params: "1 30")]
+	float m_fAtmRange = 5;
 
 	protected static ref LF_LedgerConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -58,5 +66,25 @@ class LF_LedgerConfig
 			return DEFAULT_MAX_AGE_DAYS;
 
 		return config.m_iMaxAgeDays;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int AtmMaxTransaction()
+	{
+		LF_LedgerConfig config = Get();
+		if (!config || config.m_iAtmMaxTransaction <= 0)
+			return DEFAULT_ATM_MAX_TRANSACTION;
+
+		return config.m_iAtmMaxTransaction;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float AtmRange()
+	{
+		LF_LedgerConfig config = Get();
+		if (!config || config.m_fAtmRange <= 0)
+			return DEFAULT_ATM_RANGE;
+
+		return config.m_fAtmRange;
 	}
 }

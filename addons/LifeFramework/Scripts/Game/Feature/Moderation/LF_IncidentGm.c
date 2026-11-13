@@ -14,8 +14,6 @@ class LF_IncidentGm
 {
 	static const string FEATURE = "IncidentGM";
 
-	static const float RADIUS = 400;
-	static const int WINDOW_SECONDS = 3600;
 	static const int MAX_ROWS = 40;
 	static const int MAX_FLAGGED_ROWS = 20;
 	static const string SEP = "|";
@@ -52,7 +50,7 @@ class LF_IncidentGm
 			return new array<string>();
 		}
 
-		array<ref LF_IncidentRecord> found = LF_IncidentLog.Query(center, RADIUS, now - WINDOW_SECONDS, -1, "");
+		array<ref LF_IncidentRecord> found = LF_IncidentLog.Query(center, LF_IncidentConfig.GmRadius(), now - LF_IncidentConfig.GmWindowSeconds(), -1, "");
 		LF_IncidentFlags.Prune();
 		array<ref LF_IncidentRecord> flaggedFar = new array<ref LF_IncidentRecord>();
 		array<ref LF_IncidentRecord> everything = LF_IncidentLog.Query(vector.Zero, -1, 0, -1, "");

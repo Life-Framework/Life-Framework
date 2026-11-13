@@ -142,10 +142,10 @@ class LF_OrgLedger
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, "#LF-Org_LedgerTitle"));
 		if (!page || !page.m_bHasOrg)
 		{
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_INTRO, WidgetManager.Translate("#LF-Org_FoundIntro", LF_OrgRules.FOUNDING_FEE)));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_INTRO, WidgetManager.Translate("#LF-Org_FoundIntro", LF_OrgConfig.FoundingFee())));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_NAME, "#LF-Org_NameField"));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_NOTICE, ""));
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_FOUND, WidgetManager.Translate("#LF-Org_FoundButton", LF_OrgRules.FOUNDING_FEE)));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_FOUND, WidgetManager.Translate("#LF-Org_FoundButton", LF_OrgConfig.FoundingFee())));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, PART_CLOSE, "#LF-Org_CloseLedger"));
 			return parts;
 		}
@@ -179,7 +179,7 @@ class LF_OrgLedger
 		if (page.m_bProcessing || !page.Can(LF_OrgRules.RIGHT_BUY))
 			return string.Empty;
 
-		return WidgetManager.Translate("#LF-Org_BuyFor", LF_MoneyFormat.FormatMoney(LF_OrganizationManager.PRICE_PROCESSING_SLOT));
+		return WidgetManager.Translate("#LF-Org_BuyFor", LF_MoneyFormat.FormatMoney(LF_OrgConfig.PriceProcessingSlot()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ class LF_OrgLedger
 				return;
 			}
 
-			if (LF_MoneyUtils.GetCash(character) < LF_OrgRules.FOUNDING_FEE)
+			if (LF_MoneyUtils.GetCash(character) < LF_OrgConfig.FoundingFee())
 			{
 				m_Screen.SetLine(PART_NOTICE, "#LF-Org_NoFee");
 				SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.ERROR);

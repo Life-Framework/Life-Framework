@@ -21,6 +21,9 @@ class LF_IncidentConfig
 	static const float DEFAULT_DAMAGE_SAMPLE_SECONDS = 5;
 	static const int DEFAULT_REPORT_WINDOW_MINUTES = 10;
 	static const int DEFAULT_REPORT_COOLDOWN_SECONDS = 120;
+	static const float DEFAULT_GM_RADIUS = 400;
+	static const int DEFAULT_GM_WINDOW_SECONDS = 3600;
+	static const float DEFAULT_ZONE_NOTICE_SECONDS = 8;
 
 	protected static ref LF_IncidentConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -60,6 +63,15 @@ class LF_IncidentConfig
 
 	[Attribute("1", UIWidgets.Auto, "Seconds between two aim checks on the server")]
 	float m_fAimCheckSeconds;
+
+	[Attribute("400", UIWidgets.Auto, "Metres around a game master that the incident panel searches for incidents", params: "10 5000")]
+	float m_fGmRadius = 400;
+
+	[Attribute("3600", UIWidgets.Auto, "Seconds back from now the game master incident panel looks", params: "60 604800")]
+	int m_iGmWindowSeconds = 3600;
+
+	[Attribute("8", UIWidgets.Auto, "Seconds between two 'your shot did nothing' notes to the same shooter in a safe zone", params: "0 300")]
+	float m_fZoneNoticeSeconds = 8;
 
 	[Attribute("1", UIWidgets.CheckBox, "1 = aim alone counts; 0 = the aim line must also reach the player unobstructed")]
 	bool m_bAimAloneCounts;
@@ -114,6 +126,36 @@ class LF_IncidentConfig
 			return true;
 
 		return KindEnabled(config.m_sKinds, kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float GmRadius()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_fGmRadius <= 0)
+			return DEFAULT_GM_RADIUS;
+
+		return config.m_fGmRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int GmWindowSeconds()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_iGmWindowSeconds <= 0)
+			return DEFAULT_GM_WINDOW_SECONDS;
+
+		return config.m_iGmWindowSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float ZoneNoticeSeconds()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_fZoneNoticeSeconds < 0)
+			return DEFAULT_ZONE_NOTICE_SECONDS;
+
+		return config.m_fZoneNoticeSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------

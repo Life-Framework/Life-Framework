@@ -1,7 +1,7 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_BackRoomRules` with the on-duty check disabled failed `off duty: refused`. Restored; green.
 // tier: LOGIC
 //! Back room police rules (#600): only an on-duty officer in reach may search a real back room,
-//! a raided room stays shut for SHUT_MS, and a back room seizure is kept in the evidence locker
+//! a raided room stays shut for the configured shut time, and a back room seizure is kept in the evidence locker
 //! without a crime report.
 class LF_Test_BackRoomRules : LF_Test
 {

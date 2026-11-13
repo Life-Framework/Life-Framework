@@ -17,10 +17,22 @@ class LF_GarageConfig
 {
 	static const ResourceName CONFIG_PATH = "{6A1E5C0D2B7F4E93}Configs/Vehicles/LF_Garage.conf";
 	//! Used when the config does not resolve, so the desk still works and the error is logged.
-	static const int FALLBACK_FEE = 250;
+	static const int DEFAULT_IMPOUND_FEE = 250;
+	static const float DEFAULT_DESK_REACH = 5;
+	static const float DEFAULT_GARAGE_RADIUS = 15;
+	static const float DEFAULT_PAD_OCCUPIED_RADIUS = 3;
 
 	[Attribute("250", UIWidgets.Auto, "Impound fee in carried cash to collect one vehicle. 0 releases for free")]
 	int m_iImpoundFee;
+
+	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from a garage or impound desk for the server to accept a desk action", params: "1 30")]
+	float m_fDeskReach = 5;
+
+	[Attribute("15", UIWidgets.Auto, "Metres from a garage within which a player and their vehicle can park or retrieve", params: "3 100")]
+	float m_fGarageRadius = 15;
+
+	[Attribute("3", UIWidgets.Auto, "Metres around a vehicle pad that count as occupied by a parked vehicle", params: "1 20")]
+	float m_fPadOccupiedRadius = 3;
 
 	protected static ref LF_GarageConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -52,18 +64,45 @@ class LF_GarageConfig
 	{
 		LF_GarageConfig config = Get();
 		if (!config)
-			return FALLBACK_FEE;
+			return DEFAULT_IMPOUND_FEE;
 
 		return config.m_iImpoundFee;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float DeskReach()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_DESK_REACH;
+
+		return config.m_fDeskReach;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float GarageRadius()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_GARAGE_RADIUS;
+
+		return config.m_fGarageRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float PadOccupiedRadius()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_PAD_OCCUPIED_RADIUS;
+
+		return config.m_fPadOccupiedRadius;
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 class LF_Garage
 {
-	//! How close the player stands to a desk or counter for a server-side action to count.
-	static const float DESK_REACH = 5.0;
-
 	//------------------------------------------------------------------------------------------------
 	static bool ParkAllowed(bool isOwner, bool inVehicle, bool garageNearby)
 	{
@@ -104,13 +143,13 @@ class LF_Garage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return true when user stands within DESK_REACH of desk.
+	//! \return true when user stands within the configured desk reach of desk.
 	static bool WithinReach(IEntity user, IEntity desk)
 	{
 		if (!user || !desk)
 			return false;
 
-		return vector.Distance(user.GetOrigin(), desk.GetOrigin()) <= DESK_REACH;
+		return vector.Distance(user.GetOrigin(), desk.GetOrigin()) <= LF_GarageConfig.DeskReach();
 	}
 
 	//------------------------------------------------------------------------------------------------
