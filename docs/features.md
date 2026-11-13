@@ -1772,6 +1772,33 @@
   server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
 - ⚠️ No compensation or wanted reduction.
 
+### `LF_Restraint` and the handcuffs — `Feature/Police/LF_Restraint.c`, `Prefabs/Items/Roleplay/Handcuffs.et` (#664, 2026-11-13)
+- ✅ **An on-duty officer holding handcuffs cuffs a downed, stunned, or held-up and unarmed player.** Two entries in the player interaction menu (`Character_Roleplay.et`, context `LF_ID`): **Cuff** (`LF_RestrainAction`), offered to an on-duty officer whose left hand holds an item with `LF_HandcuffsComponent`, and **Uncuff** (`LF_ReleaseRestraintAction`), offered to any on-duty officer facing a cuffed player. The server decides (`LF_Restraint.Restrain` / `Release`): the request goes through `LF_RateLimit` (`SPAWN`), the officer's real account must be on duty, the cuffs must be in hand (`HeldCuffs`: the gadget manager's held gadget, else the controller's left-hand attachment, both readable on the server), and the target must be downed (`LF_Downed`, a taser stun included) or compliant: held up (`LF_HoldUp.HeldUpAt`) within `m_iCompliantSeconds` (`LF_Police.conf`, default 60, 0 = downed only) and holding no weapon. Every refusal logs and toasts the reason. `DecideRestrain`, `DecideRelease` and `IsCompliant` are the pure rules (test `police/restraint-rules`).
+- ✅ **The cuffs are consumed onto the suspect and come back.** Cuffing deletes the officer's pair and records its prefab against the prisoner; release puts a pair in the releasing officer's inventory (at their feet when full). An arrest at the cell (`LF_Jail.Arrest`) takes them off and returns them to the arresting officer; a cuffed body that dies (bleed-out, give-up) returns them to the officer who cuffed it; a prisoner who disconnects returns them too. Logs `[LFDebug:Police] restrained <uid> by <uid> (downed|held up, cuffs <prefab>)` and `restraint off <uid> (<why>); cuffs <where>`.
+- ✅ **A cuffed player keeps walking but holds nothing.** The replicated flag `m_bLF_Restrained` on the character reaches every client and a late joiner; the owner's controller disables weapon controls, holsters the weapon and puts away a held gadget, and gives the controls back on release (test `police/handcuffs`). Every client with a renderer shows a cuff on the suspect's right wrist (`Handcuffs_Worn.et`, spawned locally and attached to the `righthandprop` bone the way the vanilla loiter props are, a ring turned onto the forearm; never replicated).
+- ✅ **The handcuffs** (`Handcuffs.et`, a held gadget on the vanilla `Item_Base.et`) are the first asset of the pipeline's `gadget` kind: a Meshy model (credit "generated with Meshy", generation ids in `tools/assets/handcuffs/meshy.json`). On-duty police get a pair in the DebugWorld police kit; one lies on the police desk (`Roadmap_Police_Handcuffs`). `session.mjs cuffs-proof` on two clients: clock in, down the suspect, hold the cuffs, cuff, both clients read the suspect cuffed, release, both read them free, the cuffs are back; a cuffed player who dies gives them back.
+- ⚠️ **The cuffs do not show in the officer's hand.** Holding them raises the hand in the vanilla gauze pose the other held items use (the lockpick's offsets), but the session shot shows an empty hand; the hand offsets (`gadget.hand` in the spec, `HandAdditive*` on the prefab) need a pass in Workbench. Cuffing works the same.
+- ⚠️ **No restrained animation.** The base game has no surrender, hands-up, cuffed or tied animation (`docs/research/animation-pipeline.md`: the ACE captives set is the candidate, #340); a cuffed player stands or lies in the normal pose with the cuffs on one hand. There is no surrender gesture either, so "compliant" means held up and unarmed. Cuffed players can still open their inventory, and the officer cannot lead them by the cuffs (escort is the vehicle escort). Disconnect rejoin rules for cuffed players are #691. The restraint is not saved: a server restart frees every cuffed player and the pairs on them are gone.
+
+### `LF_SpikeStrips` — `Feature/Police/LF_SpikeStrip.c`, `Prefabs/Props/Roleplay/SpikeStrip/` (#646, 2026-11-13)
+- ✅ Police spike strip. Every rank's armory kit carries the folded strip (`SpikeStrip_Item.et`, 6 kg).
+  On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN) lays `SpikeStrip.et`
+  (3.5 m) from 1 m in front of the officer: along their facing, or straight across the nearest road
+  within 12 m when the AI road network has one. Its three ground points take the higher of terrain and
+  what stands there; more than 0.25 m between them refuses (`#LF-SpikeStrip_NoGround`). The item is used up.
+- ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
+  sample against the footprint, so a fast car cannot jump it. A crossing wheel's `SCR_WheelHitZone` (on the
+  wheel slot entity) takes COLLISION damage to DESTROYED; vanilla `UpdateWheelState` then cuts the radius to
+  80 %, the grip to 20 % and adds drag on every machine, so the car slows and pulls. A flat wheel is not hit
+  twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
+- ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
+  The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). DebugWorld shows one
+  on the police station verge (`Roadmap_Police_SpikeStrip`: `m_bArmed 0`, `m_bExpires 0`; an officer can still pick it up).
+- Model: one Meshy link repeated by the asset pipeline's deployable kind (`tools/assets/spike-strip`).
+  Tests `police/spike-strip`, `police/spike-strip-geometry`; proof `session.mjs spike-strip-proof`.
+- ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in
+  DebugWorld (no AI road network there); the strip follows the officer's facing.
+
 ## Ownership
 
 ### `LF_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11; ledger and invites 2026-11-08)
@@ -2331,6 +2358,7 @@
 ### Asset pipeline — `tools/assets/pipeline/` (dev tooling, #339, #341 spike)
 - ✅ `tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..."` and `asset run <slug>` take a roadmap item to an asset in five resumable stages cached in `tmp/assets/<slug>/`: `concept` (spec checks), `generate` (Meshy text-to-3D with PBR maps, credits logged per call, a 300-credit cap per asset), `clean` (headless Blender: orientation, metres, LODs, one atlas packed to `_BCR`/`_NMO`, collider, and for a weapon the vanilla pistol skeleton, sockets and moving parts), `import` (`.meta` files with fresh GUIDs, `.emat`, a hidden Workbench rebuild, then a read-back of the `.xob`), `prefab` (weapon, magazine, projectile, config). `asset status | doctor | selftest`. Playbook for the judgement steps and the review checklist: `docs/asset-pipeline/`. First asset: the taser. `generate` writes the Meshy preview and refine task ids to `tools/assets/<slug>/meshy.json` (the provenance record; credit in `docs/credits.md`, decision in `docs/decisions.md`). Offline checks: `tools/validation/asset-pipeline-selftest.mjs` (part of `validate`).
 - ⚠️ Only the `weapon` kind has run end to end. `gadget` and `deployable` have profiles and no prefab scaffold. Verification (look, previews, the session proof) is a checklist, not a stage. Findings and the issue breakdown: `docs/architecture/asset-pipeline-spike.md`.
+- ✅ (#664, 2026-11-13) **The `gadget` kind runs end to end**, proven with the handcuffs: the `prefab` stage dispatches every kind but `weapon` to `prefab-<kind>.mjs`, and `prefab-gadget.mjs` writes one held item on the vanilla `Item_Base.et` (inventory name and volume, the vanilla gauze hand attachment bound as `Gadget`, `SCR_GadgetComponent`, preview camera, the spec's extra components). A gadget is scaled on its length, so the size check holds the length to 5 % and the other two to 40 %. The import judged each Workbench run on `console.log` alone; joining `script.log` and `error.log` after it counted the start-up `metafile without corresponding resource` lines and failed a clean import. Offline checks: `tools/validation/asset-gadget-selftest.mjs`.
 
 ### `film-make` post-production — `tools/film/post.mjs` (dev tooling, #397)
 - ✅ `tools\cli film-make video/<name>.json` joins clips into one mp4: logo title and end cards, crossfades, burned-in captions from cue files plus an `.srt`, offline Piper voice-over, and a licensed music bed ducked under game sound and voice (about -14 LUFS). Covered by `node tools/film/film.mjs selftest`; proven on `video/tooling-test.json` (not for posting).
@@ -2442,10 +2470,8 @@
   vector and does not call `SetVelocity`. Ported from EveronLife
   `EL_JumpTrigger` (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
 
-### `LF_SpikeStrip` — `Feature/Toys/LF_SpikeStrip.c`
-- ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
-  box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
-  (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+### `LF_SpikeStrip` — moved to `Feature/Police/LF_SpikeStrip.c` (#646)
+- The trigger version is gone; the police spike strip below replaced it.
 
 ## Service calls (#248)
 

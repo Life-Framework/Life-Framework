@@ -45,6 +45,8 @@ name of the person who ran the agent.
 | Asset | Tool | Source | Terms | Recorded in |
 |---|---|---|---|---|
 | Taser model (`Assets/Weapons/Handguns/Taser/Taser.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/taser/meshy.json` (generation ids), `tools/assets/taser/spec.json` (prompt) |
+| Handcuffs model (`Assets/Items/Roleplay/Handcuffs/Handcuffs.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/handcuffs/meshy.json` (generation ids), `tools/assets/handcuffs/spec.json` (prompt) |
+| Spike strip model (`Assets/Props/Roleplay/SpikeStrip/SpikeStrip.xob`, `SpikeStrip_Folded.xob`): one generated link, repeated and stacked by the clean stage | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; signed off 2026-11-13 (#664) | `tools/assets/spike-strip/meshy.json` (generation ids), `tools/assets/spike-strip/spec.json` (prompt) |
 
 ## Generated voices
 

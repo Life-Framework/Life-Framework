@@ -84,8 +84,9 @@ export function xobMetaIds(text, used) {
 // Write every text file one imported model needs. Texture and material files are kept when they
 // exist. The model's .meta is rewritten each time with the GUID and ids it already had, because
 // Workbench drops what it could not import (an invalid collider's GeometryParam, for one).
-// Returns the {GUID}path strings.
-export function writeAssetMetas(addonDir, { assetDir, name, collider, flags, used = usedGuids(addonDir) }) {
+// Returns the {GUID}path strings. `model` names a second model (a deployable's folded state) that
+// shares `name`'s textures and material; it defaults to `name`.
+export function writeAssetMetas(addonDir, { assetDir, name, model = name, collider, flags, used = usedGuids(addonDir) }) {
   const data = `${assetDir}/Data`;
   const out = {};
   const put = (rel, text) => writeFileSync(join(addonDir, rel), text);
@@ -101,7 +102,7 @@ export function writeAssetMetas(addonDir, { assetDir, name, collider, flags, use
   if (!existsSync(join(addonDir, ematRes))) put(ematRes, ematText(out));
   if (!existsSync(join(addonDir, ematRes + ".meta"))) put(ematRes + ".meta", ematMeta(ematRes, ematGuid));
   out.emat = `{${ematGuid}}${ematRes}`;
-  const xobRes = `${assetDir}/${name}.xob`;
+  const xobRes = `${assetDir}/${model}.xob`;
   const xobGuid = guidFor(xobRes);
   const metaFile = join(addonDir, xobRes + ".meta");
   const ids = xobMetaIds(existsSync(metaFile) ? readFileSync(metaFile, "utf8") : "", used);

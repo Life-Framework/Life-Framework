@@ -220,7 +220,10 @@ the game profile). Hooks:
 - `peers` (read-only, runs on the client) lists every player body this client has streamed in as
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
   life state as THIS client sees them, so a late joiner's view of a downed player is readable.
-  `state` also reports the own `downed=` and `life=`.
+  `state` also reports the own `downed=` and `life=`. Both end with `cuffed=0|1`, the replicated
+  handcuffs flag (#664).
+- `hold <name>` (runs on the client) takes a carried gadget whose prefab name contains `<name>`
+  into the left hand, as a quick-slot key does. Replies `held <name>` or `not_carried`.
 - `seen [radius]` (read-only, runs on the client) reports what THIS client's copy of the world says: replicated account state (`me=faction/duty/wanted`), carried `cash`, own `downed`/`life`/`bleed`, nearby vehicles (`eng`, `lock`, `ign`, `stolen`, nearest first), doors (`locked`), loose money `bags`, the chop yard `chop` percent, the last `toast` and radio `dispatches`. Unlike `state` (the server's word) a missed `BumpMe` or RPC shows here. Proofs call `clientSees(on, wait, n, judge)` from `session.mjs` to poll it until the replicated value lands (`clientSeesPeer` does the same for `peers`). #522 added client reads to `carry`, `cash-van`, `lockpick`, `hotwire`, `downed`, `medic` and `chop` proofs.
 - `perf <seconds> [label]` (runs on the client) samples this client's frame time once a frame for the window and returns `frames`, `meanMs`, `p50Ms`, `p95Ms`, `p99Ms`, `maxMs`, `fps` and `memKB=start->end (delta)` (`System.MemoryAllocationKB`). Compare a window with the thing in view against one without it. A session's `-maxFPS` cap (30 full, 15 lowspec) hides any frame faster than the cap, so measure on `session up --profile full --levers uncapped`. `session.mjs board-perf` is the poster-board measurement (`docs/architecture/visual-boards-budget.md`).
 - Proof verbs are one module each, `agent-box/proofs/<verb>.mjs`, default-exporting `{ name, usage, run(ctx), film? }` (`ctx.args` is the rest of the command line). `session.mjs` discovers the folder and prints them under `--help`, so a new proof adds a file and touches no shared list (`validate-registries`).

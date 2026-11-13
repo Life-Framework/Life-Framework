@@ -1,0 +1,75 @@
+{
+  "slug": "spike-strip",
+  "name": "SpikeStrip",
+  "kind": "deployable",
+  "roadmap": "#646",
+  "concept": "Police stinger for 1989 Everon: a folding tyre-deflation strip an officer carries folded, lays across the road in front of a fleeing car and picks up again. Deployed it is about 3.5 m of low hinged links with two rows of hollow steel spikes; a wheel that crosses it goes flat, so the car slows and pulls to that side. The generator makes one link; the clean stage repeats it seven times along the length and stacks the same seven for the folded bundle.",
+  "prompt": "A flat low rectangular road plate, 50 cm long, 30 cm wide and 4 cm thick, lying flat on the ground. Two straight rows of short sharp upright steel spikes stand on its top face, seven spikes in each row along the length. A round hinge tube runs across each short end of the plate. Square edges, low profile, nothing above the spikes. Police stinger tyre-deflation strip segment from the 1980s. Clean hard-surface industrial design, single object, no text, no logos, no hands, no stand.",
+  "texture_prompt": "Matte black hard rubber base plate with light road scuffs, dull bare steel spikes, zinc-plated steel hinge tubes, no text, no logos, flat neutral lighting.",
+  "meshy": {
+    "ai_model": "latest",
+    "target_polycount": 6000
+  },
+  "size_m": {
+    "length": 3.5,
+    "height": 0.06,
+    "width": 0.3
+  },
+  "budget": {
+    "lod0_tris": 11200,
+    "lod_ratios": [
+      0.4,
+      0.12
+    ],
+    "texture_px": 1024,
+    "credits": 30
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ],
+    "stretch": true,
+    "repeat": 7,
+    "fold": true
+  },
+  "parts": [],
+  "asset_dir": "Assets/Props/Roleplay/SpikeStrip",
+  "prefab_dir": "Prefabs/Props/Roleplay/SpikeStrip",
+  "deployable": {
+    "name_key": "#LF-SpikeStrip_Name",
+    "description_key": "#LF-SpikeStrip_Description",
+    "weight": 6,
+    "item_volume": 2500,
+    "components": [
+      {
+        "class": "LF_SpikeStripComponent",
+        "props": {
+          "m_sItemPrefab": "$item",
+          "m_fHalfLength": 1.75,
+          "m_fHalfWidth": 0.15
+        }
+      }
+    ],
+    "actions": [
+      {
+        "class": "LF_SpikeStripPickUpAction"
+      }
+    ],
+    "item_components": [
+      {
+        "class": "LF_DeployableItemComponent",
+        "props": {
+          "m_sDeployedPrefab": "$deployed",
+          "m_fDeployedLength": 3.5
+        }
+      }
+    ],
+    "item_actions": [
+      {
+        "class": "LF_SpikeStripDeployAction"
+      }
+    ]
+  }
+}

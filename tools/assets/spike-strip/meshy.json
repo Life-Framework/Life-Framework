@@ -1,0 +1,17 @@
+{
+  "slug": "spike-strip",
+  "generations": [
+    {
+      "date": "2026-11-13",
+      "tool": "Meshy text-to-3D",
+      "model": "latest",
+      "previewId": "01a1d333-83d7-77a3-8e12-ed0164648de9",
+      "refineId": "01a1d334-3583-7070-94ba-b67475a3da48",
+      "accepted": true,
+      "credits": 30,
+      "note": "Attempt 1: one stinger link, a flat plate with two rows of spikes and hinge tubes. The clean stage tiles it seven times for the deployed strip and stacks the seven for the folded item.",
+      "prompt": "A flat low rectangular road plate, 50 cm long, 30 cm wide and 4 cm thick, lying flat on the ground. Two straight rows of short sharp upright steel spikes stand on its top face, seven spikes in each row along the length. A round hinge tube runs across each short end of the plate. Square edges, low profile, nothing above the spikes. Police stinger tyre-deflation strip segment from the 1980s. Clean hard-surface industrial design, single object, no text, no logos, no hands, no stand.",
+      "texturePrompt": "Matte black hard rubber base plate with light road scuffs, dull bare steel spikes, zinc-plated steel hinge tubes, no text, no logos, flat neutral lighting."
+    }
+  ]
+}

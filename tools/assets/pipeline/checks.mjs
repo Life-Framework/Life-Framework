@@ -10,8 +10,10 @@ export function checkReport(spec, kind, report) {
   });
   const [length, height, width] = report.size;
   const want = spec.size_m;
-  for (const [label, got, tol] of [["length", length, 0.25], ["height", height, 0.05], ["width", width, 0.4]]) {
-    // A pistol is scaled on its height (the grip); the other two say whether the proportions fit the spec.
+  // The clean stage scales a pistol on its height (the grip) and every other kind on its length, so
+  // that axis is tight; the other two say whether the proportions fit the spec.
+  const tols = kind.fit === "pistol" ? { length: 0.25, height: 0.05, width: 0.4 } : { length: 0.05, height: 0.4, width: 0.4 };
+  for (const [label, got, tol] of [["length", length, tols.length], ["height", height, tols.height], ["width", width, tols.width]]) {
     if (Math.abs(got - want[label]) > want[label] * tol) out.push(`${label} is ${got.toFixed(3)} m against the spec's ${want[label]} m (tolerance ${tol * 100}%): regenerate, or correct size_m if the spec was wrong`);
   }
   if (report.uv.min < -0.01 || report.uv.max > 1.01) out.push(`UVs leave the 0..1 square (${report.uv.min.toFixed(2)}..${report.uv.max.toFixed(2)}); the atlas would tile`);
