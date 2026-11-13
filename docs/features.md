@@ -1772,6 +1772,25 @@
   server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
 - ⚠️ No compensation or wanted reduction.
 
+### `LF_SpikeStrips` — `Feature/Police/LF_SpikeStrip.c`, `Prefabs/Props/Roleplay/SpikeStrip/` (#646, 2026-11-13)
+- ✅ Police spike strip. Every rank's armory kit carries the folded strip (`SpikeStrip_Item.et`, 6 kg).
+  On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN) lays `SpikeStrip.et`
+  (3.5 m) from 1 m in front of the officer: along their facing, or straight across the nearest road
+  within 12 m when the AI road network has one. Its three ground points take the higher of terrain and
+  what stands there; more than 0.25 m between them refuses (`#LF-SpikeStrip_NoGround`). The item is used up.
+- ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
+  sample against the footprint, so a fast car cannot jump it. A crossing wheel's `SCR_WheelHitZone` (on the
+  wheel slot entity) takes COLLISION damage to DESTROYED; vanilla `UpdateWheelState` then cuts the radius to
+  80 %, the grip to 20 % and adds drag on every machine, so the car slows and pulls. A flat wheel is not hit
+  twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
+- ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
+  The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). DebugWorld shows one
+  on the police station verge (`Roadmap_Police_SpikeStrip`, never expires).
+- Model: one Meshy link repeated by the asset pipeline's deployable kind (`tools/assets/spike-strip`).
+  Tests `police/spike-strip`, `police/spike-strip-geometry`; proof `session.mjs spike-strip-proof`.
+- ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in
+  DebugWorld (no AI road network there); the strip follows the officer's facing.
+
 ## Ownership
 
 ### `LF_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11; ledger and invites 2026-11-08)

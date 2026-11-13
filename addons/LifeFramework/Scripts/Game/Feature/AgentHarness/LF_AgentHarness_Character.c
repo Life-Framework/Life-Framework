@@ -366,12 +366,12 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		if (tool == "spikeverge" || tool == "spikecar" || tool == "spikecheck")
+		if (tool == "spikedrop" || tool == "spikecar" || tool == "spikecheck")
 		{
 			// The spike strip proof's stand-ins (LF_SpikeStripHarness, #646).
 			string spike;
-			if (tool == "spikeverge")
-				spike = "ok " + LF_SpikeStripHarness.Verge(this);
+			if (tool == "spikedrop")
+				spike = LF_SpikeStripHarness.Drop(this);
 			else if (tool == "spikecar")
 				spike = LF_SpikeStripHarness.LaunchCar(this);
 			else

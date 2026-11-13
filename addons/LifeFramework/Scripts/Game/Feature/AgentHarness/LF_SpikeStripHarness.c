@@ -1,10 +1,14 @@
 //------------------------------------------------------------------------------------------------
 //! Harness stand-ins for the spike strip proof (#646, agent-box/proofs/spike-strip-proof.mjs). The
 //! harness cannot walk a player to a road or drive a car (movement keys are refused), so:
-//!   spikeverge  the server puts the asking character on the main street's south verge, facing
-//!               north across the road (the spot LF_Test_SpikeStrip uses)
-//!   spikecar    the server sets an empty S105 on the road 12 m before the nearest deployed strip,
-//!               in line with its far half, and sends it rolling across at about 30 km/h
+//!   spikeverge  (client) the local character teleports to the main street's south verge, facing
+//!               north across the road (the spot LF_Test_SpikeStrip uses). The owner moves its own
+//!               character: a server-side move is overwritten by the owning client
+//!   spikedrop   the server drops the carried folded strip at the character's feet, the way the
+//!               inventory screen's drop does (deploy is an action on the strip on the ground)
+//!   spikecar    the server sets an empty S105 on the road 6 m before the nearest deployed strip,
+//!               in line with its far half, and sends it rolling across at 50 km/h (an empty car
+//!               brakes itself: at 30 km/h it stopped after 7 m)
 //!   spikecheck  the server's view of that car: each wheel's damage state and radius, its speed
 //!   spikeseen   (client) the same wheels as this machine sees them: the replicated damage
 //! Everything after the push is the real path: the strip's own tick, the vanilla wheel damage.
@@ -14,26 +18,44 @@ class LF_SpikeStripHarness
 	static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
 	static const vector VERGE = "300 0 245.5";
 	//! Metres before the strip the car starts, and its speed across (m/s).
-	static const float RUN_UP = 12;
-	static const float SPEED = 8.5;
+	static const float RUN_UP = 6;
+	static const float SPEED = 14;
 
 	protected static EntityID s_LastCar;
 	protected static vector s_vPush;
 
 	//------------------------------------------------------------------------------------------------
-	static string Verge(IEntity character)
+	static string Verge()
 	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 		if (!character)
-			return "no_character";
+			return "error no_character";
 
 		vector at = VERGE;
 		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
 		vector transform[4];
 		Math3D.AnglesToMatrix("0 0 0", transform);
 		transform[3] = at;
-		character.SetWorldTransform(transform);
-		character.Update();
-		return string.Format("verge at %1 facing north", at);
+		character.Teleport(transform);
+		return string.Format("ok verge at %1 facing north", at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string Drop(IEntity character)
+	{
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		if (!manager)
+			return "error no_inventory";
+
+		array<IEntity> items = LF_InventoryUtils.FindItemsByPrefab(manager, LF_PoliceRanks.SPIKE_STRIP);
+		if (items.IsEmpty())
+			return "error no_strip_carried";
+
+		InventoryItemComponent item = InventoryItemComponent.Cast(items[0].FindComponent(InventoryItemComponent));
+		if (!item || !item.GetParentSlot() || !manager.TryRemoveItemFromStorage(items[0], item.GetParentSlot().GetStorage()))
+			return "error drop_refused";
+
+		return string.Format("ok dropped at %1", items[0].GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -42,7 +64,8 @@ class LF_SpikeStripHarness
 		if (!character)
 			return "error no_character";
 
-		LF_SpikeStripComponent strip = LF_SpikeStrips.Nearest(character.GetOrigin(), 40);
+		// The strip this officer just laid, not the display strip down the street.
+		LF_SpikeStripComponent strip = LF_SpikeStrips.Nearest(character.GetOrigin(), 8);
 		if (!strip || !strip.GetOwner())
 			return "error no_strip";
 

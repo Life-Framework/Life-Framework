@@ -2,15 +2,14 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 
 // #646 police spike strip on a running `up --clients 2 --profile full` session with client 1 on the
 // roster (`session.mjs roster 1` before up): client 1 clocks in, draws the patrol kit at the armory
-// (the M9 and the folded strip), stands on the main street's south verge facing across it and
-// deploys the strip. An empty S105 is sent rolling along the street over the strip's far half
+// (the M9 and the folded strip), stands on the main street's south verge facing across it, drops
+// the folded strip and deploys it. An empty S105 is sent rolling along the street over the strip's far half
 // (the harness cannot drive: `spikecar` is the push, everything after it is the strip's own check
 // and the vanilla wheel damage). The server reports two wheels DESTROYED and on a smaller radius,
 // both clients see the same through replication, and client 1 picks the strip up again.
 // Confirm `[LFDebug:SpikeStrip] deployed by`, `punctured wheel` (twice) and `picked up by` in the
 // server log.
 const ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";
-const STRIP = "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et";
 
 async function runSpikeStripProof() {
   const h = await import("../harness.mjs");
@@ -42,7 +41,7 @@ async function runSpikeStripProof() {
   wait(2500);
 
   // The inventory pictures the engine renders from the two prefabs.
-  on(1, { verb: "previews", mode: "show", prefabs: [ITEM, STRIP] }, 10000);
+  on(1, { verb: "previews", mode: "show", prefabs: [ITEM] }, 10000);
   wait(2500);
   on(1, { verb: "capture", mode: "ui", name: "spike_1_previews" }, 25000);
   on(1, { verb: "previews", mode: "hide" }, 10000);
@@ -50,7 +49,12 @@ async function runSpikeStripProof() {
   // To the verge, facing across the street, and deploy.
   must(on(1, { verb: "spikeverge" }, 10000), "to the verge");
   wait(2500);
+  // Deploy is an action on the strip on the ground: drop it first, as from the inventory screen.
+  must(on(1, { verb: "spikedrop" }, 10000), "drop the folded strip");
+  wait(2000);
   const deploy = must(on(1, { verb: "use", className: "LF_SpikeStripDeployAction" }, 10000), "deploy");
+  // The action reports "performed" even when the server refuses (the refusal is a toast and a log
+  // line); spikecar finds no strip within 8 m of the officer then.
   wait(3000);
   on(1, { verb: "capture", mode: "ui", name: "spike_2_officer_view" }, 25000);
   on(2, { verb: "capture", mode: "world", name: "spike_3_deployed", x: 300, y: 0.1, z: 248.25, ox: -6, oy: 2.2, oz: -4, hour: 12 }, 25000);
