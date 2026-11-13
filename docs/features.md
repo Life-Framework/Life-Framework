@@ -1611,8 +1611,15 @@
   config section `wantedBoard`: `posters` (4, at most 8 in two rows) and `drawRadius`.
   The Read card and the police-only lines are unchanged; the dispatch boards keep their
   painted face (`m_bDrawPosters 0`). Tests `police/wanted-posters-feed`,
-  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`. Stolen cars
-  follow (spike issue 5).
+  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`.
+- ✅ **Stolen cars on the wanted board's face** (#758, spike issue 5): a car its owner
+  reported stolen (`LF_ReportStolenAction`) takes one of the last places (`wantedBoard.
+  stolenPosters`, 1) as a STOLEN poster: a picture of the model (the prefab's own preview,
+  in its default colour), the plate on a white strip, the car's name and "Seen it? Tell the
+  police." The report carries the vehicle prefab's GUID; no place or owner reaches the face.
+  Rebuilt on `LF_OnVehicleReportedStolen`, `LF_OnVehicleRecovered`, `LF_OnVehicleChopped`
+  and any closed report. Test `police/wanted-posters-stolen`; proof
+  `session.mjs stolen-poster-proof` (`up --clients 2 --mission playtest`).
 - ✅ **Portraits on the wanted posters** (#758, spike issue 4): the server records the
   suspect's look at the crime (`LF_WantedLook.Capture`: the character prefab and each
   loadout slot's item as prefab GUIDs, no paths) on the report and in the poster entry.

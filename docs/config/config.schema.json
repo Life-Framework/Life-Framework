@@ -346,6 +346,12 @@
           "minimum": 1,
           "maximum": 8
         },
+        "stolenPosters": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 8
+        },
         "drawRadius": {
           "type": "number",
           "default": 30,

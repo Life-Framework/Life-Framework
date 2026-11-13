@@ -87,7 +87,7 @@ is under 2 ms mean and 2 ms p95 over no posters.*
 | Limit | Value | Where |
 |---|---|---|
 | Posters per board | **4** by default (one row: the PoC look), at most **8** (two rows) | config, `wantedBoard.posters` (`Configs/Police/LF_WantedPosters.conf`) |
-| Stolen cars among them | at most **1** by default, the last place on the row | config, added with the stolen-car posters (spike issue 4) |
+| Stolen cars among them | at most **1** by default, the last place on the row | config, `wantedBoard.stolenPosters` |
 | Draw radius | **30 m**: build the target and the pictures inside it, release them beyond 30 m plus 5 m of hysteresis | config, `wantedBoard.drawRadius` |
 | Live window | a picture renders live for **3 s** after a (re)build, then the board freezes and the dummies are deleted | code constant |
 | Render targets | **1 per board** | code |

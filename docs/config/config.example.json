@@ -74,6 +74,7 @@
   },
   "wantedBoard": {
     "posters": 4,
+    "stolenPosters": 1,
     "drawRadius": 30
   }
 }
