@@ -37,6 +37,30 @@
         "m_sLicence"
       ],
       "key": "The key is a licence name (LF_ELicenseType, e.g. MINER_GOLD). A licence with no row keeps its shipped gate (its family job, its catalog level); a new row must set job and minLevel."
+    },
+    "LF_PoliceRank": {
+      "keyFields": [
+        "m_sId"
+      ],
+      "key": "The key is the rank id (patrol, senior). An id the ladder has changes that rank only in the fields given; an id it lacks appends a rung at the end, because a saved rank is its index and never moves. A rank written in the stream leaves out kit."
+    },
+    "LF_ZoneRuleSet": {
+      "keyFields": [
+        "m_eRule"
+      ],
+      "key": "The key is the rule name: NORMAL, SAFE or LAWLESS. A rule changes only the fields given. A rule with no shipped entry starts from what the two legacy flags say."
+    },
+    "LF_OrgRankDefault": {
+      "keyFields": [
+        "m_sRank"
+      ],
+      "key": "The key is a default rank id: founder, officer or member. The entry starts from the shipped rights, so only the permissions written change. It applies to organizations founded afterwards; a saved organization keeps its own ranks."
+    },
+    "LF_LicenceRuleDef": {
+      "keyFields": [
+        "m_sLicence"
+      ],
+      "key": "The key is a licence name as LF_ELicenseType spells it (POLICE_ACCESS, MINER_GOLD, ...). A name that is not a licence is refused. The job level a licence needs is jobs.licenceGates."
     }
   },
   "examples": {
@@ -93,6 +117,40 @@
         "MINER_GOLD": {
           "job": "MINER",
           "minLevel": 4
+        }
+      }
+    },
+    "zones": {
+      "ruleSets": {
+        "SAFE": {
+          "fineMultiplier": 2
+        },
+        "LAWLESS": {
+          "suppressesWanted": true
+        }
+      }
+    },
+    "police": {
+      "ranks": {
+        "patrol": {
+          "fineCap": 1500
+        }
+      },
+      "arrestReach": 6,
+      "ticketMaxOpen": 5
+    },
+    "organizations": {
+      "rankDefaults": {
+        "officer": {
+          "withdraw": true
+        }
+      },
+      "foundingFee": 500
+    },
+    "licences": {
+      "rules": {
+        "POLICE_FINE": {
+          "requiresWhitelist": false
         }
       }
     }

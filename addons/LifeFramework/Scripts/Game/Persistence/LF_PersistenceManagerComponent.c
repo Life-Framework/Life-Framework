@@ -363,10 +363,12 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	//! Starts the repeating autosave timer. Server only, once per world.
 	void StartAutosaves()
 	{
-		if (m_bAutosaveScheduled || !m_bEnableAutosave || m_fAutosaveInterval <= 0)
+		if (m_bAutosaveScheduled || !Replication.IsServer())
 			return;
 
-		if (!Replication.IsServer())
+		// The owner's `persistence` section over the prefab's values (no config.json: unchanged).
+		LF_PersistenceConfig.Resolve(m_bEnableAutosave, m_fAutosaveInterval);
+		if (!m_bEnableAutosave || m_fAutosaveInterval <= 0)
 			return;
 
 		m_bAutosaveScheduled = true;
