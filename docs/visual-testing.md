@@ -8,7 +8,11 @@ tools\cli audit placement [--area a]     numbers, no pixels, test server, about 
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli shots area <name>              pictures from a game client on a `--profile full` session (docs/agent-area-polish.md)
+tools\cli evidence <issue> before|after <area>   keep a look picture for the PR; `evidence <issue> table` prints the embed
 ```
+
+What right looks like is `docs/style-guide.md`; the checklist to walk against the pictures is the
+`polish` skill. `wt ship` refuses a player-visible change whose PR body embeds no picture.
 
 ## The matrix
 

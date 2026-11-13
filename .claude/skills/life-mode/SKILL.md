@@ -14,7 +14,7 @@ Pick the matching playbook in `playbooks/` and follow its steps:
 
 - How/why question, "walk me through X": `investigation.md` (read-only).
 - Bug: `bug-fix.md`, with **el-tdd** when a cheap test exists.
-- Feature: `feature.md` (data shape and boundaries first).
+- Feature: `feature.md` (design, scaffold with `tools\cli feature new`, look, place, build, test, look, review, ship).
 - Refactor: `refactoring.md`.
 - Live symptom with no known cause: `runtime-forensics.md`.
 - Empirical design fork: `prototype.md`.
@@ -26,7 +26,8 @@ Load an authoring skill only when editing that artifact:
 `.conf`, `.layout`, input, localization, layers). Use
 **enfusion-api-research** before touching an unfamiliar Enfusion API,
 **enfusion-blast-radius** before a change with hidden coupling, **interrogate**
-before shipping a risky diff, **show-me-your-work** for long autonomous work.
+before shipping a risky diff, **polish** before shipping anything a player can
+see, **show-me-your-work** for long autonomous work.
 **principles** holds the six heuristics the playbooks cite.
 
 ## Working rules
@@ -41,8 +42,9 @@ before shipping a risky diff, **show-me-your-work** for long autonomous work.
 
 1. Inspect the diff and affected resources.
 2. Run `tools\cli validate` for code/resource changes.
-3. Run the cheapest relevant test. Use `tools\cli test --no-build` or manual runtime proof when behavior, networking, persistence, UI, or world state changed.
-4. Report only what changed, what passed, and any unverified manual step.
+3. For a player-visible change, `tools\cli look <area>` and the **polish** checklist; the PR embeds the before and after.
+4. Run the cheapest relevant test. Use `tools\cli test --no-build` or manual runtime proof when behavior, networking, persistence, UI, or world state changed.
+5. Report only what changed, what passed, and any unverified manual step.
 
 Use **enfusion-verify** when the proof plan is non-obvious or the user asks
 whether it works.

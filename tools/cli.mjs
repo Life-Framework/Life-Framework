@@ -3254,6 +3254,27 @@ async function wtShipCmd(args) {
     console.log(`FAIL  nothing to ship: ${e.branch} has no commits beyond origin/${base}`);
     return 1;
   }
+  // The PR body is checked before the gate, so a missing picture or an open review
+  // finding costs seconds, not a gate run (tools/lib/pr-quality.mjs).
+  {
+    const { bodyProblems, withReview } = await import("./lib/pr-quality.mjs");
+    const changed = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
+    const reviewPath = join(wtRoot, "tmp", `review-${slug}.md`);
+    const reviewText = existsSync(reviewPath) ? readFileSync(reviewPath, "utf8") : null;
+    const problems = bodyProblems({
+      body: customBody ?? "",
+      files: changed,
+      exists: (p) => existsSync(join(wtRoot, p)),
+      reviewText,
+      hasBodyFile: customBody !== null,
+    });
+    if (problems.length) {
+      console.log("FAIL  the PR is not ready to ship:");
+      for (const p of problems) console.log(`  - ${p}`);
+      return 1;
+    }
+    if (customBody !== null) customBody = withReview(customBody, reviewText);
+  }
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
@@ -3521,6 +3542,22 @@ function cmdSuiteValid(flags) {
   return 1;
 }
 
+// Commands that live one file each in tools/commands/ (export `help` and `main(args, { root })`).
+// Add a command there, not to `cmds` above: this file was edited by 66 commits in ten days.
+function discoveredCommand(name) {
+  return /^[a-z][a-z0-9-]*$/.test(name) && existsSync(join(ROOT, "tools", "commands", `${name}.mjs`));
+}
+
+async function discoveredHelp() {
+  const dir = join(ROOT, "tools", "commands");
+  if (!existsSync(dir)) return;
+  console.log("\nMore commands (tools/commands/, one file each):");
+  for (const f of readdirSync(dir).filter((n) => n.endsWith(".mjs")).sort()) {
+    const mod = await import(`./commands/${f}`);
+    if (mod.help) console.log(`  ${mod.help}`);
+  }
+}
+
 const [a, b] = rest;
 const HEAVY = ["build", "pack", "serve", "dev", "test", "ci", "e2e"];
 
@@ -3541,9 +3578,13 @@ try {
     code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "asset" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
+  } else if (cmd && discoveredCommand(cmd)) {
+    // tools/commands/<cmd>.mjs: a new command is one file and touches no shared list.
+    code = (await import(`./commands/${cmd}.mjs`)).main(rest, { root: ROOT });
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();
+    await discoveredHelp();
   }
 } catch (e) {
   code = Promise.resolve(1);

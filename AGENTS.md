@@ -64,7 +64,13 @@ failures instead of grinding.
    row in `docs/architecture/core-pack-inventory.md`.
 10. **Shared registries are per-feature files; never append to a central list.**
     A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
-    `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both).
+    `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both); a
+    new CLI command is `tools/commands/<name>.mjs`.
+11. **What a player sees is looked at before it ships.** `tools\cli look <area>`
+    before and after, the `polish` checklist against the pictures, and the pair
+    embedded in the PR (`docs/style-guide.md`). A screen is built from UI kit
+    parts; nothing debug-looking goes in a village layer (`validate-ui-kit`,
+    `validate-player-props`).
 
 ## Commands
 
@@ -74,6 +80,8 @@ failures instead of grinding.
 |---|---|
 | `tools\cli status` | Toolchain and MCP state |
 | `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports |
+| `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
+| `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
 | `tools\cli validate [--full]` | The repo checks in `tools/validation/`. The default skips the Workbench compile (`validate-scripts.ps1`); `--full`, `ci`, `wt gate`, and `wt ship` run it |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `LF_Test` suite; exit code is pass/fail; a compile error fails it |
 | `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the red-proof loop); prints `SUMMARY tier=only` |
@@ -82,7 +90,7 @@ failures instead of grinding.
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
+| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge. Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
 
@@ -212,6 +220,15 @@ Never guess an Enfusion API. Look it up from any terminal:
 (use `@args.json` from PowerShell). `wb_read_props` gives resolved inherited
 prefab values; `asset_search` gives `{GUID}path`. Reading sibling features and
 existing code to learn the shape is encouraged. See `enfusion-api-research`.
+
+## Building a feature
+
+The order is design, scaffold, look, place, build, test, look, review, ship
+(`.claude/skills/life-mode/playbooks/feature.md`). Start with
+`tools\cli feature new`; do not hand-write what it generates. Run **interrogate**
+when the diff touches replication, an RPC, persistence, money, inventory or
+GUIDs: findings go in `tmp/review-<slug>.md`, each ticked `fixed:` or
+`dismissed:` with a reason, and ship carries the file into the PR.
 
 ## What "done" means (issue states)
 

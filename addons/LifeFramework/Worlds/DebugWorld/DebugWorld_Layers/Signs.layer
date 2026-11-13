@@ -32,9 +32,9 @@ GenericEntity Sign_Atm : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et
    m_vTextColor 0.1 0.3 0.15
   }
  }
- coords 177 2.45 259.73
+ coords 177.7 2.434 259.716
  angleY 180
- scale 1.2
+ scale 0.7
 }
 GenericEntity Sign_Bank : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
@@ -128,7 +128,7 @@ GenericEntity Sign_Jail : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.e
    m_vTextColor 0.95 0.95 0.95
   }
  }
- coords 234.9 1.8 226.2
+ coords 234.9 1.308 226.228
  scale 1.2
 }
 GenericEntity Sign_FuelStation : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

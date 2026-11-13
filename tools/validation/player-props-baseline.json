@@ -1,0 +1,23 @@
+{
+  "note": "Debug-looking entities in village layers on the day the check landed. Burn down, never add (validate-player-props.mjs).",
+  "entities": [
+    "CementChain/CementPile_Debug",
+    "CementChain/CementPlant_Debug",
+    "CrimeChain/CrimeFurnace_Debug",
+    "CrimeChain/CrimeTrader_Debug",
+    "GravelChain/GravelPile_Large_Debug",
+    "GravelChain/GravelPile_Medium_Debug",
+    "LoggingChain/Sawmill_Debug",
+    "MiningChain/CopperOre_Debug",
+    "MiningChain/GoldOre_Debug",
+    "MiningChain/IronOre_Debug",
+    "MiningChain/LF_MiningSign_Debug",
+    "MiningChain/MiningArea_Debug",
+    "MiningChain/Pickaxe_Debug",
+    "SandChain/SandPile_Debug",
+    "Street_Bank/Roadmap_Bank_RobKit",
+    "Street_Jail/Sign_DebugJailMe",
+    "Survival/SurvivalApple_Debug",
+    "Survival/SurvivalPlum_Debug"
+  ]
+}
