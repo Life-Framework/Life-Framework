@@ -157,5 +157,12 @@
       "note": "deep bulkhead collar; door changed (hinge arm half hidden), dark wall"
     }
   ],
-  "image_model": "nano-banana-2-1"
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 1,
+    "label": "Plain concrete block",
+    "by": "human",
+    "why": "maintainer pick (coordinator 2026-11-14)",
+    "at": "2026-11-13"
+  }
 }

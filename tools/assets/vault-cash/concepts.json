@@ -153,5 +153,12 @@
       "note": "counting bench with stacks: solid, simple"
     }
   ],
-  "image_model": "nano-banana-2-1"
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 2,
+    "label": "Flat cash trolley",
+    "by": "human",
+    "why": "maintainer pick (coordinator 2026-11-14)",
+    "at": "2026-11-13"
+  }
 }

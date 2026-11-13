@@ -153,5 +153,12 @@
       "note": "worn and dented; good finish reference"
     }
   ],
-  "image_model": "nano-banana-2-1"
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 9,
+    "label": "Riveted bays",
+    "by": "human",
+    "why": "maintainer pick (coordinator 2026-11-14)",
+    "at": "2026-11-13"
+  }
 }
