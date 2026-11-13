@@ -2791,7 +2791,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B50F85FC9F4CC91E}" {
      Id "LF-Shop_Open_BackRoom"
-     Target_en_us "Knock on the back door"
+     Target_en_us "Knock to buy a handgun"
      Target_es_es "Abrir mercado negro"
      Comment "Interaction name on the black-market shop"
     }
@@ -2814,7 +2814,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F1C7C0F870099A03}" {
      Id "LF-Shop_OpenDesc_BackRoom"
-     Target_en_us "Buy equipment"
+     Target_en_us "Back room. Cash only."
      Target_es_es "Comprar equipamiento"
      Comment "Interaction description on the black-market shop"
     }
@@ -3921,12 +3921,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
-     Target_en_us "Knock on the back door."
+     Target_en_us "Stand at the stall and knock (F). The price list opens: pick the handgun and pay."
      Comment "Sign card for the back room shop in the alley (no printed title), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{62B0D34EDFA21A7A}" {
      Id "LF-Sign_BlackMarket_Needs"
-     Target_en_us "Cash."
+     Target_en_us "Cash: the handgun costs 500. No licence and no contact needed, at any hour."
      Comment "Sign card for the back room shop in the alley (no printed title), Needs section."
     }
     CustomStringTableItem "{6F09655B2F839902}" {
@@ -6703,7 +6703,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7B1E5A0C00000001}" {
      Id "LF-Shop_RefuseClosed"
-     Target_en_us "The back room is shut. Police have been through it."
+     Target_en_us "The back room is shut. Police have been through it. Come back in a few minutes."
      Comment "Shop refusal: a raided back room is shut for a while (#600)."
     }
     CustomStringTableItem "{7B1E5A0C00000002}" {
@@ -8150,6 +8150,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-CC_Error_NoIdentity"
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
      Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
+    }
+    CustomStringTableItem "{74C05AD0FF1A649C}" {
+     Id "LF-BackRoom_DoorShut"
+     Target_en_us "Back room (shut)"
+     Comment "Prompt on the back room's counter while it is shut after a police search (#933)."
+    }
+    CustomStringTableItem "{B4FBE7394CA00159}" {
+     Id "LF-Shop_Hint_General"
+     Target_en_us "Looking for something stronger? Try the back room at the head of the cobbled alley, east of the square. Knock, and bring cash."
+     Comment "The general store keeper's word on his sheet: where the back room is (#933)."
+    }
+    CustomStringTableItem "{06F11B7C90FB5AF0}" {
+     Id "LF-Sign_BlackMarket_Rules"
+     Target_en_us "Police can search it. After a search the room stays shut for about ten minutes."
+     Comment "Sign card of the back room: the one thing that closes it (#933)."
     }
   }
  }

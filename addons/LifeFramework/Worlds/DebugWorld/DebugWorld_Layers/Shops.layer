@@ -12,6 +12,7 @@ $grp GenericEntity {
    LF_ShopComponent "{5A4B0B84C86E2843}" {
     m_sShopName "#LF-Shop_Name_General"
     m_sShopDescription "#LF-Shop_Desc_General"
+    m_sShopHint "#LF-Shop_Hint_General"
     m_aShopItems {
      LF_ShopItem "{998FEC04638C4A69}" {
       m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"

@@ -103,3 +103,19 @@ type; no per-map scripting. See `docs/design.md` §4.
 - `Banking` / `ATM` (store takings, if a shop has a banked float).
 - `VehicleLock` / `LicensePlate` for the vehicle dealer handoff.
 - `Quantity` (stacking purchased goods).
+
+## Back room door (#933)
+
+- **What the room is today:** a market stall (`LF_ShopComponent.m_bBackRoom`) with an M9 for 500
+  cash. No hour, licence, contact or key gates it; the only closed state is the shutter a police
+  search (#600) puts down for `LF_ShopLimitsConfig.BackRoomShutMs()`. The door says that.
+- **Player sees:** the prompt *Knock to buy a handgun*; *Back room (shut)* with the reason while
+  shut; the general store's sheet carries the shopkeeper's pointer (`m_sShopHint`, a key); the
+  chalkboard card gives the price and the one rule that closes it.
+- **Owner and side:** `LF_BackRoomDoor` is the pure wording. `LF_ShopAction` applies it on the
+  client from `LF_ShopComponent.IsShutShown()`, an `RplProp` the server sets when a raid shuts
+  the room and clears when the shut time passes. The server's `m_iClosedUntilMs` stays the
+  authority: a buy or sell is still refused there with `#LF-Shop_RefuseClosed`.
+- **Data:** keys `LF-Shop_Open_BackRoom`, `LF-BackRoom_DoorShut`, `LF-Shop_RefuseClosed`,
+  `LF-Shop_Hint_General`, `LF-Sign_BlackMarket_*`; nothing persists (a restart reopens the room).
+- **Proof:** `shop/back-room-door` (LOGIC), `node agent-box/session.mjs back-room-door-proof`.
