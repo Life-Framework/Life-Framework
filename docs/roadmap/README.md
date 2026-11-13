@@ -44,6 +44,7 @@ Each outline is planned in full only after the milestone before it closes.
 - **Reuse before writing.** [sources.md](sources.md) names the script or prefab
   to extend: this repo first, then Arma Reforger, then Overthrow and
   [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) (MIT).
+  [references.md](references.md) lists outside projects to check for ideas.
 - **Three gates.** [testing/README.md](testing/README.md) is the headless case,
   the DebugWorld entity, and the screenshot for each setup.
 - **Proof classes.** In-session checks do not prove a restart. A host-only run
