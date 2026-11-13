@@ -12,6 +12,10 @@
       }
     }
   },
+  "idCard": {
+    "replacementFee": 50,
+    "showSeconds": 8
+  },
   "jobs": {
     "policeDutyPayPerSecond": 0.5,
     "medicDutyPayPerSecond": 0.4,

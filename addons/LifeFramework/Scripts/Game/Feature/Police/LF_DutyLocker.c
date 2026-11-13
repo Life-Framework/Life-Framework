@@ -220,9 +220,14 @@ class LF_DutyLocker
 		LF_ServiceRadio.TuneForAccount(account, officer);
 		LF_StorageSnapshot.CaptureCarried(identity.GetId(), officer);
 
+		// A restored card carries its number and is printed from the registry; a blank card with no
+		// number (saved before #902) is printed as the officer's own.
+		LF_IdCard.RepairCarried(officer);
 		array<LF_IdCardComponent> cards = {};
 		LF_IdCard.FindCarried(officer, cards);
-		if (cards.Count() > 0)
+		array<string> holders = {};
+		LF_IdCard.HolderIds(cards, holders);
+		if (holders.Find(string.Empty) >= 0)
 			LF_IdCard.Grant(officer, identity.GetId(), identity.GetFirstName(), identity.GetLastName(), identity.GetAge());
 
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();

@@ -20,7 +20,7 @@
       "options": [
         { "text": "new", "next": "menu", "condition": "QuestNotTurnedIn", "param": "arrival_register", "action": "QuestConverse" },
         { "text": "next", "next": "menu", "condition": "QuestTurnedIn", "param": "arrival_register", "action": "QuestConverse" },
-        { "text": "work", "next": "work" },
+        { "text": "lost", "next": "menu", "condition": "IdCardMissing", "action": "IdCardReplace" },
         { "text": "bye", "next": "bye" }
       ]
     },
@@ -54,6 +54,7 @@
     "next": "What should I do now?",
     "work": "Where can I find work?",
     "town": "Tell me about this town.",
+    "lost": "I have lost my identity card.",
     "bye": "Goodbye."
   }
 }

@@ -217,6 +217,9 @@ class LF_ConfigStream
 		// The wanted board's poster count and draw radius (server); the boards send the new list.
 		LF_WantedPostersConfig.Reload();
 		LF_WantedPosters.MarkDirty("config reload");
+
+		// The clerk's fee for a replacement identity card (server).
+		LF_PhotoIdCardConfig.Reload();
 	}
 
 	//------------------------------------------------------------------------------------------------

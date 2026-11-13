@@ -33,11 +33,15 @@ class LF_SerialComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a load restores the serial even over an existing one.
+	//! Server: a load restores the serial even over an existing one. An identity card restored with
+	//! its number is printed again from the registry when the registry holds it (#902).
 	void RestoreSerial(string serial)
 	{
 		m_sSerial = serial;
 		Replication.BumpMe();
+		LF_IdCardComponent card = LF_IdCardComponent.Cast(GetOwner().FindComponent(LF_IdCardComponent));
+		if (card && Replication.IsServer() && !card.IsIssued() && LF_PhotoIdCard.FindNumber(serial) != null)
+			LF_IdCard.EnsurePrinted(card);
 	}
 }
 

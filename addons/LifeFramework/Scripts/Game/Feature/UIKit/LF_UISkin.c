@@ -81,6 +81,36 @@ class LF_UISkin
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A laminated identity card: pale registry paper with a faint green cast, a slate-blue rim and
+	//! state-blue labels (the civil registry's ink).
+	static LF_UISkin IdCard()
+	{
+		LF_UISkin skin = Paper();
+		skin.m_sName = "id-card";
+		skin.m_fWidth = 600;
+		skin.m_Paper = Color.FromSRGBA(228, 233, 218, 255);
+		skin.m_Row = Color.FromSRGBA(196, 204, 190, 255);
+		skin.m_Metal = Color.FromSRGBA(52, 70, 92, 255);
+		skin.m_Accent = Color.FromSRGBA(40, 66, 118, 255);
+		skin.m_sAccentRgba = "40,66,118,255";
+		skin.m_Rule = skin.m_Accent;
+		skin.m_ButtonFocus = skin.m_Accent;
+		// The card face: title, the registry line, the photo with its lines, a rule and one button.
+		skin.m_fHeight = 560;
+		return skin;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The police ID check on the citizen's screen: the identity card's paper, a short slip.
+	static LF_UISkin IdCheck()
+	{
+		LF_UISkin skin = IdCard();
+		skin.m_sName = "id-check";
+		skin.m_fHeight = 420;
+		return skin;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Green phosphor on a black tube in a beige-grey 1989 cash machine bezel. Focus is amber.
 	static LF_UISkin Terminal()
 	{

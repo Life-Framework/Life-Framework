@@ -27,6 +27,10 @@ class LF_UIScreen
 	static const int ORDER_SPAN = 1000;
 	//! Sheet width minus a list row's width: list and row padding (4 x 28) and the scrollbar.
 	static const float LIST_ROW_INSET = 136;
+	//! PORTRAIT: the photo window (LF_UIPortrait.layout) and the lines beside it.
+	static const float PORTRAIT_WIDTH = 180;	// lf-fixed: the layout's photo window
+	static const float PORTRAIT_HEIGHT = 225;	// lf-fixed: the layout's photo window
+	static const int PORTRAIT_LINES = 6;	// lf-fixed: the layout's line widgets
 
 	protected Widget m_wRoot;
 	protected bool m_bHasField;
@@ -690,6 +694,12 @@ class LF_UIScreen
 			return;
 		}
 
+		if (part.GetKind() == LF_EUIPartKind.PORTRAIT)
+		{
+			AddPortrait(widget, part);
+			return;
+		}
+
 		if (part.GetKind() == LF_EUIPartKind.TITLE)
 		{
 			TextWidget title = TextWidget.Cast(widget);
@@ -940,6 +950,83 @@ class LF_UIScreen
 
 		widget.SetIsColorInherited(false);
 		widget.SetColor(color);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PORTRAIT: the photo window, the stamp over its lower right corner, the lines beside it. The
+	//! preview widget is three photo frames wide and the frame clips it to the head and shoulders,
+	//! the framing of the wanted poster (LF_WantedPosterBoard).
+	protected void AddPortrait(Widget widget, LF_UIPart part)
+	{
+		PlaceIn(widget.FindAnyWidget("PhotoBack"), 0, 0, PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+		Widget clip = widget.FindAnyWidget("PhotoClip");
+		PlaceIn(clip, 0, 0, PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+		if (clip)
+			clip.SetFlags(WidgetFlags.CLIPCHILDREN);
+
+		PlaceIn(widget.FindAnyWidget("Photo"), -PORTRAIT_WIDTH, -PORTRAIT_WIDTH * 0.075, PORTRAIT_WIDTH * 3, PORTRAIT_WIDTH * 3.19);
+		PaintNamed(widget, "PhotoBack", GetSkin().m_Row);
+
+		ImageWidget stamp = ImageWidget.Cast(widget.FindAnyWidget("Stamp"));
+		PlaceIn(stamp, PORTRAIT_WIDTH - 64, PORTRAIT_HEIGHT - 76, 112, 112);
+		if (stamp)
+		{
+			bool stamped = !part.GetText().IsEmpty() && stamp.LoadImageFromSet(0, part.GetText(), part.GetStatus());
+			stamp.SetVisible(stamped);
+			if (!stamped && !part.GetText().IsEmpty())
+				LF_Debug.Error("UIKit", "portrait " + part.GetName() + " stamp did not load: " + part.GetText() + " / " + part.GetStatus());
+		}
+
+		array<string> labels = part.GetLabels();
+		array<string> values = part.GetValues();
+		if (labels.Count() > PORTRAIT_LINES)
+			LF_Debug.Warn("UIKit", string.Format("portrait %1 prints %2 of %3 lines", part.GetName(), PORTRAIT_LINES, labels.Count()));
+
+		for (int i = 0; i < PORTRAIT_LINES; i++)
+		{
+			TextWidget label = TextWidget.Cast(widget.FindAnyWidget("PortraitLabel" + i));
+			TextWidget value = TextWidget.Cast(widget.FindAnyWidget("PortraitValue" + i));
+			if (!label || !value)
+			{
+				LF_Debug.Error("UIKit", "portrait layout is missing line " + i);
+				continue;
+			}
+
+			bool used = i < labels.Count();
+			label.SetVisible(used);
+			value.SetVisible(used);
+			if (!used)
+				continue;
+
+			ApplyInk(label, LF_UITheme.FONT_HEADING, labels[i]);
+			label.SetColor(Accent());
+			ApplyInk(value, LF_UITheme.FONT_FIELD + 2, values[i]);
+			AlignableSlot.SetPadding(value, 0, 0, 0, 8);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void PlaceIn(Widget w, float x, float y, float width, float height)
+	{
+		if (!w)
+			return;
+
+		FrameSlot.SetAnchorMin(w, 0, 0);
+		FrameSlot.SetAnchorMax(w, 0, 0);
+		FrameSlot.SetPos(w, x, y);
+		FrameSlot.SetSize(w, width, height);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The photo widget of a PORTRAIT part, for the feature to draw a person into; null when the
+	//! sheet has no such part.
+	ItemPreviewWidget GetPortrait(string name)
+	{
+		Widget widget = WidgetNamed(name);
+		if (!widget)
+			return null;
+
+		return ItemPreviewWidget.Cast(widget.FindAnyWidget("Photo"));
 	}
 
 	//------------------------------------------------------------------------------------------------

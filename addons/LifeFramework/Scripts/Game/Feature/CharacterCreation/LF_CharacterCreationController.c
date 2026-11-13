@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! Client <-> server bridge for the first-join menus. Hosted on the PlayerController: it exists
 //! (and is owned by the joining client) before any character is spawned.
-//!   server -> owner : LF_ShowRegistrationForm, LF_ShowIdCardView (RpcDo_*, RplRcver.Owner)
+//!   server -> owner : LF_ShowRegistrationForm (RpcDo_*, RplRcver.Owner); the ID card view is in
+//!                     Feature/Identity/LF_IdentityController.c
 //!   owner -> server : LF_AskCreateCharacter (RpcAsk_*)
 //! There is no faction pick: everyone registers as a civilian and police clock in at the duty desk.
 //! The server identifies the player by this controller's id, never by a client-sent value, and
@@ -24,17 +25,6 @@ modded class SCR_PlayerController
 			RpcDo_LF_ShowRegistrationForm(refusal);
 		else
 			Rpc(RpcDo_LF_ShowRegistrationForm, refusal);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: show this player the ID card another player holds up. The card's printed fields
-	//! travel as values; the shower travels as an RplId so the view closes when they walk off.
-	void LF_ShowIdCardView(string firstName, string lastName, int age, RplId shower)
-	{
-		if (LF_IsLocalController())
-			RpcDo_LF_ShowIdCardView(firstName, lastName, age, shower);
-		else
-			Rpc(RpcDo_LF_ShowIdCardView, firstName, lastName, age, shower);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -112,19 +102,6 @@ modded class SCR_PlayerController
 		LF_DestroySpawnSplash();
 		if (!LF_RegistrationForm.Open(this, refusal))
 			LF_Debug.Error("CharacterCreation", "failed to open the registration form");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_ShowIdCardView(string firstName, string lastName, int age, RplId shower)
-	{
-		if (!GetGame().GetWorkspace())
-		{
-			LF_Debug.Error("IdCard", "card view not opened: no workspace on this machine");
-			return;
-		}
-
-		LF_IdCardView.Open(firstName, lastName, age, LF_NetworkUtils.FindEntityByRplId(shower));
 	}
 
 	//------------------------------------------------------------------------------------------------
