@@ -1,0 +1,478 @@
+{
+  "slug": "taser",
+  "name": "Taser",
+  "kind": "weapon",
+  "project_dir": "Sounds/Weapons/Handguns/Taser",
+  "project_prefix": "Weapons_Handguns_Taser",
+  "output_format": "pcm_48000",
+  "budget": {
+    "generations": 20
+  },
+  "sounds": [
+    {
+      "id": "shot",
+      "event": "SOUND_SHOT",
+      "project": "Shot",
+      "bus": "shots",
+      "range": "voice70",
+      "volume_db": -6,
+      "pitch_variance": 0.3,
+      "prompt": "One loud sharp bang of a small gunpowder cap at the very start, then immediately a fast dry electric ticking crackle for one second that stops abruptly. A 1980s police stun gun firing its darts. Recorded close, dry, no reverb, no tone, no hum, no music, no voice, no laser.",
+      "duration_seconds": 1.5,
+      "prompt_influence": 0.8,
+      "variations": 5,
+      "trim_db": -30,
+      "layer": {
+        "id": "pop",
+        "take": 2,
+        "gain_db": 3,
+        "delay_ms": 40
+      },
+      "pick": [
+        1
+      ],
+      "reason": "No take put a pop before the crackle (five takes, two prompts), so the pop is its own generation laid over the start. Take 1 is the crackle: 23 even broadband ticks in 1.04 s (about 22 per second) that end on a tick. Take 2 has swept tones and a steady 11 kHz line (reads as a synthetic zap); take 3 has the same tonal band and its one pop at the end; takes 4 and 5 are sparse single ticks (20 and 16 per second with gaps), a relay more than an arc. One take only: a weapon that sounds different on every shot reads as a different weapon."
+    },
+    {
+      "id": "pop",
+      "layer_only": true,
+      "prompt": "A single sharp small bang of a toy cap gun, one shot only. Recorded close, dry, no reverb, no echo, no voice.",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.8,
+      "variations": 2,
+      "trim_db": -35,
+      "reason": "Take 2 for the shot's first 100 ms: its peak is 7 ms in and the body is gone by about 120 ms; take 1 rings for 300 ms on a 2 kHz band."
+    },
+    {
+      "id": "dry",
+      "event": "SOUND_DRY",
+      "project": "Handling",
+      "bus": "shots",
+      "range": "near22",
+      "volume_db": -20,
+      "pitch_variance": 0.25,
+      "prompt": "One single dry click of a plastic trigger switch on a small handheld device, nothing else. Recorded close, dry, no reverb, no spark, no voice.",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.7,
+      "variations": 3,
+      "pick": [
+        1,
+        2,
+        3
+      ],
+      "reason": "All three are one click of 60 to 90 ms with nothing after it; three for variety on repeated trigger pulls."
+    },
+    {
+      "id": "mag_out",
+      "event": "SOUND_RELOAD_MAG_REMOVE",
+      "project": "Handling",
+      "bus": "handling",
+      "range": "reload60",
+      "volume_db": -18,
+      "pitch_variance": 0.6,
+      "prompt": "A small hard plastic cartridge is unlatched and pulled out of a handheld device: a short latch click, then a brief plastic scrape. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "variations": 3,
+      "pick": [
+        3
+      ],
+      "reason": "Take 3 is the prompt in order and on time: a click 19 ms in, then a light scrape. Takes 1 and 2 put their loudest click about 370 ms in, which would trail the hand in the reload animation."
+    },
+    {
+      "id": "mag_in",
+      "event": "SOUND_RELOAD_MAG_INSERT",
+      "project": "Handling",
+      "bus": "handling",
+      "range": "reload60",
+      "volume_db": -16,
+      "pitch_variance": 0.6,
+      "prompt": "A small hard plastic cartridge is pushed into a handheld device and snaps into place with one firm click. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "variations": 3,
+      "pick": [
+        2,
+        3
+      ],
+      "reason": "Take 2: a short push and a click 54 ms in. Take 3: one firm low click, 80 ms. Take 1's click comes 346 ms in, too late for the animation event."
+    },
+    {
+      "id": "stun",
+      "event": "SOUND_LF_STUN_LP",
+      "project": "Stun",
+      "bus": "sfx",
+      "range": "reload60",
+      "volume_db": -12,
+      "loop": true,
+      "prompt": "Continuous steady electric arc crackle from a stun gun: fast ticking sparks at about fifteen pulses per second, constant level from start to end. Recorded close, dry, no reverb, no hum, no music, no voice, no science-fiction sound.",
+      "duration_seconds": 2,
+      "prompt_influence": 0.6,
+      "variations": 3,
+      "pick": [
+        2
+      ],
+      "reason": "Take 2 is an even train of about 40 broadband ticks in 2.2 s (18 per second) at a constant level, so the loop has no pattern to notice. Take 1 has gaps of 100 ms and more that would repeat every loop; take 3 is a steady hiss with no ticks."
+    }
+  ],
+  "generations": [
+    {
+      "id": "shot",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s police stun gun fires: one sharp small pop like a cap gun, immediately followed by one second of fast dry electric arc crackling, rapid ticking sparks. Recorded close, dry, no reverb, no echo, no music, no voice, no science-fiction laser or synthesizer.",
+      "duration_seconds": 1.5,
+      "prompt_influence": 0.6,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 284160,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "shot",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s police stun gun fires: one sharp small pop like a cap gun, immediately followed by one second of fast dry electric arc crackling, rapid ticking sparks. Recorded close, dry, no reverb, no echo, no music, no voice, no science-fiction laser or synthesizer.",
+      "duration_seconds": 1.5,
+      "prompt_influence": 0.6,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 284160,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "shot",
+      "take": 3,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s police stun gun fires: one sharp small pop like a cap gun, immediately followed by one second of fast dry electric arc crackling, rapid ticking sparks. Recorded close, dry, no reverb, no echo, no music, no voice, no science-fiction laser or synthesizer.",
+      "duration_seconds": 1.5,
+      "prompt_influence": 0.6,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 284160,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "dry",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "One single dry click of a plastic trigger switch on a small handheld device, nothing else. Recorded close, dry, no reverb, no spark, no voice.",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 92160,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "dry",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "One single dry click of a plastic trigger switch on a small handheld device, nothing else. Recorded close, dry, no reverb, no spark, no voice.",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 92160,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "dry",
+      "take": 3,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "One single dry click of a plastic trigger switch on a small handheld device, nothing else. Recorded close, dry, no reverb, no spark, no voice.",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 92160,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "mag_out",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small hard plastic cartridge is unlatched and pulled out of a handheld device: a short latch click, then a brief plastic scrape. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 130560,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "mag_out",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small hard plastic cartridge is unlatched and pulled out of a handheld device: a short latch click, then a brief plastic scrape. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 130560,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "mag_out",
+      "take": 3,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small hard plastic cartridge is unlatched and pulled out of a handheld device: a short latch click, then a brief plastic scrape. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 130560,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "mag_in",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small hard plastic cartridge is pushed into a handheld device and snaps into place with one firm click. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 130560,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "mag_in",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small hard plastic cartridge is pushed into a handheld device and snaps into place with one firm click. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 130560,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "mag_in",
+      "take": 3,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small hard plastic cartridge is pushed into a handheld device and snaps into place with one firm click. Recorded close, dry, no reverb, no voice.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "bytes": 130560,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "stun",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Continuous steady electric arc crackle from a stun gun: fast ticking sparks at about fifteen pulses per second, constant level from start to end. Recorded close, dry, no reverb, no hum, no music, no voice, no science-fiction sound.",
+      "duration_seconds": 2,
+      "prompt_influence": 0.6,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "bytes": 432000,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "stun",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Continuous steady electric arc crackle from a stun gun: fast ticking sparks at about fifteen pulses per second, constant level from start to end. Recorded close, dry, no reverb, no hum, no music, no voice, no science-fiction sound.",
+      "duration_seconds": 2,
+      "prompt_influence": 0.6,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "bytes": 432000,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "stun",
+      "take": 3,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Continuous steady electric arc crackle from a stun gun: fast ticking sparks at about fifteen pulses per second, constant level from start to end. Recorded close, dry, no reverb, no hum, no music, no voice, no science-fiction sound.",
+      "duration_seconds": 2,
+      "prompt_influence": 0.6,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "bytes": 432000,
+      "channels": 2,
+      "credits_estimate": 200
+    },
+    {
+      "id": "shot",
+      "take": 4,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "One loud sharp bang of a small gunpowder cap at the very start, then immediately a fast dry electric ticking crackle for one second that stops abruptly. A 1980s police stun gun firing its darts. Recorded close, dry, no reverb, no tone, no hum, no music, no voice, no laser.",
+      "duration_seconds": 1.5,
+      "prompt_influence": 0.8,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 284160,
+      "credits_estimate": 200
+    },
+    {
+      "id": "shot",
+      "take": 5,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "One loud sharp bang of a small gunpowder cap at the very start, then immediately a fast dry electric ticking crackle for one second that stops abruptly. A 1980s police stun gun firing its darts. Recorded close, dry, no reverb, no tone, no hum, no music, no voice, no laser.",
+      "duration_seconds": 1.5,
+      "prompt_influence": 0.8,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 284160,
+      "credits_estimate": 200
+    },
+    {
+      "id": "pop",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A single sharp small bang of a toy cap gun, one shot only. Recorded close, dry, no reverb, no echo, no voice.",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.8,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 92160,
+      "credits_estimate": 200
+    },
+    {
+      "id": "pop",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A single sharp small bang of a toy cap gun, one shot only. Recorded close, dry, no reverb, no echo, no voice.",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.8,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 92160,
+      "credits_estimate": 200
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-13",
+      "generations": 15,
+      "seconds": 16.2,
+      "plan": "starter",
+      "credits_before": 0,
+      "credits_after": 142,
+      "credits": 142
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 2,
+      "seconds": 3,
+      "plan": "starter",
+      "credits_before": 162,
+      "credits_after": 162,
+      "credits": 0
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 2,
+      "seconds": 1,
+      "plan": "starter",
+      "credits_before": 192,
+      "credits_after": 192,
+      "credits": 0
+    }
+  ],
+  "wired": {
+    "Shot": {
+      "project": "{74C6FFC3E6765A20}Sounds/Weapons/Handguns/Taser/Weapons_Handguns_Taser_Shot.acp",
+      "events": [
+        "SOUND_SHOT"
+      ],
+      "samples": [
+        "{14061AC328152DE2}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_SHOT_01.wav"
+      ]
+    },
+    "Handling": {
+      "project": "{CA51DCAD77CCF499}Sounds/Weapons/Handguns/Taser/Weapons_Handguns_Taser_Handling.acp",
+      "events": [
+        "SOUND_DRY",
+        "SOUND_RELOAD_MAG_REMOVE",
+        "SOUND_RELOAD_MAG_INSERT"
+      ],
+      "samples": [
+        "{D4818F1BF6266961}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_DRY_01.wav",
+        "{31912CC5833D7257}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_DRY_02.wav",
+        "{9C96F4E628914F69}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_DRY_03.wav",
+        "{9B1CEB35DC2818AD}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_RELOAD_MAG_REMOVE_01.wav",
+        "{BEA435674404C61F}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_RELOAD_MAG_INSERT_01.wav",
+        "{4051E65BD8CBF35A}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_RELOAD_MAG_INSERT_02.wav"
+      ]
+    },
+    "Stun": {
+      "project": "{3BB5DCC4ECCFE291}Sounds/Weapons/Handguns/Taser/Weapons_Handguns_Taser_Stun.acp",
+      "events": [
+        "SOUND_LF_STUN_LP"
+      ],
+      "samples": [
+        "{94BB4338EE238681}Sounds/Weapons/Handguns/Taser/Samples/Weapons_Handguns_Taser_LF_STUN_LP_01.wav"
+      ]
+    }
+  },
+  "account": {
+    "date": "2026-11-13",
+    "plan": "starter",
+    "used": 3997,
+    "limit": 40000,
+    "used_before_first_run": 0,
+    "note": "used - used_before_first_run is this asset's cost only if nothing else spent credits on the account in between"
+  }
+}

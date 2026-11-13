@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3BB5DCC4ECCFE291}Sounds/Weapons/Handguns/Taser/Weapons_Handguns_Taser_Stun.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -787,3 +787,32 @@ and into the Workshop build under that plan's terms. Each one is credited
 refine task) are recorded per asset in `tools/assets/<slug>/meshy.json`, which the
 `generate` stage writes. An asset made some other way (a CC0 model, a Blender
 script, a human modeller) does not need the credit but keeps its source in the spec.
+
+**2026-11-13 — #664: ElevenLabs-generated sound effects may be used in the project
+and in published builds.** The asset pipeline's sound stage (`tools\cli asset sound`,
+`docs/asset-pipeline/sounds.md`) generates an asset's sound effects with the
+ElevenLabs sound-effects API. The maintainer moved the account to the Starter plan
+on 2026-11-13, before the first generation that ships; the taser's 19 takes were all
+made on it (the API reported tier `starter` at each run). What the terms say, read
+on 2026-11-13 (Terms of Service and the ElevenCreative Terms with Exhibit 4, Sound
+Effects, both last updated 2026-10-09):
+
+- A paid plan may use the service for commercial purposes; the free plan is
+  non-commercial only (Terms of Service 1(c)). **Nothing generated on the free plan
+  ships.** If the plan lapses, generate nothing for the mod until it is paid again.
+- Output may be used, reproduced, modified and distributed "including by
+  incorporating it into films, trailers, advertising, video, games, applications,
+  and other productions" (Exhibit 4, section 2), and the user keeps the rights in
+  the output (Terms of Service 4(c)).
+- Output may be used only "combined with other material" and may not be made
+  "available as isolated audio files or samples". The samples ship inside the addon
+  as part of the game; they are never published as a sound pack or a download.
+- No attribution duty was found in the terms that were read. The project credits
+  the tool anyway: "generated with ElevenLabs" in `docs/credits.md`.
+- The service "may produce the same or similar Output" for someone else; a generated
+  sound is not exclusive.
+
+Not confirmed: the help-centre articles on publishing and attribution could not be
+read (HTTP 403 to an automated client), and the EU terms were not read. Each
+generation's prompt, parameters and date, and the takes that ship with the reason,
+are recorded per asset in `tools/assets/<slug>/sounds.json`, which the stage writes.

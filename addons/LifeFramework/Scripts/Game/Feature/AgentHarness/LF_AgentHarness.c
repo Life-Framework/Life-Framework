@@ -169,6 +169,14 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
+		if (cmd.Verb == "sound")
+		{
+			// sound [SOUND_EVENT]: with an event, that one is played on the held weapon.
+			if (parts.Count() >= 3)
+				cmd.Arg1 = parts[2];
+
+			return true;
+		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
 			return true;
 		if (cmd.Verb == "engine")
@@ -1277,6 +1285,11 @@ class LF_AgentHarness
 			if (!LF_HarnessPerf.Start(cmd.Id, cmd.PosX, cmd.Arg1, perfError))
 				WriteResult(cmd.Id, "error", perfError);
 
+			return;
+		}
+		if (cmd.Verb == "sound")
+		{
+			WriteResult(cmd.Id, "ok", LF_HarnessSound.Probe(cmd.Arg1));
 			return;
 		}
 		if (cmd.Verb == "shoot")

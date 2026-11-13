@@ -9,6 +9,7 @@ is the playbook for those. What the first run taught us is in
 tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--roadmap #N] [--no-run]
 tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]
 tools\cli asset status [<slug>]
+tools\cli asset sound <slug>  generated sound effects, after the prefab stage: sounds.md
 tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
 ```
@@ -27,6 +28,8 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry; a gadget: one held item; a deployable: the deployed prop and the carried item). Every kind but `weapon` has its own `prefab-<kind>.mjs` | The agent finishes them: strings, feature component, placement |
 
 After `prefab` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
+Sound is its own command with its own record, because a review sits in the middle of it:
+[sounds.md](sounds.md).
 
 A finished stage is skipped on the next `run`. `--only clean` reruns one stage, `--from clean`
 reruns it and everything after it, and `--force` reruns from the start. A stage that failed is
@@ -117,6 +120,8 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
 - It does not make an icon. Enfusion renders inventory pictures from the prefab at run time;
   check them with the harness `previews` verb or `tools\cli shots previews`.
 - It does not add string table keys, feature code, world placement or tests.
+- The model stages make no sound. `asset sound` does ([sounds.md](sounds.md)); until it has run, a
+  weapon keeps the vanilla M9's sounds.
 - It does not rewrite a prefab that exists. After the scaffold the prefabs are ordinary files.
 - It does not classify the asset core or pack. Do that by the red line
   (`docs/architecture/core-vs-pack.md`) and add the inventory rows.

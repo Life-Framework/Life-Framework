@@ -133,6 +133,10 @@ export function buildLine(id, spec) {
   if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "spikeseen") {
     return `${id} ${spec.verb}`;
   }
+  if (spec.verb === "sound") {
+    // sound [SOUND_EVENT]: the held weapon's sound events and the stun buzz on this client (LF_HarnessSound).
+    return spec.event ? `${id} sound ${token(spec.event, "sound event")}` : `${id} sound`;
+  }
   if (spec.verb === "engine") {
     if (spec.entityName) return `${id} engine ${token(spec.entityName, "entity")}`;
     return `${id} engine`;
