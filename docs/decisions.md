@@ -766,3 +766,15 @@ level; every other job starts at 0. Skill points are dropped: nothing spends
 them any more. The issue's first draft started every job at 0; that would have
 reset every courier's fuel and taxi access, so it was not taken. Detail:
 `docs/persistence.md` item 20.
+
+**2026-11-13 — #758: the dispatch boards keep the Read card; only the wanted board
+draws on its face.** The visual-boards spike (issue 6) left open whether the
+police and medic dispatch boards get the same face. Their content is service
+calls that only on-duty staff of that service may read. A face is drawn by every
+client that has the board streamed in, so the server would have to send the calls
+to every client, and a filter on the client does not stop a modified client from
+reading them. Sending a second list only to on-duty staff would draw a face that
+other players see blank or with a call count, which still tells them how busy the
+police are. Not worth it: the dispatch boards keep their painted DISPATCH face and
+the per-read card. The wanted board's face carries only what its public Read card
+already showed. Detail: `docs/architecture/visual-boards.md`.
