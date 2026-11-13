@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_ScenePiecesWorld`: LF_ScenePieces.GroundSpot returning the point unprobed failed `- the casing rests on the ground, not at the shooter's height (gap 1.1942 m)` and `- a second casing lands apart from the first`. Restored; green.
+// red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_ScenePiecesWorld`: LF_ScenePieces.GroundSpot returning the point unprobed failed `- the casing rests on the ground, not at the shooter's height (gap 1.1942 m)` and `- a second casing lands apart from the first`. Restored; green. Shared-mesh guard: with the marker on IdCard.xob and the footprint and statement on Papers_Personal.xob, `- {...}LF_EvidenceMarker.et shares no mesh with a carried item ({46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob)` and the same for both papers. Restored; green.
 // tier: WORLD
 //! Scene pieces (#148) in the world: a casing from a shooter standing 1.2 m up lands on the ground
 //! under the placement probe, not in the air; a burst's casings land apart; a robber on foot leaves
@@ -11,6 +11,15 @@ class LF_Test_ScenePiecesWorld : LF_Test
 	protected static const int REPORT = 41;
 	//! How far a piece's bottom may be from the surface under it.
 	protected static const float RESTS = 0.05;
+
+	protected static const ResourceName ITEM_TICKET = "{3D6B0E8A41C7F259}Prefabs/Items/Roleplay/FineTicket.et";
+	protected static const ResourceName ITEM_BILL = "{75055A5BFE4372D5}Prefabs/Items/Roleplay/HospitalBill.et";
+	protected static const ResourceName ITEM_RECEIPT = "{3E8A5C1D7B2F4096}Prefabs/Items/Roleplay/LF_Receipt.et";
+	protected static const ResourceName ITEM_SLIP = "{4C1A9E7B52D83F60}Prefabs/Items/Roleplay/SentenceSlip.et";
+	protected static const ResourceName ITEM_ID_CARD = "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et";
+	protected static const ResourceName ITEM_KEYCARD = "{F341AA386FA695E4}Prefabs/Items/Fence/LF_Keycard.et";
+	protected static const ResourceName ITEM_LOCKPICK = "{6B1D3F5A92C47E08}Prefabs/Items/Fence/LF_Lockpick.et";
+	protected static const ResourceName ITEM_SEEDS = "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et";
 
 	protected ref array<IEntity> m_aSpawned = {};
 
@@ -42,6 +51,7 @@ class LF_Test_ScenePiecesWorld : LF_Test
 
 		RunFootprint(ctx, ground);
 		RunStatement(ctx, ground);
+		RunNoSharedMesh(ctx);
 
 		LF_Evidence.ResetStatics();
 		foreach (IEntity spawned : m_aSpawned)
@@ -162,5 +172,41 @@ class LF_Test_ScenePiecesWorld : LF_Test
 
 		ctx.True(bag, "the " + what + " offers Bag as evidence");
 		ctx.False(pickUp, "the " + what + " offers no Pick up");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No piece uses the mesh of an item a player carries. A piece is not an inventory item; one that
+	//! spawned first with Papers_Personal.xob left the fine ticket (same mesh) unable to go into a
+	//! pocket later in the process (`--only LF_Test_Armory,LF_Test_FineTicket`, the #699 volume quirk).
+	protected void RunNoSharedMesh(LF_TestContext ctx)
+	{
+		array<ResourceName> pieces = {LF_Evidence.CASING_PREFAB, LF_Evidence.MARKER_PREFAB, LF_Evidence.FOOTPRINT_PREFAB, LF_Evidence.STATEMENT_PREFAB};
+		array<ResourceName> items = {LF_Evidence.BAG_PREFAB, ITEM_TICKET, ITEM_BILL, ITEM_RECEIPT, ITEM_SLIP, ITEM_ID_CARD, ITEM_KEYCARD, ITEM_LOCKPICK, ITEM_SEEDS};
+		array<string> itemMeshes = {};
+		foreach (ResourceName item : items)
+			itemMeshes.Insert(MeshOf(item));
+
+		foreach (ResourceName piece : pieces)
+		{
+			string mesh = MeshOf(piece);
+			ctx.False(mesh.IsEmpty(), "the piece has a mesh: " + piece);
+			ctx.False(itemMeshes.Contains(mesh), string.Format("%1 shares no mesh with a carried item (%2)", piece, mesh));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string MeshOf(ResourceName prefab)
+	{
+		IEntity entity = LF_Utils.SpawnEntityPrefab(prefab, "1000 0 1020", "0 0 0", false);
+		if (!entity)
+			return string.Empty;
+
+		string mesh;
+		VObject visual = entity.GetVObject();
+		if (visual)
+			mesh = visual.GetResourceName();
+
+		SCR_EntityHelper.DeleteEntityAndChildren(entity);
+		return mesh;
 	}
 }

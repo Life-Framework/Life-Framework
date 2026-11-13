@@ -3,10 +3,6 @@ GenericEntity {
  components {
   MeshObject "{85C81781C5D78CFD}" {
   }
-  RigidBody "{79BED47812EFAF8B}" {
-   ModelGeometry 1
-   Static 1
-  }
   ActionsManagerComponent "{0052D3827BE6D8A3}" {
    ActionContexts {
     UserActionContext "{C3BDED1833830481}" {

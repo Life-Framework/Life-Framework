@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_CaseBoardWorld`: LF_EvidenceLocker.LogBag handing the case board an empty note failed `- the card carries the note the bag carried (expected '#AR-Boots_Jungle', got '')`. Restored; green.
+// red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_CaseBoardWorld`: LF_EvidenceLocker.LogBag handing the case board an empty note failed `- the card carries the note the bag carried (expected '#AR-Boots_Jungle', got '')`. Restored; green. Bag stacking: before `m_iMaxQuantity 1` on LF_EvidenceBag.et it failed `- two evidence bags never stack: each keeps its own stamp`; green after.
 // tier: WORLD
 //! Case board (#148) in the world: the board prefab spawns with its component, its two actions and
 //! its Read card; and a stamped bag logged at the locker becomes a card that Pin puts

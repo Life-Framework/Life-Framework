@@ -60,7 +60,8 @@ loses its stamp over a restart until the locker (#269) logs it.
 - **Police only:** the pieces (`LF_EvidencePiece_Base.et` and its children: casing, marker, footprint card, statement) are not inventory items. The vanilla pickup and the inventory's vicinity list never offer them; only `LF_BagEvidenceAction` takes one. Before #148 the casing and the marker were items anyone could pick up.
 - **Data:** `Configs/Investigation/LF_Evidence.conf` `m_aFootprintOffences` (robbery, hospital robbery, break-in, armory heist, cash van). A piece carries a note for its card (footwear key, "clothing~vehicle~plate", item name key), stamped on the bag (`LF_EvidenceBagComponent.GetNote`). Not saved: what lies about is cleared by a restart, as before.
 - **Proof:** `investigation/scene-pieces` (LOGIC), `investigation/scene-pieces-world` (WORLD: the gap to the ground, flat cards, police-only), `node agent-box/session.mjs case-board-proof`.
-- **Stand-ins:** the footprint card and the statement are the personal papers mesh (the ID card mesh read as a dropped ID booklet) (`docs/asset-inventory.md`). A real footprint decal under the card is not done.
+- **Stand-ins:** the footprint card, the statement and the dropped-item marker are vanilla floor-litter documents (`docs/asset-inventory.md`). A real footprint decal under the card is not done.
+- **Mesh rule:** a piece never uses the mesh of an item a player carries. A non-item spawned first with `Papers_Personal.xob` left the fine ticket (same mesh) unable to go into a pocket for the rest of the process (the #699 volume quirk); `investigation/scene-pieces-world` checks every piece against the carried items' meshes.
 
 ## Case board (#148)
 

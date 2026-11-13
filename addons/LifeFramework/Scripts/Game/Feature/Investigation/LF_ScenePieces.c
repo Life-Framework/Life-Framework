@@ -18,12 +18,7 @@ class LF_ScenePieces
 	static const float PROBE_LIFT = 0.5;	// lf-fixed: placement probe start, not tuning
 	//! Mesh base below the pivot, so each piece rests on the surface (tools\cli place bounds).
 	static const float CASING_BASE = 0.005;	// lf-fixed: Case_556x45.xob lying on its side
-	static const float CARD_BASE = 0.017;	// lf-fixed: IdCard.xob turned flat (CARD_PITCH), its -z face down
-	static const float PAPER_BASE = 0.001;	// lf-fixed: Papers_Personal.xob, base at the pivot
-	//! The pitch that lays IdCard.xob (modelled upright, 0.109 m tall) flat, its printed face up: the
-	//! dropped-item marker. The footprint card is a paper sheet, which lies flat as modelled.
-	//! -90 left the dark back up: a black booklet on the asphalt (session, 2026-11-13).
-	static const float CARD_PITCH = 90;	// lf-fixed: the mesh orientation
+	static const float PAPER_BASE = 0.001;	// lf-fixed: the litter documents lie flat, base at the pivot
 	//! A dropped item's card lies beside it, not under it.
 	static const vector MARKER_OFFSET = "0.25 0 0.15";
 	//! Casings land on a ring around the shooter: the first at SCATTER_MIN, later ones a step farther.

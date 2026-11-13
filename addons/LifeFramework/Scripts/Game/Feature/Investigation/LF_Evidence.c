@@ -265,8 +265,8 @@ class LF_Evidence
 		if (!scene)
 			return null;
 
-		vector spot = LF_ScenePieces.GroundSpot(item.GetOrigin() + LF_ScenePieces.MARKER_OFFSET, LF_ScenePieces.CARD_BASE);
-		IEntity marker = LF_Utils.SpawnEntityPrefab(MARKER_PREFAB, spot, Vector(0, LF_ScenePieces.CARD_PITCH, 0));
+		vector spot = LF_ScenePieces.GroundSpot(item.GetOrigin() + LF_ScenePieces.MARKER_OFFSET, LF_ScenePieces.PAPER_BASE);
+		IEntity marker = LF_Utils.SpawnEntityPrefab(MARKER_PREFAB, spot);
 		if (!marker)
 			return null;
 
