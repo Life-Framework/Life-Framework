@@ -13,6 +13,12 @@ class LF_DialogueCamera
 	//! The camera keeps this far off anything between it and its subject.
 	static const float COLLISION_MARGIN = 0.85;
 
+	//! The camera never comes closer than this to the centre of the player's head: a sphere that
+	//! covers the head, hair and the neck, so no mesh is cut by the near plane.
+	static const float HEAD_KEEP_OUT = 0.85;
+
+	protected static bool s_bAvoidHead;
+	protected static float s_fKeepFrom;
 	protected static EntityID s_CameraId = EntityID.INVALID;
 	protected static EntityID s_PreviousId = EntityID.INVALID;
 	protected static EntityID s_NpcId = EntityID.INVALID;
@@ -34,6 +40,7 @@ class LF_DialogueCamera
 		s_PreviousId = EntityID.INVALID;
 		s_NpcId = EntityID.INVALID;
 		s_bClosing = false;
+		s_bAvoidHead = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -82,9 +89,43 @@ class LF_DialogueCamera
 			return;
 		}
 
-		position = playerHead + toPlayer * 0.6 + right * 0.4 + "0 0.14 0";
+		position = playerHead + toPlayer * 0.75 + right * 0.5 + "0 0.22 0";
 		lookAt = npcHead;
 		fov = FOV_SHOULDER;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the side of the player's head the shoulder shot lives on (the same "right" as Frame).
+	static vector ShoulderSide(vector npcHead, vector playerHead)
+	{
+		vector toPlayer = playerHead - npcHead;
+		toPlayer[1] = 0;
+		if (toPlayer.LengthSq() < 0.01)
+			toPlayer = "0 0 1";
+
+		toPlayer.Normalize();
+		return Vector(toPlayer[2], 0, -toPlayer[0]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: keep a camera position out of a sphere around the player's head. A path that would pass
+	//! through the head slides round the shoulder side instead (the part of the offset on the far
+	//! side of the head is dropped before pushing out, so the slide has no jump).
+	static vector KeepOutOfHead(vector position, vector playerHead, vector shoulderSide, float radius)
+	{
+		vector offset = position - playerHead;
+		if (offset.Length() >= radius)
+			return position;
+
+		float lateral = vector.Dot(offset, shoulderSide);
+		if (lateral < 0)
+			offset = offset - shoulderSide * lateral;
+
+		if (offset.Length() < 0.01)
+			offset = shoulderSide * 0.01;
+
+		offset.Normalize();
+		return playerHead + offset * radius;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -231,6 +272,17 @@ class LF_DialogueCamera
 		s_vFromPosition = s_vPosition;
 		s_vFromLook = s_vLook;
 		s_fFromFov = s_fFov;
+		s_bAvoidHead = false;
+		IEntity player = LF_Utils.GetLocalCharacter();
+		if (player)
+		{
+			// The sphere grows from where the camera starts (the face shot can stand closer than the
+			// full keep-out) to the full size. A first person start sits at the head itself; leave it alone.
+			float fromDistance = vector.Distance(s_vFromPosition, LF_DialogueVoice.HeadOf(player));
+			s_bAvoidHead = fromDistance >= 0.3;
+			s_fKeepFrom = Math.Min(fromDistance, HEAD_KEEP_OUT);
+		}
+
 		s_iBlendStartMs = System.GetTickCount();
 	}
 
@@ -293,6 +345,15 @@ class LF_DialogueCamera
 		float t = (System.GetTickCount() - s_iBlendStartMs) / (EASE_SECONDS * 1000);
 		float k = Ease(t);
 		s_vPosition = vector.Lerp(s_vFromPosition, position, k);
+		IEntity player = LF_Utils.GetLocalCharacter();
+		IEntity npc = world.FindEntityByID(s_NpcId);
+		if (s_bAvoidHead && !s_bClosing && player && npc)
+		{
+			// The ease between shots is a straight line; keep it from cutting through the head.
+			vector playerHead = LF_DialogueVoice.HeadOf(player);
+			s_vPosition = KeepOutOfHead(s_vPosition, playerHead, ShoulderSide(LF_DialogueVoice.HeadOf(npc), playerHead), Math.Lerp(s_fKeepFrom, HEAD_KEEP_OUT, k));
+		}
+
 		s_vLook = vector.Lerp(s_vFromLook, lookAt, k);
 		s_fFov = Math.Lerp(s_fFromFov, fov, k);
 		Apply(camera);

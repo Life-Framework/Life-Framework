@@ -149,7 +149,13 @@ class LF_Test_DialogueFlow : LF_Test
 		ctx.True(position[0] > npcHead[0], "the face shot leans to the side the player stands on");
 		LF_DialogueCamera.Frame(npcHead, facingPlayer, playerHead, false, position, lookAt, fov);
 		ctx.True(vector.Distance(position, npcHead) > vector.Distance(playerHead, npcHead), "the shoulder shot stands behind the player");
-		ctx.True(vector.Distance(position, playerHead) < 1, "the shoulder shot stays at the player's shoulder");
+		ctx.True(vector.Distance(position, playerHead) < 1.1, "the shoulder shot stays at the player's shoulder");
+		ctx.True(vector.Distance(position, playerHead) > LF_DialogueCamera.HEAD_KEEP_OUT, "the shoulder shot stands outside the player's head");
+		vector side = LF_DialogueCamera.ShoulderSide(npcHead, playerHead);
+		vector pushed = LF_DialogueCamera.KeepOutOfHead(playerHead + "0 0.05 0.1", playerHead, side, LF_DialogueCamera.HEAD_KEEP_OUT);
+		ctx.EqualFloat(LF_DialogueCamera.HEAD_KEEP_OUT, vector.Distance(pushed, playerHead), 0.01, "a camera inside the head is pushed out to the keep-out sphere");
+		ctx.True(vector.Dot(pushed - playerHead, side) >= -0.001, "a camera pushed out of the head leaves on the shoulder side");
+		ctx.True(vector.Distance(LF_DialogueCamera.KeepOutOfHead(playerHead + "0 3 0", playerHead, side, LF_DialogueCamera.HEAD_KEEP_OUT), playerHead + "0 3 0") < 0.001, "a camera already clear of the head is left alone");
 		LF_DialogueCamera.Frame(npcHead, vector.Zero, npcHead, true, position, lookAt, fov);
 		ctx.True(vector.Distance(position, npcHead) > 0.8, "two heads on one spot still give a camera that stands off");
 		ctx.EqualFloat(0, LF_DialogueCamera.Ease(0), 0.001, "the ease starts at rest");
