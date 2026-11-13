@@ -289,6 +289,7 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "selftest") return (await import("../../validation/asset-pipeline-selftest.mjs")).main(rest);
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
+  if (sub === "sound") return (await import("./sound.mjs")).main(root, rest); // docs/asset-pipeline/sounds.md
   if (sub === "new" || sub === "run") {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
@@ -300,6 +301,7 @@ export async function main(flags, { workbench } = {}) {
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
+       tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
 playbook: docs/asset-pipeline/README.md`);
   return sub ? 2 : 0;
 }

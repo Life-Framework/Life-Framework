@@ -355,14 +355,24 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		m_sLF_DownerUid = downerUid;
-		if (!downed)
+		bool changed;
+		if (!downed && m_bLF_Stunned)
+		{
 			m_bLF_Stunned = false;
+			changed = true;
+		}
 
-		if (downed == m_bLF_Downed)
+		if (downed != m_bLF_Downed)
+		{
+			m_bLF_Downed = downed;
+			changed = true;
+		}
+
+		if (!changed)
 			return;
 
-		m_bLF_Downed = downed;
 		Replication.BumpMe();
+		LF_StunBuzz.Sync(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -371,9 +381,27 @@ modded class SCR_ChimeraCharacter
 		return m_bLF_Downed;
 	}
 
-	//! Server only: this downed state is a timed stun (LF_Stun). Cleared whenever the flag clears.
+	//! This downed state is a timed stun (LF_Stun). Cleared whenever the downed flag clears. Only
+	//! the server writes it; it is replicated so every client can sound the stun buzz (LF_StunBuzz).
+	[RplProp(onRplName: "LF_OnStunnedReplicated")]
 	protected bool m_bLF_Stunned;
+
+	//! Server only.
 	protected int m_iLF_StunToken;
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_OnStunnedReplicated()
+	{
+		LF_StunBuzz.Sync(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stun flag alone. A client reads this in the replication callback, where the downed flag
+	//! of the same update may not be applied yet; game rules use LF_IsStunned.
+	bool LF_HasStunFlag()
+	{
+		return m_bLF_Stunned;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: enter the downed state as a stun. \return The token the timed wake must present.
@@ -382,6 +410,8 @@ modded class SCR_ChimeraCharacter
 		LF_SetDowned(true, "");
 		m_bLF_Stunned = true;
 		m_iLF_StunToken++;
+		Replication.BumpMe();
+		LF_StunBuzz.Sync(this);
 		return m_iLF_StunToken;
 	}
 

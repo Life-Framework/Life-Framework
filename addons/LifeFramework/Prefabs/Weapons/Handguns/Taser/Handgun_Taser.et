@@ -1,6 +1,11 @@
 GenericEntity : "{809488C4984AC087}Prefabs/Weapons/Handguns/M9/Handgun_M9_base.et" {
  ID "E03AF4928EE6F369"
  components {
+  WeaponSoundComponent "{5A8685198A9AEEDD}" {
+   Filenames {
+    "{74C6FFC3E6765A20}Sounds/Weapons/Handguns/Taser/Weapons_Handguns_Taser_Shot.acp" "{CA51DCAD77CCF499}Sounds/Weapons/Handguns/Taser/Weapons_Handguns_Taser_Handling.acp" "{430CD8162D17C2FF}Sounds/Weapons/_SharedData/Melee/Weapons_Melee_Pistol.acp" "{8D040E18DFEC29AF}Sounds/Weapons/_SharedData/PickUp/Weapons_PickUp_HandGun.acp" "{D32144A00CA494A6}Sounds/Weapons/_SharedData/Drop/Weapons_Drop_Pistol.acp" "{62A8FCC1AB0B7AA5}Sounds/Weapons/_SharedData/Drop/Weapons_Drop_Physical_PIstol.acp"
+   }
+  }
   MeshObject "{CFBAA4B701F95D69}" {
    Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }

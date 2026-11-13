@@ -253,6 +253,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Anims/` | core | Generic carry and NPC graphs |
 | `Particles/` | core | Gather effects |
 | `Sounds/` | core | Siren |
+| `Sounds/Weapons/Handguns/Taser/` | split | Sounds of the stun weapon (shot, handling, stun buzz): they follow the taser, example in core, police-issue item in pack |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |
 
