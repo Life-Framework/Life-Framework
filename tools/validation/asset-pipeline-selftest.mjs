@@ -12,12 +12,16 @@
 //   logProblems counting lines before start  -> FAIL log: lines before the plugin starts do not count
 //   runLog joining console, script and error -> FAIL log: a run's own start-up lines do not count
 //   recordProvenance dropping the refine id  -> FAIL provenance: meshy.json keeps both generations and the refine ids
+//   buildPrompts dropping the frame          -> FAIL concepts: every prompt ends in the shared product-shot frame
+//   sheetLayout using rows for columns       -> FAIL concepts: ten cells make a 5x2 grid, numbered left to right
+//   pickByRubric breaking ties on the high n -> FAIL concepts: a tie goes to the lower number
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { STAGES, recordProvenance, run, specProblems } from "../assets/pipeline/asset.mjs";
+import * as cc from "../assets/pipeline/concepts.mjs";
 import { checkReport, checkSockets } from "../assets/pipeline/checks.mjs";
 import { logProblems, runLog } from "../assets/pipeline/import.mjs";
 import { KINDS } from "../assets/pipeline/kinds.mjs";
@@ -55,7 +59,7 @@ export async function main() {
     asset_dir: "Assets/Weapons/Handguns/Stick", prefab_dir: "Prefabs/Weapons/Handguns/Stick",
   });
 
-  // ---- spec: the concept stage refuses what would waste credits or break an import ---------------
+  // ---- spec: the spec stage refuses what would waste credits or break an import ---------------
   {
     ok(specProblems(spec()).length === 0, `spec: a complete spec passes (${specProblems(spec())[0]})`);
     const bad = (edit, pattern, what) => {
@@ -139,9 +143,9 @@ export async function main() {
       const code = await run(root, "stick", {}).catch(() => 1);
       ok(code === 0 && touched === 0 && readFileSync(join(cache, "state.json"), "utf8") === before, "resume: a finished run touches nothing");
 
-      await run(root, "stick", { only: "concept" });
+      await run(root, "stick", { only: "spec" });
       const st = JSON.parse(readFileSync(join(cache, "state.json"), "utf8"));
-      ok(st.stages.concept.result.estimate === 15, "resume: --only reruns one stage and records its result");
+      ok(st.stages.spec.result.estimate === 15, "resume: --only reruns one stage and records its result");
 
       writeFileSync(join(cache, "state.json"), JSON.stringify({ stages: {} }));
       writeFileSync(join(cache, "credits.jsonl"), JSON.stringify({ call: "earlier attempts", credits: 290 }) + "\n");
@@ -312,6 +316,71 @@ export async function main() {
     ok(two.includes('"{A}a.et"\n  "{B}b.et"\n }\n}'), "prefab: a second asset's ammo is appended");
     ok(ammoListWith(two, "{A}a.et") === two, "prefab: listing the same ammo twice changes nothing");
     await throws(() => ammoListWith("SCR_AmmoList {\n m_aAmmoList {\n }\n}\n", "{C}c.et"), /not the append-only override/, "prefab: a hand-written list that would replace vanilla's is refused");
+  }
+
+  // ---- concepts: prompt fan-out, sheet layout, scoring and the pick -----------------------------
+  {
+    const variants = Array.from({ length: 10 }, (_, i) => ({ label: `Variant ${i + 1}`, detail: `detail number ${i + 1}.` }));
+    const rec = () => ({ slug: "stick", subject: "A police baton.", variants: variants.map((v) => ({ ...v })) });
+    ok(cc.conceptProblems(rec()).length === 0, `concepts: ten distinct variants pass (${cc.conceptProblems(rec())[0]})`);
+    const prompts = cc.buildPrompts("A police baton.", variants);
+    ok(prompts.length === 10 && prompts.every((p) => p.prompt.endsWith(cc.FRAME) && p.prompt.startsWith("A police baton.")), "concepts: every prompt ends in the shared product-shot frame");
+    ok(new Set(prompts.map((p) => p.prompt)).size === 10 && prompts[2].n === 3 && !prompts[0].prompt.includes(".."), "concepts: the ten prompts are distinct, numbered and tidy");
+    const nine = rec(); nine.variants.pop();
+    ok(cc.conceptProblems(nine).some((m) => /exactly 10/.test(m)), "concepts: nine variants are refused");
+    const same = rec(); same.variants[4].detail = same.variants[1].detail;
+    ok(cc.conceptProblems(same).some((m) => /details must be distinct/.test(m)), "concepts: two identical details are refused");
+
+    const L = cc.sheetLayout(10, 5, 400, 44);
+    ok(L.cols === 5 && L.rows === 2 && L.width === 2000 && L.height === 888, "concepts: ten cells make a 5x2 grid");
+    ok(L.cells[0].x === 0 && L.cells[4].x === 1600 && L.cells[4].y === 0 && L.cells[5].x === 0 && L.cells[5].y === 444 && L.cells[9].n === 10, "concepts: cells are numbered left to right, top row first");
+    const args = cc.sheetArgs({ images: prompts.map((p) => `${cc.pad(p.n)}.png`), out: "sheet.png" });
+    const fc = args[args.indexOf("-filter_complex") + 1];
+    ok(args.filter((a) => a === "-i").length === 10 && fc.includes("xstack=inputs=10:layout=0_0|400_0|800_0|1200_0|1600_0|0_444|") && fc.includes("textfile=lab10.txt"), "concepts: ffmpeg gets ten inputs, the grid layout and a label per cell");
+
+    const r = rec();
+    ok(!cc.scored(r), "concepts: an unscored set is not scored");
+    await throws(async () => cc.pickByRubric(r), /scored first/, "concepts: --pick refuses an unscored set");
+    const full = (n) => Array(6).fill(n);
+    for (let n = 1; n <= 10; n++) cc.applyScore(r, n, full(1));
+    cc.applyScore(r, 7, [2, 2, 2, 2, 2, 1], "reads as a baton");
+    cc.applyScore(r, 4, [2, 2, 2, 2, 2, 1]);
+    cc.pickByRubric(r, new Date("2026-11-13T10:00:00Z"));
+    ok(r.pick.n === 4 && r.pick.by === "rubric" && /11\/12/.test(r.pick.why) && /image_to_3d/.test(r.pick.why), `concepts: a tie goes to the lower number and the why is recorded (got ${JSON.stringify(r.pick)})`);
+    ok(cc.ranking(r)[0].n === 4 && cc.ranking(r)[1].n === 7, "concepts: the ranking is by total, then number");
+    await throws(async () => cc.applyScore(r, 3, [1, 2, 3, 0, 0, 0]), /integers 0 to 2/, "concepts: a score above 2 is refused");
+    await throws(async () => cc.applyScore(r, 11, full(1)), /no concept 11/, "concepts: scoring a missing concept is refused");
+    cc.pickConcept(r, 9, { by: "human", why: "the maintainer's pick" });
+    ok(r.pick.n === 9 && r.pick.by === "human" && r.pick.why === "the maintainer's pick", "concepts: a human pick replaces the rubric pick and keeps its reason");
+
+    // The stage with no concepts.json does nothing, and generate keeps text-to-3D; with one it stops for a pick.
+    const root = join(tmp, "croot");
+    const dir = join(root, "tmp", "assets", "stick");
+    mkdirSync(join(root, "tools", "assets", "stick"), { recursive: true });
+    mkdirSync(dir, { recursive: true });
+    const ctx = { root, spec: spec(), dir, state: {}, fullState: {} };
+    const noop = { writeState() {}, resolveFfmpeg: () => null };
+    const quiet = console.log;
+    console.log = () => {};
+    try {
+      const skipped = await cc.stageConcept(ctx, noop);
+      ok(skipped.skipped === true && cc.pickedImage(root, "stick", dir) === null, "concepts: without concepts.json the stage is skipped and no image is picked");
+      const picked = rec(); cc.pickConcept(picked, 3, { by: "human" });
+      cc.saveConcepts(root, "stick", picked);
+      ok(cc.pickedImage(root, "stick", dir) === null, "concepts: a pick whose image is missing does not switch generate to image-to-3D");
+      mkdirSync(join(dir, "concepts"), { recursive: true });
+      writeFileSync(join(dir, "concepts", "03.png"), "png");
+      ok(cc.pickedImage(root, "stick", dir)?.pick.n === 3, "concepts: a picked, downloaded image switches generate to image-to-3D");
+    } finally {
+      console.log = quiet;
+    }
+    const body = meshy.imageTo3dBody({ meshy: { ai_model: "latest", target_polycount: 20000 }, texture_prompt: "matte" }, "data:image/png;base64,AA");
+    ok(body.image_url.startsWith("data:image/png") && body.should_texture === true && body.enable_pbr === true && body.target_formats[0] === "glb", "concepts: the image-to-3D request asks for a textured PBR glb");
+    const prov = join(tmp, "proot"); mkdirSync(join(prov, "tools", "assets", "stick"), { recursive: true });
+    recordProvenance(prov, spec(), { imageTaskId: "i1", concept: 3, conceptTaskId: "c3", conceptPrompt: "p" }, new Date("2026-11-13T10:00:00Z"));
+    recordProvenance(prov, spec(), { imageTaskId: "i1", concept: 3, conceptTaskId: "c3", conceptPrompt: "p" }, new Date("2026-11-13T11:00:00Z"));
+    const pg = JSON.parse(readFileSync(join(prov, "tools", "assets", "stick", "meshy.json"), "utf8")).generations;
+    ok(pg.length === 1 && pg[0].tool === "Meshy image-to-3D" && pg[0].imageTaskId === "i1" && pg[0].conceptTaskId === "c3", "concepts: meshy.json records the image-to-3D task and the concept it came from, once");
   }
 
   if (failed) {

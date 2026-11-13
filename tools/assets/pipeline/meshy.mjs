@@ -14,6 +14,9 @@ export const COST = {
   preview: { "meshy-6-lite": 5, "meshy-t2": 5, "meshy-t2.5": 5, "meshy-6": 20, "meshy-7.1": 20, latest: 20 },
   refine: 10,
   remesh: 5,
+  image: { "nano-banana": 3, "nano-banana-2": 6, "nano-banana-2-lite": 3, "nano-banana-2-1": 4, "nano-banana-pro": 9 }, // text-to-image
+  // image-to-3D with a 2K texture, one call (no refine): 30 on meshy-6 / meshy-7.1 / latest, 15 on meshy-6-lite (pricing page, 2026-11-13)
+  imageTo3d: { "meshy-6-lite": 15, "meshy-6": 30, "meshy-7.1": 30, latest: 30 },
 };
 
 export function estimate(spec) {
@@ -77,6 +80,23 @@ export function previewBody(spec) {
   };
 }
 
+// Image-to-3D from a concept picture: one task makes the mesh and the PBR textures.
+export function imageTo3dBody(spec, imageUri) {
+  const m = spec.meshy || {};
+  const body = {
+    image_url: imageUri,
+    ai_model: m.ai_model || "meshy-6-lite",
+    should_texture: true,
+    enable_pbr: true,
+    should_remesh: true,
+    topology: "triangle",
+    target_polycount: m.target_polycount || 20000,
+    target_formats: ["glb"],
+  };
+  if (spec.texture_prompt) body.texture_prompt = spec.texture_prompt.slice(0, 800);
+  return body;
+}
+
 export function refineBody(spec, previewTaskId) {
   const m = spec.meshy || {};
   const body = { mode: "refine", preview_task_id: previewTaskId, enable_pbr: true, target_formats: ["glb"] };
@@ -89,11 +109,11 @@ export function refineBody(spec, previewTaskId) {
 }
 
 // Poll one task until it ends or the budget runs out. One blocking call with its own bound.
-export async function waitTask(id, { budgetS = 900, everyS = 8, onProgress = () => {}, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), ...o } = {}) {
+export async function waitTask(id, { path = "/openapi/v2/text-to-3d", budgetS = 900, everyS = 8, onProgress = () => {}, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), ...o } = {}) {
   const until = Date.now() + budgetS * 1000;
   let last = -1;
   for (;;) {
-    const t = await call("GET", `/openapi/v2/text-to-3d/${id}`, null, o);
+    const t = await call("GET", `${path}/${id}`, null, o);
     if (t.progress !== last) { last = t.progress; onProgress(t); }
     if (t.status === "SUCCEEDED") return t;
     if (t.status === "FAILED" || t.status === "CANCELED") {
