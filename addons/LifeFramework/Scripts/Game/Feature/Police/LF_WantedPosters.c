@@ -12,6 +12,8 @@ class LF_WantedPosterEntry : Managed
 	string m_sClothing;
 	//! Vehicle display-name key, empty on foot.
 	string m_sVehicle;
+	//! The suspect's look at the crime (LF_WantedLook); empty draws an empty photo frame.
+	string m_sAppearance;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -22,7 +24,8 @@ class LF_WantedPosterEntry : Managed
 //! broadcast when it changes. A change is an event on the bus (a crime, a wanted level, an
 //! identification) or a load; changes inside COALESCE_MS make one broadcast. Nothing polls.
 //!
-//! An entry is a short string of ids: "P;name;offence id;level;clothing keys;vehicle key". It holds
+//! An entry is a short string of ids: "P;name;offence id;level;clothing keys;vehicle key;look",
+//! the look being prefab GUIDs (LF_WantedLook), never paths. It holds
 //! what the public Read card shows (no place, the name only once identified); police-only lines
 //! stay on the Read card (LF_WantedBoard.ServerRead).
 class LF_WantedPosters
@@ -188,7 +191,7 @@ class LF_WantedPosters
 			if (standing)
 				level = standing.m_iWantedLevel;
 
-			outEntries.Insert(EncodePerson(name, report.m_sOffence, level, report.m_sClothing, report.m_sVehicle));
+			outEntries.Insert(EncodePerson(name, report.m_sOffence, level, report.m_sClothing, report.m_sVehicle, report.m_sAppearance));
 		}
 
 		return outEntries.Count();
@@ -205,9 +208,9 @@ class LF_WantedPosters
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string EncodePerson(string name, string offence, int level, string clothing, string vehicle)
+	static string EncodePerson(string name, string offence, int level, string clothing, string vehicle, string appearance = "")
 	{
-		return KIND_PERSON + FIELD + Clean(name) + FIELD + Clean(offence) + FIELD + level.ToString() + FIELD + Clean(clothing) + FIELD + Clean(vehicle);
+		return KIND_PERSON + FIELD + Clean(name) + FIELD + Clean(offence) + FIELD + level.ToString() + FIELD + Clean(clothing) + FIELD + Clean(vehicle) + FIELD + Clean(appearance);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -229,6 +232,9 @@ class LF_WantedPosters
 		poster.m_iLevel = Math.ClampInt(fields[3].ToInt(), 1, 5);
 		poster.m_sClothing = fields[4];
 		poster.m_sVehicle = fields[5];
+		if (fields.Count() > PERSON_FIELDS)
+			poster.m_sAppearance = fields[PERSON_FIELDS];
+
 		return poster;
 	}
 

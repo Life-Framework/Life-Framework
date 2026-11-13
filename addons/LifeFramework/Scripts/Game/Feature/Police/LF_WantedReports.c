@@ -19,6 +19,10 @@ class LF_WantedReportRecord : Managed
 	bool m_bIdentified;
 	//! Report order across the server's life; newest has the highest number.
 	int m_iSequence;
+	//! The suspect's look at the crime (LF_WantedLook), for the portrait on the board's face. Not
+	//! part of the "wanted" payload: changing that payload's fields would change its save format.
+	[NonSerialized()]
+	string m_sAppearance;
 
 	//------------------------------------------------------------------------------------------------
 	LF_WantedReportRecord Copy()
@@ -31,6 +35,7 @@ class LF_WantedReportRecord : Managed
 		copy.m_sPlace = m_sPlace;
 		copy.m_bIdentified = m_bIdentified;
 		copy.m_iSequence = m_iSequence;
+		copy.m_sAppearance = m_sAppearance;
 		return copy;
 	}
 }
@@ -104,6 +109,7 @@ class LF_WantedReports
 
 		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
 		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
+		record.m_sAppearance = LF_WantedLook.Capture(suspect);
 		LF_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
 		if (suspect)
 		{

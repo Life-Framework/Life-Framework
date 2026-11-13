@@ -24,15 +24,37 @@ An entry is a short string of ids: `P;name;offence id;level;clothing keys;vehicl
 the offence being the crime catalog id (#685a). Police-only detail (the place,
 the dispatch log, stolen cars, witness lines) stays on the Read card.
 
+## Portraits
+
+![A portrait on the face](visual-boards/portrait-close.jpg)
+
+The server captures the suspect's look when the report is made (`LF_WantedLook`):
+the character prefab and each loadout slot's item, as prefab GUIDs, about 120
+characters. `LF_WantedPortrait` spawns that character in the preview world,
+dresses it slot by slot and hands it to the poster's `ItemPreviewWidget`. The
+widget is three photo frames wide and the frame clips it to the head and
+shoulders, for every suspect. The dummy is deleted once the face has frozen for
+the last time (33 s after a change); the frozen face keeps the picture. The
+look is not yet in the save (spike issue 2): after a restart a poster has an
+empty photo frame until that lands.
+
+Measured on the session (one portrait, RTX 3080, 1280x720, uncapped): 6.08 ms
+mean, 8.03 ms p95 while live, 5.91 / 7.57 frozen.
+
 ## The live window
 
 A face renders live for 3 s after it is drawn or changed, then hides its widget
 root: the mesh keeps the last frame and costs nearly nothing (the budget's
 "frozen" rows). It renders again for 2 s at 10 s and at 30 s after it was
-built, so textures that streamed in late are on the frozen frame: a late
-joiner's first frame showed the cork at its lowest mip:
+built (and after each change), so textures that streamed in late are on the
+frozen frame; the cork texture is loaded again without the cache at each
+refresh. Before that reload, a late joiner's face kept the cork at its lowest
+mip even after the refreshes (left); with it, the late joiner's frozen face has
+the full cork (right):
 
-![Late joiner before the late refresh](visual-boards/face-late-joiner-flat.jpg)
+| Before | After |
+|---|---|
+| ![Late joiner, cached low mip](visual-boards/face-late-joiner-flat.jpg) | ![Late joiner, reloaded](visual-boards/face-late-joiner.jpg) |
 
 ## From the street
 
@@ -40,7 +62,7 @@ joiner's first frame showed the cork at its lowest mip:
 
 ## Not here yet
 
-Portraits (spike issue 3), stolen cars (issue 4), the appearance on the saved
-report (issue 5), and the night and distance checks (issue 7). The dispatch
+Stolen cars (spike issue 5), the look on the saved report (issue 2), and the
+night and distance checks (issue 7). The dispatch
 boards inherit the wanted board and keep their painted face
 (`m_bDrawPosters 0`).
