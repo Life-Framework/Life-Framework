@@ -8151,6 +8151,116 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
      Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
     }
+    CustomStringTableItem "{C3D98F355E87E01F}" {
+     Id "LF-TestOrgSign_Title"
+     Target_en_us "Test organisation"
+     Comment "Toast title of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{B249F0D4F960A3F9}" {
+     Id "LF-TestOrgSign_Join"
+     Target_en_us "Join test organisation"
+     Comment "F-key action on the playtest sign: join the shared Test Organisation (#934)."
+    }
+    CustomStringTableItem "{920FCADF747D40B0}" {
+     Id "LF-TestOrgSign_Leave"
+     Target_en_us "Leave organisation"
+     Comment "F-key action on the playtest sign: leave your organisation, founder included (#934)."
+    }
+    CustomStringTableItem "{20EB5D2AA9C99C49}" {
+     Id "LF-TestOrgSign_Denied"
+     Target_en_us "Playtest only. This sign works in the playtest town."
+     Comment "Toast when the playtest gate or the dev gate refuses the org sign (#934)."
+    }
+    CustomStringTableItem "{50FAC5EDA66028A3}" {
+     Id "LF-TestOrgSign_NoCharacter"
+     Target_en_us "You have no character yet."
+     Comment "Toast when the org sign is used with no character (#934)."
+    }
+    CustomStringTableItem "{213816480AB942FE}" {
+     Id "LF-TestOrgSign_TooFar"
+     Target_en_us "Step up to the sign."
+     Comment "Toast when the org sign is used from too far (#934)."
+    }
+    CustomStringTableItem "{D09E099C90D56448}" {
+     Id "LF-TestOrgSign_AlreadyIn"
+     Target_en_us "You already belong to an organisation. Leave it first."
+     Comment "Greyed-out reason and toast: Join while already in an organisation (#934)."
+    }
+    CustomStringTableItem "{4EA24B0F715B7041}" {
+     Id "LF-TestOrgSign_NotIn"
+     Target_en_us "You are not in an organisation."
+     Comment "Greyed-out reason and toast: Leave with no organisation (#934)."
+    }
+    CustomStringTableItem "{8E9D6E84A80978B5}" {
+     Id "LF-TestOrgSign_Joined"
+     Target_en_us "You are in the Test organisation. The hideout door in the alley opens for you."
+     Comment "Toast after joining the Test Organisation (#934)."
+    }
+    CustomStringTableItem "{92F24781D1DE033B}" {
+     Id "LF-TestOrgSign_YardTaken"
+     Target_en_us "You are in the Test organisation, but another organisation holds the hideout yard."
+     Comment "Toast after joining when the hideout lease belongs to someone else (#934)."
+    }
+    CustomStringTableItem "{88BA7C53158F4683}" {
+     Id "LF-TestOrgSign_Left"
+     Target_en_us "You left the organisation. Its door is shut to you now."
+     Comment "Toast after leaving the organisation (#934)."
+    }
+    CustomStringTableItem "{A9A2726808B24C57}" {
+     Id "LF-Hideout_Open"
+     Target_en_us "Open"
+     Comment "Prompt on a locked hideout door for a member of the owning organisation (#934)."
+    }
+    CustomStringTableItem "{6A4D04C9867F8E55}" {
+     Id "LF-Hideout_MembersOnly"
+     Target_en_us "Members only (%1)"
+     Comment "Prompt on a locked hideout door for a non-member; %1 is the owning organisation (#934)."
+    }
+    CustomStringTableItem "{F763318319EA320C}" {
+     Id "LF-Hideout_MembersOnlyPlain"
+     Target_en_us "Members only"
+     Comment "Prompt on a locked hideout door when the owner name has not reached the client yet (#934)."
+    }
+    CustomStringTableItem "{1B66611A4CED0EC1}" {
+     Id "LF-Hideout_MembersOnlyReason"
+     Target_en_us "Only members of %1 can open this door."
+     Comment "Refusal under the hideout door prompt; %1 is the owning organisation (#934)."
+    }
+    CustomStringTableItem "{2C929FC1D06CD839}" {
+     Id "LF-Hideout_Unowned"
+     Target_en_us "Locked (no owner)"
+     Comment "Prompt on a hideout door nobody holds (#934)."
+    }
+    CustomStringTableItem "{C252650C7A89CED7}" {
+     Id "LF-Hideout_UnownedReason"
+     Target_en_us "Nobody holds this yard. Found an organisation and take the lease at the registry desk."
+     Comment "Refusal under the hideout door prompt when no organisation holds the yard (#934)."
+    }
+    CustomStringTableItem "{EE39881CFABC1E92}" {
+     Id "LF-Sign_TestOrg_Title"
+     Target_en_us "Test organisation"
+     Comment "Title of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{0D48BB18722E316D}" {
+     Id "LF-Sign_TestOrg_What"
+     Target_en_us "Playtest only: a shared organisation for one tester."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{DFA15542C4155B52}" {
+     Id "LF-Sign_TestOrg_How"
+     Target_en_us "Use Join test organisation. The first one in founds it and takes the hideout yard. Use Leave organisation to get out again."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{C4E999C65CA365AF}" {
+     Id "LF-Sign_TestOrg_Needs"
+     Target_en_us "Nothing. This sign works in the playtest town only."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{39447CA62CCE01E3}" {
+     Id "LF-Sign_TestOrg_Next"
+     Target_en_us "The hideout door is at the end of the cobbled alley: members open it, everyone else is told whose it is."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
   }
  }
 }
