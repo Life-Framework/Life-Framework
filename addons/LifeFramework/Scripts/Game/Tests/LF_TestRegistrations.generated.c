@@ -207,6 +207,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Ledger(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LedgerPersist(), LF_TestTier.PERSISTENCE);

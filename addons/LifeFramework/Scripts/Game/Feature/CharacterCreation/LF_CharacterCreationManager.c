@@ -115,6 +115,19 @@ class LF_CharacterCreationManager : Managed
 	protected ref set<int> m_PickOffered = new set<int>();
 	//! Players who chose "register a new resident" on the pick: their form R-89 may add a character.
 	protected ref set<int> m_RegisterOffered = new set<int>();
+	//! Players whose flow waits for their platform identity (logged once per wait).
+	protected ref set<int> m_IdentityWaiting = new set<int>();
+	//! Players told that the server is still connecting them (once per wait).
+	protected ref set<int> m_IdentityNoticeSent = new set<int>();
+
+	// lf-fixed: identity wait mechanics (poll, when to tell the player), not a server choice
+	protected const int IDENTITY_POLL_MS = 500;
+	// lf-fixed: see above
+	protected const int IDENTITY_NOTICE_MS = 3000;
+	//! A dedicated server with a backend waits this long for a player's identity before the form
+	//! tells them it could not open their account. Past LF_PlayerIdentity.LISTEN_WAIT_MS.
+	// lf-fixed: bounded by the spawn logic retry cap (MAX_REGISTER_RETRIES, about 60 s)
+	protected const int IDENTITY_GIVE_UP_MS = 60000;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_CharacterCreationManager GetInstance()
@@ -165,8 +178,19 @@ class LF_CharacterCreationManager : Managed
 
 		// Resolved here rather than at connect: the platform identity is not guaranteed to be
 		// available yet while the world is loading, and every consumer of the account must key
-		// on the same UID the spawn logic uses.
+		// on the same UID the spawn logic uses. "" means it is still on its way (LF_PlayerIdentity):
+		// the account must not open under any other key, or the signed form looks it up under the
+		// real identity and finds nothing (playtest build 4).
 		string playerUid = LF_Utils.GetAccountUID(playerId);
+		if (playerUid.IsEmpty())
+		{
+			WaitForIdentity(playerId, playerController);
+			return;
+		}
+
+		m_IdentityWaiting.RemoveItem(playerId);
+		m_IdentityNoticeSent.RemoveItem(playerId);
+
 		LF_PlayerAccount account = accountManager.GetAccount(playerUid);
 		if (!account)
 		{
@@ -192,6 +216,40 @@ class LF_CharacterCreationManager : Managed
 		}
 
 		SpawnPlayer(playerId, playerController);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No platform identity yet: the spawn splash stays up, the player is told the server is
+	//! connecting, and the flow asks again. A listen host keys the player by name after
+	//! LF_PlayerIdentity.LISTEN_WAIT_MS, so only a dedicated server whose online service never
+	//! identifies the player reaches IDENTITY_GIVE_UP_MS: the form then opens with the reason on it,
+	//! and signing it asks again (ServerCreateCharacter), so the player is never left without a way on.
+	protected void WaitForIdentity(int playerId, PlayerController playerController)
+	{
+		int waitedMs = LF_PlayerIdentity.WaitedMs(playerId, System.GetTickCount());
+		if (waitedMs < IDENTITY_GIVE_UP_MS)
+		{
+			if (!m_IdentityWaiting.Contains(playerId))
+			{
+				m_IdentityWaiting.Insert(playerId);
+				LF_Debug.Info("CharacterCreation", "waiting for the platform identity of player " + playerId + " before opening their account");
+			}
+
+			// Usually it comes within a second (0.8 s on a launcher solo host); a longer wait is said.
+			if (waitedMs >= IDENTITY_NOTICE_MS && !m_IdentityNoticeSent.Contains(playerId))
+			{
+				m_IdentityNoticeSent.Insert(playerId);
+				LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", "#LF-CC_Wait_Identity", 8.0, LF_ENotificationType.INFO);
+			}
+
+			GetGame().GetCallqueue().CallLater(ContinueFlow, IDENTITY_POLL_MS, false, playerId);
+			return;
+		}
+
+		m_IdentityWaiting.RemoveItem(playerId);
+		m_IdentityNoticeSent.RemoveItem(playerId);
+		LF_Debug.Error("CharacterCreation", string.Format("player %1 has no platform identity after %2 s, so no account can open; the registration form asks them to sign again", playerId, waitedMs / 1000));
+		ShowRegistrationForm(playerController, "#LF-CC_Error_NoIdentity");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -305,7 +363,33 @@ class LF_CharacterCreationManager : Managed
 		if (!controller)
 			return;
 
-		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
+		string accountUid = LF_Utils.GetAccountUID(playerId);
+		LF_PlayerAccount account = FindAccount(accountUid);
+		if (!account)
+		{
+			// Never a dead end. No identity yet: the form comes back saying so. An identity with no
+			// account behind it (the flow gave up waiting before it arrived): the player has never
+			// registered under it, so the account opens now.
+			if (accountUid.IsEmpty())
+			{
+				LF_Debug.Error("CharacterCreation", "form R-89 of player " + playerId + " not registered: still no platform identity; the form asks them to sign again");
+				ShowRegistrationForm(controller, "#LF-CC_Error_NoIdentity");
+				return;
+			}
+
+			LF_Debug.Warn("CharacterCreation", string.Format("player %1 signed form R-89 with no account open under %2; opening it now", playerId, accountUid));
+			account = LF_PlayerAccountManager.GetOrCreate(accountUid);
+		}
+
+		// The form was open although the account already has a character (it opened before the
+		// identity was confirmed): back into the flow, which spawns that character or offers the pick.
+		if (account.HasCharacters() && !m_RegisterOffered.Contains(playerId) && !ControlsLivingBody(controller))
+		{
+			LF_Debug.Warn("CharacterCreation", "player " + playerId + " signed form R-89 but their account already has a character; continuing with it");
+			ContinueFlow(playerId);
+			return;
+		}
+
 		string refusal = LF_CharacterCreationRules.RefuseCharacter(account, firstName, lastName, age);
 		// A further character (#331) is registered only from the pick's "new resident" line, never
 		// from inside a living body.

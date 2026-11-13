@@ -272,6 +272,47 @@ class LF_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A player's real platform identity arrived after their account was opened under a name
+	//! stand-in (LF_PlayerIdentity). The stand-in account moves onto the real key so the next lookup
+	//! finds it. Its characters keep their record keys, so the bank, rank and every other record
+	//! saved under the stand-in still resolves through GetPlayerUID, now and after a restart.
+	//! A returning player's real account is never overwritten: an empty stand-in is dropped, a real
+	//! account with no character gives way, and when both hold characters both are kept.
+	//! \return the account now under realUid, or null when neither key had one.
+	static LF_PlayerAccount AdoptStandIn(string standInUid, string realUid)
+	{
+		if (standInUid.IsEmpty() || realUid.IsEmpty() || standInUid == realUid)
+			return null;
+
+		LF_PlayerAccountManager instance = GetInstance();
+		LF_PlayerAccount standIn = instance.m_mAccounts.Get(standInUid);
+		LF_PlayerAccount real = instance.m_mAccounts.Get(realUid);
+		if (!standIn)
+			return real;
+
+		if (real && real.HasCharacters())
+		{
+			if (!standIn.HasCharacters())
+			{
+				instance.m_mAccounts.Remove(standInUid);
+				LF_Debug.Info("Account", string.Format("stand-in account %1 had no character; account %2 is played", standInUid, realUid));
+				LF_AccountReplication.Publish(real);
+				return real;
+			}
+
+			LF_Debug.Warn("Account", string.Format("stand-in account %1 and account %2 both hold characters; %2 is played and %1 stays saved for an administrator", standInUid, realUid));
+			return real;
+		}
+
+		instance.m_mAccounts.Remove(standInUid);
+		standIn.SetPersistentId(realUid);
+		instance.m_mAccounts.Set(realUid, standIn);
+		LF_Debug.Info("Account", string.Format("account %1 moved to the real identity %2 (%3 character(s), record keys kept)", standInUid, realUid, standIn.GetCharacterCount()));
+		LF_AccountReplication.Publish(standIn);
+		return standIn;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Add the player account instance to the cache so it is returned on the next GetAccount call
 	//! \param account Account instance to cache
 	void AddToCache(notnull LF_PlayerAccount account)

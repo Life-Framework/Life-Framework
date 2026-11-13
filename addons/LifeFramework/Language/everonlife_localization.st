@@ -8141,6 +8141,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are willing, but cannot show you a card."
      Comment "Toast to the officer: the citizen agreed to show their card but carries none, or walked out of reach (#902)."
     }
+    CustomStringTableItem "{EF99F8D0F3808C85}" {
+     Id "LF-CC_Wait_Identity"
+     Target_en_us "Connecting to the online service. Your registration form opens in a moment."
+     Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
+    }
+    CustomStringTableItem "{7724C0B2311D85FD}" {
+     Id "LF-CC_Error_NoIdentity"
+     Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
+     Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
+    }
   }
  }
 }

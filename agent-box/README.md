@@ -563,6 +563,20 @@ world already open in edit mode can hang the bridge; kill that process and
 relaunch. Last full run (2026-10-10): 36 probes, `stand_fail=0`,
 `missing_action=0`, `use_fail=0`.
 
+## Listen host with the online service
+
+`session up` servers run `-noBackend`, so a player's identity never changes during a
+session. A real listen host (the launcher's "Play on my own", hosting from the game menu)
+gets the platform identity about a second after the join, and playtest build 4 broke
+there. `node agent-box/listen-host.mjs [--addons <dir>] [--profile <dir>] [--sign-after <s>]`
+boots the game the way the launcher's solo mode does (Steam signed in, hidden desktop,
+640x360, fresh profile), signs form R-89 through the file channel after the delay
+(the harness writes to `<profile>/profile/agent-box`), prints the identity, account and
+spawn lines, and exits 0 when the character spawned. Point `--addons` at an unzipped
+playtest build to test a release. It runs outside the pool's lanes and refuses while any
+Arma Reforger process runs. A joiner cannot be added on one PC: a second client is the
+same Steam account, so the same identity; a friend joining stays a manual step.
+
 ## Multi-client session (dedicated server)
 
 One dedicated server and up to three game clients run side by side on one PC

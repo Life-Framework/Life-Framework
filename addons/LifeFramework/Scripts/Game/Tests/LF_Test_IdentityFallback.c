@@ -15,9 +15,14 @@ class LF_Test_IdentityFallback : LF_Test
 		// tools\cli host start runs a -noBackend dedicated server: no backend ever answers, so a
 		// friend who joins must get an identity from their name, or the faction pick is refused
 		// with #EL-CC_Error_NoAccount and the player never spawns.
-		ctx.True(LF_Utils.ChooseIdentityFallback(true, false, true) == LF_EIdentityFallback.PLAYER_NAME, "a -noBackend dedicated server keys a player by name");
-		ctx.True(LF_Utils.ChooseIdentityFallback(true, false, false) == LF_EIdentityFallback.WAIT, "a dedicated server with a backend waits for the real identity");
-		ctx.True(LF_Utils.ChooseIdentityFallback(true, true, true) == LF_EIdentityFallback.SESSION_SLOT, "the multi-client session keys a player by player id");
-		ctx.True(LF_Utils.ChooseIdentityFallback(false, false, false) == LF_EIdentityFallback.PLAYER_NAME, "Workbench play and a listen host key a player by name");
+		int wait = LF_PlayerIdentity.LISTEN_WAIT_MS;
+		ctx.True(LF_Utils.ChooseIdentityFallback(true, false, true, 0) == LF_EIdentityFallback.PLAYER_NAME, "a -noBackend dedicated server keys a player by name");
+		ctx.True(LF_Utils.ChooseIdentityFallback(true, false, false, 0) == LF_EIdentityFallback.WAIT, "a dedicated server with a backend waits for the real identity");
+		ctx.True(LF_Utils.ChooseIdentityFallback(true, false, false, wait * 10) == LF_EIdentityFallback.WAIT, "a dedicated server with a backend never keys a player by name");
+		ctx.True(LF_Utils.ChooseIdentityFallback(true, true, true, 0) == LF_EIdentityFallback.SESSION_SLOT, "the multi-client session keys a player by player id");
+		ctx.True(LF_Utils.ChooseIdentityFallback(false, false, true, 0) == LF_EIdentityFallback.PLAYER_NAME, "Workbench play and a -noBackend listen host key a player by name");
+		// Playtest build 4: the launcher solo host got the identity about 15 s after the form opened.
+		ctx.True(LF_Utils.ChooseIdentityFallback(false, false, false, 1000) == LF_EIdentityFallback.WAIT, "a listen host with the online service waits for the identity");
+		ctx.True(LF_Utils.ChooseIdentityFallback(false, false, false, wait) == LF_EIdentityFallback.PLAYER_NAME, "a listen host whose online service never answers keys a player by name");
 	}
 }
