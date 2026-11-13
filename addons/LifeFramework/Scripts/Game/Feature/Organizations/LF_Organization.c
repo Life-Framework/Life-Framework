@@ -840,10 +840,6 @@ class LF_Organization : Managed
 //------------------------------------------------------------------------------------------------
 class LF_OrganizationManager : Managed
 {
-	static const int MAX_CASH_MOVE = 1000000;
-	static const int PRICE_EXTRA_STORAGE = 500;
-	static const int PRICE_PROCESSING_SLOT = 250;
-	static const int PRICE_PARKED_VEHICLE = 750;
 	static const string RANK_FOUNDER = "founder";
 	static const string RANK_MEMBER = "member";
 
@@ -857,18 +853,18 @@ class LF_OrganizationManager : Managed
 		if (amount <= 0)
 			return false;
 
-		return amount <= MAX_CASH_MOVE;
+		return amount <= LF_OrgConfig.MaxCashMove();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static int UpgradePrice(LF_EOrganizationUpgrade upgrade)
 	{
 		if (upgrade == LF_EOrganizationUpgrade.EXTRA_STORAGE)
-			return PRICE_EXTRA_STORAGE;
+			return LF_OrgConfig.PriceExtraStorage();
 		if (upgrade == LF_EOrganizationUpgrade.PROCESSING_SLOT)
-			return PRICE_PROCESSING_SLOT;
+			return LF_OrgConfig.PriceProcessingSlot();
 		if (upgrade == LF_EOrganizationUpgrade.PARKED_VEHICLE)
-			return PRICE_PARKED_VEHICLE;
+			return LF_OrgConfig.PriceParkedVehicle();
 
 		return 0;
 	}

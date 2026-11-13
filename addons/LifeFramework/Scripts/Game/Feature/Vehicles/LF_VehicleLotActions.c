@@ -218,7 +218,7 @@ class LF_VehicleStoreAction : ScriptedUserAction
 	//! The garage counter stores the owner's car parked at the garage.
 	protected string PickVehicleId(string uid, LF_VehicleGarageComponent garage, IEntity actionOwner, IEntity user)
 	{
-		return LF_VehicleOwnership.OwnedVehicleNear(uid, garage.GetOwner().GetOrigin(), LF_VehicleGarageComponent.INTERACT_RADIUS);
+		return LF_VehicleOwnership.OwnedVehicleNear(uid, garage.GetOwner().GetOrigin(), LF_GarageConfig.GarageRadius());
 	}
 
 	//------------------------------------------------------------------------------------------------

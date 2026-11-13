@@ -112,8 +112,6 @@ class LF_PoliceApplicationForm
 //!   server -> owner : LF_ShowPoliceApplicationForm (RpcDo_*)
 modded class SCR_PlayerController
 {
-	static const float LF_POLICE_DESK_RANGE = 6;
-
 	//------------------------------------------------------------------------------------------------
 	//! Server: open the form on this player's machine.
 	void LF_ShowPoliceApplicationForm()
@@ -162,7 +160,7 @@ modded class SCR_PlayerController
 		if (!user)
 			return false;
 
-		return LF_ActionSite.FindNear(user.GetOrigin(), LF_POLICE_DESK_RANGE, "LF_PoliceApplyAction") != null;
+		return LF_ActionSite.FindNear(user.GetOrigin(), LF_PoliceConfig.ApplyDeskRange(), "LF_PoliceApplyAction") != null;
 	}
 
 	//------------------------------------------------------------------------------------------------

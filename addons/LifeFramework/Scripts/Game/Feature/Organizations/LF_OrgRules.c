@@ -104,12 +104,7 @@ class LF_OrgView : Managed
 //------------------------------------------------------------------------------------------------
 class LF_OrgRules
 {
-	//! Cash the founder hands over at the registry desk. Carried MoneyStack, not the bank.
-	static const int FOUNDING_FEE = 250;
-	static const int NAME_MIN = 3;
-	static const int NAME_MAX = 32;
-	//! An offer stands this long; then the invitee has to be asked again.
-	static const int OFFER_MS = 120000;
+	//! The founding fee (carried cash, not the bank), the name length and the offer lifetime are LF_OrgConfig fields.
 	protected static const string NAME_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -'&.";
 
 	//! Replicated rights: the rank's mask (bit = LF_EOrganizationPermission, LF_OrgRights) plus
@@ -130,10 +125,10 @@ class LF_OrgRules
 		if (name.IsEmpty())
 			return "#LF-Org_NameEmpty";
 
-		if (name.Length() < NAME_MIN)
+		if (name.Length() < LF_OrgConfig.NameMin())
 			return "#LF-Org_NameShort";
 
-		if (name.Length() > NAME_MAX)
+		if (name.Length() > LF_OrgConfig.NameMax())
 			return "#LF-Org_NameLong";
 
 		for (int i = 0; i < name.Length(); i++)

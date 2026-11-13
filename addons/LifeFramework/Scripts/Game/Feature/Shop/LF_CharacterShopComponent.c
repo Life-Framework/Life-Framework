@@ -12,13 +12,8 @@ class LF_CharacterShopComponentClass : ScriptComponentClass
 
 class LF_CharacterShopComponent : ScriptComponent
 {
-	//! How far the player may be from the shop before the server rejects a transaction.
-	protected const float MAX_SHOP_DISTANCE = 30;
-
-	//! Upper bound on one buy or sell request. Every bought unit is spawned and every sold unit is
-	//! deleted, so an unbounded quantity is an unbounded entity loop on the server.
-	//! The order slip clamps its quantity to it, so it is public.
-	static const int MAX_TRANSACTION_QUANTITY = 99;
+	//! The shop distance and the per-order unit cap are LF_ShopLimitsConfig fields. Every bought unit is
+	//! spawned and every sold unit deleted, so an unbounded quantity would be an unbounded entity loop.
 
 	//! World cue at the till: the character handling the goods and notes, heard by everyone nearby.
 	static const string TILL_SOUND = "SOUND_PICK_UP";
@@ -123,9 +118,9 @@ class LF_CharacterShopComponent : ScriptComponent
 	//! Server: quantity, shop and range checks shared by buy and sell.
 	protected LF_EShopRefusal CheckRequest(IEntity player, RplId shopId, ResourceName prefab, int quantity)
 	{
-		if (quantity < 1 || quantity > MAX_TRANSACTION_QUANTITY)
+		if (quantity < 1 || quantity > LF_ShopLimitsConfig.OrderMaxQuantity())
 		{
-			LF_Debug.Warn("Shop", string.Format("trade rejected (quantity %1 outside 1..%2) item=%3", quantity, MAX_TRANSACTION_QUANTITY, prefab));
+			LF_Debug.Warn("Shop", string.Format("trade rejected (quantity %1 outside 1..%2) item=%3", quantity, LF_ShopLimitsConfig.OrderMaxQuantity(), prefab));
 			return LF_EShopRefusal.BAD_QUANTITY;
 		}
 
@@ -142,7 +137,7 @@ class LF_CharacterShopComponent : ScriptComponent
 			return LF_EShopRefusal.NO_SHOP;
 		}
 
-		if (vector.Distance(player.GetOrigin(), shop.GetOwner().GetOrigin()) > MAX_SHOP_DISTANCE)
+		if (vector.Distance(player.GetOrigin(), shop.GetOwner().GetOrigin()) > LF_ShopLimitsConfig.ShopDistance())
 		{
 			LF_Debug.Warn("Shop", "trade rejected (out of range)");
 			return LF_EShopRefusal.TOO_FAR;

@@ -35,7 +35,7 @@ class LF_Test_ATMKeypad : LF_Test
 		ctx.Equal(0, LF_ATMKeypad.Press(0, 0), "a leading zero adds nothing");
 		ctx.Equal(7, LF_ATMKeypad.Press(7, 12), "a key that is not a digit changes nothing");
 
-		int limit = LF_ATMManager.MAX_TRANSACTION_AMOUNT;
+		int limit = LF_LedgerConfig.AtmMaxTransaction();
 		ctx.Equal(limit, LF_ATMKeypad.Press(limit / 10, 0), "the entry reaches the transaction limit exactly");
 		ctx.Equal(limit, LF_ATMKeypad.Press(limit, 5), "a digit past the transaction limit is refused");
 
@@ -89,7 +89,7 @@ class LF_Test_CounterRefusalText : LF_Test
 
 		ctx.Equal(1, LF_ShopRefusal.StepQuantity(1, -1), "the slip never goes below 1");
 		ctx.Equal(3, LF_ShopRefusal.StepQuantity(2, 1), "One more adds one");
-		ctx.Equal(LF_CharacterShopComponent.MAX_TRANSACTION_QUANTITY, LF_ShopRefusal.StepQuantity(LF_CharacterShopComponent.MAX_TRANSACTION_QUANTITY, 1), "the slip stops at the server's per-order cap");
+		ctx.Equal(LF_ShopLimitsConfig.OrderMaxQuantity(), LF_ShopRefusal.StepQuantity(LF_ShopLimitsConfig.OrderMaxQuantity(), 1), "the slip stops at the server's per-order cap");
 
 		ctx.True(LF_ShopPriceList.Matches("Water Bottle", "water"), "the search ignores case");
 		ctx.True(LF_ShopPriceList.Matches("Water Bottle", ""), "an empty search shows every line");

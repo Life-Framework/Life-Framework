@@ -40,7 +40,7 @@ class LF_Test_ATMBoundary : LF_Test
 
 		ctx.False(LF_CharacterATMComponent.ServeDeposit(character, account, 0, uid), "a zero deposit is refused");
 		ctx.False(LF_CharacterATMComponent.ServeDeposit(character, account, -10, uid), "a negative deposit is refused");
-		ctx.False(LF_CharacterATMComponent.ServeDeposit(character, account, LF_ATMManager.MAX_TRANSACTION_AMOUNT + 1, uid), "an oversized deposit is refused");
+		ctx.False(LF_CharacterATMComponent.ServeDeposit(character, account, LF_LedgerConfig.AtmMaxTransaction() + 1, uid), "an oversized deposit is refused");
 		ctx.Equal(50, LF_MoneyUtils.GetCash(character), "refused deposits leave cash at 50");
 		ctx.Equal(0, account.GetBalance(), "refused deposits leave the balance at 0");
 

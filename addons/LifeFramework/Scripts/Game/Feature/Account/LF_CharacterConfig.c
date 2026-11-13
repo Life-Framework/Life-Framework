@@ -9,9 +9,17 @@ class LF_CharacterConfig
 	static const ResourceName CONFIG_PATH = "{CBD57E33C475D480}Configs/Account/LF_Characters.conf";
 
 	static const int DEFAULT_MAX_PER_ACCOUNT = 1;
+	static const int DEFAULT_MIN_AGE = 18;
+	static const int DEFAULT_MAX_AGE = 80;
 
 	[Attribute("1", UIWidgets.Auto, "Characters one account may hold. 1 is one life per player; more lets a player pick a character at spawn")]
 	int m_iMaxPerAccount;
+
+	[Attribute("18", UIWidgets.Auto, "Youngest age a new character may register with", params: "1 120")]
+	int m_iMinAge = 18;
+
+	[Attribute("80", UIWidgets.Auto, "Oldest age a new character may register with", params: "1 120")]
+	int m_iMaxAge = 80;
 
 	protected static ref LF_CharacterConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -52,6 +60,26 @@ class LF_CharacterConfig
 			return DEFAULT_MAX_PER_ACCOUNT;
 
 		return config.m_iMaxPerAccount;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int MinAge()
+	{
+		LF_CharacterConfig config = Get();
+		if (!config || config.m_iMinAge < 1)
+			return DEFAULT_MIN_AGE;
+
+		return config.m_iMinAge;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int MaxAge()
+	{
+		LF_CharacterConfig config = Get();
+		if (!config || config.m_iMaxAge < 1)
+			return DEFAULT_MAX_AGE;
+
+		return config.m_iMaxAge;
 	}
 
 	//------------------------------------------------------------------------------------------------

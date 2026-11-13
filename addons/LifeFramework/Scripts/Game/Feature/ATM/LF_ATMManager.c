@@ -1,9 +1,5 @@
 class LF_ATMManager : Managed
 {
-	//! Largest single deposit or withdrawal the server accepts. Guards the
-	//! account balance against hostile oversized RPC payloads.
-	static const int MAX_TRANSACTION_AMOUNT = 1000000;
-
 	protected static ref LF_ATMManager s_Instance;
 	protected ref map<string, ref LF_BankAccount> m_mAccounts = new map<string, ref LF_BankAccount>();
 
@@ -14,7 +10,7 @@ class LF_ATMManager : Managed
 	{
 		if (amount <= 0)
 			return false;
-		return amount <= MAX_TRANSACTION_AMOUNT;
+		return amount <= LF_LedgerConfig.AtmMaxTransaction();
 	}
 
 	//------------------------------------------------------------------------------------------------

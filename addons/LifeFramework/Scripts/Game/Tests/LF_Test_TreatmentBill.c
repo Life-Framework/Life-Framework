@@ -73,12 +73,12 @@ class LF_Test_TreatmentBill : LF_Test
 		LF_TreatmentBillRecord second = LF_TreatmentBills.Issue(PATIENT, "Pat", MEDIC, "Med", 80, 40, "d");
 		ctx.NotNull(second, "a second open bill is written");
 		ctx.True(LF_TreatmentBills.OldestOpen(PATIENT) == wake, "the oldest unpaid bill is paid first");
-		for (int i = 0; i < LF_TreatmentBills.MAX_OPEN_PER_PATIENT; i++)
+		for (int i = 0; i < LF_MedicConfig.Get().m_iBillMaxOpenPerPatient; i++)
 		{
 			LF_TreatmentBills.Issue(PATIENT, "Pat", MEDIC, "Med", 10, 5, "d");
 		}
 
-		ctx.Equal(LF_TreatmentBills.MAX_OPEN_PER_PATIENT, LF_TreatmentBills.CountOpen(PATIENT), "unpaid bills are capped per patient");
+		ctx.Equal(LF_MedicConfig.Get().m_iBillMaxOpenPerPatient, LF_TreatmentBills.CountOpen(PATIENT), "unpaid bills are capped per patient");
 
 		LF_TreatmentBills.ResetStatics();
 	}

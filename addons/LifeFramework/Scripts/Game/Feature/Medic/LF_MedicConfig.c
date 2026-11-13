@@ -106,6 +106,15 @@ class LF_MedicConfig
 	[Attribute("5", UIWidgets.Auto, "Seconds between two server checks of a wristband wearer's distance to the scene", params: "1 60")]
 	float m_fNewLifeCheckSeconds = 5;
 
+	[Attribute("5", UIWidgets.Auto, "Unpaid treatment bills one patient may carry; a further bill is not written", params: "1 50")]
+	int m_iBillMaxOpenPerPatient = 5;
+
+	[Attribute("3", UIWidgets.Auto, "Paid bills kept per patient so a receipt reprints after a restart", params: "0 50")]
+	int m_iBillKeepPaidPerPatient = 3;
+
+	[Attribute("60", UIWidgets.Auto, "Seconds between two sweeps that turn overdue bills into debt and let the bank pay debt off", params: "5 3600")]
+	int m_iDebtSweepSeconds = 60;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
