@@ -1,0 +1,18 @@
+GenericEntity {
+ ID "203C94B2D40384CE"
+ components {
+  LF_AmbientSwitchComponent "{8963B9BE3BB8E51F}" {
+   m_bStartsOn 0
+  }
+  LF_AmbientEmitterComponent "{E5C7586129AD61DE}" {
+   m_sSoundProject "{EC2B286A4A5D758A}Sounds/Atmosphere/Atmosphere_FuelPump.acp"
+   m_fRadius 13
+   m_sGroup "fuel_pump"
+   m_vOffset 0 1.2 0
+   m_Condition LF_AmbientConditionSwitch "{007253A5D00765D4}" {
+   }
+  }
+  RplComponent "{6BA4FF1194B4FC60}" {
+  }
+ }
+}
