@@ -7,8 +7,8 @@
   "prompt": "1989 bank vault entrance: a round grey-green steel vault door with a four-spoke wheel, set in a heavy round frame and collar in a square block of reinforced wall. no text, no logos.",
   "texture_prompt": "",
   "meshy": {
-    "ai_model": "meshy-6-lite",
-    "target_polycount": 20000
+    "ai_model": "meshy-6",
+    "target_polycount": 30000
   },
   "size_m": {
     "length": 3,
@@ -16,13 +16,13 @@
     "width": 0.9
   },
   "budget": {
-    "lod0_tris": 6000,
+    "lod0_tris": 12000,
     "lod_ratios": [
       0.5,
       0.2
     ],
     "texture_px": 2048,
-    "credits": 60
+    "credits": 75
   },
   "fit": {
     "offset": [

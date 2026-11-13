@@ -7,8 +7,8 @@
   "prompt": "1989 bank vault cash storage: a grey-green steel shelf or trolley stacked with plain banknote bundles in paper bands. no text, no logos.",
   "texture_prompt": "",
   "meshy": {
-    "ai_model": "meshy-6-lite",
-    "target_polycount": 20000
+    "ai_model": "meshy-6",
+    "target_polycount": 30000
   },
   "size_m": {
     "length": 1.4,
@@ -16,13 +16,13 @@
     "width": 0.6
   },
   "budget": {
-    "lod0_tris": 6000,
+    "lod0_tris": 12000,
     "lod_ratios": [
       0.5,
       0.2
     ],
     "texture_px": 2048,
-    "credits": 55
+    "credits": 75
   },
   "fit": {
     "offset": [
