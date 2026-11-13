@@ -1,9 +1,10 @@
 // Concept stage: 10 prompts -> 10 Meshy text-to-image pictures -> a numbered contact sheet -> a rubric
 // score and one pick, before any 3D credit is spent (docs/asset-pipeline/concepts.md). The picked
-// image is what the generate stage feeds to Meshy image-to-3D.
+// image is what the generate stage feeds to Meshy image-to-3D. With a `reference` picture in
+// concepts.json the ten go through image-to-image instead, so a kit matches a piece already chosen.
 // Endpoints and costs were read from docs.meshy.ai on 2026-11-13; recheck there before changing them.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { extname, isAbsolute, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import * as meshy from "./meshy.mjs";
 
@@ -43,8 +44,25 @@ export function conceptProblems(rec) {
     if (!x.label || x.label.length > 22) out.push(`variant ${i + 1}: label needs 1 to 22 characters`);
     if (!x.detail) out.push(`variant ${i + 1}: detail is empty`);
   }
+  if (rec.reference !== undefined) {
+    const f = rec.reference?.file;
+    if (typeof f !== "string" || !REF_TYPES[extname(f).toLowerCase()]) out.push("reference.file must be a .png, .jpg, .jpeg or .webp path");
+    else if (isAbsolute(f) || f.includes("..")) out.push("reference.file must be a path inside the repo, relative to its root");
+  }
   if (!out.length) for (const p of buildPrompts(rec.subject, v)) if (p.prompt.length > 800) out.push(`variant ${p.n}: prompt is ${p.prompt.length} characters (limit 800)`);
   return out;
+}
+
+// ---- the Meshy request -------------------------------------------------------------------------
+// image-to-image takes 1 to 5 references as URLs or data URIs and costs what text-to-image does on
+// the nano-banana models (docs.meshy.ai/en/api/image-to-image and /pricing, read 2026-11-13).
+export const REF_TYPES = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp" };
+export const referenceUri = (root, rec) =>
+  `data:${REF_TYPES[extname(rec.reference.file).toLowerCase()]};base64,` + readFileSync(join(root, rec.reference.file)).toString("base64");
+
+export function conceptRequest(model, prompt, refUri) {
+  if (!refUri) return { call: "text-to-image", path: "/openapi/v1/text-to-image", body: { ai_model: model, prompt, aspect_ratio: "1:1" } };
+  return { call: "image-to-image", path: "/openapi/v1/image-to-image", body: { ai_model: model, prompt, reference_image_urls: [refUri], aspect_ratio: "1:1" } };
 }
 
 // ---- contact sheet ----------------------------------------------------------------------------
@@ -145,6 +163,8 @@ export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
   const problems = conceptProblems(rec);
   if (problems.length) throw new Error("concepts.json problems:\n  " + problems.join("\n  "));
   const model = rec.image_model || IMAGE_MODEL;
+  if (rec.reference && !existsSync(join(root, rec.reference.file))) throw new Error(`concepts.json reference ${rec.reference.file} does not exist`);
+  const refUri = rec.reference ? referenceUri(root, rec) : null;
   const folder = conceptsDir(dir);
   mkdirSync(folder, { recursive: true });
   const ledger = join(dir, "credits.jsonl");
@@ -154,20 +174,22 @@ export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
   const need = todo.filter((p) => !st[p.n]?.taskId).length * imageCost(model);
   const before = meshy.spent(ledger);
   if (before + need > spec.budget.credits) throw new Error(`concepts need about ${need} credits and ${before} are spent; the cap is ${spec.budget.credits}. Stop and report.`);
-  if (todo.length) console.log(`Meshy balance ${await meshy.balance()} credits; ${todo.length} concept image(s) to make at ${imageCost(model)} each (${model})`);
+  if (todo.length) console.log(`Meshy balance ${await meshy.balance()} credits; ${todo.length} concept image(s) to make at ${imageCost(model)} each (${model}${refUri ? `, image-to-image from ${rec.reference.file}` : ""})`);
   const save = () => writeState(dir, ctx.fullState);
   // Start every task first so Meshy renders them side by side, then collect.
   for (const p of todo) {
     if (st[p.n]?.taskId) continue;
-    st[p.n] = { taskId: (await meshy.call("POST", "/openapi/v1/text-to-image", { ai_model: model, prompt: p.prompt, aspect_ratio: "1:1" })).result };
+    const req = conceptRequest(model, p.prompt, refUri);
+    st[p.n] = { taskId: (await meshy.call("POST", req.path, req.body, { timeoutMs: 120000 })).result, call: req.call };
     save();
   }
   for (const p of todo) {
-    const t = await meshy.waitTask(st[p.n].taskId, { path: "/openapi/v1/text-to-image", budgetS: 600 });
+    const call = st[p.n].call || "text-to-image";
+    const t = await meshy.waitTask(st[p.n].taskId, { path: `/openapi/v1/${call}`, budgetS: 600 });
     if (!t.image_urls?.[0]) throw new Error(`concept ${p.n}: Meshy returned no image`);
     await meshy.download(t.image_urls[0], join(folder, `${pad(p.n)}.png`));
     if (!st[p.n].logged) {
-      meshy.logCredits(ledger, { call: "text-to-image", model, task: st[p.n].taskId, credits: t.consumed_credits ?? imageCost(model) });
+      meshy.logCredits(ledger, { call, model, task: st[p.n].taskId, credits: t.consumed_credits ?? imageCost(model) });
       st[p.n].logged = true;
     }
     save();

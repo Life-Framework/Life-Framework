@@ -1,0 +1,157 @@
+{
+  "slug": "vault-deposit-wall",
+  "subject": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel.",
+  "variants": [
+    {
+      "label": "Even grid, grey-green",
+      "detail": "A uniform grid of equal small doors, grey-green paint, brass keyhole plates",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. A uniform grid of equal small doors, grey-green paint, brass keyhole plates. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8bad-7677-9d31-c9c0768cda6a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "plain even grid; fine grid of doors is mush for image-to-3D"
+    },
+    {
+      "label": "Mixed sizes",
+      "detail": "Rows of small doors at the top, medium in the middle and large doors at the bottom, grey-green paint",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. Rows of small doors at the top, medium in the middle and large doors at the bottom, grey-green paint. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8c63-7650-8453-58eca8e98190",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "mixed door sizes read well; bigger lower doors"
+    },
+    {
+      "label": "Brushed steel, brass",
+      "detail": "Bare brushed steel doors with brass hinges and brass keyhole plates on a grey-green carcass",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. Bare brushed steel doors with brass hinges and brass keyhole plates on a grey-green carcass. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8d1b-71b3-b51c-465237f4d507",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "bright brushed steel doors, a bit modern"
+    },
+    {
+      "label": "Plinth and cornice",
+      "detail": "The grid on a dark steel plinth with a heavy top cornice band",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. The grid on a dark steel plinth with a heavy top cornice band. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8dd8-700a-86e7-2ffc654ae273",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "plinth and cornice: old-bank feel"
+    },
+    {
+      "label": "Corner unit",
+      "detail": "An L-shaped corner unit: two walls of boxes meeting at a right angle",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. An L-shaped corner unit: two walls of boxes meeting at a right angle. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8e8f-743a-9532-1bfe9aa906d0",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "corner unit; fits a room corner but harder to tile"
+    },
+    {
+      "label": "Some doors open",
+      "detail": "A few small doors hanging open showing empty compartments, one long box drawer pulled half out",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. A few small doors hanging open showing empty compartments, one long box drawer pulled half out. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-65f9-7156-a5e6-5849b2ecc02a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "open doors and drawer: good looted state, thin parts"
+    },
+    {
+      "label": "Two-tone",
+      "detail": "Light grey doors set in a darker grey-green carcass frame with thick dividers",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. Light grey doors set in a darker grey-green carcass frame with thick dividers. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-66c4-752b-be7a-499365d09005",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "light doors on dark carcass; clean contrast"
+    },
+    {
+      "label": "Low counter unit",
+      "detail": "A waist-high box unit with a flat steel worktop on top, for opening boxes",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. A waist-high box unit with a flat steel worktop on top, for opening boxes. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-6781-7303-a1e2-ddc2289c7ee0",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "tall unit plus a counter for opening boxes; two objects"
+    },
+    {
+      "label": "Riveted bays",
+      "detail": "A heavy riveted outer frame, the doors in four bays separated by thick vertical steel posts",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. A heavy riveted outer frame, the doors in four bays separated by thick vertical steel posts. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-6836-7236-9289-48814d2fe26f",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "four riveted bays: strong silhouette, modular by bay"
+    },
+    {
+      "label": "Worn and dented",
+      "detail": "Old worn paint with scuffs and dents, darkened keyholes, a slightly battered look",
+      "prompt": "A late-1980s bank vault safety deposit box wall unit: a tall free-standing steel cabinet whose front is a grid of small plain hinged box doors, each with a pair of keyholes and a small pull handle, no numbers, matching grey-green painted vault steel. Old worn paint with scuffs and dents, darkened keyholes, a slightly battered look. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-68ef-77ce-9f98-0919bea49a80",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "worn and dented; good finish reference"
+    }
+  ],
+  "image_model": "nano-banana-2-1"
+}

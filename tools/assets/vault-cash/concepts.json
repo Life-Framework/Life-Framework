@@ -1,0 +1,157 @@
+{
+  "slug": "vault-cash",
+  "subject": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault.",
+  "variants": [
+    {
+      "label": "Steel shelf rack",
+      "detail": "A tall steel shelving rack, three shelves stacked with cash bricks",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A tall steel shelving rack, three shelves stacked with cash bricks. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8baf-76cb-b386-2857ad6117cb",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "three shelves of bricks; open rack frame is thin-ish"
+    },
+    {
+      "label": "Flat cash trolley",
+      "detail": "A low four-wheeled steel trolley with a flat deck stacked high with cash bricks and a push bar",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A low four-wheeled steel trolley with a flat deck stacked high with cash bricks and a push bar. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8c69-7390-a5a9-d1e0c10425d0",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "flat trolley, one solid block of bricks, push bar: reads at a glance"
+    },
+    {
+      "label": "Two-tier trolley",
+      "detail": "A two-tier push trolley with a handle bar, cash bricks on both tiers",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A two-tier push trolley with a handle bar, cash bricks on both tiers. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8d25-76ce-898e-43bd5ef9cfeb",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "two tiers, thin rails and gaps"
+    },
+    {
+      "label": "Shelf with sacks",
+      "detail": "Steel shelves holding canvas money sacks tied at the neck and stacks of cash bricks",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. Steel shelves holding canvas money sacks tied at the neck and stacks of cash bricks. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8de3-75d3-abdd-9b2dcf54b04d",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "mesh cage: see-through mesh fails image-to-3D"
+    },
+    {
+      "label": "Shelf with cash boxes",
+      "detail": "Open steel shelving with grey steel cash boxes and small coin bags",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. Open steel shelving with grey steel cash boxes and small coin bags. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6dc-8e99-70d1-a036-d8ce4b24ead8",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "shelves with boxes and sacks: rich but busy"
+    },
+    {
+      "label": "Trolley with crates",
+      "detail": "A flatbed trolley carrying stacked grey steel cash crates with lids",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A flatbed trolley carrying stacked grey steel cash crates with lids. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-d5b5-7774-86ec-8c4e2efbcfbb",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "two objects; mesh cage"
+    },
+    {
+      "label": "Cabinet, doors open",
+      "detail": "A steel cash cabinet with both doors open, shelves of cash bricks inside",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A steel cash cabinet with both doors open, shelves of cash bricks inside. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-d66c-733f-949a-681338530d7f",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "cash safe with open doors; overlaps the vault idea"
+    },
+    {
+      "label": "Pallet of cash",
+      "detail": "A small wooden pallet with a strapped block of stacked cash bricks",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A small wooden pallet with a strapped block of stacked cash bricks. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-d72b-7204-bd61-6ce204cd2e2e",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "strapped pallet: very solid, reads as a warehouse more than a vault"
+    },
+    {
+      "label": "Sliding tray rack",
+      "detail": "A heavy riveted rack with sliding steel trays, two pulled half out holding cash bricks",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A heavy riveted rack with sliding steel trays, two pulled half out holding cash bricks. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-d7e4-71bc-919e-66e2107abbab",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "sliding trays: good drawer play later, thin tray sides"
+    },
+    {
+      "label": "Wall shelf and bench",
+      "detail": "A low steel counting bench with a lower shelf, cash bricks stacked on top and below",
+      "prompt": "A late-1980s bank vault cash store loaded with plain banknote bricks bound in paper bands (plain grey-green paper, no printed faces, no numbers), grey-green painted steel like a vault. A low steel counting bench with a lower shelf, cash bricks stacked on top and below. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d730-d897-712c-91e3-364a20695e4f",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "counting bench with stacks: solid, simple"
+    }
+  ],
+  "image_model": "nano-banana-2-1"
+}

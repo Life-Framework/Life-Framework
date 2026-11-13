@@ -15,6 +15,7 @@
 //   buildPrompts dropping the frame          -> FAIL concepts: every prompt ends in the shared product-shot frame
 //   sheetLayout using rows for columns       -> FAIL concepts: ten cells make a 5x2 grid, numbered left to right
 //   pickByRubric breaking ties on the high n -> FAIL concepts: a tie goes to the lower number
+//   conceptRequest ignoring the reference    -> FAIL concepts: a reference sends image-to-image with the picture
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -326,6 +327,13 @@ export async function main() {
     const prompts = cc.buildPrompts("A police baton.", variants);
     ok(prompts.length === 10 && prompts.every((p) => p.prompt.endsWith(cc.FRAME) && p.prompt.startsWith("A police baton.")), "concepts: every prompt ends in the shared product-shot frame");
     ok(new Set(prompts.map((p) => p.prompt)).size === 10 && prompts[2].n === 3 && !prompts[0].prompt.includes(".."), "concepts: the ten prompts are distinct, numbered and tidy");
+    const plain = cc.conceptRequest("nano-banana-2-1", "p", null);
+    ok(plain.path === "/openapi/v1/text-to-image" && !("reference_image_urls" in plain.body), "concepts: without a reference the ten are text-to-image");
+    const withRef = cc.conceptRequest("nano-banana-2-1", "p", "data:image/jpeg;base64,AA");
+    ok(withRef.path === "/openapi/v1/image-to-image" && withRef.call === "image-to-image" && withRef.body.reference_image_urls[0] === "data:image/jpeg;base64,AA", "concepts: a reference sends image-to-image with the picture");
+    ok(cc.conceptProblems({ ...rec(), reference: { file: "tools/assets/stick/ref.gif" } }).some((m) => /reference.file/.test(m)), "concepts: a reference that is not a picture is refused");
+    ok(cc.conceptProblems({ ...rec(), reference: { file: "../outside/ref.png" } }).some((m) => /inside the repo/.test(m)), "concepts: a reference outside the repo is refused");
+    ok(cc.conceptProblems({ ...rec(), reference: { file: "tools/assets/stick/ref.jpg" } }).length === 0, "concepts: a repo-relative jpg reference passes");
     const nine = rec(); nine.variants.pop();
     ok(cc.conceptProblems(nine).some((m) => /exactly 10/.test(m)), "concepts: nine variants are refused");
     const same = rec(); same.variants[4].detail = same.variants[1].detail;
