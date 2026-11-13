@@ -22,7 +22,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
       }
      }
      HandAdditiveRotation -65 -60 -60
-     HandAdditiveTranslation -0.07 0.03 -0.01
+     HandAdditiveTranslation 0 0 0
     }
     CustomAttributes {
      PreviewRenderAttributes "{51B4D3B0BBEC9E87}" {
