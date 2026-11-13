@@ -140,6 +140,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "lockpick") {
     return `${id} lockpick`;
   }
+  if (spec.verb === "hold") {
+    return `${id} hold ${token(spec.item, "item")}`;
+  }
   if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload") {
     return `${id} ${spec.verb}`;
   }

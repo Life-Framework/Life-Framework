@@ -10,6 +10,7 @@
 //   checkSockets without the muzzle test     -> FAIL sockets: a muzzle 5 cm behind the front face is flagged
 //   checkModel without the material test     -> FAIL xob: a model that bakes another material is flagged
 //   logProblems counting lines before start  -> FAIL log: lines before the plugin starts do not count
+//   runLog joining console, script and error -> FAIL log: a run's own start-up lines do not count
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -17,7 +18,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { STAGES, run, specProblems } from "../assets/pipeline/asset.mjs";
 import { checkReport, checkSockets } from "../assets/pipeline/checks.mjs";
-import { logProblems } from "../assets/pipeline/import.mjs";
+import { logProblems, runLog } from "../assets/pipeline/import.mjs";
 import { KINDS } from "../assets/pipeline/kinds.mjs";
 import * as meshy from "../assets/pipeline/meshy.mjs";
 import { ematText, freshGuid, textureMeta, usedGuids, writeAssetMetas, xobMeta, xobMetaIds } from "../assets/pipeline/meta.mjs";
@@ -266,6 +267,17 @@ export async function main() {
     const problems = logProblems(log, "Stick");
     ok(problems.length === 2 && /Invalid collider/.test(problems[0]) && /DefaultGeneratedMaterial/.test(problems[1]), `log: lines before the plugin starts do not count (got ${JSON.stringify(problems)})`);
     ok(logProblems("x\nLF_ASSET_IMPORT rebuilding a\nall fine\nLF_ASSET_IMPORT done 1\n", "Stick").length === 0, "log: a clean import reports nothing");
+    // A run's folder holds console.log and two extracts of it; script.log ends inside the window, so
+    // error.log's start-up lines joined after it would count (the handcuffs import, 2026-11-13).
+    const wbRun = join(tmp, "wb-run");
+    mkdirSync(wbRun, { recursive: true });
+    const startup = "12:00:01.000 RESOURCES (E): metafile without corresponding resource: 'Stick.xob.meta'";
+    const scriptLines = ["12:00:02.000 SCRIPT       : LF_ASSET_IMPORT rebuilding Stick.fbx", "12:00:02.100 SCRIPT       : LF_ASSET_IMPORT done 1"];
+    writeFileSync(join(wbRun, "console.log"), [startup, ...scriptLines, "12:00:03.000 ENGINE       : Game destroyed."].join("\n"));
+    writeFileSync(join(wbRun, "script.log"), scriptLines.join("\n") + "\n");
+    writeFileSync(join(wbRun, "error.log"), startup + "\n");
+    const runProblems = logProblems(runLog(wbRun), "Stick");
+    ok(runProblems.length === 0, `log: a run's own start-up lines do not count (got ${JSON.stringify(runProblems)})`);
   }
 
   // ---- prefab text -------------------------------------------------------------------------------

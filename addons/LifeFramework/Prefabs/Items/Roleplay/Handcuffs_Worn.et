@@ -1,0 +1,10 @@
+GenericEntity {
+ ID "926D9AF0D9939F16"
+ components {
+  MeshObject "{5C9E0B2A71F4D836}" {
+   Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
+  }
+  Hierarchy "{2F7A6D0C93E1B548}" {
+  }
+ }
+}

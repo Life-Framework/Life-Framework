@@ -141,7 +141,7 @@ under "Hard-coded flagship values in script".
 | `Comms/` | core | Payphone, station telephone, phone line and dispatch boards: interactables the Comms system depends on (#147). Which props are phones in the village is layer data |
 | `Debug/` | core | Test fixtures |
 | `Items/Core/` | core | Item bases |
-| `Items/Currencies/`, `Items/Roleplay/` | core | Cash, ID card, ticket, slip, keys |
+| `Items/Currencies/`, `Items/Roleplay/` | core | Cash, ID card, ticket, slip, keys, handcuffs (the restraint's requirement, #664) |
 | `Items/Contraband/`, `Items/HouseKeyItem.et` | core | System items |
 | `Items/Food/`, `Items/Drinks/`, `Items/Seeds/` | core | Gather and survival items; neutral produce |
 | `Items/Resources/` | core | Chain items |

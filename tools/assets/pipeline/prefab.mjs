@@ -4,6 +4,7 @@
 // was fitted to) and gets its own magazine, ammo and magazine config.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
 
 const PLATFORMS = ["PC", "XBOX_ONE", "XBOX_SERIES", "PS4", "HEADLESS"];
@@ -149,7 +150,10 @@ function listAmmo(addon, ammo) {
 export async function writePrefabs(ctx) {
   const { root, spec, dir } = ctx;
   if (spec.kind !== "weapon") {
-    console.log(`prefab: no scaffold for kind ${spec.kind} yet; write the prefab by hand on Item_Base.et (docs/asset-pipeline/README.md "Kinds")`);
+    // Every other kind's scaffold is its own file, prefab-<kind>.mjs, exporting writePrefabs(ctx).
+    const own = new URL(`./prefab-${spec.kind}.mjs`, import.meta.url);
+    if (existsSync(fileURLToPath(own))) return (await import(own.href)).writePrefabs(ctx);
+    console.log(`prefab: no scaffold for kind ${spec.kind} yet; write the prefab by hand (docs/asset-pipeline/README.md "Kinds")`);
     return { skipped: true };
   }
   const w = spec.weapon;

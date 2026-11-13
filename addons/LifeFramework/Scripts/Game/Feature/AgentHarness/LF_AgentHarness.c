@@ -178,6 +178,17 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "peers")
 			return true;
+		if (cmd.Verb == "hold")
+		{
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_item";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "seen")
 		{
 			if (parts.Count() > 2)
@@ -1235,6 +1246,11 @@ class LF_AgentHarness
 			DoPeers(cmd);
 			return;
 		}
+		if (cmd.Verb == "hold")
+		{
+			DoHold(cmd);
+			return;
+		}
 		if (cmd.Verb == "seen")
 		{
 			WriteResult(cmd.Id, "ok", LF_HarnessSeen.Read(cmd.PosX));
@@ -1875,6 +1891,10 @@ class LF_AgentHarness
 			downed = 1;
 		line += " zone=" + LF_Zones.RuleName(LF_Zones.RuleAt(origin));
 		line += string.Format(" downed=%1 life=%2 bleed=%3", downed, LifeStateToken(character), BleedToken(character));
+		int cuffed = 0;
+		if (LF_Restraint.IsRestrained(character))
+			cuffed = 1;
+		line += string.Format(" cuffed=%1", cuffed);
 		line += " " + VitalsToken(character);
 		line += string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
 		return line + " " + KeepsToken(uid);
@@ -2180,12 +2200,51 @@ class LF_AgentHarness
 
 			vector at = body.GetOrigin();
 			joined += string.Format(" carrier=%1 seat=%2 at=%3,%4,%5", carrier, seated, Math.Round(at[0] * 10) / 10, Math.Round(at[1] * 10) / 10, Math.Round(at[2] * 10) / 10);
+			// #664: the replicated cuffed flag, as this client reads it.
+			int peerCuffed = 0;
+			if (LF_Restraint.IsRestrained(body))
+				peerCuffed = 1;
+			joined += string.Format(" cuffed=%1", peerCuffed);
 		}
 
 		if (joined.IsEmpty())
 			joined = "none";
 
 		WriteResult(cmd.Id, "ok", joined);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `hold <name>`: this client takes a carried gadget whose prefab name contains <name> into
+	//! the left hand, as a quick-slot key press does (SCR_GadgetManagerComponent.SetGadgetMode on the
+	//! owner). The cuffs proof (#664) holds the handcuffs with it.
+	protected static void DoHold(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(character);
+		InventoryStorageManagerComponent inventory;
+		if (character)
+			inventory = LF_Component<InventoryStorageManagerComponent>.Find(character);
+
+		if (!character || !gadgets || !inventory)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		array<IEntity> items = {};
+		inventory.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (!item || !item.FindComponent(SCR_GadgetComponent) || !LF_Utils.GetPrefabName(item).Contains(cmd.Arg1))
+				continue;
+
+			gadgets.SetGadgetMode(item, EGadgetMode.IN_HAND);
+			LF_Debug.Log(FEATURE, "hold " + LF_Utils.GetPrefabName(item));
+			WriteResult(cmd.Id, "ok", "held " + cmd.Arg1);
+			return;
+		}
+
+		WriteResult(cmd.Id, "error", "not_carried");
 	}
 
 	//------------------------------------------------------------------------------------------------

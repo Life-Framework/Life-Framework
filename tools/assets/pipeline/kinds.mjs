@@ -42,10 +42,11 @@ export const KINDS = {
     requiredSockets: ["eye", "barrel_muzzle", "barrel_chamber", "slot_magazine"],
     requiredBones: ["w_root", "w_trigger", "w_slide", "w_hammer", "w_fire_mode", "w_slide_release"],
   },
-  // The two profiles below are written from the item conventions in docs/research/asset-pipeline.md
-  // and are not proven end to end yet (docs/architecture/asset-pipeline-spike.md "Issue breakdown").
+  // A held item. Vanilla held gadgets (Gauze_01_packed.xob) have no bones or sockets: the hand
+  // attachment holds the model at its origin, which the "centre" fit puts in the middle of the mesh.
+  // The scaffold is prefab-gadget.mjs. Proven with the handcuffs (#664, 2026-11-13).
   gadget: {
-    proven: false,
+    proven: true,
     assetRoot: "Assets/Items/Roleplay",
     prefabRoot: "Prefabs/Items/Roleplay",
     defaultSize: { length: 0.15, height: 0.08, width: 0.03 },

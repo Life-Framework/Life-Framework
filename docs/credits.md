@@ -40,6 +40,16 @@ name of the person who ran the agent.
 - The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (`website/README.md`).
 - Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (`docs/community/support.md`).
 
+## Generated 3D assets
+
+AI-generated models are allowed in the project and in published builds under the account's Meshy plan terms (signed off by the
+maintainer on #664, 2026-11-13). Each one is credited "generated with Meshy" here, and the asset pipeline records its generation
+ids in `tools/assets/<slug>/provenance.json`.
+
+| Asset | Credit | Generation (Meshy task ids) | Where it is used |
+|---|---|---|---|
+| Handcuffs | generated with Meshy (text-to-3D `latest`, 2026-11-13, 30 credits) | preview `01a1d331-1940-76e1-806c-1f15b6b77fab`, refine `01a1d331-c93f-74f9-a5e6-917ef7864e43` | `Assets/Items/Roleplay/Handcuffs/`, `Prefabs/Items/Roleplay/Handcuffs.et` |
+
 ## Music
 
 | Track | Author | Source | Licence | Used in |

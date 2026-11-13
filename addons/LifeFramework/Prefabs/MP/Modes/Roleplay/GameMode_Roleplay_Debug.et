@@ -79,6 +79,7 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
        "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
        "{976BD4B5B482A8D9}Prefabs/Items/Roleplay/LF_PoliceCarKey.et"
        "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et"
+       "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et"
        "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et"
       }
      }

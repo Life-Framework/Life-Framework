@@ -150,6 +150,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Handcuffs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessPerf(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessProbe(), LF_TestTier.LOGIC);
@@ -277,6 +278,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RestartVehicleNoGroundKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehiclePlatesReserved(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWhitelistUnreadableFileKept(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RestraintRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveCprGraph(), LF_TestTier.WORLD);
