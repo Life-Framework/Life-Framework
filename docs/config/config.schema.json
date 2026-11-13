@@ -59,6 +59,26 @@
       "additionalProperties": false,
       "x-class": "LF_CrimeCatalogConfig"
     },
+    "idCard": {
+      "type": "object",
+      "description": "The photo identity card (#902): Configs/Identity/LF_PhotoIdCard.conf with the owner's `idCard` section layered over it.",
+      "properties": {
+        "replacementFee": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "showSeconds": {
+          "type": "number",
+          "default": 8,
+          "minimum": 2,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_PhotoIdCardConfig"
+    },
     "jobs": {
       "type": "object",
       "description": "Job pay, job XP and job levels.",

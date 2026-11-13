@@ -13,9 +13,6 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	[Attribute(category: "New character defaults")]
 	protected ref array<ref LF_FactionLoadout> m_aFactionCharacterItems;
 
-	//! The town clerk hands the ID card over in the arrival chain (M1-18, a quest with
-	//! m_bRewardIdCard). From then on every spawn of that player carries a card printed from the
-	//! account's character record. On, every spawn carries one from the start (a mode with no clerk).
 	//! Opening bank balance of a newly registered character (flagship default: the cheapest car on
 	//! the lot, so a new player can drive on day one; docs/decisions.md). Paid once, at registration.
 	[Attribute("1000", desc: "Bank balance a newly registered character starts with. Paid once, when the registration form is signed.", category: "New character defaults")]
@@ -125,7 +122,10 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		return m_bGrantTestCars;
 	}
 
-	[Attribute("0", desc: "Give every spawned character their ID card (LF_IdCard), registered at the clerk or not. Off: only players who turned in the clerk's ID card quest.", category: "New character defaults")]
+	//! The town clerk hands the ID card over in the arrival chain (M1-18, a quest with
+	//! m_bRewardIdCard) and replaces a lost one for a fee (#902). On, every spawn carries one from
+	//! the start and a lost one comes back free at the next spawn (a mode with no clerk).
+	[Attribute("0", desc: "Give every spawned character their ID card (LF_IdCard), registered at the clerk or not, and replace a lost one free at the next spawn (a mode with no clerk). Off: the clerk hands the first card over and replaces a lost one for a fee.", category: "New character defaults")]
 	protected bool m_bGrantIdAtSpawn;
 
 	//! Registration retries per player. Capped so a player whose UID or account never resolves
@@ -522,11 +522,10 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	protected void BindAccountComponents(int playerId, string characterPersistenceId, IEntity character)
 	{
 		// After the inventory (starter kit or restored), so the card has a pocket to land in. A
-		// restored card comes back blank (the snapshot keeps the prefab, not the print); Grant
-		// reprints a blank carried card instead of adding a second one. A newcomer gets theirs from
-		// the town clerk (arrival chain); after that, every body they spawn in carries it.
-		if (m_bGrantIdAtSpawn || LF_QuestManager.GetInstance().HasEarnedIdCard(LF_Utils.GetPlayerUID(playerId)))
-			GrantIdCard(LF_PlayerAccountManager.GetInstance().GetFromCache(playerId), character);
+		// restored card comes back with its number and nothing printed; OnSpawn prints it from the
+		// registry. A newcomer gets theirs from the town clerk (arrival chain). A card lost since
+		// (dropped at death, stolen) stays lost: the clerk replaces it for a fee (#902).
+		LF_IdCard.OnSpawn(character, LF_PlayerAccountManager.GetInstance().GetFromCache(playerId), m_bGrantIdAtSpawn, LF_QuestManager.GetInstance().HasEarnedIdCard(LF_Utils.GetPlayerUID(playerId)));
 
 		// The account components need their ids bound to the entity; this runs on every spawn
 		// path (first spawn, death respawn) so the bindings survive a fresh character entity.
@@ -559,20 +558,6 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		LF_Evidence.WatchShooter(character);
 
 		TopUpPlayer(playerId, character);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Prints the account's active character on an ID card in the new body's inventory.
-	protected void GrantIdCard(LF_PlayerAccount account, IEntity character)
-	{
-		if (!account || !account.GetActiveCharacter())
-		{
-			LF_Debug.Error("Spawn", "ID card not granted: no account character for the spawned body");
-			return;
-		}
-
-		LF_PlayerCharacter identity = account.GetActiveCharacter();
-		LF_IdCard.Grant(character, identity.GetId(), identity.GetFirstName(), identity.GetLastName(), identity.GetAge());
 	}
 
 	//------------------------------------------------------------------------------------------------

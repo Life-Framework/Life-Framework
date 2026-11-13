@@ -292,6 +292,13 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   needs stays `jobs.licenceGates`. Server only; a character spawned after the change picks it up.
 - Tests: `LF_Test_ConfigSectionsA`, `LF_Test_ConfigSectionsB`, `LF_Test_ConfigSectionsBackcompat`.
 
+## Identity card section (#902)
+
+- `idCard` (`LF_PhotoIdCardConfig`, `Configs/Identity/LF_PhotoIdCard.conf`): `replacementFee`
+  (0 to 100000, the town clerk's cash price for a lost card) and `showSeconds` (2 to 60, how long a
+  card held up to someone stays on their screen; the server sends it with the card). Server only;
+  `/configreload` drops the cached instance (`LF_ConfigStream.ApplyToFeatures`).
+
 ## Files
 
 - `LF_ConfigService.c`: `LF_ConfigService`, `LF_ConfigPackSource`,

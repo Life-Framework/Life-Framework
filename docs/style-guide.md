@@ -64,7 +64,7 @@ A screen is the last resort (`docs/decisions.md` "In-world first"), and when one
 sheet of paper or a terminal that belongs to the object the player walked up to.
 
 - **Build it from UI kit parts.** `LF_UIScreen.Open(parts)` with `LF_UIPart` rows: `TITLE`,
-  `HEADING`, `LINE`, `RICH`, `FIELD`, `ROW`, `STATUS`, `QUANTITY`, `KEYS`, `LIST`, `RULE`, `IMAGE`,
+  `HEADING`, `LINE`, `RICH`, `FIELD`, `ROW`, `STATUS`, `QUANTITY`, `KEYS`, `LIST`, `RULE`, `IMAGE`, `PORTRAIT`,
   `BUTTON`, `CLOSE`. `tools\cli feature new <Area> <Name> --kind ui` writes one. No new `.layout`
   for a screen; `validate-ui-kit` fails it.
 - **The theme is `LF_UITheme` and nothing else.** Warm paper (238, 230, 212), carbon ink

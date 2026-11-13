@@ -188,7 +188,8 @@
 ### `LF_ShowIDAction` — `Feature/CharacterCreation/LF_ShowIDAction.c`
 - ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
   the first printed one) to the player they face: the server reads the item
-  and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
+  and opens `LF_IdCardView` on the viewer's machine (#902: the photo card,
+  closing by itself after `idCard.showSeconds`, 8 s). No card: not performable,
   reason `#LF-ID_NoCard`. Offered by the player interaction reach rule
   (`LF_PlayerInteraction.CanOffer`, 2 m, both alive, a player); the server
   re-checks it. The shower points (`Gesture_Point`) and the viewer hears
@@ -248,6 +249,9 @@
   spawn a card for a mode with no clerk. A character already carrying their own
   card is refused a second; a blank carried card is printed instead of adding
   one. The DebugWorld civilian starter kit no longer carries a blank card.
+- ✅ (#902, 2026-11-13) Superseded in part: spawning no longer prints a fresh card
+  each time. A card lost at death or stolen stays lost and the clerk replaces it
+  for a fee; see `LF_PhotoIdCard` below.
 
 ### `LF_NpcBaseEntity` station NPCs — `Prefabs/Characters/Core/Npc_Base.et`
 - ✅ **Dressed on every machine** (2026-11-08, #150): `BaseLoadoutManagerComponent`
@@ -2605,3 +2609,24 @@
   Session proof: `node agent-box/session.mjs dialogue-proof`; harness verb `dialogue`.
 - Not verified by automation: how the voice sounds and its level in the mix; number keys and a
   real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
+
+### `LF_PhotoIdCard` — `Feature/Identity/LF_PhotoIdCard.c` (#902, 2026-11-13)
+- ✅ The identity card is a photo card: Inspect it in the inventory and a laminated card sheet
+  opens (UI kit `PORTRAIT` part): the holder's head and shoulders drawn client-side from their
+  look at the date of issue (`LF_WantedPortrait`), surname, given names, age, date of issue
+  (in-game), card number (`EV 000042`) and the civil registry stamp. Show ID opens the same
+  sheet on the other player's screen for `idCard.showSeconds` (8 s). An on-duty officer has
+  *Request ID* in the interaction menu (`request_id` slot): the citizen is asked on an ID CHECK
+  sheet and shows the card or refuses (30 s window); reading a wanted player's own valid card
+  identifies them, as before.
+- ✅ Every printed card is a registry row (number, holder, name, age, date, look), the `idcards`
+  payload (save version 30); the item carries only its number (`LF_SerialComponent`, which
+  persists with it anywhere) and is printed again from the row after a restart.
+- ✅ Lost or stolen: spawning hands out no new card. Talking to the town clerk, *I have lost my
+  identity card.* (offered while you were issued one and do not carry it) prints a new card
+  with a new number, a new photo and today's date for `idCard.replacementFee` (50, carried
+  cash, ledger reason `id-card`); the old card reads VOID - REPLACED. A mode with
+  `m_bGrantIdAtSpawn` replaces it free at the next spawn.
+- Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
+  `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
+  session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.

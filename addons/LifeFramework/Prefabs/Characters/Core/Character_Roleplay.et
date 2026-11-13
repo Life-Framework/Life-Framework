@@ -198,6 +198,15 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      }
      m_sSlot "witness"
     }
+    LF_PlayerRoleAction "{2644B6F5AFF0559C}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{A0F7D0E2527D8CBC}" {
+      Name "#LF-Interact_RoleSlot"
+     }
+     m_sSlot "request_id"
+    }
    }
   }
  }

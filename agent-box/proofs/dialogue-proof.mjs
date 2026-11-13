@@ -44,7 +44,8 @@ async function runDialogueProof() {
   shot(1, "2_greeting_face");
   wait(4500);
   const replies = scene(1);
-  expect(/phase=choosing replies=3/.test(replies), `a newcomer is offered three replies after the greeting (got: ${replies})`);
+  // "I am new in town." and "Goodbye."; "I have lost my identity card." waits until a card was issued (#902).
+  expect(/phase=choosing replies=2/.test(replies), `a newcomer is offered two replies after the greeting (got: ${replies})`);
   shot(1, "3_replies_shoulder");
 
   // The mouth: a held pose in the face shot, shut then open, so the two shots can be compared.

@@ -68,6 +68,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	//! The look on the robbery report (#758, "wantedlooks" payload, save version 29): the robber's
 	//! character and jacket as GUIDs, for the portrait on the wanted board's face.
 	static const string WANTED_LOOK = "9B5BB216CC7FF18E|1=9F546CCA2582D16F";
+	//! The holder of the identity card in the carrier's pocket (#902, "idcards", save version 30).
+	static const string ID_HOLDER = "e2e-card-holder";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -158,6 +160,16 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		ctx.NotNull(tagStore, "e2e general store is placed for the unpaid tag");
 		if (carrier && tagStore)
 			PocketUnpaidJuice(ctx, tagStore, carrier);
+
+		// An identity card rides in the pocket (#902): its number on the item ("itemserials"), what
+		// is printed and the photo in the registry ("idcards", save version 30).
+		if (carrier)
+		{
+			ctx.True(LF_IdCard.Grant(carrier, ID_HOLDER, "Ada", "Register", 33), "e2e carrier is handed an identity card before the save");
+			LF_PhotoIdRow cardRow = LF_PhotoIdCard.Current(ID_HOLDER);
+			ctx.True(cardRow != null && !cardRow.m_sLook.IsEmpty(), "e2e the card's row holds the photo before the save");
+			LF_Debug.Info(LF_PhotoIdCard.FEATURE, "e2e save: identity card " + LF_IdCard.NumberOf(LF_IdCard.FindShown(carrier, ID_HOLDER)));
+		}
 
 		if (carrier)
 			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
@@ -585,6 +597,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 					ctx.True(LF_WantedReports.IsIdentified(SERIAL_BUYER_UID), "e2e the buyer's report is identified by the restored drill");
 				}
 
+				VerifyIdCard(ctx, restored);
 				ctx.Equal(0, LF_StorageSnapshot.Apply(restored, carried), "e2e second apply spawns nothing");
 				ctx.Equal(237, LF_MoneyUtils.GetCash(restored), "e2e cash unchanged by the second apply");
 				VerifyUnpaidJuice(ctx, restored);
@@ -717,6 +730,35 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #else
 		ctx.Pass("runs in the reload boot");
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pocket card comes back with its number and nothing printed; the registry prints it again.
+	//! A version 23 save (--legacy-save) has the number (itemserials) but no registry: it stays blank
+	//! until the holder's next spawn prints a new card.
+	protected void VerifyIdCard(LF_TestContext ctx, IEntity restored)
+	{
+		array<LF_IdCardComponent> cards = {};
+		LF_IdCard.FindCarried(restored, cards);
+		ctx.Equal(1, cards.Count(), "e2e the identity card is back in the pocket after the restart");
+		if (cards.IsEmpty())
+			return;
+
+		LF_IdCardComponent card = cards[0];
+		string number = LF_IdCard.NumberOf(card);
+		ctx.False(number.IsEmpty(), "e2e the identity card keeps its number after the restart");
+		ctx.False(card.IsIssued(), "e2e the restored card comes back with nothing printed");
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.Equal(0, LF_IdCard.RepairCarried(restored), "e2e a version 23 save has no registry: the card stays blank");
+#else
+		ctx.Equal(1, LF_IdCard.RepairCarried(restored), "e2e the registry prints the restored card again");
+		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.ID_HOLDER, card.GetHolderId(), "e2e the card is printed for its holder after the restart");
+		ctx.EqualStr("Register", card.GetLastName(), "e2e the card's surname survives the restart");
+		ctx.True(LF_IdCard.IsValid(card), "e2e the restored card is still the holder's valid card");
+		LF_PhotoIdRow row = LF_PhotoIdCard.FindNumber(number);
+		ctx.True(row != null && !row.m_sLook.IsEmpty() && !row.m_sIssued.IsEmpty(), "e2e the photo and the date of issue survive the restart");
+#endif
+		LF_Debug.Info(LF_PhotoIdCard.FEATURE, string.Format("e2e restart: identity card %1 printed %2", number, card.IsIssued()));
 	}
 
 	//------------------------------------------------------------------------------------------------

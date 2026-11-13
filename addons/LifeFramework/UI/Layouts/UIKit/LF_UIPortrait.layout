@@ -1,0 +1,248 @@
+HorizontalLayoutWidgetClass "{7F6AF21ED11EFE33}" {
+ Name "Portrait"
+ Slot LayoutSlot "{00C4773DD8233AB1}" {
+  Padding 28 8 28 8
+ }
+ {
+  SizeLayoutWidgetClass "{2F46D6D0AD0A4042}" {
+   Name "PortraitBox"
+   Slot LayoutSlot "{985374F3E09071F1}" {
+    VerticalAlign 0
+   }
+   AllowWidthOverride 1
+   WidthOverride 232
+   AllowHeightOverride 1
+   HeightOverride 262
+   {
+    FrameWidgetClass "{8A389D18E97A0235}" {
+     Name "PortraitFrame"
+     Slot AlignableSlot "{853248E261D82031}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{FAF2C966328BA893}" {
+       Name "PhotoBack"
+       Slot FrameWidgetSlot "{F679A6C6A19554F7}" {
+        OffsetLeft 0
+        OffsetTop 0
+        SizeX 180
+        OffsetRight -180
+        SizeY 225
+        OffsetBottom -225
+       }
+       Color 0.55 0.56 0.55 1
+      }
+      FrameWidgetClass "{844282BA89CBF86C}" {
+       Name "PhotoClip"
+       Slot FrameWidgetSlot "{C6D3E24EA2D3BD1C}" {
+        OffsetLeft 0
+        OffsetTop 0
+        SizeX 180
+        OffsetRight -180
+        SizeY 225
+        OffsetBottom -225
+       }
+       Clipping True
+       {
+        ItemPreviewWidgetClass "{CE25B92344E6ABF6}" {
+         Name "Photo"
+         Slot FrameWidgetSlot "{D86F45F45B51BC7B}" {
+          OffsetLeft -180
+          OffsetTop -14
+          SizeX 540
+          OffsetRight -360
+          SizeY 574
+          OffsetBottom -560
+         }
+         "Use Engine Scale" 0
+         Filter Bilinear
+         Format LDR
+         "Clear Color" 0 0 0 0
+         "Blend mode" Blend
+        }
+       }
+      }
+      ImageWidgetClass "{ECCD63F13ADAE8E5}" {
+       Name "Stamp"
+       Slot FrameWidgetSlot "{A158F323DFC40C12}" {
+        OffsetLeft 116
+        OffsetTop 150
+        SizeX 112
+        OffsetRight -228
+        SizeY 112
+        OffsetBottom -262
+       }
+       Color 1 1 1 0.9
+      }
+     }
+    }
+   }
+  }
+  VerticalLayoutWidgetClass "{777F9011DA4D2AC2}" {
+   Name "PortraitLines"
+   Slot LayoutSlot "{3800787476EB5EF2}" {
+    Padding 18 0 0 0
+    SizeMode Fill
+   }
+   {
+    TextWidgetClass "{F89D02467BCB5410}" {
+     Name "PortraitLabel0"
+     Slot LayoutSlot "{C343DCA1AAF317EF}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 8
+     FontProperties FontProperties "{3DB9F6EB855AD19C}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{12512608692B33DC}" {
+     Name "PortraitValue0"
+     Slot LayoutSlot "{2F5D58D6C26C7845}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 8
+     FontProperties FontProperties "{5B1A4E0BC90836FE}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{D1E56B13CF66011A}" {
+     Name "PortraitLabel1"
+     Slot LayoutSlot "{2A10577BA5332EDE}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 8
+     FontProperties FontProperties "{122B0BDD8E4AD07C}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{C3E4CDC40C218067}" {
+     Name "PortraitValue1"
+     Slot LayoutSlot "{11C676C42EEC44DF}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 8
+     FontProperties FontProperties "{29654CB6152FD821}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{B2E7FBCF448B9428}" {
+     Name "PortraitLabel2"
+     Slot LayoutSlot "{E6454A80681434F4}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 8
+     FontProperties FontProperties "{D1471DC0B56021B6}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{A488A462EDE3510D}" {
+     Name "PortraitValue2"
+     Slot LayoutSlot "{E734BEB6B2E7A223}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 8
+     FontProperties FontProperties "{63D6F3D76FAF43ED}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{D0FDAEDC6BD5E563}" {
+     Name "PortraitLabel3"
+     Slot LayoutSlot "{EA1B78BAC06392B0}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 8
+     FontProperties FontProperties "{61583279BA6C3907}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{B04BE33F16AF2CF0}" {
+     Name "PortraitValue3"
+     Slot LayoutSlot "{5479433E10E7F7D1}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 8
+     FontProperties FontProperties "{AEAAEA374D4C15B8}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{1E74E4D76BBEC467}" {
+     Name "PortraitLabel4"
+     Slot LayoutSlot "{72AC7490E880D128}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 8
+     FontProperties FontProperties "{D054C36F5D416BFE}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{87075EAAD82AEBB9}" {
+     Name "PortraitValue4"
+     Slot LayoutSlot "{4F4677B97C1A4D12}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 8
+     FontProperties FontProperties "{DD8297DC7EE37447}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{2053834B61B70BB3}" {
+     Name "PortraitLabel5"
+     Slot LayoutSlot "{DD0501506CA26CCC}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 8
+     FontProperties FontProperties "{B2364756D507A911}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{43E54F86E51E0E44}" {
+     Name "PortraitValue5"
+     Slot LayoutSlot "{F135881188F8B8AF}" {
+      Padding 0 0 0 0
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 8
+     FontProperties FontProperties "{3950541647D92D2C}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

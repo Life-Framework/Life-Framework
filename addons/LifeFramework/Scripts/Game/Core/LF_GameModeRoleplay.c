@@ -63,6 +63,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_OrgInviteRole.Register();
 		LF_HoldUpRole.Register();
 		LF_WitnessRole.Register();
+		LF_IdRequestRole.Register();
 		// The money ledger listens for every cash and bank change (server only).
 		LF_Ledger.EnsureSubscribed();
 		// The hidden crime record counts every completed crime (server only).

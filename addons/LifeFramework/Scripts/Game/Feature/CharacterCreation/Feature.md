@@ -16,8 +16,8 @@ a menu is acceptable — but it should be framed as intake and stay minimal.
 Rung 4 today (menus): no account → create → registration form R-89 → spawn
 carrying an ID card. Typing a name is a correct UI, so the
 form is a 1989 paper sheet on `LF_UIScreen`, not a desktop dialog. The ID card
-is a real item (`IDCard.et` + `LF_IdCardComponent`); `LF_ShowIDAction` holds
-it up to the player you face, who sees the card.
+is a real item (`IDCard.et` + `LF_IdCardComponent`, a photo card since #902);
+`LF_ShowIDAction` holds it up to the player you face, who sees the card.
 
 Target: rung 3 — a world-anchored intake (a registration desk at a faction
 office). Low priority; the menu flow is fine for V1 as long as it is honest.
@@ -48,9 +48,11 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
   (`LF_CharacterConfig`), the residents on file: pick one, or register another
   while a slot is free. Server checks in `LF_CharacterCreationRules.RefusePick`.
 - `LF_IdCardComponent` / `LF_IdCard` — the card's printed identity and the
-  grant: the town clerk hands it over (M1-18, `LF_QuestRewards.HandIdCard`), then
-  `LF_SpawnLogic` reprints it on every spawn.
-- `LF_ShowIDAction` / `LF_IdCardView` — hold the card up; the viewer sees it.
+  grant: the town clerk hands it over (M1-18, `LF_QuestRewards.HandIdCard`). Since
+  #902 every card is numbered in the identity registry and a lost one is replaced
+  at the clerk (`Feature/Identity/Feature.md`); a spawn only prints a restored card.
+- `LF_ShowIDAction` — hold the card up; the viewer sees the photo card
+  (`Feature/Identity/LF_IdCardView.c`).
 
 ## Dependencies
 
