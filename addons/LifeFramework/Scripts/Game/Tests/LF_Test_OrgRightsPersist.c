@@ -141,7 +141,7 @@ class LF_Test_OrgRightsPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the version 27 save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(28, version, "the save is written at version 28 (orgranks is payload 27)");
+			ctx.Equal(29, version, "the save is written at version 29 (orgranks is payload 27)");
 
 			JsonLoadContext load = new JsonLoadContext(false);
 			load.LoadFromString(saved);

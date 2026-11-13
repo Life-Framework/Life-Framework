@@ -20,7 +20,8 @@ class LF_WantedReportRecord : Managed
 	//! Report order across the server's life; newest has the highest number.
 	int m_iSequence;
 	//! The suspect's look at the crime (LF_WantedLook), for the portrait on the board's face. Not
-	//! part of the "wanted" payload: changing that payload's fields would change its save format.
+	//! part of the "wanted" payload, whose fields never change: the "wantedlooks" payload (save
+	//! version 29) carries it by sequence (ExportLooks, ApplyLooks).
 	[NonSerialized()]
 	string m_sAppearance;
 
@@ -312,6 +313,59 @@ class LF_WantedReports
 		}
 
 		return records;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The looks of every report that has one, by report sequence (the "wantedlooks" payload).
+	static array<ref LF_WantedLookRow> ExportLooks()
+	{
+		array<ref LF_WantedLookRow> rows = new array<ref LF_WantedLookRow>();
+		array<LF_WantedReportRecord> ordered = {};
+		CollectNewestFirst(ordered);
+		foreach (LF_WantedReportRecord record : ordered)
+		{
+			if (!record.m_sAppearance.IsEmpty())
+				rows.Insert(LF_WantedLookRow.Create(record.m_iSequence, record.m_sAppearance));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the saved looks back on the loaded reports, matched by sequence (idempotent). A row for a
+	//! report the save no longer holds is skipped; a report with no row keeps an empty look.
+	//! \return Looks applied.
+	static int ApplyLooks(array<ref LF_WantedLookRow> rows)
+	{
+		if (!rows || !s_mReports)
+			return 0;
+
+		map<int, LF_WantedReportRecord> bySequence = new map<int, LF_WantedReportRecord>();
+		foreach (string uid, array<ref LF_WantedReportRecord> list : s_mReports)
+		{
+			foreach (LF_WantedReportRecord record : list)
+			{
+				if (record)
+					bySequence.Set(record.m_iSequence, record);
+			}
+		}
+
+		int applied;
+		foreach (LF_WantedLookRow row : rows)
+		{
+			if (!row)
+				continue;
+
+			LF_WantedReportRecord record = bySequence.Get(row.m_iSequence);
+			if (!record)
+				continue;
+
+			record.m_sAppearance = row.m_sAppearance;
+			applied++;
+		}
+
+		LF_WantedPosters.MarkDirty("looks loaded");
+		return applied;
 	}
 
 	//------------------------------------------------------------------------------------------------
