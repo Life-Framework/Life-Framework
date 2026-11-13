@@ -9,6 +9,17 @@ modded class SCR_CharacterControllerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The engine asks to drop a hand item on some movement changes (sprint, stance). A hand-carried
+	//! item stays in the hands of a living carrier; only a drop action or a downed carrier lets go.
+	override bool ShouldGadgetBeDropped(IEntity gadget)
+	{
+		if (gadget && LF_Component<LF_HandCarryComponent>.Find(gadget) && !LF_ParcelComponent.CarrierIsDown(GetOwner()))
+			return false;
+
+		return super.ShouldGadgetBeDropped(gadget);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void LF_OnWeaponChanged(BaseWeaponComponent weapon, BaseWeaponComponent prevWeapon)
 	{
 		LF_HandInventoryStorageComponent handStorage = LF_Component<LF_HandInventoryStorageComponent>.Find(GetOwner());

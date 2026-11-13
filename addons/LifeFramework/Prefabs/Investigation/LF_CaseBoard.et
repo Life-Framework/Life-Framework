@@ -1,0 +1,36 @@
+GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ ID "3E0A5132B65B8BC9"
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "police_cases"
+   m_bShowFace 0
+  }
+  LF_CaseBoardComponent "{14B9EE3BFF13554A}" {
+  }
+  ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   ActionContexts {
+    UserActionContext "{360C30155120CB67}" {
+     Radius 1.5
+    }
+   }
+   additionalActions + {
+    LF_CaseBoardPinAction "{19E73C4783414201}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{3AAC38F266B9797E}" {
+      Name "#LF-CaseBoard_Pin_Action"
+     }
+    }
+    LF_CaseBoardUnpinAction "{943868DDB212BD89}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{BCE03BB98D89A0B2}" {
+      Name "#LF-CaseBoard_Unpin_Action"
+     }
+    }
+   }
+  }
+ }
+}

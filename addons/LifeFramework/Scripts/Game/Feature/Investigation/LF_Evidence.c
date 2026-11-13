@@ -24,6 +24,9 @@ class LF_EvidenceRow
 	string m_sOffence;
 	string m_sPlace;
 	int m_iFoundAt;
+	//! What the piece says, for its card on the case board (LF_ScenePieces.Note*): a footwear key,
+	//! a witness statement, an item name. Empty for a casing.
+	string m_sNote;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -38,9 +41,13 @@ class LF_Evidence
 	static const string FEATURE = "Evidence";
 	static const string KIND_CASING = "casing";
 	static const string KIND_DROPPED = "dropped";
+	static const string KIND_FOOTPRINT = "footprint";
+	static const string KIND_STATEMENT = "statement";
 	static const ResourceName CASING_PREFAB = "{7D3A9E15C2B4F680}Prefabs/Investigation/LF_EvidenceCasing.et";
 	static const ResourceName MARKER_PREFAB = "{4C81F2A6D9E37B05}Prefabs/Investigation/LF_EvidenceMarker.et";
 	static const ResourceName BAG_PREFAB = "{A2E64B90F1C8D357}Prefabs/Investigation/LF_EvidenceBag.et";
+	static const ResourceName FOOTPRINT_PREFAB = "{BDD2844E23A8782C}Prefabs/Investigation/LF_EvidenceFootprint.et";
+	static const ResourceName STATEMENT_PREFAB = "{964BD33ED81ADE29}Prefabs/Investigation/LF_EvidenceStatement.et";
 	static const int SWEEP_MS = 30000;
 	static const int DROP_SETTLE_MS = 1500;
 	static const int MAX_PENDING_DROPS = 64;
@@ -183,12 +190,16 @@ class LF_Evidence
 		if (scene.m_iCasings >= LF_EvidenceConfig.MaxCasingsPerScene())
 			return null;
 
-		IEntity casing = LF_Utils.SpawnEntityPrefab(CASING_PREFAB, origin + "0 0.1 0");
+		// Each casing of a scene lands on its own spot of a ring around the shooter, on the surface
+		// under it (LF_ScenePieces.GroundSpot): a burst leaves a few casings on the floor, not a pile
+		// in the air.
+		vector spot = LF_ScenePieces.GroundSpot(LF_ScenePieces.Scatter(origin, scene.m_iCasings), LF_ScenePieces.CASING_BASE);
+		IEntity casing = LF_Utils.SpawnEntityPrefab(CASING_PREFAB, spot, Vector(LF_ScenePieces.ScatterYaw(scene.m_iCasings), 0, 0));
 		if (!casing)
 			return null;
 
 		scene.m_iCasings++;
-		Track(casing, casing, scene, KIND_CASING, nowMs);
+		Track(casing, casing, scene.m_iReport, scene.m_sOffence, scene.m_sPlace, KIND_CASING, string.Empty, nowMs);
 		return casing;
 	}
 
@@ -254,16 +265,47 @@ class LF_Evidence
 		if (!scene)
 			return null;
 
-		IEntity marker = LF_Utils.SpawnEntityPrefab(MARKER_PREFAB, item.GetOrigin() + "0 0.05 0");
+		vector spot = LF_ScenePieces.GroundSpot(item.GetOrigin() + LF_ScenePieces.MARKER_OFFSET, LF_ScenePieces.PAPER_BASE);
+		IEntity marker = LF_Utils.SpawnEntityPrefab(MARKER_PREFAB, spot);
 		if (!marker)
 			return null;
 
-		Track(item, marker, scene, KIND_DROPPED, nowMs);
+		Track(item, marker, scene.m_iReport, scene.m_sOffence, scene.m_sPlace, KIND_DROPPED, LF_ScenePieces.NoteItem(item), nowMs);
 		return marker;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Track(notnull IEntity item, notnull IEntity marker, notnull LF_EvidenceScene scene, string kind, int nowMs)
+	//! Server: a piece of evidence that is its own thing (a footprint card, a statement), filed
+	//! against a report. LF_ScenePieces decides where it lies; this keeps the cap and the expiry.
+	static IEntity LeavePiece(ResourceName prefab, vector position, vector angles, int report, string offence, string place, string kind, string note, int nowMs)
+	{
+		if (!Replication.IsServer())
+			return null;
+
+		IEntity piece = LF_Utils.SpawnEntityPrefab(prefab, position, angles);
+		if (!piece)
+			return null;
+
+		Track(piece, piece, report, offence, place, kind, note, nowMs);
+		return piece;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pieces of one kind lying for one report. Tests and the footprint's one-per-report rule read it.
+	static int CountFor(int report, string kind)
+	{
+		int count;
+		foreach (LF_EvidenceRow row : Rows())
+		{
+			if (row.m_iReport == report && row.m_sKind == kind)
+				count++;
+		}
+
+		return count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Track(notnull IEntity item, notnull IEntity marker, int report, string offence, string place, string kind, string note, int nowMs)
 	{
 		array<ref LF_EvidenceRow> rows = Rows();
 		while (rows.Count() >= LF_EvidenceConfig.MaxEvidence())
@@ -275,13 +317,14 @@ class LF_Evidence
 		LF_EvidenceRow row = new LF_EvidenceRow();
 		row.m_Item = item.GetID();
 		row.m_Marker = marker.GetID();
-		row.m_iReport = scene.m_iReport;
+		row.m_iReport = report;
 		row.m_sKind = kind;
-		row.m_sOffence = scene.m_sOffence;
-		row.m_sPlace = scene.m_sPlace;
+		row.m_sOffence = offence;
+		row.m_sPlace = place;
 		row.m_iFoundAt = nowMs;
+		row.m_sNote = note;
 		rows.Insert(row);
-		LF_Debug.Info(FEATURE, string.Format("%1 left as evidence for report #%2 at %3 (%4 lying about)", kind, scene.m_iReport, scene.m_sPlace, rows.Count()));
+		LF_Debug.Info(FEATURE, string.Format("%1 left as evidence for report #%2 at %3 (%4 lying about) at %5", kind, report, place, rows.Count(), marker.GetOrigin()));
 		ScheduleSweep();
 	}
 
@@ -399,7 +442,7 @@ class LF_Evidence
 		}
 
 		int minutes = (nowMs - row.m_iFoundAt) / 60000;
-		bagComponent.Stamp(row.m_iReport, row.m_sOffence, row.m_sPlace, row.m_sKind, minutes);
+		bagComponent.Stamp(row.m_iReport, row.m_sOffence, row.m_sPlace, row.m_sKind, minutes, row.m_sNote);
 		bagComponent.Seal(item);
 
 		if (row.m_Marker != row.m_Item)

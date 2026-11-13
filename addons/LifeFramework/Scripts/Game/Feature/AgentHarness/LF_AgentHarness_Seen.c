@@ -190,6 +190,6 @@ class LF_HarnessSeen
 		string dispatch = SCR_PlayerController.LF_GetLastDispatch();
 		dispatch.Replace(" ", "_");
 		string seen = string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
-		return seen + " npc=" + Join(s_aNpcText);
+		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " npc=" + Join(s_aNpcText);
 	}
 }
