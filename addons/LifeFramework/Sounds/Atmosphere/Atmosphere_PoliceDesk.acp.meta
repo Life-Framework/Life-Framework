@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{78589B4D585BFBA4}Sounds/Atmosphere/Atmosphere_PoliceDesk.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

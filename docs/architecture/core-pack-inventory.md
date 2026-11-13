@@ -253,6 +253,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Anims/` | core | Generic carry and NPC graphs |
 | `Particles/` | core | Gather effects |
 | `Sounds/` | core | Siren |
+| `Sounds/Atmosphere/` | pack | The Everon town's two radio tracks and eight background loops (`docs/architecture/atmosphere.md`); the emitter scripts and `Prefabs/Atmosphere/` that play them are core |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |
 

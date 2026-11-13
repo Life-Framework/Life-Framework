@@ -88,5 +88,11 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
     }
    }
   }
+  LF_AmbientEmitterComponent "{760C91A7E6A50004}" {
+   m_sSoundProject "{9D9DC60799E815A4}Sounds/Atmosphere/Atmosphere_Furnace.acp"
+   m_fRadius 35
+   m_iPriority 1
+   m_vOffset 0 1 0
+  }
  }
 }

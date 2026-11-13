@@ -286,6 +286,7 @@ async function cmdDoctor() {
 export async function main(flags, { workbench } = {}) {
   const [sub, ...rest] = flags;
   const root = ROOT;
+  if (sub === "ambience") return (await import("./ambience.mjs")).main(root, rest); // docs/architecture/atmosphere.md
   if (sub === "selftest") return (await import("../../validation/asset-pipeline-selftest.mjs")).main(rest);
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);

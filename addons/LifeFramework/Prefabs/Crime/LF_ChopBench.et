@@ -57,5 +57,11 @@ GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.
     }
    }
   }
+  LF_AmbientEmitterComponent "{C2EB66268349B3A3}" {
+   m_sSoundProject "{C992ED4AD7C05169}Sounds/Atmosphere/Atmosphere_ChopShop.acp"
+   m_fRadius 29
+   m_iPriority 1
+   m_vOffset 0 1 0
+  }
  }
 }

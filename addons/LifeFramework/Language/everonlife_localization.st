@@ -7816,6 +7816,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The receiver of the call you are on. It goes back when you hang up."
      Comment "Inventory description of the telephone receiver item."
     }
+    CustomStringTableItem "{EA5E950371F7CE44}" {
+     Id "LF-Atmosphere_SwitchOff"
+     Target_en_us "Switch off"
+     Comment "Action on a radio that is playing music (Feature/Atmosphere)."
+    }
+    CustomStringTableItem "{C1C1995B07DB81F6}" {
+     Id "LF-Atmosphere_SwitchOn"
+     Target_en_us "Switch on"
+     Comment "Action on a radio that is switched off (Feature/Atmosphere)."
+    }
   }
  }
 }

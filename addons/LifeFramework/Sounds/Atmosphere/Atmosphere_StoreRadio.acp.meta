@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F81D983989C40DCD}Sounds/Atmosphere/Atmosphere_StoreRadio.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

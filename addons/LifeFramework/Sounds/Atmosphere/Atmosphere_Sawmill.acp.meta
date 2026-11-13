@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7D137D89A4BD8A95}Sounds/Atmosphere/Atmosphere_Sawmill.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

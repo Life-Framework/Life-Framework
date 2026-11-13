@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2BC9B5C5F72B71E7}Sounds/Atmosphere/Atmosphere_PubRadio.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

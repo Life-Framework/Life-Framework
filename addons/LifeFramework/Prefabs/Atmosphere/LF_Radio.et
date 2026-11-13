@@ -1,0 +1,47 @@
+GenericEntity : "{10C26F96EF7A8CF5}Prefabs/Props/Core/Props_Base.et" {
+ ID "537D50B3466331F2"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object "{16B8DF2B48A440A2}Assets/Props/Civilian/RadioSmall_01/RadioSmall_01.xob"
+   Materials {
+    MaterialAssignClass "{02CA5FD751058658}" {
+     SourceMaterial "secondary"
+     AssignedMaterial "{6B75318C89502D63}Assets/Props/Civilian/RadioSmall_01/Data/RadioSmall_Display_V2.emat"
+    }
+   }
+  }
+  LF_AmbientSwitchComponent "{566F515F5A10D849}" {
+  }
+  LF_AmbientEmitterComponent "{D06D909C939BCF74}" {
+   m_fRadius 20
+   m_iPriority 2
+   m_vOffset 0 0.08 0
+   m_Condition LF_AmbientConditionSwitch "{557AC027554C523F}" {
+   }
+  }
+  ActionsManagerComponent "{DC88F4EDAB241735}" {
+   ActionContexts {
+    UserActionContext "{19F4EC1BEC96BE69}" {
+     ContextName "LF_Radio"
+     Position PointInfo "{A19BFCA4D25F7B45}" {
+      Offset 0 0.08 0.05
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_AmbientSwitchAction "{8117C415206945C3}" {
+     ParentContextList {
+      "LF_Radio"
+     }
+     UIInfo UIInfo "{2C0F81D5DE5B58A8}" {
+      Name "#LF-Atmosphere_SwitchOff"
+     }
+     VisibilityRange 2
+    }
+   }
+  }
+  RplComponent "{8ABC0A7C7D3718F0}" {
+  }
+ }
+}

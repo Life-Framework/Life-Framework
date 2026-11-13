@@ -104,3 +104,9 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
 - It does not rewrite a prefab that exists. After the scaffold the prefabs are ordinary files.
 - It does not classify the asset core or pack. Do that by the red line
   (`docs/architecture/core-vs-pack.md`) and add the inventory rows.
+
+## Music and background loops
+
+`tools\cli asset ambience` is a sibling of the stages above for sounds that belong to a place
+instead of an item: radio music and looped beds for `LF_AmbientEmitterComponent`. Spec, credit
+record, steps and the listening caveat: [`docs/architecture/atmosphere.md`](../architecture/atmosphere.md).

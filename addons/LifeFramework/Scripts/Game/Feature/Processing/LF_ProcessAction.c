@@ -38,6 +38,9 @@ class LF_ProcessAction : ScriptedUserAction
 	[Attribute("0 0 0", UIWidgets.EditBox, "Drop Rotation")]
 	vector m_vRotation;
 
+	[Attribute("12", UIWidgets.Auto, "Seconds the machine is heard running after a process, when its prefab has an LF_AmbientSwitchComponent (the sawmill)")]
+	float m_fRunSoundSeconds;
+
 	protected LF_HideoutMachineComponent m_pHideoutMachine;
 
 	//------------------------------------------------------------------------------------------------
@@ -114,6 +117,9 @@ class LF_ProcessAction : ScriptedUserAction
 
 			LF_Debug.Log("Processing", string.Format("processed %1 x%2", processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount));
 		}
+
+		// The machine is heard running for a while (Feature/Atmosphere); no switch on the prefab, no sound.
+		LF_AmbientSwitchComponent.PulseOn(pOwnerEntity, m_fRunSoundSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------

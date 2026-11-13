@@ -1,0 +1,7 @@
+GenericEntity {
+ ID "1A7D50201052CD83"
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+  }
+ }
+}

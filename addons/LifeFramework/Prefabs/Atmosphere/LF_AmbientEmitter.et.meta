@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

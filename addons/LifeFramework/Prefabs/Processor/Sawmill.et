@@ -38,5 +38,16 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
     }
    }
   }
+  LF_AmbientSwitchComponent "{1340F69FA1DBDDDF}" {
+   m_bStartsOn 0
+  }
+  LF_AmbientEmitterComponent "{FBA34EAAA763CB82}" {
+   m_sSoundProject "{7D137D89A4BD8A95}Sounds/Atmosphere/Atmosphere_Sawmill.acp"
+   m_fRadius 44
+   m_iPriority 1
+   m_vOffset 0 1 0
+   m_Condition LF_AmbientConditionSwitch "{2BAD6D499AF5D578}" {
+   }
+  }
  }
 }
