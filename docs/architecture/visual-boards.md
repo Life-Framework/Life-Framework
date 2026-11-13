@@ -73,9 +73,36 @@ the full cork (right):
 
 ![The board from 6 m](visual-boards/face-street.jpg)
 
-## Not here yet
+## Checks: distance, night, late join
 
-The look on the saved report (spike issue 2), and the night and distance checks
-(issue 7). The dispatch
-boards inherit the wanted board and keep their painted face
-(`m_bDrawPosters 0`).
+![Noon (top) and 22:00 (bottom) from 1.7, 4, 8, 15 and 25 m](visual-boards/day-night-distance.jpg)
+
+*`session.mjs wanted-posters-look-proof` on a 1280x720 game client: one robber's
+poster, a fixed camera straight in front of the board. At 25 m the camera stands
+behind the house across the street; the board is still built (the radius is 30 m).*
+
+- **Distance (noon).** At 1.7 m every line reads, the description included. At
+  4 m the header, the portrait, the name and the offence read; the description
+  does not. At 8 m it is a WANTED poster with a face; at 15 m a poster on a
+  board. Beyond 35 m the face is released and the board shows plain cork, which
+  nobody can tell apart at that distance.
+- **Night (22:00).** The face is lit like every other sign and prop: no light of
+  its own. Up close the header, the portrait and the name read dimly; the small
+  lines need a torch. The DISPATCH board beside it is as dark. A lamp over the
+  board is the fix if a server wants it readable at night; it is world content
+  (where the board stands), so it belongs to the map or the pack, not this
+  component.
+  ![The board at 22:00 from 1.7 m](visual-boards/night-close.jpg)
+- **Late join.** A player joining after a change draws the current posters from
+  the board's `RplLoad` (`wanted-posters-proof`: `1 poster(s) from jip`), with the
+  portrait and, after the settle refreshes, the cork texture.
+
+## The dispatch boards
+
+The two dispatch boards (`LF_DispatchBoard_Police.et`, `LF_DispatchBoard_Medic.et`)
+inherit the wanted board and keep their painted DISPATCH face and the Read card
+(`m_bDrawPosters 0`). Their content is service calls that only the service's
+on-duty staff may read (`LF_ServiceBoard.MayRead`). Anything drawn on a prop is
+sent to every client that has the board streamed in, and a client-side filter
+does not keep it from a modified client, so the calls stay on the per-read card.
+`docs/decisions.md`, 2026-11-13.

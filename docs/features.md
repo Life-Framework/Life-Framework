@@ -1610,7 +1610,9 @@
   3 s after a change and then freezes, which the budget measured as nearly free. Owner
   config section `wantedBoard`: `posters` (4, at most 8 in two rows) and `drawRadius`.
   The Read card and the police-only lines are unchanged; the dispatch boards keep their
-  painted face (`m_bDrawPosters 0`). Tests `police/wanted-posters-feed`,
+  painted face (`m_bDrawPosters 0`; decision 2026-11-13). Readable to about 4 m at noon;
+  at night it has no light of its own, like every other sign (`session.mjs
+  wanted-posters-look-proof` takes the pictures). Tests `police/wanted-posters-feed`,
   `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`.
 - ✅ **Stolen cars on the wanted board's face** (#758, spike issue 5): a car its owner
   reported stolen (`LF_ReportStolenAction`) takes one of the last places (`wantedBoard.
