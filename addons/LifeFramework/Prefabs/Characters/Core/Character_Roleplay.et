@@ -20,8 +20,6 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
    }
    LF_CharacterSurvivalComponent "{A68F47E449868506}" {
    }
-   LF_PlayerLevelComponent "{A68F47E449868507}" {
-   }
 LF_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_QuestTrackerComponent "{4EDDFD87ACFEE921}" {
@@ -128,6 +126,22 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      }
      UIInfo UIInfo "{56C5730E07320FFE}" {
       Name "#EL-Jail_Arrest"
+     }
+    }
+    LF_RestrainAction "{3751D3B9F77802F3}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{606120CC8281F8AE}" {
+      Name "#LF-Restrain_Action"
+     }
+    }
+    LF_ReleaseRestraintAction "{AF70CE56F3804F01}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{198EEA9448F82642}" {
+      Name "#LF-Restrain_Release"
      }
     }
     LF_PlayerRoleAction "{2B55172B79B0124D}" {

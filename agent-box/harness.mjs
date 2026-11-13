@@ -121,14 +121,21 @@ export function buildLine(id, spec) {
   if (spec.verb === "giveup") {
     return `${id} giveup`;
   }
+  if (spec.verb === "resetcrime") {
+    return `${id} resetcrime`;
+  }
   if (spec.verb === "gm") {
     return spec.arg === "close" ? `${id} gm close` : `${id} gm`;
   }
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "spikeseen") {
     return `${id} ${spec.verb}`;
+  }
+  if (spec.verb === "sound") {
+    // sound [SOUND_EVENT]: the held weapon's sound events and the stun buzz on this client (LF_HarnessSound).
+    return spec.event ? `${id} sound ${token(spec.event, "sound event")}` : `${id} sound`;
   }
   if (spec.verb === "engine") {
     if (spec.entityName) return `${id} engine ${token(spec.entityName, "entity")}`;
@@ -137,8 +144,14 @@ export function buildLine(id, spec) {
   if (spec.verb === "lockpick") {
     return `${id} lockpick`;
   }
-  if (spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload") {
+  if (spec.verb === "hold") {
+    return `${id} hold ${token(spec.item, "item")}`;
+  }
+  if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload") {
     return `${id} ${spec.verb}`;
+  }
+  if (spec.verb === "dialogue") {
+    return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
   }
   if (spec.verb === "peers") {
     return `${id} peers`;
@@ -147,6 +160,11 @@ export function buildLine(id, spec) {
     const radius = Number(spec.radius ?? 0);
     if (!Number.isFinite(radius) || radius < 0) throw new Error(`seen radius must be a number: ${spec.radius}`);
     return radius > 0 ? `${id} seen ${radius}` : `${id} seen`;
+  }
+  if (spec.verb === "perf") {
+    const seconds = Number(spec.seconds ?? 10);
+    if (!Number.isFinite(seconds) || seconds <= 0 || seconds > 60) throw new Error(`perf seconds must be 0..60: ${spec.seconds}`);
+    return spec.label ? `${id} perf ${seconds} ${token(spec.label, "label")}` : `${id} perf ${seconds}`;
   }
   if (spec.verb === "shoot") {
     const target = Number(spec.playerId);
@@ -888,6 +906,8 @@ function selftest() {
   if (stand !== "10 stand ATM_Debug") throw new Error(stand);
   const state = buildLine(11, { verb: "state" });
   if (state !== "11 state") throw new Error(state);
+  if (buildLine(12, { verb: "perf", seconds: 8, label: "boards_4" }) !== "12 perf 8 boards_4") throw new Error("perf line");
+  if (buildLine(12, { verb: "perf" }) !== "12 perf 10") throw new Error("perf default line");
   setBoxes(["X"]);
   const boxes = profileBoxes();
   setBoxes(null);
@@ -1465,13 +1485,19 @@ function main(argv) {
     if (cmd === "die") {
       return printResult(sendCommand({ verb: "die" }, 10000));
     }
+    if (cmd === "resetcrime") {
+      return printResult(sendCommand({ verb: "resetcrime" }, 10000));
+    }
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
+    }
+    if (cmd === "dialogue") {
+      return printResult(sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 15000));
     }
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "spikeseen") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {
@@ -1480,7 +1506,7 @@ function main(argv) {
     if (cmd === "lockpick") {
       return printResult(sendCommand({ verb: "lockpick" }, 10000));
     }
-    if (cmd === "radio" || cmd === "pager" || cmd === "report") {
+    if (cmd === "phone" || cmd === "radio" || cmd === "pager" || cmd === "report") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "peers") {
@@ -1488,6 +1514,10 @@ function main(argv) {
     }
     if (cmd === "seen") {
       return printResult(sendCommand({ verb: "seen", radius: rest[0] }, 10000));
+    }
+    if (cmd === "perf") {
+      const seconds = Number(rest[0] ?? 10);
+      return printResult(sendCommand({ verb: "perf", seconds, label: rest[1] }, (seconds + 15) * 1000));
     }
     if (cmd === "shoot") {
       return printResult(sendCommand({ verb: "shoot", playerId: rest[0] }, 10000));

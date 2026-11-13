@@ -216,6 +216,7 @@ class LF_PlayerAccount : Managed
 	void SetWantedLevel(int level)
 	{
 		LF_CharacterStanding standing = GetStanding();
+		int oldLevel = standing.m_iWantedLevel;
 		standing.m_iWantedLevel = Math.Clamp(level, 0, 5); // Max 5
 
 		// Wanted cleared (jail, fine, admin): the posters for this person come down.
@@ -223,6 +224,9 @@ class LF_PlayerAccount : Managed
 			LF_WantedReports.ClearFor(GetActiveCharacterKey());
 
 		LF_AccountReplication.Publish(this);
+		// The wanted board's face shows the level (LF_WantedPosters).
+		if (oldLevel != standing.m_iWantedLevel && Replication.IsServer())
+			LF_EventBus.Publish(LF_OnWantedChanged.Create(GetActiveCharacterKey(), oldLevel, standing.m_iWantedLevel));
 	}
 
 	//------------------------------------------------------------------------------------------------

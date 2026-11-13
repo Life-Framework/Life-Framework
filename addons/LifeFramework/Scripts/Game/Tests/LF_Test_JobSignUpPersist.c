@@ -33,6 +33,8 @@ class LF_Test_JobSignUpPersist : LF_Test
 		LF_Progression.Forget(COURIER);
 		LF_Progression.Forget(DRIVER);
 		array<ref LF_ProgressionRecord> progressionBefore = LF_Progression.ExportAll();
+		// A progression load seeds the job store from its records alone (#749); put the job XP back.
+		array<ref LF_JobXpRow> jobXpBefore = LF_JobLevels.ExportAll();
 		array<ref LF_JobSignUpRecord> signUpsBefore = LF_CivilianJob.ExportSignUps();
 
 		// The courier signs up at the counter; the driver reaches level 2, signs up for fuel, and
@@ -56,7 +58,7 @@ class LF_Test_JobSignUpPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(27, version, "the save is written at version 27 (job sign-ups are payload 11)");
+		ctx.Equal(29, version, "the save is written at version 29 (job sign-ups are payload 11)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "introductions");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "jobsignups");
@@ -91,6 +93,7 @@ class LF_Test_JobSignUpPersist : LF_Test
 		LF_Progression.Forget(COURIER);
 		LF_Progression.Forget(DRIVER);
 		LF_Progression.ApplyAll(progressionBefore);
+		LF_JobLevels.ApplyAll(jobXpBefore);
 		LF_CivilianJob.ApplySignUps(signUpsBefore);
 	}
 }

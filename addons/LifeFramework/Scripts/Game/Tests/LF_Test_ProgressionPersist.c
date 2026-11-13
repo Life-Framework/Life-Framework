@@ -95,12 +95,15 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 		LF_Progression.Forget(COURIER);
 		LF_Progression.Forget(OFFICER);
 		array<ref LF_ProgressionRecord> before = LF_Progression.ExportAll();
+		// A progression load seeds the job store from its records alone (#749); put the job XP back.
+		array<ref LF_JobXpRow> jobXpBefore = LF_JobLevels.ExportAll();
 
 		// Progression through the public mutators the game uses.
 		LF_TestProgressionKit.SeedCourier(ctx, COURIER);
 		string reason;
 		ctx.Equal(50, LF_UnemploymentBenefit.Claim(COURIER, 0, false, LF_JobGuards.Now(), 100, 50, 3600, reason), "the courier collects the benefit");
-		LF_Progression.NoteLevel(COURIER, 3, 40, 2, 2);
+		// Level 3 and 40 XP on the pre-#749 single level: 340 CIVILIAN XP, level 3 (#749).
+		ctx.Equal(340, LF_JobLevels.AddXp(COURIER, LF_JobLevels.JOB_CIVILIAN, 340, "test"), "the courier earns 340 civilian xp");
 		array<LF_ELicenseType> licenses = {LF_ELicenseType.UNEMPLOYED, LF_ELicenseType.MINER_COAL};
 		LF_Progression.NoteLicenses(COURIER, licenses);
 		LF_Progression.NoteTurnedIn(COURIER, LF_TestProgressionKit.QUEST_ID);
@@ -131,7 +134,7 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(27, version, "the save is written at version 27 (progression is payload 7)");
+		ctx.Equal(29, version, "the save is written at version 29 (progression is payload 7)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 
 		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER), "courier level 2 after the load");
@@ -155,20 +158,17 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 			stored.m_aLicenses.Insert("LF_REMOVED_LICENCE");
 		ctx.Equal(2, LF_Progression.GetLicenses(COURIER, loadedLicenses), "an unknown licence name is skipped");
 
-		// A new body gets the level and the turn-in back, twice without change.
+		// Job levels are keyed by the character, not the body: the progression payload alone brings
+		// CIVILIAN back from the record's single-level mirror.
+		ctx.Equal(340, LF_JobLevels.XpOf(COURIER, LF_JobLevels.JOB_CIVILIAN), "the courier's civilian xp is back");
+		ctx.Equal(3, LF_JobLevels.LevelOf(COURIER, LF_JobLevels.JOB_CIVILIAN), "the courier is civilian level 3");
+
+		// A new body gets the turn-in back, twice without change.
 		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
 		if (body)
 		{
 			ctx.True(LF_Progression.ApplyToCharacter(COURIER, body), "the record applies to a new body");
 			ctx.True(LF_Progression.ApplyToCharacter(COURIER, body), "the record applies a second time");
-			LF_PlayerLevelComponent level = LF_Component<LF_PlayerLevelComponent>.Find(body);
-			ctx.NotNull(level, "the body has a level component");
-			if (level)
-			{
-				ctx.Equal(3, level.GetLevel(), "the body is level 3");
-				ctx.Equal(2, level.GetSkillPoints(), "the body has 2 skill points");
-			}
-
 			LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(body);
 			ctx.NotNull(tracker, "the body has a quest tracker");
 			if (tracker)
@@ -201,6 +201,7 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 		LF_Progression.Forget(OFFICER);
 		LF_TestProgressionKit.ResetAccount(OFFICER);
 		LF_Progression.ApplyAll(before);
+		LF_JobLevels.ApplyAll(jobXpBefore);
 	}
 }
 
@@ -222,7 +223,7 @@ class LF_Test_ProgressionOldSave : LF_Test
 	{
 		// An older-format save loaded here replaces the organizations with record version 1 ones,
 		// which drops rank masks only "orgranks" holds (#750a); put back what this test found.
-		LF_TestOrgSnapshot keptOrgs = LF_TestOrgSnapshot.Take();
+		LF_TestLegacySnapshot keptOrgs = LF_TestLegacySnapshot.Take();
 		RunKeptOrgs(ctx);
 		keptOrgs.Restore();
 	}

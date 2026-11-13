@@ -155,17 +155,37 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "giveup")
 			return true;
+		if (cmd.Verb == "resetcrime")
+			return true;
 		if (cmd.Verb == "gm")
 		{
 			if (parts.Count() > 2)
 				cmd.Arg1 = parts[2];
 			return true;
 		}
-		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
+		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
+		if (cmd.Verb == "dialogue")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			if (parts.Count() > 3)
+				cmd.Arg2 = parts[3];
+			return true;
+		}
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
 			return true;
 		if (cmd.Verb == "lockpick")
+			return true;
+		if (cmd.Verb == "sound")
+		{
+			// sound [SOUND_EVENT]: with an event, that one is played on the held weapon.
+			if (parts.Count() >= 3)
+				cmd.Arg1 = parts[2];
+
+			return true;
+		}
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
 			return true;
 		if (cmd.Verb == "engine")
 		{
@@ -176,10 +196,36 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "peers")
 			return true;
+		if (cmd.Verb == "hold")
+		{
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_item";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "seen")
 		{
 			if (parts.Count() > 2)
 				cmd.PosX = parts[2].ToFloat();
+			return true;
+		}
+		if (cmd.Verb == "perf")
+		{
+			// perf <seconds> [label]: this client's frame time and memory over the window.
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_seconds";
+				return false;
+			}
+
+			cmd.PosX = parts[2].ToFloat();
+			if (parts.Count() > 3)
+				cmd.Arg1 = parts[3];
+
 			return true;
 		}
 		if (cmd.Verb == "shoot")
@@ -918,6 +964,10 @@ class LF_AgentHarness
 	protected static const int UI_TEXT_MAX = 80;
 	//! stand puts the character this far along +X from the entity, facing it.
 	static const float STAND_SIDE = 1.2;
+	// lf-fixed: dev-harness geometry, the width of a character capsule
+	static const float STAND_CAPSULE_RADIUS = 0.4;
+	// lf-fixed: dev-harness geometry, a counter top is higher than this above the floor
+	static const float STAND_MAX_STEP = 0.6;
 	//! Metres in front of a sign's face (its local +Z) where stand puts the reader.
 	static const float SIGN_STAND_FRONT = 1.4;
 	//! How far an unnamed part may sit from the named prop it belongs to (CollectActionEntity).
@@ -928,6 +978,18 @@ class LF_AgentHarness
 	protected static int s_iEnsureTries;
 	protected static int s_iCaptureId;
 	protected static vector s_vShotStand;
+	protected static float s_fStandYaw;
+	protected static IEntity s_StandSelf;
+	protected static vector s_vStandCentre;
+	protected static bool s_bStandBlocked;
+	// Characters the harness already stood, with the spot and when. The spatial query and the traces
+	// do not see a body moved this frame (or one whose owner has not applied the teleport yet), so
+	// a second stand in a burst would otherwise pick the same spot.
+	protected static ref array<EntityID> s_aStoodIds = {};
+	protected static ref array<vector> s_aStoodSpots = {};
+	protected static ref array<int> s_aStoodTicks = {};
+	// lf-fixed: dev-harness bookkeeping, how long a stood spot counts as occupied
+	protected static const int STAND_REMEMBER_MS = 15000;
 	protected static vector s_vShotAngles;
 	protected static bool s_bShotPose;
 	protected static string s_sHeldAction;
@@ -1005,6 +1067,10 @@ class LF_AgentHarness
 	static void Poll()
 	{
 		FinishCapture();
+		string perfDetail;
+		int perfId = LF_HarnessPerf.TakeResult(perfDetail);
+		if (perfId > 0)
+			WriteResult(perfId, "ok", perfDetail);
 
 		if (!FileIO.FileExists(COMMAND_PATH))
 			return;
@@ -1134,9 +1200,26 @@ class LF_AgentHarness
 			DoGiveUp(cmd);
 			return;
 		}
+		if (cmd.Verb == "resetcrime")
+		{
+			DoResetCrime(cmd);
+			return;
+		}
 		if (cmd.Verb == "gm")
 		{
 			DoGm(cmd);
+			return;
+		}
+		if (cmd.Verb == "dialogue")
+		{
+			// The conversation scene on this machine: its state, or a mouth pose to look at.
+			WriteResult(cmd.Id, "ok", LF_DialogueScene.Harness(cmd.Arg1, cmd.Arg2));
+			return;
+		}
+		if (cmd.Verb == "phone")
+		{
+			// What this machine's telephone lines show (#147): state, talker, rings heard.
+			WriteResult(cmd.Id, "ok", LF_PhoneLineComponent.DescribeAll() + " " + LF_PhoneVoiceClient.Describe());
 			return;
 		}
 		if (cmd.Verb == "radio")
@@ -1159,7 +1242,7 @@ class LF_AgentHarness
 			DoConfigReload(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
@@ -1171,6 +1254,19 @@ class LF_AgentHarness
 		if (cmd.Verb == "engine")
 		{
 			DoEngine(cmd);
+			return;
+		}
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		{
+			string seen;
+			if (cmd.Verb == "spikeverge")
+				seen = LF_SpikeStripHarness.Verge();
+			else
+				seen = LF_SpikeStripHarness.Seen();
+			if (seen.StartsWith("ok "))
+				WriteResult(cmd.Id, "ok", seen.Substring(3, seen.Length() - 3));
+			else
+				WriteResult(cmd.Id, "error", seen);
 			return;
 		}
 		if (cmd.Verb == "lockpick")
@@ -1187,9 +1283,27 @@ class LF_AgentHarness
 			DoPeers(cmd);
 			return;
 		}
+		if (cmd.Verb == "hold")
+		{
+			DoHold(cmd);
+			return;
+		}
 		if (cmd.Verb == "seen")
 		{
 			WriteResult(cmd.Id, "ok", LF_HarnessSeen.Read(cmd.PosX));
+			return;
+		}
+		if (cmd.Verb == "perf")
+		{
+			string perfError;
+			if (!LF_HarnessPerf.Start(cmd.Id, cmd.PosX, cmd.Arg1, perfError))
+				WriteResult(cmd.Id, "error", perfError);
+
+			return;
+		}
+		if (cmd.Verb == "sound")
+		{
+			WriteResult(cmd.Id, "ok", LF_HarnessSound.Probe(cmd.Arg1));
 			return;
 		}
 		if (cmd.Verb == "shoot")
@@ -1357,7 +1471,10 @@ class LF_AgentHarness
 
 		// One metre to the side keeps the character inside a 3m action radius
 		// without planting them inside the prop.
-		destination = target.GetOrigin() + StandOffset(side);
+		// The spot is snapped to the ground and stepped around the target until no other
+		// character or prop fills the capsule, so two players sent to one target do not
+		// overlap and a raised target (a till) does not lift the player to its height.
+		destination = ClearStandSpot(character, target, side);
 
 		// A sign is read from the front: a wall plate or fascia hangs above the
 		// pavement with the wall right behind it, so beside it is inside the wall
@@ -1369,10 +1486,187 @@ class LF_AgentHarness
 			vector front = target.GetOrigin() + transform[2] * SIGN_STAND_FRONT;
 			front[1] = world.GetSurfaceY(front[0], front[2]);
 			destination = front;
+			s_fStandYaw = StandYaw(side);
 		}
 
 		LF_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Yaw the last ServerStand chose (it faces the target from the spot it picked).
+	static float LastStandYaw()
+	{
+		return s_fStandYaw;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ground under (x, z), searching down from startY past characters. False when there is no floor.
+	protected static bool StandGround(IEntity self, float x, float z, float startY, out float groundY)
+	{
+		float y = startY;
+		float floorY = startY - 12;
+		for (int i = 0; i < 4; i++)
+		{
+			IEntity hit;
+			float d = LF_PlacementAudit.Trace(Vector(x, y, z), Vector(x, floorY, z), self, hit);
+			if (d >= y - floorY - 0.01)
+				return false;
+
+			y = y - d;
+			if (!ChimeraCharacter.Cast(hit))
+			{
+				groundY = y;
+				return true;
+			}
+
+			y = y - 0.05;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a standing capsule at feet (spot) holds no other character and no prop.
+	protected static bool StandSpotClear(IEntity self, vector spot)
+	{
+		s_StandSelf = self;
+		s_vStandCentre = spot;
+		s_bStandBlocked = false;
+		GetGame().GetWorld().QueryEntitiesBySphere(spot + "0 0.9 0", STAND_CAPSULE_RADIUS * 2 + 0.3, StandQueryHit, null, EQueryEntitiesFlags.ALL);
+		if (s_bStandBlocked)
+			return false;
+
+		if (StandSpotRemembered(self, spot))
+			return false;
+
+		IEntity hit;
+		array<float> heights = {0.4, 1.0, 1.6};
+		foreach (float height : heights)
+		{
+			for (int a = 0; a < 8; a++)
+			{
+				float rad = a * Math.PI / 4;
+				vector from = spot + Vector(0, height, 0);
+				vector to = from + Vector(Math.Cos(rad), 0, Math.Sin(rad)) * STAND_CAPSULE_RADIUS;
+				if (LF_PlacementAudit.Trace(from, to, self, hit) < STAND_CAPSULE_RADIUS - 0.01)
+					return false;
+			}
+		}
+
+		// Head room: a low ceiling or a shelf over the spot.
+		return LF_PlacementAudit.Trace(spot + "0 0.2 0", spot + "0 1.8 0", self, hit) >= 1.6 - 0.01;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool StandSpotRemembered(IEntity self, vector spot)
+	{
+		int now = System.GetTickCount();
+		for (int i = s_aStoodIds.Count() - 1; i >= 0; i--)
+		{
+			if (now - s_aStoodTicks[i] > STAND_REMEMBER_MS)
+			{
+				s_aStoodIds.Remove(i);
+				s_aStoodSpots.Remove(i);
+				s_aStoodTicks.Remove(i);
+				continue;
+			}
+
+			if (s_aStoodIds[i] == self.GetID())
+				continue;
+
+			vector delta = s_aStoodSpots[i] - spot;
+			delta[1] = 0;
+			if (delta.Length() < STAND_CAPSULE_RADIUS * 2)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RememberStand(IEntity character, vector spot)
+	{
+		for (int i = s_aStoodIds.Count() - 1; i >= 0; i--)
+		{
+			if (s_aStoodIds[i] != character.GetID())
+				continue;
+
+			s_aStoodIds.Remove(i);
+			s_aStoodSpots.Remove(i);
+			s_aStoodTicks.Remove(i);
+		}
+
+		s_aStoodIds.Insert(character.GetID());
+		s_aStoodSpots.Insert(spot);
+		s_aStoodTicks.Insert(System.GetTickCount());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool StandQueryHit(IEntity entity)
+	{
+		if (entity == s_StandSelf || !ChimeraCharacter.Cast(entity))
+			return true;
+
+		vector delta = entity.GetOrigin() - s_vStandCentre;
+		delta[1] = 0;
+		if (delta.Length() < STAND_CAPSULE_RADIUS * 2)
+			s_bStandBlocked = true;
+
+		return !s_bStandBlocked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot stand uses: the requested side first, then the other seven directions around the
+	//! target, then wider rings. Each spot is snapped down to the floor; a spot on a counter top
+	//! (higher than the lowest floor of its ring) is passed over. Falls back to the plain side offset.
+	protected static vector ClearStandSpot(IEntity character, IEntity target, string side)
+	{
+		vector origin = target.GetOrigin();
+		vector plain = origin + StandOffset(side);
+		s_fStandYaw = StandYaw(side);
+
+		float startRad = Math.Atan2(plain[2] - origin[2], plain[0] - origin[0]);
+		for (int ring = 0; ring < 3; ring++)
+		{
+			float radius = STAND_SIDE + ring * 0.6;
+			array<vector> spots = {};
+			array<float> yaws = {};
+			float lowest = 1000;
+			for (int a = 0; a < 8; a++)
+			{
+				float rad = startRad + a * Math.PI / 4;
+				float x = origin[0] + Math.Cos(rad) * radius;
+				float z = origin[2] + Math.Sin(rad) * radius;
+				float groundY;
+				if (!StandGround(character, x, z, origin[1] + 0.3, groundY))
+					continue;
+
+				spots.Insert(Vector(x, groundY, z));
+				yaws.Insert(Math.Atan2(origin[0] - x, origin[2] - z) * Math.RAD2DEG);
+				if (groundY < lowest)
+					lowest = groundY;
+			}
+
+			for (int i = 0; i < spots.Count(); i++)
+			{
+				if (spots[i][1] > lowest + STAND_MAX_STEP)
+					continue;
+
+				if (!StandSpotClear(character, spots[i]))
+					continue;
+
+				s_fStandYaw = yaws[i];
+				if (i != 0 || ring != 0)
+					LF_Debug.Log(FEATURE, string.Format("stand spot beside %1 was taken or blocked; using ring %2 step %3 at %4", origin, ring, i, spots[i]));
+
+				RememberStand(character, spots[i]);
+				return spots[i];
+			}
+		}
+
+		LF_Debug.Warn(FEATURE, string.Format("stand found no clear spot around %1; using %2", origin, plain));
+		return plain;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1476,6 +1770,23 @@ class LF_AgentHarness
 		}
 
 		character.LF_AskHarnessSiren(cmd.Id, cmd.Arg1, cmd.Arg2.ToInt());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `resetcrime` (#867): the per-proof reset's way to clear this player's wanted level and
+	//! the crime stores an earlier proof filled (the debug menu refuses a non-admin).
+	protected static void DoResetCrime(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		// The count this client heard is client state; the server clears the rest.
+		SCR_PlayerController.LF_ResetDispatchCount();
+		character.LF_AskHarnessResetCrime(cmd.Id);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1622,6 +1933,10 @@ class LF_AgentHarness
 			downed = 1;
 		line += " zone=" + LF_Zones.RuleName(LF_Zones.RuleAt(origin));
 		line += string.Format(" downed=%1 life=%2 bleed=%3", downed, LifeStateToken(character), BleedToken(character));
+		int cuffed = 0;
+		if (LF_Restraint.IsRestrained(character))
+			cuffed = 1;
+		line += string.Format(" cuffed=%1", cuffed);
 		line += " " + VitalsToken(character);
 		line += string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
 		return line + " " + KeepsToken(uid);
@@ -1927,12 +2242,51 @@ class LF_AgentHarness
 
 			vector at = body.GetOrigin();
 			joined += string.Format(" carrier=%1 seat=%2 at=%3,%4,%5", carrier, seated, Math.Round(at[0] * 10) / 10, Math.Round(at[1] * 10) / 10, Math.Round(at[2] * 10) / 10);
+			// #664: the replicated cuffed flag, as this client reads it.
+			int peerCuffed = 0;
+			if (LF_Restraint.IsRestrained(body))
+				peerCuffed = 1;
+			joined += string.Format(" cuffed=%1", peerCuffed);
 		}
 
 		if (joined.IsEmpty())
 			joined = "none";
 
 		WriteResult(cmd.Id, "ok", joined);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `hold <name>`: this client takes a carried gadget whose prefab name contains <name> into
+	//! the left hand, as a quick-slot key press does (SCR_GadgetManagerComponent.SetGadgetMode on the
+	//! owner). The cuffs proof (#664) holds the handcuffs with it.
+	protected static void DoHold(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(character);
+		InventoryStorageManagerComponent inventory;
+		if (character)
+			inventory = LF_Component<InventoryStorageManagerComponent>.Find(character);
+
+		if (!character || !gadgets || !inventory)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		array<IEntity> items = {};
+		inventory.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (!item || !item.FindComponent(SCR_GadgetComponent) || !LF_Utils.GetPrefabName(item).Contains(cmd.Arg1))
+				continue;
+
+			gadgets.SetGadgetMode(item, EGadgetMode.IN_HAND);
+			LF_Debug.Log(FEATURE, "hold " + LF_Utils.GetPrefabName(item));
+			WriteResult(cmd.Id, "ok", "held " + cmd.Arg1);
+			return;
+		}
+
+		WriteResult(cmd.Id, "error", "not_carried");
 	}
 
 	//------------------------------------------------------------------------------------------------

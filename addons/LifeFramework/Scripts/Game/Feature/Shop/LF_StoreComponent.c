@@ -57,9 +57,6 @@ class LF_StoreComponent : ScriptComponent
 	[Attribute("120", UIWidgets.Auto, "Seconds between restocks. 0 never restocks")]
 	protected int m_iRestockSeconds;
 
-	[Attribute("1", UIWidgets.Auto, "Wanted levels a shoplifter gets")]
-	protected int m_iWantedIncrease;
-
 	[Attribute("300", UIWidgets.Auto, "Seconds a shopper whose unpaid goods came back after a restart or a logout has to come back and pay. After that, carrying them outside the store is shoplifting")]
 	protected int m_iRestoredGraceSeconds;
 
@@ -154,12 +151,6 @@ class LF_StoreComponent : ScriptComponent
 	string GetStoreKey()
 	{
 		return m_sStoreKey;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	int GetWantedIncrease()
-	{
-		return m_iWantedIncrease;
 	}
 
 	//------------------------------------------------------------------------------------------------

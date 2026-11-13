@@ -19,6 +19,11 @@ class LF_WantedReportRecord : Managed
 	bool m_bIdentified;
 	//! Report order across the server's life; newest has the highest number.
 	int m_iSequence;
+	//! The suspect's look at the crime (LF_WantedLook), for the portrait on the board's face. Not
+	//! part of the "wanted" payload, whose fields never change: the "wantedlooks" payload (save
+	//! version 29) carries it by sequence (ExportLooks, ApplyLooks).
+	[NonSerialized()]
+	string m_sAppearance;
 
 	//------------------------------------------------------------------------------------------------
 	LF_WantedReportRecord Copy()
@@ -31,6 +36,7 @@ class LF_WantedReportRecord : Managed
 		copy.m_sPlace = m_sPlace;
 		copy.m_bIdentified = m_bIdentified;
 		copy.m_iSequence = m_iSequence;
+		copy.m_sAppearance = m_sAppearance;
 		return copy;
 	}
 }
@@ -44,6 +50,7 @@ class LF_WantedReports
 	static const string FEATURE = "Wanted";
 	static const string OFFENCE_ROBBERY = "#LF-Offence_Robbery";
 	static const string OFFENCE_VEHICLE_THEFT = "#LF-Offence_VehicleTheft";
+	static const string OFFENCE_CARJACKING = "#LF-Offence_Carjacking";
 	static const string OFFENCE_WEAPON_THEFT = "#LF-Offence_WeaponTheft";
 	static const string OFFENCE_BREAK_IN = "#LF-Offence_BreakIn";
 	static const string OFFENCE_HOSPITAL = "#LF-Offence_HospitalRobbery";
@@ -103,6 +110,7 @@ class LF_WantedReports
 
 		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
 		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
+		record.m_sAppearance = LF_WantedLook.Capture(suspect);
 		LF_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
 		if (suspect)
 		{
@@ -159,7 +167,10 @@ class LF_WantedReports
 		}
 
 		if (changed > 0)
+		{
 			LF_Debug.Info(FEATURE, string.Format("%1 identified by %2: %3 report(s) now name them", playerUid, how, changed));
+			LF_EventBus.Publish(LF_OnSuspectIdentified.Create(playerUid, how, changed));
+		}
 
 		return changed;
 	}
@@ -197,6 +208,24 @@ class LF_WantedReports
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every player's reports come down (the harness's per-proof reset, #867). The sequence keeps
+	//! counting so a later report never reuses a number.
+	//! @return How many reports were removed.
+	static int ClearAll()
+	{
+		int removed = 0;
+		if (!s_mReports)
+			return 0;
+
+		for (int i = 0; i < s_mReports.Count(); i++)
+			removed += s_mReports.GetElement(i).Count();
+
+		s_mReports.Clear();
+		LF_Debug.Info(FEATURE, string.Format("all reports taken down: %1", removed));
+		return removed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -266,6 +295,9 @@ class LF_WantedReports
 		if (!cleared.IsEmpty())
 			LF_Debug.Info(FEATURE, string.Format("load took down the reports of %1 character(s) no longer wanted", cleared.Count()));
 
+		// Not an event: the save restored the whole store, so the board's posters are rebuilt from it.
+		LF_WantedPosters.MarkDirty("load");
+
 		return cleared.Count();
 	}
 
@@ -281,6 +313,59 @@ class LF_WantedReports
 		}
 
 		return records;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The looks of every report that has one, by report sequence (the "wantedlooks" payload).
+	static array<ref LF_WantedLookRow> ExportLooks()
+	{
+		array<ref LF_WantedLookRow> rows = new array<ref LF_WantedLookRow>();
+		array<LF_WantedReportRecord> ordered = {};
+		CollectNewestFirst(ordered);
+		foreach (LF_WantedReportRecord record : ordered)
+		{
+			if (!record.m_sAppearance.IsEmpty())
+				rows.Insert(LF_WantedLookRow.Create(record.m_iSequence, record.m_sAppearance));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the saved looks back on the loaded reports, matched by sequence (idempotent). A row for a
+	//! report the save no longer holds is skipped; a report with no row keeps an empty look.
+	//! \return Looks applied.
+	static int ApplyLooks(array<ref LF_WantedLookRow> rows)
+	{
+		if (!rows || !s_mReports)
+			return 0;
+
+		map<int, LF_WantedReportRecord> bySequence = new map<int, LF_WantedReportRecord>();
+		foreach (string uid, array<ref LF_WantedReportRecord> list : s_mReports)
+		{
+			foreach (LF_WantedReportRecord record : list)
+			{
+				if (record)
+					bySequence.Set(record.m_iSequence, record);
+			}
+		}
+
+		int applied;
+		foreach (LF_WantedLookRow row : rows)
+		{
+			if (!row)
+				continue;
+
+			LF_WantedReportRecord record = bySequence.Get(row.m_iSequence);
+			if (!record)
+				continue;
+
+			record.m_sAppearance = row.m_sAppearance;
+			applied++;
+		}
+
+		LF_WantedPosters.MarkDirty("looks loaded");
+		return applied;
 	}
 
 	//------------------------------------------------------------------------------------------------

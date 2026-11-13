@@ -1,0 +1,26 @@
+GenericEntity : "{DFFBF5F097FCF797}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Base.et" {
+ ID "E899960657A0407A"
+ components {
+  InventoryMagazineComponent "{51EED12B803954CC}" {
+   Attributes SCR_ItemAttributeCollection "{51EED12B86960275}" {
+    ItemDisplayName UIInfo "{51FEE38527BFEA5B}" {
+     Name "#LF-Magazine_Taser_Name"
+     Description "#LF-Magazine_Taser_Description"
+    }
+   }
+  }
+  SCR_MagazineComponent "{CA6BE4D6B4DAFD69}" {
+   MagazineWell LF_MagazineWellTaser "{62F1575E3EF6EE99}" {
+   }
+   UIInfo MagazineUIInfo "{57126733AA401586}" {
+    Name "#LF-Magazine_Taser_Name"
+    Description "#LF-Magazine_Taser_Description"
+   }
+   MaxAmmo 1
+   AmmoConfig "{DEEE04B6723628E2}Configs/Weapons/Ammo/LF_Ammo_Taser.conf"
+   AmmoMapping {
+    0
+   }
+  }
+ }
+}

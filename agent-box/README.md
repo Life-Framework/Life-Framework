@@ -208,6 +208,9 @@ the game profile). Hooks:
 - `stand <EntityName>` asks the server to move the local character beside
   that entity so a 3m action radius can succeed, 1.2 m along +X and turned to
   face it, so `press F` aims at the entity. It does not inject movement keys.
+  The spot is snapped to the floor and checked clear of other characters and props;
+  when the side is taken (a second player at the same target) or blocked, `stand` steps
+  around the target, then out in wider rings, and logs `stand spot beside ... using ...`.
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
@@ -217,13 +220,19 @@ the game profile). Hooks:
 - `peers` (read-only, runs on the client) lists every player body this client has streamed in as
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
   life state as THIS client sees them, so a late joiner's view of a downed player is readable.
-  `state` also reports the own `downed=` and `life=`.
+  `state` also reports the own `downed=` and `life=`. Both end with `cuffed=0|1`, the replicated
+  handcuffs flag (#664).
+- `hold <name>` (runs on the client) takes a carried gadget whose prefab name contains `<name>`
+  into the left hand, as a quick-slot key does. Replies `held <name>` or `not_carried`.
 - `seen [radius]` (read-only, runs on the client) reports what THIS client's copy of the world says: replicated account state (`me=faction/duty/wanted`), carried `cash`, own `downed`/`life`/`bleed`, nearby vehicles (`eng`, `lock`, `ign`, `stolen`, nearest first), doors (`locked`), loose money `bags`, the chop yard `chop` percent, the last `toast` and radio `dispatches`. Unlike `state` (the server's word) a missed `BumpMe` or RPC shows here. Proofs call `clientSees(on, wait, n, judge)` from `session.mjs` to poll it until the replicated value lands (`clientSeesPeer` does the same for `peers`). #522 added client reads to `carry`, `cash-van`, `lockpick`, `hotwire`, `downed`, `medic` and `chop` proofs.
+- `perf <seconds> [label]` (runs on the client) samples this client's frame time once a frame for the window and returns `frames`, `meanMs`, `p50Ms`, `p95Ms`, `p99Ms`, `maxMs`, `fps` and `memKB=start->end (delta)` (`System.MemoryAllocationKB`). Compare a window with the thing in view against one without it. A session's `-maxFPS` cap (30 full, 15 lowspec) hides any frame faster than the cap, so measure on `session up --profile full --levers uncapped`. `session.mjs board-perf` is the poster-board measurement (`docs/architecture/visual-boards-budget.md`).
 - Proof verbs are one module each, `agent-box/proofs/<verb>.mjs`, default-exporting `{ name, usage, run(ctx), film? }` (`ctx.args` is the rest of the command line). `session.mjs` discovers the folder and prints them under `--help`, so a new proof adds a file and touches no shared list (`validate-registries`).
 - `session.mjs moonshine-proof` (3 clients, `roster 3` before up): clients 1 and 2 mash and distil the moonshine chain at `Moonshine_Site`; client 3 clocks in, waits at the hideout door (no smell), then walks to the barrels and gets the `#LF-Chain_Smell_Officer` cue; the workers' own smell raises one dispatch lead that radios the officer. Shots: the still smoking and the workers. Verb `moonshine` hands one mash of goods.
 - `session.mjs bed-proof` (2 clients): the medic loads a downed client into the hospital ambulance, the bleed-out stays paused, the medic puts them in `Hospital_Bed_2`, the patient wakes with the reduced bill.
 - `siren <EntityName> <mode>` (dev gate) sets a placed vehicle's siren mode on the server through the driver key's rule (`LF_SirenManagerComponent.ApplyRequest`); replies `siren changed=C on=O broadcasts=N`. `session.mjs siren-proof` runs it on the ambulance and the police car and checks client 2.
+- `dialogue` (runs on the client) reports the conversation scene: `closed`, or node, phase (`line`, `choosing`, `waiting`), replies shown, whether the camera is taken, and how many voiced lines and lip frames this client has played. `dialogue pick <row>`, `dialogue skip`, `dialogue face 0|1`, `dialogue mouth <0..1>` and `dialogue rig <Bone:ax,ay,az,tx,ty,tz;...>` drive it and pose the mouth for a shot. Proof: `session.mjs dialogue-proof` (`up --profile full --clients 2`).
 - `giveup` presses the give-up key for the local player (#256); the server refuses it before `m_fGiveUpDelaySeconds`. `state` reports `bleed=` (seconds left as this client reads them, -1 when not downed).
+- `resetcrime` (dev gate, #867) clears this client's wanted level, every wanted poster and dispatch log entry, the till and vault robbery cooldowns and this client's dispatch count. The per-proof reset (`_reset.mjs`) uses it, because the debug menu's wanted button is refused for a non-admin; the reset prints `crime state cleared (...)` or `still dirty: ...`.
 - `die` asks the server to kill the local character for real, downed or not (dev gate; `LF_Downed.Finish`), so a session
   can prove the death screen and the hospital respawn. `state` also reports
   `pos=x,y,z`, `bills=` (hospital bills carried), and `tickets=` / `owed=`

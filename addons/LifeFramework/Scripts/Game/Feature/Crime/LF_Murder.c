@@ -135,7 +135,7 @@ class LF_Murder
 			return false;
 		}
 
-		int amount = WantedAmount();
+		int amount = LF_CrimeCatalog.WantedFor(killerUid, LF_WantedReports.OFFENCE_MURDER);
 		account.IncreaseWantedLevel(amount);
 		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (accountManager)
@@ -161,17 +161,7 @@ class LF_Murder
 	//------------------------------------------------------------------------------------------------
 	static int WantedAmount()
 	{
-		LF_PoliceConfig config = LF_PoliceConfig.Get();
-		if (!config)
-			return LF_PoliceConfig.DEFAULT_MURDER_WANTED;
-
-		if (config.m_iMurderWanted < 1)
-		{
-			LF_Debug.Error(FEATURE, string.Format("murder wanted amount %1 is below 1; using %2", config.m_iMurderWanted, LF_PoliceConfig.DEFAULT_MURDER_WANTED));
-			return LF_PoliceConfig.DEFAULT_MURDER_WANTED;
-		}
-
-		return config.m_iMurderWanted;
+		return LF_CrimeCatalog.BaseWanted(LF_WantedReports.OFFENCE_MURDER);
 	}
 
 	//------------------------------------------------------------------------------------------------

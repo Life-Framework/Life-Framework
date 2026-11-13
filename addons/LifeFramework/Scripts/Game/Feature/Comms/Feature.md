@@ -51,3 +51,48 @@ radio frequency is heard (police, medic). The scanner chirps, the carrier gets a
 `LF_OnScannerHeard` goes out on the bus. It never transmits. Legality is `m_bScannerIllegal` in
 `LF_ServiceCalls.conf`: `LF_ConfiscateAction` (the officer's search of a wanted suspect) takes every scanner and
 files `#LF-Offence_Scanner` once through `LF_WantedReports.Report` (no save change; the crime record counts it).
+
+## Telephone calls (#147)
+
+Design: `docs/architecture/phone-calls-spike.md`. Four pieces:
+
+- `LF_PhoneExchange` (`LF_PhoneExchange.c`) is the call table with no world in it: calls are
+  RINGING, CONNECTED, ENDED or MISSED, phones are keys (`LF_Payphone.PhoneKey`), players are server
+  ids. `LF_Test_PhoneExchange` drives it.
+- `LF_PhoneCalls` (`LF_PhoneCalls.c`) feeds it from the world on the server: dial, pick up, hang
+  up, a one-second tick for the ring timeout, the maximum length and the cord
+  (`LF_PhonePresence`: disconnected, down or dead, too far, phone gone). After every change it
+  syncs the lines, publishes `LF_OnPhoneCall` and toasts the people involved. Dialling the station
+  runs `LF_Payphone.UseAt` first, so coin, cooldowns, the duty check and `LF_OnServiceCall` (radio
+  dispatch, board, pagers) are unchanged.
+- `LF_PhoneComponent` marks a prop as a telephone; `m_sDispatchService` makes it a station
+  telephone that rings for that service and is picked up only by its people on duty.
+  `LF_PhoneLineComponent` lives on the replicated line entity the server spawns at a phone on
+  first use (`Prefabs/Comms/LF_PhoneLine.et`): state and talker id as `RplProp`s. Clients ring a
+  RINGING line from the phone prop on their own timer, so JIP needs nothing extra.
+- `LF_PhoneDialAction`, `LF_PhoneAnswerAction`, `LF_PhoneHangUpAction` (`LF_PhoneActions.c`) read
+  the line to show only what applies; the server decides again.
+
+Call-back requests (the voicemail replacement): `LF_PhoneCallBackBook` is the pure book (offers
+per caller and phone, requests, the pad entries); `LF_PhoneCallBacks` feeds it. A MISSED call
+(rang out or nobody on duty) gives its caller an offer at that payphone, shown on the line
+(`m_iOfferId`) to that player only. `LF_PhoneLeaveRequestAction` opens `LF_PhoneSlipSheet`;
+`RpcAsk_LF_PhoneLeave` is checked for rate, offer, distance and length. `LF_PhoneReadPadAction`
+opens `LF_PhonePadSheet` for the service's people on duty; `RpcAsk_LF_PhoneCallBack` rings the
+payphone (`LF_PhoneCalls.CallBackAt`, a call with `m_bCallBack`). A picked-up ring-back closes the
+request; one nobody answers reopens it. Requests expire with the dispatch board; nothing is saved.
+
+Voice (`LF_PhoneVoice.c`, `LF_PhoneVoiceClient.c`): on CONNECTED the server makes a
+`LF_PhoneVoiceLink` (frequency `FrequencyFor(callId)` in the private band, a random key) and asks
+the configured `LF_PhoneVoiceTransport` for two powered radios: the line entities' radios
+(`LF_PhoneLineTransport`, default) or a handset item per talker (`LF_PhoneHandsetTransport`). Each
+talker gets an owner RPC with the radio's RplId; `LF_PhoneVoiceClient` waits for it to stream in,
+adds an `LF_PhoneVONEntry` to the vanilla `SCR_VONController` and makes it active. The entry is a
+plain `SCR_VONEntry` (an `SCR_VONEntryRadio` would be refused for its non-faction key in
+`ActivateVON` and would crash the radial menu's gadget preview); the modded
+`SCR_VONController.SetActiveTransmit` sets SQUAD_RADIO and its transceiver. Re-check that override
+on every game update. When the call is over the entry goes, the previous entry is active again,
+the lines are powered off with new idle keys, or the handsets are deleted wherever they are.
+
+Settings: `LF_PhoneConfig` (`Configs/Comms/LF_Phone.conf`). Never call
+`RadioManagerEntity.GetTransceiversInRange`: it crashed the dedicated server in the spike.

@@ -181,7 +181,7 @@ class LF_Test_Roadmap_OrganizationsPersistence : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		// The e2e save boot seeds an organization earlier in this tier; put it back at the end.
-		LF_TestOrgSnapshot kept = LF_TestOrgSnapshot.Take();
+		LF_TestLegacySnapshot kept = LF_TestLegacySnapshot.Take();
 		RunWiped(ctx);
 		kept.Restore();
 	}

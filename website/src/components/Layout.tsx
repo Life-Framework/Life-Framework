@@ -194,6 +194,7 @@ function Footer() {
         { label: "Join the playtest", href: "/playtest" },
         { label: "Server owners", href: "/servers" },
         { label: "Config generator", href: "/config" },
+        { label: "Config reference", href: "/config/reference" },
         { label: "Contribute", href: "/contribute" },
         { label: "Docs", href: "/docs" },
         { label: "Discord", href: DISCORD_URL },

@@ -46,11 +46,7 @@ class LF_ChainGate
 
 		int level = 0;
 		if (step.m_iMinLevel > 0)
-		{
-			LF_PlayerLevelComponent levelComponent = LF_Component<LF_PlayerLevelComponent>.Find(player);
-			if (levelComponent)
-				level = levelComponent.GetLevel();
-		}
+			level = LF_JobLevels.LevelOfBody(player, LevelJob(step));
 
 		bool hasEquipment = true;
 		if (!step.m_sEquipmentId.IsEmpty())
@@ -65,6 +61,16 @@ class LF_ChainGate
 		}
 
 		return Evaluate(step, hasLicense, level, hasEquipment);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The job a step's level gate reads; CIVILIAN when the step names none.
+	static string LevelJob(notnull LF_ChainStepDef step)
+	{
+		if (step.m_sLevelJob.IsEmpty())
+			return LF_JobLevels.JOB_CIVILIAN;
+
+		return step.m_sLevelJob;
 	}
 
 	//------------------------------------------------------------------------------------------------

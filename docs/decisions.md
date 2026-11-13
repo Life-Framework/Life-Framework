@@ -755,3 +755,83 @@ questions in section 6 of `docs/roadmap/m3-plan.md`. Each answer is below.
   read job levels.
 - **Profit loops:** the gold furnace (+30) and cement plant (+24) stay
   baselined for now, the maintainer's choice.
+
+**2026-11-12 — #749: a pre-job-levels save keeps its progress on CIVILIAN and
+DELIVERY.** D12 replaced the single player level with per-job XP. A version 7-27
+save has no per-job XP, so the load maps what it has: the single level's total
+XP onto CIVILIAN (quests, fruit picking and debug grants all fed that one number,
+so it cannot be split by job) and the delivery career's onto DELIVERY. The
+shipped CIVILIAN and DELIVERY thresholds are the old curves, so nobody loses a
+level; every other job starts at 0. Skill points are dropped: nothing spends
+them any more. The issue's first draft started every job at 0; that would have
+reset every courier's fuel and taxi access, so it was not taken. Detail:
+`docs/persistence.md` item 20.
+
+**2026-11-13 — #758: the dispatch boards keep the Read card; only the wanted board
+draws on its face.** The visual-boards spike (issue 6) left open whether the
+police and medic dispatch boards get the same face. Their content is service
+calls that only on-duty staff of that service may read. A face is drawn by every
+client that has the board streamed in, so the server would have to send the calls
+to every client, and a filter on the client does not stop a modified client from
+reading them. Sending a second list only to on-duty staff would draw a face that
+other players see blank or with a call count, which still tells them how busy the
+police are. Not worth it: the dispatch boards keep their painted DISPATCH face and
+the per-read card. The wanted board's face carries only what its public Read card
+already showed. Detail: `docs/architecture/visual-boards.md`.
+
+**2026-11-13 — #664: Meshy-generated 3D assets may be used in the project and in
+published builds.** The maintainer signed off the licence gate on 2026-11-13.
+Models made with Meshy text-to-3D on the account's plan may go into the repository
+and into the Workshop build under that plan's terms. Each one is credited
+"generated with Meshy" in `docs/credits.md`, and its generation ids (preview and
+refine task) are recorded per asset in `tools/assets/<slug>/meshy.json`, which the
+`generate` stage writes. An asset made some other way (a CC0 model, a Blender
+script, a human modeller) does not need the credit but keeps its source in the spec.
+
+**2026-11-13 — #664: ElevenLabs-generated sound effects may be used in the project
+and in published builds.** The asset pipeline's sound stage (`tools\cli asset sound`,
+`docs/asset-pipeline/sounds.md`) generates an asset's sound effects with the
+ElevenLabs sound-effects API. The maintainer moved the account to the Starter plan
+on 2026-11-13, before the first generation that ships; the taser's 19 takes were all
+made on it (the API reported tier `starter` at each run). What the terms say, read
+on 2026-11-13 (Terms of Service and the ElevenCreative Terms with Exhibit 4, Sound
+Effects, both last updated 2026-10-09):
+
+- A paid plan may use the service for commercial purposes; the free plan is
+  non-commercial only (Terms of Service 1(c)). **Nothing generated on the free plan
+  ships.** If the plan lapses, generate nothing for the mod until it is paid again.
+- Output may be used, reproduced, modified and distributed "including by
+  incorporating it into films, trailers, advertising, video, games, applications,
+  and other productions" (Exhibit 4, section 2), and the user keeps the rights in
+  the output (Terms of Service 4(c)).
+- Output may be used only "combined with other material" and may not be made
+  "available as isolated audio files or samples". The samples ship inside the addon
+  as part of the game; they are never published as a sound pack or a download.
+- No attribution duty was found in the terms that were read. The project credits
+  the tool anyway: "generated with ElevenLabs" in `docs/credits.md`.
+- The service "may produce the same or similar Output" for someone else; a generated
+  sound is not exclusive.
+
+Not confirmed: the help-centre articles on publishing and attribution could not be
+read (HTTP 403 to an automated client), and the EU terms were not read. Each
+generation's prompt, parameters and date, and the takes that ship with the reason,
+are recorded per asset in `tools/assets/<slug>/sounds.json`, which the stage writes.
+
+**2026-11-13 — NPC voices are generated with ElevenLabs at build time, and may ship.**
+The maintainer moved the ElevenLabs account to the Starter plan on 2026-11-13. Paid plans
+allow commercial use and require no attribution, and the output is ours (terms of use read
+the same day; `docs/architecture/npc-dialogue.md` "Licence"). Spoken lines made on that plan
+may go into the repository and published builds. Each voiced NPC is credited "voices generated
+with ElevenLabs" in `docs/credits.md`, and every line's request id, voice, model and text is
+recorded in `tools/assets/dialogue/<npc>/elevenlabs.json`, which the dialogue stage writes.
+Speech is never generated at run time: the game holds no key and calls no service. A
+voice-library voice can be withdrawn by its owner; lines already made stay usable, so a
+withdrawn voice means revoicing that NPC when its text next changes. Open: whether the
+licence for existing audio survives a downgrade to the free plan; keep the plan or ask first.
+
+**2026-11-13 — An NPC's line is heard by players nearby, the scene is the talker's alone.**
+The camera, captions and replies of a conversation exist only on the talking player's
+client. The voice and the moving lips are also played for players within the NPC's
+`hear_range_m` (12 m by default; 0 makes an NPC private). Why: it is a town, and the world
+does not stop for one player's conversation. A default from the spike, for the maintainer
+to confirm per NPC.

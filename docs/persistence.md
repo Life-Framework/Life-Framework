@@ -41,10 +41,11 @@ Each of these must survive a server restart:
 6. Serving jail sentences (player uid, remaining seconds).
 7. Each living player's carried inventory: the storage tree under the character
    (prefab, stack quantity, nesting). Death drops it.
-8. Each player's progression, keyed by player uid: delivery career level, XP
-   and paid total; police rank, on-duty and unpaid duty seconds; seconds since
-   the last benefit collection; player level, XP and skill points; licences (by
-   enum name); turned-in quest ids. Death keeps it.
+8. Each player's progression, keyed by player uid: delivery career paid total;
+   police rank, on-duty and unpaid duty seconds; seconds since the last benefit
+   collection; licences (by enum name); turned-in quest ids. Death keeps it. Job
+   XP is item 20; the record's career level and XP and its single player level
+   are a mirror of the DELIVERY and CIVILIAN jobs since #749 (skill points are 0).
 9. The contents of placed storage (the hideout stash), keyed by a stable
    storage key such as `hideout:Roadmap_Hideout`, never an entity id.
 10. Both duty inventories (M1-11): the police inventory stored at the desk
@@ -64,6 +65,8 @@ Each of these must survive a server restart:
 17. Unpaid store tags (save version 25, payload `storeunpaid`, #479): store key, item prefab, price, the carrier's character record key and whether the item was used up, never an entity id (`LF_Stores`). Only tags a living player carries are saved; a disconnect parks them the same way. They wait until that character's body spawns with its carried inventory back, then go on an untagged item of that prefab (`ReattachUnpaid`); a tag whose item or store is gone is dropped with a warning. A re-applied load replaces the tags of characters in the world now. A restored tag is not swept as shoplifting while its carrier has the store's grace (`m_iRestoredGraceSeconds`) to come back and pay; after that, or once back inside, the sweep applies.
 18. Playtime (save version 26, payload `playtime`, #692): seconds played per account uid and job (`CIVILIAN`, `POLICE`, `MEDIC`, a delivery job name), never replicated (`LF_Playtime`). The save holds the time up to the save: export credits the online clocks first. The clocks themselves are session-only; a load replaces the counts and leaves running clocks alone, so a live re-apply rolls playtime back to the save like every other payload. A version 1-25 save never reaches this payload and leaves the live counts alone: at a boot load they are empty, so every account starts at zero. One credit is capped at 300 s (a longer gap is a wall-clock jump); a player id that changes account settles the old clock and starts a new one.
 19. Organization ranks (save version 27, payload `orgranks`, #750a): each rank's rights bitmask and ladder order, keyed by organization id and rank id (`LF_OrganizationManager`). The `organizations` record keeps its layout: a positional record read through a changed class would misread every older save, so the mask that does not fit the four saved bools rides its own payload (the `itemstate` route). The record version is 2. A version 1-26 save has record version 1 organizations: `ApplyAll` turns each rank's four bools into a mask (the founder gets every right, any other rank its bools plus the stash every member already had), adds the officer rung between founder and member, keeps every member on their rank and logs `load migrated N organization(s) from record version 1`. Rows for a gone organization or rank are dropped with a warning; a rank with no row keeps the mask from its bools.
+20. Job XP (save version 28, payload `joblevels`, #749, decision D12): total XP per character record key and job id (`LF_JobXpRow`, `LF_JobLevels`), never replicated except the DELIVERY level the sign-up offer reads. The level is never saved: the `jobs` config's thresholds derive it, so a rebalance reaches every save. Per-job XP replaced the single player level and its skill points (`LF_PlayerLevelComponent` is gone). The `progression` record keeps its layout: its career level and XP and its single level are written as a mirror of DELIVERY and CIVILIAN in the pre-#749 curves, and `LF_Progression.ApplyAll` seeds the job store from them (`LF_JobLevels.SeedFromLegacy`) on every load; a version 28 save's `joblevels` rows, read later in the same load, replace that seed. **Migration (the choice, recorded):** a version 7-27 save keeps its progress. The single level's total XP (50 L (L-1) + XP toward the next level) goes onto CIVILIAN, because quests, fruit picking and debug grants all fed that one number and it cannot be split by job; the delivery career's total XP (500, then doubling, plus the remainder) goes onto DELIVERY. The shipped CIVILIAN and DELIVERY thresholds are those old curves, so every character keeps its level; FARMER, MINER and the other jobs start at 0. The load logs `save version N has no job xp rows: job levels migrated ...`. Rows with no character, no job or negative XP are skipped; a row for a job the config does not list is kept and reads as level 1. The cooldown and daily-cap clocks are session-only. The pre-#749 career curve is read from the jobs config at migration time (`jobXpFirstLevel` 500, `jobXpLevelGrowth` 2, the values the old career read), and the single level converts whole at any level (no level 20 clamp). Proof: `persist/job-levels` (round trip, second load, a version 27 save) and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the version 23 save migrates CIVILIAN and DELIVERY and has no FARMER or MINER XP).
+21. Wanted looks (save version 29, payload `wantedlooks`, #758): the suspect's look at the crime (`LF_WantedLookRow`: the report sequence and the look, the character prefab and loadout item GUIDs of `LF_WantedLook`), so the portraits on the wanted board's face come back after a restart. A separate payload because the `wanted` records are positional and never change; `LF_WantedReports.ApplyLooks` matches rows to the loaded reports by sequence and skips a row whose report is gone. A version 28 or older save loads its reports with no look (an empty photo frame until the next crime). Proof: `persist/wanted-looks` (round trip, second load, a version 28 save) and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the report has no look).
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -111,7 +114,7 @@ Identity:
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
   survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
-  itemstate, wanted, jobsignups, tickets. The written version is that list's length (currently 12). Deserialize stops at the stored version, so an
+  itemstate, wanted, jobsignups, tickets, ... joblevels, wantedlooks. The written version is that list's length (currently 29). Deserialize stops at the stored version, so an
   older save leaves later payloads untouched. A new system appends one entry at
   the end and raises the version by one. Never insert earlier or reorder.
   The override bodies live in public static `SerializeStore` /
@@ -138,6 +141,7 @@ Identity:
   | 25 | unpaid store tags (#479): by character record key, store key and prefab (`LF_Stores.ExportUnpaid` / `ApplyUnpaid`; `ReattachUnpaid` on each spawn, `ParkCarrier` on disconnect) |
   | 26 | playtime per account and job (#692): account uid, job name, seconds (`LF_Playtime.ExportAll` / `ApplyAll`; export settles the online clocks) |
   | 27 | organization ranks (#750a): rights mask and ladder order per organization id and rank id (`LF_OrganizationManager.ExportRanks` / `ApplyRanks`, after `organizations`) |
+  | 28 | job XP (#749): character record key, job id, total XP (`LF_JobLevels.ExportAll` / `ApplyAll`, after `progression`, which seeds it from a pre-#749 record) |
 
 - **Characters per account (#331, save version 24).** An account holds up to
   `LF_CharacterConfig.MaxPerAccount()` characters (`Configs/Account/LF_Characters.conf`,

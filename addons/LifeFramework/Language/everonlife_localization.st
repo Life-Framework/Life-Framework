@@ -7501,6 +7501,501 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{18003FE63D1892AD}" {
+     Id "LF-Offence_Carjacking"
+     Target_en_us "Vehicle theft"
+     Comment "Offence on a wanted poster: a vehicle was taken from its driver by force (crime catalog id; same words as LF-Offence_VehicleTheft today)."
+    }
+    CustomStringTableItem "{963D39B8BF62B9C8}" {
+     Id "LF-Weapon_Taser_Name"
+     Target_en_us "Taser"
+     Comment "Inventory name of the police stun pistol."
+    }
+    CustomStringTableItem "{7AF5414FC3686A70}" {
+     Id "LF-Weapon_Taser_Description"
+     Target_en_us "Police stun pistol. One cartridge. A hit within ten metres puts a person down for a few seconds and does not wound."
+     Comment "Inventory description of the police stun pistol."
+    }
+    CustomStringTableItem "{4EBBF5311DDAD1CF}" {
+     Id "LF-Magazine_Taser_Name"
+     Target_en_us "Taser cartridge"
+     Comment "Inventory name of the taser's single-shot cartridge."
+    }
+    CustomStringTableItem "{3651646B23FCD86B}" {
+     Id "LF-Magazine_Taser_Description"
+     Target_en_us "One shot for the taser."
+     Comment "Inventory description of the taser cartridge."
+    }
+    CustomStringTableItem "{F75D2B3B32248836}" {
+     Id "LF-Police_Stunned"
+     Target_en_us "You were hit by a taser. You will get up in about %1 seconds."
+     Comment "Toast to a player who was hit by a taser. %1 is the number of seconds."
+    }
+    CustomStringTableItem "{4AD8545DB4254A00}" {
+     Id "LF-Wanted_PosterHeader"
+     Target_en_us "Wanted"
+     Comment "Headline printed at the top of a wanted poster on the board's face; shown in capitals."
+    }
+    CustomStringTableItem "{DB6449E40E448E46}" {
+     Id "LF-Wanted_PosterDriving"
+     Target_en_us "Driving %1"
+     Comment "Wanted poster on the board's face, when nothing was seen of the clothing: %1 is the vehicle name."
+    }
+    CustomStringTableItem "{E7D83B6B552680AE}" {
+     Id "LF-Phone_Title"
+     Target_en_us "Telephone"
+     Comment "Title of every telephone toast (#147)."
+    }
+    CustomStringTableItem "{329AA4071D9D4E53}" {
+     Id "LF-Phone_StationTitle"
+     Target_en_us "Station telephone"
+     Comment "Description line of the station telephone's actions."
+    }
+    CustomStringTableItem "{724AB80720A9B1ED}" {
+     Id "LF-Phone_DialPolice"
+     Target_en_us "Ring the police station"
+     Comment "Payphone action: lift the receiver and ring the station telephone (a voice call)."
+    }
+    CustomStringTableItem "{9D830AA1DCE7D2B2}" {
+     Id "LF-Phone_PickUp"
+     Target_en_us "Pick up the receiver"
+     Comment "Telephone action: answer a ringing telephone."
+    }
+    CustomStringTableItem "{511F17E96A45A274}" {
+     Id "LF-Phone_HangUp"
+     Target_en_us "Hang up"
+     Comment "Telephone action: put the receiver down and end the call."
+    }
+    CustomStringTableItem "{AF38AF3C3E652AC0}" {
+     Id "LF-Phone_Ringing"
+     Target_en_us "It is ringing at the other end."
+     Comment "Toast to the caller: the call is ringing at the station."
+    }
+    CustomStringTableItem "{FDD324D5C2537635}" {
+     Id "LF-Phone_StationRinging"
+     Target_en_us "The station telephone is ringing."
+     Comment "Toast to everyone on duty for the service: a call is ringing at the station telephone."
+    }
+    CustomStringTableItem "{3CD776C95F970C59}" {
+     Id "LF-Phone_Connected"
+     Target_en_us "Someone picked up. The line is open."
+     Comment "Toast to both talkers: the call was answered."
+    }
+    CustomStringTableItem "{F4812934650FC09F}" {
+     Id "LF-Phone_HungUp"
+     Target_en_us "You put the receiver down."
+     Comment "Toast to the talker who hung up."
+    }
+    CustomStringTableItem "{E465752BE2E0AD2D}" {
+     Id "LF-Phone_LineDead"
+     Target_en_us "The line went dead."
+     Comment "Toast to a talker: the other end hung up, walked off, went down or left."
+    }
+    CustomStringTableItem "{F5AAE9C32EB617FE}" {
+     Id "LF-Phone_WalkedAway"
+     Target_en_us "You walked away from the telephone. The call is over."
+     Comment "Toast to a talker who went further than the receiver cord."
+    }
+    CustomStringTableItem "{C7D5CA3226CB67B4}" {
+     Id "LF-Phone_TooLong"
+     Target_en_us "The exchange cut the call. It ran too long."
+     Comment "Toast to both talkers: the call reached the configured maximum length."
+    }
+    CustomStringTableItem "{BC90AE92BE14E820}" {
+     Id "LF-Phone_NoAnswer"
+     Target_en_us "Nobody picked up."
+     Comment "Toast to the caller: the call rang out unanswered."
+    }
+    CustomStringTableItem "{BA03409293F966F8}" {
+     Id "LF-Phone_OnACall"
+     Target_en_us "You are already on a call."
+     Comment "Telephone refusal: the player is talking on another call."
+    }
+    CustomStringTableItem "{CD75E1603F385300}" {
+     Id "LF-Phone_PhoneBusy"
+     Target_en_us "This telephone is in use."
+     Comment "Telephone refusal: someone else is using this telephone."
+    }
+    CustomStringTableItem "{A3F52DC9AD380D5E}" {
+     Id "LF-Phone_LineBusy"
+     Target_en_us "Busy signal. The station line is engaged."
+     Comment "Telephone refusal: every station telephone of the service is already on a call."
+    }
+    CustomStringTableItem "{E141F35D692DD238}" {
+     Id "LF-Phone_NoLine"
+     Target_en_us "The line is dead. No telephone answers that number here."
+     Comment "Telephone refusal: no station telephone for the service exists in this world."
+    }
+    CustomStringTableItem "{1631B276C9DBC6BF}" {
+     Id "LF-Phone_NotRinging"
+     Target_en_us "This telephone is not ringing."
+     Comment "Telephone refusal: picked up a telephone with no call on it."
+    }
+    CustomStringTableItem "{BCE2B941D51071CA}" {
+     Id "LF-Phone_NotOnDuty"
+     Target_en_us "Only an officer on duty answers the station telephone."
+     Comment "Telephone refusal: the player is not on duty for the service of this station telephone."
+    }
+    CustomStringTableItem "{458C896F6A964243}" {
+     Id "LF-Phone_TooFar"
+     Target_en_us "Stand at the telephone to use it."
+     Comment "Telephone refusal: the server found the player too far from the telephone."
+    }
+    CustomStringTableItem "{EB9C965AE30ACFF5}" {
+     Id "LF-Phone_NotYourCall"
+     Target_en_us "You are not on this line."
+     Comment "Telephone refusal: hung up a telephone the player is not talking on."
+    }
+    CustomStringTableItem "{D0D0E6843F18276B}" {
+     Id "LF-Payphone_Summary_Call"
+     Target_en_us "Phoned the station"
+     Comment "Summary the police radio, the dispatch board and the pagers show for a voice call to the station telephone."
+    }
+    CustomStringTableItem "{24435758A5CF028C}" {
+     Id "LF-Phone_LeaveRequest"
+     Target_en_us "Leave a message for a call back"
+     Comment "Payphone action: after a call rang out or found nobody on duty, leave a call-back request (#147)."
+    }
+    CustomStringTableItem "{DF8387B5D8AB3DA0}" {
+     Id "LF-Phone_ReadPad"
+     Target_en_us "Read the message pad"
+     Comment "Station telephone action: list the call-back requests left at payphones."
+    }
+    CustomStringTableItem "{2F6EBB4F95048920}" {
+     Id "LF-Phone_NoAnswerOffer"
+     Target_en_us "Nobody picked up. Leave a message here and the station will ring back."
+     Comment "Toast to the caller: the call rang out; a call-back request may be left at that payphone."
+    }
+    CustomStringTableItem "{3D04C4CC444D598D}" {
+     Id "LF-Phone_NobodyOffer"
+     Target_en_us "Nobody is at the station. Leave a message here and they will ring back."
+     Comment "Toast to the caller: nobody is on duty; a call-back request may be left at that payphone."
+    }
+    CustomStringTableItem "{C4782A22D7EDB5DA}" {
+     Id "LF-Phone_NoOffer"
+     Target_en_us "You have no missed call from this telephone to leave a message for."
+     Comment "Refusal: the player has no call-back offer at this payphone (no missed call, or the offer ran out)."
+    }
+    CustomStringTableItem "{8D1F5DAFD398EAF5}" {
+     Id "LF-Phone_RequestTooLong"
+     Target_en_us "The message is too long."
+     Comment "Refusal: the server found the typed message longer than the configured limit."
+    }
+    CustomStringTableItem "{2A96C07D4D496947}" {
+     Id "LF-Phone_RequestTooLongBy"
+     Target_en_us "Too long by %1 characters."
+     Comment "Message slip error line. %1 is how many characters to cut."
+    }
+    CustomStringTableItem "{DF38F94D73120112}" {
+     Id "LF-Phone_RequestGone"
+     Target_en_us "That message is no longer on the pad."
+     Comment "Refusal: the call-back request expired, was answered, or belongs to another service."
+    }
+    CustomStringTableItem "{257CE64B80315E01}" {
+     Id "LF-Phone_RequestCalling"
+     Target_en_us "Someone is already ringing that telephone back."
+     Comment "Refusal: another officer is ringing this request back."
+    }
+    CustomStringTableItem "{E48722D4B403267E}" {
+     Id "LF-Phone_RequestLeft"
+     Target_en_us "Message left. The station will ring this telephone back."
+     Comment "Toast to the caller: the call-back request is on the station pad."
+    }
+    CustomStringTableItem "{C42B50D4E2C64F7C}" {
+     Id "LF-Phone_RequestOnPad"
+     Target_en_us "A call-back request is on the station pad."
+     Comment "Toast to everyone on duty for the service: a caller left a call-back request."
+    }
+    CustomStringTableItem "{C5B665DD46E8ECE5}" {
+     Id "LF-Phone_RingingBack"
+     Target_en_us "The station is ringing back the telephone you called from."
+     Comment "Toast to the caller who left a request: an officer rings that payphone now."
+    }
+    CustomStringTableItem "{C2EB7CAD98723360}" {
+     Id "LF-Phone_PadNotOnDuty"
+     Target_en_us "Only an officer on duty reads the station pad."
+     Comment "Refusal: the player is not on duty for the station telephone's service."
+    }
+    CustomStringTableItem "{BC2E18872DCB8DB9}" {
+     Id "LF-Phone_SlipTitle"
+     Target_en_us "Message for the station"
+     Comment "Title of the message slip a caller fills in at a payphone."
+    }
+    CustomStringTableItem "{95315859351CA873}" {
+     Id "LF-Phone_SlipHint"
+     Target_en_us "The station will ring this telephone back. A few words help; you may leave none."
+     Comment "Hint line on the message slip."
+    }
+    CustomStringTableItem "{256554EEA5E89F45}" {
+     Id "LF-Phone_SlipField"
+     Target_en_us "Message (up to %1 characters)"
+     Comment "Label of the message field on the slip. %1 is the length limit."
+    }
+    CustomStringTableItem "{12ED03DE459A7FC8}" {
+     Id "LF-Phone_SlipLeave"
+     Target_en_us "Leave the message"
+     Comment "Message slip button: send the call-back request."
+    }
+    CustomStringTableItem "{87FE88A4ADBE1096}" {
+     Id "LF-Phone_SlipCancel"
+     Target_en_us "Hang up"
+     Comment "Message slip close button: leave no request."
+    }
+    CustomStringTableItem "{7AA1CB1952D2EA8E}" {
+     Id "LF-Phone_PadTitle"
+     Target_en_us "While you were out"
+     Comment "Title of the station message pad (the period call-back slip)."
+    }
+    CustomStringTableItem "{D0F1DC66613DA0C1}" {
+     Id "LF-Phone_PadHint"
+     Target_en_us "Call-back requests left at payphones. Ring one back from this telephone."
+     Comment "Hint line on the station message pad."
+    }
+    CustomStringTableItem "{2FE54F022DB5CA14}" {
+     Id "LF-Phone_PadNone"
+     Target_en_us "No messages."
+     Comment "Station message pad with no call-back requests."
+    }
+    CustomStringTableItem "{5BD8A3BD5B8F473D}" {
+     Id "LF-Phone_PadLine"
+     Target_en_us "%1  %2, rang %3 s"
+     Comment "One request on the pad. %1 the in-game time it was left, %2 the place of the payphone, %3 seconds it rang."
+    }
+    CustomStringTableItem "{DE961B312ED56923}" {
+     Id "LF-Phone_PadNoMessage"
+     Target_en_us "No message"
+     Comment "Pad line status: the caller typed nothing."
+    }
+    CustomStringTableItem "{6B69BDA7166DD69D}" {
+     Id "LF-Phone_PadCalling"
+     Target_en_us "%1 (ringing back)"
+     Comment "Pad line status while someone rings that payphone back. %1 is the message."
+    }
+    CustomStringTableItem "{F95D32253E487FB1}" {
+     Id "LF-Phone_PadCallBack"
+     Target_en_us "Ring back"
+     Comment "Pad line button: ring the payphone the request came from."
+    }
+    CustomStringTableItem "{42FDE23CF0AC3481}" {
+     Id "LF-Phone_PadClose"
+     Target_en_us "Put the pad down"
+     Comment "Station message pad close button."
+    }
+    CustomStringTableItem "{12ACDFB2A237C258}" {
+     Id "LF-Phone_TargetBusy"
+     Target_en_us "Busy signal. That telephone is in use."
+     Comment "Refusal: the payphone a call-back request came from is in use; try again later."
+    }
+    CustomStringTableItem "{6299E3E0908A6C21}" {
+     Id "LF-Wanted_PosterStolen"
+     Target_en_us "Stolen"
+     Comment "Headline of a stolen-car poster on the wanted board's face; shown in capitals."
+    }
+    CustomStringTableItem "{E060F7BC110E80EE}" {
+     Id "LF-Wanted_PosterStolenTip"
+     Target_en_us "Seen it? Tell the police."
+     Comment "Stolen-car poster on the wanted board's face: the appeal under the plate and the car's name."
+    }
+    CustomStringTableItem "{4C1C8D5F5970AE54}" {
+     Id "LF-Phone_VonEntry"
+     Target_en_us "Telephone"
+     Comment "Name of the telephone entry in the voice menu and on the voice hint while a call is connected (#147)."
+    }
+    CustomStringTableItem "{B9F7280CFE2131EE}" {
+     Id "LF-Phone_ConnectedTalk"
+     Target_en_us "Someone picked up. Hold your radio key to talk."
+     Comment "Toast to both talkers: the call was answered; the radio push-to-talk key now talks into the telephone."
+    }
+    CustomStringTableItem "{4E79AEAA1ECC6CF6}" {
+     Id "LF-Phone_HandsetName"
+     Target_en_us "Telephone receiver"
+     Comment "Inventory name of the receiver a talker holds for the length of a call (the handset voice transport)."
+    }
+    CustomStringTableItem "{647E1213753F5C49}" {
+     Id "LF-Phone_HandsetDescription"
+     Target_en_us "The receiver of the call you are on. It goes back when you hang up."
+     Comment "Inventory description of the telephone receiver item."
+    }
+    CustomStringTableItem "{63D92EC5F37B85A8}" {
+     Id "LF-Dialogue_Clerk_Greet"
+     Target_en_us "Good day. This is the town clerk's desk. What can I do for you?"
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{CB45DD686F00C171}" {
+     Id "LF-Dialogue_Clerk_Register"
+     Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{5DFED210FA00C577}" {
+     Id "LF-Dialogue_Clerk_Board"
+     Target_en_us "Now read the town board on the square, right beside me. It shows where everything in town is."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{D60A962F84ED553E}" {
+     Id "LF-Dialogue_Clerk_WorkErrand"
+     Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{D90DCDEF90A1C933}" {
+     Id "LF-Dialogue_Clerk_Bank"
+     Target_en_us "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{08B7665F0C1963C1}" {
+     Id "LF-Dialogue_Clerk_Done"
+     Target_en_us "Welcome to Everon. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{C74D628DF7469E2D}" {
+     Id "LF-Dialogue_Clerk_Idle"
+     Target_en_us "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{CC089999560B9785}" {
+     Id "LF-Dialogue_Clerk_AboutWork"
+     Target_en_us "The post office always needs couriers. For anything else, read the town board. It lists who is hiring."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{94AAB43F98726DB0}" {
+     Id "LF-Dialogue_Clerk_AboutTown"
+     Target_en_us "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{93CF95EE9BA6015C}" {
+     Id "LF-Dialogue_Clerk_Bye"
+     Target_en_us "Good day to you."
+     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{4DDB701E3B9C046A}" {
+     Id "LF-Dialogue_Clerk_SayNew"
+     Target_en_us "I am new in town."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{BCE0D0B87758A6FA}" {
+     Id "LF-Dialogue_Clerk_SayNext"
+     Target_en_us "What should I do now?"
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{BBD914A5709DB653}" {
+     Id "LF-Dialogue_Clerk_SayWork"
+     Target_en_us "Where can I find work?"
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{53AB451CE6742B73}" {
+     Id "LF-Dialogue_Clerk_SayTown"
+     Target_en_us "Tell me about this town."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{50187032E73CA183}" {
+     Id "LF-Dialogue_Clerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{B3D8A9678B34F5A7}" {
+     Id "LF-Dialogue_HintLine"
+     Target_en_us "Confirm: skip    Back: leave"
+     Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
+    }
+    CustomStringTableItem "{857383630EAB1A5D}" {
+     Id "LF-Dialogue_HintChoose"
+     Target_en_us "1 to 4, or Up, Down and Confirm: answer    Back: leave"
+     Comment "Conversation scene, small hint under the numbered replies."
+    }
+    CustomStringTableItem "{6B316884EEFB27FF}" {
+     Id "LF-Item_Handcuffs_Name"
+     Target_en_us "Handcuffs"
+     Comment "Inventory name of the police handcuffs."
+    }
+    CustomStringTableItem "{E0C70F7F81117F7D}" {
+     Id "LF-Item_Handcuffs_Description"
+     Target_en_us "Steel chain handcuffs. Hold them and face a downed or held-up suspect to cuff them."
+     Comment "Inventory description of the police handcuffs."
+    }
+    CustomStringTableItem "{C96808FBA0407AFE}" {
+     Id "LF-Restrain_Action"
+     Target_en_us "Cuff"
+     Comment "Interaction menu entry for an on-duty officer holding handcuffs: cuff the person in front of you."
+    }
+    CustomStringTableItem "{1069F4CF50C7B5A1}" {
+     Id "LF-Restrain_Release"
+     Target_en_us "Uncuff"
+     Comment "Interaction menu entry for an on-duty officer facing a cuffed player: take the handcuffs off."
+    }
+    CustomStringTableItem "{421ECB9A8B26A772}" {
+     Id "LF-Restrain_Title"
+     Target_en_us "Handcuffs"
+     Comment "Toast title for cuffing and uncuffing."
+    }
+    CustomStringTableItem "{43F938FE3194371E}" {
+     Id "LF-Restrain_NotOfficer"
+     Target_en_us "Only an on-duty officer can do that."
+     Comment "Cuff refusal: the player is not clocked in as police."
+    }
+    CustomStringTableItem "{677F023211DC8C42}" {
+     Id "LF-Restrain_NoCuffs"
+     Target_en_us "Hold handcuffs in your hand first."
+     Comment "Cuff refusal: the officer holds no handcuffs."
+    }
+    CustomStringTableItem "{B261D371541EF2AF}" {
+     Id "LF-Restrain_NotCompliant"
+     Target_en_us "Only a downed suspect, or one held up who holds no weapon, can be cuffed."
+     Comment "Cuff refusal: the target is standing, not held up, or armed."
+    }
+    CustomStringTableItem "{8865F05A2F144187}" {
+     Id "LF-Restrain_Already"
+     Target_en_us "Already in handcuffs."
+     Comment "Cuff refusal: the target is cuffed already."
+    }
+    CustomStringTableItem "{4F1BD3FDEFA49623}" {
+     Id "LF-Restrain_NotCuffed"
+     Target_en_us "Not in handcuffs."
+     Comment "Uncuff refusal: the target is not cuffed."
+    }
+    CustomStringTableItem "{A39AC47B9AF1F8B0}" {
+     Id "LF-Restrain_Cuffed"
+     Target_en_us "Suspect cuffed."
+     Comment "Toast to the officer after cuffing someone."
+    }
+    CustomStringTableItem "{4861834BE14FFC3F}" {
+     Id "LF-Restrain_YouAreCuffed"
+     Target_en_us "You are in handcuffs."
+     Comment "Toast to the player who was just cuffed."
+    }
+    CustomStringTableItem "{5E8975FFDDC6A07C}" {
+     Id "LF-Restrain_Released"
+     Target_en_us "The handcuffs are off."
+     Comment "Toast to both the officer and the player when the handcuffs come off."
+    }
+    CustomStringTableItem "{70EF9362784F2066}" {
+     Id "LF-SpikeStrip_Name"
+     Target_en_us "Spike strip"
+     Comment "Inventory name of the folded police stinger (#646)."
+    }
+    CustomStringTableItem "{633CC534006B5907}" {
+     Id "LF-SpikeStrip_Description"
+     Target_en_us "Folding tyre-deflation strip. Drop it at the roadside and deploy it across the road; a tyre that crosses it goes flat. On-duty police only."
+     Comment "Inventory description of the folded police stinger."
+    }
+    CustomStringTableItem "{C9A02C030858FF1F}" {
+     Id "LF-SpikeStrip_Deploy"
+     Target_en_us "Deploy spike strip"
+     Comment "Action on the folded strip: lays it across the road in front of the officer."
+    }
+    CustomStringTableItem "{4CC146840395573D}" {
+     Id "LF-SpikeStrip_PickUp"
+     Target_en_us "Pick up spike strip"
+     Comment "Action on a deployed strip: folds it back into the officer inventory."
+    }
+    CustomStringTableItem "{C73AA5808AE4125F}" {
+     Id "LF-SpikeStrip_PoliceOnly"
+     Target_en_us "Only an on-duty officer can handle the spike strip."
+     Comment "Toast and greyed-out reason when someone who is not on-duty police tries the strip."
+    }
+    CustomStringTableItem "{A09B30F6281E5E2E}" {
+     Id "LF-SpikeStrip_NoGround"
+     Target_en_us "There is no flat ground in front of you for the strip."
+     Comment "Toast when the ground ahead rises or falls too much along the strip (a kerb, a car, a slope)."
+    }
   }
  }
 }

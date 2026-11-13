@@ -40,6 +40,26 @@ name of the person who ran the agent.
 - The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (`website/README.md`).
 - Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (`docs/community/support.md`).
 
+## Generated 3D assets
+
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Taser model (`Assets/Weapons/Handguns/Taser/Taser.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/taser/meshy.json` (generation ids), `tools/assets/taser/spec.json` (prompt) |
+| Handcuffs model (`Assets/Items/Roleplay/Handcuffs/Handcuffs.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/handcuffs/meshy.json` (generation ids), `tools/assets/handcuffs/spec.json` (prompt) |
+| Spike strip model (`Assets/Props/Roleplay/SpikeStrip/SpikeStrip.xob`, `SpikeStrip_Folded.xob`): one generated link, repeated and stacked by the clean stage | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; signed off 2026-11-13 (#664) | `tools/assets/spike-strip/meshy.json` (generation ids), `tools/assets/spike-strip/spec.json` (prompt) |
+
+## Generated sound effects (ElevenLabs)
+
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Taser sounds: shot, dry fire, cartridge out and in, stun buzz (`Sounds/Weapons/Handguns/Taser/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-13 on the maintainer's Starter plan, a paid plan with a commercial licence. The output may be used in the project and in published builds as part of the mod; it may not be distributed as stand-alone audio files or a sample pack (`docs/decisions.md`, 2026-11-13) | `tools/assets/taser/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
+
+## Generated voices
+
+| Asset | Tool | Source | Terms | Recorded in |
+|---|---|---|---|---|
+| Town clerk's spoken lines (`Sounds/Dialogue/clerk/*.wav`) | ElevenLabs text-to-speech, voices generated with ElevenLabs; voice "JC" from the voice library | https://elevenlabs.io | The maintainer's paid plan (Starter): commercial use allowed, no attribution required; use in the project and published builds per `docs/decisions.md` 2026-11-13 | `tools/assets/dialogue/clerk/elevenlabs.json` (request ids, voice, model, text), `tools/assets/dialogue/clerk/dialogue.json` |
+
 ## Music
 
 | Track | Author | Source | Licence | Used in |

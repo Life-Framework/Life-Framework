@@ -9,6 +9,9 @@ decides what this server is. The rule and its tests are in
 and `playtest` pass `-addons LifeFramework` only, and every resource still
 lives in the core. The move is an M3 freeze (epic #223).
 
+Licence: the Workshop build of this pack is under the Arma Public License (APL); the source on
+GitHub is MIT.
+
 ## What belongs here
 
 - **Where:** world layers and placement, the village, the MainWorld town.

@@ -84,3 +84,70 @@ class LF_OnScannerHeard : LF_Event
 		return e;
 	}
 }
+
+//! A telephone call changed state (#147): it started ringing, was picked up, ended, or rang out.
+//! Published by LF_PhoneCalls on the server once per transition, after the call table changed.
+//! m_eState is LF_EPhoneCallState and m_eEnd is LF_EPhoneEnd (NONE until the call is over).
+//! Player ids stay on the server; subscribers key on the uids.
+class LF_OnPhoneCall : LF_Event
+{
+	int m_iCallId;
+	int m_eState;
+	int m_eEnd;
+	string m_sService;
+	string m_sCallerUid;
+	//! Empty until someone picks up.
+	string m_sAnswererUid;
+	//! Place of the phone the call came from (LF_WantedReports.DescribePlace).
+	string m_sPlace;
+	//! The call rings a payphone back from the station (a call-back) rather than the station.
+	bool m_bCallBack;
+	int m_iRangSeconds;
+	int m_iTalkSeconds;
+
+	static LF_OnPhoneCall Create(notnull LF_PhoneCall call)
+	{
+		LF_OnPhoneCall e = new LF_OnPhoneCall();
+		e.m_iCallId = call.m_iId;
+		e.m_eState = call.m_eState;
+		e.m_eEnd = call.m_eEnd;
+		e.m_sService = call.m_sService;
+		e.m_sCallerUid = call.m_sCallerUid;
+		e.m_sAnswererUid = call.m_sAnswererUid;
+		e.m_sPlace = call.m_sPlace;
+		e.m_bCallBack = call.m_bCallBack;
+		e.m_iRangSeconds = call.RangSeconds();
+		e.m_iTalkSeconds = call.TalkSeconds();
+		return e;
+	}
+}
+
+//! A call-back request changed (#147): m_sKind is "left" (a caller left it at a payphone), "rung"
+//! (an officer rings that payphone back), "answered" (someone picked up the call-back, it leaves
+//! the pad) or "expired" (it ran out with the dispatch board, unanswered). Published by
+//! LF_PhoneCallBacks on the server. m_sMessage is the caller's typed text, already cleaned and
+//! length-checked; it is logged like chat.
+class LF_OnPhoneCallBack : LF_Event
+{
+	string m_sKind;
+	int m_iRequestId;
+	string m_sService;
+	string m_sCallerUid;
+	//! Empty unless an officer rang it back.
+	string m_sOfficerUid;
+	string m_sPlace;
+	string m_sMessage;
+
+	static LF_OnPhoneCallBack Create(string kind, int requestId, string service, string callerUid, string officerUid, string place, string message)
+	{
+		LF_OnPhoneCallBack e = new LF_OnPhoneCallBack();
+		e.m_sKind = kind;
+		e.m_iRequestId = requestId;
+		e.m_sService = service;
+		e.m_sCallerUid = callerUid;
+		e.m_sOfficerUid = officerUid;
+		e.m_sPlace = place;
+		e.m_sMessage = message;
+		return e;
+	}
+}

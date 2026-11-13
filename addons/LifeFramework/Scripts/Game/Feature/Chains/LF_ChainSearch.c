@@ -53,6 +53,14 @@ class LF_ChainSearch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static int ClearSearchCooldowns()
+	{
+		int cleared = s_mLastSearch.Count();
+		s_mLastSearch.Clear();
+		return cleared;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResetSearchCooldowns()
 	{
 		s_mLastSearch.Clear();

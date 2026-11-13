@@ -1,0 +1,59 @@
+{
+  "id": "clerk",
+  "name": "Clerk",
+  "speaker_key": "#LF-Quest_Giver_Clerk",
+  "voice": {
+    "id": "pB0wYnYoA5t7xU302lqw",
+    "name": "JC - Deep, Thoughful and Encouraging",
+    "public_owner_id": "4a3abb2838631717507cfb261f8223e0426f0d752248e5aef0f55c782e5c29d0",
+    "why": "A man over sixty with a French accent: an old island official. The town's own names are French (Dupont, Lefevre).",
+    "model": "eleven_multilingual_v2",
+    "settings": { "stability": 0.55, "similarity_boost": 0.75, "style": 0.15 }
+  },
+  "budget_chars": 3000,
+  "hear_range_m": 12,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "new", "next": "menu", "condition": "QuestNotTurnedIn", "param": "arrival_register", "action": "QuestConverse" },
+        { "text": "next", "next": "menu", "condition": "QuestTurnedIn", "param": "arrival_register", "action": "QuestConverse" },
+        { "text": "work", "next": "work" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    {
+      "id": "menu",
+      "options": [
+        { "text": "next", "next": "menu", "action": "QuestConverse" },
+        { "text": "work", "next": "work" },
+        { "text": "town", "next": "town" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "work", "line": "about_work", "options_from": "menu" },
+    { "id": "town", "line": "about_town", "options_from": "menu" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Good day. This is the town clerk's desk. What can I do for you?" },
+    "register": { "for_key": "#LF-Quest_ArrivalRegister_TurnIn", "text": "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it." },
+    "board": { "for_key": "#LF-Quest_ArrivalBoard_Desc", "text": "Now read the town board on the square, right beside me. It shows where everything in town is." },
+    "work_errand": { "for_key": "#LF-Quest_ArrivalWork_Desc", "text": "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run." },
+    "bank": { "for_key": "#LF-Quest_ArrivalBank_Desc", "text": "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office." },
+    "done": { "for_key": "#LF-Quest_ArrivalDone_TurnIn", "text": "Welcome to Everon. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board." },
+    "idle": { "for_key": "#LF-Quest_Clerk_Idle", "text": "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office." },
+    "about_work": { "text": "The post office always needs couriers. For anything else, read the town board. It lists who is hiring." },
+    "about_town": { "text": "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well." },
+    "bye": { "text": "Good day to you." }
+  },
+  "replies": {
+    "new": "I am new in town.",
+    "next": "What should I do now?",
+    "work": "Where can I find work?",
+    "town": "Tell me about this town.",
+    "bye": "Goodbye."
+  }
+}

@@ -46,6 +46,12 @@ is the entry point.
   police inventories (`civilian_stash` / `police_duty` snapshots, persisted).
   A first shift gets the starter police kit (config). Clock-out pays duty pay
   (`LF_DutyPay`). There is no faction screen; the faction is the duty role.
+- Wanted board face (#758): `LF_WantedPosters` (server list, events, coalesced) ->
+  `LF_WantedPosterBoardComponent` on `LF_WantedBoard.et` (RplSave/RplLoad + broadcast) ->
+  `LF_WantedPosterFace` (one render target on `LF_BoardFace.et`, drawn within
+  `wantedBoard.drawRadius`, frozen 3 s after each change). Config `LF_WantedPostersConfig`
+  (`Configs/Police/LF_WantedPosters.conf`, owner section `wantedBoard`). The dispatch boards
+  inherit the component with `m_bDrawPosters 0`.
 - Wanted board (M1-11): `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`),
   `LF_WantedBoardReadAction` -> `LF_WantedBoard` (per-read RPC). Posters come
   from `LF_WantedReports`: a description at the crime, the name once identified
@@ -65,6 +71,16 @@ is the entry point.
   count online time: x2 once, then +1 wanted and an Unpaid fine poster.
   Records persist (save version 12).
 - `LF_ConfiscateAction` — weapon confiscation; ⚠️ mutation-during-iteration.
+- Handcuffs (#664): `LF_Restraint.c`. Cuff and Uncuff in the interaction menu; the officer holds
+  `Prefabs/Items/Roleplay/Handcuffs.et` (`LF_HandcuffsComponent`) and the target is downed,
+  stunned, or held up and unarmed (`m_iCompliantSeconds`). The cuffs go onto the suspect and come
+  back on release, at the cell (`LF_Jail.Arrest`), on the suspect's death or disconnect. A cuffed
+  player has no weapon controls (replicated `m_bLF_Restrained`). No restrained animation exists
+  in the base game (#340); the cuffs show on the right hand.
+- Spike strip (#646): every rank's armory kit carries the folded strip. Deploy it from the
+  ground in front of you (on-duty police, rate limited); the server punctures each wheel whose path
+  crosses it through the vanilla wheel damage, and an officer picks it up again. It goes after
+  `m_iSpikeStripLifetimeSeconds`. `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
 
 ## Dependencies
 

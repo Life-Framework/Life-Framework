@@ -71,6 +71,11 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
     description: "Build a Life Framework owner config.json in the browser: a form from the config schema, live validation, and a file with only the values you changed.",
     og: "docs",
   },
+  "/config/reference": {
+    title: "Config reference",
+    description: "Every field of the Life Framework owner config.json: type, default, range and meaning, record-key formats, examples, and how to check a file before a restart.",
+    og: "docs",
+  },
   "/credits": {
     title: "Credits",
     description: "The projects Life Framework builds on, the music and voice licences, the tools, and the people who have shipped code.",

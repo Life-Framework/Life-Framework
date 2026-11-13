@@ -53,28 +53,27 @@ modded class SCR_ChimeraCharacter
 		// the same). The listen host's own character is local.
 		if (LF_Utils.GetLocalCharacter() == this)
 		{
-			LF_MoveHarnessBody(destination, side);
+			LF_MoveHarnessBody(destination, LF_AgentHarness.LastStandYaw());
 			LF_HarnessReply(commandId, "ok", entityName);
 			return;
 		}
 
-		Rpc(RpcDo_LF_HarnessStand, commandId, entityName, destination, side);
+		Rpc(RpcDo_LF_HarnessStand, commandId, entityName, destination, LF_AgentHarness.LastStandYaw());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_HarnessStand(int commandId, string entityName, vector destination, string side)
+	protected void RpcDo_LF_HarnessStand(int commandId, string entityName, vector destination, float yaw)
 	{
-		LF_MoveHarnessBody(destination, side);
+		LF_MoveHarnessBody(destination, yaw);
 		LF_AgentHarness.Reply(commandId, "ok", entityName);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Stand at destination facing the entity (LF_AgentHarness.StandYaw), the way a player walks up
 	//! to a counter, so the interaction key aims at it.
-	protected void LF_MoveHarnessBody(vector destination, string side = "e")
+	protected void LF_MoveHarnessBody(vector destination, float yaw)
 	{
-		float yaw = LF_AgentHarness.StandYaw(side);
 		vector transform[4];
 		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
 		transform[3] = destination;
@@ -232,6 +231,60 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `resetcrime`: the server clears this player's wanted level and the crime stores an
+	//! earlier proof filled, behind the dev gate (#867).
+	void LF_AskHarnessResetCrime(int commandId)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessResetCrime(commandId, true);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessResetCrime, commandId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessResetCrime(int commandId)
+	{
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "resetcrime");
+		LF_ApplyHarnessResetCrime(commandId, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessResetCrime(int commandId, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		string uid = LF_Utils.GetPlayerUID(this);
+		LF_PlayerAccount account;
+		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
+		if (manager && !uid.IsEmpty())
+			account = manager.GetAccount(uid);
+
+		string cleared = "";
+		if (account)
+		{
+			// SetWantedLevel(0) also takes this player's posters down and publishes the account.
+			account.SetWantedLevel(0);
+			cleared = "wanted";
+		}
+
+		int reports = LF_WantedReports.ClearAll();
+		int dispatches = LF_Dispatch.ClearLog();
+		int tills = LF_RobAction.ResetCooldowns() + LF_Hospital.ResetTillCooldowns();
+		int vaults = LF_Bank.RestockAll();
+		int searches = LF_ChainSearch.ClearSearchCooldowns();
+		LF_HarnessReply(commandId, "ok", string.Format("cleared %1 reports=%2 dispatches=%3 tills=%4 vaults=%5 searches=%6", cleared, reports, dispatches, tills, vaults, searches));
+		LF_Debug.Info("AgentHarness", string.Format("crime state reset: reports=%1 dispatches=%2 tills=%3 vaults=%4 searches=%5", reports, dispatches, tills, vaults, searches));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `scanner`: the server puts a police scanner in this character's inventory, behind the
 	//! dev gate (the fence path needs a crime record and cash; the proof is about hearing).
 	void LF_AskHarnessScanner(int commandId, string tool = "scanner")
@@ -310,6 +363,24 @@ modded class SCR_ChimeraCharacter
 			else
 				LF_HarnessReply(commandId, "ok", "stash moved=0");
 
+			return;
+		}
+
+		if (tool == "spikedrop" || tool == "spikecar" || tool == "spikecheck")
+		{
+			// The spike strip proof's stand-ins (LF_SpikeStripHarness, #646).
+			string spike;
+			if (tool == "spikedrop")
+				spike = LF_SpikeStripHarness.Drop(this);
+			else if (tool == "spikecar")
+				spike = LF_SpikeStripHarness.LaunchCar(this);
+			else
+				spike = LF_SpikeStripHarness.Check();
+
+			if (spike.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", spike.Substring(3, spike.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", spike);
 			return;
 		}
 

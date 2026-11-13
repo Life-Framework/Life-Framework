@@ -28,7 +28,7 @@ class LF_Test_FineTicketSerializer : LF_Test
 
 		array<ref LF_FineTicketRecord> before = LF_FineTickets.ExportAll();
 		LF_FineTickets.ApplyAll(null);
-		LF_FineTickets.Configure(60, 60, 2, 1);
+		LF_FineTickets.Configure(60, 60, 2);
 		LF_FineTicketRecord open = LF_FineTickets.Issue(HOLDER, "Ada Holder", "ticket-save-officer", "Bo Officer", LF_PoliceRanks.PATROL, "#LF-Ticket_OffenceSpeeding", 200, "08/11/1989 12:00");
 		array<string> online = {HOLDER};
 		LF_FineTickets.TickOnline(75, online);
@@ -47,7 +47,7 @@ class LF_Test_FineTicketSerializer : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(27, version, "the save is written at version 27 (tickets is payload 12)");
+		ctx.Equal(29, version, "the save is written at version 29 (tickets is payload 12)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "tickets");
 		LF_FineTicketRecord loaded = LF_FineTickets.Find(number);
 		ctx.NotNull(loaded, "the ticket is back after the load");

@@ -261,6 +261,22 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: restocks every registered target (the harness's per-proof reset, #867), which ends
+	//! the robbery cooldown a finished heist left running.
+	//! @return How many targets were restocked.
+	static int RestockAll()
+	{
+		array<string> ids = {};
+		for (int i = 0; i < Vaults().Count(); i++)
+			ids.Insert(Vaults().GetKey(i));
+
+		foreach (string id : ids)
+			Restock(id);
+
+		return ids.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Hauls left in stock; negative when the target is not limited.
 	static int GetStock(string vaultId)
 	{

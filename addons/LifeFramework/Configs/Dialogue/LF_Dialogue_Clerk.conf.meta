@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{65C163E3C4868E76}Configs/Dialogue/LF_Dialogue_Clerk.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

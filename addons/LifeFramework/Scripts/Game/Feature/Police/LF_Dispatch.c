@@ -173,6 +173,20 @@ class LF_Dispatch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Empties the call log (the harness's per-proof reset, #867). Alarms already sounding and the
+	//! call numbering are left alone.
+	//! @return How many calls were dropped.
+	static int ClearLog()
+	{
+		if (!s_aLog)
+			return 0;
+
+		int dropped = s_aLog.Count();
+		s_aLog.Clear();
+		return dropped;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The newest call, or null.
 	static LF_DispatchRecord Last()
 	{
@@ -501,6 +515,14 @@ modded class SCR_PlayerController
 	static int LF_GetDispatchCount()
 	{
 		return s_iLF_DispatchCount;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Forgets the dispatches this client heard (the harness's per-proof reset, #867).
+	static void LF_ResetDispatchCount()
+	{
+		s_iLF_DispatchCount = 0;
+		s_sLF_LastDispatch = "";
 	}
 
 	//------------------------------------------------------------------------------------------------

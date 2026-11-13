@@ -1,0 +1,23 @@
+GenericEntity {
+ ID "56E65DC9EBFCAF0B"
+ components {
+  BaseRadioComponent "{47D8BA4A77F13F50}" {
+   "Encryption key" "LF_line_idle"
+   "Turned on" 1
+   Transceivers {
+    RadioTransceiver "{2781825735993456}" {
+     ChannelFrequency 100000
+     "Transmitting Range" 60000
+     "Min tunable frequency" 100000
+     "Max tunable frequency" 165000
+     "Frequency resolution" 1
+    }
+   }
+  }
+  LF_PhoneLineComponent "{E45CD91B8645F4CD}" {
+  }
+  RplComponent "{E870E5EC7993D785}" {
+   Enabled 1
+  }
+ }
+}

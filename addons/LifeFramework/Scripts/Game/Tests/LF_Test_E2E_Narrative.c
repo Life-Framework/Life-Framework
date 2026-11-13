@@ -241,7 +241,7 @@ class LF_Test_E2E_Narrative : LF_Test
 		float robNowMs = GetGame().GetWorld().GetWorldTime();
 		float robLast = 0;
 		float robNext = 0;
-		int robbed = LF_RobAction.CommitRobbery(ACCOUNT_UID, character, 200, 1, 0, 0, 60, robLast, robNowMs, robNext);
+		int robbed = LF_RobAction.CommitRobbery(ACCOUNT_UID, character, 200, 0, 0, 60, robLast, robNowMs, robNext);
 		ctx.Equal(200, robbed, "LF_RobAction.CommitRobbery pays the 200 robbery cash");
 		ctx.Equal(210, LF_MoneyUtils.GetCash(character), "robbery payout lands as MoneyStack: cash 210");
 

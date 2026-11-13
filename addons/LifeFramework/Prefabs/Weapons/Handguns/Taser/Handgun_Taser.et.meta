@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

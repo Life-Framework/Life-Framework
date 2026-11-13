@@ -27,8 +27,6 @@ class LF_PoliceConfig
 	static const int DEFAULT_TICKET_FIRST_DEADLINE = 1800;
 	static const int DEFAULT_TICKET_SECOND_DEADLINE = 1800;
 	static const float DEFAULT_TICKET_LATE_MULTIPLIER = 2;
-	static const int DEFAULT_TICKET_LATE_WANTED = 1;
-	static const int DEFAULT_MURDER_WANTED = 3;
 	static const bool DEFAULT_OFFICER_KILL_OF_WANTED_EXEMPT = true;
 	static const int DEFAULT_SEARCH_COOLDOWN_SECONDS = 120;
 	static const int DEFAULT_TICKET_MAX_OPEN = 3;
@@ -36,6 +34,8 @@ class LF_PoliceConfig
 	static const float DEFAULT_ARREST_REACH = 5;
 	static const float DEFAULT_JAIL_ARRIVAL_RADIUS = 8;
 	static const float DEFAULT_APPLY_DESK_RANGE = 6;
+	static const int DEFAULT_COMPLIANT_SECONDS = 60;
+	static const int DEFAULT_SPIKE_STRIP_LIFETIME_SECONDS = 600;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -79,10 +79,6 @@ class LF_PoliceConfig
 	[Attribute("5", UIWidgets.Auto, "Dispatch lines the wanted board shows to on-duty police, newest first")]
 	int m_iDispatchLogLines;
 
-
-	[Attribute("", UIWidgets.Object, "Offences an officer can write on a ticket, each with its fixed amount. The rank fine cap decides which ones an officer may write")]
-	ref array<ref LF_TicketOffence> m_aTicketOffences;
-
 	[Attribute("1800", UIWidgets.Auto, "Online seconds a ticket holder has to pay at the police desk before the amount goes up")]
 	int m_iTicketFirstDeadline;
 
@@ -91,11 +87,6 @@ class LF_PoliceConfig
 
 	[Attribute("2", UIWidgets.Auto, "The amount is multiplied by this once, at the first deadline")]
 	float m_fTicketLateMultiplier;
-
-	[Attribute("1", UIWidgets.Auto, "Wanted levels added at the second deadline")]
-	int m_iTicketLateWanted;
-	[Attribute("3", UIWidgets.Auto, "Wanted levels a murder adds (M1-27). Robbery adds 1; wanted caps at 5")]
-	int m_iMurderWanted;
 
 	[Attribute("1", UIWidgets.Auto, "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder")]
 	bool m_bOfficerKillOfWantedExempt;
@@ -117,6 +108,11 @@ class LF_PoliceConfig
 
 	[Attribute("6", UIWidgets.Auto, "Metres a player may stand from the police application desk for the form to open", params: "1 30")]
 	float m_fApplyDeskRange = 6;
+	[Attribute("60", UIWidgets.Auto, "Seconds after a hold-up during which the held-up player, holding no weapon, may be handcuffed by an on-duty officer. A downed player may always be. 0 allows downed players only", params: "0 600")]
+	int m_iCompliantSeconds;
+
+	[Attribute("600", UIWidgets.Auto, "Seconds a deployed spike strip stays before it goes away by itself (#646). An officer can pick it up sooner", params: "30 7200")]
+	int m_iSpikeStripLifetimeSeconds;
 
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -201,6 +197,26 @@ class LF_PoliceConfig
 			return DEFAULT_SEARCH_COOLDOWN_SECONDS;
 
 		return Math.Max(config.m_iSearchCooldownSeconds, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int CompliantSeconds()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_COMPLIANT_SECONDS;
+
+		return Math.ClampInt(config.m_iCompliantSeconds, 0, 600);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int SpikeStripLifetimeSeconds()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_SPIKE_STRIP_LIFETIME_SECONDS;
+
+		return Math.ClampInt(config.m_iSpikeStripLifetimeSeconds, 30, 7200);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -370,19 +386,11 @@ class LF_PoliceConfig
 	static void TicketOffences(notnull array<ref LF_TicketOffence> outOffences)
 	{
 		outOffences.Clear();
-		LF_PoliceConfig config = Get();
-		if (config && config.m_aTicketOffences)
-		{
-			foreach (LF_TicketOffence offence : config.m_aTicketOffences)
-			{
-				if (offence && !offence.m_sName.IsEmpty() && offence.m_iAmount > 0)
-					outOffences.Insert(LF_TicketOffence.Create(offence.m_sName, offence.m_iAmount));
-			}
+		LF_CrimeCatalog.CollectTicketOffences(outOffences);
+		if (!outOffences.IsEmpty())
+			return;
 
-			if (!outOffences.IsEmpty())
-				return;
-		}
-
+		// The catalog is missing or lists no fine: the shipped form, so an officer can still write a ticket.
 		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceSpeeding", 200));
 		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceDisturbance", 150));
 		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceRecklessDriving", 500));
@@ -420,15 +428,6 @@ class LF_PoliceConfig
 		return config.m_fTicketLateMultiplier;
 	}
 
-	//------------------------------------------------------------------------------------------------
-	static int TicketLateWanted()
-	{
-		LF_PoliceConfig config = Get();
-		if (!config || config.m_iTicketLateWanted < 0)
-			return DEFAULT_TICKET_LATE_WANTED;
-
-		return config.m_iTicketLateWanted;
-	}
 }
 
 //------------------------------------------------------------------------------------------------

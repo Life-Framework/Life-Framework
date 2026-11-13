@@ -3,8 +3,12 @@
 //! "progression" payload (save version 7) by LF_PersistenceComponentSerializer.
 //!
 //! Career, police, and benefit fields mirror state owned elsewhere (LF_CivilianJob,
-//! LF_PlayerAccount, LF_UnemploymentBenefit). Level, licences, and quest turn-ins live on the
-//! character entity, so LF_Progression keeps them here between bodies.
+//! LF_PlayerAccount, LF_UnemploymentBenefit). Licences and quest turn-ins live on the character
+//! entity, so LF_Progression keeps them here between bodies.
+//!
+//! The layout is the pre-#749 one and must stay (positional save). Since #749 the career level and
+//! XP and the single player level are a mirror of the CIVILIAN and DELIVERY jobs in LF_JobLevels,
+//! written in the old curves, and the source of a version 7-27 save's job XP.
 //!
 //! Licences are stored by enum name, not by LF_LicenseBits position, so a reordered or renamed
 //! licence list drops one unknown name instead of shifting every saved bit.
@@ -16,7 +20,7 @@ class LF_ProgressionRecord : Managed
 	int m_iVersion = VERSION;
 	string m_sPlayerUid;
 
-	// Civilian delivery career (LF_CivilianJob).
+	// Civilian delivery career: pay total (LF_CivilianJob); level and XP mirror the DELIVERY job.
 	int m_iCareerLevel = 1;
 	float m_fCareerExperience;
 	int m_iCareerPaidTotal;
@@ -29,7 +33,8 @@ class LF_ProgressionRecord : Managed
 	//! Seconds between the last benefit collection and the save. -1 = never collected.
 	float m_fBenefitElapsedSeconds = -1;
 
-	// Player level (LF_PlayerLevelComponent). Applied only when m_bHasLevel.
+	// The pre-#749 single player level: a mirror of the CIVILIAN job, read only when m_bHasLevel.
+	// Skill points no longer exist and are written as 0.
 	bool m_bHasLevel;
 	int m_iPlayerLevel = 1;
 	float m_fPlayerExperience;

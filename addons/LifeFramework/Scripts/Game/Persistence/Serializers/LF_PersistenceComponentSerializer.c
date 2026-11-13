@@ -31,7 +31,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks. The written version is that list's length (27). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks. The written version is that list's length (29). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -63,6 +63,12 @@
 //! A version 26 save includes the playtime and has no organization rank rows (#750a): its organization
 //! records are record version 1, so LF_OrganizationManager.ApplyAll turns each rank's four bools into
 //! a rights mask and adds the officer rung; members keep their rank.
+//! A version 27 save includes the organization ranks and has no job XP rows (#749): the
+//! "progression" payload seeds LF_JobLevels from its records' single level (onto CIVILIAN) and
+//! delivery career (onto DELIVERY), and that is the migration; every other job starts at 0.
+//! A version 28 save includes the job XP rows and has no wanted looks (#758): its reports load with
+//! no look, so their posters on the wanted board's face show an empty photo frame until the
+//! suspect's next crime.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -125,6 +131,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("storeunpaid");
 		order.Insert("playtime");
 		order.Insert("orgranks");
+		order.Insert("joblevels");
+		order.Insert("wantedlooks");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,7 +166,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 27);
+		context.WriteValue("version", 29);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -281,6 +289,11 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 		// A save from before #331 has no character slots. ApplyAll already keyed each account's one
 		// character by the account uid (slot 1), which is what that save's records use.
+		// A save from before #749 has no job XP rows: "progression" seeded them from its single
+		// level and delivery career.
+		if (version > order.Find("progression") && version <= order.Find("joblevels"))
+			LF_Debug.Info("Persistence", string.Format("save version %1 has no job xp rows: job levels migrated from the single level (CIVILIAN) and the delivery career (DELIVERY), %2 job xp row(s)", version, LF_JobLevels.ExportAll().Count()));
+
 		if (version <= order.Find("characters"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no character slots: %2 account(s) load their character into slot 1, keyed by the account uid", version, LF_PlayerAccountManager.CountAccountsWithCharacters()));
 
@@ -509,6 +522,18 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_OrganizationRankRow> rankRows = LF_OrganizationManager.ExportRanks();
 			context.Write(rankRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 organization rank row(s)", rankRows.Count()));
+		}
+		else if (payload == "joblevels")
+		{
+			array<ref LF_JobXpRow> jobXpRows = LF_JobLevels.ExportAll();
+			context.Write(jobXpRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 job xp row(s)", jobXpRows.Count()));
+		}
+		else if (payload == "wantedlooks")
+		{
+			array<ref LF_WantedLookRow> lookRows = LF_WantedReports.ExportLooks();
+			context.Write(lookRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 wanted look(s)", lookRows.Count()));
 		}
 		else
 		{
@@ -913,6 +938,37 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "organization rank rows failed to read, ranks keep the rights from their records");
+			}
+		}
+		else if (payload == "joblevels")
+		{
+			// Runs after "progression" in the same load, which seeded the store from the records'
+			// pre-#749 fields; these rows replace that. A version 7-27 save never reaches this
+			// payload and keeps the seed (its migration).
+			array<ref LF_JobXpRow> jobXpRows = new array<ref LF_JobXpRow>();
+			if (context.Read(jobXpRows))
+			{
+				int jobXpApplied = LF_JobLevels.ApplyAll(jobXpRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 job xp row(s)", jobXpApplied, jobXpRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "job xp rows failed to read, job levels keep the values the progression records hold");
+			}
+		}
+		else if (payload == "wantedlooks")
+		{
+			// Runs after "wanted" in the same load, so the reports exist; matched by sequence. A
+			// version 1-28 save never reaches this payload and its posters have no picture.
+			array<ref LF_WantedLookRow> lookRows = new array<ref LF_WantedLookRow>();
+			if (context.Read(lookRows))
+			{
+				int looksApplied = LF_WantedReports.ApplyLooks(lookRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 wanted look(s)", looksApplied, lookRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "wanted looks failed to read, the posters show no picture until the next crime");
 			}
 		}
 		else

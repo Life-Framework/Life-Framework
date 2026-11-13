@@ -291,6 +291,12 @@
   `docs/architecture/core-pack-inventory.md`.
 
 ### Config service — `Scripts/Game/Core/Config/LF_ConfigService.c` (#278)
+- ✅ (2026-11-12, #749) The `jobs` section (D8): duty pay, the benefit, and the job XP
+  tables (`tracks` by job id with `levelThresholds` and `dailyXpCap`, `xpAwards` by action
+  id, `licenceGates` by licence name), read by `LF_JobsConfig.ApplyOwner` with ranges.
+  `ReadFloat` takes a whole number or a fraction; `ReadInts` refuses a list holding a
+  non-number or a number out of range whole. `vehicles` and `jobs` are known top-level
+  keys now (`vehicles` warned as unknown before). Test `config/jobs-owner`.
 - ✅ (2026-11-12) The server reads the owner's
   `$profile:LifeFramework/config.json` at game start and merges it over the
   shipped `.conf` defaults field by field: owner, then pack, then core. Records
@@ -525,14 +531,17 @@
   `persist/progression-roundtrip`, `persist/progression-old-save`, and
   `e2e/pass2-verify-load` across a real two-boot restart). The `progression`
   payload, appended at save version 7, holds one `LF_ProgressionRecord` per
-  player uid: the civilian delivery career (level, XP, paid total), police rank,
+  player uid: the civilian delivery career pay total, police rank,
   on-duty seconds and unpaid duty seconds, seconds since the last benefit
-  collection, the player level (level, XP, skill points), licences by enum name,
-  and turned-in quest ids. A courier at level 2 still opens fuel delivery and a
-  senior officer stays senior.
-- ✅ Level, licences, and turn-ins live on the character, so their owners write
+  collection, licences by enum name, and turned-in quest ids. Since #749 its
+  career level and XP and its single player level are a mirror of the DELIVERY
+  and CIVILIAN jobs (`LF_JobLevels`, own payload), written in the pre-#749 curves; a
+  version 7-27 save's job XP comes from them. A courier at level 2 still opens fuel
+  delivery and a senior officer stays senior.
+- ✅ Licences and turn-ins live on the character, so their owners write
   through to the store and `LF_SpawnLogic` applies the record to every new body.
-  They now survive death as well; only carried items drop.
+  They now survive death as well; only carried items drop. Job levels are keyed by
+  the character, not the body.
 - ✅ Tolerant load: an unknown licence name is skipped with a warning, an unknown
   quest id is kept with a warning, a rank above the ladder clamps to senior. A
   version 6 save leaves live rank and duty totals alone (the account apply
@@ -790,7 +799,7 @@
   `SellItem` pays cash only after the goods are confirmed removable and
   claws back overpayments. `IsItemSoldHere` gates buy and sell.
 - ⚠️ A shop with no `LF_StoreComponent` has no stock (infinite supply); the physical general store below does.
-- ✅ **Physical store (#202).** The DebugWorld general store (`Shop_GeneralStore_Debug`, store key `general_store`) is also a physical store: `LF_StoreComponent` beside the price list. The goods stand on the counter as real world items (apple, cabbage, water, apple juice, field dressing). The price list stays and is the convenient way to buy. **Stock is one number per line** (`min(stock, slots)` display copies stand on the shelf, the rest waits in the back room): a copy taken by hand leaves the stock once and is tagged **unpaid** (`LF_Stores`, a record per item instance on the server); a price-list sale (`LF_ShopComponent.Buy`) checks stock, takes the cash, reserves the units and deletes the surplus display copy; every stock operation first looks for items already taken, so a pickup and a sale can never count one unit twice, and an empty line refuses with `#LF-Shop_RefuseOutOfStock`. **Pay for goods** (`LF_StoreTillAction` on the cash register itself, #582: `Shop_GeneralStore_Till`, the station register prefab `EL_FuelTill.et` standing on the counter and naming its store by `m_sStoreKey`, its action context on the customer side; the server refuses a payer more than `LF_StoreRules.TILL_REACH` (3.5 m) from the register) charges exactly what the user carries unpaid in cash (reason `store-sale`, an `LF_OnMoneyMoved`), all or nothing, clears the tags and hands over an `LF_Receipt` (Read toasts the number, items and total; the printed fields are session state, so a receipt kept over a restart reads blank). An unpaid item eaten or used up stays on the bill. **Shoplifting:** a character holding unpaid goods of a store while outside its boundary box (`m_vBoundaryCenter`/`m_vBoundaryHalf`, flat) is caught by the 500 ms store tick: the goods close as theirs, `m_iWantedIncrease` (1) wanted levels, `LF_Dispatch.Report` with `#LF-Offence_Shoplifting` (the alarm sounds at the counter and police are radioed) and `LF_WantedReports.Identify` so the poster names them (being seen walking out of a shop counts as identified). The shelf refills from config over time: `m_iRestockSeconds` (120) adds each line's `m_iRestockAmount` up to `m_iMaxStock` and respawns the missing copies. **Stock persists** (`storestock` payload, save version 21, `LF_StoreStockRow` by store key and prefab); the shelf is rebuilt from it after a restart. The engine's own persistence also saves a loose shelf item (it carries `LF_QuantityComponent`) and restores it where it stood, so on a fill or a load the store adopts a loose copy sitting on a shelf point (or deletes it when the slot is already filled) instead of spawning a second one; `wt e2e` counts the loose apples around the store after the restart. Tests `store/rules`, `store/shelf-till`, `store/shoplift`, `persist/store-stock`; `session.mjs store-proof` (two clients: A pays, B walks out). ⚠️ Follow-ups: the market and the car lot (cars on display, each with its own buy interaction, key at the desk) are not on this pattern yet; a shelf or unpaid item is kept out of stack merges (`LF_Stores.HoldsApart`, test `store/stack-merge`), so it stays a separate stack until it is moved again after paying; receipt text does not survive a restart. **Unpaid tags survive a restart and a logout (#479):** the `storeunpaid` payload (save version 25, `LF_StoreUnpaidRow` by character record key, store key and prefab, never an entity id) saves the tag of every item a living player carries or used up, and `LF_Stores.ParkCarrier` parks them on disconnect; when that character's body spawns with its carried inventory back (`LF_SpawnLogic.OnCharacterCreated`), `LF_Stores.ReattachUnpaid` puts each tag on an untagged item of that prefab it carries (a used-up one comes back as the same debt). A tag whose item or store is gone is dropped with a warning; a tag on the floor or a dead body is not saved. A restored tag is not swept while its carrier has the store's grace (`m_iRestoredGraceSeconds`, 300 s; toast `#LF-Store_UnpaidRestored` at spawn) to come back and pay; once the carrier has stood in the store, or the grace has run out, the sweep applies as usual, so logging out inside a store is no way to leave with the goods. The till charges a restored tag as before. Tests `persist/store-unpaid`, `e2e/pass*` (a juice taken off the shelf before the save is owed and paid after the restart).
+- ✅ **Physical store (#202).** The DebugWorld general store (`Shop_GeneralStore_Debug`, store key `general_store`) is also a physical store: `LF_StoreComponent` beside the price list. The goods stand on the counter as real world items (apple, cabbage, water, apple juice, field dressing). The price list stays and is the convenient way to buy. **Stock is one number per line** (`min(stock, slots)` display copies stand on the shelf, the rest waits in the back room): a copy taken by hand leaves the stock once and is tagged **unpaid** (`LF_Stores`, a record per item instance on the server); a price-list sale (`LF_ShopComponent.Buy`) checks stock, takes the cash, reserves the units and deletes the surplus display copy; every stock operation first looks for items already taken, so a pickup and a sale can never count one unit twice, and an empty line refuses with `#LF-Shop_RefuseOutOfStock`. **Pay for goods** (`LF_StoreTillAction` on the cash register itself, #582: `Shop_GeneralStore_Till`, the station register prefab `EL_FuelTill.et` standing on the counter and naming its store by `m_sStoreKey`, its action context on the customer side; the server refuses a payer more than `LF_StoreRules.TILL_REACH` (3.5 m) from the register) charges exactly what the user carries unpaid in cash (reason `store-sale`, an `LF_OnMoneyMoved`), all or nothing, clears the tags and hands over an `LF_Receipt` (Read toasts the number, items and total; the printed fields are session state, so a receipt kept over a restart reads blank). An unpaid item eaten or used up stays on the bill. **Shoplifting:** a character holding unpaid goods of a store while outside its boundary box (`m_vBoundaryCenter`/`m_vBoundaryHalf`, flat) is caught by the 500 ms store tick: the goods close as theirs, the catalog's shoplifting amount (1) of wanted levels, `LF_Dispatch.Report` with `#LF-Offence_Shoplifting` (the alarm sounds at the counter and police are radioed) and `LF_WantedReports.Identify` so the poster names them (being seen walking out of a shop counts as identified). The shelf refills from config over time: `m_iRestockSeconds` (120) adds each line's `m_iRestockAmount` up to `m_iMaxStock` and respawns the missing copies. **Stock persists** (`storestock` payload, save version 21, `LF_StoreStockRow` by store key and prefab); the shelf is rebuilt from it after a restart. The engine's own persistence also saves a loose shelf item (it carries `LF_QuantityComponent`) and restores it where it stood, so on a fill or a load the store adopts a loose copy sitting on a shelf point (or deletes it when the slot is already filled) instead of spawning a second one; `wt e2e` counts the loose apples around the store after the restart. Tests `store/rules`, `store/shelf-till`, `store/shoplift`, `persist/store-stock`; `session.mjs store-proof` (two clients: A pays, B walks out). ⚠️ Follow-ups: the market and the car lot (cars on display, each with its own buy interaction, key at the desk) are not on this pattern yet; a shelf or unpaid item is kept out of stack merges (`LF_Stores.HoldsApart`, test `store/stack-merge`), so it stays a separate stack until it is moved again after paying; receipt text does not survive a restart. **Unpaid tags survive a restart and a logout (#479):** the `storeunpaid` payload (save version 25, `LF_StoreUnpaidRow` by character record key, store key and prefab, never an entity id) saves the tag of every item a living player carries or used up, and `LF_Stores.ParkCarrier` parks them on disconnect; when that character's body spawns with its carried inventory back (`LF_SpawnLogic.OnCharacterCreated`), `LF_Stores.ReattachUnpaid` puts each tag on an untagged item of that prefab it carries (a used-up one comes back as the same debt). A tag whose item or store is gone is dropped with a warning; a tag on the floor or a dead body is not saved. A restored tag is not swept while its carrier has the store's grace (`m_iRestoredGraceSeconds`, 300 s; toast `#LF-Store_UnpaidRestored` at spawn) to come back and pay; once the carrier has stood in the store, or the grace has run out, the sweep applies as usual, so logging out inside a store is no way to leave with the goods. The till charges a restored tag as before. Tests `persist/store-unpaid`, `e2e/pass*` (a juice taken off the shelf before the save is owed and paid after the restart).
 - ✅ **The general store sells a short list** (2026-11-08, M1 RC QA): `Shop_GeneralStore_Debug`
   carries a curated `m_aShopItems` (apple, cabbage, water, apple juice, field dressing,
   ALICE backpack). Without it the price list showed the whole 1312-line base-game catalog,
@@ -953,7 +962,8 @@
   catalog, extended). A chain has a tier (1 to 5), steps in order, equipment, and heat settings.
   A step names the station type it needs, its inputs and outputs (the `LF_ProcessAction`
   recipe rows), the hands-on work units one batch takes (`m_iWork`), a licence
-  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum player level, and an equipment id.
+  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum level in the job it names
+  (`m_sLevelJob`, CIVILIAN by default; #749), and an equipment id.
   A pack adds a chain by overriding the `.conf`; there is no script.
 - ✅ **A bad chain disables only itself.** `LF_ChainCatalog.Build` validates each row (no id,
   tier out of range, no steps, no station, no work, a malformed recipe, unlisted equipment,
@@ -1125,24 +1135,48 @@
 - ✅ `#EL-Job_Earned` is `Earned $%1 for work!` and `GiveReward` passes the
   paid amount through `WidgetManager.Translate` (verified 2026-10-11).
 
-### `LF_PlayerLevelComponent` — `Feature/Level/LF_PlayerLevelComponent.c`
-- ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;
-  passive bonuses (`gatheringSpeed 1+(level-1)*0.1`, `gatheringAmount` same,
-  `saleBonus 1+(level-1)*0.05`); `CheckLevelUp` drains XP cascades, +1 SP and
-  +1 total SP per level.
-- ⚠️ `SetLevel`/`SetExperience`/`SetSkillPoints`/`SetTotalSkillPointsEarned`
-  have no server guard, no validation, no recompute (inconsistent state
-  possible). Saves on every XP gain (DB-write hazard). `GetBonusesText`
-  returns a Spanish literal.
+### `LF_JobLevels` — `Feature/Level/LF_JobLevels.c` (#749, D12)
+- ✅ (2026-11-12) **Per-job XP replaces the single player level.** One XP track per job
+  (CIVILIAN, DELIVERY, FARMER, MINER, LUMBERJACK, MEDIC, POLICE in the core config), keyed by
+  the character record key. The store holds total XP; the level is 1 plus the job's
+  thresholds reached (`LF_JobsConfig.m_aTracks`, owner key `jobs.tracks`), so a rebalance
+  reaches old saves. `LF_PlayerLevelComponent`, its skill points and its unused passive
+  bonuses are gone (component removed from `Character_Roleplay.et`; the debug menu's skill
+  point button too). Tests `jobs/job-levels`, `jobs/job-level-gates`, `config/jobs-owner`,
+  `persist/job-levels`, `e2e/pass2-verify-load`.
+- ✅ XP is added only by the server: `AddXp(uid, job, amount, reason)` (quest reward XP to the
+  quest's `m_sJob`, debug grants to CIVILIAN) and `Award(uid, action, units)` for in-world
+  actions whose XP, job and cooldown are config (`jobs.xpAwards`: `delivery_run` 100 DELIVERY,
+  `fruit_pick` 5 FARMER a fruit, `gather` 2 FARMER). An action inside its cooldown earns
+  nothing; a job's `dailyXpCap` (FARMER 2000) drops the part over the cap per day of server
+  time. Both clocks are session state. An unknown job or action earns nothing and logs
+  `[LFDebug:JobLevels]`.
+- ✅ Gates read job levels: delivery sign-up (DELIVERY: fuel level 2, taxi level 3, the old
+  pacing), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
+  or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
+  default), lockpicking skill (CIVILIAN).
+- ✅ **Saved as the `joblevels` payload (save version 28)**: one `LF_JobXpRow` per (character,
+  job). A version 7-27 save migrates: the single level goes onto CIVILIAN and the delivery
+  career onto DELIVERY at the same levels; every other job starts at 0. Load is idempotent.
+- ✅ A level rise from any grant publishes `LF_OnJobLevelChanged`; `LF_JobLevelSync` refreshes
+  the replicated DELIVERY level on the character's live body, so a quest's DELIVERY XP opens fuel
+  delivery on the client too (`jobs/job-level-sync`). A capped or refused award does not start
+  its cooldown. The pre-#749 career curve stays config (`jobXpFirstLevel`, `jobXpLevelGrowth`,
+  read only to migrate), and the single level migrates whole at any level.
+- ⚠️ Only the DELIVERY level reaches a client (`LF_PlayerJobComponent`'s replicated level, for
+  the sign-up offer); no client reads another job's level yet, so no level is shown. There is
+  no XP source yet for MINER, LUMBERJACK, MEDIC or POLICE, and no player-facing licence
+  purchase, so those licence gates are reachable only through config and tests.
 
 ### `LF_LicenseManagerComponent` — `Feature/License/LF_LicenseManagerComponent.c`
 - ✅ License catalog (26 entries), `CanUnlockLicense` (owned/config/whitelist/
-  level), `CanAffordLicense` (SP cost), `PurchaseLicense` (spends SP +
-  unlock), `HasLicense`, persistence restore.
+  job level), `PurchaseLicense` (checks, then unlocks; nothing is spent since #749),
+  `HasLicense`, persistence restore. The level gate is `LF_LicenseGate` (#749): the
+  licence family's job (FARMER_* in FARMER, ..., criminal licences in CIVILIAN) at the
+  catalog's `m_iMinLevelRequired`, unless the jobs config has a `licenceGates` row.
 - ✅ **Whitelist mapping and purchase ordering fixed** (verified 2026-08-30):
   `GetLicenseWhitelistJob` maps MEDIC access to MEDIC and police licenses to
-  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`
-  spends skill points. `SetUnlockedLicenses` is the persistence restore seam,
+  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`. `SetUnlockedLicenses` is the persistence restore seam,
   not a player purchase path. Remaining: not localized; `m_bIsInitialLicense`
   is used for initial grants.
 - ✅ **Replicates as a bitmask** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the old `[RplProp] ref array` broke the
@@ -1290,8 +1324,8 @@
 ### `LF_Murder` / `LF_Zones` — `Feature/Crime/`, `Feature/Moderation/` (M1-27, #125; zones #242)
 - ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
   reaches `LF_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
-  player who kills another player or an NPC gets wanted +`m_iMurderWanted`
-  (`LF_Police.conf`, default 3), one `LF_WantedReports` report with the
+  player who kills another player or an NPC gets wanted +the catalog's amount
+  (`#LF-Offence_Murder` in `LF_CrimeCatalog.conf`, default 3), one `LF_WantedReports` report with the
   `#LF-Offence_Murder` offence and their description (no name), a radio
   dispatch to every on-duty officer (`LF_Dispatch.Report`, no site alarm), and a toast. Not murder: a death with no player behind
   it, a self-kill, a destroyed vehicle, and (config
@@ -1349,7 +1383,7 @@
   with `LF_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
   the server rolls it, and min equal to max pays that fixed amount. The debug
   till pays 150 MoneyStack cash. The bank balance stays 0. Wanted rises by
-  `m_iWantedIncrease` (default 1) and still clamps at 5. A second attempt
+  the catalog's robbery amount (default 1) and still clamps at 5. A second attempt
   inside the cooldown is refused and logged with `LF_Debug.Error`. The police
   alert fires once, inside `CommitRobbery`, not while counting on-duty police
   and not when the offer refreshes. The fuel station building
@@ -1362,7 +1396,7 @@
   real character: MoneyStack cash, bank 0, wanted +1, cooldown, civilian gate.
   The weapon and vehicle grant/spawn, wanted, and alert moved into
   `LF_RobWeaponAction.CommitWeaponRobbery` and
-  `LF_RobVehicleAction.CommitVehicleRobbery` (wanted `WANTED_INCREASE` 2 / 3;
+  `LF_RobVehicleAction.CommitVehicleRobbery` (wanted from the catalog, weapon theft 2 and carjacking 3;
   `PerformAction` keeps the server-only guard), and their civilian check into
   `LF_RobAction.IsFactionAllowedToRob`; `crime/rob-weapon-vehicle` (WORLD)
   drives them. The earlier `crime/rob-reward` and `crime/rob-wanted-clamp`
@@ -1476,7 +1510,7 @@
   (the `fine` slot of the player interaction menu, `LF_FineTicketRole`, no
   prefab edit). The server opens the ticket pad (`LF_FineTicketPad`, paper
   `LF_UIScreen`) on the officer's machine: one "Write: <offence>, <amount>" button per offence from
-  `LF_Police.conf` `m_aTicketOffences` at its fixed amount; offences above the
+  the crime catalog's offences with a fine (`LF_CrimeCatalog.conf`) at their fixed amount; offences above the
   officer's rank cap (`LF_PoliceRanks.FineCap`: patrol 1000, senior 5000) print
   as a plain "senior officers only" line. The server re-checks duty,
   reach (2 m), the cap, and at most 3 unpaid tickets per holder, then hands
@@ -1492,7 +1526,7 @@
 - ✅ **Deadlines in online time** (like the jail sentence): unpaid after
   `m_iTicketFirstDeadline` (1800 s) the amount is multiplied once by
   `m_fTicketLateMultiplier` (x2) and the paper updates; after a further
-  `m_iTicketSecondDeadline` (1800 s) the holder gets `m_iTicketLateWanted` (+1)
+  `m_iTicketSecondDeadline` (1800 s) the holder gets the catalog's `#LF-Offence_UnpaidFine` amount (+1)
   wanted and a named "Unpaid fine" poster on the wanted board. Still payable
   after; paying does not lift the warrant. Logs: `[LFDebug:Ticket]`.
 - ✅ **Persisted** (save version 12, payload `tickets`). A restart's blank
@@ -1561,6 +1595,45 @@
   on identified reports. The card is an `LF_UIScreen` paper sheet that closes
   4 m from the board; reading plays the map pick-up sound and gesture.
   On-duty police also see the dispatch log under the posters (M1-20).
+- ✅ **Posters on the wanted board's face** (#758, `docs/architecture/visual-boards-spike.md`
+  issue 1, budget in `docs/architecture/visual-boards-budget.md`): every player near the
+  board sees a paper poster per wanted suspect pinned on the cork, without reading it:
+  WANTED, the name once identified (else UNKNOWN PERSON), the offence, what was seen
+  (`Wearing ...; driving ...`, the line left off when nothing was seen) and the wanted
+  level. `LF_WantedPosters` builds the public list on the server (one poster per suspect,
+  newest first, no place) on bus events (`LF_OnCrimeCommitted`, the new `LF_OnWantedChanged`
+  and `LF_OnSuspectIdentified`) and after a load, coalesced to one broadcast; the board's
+  `LF_WantedPosterBoardComponent` sends it by `RplSave`/`RplLoad` (late join, stream-in)
+  and a reliable broadcast. Each client draws one render target over the cork
+  (`Prefabs/Props/Signs/LF_BoardFace.et`, a 16:9 quad, the vanilla cork texture under the
+  posters) within `drawRadius` (30 m) and releases it 5 m beyond; the face renders live for
+  3 s after a change and then freezes, which the budget measured as nearly free. Owner
+  config section `wantedBoard`: `posters` (4, at most 8 in two rows) and `drawRadius`.
+  The Read card and the police-only lines are unchanged; the dispatch boards keep their
+  painted face (`m_bDrawPosters 0`; decision 2026-11-13). Readable to about 4 m at noon;
+  at night it has no light of its own, like every other sign (`session.mjs
+  wanted-posters-look-proof` takes the pictures). Tests `police/wanted-posters-feed`,
+  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`.
+- ✅ **Stolen cars on the wanted board's face** (#758, spike issue 5): a car its owner
+  reported stolen (`LF_ReportStolenAction`) takes one of the last places (`wantedBoard.
+  stolenPosters`, 1) as a STOLEN poster: a picture of the model (the prefab's own preview,
+  in its default colour), the plate on a white strip, the car's name and "Seen it? Tell the
+  police." The report carries the vehicle prefab's GUID; no place or owner reaches the face.
+  Rebuilt on `LF_OnVehicleReportedStolen`, `LF_OnVehicleRecovered`, `LF_OnVehicleChopped`
+  and any closed report. Test `police/wanted-posters-stolen`; proof
+  `session.mjs stolen-poster-proof` (`up --clients 2 --mission playtest`).
+- ✅ **Portraits on the wanted posters** (#758, spike issue 4): the server records the
+  suspect's look at the crime (`LF_WantedLook.Capture`: the character prefab and each
+  loadout slot's item as prefab GUIDs, no paths) on the report and in the poster entry.
+  Each client dresses a dummy of that character in the preview world and the poster's
+  `ItemPreviewWidget` draws it as a head-and-shoulders mugshot (a preview three frames
+  wide, clipped by the photo frame), the same framing for a named and an unknown suspect.
+  A report without a look keeps the empty photo frame. The face re-renders at 10 s and
+  30 s after a change so streamed textures land, then the dummies are deleted. The look
+  is saved as the `wantedlooks` payload (save version 29, keyed by report sequence), so
+  the portraits come back after a restart; a version 28 save loads its reports without a
+  picture. Tests `police/wanted-look`, `persist/wanted-looks`; `wt e2e` checks the look
+  across a real restart.
 
 ### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
 - ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`
@@ -1683,6 +1756,15 @@
   organization membership, so the reason arrives after the press, not on the
   offer.
 
+### `LF_Stun` and the taser — `Feature/Police/LF_Stun.c`, `Prefabs/Weapons/Handguns/Taser/` (#341 spike, 2026-11-13)
+- ✅ **A stun weapon downs a player for a few seconds and wounds nobody.** A weapon prefab that carries `LF_StunWeaponComponent` (`m_fStunSeconds`, `m_fRange`) is a stun weapon. On the server, `SCR_CharacterDamageManagerComponent.HijackDamageHandling` hands every kinetic hit to `LF_Stun.TryHit`; when the shooter holds a stun weapon the damage is discarded, and inside the reach the victim enters the downed state (`LF_Downed`: the same replicated flag and vanilla unconsciousness, so a late joiner sees it) marked as a stun. A stun starts no murder attribution, the player cannot give up out of it (`LF_BleedOut.GiveUp` refuses), a disconnect while stunned is not a death, and the server wakes them after `m_fStunSeconds` with the health they had. A stale wake does nothing (token), a revive ends a stun early, an already downed player is not stunned, and a hit out of reach or on an NPC is absorbed with a log line. `LF_Stun.Decide` is the pure rule. Toast `#LF-Police_Stunned`. Logs `[LFDebug:Police] player <uid> is stunned for <n> s`.
+- ✅ **The owner now recomputes consciousness when the downed flag sets, too** (`LF_OnDownedReplicated`): a stun damages no hit zone, so without it the stunned player's own client kept walking.
+- ✅ **Taser** (`Handgun_Taser.et` on the vanilla `Handgun_M9_base.et`, 8 s, 10 m): its own magazine well (`LF_MagazineWellTaser`), so a pistol magazine does not fit, a one-round cartridge (`Magazine_Taser.et`), and a 1-damage projectile (`Ammo_Taser.et`, listed in the `AmmoList.conf` override the magazine system needs). One lies on the DebugWorld police desk (`Roadmap_Police_Taser`). Test `police/stun`; `session.mjs taser-proof` on two clients: taken from the desk, the target is stunned and seen stunned by both, give-up is refused, and they get up.
+- ⚠️ The model (v2, 2026-11-13, a boxy yellow and black body with a slim grip the hand closes around) is a generated placeholder (`docs/asset-inventory.md`); the cartridge wears the vanilla magazine mesh; the muzzle flash is still the M9's. No agent has fired a dart at a player: the proof enters at the damage handler (`shoot` verb). Any kinetic hit by a player holding the taser counts as its hit. The officer gets no taser from the armory or duty kit yet. Manual steps in the PR.
+- ✅ **Taser sounds** (2026-11-13, asset pipeline sound stage): the taser lists its own sound projects in place of the M9's shot and handling (`Sounds/Weapons/Handguns/Taser/`): `SOUND_SHOT` is a pop and a second of electric crackle, `SOUND_DRY` a plastic click (three takes), `SOUND_RELOAD_MAG_REMOVE` and `SOUND_RELOAD_MAG_INSERT` the cartridge out and in. The M9's slide sounds are gone with its handling project; melee, pick-up and drop stay vanilla. All generated with ElevenLabs (`tools/assets/taser/sounds.json`, `docs/credits.md`). Test `police/taser_sound`.
+- ✅ **Stun buzz** (`LF_StunBuzz`, 2026-11-13): while a player is stunned an electric buzz loops on their body (`SOUND_LF_STUN_LP`, heard to about 60 m). The stun flag on the character is now replicated (`m_bLF_Stunned`); each client starts the loop when it sets and ends it when it clears, a host included, with a 30 s cap. `session.mjs taser-sound-proof` on two clients with `--sound`: the taser knows and plays its four events and not the M9's `SOUND_RELOAD_BOLT_PULL`, both clients start the buzz with the stun and stop it at its end, and client 1's audio is recorded.
+- ⚠️ No ear has judged the sounds: an agent read spectrograms and a recording of the client. A fired shot and a real reload (the animation's own events) are manual steps. A client that joins during a stun was not tested. A client out of earshot when the stun starts does not get the buzz by walking closer.
+
 ### `LF_ConfiscateAction` — `Feature/Police/LF_ConfiscateAction.c`
 - ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
   police within the 2 m reach; deletes the weapons of the wanted player in
@@ -1692,6 +1774,33 @@
   The offer reads replicated officer and target state; the deletion runs on the
   server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
 - ⚠️ No compensation or wanted reduction.
+
+### `LF_Restraint` and the handcuffs — `Feature/Police/LF_Restraint.c`, `Prefabs/Items/Roleplay/Handcuffs.et` (#664, 2026-11-13)
+- ✅ **An on-duty officer holding handcuffs cuffs a downed, stunned, or held-up and unarmed player.** Two entries in the player interaction menu (`Character_Roleplay.et`, context `LF_ID`): **Cuff** (`LF_RestrainAction`), offered to an on-duty officer whose left hand holds an item with `LF_HandcuffsComponent`, and **Uncuff** (`LF_ReleaseRestraintAction`), offered to any on-duty officer facing a cuffed player. The server decides (`LF_Restraint.Restrain` / `Release`): the request goes through `LF_RateLimit` (`SPAWN`), the officer's real account must be on duty, the cuffs must be in hand (`HeldCuffs`: the gadget manager's held gadget, else the controller's left-hand attachment, both readable on the server), and the target must be downed (`LF_Downed`, a taser stun included) or compliant: held up (`LF_HoldUp.HeldUpAt`) within `m_iCompliantSeconds` (`LF_Police.conf`, default 60, 0 = downed only) and holding no weapon. Every refusal logs and toasts the reason. `DecideRestrain`, `DecideRelease` and `IsCompliant` are the pure rules (test `police/restraint-rules`).
+- ✅ **The cuffs are consumed onto the suspect and come back.** Cuffing deletes the officer's pair and records its prefab against the prisoner; release puts a pair in the releasing officer's inventory (at their feet when full). An arrest at the cell (`LF_Jail.Arrest`) takes them off and returns them to the arresting officer; a cuffed body that dies (bleed-out, give-up) returns them to the officer who cuffed it; a prisoner who disconnects returns them too. Logs `[LFDebug:Police] restrained <uid> by <uid> (downed|held up, cuffs <prefab>)` and `restraint off <uid> (<why>); cuffs <where>`.
+- ✅ **A cuffed player keeps walking but holds nothing.** The replicated flag `m_bLF_Restrained` on the character reaches every client and a late joiner; the owner's controller disables weapon controls, holsters the weapon and puts away a held gadget, and gives the controls back on release (test `police/handcuffs`). Every client with a renderer shows a cuff on the suspect's right wrist (`Handcuffs_Worn.et`, spawned locally and attached to the `righthandprop` bone the way the vanilla loiter props are, a ring turned onto the forearm; never replicated).
+- ✅ **The handcuffs** (`Handcuffs.et`, a held gadget on the vanilla `Item_Base.et`) are the first asset of the pipeline's `gadget` kind: a Meshy model (credit "generated with Meshy", generation ids in `tools/assets/handcuffs/meshy.json`). On-duty police get a pair in the DebugWorld police kit; one lies on the police desk (`Roadmap_Police_Handcuffs`). `session.mjs cuffs-proof` on two clients: clock in, down the suspect, hold the cuffs, cuff, both clients read the suspect cuffed, release, both read them free, the cuffs are back; a cuffed player who dies gives them back.
+- ⚠️ **The cuffs do not show in the officer's hand.** Holding them raises the hand in the vanilla gauze pose the other held items use (the lockpick's offsets), but the session shot shows an empty hand; the hand offsets (`gadget.hand` in the spec, `HandAdditive*` on the prefab) need a pass in Workbench. Cuffing works the same.
+- ⚠️ **No restrained animation.** The base game has no surrender, hands-up, cuffed or tied animation (`docs/research/animation-pipeline.md`: the ACE captives set is the candidate, #340); a cuffed player stands or lies in the normal pose with the cuffs on one hand. There is no surrender gesture either, so "compliant" means held up and unarmed. Cuffed players can still open their inventory, and the officer cannot lead them by the cuffs (escort is the vehicle escort). Disconnect rejoin rules for cuffed players are #691. The restraint is not saved: a server restart frees every cuffed player and the pairs on them are gone.
+
+### `LF_SpikeStrips` — `Feature/Police/LF_SpikeStrip.c`, `Prefabs/Props/Roleplay/SpikeStrip/` (#646, 2026-11-13)
+- ✅ Police spike strip. Every rank's armory kit carries the folded strip (`SpikeStrip_Item.et`, 6 kg).
+  On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN) lays `SpikeStrip.et`
+  (3.5 m) from 1 m in front of the officer: along their facing, or straight across the nearest road
+  within 12 m when the AI road network has one. Its three ground points take the higher of terrain and
+  what stands there; more than 0.25 m between them refuses (`#LF-SpikeStrip_NoGround`). The item is used up.
+- ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
+  sample against the footprint, so a fast car cannot jump it. A crossing wheel's `SCR_WheelHitZone` (on the
+  wheel slot entity) takes COLLISION damage to DESTROYED; vanilla `UpdateWheelState` then cuts the radius to
+  80 %, the grip to 20 % and adds drag on every machine, so the car slows and pulls. A flat wheel is not hit
+  twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
+- ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
+  The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). DebugWorld shows one
+  on the police station verge (`Roadmap_Police_SpikeStrip`: `m_bArmed 0`, `m_bExpires 0`; an officer can still pick it up).
+- Model: one Meshy link repeated by the asset pipeline's deployable kind (`tools/assets/spike-strip`).
+  Tests `police/spike-strip`, `police/spike-strip-geometry`; proof `session.mjs spike-strip-proof`.
+- ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in
+  DebugWorld (no AI road network there); the strip follows the officer's facing.
 
 ## Ownership
 
@@ -1997,7 +2106,10 @@
   Accepting at a giver counts that giver's talk objective at once. No waypoints.
   The clerk is a converse giver (`m_bConverse`): "Talk to the clerk" opens no menu; one talk
   turns in what is done, takes on the next quest, and the clerk's lines show as slips
-  (`RequestConverse`); mid-errand he repeats the errand, after the chain his idle line
+  (`RequestConverse`). Since 2026-11-13 the talk is a conversation scene ("NPC dialogue scenes"
+  below): the reply "I am new in town" / "What should I do now?" runs the same `RequestConverse`
+  through `LF_DialogueHook_QuestConverse` (`ConverseSpoken`), and the story lines are spoken, not
+  shown as slips; mid-errand he repeats the errand, after the chain his idle line
   (`m_sIdleKey`). A second NPC with a placed giver's id no longer takes the giver over.
   Harness: `agent-box/flows/arrival-chain.txt`; `state` adds `idcard=` and `quests=`;
   `stand`/`use` reach a replicated NPC (no layer name on a client).
@@ -2021,7 +2133,7 @@
   removed; `EHarvestJobType` moved to `Feature/Jobs/LF_HarvestJobType.c`.
 - ✅ `LF_DebugMenu` is a development menu opened with F10 (or its rebind),
   with server-routed controls for cash, wanted state, faction, jobs, survival,
-  XP, and skill points. Actions affect only the requesting player's state
+  and CIVILIAN job XP (#749; skill points no longer exist). Actions affect only the requesting player's state
   (verified 2026-08-30). `LF_DevGate` (`Core/LF_DevGate.c`) checks every
   action on the server. It logs `[LFDebug:DebugMenu] debug action refused: ...`
   and refuses unless the game mode sets `m_bDevToolsEnabled` or the sender
@@ -2246,6 +2358,13 @@
 - ✅ Storyboard format `lf-storyboard/1` (`video/storyboard.schema.json`, checks in `tools/film/storyboard.mjs`): output size, fps and aspect (16:9 and 9:16), scenes, shots with camera, duration, captions and voice. `toolscli film-make video/<name>.json` validates (a bad file fails naming the field, e.g. `shots[2].camera.radius`), shoots each shot on the session through the engine recorder, deletes the frames after encoding, and hands the takes to post-production. Flags `--shot ids`, `--group name`, `--preview` (half size, 10 fps), `--client n`, `--no-shoot`, `--shoot-only`. The trailer storyboard is `video/trailer-571.json`; its `spawn-square` group (drone, orbit, static) shoots today, the rest are marked `pending` and skipped. `validate-storyboards` checks every `video/*.json`.
 - ⚠️ A first-person shot films the client as it stands: the actor setup for each trailer beat (`shot.setup`) is not written yet, and a title card between shots is not supported by post-production.
 
+### Asset pipeline — `tools/assets/pipeline/` (dev tooling, #339, #341 spike)
+- ✅ `tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..."` and `asset run <slug>` take a roadmap item to an asset in five resumable stages cached in `tmp/assets/<slug>/`: `concept` (spec checks), `generate` (Meshy text-to-3D with PBR maps, credits logged per call, a 300-credit cap per asset), `clean` (headless Blender: orientation, metres, LODs, one atlas packed to `_BCR`/`_NMO`, collider, and for a weapon the vanilla pistol skeleton, sockets and moving parts), `import` (`.meta` files with fresh GUIDs, `.emat`, a hidden Workbench rebuild, then a read-back of the `.xob`), `prefab` (weapon, magazine, projectile, config). `asset status | doctor | selftest`. Playbook for the judgement steps and the review checklist: `docs/asset-pipeline/`. First asset: the taser. `generate` writes the Meshy preview and refine task ids to `tools/assets/<slug>/meshy.json` (the provenance record; credit in `docs/credits.md`, decision in `docs/decisions.md`). Offline checks: `tools/validation/asset-pipeline-selftest.mjs` (part of `validate`).
+- ⚠️ Only the `weapon` kind has run end to end. `gadget` and `deployable` have profiles and no prefab scaffold. Verification (look, previews, the session proof) is a checklist, not a stage. Findings and the issue breakdown: `docs/architecture/asset-pipeline-spike.md`.
+- ✅ **Sound stage** (2026-11-13): \`tools\cli asset sound <slug>\` gives an asset generated sound effects (`docs/asset-pipeline/sounds.md`). `sounds.json` lists the events of the item kind (a weapon: shot, dry fire, magazine out and in) with a prompt each; `generate` calls the ElevenLabs sound-effects API (a row per call, a cap of 20 generations, the key never logged); `process` normalises, trims, fades, seams loops and can lay one take over another, and writes 48 kHz mono 16-bit WAVs plus a waveform and spectrogram picture per take for the agent's review; `wire` puts the picked takes and their `.meta` files in the addon and writes the `.acp` sound projects on the vanilla M9 handling graph. `asset-sound-selftest` (in `validate`, ten red-proofs) checks the format of every committed sample and each committed project against the generator. Harness verb `sound [EVENT]` reports and plays a held weapon's events on a client.
+- ⚠️ Proven with the taser only. The prefab's `Filenames` override and the script that plays a non-weapon sound are written by hand. Cost and quality: `docs/architecture/asset-sound-spike.md`.
+- ✅ (#664, 2026-11-13) **The `gadget` kind runs end to end**, proven with the handcuffs: the `prefab` stage dispatches every kind but `weapon` to `prefab-<kind>.mjs`, and `prefab-gadget.mjs` writes one held item on the vanilla `Item_Base.et` (inventory name and volume, the vanilla gauze hand attachment bound as `Gadget`, `SCR_GadgetComponent`, preview camera, the spec's extra components). A gadget is scaled on its length, so the size check holds the length to 5 % and the other two to 40 %. The import judged each Workbench run on `console.log` alone; joining `script.log` and `error.log` after it counted the start-up `metafile without corresponding resource` lines and failed a clean import. Offline checks: `tools/validation/asset-gadget-selftest.mjs`.
+
 ### `film-make` post-production — `tools/film/post.mjs` (dev tooling, #397)
 - ✅ `tools\cli film-make video/<name>.json` joins clips into one mp4: logo title and end cards, crossfades, burned-in captions from cue files plus an `.srt`, offline Piper voice-over, and a licensed music bed ducked under game sound and voice (about -14 LUFS). Covered by `node tools/film/film.mjs selftest`; proven on `video/tooling-test.json` (not for posting).
 
@@ -2356,10 +2475,8 @@
   vector and does not call `SetVelocity`. Ported from EveronLife
   `EL_JumpTrigger` (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
 
-### `LF_SpikeStrip` — `Feature/Toys/LF_SpikeStrip.c`
-- ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
-  box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
-  (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+### `LF_SpikeStrip` — moved to `Feature/Police/LF_SpikeStrip.c` (#646)
+- The trigger version is gone; the police spike strip below replaced it.
 
 ## Service calls (#248)
 
@@ -2374,6 +2491,14 @@
 ## Payphone (#247)
 
 - ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset: report a crime, an emergency or someone suspicious (police), ring for a doctor (medic), ring for a cab (taxi; mechanic waits for a mechanic job). The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.Receive`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the square, the fuel station, the hospital and the police station (#254), with a police dispatch board (`Prefabs/Comms/LF_DispatchBoard_Police.et`) beside the wanted board.
+
+- ✅ **Fixed (#147):** a player or payphone that had never called read as having called at time 0 (`map.Find` leaves 0 in the out value when the key is missing), so every call in a server's first 60 s was refused with the cooldown. `LF_Payphone.UseAt` now treats a missing entry as never used; `comms/payphone` covers a first call at second 5.
+
+## Telephone calls (#147)
+
+- ✅ **Call core** (LOGIC `comms/phone-exchange`, WORLD `comms/phone-call-world`, `session.mjs phone-proof`). A payphone's *Ring the police station* (`LF_PhoneDialAction`) goes through `LF_Payphone.UseAt` first (coin, cooldowns, duty check, `LF_OnServiceCall`, so the radio dispatch, the board and the pagers still get it), then `LF_PhoneCalls` puts a call in the server table (`LF_PhoneExchange`: RINGING, CONNECTED, ENDED, MISSED) and rings every idle station telephone of the service (`Prefabs/Comms/LF_DispatchPhone.et`, the base-game rotary desk phone, `Roadmap_Dispatch_Phone` on the dispatch-room desk). Every phone gets a replicated line (`Prefabs/Comms/LF_PhoneLine.et`, spawned on first use) carrying idle/ringing/busy and the talker's player id: the actions show only when they apply and each client rings a ringing line itself (`m_iRingPulseSeconds`), so a late joiner or a passer-by hears it. On-duty officers get a toast. Only an on-duty officer picks up the station telephone; anyone picks up a ringing payphone. Hang-up, walking past the cord (`m_fCordMeters` 6), going down, dying, disconnecting, a destroyed phone and `m_iMaxCallSeconds` (600) end the call; `m_iRingSeconds` (30) unanswered is MISSED, nobody on duty is MISSED at once with no coin taken. Every transition is `LF_OnPhoneCall` on the bus and a `[LFDebug:Phone]` line. Settings: `Configs/Comms/LF_Phone.conf` (Comms has no owner config section yet). The ring is the radio chirp until a bell sound exists.
+- ✅ **Voice on the call, behind a seam** (LOGIC `comms/phone-voice-band`, WORLD `comms/phone-voice-world`, `session.mjs phone-proof`). On pick-up `LF_PhoneVoice` gives the call one frequency in a private band no handheld tunes (100001 to 165000 kHz) and one random key, and a transport powers two radios on it: `LF_PhoneLineTransport` (default) uses the radio on each phone's line entity (`LF_PhoneLine.et`, range 60 km, off when idle); `LF_PhoneHandsetTransport` puts a *Telephone receiver* (`Prefabs/Comms/LF_PhoneHandset.et`, a radio on the same band) in each talker's inventory and takes it back after. `m_iVoiceTransport` in `LF_Phone.conf` picks one. Each talker's machine gets the radio's RplId and adds a *Telephone* entry to the vanilla voice controller (`LF_PhoneVONEntry`, made active; a modded `SCR_VONController.SetActiveTransmit` points it at the transceiver), so the normal radio key talks into the phone and the voice HUD shows it; the radio entry they had comes back at hang-up. No open microphone and no re-assert loop. ⚠️ Whether a listener hears a prop transceiver they do not carry is unproven: the two-microphone human test in the PR decides it; if it fails, set `m_iVoiceTransport 1`. `RadioManagerEntity.GetTransceiversInRange` is never called (it crashed the dedicated server in the spike).
+- ✅ **Call-back requests, the voicemail replacement** (LOGIC `comms/phone-callback-book`, WORLD `comms/phone-callback-world`, `session.mjs phone-proof`). Script cannot record a voice, so a caller whose call rang out, or found nobody on duty, may leave a request at that payphone for `m_iCallBackOfferSeconds` (120): *Leave a message for a call back* (shown only to that caller, from the line's replicated offer) opens a paper message slip with an optional typed message (`m_iMessageMaxChars` 120). The server checks the offer, the caller's distance, the length (before and after cleaning out markup and separators) and the comms rate limit (#834), logs the text with the uid like chat, and toasts the officers on duty. At the station telephone *Read the message pad* opens a paper "While you were out" pad (on-duty only) with one line per request (time, place, how long it rang, the message) and a *Ring back* button: the payphone rings, anyone there picks up, and the request leaves the pad; a ring-back nobody answers puts it back. One open request per caller, at most `m_iMaxCallBacks` (20), expiring with the dispatch board (`m_iBoardExpirySeconds`); never saved. `LF_OnPhoneCallBack` (left, rung, answered, expired) on the bus.
 
 ## Dispatch board (#250)
 
@@ -2441,3 +2566,30 @@
 - ✅ **Owner config check (#281, M3).** `tools\cli config-check <config.json>` (`tools/config/check.mjs`) validates a server owner's file offline and prints one `line:col` line per problem in the words `LF_ConfigService` logs at boot: JSON syntax errors (own position-tracking reader, strict like the engine), unknown keys (warn), wrong types and values outside the schema range (errors), `schemaVersion` too new or below 1 (error) or older than the build (warn), record keys no shipped record has (warn) or the server cannot parse (error), and the profit loops the owner's prices create (warn, reusing `tools/economy/profit-loops.mjs` with the refused values left out; a baselined or shipped loop is not the owner's). Types, ranges and known keys come from `docs/config/config.schema.json`; only the `shops.priceRules` key grammar and the shipped-key sources are in the checker. Exit 1 on any error, 0 on warnings only (`--strict` fails on warnings). Owner guide `docs/config/owner-config.md`; red-proof `tools/validation/config-check-selftest.mjs`. Known gap: the schema lists `prefab` as a `priceRules` record field that `LF_ShopPricesConfig.ApplyOwner` warns about as unknown.
 - ✅ (2026-11-12, #323 batch 0d) Core scripts stop naming village entities. The convoy start and drop are found through `LF_ConvoyMarkerComponent` (`m_bDrop`, new `m_bNearDrop`), the playtest test-car lot is the `LF_VehicleLotComponent` with `m_bTestCarLot`, `LF_Jail.SyncPlacedCell` re-applies the placed `LF_JailCellComponent` (its `m_sDoorTargetId` now defaults empty and the village cell sets it), the cash van route names its stops and van on the placed box instead of in the prefab and script, and the agent harness finds the stash (`LF_PersistentStorageComponent.GetPlaced`) and the nearest garage by component. The hospital till and cabinet and the convoy markers moved onto annex twins (`Annex_Hospital_Till/Cabinet`, `Annex_Convoy_*`), and the safe and quarry zone tests read the placed zone back or use fixture zones instead of town coordinates. `validate-annex-fixtures` now reads entities inside a `$grp` or children (`Shops` counts as a core layer), and the new `validate-core-village-names` fails when a core script quotes a village entity name (baseline `{}`). No save change; the village entities keep working through the new attributes.
 - ✅ (2026-11-12, #284 batch 1) 31 hard-coded tunables move onto config classes with today's values as defaults, `params` ranges and descriptions: police (ticket open and paid caps, arrest reach, jail arrival radius, application desk range), incident and zones (GM panel radius and window, zone notice interval), medic (bill caps, debt sweep), garage (desk reach, garage radius, pad radius), ATM (transaction cap, range), registration ages, and two new roots: `LF_OrgConfig` (founding fee, name length, offer time, fund cash cap, upgrade prices, desk range; `Configs/Organizations/LF_Org.conf`) and `LF_ShopLimitsConfig` (till reach, shop distance, order quantity cap, back room reach and shut time; `Configs/Shop/LF_ShopLimits.conf`). `LF_Test_ConfigConstantsBatch1` pins the values; the baseline drops from 193 to 163 rows.
+- ✅ **Crime catalog (#685a, M3).** One config table of offences, `Configs/Crime/LF_CrimeCatalog.conf` (`LF_CrimeCatalogConfig`, owner section `crime`, records keyed by the crime id such as `#LF-Offence_Robbery`): `m_iWantedAdd`, `m_iFine` (above 0 the offence is on the officer's ticket form), `m_iSentenceSeconds` (a floor on the jail time when the offence is on the prisoner's reports; 0 keeps the wanted-scaled sentence), `m_iRepeatThreshold` and `m_iRepeatWantedAdd` (from that many completed crimes of the kind on the account's crime record, a repeat adds wanted). Every call site (robbery, hotwire, carjacking, weapon theft, breach and heist, hospital till, murder, shoplifting, unpaid ticket, jail sentence, ticket form) reads `LF_CrimeCatalog`; the old `m_iMurderWanted`, `m_iTicketLateWanted`, `m_aTicketOffences`, store and robbery `m_iWantedIncrease`, `THEFT_WANTED` and `WANTED_INCREASE` values are gone. The saved `{uid, offence, count}` crime record is unchanged (the offence string is the crime id; no save-format change). Today's offences add what they added before; carjacking is its own id `#LF-Offence_Carjacking` (3 wanted, same words on the poster) so it no longer shares the hotwire theft's 1. An id the catalog does not list adds 1 wanted and logs one warning. Server only, not in the config stream. Tests `crime/catalog-backcompat`, `crime/catalog-owner`. Licence seizure and a bail rule are not here (#685b, M5). (merged, in-dev)
+
+## NPC dialogue scenes (spike, 2026-11-13)
+
+### `LF_Dialogue` / `LF_DialogueScene` — `Scripts/Game/Feature/Dialogue/`
+
+- 🟡 **Talking to an NPC is a scene.** The camera eases to the NPC (face shot while it speaks,
+  over the shoulder while the player chooses) and back; the line is a caption at the bottom with
+  a recorded voice; replies are a numbered list (1 to 4, or up, down and confirm; Back leaves;
+  confirm skips a line). Movement, view and weapon controls are held and the HUD is hidden
+  for the length of it. Only the talker's client changes.
+- The server owns the conversation (`LF_Dialogue`): the client sends an NPC, then a reply
+  index; the server checks reach (4 m), that it offered that reply, and its condition again, runs
+  the reply's action, and answers with node and line ids. Sessions are not saved.
+- Data: `Configs/Dialogue/LF_Dialogue_<Name>.conf` (`LF_DialogueConfig`) on the NPC's
+  `LF_DialogueComponent`, generated by `tools\cli asset dialogue <npc>` from
+  `tools/assets/dialogue/<npc>/dialogue.json` (`docs/asset-pipeline/dialogue.md`).
+- A reply's condition or action is a hook class `LF_DialogueHook_<Name>` in the owning feature;
+  the quests have `QuestConverse`, `QuestTurnedIn`, `QuestNotTurnedIn`.
+- Voice and lips (`LF_DialogueVoice`): `AudioSystem.PlayEvent` from the NPC's head; the lip
+  bones follow the line's loudness envelope. Players within `m_fHearRange` (12 m) hear it too.
+- Converted: the town clerk (`QuestGiver_Clerk.et`), voice generated with ElevenLabs.
+  Not converted: witness, bank teller, shop clerks.
+- Tests: `dialogue/flow` (LOGIC), `dialogue/clerk` (WORLD); `dialogue-pipeline-selftest.mjs`.
+  Session proof: `node agent-box/session.mjs dialogue-proof`; harness verb `dialogue`.
+- Not verified by automation: how the voice sounds and its level in the mix; number keys and a
+  real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.

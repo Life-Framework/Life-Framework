@@ -153,7 +153,6 @@ Owner is core for every row until the M3 move.
 | `Crime/LF_Hotwire.c` | `NOISE_PER_SKILL` | `0.04` | crime | to move (#284) |
 | `Crime/LF_Hotwire.c` | `MIN_NOISE` | `0.2` | crime | to move (#284) |
 | `Crime/LF_Hotwire.c` | `TICK_SECONDS` | `0.5` | crime | to move (#284) |
-| `Crime/LF_Hotwire.c` | `THEFT_WANTED` | `1` | crime | to move (#284) |
 | `Crime/LF_Lockpick.c` | `MAX_SKILL` | `10` | crime | to move (#284) |
 | `Crime/LF_Lockpick.c` | `BASE_SECONDS` | `20` | crime | to move (#284) |
 | `Crime/LF_Lockpick.c` | `MIN_SECONDS` | `6` | crime | to move (#284) |
@@ -167,8 +166,6 @@ Owner is core for every row until the M3 move.
 | `Crime/LF_Lockpick.c` | `MIN_NOISE` | `0.15` | crime | to move (#284) |
 | `Crime/LF_Lockpick.c` | `TICK_SECONDS` | `0.5` | crime | to move (#284) |
 | `Crime/LF_Lockpick.c` | `MAX_DISTANCE` | `4` | crime | to move (#284) |
-| `Crime/LF_RobVehicleAction.c` | `WANTED_INCREASE` | `3` | crime | to move (#284) |
-| `Crime/LF_RobWeaponAction.c` | `WANTED_INCREASE` | `2` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `MAX_RANGE` | `5` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `SLACK_SECONDS` | `2` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `DRILL_SECONDS` | `6` | crime | to move (#284) |

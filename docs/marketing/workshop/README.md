@@ -18,6 +18,14 @@ The click-by-click steps are in [`docs/playtest/workshop-publish.md`](../../play
 | Licence | Arma Public License (APL) |
 | Category | Game Mode (and Scenario if the dialog offers it) |
 
+The Workshop build is APL because the Workshop Terms of Use require an APL-family licence
+(decision D2, 2026-11-12). The source on GitHub stays MIT. The description's "Licence and credits"
+section says both; check it says so before each publish.
+
+The Workshop build is APL because the Workshop Terms of Use require an APL-family licence
+(decision D2). The source on GitHub stays MIT. The description's "Licence and credits" section
+says both; check it still does before each publish.
+
 After publish:
 
 - Discord post: [`discord-announcement.md`](discord-announcement.md)

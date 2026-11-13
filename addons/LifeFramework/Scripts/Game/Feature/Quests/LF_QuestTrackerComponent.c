@@ -15,6 +15,8 @@ class LF_QuestTrackerComponentClass : ScriptComponentClass
 class LF_QuestTrackerComponent : ScriptComponent
 {
 	protected ref LF_QuestTracker m_Tracker = new LF_QuestTracker();
+	//! Set for the length of one ConverseSpoken call: story slips are collected here.
+	protected ref array<string> m_aSpoken;
 	protected ref map<string, bool> m_mInsideAreas = new map<string, bool>();
 	protected float m_fTickAccumulator;
 	protected string m_sClientLogCache;
@@ -178,10 +180,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		}
 
 		IEntity owner = GetOwner();
-		int level = 1;
-		LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-		if (levelComp)
-			level = levelComp.GetPlayerLevel();
+		int level = LF_JobLevels.LevelOfBody(owner, JobOf(def));
 
 		LF_EJobType job = LF_EJobType.UNEMPLOYED;
 		LF_PlayerJobComponent jobComp = LF_Component<LF_PlayerJobComponent>.Find(owner);
@@ -414,6 +413,16 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! eturn The job a quest's level gate reads and its reward XP goes to; CIVILIAN when none.
+	static string JobOf(notnull LF_QuestDefinition def)
+	{
+		if (def.m_sJob.IsEmpty())
+			return LF_JobLevels.JOB_CIVILIAN;
+
+		return def.m_sJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void GrantReward(LF_QuestDefinition def)
 	{
 		IEntity owner = GetOwner();
@@ -432,9 +441,11 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		if (def.m_fRewardXp > 0)
 		{
-			LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
-			if (levelComp)
-				levelComp.AddExperience(def.m_fRewardXp, "Quest");
+			string uid = LF_Utils.GetPlayerUID(owner);
+			if (uid.IsEmpty())
+				LF_Debug.Warn("Quests", string.Format("turn-in %1: no player behind the body, %2 reward xp not given", def.m_sQuestId, def.m_fRewardXp));
+			else
+				LF_JobLevels.AddXp(uid, JobOf(def), Math.Round(def.m_fRewardXp), "quest " + def.m_sQuestId);
 		}
 
 		if (def.m_aRewardItems)
@@ -723,6 +734,18 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: RequestConverse for a conversation scene (LF_DialogueHook_QuestConverse). The
+	//! giver's story lines (hand-in, the next errand, the idle line) go into `spoken` as their
+	//! keys, in order, instead of being shown as slips. Everything else is the same talk.
+	bool ConverseSpoken(string giverId, notnull array<string> spoken)
+	{
+		m_aSpoken = spoken;
+		bool acted = RequestConverse(giverId);
+		m_aSpoken = null;
+		return acted;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether the quest asks only for a talk with this giver: taken on and done in one breath,
 	//! so its errand text is not worth a toast.
 	protected bool IsTalkOnly(LF_QuestDefinition def, string giverId)
@@ -858,6 +881,13 @@ class LF_QuestTrackerComponent : ScriptComponent
 	{
 		if (!Replication.IsServer())
 			return;
+
+		// In a conversation the giver speaks its story lines; they are not also shown as slips.
+		if (m_aSpoken && duration >= STORY_SECONDS)
+		{
+			m_aSpoken.Insert(message);
+			return;
+		}
 
 		LF_Utils.NotifyEntity(GetOwner(), message, title, duration);
 	}
