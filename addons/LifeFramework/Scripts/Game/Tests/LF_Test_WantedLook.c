@@ -2,7 +2,7 @@
 // `tools\cli test --no-build --only LF_Test_WantedLook` (2026-11-13). Observed:
 //   [LFTEST]   - the GUID of a {GUID}path name (expected '9B5BB216CC7FF18E', got '{9B5BB216CC7FF18')
 //   [LFTEST]   - the character GUID alone loads its prefab: {{9B5BB216CC7FF18}
-// Restored it and the test passed (12 assertions).
+// Restored it and the test passed (17 assertions).
 
 // tier: WORLD
 //! The portrait's look (LF_WantedLook): a dressed character becomes its prefab GUID and the GUIDs
@@ -55,6 +55,21 @@ class LF_Test_WantedLook : LF_Test
 
 		ctx.True(jacket, "the jacket the fixture put on is one of the items");
 		ctx.False(LF_WantedLook.Parse("", character, slots, items), "an empty look draws nothing");
+
+		// The look is on the report but not in the "wanted" save payload, whose format stays as is.
+		LF_WantedReportRecord record = new LF_WantedReportRecord();
+		record.m_sPlayerUid = "look-test";
+		record.m_sAppearance = look;
+		ctx.EqualStr(look, record.Copy().m_sAppearance, "a copied report keeps the look");
+		JsonSaveContext json = new JsonSaveContext(false);
+		json.WriteValue("report", record);
+		string text = json.SaveToString();
+		ctx.True(text.Contains("m_sPlayerUid"), "the report serializes its fields");
+		ctx.False(text.Contains("m_sAppearance"), "the look stays out of the wanted payload's record format");
+
+		// A hostile or broken look from a server never indexes out of range.
+		ctx.True(LF_WantedLook.Parse("9B5BB216CC7FF18E|=|x=|99=ABC|-1=9F546CCA2582D16F|2=9F546CCA2582D16F", character, slots, items), "a broken look still names the character");
+		ctx.Equal(1, items.Count(), "only the well-formed item part is kept");
 		LF_TestCharacterFixture.Delete(suspect);
 	}
 }

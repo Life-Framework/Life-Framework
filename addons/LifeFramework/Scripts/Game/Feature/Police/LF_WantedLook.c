@@ -85,10 +85,12 @@ class LF_WantedLook
 				continue;
 
 			ResourceName item = ResourceOf(parts[i].Substring(at + 1, parts[i].Length() - at - 1));
-			if (item.IsEmpty())
+			string slotText = parts[i].Substring(0, at);
+			int slot = slotText.ToInt();
+			if (item.IsEmpty() || slot < 0 || slot.ToString() != slotText)
 				continue;
 
-			outSlots.Insert(parts[i].Substring(0, at).ToInt());
+			outSlots.Insert(slot);
 			outItems.Insert(item);
 		}
 
@@ -145,6 +147,9 @@ class LF_WantedPortrait : Managed
 		EquipedLoadoutStorageComponent storage = EquipedLoadoutStorageComponent.Cast(m_Dummy.FindComponent(EquipedLoadoutStorageComponent));
 		for (int i = 0; storage && i < items.Count(); i++)
 		{
+			if (slots[i] >= storage.GetSlotsCount())
+				continue;
+
 			InventoryStorageSlot slot = storage.GetSlot(slots[i]);
 			Resource itemResource = Resource.Load(items[i]);
 			if (!slot || !itemResource || !itemResource.IsValid())
