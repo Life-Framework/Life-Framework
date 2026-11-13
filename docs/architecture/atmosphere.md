@@ -21,6 +21,17 @@ how that works, which places have it, which do not yet, and what it cost. Spiked
 
 Hours are local solar time (noon is the sun at its highest), the same clock the film scenes use.
 
+The store radio sits on the counter beside the till:
+
+![The radio on the general store counter](atmosphere/1-store-radio-on-counter.jpg)
+![The counter from the street](atmosphere/2-store-radio-from-the-street.jpg)
+
+The pub has no radio prop. Nobody can enter the building yet, so the music comes from inside it
+and there is nothing to switch. A radio or cassette player on the bar is the step to take when the
+pub becomes a room.
+
+![The pub from the square](atmosphere/3-pub-from-the-square.jpg)
+
 ## The survey
 
 Every area of `agent-box/areas.json` was read from `tools\cli look all`, the layers and
@@ -179,22 +190,24 @@ Two things for the maintainer to decide, recorded in `docs/decisions.md`:
 - `node agent-box/session.mjs atmosphere-proof` on `session up --profile full --sound`: one client
   walks the spots. Evidence is the client's own log (`start`, then `voice up` once the engine's
   handle for the loop is valid and playing, then `stop` with the reason) and a recording of what
-  the client process played, measured over the last 2.5 s of each step. Run of 2026-11-13: PASS.
+  the client process played, measured over the last 2.5 s of each step. Run twice on 2026-11-13,
+  the second time after merging the sound and dialogue stages from `main`: PASS both times. The
+  numbers are the second run.
 
 | Step | Client log | Level the client played |
 |---|---|---|
 | Car lot, nothing in range | no voice | silence (-91 dB) |
-| At the store radio (1.3 m) | start, voice up | mean -29.8 dB |
-| Radio switched off | stop (condition) | silence |
-| Radio switched on | start, voice up | mean -29.5 dB |
+| At the store radio (1.3 m) | start, voice up | mean -29.6 dB |
+| Radio switched off | stop (condition) | mean -68 dB (the first run read silence) |
+| Radio switched on | start, voice up | mean -29.6 dB |
 | Back at the car lot (47 m) | stop (out of range) | silence |
-| At the furnace | furnace and quarry start, voices up; sawmill silent | mean -23.9 dB |
+| At the furnace | furnace and quarry start, voices up; sawmill silent | mean -23.2 dB |
 | At the empty still | no voice | silence |
-| Police duty desk | start, voice up | mean -49.1 dB |
-| Chop shop | chop shop and the crime furnace 34 m away | mean -25.8 dB |
-| Farm plot 2 | one of three plots starts | mean -29.2 dB |
-| Pub sign | pub and square start | mean -32.3 dB |
-| Clock to 23:00 | square and farm stop (hours); pub plays on | mean -33.2 dB |
+| Police duty desk | start, voice up | mean -39.4 dB (-49.1 in the first run: the loop is sparse) |
+| Chop shop | chop shop and the crime furnace 34 m away | mean -27.6 dB |
+| Farm plot 2 | one of three plots starts | mean -36.9 dB (-29.2 in the first run) |
+| Pub sign | pub and square start | mean -33.7 dB |
+| Clock to 23:00 | square and farm stop (hours); pub plays on | mean -32.6 dB |
 
 Not proven by an agent: how any of it sounds, the pub's occlusion by ear, a second player hearing
 the radio switch (the bool is a plain `RplProp`; the proof's own client is a network client of a
@@ -208,7 +221,7 @@ the server only).
 - Voices: the most at once in the walk was 4 (cap 6). Two 24 kHz mono streams and up to four
   48 kHz mono loops.
 - Frame time on the proof client (full profile, capped at 30 fps): mean 33.33 ms at the quiet car
-  lot and 33.33 ms at the quarry with two voices; p99 34.39 and 34.21 ms. The cap hides anything
+  lot and 33.33 ms at the quarry with two voices; p99 35.89 and 34.35 ms. The cap hides anything
   faster than 33 ms, so this shows no frame was pushed over budget, not the cost itself. An
   uncapped measurement (`session up --levers uncapped`, harness `perf`) is the next step if the
   number matters.
