@@ -48,6 +48,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CarriedSerialPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_Carry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarryMeshes(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CaseBoard(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CaseBoardPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_CaseBoardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainMoonshine(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainsConfig(), LF_TestTier.LOGIC);
@@ -243,6 +246,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_Pager(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ParcelCarry(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ParcelCollision(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
@@ -343,6 +348,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PersistenceManagerWiring(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScannerHears(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScannerIllegal(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ScenePieces(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ScenePiecesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SearchCooldown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);

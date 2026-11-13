@@ -86,6 +86,10 @@ class LF_StaticReset
 		LF_RateLimit.ResetStatics();
 		LF_SpikeStrips.ResetStatics();
 		LF_ConfigStream.Reset();
+		LF_CaseBoard.ResetStatics();
+		LF_CaseBoardView.ResetStatics();
+		LF_CaseBoardComponent.ResetStatics();
+		LF_ScenePieces.ResetStatics();
 		LF_PhotoIdCard.ResetStatics();
 		LF_IdCardView.ResetStatics();
 		LF_IdCheck.ResetStatics();

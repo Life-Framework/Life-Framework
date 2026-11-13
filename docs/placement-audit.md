@@ -35,6 +35,11 @@ tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x 
    the walk on the police evidence locker, which the audit found half inside the station wall.
 3. The Node side adds the checks that pair entities, applies exemptions and the allowlist, and ranks.
 
+Stock a physical store puts on its shelves at load (`LF_StoreComponent`) is spawned by script, not placed in a
+layer. `LF_PlacementAudit.StockRows` writes one `shelf` row per display copy, and the Node side measures and pairs
+them like a placed prop (layer `(store stock)`, name `Stock_<store>_<prefab>_<slot>`). Until #919 the audit never saw
+them, which is how apple juice bottles stood inside the general store till.
+
 ## Checks
 
 | Problem | Measured | Threshold |
@@ -43,7 +48,7 @@ tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x 
 | sunk | bounds bottom and pivot both below that surface (a vehicle's wheels below its pivot, or a pivot left on the floor under a raised mesh, are not sunk) | 0.15 m (0.5 m for buildings) |
 | overhang | a bottom corner (20% in from each side) with no surface within 0.2 m under it while the centre rests on a prop | any corner |
 | clips | another entity's surface inside the shrunk bounds on two or more of 54 rays across them | 0.15 m in |
-| overlaps | oriented boxes (local bounds through the transform, scale applied) interpenetrating | 0.08 m |
+| overlaps | oriented boxes (local bounds through the transform, scale applied) interpenetrating | 0.08 m; 0.02 m for two props standing on the same table or counter (the contents exemption does not apply to them) |
 | blocks a door | an oriented box inside a door leaf's clearance (the leaf pushed out 1 m both ways, 2.2 m high) | 0.1 m |
 | in a door's walk-up | the same box pushed out 3 m, for ground-floor doors, outside the door's own building (furniture inside it is not on the street path) | 0.1 m |
 | in the road | the box centre on a carriageway of `Village_Roads.layer` (roads under 15 m wide, not the market, square or fuel apron) | half width - 0.3 m |
