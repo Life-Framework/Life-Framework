@@ -39,7 +39,9 @@ class LF_Test_WantedPostersFeed : LF_Test
 		thief.SetWantedLevel(0);
 		LF_WantedPosters.Flush();
 
-		// Events, not a poll: the game mode subscribed the feed, and a wanted change queues a rebuild.
+		// Events, not a poll: the feed subscribes (the game mode does it at start; an earlier test in
+		// the suite may have reset the bus), and a wanted change queues a rebuild.
+		ctx.True(LF_WantedPosters.Install(), "the feed subscribes to the bus");
 		ctx.True(LF_EventBus.SubscriberCount(LF_OnWantedChanged) > 0, "the feed listens for wanted level changes");
 		ctx.True(LF_EventBus.SubscriberCount(LF_OnSuspectIdentified) > 0, "the feed listens for identifications");
 		LF_WantedPosters.Flush();
