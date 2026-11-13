@@ -22,7 +22,7 @@
       0.2
     ],
     "texture_px": 2048,
-    "credits": 75
+    "credits": 70
   },
   "fit": {
     "offset": [
@@ -33,5 +33,6 @@
   },
   "parts": [],
   "asset_dir": "Assets/Props/Roleplay/BankVault/Front",
-  "prefab_dir": "Prefabs/Props/Roleplay/BankVault"
+  "prefab_dir": "Prefabs/Props/Roleplay/BankVault",
+  "build": "meshy-6 image-to-3D for the door, frame ring and hinge barrels; wall block, tunnel and collar in Blender; LOD0 kept dense"
 }

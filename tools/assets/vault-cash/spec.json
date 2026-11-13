@@ -22,7 +22,7 @@
       0.2
     ],
     "texture_px": 2048,
-    "credits": 75
+    "credits": 40
   },
   "fit": {
     "offset": [
@@ -33,5 +33,6 @@
   },
   "parts": [],
   "asset_dir": "Assets/Props/Roleplay/BankVault/Cash",
-  "prefab_dir": "Prefabs/Props/Roleplay/BankVault"
+  "prefab_dir": "Prefabs/Props/Roleplay/BankVault",
+  "build": "Blender geometry from the picked concept, no 3D credits (coordinator, option c)"
 }
