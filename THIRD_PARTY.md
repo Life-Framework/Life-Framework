@@ -41,7 +41,7 @@ fork and branch:
 - thebonbon/EveronLife: `Feature/Chat/LF_RoleplayChat.c`, `UI/Chat/LF_ChatPanel.c`,
   `Feature/Mining/LF_Mining*.c`, `Feature/Mining/LF_OreNodeComponent.c` (pickaxe-hit
   mining from branch `enhancement/Main_World`, ported with the author's permission
-  given to the maintainer, 2026-11-08), `Feature/Toys/LF_JumpPad.c`, `Feature/Toys/LF_SpikeStrip.c`
+  given to the maintainer, 2026-11-08), `Feature/Toys/LF_JumpPad.c`, `Feature/Police/LF_SpikeStrip.c`
 - rekterakathom/EveronLife: parts of
   `Components/InventorySystem/EL_InventoryStorageManagerComponent.c` and
   `Feature/Shop/LF_ShopRules.c`

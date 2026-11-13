@@ -9,6 +9,7 @@ is the playbook for those. What the first run taught us is in
 tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--roadmap #N] [--no-run]
 tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force]
 tools\cli asset status [<slug>]
+tools\cli asset sound <slug>  generated sound effects, after the prefab stage: sounds.md
 tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
 ```
@@ -24,9 +25,11 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | `generate` | Meshy text-to-3D preview, then refine with PBR maps; downloads the GLB, the maps and two thumbnails; logs credits | The agent reads `raw/refined.png`: [review-generation.md](review-generation.md) |
 | `clean` | Headless Blender: orientation, scale in metres, origin, floaters, decimation to LODs, one UV atlas packed as `_BCR` and `_NMO`, collider, and for a weapon the vanilla pistol skeleton, sockets and moving parts | The tool checks the numbers; the agent reads `clean/review/*.png`: [review-clean.md](review-clean.md), [socket-checks.md](socket-checks.md) |
 | `import` | Copies the sources into the addon, writes every `.meta` with fresh GUIDs and the `.emat`, rebuilds them in a hidden Workbench, then reads the `.xob` back and checks bones, sockets, material and collider | The tool |
-| `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry) | The agent finishes them: strings, feature component, placement |
+| `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry; a gadget: one held item; a deployable: the deployed prop and the carried item). Every kind but `weapon` has its own `prefab-<kind>.mjs` | The agent finishes them: strings, feature component, placement |
 
 After `prefab` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
+Sound is its own command with its own record, because a review sits in the middle of it:
+[sounds.md](sounds.md).
 
 A finished stage is skipped on the next `run`. `--only clean` reruns one stage, `--from clean`
 reruns it and everything after it, and `--force` reruns from the start. A stage that failed is
@@ -64,8 +67,8 @@ Read this before any `generate`.
 | Kind | State | Fit | Collider | Prefab scaffold |
 |---|---|---|---|---|
 | `weapon` | proven with the taser | Scaled to the vanilla M9's height and put on its grip; skinned to the M9 skeleton with its sockets | convex `UCX_`, `WeaponFire` | weapon on `Handgun_M9_base.et`, magazine, projectile, config |
-| `gadget` | profile written, not run | Centred on the origin, scaled to `size_m.length` | box `UBX_`, `ItemFireView` | none: write the prefab on `Item_Base.et` |
-| `deployable` | profile written, not run | Standing on the origin, scaled to `size_m.length` | box `UBX_`, `ItemFireView` | none |
+| `gadget` | proven with the handcuffs (#664) | Centred on the origin, scaled to `size_m.length`; the origin is where the hand holds it | box `UBX_`, `ItemFireView` | one held item on the vanilla `Item_Base.et` (`prefab-gadget.mjs`): name, volume, the vanilla gauze hand attachment, `SCR_GadgetComponent`, preview camera, `gadget.components` |
+| `deployable` | proven with the spike strip | Standing on the origin, scaled to `size_m.length`; `fit.repeat` tiles one generated link along the length, `fit.fold` stacks the links into a second model | thin box `UBX_` (3 cm), `ItemFireView` | the deployed prop and the carried item (`prefab-deployable.mjs`) |
 
 The profiles are in `tools/assets/pipeline/kinds.mjs`. A new weapon family (a rifle, a melee
 weapon) is a new kind with its own reference skeleton: read it from the vanilla `.xob` with
@@ -94,6 +97,22 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   to the bone. Boxes are in Enfusion model space after the fit.
 - `sockets` (optional) overrides a socket position by name.
 - `weapon.components` are extra components written into the weapon prefab, with their values.
+- A gadget has a `gadget` block instead: `name_key`, `description_key`, `weight`, `volume`, `components`, and `hand`
+  (`rotation`, `translation`: the `HandAdditive*` values; the default is the lockpick's). Vanilla held gadgets have no
+  bones or sockets (`Gauze_01_packed.xob`): the hand holds the model at its origin, so move the grip there with `fit.offset`.
+- A gadget is scaled on its length, so the size check holds the length to 5 % and the height and width to 40 %.
+- `fit.stretch` (not for a weapon) fits each axis to `size_m` on its own instead of scaling by the
+  length: right for a flat prop whose height the generator guesses.
+- `fit.repeat: n` (deployable) makes the generated model one of n links end to end; `size_m` stays
+  the size of the whole thing and the triangle budget is shared by the links. `fit.fold: true` also
+  exports `<Name>_Folded`: the n links stacked, with its own LODs and box, imported beside the first
+  model with the same material. The spike strip is 7 links of 0.5 m.
+- `deployable` holds what the scaffold writes: `name_key`, `description_key`, `weight`,
+  `item_volume`, the deployed prop's `components` and `actions`, and the carried item's
+  `item_components` and `item_actions`. A string prop value `"$deployed"` or `"$item"` becomes that
+  prefab's `{GUID}path`, so the item names what it deploys into and the prop what it folds back
+  into. Nothing else is written: the deploy, the pick-up and what the prop does are feature code
+  (`Feature/Police/LF_SpikeStrip.c` for the strip).
 
 ## What the tool does not do
 
@@ -101,6 +120,8 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
 - It does not make an icon. Enfusion renders inventory pictures from the prefab at run time;
   check them with the harness `previews` verb or `tools\cli shots previews`.
 - It does not add string table keys, feature code, world placement or tests.
+- The model stages make no sound. `asset sound` does ([sounds.md](sounds.md)); until it has run, a
+  weapon keeps the vanilla M9's sounds.
 - It does not rewrite a prefab that exists. After the scaffold the prefabs are ordinary files.
 - It does not classify the asset core or pack. Do that by the red line
   (`docs/architecture/core-vs-pack.md`) and add the inventory rows.

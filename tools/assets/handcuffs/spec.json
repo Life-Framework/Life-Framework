@@ -1,0 +1,51 @@
+{
+  "slug": "handcuffs",
+  "name": "Handcuffs",
+  "kind": "gadget",
+  "roadmap": "#664",
+  "concept": "Police chain handcuffs for 1989 Everon: a pair of steel chain cuffs, the kind every officer carries on the duty belt. An on-duty officer holds them in the left hand and restrains a downed or held-up suspect with them; the cuffs go onto the suspect and come back to the officer on release.",
+  "prompt": "A pair of steel police handcuffs lying flat. Two round closed cuff rings side by side, each ring about as wide as a wrist, made of a thick flat curved steel bar. Each cuff has a solid rectangular lock box on one side with a small keyhole. The two lock boxes face each other and are joined by a short chain of three thick oval steel links with clear gaps between the links. Classic 1980s chain handcuffs, clean hard-surface industrial design, single object, no text, no logos, no hands, no key, no stand.",
+  "texture_prompt": "Polished nickel-plated steel with a cool grey sheen, slightly darker steel inside the lock boxes and keyholes, light scratches and edge wear, no text, no logos, flat neutral lighting.",
+  "meshy": {
+    "ai_model": "latest",
+    "target_polycount": 30000
+  },
+  "size_m": {
+    "length": 0.18,
+    "height": 0.032,
+    "width": 0.1
+  },
+  "budget": {
+    "lod0_tris": 3000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 1024,
+    "credits": 30
+  },
+  "fit": {
+    "up_axis": "y",
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Roleplay/Handcuffs",
+  "prefab_dir": "Prefabs/Items/Roleplay",
+  "gadget": {
+    "name_key": "#LF-Item_Handcuffs_Name",
+    "description_key": "#LF-Item_Handcuffs_Description",
+    "weight": 0.3,
+    "volume": 150,
+    "components": [
+      {
+        "class": "LF_HandcuffsComponent",
+        "props": {}
+      }
+    ]
+  },
+  "maps_note": "The generated maps read as polished chrome in daylight. tone-maps.py (beside this spec) darkens the base colour, roughens and lowers the metallic before the clean stage; rerun it after any new generate."
+}

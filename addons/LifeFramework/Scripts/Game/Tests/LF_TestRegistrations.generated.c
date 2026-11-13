@@ -152,6 +152,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Handcuffs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessPerf(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessProbe(), LF_TestTier.LOGIC);
@@ -279,6 +280,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RestartVehicleNoGroundKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehiclePlatesReserved(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWhitelistUnreadableFileKept(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RestraintRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveCprGraph(), LF_TestTier.WORLD);
@@ -363,6 +365,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpawnHub(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpawnScale(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpikeStrip(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
@@ -378,6 +382,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SurvivalLight(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalRealHealth(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SurvivalSync(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);

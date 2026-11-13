@@ -16,6 +16,7 @@ addons/LifeFramework/Language/*.conf -text
 *.tif -text
 *.ttile -text
 *.txo -text
+*.wav -text
 *.xob -text
 *.png -text
 *.jpg -text

@@ -1,0 +1,16 @@
+{
+  "slug": "handcuffs",
+  "generations": [
+    {
+      "date": "2026-11-13",
+      "tool": "Meshy text-to-3D",
+      "model": "latest",
+      "previewId": "01a1d331-1940-76e1-806c-1f15b6b77fab",
+      "refineId": "01a1d331-c93f-74f9-a5e6-917ef7864e43",
+      "prompt": "A pair of steel police handcuffs lying flat. Two round closed cuff rings side by side, each ring about as wide as a wrist, made of a thick flat curved steel bar. Each cuff has a solid rectangular lock box on one side with a small keyhole. The two lock boxes face each other and are joined by a short chain of three thick oval steel links with clear gaps between the links. Classic 1980s chain handcuffs, clean hard-surface industrial design, single object, no text, no logos, no hands, no key, no stand.",
+      "texturePrompt": "Polished nickel-plated steel with a cool grey sheen, slightly darker steel inside the lock boxes and keyholes, light scratches and edge wear, no text, no logos, flat neutral lighting.",
+      "accepted": true,
+      "note": "attempt 1: the shipped model (30 credits); maps darkened by tone-maps.py before the clean stage"
+    }
+  ]
+}
