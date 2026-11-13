@@ -328,11 +328,11 @@ modded class SCR_ChimeraCharacter
 	//! zones have regenerated to full (a patient downed for a while, the ambulance ride of #442)
 	//! changes no damage state, so without this the owner keeps the body INCAPACITATED and the
 	//! server's SetUnconscious(false) in LF_Downed.Clear never takes.
+	//! The same holds when the flag sets with no damage behind it: a stun (LF_Stun) hurts no hit
+	//! zone, so the owner would stay ALIVE and walk on (seen in the two-client taser proof,
+	//! 2026-11-12). The owner therefore recomputes on every change of the flag.
 	protected void LF_OnDownedReplicated()
 	{
-		if (m_bLF_Downed)
-			return;
-
 		RplComponent rpl = RplComponent.Cast(FindComponent(RplComponent));
 		if (!rpl || !rpl.IsOwner())
 			return;
@@ -342,7 +342,7 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		damageManager.UpdateConsciousness();
-		LF_Debug.Info(LF_Downed.FEATURE, string.Format("wake reached the owning client: wants unconscious %1", damageManager.LF_WantsUnconscious()));
+		LF_Debug.Info(LF_Downed.FEATURE, string.Format("downed flag %1 reached the owning client: wants unconscious %2", m_bLF_Downed, damageManager.LF_WantsUnconscious()));
 	}
 
 	//! Server only: who dealt the hit that downed this character ("" when no player did).
@@ -355,6 +355,9 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		m_sLF_DownerUid = downerUid;
+		if (!downed)
+			m_bLF_Stunned = false;
+
 		if (downed == m_bLF_Downed)
 			return;
 
@@ -366,6 +369,32 @@ modded class SCR_ChimeraCharacter
 	bool LF_IsDowned()
 	{
 		return m_bLF_Downed;
+	}
+
+	//! Server only: this downed state is a timed stun (LF_Stun). Cleared whenever the flag clears.
+	protected bool m_bLF_Stunned;
+	protected int m_iLF_StunToken;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: enter the downed state as a stun. \return The token the timed wake must present.
+	int LF_BeginStun()
+	{
+		LF_SetDowned(true, "");
+		m_bLF_Stunned = true;
+		m_iLF_StunToken++;
+		return m_iLF_StunToken;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool LF_IsStunned()
+	{
+		return m_bLF_Stunned && m_bLF_Downed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int LF_GetStunToken()
+	{
+		return m_iLF_StunToken;
 	}
 
 	//------------------------------------------------------------------------------------------------

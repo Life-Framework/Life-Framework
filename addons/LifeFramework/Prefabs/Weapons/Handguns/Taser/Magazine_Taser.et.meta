@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{22DC576156907CBF}Prefabs/Weapons/Handguns/Taser/Magazine_Taser.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -7506,6 +7506,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Vehicle theft"
      Comment "Offence on a wanted poster: a vehicle was taken from its driver by force (crime catalog id; same words as LF-Offence_VehicleTheft today)."
     }
+    CustomStringTableItem "{963D39B8BF62B9C8}" {
+     Id "LF-Weapon_Taser_Name"
+     Target_en_us "Taser"
+     Comment "Inventory name of the police stun pistol."
+    }
+    CustomStringTableItem "{7AF5414FC3686A70}" {
+     Id "LF-Weapon_Taser_Description"
+     Target_en_us "Police stun pistol. One cartridge. A hit within ten metres puts a person down for a few seconds and does not wound."
+     Comment "Inventory description of the police stun pistol."
+    }
+    CustomStringTableItem "{4EBBF5311DDAD1CF}" {
+     Id "LF-Magazine_Taser_Name"
+     Target_en_us "Taser cartridge"
+     Comment "Inventory name of the taser's single-shot cartridge."
+    }
+    CustomStringTableItem "{3651646B23FCD86B}" {
+     Id "LF-Magazine_Taser_Description"
+     Target_en_us "One shot for the taser."
+     Comment "Inventory description of the taser cartridge."
+    }
+    CustomStringTableItem "{F75D2B3B32248836}" {
+     Id "LF-Police_Stunned"
+     Target_en_us "You were hit by a taser. You will get up in about %1 seconds."
+     Comment "Toast to a player who was hit by a taser. %1 is the number of seconds."
+    }
     CustomStringTableItem "{4AD8545DB4254A00}" {
      Id "LF-Wanted_PosterHeader"
      Target_en_us "Wanted"
