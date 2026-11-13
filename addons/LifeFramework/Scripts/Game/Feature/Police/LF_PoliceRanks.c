@@ -21,6 +21,8 @@ class LF_PoliceRanks
 
 	static const ResourceName SIDEARM = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
 	static const ResourceName LONG_GUN = "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et";
+	//! The folded spike strip (#646): every rank carries one.
+	static const ResourceName SPIKE_STRIP = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";
 
 	protected static int s_iArrestRefusals;
 	protected static int s_iFineRefusals;
@@ -588,6 +590,7 @@ class LF_PoliceRanks
 		prefabs.Clear();
 		prefabs.Insert(SIDEARM);
 		prefabs.Insert(LONG_GUN);
+		prefabs.Insert(SPIKE_STRIP);
 	}
 
 	//------------------------------------------------------------------------------------------------

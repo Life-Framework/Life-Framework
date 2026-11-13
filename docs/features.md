@@ -1780,6 +1780,25 @@
 - ⚠️ **The cuffs do not show in the officer's hand.** Holding them raises the hand in the vanilla gauze pose the other held items use (the lockpick's offsets), but the session shot shows an empty hand; the hand offsets (`gadget.hand` in the spec, `HandAdditive*` on the prefab) need a pass in Workbench. Cuffing works the same.
 - ⚠️ **No restrained animation.** The base game has no surrender, hands-up, cuffed or tied animation (`docs/research/animation-pipeline.md`: the ACE captives set is the candidate, #340); a cuffed player stands or lies in the normal pose with the cuffs on one hand. There is no surrender gesture either, so "compliant" means held up and unarmed. Cuffed players can still open their inventory, and the officer cannot lead them by the cuffs (escort is the vehicle escort). Disconnect rejoin rules for cuffed players are #691. The restraint is not saved: a server restart frees every cuffed player and the pairs on them are gone.
 
+### `LF_SpikeStrips` — `Feature/Police/LF_SpikeStrip.c`, `Prefabs/Props/Roleplay/SpikeStrip/` (#646, 2026-11-13)
+- ✅ Police spike strip. Every rank's armory kit carries the folded strip (`SpikeStrip_Item.et`, 6 kg).
+  On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN) lays `SpikeStrip.et`
+  (3.5 m) from 1 m in front of the officer: along their facing, or straight across the nearest road
+  within 12 m when the AI road network has one. Its three ground points take the higher of terrain and
+  what stands there; more than 0.25 m between them refuses (`#LF-SpikeStrip_NoGround`). The item is used up.
+- ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
+  sample against the footprint, so a fast car cannot jump it. A crossing wheel's `SCR_WheelHitZone` (on the
+  wheel slot entity) takes COLLISION damage to DESTROYED; vanilla `UpdateWheelState` then cuts the radius to
+  80 %, the grip to 20 % and adds drag on every machine, so the car slows and pulls. A flat wheel is not hit
+  twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
+- ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
+  The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). DebugWorld shows one
+  on the police station verge (`Roadmap_Police_SpikeStrip`: `m_bArmed 0`, `m_bExpires 0`; an officer can still pick it up).
+- Model: one Meshy link repeated by the asset pipeline's deployable kind (`tools/assets/spike-strip`).
+  Tests `police/spike-strip`, `police/spike-strip-geometry`; proof `session.mjs spike-strip-proof`.
+- ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in
+  DebugWorld (no AI road network there); the strip follows the officer's facing.
+
 ## Ownership
 
 ### `LF_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11; ledger and invites 2026-11-08)
@@ -2448,10 +2467,8 @@
   vector and does not call `SetVelocity`. Ported from EveronLife
   `EL_JumpTrigger` (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
 
-### `LF_SpikeStrip` — `Feature/Toys/LF_SpikeStrip.c`
-- ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
-  box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
-  (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+### `LF_SpikeStrip` — moved to `Feature/Police/LF_SpikeStrip.c` (#646)
+- The trigger version is gone; the police spike strip below replaced it.
 
 ## Service calls (#248)
 

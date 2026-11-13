@@ -1,0 +1,37 @@
+GenericEntity {
+ ID "094A57E4751BCCF2"
+ components {
+  MeshObject "{D67929C91AE42A82}" {
+   Object "{210F81B75C156A83}Assets/Props/Roleplay/SpikeStrip/SpikeStrip.xob"
+  }
+  RigidBody "{910A07BAD6AF8176}" {
+   ModelGeometry 1
+   Static 1
+  }
+  LF_SpikeStripComponent "{EDD34B7850C70B44}" {
+   m_sItemPrefab "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et"
+   m_fHalfLength 1.75
+   m_fHalfWidth 0.15
+  }
+  ActionsManagerComponent "{7C373D66DD116840}" {
+   ActionContexts {
+    UserActionContext "{643305FB35E19009}" {
+     ContextName "default"
+     Position PointInfo "{D93D8D5545EC1EE3}" {
+      Offset 0 0.0605 0
+     }
+     Radius 2.1499
+    }
+   }
+   additionalActions {
+    LF_SpikeStripPickUpAction "{2113363B757296D9}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{2417C4C927BF1298}" {
+  }
+ }
+}

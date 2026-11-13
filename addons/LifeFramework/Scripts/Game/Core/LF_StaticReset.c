@@ -78,6 +78,7 @@ class LF_StaticReset
 		LF_Stores.ResetStatics();
 		LF_OrgInvites.Reset();
 		LF_RateLimit.ResetStatics();
+		LF_SpikeStrips.ResetStatics();
 		LF_ConfigStream.Reset();
 
 		s_iRuns = s_iRuns + 1;

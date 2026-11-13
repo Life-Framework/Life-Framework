@@ -149,6 +149,7 @@ function listAmmo(addon, ammo) {
 
 export async function writePrefabs(ctx) {
   const { root, spec, dir } = ctx;
+  if (spec.kind === "deployable") return (await import("./prefab-deployable.mjs")).writeDeployablePrefabs(ctx);
   if (spec.kind !== "weapon") {
     // Every other kind's scaffold is its own file, prefab-<kind>.mjs, exporting writePrefabs(ctx).
     const own = new URL(`./prefab-${spec.kind}.mjs`, import.meta.url);

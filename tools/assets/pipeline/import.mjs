@@ -19,6 +19,9 @@ export function logProblems(text, name = "") {
     if (/LF_ASSET_IMPORT rebuilding/.test(line)) live = true;
     if (/Resource leaks|Game destroyed/.test(line)) live = false;
     if (!live) continue;
+    // A source rebuilt before its sibling lists the sibling's .meta as having no resource yet (the
+    // folded model's .meta while the textures build). The checks after the build catch a real miss.
+    if (/metafile without corresponding resource/.test(line)) continue;
     const named = name && line.includes(name) && /\((E|W)\)/.test(line);
     if (named || /Invalid collider|DefaultGeneratedMaterial|SCRIPT\s+\(E\)|LF_ASSET_IMPORT FAIL|Build failed/.test(line)) out.push(line.trim().replace(/^[\d:.]+\s+/, "").slice(0, 240));
   }
@@ -110,9 +113,37 @@ export async function importAsset(ctx) {
     if (!existsSync(f)) problems.push(`Workbench produced no ${f}`);
     else if (statSync(f).mtimeMs <= before[i + 1]) problems.push(`${f} was not rebuilt`);
   });
+  // Further models from the clean stage (a deployable's folded state): same textures and material.
+  const variants = {};
+  for (const v of report.variants || []) {
+    const vfbx = join(assetAbs, `${v.name}.fbx`);
+    const vxob = join(assetAbs, `${v.name}.xob`);
+    copyFileSync(v.fbx, vfbx);
+    const vBefore = existsSync(vxob) ? statSync(vxob).mtimeMs : 0;
+    const vMetas = () => writeAssetMetas(addon, {
+      assetDir: spec.asset_dir, name: spec.name, model: v.name,
+      collider: { name: v.collider.name, layerPreset: kind.collider.layerPreset, gamemat: kind.collider.gamemat },
+      flags: kind.metaFlags,
+    });
+    let vRefs = vMetas();
+    let vProblems = [];
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      vProblems = [];
+      const vLog = rebuild(vfbx);
+      if (!existsSync(vxob)) vProblems.push(`Workbench produced no ${vxob}`);
+      else if (statSync(vxob).mtimeMs <= vBefore) vProblems.push(`${vxob} was not rebuilt`);
+      vProblems.push(...logProblems(vLog, v.name));
+      if (existsSync(vxob)) vProblems.push(...checkModel(parse(readFileSync(vxob)), kind, { sockets: [], emat: vRefs.emat.replace(/^\{[0-9A-F]+\}/, ""), colliderName: v.collider.name }));
+      if (!vProblems.length || attempt === 2) break;
+      console.log(`import: ${v.name} attempt 1 failed (${vProblems[0]}); rewriting the .meta and trying once more`);
+      vRefs = vMetas();
+    }
+    problems.push(...vProblems);
+    variants[v.name] = vRefs.xob;
+  }
   const secs = ((Date.now() - started) / 1000).toFixed(0);
   for (const p of problems) console.log(`FAIL  ${p}`);
   console.log(`import: ${secs}s in Workbench; ${refs.xob}`);
   if (problems.length) throw new Error(`${problems.length} import check(s) failed`);
-  return { ...refs, workbenchSecs: Number(secs) };
+  return { ...refs, variants, workbenchSecs: Number(secs) };
 }

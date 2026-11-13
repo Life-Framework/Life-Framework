@@ -57,15 +57,19 @@ export const KINDS = {
     requiredSockets: [],
     requiredBones: [],
   },
+  // Proven with the police spike strip (tools/assets/spike-strip): one generated link, repeated
+  // along the length by fit.repeat, stacked into a folded model by fit.fold, a world prefab and
+  // a carried item scaffolded by prefab.mjs.
   deployable: {
-    proven: false,
+    proven: true,
     assetRoot: "Assets/Props/Roleplay",
     prefabRoot: "Prefabs/Props/Roleplay",
     defaultSize: { length: 3.0, height: 0.05, width: 0.3 },
     defaultTris: 4000,
     maxTris: 12000,
     fit: "ground",
-    collider: { prefix: "UBX_", layerPreset: "ItemFireView", gamemat: "{13581C35484F3000}Common/Materials/Game/fabric.gamemat" },
+    // maxHeight: the box covers the base only, so a wheel rolls over the strip instead of climbing it.
+    collider: { prefix: "UBX_", layerPreset: "ItemFireView", gamemat: "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat", maxHeight: 0.03 },
     requiredSockets: [],
     requiredBones: [],
   },

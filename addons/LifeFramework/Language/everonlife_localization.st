@@ -7881,6 +7881,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The handcuffs are off."
      Comment "Toast to both the officer and the player when the handcuffs come off."
     }
+    CustomStringTableItem "{70EF9362784F2066}" {
+     Id "LF-SpikeStrip_Name"
+     Target_en_us "Spike strip"
+     Comment "Inventory name of the folded police stinger (#646)."
+    }
+    CustomStringTableItem "{633CC534006B5907}" {
+     Id "LF-SpikeStrip_Description"
+     Target_en_us "Folding tyre-deflation strip. Drop it at the roadside and deploy it across the road; a tyre that crosses it goes flat. On-duty police only."
+     Comment "Inventory description of the folded police stinger."
+    }
+    CustomStringTableItem "{C9A02C030858FF1F}" {
+     Id "LF-SpikeStrip_Deploy"
+     Target_en_us "Deploy spike strip"
+     Comment "Action on the folded strip: lays it across the road in front of the officer."
+    }
+    CustomStringTableItem "{4CC146840395573D}" {
+     Id "LF-SpikeStrip_PickUp"
+     Target_en_us "Pick up spike strip"
+     Comment "Action on a deployed strip: folds it back into the officer inventory."
+    }
+    CustomStringTableItem "{C73AA5808AE4125F}" {
+     Id "LF-SpikeStrip_PoliceOnly"
+     Target_en_us "Only an on-duty officer can handle the spike strip."
+     Comment "Toast and greyed-out reason when someone who is not on-duty police tries the strip."
+    }
+    CustomStringTableItem "{A09B30F6281E5E2E}" {
+     Id "LF-SpikeStrip_NoGround"
+     Target_en_us "There is no flat ground in front of you for the strip."
+     Comment "Toast when the ground ahead rises or falls too much along the strip (a kerb, a car, a slope)."
+    }
   }
  }
 }
