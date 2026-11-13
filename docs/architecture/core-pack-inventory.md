@@ -151,6 +151,7 @@ under "Hard-coded flagship values in script".
 | `Props/Commercial/`, `Props/Construction/`, `Props/Hideouts/` | core | Interactables |
 | `Props/Debug/` | core | Playtest-only stands (bank robbery kit, #605), gated by the debug flag |
 | `Props/Signs/LF_Sign*.et` (10) | core | Generic boards and faces |
+| `Props/Signs/LF_BoardFace.et` | core | The 16:9 render-target face a board draws on (wanted posters, #758) |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
 | `Resources/` | core | Ore, trees, logs |
@@ -179,6 +180,7 @@ under "Hard-coded flagship values in script".
 | `Vehicles/VehicleSettings.conf` | core | Plate generator choice |
 | `Jobs/LF_Jobs.conf` | split | Holds the flagship duty pay and benefit (decision 2026-11-08) |
 | `Police/LF_Police.conf` | split | Holds the flagship ticket deadlines and caps |
+| `Police/LF_WantedPosters.conf` | core | Neutral budget: 4 posters, 30 m draw radius (#758) |
 | `Shop/ShopPrices.conf` | split | Flagship prices; path-matched rules |
 | `Resources/ResourceChains.conf` | split | Chain shape is core; yields and prices are pack |
 | `Signs/LF_Signs.conf` | split | Sign defs tests use; the titles are the village's |
@@ -233,7 +235,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Props/GreenScreen/` | core | Filming tooling |
 | `Props/TitlePoster/` | pack | Everon title poster |
 | `Resources/` | core | Ore and wood meshes |
-| `Signs/` | core | Sign face material |
+| `Signs/` | core | Sign face material; `LF_BoardFace.xob`, a copy of the title poster's 16:9 quad with its own GUID (the title poster itself is pack) |
 | `Tools/` | core | Axe, pickaxe |
 | `UI/` | core | Stats bars, chat icons |
 | `UI/Illustrations/medic_flow.*` | pack | The hospital's CALL, TREAT, BED diagram; the `tools\cli ui-image` route that made it is core (#579) |

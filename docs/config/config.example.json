@@ -71,5 +71,9 @@
         "impoundOverride": 200
       }
     }
+  },
+  "wantedBoard": {
+    "posters": 4,
+    "drawRadius": 30
   }
 }

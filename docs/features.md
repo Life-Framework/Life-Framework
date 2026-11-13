@@ -1595,6 +1595,24 @@
   on identified reports. The card is an `LF_UIScreen` paper sheet that closes
   4 m from the board; reading plays the map pick-up sound and gesture.
   On-duty police also see the dispatch log under the posters (M1-20).
+- ✅ **Posters on the wanted board's face** (#758, `docs/architecture/visual-boards-spike.md`
+  issue 1, budget in `docs/architecture/visual-boards-budget.md`): every player near the
+  board sees a paper poster per wanted suspect pinned on the cork, without reading it:
+  WANTED, the name once identified (else UNKNOWN PERSON), the offence, what was seen
+  (`Wearing ...; driving ...`, the line left off when nothing was seen) and the wanted
+  level. `LF_WantedPosters` builds the public list on the server (one poster per suspect,
+  newest first, no place) on bus events (`LF_OnCrimeCommitted`, the new `LF_OnWantedChanged`
+  and `LF_OnSuspectIdentified`) and after a load, coalesced to one broadcast; the board's
+  `LF_WantedPosterBoardComponent` sends it by `RplSave`/`RplLoad` (late join, stream-in)
+  and a reliable broadcast. Each client draws one render target over the cork
+  (`Prefabs/Props/Signs/LF_BoardFace.et`, a 16:9 quad, the vanilla cork texture under the
+  posters) within `drawRadius` (30 m) and releases it 5 m beyond; the face renders live for
+  3 s after a change and then freezes, which the budget measured as nearly free. Owner
+  config section `wantedBoard`: `posters` (4, at most 8 in two rows) and `drawRadius`.
+  The Read card and the police-only lines are unchanged; the dispatch boards keep their
+  painted face (`m_bDrawPosters 0`). Tests `police/wanted-posters-feed`,
+  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`. Portraits and
+  stolen cars follow (spike issues 3 and 4).
 
 ### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
 - ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`

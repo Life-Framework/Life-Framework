@@ -46,6 +46,12 @@ is the entry point.
   police inventories (`civilian_stash` / `police_duty` snapshots, persisted).
   A first shift gets the starter police kit (config). Clock-out pays duty pay
   (`LF_DutyPay`). There is no faction screen; the faction is the duty role.
+- Wanted board face (#758): `LF_WantedPosters` (server list, events, coalesced) ->
+  `LF_WantedPosterBoardComponent` on `LF_WantedBoard.et` (RplSave/RplLoad + broadcast) ->
+  `LF_WantedPosterFace` (one render target on `LF_BoardFace.et`, drawn within
+  `wantedBoard.drawRadius`, frozen 3 s after each change). Config `LF_WantedPostersConfig`
+  (`Configs/Police/LF_WantedPosters.conf`, owner section `wantedBoard`). The dispatch boards
+  inherit the component with `m_bDrawPosters 0`.
 - Wanted board (M1-11): `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`),
   `LF_WantedBoardReadAction` -> `LF_WantedBoard` (per-read RPC). Posters come
   from `LF_WantedReports`: a description at the crime, the name once identified
