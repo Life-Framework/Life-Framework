@@ -132,6 +132,8 @@ class LF_PhoneComponent : ScriptComponent
 			}
 
 			m_Line = line.GetID();
+			// Its radio starts idle with a key of its own, so no two idle lines ever match.
+			LF_PhoneVoice.Tune(line, LF_PhoneVoice.BAND_MIN, LF_PhoneVoice.IdleKey());
 			LF_Debug.Info(LF_PhoneCalls.FEATURE, string.Format("line spawned for phone %1 (%2)", Key(), Place()));
 		}
 

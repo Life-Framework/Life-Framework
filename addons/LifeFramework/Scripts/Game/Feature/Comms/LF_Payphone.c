@@ -79,10 +79,13 @@ class LF_Payphone
 			s_mPhoneLast = new map<string, float>();
 
 		string phoneKey = PhoneKey(phonePos);
-		float playerLast = -1;
-		float phoneLast = -1;
-		s_mPlayerLast.Find(uid, playerLast);
-		s_mPhoneLast.Find(phoneKey, phoneLast);
+		// map.Find leaves 0 in the out value when the key is missing; 0 is a real time here.
+		float playerLast;
+		float phoneLast;
+		if (!s_mPlayerLast.Find(uid, playerLast))
+			playerLast = -1;
+		if (!s_mPhoneLast.Find(phoneKey, phoneLast))
+			phoneLast = -1;
 
 		if (CooldownLeft(now, playerLast, LF_ServiceCallsConfig.PlayerCooldown()) > 0)
 		{

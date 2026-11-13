@@ -23,7 +23,14 @@ export function parseLines(detail) {
   return String(detail ?? "").trim().split(/\s+/).slice(1).map((part) => {
     const [key, state, talker, rings, offer] = part.split(":");
     return { key, state, talker: Number(talker), rings: Number(rings), offer: Number(offer ?? 0) };
-  }).filter((l) => l.key);
+  }).filter((l) => l.key && l.state);
+}
+
+/** "... voice=up call=1 entry=1 txSet=0 ..." -> { voice: "up", call: "1", entry: "1", ... } */
+export function parseVoice(detail) {
+  const out = {};
+  for (const m of String(detail ?? "").matchAll(/(\w+)=([^\s]+)/g)) out[m[1]] = m[2];
+  return out;
 }
 
 export const has = (lines, state) => lines.some((l) => l.state === state && (state !== "BUSY" || l.talker > 0));
@@ -45,6 +52,7 @@ async function runPhoneProof() {
   };
   const use = (n, className, entityName) => on(n, { verb: "use", className, entityName }, 10000);
   const lines = (n) => parseLines(on(n, { verb: "phone" }, 10000).detail);
+  const voice = (n) => parseVoice(on(n, { verb: "phone" }, 10000).detail);
   const fails = [];
   const expect = (ok, what) => { if (!ok) fails.push(what); };
 
@@ -74,9 +82,23 @@ async function runPhoneProof() {
   wait(3000);
   expect(has(lines(2), "BUSY"), "the station telephone does not show the officer on it");
   expect(has(lines(1), "BUSY"), "the payphone line is not busy while talking");
+  for (const n of [1, 2]) {
+    // The radio's state reaches the client a moment after the entry attaches: poll up to 20 s.
+    let v = voice(n);
+    for (let i = 0; i < 8 && !/^1\d{5}:1$/.test(v.radio ?? ""); i++) {
+      wait(2500);
+      v = voice(n);
+    }
+    expect(v.voice === "up" && v.entry === "1", `client ${n}: the telephone is not the active voice entry while talking (voice=${v.voice} entry=${v.entry})`);
+    expect(/^1\d{5}:1$/.test(v.radio ?? ""), `client ${n}: the telephone radio is not powered on the call's private-band frequency here (radio=${v.radio})`);
+  }
   expect(use(1, "LF_PhoneHangUpAction", PAYPHONE).status === "ok", "client 1 could not hang up");
   wait(3000);
   expect(!has(lines(1), "BUSY") && !has(lines(2), "BUSY") && !has(lines(2), "RINGING"), "a line is still busy or ringing after the hang-up");
+  for (const n of [1, 2]) {
+    const v = voice(n);
+    expect(v.voice === "down" && v.entry === "0", `client ${n}: the telephone entry is still there after the hang-up (voice=${v.voice} entry=${v.entry})`);
+  }
 
   console.log(`\n== call 2: the caller walks off a connected call (waiting ${PLAYER_COOLDOWN_MS / 1000} s for the payphone cooldown)`);
   wait(PLAYER_COOLDOWN_MS);
@@ -130,6 +152,8 @@ async function runPhoneProof() {
   saw(/call-back request \d+ left by .*'Robbery_at_the_bank'/, "no call-back request left line");
   saw(/call-back request \d+ rung back by/, "no ring-back line");
   saw(/call-back request \d+ answered at/, "no answered ring-back line");
+  saw(/call \d+ voice up over the line transport: \d+ kHz, caller radio rplId \S+ powered=1 f=\d+ key=LF_call_/, "no voice up line with powered lines");
+  saw(/call \d+ voice down/, "no voice down line");
   expect(!server.some((l) => /Error|refused after the coin/.test(l)), "server log: a phone error line");
 
   for (const f of fails) console.log(`FAIL  ${f}`);

@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_Payphone`: commenting out the player cooldown stamp (`s_mPlayerLast.Set(uid, now)`) in LF_Payphone.UseAt failed it with `- the same player is refused inside the cooldown`. Restored; green.
+// red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_Payphone`: commenting out the player cooldown stamp (`s_mPlayerLast.Set(uid, now)`) in LF_Payphone.UseAt failed it with `- the same player is refused inside the cooldown`. Restored; green. Observed 2026-11-13: before the map.Find fix in UseAt it failed with `- a first call in the server's first minute connects` (a missing entry read as a call at time 0).
 //------------------------------------------------------------------------------------------------
 //! comms/payphone (#247): a call charges the coin once and reaches dispatch once; the cooldown
 //! refuses a second call and takes no coin; a call nobody can answer takes no coin.
@@ -32,6 +32,12 @@ class LF_Test_Payphone : LF_Test
 		string summary = "#LF-Payphone_Summary_Crime";
 		array<string> board = {};
 
+		// A server's first minute: a player who never called is not cooling down (a missing map
+		// entry must not read as a call at time 0).
+		ctx.True(LF_Payphone.UseAt(5, "payphone-early", caller, "50 0 50", "police", summary, officer) == LF_EPayphoneResult.CONNECTED, "a first call in the server's first minute connects");
+		ctx.Equal(5 - cost, LF_MoneyUtils.GetCash(caller), "the early call took the coin");
+		LF_MoneyUtils.AddCash(caller, cost);
+		LF_Dispatch.ResetStatics();
 		ctx.True(LF_Payphone.UseAt(100, "payphone-a", caller, phone, "police", summary, officer) == LF_EPayphoneResult.CONNECTED, "the first call connects");
 		ctx.Equal(5 - cost, LF_MoneyUtils.GetCash(caller), "the call took the coin once");
 		LF_Dispatch.BuildBoardEntries(10, board);

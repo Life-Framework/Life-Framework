@@ -18,6 +18,7 @@ class LF_PhoneConfig
 	static const int DEFAULT_CALL_BACK_OFFER_SECONDS = 120;
 	static const int DEFAULT_MESSAGE_MAX_CHARS = 120;
 	static const int DEFAULT_MAX_CALL_BACKS = 20;
+	static const int DEFAULT_VOICE_TRANSPORT = 0;
 
 	[Attribute("30", UIWidgets.Auto, "Seconds a call rings at the far end before it counts as missed", params: "5 300")]
 	int m_iRingSeconds = DEFAULT_RING_SECONDS;
@@ -45,6 +46,9 @@ class LF_PhoneConfig
 
 	[Attribute("20", UIWidgets.Auto, "Most call-back requests waiting at once, all services together; the oldest goes first. They expire with the dispatch board (m_iBoardExpirySeconds)", params: "1 100")]
 	int m_iMaxCallBacks = DEFAULT_MAX_CALL_BACKS;
+
+	[Attribute("0", UIWidgets.Auto, "Where a call's two radios live (LF_EPhoneVoiceTransport): 0 the line at each telephone, 1 a handset item in each talker's inventory for the call", params: "0 1")]
+	int m_iVoiceTransport = DEFAULT_VOICE_TRANSPORT;
 
 	protected static ref LF_PhoneConfig s_Config;
 
@@ -114,6 +118,15 @@ class LF_PhoneConfig
 	static int MaxCallBacks()
 	{
 		return Math.Max(Get().m_iMaxCallBacks, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static LF_EPhoneVoiceTransport VoiceTransport()
+	{
+		if (Get().m_iVoiceTransport == LF_EPhoneVoiceTransport.HANDSET)
+			return LF_EPhoneVoiceTransport.HANDSET;
+
+		return LF_EPhoneVoiceTransport.LINE;
 	}
 
 	//------------------------------------------------------------------------------------------------

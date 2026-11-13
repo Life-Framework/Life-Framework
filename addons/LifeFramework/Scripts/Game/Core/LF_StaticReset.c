@@ -66,6 +66,8 @@ class LF_StaticReset
 		LF_ServiceBoard.ResetStatics();
 		LF_PhoneCalls.ResetStatics();
 		LF_PhoneCallBacks.ResetStatics();
+		LF_PhoneVoice.ResetStatics();
+		LF_PhoneVoiceClient.ResetStatics();
 		LF_PhoneConfig.ResetStatics();
 		LF_PhoneComponent.ResetStatics();
 		LF_PhoneLineComponent.ResetStatics();

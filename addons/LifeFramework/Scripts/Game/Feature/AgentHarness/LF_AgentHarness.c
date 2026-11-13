@@ -1184,7 +1184,7 @@ class LF_AgentHarness
 		if (cmd.Verb == "phone")
 		{
 			// What this machine's telephone lines show (#147): state, talker, rings heard.
-			WriteResult(cmd.Id, "ok", LF_PhoneLineComponent.DescribeAll());
+			WriteResult(cmd.Id, "ok", LF_PhoneLineComponent.DescribeAll() + " " + LF_PhoneVoiceClient.Describe());
 			return;
 		}
 		if (cmd.Verb == "radio")

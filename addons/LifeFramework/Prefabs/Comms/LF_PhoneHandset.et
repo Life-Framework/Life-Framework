@@ -1,0 +1,42 @@
+GenericEntity : "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et" {
+ ID "1866B79B8F3183D3"
+ components {
+  BaseRadioComponent "{5A30BAE7673C63CA}" {
+   "Encryption key" "LF_handset_idle"
+   "Turned on" 1
+   Transceivers {
+    RadioTransceiver "{5A6C8885A4D45664}" {
+     ChannelFrequency 100000
+     "Transmitting Range" 60000
+     "Min tunable frequency" 100000
+     "Max tunable frequency" 165000
+     "Frequency resolution" 1
+    }
+    RadioTransceiver "{5A8E721FD75D0F5F}" {
+     ChannelFrequency 100000
+     "Transmitting Range" 60000
+     "Min tunable frequency" 100000
+     "Max tunable frequency" 165000
+     "Frequency resolution" 1
+    }
+   }
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Phone_HandsetName"
+     Description "#LF-Phone_HandsetDescription"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.3
+     SizeSetupStrategy Volume
+     ItemVolume 150
+     RestingUP Forward
+    }
+   }
+  }
+  MeshObject "{5A30BAE7673C63D1}" {
+   Object "{8AFFC1E1E754EBCC}Assets/Props/Furniture/PhoneTable_01/PhoneTable_01_handset.xob"
+  }
+ }
+}

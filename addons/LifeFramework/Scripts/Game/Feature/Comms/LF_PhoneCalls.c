@@ -487,6 +487,7 @@ class LF_PhoneCalls
 			at = call.m_fEnded;
 		LF_PhoneCallBacks.OnCallChanged(call, at);
 		SyncLines();
+		LF_PhoneVoice.OnCallChanged(call);
 		LF_EventBus.Publish(LF_OnPhoneCall.Create(call));
 
 		string state = typename.EnumToString(LF_EPhoneCallState, call.m_eState);
@@ -501,8 +502,8 @@ class LF_PhoneCalls
 			case LF_EPhoneCallState.CONNECTED:
 			{
 				LF_Debug.Info(FEATURE, string.Format("call %1 CONNECTED: %2; player %3 (caller) <-> player %4", call.m_iId, why, call.m_iCallerId, call.m_iAnswererId));
-				Toast(call.m_iCallerId, "#LF-Phone_Connected");
-				Toast(call.m_iAnswererId, "#LF-Phone_Connected");
+				Toast(call.m_iCallerId, "#LF-Phone_ConnectedTalk");
+				Toast(call.m_iAnswererId, "#LF-Phone_ConnectedTalk");
 				break;
 			}
 			default:
