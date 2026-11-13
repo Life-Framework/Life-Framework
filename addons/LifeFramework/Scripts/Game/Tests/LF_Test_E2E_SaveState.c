@@ -33,6 +33,11 @@
 // pass 2 failed with `- e2e farmer xp survives the restart (expected 120, got 0)` and
 // `- e2e miner xp survives the restart (expected 650, got 0)`. LF_TestLegacySnapshot and the
 // progression tests now put the job XP back; both passes green, and green with --legacy-save.
+// e2e/pass2-verify-load (save version 29, wanted looks, #758), observed 2026-11-13 with
+// `tools\cli wt e2e board-looks-save`: a legacy-loading test after this one reloaded a version 23
+// save of the live store, which has no "wantedlooks", and pass 2 failed with
+// `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
+// LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
 // tier: PERSISTENCE
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
