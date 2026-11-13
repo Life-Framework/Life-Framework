@@ -71,6 +71,13 @@ class LF_CashVanRouteComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "World entity name of the van; set on the placed box (the pack names its van). The box is its own entity, not a child: a replicated child under a replicated vehicle makes the client item table disagree with the server.")]
 	protected string m_sVanEntity;
 
+	//------------------------------------------------------------------------------------------------
+	//! World entity name of the van this box drives.
+	string GetVanEntityName()
+	{
+		return m_sVanEntity;
+	}
+
 	[Attribute("1.35 0 -1.4", UIWidgets.Coords, desc: "Where the box stands, in the van's local space: on the ground at the kerb-side door. It used to hang off the rear step over the road.")]
 	protected vector m_vBoxOffset;
 
