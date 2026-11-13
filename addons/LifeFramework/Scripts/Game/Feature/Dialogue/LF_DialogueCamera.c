@@ -1,15 +1,20 @@
 //------------------------------------------------------------------------------------------------
 //! The conversation camera, on the talker's machine only. A scripted camera is spawned locally
-//! (never replicated), made the current camera, eased from where the player was looking to a shot
-//! of the NPC, and eased back before the player's own camera is restored. Two shots: over the
-//! player's shoulder while they choose a reply, the NPC's face while it speaks.
+//! (never replicated), made the current camera, eased from where the player was looking to ONE shot
+//! of the NPC (over the player's shoulder, the NPC from about the chest up), and eased back before
+//! the player's own camera is restored. The shot never changes during the talk: no zoom on the NPC's
+//! lines and no cut between shots.
 //! Same camera prefab and SetCamera hand-over as the film rig (Feature/Film/LF_FilmCameraPath.c).
 class LF_DialogueCamera
 {
 	static const ResourceName CAMERA_PREFAB = "{D6DE32D1C0FCC1C7}Prefabs/Editor/Camera/ManualCameraBase.et";
 	static const float EASE_SECONDS = 0.8; // lf-fixed: camera feel, the same for every NPC
-	static const float FOV_FACE = 30;
-	static const float FOV_SHOULDER = 42;
+	//! The one framing of the whole conversation: the camera stands this far behind, aside of and above
+	//! the player's head, looks at the NPC's head, and uses this field of view.
+	static const float FOV = 42;
+	static const float SHOT_BEHIND = 0.75;
+	static const float SHOT_ASIDE = 0.5;
+	static const float SHOT_UP = 0.22;
 	//! The camera keeps this far off anything between it and its subject.
 	static const float COLLISION_MARGIN = 0.85;
 
@@ -17,12 +22,11 @@ class LF_DialogueCamera
 	//! covers the head, hair and the neck, so no mesh is cut by the near plane.
 	static const float HEAD_KEEP_OUT = 0.85;
 
-	protected static bool s_bAvoidHead;
+	protected static bool s_bProofCloseUp;
 	protected static float s_fKeepFrom;
 	protected static EntityID s_CameraId = EntityID.INVALID;
 	protected static EntityID s_PreviousId = EntityID.INVALID;
 	protected static EntityID s_NpcId = EntityID.INVALID;
-	protected static bool s_bFace;
 	protected static bool s_bClosing;
 	protected static bool s_bHudWasVisible;
 	protected static int s_iBlendStartMs;
@@ -40,7 +44,7 @@ class LF_DialogueCamera
 		s_PreviousId = EntityID.INVALID;
 		s_NpcId = EntityID.INVALID;
 		s_bClosing = false;
-		s_bAvoidHead = false;
+		s_bProofCloseUp = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -58,11 +62,9 @@ class LF_DialogueCamera
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: where the camera stands and looks for a shot, from the two heads and the way the NPC faces.
-	//! face: in front of the NPC's face, a little to the side the player stands on. The NPC does
-	//!       not turn, so a player who walked up from behind still gets the face, not the neck.
-	//! shoulder: behind and beside the player's head, looking past it at the NPC.
-	static void Frame(vector npcHead, vector npcForward, vector playerHead, bool face, out vector position, out vector lookAt, out float fov)
+	//! Pure: where the camera stands and looks, from the two heads: behind and beside the player's
+	//! head, looking past it at the NPC. The only shot of the conversation.
+	static void Frame(vector npcHead, vector playerHead, out vector position, out vector lookAt, out float fov)
 	{
 		vector toPlayer = playerHead - npcHead;
 		toPlayer[1] = 0;
@@ -71,27 +73,9 @@ class LF_DialogueCamera
 
 		toPlayer.Normalize();
 		vector right = Vector(toPlayer[2], 0, -toPlayer[0]);
-		if (face)
-		{
-			vector forward = npcForward;
-			forward[1] = 0;
-			if (forward.LengthSq() < 0.01)
-				forward = toPlayer;
-
-			forward.Normalize();
-			vector side = Vector(forward[2], 0, -forward[0]);
-			if (vector.Dot(side, toPlayer) < 0)
-				side = -side;
-
-			position = npcHead + forward * 0.95 + side * 0.4 + "0 0.03 0";
-			lookAt = npcHead + "0 0.04 0";
-			fov = FOV_FACE;
-			return;
-		}
-
-		position = playerHead + toPlayer * 0.75 + right * 0.5 + "0 0.22 0";
+		position = playerHead + toPlayer * SHOT_BEHIND + right * SHOT_ASIDE + Vector(0, SHOT_UP, 0);
 		lookAt = npcHead;
-		fov = FOV_SHOULDER;
+		fov = FOV;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -150,7 +134,7 @@ class LF_DialogueCamera
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The shot for the current mode, with collision.
+	//! The shot, with collision.
 	protected static bool Target(out vector position, out vector lookAt, out float fov)
 	{
 		BaseWorld world = GetGame().GetWorld();
@@ -164,21 +148,24 @@ class LF_DialogueCamera
 
 		vector npcHead = LF_DialogueVoice.HeadOf(npc);
 		vector playerHead = LF_DialogueVoice.HeadOf(player);
-		vector npcMat[4];
-		npc.GetWorldTransform(npcMat);
-		Frame(npcHead, npcMat[2], playerHead, s_bFace, position, lookAt, fov);
-		if (s_bFace)
+		Frame(npcHead, playerHead, position, lookAt, fov);
+		if (s_bProofCloseUp)
 		{
-			// Start clear of the NPC's own head and collar.
-			vector away = position - npcHead;
-			away.Normalize();
-			position = Unblocked(npcHead + away * 0.35, position, npc);
-		}
-		else
-		{
-			position = Unblocked(playerHead, position, player);
+			// Harness only (`dialogue closeup 1`): a face close-up so a proof can film the mouth. The
+			// conversation itself never uses it.
+			vector npcMat[4];
+			npc.GetWorldTransform(npcMat);
+			vector forward = npcMat[2];
+			forward[1] = 0;
+			forward.Normalize();
+			vector side = Vector(forward[2], 0, -forward[0]);
+			position = npcHead + forward * 0.8 + side * 0.25 + "0 0.03 0";
+			lookAt = npcHead + "0 0.04 0";
+			fov = 24;
+			return true;
 		}
 
+		position = Unblocked(playerHead, position, player);
 		return true;
 	}
 
@@ -223,7 +210,6 @@ class LF_DialogueCamera
 		s_PreviousId = previous.GetID();
 		s_CameraId = camera.GetID();
 		s_bClosing = false;
-		s_bFace = false;
 		s_vPosition = mat[3];
 		s_vLook = mat[3] + mat[2];
 		s_fFov = previous.GetVerticalFOV();
@@ -245,13 +231,13 @@ class LF_DialogueCamera
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Switch between the face shot (the NPC speaks) and the shoulder shot (the player chooses).
-	static void SetFace(bool face)
+	//! Harness only: eased close-up of the NPC's face for a mouth proof, or back to the shot.
+	static void SetProofCloseUp(bool on)
 	{
-		if (!IsActive() || s_bClosing || s_bFace == face)
+		if (!IsActive() || s_bClosing || s_bProofCloseUp == on)
 			return;
 
-		s_bFace = face;
+		s_bProofCloseUp = on;
 		BeginBlend();
 	}
 
@@ -272,15 +258,14 @@ class LF_DialogueCamera
 		s_vFromPosition = s_vPosition;
 		s_vFromLook = s_vLook;
 		s_fFromFov = s_fFov;
-		s_bAvoidHead = false;
+		s_fKeepFrom = 0;
 		IEntity player = LF_Utils.GetLocalCharacter();
 		if (player)
 		{
-			// The sphere grows from where the camera starts (the face shot can stand closer than the
-			// full keep-out) to the full size. A first person start sits at the head itself; leave it alone.
-			float fromDistance = vector.Distance(s_vFromPosition, LF_DialogueVoice.HeadOf(player));
-			s_bAvoidHead = fromDistance >= 0.3;
-			s_fKeepFrom = Math.Min(fromDistance, HEAD_KEEP_OUT);
+			// The keep-out sphere starts as big as the camera's distance from the head (a first person
+			// view sits at the head itself, so it starts tiny) and ends at the distance the end of the
+			// ease has, so the ease in and the ease out both slide round the head, never through it.
+			s_fKeepFrom = Math.Min(vector.Distance(s_vFromPosition, LF_DialogueVoice.HeadOf(player)), HEAD_KEEP_OUT);
 		}
 
 		s_iBlendStartMs = System.GetTickCount();
@@ -347,11 +332,12 @@ class LF_DialogueCamera
 		s_vPosition = vector.Lerp(s_vFromPosition, position, k);
 		IEntity player = LF_Utils.GetLocalCharacter();
 		IEntity npc = world.FindEntityByID(s_NpcId);
-		if (s_bAvoidHead && !s_bClosing && player && npc)
+		if (player && npc)
 		{
-			// The ease between shots is a straight line; keep it from cutting through the head.
+			// The ease is a straight line; keep it from cutting through the head.
 			vector playerHead = LF_DialogueVoice.HeadOf(player);
-			s_vPosition = KeepOutOfHead(s_vPosition, playerHead, ShoulderSide(LF_DialogueVoice.HeadOf(npc), playerHead), Math.Lerp(s_fKeepFrom, HEAD_KEEP_OUT, k));
+			float keepTo = Math.Min(vector.Distance(position, playerHead), HEAD_KEEP_OUT);
+			s_vPosition = KeepOutOfHead(s_vPosition, playerHead, ShoulderSide(LF_DialogueVoice.HeadOf(npc), playerHead), Math.Lerp(s_fKeepFrom, keepTo, k));
 		}
 
 		s_vLook = vector.Lerp(s_vFromLook, lookAt, k);

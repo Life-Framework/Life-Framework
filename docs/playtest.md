@@ -61,6 +61,9 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 
 1. **Arrival.** Fill in form R-89, then follow the clerk on the square: your ID
    card, the town board, and a parcel run ("Run paid: $40").
+   Talking to the clerk is a conversation scene (#896): the camera holds one
+   over-the-shoulder shot the whole time, the lips and jaw follow the voice, and
+   he blinks and nods. Demo: `node agent-box/session.mjs dialogue-proof` (debug mission).
 2. **Job.** Sign up at the post office counter and deliver the parcel. Five
    parcel runs open fuel delivery, fifteen open the taxi.
 3. **Bank.** You start with $1,000 in the bank. Deposit and withdraw at the bank teller: walk to the west counter window on the bank front at (176, 259), where Edith stands behind the counter under the *Teller* sign, and use *Talk to the teller*; it opens the same deposit and withdraw screen the ATM did (demo: `node agent-box/session.mjs bank-teller-proof`). The old ATM entity is kept hidden inside the bank for the tests; the east counter at (187, 259) is a plain counter.

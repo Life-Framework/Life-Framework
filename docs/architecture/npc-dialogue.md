@@ -8,7 +8,7 @@ from a numbered list. The town clerk is the first NPC converted. How to add anot
 | | |
 |---|---|
 | ![face](img/npc-dialogue/1-face-and-caption.jpg) | ![replies](img/npc-dialogue/2-shoulder-and-replies.jpg) |
-| The NPC speaks: face shot, caption, skip and leave hint | The player chooses: over the shoulder, numbered replies |
+| The first version: a face shot while the NPC speaks (replaced by the one shoulder shot below) | The shot used for the whole talk: over the shoulder, numbered replies |
 | ![answer](img/npc-dialogue/3-answer-speaking.jpg) | ![bystander](img/npc-dialogue/5-bystander.jpg) |
 | The answer to a reply; the lips are mid-word | A second player beside them: no scene, the world goes on, the voice is heard |
 
@@ -63,17 +63,19 @@ built the missing parts.
 - `CameraManager` has no blend. The script eases position, look-at and field of view with a
   smoothstep over 0.8 s: in from the player's own view, between shots, and back out to the
   player's view before the old camera is restored and ours deleted.
-- Two shots. **Face**, while the NPC speaks: about a metre in front of the NPC's face, leaning to
-  the side the player stands on, 30 degrees. It uses the way the NPC faces, so a player who walks
-  up from behind still gets the face (the first version used the player's side and filmed the back
-  of the clerk's head). **Shoulder**, while the player chooses: behind and beside the player's
-  head, 42 degrees.
-- The ease between shots is a straight line, which used to cut through the player's own head (a
-  filmed clip showed the back of the head and hair strands filling the frame). The shoulder shot now
-  stands further out and up (0.75 behind, 0.5 aside, 0.22 up), and every eased position is kept out
-  of a sphere around the player's head bone (`HEAD_KEEP_OUT`, 0.85 m): a path through the head slides
-  round the shoulder side. The sphere grows from the start distance, so the face shot does not pop,
-  and is skipped when the blend starts inside it (a first person view).
+- **One shot.** The first version had two (a face close-up while the NPC spoke, over the shoulder
+  while the player chose), and the cut between them zoomed hard into the face; the maintainer found it
+  janky (#896, 2026-11-13). Now the whole talk uses the over-the-shoulder medium shot: behind the
+  player's head (0.75 m back, 0.5 aside, 0.22 up), looking at the NPC's head, 42 degrees, so the NPC
+  shows from about the chest up with the player's shoulder at the frame edge. It never changes while
+  the NPC speaks. There is one ease in from the player's view and one ease out (`LF_DialogueCamera.Frame`,
+  `FOV`, `SHOT_*`), with no drift. The shot depends on the two heads only, so a line cannot move it.
+  `dialogue closeup 1` is a proof-only harness close-up (scene widgets hidden) for filming the mouth.
+- The ease is a straight line, which used to cut through the player's own head. Every eased position,
+  in and out, is kept out of a sphere around the player's head bone (`HEAD_KEEP_OUT`, 0.85 m): a path
+  through the head slides round the shoulder side. The sphere starts as big as the camera's distance
+  from the head (a first person start sits at the head, so it starts tiny) and ends at the distance
+  the end of the ease has, so nothing pops.
 - Collision is a script trace (`BaseWorld.TraceMove`) from the subject to the camera; a hit pulls
   the camera in. There is no built-in collision for a free camera.
 - While the scene is open the character's movement, view and weapon controls are disabled
@@ -100,10 +102,25 @@ The skeleton (231 bones, shared by body, head and clothes) has a muscle-style fa
 bone, angles, translation, scale)` applies an offset from the bone's rest pose and it holds until
 set again, because the NPC's graph is a single pose.
 
-The mouth pose in `LF_DialogueVoice.DEFAULT_RIG`: lower lip down 8 mm in the middle and 6 mm at
-both sides, upper lip up 2 mm. While a line plays, the pose is scaled every frame by the line's
-envelope: one digit 0 to 9 per 50 ms, RMS loudness of the final wav scaled to the line's own loud
-level, computed by the pipeline and stored in the dialogue config (`m_sMouth`).
+The mouth pose in `LF_DialogueVoice.DEFAULT_RIG` + `JAW_RIG`: lower lip down 8 mm in the middle and
+6 mm at both sides, upper lip up 2 mm, and the `Jaw` bone turned 0.12 rad (angles of `SetBone` are
+**radians**; a first guess in degrees tore the face). The jaw has no skin weight, so it only moves the
+teeth and tongue behind the lips, which is what a small opening needs; negative y opens it.
+
+Natural motion (2026-11-13, `LF_DialogueMouth`, tests `dialogue/mouth`): the raw envelope flapped the
+lip, so it is now shaped before it reaches the bones.
+
+| Step | Value |
+|---|---|
+| Smoothing | one-pole, 40 ms attack, 100 ms release |
+| Cap | never above 0.85 of the pose |
+| Variation | each syllable (envelope rises over 0.45) opens 0.7 to 1.0 of the envelope, a fixed spread per syllable number (the envelope is a loudness, not a spectrum, so no zero-crossing or spectral cue) |
+| Pauses | below 0.06 the mouth is exactly shut |
+| Nod | an envelope peak at 0.85 or more pitches `Head` 0.05 rad (about 3 degrees) over 0.3 s |
+| Blink | the six `OrbicularisOculi_upper*Lid_{left,right}` bones drop 8 mm along +y over 0.16 s, every 2.2 to 5 s, while the scene is open and while the NPC speaks |
+
+Bones were found with `dialogue bones <part>` (Eye, Lid, Jaw, Head...) and `dialogue rig` trials in a
+session: the lid bones close along +y (-y opens them wide), `Head` +y bows.
 
 ![mouth](img/npc-dialogue/4-mouth-shut-open.jpg)
 

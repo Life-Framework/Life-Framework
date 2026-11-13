@@ -6,7 +6,7 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 // key and runs the same server talk as before (registers the player, hands over the ID card), the
 // clerk answers with two voiced lines, and Back gives the camera back. Client 2 stands beside them:
 // it gets no scene, and hears the clerk's answer (`dialogue` on client 2 counts the lines it played).
-// Shots show the camera, the caption, the replies and the mouth shut and open (a held pose).
+// Shots show the camera (one medium framing throughout), the caption, the replies and, in a proof-only close-up, the mouth shut and open (a held pose).
 // An agent cannot listen: the proof reads that each line started with a valid sound handle from
 // the client's `[LFDebug:Dialogue] line ... plays` log lines; the maintainer's ears do the rest.
 async function runDialogueProof() {
@@ -48,7 +48,7 @@ async function runDialogueProof() {
   shot(1, "3_replies_shoulder");
 
   // The mouth: a held pose in the face shot, shut then open, so the two shots can be compared.
-  scene(1, "face", "1");
+  scene(1, "closeup", "1");
   wait(1200);
   scene(1, "mouth", "0");
   wait(200);
@@ -56,8 +56,8 @@ async function runDialogueProof() {
   scene(1, "mouth", "1");
   wait(200);
   shot(1, "5_mouth_open");
-  scene(1, "mouth", "0");
-  scene(1, "face", "0");
+  scene(1, "closeup", "0");
+  scene(1, "mouth", "-1");
   wait(1000);
 
   // The real keys: down, up, then confirm on the first reply.

@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueFlow`: made
+// red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueFlow`: setting LF_DialogueCamera.FOV to 30 (the old face close-up) failed `dialogue/flow` with `- the one framing is a medium shot, not a face close-up`. Restored; green. Earlier: made LF_DialogueFlow.IsOffered return true; got `- a reply that was not offered cannot be picked`.
 // LF_DialogueFlow.IsOffered return true; got `[LFTEST] FAIL dialogue/flow`,
 // `- a reply that was not offered cannot be picked`. Restored; green.
 // tier: LOGIC
@@ -129,35 +129,35 @@ class LF_Test_DialogueFlow : LF_Test
 		ctx.EqualFloat(6, LF_DialogueFlow.HoldSeconds(null, 100), 0.001, "a bare caption holds for reading time");
 		ctx.EqualFloat(LF_DialogueFlow.SILENT_SECONDS_MIN, LF_DialogueFlow.HoldSeconds(null, 3), 0.001, "a short bare caption still holds long enough to see");
 
-		// Camera: both shots look at the NPC; the face shot is close, the shoulder shot is behind the player.
+		// Camera: ONE framing for the whole talk, over the player's shoulder, the same at any distance
+		// of the two heads and whatever way the NPC faces. It looks at the NPC's head.
 		vector npcHead = "10 1.7 10";
 		vector playerHead = "10 1.7 12";
 		vector position;
 		vector lookAt;
 		float fov;
-		vector facingPlayer = "0 0 1";
-		vector facingAway = "0 0 -1";
-		LF_DialogueCamera.Frame(npcHead, facingPlayer, playerHead, true, position, lookAt, fov);
-		ctx.True(vector.Distance(position, npcHead) < 1.3 && vector.Distance(position, npcHead) > 0.8, "the face shot stands about a metre from the NPC's head");
-		ctx.True(vector.Distance(lookAt, npcHead) < 0.2, "the face shot looks at the NPC's head");
-		ctx.True(vector.Distance(position, npcHead) < vector.Distance(playerHead, npcHead), "in the face shot the player is behind the camera");
-		ctx.True(vector.Dot(position - npcHead, facingPlayer) > 0.8, "the face shot stands in front of the NPC's face");
-		LF_DialogueCamera.Frame(npcHead, facingAway, playerHead, true, position, lookAt, fov);
-		ctx.True(vector.Dot(position - npcHead, facingAway) > 0.8, "a player behind the NPC still gets its face, not the back of its head");
-		vector besidePlayer = "13 1.7 10";
-		LF_DialogueCamera.Frame(npcHead, facingPlayer, besidePlayer, true, position, lookAt, fov);
-		ctx.True(position[0] > npcHead[0], "the face shot leans to the side the player stands on");
-		LF_DialogueCamera.Frame(npcHead, facingPlayer, playerHead, false, position, lookAt, fov);
-		ctx.True(vector.Distance(position, npcHead) > vector.Distance(playerHead, npcHead), "the shoulder shot stands behind the player");
-		ctx.True(vector.Distance(position, playerHead) < 1.1, "the shoulder shot stays at the player's shoulder");
-		ctx.True(vector.Distance(position, playerHead) > LF_DialogueCamera.HEAD_KEEP_OUT, "the shoulder shot stands outside the player's head");
+		LF_DialogueCamera.Frame(npcHead, playerHead, position, lookAt, fov);
+		ctx.True(vector.Distance(lookAt, npcHead) < 0.01, "the shot looks at the NPC's head");
+		ctx.EqualFloat(LF_DialogueCamera.FOV, fov, 0.001, "the shot uses the one field of view");
+		ctx.True(fov >= 38 && fov <= 50, "the one framing is a medium shot, not a face close-up (a close-up is about 30 degrees)");
+		ctx.True(vector.Distance(position, npcHead) > vector.Distance(playerHead, npcHead), "the shot stands behind the player, not in the NPC's face");
+		ctx.True(vector.Distance(position, npcHead) > 2, "the shot keeps the NPC at conversation distance, never a close-up of the face");
+		ctx.True(vector.Distance(position, playerHead) < 1.1, "the shot stays at the player's shoulder");
+		ctx.True(vector.Distance(position, playerHead) > LF_DialogueCamera.HEAD_KEEP_OUT, "the shot stands outside the player's head");
+		vector other = "10 1.7 11.5";
+		vector positionNear;
+		LF_DialogueCamera.Frame(npcHead, other, positionNear, lookAt, fov);
+		ctx.EqualFloat(vector.Distance(position, playerHead), vector.Distance(positionNear, other), 0.001, "the shot sits the same way against the player's head wherever the player stands");
+		vector positionRepeat;
+		LF_DialogueCamera.Frame(npcHead, playerHead, positionRepeat, lookAt, fov);
+		ctx.True(vector.Distance(position, positionRepeat) < 0.0001, "the framing depends on the two heads only, so the NPC's speaking cannot move it");
 		vector side = LF_DialogueCamera.ShoulderSide(npcHead, playerHead);
 		vector pushed = LF_DialogueCamera.KeepOutOfHead(playerHead + "0 0.05 0.1", playerHead, side, LF_DialogueCamera.HEAD_KEEP_OUT);
 		ctx.EqualFloat(LF_DialogueCamera.HEAD_KEEP_OUT, vector.Distance(pushed, playerHead), 0.01, "a camera inside the head is pushed out to the keep-out sphere");
 		ctx.True(vector.Dot(pushed - playerHead, side) >= -0.001, "a camera pushed out of the head leaves on the shoulder side");
 		ctx.True(vector.Distance(LF_DialogueCamera.KeepOutOfHead(playerHead + "0 3 0", playerHead, side, LF_DialogueCamera.HEAD_KEEP_OUT), playerHead + "0 3 0") < 0.001, "a camera already clear of the head is left alone");
-		LF_DialogueCamera.Frame(npcHead, vector.Zero, npcHead, true, position, lookAt, fov);
-		ctx.True(vector.Distance(position, npcHead) > 0.8, "two heads on one spot still give a camera that stands off");
+		LF_DialogueCamera.Frame(npcHead, npcHead, position, lookAt, fov);
+		ctx.True(vector.Distance(position, npcHead) > 0.5, "two heads on one spot still give a camera that stands off");
 		ctx.EqualFloat(0, LF_DialogueCamera.Ease(0), 0.001, "the ease starts at rest");
 		ctx.EqualFloat(1, LF_DialogueCamera.Ease(1), 0.001, "the ease ends on the shot");
 		ctx.EqualFloat(1, LF_DialogueCamera.Ease(4), 0.001, "the ease does not overshoot");

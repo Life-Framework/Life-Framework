@@ -71,7 +71,7 @@ class LF_DialogueScene
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The play-session harness (`dialogue`, `dialogue pick 0`, `dialogue skip`, `dialogue face 1`,
+	//! The play-session harness (`dialogue`, `dialogue pick 0`, `dialogue skip`,
 	//! `dialogue mouth 0.8`, `dialogue rig Jaw:0,8,0,0,0,0;...`): the
 	//! scene's state, or a held mouth pose on the NPC of the open scene so a shot can show it.
 	static string Harness(string verb, string value)
@@ -85,19 +85,29 @@ class LF_DialogueScene
 			return "rig=" + LF_DialogueVoice.SetRig(value);
 		}
 
+		if (verb == "closeup")
+		{
+			LF_DialogueCamera.SetProofCloseUp(value == "1");
+			// The caption bar would cover the mouth in the close-up: hide the scene's widgets while it runs.
+			if (s_wRoot)
+				s_wRoot.SetVisible(value != "1");
+
+			return "closeup=" + value;
+		}
+
+		if (verb == "nodrig" || verb == "blinkrig")
+			return verb + "=" + LF_DialogueVoice.SetExtraRig(verb == "blinkrig", value);
+
+		if (verb == "bones")
+			return LF_DialogueVoice.BoneNames(GetGame().GetWorld().FindEntityByID(s_NpcId), value);
+
 		if (verb == "mouth")
 		{
 			if (!IsOpen())
 				return "closed";
 
-			LF_DialogueVoice.SetMouth(GetGame().GetWorld().FindEntityByID(s_NpcId), value.ToFloat());
+			LF_DialogueVoice.HoldMouth(GetGame().GetWorld().FindEntityByID(s_NpcId), value.ToFloat());
 			return "mouth=" + value;
-		}
-
-		if (verb == "face")
-		{
-			LF_DialogueCamera.SetFace(value == "1");
-			return "face=" + value;
 		}
 
 		if (verb == "pick")
@@ -168,6 +178,7 @@ class LF_DialogueScene
 		if (!LF_DialogueCamera.Start(npc))
 			LF_Debug.Warn(LF_Dialogue.FEATURE, "the conversation runs without its camera");
 
+		LF_DialogueVoice.Attend(npc, true);
 		GetGame().GetCallqueue().CallLater(Tick, 0, true);
 		LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("scene open with '%1'", config.m_sId));
 		return true;
@@ -228,7 +239,6 @@ class LF_DialogueScene
 			// A held confirm key must not skip the line it just brought up.
 			s_iGuardUntilMs = System.GetTickCount() + INPUT_GUARD_MS;
 			s_bChoosing = false;
-			LF_DialogueCamera.SetFace(true);
 			return;
 		}
 
@@ -260,7 +270,6 @@ class LF_DialogueScene
 		s_iGuardUntilMs = System.GetTickCount() + INPUT_GUARD_MS;
 		SetText("Hint", "#LF-Dialogue_HintChoose");
 		ShowRows();
-		LF_DialogueCamera.SetFace(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -447,7 +456,13 @@ class LF_DialogueScene
 		GetGame().GetCallqueue().Remove(Tick);
 		BaseWorld world = GetGame().GetWorld();
 		if (world)
-			LF_DialogueVoice.Stop(world.FindEntityByID(s_NpcId));
+		{
+			IEntity npc = world.FindEntityByID(s_NpcId);
+			LF_DialogueVoice.Stop(npc);
+			LF_DialogueVoice.Attend(npc, false);
+		}
+
+		LF_DialogueVoice.HoldMouth(null, -1);
 
 		if (s_wRoot)
 			s_wRoot.RemoveFromHierarchy();
