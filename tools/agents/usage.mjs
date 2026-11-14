@@ -1,4 +1,4 @@
-// Token usage per agent run, read from the Claude Code session logs.
+﻿// Token usage per agent run, read from the Claude Code session logs.
 //
 // Each subagent is <projects>/<project>/<session>/subagents/agent-<id>.jsonl with a .meta.json
 // beside it (agentType, description); a lead thread is <projects>/<project>/<session>.jsonl.
@@ -17,8 +17,8 @@ import { basename, dirname, join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 
-export const cost = (u) =>
-  (u.input_tokens || 0) + 1.25 * (u.cache_creation_input_tokens || 0) + 0.1 * (u.cache_read_input_tokens || 0) + 5 * (u.output_tokens || 0);
+import { cost } from "./usage-scan.mjs"; // one weighting for per-run and per-account figures
+export { cost };
 export const HANDOFF_CTX = 150000;
 const HANDOFF_STATE = 5000; // the tmp/ state file a fresh agent starts from
 const HANDOFF_REREAD = 30000; // what it re-reads to pick the work back up

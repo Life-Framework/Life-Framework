@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1, "maximum": 2, "default": 2 },
+    "shops": {
+      "type": "object",
+      "properties": {
+        "defaultBuyPrice": { "type": "integer", "default": 120, "minimum": 0, "maximum": 1000 },
+        "taxRate": { "type": "string", "default": "0.1" },
+        "newFlag": { "type": "boolean", "default": true }
+      }
+    },
+    "police": {
+      "type": "object",
+      "properties": { "fineCap": { "type": "integer", "default": 500 } }
+    },
+    "weather": {
+      "type": "object",
+      "properties": { "rainChance": { "type": "number", "default": 0.2 } }
+    }
+  }
+}

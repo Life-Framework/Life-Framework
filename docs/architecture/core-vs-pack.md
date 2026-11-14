@@ -155,6 +155,16 @@ prefab brings the punch clock with the clock-in action, the place registration a
 slot, so a pack needs no hand-wired actions and no script. A job id that is not a duty job
 (`POLICE`, `MEDIC`) still registers its place; it shows no clock-in.
 
+### Swapping a model (prefab slots)
+
+A pack swaps a core item or prop by prefab slot, with no script (#964, #1128). Add `Configs/PrefabSlots.conf`
+(root class `LF_PrefabSlotsConfig`, a `.conf` plus its `.meta`), list it in the mission header's
+`m_aLF_ConfigOverlays`, and patch the slot by id: `LF_PrefabSlot { m_sOp "patch" m_sSlot "evidence_marker"
+m_Prefab "{GUID}Prefabs/...et" }`. The slot ids and the components each prefab must carry are the core file
+`LifeFramework/Configs/PrefabSlots/LF_PrefabSlots.conf`; the rules (a bad prefab logs `LF_Debug.Error` and
+keeps the core default, a restart is needed) are in `Scripts/Game/Core/Config/Feature.md` "Prefab slots".
+`toolscli pack check <addon>` accepts the file. Proof of both paths: test `prefabs/slot-swap-spawn`.
+
 Which licence your pack may carry, what it may copy from the core, and how to credit: [pack-licence.md](pack-licence.md) (#967).
 
 ## Checking a pack
