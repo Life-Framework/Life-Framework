@@ -99,6 +99,8 @@ still boots; the log line names the field. If you have a checkout of the reposit
 defaults are in the [config reference](../config/owner-config.md) and on the website's config page.
 What logging out does to a cuffed, downed, wanted or jailed player is the `disconnect` section
 ([disconnect rules](disconnect-rules.md)).
+Which player state survives a restart (cash on hand, carried gear, hunger and thirst, warrants,
+sentences, licences) is the `persistence` section ([persistence switches](persistence-switches.md)).
 
 Restart the server after changing the file.
 

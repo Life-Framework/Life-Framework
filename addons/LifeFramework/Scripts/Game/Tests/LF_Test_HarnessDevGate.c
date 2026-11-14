@@ -15,7 +15,7 @@
 //! harness reports, not a silent timeout.
 class LF_Test_HarnessDevGate : LF_Test
 {
-	static const string PLAYTEST_MISSION = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
+	static const string PLAYTEST_MISSION = "{43902474F5601DAA}Missions/LF_HostedTest.conf"; // core fixture: the playtest headers are pack (#323)
 
 	override string GetName()
 	{

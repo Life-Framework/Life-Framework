@@ -402,6 +402,41 @@ class LF_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: every character of every loaded account (not only the active one) back to wanted 0.
+	//! The wanted persistence switch (#689) runs it after a load; the caller prunes the posters
+	//! (LF_WantedReports.PruneCleared), so no event fires per character.
+	//! \return How many characters had a wanted level.
+	int ClearAllCharactersWanted()
+	{
+		if (!m_mAccounts)
+			return 0;
+
+		int cleared = 0;
+		for (int i = 0; i < m_mAccounts.Count(); i++)
+		{
+			LF_PlayerAccount account = m_mAccounts.GetElement(i);
+			if (!account)
+				continue;
+
+			bool changed;
+			foreach (LF_PlayerCharacter character : account.GetCharacters())
+			{
+				if (!character || character.GetStanding().m_iWantedLevel <= 0)
+					continue;
+
+				character.GetStanding().m_iWantedLevel = 0;
+				changed = true;
+				cleared++;
+			}
+
+			if (changed)
+				LF_AccountReplication.Publish(account);
+		}
+
+		return cleared;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	LF_PlayerAccount GetAccount(int playerId)
 	{
 		return GetFromCache(playerId);
