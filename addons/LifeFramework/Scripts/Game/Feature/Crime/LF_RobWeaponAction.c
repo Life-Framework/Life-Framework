@@ -12,6 +12,13 @@ class LF_RobWeaponAction : ScriptedUserAction
 	protected float m_fLastRobTime = LF_RobCooldown.NEVER;
 
 	//------------------------------------------------------------------------------------------------
+	//! Hidden while the Robbery system is off (#960).
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled(LF_RobAction.SYSTEM);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		float currentTime = GetGame().GetWorld().GetWorldTime();
@@ -42,6 +49,14 @@ class LF_RobWeaponAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		// A prompt shown just before Robbery was turned off (#960): no cooldown, and the right words.
+		if (!LF_Systems.IsEnabled(LF_RobAction.SYSTEM))
+		{
+			if (Replication.IsServer() && LF_Systems.Refuses(LF_RobAction.SYSTEM, "weapon robbery"))
+				LF_Utils.NotifyEntity(pUserEntity, "#LF-Systems_Off", "#EL-Robbery_Failed", 3.0);
+			return;
+		}
+
 		// Recorded on both sides so the performing client's CanBePerformed also sees the cooldown.
 		m_fLastRobTime = GetGame().GetWorld().GetWorldTime();
 
@@ -62,6 +77,9 @@ class LF_RobWeaponAction : ScriptedUserAction
 	//! \return True when the weapon was delivered.
 	static bool CommitWeaponRobbery(string playerUid, IEntity user, ResourceName weaponPrefab)
 	{
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "weapon robbery"))
+			return false;
+
 		SCR_InventoryStorageManagerComponent inventoryManager = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
 		if (!inventoryManager || !LF_InventoryUtils.AddItem(inventoryManager, weaponPrefab))
 			return false;

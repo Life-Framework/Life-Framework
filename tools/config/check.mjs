@@ -20,6 +20,7 @@ import { checkProfitLoops, judge, parseConf, DEFAULT_SOURCES } from "../economy/
 
 const here = dirname(fileURLToPath(import.meta.url));
 const BASELINE = join(here, "..", "validation", "profit-loop-baseline.json");
+const SYSTEM_CATALOG = join(here, "..", "..", "addons", "LifeFramework", "Configs", "Systems", "LF_SystemCatalog.conf");
 
 // ---- JSON with positions ---------------------------------------------------------------------
 // JSON.parse reports an offset at best, and gives no position for a value. This reader keeps the
@@ -164,6 +165,10 @@ function shippedKeys(sources) {
   for (const v of veh?.props.m_aVehicles?.list ?? []) {
     for (const r of [v.props.m_SpawnPrefab, v.props.m_Prefab]) if (r) keys["vehicles.vehicles"].add(pathOfRes(r));
   }
+  // System ids (#960): the server refuses an id the catalog does not list, so a typo is worth a warning.
+  const catalog = read(sources.systems ?? SYSTEM_CATALOG);
+  keys["systems.switches"] = new Set();
+  for (const d of catalog?.props.m_aSystems?.list ?? []) if (d.props.m_sId) keys["systems.switches"].add(d.props.m_sId);
   return keys;
 }
 
@@ -236,6 +241,10 @@ export function checkOwner(root, schema, source, shipped = {}) {
       const key = grammar(p.key);
       if (!key) {
         add("error", p, `${dotted(path)}.${p.key}: the key is neither a prefab-path substring, prefab:<GUID> nor type:<flags>,mode:<mode>; record skipped`, [...path, p.key]);
+        continue;
+      }
+      if (dotted(path) === "systems.switches" && have && have.size && !have.has(key.norm)) {
+        add("error", p, `${where}: the key is not a system id (Configs/Systems/LF_SystemCatalog.conf lists them); record skipped`, [...path, p.key]);
         continue;
       }
       if (have && have.size && !have.has(key.norm)) {
