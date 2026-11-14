@@ -34,6 +34,7 @@ import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sess
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
+import { statusLine } from "../lib/wb-lock.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -2102,6 +2103,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     seen.set(m.name, { m, infos, capMin, freeMb });
   }
   const diskGb = gc.freeDiskGb(sessionBase());
+  console.log(statusLine(root)); // the Workbench limit of this PC (tools/lib/wb-lock.mjs)
   console.log(`disk: ${diskGb === null ? "unknown" : `${diskGb.toFixed(1)} GB free`} on the session volume (floor ${settings.minFreeDiskGb} GB; session folders older than ${settings.sessionKeepHours} h are removed on the next session or test start)`);
   const promoteMs = settings.promoteMin * 60000;
   const starveMs = settings.starveMin * 60000;

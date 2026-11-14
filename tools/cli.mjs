@@ -66,6 +66,8 @@ import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-l
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
+import * as wbLock from "./lib/wb-lock.mjs";
+import * as wbGate from "./lib/wb-gate.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
@@ -664,7 +666,13 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
       const started = Date.now();
-      job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
+      // The Workbench compile takes one of this PC's Workbench slots first (tools/lib/wb-lock.mjs).
+      const wb = FULL_ONLY.has(job.s) ? await wbLock.acquireWorkbench(root, { purpose: job.s }) : null;
+      try {
+        job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
+      } finally {
+        wb?.release();
+      }
       job.secs = (Date.now() - started) / 1000;
     }
   };
@@ -895,12 +903,18 @@ function latestWorkbenchLog(profile) {
 // builds just that one.
 async function cmdBuild(root = ROOT, opts = {}) {
   guardHeavy(root, "build", opts.force);
-  if (opts.addon) return buildAddon(root, opts);
-  for (const addon of launchAddons(root)) {
-    const code = await buildAddon(root, { ...opts, addon });
-    if (code !== 0) return code;
+  // One of this PC's Workbench slots for the whole build (tools/lib/wb-lock.mjs).
+  const wb = await wbLock.acquireWorkbench(root, { purpose: "build" });
+  try {
+    if (opts.addon) return await buildAddon(root, opts);
+    for (const addon of launchAddons(root)) {
+      const code = await buildAddon(root, { ...opts, addon });
+      if (code !== 0) return code;
+    }
+    return 0;
+  } finally {
+    wb.release();
   }
-  return 0;
 }
 
 function buildAddon(root, opts) {
@@ -2656,13 +2670,22 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 
 async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
+  // `ci --wb-only`: just the Workbench steps, here (what a pool machine runs for a remote gate).
+  if (opts.wbOnly) return ciWorkbench(root, opts);
   const steps = [
-    ["validate --full", () => cmdRunArea("validate", root, { full: true })],
-    ["build", () => cmdBuild(root, { wait: opts.wait })],
+    // The cheap checks run here while the Workbench compile and build run wherever there is room
+    // (this PC or a pool machine, tools/lib/wb-gate.mjs). The gate starts first, so its snapshot is
+    // taken before any generator check rewrites a file.
+    ["validate --full + build", async () => {
+      const gate = workbenchGate(root, opts);
+      const v = await cmdRunArea("validate", root, {});
+      const g = await gate;
+      return v !== 0 || g !== 0 ? 1 : 0;
+    }],
     ["test", () => cmdTest(true, "all", root, opts)],
-    // After the suite: a branch that moved or added world props must pass the placement audit. It runs
-    // through the same test lane as "test" (queues, never collides with a session).
-    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), async (a) => (await import("../agent-box/place-audit.mjs")).main(["placement", ...a]))],
+    // After the suite: a branch that moved or added world props must pass the placement audit. It
+    // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -2672,6 +2695,85 @@ async function cmdCi(root = ROOT, opts = {}) {
   }
   console.log(failed === 0 ? "\nci: ALL PASSED" : `\nci: ${failed} step(s) failed`);
   return failed === 0 ? 0 : 1;
+}
+
+// The Workbench compile (validate-scripts.ps1) and the build, on this PC, under one Workbench slot.
+async function ciWorkbench(root, opts = {}) {
+  const wb = await wbLock.acquireWorkbench(root, { purpose: "ci compile+build" });
+  try {
+    let ok = true;
+    const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()));
+    if (skip.has("validate-scripts.ps1")) console.log("SKIP  validate/validate-scripts.ps1 (LF_VALIDATE_SKIP)");
+    else {
+      const t0 = Date.now();
+      const res = await invokeScriptAsync(join(root, "tools", "validation", "validate-scripts.ps1"), { cwd: root, env: toolEnv() });
+      console.log(`${res.status === 0 ? "PASS" : "FAIL"}  validate/validate-scripts.ps1 (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+      for (const t of [res.stdout, res.stderr]) if (t) process.stdout.write(t.endsWith("\n") ? t : `${t}\n`);
+      ok = res.status === 0;
+    }
+    console.log("--- ci: build ---");
+    const b = await cmdBuild(root, { wait: true, force: opts.force });
+    return ok && b === 0 ? 0 : 1;
+  } finally {
+    wb.release();
+  }
+}
+
+// Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine
+// gets this worktree's snapshot, uncommitted state included, through pool.syncAndRun.
+function workbenchGate(root, opts = {}) {
+  const machine = opts.machine && opts.machine !== "any" ? opts.machine : opts.remote || null;
+  let mode = "any";
+  if (opts.local) mode = "local";
+  else if (opts.remote !== undefined || machine) mode = "remote";
+  else if (!opts.any && envOf().LF_TESTBOX_AUTO === "0") mode = "local";
+  const limit = wbLock.wbLimit(root);
+  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit };
+  let remotes = [];
+  if (mode === "remote" || (mode === "any" && local.busy + local.queued >= limit)) {
+    remotes = pool.loadMachines(root)
+      .filter((m) => m.via === "ssh" && (m.caps ?? []).includes("workbench") && (!machine || m.name === machine))
+      .map((m) => ({ name: m.name, caps: m.caps, m, state: wbGate.remoteWbState(m) }));
+  }
+  const c = wbGate.chooseGate({ local, remotes, mode, machine });
+  console.log(`ci: Workbench compile + build on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
+  if (c.where === "local") return ciWorkbench(root, opts);
+  const m = remotes.find((r) => r.name === c.where).m;
+  const t0 = Date.now();
+  return pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" }).then((r) => {
+    console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+    if (r.code === 3) {
+      console.log(`ci: ${m.name} could not take the Workbench steps; running them here`);
+      return ciWorkbench(root, opts);
+    }
+    return r.code === 0 ? 0 : 1;
+  });
+}
+
+// The placement audit takes a test lane through the pool like `test` (any machine by default). On a
+// pool machine the audit runs in the synced run folder; its nested test inherits the held lane.
+async function placementAudit(root, a, opts = {}) {
+  const purpose = "placement audit";
+  let slot;
+  try {
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 3;
+  }
+  if (slot.local) {
+    // The audit's own test run takes the local lane again (place-audit.mjs measureTown).
+    slot.release();
+    return (await import("../agent-box/place-audit.mjs")).main(["placement", ...a]);
+  }
+  let code = 3;
+  try {
+    code = (await testbox.runRemote(root, slot, { args: ["audit", "placement", ...a], writeSyncState: pool.writeSyncState, fetchLog: false })).code;
+    return code;
+  } finally {
+    slot.release();
+    if (!slot.inherited) pool.recordRun(root, slot, { purpose, code });
+  }
 }
 
 // Tool runs live on the private LF-Agents desktop (tools/lib/quiet-launch.mjs),
@@ -3768,7 +3870,7 @@ const cmds = {
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids") });
