@@ -2017,7 +2017,7 @@ function cmdSessionJoin(root, dir, flags) {
     return 1;
   }
   const log = session.newestLog(join(s.serverProfile, "logs"));
-  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  const marker = /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
   const before = (readFileSync(log, "utf8").match(marker) ?? []).length;
   const state = { ...s, clients: (s.clients ?? []).filter((x) => x.n !== n) };
   sessionLog = join(dir, "up.log");
@@ -2231,11 +2231,11 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player) \d+/g });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
-    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
+    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g, fail, state);
     if (joined < 0) return 1;
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     recordIdentities(dir, state);
@@ -2301,7 +2301,7 @@ function cmdSessionMeasure(root, dir, flags) {
     session.writeSession(dir, { ...state, stoppedAt: new Date().toISOString() });
     sleepMs(4000);
   };
-  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  const marker = /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
   try {
     for (const v of variants) {
       for (const n of v.only === null ? counts : [v.only]) {
@@ -2531,7 +2531,7 @@ function cmdSessionWait(dir, flags) {
         return 1;
       }
       if (log && s.expectClients !== undefined && (s.clients ?? []).length >= s.expectClients) {
-        const marker = s.restartedAt ? /flow start for player \d+/g : /(?:registration form sent to player|spawning player) \d+/g;
+        const marker = s.restartedAt ? /flow start for player \d+/g : /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
         const v = sessionVerdict(s, log, marker);
         if (v.fail) {
           console.log(`FAIL  ${v.fail}`);

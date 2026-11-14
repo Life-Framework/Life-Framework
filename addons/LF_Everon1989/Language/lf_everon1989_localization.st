@@ -1103,6 +1103,131 @@ StringTable {
      Target_en_us "Good day. This is the town clerk's desk. What can I do for you?"
      Comment "Pack patch of the clerk dialogue's line greet (text only; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{97498693DB908E77}" {
+     Id "LF-QuizEveron_rdm_Q"
+     Target_en_us "A stranger in the square annoys you. May you shoot them?"
+     Comment "Rules orientation quiz question (rdm), pack flagship copy (#915)."
+    }
+    CustomStringTableItem "{4481C6A0F6E7AB22}" {
+     Id "LF-QuizEveron_rdm_A1"
+     Target_en_us "Yes, if they are rude twice."
+     Comment "Rules orientation quiz answer 1 of rdm (#915)."
+    }
+    CustomStringTableItem "{01CB35309B192427}" {
+     Id "LF-QuizEveron_rdm_A2"
+     Target_en_us "No. Violence needs a real reason."
+     Comment "Rules orientation quiz answer 2 of rdm (#915)."
+    }
+    CustomStringTableItem "{343A3297E64F011E}" {
+     Id "LF-QuizEveron_rdm_A3"
+     Target_en_us "Yes, if nobody is watching."
+     Comment "Rules orientation quiz answer 3 of rdm (#915)."
+    }
+    CustomStringTableItem "{5E22DA8A32477E17}" {
+     Id "LF-QuizEveron_rdm_Why"
+     Target_en_us "No random violence (RDM): hurting or killing another player with no story reason behind it is not allowed. Talk first; escalate only with a reason your character really has."
+     Comment "The rule shown after a wrong answer to rdm (#915)."
+    }
+    CustomStringTableItem "{25B4ABD964ABA7C1}" {
+     Id "LF-QuizEveron_fear_Q"
+     Target_en_us "A robber points a gun at you and says hands up. What do you do?"
+     Comment "Rules orientation quiz question (fear), pack flagship copy (#915)."
+    }
+    CustomStringTableItem "{C2A7527A4FB2AAB1}" {
+     Id "LF-QuizEveron_fear_A1"
+     Target_en_us "Comply. Your life comes first."
+     Comment "Rules orientation quiz answer 1 of fear (#915)."
+    }
+    CustomStringTableItem "{FA8267A7B5D209AF}" {
+     Id "LF-QuizEveron_fear_A2"
+     Target_en_us "Draw your own gun and shoot."
+     Comment "Rules orientation quiz answer 2 of fear (#915)."
+    }
+    CustomStringTableItem "{9B63802CC7A8B666}" {
+     Id "LF-QuizEveron_fear_A3"
+     Target_en_us "Ignore them and run for police."
+     Comment "Rules orientation quiz answer 3 of fear (#915)."
+    }
+    CustomStringTableItem "{7B21C453F410A1AF}" {
+     Id "LF-QuizEveron_fear_Why"
+     Target_en_us "Fear RP: when a weapon is aimed at you and you cannot clearly win, your character values their life. Comply, then report it. Fighting back out of nowhere is not roleplay."
+     Comment "The rule shown after a wrong answer to fear (#915)."
+    }
+    CustomStringTableItem "{2DB8CE716AC0AB66}" {
+     Id "LF-QuizEveron_newlife_Q"
+     Target_en_us "Your character has been killed. You respawn. What do you remember?"
+     Comment "Rules orientation quiz question (newlife), pack flagship copy (#915)."
+    }
+    CustomStringTableItem "{5F9B5AF6943137C2}" {
+     Id "LF-QuizEveron_newlife_A1"
+     Target_en_us "Everything, especially the killer."
+     Comment "Rules orientation quiz answer 1 of newlife (#915)."
+    }
+    CustomStringTableItem "{3B2C2E1F21AD09C9}" {
+     Id "LF-QuizEveron_newlife_A2"
+     Target_en_us "The killer, but keep it quiet."
+     Comment "Rules orientation quiz answer 2 of newlife (#915)."
+    }
+    CustomStringTableItem "{E9311B8731E21B48}" {
+     Id "LF-QuizEveron_newlife_A3"
+     Target_en_us "Nothing: it is a new life."
+     Comment "Rules orientation quiz answer 3 of newlife (#915)."
+    }
+    CustomStringTableItem "{1D4BF23E3945BC25}" {
+     Id "LF-QuizEveron_newlife_Why"
+     Target_en_us "New Life Rule: after a death your character forgets the events that led to it. You do not seek out the killer, return to the scene or share what you saw."
+     Comment "The rule shown after a wrong answer to newlife (#915)."
+    }
+    CustomStringTableItem "{25B300294B095709}" {
+     Id "LF-QuizEveron_safezone_Q"
+     Target_en_us "Where do you bring up a dispute with another player?"
+     Comment "Rules orientation quiz question (safezone), pack flagship copy (#915)."
+    }
+    CustomStringTableItem "{7CC5196CECB92645}" {
+     Id "LF-QuizEveron_safezone_A1"
+     Target_en_us "Shout it out in the town chat."
+     Comment "Rules orientation quiz answer 1 of safezone (#915)."
+    }
+    CustomStringTableItem "{6737496550CC0BCB}" {
+     Id "LF-QuizEveron_safezone_A2"
+     Target_en_us "In character, or through staff."
+     Comment "Rules orientation quiz answer 2 of safezone (#915)."
+    }
+    CustomStringTableItem "{1055D2D5BC8486AF}" {
+     Id "LF-QuizEveron_safezone_A3"
+     Target_en_us "Wait outside their house."
+     Comment "Rules orientation quiz answer 3 of safezone (#915)."
+    }
+    CustomStringTableItem "{CB335702EB33F858}" {
+     Id "LF-QuizEveron_safezone_Why"
+     Target_en_us "Keep disputes out of the streets: settle it in character if you can, otherwise ask staff. Harassing or stalking another player is not roleplay."
+     Comment "The rule shown after a wrong answer to safezone (#915)."
+    }
+    CustomStringTableItem "{5A4C00E82211205E}" {
+     Id "LF-QuizEveron_logout_Q"
+     Target_en_us "You are being arrested. May you leave the server to avoid it?"
+     Comment "Rules orientation quiz question (logout), pack flagship copy (#915)."
+    }
+    CustomStringTableItem "{614D9C9E4BFF920B}" {
+     Id "LF-QuizEveron_logout_A1"
+     Target_en_us "No. Leaving to dodge it is banned."
+     Comment "Rules orientation quiz answer 1 of logout (#915)."
+    }
+    CustomStringTableItem "{9C945A291098FABF}" {
+     Id "LF-QuizEveron_logout_A2"
+     Target_en_us "Yes, if the police are unfair."
+     Comment "Rules orientation quiz answer 2 of logout (#915)."
+    }
+    CustomStringTableItem "{A19161005BF4FF6E}" {
+     Id "LF-QuizEveron_logout_A3"
+     Target_en_us "Yes, if you rejoin straight away."
+     Comment "Rules orientation quiz answer 3 of logout (#915)."
+    }
+    CustomStringTableItem "{13B8AE1A4881DC98}" {
+     Id "LF-QuizEveron_logout_Why"
+     Target_en_us "No combat logging: disconnecting in the middle of an arrest, a robbery or a fight to avoid the result is not allowed. Play the scene out; staff will hear a complaint afterwards."
+     Comment "The rule shown after a wrong answer to logout (#915)."
+    }
   }
  }
 }

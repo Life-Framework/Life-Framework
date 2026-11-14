@@ -182,6 +182,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_TestProgressionKit.SeedCourier(ctx, COURIER_UID);
 		LF_TestProgressionKit.SeedSeniorOfficer(ctx, OFFICER_UID);
 		LF_Progression.NoteTurnedIn(COURIER_UID, LF_TestProgressionKit.QUEST_ID);
+		LF_Progression.NoteFlag(COURIER_UID, LF_Quiz.PASS_FLAG);
 		// An introduction rides the "introductions" payload (save version 8): Bea still knows Ada.
 		LF_Introductions.Introduce(INTRO_KNOWER_UID, ACCOUNT_UID);
 		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction known before the save");
@@ -635,6 +636,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		}
 
 		ctx.True(LF_Progression.HasTurnedIn(COURIER_UID, LF_TestProgressionKit.QUEST_ID), "e2e turned-in quest stays done after the save load");
+		ctx.True(LF_Progression.HasFlag(COURIER_UID, LF_Quiz.PASS_FLAG), "e2e rules quiz pass is remembered after the restart (#915)");
 
 		VerifyDutyInventories(ctx);
 		VerifyMedicInventory(ctx);
