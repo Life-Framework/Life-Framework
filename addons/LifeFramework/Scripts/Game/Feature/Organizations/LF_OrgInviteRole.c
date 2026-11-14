@@ -59,7 +59,7 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 	//------------------------------------------------------------------------------------------------
 	override bool CanOffer(IEntity user, IEntity target)
 	{
-		return ModeOf(user, target) != LF_EOrgRoleMode.NONE;
+		return LF_Systems.IsEnabled(LF_OrgRules.SYSTEM) && ModeOf(user, target) != LF_EOrgRoleMode.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -67,6 +67,9 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 	override void Perform(IEntity user, IEntity target)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_OrgRules.SYSTEM, "organization role"))
 			return;
 
 		string userCharacter = LF_Hideout.CharacterIdOf(user);

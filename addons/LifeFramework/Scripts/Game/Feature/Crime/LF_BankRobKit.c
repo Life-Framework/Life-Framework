@@ -76,10 +76,7 @@ class LF_BankRobKitAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		if (!LF_Systems.IsEnabled("Crime"))
-			return false;
-
-		return LF_BankRobKit.Enabled();
+		return LF_BankRobKit.Enabled() && LF_Systems.IsEnabled(LF_RobAction.SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -91,10 +88,10 @@ class LF_BankRobKitAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (LF_Systems.Refuses("Crime", "LF_BankRobKitAction"))
+		if (!Replication.IsServer())
 			return;
 
-		if (!Replication.IsServer())
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "rob kit"))
 			return;
 
 		if (!LF_BankRobKit.Enabled())

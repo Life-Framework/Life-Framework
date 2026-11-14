@@ -104,6 +104,10 @@ class LF_OrgView : Managed
 //------------------------------------------------------------------------------------------------
 class LF_OrgRules
 {
+	//! The system id the Organizations switch answers to (#1074). Off: the desk, the ledger requests and
+	//! the invite and rank roles are closed; registered organizations and their funds stay saved.
+	static const string SYSTEM = "Organizations";
+
 	//! The founding fee (carried cash, not the bank), the name length and the offer lifetime are LF_OrgConfig fields.
 	protected static const string NAME_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -'&.";
 

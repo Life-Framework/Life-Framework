@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 50,
+      "msg": "shops.priceRules.type:x: the key is neither a prefab-path substring, prefab:<GUID> nor type:<flags>,mode:<mode>; record skipped"
+    }
+  ]
+}
