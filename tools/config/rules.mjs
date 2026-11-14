@@ -194,7 +194,9 @@ export function checkOwner(root, schema, source, shipped = {}) {
   };
 
   const records = (rsch, n, path) => {
-    const grammar = dotted(path) === "shops.priceRules" ? parseShopRuleKey : (k) => (k ? { norm: k } : null);
+    const grammar = dotted(path) === "shops.priceRules" ? parseShopRuleKey
+      : dotted(path) === "vehicles.vehicles" ? (k) => (k ? { norm: k.replace(/[{}]/g, "").toUpperCase() } : null)
+      : (k) => (k ? { norm: k } : null);
     const have = shipped[dotted(path)];
     for (const p of n.props) {
       const where = dotted([...path, p.key]);

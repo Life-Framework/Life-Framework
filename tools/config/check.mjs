@@ -42,7 +42,10 @@ function shippedKeys(sources) {
   const veh = read(sources.vehicles);
   keys["vehicles.vehicles"] = new Set();
   for (const v of veh?.props.m_aVehicles?.list ?? []) {
-    for (const r of [v.props.m_SpawnPrefab, v.props.m_Prefab]) if (r) keys["vehicles.vehicles"].add(pathOfRes(r));
+    for (const r of [v.props.m_SpawnPrefab, v.props.m_Prefab]) {
+      const guid = /^{([0-9A-Fa-f]{16})}/.exec(String(r ?? ""))?.[1];
+      if (guid) keys["vehicles.vehicles"].add(guid.toUpperCase()); // the owner file keys a vehicle by GUID (override-model.md)
+    }
   }
   // System ids (#960): the server refuses an id the catalog does not list, so a typo is worth a warning.
   const catalog = read(sources.systems ?? SYSTEM_CATALOG);
