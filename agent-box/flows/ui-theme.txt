@@ -5,19 +5,19 @@ ui
 kit theme flagship
 kit show
 wait 800
-shot ui theme-flagship-sheet
+shot ui theme_flagship_sheet
 kit hide
 kit terminal
 wait 800
-shot ui theme-flagship-terminal
+shot ui theme_flagship_terminal
 kit hide
 kit theme testpack
 kit show
 wait 800
-shot ui theme-pack-sheet
+shot ui theme_pack_sheet
 kit hide
 kit terminal
 wait 800
-shot ui theme-pack-terminal
+shot ui theme_pack_terminal
 kit hide
 kit theme flagship
