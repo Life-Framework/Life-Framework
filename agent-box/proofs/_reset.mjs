@@ -1,4 +1,4 @@
-// Per-proof reset (#496). A proof leaves duty, wanted, faction and a downed or dead body behind;
+﻿// Per-proof reset (#496). A proof leaves duty, wanted, faction and a downed or dead body behind;
 // the next proof in the same session then fails from the first step (a clock-in toggles off,
 // a revive finds a healthy patient). `resetClients` brings every client back to a plain living
 // civilian off duty. session.mjs runs it before every proof verb (skip with --no-reset) and
@@ -86,7 +86,7 @@ export function resetClient(on, wait, n, phase = "all") {
   // state in one server-side call; the desk walk and the debug menu below are the fallback when it is
   // refused (a build without the verb, or a closed dev gate).
   let serverSide = false;
-  if (phase === "rest" && (steps.length || n === 1)) {
+  if (phase === "rest") {
     const r = on(n, { verb: "resetplayer" }, 10000);
     if (r.status === "ok") {
       serverSide = true;

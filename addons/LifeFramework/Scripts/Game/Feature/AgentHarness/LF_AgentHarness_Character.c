@@ -334,6 +334,27 @@ modded class SCR_ChimeraCharacter
 			account.SetFaction(LF_Faction.CIVILIAN);
 		}
 
+		int bills = LF_TreatmentBills.ForgetFor(uid);
+		// The paper bills in the pockets go too (the state line counts them).
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(this);
+		if (inventory)
+		{
+			array<IEntity> carried = {};
+			inventory.GetItems(carried);
+			array<IEntity> paper = {};
+			foreach (IEntity item : carried)
+			{
+				if (item && paper.Find(item) < 0 && item.FindComponent(LF_HospitalBillComponent))
+					paper.Insert(item);
+			}
+
+			foreach (IEntity bill : paper)
+			{
+				if (inventory.TryDeleteItem(bill))
+					bills++;
+			}
+		}
+
 		string crime = LF_WorldReset.RunAll("harness resetplayer", true);
 		if (cash >= 0)
 		{
@@ -344,8 +365,8 @@ modded class SCR_ChimeraCharacter
 				LF_MoneyUtils.AddCash(this, cash - have, "debug-reset");
 		}
 
-		LF_Debug.Info("AgentHarness", string.Format("resetplayer %1 cuffs=%2 sentence=%3 duty=%4", uid, cuffs, sentence, duty));
-		LF_HarnessReply(commandId, "ok", string.Format("cuffs=%1 sentence=%2 duty=%3 cleared %4", cuffs, sentence, duty, crime));
+		LF_Debug.Info("AgentHarness", string.Format("resetplayer %1 cuffs=%2 sentence=%3 duty=%4 bills=%5", uid, cuffs, sentence, duty, bills));
+		LF_HarnessReply(commandId, "ok", string.Format("cuffs=%1 sentence=%2 duty=%3 bills=%4 cleared %5", cuffs, sentence, duty, bills, crime));
 	}
 
 	//------------------------------------------------------------------------------------------------
