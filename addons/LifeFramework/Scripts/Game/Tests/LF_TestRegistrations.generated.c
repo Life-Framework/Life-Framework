@@ -32,6 +32,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AssetAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AtmosphereMix(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BackRoomDoor(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BackRoomRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankAccountMath(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankSaveRoundtrip(), LF_TestTier.LOGIC);

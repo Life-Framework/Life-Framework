@@ -152,6 +152,9 @@ class LF_ShopPriceList
 		array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", WidgetManager.Translate(m_Shop.GetShopName())));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Cash", CashText(LF_MoneyUtils.GetCash(LF_Utils.GetLocalCharacter()))));
+		if (!m_Shop.GetShopHint().IsEmpty())
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Hint", m_Shop.GetShopHint()));
+
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, "Search", "#LF-Shop_LookFor"));
 		parts.Insert(LF_UIPart.CreateList("Prices"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Order", "#LF-Shop_SlipEmpty"));

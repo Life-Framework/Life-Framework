@@ -19,7 +19,32 @@ class LF_ShopAction : ScriptedUserAction
 	override bool CanBePerformedScript(IEntity user)
 	{
 		LF_ShopComponent shop = LF_ShopComponent.Cast(GetOwner().FindComponent(LF_ShopComponent));
-		return shop != null;
+		if (!shop)
+			return false;
+
+		string reason = LF_BackRoomDoor.ReasonKey(shop.IsBackRoom(), shop.IsShutShown());
+		if (!reason.IsEmpty())
+		{
+			SetCannotPerformReason(reason);
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A back room names itself while it is shut; every other counter keeps the name on its prefab.
+	override bool GetActionNameScript(out string outName)
+	{
+		LF_ShopComponent shop = LF_ShopComponent.Cast(GetOwner().FindComponent(LF_ShopComponent));
+		if (!shop)
+			return false;
+
+		outName = LF_BackRoomDoor.LabelKey(shop.IsBackRoom(), shop.IsShutShown());
+		if (outName == "#LF-Shop_Open_BackRoom")
+			return false;
+
+		return !outName.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------

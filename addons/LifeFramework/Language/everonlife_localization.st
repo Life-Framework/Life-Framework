@@ -2791,7 +2791,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B50F85FC9F4CC91E}" {
      Id "LF-Shop_Open_BackRoom"
-     Target_en_us "Knock on the back door"
+     Target_en_us "Knock to buy a handgun"
      Target_es_es "Abrir mercado negro"
      Comment "Interaction name on the black-market shop"
     }
@@ -2814,7 +2814,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F1C7C0F870099A03}" {
      Id "LF-Shop_OpenDesc_BackRoom"
-     Target_en_us "Buy equipment"
+     Target_en_us "Back room. Cash only."
      Target_es_es "Comprar equipamiento"
      Comment "Interaction description on the black-market shop"
     }
@@ -3921,12 +3921,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
-     Target_en_us "Knock on the back door."
+     Target_en_us "Stand at the stall and knock (F). The price list opens: pick the handgun and pay."
      Comment "Sign card for the back room shop in the alley (no printed title), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{62B0D34EDFA21A7A}" {
      Id "LF-Sign_BlackMarket_Needs"
-     Target_en_us "Cash."
+     Target_en_us "Cash: the handgun costs 500. No licence and no contact needed, at any hour."
      Comment "Sign card for the back room shop in the alley (no printed title), Needs section."
     }
     CustomStringTableItem "{6F09655B2F839902}" {
@@ -6703,7 +6703,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7B1E5A0C00000001}" {
      Id "LF-Shop_RefuseClosed"
-     Target_en_us "The back room is shut. Police have been through it."
+     Target_en_us "The back room is shut. Police have been through it. Come back in a few minutes."
      Comment "Shop refusal: a raided back room is shut for a while (#600)."
     }
     CustomStringTableItem "{7B1E5A0C00000002}" {
@@ -8141,6 +8141,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are willing, but cannot show you a card."
      Comment "Toast to the officer: the citizen agreed to show their card but carries none, or walked out of reach (#902)."
     }
+    CustomStringTableItem "{EF99F8D0F3808C85}" {
+     Id "LF-CC_Wait_Identity"
+     Target_en_us "Connecting to the online service. Your registration form opens in a moment."
+     Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
+    }
+    CustomStringTableItem "{7724C0B2311D85FD}" {
+     Id "LF-CC_Error_NoIdentity"
+     Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
+     Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
+    }
+    CustomStringTableItem "{D8050889F5E6497E}" {
+     Id "LF-DebugMenu_ResetWorld"
+     Target_en_us "Reset world"
+     Comment "Debug menu: first press of the reset-world button (asks again before it resets)."
+    }
+    CustomStringTableItem "{42E123AF9D0648DA}" {
+     Id "LF-DebugMenu_ResetWorldSure"
+     Target_en_us "Press again: reset for everyone"
+     Comment "Debug menu: reset-world button after the first press."
+    }
+    CustomStringTableItem "{A3B9C629E6434881}" {
+     Id "LF-SpawnHub_ResetWorld"
+     Target_en_us "Reset the world"
+     Comment "Travel globe list row: puts the playtest world back as it was for everyone."
+    }
+    CustomStringTableItem "{EE3AD272B57D4B3B}" {
+     Id "LF-SpawnHub_ResetSure"
+     Target_en_us "Sure? Resets for everyone"
+     Comment "Travel globe reset row after the first press."
+    }
     CustomStringTableItem "{960E19EA6B5BB672}" {
      Id "LF-CaseBoard_Title"
      Target_en_us "Case board"
@@ -8241,16 +8271,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The evidence locker keeps every logged bag; the wanted board shows the suspects to the public."
      Comment "Case board Read card (#148)."
     }
-    CustomStringTableItem "{EF99F8D0F3808C85}" {
-     Id "LF-CC_Wait_Identity"
-     Target_en_us "Connecting to the online service. Your registration form opens in a moment."
-     Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
-    }
-    CustomStringTableItem "{7724C0B2311D85FD}" {
-     Id "LF-CC_Error_NoIdentity"
-     Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
-     Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
-    }
     CustomStringTableItem "{7D3A91E4C2B8F650}" {
      Id "LF-Parcel_DroppedTitle"
      Target_en_us "Parcel"
@@ -8260,6 +8280,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Parcel_DroppedNearby"
      Target_en_us "You dropped the parcel. It is on the ground nearby, marked with a glow."
      Comment "Toast when a carried courier parcel lands on the ground (#920)."
+    }
+    CustomStringTableItem "{74C05AD0FF1A649C}" {
+     Id "LF-BackRoom_DoorShut"
+     Target_en_us "Back room (shut)"
+     Comment "Prompt on the back room's counter while it is shut after a police search (#933)."
+    }
+    CustomStringTableItem "{B4FBE7394CA00159}" {
+     Id "LF-Shop_Hint_General"
+     Target_en_us "Looking for something stronger? Try the back room at the head of the cobbled alley, east of the square. Knock, and bring cash."
+     Comment "The general store keeper's word on his sheet: where the back room is (#933)."
+    }
+    CustomStringTableItem "{06F11B7C90FB5AF0}" {
+     Id "LF-Sign_BlackMarket_Rules"
+     Target_en_us "Police can search it. After a search the room stays shut for about ten minutes."
+     Comment "Sign card of the back room: the one thing that closes it (#933)."
     }
     CustomStringTableItem "{77F083725C2B630B}" {
      Id "LF-Police_NpcStunned"
@@ -8375,26 +8410,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_TestOrg_Next"
      Target_en_us "The hideout door is at the end of the cobbled alley: members open it, everyone else is told whose it is."
      Comment "Sign card of the playtest organisation sign (#934)."
-    }
-    CustomStringTableItem "{D8050889F5E6497E}" {
-     Id "LF-DebugMenu_ResetWorld"
-     Target_en_us "Reset world"
-     Comment "Debug menu: first press of the reset-world button (asks again before it resets)."
-    }
-    CustomStringTableItem "{42E123AF9D0648DA}" {
-     Id "LF-DebugMenu_ResetWorldSure"
-     Target_en_us "Press again: reset for everyone"
-     Comment "Debug menu: reset-world button after the first press."
-    }
-    CustomStringTableItem "{A3B9C629E6434881}" {
-     Id "LF-SpawnHub_ResetWorld"
-     Target_en_us "Reset the world"
-     Comment "Travel globe list row: puts the playtest world back as it was for everyone."
-    }
-    CustomStringTableItem "{EE3AD272B57D4B3B}" {
-     Id "LF-SpawnHub_ResetSure"
-     Target_en_us "Sure? Resets for everyone"
-     Comment "Travel globe reset row after the first press."
     }
     CustomStringTableItem "{57F981BB07357D29}" {
      Id "LF-FuelClerk_Name"
