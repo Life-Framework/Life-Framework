@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "persistence": { "enableAutosave": true, "autosaveInterval": 600 },
+  "shops": { "defaultBuyPrice": 50, "defaultSellPrice": 25 },
+  "jobs": { "policeDutyPayPerSecond": 0.5, "benefitAmount": 100, "benefitCooldownSeconds": 1200 },
+  "vehicles": { "buyPercent": 100, "sellBackPercent": 50, "impoundPercent": 10 }
+}
