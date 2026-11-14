@@ -25,7 +25,14 @@ import { eddsInfo, gameData, lz4Block } from "../../assets/pipeline/clothing-van
 //   exterior white plaster: Church_01_ExtWalls_White 0.375, Chapel_01_Ext_White 0.360 -> 0.367
 //   interior white plaster: House_Town_E_2I01_Int 0.645, House_Village_E_1L03_interior_1 0.575 -> 0.61
 //   ArchBuilder white plaster in Blender: AB_Stucco_White 0.849, AB_Plaster_Interior 0.888
-export const GAME_WHITE = { exterior: 0.367, interior: 0.61 };
+// Inside, the same albedo does not give the same picture. Our exported interiors are lit far more
+// than the base game's (2026-11-14, one full-profile session at noon, DebugWorld): the supermarket's
+// cream hall wall at albedo 0.57 rendered at sRGB 181 and its ceiling (0.61) at 233, while the white
+// plaster of House_Town_E_2I01 rendered at 93 (wall) and 74 (ceiling) and a window-lit vanilla
+// kitchen ceiling at 141. So the interior white is calibrated on the picture, not the albedo: half
+// the base game's interior plaster albedo brings our hall to about the window-lit vanilla room
+// (docs/building-pipeline/polish.md "Interior brightness").
+export const GAME_WHITE = { exterior: 0.367, interior: 0.30 };
 export const BLENDER_WHITE = { exterior: 0.849, interior: 0.888 };
 // A material is an outside one when at least this share of its area looks out of the building (the
 // job casts a ray along each face's normal). Sunlit faces are where an over-bright albedo reads white.

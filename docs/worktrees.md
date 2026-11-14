@@ -154,6 +154,14 @@ API, which makes GitHub compute it.
 
 `prs heal`, per PR:
 
+Git runs a merge driver in the worktree being merged into, so a branch would
+otherwise merge `origin/main` with its own, possibly older, `tools/merge/`
+copy. `tools/merge/run-driver.mjs` runs the newest copy among HEAD, the commit
+being merged and `origin/main`, and says so on stderr (`lf-merge: <driver>
+from <ref>`). The string-table driver refuses a side it cannot parse whole
+and writes git's line merge with exit 1 instead. `merge-content-selftest`
+merges real branches and compares the result byte for byte (#1154, #1161).
+
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with

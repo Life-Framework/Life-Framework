@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "systems": {
+    "switches": {
+      "ATM": { "enabled": false }
+    }
+  }
+}

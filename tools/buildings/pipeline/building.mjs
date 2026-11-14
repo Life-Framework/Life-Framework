@@ -2,15 +2,17 @@
 // Playbook: docs/building-pipeline/README.md. Spike: docs/architecture/building-pipeline-spike.md.
 //
 //   building run <slug> [--from <stage>] [--only <stage>] [--force]
+//   building adopt <slug> [<file.blend>]   keep a hand-polished scene (docs/building-pipeline/polish.md)
 //   building status [<slug>]     building doctor     building selftest
 //
 // The spec is tools/buildings/<slug>/spec.json (tracked). Every stage writes into
 // tmp/buildings/<slug>/ and a finished stage is skipped until --force or an earlier stage reruns.
 // A stage that needs ArchBuilder skips with a message on a machine without it (CI, the test laptop).
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ArchBuilderMissing, archBuilderSetup, licenseMarks, runArchBuilder } from "./archbuilder.mjs";
+import { zstdDecompressSync } from "node:zlib";
+import { ArchBuilderMissing, archBuilderSetup, licenseMarks, runArchBuilder, scanForMarks } from "./archbuilder.mjs";
 import { safeRemoveTree } from "../../link-safety.mjs";
 import { addonOf, addonPath, addonProblems } from "../../assets/pipeline/addon.mjs";
 import { readGuid } from "../../assets/pipeline/meta.mjs";
@@ -18,11 +20,15 @@ import { gameDb } from "./gamedb.mjs";
 import { materialsDir } from "./import.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGES = ["spec", "generate", "review", "export", "import", "prefab"];
-const NEEDS_ARCHBUILDER = new Set(["generate", "review", "export"]);
+export const STAGES = ["spec", "generate", "review", "polish", "export", "import", "prefab"];
+const NEEDS_ARCHBUILDER = new Set(["generate", "review", "polish", "export"]);
 
 export const specFile = (root, slug) => join(root, "tools", "buildings", slug, "spec.json");
 export const cacheDir = (root, slug) => join(root, "tmp", "buildings", slug);
+// The hand-polished scene, tracked beside the spec. When it is there, it and not the spec's generate
+// is what the export ships (ArchBuilder's scene export). docs/building-pipeline/polish.md
+export const polishedBlend = (root, slug) => join(root, "tools", "buildings", slug, "polished.blend");
+const sourceBlend = (ctx) => (existsSync(polishedBlend(ctx.root, ctx.slug)) ? polishedBlend(ctx.root, ctx.slug) : join(ctx.dir, "building.blend"));
 
 export function loadSpec(root, slug) {
   const file = specFile(root, slug);
@@ -116,6 +122,62 @@ async function stageReview(ctx) {
   return { stats: s, shots: r.shots };
 }
 
+// The spec's ArchBuilder settings the polished .blend was not made with. The blend wins, so a spec
+// change after the hand polish does nothing until the blend is regenerated and polished again.
+export function settingsDrift(spec, settings) {
+  const out = [];
+  for (const [k, v] of Object.entries(spec.archbuilder || {})) {
+    if (!(k in settings)) continue;
+    const got = settings[k];
+    if (typeof v === "number" ? Math.abs(got - v) > 1e-3 : got !== v) out.push(`${k} ${JSON.stringify(got)} (spec ${JSON.stringify(v)})`);
+  }
+  return out;
+}
+
+async function stagePolish(ctx) {
+  const blend = sourceBlend(ctx);
+  if (!existsSync(blend)) throw new Error(`no ${blend}; run the generate stage`);
+  const hand = blend === polishedBlend(ctx.root, ctx.slug);
+  const r = (ctx.runArchBuilder || runArchBuilder)("polish", { spec: ctx.spec, out: ctx.dir, blend, timeoutMs: 300000 });
+  console.log(hand ? `polish: hand-polished ${blend}` : "polish: no hand polish yet; the export ships the generated building (docs/building-pipeline/polish.md)");
+  for (const e of ctx.spec.polish?.edits || []) console.log(`        edit: ${e}`);
+  const drift = hand ? settingsDrift(ctx.spec, r.settings || {}) : [];
+  if (drift.length) console.log(`WARN  the polished blend was made with other settings than the spec: ${drift.join(", ")}. The blend wins (polish.md "Changing settings later")`);
+  console.log(`        look at ${r.shots.join(", ")} (docs/building-pipeline/polish.md)`);
+  return { hand, blend, shots: r.shots, drift };
+}
+
+// Door sets standing in a row on one wall line of the exported shell. Four doors in a row off the
+// shop floor read as a corridor of cupboards (polish.md "Patterns"). Printed, never failing.
+export function doorRows(baseText, min = 3) {
+  const lines = new Map();
+  for (const m of baseText.matchAll(/^ {2}\w+ : "\{[0-9A-F]{16}\}[^"]*\/Doors\/DoorSet_[^"]*" \{\n([\s\S]*?)^ {2}\}/gm)) {
+    const c = /coords (\S+) \S+ (\S+)/.exec(m[1]);
+    if (!c) continue;
+    const yaw = Number((/angleY (\S+)/.exec(m[1]) || [0, 0])[1]);
+    const alongX = Math.round(yaw / 90) % 2 === 0;
+    const [x, z] = [Number(c[1]), Number(c[2])];
+    const key = `${alongX ? "z" : "x"} ${(Math.round((alongX ? z : x) / 0.3) * 0.3).toFixed(1)}`;
+    if (!lines.has(key)) lines.set(key, []);
+    lines.get(key).push(alongX ? x : z);
+  }
+  return [...lines].filter(([, at]) => at.length >= min).map(([line, at]) => ({ line, at: at.sort((a, b) => a - b) }));
+}
+
+// Nudges to the game entities the export places (the shop sign, a lamp). ArchBuilder's scene export
+// always takes them from its own plan, so a hand edit to them in Blender never ships; this does.
+// spec.polish.entities: [{ "prefab": "<file name without .et>", "move": [x, y, z], "why": "..." }]
+export function moveEntities(text, entities = []) {
+  const hits = {};
+  const out = text.replace(/^( {2}\w+ : "\{[0-9A-F]{16}\}[^"]*\/([^"/]+)\.et" \{\n(?: {3}(?!coords )[^\n]*\n)*? {3}coords )(\S+) (\S+) (\S+)$/gm, (all, head, name, x, y, z) => {
+    const e = entities.find((q) => q.prefab === name);
+    if (!e) return all;
+    hits[name] = (hits[name] || 0) + 1;
+    return head + [x, y, z].map((n, i) => +(Number(n) + (e.move?.[i] || 0)).toFixed(4)).join(" ");
+  });
+  return { text: out, hits };
+}
+
 // Counts in the exported building prefab: vanilla door sets and windows, probes.
 export function countOpenings(prefabText) {
   const refs = [...prefabText.matchAll(/:\s*"\{[0-9A-F]{16}\}([^"]+)"/g)].map((m) => m[1]);
@@ -127,11 +189,13 @@ export function countOpenings(prefabText) {
 }
 
 async function stageExport(ctx) {
-  const blend = join(ctx.dir, "building.blend");
+  const blend = sourceBlend(ctx);
   if (!existsSync(blend)) throw new Error(`no ${blend}; run the generate stage`);
+  const hand = blend === polishedBlend(ctx.root, ctx.slug);
   const staging = join(ctx.dir, "export");
   if (existsSync(staging)) safeRemoveTree(staging); // a stale file from an older export must not be imported
-  const r = (ctx.runArchBuilder || runArchBuilder)("export", { spec: ctx.spec, out: ctx.dir, blend, extra: { staging }, timeoutMs: 300000 });
+  const r = (ctx.runArchBuilder || runArchBuilder)("export", { spec: ctx.spec, out: ctx.dir, blend, extra: { staging, scene: hand }, timeoutMs: 300000 });
+  if (hand) console.log(`export: the hand-polished scene ${blend}`);
   const log = readFileSync(r.log, "utf8");
   const between = log.split("LF_BUILDING export start")[1]?.split("LF_BUILDING export end")[0] || "";
   const warnings = between.split(/\r?\n/).filter((l) => /^(Warning|Error):/.test(l.trim())).map((l) => l.trim());
@@ -143,6 +207,18 @@ async function stageExport(ctx) {
   for (const c of colours) console.log(`        ${c.name.padEnd(20)} ${c.where.padEnd(8)} ${String(Math.round(c.outside * 100)).padStart(3)}% out  Blender ${c.blender.join(" ")} -> Color ${c.color.join(" ")}${c.mean ? ` over a ${Math.max(...c.mean).toFixed(2)} texture` : " (flat)"}${c.capped ? " (texture darker than Blender: Color capped at 1)" : ""}`);
   const base = join(staging, "Prefabs", "ArchBuilder", ctx.spec.name, `${ctx.spec.name}_Base.et`);
   if (!existsSync(base)) throw new Error(`the export wrote no ${base}`);
+  const entities = ctx.spec.polish?.entities || [];
+  const hits = {};
+  for (const f of [base, join(dirname(base), "Furniture", `${ctx.spec.name}_furniture_01.et`)]) {
+    if (!entities.length || !existsSync(f)) continue;
+    const m = moveEntities(readFileSync(f, "utf8"), entities);
+    writeFileSync(f, m.text);
+    for (const [k, n] of Object.entries(m.hits)) hits[k] = (hits[k] || 0) + n;
+  }
+  for (const e of entities) console.log(`        moved ${hits[e.prefab] || 0} x ${e.prefab} by ${(e.move || []).join(" ")}${e.why ? `: ${e.why}` : ""}`);
+  const missing = entities.filter((e) => !hits[e.prefab]).map((e) => e.prefab);
+  if (missing.length) throw new Error(`spec.polish.entities names ${missing.join(", ")}, which the export did not place`);
+  for (const row of doorRows(readFileSync(base, "utf8"))) console.log(`WARN  ${row.at.length} door sets in a row on the wall at ${row.line} (${row.at.map((a) => a.toFixed(1)).join(", ")}); polish.md "Patterns"`);
   const counts = countOpenings(readFileSync(base, "utf8"));
   console.log(`export: ${r.secs}s; ${counts.doors} door sets, ${counts.windows} windows, ${counts.probes} probe(s); ${info.replace(/^Info: /, "")}`);
   const furniture = join(staging, "Prefabs", "ArchBuilder", ctx.spec.name, "Furniture", `${ctx.spec.name}_furniture_01.et`);
@@ -257,7 +333,7 @@ async function stagePrefab(ctx) {
   return { prefab: imp.prefab, ...counts, external: external.size, gameChecked: bad !== null };
 }
 
-const RUN = { spec: stageSpec, generate: stageGenerate, review: stageReview, export: stageExport, import: stageImport, prefab: stagePrefab };
+const RUN = { spec: stageSpec, generate: stageGenerate, review: stageReview, polish: stagePolish, export: stageExport, import: stageImport, prefab: stagePrefab };
 
 export async function run(root, slug, { from, only, force, workbench, hooks = {} } = {}) {
   const spec = loadSpec(root, slug);
@@ -324,6 +400,51 @@ function cmdStatus(root, slug) {
   return 0;
 }
 
+// Keep a scene polished by hand as the building's export source, tools/buildings/<slug>/polished.blend
+// (tracked). The repo is public: refused if it carries the ArchBuilder buyer's id or key. Blender
+// saves zstd-compressed, so the scan reads it unpacked.
+export function cmdAdopt(root, slug, from, { marks = licenseMarks() } = {}) {
+  const src = resolve(from || join(cacheDir(root, slug), "building.blend"));
+  if (!existsSync(specFile(root, slug))) return say(`FAIL  no spec for ${slug}`, 1);
+  if (!existsSync(src)) return say(`FAIL  no ${src}; save the polished scene there or name the file`, 1);
+  let buf = readFileSync(src);
+  if (buf.length > 4 && buf.readUInt32LE(0) === 0xfd2fb528) buf = unzstd(buf);
+  if (buf.toString("latin1", 0, 7) !== "BLENDER") return say(`FAIL  ${src} is not a .blend`, 1);
+  if (!marks.length) return say("FAIL  no ArchBuilder licence file to check the watermark against (tools\\cli building doctor)", 1);
+  const scan = join(cacheDir(root, slug), "adopt-scan.blend");
+  mkdirSync(dirname(scan), { recursive: true });
+  writeFileSync(scan, buf);
+  if (scanForMarks([scan], marks).length) return say(`FAIL  ${src} carries the ArchBuilder licence watermark; it cannot go in this public repo`, 1);
+  const dest = polishedBlend(root, slug);
+  if (resolve(dest) !== src) copyFileSync(src, dest);
+  console.log(`adopted ${src} -> ${dest} (${Math.round(readFileSync(dest).length / 1024)} KB)`);
+  return say(`next: list the edits in spec.polish.edits, then tools\\cli building run ${slug} --from polish`, 0);
+}
+const say = (line, code) => (console.log(line), code);
+
+// A compressed .blend is many zstd frames plus a skippable seek table, and node's zstd stops after
+// the first frame (1.5 KB of a 2 MB file). Walk the frame headers (RFC 8878) and inflate each one.
+export function unzstd(buf) {
+  const out = [];
+  for (let o = 0; o + 8 <= buf.length;) {
+    const magic = buf.readUInt32LE(o);
+    if ((magic & 0xfffffff0) === 0x184d2a50) { o += 8 + buf.readUInt32LE(o + 4); continue; } // skippable
+    if (magic !== 0xfd2fb528) throw new Error(`not a zstd frame at byte ${o}`);
+    const fhd = buf[o + 4];
+    const single = (fhd >> 5) & 1;
+    let p = o + 5 + (single ? 0 : 1) + [0, 1, 2, 4][fhd & 3] + [single, 2, 4, 8][fhd >> 6];
+    for (let last = 0; !last;) {
+      const h = buf.readUIntLE(p, 3);
+      last = h & 1;
+      p += 3 + (((h >> 1) & 3) === 1 ? 1 : h >> 3);
+    }
+    if ((fhd >> 2) & 1) p += 4; // content checksum
+    out.push(zstdDecompressSync(buf.subarray(o, p)));
+    o = p;
+  }
+  return Buffer.concat(out);
+}
+
 function cmdDoctor() {
   let bad = 0;
   const say = (ok, what) => { if (!ok) bad++; console.log(`${ok ? "ok  " : "FAIL"}  ${what}`); };
@@ -348,6 +469,7 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "selftest") return (await import("../../validation/building-pipeline-selftest.mjs")).main(rest);
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
+  if (sub === "adopt") return rest[0] ? cmdAdopt(root, rest[0], rest[1]) : say("usage: tools\\cli building adopt <slug> [<file.blend>]", 2);
   if (sub === "run") {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  building runs only in a worktree"); return 1; }
@@ -356,6 +478,7 @@ export async function main(flags, { workbench } = {}) {
     return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), workbench });
   }
   console.log(`usage: tools\\cli building run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
+       tools\\cli building adopt <slug> [<file.blend>]     keep a hand-polished scene
        tools\\cli building status [<slug>] | doctor | selftest
 playbook: docs/building-pipeline/README.md`);
   return sub ? 2 : 0;

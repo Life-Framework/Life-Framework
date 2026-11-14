@@ -11,12 +11,15 @@
 //   run() without the archBuilderSetup check                   -> FAIL skip: review skips without ArchBuilder
 //   exportProblems ignoring props_mesh (2026-11-14, parity)     -> FAIL export: furniture ArchBuilder left out of the game fails, by kind
 //   specProblems allowing vanilla props with furniture off       -> FAIL spec: vanilla props with furniture off are refused
+//   unzstd stopping after one frame (2026-11-14, polish)        -> FAIL polish: every zstd frame of a compressed .blend is read
+//   moveEntities moving every child (entities[0])               -> FAIL polish: an entity nudge moves only the named prefab
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { checkBuildingModel, metaDrift, metaMaterials, metaSurfaces, planImport, skipped, targetPath, writePlan, importBuilding } from "../buildings/pipeline/import.mjs";
-import { STAGES, badGameRefs, countOpenings, countProps, exportProblems, reviewProblems, run, specProblems } from "../buildings/pipeline/building.mjs";
+import { STAGES, badGameRefs, countOpenings, countProps, doorRows, exportProblems, moveEntities, reviewProblems, run, settingsDrift, specProblems, unzstd } from "../buildings/pipeline/building.mjs";
+import { zstdCompressSync } from "node:zlib";
 import { archBuilderSetup, licenseMarks, scanForMarks } from "../buildings/pipeline/archbuilder.mjs";
 import { guidIn, rdbRecord } from "../buildings/pipeline/gamedb.mjs";
 
@@ -243,11 +246,23 @@ export async function main() {
       console.log = log;
     }
     const out = lines.join("\n");
-    for (const s of ["generate", "review", "export"]) ok(new RegExp(`SKIP  ${s}: the ArchBuilder add-on is not installed`).test(out), `skip: ${s} skips without ArchBuilder`);
+    for (const s of ["generate", "review", "polish", "export"]) ok(new RegExp(`SKIP  ${s}: the ArchBuilder add-on is not installed`).test(out), `skip: ${s} skips without ArchBuilder`);
     ok(/FAIL  import: no ArchBuilder export/.test(out) && code === 1, "skip: import then says the export must come from the ArchBuilder machine");
     const state = JSON.parse(readFileSync(join(root, "tmp", "buildings", "shop", "state.json"), "utf8"));
     ok(state.stages.spec.ok && state.stages.generate.skipped, "skip: status records the skip, not a failure");
-    ok(STAGES.join() === "spec,generate,review,export,import,prefab", "stages: the order the docs describe");
+    ok(STAGES.join() === "spec,generate,review,polish,export,import,prefab", "stages: the order the docs describe");
+
+    // ---- polish (docs/building-pipeline/polish.md)
+    const shell = (doors) => `SCR_DestructibleBuildingEntity : "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et" {\n {\n${doors.map(([x, z, yaw]) => `  GenericEntity : "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et" {\n   ID "0000000000000001"\n   coords ${x} 0.1 ${z}\n${yaw ? `   angleY ${yaw}\n` : ""}  }\n`).join("")} }\n}\n`;
+    const row = doorRows(shell([[-6, 2.358], [-2.1, 2.358], [0.9, 2.358], [5.6, 2.358], [0, -6.8]]));
+    ok(row.length === 1 && row[0].at.length === 4, `polish: four door sets on one wall line are reported as a row (${JSON.stringify(row)})`);
+    ok(doorRows(shell([[-6, 2.358], [3, 2.358], [7.2, 0, 90], [7.2, 4, 90]])).length === 0, "polish: two doors on a wall and two on the side wall are no row");
+    const furnText = `GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {\n {\n  GenericEntity : "{1A299FE9842C8DB3}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et" {\n   ID "2CB7F53CEB3B3AC9"\n   coords -0.063 3.85 -7.025\n   angleY 180\n  }\n  GenericEntity : "{AAAAAAAAAAAAAAAA}Prefabs/Props/Commercial/ShelfShop_01.et" {\n   ID "0000000000000002"\n   coords 1 0 1\n  }\n }\n}\n`;
+    const moved = moveEntities(furnText, [{ prefab: "SignCommercial_01_GroceryStore", move: [-5.1, 0.2, 0] }]);
+    ok(moved.hits.SignCommercial_01_GroceryStore === 1 && moved.text.includes("coords -5.163 4.05 -7.025") && moved.text.includes("coords 1 0 1"), "polish: an entity nudge moves only the named prefab");
+    ok(settingsDrift({ archbuilder: { seed: 1989, width: 18, archetype: "SUPERMARKET" } }, { seed: 7, width: 18.0000001, archetype: "SUPERMARKET" }).join() === "seed 7 (spec 1989)", "polish: a polished blend made with other settings is named, setting by setting");
+    const frames = Buffer.concat([zstdCompressSync(Buffer.from("BLENDER-head-")), zstdCompressSync(Buffer.from(`made for ${FAKE_BUYER}`)), Buffer.from([0x5e, 0x2a, 0x4d, 0x18, 2, 0, 0, 0, 9, 9])]);
+    ok(unzstd(frames).toString() === `BLENDER-head-made for ${FAKE_BUYER}`, "polish: every zstd frame of a compressed .blend is read (a watermark past the first frame is seen)");
   } finally {
     for (const k of Object.keys(process.env)) if (!(k in savedEnv)) delete process.env[k];
     Object.assign(process.env, savedEnv);

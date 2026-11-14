@@ -5,6 +5,8 @@
 //   pack explain shops.priceRules.type:64,mode:2.buyPrice
 //   pack explain shops.defaultBuyPrice                  a plain section key (core, packs, owner)
 //   pack explain crime.crimes                           every id a pack or the owner file changed
+//   pack explain everon1989                             a section a pack adds (#553): each field's default and owner value
+//   pack explain everon1989.festivalDay                 one field of it
 //
 // Layers, in order (docs/config/override-model.md): the core .conf, each pack's overlays in load
 // order (the packs under addons/, or `--pack <addon>`), then the owner's file (`--config config.json`).
@@ -13,9 +15,10 @@
 // printed under the entry. Fields no layer sets keep the class default and are not listed.
 // Exit 1 when the key names nothing. red-proof: tools/validation/pack-check-selftest.mjs.
 import { join } from "node:path";
-import { jsonKey } from "../config/schema.mjs";
+import { jsonKey, validateJson } from "../config/schema.mjs";
+import { loadPackSections, sectionSchema } from "../config/pack-sections.mjs";
 import { SECTIONS, fieldsOf, layerName, loadCore, loadOwner, loadPackOverlays, mergeList, metaIndex, sectionDef, sectionLayers, sectionNames, show } from "./layers.mjs";
-import { packDirs, resolvePack } from "./check.mjs";
+import { coreKeysFor, packDirs, resolvePack } from "./check.mjs";
 
 const USAGE = `usage: tools\\cli pack explain <key> [--pack <addon>] [--config <config.json>] [--json]
   key: <section>.<list>.<id>[.<field>] or <section>.<key>
@@ -73,7 +76,53 @@ function explainEntry(list, id, field, merged, out) {
   return true;
 }
 
+/**
+ * A key under a section a pack adds (#553): the pack's declared default, then the owner's value.
+ * Returns null when the key is not under a pack section (the core parse then takes it).
+ */
+function explainPackSection(root, key, opts) {
+  const addonsDir = join(root, "addons");
+  const core = coreKeysFor(addonsDir);
+  const want = opts.pack ? resolvePack(addonsDir, opts.pack) : null;
+  const name = key.split(".")[0];
+  let found = null;
+  for (const pk of loadPackSections(addonsDir, core)) {
+    if (want && pk.pack !== want) continue;
+    const s = pk.sections.find((x) => x.name === name);
+    if (s) found = { pk, s };
+  }
+  if (!found) return null;
+  const { pk, s } = found;
+  if (s.problem) return { code: 1, lines: [`${name}: pack ${pk.pack} declares it, but the server ignores it: ${s.problem}`] };
+  const owner = loadOwner(opts.config);
+  if (owner.error) return { code: 2, lines: [`pack explain: ${owner.error}`] };
+  const ownerFile = opts.config ? opts.config.split(/[\\/]/).pop() : "config.json";
+  const schema = sectionSchema(pk.pack, s);
+  const ownerSection = owner.json?.[name];
+  const rest = key.slice(name.length + 1);
+  const names = rest ? [rest] : s.fields.map((f) => f.key);
+  const out = [];
+  let code = 0;
+  for (const n of names) {
+    const f = schema.properties[n];
+    if (!f) { out.push(`${name}.${n}: no such field in ${name} (fields: ${Object.keys(schema.properties).join(", ")})`); code = 1; continue; }
+    out.push(`${name}.${n} = ${show(f.default)}  <- pack ${pk.pack} (${pk.file})`);
+    if (ownerSection && Object.hasOwn(ownerSection, n)) {
+      const bad = validateJson(ownerSection[n], f, n);
+      if (bad.length) out.push(`  refused: owner ${ownerFile} sets ${show(ownerSection[n])}; ${bad[0].replace(/^[^:]*: /, "")}; the pack default stays`);
+      else out[out.length - 1] = `${name}.${n} = ${show(ownerSection[n])}  <- owner ${ownerFile}
+  overridden: ${show(f.default)} from pack ${pk.pack} (${pk.file})`;
+    }
+  }
+  if (ownerSection && typeof ownerSection === "object") {
+    for (const extra of Object.keys(ownerSection).filter((x) => !schema.properties[x])) out.push(`  unknown: owner ${ownerFile} sets ${name}.${extra}, which ${name} does not declare; the server warns and ignores it`);
+  }
+  return { code, lines: out };
+}
+
 export function explain(root, key, opts = {}) {
+  const packSection = explainPackSection(root, key, opts);
+  if (packSection) return packSection;
   const k = parseKey(key);
   if (!k) return { code: 2, lines: [`pack explain: '${key}' is not <section>.<list>.<id> or <section>.<key>`, USAGE] };
   const L = layersFor(root, opts.pack, opts.config, k.def);

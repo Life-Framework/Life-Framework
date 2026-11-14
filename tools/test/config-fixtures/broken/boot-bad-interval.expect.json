@@ -1,0 +1,19 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 60,
+      "msg": "persistence.autosaveInterval = 5 is below the minimum 30; keeping the shipped value"
+    }
+  ],
+  "boot": true,
+  "bootLog": {
+    "has": [
+      "persistence.autosaveInterval = 5 is below the minimum 30",
+      "autosave scheduled every 600"
+    ]
+  }
+}

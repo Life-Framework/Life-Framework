@@ -1,3 +1,4 @@
+// red-proof (caps, #1136): observed 2026-11-14 (test --only LF_Test_Terms): replaced `words.ToUpper();` in LF_TermBook.Placeholder with `words = words;`; got [LFTEST] FAIL strings/terms "an all-capitals name prints the words in capitals (expected 'POLICE first.', got 'police first.')". Restored; green.
 // red-proof: Observed 2026-11-14 with the terms test run alone (no build, only LF_Test_Terms): replaced `words = Capitalise(words);` in LF_TermBook.Placeholder with `words = words;`; got [LFTEST] FAIL strings/terms with "a capital first letter capitalises the words (expected 'Police first.', got 'police first.')". Restored; green.
 
 //------------------------------------------------------------------------------------------------
@@ -45,6 +46,7 @@ class LF_Test_Terms : LF_Test
 		LF_TermBook book = CoreBook();
 		ctx.EqualStr("Call the police.", book.Expand("Call the {police}.", EN), "a placeholder becomes the term's words");
 		ctx.EqualStr("Police first.", book.Expand("{Police} first.", EN), "a capital first letter capitalises the words");
+		ctx.EqualStr("POLICE first.", book.Expand("{POLICE} first.", EN), "an all-capitals name prints the words in capitals");
 		ctx.EqualStr("organisations", book.Expand("{org:pl}", EN), "a form after a colon picks that form");
 		ctx.EqualStr("Organisations", book.Expand("{Org:pl}", EN), "a capital and a form combine");
 		ctx.EqualStr("$40", book.Expand("{currency:sym}40", EN), "an extra form such as the symbol resolves");
@@ -173,10 +175,20 @@ class LF_Test_Terms : LF_Test
 		ctx.True(LF_Terms.Text("#LF-Bill_Received", "{police}").Contains("{police}"), "a parameter that looks like a placeholder is not expanded");
 		ctx.EqualStr("$1,500", LF_MoneyFormat.FormatMoney(1500), "money reads the currency symbol term");
 
+		ctx.EqualStr("POLICE TICKET", LF_Terms.Text("#LF-Ticket_CardTitle"), "a migrated all-capitals key reads as before");
+		ctx.EqualStr("Miner", LF_Terms.Expand("{job:miner}"), "the job term names a job by its id");
+		ctx.EqualStr("Fines", LF_Terms.Expand("{Fine:pl}"), "the fine term has a plural");
+		ctx.EqualStr("Organization", LF_Terms.Expand("{Org}"), "the org term ships");
+		ctx.EqualStr("Only on-duty police can confiscate", LF_Terms.Shown("#EL-Confiscate_OnDutyOnly"), "a bare key shown by the UI kit is translated and expanded");
+
 		LF_TermBook renamed = LF_Terms.Get();
 		renamed.SetOwner("police", "singular", "", "Sheriff");
+		renamed.SetOwner("org", "singular", "", "gang");
 		renamed.SetOwner("currency", "sym", "", "L");
 		ctx.True(LF_Terms.Text("#LF-Ticket_NowWanted").Contains("Sheriff"), "text that names a term follows the owner's word");
+		ctx.EqualStr("SHERIFF TICKET", LF_Terms.Text("#LF-Ticket_CardTitle"), "an all-capitals key follows the owner's word");
+		ctx.EqualStr("Only on-duty Sheriff can confiscate", LF_Terms.Shown("#EL-Confiscate_OnDutyOnly"), "an action reason follows the owner's word");
+		ctx.True(LF_Terms.Text("#LF-Org_Left").Contains("gang"), "a migrated organisation key follows the org term");
 		ctx.EqualStr("L1,500", LF_MoneyFormat.FormatMoney(1500), "the money format follows the owner's symbol");
 		ctx.EqualStr("-L20", LF_MoneyFormat.FormatMoney(-20), "a negative amount keeps the minus before the symbol");
 		LF_Terms.Reload();

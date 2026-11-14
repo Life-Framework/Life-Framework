@@ -372,7 +372,13 @@ class LF_TermBook
 
 		string id = name;
 		bool capital = UPPER_CHARS.Contains(name.Get(0));
-		if (capital)
+		bool allCaps = capital && name.Length() > 1 && IsAllUpper(name);
+		if (allCaps)
+		{
+			id = name;
+			id.ToLower();
+		}
+		else if (capital)
 		{
 			string head = name.Substring(0, 1);
 			head.ToLower();
@@ -383,9 +389,24 @@ class LF_TermBook
 		if (words.IsEmpty())
 			return false;
 
-		if (capital)
+		if (allCaps)
+			words.ToUpper();
+		else if (capital)
 			words = Capitalise(words);
 		replacement = words;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when every letter of the name is upper case ({POLICE}: the words print in capitals).
+	protected static bool IsAllUpper(string name)
+	{
+		for (int i = 0; i < name.Length(); i++)
+		{
+			if (LOWER_CHARS.Contains(name.Get(i)))
+				return false;
+		}
+
 		return true;
 	}
 

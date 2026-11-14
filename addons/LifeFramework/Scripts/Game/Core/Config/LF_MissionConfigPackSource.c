@@ -92,6 +92,15 @@ class LF_MissionConfigPackSource : LF_ConfigPackSource
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override LF_PackManifest GetManifest()
+	{
+		LF_MissionHeader header = ResolveHeader();
+		if (!IsPackAccepted(header))
+			return null;
+		return m_Manifest;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override string GetName()
 	{
 		return "mission-header";
