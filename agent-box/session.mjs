@@ -34,6 +34,7 @@
 // %LOCALAPPDATA%\LifeFramework\session\<checkout folder>, override
 // LF_SESSION_DIR), and holds no junctions.
 
+import "../tools/lib/quiet-gate.mjs";
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";

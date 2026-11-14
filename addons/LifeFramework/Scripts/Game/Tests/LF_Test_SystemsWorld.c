@@ -188,7 +188,7 @@ class LF_Test_SystemsWorld : LF_Test
 		// The config stream: the server's answer, taken the way a client takes it (OnArrived, as the join
 		// snapshot and the change RPC do), wins over this machine's own owner layer, which is gone.
 		Owner("{\"Robbery\":{\"enabled\":false}}");
-		string payload = LF_ConfigStream.BuildPayload(null, true, null, null, null, null, true);
+		string payload = LF_ConfigStream.BuildPayload(null, true, null, null, null, null, null, true);
 		ctx.True(payload.Contains("\"Robbery\":{\"enabled\":false}"), "the stream carries Robbery off");
 		Owner(string.Empty);
 		ctx.True(LF_Systems.IsEnabled(LF_RobAction.SYSTEM), "without the owner layer this machine has Robbery on");
