@@ -30,7 +30,7 @@ refused with the source and id; two packs on one id warn and the later wins. On 
 too), and (#1108) `police` (`ranks`), `organizations` (`rankDefaults`), `zones` (`ruleSets`), `licences`
 (`rules`) and the system catalog (`LF_SystemDef`, pack overlays only). A list says what may not be
 removed with `LF_ConfigList.RemoveRefusal` (a shipped police rank, a zone rule set, a licence, a
-framework system), and ehicles (ehicles, keyed by prefab GUID; it now reads pack overlays and the percents too, #1109). Dialogue nodes and lines take the same verbs in a pack patch (#957, #1109). Verbs, examples and how to move a section: `docs/config/override-model.md`.
+framework system), and `vehicles` (`vehicles`, keyed by prefab GUID; it now reads pack overlays and the percents too, #1109). Dialogue nodes and lines take the same verbs in a pack patch (#957, #1109). Verbs, examples and how to move a section: `docs/config/override-model.md`.
 
 The service is generic. A feature loads its core instance, then calls its own
 apply step (shops: `LF_ShopPricesConfig.ApplyLayers`), which asks the service
