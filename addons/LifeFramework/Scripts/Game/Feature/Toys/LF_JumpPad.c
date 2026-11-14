@@ -116,6 +116,9 @@ class LF_JumpPadComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_JumpPadComponent : ScriptComponent
 {
+	//! The system a server switches the pads off with (#1075).
+	static const string SYSTEM = "Toys";
+
 	[Attribute("1", UIWidgets.CheckBox, desc: "When disabled, entering applies no velocity.")]
 	protected bool m_bEnabled = true;
 
@@ -218,6 +221,13 @@ class LF_JumpPadComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! False while a server has Toys off: the pad throws nobody (#1075).
+	static bool SwitchedOn()
+	{
+		return LF_Systems.IsEnabled(SYSTEM);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void OnPlayerEnter(IEntity ent)
 	{
 		if (!ent)
@@ -228,6 +238,10 @@ class LF_JumpPadComponent : ScriptComponent
 
 		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(ent);
 		if (!character)
+			return;
+
+		// Toys off: the pad throws nobody; it is a patch of ground (#1075).
+		if (!SwitchedOn())
 			return;
 
 		int token = TokenFor(ent, true);

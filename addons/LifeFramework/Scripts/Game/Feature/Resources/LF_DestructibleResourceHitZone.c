@@ -4,10 +4,16 @@
 //! the server and the zone heals back, so the rock is never destroyed by health.
 class LF_DestructibleResourceHitZone : SCR_HitZone
 {
+	//! The system a server switches tool damage on trees and rocks off with (#1075).
+	static const string SYSTEM = "Resources";
+
 	//------------------------------------------------------------------------------------------------
 	override void OnDamage(notnull BaseDamageContext damageContext)
 	{
 		super.OnDamage(damageContext);
+
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return;
 
 		IEntity owner = GetOwner();
 		LF_OreNodeComponent ore = LF_OreNodeComponent.Cast(owner.FindComponent(LF_OreNodeComponent));
@@ -39,6 +45,10 @@ class LF_DestructibleResourceHitZone : SCR_HitZone
 	//------------------------------------------------------------------------------------------------
 	override float ComputeEffectiveDamage(notnull BaseDamageContext damageContext, bool isDOT)
 	{
+		// Resources off: a tool deals nothing to a tree or a rock, so neither falls nor breaks (#1075).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return 0.0;
+
 		IEntity owner = GetOwner();
 		LF_DestructibleResourceComponent destructibleResource = LF_Component<LF_DestructibleResourceComponent>.Find(owner);
 		if (!destructibleResource)

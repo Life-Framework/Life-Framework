@@ -5,6 +5,16 @@
 //------------------------------------------------------------------------------------------------
 class LF_HideoutStashOpenAction : SCR_OpenStorageAction
 {
+	//------------------------------------------------------------------------------------------------
+	//! A server with Hideouts off offers no stash (#1075).
+	override bool CanBeShownScript(IEntity user)
+	{
+		if (!LF_Systems.IsEnabled(LF_Hideout.SYSTEM))
+			return false;
+
+		return super.CanBeShownScript(user);
+	}
+
 	#ifndef DISABLE_INVENTORY
 	//------------------------------------------------------------------------------------------------
 	override protected void PerformActionInternal(SCR_InventoryStorageManagerComponent manager, IEntity pOwnerEntity, IEntity pUserEntity)
