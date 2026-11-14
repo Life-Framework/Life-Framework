@@ -3856,8 +3856,8 @@ try {
     code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
-  } else if (cmd === "pack" && rest[0] === "new") {
-    // `pack` builds the Workshop bundle; `pack new <Name>` scaffolds a content pack (tools/commands/pack.mjs).
+  } else if (cmd === "pack" && ["new", "check", "explain"].includes(rest[0])) {
+    // `pack` builds the Workshop bundle; `pack new|check|explain` are the content-pack tools (tools/commands/pack.mjs).
     code = await (await import("./commands/pack.mjs")).main(rest, { root: ROOT });
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "asset" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
