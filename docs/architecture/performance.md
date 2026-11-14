@@ -12,7 +12,8 @@ budget, how it is measured, the numbers so far, and what a synthetic run cannot 
 | Benchmark and gate | test `perf/budget-128` (`LF_Test_PerfBudget`, PERSISTENCE tier): builds 128 synthetic characters through the real managers, bus and serializer, fails when a cost passes its limit |
 | Report | `tools\cli perf [--local]` runs the test, prints the table, writes `tmp/perf/report.{md,json}`, exits 1 over budget. The test also runs in `--tier all`, so `wt gate` / `wt ship` enforce the budget |
 
-Instrumented today: `Account.refreshAll` (the 10 s pass over every player), `Account.publish`
+Instrumented today: `Account.refreshAll` (the 10 s pass over every player), `Account.publish`,
+`Account.ownerScan` (walks over the players to find an account's owner: at most one a frame, #716)
 and `Replication.accountState` (bumps), `Ledger.record`, `Medic.bleedAdvance` and `Medic.downed`,
 `Persistence.savePoint` (request to commit). Add a site with `LF_Perf.Begin()` / `End("Sys.name", t)`
 or `LF_Perf.Count("Replication.x")`; keys are `<System>.<name>`. Timers are whole milliseconds,

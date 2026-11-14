@@ -306,6 +306,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "levelThresholds": {
                 "type": "array",
                 "description": "",
@@ -330,6 +342,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "job": {
                 "type": "string",
                 "default": ""
@@ -356,6 +380,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "job": {
                 "type": "string",
                 "default": ""
