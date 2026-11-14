@@ -63,7 +63,14 @@ const fmtMsg = (m) => ({
 const INTENTS = 103943;
 const MAX_EVENTS = 1000;
 const events = []; // { seq, at, type, data }
-let eventSeq = 0, botUser = null, gatewayStatus = "connecting", waiters = [];
+let eventSeq = 0, botUser = null, gatewayStatus = "idle: starts on the first get_new_events or wait_for_events call", waiters = [];
+let gatewayStarted = false;
+// The Gateway is a websocket per process. Every agent loads this server, so an eager
+// connect meant one Discord session and its buffers per agent. Connect on first use.
+function ensureGateway() {
+  if (gatewayStarted) return;
+  gatewayStarted = true; gatewayStatus = "connecting"; connectGateway();
+}
 const channelNames = new Map();
 
 function pushEvent(type, data) {
@@ -147,6 +154,7 @@ tool("get_new_events",
   "Get Discord activity captured live since a cursor: new messages (incl. DMs to the bot), edits, deletions, member joins/leaves, reactions, bans, new threads. Pass the returned `cursor` next time to only get newer events. Use this to find things to reply to.",
   { since_cursor: int("Cursor from the previous call (0 = everything buffered)"), types: S("array", "Optional filter, e.g. [\"message\",\"member_joined\"]", { items: { type: "string" } }), limit: int("Max events (default 100)") },
   [], async ({ since_cursor = 0, types, limit = 100 }) => {
+    ensureGateway();
     let out = events.filter(e => e.seq > since_cursor && (!types?.length || types.includes(e.type)));
     const truncated = out.length > limit; out = out.slice(0, limit);
     return { gateway: gatewayStatus, cursor: out.length ? out[out.length - 1].seq : Math.max(since_cursor, 0), truncated, events: out };
@@ -156,6 +164,7 @@ tool("wait_for_events",
   "Block until new Discord activity arrives after the cursor (or the timeout passes), then return it. Good for 'watch the server and respond as things come in'.",
   { since_cursor: int("Cursor from get_new_events / previous wait"), timeout_seconds: int("Max wait, 1–300 (default 60)"), types: S("array", "Optional type filter", { items: { type: "string" } }) },
   ["since_cursor"], async ({ since_cursor, timeout_seconds = 60, types }) => {
+    ensureGateway();
     const match = () => events.filter(e => e.seq > since_cursor && (!types?.length || types.includes(e.type)));
     const deadline = Date.now() + Math.min(Math.max(timeout_seconds, 1), 300) * 1000;
     while (!match().length && Date.now() < deadline)
@@ -370,4 +379,4 @@ rl.on("line", async (line) => {
 });
 rl.on("close", () => process.exit(0));
 
-connectGateway();
+if (process.env.DISCORD_GATEWAY === "eager") ensureGateway();

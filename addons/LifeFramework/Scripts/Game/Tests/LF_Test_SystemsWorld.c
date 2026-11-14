@@ -35,7 +35,6 @@ class LF_Test_SystemsWorld : LF_Test
 {
 	static const ResourceName PAGER = "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et";
 	static const ResourceName WEAPON = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
-	static const ResourceName BANK_VAULT = "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et";
 	static const ResourceName CASH_VAN_BOX = "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et";
 	static const ResourceName ARMORY_STORE = "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et";
 	static const ResourceName TILL = "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et";
@@ -118,10 +117,13 @@ class LF_Test_SystemsWorld : LF_Test
 	protected void RunVaults(LF_TestContext ctx, IEntity user)
 	{
 		Owner(string.Empty);
-		IEntity bankVault = LF_Utils.SpawnEntityPrefab(BANK_VAULT, user.GetOrigin());
+		// The annex example vault (core); the town vault kit is the pack's (#323).
+		IEntity bankVault = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BANK_VAULT);
+		if (bankVault)
+			user.SetOrigin(bankVault.GetOrigin());
 		IEntity cashVan = LF_Utils.SpawnEntityPrefab(CASH_VAN_BOX, user.GetOrigin());
 		IEntity armoryStore = LF_Utils.SpawnEntityPrefab(ARMORY_STORE, user.GetOrigin());
-		ctx.True(bankVault != null && cashVan != null && armoryStore != null, "the vault, the cash van box and the armory store spawn");
+		ctx.True(bankVault != null && cashVan != null && armoryStore != null, "the annex vault is placed, the cash van box and the armory store spawn");
 		if (bankVault && cashVan && armoryStore)
 		{
 			ctx.True(ShownActions(bankVault, user, LF_BankRobAction) > 0, "with Robbery on the vault offers its robbery");
@@ -137,7 +139,6 @@ class LF_Test_SystemsWorld : LF_Test
 			ctx.True(ShownActions(cashVan, user, LF_HeistRobAction) > 0, "on again the cash van box offers its break-in");
 		}
 
-		SCR_EntityHelper.DeleteEntityAndChildren(bankVault);
 		SCR_EntityHelper.DeleteEntityAndChildren(cashVan);
 		SCR_EntityHelper.DeleteEntityAndChildren(armoryStore);
 

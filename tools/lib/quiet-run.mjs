@@ -37,7 +37,10 @@ const WARN_RE = /^WARN\b|^pool: .*(past its|warned|closes in|reclaimed|no server
 // validate prints the output of its self-tests too (pool and merge fixtures): only its own WARN lines count.
 const VALIDATE_WARN_RE = /^WARN\b/;
 // The command's own verdict: kept when the run passes, so the agent never needs the log for them.
-const KEEP_RE = /^(SUMMARY|validate:|incremental:|slowest:|test-e2e: (SUMMARY|OK|FAIL|RED PROOF OK|log|feature debug)|\s+(RED-OK|red:) |pool: .* on .*: exit|session: (ready|nobody|\d+ (request|session)|full log)|look: \d+\/\d+|PR |gate:|ship:|merged|checks)|https:\/\/github\.com\/\S+\/pull\/\d+|\bproof: (PASS|FAIL)|^town (ok|FAILED)/;
+const KEEP_RE = /^(SUMMARY|validate:|incremental:|slowest:|test-e2e: (SUMMARY|OK|FAIL|RED PROOF OK|log|feature debug)|\s+(RED-OK|red:) |test: pass cache|pool: .* on .*: exit|session: (ready|nobody|\d+ (request|session)|full log)|look: \d+\/\d+|PR |gate:|ship:|merged|checks)|https:\/\/github\.com\/\S+\/pull\/\d+|\bproof: (PASS|FAIL)|^town (ok|FAILED)/;
+
+// A reused test pass (tools/lib/test-cache.mjs): always shown, so a gate never hides that its suite did not boot.
+const CACHED_RE = /^test: CACHED pass\b/;
 
 function clip(line, n = MAX_LINE) {
   const s = line.replace(/\s+$/, "");
@@ -52,6 +55,7 @@ export function summarize({ label, code, text, logPath, seconds }) {
   const warns = [];
   const keeps = [];
   const skips = [];
+  const cached = [];
   let inFailBlock = 0;
   let fixtureBlock = false; // the output of a passing *-selftest.mjs is fixtures (pool, merge), not this run
   for (const raw of lines) {
@@ -80,7 +84,8 @@ export function summarize({ label, code, text, logPath, seconds }) {
       inFailBlock--;
       continue;
     }
-    if (KEEP_RE.test(line)) keeps.push(line);
+    if (CACHED_RE.test(line)) cached.push(line);
+    else if (KEEP_RE.test(line)) keeps.push(line);
   }
   const failed = code !== 0;
   const out = [];
@@ -98,6 +103,7 @@ export function summarize({ label, code, text, logPath, seconds }) {
   for (const l of warnShown) out.push(clip(l));
   if (warns.length > warnShown.length) out.push(`... ${warns.length - warnShown.length} more warning(s) in ${logPath}`);
   if (skips.length) out.push(`skipped ${skips.length} check(s): ${skips.join(", ")}`);
+  for (const l of cached.slice(-4)) out.push(clip(l, 400));
   const keepShown = keeps.slice(-MAX_KEEP_LINES);
   for (const l of keepShown) out.push(clip(l));
   if (failed && failures.length === 0) {
