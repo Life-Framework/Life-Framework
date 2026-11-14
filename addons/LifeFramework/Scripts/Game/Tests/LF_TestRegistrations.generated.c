@@ -261,6 +261,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PackManifest(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Pager(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelCarry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelCollision(), LF_TestTier.WORLD);
