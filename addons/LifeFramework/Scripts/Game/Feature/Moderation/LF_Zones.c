@@ -50,19 +50,35 @@ class LF_ZoneRuleSet
 	bool m_bSuppressesWanted;
 
 	[Attribute("1", UIWidgets.CheckBox, "Robbery is allowed inside")]
-	bool m_bAllowsRobbery = true;
+	bool m_bAllowsRobbery;
 
 	[Attribute("1", UIWidgets.CheckBox, "Vehicle theft is allowed inside")]
-	bool m_bAllowsVehicleTheft = true;
+	bool m_bAllowsVehicleTheft;
 
 	[Attribute("1", UIWidgets.CheckBox, "Drawing a weapon is allowed inside")]
-	bool m_bAllowsWeaponDraw = true;
+	bool m_bAllowsWeaponDraw;
 
 	[Attribute("1", UIWidgets.EditBox, "Multiplier on fines for crimes committed inside", params: "0 10")]
-	float m_fFineMultiplier = 1;
+	float m_fFineMultiplier;
 
 	[Attribute("1", UIWidgets.CheckBox, "Police may enter and act inside")]
-	bool m_bCopsEnter = true;
+	bool m_bCopsEnter;
+
+	//------------------------------------------------------------------------------------------------
+	//! A rule set with the attribute defaults, built in script. The members carry no initializers:
+	//! an initializer beats a `.conf` value of 0, so a pack or core `.conf` that turned robbery off
+	//! would read as on (#1077). Script that builds one starts here.
+	static LF_ZoneRuleSet CreateDefault(LF_ZoneRule rule)
+	{
+		LF_ZoneRuleSet ruleSet = new LF_ZoneRuleSet();
+		ruleSet.m_eRule = rule;
+		ruleSet.m_bAllowsRobbery = true;
+		ruleSet.m_bAllowsVehicleTheft = true;
+		ruleSet.m_bAllowsWeaponDraw = true;
+		ruleSet.m_fFineMultiplier = 1;
+		ruleSet.m_bCopsEnter = true;
+		return ruleSet;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -89,11 +105,21 @@ class LF_ZoneConfig
 
 	//! Legacy flag (before #755). Used only for SAFE when m_aRuleSets has no SAFE entry.
 	[Attribute("1", UIWidgets.CheckBox, "Legacy: SAFE zones refuse player-on-player damage. Ignored once the rule table has a SAFE entry")]
-	bool m_bSafeBlocksPlayerDamage = true;
+	bool m_bSafeBlocksPlayerDamage;
 
 	//! Legacy flag (before #755). Used only for LAWLESS when m_aRuleSets has no LAWLESS entry.
 	[Attribute("0", UIWidgets.CheckBox, "Legacy: a murder inside a LAWLESS zone raises no wanted level. Ignored once the rule table has a LAWLESS entry")]
 	bool m_bLawlessSuppressesWanted;
+
+	//------------------------------------------------------------------------------------------------
+	//! A config with the attribute defaults, built in script (tests). No member initializers, for
+	//! the reason LF_ZoneRuleSet.CreateDefault gives (#1077).
+	static LF_ZoneConfig CreateDefault()
+	{
+		LF_ZoneConfig config = new LF_ZoneConfig();
+		config.m_bSafeBlocksPlayerDamage = true;
+		return config;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -228,8 +254,7 @@ class LF_ZoneConfig
 			}
 		}
 
-		LF_ZoneRuleSet legacy = new LF_ZoneRuleSet();
-		legacy.m_eRule = rule;
+		LF_ZoneRuleSet legacy = LF_ZoneRuleSet.CreateDefault(rule);
 		if (rule == LF_ZoneRule.SAFE)
 		{
 			legacy.m_bBlocksPlayerDamage = true;

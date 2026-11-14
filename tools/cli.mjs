@@ -2497,7 +2497,7 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   let extra = {};
   try {
     if (!slot.local) {
-      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
       const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState });
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
@@ -2510,7 +2510,7 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-    code = runLocalTest(root, tier, only);
+    code = runLocalTest(root, tier, only, opts.world);
     const stamp = newestStamp(root, before);
     if (stamp) extra = { passed: stamp.passed, total: stamp.total };
     return { code };
@@ -2543,7 +2543,9 @@ function poolMode(root, opts) {
   return { mode: "any" };
 }
 
-function runLocalTest(root, tier, only) {
+// world: another world or mission header to boot instead of DebugWorld (Worlds/CoreOnEveron/CoreOnEveron.ent
+// boots the core alone on vanilla Everon, #1047). Its layers must place an LF_TestRunner.
+function runLocalTest(root, tier, only, world) {
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [LFTEST] SUMMARY, self-terminates.
@@ -2565,6 +2567,7 @@ function runLocalTest(root, tier, only) {
       ...(laneListenAddr() ? ["-ListenAddr", laneListenAddr()] : []),
       ...budgetArgs(),
       ...(only.length ? ["-Only", only.join(",")] : []),
+      ...(world ? ["-Mission", world] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
@@ -2687,7 +2690,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
@@ -3688,7 +3691,7 @@ const cmds = {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, ...remoteFlags(list) });
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),

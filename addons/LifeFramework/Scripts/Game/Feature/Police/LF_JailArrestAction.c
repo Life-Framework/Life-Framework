@@ -35,6 +35,9 @@ class LF_JailArrestAction : ScriptedUserAction
 		if (GetOwner() == user)
 			return false;
 
+		if (!LF_Systems.IsEnabled(LF_Jail.SYSTEM))
+			return false;
+
 		// One entry in the player interaction menu: same reach as the rest of the list.
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;

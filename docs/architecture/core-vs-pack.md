@@ -62,7 +62,11 @@ Chernarus or a custom map works by placing components, with no script change.
 - An id defaults to the entity name only so placed layers keep their saved
   keys; nothing looks an entity up by that name.
 - A place that is not on the map is a null lookup: the system logs and that
-  one feature stays off.
+  one feature stays off. A system that cannot work without a place lists its
+  kinds in its catalog entry (`m_aPlaces`, `LF_SystemCatalog.conf`); at game
+  start it switches off with one line when none is placed (#1047). The jail
+  cell registers as `JailCell`. `Worlds/CoreOnEveron` boots the core alone on
+  vanilla Everon to prove it (`tools\cli test --tier fast --world ...`).
 - Tests keep their annex fixtures and may look them up by name.
 
 

@@ -47,6 +47,9 @@ just before a reload) is refused with a log line and, where the player sees a re
 - **Run-time switch-off (#1047):** `LF_Systems.SwitchOff(id, reason)` (server only) turns a non-LOCKED system off
   until the world ends (a map with no place for it). It logs `[LFDebug:<id>] <reason>: off` once,
   survives a config reload, and goes out in the config stream.
+- **Places (#1047):** a catalog entry's `m_aPlaces` lists the `LF_Places` kinds the system works at.
+  `LF_Systems.CheckPlaces()` (server, `LF_GameModeRoleplay.OnGameStart` after `Boot`) switches off
+  each system with none of them placed: `[LFDebug:<id>] no <Kind> placed on this map: off`.
 - **Saved data:** never touched. Load and save run as before while a system is off, so turning it
   on again finds its data. Farming also stops its growth clock while off, so a crop comes back as
   it was saved.
