@@ -120,14 +120,24 @@ modded class KickCommand
 }
 
 //------------------------------------------------------------------------------------------------
-//! The vanilla #ban chat command.
+//! The vanilla #ban chat and RCON command. An accepted `create` or `remove` (the unban) also
+//! writes a ban record row (LF_BanRecord, #1285).
 modded class BanCommand
 {
 	//------------------------------------------------------------------------------------------------
 	override ref ScrServerCmdResult OnChatServerExecution(array<string> argv, int playerId)
 	{
 		ref ScrServerCmdResult result = super.OnChatServerExecution(argv, playerId);
+		LF_BanRecord.RecordCommand(argv, LF_AdminAction.UidOfPlayer(playerId), result);
 		LF_AdminAction.ReportCommand("#ban", argv, playerId);
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override ref ScrServerCmdResult OnRCONExecution(array<string> argv)
+	{
+		ref ScrServerCmdResult result = super.OnRCONExecution(argv);
+		LF_BanRecord.RecordCommand(argv, LF_BanRecord.STAFF_RCON, result);
 		return result;
 	}
 }
