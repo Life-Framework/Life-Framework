@@ -339,6 +339,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceTrialExpiry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PrefabSlotsSwapSpawn(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
@@ -468,6 +469,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StoreRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StoreShelf(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreShoplift(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_StoreSnapToBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreStacks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreUnpaidPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_StringSplit(), LF_TestTier.LOGIC);

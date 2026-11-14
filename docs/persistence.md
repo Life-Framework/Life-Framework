@@ -466,3 +466,30 @@ across the `wt e2e` restart, keepLicences off from the owner file).
 - In-session round trips prove nothing; the restart is ground truth. `wt e2e`
   covers save -> host-stop shutdown -> boot -> load with two processes; a
   single `LF_Test` run cannot survive a game-state transition.
+
+## Pre-move save gate (#327, decision D7 (a))
+
+A move keeps each GUID and changes its path, so a save made before the pack move must still load
+after it. That is a standing guarantee, not a one-off check of #323:
+
+- **Pinned reference:** `PRE_MOVE_REF` in `tools/lib/pre-move-gate.mjs` is `502ebf39` (PR #1144),
+  the last commit before the first move batch. It is a fixed commit, not "the previous release",
+  so the guarantee does not slide forward with `main`. The playtest header (GUID `1054CC8646357708`)
+  is the save key a real host has; it lives in the core at that commit and in the pack now.
+- **Proof:** `tools\cli e2e --pre-move 502ebf39 --mission playtest`. Pass 1 checks out the ref (a
+  clean tree is required; the checkout returns either way), boots core only, and ends through the
+  host stop file so the engine writes the SHUTDOWN save. Pass 2 runs on the current tree with both
+  addons and `-loadSessionSave latest`; `e2e/pass2-verify-load` asserts the marker values (cash, the
+  carried inventory, the jail sentence, the card, the accounts) came back.
+- **Gate:** `ci`, `wt gate` and `wt ship` run it as the `pre-move save` step when the diff touches
+  persistence code (`Scripts/Game/Persistence/`, `*Persist*.c`, `*SaveAlias*.c`, `*SaveIds*.c`), any
+  `Missions/` file, a `.gproj`, the pack/core boundary (`tools/lib/addons.mjs`,
+  `validate-addon-boundary.mjs`) or the e2e harness. Other diffs skip it with one line. The trigger
+  is `tools/validation/pre-move-gate-selftest.mjs`, offline.
+- **Newer-than-ref assertions:** pass 2 compiles with `LF_E2E_PRE_MOVE`. An e2e assertion about state the ref build never wrote (a record, flag or owner file added after `PRE_MOVE_REF`) goes inside `#ifndef LF_E2E_PRE_MOVE`; without that the gate fails on the test, not on the save. Today: the rules quiz flag (`LF_Test_E2E_SaveState`) and the switches reload boot (`LF_Test_PersistSwitchesRestart`).
+- **Failure reading:** a load that resolves a prefab by path instead of GUID shows as a missing
+  marker value in `pass2-verify-load` or an `Unable to find` line in the second boot. Fix the loader
+  to compare GUIDs (`LF_SaveIds`), never re-point the ref.
+- **When the ref may change:** never to hide a failure. Only if a later save-format break makes the
+  old save unreadable by design (record that in "Save reset" above), then pin the newest commit
+  that is still readable and say why in the PR.

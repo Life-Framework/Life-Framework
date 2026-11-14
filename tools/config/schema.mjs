@@ -299,10 +299,11 @@ export function runtimeExample(serviceText) {
   try { return JSON.parse(lines.join("\n")); } catch { return null; }
 }
 
-export function build() {
+/** The schema for the core plus the packs under `addonsDir` (the repo's addons/ by default; `config-check --addons` passes a test pack's). */
+export function build(addonsDir = join(REPO, "addons")) {
   const overrides = JSON.parse(readFileSync(OVERRIDES, "utf8"));
   const files = readScripts();
-  return generate(files, readFileSync(SERVICE, "utf8"), overrides, loadPackSections(join(REPO, "addons"), coreKeysOf(files)));
+  return generate(files, readFileSync(SERVICE, "utf8"), overrides, loadPackSections(addonsDir, coreKeysOf(files)));
 }
 
 if (process.argv[1] && /[\\/]schema\.mjs$/.test(process.argv[1])) {

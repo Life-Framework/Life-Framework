@@ -11,6 +11,10 @@
 //     `log` folder), tracked or untracked-not-ignored;
 //   - an EL_ identifier in a text file (AGENTS.md rule 5; resource basenames
 //     that keep EL_ paths are exempt, as in validate-no-el-prefix.mjs).
+// Branding (#375): each kit's Project Name row equals its .gproj TITLE; the core
+// description points players at "Everon 1989" under "Looking to play?"; the pack
+// description names "Life Framework (Core)" and its README has a semver Requires
+// row; both briefs (docs/branding/core.md, everon-1989.md) exist.
 // The Workshop kit (version, summary, description, preview image, APL licence
 // line) lives under docs/marketing/workshop/ for the core and
 // docs/marketing/workshop/everon-1989/ for the pack. A kit folder that exists
@@ -122,6 +126,13 @@ function checkTree(root, addon, errors) {
   }
 }
 
+const BRIEFS = ["docs/branding/core.md", "docs/branding/everon-1989.md"];
+
+function gprojTitle(root, addon) {
+  const path = join(root, "addons", addon, `${addon}.gproj`);
+  return existsSync(path) ? gprojField(readFileSync(path, "utf8"), "TITLE") : "";
+}
+
 function checkKit(root, addon, errors, warnings) {
   const rel = KIT_DIR[addon];
   const dir = join(root, rel);
@@ -144,6 +155,21 @@ function checkKit(root, addon, errors, warnings) {
     return;
   }
   const readme = readFileSync(readmePath, "utf8");
+  const title = gprojTitle(root, addon);
+  const nameRow = readme.match(/^\|\s*Project Name[^|]*\|\s*`?([^`|]*?)`?\s*\|/m);
+  if (!nameRow) errors.push(`${addon}: Workshop kit README has no Project Name row`);
+  else if (title && nameRow[1] !== title) errors.push(`${addon}: Workshop kit Project Name "${nameRow[1]}" is not the .gproj TITLE "${title}"`);
+  const desc = existsSync(join(dir, "description.bbcode")) ? readFileSync(join(dir, "description.bbcode"), "utf8") : "";
+  if (addon === CORE && !(/Looking to play/i.test(desc) && /Everon 1989/.test(desc))) {
+    errors.push(`${addon}: Workshop description lacks the "Looking to play?" pointer to Everon 1989 (${rel}/description.bbcode)`);
+  }
+  if (addon === PACK) {
+    if (!/Life Framework \(Core\)/.test(desc)) errors.push(`${addon}: Workshop description does not name Life Framework (Core) (${rel}/description.bbcode)`);
+    if (!/^\|\s*Requires\s*\|.*\d+\.\d+\.\d+/m.test(readme)) errors.push(`${addon}: Workshop kit README has no Requires row with the core version`);
+  }
+  if (addon === CORE) {
+    for (const b of BRIEFS) if (!existsSync(join(root, b))) errors.push(`${addon}: brand brief missing (${b})`);
+  }
   if (!/^\|\s*Version\s*\|\s*`?\d+\.\d+\.\d+`?\s*\|/m.test(readme)) errors.push(`${addon}: Workshop kit README has no semver Version row`);
   const lic = readme.match(/^\|\s*Licen[cs]e\s*\|\s*(.*?)\s*\|/m);
   if (!lic) errors.push(`${addon}: Workshop kit README has no Licence row (APL notice)`);
