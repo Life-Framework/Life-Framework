@@ -10,7 +10,7 @@ class LF_BackRoomSearchAction : ScriptedUserAction
 	override bool CanBeShownScript(IEntity user)
 	{
 		LF_ShopComponent shop = LF_ShopComponent.Cast(GetOwner().FindComponent(LF_ShopComponent));
-		return shop && shop.IsBackRoom() && LF_PlayerInteraction.IsOnDutyPolice(user);
+		return shop && LF_Systems.IsEnabled(LF_ShopRefusal.SYSTEM) && shop.IsBackRoom() && LF_PlayerInteraction.IsOnDutyPolice(user);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -29,6 +29,9 @@ class LF_BackRoomSearchAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer() || !pOwnerEntity || !pUserEntity)
+			return;
+
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "back room search"))
 			return;
 
 		LF_ShopComponent shop = LF_ShopComponent.Cast(pOwnerEntity.FindComponent(LF_ShopComponent));

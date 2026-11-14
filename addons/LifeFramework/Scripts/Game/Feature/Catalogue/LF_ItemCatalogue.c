@@ -36,6 +36,8 @@ enum LF_EOutletGate
 class LF_ItemCatalogue
 {
 	static const string FEATURE = "Catalogue";
+	//! The system id the Catalogue switch answers to (#1074).
+	static const string SYSTEM = "Catalogue";
 
 	//! Crime catalog ids (Configs/Crime/LF_CrimeCatalog.conf) for carrying an item the law does not
 	//! allow the carrier. The catalog holds the wanted, fine and sentence numbers.

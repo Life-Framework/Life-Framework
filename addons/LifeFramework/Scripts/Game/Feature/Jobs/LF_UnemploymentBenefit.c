@@ -195,13 +195,16 @@ class LF_CollectBenefitAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return true;
+		return LF_Systems.IsEnabled(LF_CivilianJob.SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "unemployment benefit"))
 			return;
 
 		LF_UnemploymentBenefit.CollectAtCounter(pUserEntity);

@@ -92,6 +92,10 @@ class LF_ShopAction : ScriptedUserAction
 		if (!owner || LF_NpcStun.BlocksTalk(owner))
 			return false;
 
+		// Hidden while the Shop system is off (#1074).
+		if (!LF_Systems.IsEnabled(LF_ShopRefusal.SYSTEM))
+			return false;
+
 		return vector.Distance(user.GetOrigin(), owner.GetOrigin()) <= LF_ShopPriceList.SHOW_DISTANCE;
 	}
 

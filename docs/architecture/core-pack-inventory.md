@@ -225,6 +225,7 @@ its save.
 | `LF_PlaytestTown.conf` | pack | The flagship playtest header |
 | `LF_PlaytestTown_Preview.{edds,jpg}` | pack | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack | The MainWorld header |
+| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The pack's own playtest header (2026-11-14, #322): a copy of `LF_PlaytestTown.conf` that `host`, `playtest` and `session --mission playtest` boot with both addons. It still points at the core's DebugWorld and preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 
 ## Worlds

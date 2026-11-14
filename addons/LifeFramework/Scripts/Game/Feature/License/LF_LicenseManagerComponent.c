@@ -79,6 +79,10 @@ class LF_LicenseConfig
 //! the criminal licences and UNEMPLOYED in CIVILIAN). Skill points no longer exist.
 class LF_LicenseGate
 {
+	//! The system id the License switch answers to (#1074). Off: no licence is unlocked or granted;
+	//! held licences stay saved and are still read.
+	static const string SYSTEM = "License";
+
 	//------------------------------------------------------------------------------------------------
 	//! \return The job a licence family levels in.
 	static string JobOf(LF_ELicenseType licenseType)
@@ -519,6 +523,9 @@ class LF_LicenseManagerComponent : ScriptComponent
 	//! Verificar si el jugador puede desbloquear una licencia
 	bool CanUnlockLicense(LF_ELicenseType licenseType)
 	{
+		if (!LF_Systems.IsEnabled(LF_LicenseGate.SYSTEM))
+			return false;
+
 		// Ya desbloqueada
 		if (HasLicense(licenseType))
 			return false;
@@ -581,7 +588,10 @@ class LF_LicenseManagerComponent : ScriptComponent
 	//! Desbloquear una licencia
 	bool UnlockLicense(LF_ELicenseType licenseType, bool isFree = false)
 	{
-if (!Replication.IsServer())
+	if (!Replication.IsServer())
+			return false;
+
+		if (LF_Systems.Refuses(LF_LicenseGate.SYSTEM, "licence unlock"))
 			return false;
 
 		// Ya tiene esta licencia

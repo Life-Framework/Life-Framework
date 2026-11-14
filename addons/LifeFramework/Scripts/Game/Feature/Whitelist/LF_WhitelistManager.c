@@ -15,6 +15,9 @@ enum LF_EFactionType
 class LF_WhitelistManager
 {
 	static const int VERSION = 1;
+	//! The system id the Whitelist switch answers to (#1074). Off: nothing is restricted and the join
+	//! gate is open; the list file is neither read differently nor rewritten.
+	static const string SYSTEM = "Whitelist";
 
 	protected static ref map<string, ref array<LF_EFactionType>> s_mFactionWhitelist;
 	protected static ref map<string, ref array<LF_EJobType>> s_mJobWhitelist;
@@ -76,6 +79,9 @@ class LF_WhitelistManager
 	//! Check if faction type requires whitelist
 	static bool IsFactionRestricted(LF_EFactionType factionType)
 	{
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return false;
+
 		switch (factionType)
 		{
 			case LF_EFactionType.POLICE:
@@ -91,6 +97,9 @@ class LF_WhitelistManager
 	//! Check if job type requires whitelist
 	static bool IsJobRestricted(LF_EJobType jobType)
 	{
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return false;
+
 		// Solo POLICE requiere whitelist
 		return jobType == LF_EJobType.POLICE;
 	}

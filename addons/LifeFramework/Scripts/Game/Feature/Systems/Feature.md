@@ -27,8 +27,17 @@ just before a reload) is refused with a log line and, where the player sees a re
   `SWITCHABLE` system no script checks.
   - `SWITCHABLE`: its entry points check the switch. Today: `Farming` (plot actions, plant,
     harvest, the growth clock), `Robbery` (the till, weapon and vehicle robbery actions, the till
-    hold and its dialogue line, a hold's payout), `Pager` (paging, the read action, loadout items).
-    Bank vault and heist robbery are not part of `Robbery` yet (they belong to `Crime`, `NOT_YET`).
+    hold and its dialogue line, a hold's payout, the bank vault and heist actions, the rob kit stand,
+    and the loot of a drill that ends after the switch went off (#1073)), `Pager` (paging, the read
+    action, loadout items).
+  - Economy (#1074): `Banking` (account deposits and withdrawals), `ATM` (machine action and its
+    server requests; needs Banking), `Shop` (counters, the till, back-room search, buy and sell),
+    `Catalogue` (an outlet counter stocks nothing and refuses a sale), `Trader` (the trader stall),
+    `Jobs` (workplace actions, job requests, fruit rounds, run and reward payouts, the benefit),
+    `Level` (no XP is earned; saved XP and levels are still read), `License` (no licence is unlocked
+    or granted; held licences are still read), `Whitelist` (nothing is restricted and the join gate is
+    open; the list file is untouched), `Organizations` (the desk, the ledger requests, invite and rank
+    roles; needs Banking). Banking cannot go off while ATM or Organizations are on: switch them too.
   - `NOT_YET`: not gated yet; a config that turns it off is refused with a logged reason and it
     stays on. Follow-ups move them to `SWITCHABLE` one by one.
   - `LOCKED`: framework plumbing (Account, Character, Interaction, UIKit, ...); always on.
@@ -61,6 +70,7 @@ just before a reload) is refused with a log line and, where the player sees a re
 
 - `systems/toggle` (LOGIC): catalog in script, owner section, refusals, dependencies, opt-in,
   run-time switch-off, loadout items.
+- `systems/economy-gates` (WORLD): the vault, ATM, counter, trader, depot and org desk with each economy system off and on; a drill mid-way; XP, licences, the whitelist and the payout.
 - `systems/world-gates` (WORLD): the shipped catalog; the DebugWorld farm plot, robbery seams and a
   pager with the systems off and on; a pack overlay under the owner; the stream to a client.
 - `systems/keep-data` (PERSISTENCE): a crop saved and loaded while Farming is off; across a restart

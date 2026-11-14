@@ -52,7 +52,7 @@ import * as session from "../agent-box/session.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
-import { addonsDirArgs, addonDir, gprojOf, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
+import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -866,7 +866,7 @@ function serverArgs(root, ports) {
   return [
     "-server", "Worlds/DebugWorld/DebugWorld.ent",
     "-addonsDir", addonsDir,
-    "-addons", "LifeFramework",
+    ...addonsArgs(launchAddons(root)),
     "-profile", profile,
     "-maxFPS", "30",
     "-logLevel", "normal",
@@ -889,8 +889,20 @@ function latestWorkbenchLog(profile) {
   return existsSync(f) ? f : null;
 }
 
-function cmdBuild(root = ROOT, opts = {}) {
+// `build` with no addon builds every addon a launch loads (#322): the core, then the pack when
+// it is in the checkout, so `test`, `dev` and `wt gate` compile both projects. `build <addon>`
+// builds just that one.
+async function cmdBuild(root = ROOT, opts = {}) {
   guardHeavy(root, "build", opts.force);
+  if (opts.addon) return buildAddon(root, opts);
+  for (const addon of launchAddons(root)) {
+    const code = await buildAddon(root, { ...opts, addon });
+    if (code !== 0) return code;
+  }
+  return 0;
+}
+
+function buildAddon(root, opts) {
   const exe = workbenchExe();
   if (!existsSync(exe)) {
     console.log(`FAIL  workbench not found: ${exe}`);
@@ -942,7 +954,7 @@ function cmdBuild(root = ROOT, opts = {}) {
     "-profile", profile,
     ...addonsDirArgs(addonDirs),
   ];
-  console.log(`building addon (headless Workbench) -> ${out}`);
+  console.log(`building addon ${addonInfo.name} (headless Workbench) -> ${out}`);
   console.log(`  cwd (game dir): ${gameDir}`);
   console.log(`  addon dirs: ${addonDirs.join(", ")}`);
   console.log("  (streaming Workbench console.log live)");
@@ -1316,7 +1328,7 @@ function cmdServe(root = ROOT, opts = {}) {
 
 // ----------------------------------------------------------------- playtest host
 // `host start|stop|status|backup`: the playtest dedicated server on
-// Missions/LF_PlaytestTown.conf with a stable profile outside every worktree
+// the pack header Missions/LF_Everon1989.conf (core-only: LF_PlaytestTown.conf) with a stable profile outside every worktree
 // (tools/host/host.mjs). The server runs detached and owns the server-2001
 // lock while it lives; `host stop` asks for a graceful close so the engine
 // writes its SHUTDOWN save, then backs the saves up.
@@ -1347,6 +1359,7 @@ function cmdHostStatus(dir) {
   if (s) {
     console.log(`  addon:    ${s.root}`);
     console.log(`  mission:  ${s.mission}`);
+    console.log(`  addons:   ${(s.addons ?? [CORE]).join(",")}`);
     console.log(`  started:  ${s.startedAt}${s.loadSave ? " (continued the latest save)" : " (fresh: no save existed)"}`);
   }
   const saves = host.findSavePoints(p.profile);
@@ -1401,13 +1414,15 @@ function cmdHostStart(root, dir, opts) {
     const junction = serverGameAddons(root);
     mkdirSync(p.profile, { recursive: true });
     const saves = host.findSavePoints(p.profile);
-    const loadSave = saves.length > 0;
-    if (loadSave) {
+    // #322: the pack loads when it is in the checkout; a save keeps the header it was made on.
+    const addons = launchAddons(root);
+    const { mission, loadSave } = host.hostMission(p.profile, addons);
+    if (saves.length) {
       const b = host.backupSaves(dir, "start");
       console.log(`host: backed up saves -> ${b}`);
     }
-    const args = host.hostArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: p.profile, loadSave });
-    console.log(`host: ${loadSave ? `continuing the latest save (${saves.length} save point(s))` : "no save yet, starting a fresh session"}`);
+    const args = host.hostArgs({ addons, mission, addonsDir: [join(root, "addons"), junction].join(","), profile: p.profile, loadSave });
+    console.log(`host: ${loadSave ? `continuing the latest save (${saves.length} save point(s))` : saves.length ? "no save of this mission yet, starting a fresh session" : "no save yet, starting a fresh session"}; mission ${mission}; addons ${addons.join(",")}`);
     console.log(`launching: ${exe}`);
     console.log(`  ${args.join(" ")}`);
     const before = new Set(existsSync(join(p.profile, "logs")) ? readdirSync(join(p.profile, "logs")) : []);
@@ -1416,7 +1431,7 @@ function cmdHostStart(root, dir, opts) {
     child.unref();
     if (!pid) throw new Error("server did not start");
     wt.transferLock(root, SERVER_SLOT, pid);
-    host.writeHostState(dir, { pid, root, mission: host.PLAYTEST_MISSION, loadSave, startedAt: new Date().toISOString(), exe });
+    host.writeHostState(dir, { pid, root, mission, addons, loadSave, startedAt: new Date().toISOString(), exe });
 
     // Wait for the world: "Entered online game state." in the new console.log.
     const deadline = Date.now() + (opts.timeoutSec ?? 300) * 1000;
@@ -1665,7 +1680,7 @@ function cmdPlaytestStart(mainRoot, hostDir, playerDir) {
   const hostLog = host.newestConsoleLog(host.hostPaths(hostDir).profile);
   const joinsBefore = hostLog ? playtest.countJoins(readFileSync(hostLog, "utf8")) : 0;
   mkdirSync(pp.profile, { recursive: true });
-  const args = playtest.playerClientArgs({ addonsDir: join(s.root, "addons"), profile: pp.profile });
+  const args = playtest.playerClientArgs({ addonsDir: join(s.root, "addons"), profile: pp.profile, addons: s.addons ?? launchAddons(s.root) });
   console.log(`playtest: opening the game: ${game}\n  ${args.join(" ")}`);
   const child = spawn(game, args, { cwd: dirname(game), detached: true, stdio: "ignore" });
   child.unref();
@@ -1696,7 +1711,7 @@ function cmdPlaytestStart(mainRoot, hostDir, playerDir) {
   else console.log(`WARN  no join seen in the server log within 5 minutes; the game is still open (host log ${hostLog})`);
   const commit = wt.git(s.root, ["rev-parse", "HEAD"]).stdout.trim();
   console.log("");
-  for (const l of playtest.friendLines({ lan: host.lanAddresses(), port: host.GAME_PORT, commit })) console.log(l);
+  for (const l of playtest.friendLines({ lan: host.lanAddresses(), port: host.GAME_PORT, commit, addons: s.addons ?? launchAddons(s.root) })) console.log(l);
   return joined ? 0 : 1;
 }
 
@@ -2044,7 +2059,7 @@ function cmdSessionUp(root, dir, flags) {
     if (joined < 0) return 1;
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
-    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? " (LF_PlaytestTown, LF_HARNESS)" : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${playtestMission(launchAddons(ROOT)).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
     sessionCapNote(root, settings, hold.min);
     console.log(`session: full log ${sessionLog}`);
     return 0;
@@ -2170,7 +2185,7 @@ function cmdSessionMeasure(root, dir, flags) {
 function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker }) {
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state) });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
@@ -2213,7 +2228,7 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
   session.applyClientSettings(c.profile, rp);
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp });
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddons(root) });
   slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
@@ -2682,7 +2697,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 website/public/playtest-server.json, tools/release/playtest-server.mjs)
                                 release [--tag playtest-m2-N]: refresh the rdb, attach it to a pre-release,
                                 start the playtest-release workflow (worktree at origin/main)
-  host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
+  host start|stop|status|backup  playtest dedicated server on the pack header Missions/LF_Everon1989.conf (an LF_PlaytestTown save keeps its header);
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout).
                                 start refuses a save from another game build until a preflight passes
@@ -3841,6 +3856,9 @@ try {
     code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
+  } else if (cmd === "pack" && rest[0] === "new") {
+    // `pack` builds the Workshop bundle; `pack new <Name>` scaffolds a content pack (tools/commands/pack.mjs).
+    code = await (await import("./commands/pack.mjs")).main(rest, { root: ROOT });
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "asset" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
   } else if (cmd && discoveredCommand(cmd)) {

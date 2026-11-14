@@ -203,7 +203,7 @@ def _normal_out(g, height, strength, distance):
 
 
 def bake(obj, g, recipe, px, outdir):
-    """recipe: {base, rough, metal, height, bump_strength, bump_distance}. Writes the four maps."""
+    """recipe: {base, rough, metal, height, bump_strength, bump_distance, ao?}. Writes the four maps, and tex_ao.png when the recipe has an ao."""
     os.makedirs(outdir, exist_ok=True)
     obj.data.materials.clear()
     obj.data.materials.append(g.mat)
@@ -212,7 +212,10 @@ def bake(obj, g, recipe, px, outdir):
     bpy.context.view_layer.objects.active = obj
     target = g.node("ShaderNodeTexImage")
     files = {}
-    for key, data in (("base_color", False), ("roughness", True), ("metallic", True), ("normal", True)):
+    keys = [("base_color", False), ("roughness", True), ("metallic", True), ("normal", True)]
+    if recipe.get("ao") is not None:
+        keys.append(("ao", True))  # the NMO alpha: occlusion in the recesses (clean.py packs it)
+    for key, data in keys:
         im = bpy.data.images.new("%s_%s" % (g.mat.name, key), px, px, alpha=False, is_data=data)
         target.image = im
         g.nt.nodes.active = target
@@ -221,7 +224,7 @@ def bake(obj, g, recipe, px, outdir):
             _normal_out(g, recipe["height"], recipe.get("bump_strength", 1.0), recipe.get("bump_distance", 0.002))
             bpy.ops.object.bake(type="NORMAL", normal_space="TANGENT", use_clear=True, margin=8)
         else:
-            sock = {"base_color": recipe["base"], "roughness": recipe["rough"], "metallic": recipe["metal"]}[key]
+            sock = {"base_color": recipe["base"], "roughness": recipe["rough"], "metallic": recipe["metal"], "ao": recipe.get("ao")}[key]
             if key != "base_color":
                 comb = g.node("ShaderNodeCombineColor")
                 for i in range(3):
