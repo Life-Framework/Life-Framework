@@ -110,8 +110,8 @@ function reloadRound(tok, broken, label) {
   return rr;
 }
 
-function suiteRun(label, ms = 120000) {
-  writeFileSync(join(RAW, "run-suite.txt"), "1");
+function suiteRun(label, ms = 120000, mode = "all") {
+  writeFileSync(join(RAW, "run-suite.txt"), mode);
   const before = wbLogText().length;
   const r = play(ms);
   rmSync(join(RAW, "run-suite.txt"), { force: true });
@@ -144,6 +144,25 @@ async function h2() {
   log({ step: "quit", ...r });
 }
 
+async function h2b() {
+  let r;
+  if (!suiteRun("fast clean", 45000, "fast").ok) return;
+  const orig = readFileSync(SMOKE, "utf8");
+  try {
+    writeFileSync(SMOKE, orig.replace('ctx.Equal(5, Math.AbsInt(-5), "Math.AbsInt");', 'ctx.Equal(4, Math.AbsInt(-5), "Math.AbsInt");'));
+    if (!reloadRound(null, false, "smoke test broken").ok) return;
+    if (!suiteRun("fast red", 45000, "fast").ok) return;
+  } finally {
+    writeFileSync(SMOKE, orig);
+  }
+  if (!reloadRound(null, false, "smoke test restored").ok) return;
+  if (!suiteRun("fast green again", 45000, "fast").ok) return;
+  for (let i = 1; i <= 4; i++) if (!reloadRound("M" + i, false, "memory " + i).ok) return;
+  if (!suiteRun("fast after 7 reloads", 45000, "fast").ok) return;
+  r = send("quit", "", 60);
+  log({ step: "quit", ...r });
+}
+
 async function main() {
   const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
   const lock = await acquireWorkbench(ROOT, { purpose: "warm-runner-spike", waitMs: 900000 });
@@ -167,6 +186,10 @@ async function main() {
     r = play(8000);
     log({ step: "play", expect: "T0", ...r, sinceLaunchS: ((Date.now() - tLaunch) / 1000).toFixed(1) });
 
+    if (scenario === "h2b") {
+      await h2b();
+      return;
+    }
     if (scenario === "h2") {
       await h2();
       return;

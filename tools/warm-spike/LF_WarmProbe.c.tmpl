@@ -17,8 +17,29 @@ modded class LF_TestRunnerComponent
 			f.Close();
 		}
 
-		if (FileIO.FileExists("$profile:lf-warm/run-suite.txt"))
+		if (!FileIO.FileExists("$profile:lf-warm/run-suite.txt"))
+			return;
+
+		string mode;
+		FileHandle m = FileIO.OpenFile("$profile:lf-warm/run-suite.txt", FileMode.READ);
+		if (m)
+		{
+			m.ReadLine(mode);
+			m.Close();
+		}
+
+		mode.TrimInPlace();
+		if (mode == "fast")
+			GetGame().GetCallqueue().CallLater(RunFastWarm, 3000, false);
+		else
 			GetGame().GetCallqueue().CallLater(Run, 3000, false);
+	}
+
+	protected void RunFastWarm()
+	{
+		string reportXml;
+		int failures = LF_TestManager.GetInstance().RunAll(true, reportXml);
+		PrintFormat("[LFWARM] fast suite done failures=%1", failures);
 	}
 
 	override protected void Close()
