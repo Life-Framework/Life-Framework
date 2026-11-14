@@ -1,4 +1,5 @@
 // Proves the no-profit-loop check (#686) fails on a fixture with planted loops, passes on the
+// inputs: tools/**, agent-box/**, .githooks/**
 // clean twin, catches a loop an owner's config.json `shops` section creates, and honours the
 // baseline ratchet. Fixtures: tools/validation/fixtures/profit-loop/{good,bad}.
 //

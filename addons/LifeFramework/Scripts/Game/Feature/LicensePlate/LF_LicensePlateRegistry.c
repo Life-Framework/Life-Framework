@@ -66,6 +66,9 @@ class LF_LicensePlateRegistry
 	//! \return The issued plate, or empty when none could be kept.
 	static string Issue(LF_LicensePlateGeneratorBase generator, string vehicleId)
 	{
+		if (LF_Systems.Refuses("LicensePlate", "plate issue"))
+			return "";
+
 		if (!generator)
 		{
 			LF_Debug.Error("LicensePlate", "issue refused: no generator");

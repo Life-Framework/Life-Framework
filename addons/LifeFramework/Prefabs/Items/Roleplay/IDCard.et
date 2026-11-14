@@ -33,7 +33,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
      ItemVolume 113
      RestingUP Up
      RestingAdditiveRotationLS 0 0 0
-     RestingAdditiveOffsetLS 0 0 -0.008
+     RestingAdditiveOffsetLS 0 0.006 0
     }
     ItemAnimationAttributes ItemAnimationAttributes "{6BD27321C1406B52}" {
      AnimationAttachments {

@@ -1,5 +1,5 @@
 // red-proof: 2026-11-14 `tools\cli test --no-build --only LF_Test_TestOrgSign` with the expected entry rank changed to founder failed `later ones join at the entry rank (expected 'founder', got 'member')`. Restored; green.
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 //! Test org sign (#934): the gate, the founder rule, the direct join and leave the sign uses, and
 //! the wording of the hideout door ("Members only (<org>)" for a stranger, "Open" for a member).
 class LF_Test_TestOrgSign : LF_Test

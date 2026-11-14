@@ -237,6 +237,8 @@ base = pixels(maps["base_color"], px, (0.5, 0.5, 0.5, 1))
 rough = pixels(maps["roughness"], px, (0.6, 0.6, 0.6, 1))
 metal = pixels(maps["metallic"], px, (0, 0, 0, 1))
 normal = pixels(maps["normal"], px, (0.5, 0.5, 1, 1))
+ao_img = find_map("ao")  # only a modelled asset bakes one (texbake recipe "ao"); it fills the NMO alpha
+ao = pixels(ao_img, px, (1, 1, 1, 1))[:, :, 0]
 
 
 def height_mask(above_m):
@@ -276,7 +278,7 @@ report["materials"] = {"default": plan["default"], "regions": [{"class": g["clas
                        "after": {"rough": float(rough1.mean()), "metal": float(metal1.mean())}}
 base[:, :, :3], rough[:, :, 0], metal[:, :, 0] = base3, rough1, metal1
 bcr = np.dstack([base[:, :, :3], rough[:, :, 0]])
-nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal[:, :, 0], np.ones((px, px), np.float32)])
+nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal[:, :, 0], ao])
 write_tiff(os.path.join(out, name + "_BCR.tif"), (np.clip(bcr, 0, 1) * 255 + 0.5).astype(np.uint8))
 write_tiff(os.path.join(out, name + "_NMO.tif"), (np.clip(nmo, 0, 1) * 255 + 0.5).astype(np.uint8))
 report["textures"]["mean_base"] = [float(v) for v in base[:, :, :3].mean(axis=(0, 1))]
@@ -379,7 +381,7 @@ elif px >= 256 and tri_count(high) > 1.15 * tri_count(obj):
     baked = bake_normal(high, obj, px, maps["normal"], mat, None)
     if baked is not None:
         normal = baked
-        nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal[:, :, 0], np.ones((px, px), np.float32)])
+        nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal[:, :, 0], ao])
         write_tiff(os.path.join(out, name + "_NMO.tif"), (np.clip(nmo, 0, 1) * 255 + 0.5).astype(np.uint8))
         report["textures"]["normal"] = "baked from %d source triangles" % tri_count(high)
     else:

@@ -1,4 +1,5 @@
 // The town's background sound, offline (docs/architecture/atmosphere.md): the spec is sound, every
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // wired project is what the tool would write today, every sample is a mono 16-bit loop whose ends
 // meet, and every emitter in a prefab or layer starts inside its project's audible range.
 // red-proof: 2026-11-13, with LF_PoliceDutyDesk.et's m_fRadius set to 40 (outer range 14) this printed

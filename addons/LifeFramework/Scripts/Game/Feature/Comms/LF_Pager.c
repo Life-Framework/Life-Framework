@@ -84,6 +84,8 @@ class LF_Pager
 {
 	static const string FEATURE = "Pager";
 	static const string CHANNEL = "pager";
+	//! The system id (LF_Systems, #960): paging, reading a pager, the pager in a loadout.
+	static const string SYSTEM = "Pager";
 
 	//------------------------------------------------------------------------------------------------
 	//! Pure: does this channel list include the pager?
@@ -197,6 +199,13 @@ class LF_PagerSubscriber : LF_EventSubscriber
 		if (!LF_Pager.HasPagerChannel(call.m_sChannels))
 			return true;
 
+		// The Pager system is off (#960): the call still reaches the board and the radio.
+		if (!LF_Systems.IsEnabled(LF_Pager.SYSTEM))
+		{
+			LF_Debug.Info(LF_Pager.FEATURE, "service call not paged: the Pager system is off");
+			return true;
+		}
+
 		array<LF_PagerComponent> pagers = {};
 		LF_Pager.ReceiverPagers(call, pagers);
 		LF_Pager.Page(call, pagers, LF_Dispatch.ClockText());
@@ -229,6 +238,13 @@ class LF_ReadPagerAction : ScriptedUserAction
 	override bool HasLocalEffectOnlyScript()
 	{
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pager already in a pocket reads nothing while the Pager system is off (#960).
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled(LF_Pager.SYSTEM);
 	}
 
 	override bool GetActionNameScript(out string outName)

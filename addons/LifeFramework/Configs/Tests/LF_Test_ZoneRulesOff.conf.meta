@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{CBBF8837BF96F37D}Configs/Tests/LF_Test_ZoneRulesOff.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

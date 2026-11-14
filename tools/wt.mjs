@@ -18,10 +18,11 @@
 // stable no matter where a command is invoked.
 
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, normalize, resolve } from "node:path";
 import { removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 import { ADDONS } from "./lib/addons.mjs";
+import { sessionDirOf } from "./lib/session-lease.mjs";
 
 const IS_WIN = process.platform === "win32";
 const GH_ON_PATH = IS_WIN ? "gh.cmd" : "gh";
@@ -64,10 +65,17 @@ function sleep(ms) {
 
 // ---------------------------------------------------------------- git geometry
 
+// A checkout's common dir never moves while a process runs, and the pool queue asks for it on every
+// poll (hundreds of git spawns in one wait), so a success is cached per root; a failure is not.
+const commonDirs = new Map();
 export function gitCommonDir(root) {
+  const hit = commonDirs.get(root);
+  if (hit) return hit;
   const res = git(root, ["rev-parse", "--git-common-dir"]);
   if (res.status !== 0) throw new Error(`not a git checkout: ${root}`);
-  return resolve(root, res.stdout.trim());
+  const dir = resolve(root, res.stdout.trim());
+  commonDirs.set(root, dir);
+  return dir;
 }
 
 // True for the checkout that owns the .git dir (the world-editor copy).
@@ -436,7 +444,104 @@ export function mergeWouldConflict(wtRoot, theirs = "origin/main") {
   throw new Error(`git merge-tree failed: ${res.stderr || res.stdout}`);
 }
 
-export function wtPrune(root, slug, { force = false } = {}) {
+// Heads of merged PRs for a branch, via gh. A squash merge leaves the branch tip out of origin/<base>'s
+// history, so ancestry alone calls it unmerged. Returns [] when gh is missing or fails.
+export function mergedPrHeads(root, branch) {
+  const gh = ghBin();
+  if (!gh) return [];
+  const res = run(gh, ["pr", "list", "--head", branch, "--state", "merged", "--json", "headRefOid", "--limit", "20"], { cwd: root });
+  if (res.status !== 0) return [];
+  try {
+    return JSON.parse(res.stdout).map((p) => p.headRefOid).filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+// Is this branch's work in origin/<base>? True when it is an ancestor, when a merged PR's head SHA is the
+// branch tip (squash or rebase merge), or when the branch's files match origin/<base>. Unmerged work is false.
+// opts.mergedHeads(root, branch) replaces the gh lookup (selftest).
+export function branchMerged(root, branch, base, { mergedHeads = mergedPrHeads } = {}) {
+  const ref = `origin/${base}`;
+  if (!gitOk(root, ["rev-parse", "--verify", "--quiet", `refs/heads/${branch}`])) return { merged: false, via: "missing branch" };
+  if (gitOk(root, ["merge-base", "--is-ancestor", branch, ref])) return { merged: true, via: "ancestor" };
+  const tip = git(root, ["rev-parse", branch]).stdout.trim();
+  if (tip && mergedHeads(root, branch).includes(tip)) return { merged: true, via: "merged PR" };
+  const mb = git(root, ["merge-base", branch, ref]);
+  if (mb.status === 0) {
+    const files = git(root, ["diff", "--name-only", `${mb.stdout.trim()}..${branch}`]).stdout.split(/\r?\n/).filter(Boolean);
+    if (files.length && gitOk(root, ["diff", "--quiet", branch, ref, "--", ...files])) return { merged: true, via: "same files as " + ref };
+  }
+  return { merged: false, via: "not merged" };
+}
+
+// Why a worktree must not be pruned right now, or null: a live lock or session that names it.
+export function worktreeBusy(root, e) {
+  const want = normalize(resolve(e.path)).toLowerCase();
+  const dir = join(hubDirOf(root), "locks");
+  if (existsSync(dir)) {
+    for (const f of readdirSync(dir)) {
+      try {
+        const info = JSON.parse(readFileSync(join(dir, f), "utf8"));
+        if (info.root && normalize(resolve(info.root)).toLowerCase() === want && info.pid && pidAlive(info.pid)) return `lock ${f}`;
+      } catch { /* malformed lock: not ours to read */ }
+    }
+  }
+  const sess = join(sessionDirOf(e.path), "session.json");
+  if (existsSync(sess)) {
+    try {
+      const s = JSON.parse(readFileSync(sess, "utf8"));
+      if (s.serverPid && pidAlive(s.serverPid)) return "live session";
+    } catch { return "session.json unreadable"; }
+  }
+  return null;
+}
+
+// Newest sign of life in a worktree: its index, HEAD, or HEAD log.
+function lastTouched(e) {
+  let newest = 0;
+  const gd = git(e.path, ["rev-parse", "--absolute-git-dir"]).stdout.trim();
+  for (const f of [join(gd, "index"), join(gd, "HEAD"), join(gd, "logs", "HEAD")]) {
+    try { newest = Math.max(newest, statSync(f).mtimeMs); } catch { /* absent */ }
+  }
+  return newest;
+}
+
+// Every worktree `wt prune --merged` would remove, and the ones it skips with the reason.
+export function pruneCandidates(root, { idleMs = 30 * 60 * 1000, now = Date.now(), mergedHeads = mergedPrHeads } = {}) {
+  git(root, ["fetch", "origin", "--prune"]);
+  const state = readState(root);
+  const take = [];
+  const skip = [];
+  for (const [slug, e] of Object.entries(state.worktrees ?? {})) {
+    if (!existsSync(e.path)) { skip.push({ slug, why: "directory missing" }); continue; }
+    const m = branchMerged(root, e.branch, baseOf(e), { mergedHeads });
+    if (!m.merged) { skip.push({ slug, why: m.via }); continue; }
+    if (git(e.path, ["status", "--porcelain"]).stdout.trim()) { skip.push({ slug, why: "uncommitted changes" }); continue; }
+    const busy = worktreeBusy(root, e);
+    if (busy) { skip.push({ slug, why: busy }); continue; }
+    const idle = now - lastTouched(e);
+    if (idle < idleMs) { skip.push({ slug, why: `touched ${Math.round(idle / 60000)} min ago` }); continue; }
+    take.push({ slug, via: m.via });
+  }
+  return { take, skip };
+}
+
+// Parses --refs / --closes: an issue number >= 1. Absent means no issue (null); "0" or text throws.
+export function parseIssueFlag(flags) {
+  for (const name of ["--refs", "--closes"]) {
+    const i = flags.indexOf(name);
+    if (i === -1) continue;
+    const v = flags[i + 1];
+    if (v === undefined || !/^[1-9]\d*$/.test(v)) {
+      throw new Error(`${name} takes an issue number of 1 or more, got '${v ?? ""}'. With no issue, leave the flag out`);
+    }
+    return v;
+  }
+  return null;
+}
+
+export function wtPrune(root, slug, { force = false, mergedHeads = mergedPrHeads } = {}) {
   const lock = acquireLock(root, "wt", { waitMs: 600000 });
   try {
     const state = readState(root);
@@ -454,7 +559,7 @@ export function wtPrune(root, slug, { force = false } = {}) {
     if (!force) {
       git(root, ["fetch", "origin", "--prune"]);
       const base = baseOf(e);
-      if (!gitOk(root, ["merge-base", "--is-ancestor", e.branch, `origin/${base}`])) {
+      if (!branchMerged(root, e.branch, base, { mergedHeads }).merged) {
         throw new Error(`branch ${e.branch} is not merged into origin/${base}; use --force to discard unmerged work`);
       }
       const dirty = git(e.path, ["status", "--porcelain"]).stdout.trim();

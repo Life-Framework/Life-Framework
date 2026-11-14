@@ -6,6 +6,9 @@ class LF_RobAction : ScriptedUserAction
 	static const string REFUSED_NOT_CIVILIAN = "robbery refused: only civilians can rob";
 	static const string REFUSED_POLICE = "robbery refused: not enough police on duty";
 	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
+	static const string REFUSED_OFF = "robbery refused: the Robbery system is off";
+	//! The system id (LF_Systems, #960): till, weapon and vehicle robbery and the till hold.
+	static const string SYSTEM = "Robbery";
 
 	[Attribute(defvalue: "100", uiwidget: UIWidgets.Auto, desc: "Amount of money to steal when no range is set")]
 	protected int m_iMoneyAmount;
@@ -164,6 +167,12 @@ class LF_RobAction : ScriptedUserAction
 	{
 		outLastRobTimeMs = lastRobTimeMs;
 
+		if (LF_Systems.Refuses(SYSTEM, "till robbery"))
+		{
+			s_sLastRefusal = REFUSED_OFF;
+			return 0;
+		}
+
 		string refusal = Gate(playerUid, payout, policeOnDuty, minPolice, cooldownSeconds, lastRobTimeMs, nowMs);
 		if (!refusal.IsEmpty())
 		{
@@ -271,6 +280,13 @@ class LF_RobAction : ScriptedUserAction
 	//! \return Cash paid (0 when the inventory could not take it; logged).
 	int PayHeld(IEntity user)
 	{
+		// Robbery turned off while the hold ran (#960): the till stays shut.
+		if (LF_Systems.Refuses(SYSTEM, "held till robbery payout"))
+		{
+			s_sLastRefusal = REFUSED_OFF;
+			return 0;
+		}
+
 		int paid = PayCash(user, ResolvePayout(m_iMoneyAmount, m_iMinPayout, m_iMaxPayout, -1));
 		NotePaid(LF_Utils.GetPlayerUid(user), paid);
 		return paid;
@@ -358,6 +374,10 @@ class LF_RobAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		// A server with robbery off offers no robbery anywhere (#960).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return false;
+
 		// A dialogue-only till is robbed by talking to its attendant with a weapon drawn.
 		return !m_bDialogueOnly;
 	}

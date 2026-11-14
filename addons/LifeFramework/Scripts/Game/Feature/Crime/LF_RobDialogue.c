@@ -13,6 +13,10 @@ class LF_DialogueHook_RobArmed : LF_DialogueHook
 	//------------------------------------------------------------------------------------------------
 	override bool Allows(IEntity player, IEntity npc, string param)
 	{
+		// No robbery line at all while the Robbery system is off (#960).
+		if (!LF_Systems.IsEnabled(LF_RobAction.SYSTEM))
+			return false;
+
 		return LF_HoldUp.IsArmed(player) && LF_RobAction.IsFactionAllowedToRob(LF_Utils.GetPlayerUid(player));
 	}
 }

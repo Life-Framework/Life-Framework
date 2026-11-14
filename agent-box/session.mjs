@@ -3,7 +3,7 @@
 // each client with its own -profile, joined over 127.0.0.1:2001.
 //
 //   node agent-box/session.mjs up --clients 2     boot the server, launch the clients
-//   node agent-box/session.mjs up --clients 2 --mission playtest   LF_PlaytestTown, harness build
+//   node agent-box/session.mjs up --clients 2 --mission playtest   the pack header (LF_Everon1989.conf), harness build
 //   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest mission)
 //   node agent-box/session.mjs wait [--timeout 600]   block until a starting session is ready (exit 0), or say why not
 //   node agent-box/session.mjs down               close every process the session started
@@ -18,7 +18,8 @@
 //
 // The server runs the bare DebugWorld (no mission header, no test define), so
 // the world's game mode keeps dev tools open and the harness RPCs pass
-// LF_DevGate. The playtest mission (LF_PlaytestTown.conf) closes that gate.
+// LF_DevGate. The playtest mission (the pack's LF_Everon1989.conf, or the core's LF_PlaytestTown.conf
+// without the pack) closes that gate.
 // `up --mission playtest` runs that mission the way `tools\cli host start` does,
 // with -scrDefine LF_HARNESS on the server and every client: the harness
 // (stand, pose, use) passes its own gate in that build only, the debug menu
@@ -34,6 +35,7 @@
 // %LOCALAPPDATA%\LifeFramework\session\<checkout folder>, override
 // LF_SESSION_DIR), and holds no junctions.
 
+import "../tools/lib/quiet-gate.mjs";
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -41,7 +43,7 @@ import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
+import { addonsArgs, launchAddons, PACK_MISSION, playtestMission } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 export { applyClientSettings, resolveProfile };
 
@@ -199,11 +201,12 @@ export function laneArgs(port) {
 }
 
 // rp: the resolved session profile (session-profile.mjs); absent means full.
-export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full") }) {
+// addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header.
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons() }) {
   const args = [
-    "-server", mission === "playtest" ? PLAYTEST_MISSION : SERVER_WORLD,
+    "-server", mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
     "-addonsDir", addonsDir,
-    "-addons", "LifeFramework",
+    ...addonsArgs(addons),
     "-profile", profile,
     "-maxFPS", String(rp.server?.maxFps ?? 30),
     "-logLevel", "normal",
@@ -227,12 +230,12 @@ export function windowFor(n, res = WINDOW) {
   return { x: (n - 1) * (res.width + WINDOW.gap), y: 0, width: res.width, height: res.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false, rp = resolveProfile("full") }) {
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false, rp = resolveProfile("full"), addons = launchAddons() }) {
   const w = windowFor(n, res);
   return [
     "-client", port && port !== 2001 ? `${address}:${port}` : address,
     "-addonsDir", addonsDir,
-    "-addons", "LifeFramework",
+    ...addonsArgs(addons),
     "-profile", profile,
     "-window",
     "-screenWidth", String(w.width),
@@ -375,6 +378,22 @@ export function selftestProfile() {
 export function selftestSession() {
   const failures = [];
   {
+    // red-proof 2026-11-14: with sessionRelay never relaying it printed "a proof verb with a remote session ran on this PC" and "reset with a remote session ran on this PC".
+    // A remote session: proofs and reset run there (a proof on this PC found no session), --local
+    // keeps them here, and a proof's out dir in this worktree maps into the run folder and comes home.
+    const ptr = { machine: "lf-testbox", dir: "C:/LF/Life-Framework-rt-x-session" };
+    if (!sessionRelay("asset-states-proof", ["{AB}P/x.et"], ptr, true).relay) failures.push("a proof verb with a remote session ran on this PC");
+    if (!sessionRelay("reset", [], ptr, false).relay) failures.push("reset with a remote session ran on this PC");
+    const pinned = sessionRelay("asset-states-proof", ["x", "--local"], ptr, true);
+    if (pinned.relay || pinned.rest.includes("--local")) failures.push("--local did not keep a proof on this PC");
+    if (sessionRelay("asset-states-proof", [], null, true).relay) failures.push("a proof relayed with no remote session");
+    if (sessionRelay("up", [], ptr, false).relay || sessionRelay("selftest", [], ptr, false).relay) failures.push("a non-session command was relayed");
+    const root = join(tmpdir(), "lf-wt");
+    const m = remoteArgs(["{AB}P/x.et", "hand,ground", join(root, "tmp", "assets", "l", "states"), join(tmpdir(), "elsewhere")], root, ptr.dir);
+    if (m.args[2] !== `${ptr.dir}/tmp/assets/l/states` || m.args[0] !== "{AB}P/x.et" || m.args[3] !== join(tmpdir(), "elsewhere")) failures.push(`remoteArgs mapped the wrong args: ${JSON.stringify(m.args)}`);
+    if (m.back.length !== 1 || m.back[0].local !== join(root, "tmp", "assets", "l", "states")) failures.push("remoteArgs does not bring the out dir home");
+  }
+  {
     const base = mkdtempSync(join(tmpdir(), "lf-orph-"));
     const live = new Set([11, 22, 33]);
     const w = (n, rec) => writeSession(join(base, n), rec);
@@ -409,14 +428,15 @@ export function selftestSession() {
   } catch {}
   const s = serverArgs({ addonsDir: "A", profile: "SP" });
   if (s[0] !== "-server" || s[1] !== SERVER_WORLD) failures.push("server does not run the bare DebugWorld");
-  if (s.some((x) => /LF_AUTOTEST|LF_PlaytestTown|-config/.test(x))) failures.push("server args carry a test define, the playtest mission, or -config");
+  if (s.some((x) => /LF_AUTOTEST|LF_PlaytestTown|LF_Everon1989.conf|-config/.test(x))) failures.push("server args carry a test define, the playtest mission, or -config");
   if (s[s.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("server does not define LF_SESSION_IDENTITY");
   if (a1[a1.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("client script define differs from the server (checksum refusal)");
   if (s.includes(HARNESS_DEFINE) || a1.includes(HARNESS_DEFINE)) failures.push("the bare DebugWorld session carries LF_HARNESS");
   if (s.includes("-loadSessionSave")) failures.push("a fresh session loads a save");
   const ps = serverArgs({ addonsDir: "A", profile: "SP", mission: "playtest" });
   const pc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "playtest" });
-  if (ps[1] !== PLAYTEST_MISSION) failures.push("--mission playtest does not run LF_PlaytestTown");
+  if (ps[1] !== PACK_MISSION) failures.push("--mission playtest does not run the pack's mission header");
+  for (const args of [s, ps, pc, a1]) if (args[args.indexOf("-addons") + 1] !== "LifeFramework,LF_Everon1989") failures.push(`a session launch loads ${args[args.indexOf("-addons") + 1]}, not the core and the pack`);
   const defs = (args) => args.filter((x, i) => args[i - 1] === "-scrDefine").sort().join(",");
   if (defs(ps) !== [HARNESS_DEFINE, SESSION_DEFINE].sort().join(",")) failures.push(`playtest server defines are ${defs(ps)}`);
   if (defs(pc) !== defs(ps)) failures.push("playtest client defines differ from the server (checksum refusal)");
@@ -795,13 +815,20 @@ function pidIsAlive(pid) {
   }
 }
 
+// Runs the local leg of `up` (tools/cli.mjs session up) and returns its exit code. LF_SESSION_ROUTED
+// tells `tools\cli session up` that the machine is already chosen (it does not route again).
+function runLocalUp(args) {
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "up", ...args], { windowsHide: true, stdio: "inherit", cwd: process.cwd(), env: { ...process.env, LF_SESSION_ROUTED: "1" } });
+  return r.status ?? 1;
+}
+
 async function routeMachine(cmd, rest) {
   const i = rest.indexOf("--machine");
   const want = i === -1 ? null : String(rest[i + 1] ?? "");
   const args = i === -1 ? rest : rest.filter((_, k) => k !== i && k !== i + 1);
   const pool = await import("../tools/remote/pool.mjs");
   const machines = pool.loadMachines(ROOT);
-  const ptr = readRemotePointer();
+  let ptr = readRemotePointer();
   if (cmd !== "up") {
     if (want === "local" || !ptr) return { local: true, args };
     const m = pool.findMachine(machines, ptr.machine);
@@ -809,21 +836,58 @@ async function routeMachine(cmd, rest) {
     console.log(`session: on ${m.name} (${ptr.dir})`);
     const code = await pool.runIn(m, ptr.dir, "agent-box/session.mjs", [cmd, ...args]);
     if (cmd === "down" && code === 0) rmSync(remotePointerFile(), { force: true });
+    // ssh failed (255) and the machine does not answer: it went away and took its session with it.
+    // `down` clears the record; the rest say so.
+    if (code === 255 && !pool.probe(ROOT, m, { fresh: true }).reachable) {
+      pool.markDown(ROOT, m, "went away during a session");
+      if (cmd === "down") {
+        rmSync(remotePointerFile(), { force: true });
+        console.log(`session: ${m.name} does not answer; its session went with it. Record cleared; the next 'up' picks another machine`);
+        return { code: 0 };
+      }
+      console.log(`session: ${m.name} does not answer (the session there is gone with it); 'node agent-box/session.mjs down' clears the record, then 'up' again`);
+      return { code: 1 };
+    }
     return { code };
   }
   if (want === "local") return { local: true, args };
   const clients = parseClients(args);
-  let target = null;
-  if (!want || want === "any") {
-    // A session of this worktree already runs on this PC: `up` reports it.
-    const live = readSession(sessionDir());
-    if (live && !live.stoppedAt && [live.serverPid, ...(live.clients ?? []).map((c) => c.pid)].some((p) => pidIsAlive(p))) return { local: true, args };
-    // The default: every machine that can run this session is considered (this PC first on a tie).
-    // With --wait the request queues for whichever lane frees first; without it, one look.
-    const waitMs = args.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0;
-    const prio = args.indexOf("--priority") === -1 ? undefined : args[args.indexOf("--priority") + 1];
+  const profile = parseSessionProfile(args).profile;
+  // A remote leg ships this worktree's resourceDatabase.rdb: refresh it here first, before the queue,
+  // as `test` does (a fresh worktree sent a 0.1 MiB rdb and the box ran its own headless Workbench).
+  spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
+  // A record whose machine went away is not a session any more: forget it.
+  if (ptr) {
+    const pm = pool.findMachine(machines, ptr.machine);
+    if (pm && !pool.probe(ROOT, pm, { fresh: true }).reachable) {
+      console.log(`session: the recorded session on ${ptr.machine} went away with that machine; record cleared`);
+      rmSync(remotePointerFile(), { force: true });
+      ptr = null;
+    }
+  }
+  if (want && want !== "any") {
+    const target = pool.findMachine(machines, want);
+    if (!target) throw new Error(`--machine ${want}: not in the pool (${machines.map((m) => m.name).join(", ")})`);
+    if (target.via === "local") return { local: true, args };
+    const code = await upOnRemote(pool, target, args, clients, ptr);
+    return { code: code === UP_MACHINE_GONE ? 1 : code };
+  }
+  // A session of this worktree already runs on this PC: `up` reports it.
+  const live = readSession(sessionDir());
+  if (live && !live.stoppedAt && [live.serverPid, ...(live.clients ?? []).map((c) => c.pid)].some((p) => pidIsAlive(p))) return { local: true, args };
+  // The default: every machine that can run this session is considered (this PC first on a tie),
+  // laptop included, for any client count and profile. With --wait the request queues for whichever
+  // machine has a lane and the RAM first; the chosen machine's `up` runs without --wait, so a lost
+  // race there (LANE_BUSY) or a machine that goes away puts the request back in the queue here
+  // instead of pinning it to one machine.
+  const waitMs = args.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0;
+  const prio = args.indexOf("--priority") === -1 ? undefined : args[args.indexOf("--priority") + 1];
+  const legArgs = args.filter((a) => a !== "--wait");
+  const deadline = Date.now() + waitMs;
+  for (;;) {
+    let target;
     try {
-      target = await pool.chooseSessionMachine(ROOT, { clients, waitMs, priority: prio, meta: { clients } });
+      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile } });
     } catch (e) {
       if (!e.refusal) throw e;
       console.log(`session: ${e.message}`);
@@ -834,21 +898,36 @@ async function routeMachine(cmd, rest) {
         console.log(`session: no session lane freed on any machine within ${SESSION_QUEUE_MIN} min`);
         return { code: 1 };
       }
+      // No wait asked: one look at this PC, which says why it cannot start.
       return { local: true, args };
     }
-  } else {
-    target = pool.findMachine(machines, want);
-    if (!target) throw new Error(`--machine ${want}: not in the pool (${machines.map((m) => m.name).join(", ")})`);
+    const code = target.via === "local" ? runLocalUp(legArgs) : await upOnRemote(pool, target, legArgs, clients, ptr);
+    const again = code === pool.LANE_BUSY_CODE || code === UP_MACHINE_GONE;
+    if (!again || waitMs <= 0 || Date.now() > deadline) return { code: code === UP_MACHINE_GONE ? 1 : code };
+    console.log(`session: ${code === UP_MACHINE_GONE ? `${target.name} went away` : `lost the race for a lane on ${target.name}`}; queuing again for any machine`);
+    // A lane that looked free and was not: give the holder a moment before asking again.
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
   }
-  if (target.via === "local") return { local: true, args };
+}
+
+// Exit code of upOnRemote when the machine went away during the remote `up` (the request requeues).
+const UP_MACHINE_GONE = 254;
+
+// `up` on a pool machine: sync this worktree there and run its own `session up` (pinned to itself,
+// no --wait: the queue is here). Returns the exit code; UP_MACHINE_GONE when the machine went away.
+async function upOnRemote(pool, target, args, clients, ptr) {
   if (clients > 0 && !target.caps.includes("clients")) {
     console.log(`session: ${target.name} cannot start game clients over ssh (no desktop session); use --clients 0 for a server-only session there and join it from this PC`);
-    return { code: 2 };
+    return 2;
+  }
+  if (target.maxClients && clients > target.maxClients) {
+    console.log(`session: ${target.name} runs at most ${target.maxClients} client(s) per session (maxClients in tools/pool.json: heat); ask for fewer or use --machine local`);
+    return 2;
   }
   // A record on the same machine is not a refusal: the box's own `up` says whether that session still lives, and a stale one is replaced.
   if (ptr && ptr.machine !== target.name) {
     console.log(`session: one is recorded on ${ptr.machine}; 'node agent-box/session.mjs down' first`);
-    return { code: 1 };
+    return 1;
   }
   console.log(`session: on ${target.name}${clients > 0 ? ` (${clients} client(s) on its desktop)` : " (server only)"}`);
   // The pointer is written before the remote up runs: an up that is killed or times out mid-way can leave a live server on the box, and without a pointer `down` would say "none recorded" while the box's up refuses.
@@ -856,9 +935,19 @@ async function routeMachine(cmd, rest) {
     mkdirSync(dirname(remotePointerFile()), { recursive: true });
     writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir, at: new Date().toISOString(), root: ROOT }));
   };
-  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args], onSlot: (rDir) => writePtr(rDir) });
-  if (r.code === 0) writePtr(r.rDir);
-  return { code: r.code };
+  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", "--machine", "local", ...args], onSlot: (rDir) => writePtr(rDir) });
+  if (r.code === 0) {
+    writePtr(r.rDir);
+    return 0;
+  }
+  // Nothing started there: the record goes, so the next machine is free to take the request.
+  const gone = r.code === 255 || r.code === 3 ? !pool.probe(ROOT, target, { fresh: true }).reachable : false;
+  if (r.code === pool.LANE_BUSY_CODE || gone) rmSync(remotePointerFile(), { force: true });
+  if (gone) {
+    pool.markDown(ROOT, target, "went away during session up");
+    return UP_MACHINE_GONE;
+  }
+  return r.code;
 }
 
 // M1-20 on a running `up --clients 2` session with client 2 on the roster
@@ -1007,11 +1096,65 @@ async function runReset(args = []) {
   return dirty && args.includes("--strict") ? 1 : 0;
 }
 
+// Commands that act on the live session's clients: they must run where the session runs. With a
+// remote session recorded (tmp/session-remote.json) they are relayed there, like harness.mjs does;
+// --local keeps one on this PC. Proof verbs count too (a proof drives the harness in-process, so on
+// this PC it found no session: `reset: no session`, `no_live_session`, 2026-11-14).
+const SESSION_BOUND = new Set(["reset", "roster", "join", "film"]);
+
+// Pure: maps the absolute paths inside root among args to the same place in the remote run folder
+// rdir, so a proof's out dir lands in its run folder; `back` lists what to copy home afterwards.
+export function remoteArgs(args, root, rdir) {
+  const base = resolve(root).replaceAll("\\", "/").replace(/\/$/, "");
+  const rbase = String(rdir).replaceAll("\\", "/").replace(/\/$/, "");
+  const back = [];
+  const out = args.map((a) => {
+    if (typeof a !== "string" || !/^[A-Za-z]:[\\/]/.test(a)) return a;
+    const p = resolve(a).replaceAll("\\", "/");
+    if (p.toLowerCase() !== base.toLowerCase() && !p.toLowerCase().startsWith(`${base.toLowerCase()}/`)) return a;
+    const remote = `${rbase}${p.slice(base.length)}`;
+    back.push({ remote, local: resolve(a) });
+    return remote;
+  });
+  return { args: out, back };
+}
+
+// Pure: whether cmd runs where the recorded remote session runs. --local keeps it here (and is
+// dropped from the args either way for a session-bound command).
+export function sessionRelay(cmd, rest, ptr, isProof) {
+  if (!cmd || !(SESSION_BOUND.has(cmd) || isProof)) return { relay: false, rest };
+  if (rest.includes("--local")) return { relay: false, rest: rest.filter((a) => a !== "--local") };
+  return { relay: !!ptr, rest };
+}
+
+async function relayToSession(cmd, rest, ptr) {
+  const pool = await import("../tools/remote/pool.mjs");
+  const tb = await import("../tools/remote/testbox.mjs");
+  const m = pool.findMachine(pool.loadMachines(ROOT), ptr.machine);
+  if (!m) throw new Error(`session is on ${ptr.machine}, which is not in the pool any more`);
+  const { args, back } = remoteArgs(rest, ROOT, ptr.dir);
+  console.log(`session: ${cmd} runs where the session runs: ${m.name} (${ptr.dir})`);
+  const code = await pool.runIn(m, ptr.dir, "agent-box/session.mjs", [cmd, ...args]);
+  // What the command wrote into paths of this worktree comes home (a proof's pictures).
+  for (const b of back) {
+    mkdirSync(dirname(b.local), { recursive: true });
+    const r = tb.scp(["-r", `${m.host}:${b.remote}`, dirname(b.local)]);
+    if (r.status === 0) console.log(`session: copied ${b.remote} from ${m.name} to ${b.local}`);
+  }
+  return code;
+}
+
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
     console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
+  }
+  {
+    const ptr = readRemotePointer();
+    const r = sessionRelay(cmd, rest, ptr, ptr && cmd && !SESSION_BOUND.has(cmd) ? (await loadProofs()).has(cmd) : false);
+    if (r.relay) return relayToSession(cmd, r.rest, ptr);
+    rest = r.rest;
   }
   // Any session command is activity for the pool's lease (tools/remote/pool.mjs reapIdleSessions).
   if (cmd && !["down", "selftest", "lease"].includes(cmd)) {
@@ -1053,7 +1196,7 @@ async function main(argv) {
     return f.length ? 1 : 0;
   }
   if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart" || cmd === "wait" || cmd === "join") {
-    const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd() });
+    const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd(), env: { ...process.env, LF_SESSION_ROUTED: "1" } });
     return r.status ?? 1;
   }
   const proofs = await loadProofs();

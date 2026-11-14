@@ -5,6 +5,8 @@
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
   sessionIdleMin: 15,
+  // A session idle this long is closed even with nobody waiting (it holds RAM and client windows).
+  sessionIdleMaxMin: 30,
   promoteMin: 20, starveMin: 20,
   minFreeMb: 1500,
   // Memory a second concurrent session takes: the server, plus each game client (MB; measured
@@ -119,46 +121,102 @@ export function portForLock(name) {
 // lane shares a lock with mine. A ticket without a lane (an older CLI) is a
 // session-lane ticket: it contends for server-2001.
 // Backfill: an `other` that already tried and cannot start (t.stuck "ram" or "lane") does
-// not block, so the next job that can start right now goes. Anti-starvation: once such a
-// head has waited ctx.starveMs it holds its place again as soon as the RAM it needs is there
-// (ctx.freeMb >= t.needMb), or at once when it only lacks a lane.
-// ctx: { starveMs, freeMb } (both optional).
+// not block, so the next job that can start right now goes (a lowspec one-client session
+// passes a full two-client one that waits for RAM). Anti-starvation: once such a head has
+// waited ctx.starveMs it holds its place: a lane-stuck head at once; a RAM-stuck head drains
+// the machine for every lane (tests too, they eat the same RAM) as long as draining can help,
+// that is its need fits in what is free plus what the pool's running jobs there hold
+// (ctx.heldMb). A head that cannot fit even on an empty machine never blocks.
+// ctx: { starveMs, freeMb, heldMb } (all optional; per machine m).
 export function blocks(other, mine, m, now, promoteMs, ctx = {}) {
   if (!(other.machines ?? []).includes(m.name)) return false;
-  const a = new Set(lanesFor(m, other.lane ?? "session").map((l) => l.lock));
-  if (!lanesFor(m, mine.lane ?? "test").some((l) => a.has(l.lock))) return false;
   if (!servedBefore(other, mine, now, promoteMs)) return false;
+  const a = new Set(lanesFor(m, other.lane ?? "session").map((l) => l.lock));
+  const sharesLane = lanesFor(m, mine.lane ?? "test").some((l) => a.has(l.lock));
+  if (!sharesLane) return other.stuck === "ram" && starved(other, now, ctx) && drainHelps(other, ctx);
   // A head that lacks only a lane is raced for it when that lane frees, so it keeps its turn
   // unless mine can also use a lane the head cannot.
   if (other.stuck === "lane" && lanesFor(m, mine.lane ?? "test").every((l) => a.has(l.lock))) return true;
   return !canBackfill(other, now, ctx);
 }
 
-// True when a ticket that is served first is stuck (RAM or lane) and not yet owed a reservation.
-export function canBackfill(t, now, { starveMs = DEFAULTS.starveMin * 60000, freeMb } = {}) {
+function starved(t, now, { starveMs = DEFAULTS.starveMin * 60000 } = {}) {
+  return starveMs > 0 && now - Date.parse(t.at) > starveMs;
+}
+
+// Whether holding everyone else back can ever let t start: its need fits in free RAM plus what
+// the pool's own running jobs on the machine hold. Unknown numbers count as "it can".
+function drainHelps(t, { freeMb, heldMb } = {}) {
+  if (!Number.isFinite(t.needMb) || !Number.isFinite(freeMb)) return true;
+  return t.needMb <= freeMb + (Number.isFinite(heldMb) ? heldMb : Infinity);
+}
+
+// True when a ticket that is served first is stuck (RAM or lane) and may be passed: it has not
+// waited past the starvation limit, or (RAM) draining the machine could not help it anyway.
+export function canBackfill(t, now, ctx = {}) {
   if (t.stuck !== "ram" && t.stuck !== "lane") return false;
-  const starved = starveMs > 0 && now - Date.parse(t.at) > starveMs;
-  if (!starved) return true;
-  if (t.stuck === "ram") return !(Number.isFinite(freeMb) && Number.isFinite(t.needMb) && freeMb >= t.needMb);
+  if (!starved(t, now, ctx)) return true;
+  if (t.stuck === "ram") return !drainHelps(t, ctx);
   return false;
 }
 
-// Why a ticket waits, for `pool status`: "ram 3-client", "lane", "behind N", or "".
-export function waitReason(t, ahead = 0) {
-  if (t.stuck === "ram") return `ram${t.clients ? ` ${t.clients}-client` : ""}`;
-  if (t.stuck === "lane") return "lane";
+// Why a ticket waits, for `pool status`: "ram 2-client full: needs 3.8 GB free, local has 1.1 GB",
+// "lane", "behind N", plus "starved: holds the machine" once it reserves. freeMbOf(name) gives a
+// machine's live free RAM (MB) when known.
+export function waitReason(t, ahead = 0, { now = Date.now(), starveMs, freeMbOf } = {}) {
+  const hold = (t.stuck === "ram" || t.stuck === "lane") && starved(t, now, { starveMs }) ? "; starved, so it holds its place" : "";
+  if (t.stuck === "ram") {
+    const what = `ram${t.clients ? ` ${t.clients}-client` : ""}${t.profile && t.clients ? ` ${t.profile}` : ""}`;
+    if (!Number.isFinite(t.needMb)) return `${what}${hold}`;
+    const gb = (x) => (x / 1024).toFixed(1);
+    const busy = t.busyOn ?? [];
+    const have = (t.machines ?? []).filter((n) => !busy.includes(n)).map((n) => [n, freeMbOf?.(n)]).filter(([, f]) => Number.isFinite(f)).map(([n, f]) => `${n} has ${gb(f)}`);
+    return `${what}: needs ${gb(t.needMb)} GB free${have.length ? `, ${have.join(", ")}` : ""}${busy.length ? `; every session lane taken on ${busy.join(", ")}` : ""}${hold}`;
+  }
+  if (t.stuck === "lane") return `lane${hold}`;
   return ahead > 0 ? `behind ${ahead}` : "";
 }
 
-// RAM gate: a server beyond the first waits while free memory is under the
-// floor, instead of letting Windows page.
-// A second session also needs reserveMb (its own expected memory) on top of the floor, and
-// pendingMb counts sessions still booting, whose memory has not shown in freeMb yet.
+// When the job holding a lane is expected to let go (epoch ms): its start plus the typical hold of
+// its kind; one that has outrun that is given half a typical hold more, but never past its cap
+// (a session's hold cap plus grace while someone waits). typicalMs and capMs may be absent.
+export function projectedRelease({ atMs, now, typicalMs, capMs }) {
+  if (!Number.isFinite(atMs)) return now + (typicalMs ?? 0);
+  const cap = Number.isFinite(capMs) ? atMs + capMs : Infinity;
+  const typ = Number.isFinite(typicalMs) && typicalMs > 0 ? typicalMs : 0;
+  let end = atMs + typ;
+  if (end < now) end = now + typ / 2;
+  return Math.max(now, Math.min(end, cap < now ? now + 60000 : cap));
+}
+
+// Estimated start of a waiting job (epoch ms): the (ahead+1)-th lane release among the lanes it can
+// use (a free lane releases "now"); with more jobs ahead than lanes, each further round of lanes
+// adds cycleMs (a typical hold). null when it can use no lane at all.
+export function estimateStart(releases, ahead = 0, cycleMs = 0) {
+  const r = [...releases].filter(Number.isFinite).sort((x, y) => x - y);
+  if (!r.length) return null;
+  return r[ahead % r.length] + Math.floor(ahead / r.length) * (Number.isFinite(cycleMs) ? cycleMs : 0);
+}
+
+// Median of the positive numbers in values (0 when none).
+export function median(values) {
+  const v = values.filter((x) => Number.isFinite(x) && x > 0).sort((a, b) => a - b);
+  return v.length ? v[Math.floor((v.length - 1) / 2)] : 0;
+}
+
+// RAM gate. A job reserves what it is expected to take (reserveMb: a session's server and
+// clients; 0 for a test, which the floor covers) and sessions still booting count with what they
+// will take (pendingMb), since free RAM does not show it yet. With nothing else running on the
+// machine the job only has to fit (free >= reserve + pending): a machine is never over-committed,
+// and an idle one always takes a job that fits. Beside other servers it must also leave minFreeMb.
 export function ramVerdict({ running, freeMb, minFreeMb, reserveMb = 0, pendingMb = 0 }) {
-  if (running <= 0) return { ok: true };
+  const gb = (x) => (x / 1024).toFixed(1);
+  if (running <= 0) {
+    if (freeMb - pendingMb >= reserveMb) return { ok: true };
+    return { ok: false, needMb: reserveMb + pendingMb, reason: `free RAM ${gb(freeMb)} GB is under the ${gb(reserveMb + pendingMb)} GB the session needs` };
+  }
   const after = freeMb - pendingMb - reserveMb;
   if (after >= minFreeMb) return { ok: true };
-  const gb = (x) => (x / 1024).toFixed(1);
   const needMb = minFreeMb + reserveMb + pendingMb;
   if (reserveMb > 0 || pendingMb > 0) {
     return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(reserveMb + pendingMb)} GB for the session${pendingMb > 0 ? "(s) starting" : ""} would be under ${gb(minFreeMb)} GB` };

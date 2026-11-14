@@ -5,6 +5,8 @@
 //   asset new <slug> --kind clothing --base "{GUID}Prefabs/...et" --slot Jacket [--route a|b|c] (clothing.mjs)
 //   asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
 //   asset states <slug> [--fix] [--shots]   the inventory, ground, hand and use states (states.md)
+//   asset run <slug> --only clean --live [--discard]   the clean stage in the open Blender (the bridge)
+//   asset shot <slug> [--view iso|front|right|top] [--live]   pictures of the cleaned model
 //   asset status [<slug>]      asset doctor      asset selftest
 //
 // The spec is tools/assets/<slug>/spec.json (tracked). Everything a stage produces is cached in
@@ -23,6 +25,7 @@ import { materialProblems, resolveMaterials, variantPlans } from "./materials.mj
 import { resolveFfmpeg } from "../../film/film.mjs";
 import { animProblems, hasAnim, withAnim } from "./anim.mjs";
 import { hasStates, shootStates, stageStates, statesProblems } from "./states.mjs";
+import { blenderExe, runBlender, runLive } from "../../lib/blender.mjs";
 import { ADDONS, CORE, addonFlag, addonOf, addonProblems, assertBoundary, plan as addonPlan, withAddon } from "./addon.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -45,7 +48,7 @@ export function specProblems(spec) {
   if (!/^[A-Z][A-Za-z0-9]*$/.test(spec.name || "")) out.push("name must be PascalCase letters and digits (it becomes file and material names)");
   const kind = KINDS[spec.kind];
   if (!kind) out.push(`kind must be one of ${Object.keys(KINDS).join(", ")}`);
-  const lib = source.isPolyHaven(spec) || source.isVanilla(spec); // a found model: no prompt, no Meshy call, no credits (source.mjs)
+  const lib = source.isPolyHaven(spec) || source.isVanilla(spec) || source.isIncoming(spec); // a found model: no prompt, no Meshy call, no credits (source.mjs)
   const blender = !!spec.source?.blender; // modelled or painted by our own script: no Meshy call, no credits
   const textureOnly = kind?.fit === "none";
   if (!spec.prompt && !lib) out.push("prompt is empty");
@@ -248,23 +251,9 @@ async function stageGenerate(ctx) {
   return { ...ids, credits: total, balance: bal1, maps: Object.keys(tex) };
 }
 
-export function blenderExe() {
-  return process.env.LF_BLENDER || "C:/Users/jaspe/Tools/blender-4.5.9-windows-x64/blender.exe";
-}
-
-// Run one of our bpy scripts headless; the script writes a JSON report we read back.
-export function runBlender(script, args, { timeoutMs = 600000, log } = {}) {
-  const exe = blenderExe();
-  if (!existsSync(exe)) throw new Error(`Blender not found at ${exe}; set LF_BLENDER (docs/asset-pipeline/README.md "Setup")`);
-  const res = spawnSync(exe, ["--background", "--factory-startup", "--python-exit-code", "3", "--python", script, "--", ...args],
-    { encoding: "utf8", timeout: timeoutMs, windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
-  if (log) writeFileSync(log, (res.stdout || "") + "\n" + (res.stderr || ""));
-  if (res.error) throw new Error(`Blender ${script}: ${res.error.message}`);
-  if (res.status !== 0) {
-    const tail = ((res.stdout || "") + (res.stderr || "")).trim().split("\n").slice(-12).join("\n");
-    throw new Error(`Blender ${script} exited ${res.status}${log ? ` (log: ${log})` : ""}\n${tail}`);
-  }
-}
+// Finding Blender and running a script headless moved to tools/lib/blender.mjs (shared with
+// `tools\cli blender`); the names stay exported from here for the callers that import them.
+export { blenderExe, runBlender };
 
 // The Meshy task the remesh starts from: the accepted generation recorded in tools/assets/<slug>/meshy.json.
 export function acceptedTaskId(root, slug) {
@@ -316,16 +305,25 @@ async function stageClean(ctx) {
   mkdirSync(out, { recursive: true });
   const variants = variantPlans(spec);
   const blenderDir = join(dirname(fileURLToPath(import.meta.url)), "blender");
-  const packVariants = () => {
+  // --live: the same scripts in the user's open Blender, over the bridge (docs/blender-bridge.md).
+  // The headless run stays the default; a live run replaces the open scene (refused if it is unsaved).
+  const live = !!ctx.flags?.includes("--live");
+  const blender = async (script, args, opts) => {
+    if (!live) return runBlender(script, args, opts);
+    const r = await runLive(script, args, { ...opts, discard: ctx.flags.includes("--discard") });
+    console.log(`  live in Blender ${r.info.blender}: ${script.replace(/^.*[\\/]/, "")}`);
+    return r;
+  };
+  const packVariants = async () => {
     if (!variants.length) return {};
     const vjob = join(out, "variants-job.json");
     writeFileSync(vjob, JSON.stringify({ name: spec.name, raw: join(dir, "raw"), out, px: spec.budget.texture_px, variants }, null, 1));
-    runBlender(join(blenderDir, "variants.py"), [vjob], { log: join(out, "variants.log") });
+    await blender(join(blenderDir, "variants.py"), [vjob], { log: join(out, "variants.log") });
     const v = JSON.parse(readFileSync(join(out, "variants.json"), "utf8"));
     for (const [n, st] of Object.entries(v)) console.log(`  variant ${n}: rough ${st.mean_roughness.toFixed(2)}, metal ${st.mean_metallic.toFixed(2)}, base ${st.mean_base.map((x) => x.toFixed(2)).join(" ")}`);
     return v;
   };
-  if (KINDS[spec.kind].fit === "none") return { variants: packVariants() };
+  if (KINDS[spec.kind].fit === "none") return { variants: await packVariants() };
   // A remeshed model (raw-remesh/) is LOD0 already; otherwise the generator's raw output. A spec
   // with meshy.remesh false uses the raw output even when an earlier run left a remesh behind.
   const remeshed = spec.meshy?.remesh !== false && existsSync(join(dir, "raw-remesh", "model.glb"));
@@ -336,14 +334,14 @@ async function stageClean(ctx) {
   // The anim block adds a skeleton (a bone per moving part, the sockets) and the parts to split off.
   const { kind, parts } = withAnim(KINDS[spec.kind], spec);
   writeFileSync(job, JSON.stringify({ spec: { ...spec, parts }, kind, materials: resolveMaterials(spec), glb, raw: rawDir, out }, null, 1));
-  runBlender(join(blenderDir, "clean.py"), [job], { log: join(out, "blender.log") });
+  await blender(join(blenderDir, "clean.py"), [job], { log: join(out, "blender.log") });
   const report = JSON.parse(readFileSync(join(out, "report.json"), "utf8"));
   const { checkReport } = await import("./checks.mjs");
   const problems = checkReport(spec, kind, report);
   for (const p of problems) console.log(`FAIL  ${p}`);
   console.log(`clean: LODs ${report.lods.map((l) => l.tris).join("/")} tris, size ${report.size.map((v) => v.toFixed(3)).join(" x ")} m, ${report.sockets.length} sockets, review ${join(out, "review")}`);
   if (problems.length) throw new Error(`${problems.length} check(s) failed; fix the spec (fit, parts, budget) and rerun --only clean`);
-  return { lods: report.lods, size: report.size, variants: packVariants() };
+  return { lods: report.lods, size: report.size, variants: await packVariants() };
 }
 
 async function stageImport(ctx) {
@@ -403,6 +401,7 @@ export async function stagesFor(spec) {
 }
 
 export async function run(root, slug, { from, only, force, workbench, pick, fix, flags = [], to, addon } = {}) {
+  if (flags.includes("--live") && only !== "clean") throw new Error("--live runs the clean stage in the open Blender: use it with --only clean (docs/blender-bridge.md)");
   const spec = loadSpec(root, slug, addon);
   const dir = cacheDir(root, slug);
   const fullState = readState(dir);
@@ -563,10 +562,10 @@ export async function main(flags, { workbench } = {}) {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
     const slug = rest.find((f) => !f.startsWith("--") && f !== addonFlag(rest));
-    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots] [--addon <name>]"); return 2; }
+    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots [--local]] [--addon <name>]"); return 2; }
     const spec = loadSpec(root, slug, addonFlag(rest));
     stageStates({ root, spec }, { fix: rest.includes("--fix") });
-    return rest.includes("--shots") ? shootStates(root, spec, cacheDir(root, slug)) : 0;
+    return rest.includes("--shots") ? shootStates(root, spec, cacheDir(root, slug), { local: rest.includes("--local") }) : 0;
   }
   if (sub === "kit") {
     const wt = await import("../../wt.mjs");
@@ -581,6 +580,11 @@ export async function main(flags, { workbench } = {}) {
     if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--addon <name>]"); return 2; }
     return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench, flags: rest, to: flag(rest, "--to"), addon: addonFlag(rest) });
   }
+  if (sub === "shot") { // viewport pictures of the cleaned model: tools\cli asset shot <slug> [--view v] [--live]
+    const wt = await import("../../wt.mjs");
+    if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
+    return (await import("./shot.mjs")).main(root, rest);
+  }
   if (sub === "plan") { // where every stage of a spec writes, nothing written: tools\cli asset plan <slug> [--addon <name>]
     const slug = rest.find((f) => !f.startsWith("--") && f !== addonFlag(rest));
     if (!slug) { console.log("usage: tools\\cli asset plan <slug> [--addon <name>]"); return 2; }
@@ -592,6 +596,8 @@ export async function main(flags, { workbench } = {}) {
        tools\\cli asset new <slug> --kind clothing --base "{GUID}Prefabs/...et" --slot Jacket [--route a|b|c]     a garment (docs/asset-pipeline/clothing.md)
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--addon <name>]     stages: ${STAGES.join(", ")}; clothing: spec, vanilla, textures, fit, import, prefab, verify [--previews] [--no-shots]
        tools\\cli asset plan <slug> [--addon <name>]     the addon and every path the stages write, nothing written (docs/asset-pipeline/README.md "Target addon")
+       tools\\cli asset run <slug> --only clean --live [--discard]     the clean stage in the open Blender, over the bridge (docs/blender-bridge.md)
+       tools\\cli asset shot <slug> [--view iso|front|right|top] [--live]     pictures of the cleaned model in tmp/assets/<slug>/shots/
        tools\\cli asset status [<slug>] | doctor | selftest
        tools\\cli asset anim <slug> [--fix]     moving parts, character clips, effects (docs/asset-pipeline/animation.md)
        tools\\cli asset states <slug> [--fix] [--shots]     inventory, ground, hand and use states (docs/asset-pipeline/states.md)

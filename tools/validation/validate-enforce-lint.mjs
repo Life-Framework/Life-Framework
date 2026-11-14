@@ -1,4 +1,5 @@
 // Ratcheting structural lint over addons/LifeFramework (rules in tools/enforce-lint.mjs).
+// inputs: addons/**, tools/enforce-lint.mjs, tools/link-safety.mjs
 //
 // Every finding prints as `WARN <rule> <file>:<line> <snippet>`. Findings listed
 // in enforce-lint-baseline.json are known debt and pass; a finding not in the

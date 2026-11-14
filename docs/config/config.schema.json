@@ -11,6 +11,116 @@
       "default": 1,
       "description": "Owner file schema version. A file without it is version 1."
     },
+    "catalogue": {
+      "type": "object",
+      "description": "The item catalogue and its outlets (#988): Configs/Catalogue/LF_ItemCatalogue.conf, then each pack overlay of this class (D4), then the owner's `catalogue` section, then (on a client) the server's streamed values.",
+      "properties": {
+        "items": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the item id (pistol_m9, raincoat_green). An id no shipped item has adds one, which must set prefab; an existing id changes only the fields given. removed: true takes the item out of every outlet; a later layer can put it back with removed: false.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
+              "prefab": {
+                "type": "string",
+                "default": ""
+              },
+              "category": {
+                "type": "string",
+                "default": "equipment"
+              },
+              "price": {
+                "type": "integer",
+                "default": 100,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "sellPrice": {
+                "type": "integer",
+                "default": 50,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "legality": {
+                "type": "string",
+                "default": "legal"
+              },
+              "licence": {
+                "type": "string",
+                "default": ""
+              },
+              "concealsFace": {
+                "type": "boolean"
+              },
+              "concealsBuild": {
+                "type": "boolean"
+              },
+              "removed": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "offers": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is outlet/item (gun_counter/pistol_m9): the outlet id a shop counter names, a slash, and the catalogue item id. A new key adds the offer; an existing key changes only the gate fields given. removed: true takes the item off that outlet.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
+              "licence": {
+                "type": "string",
+                "default": ""
+              },
+              "job": {
+                "type": "string",
+                "default": ""
+              },
+              "minRank": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 100
+              },
+              "orgRight": {
+                "type": "string",
+                "default": ""
+              },
+              "removed": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_ItemCatalogueConfig"
+    },
     "crime": {
       "type": "object",
       "description": "The crime catalog config: Configs/Crime/LF_CrimeCatalog.conf, with the owner's `crime` section layered over it.",
@@ -21,6 +131,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "wantedAdd": {
                 "type": "integer",
                 "default": 1,
@@ -576,6 +698,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "prefab": {
                 "type": "string",
                 "default": ""
@@ -614,6 +748,27 @@
       },
       "additionalProperties": false,
       "x-class": "LF_ShopPricesConfig"
+    },
+    "systems": {
+      "type": "object",
+      "description": "The `systems` section: which systems this server runs.",
+      "properties": {
+        "switches": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is a system id: a Feature/<Area> folder name (Farming) or a named part of one (Robbery, Pager), as Configs/Systems/LF_SystemCatalog.conf lists them. Turning a system off hides its actions, refuses its requests and spawns nothing; its saved data is kept, so turning it on again restores it. A framework system (LOCKED), a system with no switch yet (NOT_YET), and turning off one that an enabled system needs are refused at boot, and the system stays on.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_SystemsConfig"
     },
     "vehicles": {
       "type": "object",

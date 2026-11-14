@@ -7,16 +7,18 @@
 //   audit placement [--top 40] [--area <name>] [--layer A.layer,B.layer] [--annex] [--from <out.txt>] [--out dir] [--strict]
 //   audit selftest
 //
+// red-proof: 2026-11-14, the fixture layer's twin crate moved 1 m away printed "FAILED duplicate not named"; restored, OK.
 // red-proof: 2026-11-14, LIMITS.sharedOverlap set to 0.08 printed "place-audit selftest: FAILED cups on one counter"; restored, OK.
 // In-game (LF_PlacementAudit.c): floating / sunk (a trace down from the bounds base), corners hanging
 // off a surface edge, clips through walls and other surfaces, tilt, scale, reach, oriented boxes, doors.
 // Here: overlaps between oriented boxes, props in a door's swing, props on a carriageway, absurd scale,
 // the largest side against tools/place/expected-sizes.json, what is exempt (a hung sign, a sack laid down, a shelf's contents), the allowlist, and the ranking.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadWorld } from "./layers.mjs";
+import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LAYERS_DIR = join(ROOT, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
@@ -481,7 +483,7 @@ export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit")
   rmSync(outFile, { force: true });
   writeFileSync(inFile, inputText(records, extra));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
-  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--local"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--local", "--verbose"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
   const keep = text.split(/\r?\n/).filter((l) => /SUMMARY|^pool:|FAILED|TIMEOUT|error/i.test(l));
   for (const l of keep.slice(-4)) log(`  ${l.trim()}`);
@@ -542,6 +544,9 @@ async function placement(argv) {
     if (testFailed) console.log("audit placement: LF_Test_PlacementAuditTown failed (lines above); ranking what it measured");
   }
   const res = analyse(records, outText, { allow, areas, roads });
+  // Static world checks on the layer entries: duplicates and the per-cell entity budget.
+  const world = worldFindings(records, { allow });
+  const cells = cellBudget(records);
   const top = Number(flags.top ?? 40);
   const fmt = (r, i) => `${String(i + 1).padStart(3)}. ${String(r.score).padStart(5)}  ${r.name} [${r.layer}${r.area ? `, ${r.area}` : ""}] @${r2(r.x)},${r2(r.y)},${r2(r.z)}: ${r.problems.map((p) => p.text).join("; ")}`;
   const byKind = {};
@@ -549,15 +554,50 @@ async function placement(argv) {
   const lines = [
     `placement audit: ${res.ranked.length} of ${res.measured} entities flagged (${res.missing.length} not found in the world, ${res.doors} door leaves checked, sizes: ${res.sizeCovered} covered by expected-sizes.json), ${((Date.now() - t0) / 1000).toFixed(0)} s`,
     `by kind: ${Object.entries(byKind).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(", ") || "none"}`,
+    `world: ${cells.length} cells of ${BUDGET.cell} m, busiest ${cells[0] ? `${cells[0].cell} with ${cells[0].count} of ${BUDGET.limit}` : "none"}; ${world.length} world finding(s)`,
+    ...world.map((w) => `  ${w.text}`),
     ...res.ranked.map(fmt),
   ];
   if (res.missing.length) lines.push("", "not found at their layer position:", ...res.missing.map((e) => `  ${label(e)} [${e.layer}] @${e.x},${e.y},${e.z}`));
   writeFileSync(join(outDir, "report.txt"), lines.join("\n") + "\n");
-  writeFileSync(join(outDir, "report.json"), JSON.stringify({ at: new Date().toISOString(), limits: LIMITS, ...res, missing: res.missing.map((e) => ({ name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z })) }, null, 2));
-  console.log(lines.slice(0, 2 + top).join("\n"));
+  writeFileSync(join(outDir, "report.json"), JSON.stringify({ at: new Date().toISOString(), limits: LIMITS, budget: BUDGET, world, cells, ...res, missing: res.missing.map((e) => ({ name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z })) }, null, 2));
+  console.log(lines.slice(0, 3 + world.length + top).join("\n"));
   if (res.ranked.length > top) console.log(`  ... ${res.ranked.length - top} more`);
   console.log(`report: ${join(outDir, "report.txt")} (json beside it)`);
-  return testFailed || (flags.strict && res.ranked.length) ? 1 : 0;
+  return testFailed || (flags.strict && (res.ranked.length || world.length)) ? 1 : 0;
+}
+
+// The fixture layer (agent-box/fixtures/place-budget/Fixture.layer): a crate and its twin 1 cm apart, a barrel
+// 1.4 m up in the air and five cups in a row. With a cell limit of 5 the cups' cell is over-full; each finding
+// must name its prop or cell. The floating barrel goes through the measured-row path (analyse), the rest is static.
+function worldSelftest(fail) {
+  const recs = loadWorld(ROOT, join(ROOT, "agent-box", "fixtures", "place-budget"));
+  if (recs.length !== 8) fail(`fixture layer entities: ${recs.length}`);
+  const found = worldFindings(recs, { limit: 5 });
+  const dup = found.find((f) => f.kind === "duplicate");
+  if (!dup || !dup.text.includes("FixtureCrate_Twin") || !dup.text.includes("FixtureCrate_A")) fail(`duplicate not named: ${JSON.stringify(found)}`);
+  if (found.filter((f) => f.kind === "duplicate").length !== 1) fail("the cups 0.5 m apart are not duplicates");
+  const over = found.find((f) => f.kind === "budget");
+  if (!over || !over.text.includes("cell 0,0") || !over.text.includes("8 entities") || !over.text.includes("Cup_01 x5")) fail(`over-full cell not named: ${JSON.stringify(found)}`);
+  if (worldFindings(recs, { limit: 50 }).some((f) => f.kind === "budget")) fail("a cell under the limit is flagged");
+  if (worldFindings(recs, { limit: 5, allow: [{ match: "^FixtureCrate_Twin", kind: "duplicate", why: "t" }, { match: "cell:0,0", kind: "budget", why: "t" }] }).length) fail("the allowlist suppresses world findings");
+  const row = "bmin=19.7,1.1,9.7 bmax=20.3,1.7,10.3 gap=1.4 tilt=0 walk=-1 pgap=1.4 clip=none scale=1 on=terrain over=0 drop=0 backed=0 c=20,1.4,10 h=0.3,0.3,0.3 a0=1,0,0 a1=0,1,0 a2=0,0,1 flags=none found=Barrel_01";
+  const floater = recs.findIndex((e) => e.name === "FixtureFloater");
+  const res = analyse(recs, `${floater} ${row}`, {});
+  if (!res.ranked.some((r) => r.name === "FixtureFloater" && r.problems.some((p) => p.kind === "floating"))) fail("the fixture's floating barrel is flagged floating");
+  // The measured bounds list covers every vanilla prefab the layers use, or lists it as unmeasured.
+  const list = readJson(join(ROOT, "tools", "place", "prefab-bounds.json"), null);
+  if (!list?.prefabs) fail("tools/place/prefab-bounds.json missing; run tools\cli place measure");
+  else {
+    const addon = join(ROOT, "addons", "LifeFramework");
+    const unlisted = new Set();
+    for (const f of readdirSync(LAYERS_DIR).filter((n) => n.endsWith(".layer"))) {
+      for (const m of readFileSync(join(LAYERS_DIR, f), "utf8").matchAll(/"{[0-9A-Fa-f]{16}}([^"]+.et)"/g)) {
+        if (!existsSync(join(addon, m[1])) && !list.prefabs[m[1]] && !(list.unmeasured ?? []).includes(m[1])) unlisted.add(m[1]);
+      }
+    }
+    if (unlisted.size) fail(`vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`);
+  }
 }
 
 function selftest() {
@@ -659,6 +699,7 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   const sunkM = { gap: -0.346, pgap: -0.345, over: 0, tilt: 0, scale: 1, walk: -1, backed: true, clip: [], box: { h: [0.75, 0.52, 0.56] } };
   if (!singleProblems(kioskCounter, sunkM).some((p) => p.kind === "sunk")) fail("a backed prop named Roadmap_* sunk 0.35 m into a floor is flagged");
   if (singleProblems({ name: "Roadmap_Sign_Map", prefab: "Prefabs/Props/Signs/Map_01.et" }, sunkM).length !== 0) fail("a real map on a wall is still hung");
+  worldSelftest(fail);
   if (!process.exitCode) console.log("place-audit selftest: OK");
   return process.exitCode ?? 0;
 }

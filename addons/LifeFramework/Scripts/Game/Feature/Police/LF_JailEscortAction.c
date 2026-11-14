@@ -28,6 +28,9 @@ class LF_JailEscortAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!GetOwner() || !user)
 			return false;
 
@@ -66,6 +69,9 @@ class LF_JailEscortAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_JailEscortAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

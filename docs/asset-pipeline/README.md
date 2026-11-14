@@ -88,6 +88,9 @@ Read this before any `generate`.
 - Blender 4.5 LTS at `C:\Users\jaspe\Tools\blender-4.5.9-windows-x64\blender.exe`, or set
   `LF_BLENDER`. The clean stage needs no add-on.
 - Arma Reforger Tools (Workbench), which `tools\cli build` already uses.
+- Optional: the LF Bridge extension (`tools\cli blender install`) lets `asset run <slug> --only clean --live`
+  and `tools\cli blender show <slug>` use the Blender window you have open, and `asset shot <slug>`
+  take pictures of the cleaned model. Headless stays the default ([blender-bridge.md](../blender-bridge.md)).
 - `tools\cli asset doctor` checks both and prints the Meshy balance.
 
 ## Kinds

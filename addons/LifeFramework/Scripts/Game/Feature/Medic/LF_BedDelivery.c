@@ -258,6 +258,9 @@ class LF_BedDeliveryAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Medic"))
+			return false;
+
 		return LF_BedDelivery.CanOffer(user);
 	}
 
@@ -270,6 +273,9 @@ class LF_BedDeliveryAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Medic", "LF_BedDeliveryAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

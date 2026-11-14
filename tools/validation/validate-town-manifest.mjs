@@ -1,4 +1,5 @@
 // Town manifest (agent-box/town.mjs) against the DebugWorld layers: every M1
+// inputs: agent-box/**
 // site resolves to exactly one placed entity (or its prefab placements) that
 // carries the expected actions, and sits within 30 m of another site. Signs
 // are warnings until the manifest sets requireSigns (M1-09), then failures.

@@ -220,7 +220,7 @@ moves and the config is not edited in the same change):
 between two live entities (`LF_QuantityComponent.c:290`, the inventory UI
 key) are safe.
 
-**Batch 0 (2026-11-12, #323):** done. `LF_Utils.SamePrefab` / `PrefabGuid` replace
+**Batch 0 (2026-11-12, #323):** done. Proof 2026-11-14: `--tier all` is 480/480 green normally and again with the `Village_Buildings`, `Village_Dressing` and `Village_Roads` layers removed from DebugWorld, so no test depends on them. `LF_Utils.SamePrefab` / `PrefabGuid` replace
 both helpers above, and every site in the two lists compares by GUID, plus
 `LF_PoliceRanks.ContainsPrefab`, `LF_Contraband.IsContraband` and the store's
 stray-copy check. Single-prefab `ShopPrices.conf` rules moved to `m_Prefab` (GUID).

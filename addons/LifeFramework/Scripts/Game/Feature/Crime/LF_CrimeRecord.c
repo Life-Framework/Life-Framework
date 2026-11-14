@@ -80,6 +80,9 @@ class LF_CrimeRecord
 	//! \return False when the event has no account or offence.
 	static bool Record(notnull LF_OnCrimeCommitted crime)
 	{
+		if (LF_Systems.Refuses("Crime", "crime record"))
+			return false;
+
 		if (crime.m_sPlayerUid.IsEmpty() || crime.m_sOffence.IsEmpty())
 		{
 			LF_Debug.Warn(FEATURE, "not counted: crime event has no account or offence");

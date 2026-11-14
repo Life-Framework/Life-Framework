@@ -1,4 +1,5 @@
 // tools/validation/validate-action-reach.mjs
+// inputs: addons/**, docs/action-anchors.md, tools/actions/**
 //
 // Warning-level check: a world interactable's action context should sit on its
 // mesh and reach a standing player. A point more than 0.5 m outside the mesh

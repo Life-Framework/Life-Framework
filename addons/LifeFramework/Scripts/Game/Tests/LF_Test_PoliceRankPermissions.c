@@ -8,7 +8,7 @@
 // [LFTEST]   - a new officer jails a wanted robber
 // LF_Jail logged "arrest refused: rank 0 is below the arrest rank 1". Restored to 0; green.
 
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 class LF_Test_PoliceRankPermissions : LF_Test
 {
 	override string GetName()

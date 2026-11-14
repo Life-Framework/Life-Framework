@@ -416,6 +416,9 @@ class LF_HotwireAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		return LF_Hotwire.ShowsHotwire(GetOwner(), user);
 	}
 
@@ -433,6 +436,9 @@ class LF_HotwireAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_HotwireAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

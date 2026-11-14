@@ -9,7 +9,8 @@ enum LF_EATMRefusal
 	NOT_ENOUGH_BALANCE,
 	POCKETS_FULL,
 	TOO_FAR,
-	NO_ACCOUNT
+	NO_ACCOUNT,
+	SYSTEM_OFF
 }
 
 class LF_ATMRefusal
@@ -36,6 +37,9 @@ class LF_ATMRefusal
 		if (reason == LF_EATMRefusal.NO_ACCOUNT)
 			return "#LF-ATM_RefuseAccount";
 
+		if (reason == LF_EATMRefusal.SYSTEM_OFF)
+			return "#LF-Systems_Off";
+
 		return string.Empty;
 	}
 
@@ -43,7 +47,7 @@ class LF_ATMRefusal
 	//! A reason that arrives over the wire as an int; anything unknown reads as no account.
 	static LF_EATMRefusal FromWire(int reason)
 	{
-		if (reason < LF_EATMRefusal.NONE || reason > LF_EATMRefusal.NO_ACCOUNT)
+		if (reason < LF_EATMRefusal.NONE || reason > LF_EATMRefusal.SYSTEM_OFF)
 			return LF_EATMRefusal.NO_ACCOUNT;
 
 		return reason;

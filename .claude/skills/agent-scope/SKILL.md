@@ -21,6 +21,13 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    `tools\cli test --no-build --only <LF_Test_Class>` (~10 s); run
    `tools\cli validate` as often as you like (it skips the Workbench compile; a
    compile error fails `test`). Run `--tier all` once, at the end.
+   **Output is already compact.** `validate`, `test`, `session up`, `look`, `wt gate|ship`,
+   `asset run`, `harness.mjs flow` and the `session.mjs <proof>` verbs print one
+   `SUMMARY <cmd> ok|fail ... log=<path>` line, then only the failing items with file:line and the
+   exact error. Do not pipe them through `tail`, `head` or `Select-Object`: that is how the line you
+   needed got cut. The full transcript is the `log=` file under `<worktree>\tmp\logs\`; `grep -n`
+   it or read a line range. `--verbose` prints everything as before
+   (`docs/agent-budget.md` "Compact command output").
 4. **Main.** Merge `origin/main` only when GitHub says `CONFLICTING` or you need
    code from it. `wt ship` handles the rest.
 5. **Ship.** Commit (message ends with
@@ -55,7 +62,11 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
 8. **Close what you opened.** Stop servers, Workbench, and game clients you
    started (`tools\cli host stop`, close the play session). Leave no process
    holding a lock.
-9. **Report.** A few lines: what changed, timings or evidence, what stays
-   manual. The last line is exactly
-   `PR <full URL>, head <SHA>, checks and reviews <state>`
-   (`gh pr view <n> --json statusCheckRollup,reviewDecision,mergeStateStatus`).
+9. **Budget.** Your agent file sets a tool-call budget (`docs/agent-budget.md`).
+   At it, hand off at the next checkpoint: commit to `ws/<slug>`, write
+   `tmp/handoff-<slug>.md` (at most 15 lines), and end with
+   `RESUME <worktree>\tmp\handoff-<slug>.md`.
+10. **Report.** Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, and
+   last exactly `PR <full URL>, head <SHA>, checks and reviews <state>`
+   (`gh pr view <n> --json statusCheckRollup,reviewDecision,mergeStateStatus`),
+   or the `RESUME` line.

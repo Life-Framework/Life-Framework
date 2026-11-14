@@ -125,6 +125,11 @@ addRepoDoc("docs/setup.md", { slug: "setup", group: "Start here", order: 0, titl
 addRepoDoc("docs/playtest.md", { slug: "playtest", group: "Start here", order: 1, title: "Open the playtest" });
 addRepoDoc("CONTRIBUTING.md", { slug: "contributing", group: "Start here", order: 2 });
 
+addRepoDoc("docs/owner/install.md", { slug: "owner-install", group: "For server owners", order: 0, title: "Install a server" });
+addRepoDoc("docs/owner/add-job.md", { slug: "owner-add-job", group: "For server owners", order: 1, title: "Add a delivery job" });
+addRepoDoc("docs/owner/add-shop.md", { slug: "owner-add-shop", group: "For server owners", order: 2, title: "Add a shop" });
+addRepoDoc("docs/config/owner-config.md", { slug: "owner-config", group: "For server owners", order: 3, title: "Check your owner config" });
+
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
 // Lands in its own PR; addRepoDoc skips a file that is not there yet.
 addRepoDoc("docs/architecture/core-vs-pack.md", { slug: "core-vs-pack", group: "Direction & decisions", order: 1 });
