@@ -6857,6 +6857,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1. Why: %2. Hours: %3."
      Comment "Applications sheet detail line; %1 name, %2 reason, %3 availability."
     }
+    CustomStringTableItem "{8A45E10EB5B5A7DF}" {
+     Id "LF-PoliceAppGm_NeedAdministrator"
+     Target_en_us "Only an administrator can approve or reject. Moderators may read."
+     Comment "Applications sheet status when a moderator or operator tries to decide (#1288)."
+    }
     CustomStringTableItem "{95CC9997DB5D0E03}" {
      Id "LF-PoliceAppGm_PickFirst"
      Target_en_us "Read an application, then approve or reject it."
@@ -6879,7 +6884,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1EF55798C921D26C}" {
      Id "LF-PoliceAppGm_Title"
-     Target_en_us "POLICE APPLICATIONS"
+     Target_en_us "{police} APPLICATIONS"
      Comment "Game Master applications sheet title (#1288)."
     }
     CustomStringTableItem "{7064E4B84B8AE16A}" {

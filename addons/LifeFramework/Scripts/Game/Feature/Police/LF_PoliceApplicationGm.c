@@ -6,13 +6,16 @@
 //!
 //! What the client may send: nothing to list, and a verb plus a target account uid to decide. Who
 //! asks is read from the player controller the RPC arrived on, never from the payload; staff is
-//! re-checked on every call (the roster file or the engine administrator flag). The verb must be
+//! re-checked on every call (the roster file or the engine administrator flag). Any staff level may
+//! list and read (moderators read the incident panel too); approve and reject need the roster level
+//! `administrator` or the engine administrator flag, since only administrators hold in-game powers
+//! (#313, #1320). The verb must be
 //! one of the two below and the target uid is validated by LF_PoliceApplicationStaff.
 //!
 //! Row (pipe separated): uid|name|why|availability|waitedSeconds. Free text has the separator and a
 //! leading # (a localization key) taken out, so a form field cannot forge a row or a string.
 //------------------------------------------------------------------------------------------------
-class LF_PoliceApplicationGm
+class LF_PoliceApplicationGm : LF_PoliceApplicationStaff
 {
 	static const string FEATURE = "PoliceAppGM";
 
@@ -20,12 +23,21 @@ class LF_PoliceApplicationGm
 	static const int VERB_REJECT = 2;
 
 	static const int MAX_ROWS = 30;
-	static const int MAX_TEXT = 160;
+	static const string LEVEL_ADMINISTRATOR = "administrator";
+	static const int MAX_TEXT = 160;	// lf-fixed: a row must fit the sheet's detail line, not a server tunable
 	static const string SEP = "|";
 	//! A client that asks faster than this is dropped (each ask reads the roster file).
-	static const int MIN_ASK_INTERVAL_MS = 300;
+	static const int MIN_ASK_INTERVAL_MS = 300;	// lf-fixed: flood guard on the RPC, not a gameplay tunable
 
 	protected static ref map<int, int> s_mLastAskMs = new map<int, int>();
+	protected static int s_iLevelRefusals;
+
+	//------------------------------------------------------------------------------------------------
+	//! How many decisions were refused (and logged) because the caller's level is below administrator.
+	static int LevelRefusals()
+	{
+		return s_iLevelRefusals;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Pure: wire rows for the open applications, oldest first, at most MAX_ROWS.
@@ -59,6 +71,52 @@ class LF_PoliceApplicationGm
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the roster level of uid (lower case), "" when the uid is not on the roster.
+	static string LevelOf(string uid)
+	{
+		if (uid.IsEmpty())
+			return "";
+
+		string path = GetStaffPath();
+		if (!FileIO.FileExists(path))
+			return "";
+
+		FileHandle handle = FileIO.OpenFile(path, FileMode.READ);
+		if (!handle)
+		{
+			LF_Debug.Error(FEATURE, string.Format("cannot open the staff roster: %1", path));
+			return "";
+		}
+
+		string found;
+		string line;
+		while (handle.ReadLine(line) >= 0)
+		{
+			string lineUid;
+			string level;
+			if (ParseRosterLine(line, lineUid, level) && lineUid == uid)
+			{
+				level.ToLower();
+				found = level;
+				break;
+			}
+		}
+		handle.Close();
+		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: whether the caller may approve or reject (in-game powers): the engine administrator
+	//! flag, or the roster level administrator.
+	static bool MayDecide(string callerUid, bool engineAdmin)
+	{
+		if (engineAdmin)
+			return true;
+
+		return LevelOf(callerUid) == LEVEL_ADMINISTRATOR;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: one approve or reject. Returns "" when it went through, else the refusal key.
 	//! \param[out] targetName The applicant's name for the answer line, "" when refused.
 	static string AnswerDecision(string callerUid, bool engineAdmin, int verb, string targetUid, int now, out string targetName)
@@ -70,8 +128,21 @@ class LF_PoliceApplicationGm
 			return "#LF-PoliceAppGm_BadRequest";
 		}
 
+		if (!IsStaff(callerUid, engineAdmin))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("decision by %1 refused: not staff", callerUid));
+			return "#LF-PoliceApp_NotAdmin";
+		}
+
+		if (!MayDecide(callerUid, engineAdmin))
+		{
+			s_iLevelRefusals++;
+			LF_Debug.Warn(FEATURE, string.Format("decision by %1 refused: roster level '%2' is not %3", callerUid, LevelOf(callerUid), LEVEL_ADMINISTRATOR));
+			return "#LF-PoliceAppGm_NeedAdministrator";
+		}
+
 		string name;
-		if (LF_PoliceApplicationStaff.IsValidUid(targetUid))
+		if (IsValidUid(targetUid))
 		{
 			LF_PoliceApplication open = LF_PoliceApplications.FindOpen(targetUid);
 			if (open)

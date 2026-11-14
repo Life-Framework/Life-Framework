@@ -29,7 +29,7 @@ class LF_PoliceApplicationGmPanel
 	static array<ref LF_UIPart> BuildParts()
 	{
 		array<ref LF_UIPart> parts = {};
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "PoliceAppGmTitle", "#LF-PoliceAppGm_Title"));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "PoliceAppGmTitle", LF_Terms.Text("#LF-PoliceAppGm_Title")));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_STATUS, "#LF-PoliceAppGm_Waiting"));
 		parts.Insert(LF_UIPart.CreateList(PART_LIST));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RULE, "PoliceAppGmRule", ""));

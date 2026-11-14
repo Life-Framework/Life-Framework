@@ -1,4 +1,4 @@
-// red-proof: pending
+// red-proof: RedProof() skips the staff approve: "RED PROOF OK (all 1 listed test(s) fail with the hook on)", red lines "the answer names the applicant (expected 'Ann Lee', got '')" (2026-11-15)
 // tier: LOGIC
 //! #1288: the server handlers behind the Game Master applications panel. A non-staff sender is
 //! refused and changes nothing; staff approve and reject; a bad verb or target is refused; free text
@@ -23,13 +23,15 @@ class LF_Test_PoliceApplicationGmRpc : LF_Test
 		FileIO.DeleteFile(rosterPath);
 
 		string staff = "test-gm-staff";
+		string moderator = "test-gm-moderator";
 		string civilian = "test-gm-civilian";
 		string ann = "test-gm-ann";
 		string bo = "test-gm-bo";
 		int now = 3000000;
 
 		FileHandle handle = FileIO.OpenFile(rosterPath, FileMode.WRITE);
-		handle.WriteLine(staff);
+		handle.WriteLine(staff + " Administrator # Test Admin");
+		handle.WriteLine(moderator + " moderator # Test Mod");
 		handle.Close();
 
 		ctx.EqualStr("", LF_PoliceApplications.Submit(ann, "Ann Lee", "To help", "Evenings", false), "ann's application is filed");
@@ -46,6 +48,20 @@ class LF_Test_PoliceApplicationGmRpc : LF_Test
 		ctx.EqualStr("", name, "a refusal names nobody");
 		ctx.True(LF_PoliceApplications.HasOpen(ann), "the refused approve left ann open");
 		ctx.False(LF_WhitelistManager.IsWhitelistedForFaction(ann, LF_EFactionType.POLICE), "and off the police roster");
+
+		// A moderator (#1320 roster level): may list, may not decide; the refusal is logged.
+		ctx.EqualStr("moderator", LF_PoliceApplicationGm.LevelOf(moderator), "the roster level is read");
+		ctx.EqualStr("administrator", LF_PoliceApplicationGm.LevelOf(staff), "the level is compared in lower case");
+		ctx.EqualStr("", LF_PoliceApplicationGm.LevelOf(civilian), "an unlisted uid has no level");
+		LF_PoliceApplicationGm.AnswerList(moderator, false, now, refusal);
+		ctx.EqualStr("", refusal, "a moderator may list");
+		int refusalsBefore = LF_PoliceApplicationGm.LevelRefusals();
+		ctx.EqualStr("#LF-PoliceAppGm_NeedAdministrator", LF_PoliceApplicationGm.AnswerDecision(moderator, false, LF_PoliceApplicationGm.VERB_APPROVE, ann, now, name), "a moderator approve is refused");
+		ctx.EqualStr("#LF-PoliceAppGm_NeedAdministrator", LF_PoliceApplicationGm.AnswerDecision(moderator, false, LF_PoliceApplicationGm.VERB_REJECT, bo, now, name), "a moderator reject is refused");
+		ctx.Equal(refusalsBefore + 2, LF_PoliceApplicationGm.LevelRefusals(), "both moderator refusals were logged");
+		ctx.True(LF_PoliceApplications.HasOpen(ann), "the moderator approve left ann open");
+		ctx.False(LF_WhitelistManager.IsWhitelistedForFaction(ann, LF_EFactionType.POLICE), "and off the police roster");
+		ctx.Equal(0, LF_PoliceApplications.LastRejectedAt(bo), "and the moderator reject started no cooldown");
 
 		// Staff list: rows are flat, free text cannot carry the separator or a string key.
 		rows = LF_PoliceApplicationGm.AnswerList(staff, false, now, refusal);
