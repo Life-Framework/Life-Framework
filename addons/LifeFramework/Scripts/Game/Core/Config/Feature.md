@@ -365,6 +365,8 @@ schema, `/config` form and reference page list them. A `config.json` that names 
 
 ## Prefab slots (#964)
 
+_#1128 added `hospital_bill`, `fine_ticket`, `jail_slip`, `store_receipt`, `evidence_casing|bag|footprint|statement`, `phone_handset`, `notice_board_face`, `sign_face`, `courier_parcel`. Skipped: prefabs also named by path in `ShopPrices.conf`, `ResourceChains.conf`, the fence NPC or another prefab (drill, keycard, fence charge, lockpick, car parts, contraband, scanner, service radio, vehicle key, iron nugget/bar); a slot swap there would leave those references on the old prefab. Uniform outfits live in the generated roles table; the light bar, pager and vault door have no script-chosen prefab._
+
 A system that spawns or hands out an item asks for the prefab by slot id, so a pack changes the
 look without child prefabs of core items or script of its own.
 

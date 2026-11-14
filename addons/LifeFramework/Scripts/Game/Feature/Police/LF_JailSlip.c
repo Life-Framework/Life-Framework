@@ -185,7 +185,14 @@ class LF_JailSlipRules
 //! Server helpers: find the slip a prisoner carries and grant one.
 class LF_JailSlip
 {
-	static const ResourceName PREFAB = "{4C1A9E7B52D83F60}Prefabs/Items/Roleplay/SentenceSlip.et";
+	//! The prefab slot (#1128): The sentence slip a jailed character carries.
+	static const string SLOT_SLIP = "jail_slip";
+
+	//! The prefab (slot "jail_slip"), or empty when no usable prefab resolves (logged).
+	static ResourceName Prefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_SLIP);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Every sentence slip in the character's inventory or hands, each counted once.
@@ -273,17 +280,17 @@ class LF_JailSlip
 			return null;
 		}
 
-		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(Prefab(), character.GetOrigin());
 		if (!item)
 		{
-			LF_Debug.Error("Jail", "slip not granted: prefab did not spawn " + PREFAB);
+			LF_Debug.Error("Jail", "slip not granted: prefab did not spawn " + Prefab());
 			return null;
 		}
 
 		LF_JailSlipComponent slip = LF_JailSlipComponent.Cast(item.FindComponent(LF_JailSlipComponent));
 		if (!slip)
 		{
-			LF_Debug.Error("Jail", "slip not granted: " + PREFAB + " has no LF_JailSlipComponent");
+			LF_Debug.Error("Jail", "slip not granted: " + Prefab() + " has no LF_JailSlipComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}

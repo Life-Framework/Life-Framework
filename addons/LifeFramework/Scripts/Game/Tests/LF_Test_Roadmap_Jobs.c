@@ -77,7 +77,7 @@ class LF_Test_Roadmap_JobsWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		Resource parcel = Resource.Load(LF_CivilianJob.PARCEL_PREFAB);
+		Resource parcel = Resource.Load(LF_CivilianJob.ParcelPrefab());
 		ctx.True(parcel.IsValid(), "hand-carry parcel prefab loads");
 		Resource fuel = Resource.Load(LF_CivilianJob.FUEL_PREFAB);
 		ctx.True(fuel.IsValid(), "fuel can prefab loads");

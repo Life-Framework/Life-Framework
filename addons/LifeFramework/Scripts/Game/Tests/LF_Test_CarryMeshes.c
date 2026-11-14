@@ -1,5 +1,5 @@
 // red-proof: observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_CarryMeshes` and
-// LF_CivilianJob.PARCEL_PREFAB pointed back at the bare HandCarryItem_Base.et (the old cargo):
+// LF_CivilianJob.ParcelPrefab() pointed back at the bare HandCarryItem_Base.et (the old cargo):
 // [LFTEST] FAIL items/carry-meshes
 // [LFTEST]   - the courier parcel has a mesh
 // Restored to LF_Parcel.et; green.
@@ -16,7 +16,7 @@ class LF_Test_CarryMeshes : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		ExpectMesh(ctx, LF_CivilianJob.PARCEL_PREFAB, "the courier parcel");
+		ExpectMesh(ctx, LF_CivilianJob.ParcelPrefab(), "the courier parcel");
 		ExpectMesh(ctx, LF_CivilianJob.FUEL_PREFAB, "the fuel can");
 		ExpectMesh(ctx, LF_Bank.BagPrefab(), "the bank bag");
 
