@@ -167,7 +167,9 @@
   are per account (`LF_PoliceApplications.ApplicantUid`). Every character-scoped record is keyed
   by the character's record key (`LF_Utils.GetPlayerUID`; slot 1 = the account
   uid, later slots their own id; the key is replicated on the body for clients);
-  whitelists and staff actions use `LF_Utils.GetAccountUID`. Wanted level, police
+  whitelists and staff actions use `LF_Utils.GetAccountUID`. An account change
+  replicates to its own player's body only, and the police count once a frame (#716,
+  `account/publish-cost`). Wanted level, police
   rank and duty totals belong to the character (`LF_CharacterStanding`). An old
   save loads its one character as slot 1 with nothing rewritten
   (`docs/persistence.md`). Tests `account/characters-per-account`,
@@ -638,6 +640,7 @@
   active) and logs `LF_Debug` under `Persistence`.
 - ✅ A continued save that never reaches the store read (written before the 2026-11-09 EL_ to LF_ rename, pre-release save reset) logs one `LF_Debug.Warn` "save predates the LF_ rename; starting fresh" at `ACTIVE` and runs fresh, no partial load (verified 2026-11-09 with an old save on the test server; docs/persistence.md "Save reset"). Since #980 the line is an `LF_Debug.Error` "continued save never reached the LF store" (a game update that drops saves looks the same) and autosave pauses so the save on disk is kept.
 - 🟡 Game updates never cost a save (#980): each save carries a build stamp (`buildstamp` payload, save version 32, `LF_SaveStamp`; the engine's `meta-info.json` `m_sGameVersion` too). A load from another build warns with both builds; a load that loses a payload logs `save load damaged` and pauses autosave. `tools\cli host start` refuses a save from another build until `tools\cli host preflight` passes: back up, boot the save on the installed build, check `save loaded:`, stop, and restore the backup on any failure (`host restore` by hand). Proof: `persist/save-build-stamp`, `tools\cli e2e --old-build`, a live preflight on a faked 1.8.0.13 save. Ops: `docs/ops/game-updates.md`.
+- 🟡 Renamed content still loads (#965): saves name content by stable id (a prefab by its GUID, a job, quest, chain or crop by its config id, a place by its key), and a pack ships an alias table (`LF_SaveAliasesConfig`, listed in the mission header's config overlays; the core file is empty). Every store read loads old ids through it and logs each alias used once. A prefab that no longer loads is logged once and held in the stored inventory, inside its container, through every save, and comes back once the content or its alias returns. Save format unchanged (version 32). Proof: `persist/save-aliases`, `persist/held-missing-content`, `tools\cli wt e2e <slug> --content-ids` (three boots: rename, hold, restore). Audit of what each payload stores: `docs/persistence.md` "Stable ids".
 - ✅ Shutdown save is engine-owned: the engine requests the SHUTDOWN save point
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual

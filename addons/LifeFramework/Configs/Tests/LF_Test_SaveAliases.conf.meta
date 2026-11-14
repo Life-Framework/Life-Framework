@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9E8A2122916530CF}Configs/Tests/LF_Test_SaveAliases.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
