@@ -126,6 +126,7 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
    }
   }
   LF_DebugWorldCollisionRepairComponent "{A5E5E5A1000000F1}" {
+   m_vRepairCenter 256 0 256
   }
   SCR_TimeAndWeatherHandlerComponent "{3ED2694D1CD226FD}" {
    m_iStartingHours 9

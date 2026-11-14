@@ -6,5 +6,21 @@ GenericEntity {
   }
   Hierarchy "{2F7A6D0C93E1B548}" {
   }
+  LF_AssetAnimComponent "{C6D50828B4CD7CAA}" {
+   m_aBones {
+    LF_AssetAnimBone "{9C900C63516408C1}" {
+     m_sBone "strand_r"
+     m_eMotion HINGE
+     m_vAngles 0 70 0
+     m_fSeconds 0.5
+    }
+    LF_AssetAnimBone "{3855B8F372C43DDA}" {
+     m_sBone "strand_l"
+     m_eMotion HINGE
+     m_vAngles 0 -70 0
+     m_fSeconds 0.5
+    }
+   }
+  }
  }
 }

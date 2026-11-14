@@ -9081,6 +9081,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "That is turned off on this server."
      Comment "Caption or toast when a player reaches something whose system the server owner turned off: a till robbery begun before the switch, a farm plot (#960)."
     }
+    CustomStringTableItem "{DF8BF4F56126B7CA}" {
+     Id "LF-Restrain_Interrupted"
+     Target_en_us "The cuffing was interrupted."
+     Comment "Toast to the officer when the cuff or uncuff hold stops by itself: someone moved out of reach, the cuffs left the hand, or a rule no longer holds."
+    }
   }
  }
 }

@@ -81,6 +81,10 @@ class LF_HarnessSound
 		}
 
 		bool audible = AudioSystem.IsAudible(LF_StunBuzz.PROJECT, LF_StunBuzz.EVENT, character.GetOrigin()) >= 0;
+		// The handcuffs' clicks (LF_Restraint.PlayClick): do the project and its events resolve in the engine.
+		bool closeAudible = AudioSystem.IsAudible(LF_Restraint.CLICK_PROJECT, LF_Restraint.CLICK_CLOSE, character.GetOrigin()) >= 0;
+		bool openAudible = AudioSystem.IsAudible(LF_Restraint.CLICK_PROJECT, LF_Restraint.CLICK_OPEN, character.GetOrigin()) >= 0;
+		detail += string.Format(" cuffs_close_audible=%1 cuffs_open_audible=%2", closeAudible, openAudible);
 		detail += string.Format(" stun_loop_audible=%1 stun_buzz_playing=%2 started=%3 stopped=%4", audible, LF_StunBuzz.GetPlayingCount(), LF_StunBuzz.GetStartedCount(), LF_StunBuzz.GetStoppedCount());
 		LF_Debug.Info("AgentHarness", "sound probe: " + detail);
 		return detail;
