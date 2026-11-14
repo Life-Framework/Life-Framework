@@ -188,12 +188,15 @@ class LF_PrefabSlots
 	static const string FEATURE = "PrefabSlots";
 
 	protected static ref map<string, ResourceName> s_mResolved;
+	//! Slot -> the core file's default prefab (what an older save holds when a pack swapped the slot).
+	protected static ref map<string, ResourceName> s_mCoreDefault;
 	protected static ref map<string, bool> s_mWarned;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mResolved = null;
+		s_mCoreDefault = null;
 		s_mWarned = null;
 	}
 
@@ -217,6 +220,37 @@ class LF_PrefabSlots
 		}
 
 		return ResourceName.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Older prefabs of a slot whose items may still exist (#1130): the core default when a pack
+	//! swapped the slot, and every prefab the save alias table (#965) leads to the slot's prefab.
+	//! A system that counts a slot's items counts these too, so a swap after a first save loses
+	//! nothing. Only prefabs that load are listed. Nothing is added for an unswapped slot.
+	static void LegacyPrefabs(string slot, notnull array<ResourceName> legacy)
+	{
+		ResourceName current = Get(slot);
+		if (current.IsEmpty())
+			return;
+
+		ResourceName coreDefault;
+		if (s_mCoreDefault && s_mCoreDefault.Find(slot, coreDefault) && !LF_Utils.SamePrefab(coreDefault, current) && LF_SaveIds.PrefabLoads(coreDefault))
+			legacy.Insert(coreDefault);
+
+		array<ResourceName> aliased = {};
+		LF_SaveIds.PrefabSourcesOf(current, aliased);
+		foreach (ResourceName source : aliased)
+		{
+			bool known;
+			foreach (ResourceName have : legacy)
+			{
+				if (LF_Utils.SamePrefab(have, source))
+					known = true;
+			}
+
+			if (!known && LF_SaveIds.PrefabLoads(source))
+				legacy.Insert(source);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -252,6 +286,7 @@ class LF_PrefabSlots
 	static void Resolve()
 	{
 		s_mResolved = new map<string, ResourceName>();
+		s_mCoreDefault = new map<string, ResourceName>();
 		LF_PrefabSlotsConfig core = LF_PrefabSlotsConfig.LoadCore();
 		if (!core)
 			return;
@@ -266,6 +301,7 @@ class LF_PrefabSlots
 
 			string slot = coreSlot.m_sSlot;
 			ResourceName prefab = coreSlot.m_Prefab;
+			s_mCoreDefault.Set(slot, coreSlot.m_Prefab);
 			bool fromPack;
 			LF_PrefabSlot packSlot = layered.Find(slot);
 			if (!packSlot)
