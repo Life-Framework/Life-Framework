@@ -16,7 +16,7 @@
 //   mcp verify [name]                 Boot the server briefly to prove it starts
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
-//   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
+//   validate [--full|--all]           Run the checks in tools/validation/ whose inputs changed since their last green run (--all: every check; --full: every check plus the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
@@ -36,9 +36,12 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
+import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
+import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
@@ -598,7 +601,7 @@ const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
 // their time is PowerShell start-up). Output is printed in file order.
-const AREA_CONCURRENCY = 8;
+const AREA_CONCURRENCY = Math.max(8, Math.min(12, os.cpus().length));
 
 function invokeScriptAsync(full, opts = {}) {
   let cmd = process.execPath;
@@ -637,14 +640,25 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   // base game or MCP build). Each skip is printed so a run never hides one.
   const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()).filter(Boolean));
   const areaStarted = Date.now();
+  // Incremental mode (plain `validate` and `dev` only): a check whose declared inputs are
+  // unchanged since its last green run is skipped and counted. Full runs never use it.
+  const isValidate = area === "validate";
+  const state = isValidate ? loadState(root) : null;
+  let inc = null;
+  if (isValidate && opts.incremental && !opts.full && !incrementalOff()) {
+    inc = plan(root, dir, scripts, state, snapshotFiles(root));
+  }
   const jobs = scripts.map((s) => {
     if (skip.has(s)) return { s, skipped: "LF_VALIDATE_SKIP" };
-    if (area === "validate" && !opts.full && FULL_ONLY.has(s)) {
+    if (isValidate && !opts.full && FULL_ONLY.has(s)) {
       return { s, skipped: "Workbench compile: runs in 'validate --full', ci, wt gate, wt ship" };
     }
+    if (inc?.get(s)?.unchanged) return { s, skipped: inc.get(s).why, incremental: true };
     return { s };
   });
-  const queue = jobs.filter((j) => !j.skipped);
+  // Longest first (from the last recorded times) so one slow check never starts last.
+  const lastSecs = (j) => state?.checks[j.s]?.secs ?? 0;
+  const queue = jobs.filter((j) => !j.skipped).sort((a, b) => lastSecs(b) - lastSecs(a));
   const env = toolEnv();
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
@@ -655,9 +669,11 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   };
   await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
   let failed = 0;
+  let skippedIncr = 0;
   for (const job of jobs) {
     if (job.skipped) {
-      console.log(`SKIP  ${area}/${job.s} (${job.skipped})`);
+      if (job.incremental) skippedIncr++;
+      else console.log(`SKIP  ${area}/${job.s} (${job.skipped})`);
       continue;
     }
     const { res } = job;
@@ -667,7 +683,23 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok) failed++;
   }
-  console.log(`${area}: ${scripts.length} check(s), ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
+  const ran = jobs.filter((j) => j.res);
+  if (isValidate) {
+    // Record a green run (fingerprint + time) only when the check passed; a full run records the
+    // time and a fingerprint too, since it proves the same inputs. Failing checks are forgotten.
+    const fps = plan(root, dir, scripts, state, snapshotFiles(root)); // after the run: generators rewrite their own inputs
+    for (const j of ran) {
+      if (j.res.status === 0) state.checks[j.s] = { fp: fps.get(j.s)?.fp ?? null, secs: j.secs, at: Date.now() };
+      else delete state.checks[j.s];
+    }
+    saveState(root, state);
+    if (ran.length > 1) {
+      const slow = [...ran].sort((a, b) => b.secs - a.secs).slice(0, 3).map((j) => `${j.s} ${j.secs.toFixed(1)} s`).join(", ");
+      console.log(`slowest: ${slow}`);
+    }
+    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+  }
+  console.log(`${area}: ${ran.length} check(s) run, ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
   return failed ? 1 : 0;
 }
 
@@ -1965,9 +1997,14 @@ function cmdSessionUp(root, dir, flags) {
     if (flags.includes("--wait")) console.log(`session: the session lane is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
     lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
-    if (e.refusal) console.log(`FAIL  ${e.message}`);
+    if (e.refusal) {
+      console.log(`FAIL  ${e.message}`);
+      return 1;
+    }
+    // LANE_BUSY: the router (agent-box/session.mjs) queues the request again for any machine.
+    if (process.env.LF_SESSION_ROUTED === "1" && !flags.includes("--wait")) console.log(`session: no lane here after all (${e.message})`);
     else console.log(`FAIL  the session lane is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
-    return 1;
+    return pool.LANE_BUSY_CODE;
   }
   const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
   const lanePort = lane?.port ?? 2001;
@@ -2388,6 +2425,12 @@ function cmdSession(args) {
     console.log(SESSION_USAGE);
     return 0;
   }
+  // `toolscli session up` goes through the router (agent-box/session.mjs), which picks the machine:
+  // this PC or a pool machine with a lane and the RAM. The router's own local leg sets LF_SESSION_ROUTED.
+  if (list[0] === "up" && process.env.LF_SESSION_ROUTED !== "1") {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), "up", ...list.slice(1)], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
@@ -2434,12 +2477,21 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // A remote run ships this worktree's rdb, so refresh it before the choice.
   ensureResourceDatabase(root);
   const purpose = only.length ? "test only" : `test ${tier}`;
+  // A pool machine that disappears mid-run (the laptop shuts down) is a normal case: it is marked
+  // down and the run queues again for another machine (pool.machineGone).
+  for (let attempt = 1; ; attempt++) {
+    const r = await testOnce(root, { purpose, tier, only, opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS });
+    if (!r.requeue) return r.code;
+  }
+}
+
+async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   let slot;
   try {
     slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget });
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
-    return 3;
+    return { code: 3 };
   }
   let code = 3;
   let extra = {};
@@ -2450,14 +2502,18 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
-      return code;
+      if (!lastTry && pool.machineGone(root, slot, code)) {
+        extra.lost = true;
+        return { code, requeue: true };
+      }
+      return { code };
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
     code = runLocalTest(root, tier, only);
     const stamp = newestStamp(root, before);
     if (stamp) extra = { passed: stamp.passed, total: stamp.total };
-    return code;
+    return { code };
   } finally {
     slot.release();
     if (!slot.inherited) pool.recordRun(root, slot, { purpose, code, extra });
@@ -2521,7 +2577,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // then dump the per-feature [LFDebug:*] lines from the same log.
   guardHeavy(root, "dev", opts.force);
   console.log("=== dev: validate ===");
-  const v = await cmdRunArea("validate", root);
+  const v = await cmdRunArea("validate", root, { incremental: true });
   if (v !== 0) return v;
   console.log("\n=== dev: test (no build) ===");
   process.env.LF_TEST_DEBUG_LINES = "1"; // dev is the verb that dumps the feature lines
@@ -2568,7 +2624,37 @@ function cmdHidden(flags) {
   return 0;
 }
 
-function cmdHelp() {
+// Default help is the command names; `help --verbose` is the full usage (docs/agent-budget.md).
+function compactNames(runFull, header, strip, extra = []) {
+  if (process.env.LF_OUTPUT === "full") return runFull();
+  const lines = [];
+  const orig = console.log;
+  console.log = (...a) => lines.push(a.join(" "));
+  let code;
+  try { code = runFull(); } finally { console.log = orig; }
+  const names = [];
+  for (const l of lines.join("\n").split("\n")) {
+    const m = /^ {2}(?! )(.*?)(?: {2,}|$)/.exec(l);
+    if (!m) continue;
+    const w = m[1].replace(strip, "").split(/\s+/)[0];
+    if (/^[a-z][a-z0-9-]*$/.test(w) && !names.includes(w)) names.push(w);
+  }
+  for (const n of extra) if (/^[a-z][a-z0-9-]*$/.test(n) && !names.includes(n)) names.push(n);
+  console.log(header);
+  let row = " ";
+  for (const n of names) {
+    if (row.length + n.length > 100) { console.log(row); row = " "; }
+    row += ` ${n}`;
+  }
+  if (row.trim()) console.log(row);
+  console.log("full usage: add --verbose; a command run with no arguments prints its own usage");
+  return code;
+}
+const CLI_NAME = "tools" + String.fromCharCode(92) + "cli";
+function cmdHelp() { return compactNames(cmdHelpFull, `${CLI_NAME} <command> [args]; commands:`, /^$/, [...Object.keys(cmds), ...(existsSync(join(ROOT, "tools", "commands")) ? readdirSync(join(ROOT, "tools", "commands")).filter((n) => n.endsWith(".mjs")).map((n) => n.slice(0, -4)) : [])]); }
+function wtHelp() { return compactNames(wtHelpFull, `${CLI_NAME} wt <command>; commands:`, /^tools.cli wt\s+/); }
+
+function cmdHelpFull() {
   console.log(`Life Framework dev CLI
 
 usage: tools\\cli <command> [args]
@@ -2644,7 +2730,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | selftest
+  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
                                 (about 20 s; docs/visual-testing.md)
@@ -2663,8 +2749,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   hidden [--close]              list (or close) tool processes on the private LF-Agents desktop
                                 (Workbench/server runs started there never show a window)
-  validate [--full]             run the checks in tools/validation/; --full adds the
-                                Workbench compile (validate-scripts.ps1), which ci/gate/ship run
+  validate [--full|--all]       run the checks in tools/validation/ whose declared inputs changed since their last green
+                                run in this worktree (it names how many it skipped); --all runs every check; --full also adds the
+                                Workbench compile (validate-scripts.ps1), which ci/gate/ship run, always with every check
 
 servers: ${Object.keys(SERVERS).join(", ")}
 `);
@@ -2793,6 +2880,7 @@ function cmdLogs(flags, root = ROOT) {
     return 0;
   }
   const shown = tail ? hits.slice(-limit) : hits.slice(0, limit);
+  const full = list.includes("--full") || process.env.LF_OUTPUT === "full";
   console.log(`=== ${file}`);
   console.log(`${hits.length} match(es) of /${pattern}/ (before=${before} after=${after})${hits.length > limit ? `, showing ${tail ? "last" : "first"} ${limit}` : ""}`);
   // Merge overlapping context windows so context lines print once.
@@ -2807,7 +2895,8 @@ function cmdLogs(flags, root = ROOT) {
   for (const b of blocks) {
     for (let i = b.start; i <= b.end; i++) {
       const marker = b.hits.has(i) ? ">" : " ";
-      console.log(`${marker} ${i + 1}: ${lines[i]}`);
+      const text = full || lines[i].length <= 300 ? lines[i] : `${lines[i].slice(0, 299)}... (+${lines[i].length - 299} chars; --full)`;
+      console.log(`${marker} ${i + 1}: ${text}`);
     }
     console.log("  ---");
   }
@@ -2825,7 +2914,7 @@ function wtSlug(args) {
   return slug;
 }
 
-function wtHelp() {
+function wtHelpFull() {
   console.log(`worktree commands (parallel agent isolation)
 
   tools\\cli wt new <slug> [--wait] [--base B] [--priority low]  create Life-Framework-ws-<slug> at ws/<slug>, allocate ports;
@@ -2852,7 +2941,8 @@ function wtHelp() {
   tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
                                        clean-tree check -> merge origin/<base> only if it conflicts ->
                                        gate -> push -> PR (or reuse the open one) -> gh auto-merge
-  tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
+  tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
+  tools\\cli wt prune --merged [--yes]  list every merged, clean, idle (30 min), unlocked worktree; --yes prunes them
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
   tools\\cli wt main                   print the main checkout path
@@ -2861,7 +2951,7 @@ flags:
   --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
-  --refs N     start the PR body with 'Refs #N'; --closes N is the same. Merging never closes an issue:
+  --refs N     start the PR body with 'Refs #N' (N >= 1; leave it out when there is no issue); --closes N is the same. Merging never closes an issue:
                it moves to in-dev / needs-playtest and 'promote --confirm' verifies and closes it
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
   --skip-gate  / --skip-sync   skip a ship stage (debug only)
@@ -2968,7 +3058,42 @@ function wtSyncCmd(args) {
   }
 }
 
+function wtPruneMergedCmd(args) {
+  let plan;
+  try {
+    plan = wt.pruneCandidates(ROOT);
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+  for (const s of plan.skip) console.log(`  keep   ${s.slug}: ${s.why}`);
+  for (const t of plan.take) console.log(`  prune  ${t.slug} (${t.via})`);
+  if (!plan.take.length) {
+    console.log("nothing to prune");
+    return 0;
+  }
+  if (!args.includes("--yes")) {
+    console.log(`dry run: ${plan.take.length} worktree(s) qualify; re-run with --yes to prune them`);
+    return 0;
+  }
+  let failed = 0;
+  for (const t of plan.take) {
+    try {
+      const r = wt.wtPrune(ROOT, t.slug);
+      console.log(`pruned ${r.slug}: removed ${r.path} and branch ${r.branch}`);
+    } catch (e) {
+      failed++;
+      console.log(`FAIL  ${t.slug}: ${e.message}`);
+    }
+  }
+  if (!args.includes("--keep-remote")) {
+    try { pool.cmdPoolPrune(ROOT, []); } catch (e) { console.log(`WARN  pool prune: ${e.message}`); }
+  }
+  return failed ? 1 : 0;
+}
+
 function wtPruneCmd(args) {
+  if (args.includes("--merged")) return wtPruneMergedCmd(args);
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
@@ -3103,26 +3228,38 @@ async function wtE2eCmd(args) {
 // machine, back to back, with nothing else on that slot in between.
 async function runE2e(root, opts = {}) {
   ensureResourceDatabase(root);
+  for (let attempt = 1; ; attempt++) {
+    const r = await e2eOnce(root, opts, attempt >= pool.FAILOVER_ATTEMPTS);
+    if (!r.requeue) return r.code;
+  }
+}
+
+async function e2eOnce(root, opts, lastTry) {
   let slot;
   try {
     slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose: "e2e", priority: opts.priority, budget: opts.budget });
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
-    return 3;
+    return { code: 3 };
   }
   let code = 3;
+  let extra = {};
   try {
     if (!slot.local) {
       const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
+      if (!lastTry && pool.machineGone(root, slot, code)) {
+        extra = { lost: true };
+        return { code, requeue: true };
+      }
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
       code = runE2eHere(root, opts.legacySave, opts.oldBuild);
     }
-    return code;
+    return { code };
   } finally {
     slot.release();
-    if (!slot.inherited) pool.recordRun(root, slot, { purpose: "e2e", code });
+    if (!slot.inherited) pool.recordRun(root, slot, { purpose: "e2e", code, extra });
   }
 }
 
@@ -3251,7 +3388,7 @@ function gateArgs(wtRoot, flags) {
     return ["ci", ...flags.filter((f) => f !== "--full-gate")];
   }
   console.log("=== gate: no addons/ changes; validate only (pass --full-gate to force the in-game gate) ===");
-  return ["validate"];
+  return ["validate", "--all"];
 }
 
 async function wtGateCmd(args) {
@@ -3330,7 +3467,13 @@ async function wtShipCmd(args) {
   const prOnly = flags.includes("--pr-only");
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
-  const closes = argValue(flags, "--refs") ?? argValue(flags, "--closes");
+  let closes = null;
+  try {
+    closes = wt.parseIssueFlag(flags);
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
   const bodyFile = argValue(flags, "--body-file");
   let e;
   let base;
@@ -3353,10 +3496,6 @@ async function wtShipCmd(args) {
   const dirty = wt.git(wtRoot, ["status", "--porcelain"]).stdout.trim();
   if (dirty) {
     console.log(`FAIL  worktree ${slug} has uncommitted changes; commit before shipping`);
-    return 1;
-  }
-  if (closes && !/^\d+$/.test(closes)) {
-    console.log(`FAIL  --refs/--closes takes an issue number, got '${closes}'`);
     return 1;
   }
   let customBody = null;
@@ -3558,7 +3697,10 @@ const cmds = {
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
-  validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
+  validate: (flags) => {
+    const f = flags ?? [];
+    return cmdRunArea("validate", ROOT, { full: f.includes("--full"), incremental: !f.includes("--full") && !f.includes("--all") });
+  },
   "film-make": async (flags) => (await import("./film/post.mjs")).main(flags ?? []),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");

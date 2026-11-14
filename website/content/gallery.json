@@ -4,7 +4,15 @@
     "250/police-board-call",
     "263/hospital-ambulance-siren",
     "271/fence-list",
-    "418/m2_418_still_smoke_officer_client3_1"
+    "418/m2_418_still_smoke_officer_client3_1",
+    "polish-vault-market/vault-inside-after",
+    "market-canopies/eye-level-after",
+    "asset-batch2/cement-after",
+    "paper-items-print/ground-after",
+    "asset-batch3/furnace-after",
+    "asset-batch3/console-after",
+    "928/ghost-valid-after",
+    "664/cuffs-hand-after"
   ],
   "featured": [
     { "id": "bank-vault-interior/vault-open-after", "caption": "The bank vault with its round door swung open." },

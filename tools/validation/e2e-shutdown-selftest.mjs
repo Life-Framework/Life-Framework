@@ -1,4 +1,5 @@
 // Pins the shutdown-save check of `tools\cli wt e2e` (#830): a pass 1 log with
+// inputs: tools/**, agent-box/**, .githooks/**
 // `session ended without a shutdown save`, with no host stop request, or with the
 // feature statics reset before the SHUTDOWN save fails; a host-stop close that
 // writes the SHUTDOWN save and then resets the statics passes.

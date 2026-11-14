@@ -312,10 +312,12 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
   for (let attempt = 0; attempt < 2; attempt++) {
     sync = syncToSlot(root, slot, { writeSyncState });
     if (!sync.ok) return { code: 3 };
-    const env = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
+    const quiet = "$env:LF_QUIET_CHILD = '1'"; // this run is parsed here, so the box prints the full transcript
+    const env0 = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
     const ps = [
       psCheckout(slot, sync.bundleName, slug),
-      env,
+      quiet,
+      env0,
       `& node ${psQuote(script)} ${args.map(psQuote).join(" ")}`,
       "$code = $LASTEXITCODE",
       "$ld = Get-ChildItem -LiteralPath (Join-Path $dir 'server\\profile\\test\\logs') -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1",

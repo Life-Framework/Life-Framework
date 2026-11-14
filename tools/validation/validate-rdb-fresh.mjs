@@ -1,4 +1,5 @@
 // Warns (never fails) when this checkout's gitignored resourceDatabase.rdb does
+// inputs: always
 // not register every .meta in the addon: the server would refuse those
 // resources with `Wrong GUID/name`. In a worktree, test/dev/serve/session/e2e
 // refresh it on their own (`tools\\cli rdb` does it now). Fails only when the

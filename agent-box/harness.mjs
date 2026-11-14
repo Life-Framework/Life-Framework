@@ -9,6 +9,7 @@
 // menu action through InputManager.SetActionValue. `open DebugMenu` toggles the
 // same menu the debug key opens.
 
+import "../tools/lib/quiet-gate.mjs";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -163,6 +164,10 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload" || spec.verb === "robhold") {
     return `${id} ${spec.verb}`;
+  }
+  if (spec.verb === "emote") {
+    // emote open|close|seen|<radial command>: the emote radial (LF_EmoteHarness, #982).
+    return `${id} emote ${token(spec.arg, "emote")}`;
   }
   if (spec.verb === "reload") {
     // reload [config|dialogue|config,dialogue]: the server reads the owner config and the dev caption file again (#970).
@@ -586,7 +591,7 @@ export function runScriptPillar(shouldRun) {
       text: "refusing script pillar on the main checkout. Use a worktree: tools\\cli wt new <feature>\n",
     };
   }
-  const res = spawnSync("node", ["tools/cli.mjs", "test", "--tier", "fast"], { windowsHide: true, cwd: ROOT, encoding: "utf8" });
+  const res = spawnSync("node", ["tools/cli.mjs", "test", "--tier", "fast", "--verbose"], { windowsHide: true, cwd: ROOT, encoding: "utf8" });
   return { code: res.status ?? 1, text: `${res.stdout || ""}${res.stderr || ""}` };
 }
 

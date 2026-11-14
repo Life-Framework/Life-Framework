@@ -250,6 +250,21 @@ file, dev tools only). `NeedsDevTools` keeps a developer's file from being read 
 so a payload without them is unchanged. Terms (#958) add `LF_ContentReloader_Terms` in their own file.
 Test `reload/dialogue-file`; proof `agent-box/proofs/live-reload-proof.mjs`; usage `docs/worktrees.md` "Live reload".
 
+## Catalogue section (#988)
+
+`LF_ItemCatalogueConfig` (`Configs/Catalogue/LF_ItemCatalogue.conf`) is the `catalogue` section: the
+item catalogue and the outlets' offers (`Feature/Catalogue/Feature.md`).
+
+- `items`, keyed by item id; `offers`, keyed by `outlet/item`. An existing key changes only the fields
+  given; a new item must set a `prefab` that loads; `removed: true` takes a record out and a later layer
+  can set it back. Until the shared overlay model (#962) lands, the merge is the class's own
+  (`ApplyContainer` for packs, `ApplyOwner` for the owner and the stream).
+- `category` and `legality` are words; one the catalogue does not know is refused and the lower
+  layer's word stays.
+- Streamed: `WriteStream` writes every record in the owner's shape (removed ones too), and the client
+  applies it with `ApplyOwner`, so its price list shows what the server charges. `ApplyToFeatures`
+  drops the cached instance (`LF_ItemCatalogueConfig.Reload`).
+
 ## Jobs section (#749, D8)
 
 `LF_JobsConfig` (`Configs/Jobs/LF_Jobs.conf`) is the `jobs` section: duty pay, the
@@ -308,6 +323,19 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   (0 to 100000, the town clerk's cash price for a lost card) and `showSeconds` (2 to 60, how long a
   card held up to someone stays on their screen; the server sends it with the card). Server only;
   `/configreload` drops the cached instance (`LF_ConfigStream.ApplyToFeatures`).
+
+## Systems section (#960)
+
+- `systems` (`LF_SystemsConfig`, `Feature/Systems/LF_Systems.c`): `switches` keyed by system id, each
+  with `enabled`. The ids and what may be switched are in `Configs/Systems/LF_SystemCatalog.conf`
+  (core, not an owner section); a pack ships an `LF_SystemsConfig` `.conf` in its header's overlay
+  list. The decision (refusals, dependencies) is `LF_Systems.Decide`; design and rules in
+  `Feature/Systems/Feature.md`.
+- Streamed: `BuildPayload(..., systems = true)` writes every system's effective on or off (run-time
+  offs, parents and requirements resolved), so a client hides the same actions. `ApplyToFeatures`
+  calls `LF_Systems.Reload()`.
+- `tools\cli config-check` refuses an id the catalog does not list; it cannot see LOCKED, NOT_YET or
+  dependency refusals, which the server logs at boot.
 
 ## Files
 

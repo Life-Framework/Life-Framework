@@ -31,7 +31,7 @@ jobs:
         shell: pwsh
         env:
           LF_VALIDATE_SKIP: validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs,validate-modded-container-props.mjs
-        run: node tools/cli.mjs validate
+        run: node tools/cli.mjs validate --verbose
       - name: generated files are committed
         shell: pwsh
         run: |

@@ -259,8 +259,8 @@ export function loadPlaced(root) {
 
 // Every placed entity, named or not. The town manifest resolves sites and
 // signs against this, so positions live only in the layers.
-export function loadWorld(root) {
-  const dir = join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
+export function loadWorld(root, layersDir) {
+  const dir = layersDir ?? join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
   const entities = [];
   for (const file of readdirSync(dir)) {
     if (!file.endsWith(".layer")) continue;

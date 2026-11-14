@@ -7,12 +7,36 @@ Use the cheapest tool that can see the problem; a game session is the last step,
 tools\cli audit placement [--area a]     numbers, no pixels, test server, about 10 s      (docs/placement-audit.md)
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
+tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
 tools\cli shots area <name>              pictures from a game client on a `--profile full` session (docs/agent-area-polish.md)
 tools\cli evidence <issue> before|after <area>   keep a look picture for the PR; `evidence <issue> table` prints the embed
 ```
 
 What right looks like is `docs/style-guide.md`; the checklist to walk against the pictures is the
 `polish` skill. `wt ship` refuses a player-visible change whose PR body embeds no picture.
+
+## Use `look` unless you need motion, UI, input or a second player
+
+Ask in this order and stop at the first yes.
+
+1. **Numbers or files are enough?** (a placement, a GUID, a prefab value, a scale) `validate`, `audit placement`, `asset states <slug>`. No picture.
+2. **A still of a place, a placed prop, a sign, an NPC standing?** `look <area>`. Close-ups of every placed prop are in the sheet.
+3. **A still of one item: lying on the ground, or as the inventory sees it?** `look item <prefab|slug>` (`--states ground,inventory`, `--at area|x,z`).
+4. **Two or three variants side by side?** `look item a b c`: one sheet each, 3 m apart.
+5. **Does it move, play a sound, or react to input?** A session (animation, the hold pose, a door opening, a hit, a siren).
+6. **Is it a UI sheet, HUD, or the inventory slot frame?** A session (Workbench play captures no UI).
+7. **Does a second player or a late joiner see it?** A session with `--clients 2`.
+8. **Is the picture for a PR or media?** `look` is for you while you iterate; the PR picture of a held item or a sheet comes from the session, and `tools\cli evidence` keeps a `look` pair for a world change.
+
+What an agent session used to be needed for, and what does it now:
+
+| Job | Before | Now |
+|---|---|---|
+| A dropped item at rest | `asset states --shots` or `itemdrop` and a free camera, 2 clients | `look item` (ground) |
+| The inventory preview camera of an item | `asset states --shots`, preview sheet | `look item` (inventory): the 3D view, not the slot UI |
+| A prop, a placed object, a sign | `shots area` | `look <area>` |
+| The item in a hand | session, 2 clients | still a session (`asset states --shots` does hand and use) |
+| Dialogue shot, a door, a siren, a held pose | session | still a session |
 
 ## The matrix
 
@@ -77,6 +101,22 @@ that say where to look first, not verdicts:
 On 2026-11-11 a run over all 23 areas raised no flag, while the sheets showed things to fix (a
 moonshine still on its side, sack piles taller than the barrels beside them, a pole in front of the
 bank's wide shot). So the flags catch broken renders; the judgment is still the reading.
+
+### `tools\cli look item`
+
+```
+tools\cli look item Prefabs/Items/Fence/LF_Drill.et         both pictures, tmp/look/item-LF_Drill/{ground,inventory}.png + contact.jpg
+tools\cli look item cement-bag --states ground              an asset slug, one state
+tools\cli look item a.et b.et --at hospital                  several, on the ground of an area (default spawn-square)
+```
+
+The prefab is spawned in play mode at an open spot, posed, photographed and deleted. **ground** poses it
+the way the inventory drops it (the model axis `RestingUP` names faces up, `RestingAdditiveOffsetLS`
+nudges it, the lowest point on the ground; a drop is placed, not a physics fall) and takes a close-up.
+**inventory** freezes it in the air and puts the camera where its `PreviewRenderAttributes` say. Values
+are read from the prefab file; one it inherits and does not state is read as the engine default and
+said on the first line (`not stated in the prefab file`). `RestingAdditiveRotationLS` is not applied.
+It is the same hidden Workbench as `look <area>` (build lock, 2.2 GB, `--wait`, `--force`).
 
 ### How it works
 

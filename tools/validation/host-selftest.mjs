@@ -1,4 +1,5 @@
 // Pins `tools\cli host` and `tools\cli playtest`: the playtest launch runs
+// inputs: tools/**, agent-box/**, .githooks/**
 // LF_PlaytestTown.conf with no test define and no -config, passes
 // -loadSessionSave only when a save exists, and backs the save folder up into a
 // timestamped copy. The player client is a real player (no harness flags, no

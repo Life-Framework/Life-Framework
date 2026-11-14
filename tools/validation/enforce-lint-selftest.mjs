@@ -1,4 +1,5 @@
 // Proves every enforce-lint rule fires on its known-bad fixture, stays quiet on
+// inputs: tools/**, agent-box/**, .githooks/**
 // its known-good fixture, and that the baseline ratchet fails only new hits.
 // Fixtures: tools/validation/fixtures/enforce-lint/<rule>.{bad,good}.c. Each runs
 // in a throwaway addon tree (the L6 .meta lives there, not in the repo, so the

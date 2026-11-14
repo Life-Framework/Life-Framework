@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{AC9E96BADCDA8796}Configs/Emote/LF_EmoteMenu.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

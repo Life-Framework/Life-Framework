@@ -1,4 +1,5 @@
 // Proves the merge drivers on fixture files and a temporary git repo.
+// inputs: tools/**, agent-box/**, .githooks/**
 // Does not boot the game and does not merge this worktree.
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";

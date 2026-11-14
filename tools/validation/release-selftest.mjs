@@ -1,4 +1,5 @@
 // The playtest download: zip writer, addon file list (no generated files),
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // launcher contents, and the community-server file (tools/release/).
 import { selftestPack } from "../release/pack-playtest.mjs";
 import { selftestServer } from "../release/playtest-server.mjs";
