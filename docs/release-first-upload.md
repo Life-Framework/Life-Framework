@@ -19,6 +19,9 @@ The pack depends on the core, so the core goes first. Both are APL (decision D2)
    that will own both items. Read the Workshop Terms of Service once.
 2. The checks below ran green on 2026-11-14 on `main` (`release 0.2.0` dry run, `release-ready --strict`,
    `example-zip` draft). Re-run them in step 1; do not skip it, `main` moves.
+3. The first publish waits for the whole pack move (decision D3 in [roadmap/m3-plan.md](roadmap/m3-plan.md)):
+   check that batches 1 to 4 of #323 are all merged before you press Publish. Until then a release is
+   tagged and promoted, not uploaded ([release-process.md](release-process.md), "The first Workshop publish").
 
 ## 1. Prepare (a worktree, never the main checkout)
 
