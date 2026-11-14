@@ -146,7 +146,17 @@ LF_DialogueConfig {
 - `LF_DialogueConfig.Layered(path)` is the one call; `LF_DialogueComponent.GetConfig` uses it, so an NPC's prefab path still names the core file and nothing breaks without a pack.
 - `reload dialogue` (#970) overrides a caption by its text key, so it reaches a patched line like any other.
 
-Not here (still #957): naming a dialogue by id instead of a prefab path, the `asset dialogue --addon` tool output, the text-only line (the check still wants a recording on every line), the neutral core clerk and the Everon clerk as a pack patch, and the `validate` rule that reads a pack patch against its core.
+### By id, text only, and the offline check (#957)
+
+- **Dialogue by id.** `LF_DialogueComponent.m_sDialogueId` names `clerk`; `LF_DialogueRegistry.Resolve` finds the file in the core index `Configs/Dialogue/LF_DialogueIndex.conf` (class `LF_DialogueIndexConfig`, one `LF_DialogueIndexEntry` per dialogue: `m_sId`, `m_Conf`). A pack overlay of the same class (listed in the mission header) `add`s a dialogue, `replace`s the file an id points at (a whole new clerk, with its own voice) or `remove`s an id, with the verbs above (`dialogue.index`). A pack that only rewords or reroutes the core clerk patches the core file instead (above). `m_sDialogue` (a path) still works when no id is set.
+- **Text-only line.** A line with no `m_sEvent` and no `m_fSeconds` has no recording: the caption shows for reading time and nothing plays. One of the two without the other is a half-made recording and drops the patch. This is how a pack's patch changes what the clerk says without a new voice.
+- **`tools\cli asset dialogue <npc> --addon <pack>`** with a `dialogue.json` that has `"patches": "<core npc>"` writes the pack's patch `.conf` and its strings, with no ElevenLabs call and no budget (`docs/asset-pipeline/dialogue.md` "Patching a core dialogue from a pack").
+- **`validate`** (`validate-dialogue-patch.mjs`) reads every pack `.conf` of `LF_DialogueConfig` against the core dialogue of the same id with the same verb rules and the same checks as the runtime (start node, reply targets, lines, hooks, at most four replies, no half recording) plus that each text key it writes is in a `.st`; a pack `LF_DialogueIndexConfig` is read against the core index.
+- **Proof end to end.** The 1989 Everon pack ships `Configs/Dialogue/LF_Dialogue_ClerkEveron.conf` (from `tools/assets/dialogue/clerk_everon/`), listed in `Missions/LF_Everon1989.conf`: it patches the core clerk's `greet` to a pack string key with the same words, so nothing changes on screen and the path is exercised.
+- Tests: `LF_Test_DialoguePackOverlay` (`dialogue/pack-overlay`, LOGIC): the registry's verbs and refusals, text-only lines, a half-made recording dropped; `dialogue-patch-selftest.mjs` and `dialogue-pipeline-selftest.mjs` for the checks and the tool.
+
+Not here: a patch that brings its own voice (it needs its own sound project; use a full dialogue and a registry `replace`), and a neutral core clerk with the Everon clerk's flavour in the pack (the Everon wording is the core wording until the M3 move, #323, makes the core neutral).
+
 A list that must keep some entries says so in `LF_ConfigList.RemoveRefusal(index)`: the reason is
 logged like any refusal and the entry stays.
 
