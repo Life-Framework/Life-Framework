@@ -2771,7 +2771,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     const r = await runShardedTests(root, specs, opts);
     if (r !== null) return r;
   }
-  const purpose = only.length ? "test only" : `test ${tier}`;
+  const purpose = pool.testPurpose({ tier, only, coreOnly: opts.coreOnly });
   // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
   // key) and before the pool is asked for a slot. Only a pass is stored or reused.
   const cache = passCacheCheck(root, { tier, only, opts: { ...opts, red } });
@@ -2894,7 +2894,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
     code = runLocalTest(root, tier, only, opts.world, opts.coreOnly, red);
     // test-e2e.ps1 stamps summaries.jsonl lazily (at the next boot), so read this run's printed SUMMARY.
-    const sum = lastLocalSummary ?? newestStamp(root, before);
+    const sum = lastLocalSummary ?? newestStamp(root, before, opts.coreOnly);
     if (sum) extra = { passed: sum.passed, total: sum.total };
     if (sum) recordTestTimes(root, sum.consoleLog, tier, only, opts);
     return { code, machine: slot.machine?.name, passed: sum?.passed, total: sum?.total, failed: sum?.failed };
@@ -2907,12 +2907,14 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
 }
 
 // The summary this run stamped (tools/test/test-e2e.ps1 appends one line).
-function newestStamp(root, since) {
+function newestStamp(root, since, coreOnly = false) {
   const f = join(root, "tmp", "test-results", "summaries.jsonl");
   try {
     if (statSync(f).mtimeMs < since) return null;
     const lines = readFileSync(f, "utf8").trim().split(/\r?\n/);
-    return JSON.parse(lines[lines.length - 1]);
+    const rec = JSON.parse(lines[lines.length - 1]);
+    // Never take another run's line (the stamp is lazy): a core-only run's tier ends in "-core", a full run's does not.
+    return /-core$/.test(String(rec.tier ?? "")) === !!coreOnly ? rec : null;
   } catch {
     return null;
   }
