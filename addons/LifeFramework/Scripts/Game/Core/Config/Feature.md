@@ -22,6 +22,13 @@ when the key is in the JSON. Records merge by a stable key, never by position:
 an existing key keeps its place in the list and changes only the fields given;
 a new key is appended, so it wins the rule walk.
 
+**Lists: the override model (#962).** `LF_ConfigOverlay.c` is the one merge for list sections:
+each record has an id and each layer adds, replaces, patches or removes it by id (`"op"` in JSON,
+`m_sOp` in a pack `.conf`, from `LF_ConfigRecord`). An id a verb needs that no lower layer has is
+refused with the source and id; two packs on one id warn and the later wins. On it today: `shops`
+(`priceRules`), `catalogue` (`items`, `offers`) and `crime` (`crimes`; it now reads pack overlays
+too). Verbs, examples and how to move a section: `docs/config/override-model.md`.
+
 The service is generic. A feature loads its core instance, then calls its own
 apply step (shops: `LF_ShopPricesConfig.ApplyLayers`), which asks the service
 for pack overlays and an `LF_ConfigReader` on its owner section.
@@ -251,6 +258,22 @@ file, dev tools only). `NeedsDevTools` keeps a developer's file from being read 
 so a payload without them is unchanged. Terms (#958) add `LF_ContentReloader_Terms` in their own file.
 Test `reload/dialogue-file`; proof `agent-box/proofs/live-reload-proof.mjs`; usage `docs/worktrees.md` "Live reload".
 
+## Catalogue section (#988)
+
+`LF_ItemCatalogueConfig` (`Configs/Catalogue/LF_ItemCatalogue.conf`) is the `catalogue` section: the
+item catalogue and the outlets' offers (`Feature/Catalogue/Feature.md`).
+
+- `items`, keyed by item id; `offers`, keyed by `outlet/item`. An existing key changes only the fields
+  given; a new item must set a `prefab` that loads; `removed: true` takes a record out and a later layer
+  can set it back; `"op": "remove"` takes it out of the list. Both lists merge through the shared
+  override model (`LF_CatalogueItemList`, `LF_OutletOfferList`; #962). A client replaces its lists with
+  the streamed ones, so an entry the server removed is gone there too.
+- `category` and `legality` are words; one the catalogue does not know is refused and the lower
+  layer's word stays.
+- Streamed: `WriteStream` writes every record in the owner's shape (removed ones too), and the client
+  applies it with `ApplyOwner`, so its price list shows what the server charges. `ApplyToFeatures`
+  drops the cached instance (`LF_ItemCatalogueConfig.Reload`).
+
 ## Jobs section (#749, D8)
 
 `LF_JobsConfig` (`Configs/Jobs/LF_Jobs.conf`) is the `jobs` section: duty pay, the
@@ -309,6 +332,19 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   (0 to 100000, the town clerk's cash price for a lost card) and `showSeconds` (2 to 60, how long a
   card held up to someone stays on their screen; the server sends it with the card). Server only;
   `/configreload` drops the cached instance (`LF_ConfigStream.ApplyToFeatures`).
+
+## Systems section (#960)
+
+- `systems` (`LF_SystemsConfig`, `Feature/Systems/LF_Systems.c`): `switches` keyed by system id, each
+  with `enabled`. The ids and what may be switched are in `Configs/Systems/LF_SystemCatalog.conf`
+  (core, not an owner section); a pack ships an `LF_SystemsConfig` `.conf` in its header's overlay
+  list. The decision (refusals, dependencies) is `LF_Systems.Decide`; design and rules in
+  `Feature/Systems/Feature.md`.
+- Streamed: `BuildPayload(..., systems = true)` writes every system's effective on or off (run-time
+  offs, parents and requirements resolved), so a client hides the same actions. `ApplyToFeatures`
+  calls `LF_Systems.Reload()`.
+- `tools\cli config-check` refuses an id the catalog does not list; it cannot see LOCKED, NOT_YET or
+  dependency refusals, which the server logs at boot.
 
 ## Files
 

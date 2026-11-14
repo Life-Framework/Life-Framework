@@ -888,6 +888,18 @@ GenericEntity Annex_Vehicle_Lot {
      m_iPrice 8000
      m_sNameKey "#EL-Vehicle_M923"
     }
+    LF_VehicleOffer "{E1B0E70100000016}" {
+     m_sPrefab "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
+     m_sSpawnPrefab "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et"
+     m_iPrice 1800
+     m_sNameKey "#EL-Vehicle_Dana2101"
+    }
+    LF_VehicleOffer "{E1B0E70100000017}" {
+     m_sPrefab "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
+     m_sSpawnPrefab "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et"
+     m_iPrice 700
+     m_sNameKey "#EL-Vehicle_SputnikT601"
+    }
    }
   }
   LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
@@ -1691,4 +1703,8 @@ GenericEntity Annex_Convoy_Drop_Near {
  }
  coords 63 0 70
  Flags 0x403 0
+}
+GenericEntity Annex_GunCounter : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ coords 88 0 75.036
+ angleY 180
 }

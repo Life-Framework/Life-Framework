@@ -19,10 +19,10 @@ import { setBoxes, sendCommand } from "./harness.mjs";
 import { readdirSync, statSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { addonsArgs, launchAddonsIn, playtestMission } from "../tools/lib/addons.mjs";
 import { spawnSync } from "node:child_process";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const MISSION = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
 const GAME_DIR = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Arma Reforger";
 
 function option(name, fallback) {
@@ -41,7 +41,9 @@ if (/"ArmaReforger(Steam|Server|ServerDiag)?\.exe"/i.test(running)) {
 }
 
 mkdirSync(profile, { recursive: true });
-const args = ["-addonsDir", addonsDir, "-addons", "LifeFramework", "-server", MISSION, "-addr", "127.0.0.1:2302",
+// #322: the pack loads (and its header boots) when that addons folder holds it.
+const addons = launchAddonsIn(addonsDir);
+const args = ["-addonsDir", addonsDir, ...addonsArgs(addons), "-server", playtestMission(addons), "-addr", "127.0.0.1:2302",
   "-profile", profile, "-window", "-screenWidth", "640", "-screenHeight", "360", "-maxFPS", "20",
   "-noSound", "-noFocus", "-forceUpdate", "-disableCrashReporter", "-scrDefine", "LF_HARNESS"];
 const pid = quietSpawnDetached(join(GAME_DIR, "ArmaReforgerSteam.exe"), args, { cwd: GAME_DIR });

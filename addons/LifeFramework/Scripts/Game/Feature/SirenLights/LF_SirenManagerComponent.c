@@ -156,6 +156,9 @@ class LF_SirenManagerComponent : ScriptComponent
 	//! A refusal is logged. An allowed request goes through ApplyRequest.
 	bool RequestBy(IEntity occupant, int mode, int nowMs)
 	{
+		if (LF_Systems.Refuses("SirenLights", "siren request"))
+			return false;
+
 		bool hasAccount;
 		LF_Faction faction;
 		bool onDuty;
@@ -192,6 +195,9 @@ class LF_SirenManagerComponent : ScriptComponent
 	//! \return True when the mode changed and was broadcast.
 	bool ApplyRequest(int mode, int nowMs)
 	{
+		if (LF_Systems.Refuses("SirenLights", "siren change"))
+			return false;
+
 		int count = 0;
 		if (m_Modes)
 			count = m_Modes.GetModes().Count();

@@ -1,4 +1,5 @@
 // Proves the deterministic parts of the asset pipeline's anim stage offline (tools/assets/pipeline/
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // anim.mjs, pose.mjs, vfx.mjs): the anim block's rules, the skeleton it gives the clean stage, the
 // pose solver, the .txa writer, the workspace and effect text, and that what is committed for every
 // asset with an anim block (clips, workspace, effect, the prefab's component) is what its spec

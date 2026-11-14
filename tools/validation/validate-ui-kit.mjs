@@ -1,4 +1,5 @@
 // tools/validation/validate-ui-kit.mjs
+// inputs: addons/**, docs/**
 //
 // A new player screen is built from UI kit parts (LF_UIScreen + LF_UIPart, themed by
 // LF_UITheme), not from a new .layout with its own fonts and colours. Before the kit,

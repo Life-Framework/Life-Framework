@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{B274391A95CF3D72}Configs/Systems/LF_SystemCatalog.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

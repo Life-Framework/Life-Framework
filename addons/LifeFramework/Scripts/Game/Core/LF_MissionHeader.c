@@ -20,6 +20,9 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("", UIWidgets.ResourceNamePicker, desc: "Config overlays (.conf) this mission layers over the shipped defaults, lowest precedence first: a later file wins over an earlier one, the server owner's config.json wins over all. Each overlay is a .conf of the same class as the core file it changes and sets only the fields it names. Read by LF_MissionConfigPackSource (D4 option b, #278).", params: "conf")]
 	ref array<ResourceName> m_aLF_ConfigOverlays;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, desc: "The pack's manifest (.conf of class LF_PackManifest): its id and the core versions it supports. When the running core is outside that range the core logs one error and loads none of this mission's config overlays. Empty: no check (#963).", params: "conf")]
+	ResourceName m_LF_PackManifest;
+
 	//------------------------------------------------------------------------------------------------
 	//! \return the running mission's header when it is an LF_MissionHeader, else null.
 	static LF_MissionHeader GetCurrent()

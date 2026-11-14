@@ -79,6 +79,8 @@ https://creativecommons.org/publicdomain/zero/1.0/): no attribution required, cr
 | Rust 009 | ambientCG | https://ambientcg.com/view?id=Rust009 | CC0 1.0 | Iron ingot rust spots; iron ore; iron staining on the ore rocks |
 | Rock 035 | ambientCG | https://ambientcg.com/view?id=Rock035 | CC0 1.0 | Host rock of the iron and copper nuggets; grain in the gold quartz |
 | Rock 058 | ambientCG | https://ambientcg.com/view?id=Rock058 | CC0 1.0 | Host rock of the ore veins on the quarry rocks (darkened and desaturated; ore only in its crevices and thin veins) (`Assets/Resources/Mining/OreVein/`) |
+| Metal 038 | ambientCG | https://ambientcg.com/view?id=Metal038 | CC0 1.0 | Handcuff and lockpick steel: scratches, scuffs, roughness (`Assets/Items/Roleplay/Handcuffs/Data/`, `Lockpick/Data/`) |
+| Leather 014 | ambientCG | https://ambientcg.com/view?id=Leather014 | CC0 1.0 | Lockpick wallet leather grain (`Assets/Items/Roleplay/Lockpick/Data/`) |
 
 Which set feeds which map is in each asset's spec (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`, `source.textures`).
 
@@ -92,6 +94,16 @@ A model under CC-BY would also need its author credited in this table.
 | Model | Author | Source | Licence | Recorded in |
 |---|---|---|---|---|
 | Cement Bag (`Assets/Items/Resources/CementBag/CementBag.xob`) | PierreB3D | https://polyhaven.com/a/cement_bag | CC0 1.0 | `tools/assets/cement-bag/source.json` |
+
+## Library and purchased models
+
+Models taken from the open libraries through 3d-asset-server (CC0, CC-BY) or bought by a human on CGTrader and similar markets
+(Royalty Free), then run through `clean` and `import` (`docs/asset-pipeline/sources.md`). The source stage writes each row. A CC-BY
+model needs this credit before it ships; a purchased model also needs the store page and the seller. The raw files are not
+committed (`tmp/assets/<slug>/purchased/` is gitignored); only the compiled assets are.
+
+| Model | Author | Source | Licence | Recorded in |
+|---|---|---|---|---|
 
 ## Generated sound effects (ElevenLabs)
 

@@ -126,6 +126,8 @@ class LF_JailCellComponent : ScriptComponent
 
 		s_TickOwner = this;
 		s_Placed = this;
+		// The jail's boot check finds the cell by component (#1047).
+		LF_Places.Register(LF_Jail.PLACE_KIND, LF_Jail.PLACE_ID, owner);
 		LF_Jail.Configure(m_iSecondsPerWanted, m_iMaxSeconds, m_iWantedReduction, m_fZoneRadius);
 		ApplyPlacement(owner);
 		LF_Jail.SetReleaseOffset(owner.CoordToParent(m_vReleaseOffset) - owner.GetOrigin());

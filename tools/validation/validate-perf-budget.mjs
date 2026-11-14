@@ -1,4 +1,5 @@
 // The perf budget config must match its class (#335): every [Attribute] field of LF_PerfBudget
+// inputs: addons/**
 // has a value in Configs/Perf/LF_PerfBudget.conf and the conf has no unknown field, the player
 // count is at least 128, and every limit is a positive number. A budget nobody can read is not a
 // gate. LF_Test_PerfBudget does the measuring; this keeps the thresholds honest without a boot.

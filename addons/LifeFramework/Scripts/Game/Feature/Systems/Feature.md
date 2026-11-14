@@ -1,0 +1,90 @@
+# Systems
+
+> Every system can be turned on or off from config (#960, epic #223). Rule:
+> `docs/architecture/core-vs-pack.md`: the core decides what the game can do, the pack and the
+> owner decide what this server is.
+
+## Intent
+
+A pack or an owner chooses which systems the server has: a PvE server turns robbery off, a
+modern pack turns the pager off, a pack without fields turns farming off. A player on that server
+never meets the system: no prompt, no item in the kit, no request that goes through.
+
+## Interaction pattern
+
+Nothing to walk up to: the switch removes things. An action of a system that is off is hidden,
+not greyed out. A request that still reaches the server (a stale prompt, a dialogue line picked
+just before a reload) is refused with a log line and, where the player sees a result, the
+`#LF-Systems_Off` caption ("That is turned off on this server.").
+
+## Systems (#960)
+
+- **Catalog:** `Configs/Systems/LF_SystemCatalog.conf` (`LF_SystemCatalog`) lists every system once:
+  each `Feature/<Area>` folder, plus named parts of one (`Robbery` in `Crime`, `Pager` in `Comms`).
+  An entry says how it switches (`m_eSwitch`), whether it is opt-in, its parent, what it needs
+  (`m_aRequires`) and the items only it uses (`m_aItems`). `validate-systems-list` fails a folder
+  with no entry, an unknown parent or requirement, script naming an unknown id, and a
+  `SWITCHABLE` system no script checks.
+  - `SWITCHABLE`: its entry points check the switch. Today: `Farming` (plot actions, plant,
+    harvest, the growth clock), `Robbery` (the till, weapon and vehicle robbery actions, the till
+    hold and its dialogue line, a hold's payout, the bank vault and heist actions, the rob kit stand,
+    and the loot of a drill that ends after the switch went off (#1073)), `Pager` (paging, the read
+    action, loadout items).
+  - Economy (#1074): `Banking` (account deposits and withdrawals), `ATM` (machine action and its
+    server requests; needs Banking), `Shop` (counters, the till, back-room search, buy and sell),
+    `Catalogue` (an outlet counter stocks nothing and refuses a sale), `Trader` (the trader stall),
+    `Jobs` (workplace actions, job requests, fruit rounds, run and reward payouts, the benefit),
+    `Level` (no XP is earned; saved XP and levels are still read), `License` (no licence is unlocked
+    or granted; held licences are still read), `Whitelist` (nothing is restricted and the join gate is
+    open; the list file is untouched), `Organizations` (the desk, the ledger requests, invite and rank
+    roles; needs Banking). Banking cannot go off while ATM or Organizations are on: switch them too.
+  - Services (#1076): `Comms`, `Chat`, `Medic`, `Police`, `Crime`, `Investigation`, `Vehicles`, `VehicleLock`,
+    `LicensePlate`, `SirenLights`, `Quests`. Each hides its prompts, refuses its server entry points and
+    keeps its saved data; Vehicles also leaves parked vehicles and garage records alone. Police needs
+    Crime and Investigation needs Police.
+  - World (#1075): `Gathering` (the gather action), `Processing` (the machine action), `Mining`
+    (ore hits, grow-back, the world-reset step, `LF_MiningArea` spawns), `Resources` (tool damage on
+    trees and rocks), `Chains` (station load, work, collect), `Hideouts` (lease, door, stash, hideout
+    machine), `Houses` (lock enforcement on house doors, house-wide lock toggles), `Survival` (the
+    tick, health cost, stamina penalty, food), `Toys` (the jump pad), `Atmosphere` (the voice mix, the
+    radio switch), `Emote` (the radial, seats). Spawned things stop spawning and respawning while off
+    (ore from a mining area, a rock's grow-back waits and asks again); nothing saved is touched.
+  - `NOT_YET`: not gated yet; a config that turns it off is refused with a logged reason and it
+    stays on. Follow-ups move them to `SWITCHABLE` one by one.
+  - `LOCKED`: framework plumbing (Account, Character, Interaction, UIKit, ...); always on.
+- **Layers:** the catalog default (on unless opt-in), then the pack's `LF_SystemsConfig` overlays
+  from the mission header, then the owner's `systems.switches.<id>.enabled`. A client takes the
+  server's effective values from the config stream (`systems` section) and needs no layer itself.
+- **Dependencies:** a parent that is off turns its parts off. A config that turns off a system an
+  enabled one needs is refused at boot and the needed system keeps its shipped value (#279); when
+  that value is off (opt-in), the system that needs it is turned off instead. Declared today:
+  ATM and Organizations need Banking, Police needs Crime, Investigation needs Police.
+- **Read path:** `LF_Systems.IsEnabled(id)` (actions, offers, the growth clock),
+  `LF_Systems.Refuses(id, what)` (server entry points: logs `<what> refused: <id> is off on this
+  server (<reason>)`), `LF_Systems.IsItemAllowed(prefab)` (the loadout).
+- **Logging:** each system that is off logs one `LF_Debug.Info` line under its own id when the
+  switch resolves (boot, `/configreload`, a client's stream), plus one summary under `Systems`.
+- **Run-time switch-off (#1047):** `LF_Systems.SwitchOff(id, reason)` (server only) turns a non-LOCKED system off
+  until the world ends (a map with no place for it). It logs `[LFDebug:<id>] <reason>: off` once,
+  survives a config reload, and goes out in the config stream.
+- **Places (#1047):** a catalog entry's `m_aPlaces` lists the `LF_Places` kinds the system works at.
+  `LF_Systems.CheckPlaces()` (server, `LF_GameModeRoleplay.OnGameStart` after `Boot`) switches off
+  each system with none of them placed: `[LFDebug:<id>] no <Kind> placed on this map: off`.
+- **Saved data:** never touched. Load and save run as before while a system is off, so turning it
+  on again finds its data. Farming also stops its growth clock while off, so a crop comes back as
+  it was saved.
+- **Gotcha:** a `.conf` value does not beat a member initializer. With `bool m_bEnabled = true;`
+  an overlay's `m_bEnabled 0` read as on (red-proof in `LF_Test_SystemsWorld.c`); the attribute
+  default is the only default.
+
+## Proof
+
+- `systems/toggle` (LOGIC): catalog in script, owner section, refusals, dependencies, opt-in,
+  run-time switch-off, loadout items.
+- `systems/economy-gates` (WORLD): the vault, ATM, counter, trader, depot and org desk with each economy system off and on; a drill mid-way; XP, licences, the whitelist and the payout.
+- `systems/world-gates` (WORLD): the shipped catalog; the DebugWorld farm plot, robbery seams and a
+  pager with the systems off and on; a pack overlay under the owner; the stream to a client.
+- `systems/services` (WORLD): one entry point per service system, off and on, and what it saved stays.
+- `systems/world-resources` and `systems/world-places` (WORLD, #1075): the eleven world systems above on real fixtures.
+- `systems/keep-data` (PERSISTENCE): a crop saved and loaded while Farming is off; across a restart
+  with `tools\cli wt e2e` (the save boot writes a config.json with Farming off).

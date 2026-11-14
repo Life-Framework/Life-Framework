@@ -1,0 +1,40 @@
+Vehicle : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
+ ID "E1A2101BE1A00002"
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
+  LF_VehicleStorageAccessControl "{E1A2101BE1A00004}" {
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_VehicleLockAction "{E1A2101BE1A00006}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{E1A2101BE1A00007}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E000001D6}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F000001D6}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
+    }
+    LF_VehicleSearchAction "{5EA2C409000000D6}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40A000000D6}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
+   }
+  }
+ }
+}

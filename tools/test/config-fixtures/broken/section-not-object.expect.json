@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 35,
+      "msg": "config.json: section vehicles is not an object; the section uses the shipped defaults"
+    }
+  ]
+}

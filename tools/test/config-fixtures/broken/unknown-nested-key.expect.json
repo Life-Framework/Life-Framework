@@ -1,0 +1,12 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "warn",
+      "line": 1,
+      "col": 34,
+      "msg": "shops.bogus is not a known key; ignored"
+    }
+  ]
+}

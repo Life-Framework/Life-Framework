@@ -1,4 +1,5 @@
 // tools/validation/validate-addon-boundary.mjs
+// inputs: addons/**, docs/architecture/**
 //
 // The core (addons/LifeFramework) never references the flagship pack
 // (addons/LF_Everon1989); the pack depends on the core, not the other way.
@@ -85,7 +86,17 @@ export function packSurface(packDir) {
 }
 
 // Returns a list of "file:line message" violations; empty means the boundary holds.
+export function listPacks(addonsDir) {
+  if (!existsSync(addonsDir)) return [];
+  return readdirSync(addonsDir).filter((n) => n.startsWith("LF_") && statSync(join(addonsDir, n)).isDirectory()).sort();
+}
+
+// Every pack under addons/ (LF_*) is held to the boundary, not only the flagship.
 export function checkBoundary(addonsDir) {
+  return listPacks(addonsDir).flatMap((p) => checkPackBoundary(addonsDir, p));
+}
+
+function checkPackBoundary(addonsDir, PACK) {
   const coreDir = join(addonsDir, CORE);
   const packDir = join(addonsDir, PACK);
   const errors = [];
@@ -100,6 +111,8 @@ export function checkBoundary(addonsDir) {
 
   const corePaths = new Set(walk(coreDir).map((f) => rel(coreDir, f)));
   const packOnlyPaths = new Set([...pack.paths].filter((p) => !corePaths.has(p)));
+  // Whole word: a pack LF_Test is not named by the core class LF_TestOrgSign.
+  const packNameRe = new RegExp(`\\b${PACK}\\b`);
   const classNames = [...pack.classes.keys()];
   const classRe = classNames.length ? new RegExp(`\\b(${classNames.join("|")})\\b`) : null;
 
@@ -110,7 +123,7 @@ export function checkBoundary(addonsDir) {
     const isMeta = ext(file) === ".meta";
     lines.forEach((line, i) => {
       const at = `${r}:${i + 1}`;
-      if (line.includes(PACK)) errors.push(`${at} names the pack addon "${PACK}"`);
+      if (packNameRe.test(line)) errors.push(`${at} names the pack addon "${PACK}"`);
       for (const m of line.matchAll(GUID_REF)) {
         const owner = pack.guids.get(m[1].toUpperCase());
         if (owner) errors.push(`${at} references pack GUID {${m[1]}} (${PACK}/${owner})`);
@@ -146,7 +159,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     console.log(`validate-addon-boundary: ${errors.length} violation(s); the core must not reference ${PACK} (docs/architecture/core-vs-pack.md)`);
     process.exit(1);
   }
-  const packDir = join(root, "addons", PACK);
-  const state = existsSync(packDir) ? `${packSurface(packDir).paths.size} pack resource(s)` : "no pack folder";
+  const packs = listPacks(join(root, "addons"));
+  const state = packs.length ? `${packs.length} pack(s): ${packs.join(", ")}` : "no pack folder";
   console.log(`validate-addon-boundary: OK (${state}; core references none of them)`);
 }

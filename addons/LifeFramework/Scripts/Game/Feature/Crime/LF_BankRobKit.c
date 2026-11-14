@@ -49,7 +49,7 @@ class LF_BankRobKit
 		foreach (ResourceName prefab : Items())
 		{
 			bool has;
-			if (prefab == LF_Breach.FENCE_CHARGE_PREFAB)
+			if (LF_Utils.SamePrefab(prefab, LF_Breach.FENCE_CHARGE_PREFAB))
 				has = LF_Breach.HasCharge(character);
 			else
 				has = LF_InventoryUtils.GetAmount(character, prefab) >= 1;
@@ -76,7 +76,7 @@ class LF_BankRobKitAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return LF_BankRobKit.Enabled();
+		return LF_BankRobKit.Enabled() && LF_Systems.IsEnabled(LF_RobAction.SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -89,6 +89,9 @@ class LF_BankRobKitAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "rob kit"))
 			return;
 
 		if (!LF_BankRobKit.Enabled())

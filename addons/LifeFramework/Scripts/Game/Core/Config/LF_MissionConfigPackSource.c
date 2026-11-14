@@ -25,10 +25,56 @@ class LF_MissionConfigPackSource : LF_ConfigPackSource
 		return LF_MissionHeader.GetCurrent();
 	}
 
+	//! Tests set a manifest here; null reads the header's m_LF_PackManifest.
+	protected ref LF_PackManifest m_Manifest;
+	protected string m_sCoreVersion = LF_PackManifest.CORE_VERSION;
+	protected bool m_bRefusalLogged;
+
+	//------------------------------------------------------------------------------------------------
+	void SetManifest(LF_PackManifest manifest, string coreVersion = LF_PackManifest.CORE_VERSION)
+	{
+		m_Manifest = manifest;
+		m_sCoreVersion = coreVersion;
+		m_bRefusalLogged = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the mission's pack accepts the running core. No manifest means no check. A manifest
+	//! that is named but does not load refuses the pack: the version cannot be shown to match.
+	bool IsPackAccepted(LF_MissionHeader header)
+	{
+		LF_PackManifest manifest = m_Manifest;
+		if (!manifest && header && !header.m_LF_PackManifest.IsEmpty())
+		{
+			Resource resource = BaseContainerTools.LoadContainer(header.m_LF_PackManifest);
+			if (resource && resource.IsValid())
+				manifest = LF_PackManifest.Cast(BaseContainerTools.CreateInstanceFromContainer(resource.GetResource().ToBaseContainer()));
+			if (!manifest)
+			{
+				if (!m_bRefusalLogged)
+					LF_Debug.Error(LF_PackManifest.FEATURE, string.Format("pack manifest %1 does not load as an LF_PackManifest; this mission's config overlays are not loaded", header.m_LF_PackManifest));
+				m_bRefusalLogged = true;
+				return false;
+			}
+			m_Manifest = manifest;
+		}
+		if (!manifest)
+			return true;
+		if (manifest.Supports(m_sCoreVersion))
+			return true;
+
+		if (!m_bRefusalLogged)
+			LF_Debug.Error(LF_PackManifest.FEATURE, manifest.RefusalLine(m_sCoreVersion));
+		m_bRefusalLogged = true;
+		return false;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void GetOverlays(ResourceName coreConf, notnull array<ResourceName> overlays)
 	{
 		LF_MissionHeader header = ResolveHeader();
+		if (!IsPackAccepted(header))
+			return;
 		if (!header || !header.m_aLF_ConfigOverlays)
 			return;
 

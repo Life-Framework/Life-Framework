@@ -15,11 +15,21 @@ enum LF_EShopRefusal
 	NOT_TRUSTED,
 	OUT_OF_STOCK,
 	CLOSED,
-	TOO_FAST
+	TOO_FAST,
+	//! An outlet's gate (#988): the reply's detail names what the buyer lacks.
+	NEEDS_LICENCE,
+	NEEDS_JOB,
+	NEEDS_RANK,
+	NEEDS_ORG_RIGHT,
+	//! The Shop system is off on this server (#1074).
+	SYSTEM_OFF
 }
 
 class LF_ShopRefusal
 {
+	//! The system id the Shop switch answers to (#1074).
+	static const string SYSTEM = "Shop";
+
 	//------------------------------------------------------------------------------------------------
 	//! Slip line for a refusal; empty for NONE.
 	static string Key(LF_EShopRefusal reason)
@@ -60,7 +70,35 @@ class LF_ShopRefusal
 		if (reason == LF_EShopRefusal.TOO_FAST)
 			return "#LF-Shop_RefuseTooFast";
 
+		if (reason == LF_EShopRefusal.NEEDS_LICENCE)
+			return "#LF-Shop_RefuseNeedsLicence";
+
+		if (reason == LF_EShopRefusal.NEEDS_JOB)
+			return "#LF-Shop_RefuseNeedsJob";
+
+		if (reason == LF_EShopRefusal.NEEDS_RANK)
+			return "#LF-Shop_RefuseNeedsRank";
+
+		if (reason == LF_EShopRefusal.NEEDS_ORG_RIGHT)
+			return "#LF-Shop_RefuseNeedsOrgRight";
+
+		if (reason == LF_EShopRefusal.SYSTEM_OFF)
+			return "#LF-Systems_Off";
+
 		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Slip line for a refusal with what the buyer lacks filled in (a gate names it, #988). Client.
+	//! \param[in] detail A localization key (a licence's name, a rank's title) or plain text; empty
+	//! for a refusal that names nothing.
+	static string Text(LF_EShopRefusal reason, string detail)
+	{
+		string key = Key(reason);
+		if (key.IsEmpty() || detail.IsEmpty())
+			return key;
+
+		return WidgetManager.Translate(key, WidgetManager.Translate(detail));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -68,7 +106,7 @@ class LF_ShopRefusal
 	//! The upper bound is the last enum value: it was OUT_OF_STOCK, which read CLOSED as no shop.
 	static LF_EShopRefusal FromWire(int reason)
 	{
-		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.TOO_FAST)
+		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.SYSTEM_OFF)
 			return LF_EShopRefusal.NO_SHOP;
 
 		return reason;

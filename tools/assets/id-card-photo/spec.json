@@ -53,7 +53,12 @@
       "fov": 20
     },
     "ground": {
-      "up": "Up"
+      "up": "Up",
+      "offset": [
+        0,
+        0.006,
+        0
+      ]
     },
     "hand": {
       "pose": "fist",

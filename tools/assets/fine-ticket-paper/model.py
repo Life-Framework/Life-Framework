@@ -104,7 +104,7 @@ P.write_maps(raw, maps)
 for f in ("_print.png", "_stamp.png"):
     os.remove(os.path.join(raw, f))
 
-me = P.sheet(0.148, 0.21, 0.0012, bow_x=0.0012, bow_y=0.0018)
+me = P.sheet(0.148, 0.21, 0.0008)
 ob = P.export_glb(me, "FineTicketSheet", raw, os.path.join(raw, "tex_base_color.png"))
 P.review(os.path.join(raw, "review.png"), ob, dist=0.42)
 print("LF_ASSET_MODEL ok", len(me.polygons), "faces")

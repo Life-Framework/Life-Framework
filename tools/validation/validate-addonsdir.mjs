@@ -1,4 +1,5 @@
 // One `-addonsDir` per launch: Workbench keeps only the last repeated flag, so
+// inputs: always
 // the pack addon cannot find the core (docs/architecture/pack-move-spike.md).
 // Pass the folders through tools/lib/addons.mjs addonsDirArgs() (comma-joined).
 // red-proof: restoring the two separate "-addonsDir" entries in cmdPack printed

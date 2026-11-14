@@ -1,4 +1,5 @@
 // Shared registries are per-feature files; never append to a central list.
+// inputs: addons/**, agent-box/**
 //
 // Two lists used to be conflict hotspots that every feature PR appended to:
 //   - agent-box/session.mjs: the usage line and the switch of proof verbs. Each verb is now

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "defaultBuyPrice": 60,
+    "priceRules": {
+      "Prefabs/Items/Food/": { "buyPrice": 12, "sellPrice": 6 }
+    }
+  }
+}

@@ -1,5 +1,21 @@
 {
   "schemaVersion": 1,
+  "catalogue": {
+    "items": {
+      "pistol_m9": {
+        "price": 650,
+        "sellPrice": 300
+      }
+    },
+    "offers": {
+      "gun_counter/pistol_m9": {
+        "licence": "FIREARM_PERMIT"
+      },
+      "clothing_rack/raincoat_green": {
+        "removed": true
+      }
+    }
+  },
   "crime": {
     "crimes": {
       "#LF-Offence_Robbery": {
@@ -119,6 +135,9 @@
       }
     },
     "extraItemPrefabs": []
+  },
+  "systems": {
+    "switches": {}
   },
   "vehicles": {
     "buyPercent": 100,

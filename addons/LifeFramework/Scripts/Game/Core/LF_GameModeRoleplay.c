@@ -47,6 +47,10 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		super.OnGameStart();
 		// Owner config.json over the shipped .conf defaults (server); features read through it.
 		LF_ConfigService.Boot();
+		// Which systems this server runs (#960): logs each one that is off, before anything spawns.
+		LF_Systems.Boot();
+		// A system whose places are not on this map switches off with one line (#1047, server only).
+		LF_Systems.CheckPlaces();
 		// The effective client-relevant values, for the config stream to joining clients (#285).
 		if (Replication.IsServer())
 			LF_ConfigStream.Publish();

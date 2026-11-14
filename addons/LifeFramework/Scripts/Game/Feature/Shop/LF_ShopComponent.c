@@ -30,6 +30,11 @@ class LF_ShopComponent : ScriptComponent
 	[Attribute("", UIWidgets.Auto, desc: "Shopkeeper's word on the sheet: a localization key (such as a pointer to the back room); empty shows nothing")]
 	protected string m_sShopHint;
 
+	//! An outlet of the item catalogue (#988). When set, the shop sells exactly that outlet's offers at
+	//! the catalogue's prices behind each offer's gate, and the curated list and price rules are not read.
+	[Attribute("", UIWidgets.Auto, desc: "Item catalogue outlet id (gun_counter, clothing_rack, ...). Set, the shop sells that outlet's offers at catalogue prices behind their gates")]
+	protected string m_sOutletId;
+
 	//! Server only, world time in ms. Not saved: a raid closes the room for the rest of the session at most.
 	protected int m_iClosedUntilMs;
 
@@ -132,6 +137,13 @@ class LF_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The item catalogue outlet this shop is, or empty for a price-rule shop.
+	string GetOutletId()
+	{
+		return m_sOutletId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetShopDescription()
 	{
 		return m_sShopDescription;
@@ -143,6 +155,29 @@ class LF_ShopComponent : ScriptComponent
 	array<ref LF_ShopCatalogItem> GetShopItems()
 	{
 		array<ref LF_ShopCatalogItem> result = new array<ref LF_ShopCatalogItem>();
+
+		if (!m_sOutletId.IsEmpty())
+		{
+			// An outlet is the catalogue's counter: with Catalogue off it shows nothing (#1074).
+			if (!LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM))
+				return result;
+
+			LF_ItemCatalogueConfig catalogue = LF_ItemCatalogueConfig.Get();
+			array<LF_OutletOffer> offers = {};
+			LF_ItemCatalogue.Offers(catalogue, m_sOutletId, offers);
+			foreach (LF_OutletOffer offer : offers)
+			{
+				LF_CatalogueItem entry = LF_ItemCatalogue.Item(catalogue, offer.m_sItem);
+				LF_ShopCatalogItem row = new LF_ShopCatalogItem();
+				row.m_ItemPrefab = entry.m_Prefab;
+				row.m_sDisplayName = LF_ShopManagerComponent.ResolveDisplayName(entry.m_Prefab);
+				row.m_iBuyPrice = entry.m_iPrice;
+				row.m_iSellPrice = entry.m_iSellPrice;
+				result.Insert(row);
+			}
+
+			return result;
+		}
 
 		if (m_aShopItems && !m_aShopItems.IsEmpty())
 		{
@@ -184,6 +219,12 @@ class LF_ShopComponent : ScriptComponent
 		if (prefab.IsEmpty())
 			return false;
 
+		if (!m_sOutletId.IsEmpty())
+		{
+			LF_CatalogueItem entry;
+			return LF_ItemCatalogue.OfferFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, prefab, entry) != null;
+		}
+
 		if (m_aShopItems && !m_aShopItems.IsEmpty())
 		{
 			foreach (LF_ShopItem curated : m_aShopItems)
@@ -206,6 +247,15 @@ class LF_ShopComponent : ScriptComponent
 	//! Buy price this shop charges for one prefab. Zero when the item is not priced.
 	int GetBuyPrice(ResourceName prefab)
 	{
+		if (!m_sOutletId.IsEmpty())
+		{
+			LF_CatalogueItem entry;
+			if (LF_ItemCatalogue.OfferFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, prefab, entry))
+				return entry.m_iPrice;
+
+			return 0;
+		}
+
 		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
 		if (manager)
 		{
@@ -227,6 +277,15 @@ class LF_ShopComponent : ScriptComponent
 	//! Sell price this shop pays for one prefab. Zero when the item is not priced.
 	int GetSellPrice(ResourceName prefab)
 	{
+		if (!m_sOutletId.IsEmpty())
+		{
+			LF_CatalogueItem entry;
+			if (LF_ItemCatalogue.OfferFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, prefab, entry))
+				return entry.m_iSellPrice;
+
+			return 0;
+		}
+
 		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
 		if (manager)
 		{
@@ -285,7 +344,8 @@ class LF_ShopComponent : ScriptComponent
 	bool BuyItem(ResourceName prefab, int quantity, IEntity buyer)
 	{
 		int charged;
-		return Buy(prefab, quantity, buyer, charged) == LF_EShopRefusal.NONE;
+		string missing;
+		return Buy(prefab, quantity, buyer, charged, missing) == LF_EShopRefusal.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -293,12 +353,17 @@ class LF_ShopComponent : ScriptComponent
 	//! is charged; a partial delivery refunds the difference. The till slip shows the outcome, so
 	//! this raises no toast.
 	//! \param[out] charged Cash taken for the order (0 when refused).
+	//! \param[out] missing What an outlet's gate found the buyer lacks, a localization key; else empty.
 	//! \return NONE when the whole order was paid for and delivered, else why not.
-	LF_EShopRefusal Buy(ResourceName prefab, int quantity, IEntity buyer, out int charged)
+	LF_EShopRefusal Buy(ResourceName prefab, int quantity, IEntity buyer, out int charged, out string missing)
 	{
 		charged = 0;
+		missing = string.Empty;
 		if (!Replication.IsServer() || !buyer)
 			return LF_EShopRefusal.NO_SHOP;
+
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "buy at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
 
 		if (quantity <= 0)
 			return LF_EShopRefusal.BAD_QUANTITY;
@@ -321,6 +386,10 @@ class LF_ShopComponent : ScriptComponent
 			LF_Debug.Info("Shop", string.Format("buy rejected (unpriced) item=%1", prefab));
 			return LF_EShopRefusal.UNPRICED;
 		}
+
+		LF_EShopRefusal gate = CheckOutletGate(prefab, buyer, missing);
+		if (gate != LF_EShopRefusal.NONE)
+			return gate;
 
 		string buyerUid;
 		if (m_bFence)
@@ -380,7 +449,8 @@ class LF_ShopComponent : ScriptComponent
 	bool SellItem(ResourceName prefab, int quantity, IEntity seller)
 	{
 		int earned;
-		return Sell(prefab, quantity, seller, earned) == LF_EShopRefusal.NONE;
+		string missing;
+		return Sell(prefab, quantity, seller, earned, missing) == LF_EShopRefusal.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -389,11 +459,15 @@ class LF_ShopComponent : ScriptComponent
 	//! shows the outcome.
 	//! \param[out] earned Cash paid for what was taken (0 when refused).
 	//! \return NONE when at least one unit was sold, else why not.
-	LF_EShopRefusal Sell(ResourceName prefab, int quantity, IEntity seller, out int earned)
+	LF_EShopRefusal Sell(ResourceName prefab, int quantity, IEntity seller, out int earned, out string missing)
 	{
 		earned = 0;
+		missing = string.Empty;
 		if (!Replication.IsServer() || !seller)
 			return LF_EShopRefusal.NO_SHOP;
+
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "sell at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
 
 		if (quantity <= 0)
 			return LF_EShopRefusal.BAD_QUANTITY;
@@ -416,6 +490,11 @@ class LF_ShopComponent : ScriptComponent
 			LF_Debug.Info("Shop", string.Format("sell rejected (unpriced) item=%1", prefab));
 			return LF_EShopRefusal.UNPRICED;
 		}
+
+		// An outlet trades only with whoever its gate lets through, both ways (#988).
+		LF_EShopRefusal gate = CheckOutletGate(prefab, seller, missing);
+		if (gate != LF_EShopRefusal.NONE)
+			return gate;
 
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
 		int totalPrice = LF_ShopRules.StackTradeTotal(unitPrice, units);
@@ -444,6 +523,28 @@ class LF_ShopComponent : ScriptComponent
 		earned = LF_ShopRules.StackTradeTotal(unitPrice, removed);
 		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));
 		return LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: an outlet's gate for one trader and prefab (#988). NONE for a shop that is no outlet.
+	//! \param[out] missing What the trader lacks, a localization key; empty when let through.
+	protected LF_EShopRefusal CheckOutletGate(ResourceName prefab, IEntity trader, out string missing)
+	{
+		missing = string.Empty;
+		if (m_sOutletId.IsEmpty())
+			return LF_EShopRefusal.NONE;
+
+		if (LF_Systems.Refuses(LF_ItemCatalogue.SYSTEM, "outlet trade at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
+
+		LF_CatalogueItem entry;
+		LF_OutletOffer offer = LF_ItemCatalogue.OfferFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, prefab, entry);
+		LF_EOutletGate gate = LF_ItemCatalogue.Check(offer, LF_EntityBuyerFacts.Of(trader), missing);
+		if (gate == LF_EOutletGate.OPEN)
+			return LF_EShopRefusal.NONE;
+
+		LF_Debug.Info(LF_ItemCatalogue.FEATURE, string.Format("trade refused at outlet %1: %2 lacks %3 (%4) for item %5", m_sOutletId, LF_Utils.GetPlayerUID(trader), typename.EnumToString(LF_EOutletGate, gate), missing, prefab));
+		return LF_ItemCatalogue.RefusalOf(gate);
 	}
 
 	//------------------------------------------------------------------------------------------------

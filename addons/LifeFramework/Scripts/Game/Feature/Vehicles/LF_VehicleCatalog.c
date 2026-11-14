@@ -15,6 +15,10 @@ class LF_VehicleCatalog
 	static const ResourceName UAZ452_LOCKED = "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et";
 	static const ResourceName M923 = "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et";
 	static const ResourceName M923_LOCKED = "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et";
+	static const ResourceName DANA2101 = "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et";
+	static const ResourceName DANA2101_LOCKED = "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et";
+	static const ResourceName SPUTNIK_T601 = "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et";
+	static const ResourceName SPUTNIK_T601_LOCKED = "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et";
 	static const ResourceName GARAGE_SHELL = "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et";
 	static const ResourceName KEY = "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et";
 }
