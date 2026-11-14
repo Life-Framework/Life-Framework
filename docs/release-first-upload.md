@@ -47,7 +47,7 @@ The pack is new: `0.1.0`. Every publish takes a higher number, even a text-only 
 1. Workbench launcher > **Add Existing** > `addons\LifeFramework\LifeFramework.gproj` **from the
    worktree**. Wait for the Resource Browser. Script Editor: **Build > Compile and Reload Scripts**, no errors.
 2. **Workbench > Publish Project**. Fill it from `docs/marketing/workshop/README.md`:
-   Project Name `Life Framework`; Working Dir default; Preview Image `docs/marketing/workshop/preview.jpg`;
+   Project Name `Life Framework (Core)`; Working Dir default; Preview Image `docs/marketing/workshop/preview.jpg`;
    Screenshots the nine files in `docs/marketing/workshop/screenshots/`; Category Game Mode (+ Scenario);
    Tags `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989`; License **Arma Public
    License (APL)**; Version (step 1); Visibility **Unlisted** for the first round; Summary `summary.txt`;
