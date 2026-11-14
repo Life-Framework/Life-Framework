@@ -3,6 +3,9 @@
 // `- an old prefab id follows the chain to the apple (expected '{C9D661E5B0714711}Prefabs/Items/Food/Apple.et',
 // got '{0E2EA11A500000C2}Prefabs/Items/Food/Apple_Mid.et')` and `- an alias loop is refused and the id loads
 // unchanged (expected 'loop_a', got 'loop_b')`. Restored; green.
+// red-proof: persist/save-aliases (spawnable body), observed 2026-11-14: skipping the fallback loop in
+// LF_SaveIds.SpawnablePrefab failed it with `- a missing body spawns from the first default that loads
+// (expected '{C9D661E5B0714711}Prefabs/Items/Food/Apple.et', got '')`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! The pack source of persist/save-aliases: the alias fixture for the alias table, plus a shops
@@ -63,6 +66,13 @@ class LF_Test_SaveAliases : LF_Test
 		ctx.True(LF_SaveIds.Add(LF_SaveIds.KIND_PREFAB, GONE, APPLE), "an alias added later (content back under a new id)");
 		ctx.EqualStr(APPLE, LF_SaveIds.ResolvePrefab(GONE), "the missing id resolves once its alias exists");
 		ctx.False(LF_SaveIds.Add(LF_SaveIds.KIND_PREFAB, APPLE, "{C9D661E5B0714711}" + "Prefabs/Other/Apple.et"), "an alias from an id to itself (same GUID) is refused");
+
+		// A character body whose content is gone still spawns, from a default body; the id is kept.
+		array<ResourceName> bodies = {GONE, APPLE};
+		ctx.EqualStr(APPLE, LF_SaveIds.SpawnablePrefab(APPLE, bodies), "a body that loads spawns as itself");
+		ctx.EqualStr(APPLE, LF_SaveIds.SpawnablePrefab("{0E2EA11A500000FE}Prefabs/Characters/Gone.et", bodies), "a missing body spawns from the first default that loads");
+		ctx.True(LF_SaveIds.WasMissing(LF_SaveIds.KIND_PREFAB, "{0E2EA11A500000FE}Prefabs/Characters/Gone.et"), "the missing body is logged");
+		ctx.EqualStr("", LF_SaveIds.SpawnablePrefab("{0E2EA11A500000FE}Prefabs/Characters/Gone.et", null), "no default that loads: nothing to spawn");
 
 		LF_ConfigService.SetPackSource(null);
 		LF_SaveIds.ResetStatics();

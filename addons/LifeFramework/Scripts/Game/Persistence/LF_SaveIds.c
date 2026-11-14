@@ -209,12 +209,37 @@ class LF_SaveIds
 		if (PrefabLoads(resolved))
 			return resolved;
 
-		if (resolved != prefab)
+		if (resolved != prefab) // lf-path-ok: did the alias table change this id (same string in, same out)
 			NoteMissing(KIND_PREFAB, prefab, string.Format(" (its alias leads to %1, which does not load either)", resolved));
 		else
 			NoteMissing(KIND_PREFAB, prefab, "");
 
 		return prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The prefab to spawn for a saved id: the id itself when it loads, otherwise the first
+	//! fallback that loads (a character body whose content is gone still gets a body; the
+	//! account keeps the saved id, so the old body comes back with its content). Empty when
+	//! nothing loads.
+	static ResourceName SpawnablePrefab(ResourceName saved, array<ResourceName> fallbacks)
+	{
+		if (PrefabLoads(saved))
+			return saved;
+
+		if (!saved.IsEmpty())
+			NoteMissing(KIND_PREFAB, saved, " (it spawns from a default prefab until it returns)");
+
+		if (fallbacks)
+		{
+			foreach (ResourceName fallback : fallbacks)
+			{
+				if (PrefabLoads(fallback))
+					return fallback;
+			}
+		}
+
+		return ResourceName.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------

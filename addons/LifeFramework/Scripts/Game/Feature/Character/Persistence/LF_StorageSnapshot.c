@@ -206,6 +206,14 @@ class LF_StorageSnapshot
 		if (!any)
 			return 0;
 
+		// Only a fresh capture lacks them: one built from records (a load, a stored slot) names its
+		// held items already, and carrying would copy them twice.
+		foreach (LF_StorageItemRecord nextItem : next.m_aItems)
+		{
+			if (nextItem && !nextItem.m_sPrefab.IsEmpty() && !LF_SaveIds.PrefabLoads(nextItem.m_sPrefab))
+				return 0;
+		}
+
 		// Prefab chains of both trees, to find a held item's container in the new capture.
 		array<string> previousChains = {};
 		BuildChains(previous.m_aItems, previousChains);

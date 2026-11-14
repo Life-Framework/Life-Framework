@@ -2,6 +2,9 @@
 // skipping LF_StorageSnapshot.CarryHeld in Set failed it with `- the capture still holds the missing canteen
 // (expected 1, got 0)`, `- the capture has as many records as the save (expected 8, got 5)` and `- the returned
 // canteen comes back inside the backpack as a water bottle, beside the first (expected 2, got 1)`. Restored; green.
+// red-proof: persist/held-missing-content (no double carry), observed 2026-11-14: dropping the fresh-capture
+// guard in CarryHeld failed it with `- a record that already holds the canteen gets no second copy (expected 1,
+// got 2)` and `- a replayed record keeps its own count (expected 8, got 11)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! Missing content is held, not dropped (#965). A carried inventory names a prefab the build no
@@ -93,6 +96,23 @@ class LF_Test_SaveHeldContent : LF_Test
 		}
 
 		LF_TestCharacterFixture.Delete(restored);
+
+		// A record that already names the held items (not a fresh capture) replaces the snapshot as it is.
+		LF_StorageSnapshotRecord replay = LF_StorageSnapshotRecord.Create(CHARACTER_ID, LF_StorageSnapshot.SLOT_CARRIED);
+		if (again)
+		{
+			foreach (LF_StorageItemRecord item : again.m_aItems)
+			{
+				LF_StorageItemRecord itemCopy = LF_StorageItemRecord.Create(item.m_sPrefab, item.m_iQuantity, item.m_iParent, item.m_iStorage, item.m_iSlot);
+				replay.m_aItems.Insert(itemCopy);
+			}
+		}
+
+		LF_StorageSnapshot.Set(replay);
+		ctx.Equal(1, replay.CountPrefab(GONE_IN_BACKPACK), "a record that already holds the canteen gets no second copy");
+		ctx.Equal(savedCount, replay.m_aItems.Count(), "a replayed record keeps its own count");
+		if (again)
+			LF_StorageSnapshot.Set(again);
 
 		// The content returns under a new id: the next load resolves the held record and restores it.
 		ctx.True(LF_SaveIds.Add(LF_SaveIds.KIND_PREFAB, GONE_IN_BACKPACK, LF_TestCarriedInventoryKit.WATER_PREFAB), "a pack adds the canteen's alias");
