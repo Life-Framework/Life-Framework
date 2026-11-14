@@ -259,13 +259,16 @@ class LF_Restraint
 		if (!at || System.IsConsoleApp() || RplSession.Mode() == RplMode.Dedicated)
 			return;
 
-		SCR_SoundManagerModule sound = SCR_SoundManagerModule.GetInstance(at.GetWorld());
-		if (!sound)
-			return;
-
 		string eventName = CLICK_CLOSE;
 		if (open)
 			eventName = CLICK_OPEN;
+
+		SCR_SoundManagerModule sound = SCR_SoundManagerModule.GetInstance(at.GetWorld());
+		if (!sound)
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1 not played: this machine has no sound manager", eventName));
+			return;
+		}
 
 		SCR_AudioSourceConfiguration config = new SCR_AudioSourceConfiguration();
 		config.m_sSoundProject = CLICK_PROJECT;
