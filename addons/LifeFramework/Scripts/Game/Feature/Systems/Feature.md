@@ -28,6 +28,9 @@ just before a reload) is refused with a log line and, where the player sees a re
   - `SWITCHABLE`: its entry points check the switch. Today: `Farming` (plot actions, plant,
     harvest, the growth clock), `Robbery` (the till, weapon and vehicle robbery actions, the till
     hold and its dialogue line, a hold's payout), `Pager` (paging, the read action, loadout items).
+    The service systems (#1076) are switchable too: Comms, Chat, Medic, Police, Crime, Investigation,
+    Vehicles, VehicleLock, LicensePlate, SirenLights, Quests. Each hides its prompts, refuses its server
+    entry points and keeps its saved data; Vehicles also leaves parked vehicles and garage records alone.
     Bank vault and heist robbery are not part of `Robbery` yet (they belong to `Crime`, `NOT_YET`).
   - `NOT_YET`: not gated yet; a config that turns it off is refused with a logged reason and it
     stays on. Follow-ups move them to `SWITCHABLE` one by one.
@@ -60,5 +63,6 @@ just before a reload) is refused with a log line and, where the player sees a re
   run-time switch-off, loadout items.
 - `systems/world-gates` (WORLD): the shipped catalog; the DebugWorld farm plot, robbery seams and a
   pager with the systems off and on; a pack overlay under the owner; the stream to a client.
+- `systems/services` (WORLD): one entry point per service system, off and on, and what it saved stays.
 - `systems/keep-data` (PERSISTENCE): a crop saved and loaded while Farming is off; across a restart
   with `tools\cli wt e2e` (the save boot writes a config.json with Farming off).

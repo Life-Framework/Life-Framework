@@ -7,6 +7,9 @@ class LF_BankRobAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		return Vault() != null;
 	}
 
@@ -33,6 +36,9 @@ class LF_BankRobAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_BankRobAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

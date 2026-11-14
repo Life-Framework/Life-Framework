@@ -265,8 +265,12 @@ class LF_Downed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Medic off (#1076): nobody goes down and a lethal hit kills as it would without the system.
 	static bool Enabled()
 	{
+		if (!LF_Systems.IsEnabled("Medic"))
+			return false;
+
 		return LF_MedicConfig.Get().m_bDownedEnabled;
 	}
 
