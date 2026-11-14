@@ -8141,6 +8141,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are willing, but cannot show you a card."
      Comment "Toast to the officer: the citizen agreed to show their card but carries none, or walked out of reach (#902)."
     }
+    CustomStringTableItem "{960E19EA6B5BB672}" {
+     Id "LF-CaseBoard_Title"
+     Target_en_us "Case board"
+     Comment "Toast title for the police case board (#148)."
+    }
+    CustomStringTableItem "{0B29DE154C616F79}" {
+     Id "LF-CaseBoard_Pin_Action"
+     Target_en_us "Pin evidence"
+     Comment "F-key action on the case board: pin carried evidence bags, or the next logged card (#148)."
+    }
+    CustomStringTableItem "{576F32E08182B47E}" {
+     Id "LF-CaseBoard_Unpin_Action"
+     Target_en_us "Unpin evidence"
+     Comment "F-key action on the case board: take down the card pinned last (#148)."
+    }
+    CustomStringTableItem "{88E53769C33A742A}" {
+     Id "LF-CaseBoard_Pinned"
+     Target_en_us "%1 card(s) pinned to the case board."
+     Comment "Toast after pinning; %1 is the number of cards (#148)."
+    }
+    CustomStringTableItem "{7B64365A819C2F84}" {
+     Id "LF-CaseBoard_NothingToPin"
+     Target_en_us "No evidence to pin. Bag it at the scene or log it at the locker first."
+     Comment "Toast when pinning finds nothing (#148)."
+    }
+    CustomStringTableItem "{E3F153BC2DA3B463}" {
+     Id "LF-CaseBoard_Unpinned"
+     Target_en_us "Card taken down. It stays logged in the locker."
+     Comment "Toast after unpinning (#148)."
+    }
+    CustomStringTableItem "{EDC95AB6DCC1E098}" {
+     Id "LF-CaseBoard_NothingPinned"
+     Target_en_us "Nothing is pinned to the board."
+     Comment "Toast when unpinning finds nothing (#148)."
+    }
+    CustomStringTableItem "{78EF82E35BB73ADD}" {
+     Id "LF-CaseBoard_CaseHeader"
+     Target_en_us "Case %1"
+     Comment "Header of a case sheet on the board face; %1 is the report number. Printed in capitals (#148)."
+    }
+    CustomStringTableItem "{676FF529BB3B6D09}" {
+     Id "LF-CaseBoard_PlaceTime"
+     Target_en_us "%1, %2"
+     Comment "A case's place and the time of the crime on the board face (#148)."
+    }
+    CustomStringTableItem "{B601E7BA839D3417}" {
+     Id "LF-CaseBoard_NoNote"
+     Target_en_us "Found at the scene"
+     Comment "Evidence card line when the piece says nothing more (#148)."
+    }
+    CustomStringTableItem "{498C53D90C725BD5}" {
+     Id "LF-CaseBoard_FootprintNote"
+     Target_en_us "Print of %1"
+     Comment "Footprint card line; %1 is the suspect's footwear (#148)."
+    }
+    CustomStringTableItem "{F5143D4581991E31}" {
+     Id "LF-CaseBoard_Kind_casing"
+     Target_en_us "Shell casing"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{6A7F76059AF3CDD5}" {
+     Id "LF-CaseBoard_Kind_dropped"
+     Target_en_us "Dropped item"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{CC4F6A7D13DA03D0}" {
+     Id "LF-CaseBoard_Kind_footprint"
+     Target_en_us "Footprint"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{B9E3D8B120B88890}" {
+     Id "LF-CaseBoard_Kind_statement"
+     Target_en_us "Witness statement"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{296D485ED962E190}" {
+     Id "LF-Sign_PoliceCases_Title"
+     Target_en_us "Case board"
+     Comment "Sign Read card title for the police case board (#148)."
+    }
+    CustomStringTableItem "{9CB43F394C2650F6}" {
+     Id "LF-Sign_PoliceCases_What"
+     Target_en_us "Open cases, one column each: the crime, where and when, the suspect, and the evidence pinned against it."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{F33E84A46C3A3659}" {
+     Id "LF-Sign_PoliceCases_How"
+     Target_en_us "Bag what a scene left (casings, footprint cards, dropped items, witness statements), then Pin evidence here. Unpin takes down the last card."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{FCBCE38D272C85F0}" {
+     Id "LF-Sign_PoliceCases_Rules"
+     Target_en_us "On-duty police only. A case closes when the suspect is no longer wanted."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{2306825FF804F997}" {
+     Id "LF-Sign_PoliceCases_Next"
+     Target_en_us "The evidence locker keeps every logged bag; the wanted board shows the suspects to the public."
+     Comment "Case board Read card (#148)."
+    }
     CustomStringTableItem "{EF99F8D0F3808C85}" {
      Id "LF-CC_Wait_Identity"
      Target_en_us "Connecting to the online service. Your registration form opens in a moment."
@@ -8150,6 +8250,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-CC_Error_NoIdentity"
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
      Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
+    }
+    CustomStringTableItem "{7D3A91E4C2B8F650}" {
+     Id "LF-Parcel_DroppedTitle"
+     Target_en_us "Parcel"
+     Comment "Toast title when a carried courier parcel lands on the ground."
+    }
+    CustomStringTableItem "{7D3A91E4C2B8F651}" {
+     Id "LF-Parcel_DroppedNearby"
+     Target_en_us "You dropped the parcel. It is on the ground nearby, marked with a glow."
+     Comment "Toast when a carried courier parcel lands on the ground (#920)."
+    }
+    CustomStringTableItem "{77F083725C2B630B}" {
+     Id "LF-Police_NpcStunned"
+     Target_en_us "%1 is stunned"
+     Comment "Toast to the officer whose taser dart downed a town NPC (#922). %1 is the NPC's name."
     }
     CustomStringTableItem "{C3D98F355E87E01F}" {
      Id "LF-TestOrgSign_Title"
@@ -8281,115 +8396,235 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sure? Resets for everyone"
      Comment "Travel globe reset row after the first press."
     }
-    CustomStringTableItem "{960E19EA6B5BB672}" {
-     Id "LF-CaseBoard_Title"
-     Target_en_us "Case board"
-     Comment "Toast title for the police case board (#148)."
+    CustomStringTableItem "{57F981BB07357D29}" {
+     Id "LF-FuelClerk_Name"
+     Target_en_us "Fuel attendant"
+     Comment "Speaker name of the fuel station attendant in a conversation."
     }
-    CustomStringTableItem "{0B29DE154C616F79}" {
-     Id "LF-CaseBoard_Pin_Action"
-     Target_en_us "Pin evidence"
-     Comment "F-key action on the case board: pin carried evidence bags, or the next logged card (#148)."
+    CustomStringTableItem "{5BF4FCC1A15400BB}" {
+     Id "LF-FuelClerk_Talk"
+     Target_en_us "Talk to the attendant"
+     Comment "Action on the fuel station attendant: opens the conversation."
     }
-    CustomStringTableItem "{576F32E08182B47E}" {
-     Id "LF-CaseBoard_Unpin_Action"
-     Target_en_us "Unpin evidence"
-     Comment "F-key action on the case board: take down the card pinned last (#148)."
+    CustomStringTableItem "{94A1952EED77A6E8}" {
+     Id "LF-RobHold_ClerkBeg"
+     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
     }
-    CustomStringTableItem "{88E53769C33A742A}" {
-     Id "LF-CaseBoard_Pinned"
-     Target_en_us "%1 card(s) pinned to the case board."
-     Comment "Toast after pinning; %1 is the number of cards (#148)."
+    CustomStringTableItem "{0F045151110132ED}" {
+     Id "LF-RobHold_ClerkStammer"
+     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
     }
-    CustomStringTableItem "{7B64365A819C2F84}" {
-     Id "LF-CaseBoard_NothingToPin"
-     Target_en_us "No evidence to pin. Bag it at the scene or log it at the locker first."
-     Comment "Toast when pinning finds nothing (#148)."
+    CustomStringTableItem "{AB28C43BB756D769}" {
+     Id "LF-RobHold_ClerkPaid"
+     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
     }
-    CustomStringTableItem "{E3F153BC2DA3B463}" {
-     Id "LF-CaseBoard_Unpinned"
-     Target_en_us "Card taken down. It stays logged in the locker."
-     Comment "Toast after unpinning (#148)."
+    CustomStringTableItem "{2040F7D3825AA900}" {
+     Id "LF-RobHold_ClerkPolice"
+     Target_en_us "Police! In here! He has a gun! Help me!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
     }
-    CustomStringTableItem "{EDC95AB6DCC1E098}" {
-     Id "LF-CaseBoard_NothingPinned"
-     Target_en_us "Nothing is pinned to the board."
-     Comment "Toast when unpinning finds nothing (#148)."
+    CustomStringTableItem "{EFA416C7403C71CF}" {
+     Id "LF-RobHold_ClerkGone"
+     Target_en_us "He is gone? Oh God. Somebody call the police!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
     }
-    CustomStringTableItem "{78EF82E35BB73ADD}" {
-     Id "LF-CaseBoard_CaseHeader"
-     Target_en_us "Case %1"
-     Comment "Header of a case sheet on the board face; %1 is the report number. Printed in capitals (#148)."
+    CustomStringTableItem "{FE6717CB3E1F9AF6}" {
+     Id "LF-RobHold_Title"
+     Target_en_us "ROBBERY"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Header of the hold panel."
     }
-    CustomStringTableItem "{676FF529BB3B6D09}" {
-     Id "LF-CaseBoard_PlaceTime"
-     Target_en_us "%1, %2"
-     Comment "A case's place and the time of the crime on the board face (#148)."
+    CustomStringTableItem "{A117438990F577D9}" {
+     Id "LF-RobHold_Timer"
+     Target_en_us "Keep the clerk at gunpoint: %1"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the time left, as 0:20."
     }
-    CustomStringTableItem "{B601E7BA839D3417}" {
-     Id "LF-CaseBoard_NoNote"
-     Target_en_us "Found at the scene"
-     Comment "Evidence card line when the piece says nothing more (#148)."
+    CustomStringTableItem "{653858F0C99AEAC1}" {
+     Id "LF-RobHold_Range"
+     Target_en_us "Stay within %1 m of the till. You are %2 m away."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the radius, %2 the distance."
     }
-    CustomStringTableItem "{498C53D90C725BD5}" {
-     Id "LF-CaseBoard_FootprintNote"
-     Target_en_us "Print of %1"
-     Comment "Footprint card line; %1 is the suspect's footwear (#148)."
+    CustomStringTableItem "{0846C4E67EC47B16}" {
+     Id "LF-RobHold_Edge"
+     Target_en_us "Too far! Back to the counter: %2 m of %1 m"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Shown near the edge of the radius. %1 is the radius, %2 the distance."
     }
-    CustomStringTableItem "{F5143D4581991E31}" {
-     Id "LF-CaseBoard_Kind_casing"
-     Target_en_us "Shell casing"
-     Comment "Evidence card title (#148)."
+    CustomStringTableItem "{09906F4013CF0802}" {
+     Id "LF-RobHold_Rules"
+     Target_en_us "It fails if you leave, put your weapon away, go down, or the police arrive."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
-    CustomStringTableItem "{6A7F76059AF3CDD5}" {
-     Id "LF-CaseBoard_Kind_dropped"
-     Target_en_us "Dropped item"
-     Comment "Evidence card title (#148)."
+    CustomStringTableItem "{917C7F209A2E5AE2}" {
+     Id "LF-RobHold_Success"
+     Target_en_us "The till is open. You took the cash."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
-    CustomStringTableItem "{CC4F6A7D13DA03D0}" {
-     Id "LF-CaseBoard_Kind_footprint"
-     Target_en_us "Footprint"
-     Comment "Evidence card title (#148)."
+    CustomStringTableItem "{8851882B617E8962}" {
+     Id "LF-RobHold_Fail_Left"
+     Target_en_us "Robbery failed: you left the counter."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
-    CustomStringTableItem "{B9E3D8B120B88890}" {
-     Id "LF-CaseBoard_Kind_statement"
-     Target_en_us "Witness statement"
-     Comment "Evidence card title (#148)."
+    CustomStringTableItem "{985FFEE6750F2BA2}" {
+     Id "LF-RobHold_Fail_Weapon"
+     Target_en_us "Robbery failed: you put your weapon away."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
-    CustomStringTableItem "{296D485ED962E190}" {
-     Id "LF-Sign_PoliceCases_Title"
-     Target_en_us "Case board"
-     Comment "Sign Read card title for the police case board (#148)."
+    CustomStringTableItem "{D6A9DD47C75E011F}" {
+     Id "LF-RobHold_Fail_Police"
+     Target_en_us "Robbery failed: the police arrived."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
-    CustomStringTableItem "{9CB43F394C2650F6}" {
-     Id "LF-Sign_PoliceCases_What"
-     Target_en_us "Open cases, one column each: the crime, where and when, the suspect, and the evidence pinned against it."
-     Comment "Case board Read card (#148)."
+    CustomStringTableItem "{C823A75E1A8C79F8}" {
+     Id "LF-RobHold_Fail_Downed"
+     Target_en_us "Robbery failed: you went down."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
-    CustomStringTableItem "{F33E84A46C3A3659}" {
-     Id "LF-Sign_PoliceCases_How"
-     Target_en_us "Bag what a scene left (casings, footprint cards, dropped items, witness statements), then Pin evidence here. Unpin takes down the last card."
-     Comment "Case board Read card (#148)."
+    CustomStringTableItem "{90B712FFFF5477C3}" {
+     Id "LF-RobHold_Fail_Till"
+     Target_en_us "Robbery failed: the till could not pay out."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
-    CustomStringTableItem "{FCBCE38D272C85F0}" {
-     Id "LF-Sign_PoliceCases_Rules"
-     Target_en_us "On-duty police only. A case closes when the suspect is no longer wanted."
-     Comment "Case board Read card (#148)."
+    CustomStringTableItem "{008CB39C11D31B0D}" {
+     Id "LF-RobHold_Refused_Cooldown"
+     Target_en_us "(The till was emptied a short while ago. Come back later.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
     }
-    CustomStringTableItem "{2306825FF804F997}" {
-     Id "LF-Sign_PoliceCases_Next"
-     Target_en_us "The evidence locker keeps every logged bag; the wanted board shows the suspects to the public."
-     Comment "Case board Read card (#148)."
+    CustomStringTableItem "{0078A75E091ED0E8}" {
+     Id "LF-RobHold_Refused_Police"
+     Target_en_us "(Not enough police on duty for a robbery.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
     }
-    CustomStringTableItem "{7D3A91E4C2B8F650}" {
-     Id "LF-Parcel_DroppedTitle"
-     Target_en_us "Parcel"
-     Comment "Toast title when a carried courier parcel lands on the ground."
+    CustomStringTableItem "{7A61B157428F9D30}" {
+     Id "LF-RobHold_Refused_Busy"
+     Target_en_us "(This till is already being robbed.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
     }
-    CustomStringTableItem "{7D3A91E4C2B8F651}" {
-     Id "LF-Parcel_DroppedNearby"
-     Target_en_us "You dropped the parcel. It is on the ground nearby, marked with a glow."
-     Comment "Toast when a carried courier parcel lands on the ground (#920)."
+    CustomStringTableItem "{66AD4C2125D11C00}" {
+     Id "LF-RobHold_Refused_NoTill"
+     Target_en_us "(There is no till here to rob.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{670B9380BE43A60E}" {
+     Id "LF-RobHold_Refused_Rate"
+     Target_en_us "(Too soon. Wait a moment.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{2014B40942A90812}" {
+     Id "LF-RobHold_Refused_Civilian"
+     Target_en_us "(Only civilians can rob.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{34CD07CABFFB2080}" {
+     Id "LF-RobHold_Refused_Weapon"
+     Target_en_us "(You need a weapon drawn.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{7FFE44F7F81E5976}" {
+     Id "LF-Dialogue_FuelClerk_Greet"
+     Target_en_us "Hello. Pump two sticks, so use pump one. What can I do for you?"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{D472603DD9705158}" {
+     Id "LF-Dialogue_FuelClerk_AboutWhere"
+     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{ADE95A91477ED67E}" {
+     Id "LF-Dialogue_FuelClerk_ChatQuiet"
+     Target_en_us "Quiet as a church. A tractor at nine, the post van at noon, and now you. The radio says rain by Thursday."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{F89E614A9ED832B3}" {
+     Id "LF-Dialogue_FuelClerk_ChatNews"
+     Target_en_us "Army trucks on the coast road again, all night long. Nobody tells us anything. My mother says it is like sixty eight."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{0FC2714512F080F2}" {
+     Id "LF-Dialogue_FuelClerk_RobPanic"
+     Target_en_us "W-what? No, no, no. Please, put that away. I have a little girl at home. Please do not shoot me!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{5DE47529DF3B5A69}" {
+     Id "LF-Dialogue_FuelClerk_RobOpen"
+     Target_en_us "Yes! Yes, I am opening it. The key, where is the... here, here it is. Just do not shoot, please, I am doing it!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{27029AD6A4C46ABD}" {
+     Id "LF-Dialogue_FuelClerk_RobEmpty"
+     Target_en_us "It is empty! I swear on my mother, the boss took the cash to the bank. Look, look, there is nothing!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{3D26F89BA596C1B8}" {
+     Id "LF-Dialogue_FuelClerk_RobOff"
+     Target_en_us "Oh God. Oh God, thank you. Just go. Please, just go."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{EB24FB16C4F34B2F}" {
+     Id "LF-Dialogue_FuelClerk_Beg"
+     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{7A946164FACF3403}" {
+     Id "LF-Dialogue_FuelClerk_Stammer"
+     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{74D57E4F126FE30F}" {
+     Id "LF-Dialogue_FuelClerk_Paid"
+     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{E769B1D12183A675}" {
+     Id "LF-Dialogue_FuelClerk_Police"
+     Target_en_us "Police! In here! He has a gun! Help me!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{CC61CA49E7915664}" {
+     Id "LF-Dialogue_FuelClerk_Gone"
+     Target_en_us "He is gone? Oh God. Somebody call the police!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{0896B3E1E8535C8F}" {
+     Id "LF-Dialogue_FuelClerk_Bye"
+     Target_en_us "Drive safe. Mind the potholes on the coast road."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{169564188FA741B2}" {
+     Id "LF-Dialogue_FuelClerk_SayWhere"
+     Target_en_us "Hey, where are we?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{DCA9D412FEC4B04C}" {
+     Id "LF-Dialogue_FuelClerk_SayChat"
+     Target_en_us "Quiet day?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{E0C9B717E8A63B4D}" {
+     Id "LF-Dialogue_FuelClerk_SayNews"
+     Target_en_us "Anything happening in town?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{78F76EB9DCC3A7F0}" {
+     Id "LF-Dialogue_FuelClerk_SayRob"
+     Target_en_us "This is a robbery. Hands where I can see them!"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{C3A3478410D6A6C7}" {
+     Id "LF-Dialogue_FuelClerk_SayDemand"
+     Target_en_us "Open the till. Now, or you die behind that counter."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{47B1E52CE1513EFD}" {
+     Id "LF-Dialogue_FuelClerk_SayOff"
+     Target_en_us "Forget it. You never saw me."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{30BA5B858FBF23FC}" {
+     Id "LF-Dialogue_FuelClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
     }
     CustomStringTableItem "{53FFDC4A55C11ED4}" {
      Id "LF-Siren_AmbulanceOn"
@@ -8400,11 +8635,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Siren_AmbulanceOff"
      Target_en_us "Siren: off"
      Comment "Action on the ambulance's light switch: stop the siren and the light bar (#923)."
-    }
-    CustomStringTableItem "{77F083725C2B630B}" {
-     Id "LF-Police_NpcStunned"
-     Target_en_us "%1 is stunned"
-     Comment "Toast to the officer whose taser dart downed a town NPC (#922). %1 is the NPC's name."
     }
   }
  }

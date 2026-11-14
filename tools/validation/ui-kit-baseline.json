@@ -33,6 +33,7 @@
     "addons/LifeFramework/UI/Layouts/WidgetLibrary/ThinSliderWidget.layout"
   ],
   "exceptions": {
+    "addons/LifeFramework/UI/Layouts/HUD/LF_RobHold.layout": "A HUD strip, not a screen: the held-robbery timer, bar and distance shown over the game while the player keeps moving (#936). Takes no input.",
     "addons/LifeFramework/UI/Layouts/Investigation/LF_CaseBoardString.layout": "A face part, not a screen: the red string and its two pins drawn into the case board render target (LF_CaseBoardFace, #148)."
   }
 }

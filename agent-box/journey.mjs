@@ -426,9 +426,9 @@ export const ACTIONS = {
     h.pause(1500);
   },
   rob(h) {
-    h.on(1, { verb: "stand", entityName: "Roadmap_Fuel_Till" });
+    h.on(1, { verb: "stand", entityName: "Roadmap_Test_Till" });
     h.pause(2000);
-    h.on(1, { verb: "use", className: "LF_RobAction", entityName: "Roadmap_Fuel_Till" }, 10000);
+    h.on(1, { verb: "use", className: "LF_RobAction", entityName: "Roadmap_Test_Till" }, 10000);
     h.pause(2500);
   },
   org(h) {

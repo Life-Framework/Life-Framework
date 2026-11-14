@@ -1,6 +1,11 @@
 class LF_RobAction : ScriptedUserAction
 {
 	static const string TILL_ACTION_NAME = "#EL-Fuel_Till_Rob";
+	static const string REFUSED_COOLDOWN = "robbery refused: cooldown";
+	static const string REFUSED_NO_ACCOUNT = "robbery refused: no account";
+	static const string REFUSED_NOT_CIVILIAN = "robbery refused: only civilians can rob";
+	static const string REFUSED_POLICE = "robbery refused: not enough police on duty";
+	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
 
 	[Attribute(defvalue: "100", uiwidget: UIWidgets.Auto, desc: "Amount of money to steal when no range is set")]
 	protected int m_iMoneyAmount;
@@ -19,6 +24,18 @@ class LF_RobAction : ScriptedUserAction
 
 	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Show the fuel till action name (TILL_ACTION_NAME) from script. Set on the fuel till and its annex twin.")]
 	protected bool m_bTillActionName;
+
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Robbed only through the attendant's dialogue (LF_RobHold): the world action is hidden and refused. The fuel station till (#936).")]
+	protected bool m_bDialogueOnly;
+
+	[Attribute(defvalue: "30", uiwidget: UIWidgets.Auto, desc: "Dialogue robbery: seconds the robber must keep the attendant at gunpoint before the till opens")]
+	protected float m_fHoldSeconds;
+
+	[Attribute(defvalue: "6", uiwidget: UIWidgets.Auto, desc: "Dialogue robbery: metres from the till the robber must stay within")]
+	protected float m_fHoldRadius;
+
+	[Attribute(defvalue: "30", uiwidget: UIWidgets.Auto, desc: "Dialogue robbery: an on-duty officer this close to the till ends it")]
+	protected float m_fPoliceRadius;
 
 	protected float m_fLastRobTime;
 
@@ -144,63 +161,175 @@ class LF_RobAction : ScriptedUserAction
 	{
 		outLastRobTimeMs = lastRobTimeMs;
 
-		if (IsCooldownActive(lastRobTimeMs, cooldownSeconds, nowMs))
+		string refusal = Gate(playerUid, payout, policeOnDuty, minPolice, cooldownSeconds, lastRobTimeMs, nowMs);
+		if (!refusal.IsEmpty())
 		{
-			NoteRefusal("robbery refused: cooldown");
-			return 0;
-		}
-
-		// No account means no civilian gate and no wanted bump, so it must not pay either.
-		LF_PlayerAccount account = FindAccount(playerUid);
-		if (!account)
-		{
-			NoteRefusal("robbery refused: no account");
-			return 0;
-		}
-
-		if (account.GetFaction() != LF_Faction.CIVILIAN)
-		{
-			NoteRefusal("robbery refused: only civilians can rob");
-			return 0;
-		}
-
-		if (policeOnDuty < minPolice)
-		{
-			NoteRefusal("robbery refused: not enough police on duty");
-			return 0;
-		}
-
-		if (payout <= 0)
-		{
-			NoteRefusal("robbery refused: payout is not configured");
+			NoteRefusal(refusal);
 			return 0;
 		}
 
 		int paid = PayCash(user, payout);
 		outLastRobTimeMs = nowMs;
 		s_sLastRefusal = "";
+		Report(playerUid, user, policeOnDuty);
+		NotePaid(playerUid, paid);
+		return paid;
+	}
 
-		LF_CrimeCatalog.ApplyWanted(account, playerUid, LF_WantedReports.OFFENCE_ROBBERY);
-		LF_Debug.Log("Crime", string.Format("wanted level increased for %1", playerUid));
-		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
-		if (accountManager)
-			accountManager.SaveAndReleaseAccount(account);
+	//------------------------------------------------------------------------------------------------
+	//! Why a robbery may not happen now (one of the REFUSED_* reasons), or empty when it may.
+	//! Reads only; the caller logs. No account means no civilian gate and no wanted bump, so it
+	//! must not pay either.
+	static string Gate(string playerUid, int payout, int policeOnDuty, int minPolice, float cooldownSeconds, float lastRobTimeMs, float nowMs)
+	{
+		if (IsCooldownActive(lastRobTimeMs, cooldownSeconds, nowMs))
+			return REFUSED_COOLDOWN;
+
+		LF_PlayerAccount account = FindAccount(playerUid);
+		if (!account)
+			return REFUSED_NO_ACCOUNT;
+
+		if (account.GetFaction() != LF_Faction.CIVILIAN)
+			return REFUSED_NOT_CIVILIAN;
+
+		if (policeOnDuty < minPolice)
+			return REFUSED_POLICE;
+
+		if (payout <= 0)
+			return REFUSED_PAYOUT;
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The crime is on record: wanted level, then the alarm at the till and the radio call to
+	//! on-duty officers (LF_Dispatch, which also opens the witness and evidence scene).
+	protected static void Report(string playerUid, IEntity user, int policeOnDuty)
+	{
+		LF_PlayerAccount account = FindAccount(playerUid);
+		if (account)
+		{
+			LF_CrimeCatalog.ApplyWanted(account, playerUid, LF_WantedReports.OFFENCE_ROBBERY);
+			LF_Debug.Log("Crime", string.Format("wanted level increased for %1", playerUid));
+			LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
+			if (accountManager)
+				accountManager.SaveAndReleaseAccount(account);
+		}
 
 		s_iAlertCount = s_iAlertCount + 1;
 		vector origin = "0 0 0";
 		if (user)
 			origin = user.GetOrigin();
 
-		// The alarm sounds at the till and on-duty officers are radioed (LF_Dispatch).
 		LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_ROBBERY, origin, policeOnDuty);
+	}
 
-		if (paid > 0)
+	//------------------------------------------------------------------------------------------------
+	protected static void NotePaid(string playerUid, int paid)
+	{
+		if (paid <= 0)
+			return;
+
+		s_iCashPaid = s_iCashPaid + paid;
+		LF_Debug.Log("Crime", string.Format("robbery +%1 cash to player %2", paid, playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: why a held robbery of this till by `user` cannot start now, or empty. Logs nothing:
+	//! the dialogue asks it to decide which reply to offer.
+	string HeldRefusal(IEntity user)
+	{
+		int payout = ResolvePayout(m_iMoneyAmount, m_iMinPayout, m_iMaxPayout, 0);
+		return Gate(LF_Utils.GetPlayerUid(user), payout, LF_AccountReplication.CountPoliceOnDuty(), m_iMinPoliceOnDuty, m_fCooldown, m_fLastRobTime, NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a held robbery of this till begins (LF_RobHold). The gates of the instant robbery,
+	//! then the cooldown starts and the crime is reported at once: the attendant trips the alarm
+	//! as the gun comes out, so officers can arrive before the till opens. The cash waits for
+	//! PayHeld. \return The refusal (logged), or empty when it began.
+	string BeginHeld(IEntity user)
+	{
+		string refusal = HeldRefusal(user);
+		if (!refusal.IsEmpty())
 		{
-			s_iCashPaid = s_iCashPaid + paid;
-			LF_Debug.Log("Crime", string.Format("robbery +%1 cash to player %2", paid, playerUid));
+			NoteRefusal(refusal);
+			return refusal;
 		}
 
+		m_fLastRobTime = NowMs();
+		s_sLastRefusal = "";
+		Report(LF_Utils.GetPlayerUid(user), user, LF_AccountReplication.CountPoliceOnDuty());
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the hold was kept; the till opens and pays the robber as the instant robbery does.
+	//! \return Cash paid (0 when the inventory could not take it; logged).
+	int PayHeld(IEntity user)
+	{
+		int paid = PayCash(user, ResolvePayout(m_iMoneyAmount, m_iMinPayout, m_iMaxPayout, -1));
+		NotePaid(LF_Utils.GetPlayerUid(user), paid);
 		return paid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDialogueOnly()
+	{
+		return m_bDialogueOnly;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetHoldSeconds()
+	{
+		return m_fHoldSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetHoldRadius()
+	{
+		return m_fHoldRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetPoliceRadius()
+	{
+		return m_fPoliceRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The dialogue-only till nearest to `origin` within `maxDistance` metres, or null. This is how an
+	//! attendant finds the till behind its counter; there is no link to keep in step.
+	static LF_RobAction FindDialogueTill(vector origin, float maxDistance)
+	{
+		if (!s_aTills)
+			return null;
+
+		LF_RobAction best;
+		float bestDistance = maxDistance;
+		foreach (LF_RobAction till : s_aTills)
+		{
+			if (!till || !till.m_bDialogueOnly || !till.GetOwner())
+				continue;
+
+			float distance = vector.Distance(origin, till.GetOwner().GetOrigin());
+			if (distance > bestDistance)
+				continue;
+
+			best = till;
+			bestDistance = distance;
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float NowMs()
+	{
+		if (GetGame() && GetGame().GetWorld())
+			return GetGame().GetWorld().GetWorldTime();
+
+		return 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -224,8 +353,18 @@ class LF_RobAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		// A dialogue-only till is robbed by talking to its attendant with a weapon drawn.
+		return !m_bDialogueOnly;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
+		if (m_bDialogueOnly)
+			return false;
+
 		float nowMs = 0;
 		if (GetGame().GetWorld())
 			nowMs = GetGame().GetWorld().GetWorldTime();
@@ -260,6 +399,12 @@ class LF_RobAction : ScriptedUserAction
 		// The server pays, raises wanted, and alerts. A client copy of the action does nothing.
 		if (!Replication.IsServer())
 			return;
+
+		if (m_bDialogueOnly)
+		{
+			LF_Debug.Warn("Crime", "the world action of a dialogue-only till was performed and refused; rob it through the attendant");
+			return;
+		}
 
 		float nowMs = 0;
 		if (GetGame().GetWorld())
