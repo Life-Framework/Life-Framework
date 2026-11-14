@@ -1,0 +1,50 @@
+MetaFileClass {
+ Name "{08080CFD71F775CC}Assets/Props/Roleplay/SmelterFurnace/SmelterFurnace.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{3C2E1D1192EA0FB4}" {
+     SourceMaterial "SmelterFurnace"
+     AssignedMaterial "{4536B0ACC7D1CE34}Assets/Props/Roleplay/SmelterFurnace/Data/SmelterFurnace.emat"
+    }
+   }
+   MeshParams {
+    MeshParam SmelterFurnace {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_SmelterFurnace {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{8DF5DE74983A17C1}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{FE175E44171F4141}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{1296B014AB6A4389}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{0A5B227B34A5B8E9}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{4D38778965D06A0D}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PlaytestButtons } from "@/components/PlaytestButtons";
 import { GoLink, PageHeader, Section, Stamp } from "@/components/ui";
-import { DISCORD_URL, REPO_URL, blob } from "@/lib/content";
+import { DISCORD_URL, REPO_URL, blob, formatDate } from "@/lib/content";
+import { PLAYTEST_DOWNLOAD_URL, buildLabel, formatSize, usePlaytestRelease } from "@/lib/release";
 
 // Written from docs/playtest.md, docs/features.md, docs/setup.md and the output of
 // `tools\cli playtest` (tools/host/playtest.mjs, friendLines). Player-facing facts only: no dates,
@@ -147,7 +148,7 @@ const NOT_BUILT = [
 
 const ROUGH_EDGES = [
   "Esc does not close the wanted card or the organization ledger right after founding; use the button or walk away (#199).",
-  "Some NPCs may appear half-dressed, and sign titles can be hard to read from the road.",
+  "Sign titles can be hard to read from the road.",
   "The death screen title is clipped, the organization ledger cuts off the lease status, and the moonshine still renders as a plain white boiler (#493, #494, #497).",
   "If an arrest leaves you standing where you were instead of in the cell, say so.",
 ];
@@ -202,6 +203,28 @@ const STEPS = [
   },
 ];
 
+// The newest playtest, read from GitHub when the site is built and again in the browser.
+function LatestBuild() {
+  const rel = usePlaytestRelease();
+  if (!rel) return null;
+  return (
+    <div className="sheet p-5 mt-8 max-w-3xl" id="latest">
+      <p className="kicker mb-1">Latest build</p>
+      <h2 className="display-3">{buildLabel(rel)}</h2>
+      <p className="mt-2">
+        Released {formatDate(rel.publishedAt)} · {formatSize(rel.size)} zip ·{" "}
+        <a href={PLAYTEST_DOWNLOAD_URL} className="link" download>
+          Download {buildLabel(rel).toLowerCase()}
+        </a>
+      </p>
+      <p className="mt-2 muted">
+        What changed since the last one is on the <Link to="/news" className="link">news page</Link>. Your build number is the first line
+        of <span className="font-mono">version.txt</span> in your playtest folder.
+      </p>
+    </div>
+  );
+}
+
 const Playtest = () => (
   <>
     <PageHeader kicker="Playtest" title="Download the playtest and play">
@@ -211,6 +234,7 @@ const Playtest = () => (
     </PageHeader>
     <div className="wrap pb-12 -mt-2">
       <PlaytestButtons />
+      <LatestBuild />
       <p className="mt-6 text-[1rem] muted">
         <a href="#install" className="link">How to install</a> · <a href="#run" className="link">Play with others</a> ·{" "}
         <a href="#what" className="link">What it is</a> · <a href="#test" className="link">What to test</a> ·{" "}
@@ -441,7 +465,7 @@ tools\\cli playtest stop`}</Code>
           </li>
           <li>
             <strong>Build</strong> is the first line of <span className="font-mono">version.txt</span> in your playtest folder, such as
-            playtest-m2-1. Without it we cannot tell which version you played.
+            playtest-m2-6. Without it we cannot tell which version you played.
           </li>
           <li>
             A report is read by a person. It is not a promise that the thing will be built or fixed.

@@ -197,7 +197,7 @@ class LF_AgentCommand
 
 			return true;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 			return true;
 		if (cmd.Verb == "animseen" || cmd.Verb == "animhold" || cmd.Verb == "animoff")
 			return true;
@@ -212,9 +212,9 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "heldxf")
 			return true;
-		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop")
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemon" || cmd.Verb == "itemoff")
 		{
-			// itemgive|itemdrop <{GUID}prefab>: the asset states proof (LF_AssetStatesHarness).
+			// itemgive|itemdrop|itemon|itemoff <{GUID}prefab>: the asset states proof (LF_AssetStatesHarness).
 			if (parts.Count() < 3)
 			{
 				cmd.Error = "need_prefab";
@@ -1315,7 +1315,7 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", heldText);
 			return;
 		}
-		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop")
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemon" || cmd.Verb == "itemoff")
 		{
 			SCR_ChimeraCharacter itemCharacter = LF_Utils.GetLocalCharacter();
 			if (!itemCharacter)
@@ -1330,11 +1330,13 @@ class LF_AgentHarness
 			WriteResult(cmd.Id, "ok", LF_AssetAnimHarness.Seen());
 			return;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 		{
 			string seen;
 			if (cmd.Verb == "spikeverge")
 				seen = LF_SpikeStripHarness.Verge();
+			else if (cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+				seen = LF_SpikeStripHarness.Preview(cmd.Verb == "spikepreview");
 			else
 				seen = LF_SpikeStripHarness.Seen();
 			if (seen.StartsWith("ok "))

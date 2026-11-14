@@ -133,7 +133,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "spikeseen" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "sound") {
@@ -150,8 +150,8 @@ export function buildLine(id, spec) {
   if (spec.verb === "heldxf") {
     return `${id} heldxf`;
   }
-  if (spec.verb === "itemgive" || spec.verb === "itemdrop") {
-    // The asset states proof: put one item of a prefab in the inventory, or drop it (LF_AssetStatesHarness).
+  if (spec.verb === "itemgive" || spec.verb === "itemdrop" || spec.verb === "itemon" || spec.verb === "itemoff") {
+    // The asset states proof: put one item of a prefab in the inventory, drop it, or switch it on and off (its use state, LF_AssetStatesHarness).
     if (!/^\{[0-9A-F]{16}\}[A-Za-z0-9_/.-]+\.et$/.test(spec.prefab ?? "")) throw new Error(`${spec.verb} needs a {GUID}path prefab: ${spec.prefab}`);
     return `${id} ${spec.verb} ${spec.prefab}`;
   }
@@ -1511,7 +1511,7 @@ function main(argv) {
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "spikeseen" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {

@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Marks a door, gate, or container as a breach target and registers it with LF_Breach
-//! on the server. The target id is the persistence key and the world entity name.
+//! on the server. The target id is the persistence key; LF_Breach finds the door through LF_Places
+//! under that id, so the entity needs no particular name.
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "LifeFramework/Feature/Crime", description: "Door a configured charge can open until repair.")]
 class LF_BreachTargetComponentClass : ScriptComponentClass
@@ -45,10 +46,13 @@ class LF_BreachTargetComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 
+		string targetId = GetTargetId();
+		if (!targetId.IsEmpty())
+			LF_Places.Register(LF_Breach.PLACE_KIND, targetId, owner);
+
 		if (!Replication.IsServer())
 			return;
 
-		string targetId = GetTargetId();
 		if (targetId.IsEmpty())
 		{
 			LF_Debug.Error("Breach", "target component has no id and the entity is unnamed");
@@ -144,10 +148,10 @@ class LF_BreachTargetComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	//! Turns the swing child to its open or closed yaw. A missing child is logged once per call and
 	//! the lock still works: the door only loses its motion.
-	protected void ApplySwing(bool isOpen)
+	protected IEntity ResolveSwingChild()
 	{
 		if (m_sSwingChild.IsEmpty() || !GetOwner())
-			return;
+			return null;
 
 		IEntity child = FindSwingChild(GetOwner());
 		if (!child && GetOwner().GetWorld())
@@ -160,6 +164,32 @@ class LF_BreachTargetComponent : ScriptComponent
 			m_SwingFound = null;
 		}
 
+		return child;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `seen`: this machine's open flag and the yaw its swing child stands at now, as
+	//! "open=O:yaw=Y" (yaw "none" without a swing child), so a proof reads what a client draws.
+	string DescribeSwing()
+	{
+		int open = 0;
+		if (m_bRplOpen)
+			open = 1;
+
+		IEntity child = ResolveSwingChild();
+		if (!child)
+			return string.Format("open=%1:yaw=none", open);
+
+		return string.Format("open=%1:yaw=%2", open, Math.Round(child.GetAngles()[1]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplySwing(bool isOpen)
+	{
+		if (m_sSwingChild.IsEmpty() || !GetOwner())
+			return;
+
+		IEntity child = ResolveSwingChild();
 		if (!child)
 		{
 			int count = 0;

@@ -1,0 +1,39 @@
+{
+  "roadmap": "#253",
+  "texture_prompt": "",
+  "parts": [],
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "prefab": false,
+  "slug": "dispatch-console",
+  "name": "DispatchConsole",
+  "kind": "deployable",
+  "concept": "The police radio dispatch desk set of the St Philippe station: a low sloping console that sits on the duty desk, with a row of channel buttons, a speaker, a handset in a cradle and a stubby desk microphone. The dispatcher takes calls from it.",
+  "prompt": "Late-1980s police radio dispatch desk console: a low wide sloping-front cabinet of beige and grey plastic and metal, a speaker grille on the left, rows of push buttons and toggle switches with small indicator lamps on the sloping panel, a coiled-cord handset resting in a cradle on the right side, a short stubby desk microphone on a heavy round base at the front. no text, no logos.",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 6000,
+    "remesh": false
+  },
+  "size_m": {
+    "length": 0.55,
+    "height": 0.3,
+    "width": 0.4
+  },
+  "budget": {
+    "lod0_tris": 6000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 1024,
+    "credits": 70
+  },
+  "asset_dir": "Assets/Props/Roleplay/DispatchConsole",
+  "prefab_dir": "Prefabs/Props/Roleplay/DispatchConsole"
+}

@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{BA4D3E3E5BE34C0E}Assets/Items/Roleplay/PostParcel/Data/PostParcel_BCR.edds"
+ NMOMap "{1852E06142119BCE}Assets/Items/Roleplay/PostParcel/Data/PostParcel_NMO.edds"
+}

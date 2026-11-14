@@ -1,0 +1,15 @@
+{
+  "slug": "moonshine-still",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "meshy-6-lite",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d963-d945-71c1-bb02-361f1637586c",
+      "concept": 5,
+      "conceptTaskId": "01a1d95b-94df-7618-a976-991463a737d3",
+      "conceptPrompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A cut steel oil drum as the boiler with a welded lid and a pipe, a coil of copper tubing in a second galvanised drum, a small iron firebox. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "post-parcel",
+  "image_model": "nano-banana-2-lite",
+  "realism": {
+    "how": "A parcel handed in at the post office in 1989: the sender wrapped the goods in brown paper and tied them with string themselves, because the state post required a firm tied packet, and a blank address card or label went on top. Cardboard moving boxes were not for the post.",
+    "current": "Paper and string was how every local sent a parcel that year; a plastic mailer bag or a courier box with tape would be from a later decade."
+  },
+  "subject": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top.",
+  "variants": [
+    {
+      "label": "Brown paper, cross",
+      "detail": "Plain brown kraft paper, crisp folded corners, string tied round both ways with a knot on top, a blank white label on the top face",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Plain brown kraft paper, crisp folded corners, string tied round both ways with a knot on top, a blank white label on the top face. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-ce75-77b8-9460-1b5413bb6e94",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "\"crisp brown box, string cross, blank label\""
+    },
+    {
+      "label": "Paper, single string",
+      "detail": "Brown wrapping paper, one length of string round the long side tied in a bow, a blank rectangular address card tucked under the string",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Brown wrapping paper, one length of string round the long side tied in a bow, a blank rectangular address card tucked under the string. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-cf3f-73f4-85a0-6a2bef0c32c2",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"crumpled paper\""
+    },
+    {
+      "label": "Wax seal parcel",
+      "detail": "Brown paper, crossed string with a red wax seal at the crossing, a blank white label on one corner",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Brown paper, crossed string with a red wax seal at the crossing, a blank white label on one corner. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d013-724f-8e59-9e738c18ad29",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "\"wax seal, blank label\""
+    },
+    {
+      "label": "Thick bundle",
+      "detail": "A chunkier brown-paper bundle, rough string tied in a cross with a knot, a blank buff label, slightly rounded corners",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. A chunkier brown-paper bundle, rough string tied in a cross with a knot, a blank buff label, slightly rounded corners. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d0d4-766c-98b2-75d589bd1c0d",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"lumpy\""
+    },
+    {
+      "label": "Grey paper parcel",
+      "detail": "Thick grey-brown packing paper, thin string tied both ways, a blank white label on the top face, tightly folded edges",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Thick grey-brown packing paper, thin string tied both ways, a blank white label on the top face, tightly folded edges. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d19e-7104-83b2-c883f6927fd8",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"grey paper, dull\""
+    },
+    {
+      "label": "Tape and string",
+      "detail": "Brown kraft paper sealed with brown gummed tape on the seams, string crossed over the top, a blank white label",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Brown kraft paper sealed with brown gummed tape on the seams, string crossed over the top, a blank white label. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d25d-751a-b347-7312413329e9",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"tape bands add parts\""
+    },
+    {
+      "label": "Flat document packet",
+      "detail": "A flat brown-paper packet, string tied lengthways with a knot, a blank label on the top, crisp corners",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. A flat brown-paper packet, string tied lengthways with a knot, a blank label on the top, crisp corners. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d329-72c9-8b80-168f2a5d5002",
+      "scores": {
+        "silhouette": 1,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"shot from straight above\""
+    },
+    {
+      "label": "Newspaper wrapped",
+      "detail": "Brown paper over a layer of grey newspaper showing at one edge, string crossed, blank label, slightly worn corners",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Brown paper over a layer of grey newspaper showing at one edge, string crossed, blank label, slightly worn corners. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d3ea-76b7-a346-65a926b331a1",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "\"torn edge shows newsprint text\""
+    },
+    {
+      "label": "Cord-tied parcel",
+      "detail": "Brown paper tied with thicker twine in a cross with a hand-tied loop on top for carrying, a blank white label",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Brown paper tied with thicker twine in a cross with a hand-tied loop on top for carrying, a blank white label. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d4e0-75d0-b520-a9b6e719e1d2",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"loop on top is thin\""
+    },
+    {
+      "label": "Double string parcel",
+      "detail": "Brown paper, two parallel strings round the long side and one round the short side, knots at the top, a blank white label in the middle",
+      "prompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Brown paper, two parallel strings round the long side and one round the short side, knots at the top, a blank white label in the middle. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-d5a0-73a6-b64b-68d91f2b725e",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"double string\""
+    }
+  ],
+  "pick": {
+    "n": 1,
+    "label": "Brown paper, cross",
+    "by": "rubric",
+    "why": "highest rubric total 14/14; full marks; \"crisp brown box, string cross, blank label\"",
+    "at": "2026-11-14"
+  }
+}

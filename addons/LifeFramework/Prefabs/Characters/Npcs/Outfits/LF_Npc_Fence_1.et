@@ -12,7 +12,7 @@ LF_NpcBaseEntity : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et" {
     LoadoutSlotInfo Pants {
      Prefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
     }
-    LoadoutSlotInfo Boots {
+    SCR_FeetLoadoutSlotInfo Boots {
      Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
     }
     LoadoutSlotInfo Hat {

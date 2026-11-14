@@ -1,0 +1,39 @@
+{
+  "roadmap": "#497",
+  "texture_prompt": "",
+  "parts": [],
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "prefab": false,
+  "slug": "moonshine-still",
+  "name": "MoonshineStill",
+  "kind": "deployable",
+  "concept": "The village moonshine still: an improvised home-built apple-spirit still set up in a yard, a dented aluminium milk-can pot on a brick firebox, a copper pipe running to a coil in a cooling barrel. Players load mash, work it and collect the spirit.",
+  "prompt": "Improvised home-made moonshine still: a large dented aluminium pot with a clamped lid sitting on a low brick firebox, a short copper pipe leaving the lid and running down into a wooden cooling barrel with a copper coil, a small tap at the bottom of the barrel. no text, no logos.",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 8000,
+    "remesh": false
+  },
+  "size_m": {
+    "length": 1,
+    "height": 1.07,
+    "width": 0.5
+  },
+  "budget": {
+    "lod0_tris": 8000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 2048,
+    "credits": 70
+  },
+  "asset_dir": "Assets/Props/Roleplay/MoonshineStill",
+  "prefab_dir": "Prefabs/Props/Roleplay/MoonshineStill"
+}

@@ -44,7 +44,25 @@ The pack gets the choices:
   vehicle catalogue and liveries, period props.
 - The flagship mission header and faction naming.
 
-## The four tests
+## Map independence
+
+Core script never holds a world coordinate, a map name, an entity name or a
+layer name (#961, decided with the maintainer 2026-11-14). A pack for Arland,
+Chernarus or a custom map works by placing components, with no script change.
+
+- A system finds its places by component. The component registers its owner in
+  `LF_Places` (`Core/LF_Places.c`) under a kind and the stable id the feature
+  saves; the system asks `LF_Places.Find(kind, id)`, `FindOrigin` or `FindAll`.
+  Kinds in use: `BreachTarget` (`LF_BreachTargetComponent`, and every bank
+  vault), `BankVault` (`LF_BankVaultComponent`, `LF_HeistVaultComponent`),
+  `HospitalSite` (hospital till and cabinet), `HideoutDoor`
+  (`LF_HideoutDoorComponent`, under the hideout id).
+- An id defaults to the entity name only so placed layers keep their saved
+  keys; nothing looks an entity up by that name.
+- A place that is not on the map is a null lookup: the system logs and that
+  one feature stays off.
+- Tests keep their annex fixtures and may look them up by name.
+
 
 1. **Delete the pack.** The core still boots DebugWorld, every test passes,
    and nothing references the pack.
@@ -93,4 +111,8 @@ Split them along these seams:
 
 A resource that moves keeps its `.meta`, so its GUID stays the same and every
 `{GUID}path` reference still resolves. A new pack resource gets its `.meta`
-from Workbench with the pack project loaded, never by hand.
+from Workbench with the pack project loaded, never by hand. The one exception
+is `tools\cli asset`, which writes the `.meta` files of what it imports (a
+headless Workbench cannot register a new `.fbx`) with GUIDs unique across both
+addons, and imports a pack asset with `--addon LF_Everon1989`
+([`asset-pipeline/README.md`](../asset-pipeline/README.md) "Target addon").

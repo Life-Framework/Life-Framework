@@ -1138,7 +1138,11 @@ function ensureAddonResourceDatabase(root, name) {
 
 // One headless Workbench run of a ResourceManager plugin under the build lock, bounded by
 // timeoutMs (a hung Workbench is killed with its job). Used by tools\cli asset (stage import).
-function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile }) {
+// `addon` (name, default the core) picks the project Workbench opens: the pack's project loads the
+// core as its dependency, so a pack asset's .meta and .xob resolve beside it (#971).
+function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addon = CORE }) {
+  const addonInfo = resolveAddon(addon);
+  if (!addonInfo) throw new Error(`unknown addon "${addon}"; known: LifeFramework, LF_Everon1989`);
   const exe = workbenchExe();
   if (!existsSync(exe)) throw new Error("Workbench not found: " + exe);
   const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
@@ -1147,7 +1151,7 @@ function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile }) {
   wt.acquireLock(root, "build", { waitMs: 900000 });
   try {
     const res = quietSpawnSync(exe, [
-      "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+      "-gproj", gprojOf(root, addonInfo.name),
       "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
       "-plugin=" + plugin, ...pluginArgs,
       "-profile", profile,

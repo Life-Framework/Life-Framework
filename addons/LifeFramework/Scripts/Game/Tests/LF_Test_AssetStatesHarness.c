@@ -20,6 +20,10 @@ class LF_Test_AssetStatesHarness : LF_Test
 
 		ctx.True(LF_AssetStatesHarness.IsItemVerb("itemgive {DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et"), "itemgive goes to the states harness");
 		ctx.True(LF_AssetStatesHarness.IsItemVerb("itemdrop {DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et"), "itemdrop goes to the states harness");
+		ctx.True(LF_AssetStatesHarness.IsItemVerb("itemon {DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et"), "itemon (the use state on) goes to the states harness");
+		ctx.True(LF_AssetStatesHarness.IsItemVerb("itemoff {DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et"), "itemoff goes to the states harness");
+		ctx.True(LF_AgentCommand.Parse("34 itemon {DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et", cmd), "itemon with a prefab parses");
+		ctx.EqualStr("error no_character", LF_AssetStatesHarness.Run(null, "itemon {DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et"), "no character, nothing to switch");
 		ctx.False(LF_AssetStatesHarness.IsItemVerb("scanner"), "other stand-ins stay where they are");
 		ctx.EqualStr("error usage_item_verb_prefab", LF_AssetStatesHarness.Run(null, "itemgive"), "a bare verb is refused for its usage");
 		ctx.EqualStr("error no_character", LF_AssetStatesHarness.Run(null, "itemgive {DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et"), "no character, no item");

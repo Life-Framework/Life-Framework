@@ -1,0 +1,178 @@
+{
+  "slug": "dispatch-console",
+  "image_model": "nano-banana-2-lite",
+  "realism": {
+    "how": "A militia or police station of 1989 ran its radio through a desk-top base station: a Czechoslovak, Soviet or East German VHF transceiver set in a low metal and plastic desk cabinet with channel buttons, a speaker, a handset on a cradle and a desk microphone. A duty officer sat at it with a logbook.",
+    "current": "A beige-grey desk set with buttons, lamps and a coiled handset is what a local dispatcher used every shift; a switchboard with patch cables or a glass-fronted tube radio would be a generation older."
+  },
+  "subject": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone.",
+  "variants": [
+    {
+      "label": "Beige slope console",
+      "detail": "Beige and grey sloping-front desk cabinet, a speaker grille on the left, rows of square channel buttons with small lamps, a handset in a cradle at the right, a stubby desk microphone in front",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. Beige and grey sloping-front desk cabinet, a speaker grille on the left, rows of square channel buttons with small lamps, a handset in a cradle at the right, a stubby desk microphone in front. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-30a4-72f4-a980-58f76728305f",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "\"digits on the display, coiled cord\""
+    },
+    {
+      "label": "Grey metal desk set",
+      "detail": "Grey hammer-finish metal cabinet, a round speaker grille, toggle switches and rotary knobs, a coiled-cord handset on a side cradle, a short desk microphone on a round base",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. Grey hammer-finish metal cabinet, a round speaker grille, toggle switches and rotary knobs, a coiled-cord handset on a side cradle, a short desk microphone on a round base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-3172-758f-9259-c86784479a15",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"gooseneck mic and cable\""
+    },
+    {
+      "label": "Cream and brown",
+      "detail": "Cream plastic cabinet with brown side panels, a sloping panel of piano-style channel keys and indicator lamps, a speaker grille, a handset on the right, a desk microphone",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. Cream plastic cabinet with brown side panels, a sloping panel of piano-style channel keys and indicator lamps, a speaker grille, a handset on the right, a desk microphone. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-3238-725c-ab3b-9b48909563ef",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "\"clean cream wedge, stubby mic, one handset\""
+    },
+    {
+      "label": "Two-unit desk set",
+      "detail": "A low base unit with a speaker and a handset cradle and a smaller control box on top with buttons and lamps, light grey, a stubby microphone in front",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. A low base unit with a speaker and a handset cradle and a smaller control box on top with buttons and lamps, light grey, a stubby microphone in front. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-32f6-7199-914d-f100b972cc60",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "\"tiny key legends\""
+    },
+    {
+      "label": "Olive-grey cabinet",
+      "detail": "Pale grey-green metal cabinet, a ribbed speaker grille, a row of toggle switches and four round meters, a handset in a cradle, a desk microphone",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. Pale grey-green metal cabinet, a ribbed speaker grille, a row of toggle switches and four round meters, a handset in a cradle, a desk microphone. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-33be-738a-877a-98fe2e140f7b",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"thin mic, coiled cord\""
+    },
+    {
+      "label": "Black panel set",
+      "detail": "Beige cabinet with a black sloping control panel, a grid of white push buttons with red lamps, a speaker grille, a handset on the side, a stubby microphone",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. Beige cabinet with a black sloping control panel, a grid of white push buttons with red lamps, a speaker grille, a handset on the side, a stubby microphone. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-3489-777a-bc67-29b7adf9d47a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "\"button legends\""
+    },
+    {
+      "label": "Compact dispatch box",
+      "detail": "A compact squat grey-beige box with a sloping panel of channel buttons, a small speaker, a handset resting in a top cradle, a short microphone",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. A compact squat grey-beige box with a sloping panel of channel buttons, a small speaker, a handset resting in a top cradle, a short microphone. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-354c-7588-a61e-b786e8219a0a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"thin gooseneck\""
+    },
+    {
+      "label": "Wedge console",
+      "detail": "A wedge-shaped dark grey plastic console, a tilted panel of switches and lamps, a speaker grille on the left, a handset cradle on the right, a stubby microphone on a heavy base",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. A wedge-shaped dark grey plastic console, a tilted panel of switches and lamps, a speaker grille on the left, a handset cradle on the right, a stubby microphone on a heavy base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-3634-705d-8420-3884e10ce235",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"thin mic\""
+    },
+    {
+      "label": "Rack-style desk unit",
+      "detail": "A grey metal rack-style unit lying flat on the desk, a panel of toggle switches, two dials and lamps, a speaker, a handset in a cradle on its side, a desk microphone",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. A grey metal rack-style unit lying flat on the desk, a panel of toggle switches, two dials and lamps, a speaker, a handset in a cradle on its side, a desk microphone. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-3703-73bb-b8fe-784392f59ff1",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "\"busy panel with printed marks\""
+    },
+    {
+      "label": "Cream enamel set",
+      "detail": "Cream enamelled steel cabinet with a chrome trim strip, a sloping row of cream and red push buttons, a round speaker grille, a coiled handset, a stubby microphone",
+      "prompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. Cream enamelled steel cabinet with a chrome trim strip, a sloping row of cream and red push buttons, a round speaker grille, a coiled handset, a stubby microphone. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95c-37c0-76ae-9084-4bc382887f1a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"tall gooseneck mic\""
+    }
+  ],
+  "pick": {
+    "n": 3,
+    "label": "Cream and brown",
+    "by": "rubric",
+    "why": "highest rubric total 14/14; full marks; \"clean cream wedge, stubby mic, one handset\"",
+    "at": "2026-11-14"
+  }
+}
