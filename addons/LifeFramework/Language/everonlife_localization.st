@@ -9071,10 +9071,45 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Siren: off"
      Comment "Action on the ambulance's light switch: stop the siren and the light bar (#923)."
     }
+    CustomStringTableItem "{DF8BF4F56126B7CA}" {
+     Id "LF-Restrain_Interrupted"
+     Target_en_us "The cuffing was interrupted."
+     Comment "Toast to the officer when the cuff or uncuff hold stops by itself: someone moved out of reach, the cuffs left the hand, or a rule no longer holds."
+    }
     CustomStringTableItem "{F4BBE2F164436809}" {
      Id "LF-Placement_Blocked"
      Target_en_us "Something is in the way."
      Comment "Toast when a placement is refused because something stands where it would go: a car, a post, a spike strip already lying there (#928)."
+    }
+    CustomStringTableItem "{5EBE8CF2BBC1E139}" {
+     Id "LF-Sit_Action"
+     Target_en_us "Sit"
+     Comment "F-key action on a chair or bench: sit down on it (#982)."
+    }
+    CustomStringTableItem "{41F7E124C0FE4E7B}" {
+     Id "LF-Sit_Denied"
+     Target_en_us "You cannot sit down now"
+     Comment "Greyed-out reason on Sit when the body cannot sit: dead, stunned, in a vehicle or playing a gesture (#982)."
+    }
+    CustomStringTableItem "{A9D554987763FD86}" {
+     Id "LF-Sit_StandUp"
+     Target_en_us "Stand up"
+     Comment "F-key action on the seat you are sitting on: stand up (#982)."
+    }
+    CustomStringTableItem "{48019BCFB08527D2}" {
+     Id "LF-Sit_Occupied"
+     Target_en_us "Someone is sitting here"
+     Comment "Greyed-out reason on Sit when another player sits on that place (#982)."
+    }
+    CustomStringTableItem "{946FA59E4FF609B8}" {
+     Id "LF-Emote_Restrained"
+     Target_en_us "Not while restrained"
+     Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
+    }
+    CustomStringTableItem "{623C4879FE9C4E51}" {
+     Id "LF-Emote_MenuTitle"
+     Target_en_us "Emotes"
+     Comment "Title of the emote radial (hold F1) (#982)."
     }
     CustomStringTableItem "{8BCA5C98D5D6CB15}" {
      Id "LF-Shop_RefuseNeedsLicence"
@@ -9180,11 +9215,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_Open_GunCounter"
      Target_en_us "Buy a handgun"
      Comment "Action prompt at the gun counter (#988)."
-    }
-    CustomStringTableItem "{DF8BF4F56126B7CA}" {
-     Id "LF-Restrain_Interrupted"
-     Target_en_us "The cuffing was interrupted."
-     Comment "Toast to the officer when the cuff or uncuff hold stops by itself: someone moved out of reach, the cuffs left the hand, or a rule no longer holds."
     }
   }
  }
