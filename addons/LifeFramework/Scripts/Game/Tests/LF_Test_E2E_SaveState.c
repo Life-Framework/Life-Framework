@@ -679,7 +679,10 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #else
 		ctx.EqualStr(GetGame().GetBuildVersion(), LF_SaveStamp.BootLoadedBuild(), "e2e the save names the game build that wrote it");
 #endif
+#ifndef LF_E2E_PRE_MOVE
+		// --pre-move: the ref build writes its own save version.
 		ctx.Equal(33, LF_SaveStamp.BootSaveVersion(), "e2e the save names its save version");
+#endif
 #endif
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
 		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
@@ -760,10 +763,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			ctx.Equal(0, garagedState.m_iInspectedAt, "e2e the version 23 save loads the car uninspected");
 			ctx.Equal(0, garagedState.m_iCompartment, "e2e the version 23 save loads the car with no compartment");
 #else
+#ifdef LF_E2E_PRE_MOVE
+			// --pre-move: the ref build predates #752a, wrote no state rows and set none.
+			ctx.Equal(LF_EVehicleTowState.NONE, garagedState.m_iTowState, "e2e the ref build's save loads the car untowed");
+			ctx.Equal(0, garagedState.m_iInspectedAt, "e2e the ref build's save loads the car uninspected");
+			ctx.Equal(0, garagedState.m_iCompartment, "e2e the ref build's save loads the car with no compartment");
+#else
 			ctx.Equal(LF_EVehicleTowState.TOWED, garagedState.m_iTowState, "e2e the garaged car keeps its tow state after the restart");
 			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_TOWED_AT, garagedState.m_iTowedAt, "e2e the garaged car keeps its towed-at after the restart");
 			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_INSPECTED_AT, garagedState.m_iInspectedAt, "e2e the garaged car keeps its inspection after the restart");
 			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_COMPARTMENT, garagedState.m_iCompartment, "e2e the garaged car keeps its compartment after the restart");
+#endif
 #endif
 			LF_Debug.Info("Vehicle", string.Format("e2e restart: %1 tow %2 towed-at %3 inspected-at %4 compartment %5", GARAGED_ID, garagedState.m_iTowState, garagedState.m_iTowedAt, garagedState.m_iInspectedAt, garagedState.m_iCompartment));
 		}
