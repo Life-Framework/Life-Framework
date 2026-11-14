@@ -1,54 +1,131 @@
 # Agent budget
 
-The aim is to build M2 (52 issues) and M3 (40 issues) on one Claude Max
-subscription plus the free DeepSeek model in opencode. M1 took 31 issues and
-used up the subscription faster than that pace allows. These rules come from
-reviewing the M1 threads.
+The aim is to build M2 and M3 on one Claude Max subscription plus the free
+DeepSeek model in opencode. `tools\cli usage` measures where the tokens go
+(`--top N`, `--since 7d`, `--type lf-hard`, `--leads`, `--detail`).
 
-## Where M1's tokens went (review of 2026-11-07 to 2026-11-09)
+## Budgets and handoff
 
-- **Every subagent ran on Opus.** More than 35 of them, including work a
-  smaller model handles fine: website pages, the Discord logo, filing roadmap
-  issues and research write-ups.
-- **One orchestrator thread for everything.** It grew to about 2,400 items.
-  Every wake-up rereads it, including the ones that only said "still running".
-- **Long QA and debug runs.** Single agents ran to 450–1,100 items, and much of
-  that was fighting the shared machine: a session slot held by another agent,
-  a client that exited on launch, retries.
-- **Fan-out.** Up to eight agents ran at once, and research agents started
-  their own Opus helpers. A server restart lost the helpers, so their work was
-  done twice.
-- **Free models already work for simple jobs.** DeepSeek V4.1 Flash Free
-  finished the account setup and a website article without help.
+Every turn re-reads the whole context. Context starts near 45k and grows about
+1.6k per turn, so a 400-turn run pays for 400k on each late turn: ten times a
+fresh agent's turn. In the ten costliest runs, 94 to 99% of the cost came
+after the context passed 150k.
+
+| Agent | Hand off at | Typical run (median / p90 turns) |
+|---|---|---|
+| `lf-scout` | 30 tool calls | 13 / 48 |
+| `lf-builder` | 80 tool calls (about 150k context) | 59 / 131 |
+| `lf-hard` | 80 tool calls (about 150k context) | 149 / 288 |
+| Lead thread | about 200k context: a new thread from a handoff | |
+
+**Handoff.** At the budget, at the next checkpoint (tests green or a commit,
+no session up), the agent:
+
+1. commits work in progress to its `ws/<slug>` branch;
+2. writes `tmp/handoff-<slug>.md`, at most 15 lines: goal, done (commits and
+   evidence lines), the next step as an exact command, open questions, and the
+   `path:line` places that matter;
+3. ends with the five-line report, last line `RESUME <worktree>\tmp\handoff-<slug>.md`.
+
+The lead starts a fresh agent of the same type with `Resume <slug>: read
+<file> and continue from the next step.` Resumes in the logs cost a median
+0.4M tokens. If `wt ship` is the only step left, finish instead.
+
+**Final report: five lines.**
+
+```
+Changed: <one line>
+Evidence: <the observed red, green or log line>
+Manual: <steps the PR lists, or none>
+Next: <follow-up or blocker, or none>
+PR <url>, head <sha>, checks <state>        (or RESUME <state file>)
+```
+
+## Sizing a job
+
+The lead sizes a job before starting an agent; a brief that will clearly pass
+80 tool calls is split first.
+
+- **"Town-wide", "all areas", "every sign":** one agent per area in
+  `agent-box/areas.json`, or per few areas so each stays under the budget,
+  three at a time. The town-wide placement audit ran as one agent:
+  573 turns, 28M tokens; split, it would have cost about a quarter.
+- **Two verbs, two agents:** spike + build, research + build, QA + polish,
+  film + cut. The first leaves its result in `tmp/` or an issue; the second
+  builds from that.
+- **QA** runs one agent per flow; it files issues and does not fix them.
+- **Media:** edit the storyboard or cut file and re-run its one render command
+  (`tools\cli film-make`), never one `ffmpeg` call per turn.
+
+## Searching and reading
+
+- A question that needs more than three greps or reads in unfamiliar code goes
+  to one `lf-scout` (Haiku, about 60k context). It is the one helper a builder
+  or hard agent may start without its brief saying so.
+- Put independent reads and greps in one turn. Runs average 1.07 calls per
+  turn, and each turn pays for the whole context.
+- Grep first, then read the range (`offset`/`limit`, `sed -n a,bp`). Logs:
+  `tools\cli logs <pattern>`, never the whole file.
 
 ## Which model does what
 
 | Tier | Model | Use it for |
 |---|---|---|
-| Lookup | Haiku (`lf-scout`) | API and asset lookups, grepping logs, PR or CI status, summarising one file or thread |
-| Default | Sonnet (`lf-builder`) | A scoped issue end to end under `agent-scope`: code, tests, `wt ship`. Website, tools, scripted QA runs, splitting an epic into issues |
-| Hard | Opus (`lf-hard`, or the session the human is talking to) | Talking with the human and planning. Designing replication, persistence or a new system. Debugging after Sonnet has stalled. Reviewing a risky diff (`interrogate`) |
+| Lookup | Haiku (`lf-scout`) | API and asset lookups, searches across the repo, grepping logs, PR or CI status, summarising one file or thread |
+| Default | Sonnet (`lf-builder`) | A scoped issue end to end under `agent-scope`: code, tests, `wt ship`. Visual builds (boards, signs, sheets), asset pipeline items, placement, video and trailer cuts, QA flows, website, tools, splitting an epic into issues |
+| Hard | Opus (`lf-hard`, or the session the human is talking to) | Talking with the human and planning. Replication/JIP, persistence and restart bugs. A new system's design (it writes the plan; `lf-builder` builds it). Root-cause debugging after `lf-builder` stalled twice. Reviewing a risky diff (`interrogate`) |
 | Background | DeepSeek V4.1 Flash Free (opencode, through `delegate_task`) | Non-blocking work that `tools\cli validate` or CI can check: docs, `features.md` and triage rows, localization strings, website copy and pages, issue grooming, research write-ups |
+
+Never use `general-purpose`, `Explore` or `fork` for repo work; they run on
+the parent's model with no budget. In M1, 130 `general-purpose` runs (111 on
+Opus) took 30% of all spend.
 
 **Never give DeepSeek:** Enforce Script that needs in-game proof, persistence
 payloads, replication, or `.et`/`.layout` GUID edits. A Claude agent does
 those.
 
-**When a job moves up to Opus:** after two failed attempts, or about 150 tool
-calls without progress. The Sonnet agent stops and reports what it tried, and
-the orchestrator restarts the job on `lf-hard` with that report as the brief.
+**When a job moves up to Opus:** after two failed attempts at the same
+problem. The Sonnet agent stops and reports what it tried, and the lead
+restarts the job on `lf-hard` with that report as the brief. Running out of
+budget is a handoff to a fresh `lf-builder`, not an escalation.
+
+## Where the tokens went
+
+**M1 (2026-11-07 to 11-09):** every subagent ran on Opus, one orchestrator
+thread grew to 2,400 items, single QA and debug runs reached 450 to 1,100
+items fighting shared machines, and up to eight agents ran at once.
+
+**M2 and M3 (measured 2026-11-14, `tools\cli usage`, 478 subagent runs plus
+49 lead threads, 1.42B cost-weighted tokens):**
+
+- **Run length, not log dumps.** No result in the ten costliest runs was
+  over 8k tokens (the output caps work), and at most 24 of 288 reads were
+  repeats. Those runs each made 270 to 570 turns at 270 to 500k average context.
+  Thinking and commands fill the context as much as tool results do (26M of
+  each over all runs).
+- **Routing.** 28 `lf-hard` runs on builds (the trailer, placement audit, case
+  board, wanted boards, asset pipelines, videos) cost 200M; the 23 runs on
+  replication, persistence, design and review cost 101M. 13 `lf-builder` runs
+  resumed or finished another run's job, for 11M in total; the logs show no
+  pattern of Sonnet failing and retrying.
+- **Waiting.** 30% of `lf-builder` spend was session, test, wait and poll turns.
+  The M2 QA pass waited 265 minutes in 42 calls while holding 329k context.
+  The placement audit read a background batch's progress file 69 times.
+- **Leads** took 18% at 295k average context. One lead thread ran 1,948
+  turns (103M); a third of that was turns with no tool call (replies to
+  notifications and the human).
+- Simulated, the 150k handoff alone cuts the total by about 30%.
 
 ## Working habits
 
-1. **One orchestrator thread per milestone.** When it gets long, start a new
-   thread from a short handoff. The roadmap issues are the memory, not the
-   thread.
-2. **Don't wake up just to report.** No status turns that say nothing new.
-   Read a child's result once, when it finishes.
+1. **One lead thread per milestone**, handed off near 200k context. The
+   roadmap issues are the memory, not the thread.
+2. **Don't wake up just to report.** Read a child's result once, when it
+   finishes.
 3. **No more than three Claude agents at once.** Background DeepSeek jobs
    don't count toward that limit.
-4. **Subagents don't start helpers** unless their brief says so. Research runs
-   in one agent.
+4. **Subagents don't start helpers** unless their brief says so; `lf-scout` for
+   a search is the exception.
 5. **Short briefs.** Give the issue number, the files and the acceptance test.
    Don't paste in docs the agent can read itself. Development-track and spike
    briefs add: run the pool with `--priority low` (or create the worktree with
@@ -65,12 +142,12 @@ the orchestrator restarts the job on `lf-hard` with that report as the brief.
      session another call started.
    - A step longer than that runs in the background and the agent ends its
      turn. The completion notice wakes it.
-   - Never use `sleep` or `until` loops, Monitor, ScheduleWakeup, or
-     `session status` / `pool status` polls to wait on repo tooling. Each poll
-     is a model turn that reads nothing new.
-9. **Read files in pieces.** Use `grep`, `head` and line ranges rather than
-   whole files or full logs. Output is capped at 15k characters for Bash and
-   10k tokens for MCP tools in the `.claude-gaming` profile.
+   - Never use `sleep` or `until` loops, Monitor, ScheduleWakeup,
+     `session status` / `pool status` polls, or reads of a background job's
+     progress file to wait. Each poll is a turn that pays for the whole
+     context and learns nothing.
+9. **Prepare before a session.** Make every edit before `session up`; the
+   session's turns are the most expensive ones in a run.
 
 ## Settings
 
