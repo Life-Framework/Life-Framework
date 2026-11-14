@@ -1,7 +1,7 @@
 // red-proof: 2026-11-08 (M1-14) LF_Contraband.ITEM pointed back at RowanBerries.et, `tools\cli test --no-build --only LF_Test_Roadmap_Contraband,LF_Test_Roadmap_ContrabandWorld` printed [LFTEST] SUMMARY tier=only passed=0 failed=2 / - rowan berries are food again, not contraband / - the contraband crate is carried in both hands. Restored: passed=5 failed=0.
 // red-proof: 2026-10-11 fast boot logs_2026-10-11_05-19-01 printed [LFTEST] FAIL roadmap/contraband / [LFTEST]   - delivery pays the configured cash once (expected 0, got 200)
 
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 class LF_Test_Roadmap_Contraband : LF_Test
 {
 	override string GetName()

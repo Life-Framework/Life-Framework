@@ -6,7 +6,7 @@
 // [LFTEST]   - an off-duty officer is not shown the armory actions
 // Restored; green.
 
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 //! Playtest QA #157: police-only offers are hidden from civilians, the convoy refusal has a
 //! reason the player can read, and a crop never indexes a stage it does not have.
 class LF_Test_PlaytestOffers : LF_Test
