@@ -287,6 +287,7 @@ class LF_QuantityComponent : ScriptComponent
 	bool CanCombine(notnull LF_QuantityComponent quantitySource)
 	{
 		bool notSelf = this != quantitySource;
+		// lf-path-ok: two live entities, same spawn
 		bool prefabEqual = LF_Utils.GetPrefabName(GetOwner()) == LF_Utils.GetPrefabName(quantitySource.GetOwner());
 		bool capacityLeft = m_iQuantity < GetMaxQuantity();
 		return notSelf && prefabEqual && capacityLeft;

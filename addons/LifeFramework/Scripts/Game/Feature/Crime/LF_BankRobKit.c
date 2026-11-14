@@ -49,7 +49,7 @@ class LF_BankRobKit
 		foreach (ResourceName prefab : Items())
 		{
 			bool has;
-			if (prefab == LF_Breach.FENCE_CHARGE_PREFAB)
+			if (LF_Utils.SamePrefab(prefab, LF_Breach.FENCE_CHARGE_PREFAB))
 				has = LF_Breach.HasCharge(character);
 			else
 				has = LF_InventoryUtils.GetAmount(character, prefab) >= 1;
