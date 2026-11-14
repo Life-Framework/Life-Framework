@@ -11,11 +11,16 @@
 //!               brakes itself: at 30 km/h it stopped after 7 m)
 //!   spikecheck  the server's view of that car: each wheel's damage state and radius, its speed
 //!   spikeseen   (client) the same wheels as this machine sees them: the replicated damage
+//!   spikepreview / spikepreviewoff  (client) the deploy preview ghost (#928) on or off, as
+//!               selecting Deploy starts it, then held in place so a world shot can move the
+//!               camera body; replies with the verdict and where the ghost lies
 //! Everything after the push is the real path: the strip's own tick, the vanilla wheel damage.
 //------------------------------------------------------------------------------------------------
 class LF_SpikeStripHarness
 {
 	static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
+	static const ResourceName STRIP = "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et";
+	static const float STRIP_LENGTH = 3.5; // lf-fixed: SpikeStrip_Item.et m_fDeployedLength, for the harness preview
 	static const vector VERGE = "300 0 245.5";
 	//! Metres before the strip the car starts, and its speed across (m/s).
 	static const float RUN_UP = 6; // lf-fixed: harness geometry, not a gameplay knob
@@ -141,6 +146,29 @@ class LF_SpikeStripHarness
 			punctures = strip.GetPunctures().ToString();
 
 		return string.Format("ok flat=%1 of %2 punctures=%3 %4", flat, wheels.Count(), punctures, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the deploy preview (#928) for the strip prefab, from where the local character stands.
+	static string Preview(bool on)
+	{
+		if (!on)
+		{
+			LF_SpikeStripPreview.End();
+			return "ok preview off";
+		}
+
+		if (!LF_Utils.GetLocalCharacter())
+			return "error no_character";
+
+		// One plan from where the officer stands, then held: a world shot moves the body to the camera.
+		LF_EPlacementVerdict verdict = LF_SpikeStripPreview.Begin(STRIP, STRIP_LENGTH, null);
+		LF_SpikeStripPreview.Hold();
+		IEntity ghost = LF_PlacementGhost.GetGhost();
+		if (!ghost)
+			return "error no_ghost " + LF_PlacementRules.Name(verdict);
+
+		return string.Format("ok preview %1 at %2 %3", LF_PlacementRules.Name(verdict), ghost.GetOrigin(), LF_SpikeStripPreview.GetReason());
 	}
 
 	//------------------------------------------------------------------------------------------------

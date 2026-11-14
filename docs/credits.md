@@ -36,6 +36,9 @@ name of the person who ran the agent.
 ## Tools
 
 - Arma Reforger Tools and the Workbench IDE by Bohemia Interactive build and test the mod.
+- The clothing pipeline (`docs/asset-pipeline/clothing.md`) runs Bohemia Interactive's Enfusion Blender Tools (GPL-3.0) from the local
+  Arma Reforger Tools install, and downloads the character templates of the [Arma Reforger Samples](https://github.com/BohemiaInteractive/Arma-Reforger-Samples)
+  (Arma Public License) at run time. Neither is committed; a garment built from a Samples mesh credits Bohemia Interactive here.
 - [Piper](https://github.com/rhasspy/piper) makes the trailer voice-over (see Voice-over below).
 - The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (`website/README.md`).
 - Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (`docs/community/support.md`).
