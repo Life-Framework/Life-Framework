@@ -11,7 +11,7 @@
 // Stages are an ordered registry. A stage gets one fixture and returns failure strings. The later
 // issues add theirs without touching these two:
 //   #299  "boot":   start a dedicated server on the fixture, expect its [LFDebug:Config] lines
-//   #300  "client": the client reads the served config and reports what it applied
+//   #300  "client": a client joins, the config is served to it, and a value it can see is read back
 // A stage with `needs: "server"` or `"client"` is skipped here unless the caller passes
 // `--stage <name>` explicitly, because it needs a game. Red-proof: tools/validation/config-harness-selftest.mjs.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -45,6 +45,25 @@ export function loadFixtures(dir = FIXTURES) {
 
 const baseline = () => (existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : []);
 
+// The client stage (#300). A fixture's sidecar may carry `"client": [ read, ... ]`; each read names a
+// value a player can see and what it must be:
+//   { "kind": "shopPrice",   "shop": "Shop_GeneralStore_Debug", "item": "Water", "expect": "$17" }
+//       the shop's price list, searched for `item`, shows `expect`
+//   { "kind": "actionShown", "entity": "Bank_Teller", "class": "LF_ATMAction", "expect": true|false }
+//       standing at `entity`, the player is (not) offered an action of `class` within reach
+// The stage does not touch a game itself: `driver.read(fx, read)` returns what the client showed, and the
+// driver that boots nothing but talks to a running session is agent-box/proofs/config-harness-proof.mjs.
+// Without a driver every fixture that has reads fails, so the stage never passes by being skipped.
+let clientDriver = null;
+export function setClientDriver(driver) { clientDriver = driver; }
+
+/** Judges one read against what the client showed. `got` is the text (shopPrice) or a boolean (actionShown). */
+export function judgeRead(read, got) {
+  if (read.kind === "shopPrice") return String(got).includes(read.expect) ? "" : `${read.item} in ${read.shop}: expected ${read.expect}, the client showed ${JSON.stringify(String(got))}`;
+  if (read.kind === "actionShown") return got === read.expect ? "" : `${read.class} near ${read.entity}: expected ${read.expect ? "offered" : "hidden"}, the client ${got ? "offers it" : "does not offer it"}`;
+  return `unknown read kind ${read.kind}`;
+}
+
 export const STAGES = [
   {
     name: "parse", needs: null,
@@ -72,6 +91,21 @@ export const STAGES = [
       return fails;
     },
   },
+  {
+    name: "client", needs: "client",
+    run(fx) {
+      const reads = fx.expect.client ?? [];
+      if (!reads.length) return [];
+      if (!clientDriver) return ["client: no client attached (run agent-box/session.mjs config-harness-proof on `session up --clients 1`)"];
+      const fails = [];
+      clientDriver.apply(fx);
+      for (const r of reads) {
+        const why = judgeRead(r, clientDriver.read(fx, r));
+        if (why) fails.push(`client: ${why}`);
+      }
+      return fails;
+    },
+  },
 ];
 
 /** Runs `stages` over `fixtures`; returns [{ fixture, stage, fails }] for every failing pair. */
@@ -93,6 +127,10 @@ export function main(args) {
   const known = STAGES.map((s) => s.name);
   if (want !== "all" && !known.includes(want)) {
     console.log(`config-harness: unknown stage '${want}' (${known.join(", ")}, all)`);
+    return 2;
+  }
+  if (want === "client") {
+    console.log("config-harness: the client stage needs a running game: `tools\cli session up --clients 1`, then `tools\cli session config-harness-proof`, then `session down`");
     return 2;
   }
   const stages = want === "all" ? STAGES.filter((s) => !s.needs) : STAGES.filter((s) => s.name === want);

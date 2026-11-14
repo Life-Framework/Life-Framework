@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "client": [ { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Water", "expect": "£17" } ]
+}

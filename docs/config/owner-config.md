@@ -64,7 +64,25 @@ it adds a record). Proof of the rules:
 `tools\cli config-harness --stage validate` runs `config-check` over `tools/test/config-fixtures/`
 (`presets/` pass clean, `broken/` has one file per reject class), each with a `.expect.json` holding
 the exact log line, line and column. Stages are a list in `tools/config/harness.mjs`; the server-boot
-(#299) and client (#300) stages plug in there. Proof: `node tools/validation/config-harness-selftest.mjs`.
+(#299) stage plugs in there. Proof: `node tools/validation/config-harness-selftest.mjs`.
+
+### Client stage (#300): is the value on the client?
+
+A fixture's `.expect.json` may carry `"client": [ read, ... ]`. Each read names a value a player sees and
+what it must be: `shopPrice` (the shop's list, searched for an item, shows `expect`, for a config price or a
+renamed currency term) or `actionShown` (an action is offered or hidden, for a switched-off system).
+`tools/test/config-fixtures/presets/client-shop-price`, `client-term-currency` and `client-system-off` are the
+three, `empty` is the shipped baseline for both kinds of read.
+
+```
+toolscli session up --clients 1
+toolscli session config-harness-proof [--only <name>]
+toolscli session down
+```
+
+The proof writes each fixture as the server's owner `config.json`, runs `configreload` (the server streams it),
+and client 1 reads the value off its own screen. One running server serves every fixture in turn; a server per
+fixture is #299. About 1 minute for four fixtures.
 
 ## Where a value came from
 
