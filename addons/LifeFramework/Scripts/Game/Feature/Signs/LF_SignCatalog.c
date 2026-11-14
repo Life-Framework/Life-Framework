@@ -368,7 +368,7 @@ class LF_SignCatalog
 	//! of frame, so a card needs to stay under MAX_CARD_HEIGHT). Markup tags do not count as text.
 	static float EstimateHeight(array<ref LF_UIPart> parts, float sheetWidth, float scale)
 	{
-		float fontBody = LF_UITheme.FONT_BODY * scale;
+		float fontBody = LF_UITheme.BodySize() * scale;
 		float pitch = fontBody * 1.35;
 		float perLine = (sheetWidth - 56) / (fontBody * 0.46);
 		float height = 40;
@@ -376,7 +376,7 @@ class LF_SignCatalog
 		{
 			if (part.GetKind() == LF_EUIPartKind.TITLE)
 			{
-				float fontTitle = LF_UITheme.FONT_TITLE * 1.35 * scale;
+				float fontTitle = LF_UITheme.TitleSize() * 1.35 * scale;
 				int titleLines = 1;
 				if (part.GetText().Length() * fontTitle * 0.48 > sheetWidth - 56)
 					titleLines = 2;
@@ -389,7 +389,7 @@ class LF_SignCatalog
 			}
 			else if (part.GetKind() == LF_EUIPartKind.HEADING)
 			{
-				height += 18 + LF_UITheme.FONT_HEADING * scale * 1.3;
+				height += 18 + LF_UITheme.HeadingSize() * scale * 1.3;
 			}
 			else if (part.GetKind() == LF_EUIPartKind.RICH)
 			{

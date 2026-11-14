@@ -195,6 +195,7 @@ anywhere.
 tools\cli test --no-build --tier all                      # first free slot anywhere (--any, the default)
 tools\cli test --no-build --only LF_Test_Money --local     # this PC only
 tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
+tools\cli test --no-build --tier all --core-only           # the core alone, pack hidden (#326); any machine
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run

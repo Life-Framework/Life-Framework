@@ -1,0 +1,400 @@
+{
+ "EL-Faction_Police": [
+  "police"
+ ],
+ "EL-SpawnLoc_Town": [
+  "town"
+ ],
+ "EL-SpawnLoc_Station": [
+  "police"
+ ],
+ "EL-Item_Sold": [
+  "currency"
+ ],
+ "EL-DebugMenu_FactionPolice": [
+  "police"
+ ],
+ "EL-Police_Title": [
+  "police"
+ ],
+ "EL-PoliceAlert_Title": [
+  "police"
+ ],
+ "EL-Breach_RepairDenied": [
+  "police"
+ ],
+ "EL-Rank_DrawDenied": [
+  "police"
+ ],
+ "EL-Rank_WantedListDenied": [
+  "police"
+ ],
+ "EL-Rob_NeedPolice": [
+  "police"
+ ],
+ "EL-Jail_NotOfficer": [
+  "police"
+ ],
+ "EL-Bank_NeedPolice": [
+  "police"
+ ],
+ "EL-Job_Paid": [
+  "currency"
+ ],
+ "EL-Hospital_TillNeedPolice": [
+  "police"
+ ],
+ "LF-Job_Name_Police": [
+  "police"
+ ],
+ "LF-Job_Desc_Police": [
+  "police"
+ ],
+ "LF-Job_NeedPoliceBadge": [
+  "police"
+ ],
+ "LF-Job_OnDutyPolice_Title": [
+  "police"
+ ],
+ "LF-License_PoliceAccess_Name": [
+  "police"
+ ],
+ "LF-License_PoliceAccess_Desc": [
+  "police"
+ ],
+ "LF-License_PoliceArrest_Desc": [
+  "police"
+ ],
+ "LF-License_PoliceFine_Desc": [
+  "police"
+ ],
+ "LF-License_PoliceSearch_Desc": [
+  "police"
+ ],
+ "LF-License_CriminalRobbery_Desc": [
+  "police"
+ ],
+ "LF-Rob_NeedPoliceCount": [
+  "police"
+ ],
+ "LF-Quest_Giver_Start": [
+  "town"
+ ],
+ "EL-Duty_PoliceOnly": [
+  "police"
+ ],
+ "EL-Confiscate_OnDutyOnly": [
+  "police"
+ ],
+ "EL-Duty_Paid": [
+  "currency"
+ ],
+ "EL-Benefit_Paid": [
+  "currency"
+ ],
+ "LF-Reg_MustSign": [
+  "town"
+ ],
+ "LF-Interact_CashGiven": [
+  "currency"
+ ],
+ "LF-Interact_CashReceived": [
+  "currency"
+ ],
+ "LF-Interact_GiveCashCarried": [
+  "currency"
+ ],
+ "LF-Garage_LedgerFee": [
+  "currency"
+ ],
+ "LF-Impound_CannotAfford": [
+  "currency"
+ ],
+ "LF-Duty_NotOnRoster": [
+  "police"
+ ],
+ "LF-Org_FoundIntro": [
+  "currency"
+ ],
+ "LF-Org_FoundButton": [
+  "currency"
+ ],
+ "LF-Org_NoCharacter": [
+  "town"
+ ],
+ "LF-Murder_Wanted": [
+  "police"
+ ],
+ "LF-Quest_Giver_Clerk": [
+  "town"
+ ],
+ "LF-Quest_ArrivalRegister_Title": [
+  "town"
+ ],
+ "LF-Quest_ArrivalRegister_Desc": [
+  "town"
+ ],
+ "LF-Quest_ArrivalBoard_Title": [
+  "town"
+ ],
+ "LF-Quest_ArrivalBoard_Desc": [
+  "town"
+ ],
+ "LF-Quest_ArrivalDone_TurnIn": [
+  "police",
+  "town"
+ ],
+ "LF-Quest_ArrivalRegister_TurnIn": [
+  "police"
+ ],
+ "LF-Quest_Clerk_Idle": [
+  "police",
+  "town"
+ ],
+ "LF-Contraband_Crate_Desc": [
+  "police"
+ ],
+ "LF-Ticket_Title": [
+  "police"
+ ],
+ "LF-Ticket_Name": [
+  "police"
+ ],
+ "LF-Ticket_Blank": [
+  "police"
+ ],
+ "LF-Ticket_CardTitle": [
+  "police"
+ ],
+ "LF-Ticket_DueOpen": [
+  "town"
+ ],
+ "LF-Ticket_DueLate": [
+  "police",
+  "town"
+ ],
+ "LF-Ticket_DueWanted": [
+  "police"
+ ],
+ "LF-Ticket_HowToPay": [
+  "police"
+ ],
+ "LF-Ticket_PaidLine": [
+  "police"
+ ],
+ "LF-Ticket_PayDesc": [
+  "police"
+ ],
+ "LF-Ticket_PadTitle": [
+  "police"
+ ],
+ "LF-Ticket_PadNote": [
+  "police",
+  "town"
+ ],
+ "LF-Evidence_OnDutyOnly": [
+  "police"
+ ],
+ "LF-Item_Scanner_Name": [
+  "police"
+ ],
+ "LF-Item_Scanner_Description": [
+  "police",
+  "medic"
+ ],
+ "LF-Offence_Scanner": [
+  "police"
+ ],
+ "LF-Witness_Noted": [
+  "police"
+ ],
+ "LF-Revive_Revived": [
+  "medic"
+ ],
+ "LF-Revive_NotMedic": [
+  "medic"
+ ],
+ "LF-Carry_NotAllowed": [
+  "medic"
+ ],
+ "LF-Bed_NotMedic": [
+  "medic"
+ ],
+ "LF-Offence_ArmoryHeist": [
+  "police"
+ ],
+ "LF-Stolen_Reported": [
+  "police"
+ ],
+ "LF-Stolen_Already": [
+  "police"
+ ],
+ "LF-Store_Paid": [
+  "currency"
+ ],
+ "LF-Store_NotEnough": [
+  "currency"
+ ],
+ "LF-Shop_RefuseClosed": [
+  "police"
+ ],
+ "LF-Dispatch_TestPolice": [
+  "police"
+ ],
+ "LF-Dispatch_TestMedic": [
+  "medic"
+ ],
+ "LF-Crime_RobSafe_Desc": [
+  "currency"
+ ],
+ "LF-PoliceApp_Action": [
+  "police"
+ ],
+ "LF-PoliceApp_ActionDesc": [
+  "police"
+ ],
+ "LF-PoliceApp_Title": [
+  "police"
+ ],
+ "LF-PoliceApp_Status": [
+  "police"
+ ],
+ "LF-PoliceApp_Error_OnRoster": [
+  "police"
+ ],
+ "LF-Mission_PlaytestTown_Details": [
+  "police"
+ ],
+ "LF-SpawnHub_Pt_police": [
+  "police"
+ ],
+ "LF-Weapon_Taser_Description": [
+  "police"
+ ],
+ "LF-Phone_DialPolice": [
+  "police"
+ ],
+ "LF-Wanted_PosterStolenTip": [
+  "police"
+ ],
+ "LF-SpikeStrip_Description": [
+  "police"
+ ],
+ "LF-Dialogue_Clerk_Greet": [
+  "town"
+ ],
+ "LF-Dialogue_Clerk_Register": [
+  "police"
+ ],
+ "LF-Dialogue_Clerk_Board": [
+  "town"
+ ],
+ "LF-Dialogue_Clerk_Done": [
+  "police",
+  "town"
+ ],
+ "LF-Dialogue_Clerk_Idle": [
+  "police",
+  "town"
+ ],
+ "LF-Dialogue_Clerk_AboutWork": [
+  "town"
+ ],
+ "LF-Dialogue_Clerk_AboutTown": [
+  "town"
+ ],
+ "LF-Dialogue_Clerk_SayNew": [
+  "town"
+ ],
+ "LF-Dialogue_Clerk_SayTown": [
+  "town"
+ ],
+ "LF-IdCard_ClerkNeverIssued": [
+  "town"
+ ],
+ "LF-TestOrgSign_Denied": [
+  "town"
+ ],
+ "LF-NpcRole_teller_Where": [
+  "police",
+  "town"
+ ],
+ "LF-NpcRole_store_clerk_What": [
+  "town"
+ ],
+ "LF-NpcRole_police_Name": [
+  "police"
+ ],
+ "LF-NpcRole_police_Where": [
+  "town"
+ ],
+ "LF-NpcRole_trader_Where": [
+  "town"
+ ],
+ "LF-NpcRole_office_Where": [
+  "town"
+ ],
+ "LF-NpcRole_ranger_What": [
+  "town"
+ ],
+ "LF-NpcRole_fence_What": [
+  "police"
+ ],
+ "LF-NpcRole_fence_Rumour": [
+  "police"
+ ],
+ "LF-NpcRole_townsfolk_Greet": [
+  "town"
+ ],
+ "LF-NpcRole_townsfolk_Where": [
+  "town"
+ ],
+ "LF-NpcRole_townsfolk_Rumour": [
+  "police"
+ ],
+ "LF-RobHold_ClerkPolice": [
+  "police"
+ ],
+ "LF-RobHold_ClerkGone": [
+  "police"
+ ],
+ "LF-RobHold_Rules": [
+  "police"
+ ],
+ "LF-RobHold_Fail_Police": [
+  "police"
+ ],
+ "LF-RobHold_Refused_Police": [
+  "police"
+ ],
+ "LF-Dialogue_FuelClerk_AboutWhere": [
+  "town"
+ ],
+ "LF-Dialogue_FuelClerk_Police": [
+  "police"
+ ],
+ "LF-Dialogue_FuelClerk_Gone": [
+  "police"
+ ],
+ "LF-Dialogue_FuelClerk_SayNews": [
+  "town"
+ ],
+ "LF-Term_Police": [
+  "police"
+ ],
+ "LF-Term_Medic": [
+  "medic"
+ ],
+ "LF-Term_Medic_Plural": [
+  "medic"
+ ],
+ "LF-Term_Town": [
+  "town"
+ ],
+ "LF-Term_Currency": [
+  "currency"
+ ],
+ "LF-Term_Currency_Plural": [
+  "currency"
+ ]
+}

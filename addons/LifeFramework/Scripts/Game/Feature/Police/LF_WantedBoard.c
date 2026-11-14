@@ -132,7 +132,7 @@ class LF_WantedBoard
 	{
 		array<ref LF_UIPart> parts = {};
 		if (police)
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", WidgetManager.Translate("#LF-Wanted_TitlePolice")));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", LF_Terms.Text("#LF-Wanted_TitlePolice")));
 		else
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", WidgetManager.Translate("#LF-Wanted_Title")));
 

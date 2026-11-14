@@ -93,7 +93,14 @@ class LF_Restraint
 {
 	static const string FEATURE = "Police";
 	//! Shown on the suspect's wrist while cuffed: the handcuffs model with no item, physics or actions.
-	static const ResourceName WORN_PREFAB = "{7BD876D8BA3FF91E}Prefabs/Items/Roleplay/Handcuffs_Worn.et";
+	static const string SLOT_WORN = "handcuffs_worn";
+
+	//! The wrist model (slot "handcuffs_worn"), or empty when no usable prefab resolves (logged).
+	static ResourceName WornPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_WORN);
+	}
+
 	//! The bone weapons attach to (vanilla scripts look it up by this name); a "RightHand" bone does not exist.
 	static const string WORN_BONE = "righthandprop";
 	//! The prop bone's +Z is where the hand points (a held pistol's barrel). The model lies flat with
@@ -722,10 +729,14 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		Resource resource = Resource.Load(LF_Restraint.WORN_PREFAB);
+		ResourceName wornPrefab = LF_Restraint.WornPrefab();
+		if (wornPrefab.IsEmpty())
+			return; // LF_PrefabSlots logged the empty slot once
+
+		Resource resource = Resource.Load(wornPrefab);
 		if (!resource || !resource.IsValid())
 		{
-			LF_Debug.Error(LF_Restraint.FEATURE, "worn handcuffs prefab does not resolve: " + LF_Restraint.WORN_PREFAB);
+			LF_Debug.Error(LF_Restraint.FEATURE, "worn handcuffs prefab does not resolve: " + wornPrefab);
 			return;
 		}
 

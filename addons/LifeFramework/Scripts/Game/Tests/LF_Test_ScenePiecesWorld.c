@@ -180,7 +180,7 @@ class LF_Test_ScenePiecesWorld : LF_Test
 	//! pocket later in the process (`--only LF_Test_Armory,LF_Test_FineTicket`, the #699 volume quirk).
 	protected void RunNoSharedMesh(LF_TestContext ctx)
 	{
-		array<ResourceName> pieces = {LF_Evidence.CASING_PREFAB, LF_Evidence.MARKER_PREFAB, LF_Evidence.FOOTPRINT_PREFAB, LF_Evidence.STATEMENT_PREFAB};
+		array<ResourceName> pieces = {LF_Evidence.CASING_PREFAB, LF_Evidence.MarkerPrefab(), LF_Evidence.FOOTPRINT_PREFAB, LF_Evidence.STATEMENT_PREFAB};
 		array<ResourceName> items = {LF_Evidence.BAG_PREFAB, ITEM_TICKET, ITEM_BILL, ITEM_RECEIPT, ITEM_SLIP, ITEM_ID_CARD, ITEM_KEYCARD, ITEM_LOCKPICK, ITEM_SEEDS};
 		array<string> itemMeshes = {};
 		foreach (ResourceName item : items)

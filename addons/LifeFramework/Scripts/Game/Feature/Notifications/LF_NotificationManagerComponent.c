@@ -381,7 +381,7 @@ class LF_NotificationManagerComponent : ScriptComponent
 		}
 		else if (displayTitle.StartsWith("#"))
 		{
-			displayTitle = WidgetManager.Translate(displayTitle);
+			displayTitle = LF_Terms.Text(displayTitle);
 		}
 
 		string displayMessage = message;
@@ -390,8 +390,8 @@ class LF_NotificationManagerComponent : ScriptComponent
 			// The argument can be a key too (e.g. "#LF-Duty_OnDuty"); translate it on the client.
 			string displayArg = messageArg;
 			if (displayArg.StartsWith("#"))
-				displayArg = WidgetManager.Translate(displayArg);
-			displayMessage = WidgetManager.Translate(displayMessage, displayArg);
+				displayArg = LF_Terms.Text(displayArg);
+			displayMessage = LF_Terms.Text(displayMessage, displayArg);
 		}
 		
 		// Create notification widget on HUD layer

@@ -19,9 +19,21 @@ class LF_MoneyFormat
 	static string FormatMoney(int amount)
 	{
 		if (amount < 0)
-			return "-$" + GroupThousands(-amount);
+			return "-" + Symbol() + GroupThousands(-amount);
 
-		return "$" + GroupThousands(amount);
+		return Symbol() + GroupThousands(amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The currency symbol that goes before an amount: the "currency" term's sym form (#958), so a
+	//! pack or the owner can set $, a pound sign or a short name. "$" when the term has no words.
+	static string Symbol()
+	{
+		string symbol = LF_Terms.Form("currency", "sym");
+		if (symbol.IsEmpty())
+			return "$";
+
+		return symbol;
 	}
 
 	//------------------------------------------------------------------------------------------------
