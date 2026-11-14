@@ -1228,6 +1228,11 @@ StringTable {
      Target_en_us "No combat logging: disconnecting in the middle of an arrest, a robbery or a fight to avoid the result is not allowed. Play the scene out; staff will hear a complaint afterwards."
      Comment "The rule shown after a wrong answer to logout (#915)."
     }
+    CustomStringTableItem "{6E1A4D2B9C70F358}" {
+     Id "LF-Mission_Everon1989_Details"
+     Target_en_us "Everon, 1989. Pick this scenario and host a local game to play alone, or host it for friends. Your first spawn opens form R-89 at the registry; sign it to start. Then take a job, bank your pay, buy at a shop and see how the police answer a crime. Your cash and bank top up when they run low, and every new character owns two cars, one in the garage and one at the impound. The first player on a server with no police is added to the police roster, so you can clock in at the station desk. A local game is a preview: how saving behaves on a dedicated server is not promised there. Report problems on the Life Framework Discord or GitHub."
+     Comment "Detailed scenario text shown with the Everon 1989 scenario: first-run guide and the local-game preview note (#374)."
+    }
   }
  }
 }
