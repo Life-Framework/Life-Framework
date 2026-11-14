@@ -95,6 +95,11 @@ LF_ItemCatalogueConfig {
 | `catalogue` | `items` | item id (`pistol_m9`) |
 | `catalogue` | `offers` | `outlet/item` (`gun_counter/pistol_m9`) |
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
+| `police` | `ranks` | rank id (`patrol`). A saved rank is its index: a remove is refused on a shipped rung and on any rung that is not the last |
+| `organizations` | `rankDefaults` | `founder`, `officer` or `member`. A remove drops the entry, so the rank keeps its shipped rights; a new or replaced entry starts from them |
+| `zones` | `ruleSets` | rule name `NORMAL`, `SAFE` or `LAWLESS`. A remove is refused (every zone names a rule); a new or replaced entry starts from the legacy flags |
+| `licences` | `rules` | licence name (`POLICE_ACCESS`). The ids are the catalog's: add of an existing one, a name the catalog lacks and every remove are refused; replace turns both flags off unless the layer gives them |
+| `systems` (catalog) | `LF_SystemDef` list | system id (`Pager`). Pack overlays only. A framework (`LOCKED`) system and one another system names as parent or requirement cannot be removed |
 | `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |
 | `jobs` | `xpAwards` | action id (`gather`). A new or replaced award needs a `job` |
 | `jobs` | `licenceGates` | licence name (`MINER_GOLD`, an `LF_ELicenseType` name). A new or replaced gate needs a `job` and a `minLevel`; removing a gate gives the licence its shipped gate back |
@@ -103,6 +108,9 @@ LF_ItemCatalogueConfig {
 
 The catalogue's `removed: true` is a field, not a verb: it hides an entry and a later layer can set
 it back to false. `"op": "remove"` takes the entry out of the list.
+
+A list that must keep some entries says so in `LF_ConfigList.RemoveRefusal(index)`: the reason is
+logged like any refusal and the entry stays.
 
 ## Moving a section onto the model
 
@@ -115,6 +123,7 @@ it back to false. `"op": "remove"` takes the entry out of the list.
    `LF_ConfigOverlay.ApplyRecords(reader, "field", list, source)`.
 4. `node tools/config/schema.mjs --write`: the schema gains `op` on the section's records.
 
-Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`); jobs: `LF_Test_JobsOverrideModel`
+Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`); police, organizations, zones, licences and
+systems: `LF_Test_ConfigListsOverlay` (`config/lists-overlay`, remove and a refused patch per list); jobs: `LF_Test_JobsOverrideModel`
 (`config/jobs-override-model`, owner verbs per list) and `LF_Test_JobsPackOverlay`
 (`config/jobs-pack-overlay`, a pack `.conf` over the shipped `LF_Jobs.conf`).
