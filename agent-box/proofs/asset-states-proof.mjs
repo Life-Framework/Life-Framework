@@ -12,8 +12,11 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 //   ground     client 1 drops the item (itemdrop); client 2's free camera looks down on it (the
 //              session's one free capture: a second one crashed a client before)
 //   inventory  client 1 opens the preview sheet with every prefab (the engine's inventory render)
+//   use        an item with a built use state (the cuffs' strands): client 1 switches it on (itemon), holds
+//              it and shoots its own view, client 2 shoots the hand; then it is dropped switched on beside
+//              the closed one, so the ground picture shows both
 // Several prefabs compare variants (each gets its own hand pictures; the last one is dropped).
-const STATES = ["hand", "ground", "inventory"];
+const STATES = ["hand", "ground", "inventory", "use"];
 const leaf = (p) => p.split("/").pop().replace(/\.et$/, "");
 
 async function runAssetStatesProof(ctx) {
@@ -62,6 +65,16 @@ async function runAssetStatesProof(ctx) {
     if (!states.includes("hand")) continue;
     must(on(1, { verb: "hold", item: leaf(prefab) }, 10000), `hold ${leaf(prefab)}`);
     wait(3500);
+    if (states.includes("use")) {
+      // The use state in the hand: switched on, held, seen by its owner and by a second player.
+      must(on(1, { verb: "itemon", prefab }, 10000), `switch on ${leaf(prefab)}`);
+      wait(2500);
+      on(1, { verb: "capture", mode: "ui", name: `state_use_own_${leaf(prefab)}` }, 25000);
+      const at = String(on(1, { verb: "state" }, 10000).detail.match(/pos=(\S+)/)?.[1] ?? "").split(",").map(Number).filter(Number.isFinite);
+      if (at.length === 3) on(2, { verb: "capture", mode: "world", name: `state_use_third_${leaf(prefab)}`, x: at[0] - 0.2, y: at[1] + 1.3, z: at[2] + 0.45, ox: 0.55, oy: -1.3, oz: 0.8, hour: 12 }, 25000);
+      must(on(1, { verb: "itemoff", prefab }, 10000), `switch off ${leaf(prefab)}`);
+      wait(1500);
+    }
     // Where the item sits in the character's frame (the numbers states.md's hand calibration uses).
     on(1, { verb: "heldxf" }, 10000);
     on(1, { verb: "capture", mode: "ui", name: `state_hand_own_${leaf(prefab)}` }, 25000);
@@ -82,13 +95,29 @@ async function runAssetStatesProof(ctx) {
       if (at.length === 3) spots.push(at);
       wait(1200);
     }
+    if (states.includes("use")) {
+      // A second one, switched on, dropped a step further out, beside the closed ones.
+      on(1, { verb: "stand", entityName: "Roadmap_Police_Desk", side: "s2" });
+      wait(2000);
+      for (const prefab of prefabs) {
+        must(on(1, { verb: "itemgive", prefab }, 10000), `give another ${leaf(prefab)}`);
+        wait(800);
+        must(on(1, { verb: "itemon", prefab }, 10000), `switch on ${leaf(prefab)}`);
+        wait(800);
+        const at = vec(must(on(1, { verb: "itemdrop", prefab }, 10000), `drop switched-on ${leaf(prefab)}`).detail);
+        if (at.length === 3) spots.push(at);
+        wait(1500);
+      }
+    }
     // The officer steps round to the desk's far side so the boots are not in the picture.
     on(1, { verb: "stand", entityName: "Roadmap_Police_Desk", side: "n" });
     wait(2500);
     if (spots.length) {
       const mid = [0, 1, 2].map((k) => spots.reduce((s, p) => s + p[k], 0) / spots.length);
-      const far = spots.length > 1 ? 1.8 : 1;
-      on(2, { verb: "capture", mode: "world", name: "state_ground", x: mid[0], y: mid[1], z: mid[2], ox: 0.3 * far, oy: -1.15, oz: 0.25 * far, hour: 12, free: true }, 25000);
+      // One item: look at it from a step away. Several: the camera stands out to the side of the line
+      // they lie on (the officer steps along x), so all of them are in the picture.
+      const cam = spots.length > 1 ? { ox: 0.2, oz: 1.1 } : { ox: 0.3, oz: 0.25 };
+      on(2, { verb: "capture", mode: "world", name: "state_ground", x: mid[0], y: mid[1], z: mid[2], ox: cam.ox, oy: -1.15, oz: cam.oz, hour: 12, free: true }, 25000);
     } else fails.push("no drop reported a position; no ground picture");
   }
 

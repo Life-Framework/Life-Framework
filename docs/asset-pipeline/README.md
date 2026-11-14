@@ -187,6 +187,16 @@ Meshy run leaves, so `clean` and `import` work unchanged. `budget.credits` may b
 examples: `tools/assets/metal-ingot` and `tools/assets/ore-nugget`. Every set used gets a row in
 `docs/credits.md`.
 
+Where a mesh comes from, in this order: the base game (`tools\cli call asset_search` / `game_read`;
+reuse a vanilla item when it fits), then a CC0 or CC-BY library, then a model our own script builds, and
+only then a concept and Meshy. Our own script is the right tool for what a generator gets wrong:
+thin parts (a lockpick came back as a pen) and parts that must move (Meshy fused each ring of the
+handcuffs into one surface, so a strand could not be cut off). Such a model needs no textures
+downloaded: a recipe over procedural noise and a vertex colour that names the material of each piece
+is enough (`tools/assets/lockpick/model.py` bakes leather, thread, brass, steel and a black handle
+into one atlas). The cuffs (`tools/assets/handcuffs/model.py`) show how to build parts the `anim`
+stage can cut off ([states.md](states.md) "Use states").
+
 ## Variants
 
 One model, several materials: `"variants": [{ "name": "Copper", "emat": "Assets/.../Copper.emat",

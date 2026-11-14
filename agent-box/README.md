@@ -226,12 +226,14 @@ the game profile). Hooks:
 - `hold <name>` (runs on the client) takes a carried gadget whose prefab name contains `<name>`
   into the left hand, as a quick-slot key does; a prefab whose file name is exactly `<name>` wins
   over one that only contains it. Replies `held <name>` or `not_carried`.
+- `itemon <{GUID}path>` / `itemoff <{GUID}path>` (server, dev gate) switch the item's use state (`LF_AssetAnimComponent.SetActive`: the
+  handcuffs' strands swing open), looking in the inventory first, then for one lying within 3 m.
 - `itemgive <{GUID}path>` and `itemdrop <{GUID}path>` (server, dev gate) put one item of a prefab in
   the character's inventory, or drop the carried one the way the inventory screen does (it rests by
   its RestingUP; the reply has its position and angles). `heldxf` (client) reports where the held
   gadget sits in the character's frame: its origin and axes, and the `LeftHandProp` bone's, which is
   how the hand poses in `tools/assets/pipeline/states.mjs` were measured. Proof:
-  `session.mjs asset-states-proof <{GUID}path>[,...] [hand,ground,inventory] [out dir]` (one
+  `session.mjs asset-states-proof <{GUID}path>[,...] [hand,ground,inventory,use] [out dir]` (one
   picture per state; `tools\cli asset states <slug> --shots` runs it on a fresh session,
   `docs/asset-pipeline/states.md`).
 - `seen [radius]` (read-only, runs on the client) reports what THIS client's copy of the world says: replicated account state (`me=faction/duty/wanted`), carried `cash`, own `downed`/`life`/`bleed`, nearby vehicles (`eng`, `lock`, `ign`, `stolen`, nearest first), doors (`locked`), loose money `bags`, the chop yard `chop` percent, the last `toast` and radio `dispatches`. Unlike `state` (the server's word) a missed `BumpMe` or RPC shows here. Proofs call `clientSees(on, wait, n, judge)` from `session.mjs` to poll it until the replicated value lands (`clientSeesPeer` does the same for `peers`). #522 added client reads to `carry`, `cash-van`, `lockpick`, `hotwire`, `downed`, `medic` and `chop` proofs.

@@ -4,29 +4,24 @@
   "kind": "gadget",
   "roadmap": "#664",
   "concept": "Police chain handcuffs for 1989 Everon: a pair of steel chain cuffs, the kind every officer carries on the duty belt. An on-duty officer holds them in the left hand and restrains a downed or held-up suspect with them; the cuffs go onto the suspect and come back to the officer on release.",
-  "prompt": "A pair of steel police handcuffs lying flat. Two round closed cuff rings side by side, each ring about as wide as a wrist, made of a thick flat curved steel bar. Each cuff has a solid rectangular lock box on one side with a small keyhole. The two lock boxes face each other and are joined by a short chain of three thick oval steel links with clear gaps between the links. Classic 1980s chain handcuffs, clean hard-surface industrial design, single object, no text, no logos, no hands, no key, no stand.",
+  "prompt": "Modelled in Blender by model.py: a pair of nickel-plated steel chain handcuffs lying flat. Two ring cuffs (a fixed bow and a swinging strand each) with a rectangular lock body and rivets, joined by a short three-link chain. no text, no logos.",
   "texture_prompt": "Polished nickel-plated steel with a cool grey sheen, slightly darker steel inside the lock boxes and keyholes, light scratches and edge wear, no text, no logos, flat neutral lighting.",
-  "meshy": {
-    "ai_model": "latest",
-    "target_polycount": 30000
-  },
   "size_m": {
     "length": 0.18,
-    "height": 0.032,
-    "width": 0.1
+    "height": 0.034,
+    "width": 0.086
   },
   "budget": {
-    "lod0_tris": 8000,
+    "lod0_tris": 4500,
     "lod_ratios": [
       0.5,
       0.25,
       0.125
     ],
     "texture_px": 1024,
-    "credits": 45
+    "credits": 0
   },
   "fit": {
-    "up_axis": "y",
     "offset": [
       0,
       0,
@@ -54,14 +49,14 @@
     "classes": {
       "cuff_steel": {
         "rough": [
-          0.25,
-          1.15
-        ],
-        "metal": [
-          0,
+          0.5,
           0.85
         ],
-        "base_scale": 0.55
+        "metal": [
+          0.2,
+          0.5
+        ],
+        "base_scale": 0.75
       }
     }
   },
@@ -104,8 +99,54 @@
         "name": "open",
         "needs": "bone",
         "bone": "strand_l",
-        "planned": true,
-        "note": "each cuff's single strand swings out on a hinge at its lock box; needs the strands as separate parts"
+        "note": "each cuff's strand (strand_r, strand_l) swings out 70 degrees on a hinge at its lock body while the item is switched on (LF_AssetAnimComponent.SetActive); switched off, both are shut"
+      }
+    ]
+  },
+  "source": {
+    "blender": "model.py"
+  },
+  "anim": {
+    "bones": [
+      {
+        "name": "strand_r",
+        "motion": "hinge",
+        "axis": "y",
+        "angle": 70,
+        "seconds": 0.5,
+        "pivot": [
+          -0.01564,
+          -0.0005,
+          0.02703
+        ],
+        "box": [
+          -0.02036,
+          -0.0173,
+          0.01473,
+          0.02803,
+          0.0163,
+          0.03175
+        ]
+      },
+      {
+        "name": "strand_l",
+        "motion": "hinge",
+        "axis": "y",
+        "angle": -70,
+        "seconds": 0.5,
+        "pivot": [
+          -0.01564,
+          -0.0005,
+          -0.02703
+        ],
+        "box": [
+          -0.02036,
+          -0.0173,
+          -0.03175,
+          0.02803,
+          0.0163,
+          -0.01473
+        ]
       }
     ]
   }

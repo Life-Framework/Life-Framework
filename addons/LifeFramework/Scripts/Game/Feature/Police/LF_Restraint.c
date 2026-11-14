@@ -31,6 +31,22 @@ class LF_HandcuffsComponentClass : ScriptComponentClass
 
 class LF_HandcuffsComponent : ScriptComponent
 {
+	//------------------------------------------------------------------------------------------------
+	//! Server: the cuffs' use state (docs/asset-pipeline/states.md). Open swings both strands out on their
+	//! hinges (LF_AssetAnimComponent, replicated, late joiners included); closed puts them back. Nothing in
+	//! the cuffing flow calls it yet: the cuffs leave the officer's hand in the same step that cuffs the
+	//! suspect, so a visible open phase needs a short cuffing action first. That action opens here.
+	bool SetOpen(bool open)
+	{
+		LF_AssetAnimComponent anim = LF_Component<LF_AssetAnimComponent>.Find(GetOwner());
+		if (!anim)
+		{
+			LF_Debug.Error(LF_Restraint.FEATURE, "handcuffs have no LF_AssetAnimComponent: cannot open them");
+			return false;
+		}
+
+		return anim.SetActive(open);
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -52,7 +68,7 @@ class LF_Restraint
 	//! its rings in the XZ plane, so a quarter turn about X puts a ring's axis along the forearm, and
 	//! that ring (WORN_RING_Z along the model's length) is moved to WORN_WRIST_Z, behind the palm.
 	static const float WORN_PITCH = 90; // lf-fixed: geometry of the handcuffs model, not a gameplay knob
-	static const float WORN_RING_Z = 0.045; // lf-fixed: ring centre in Handcuffs.xob
+	static const float WORN_RING_Z = 0.0525; // lf-fixed: ring centre in Handcuffs.xob
 	static const float WORN_WRIST_Z = -0.07; // lf-fixed: wrist behind righthandprop on the vanilla skeleton
 
 	//! Prisoner uid -> who cuffed them and which cuffs. Server only.

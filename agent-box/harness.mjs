@@ -150,8 +150,8 @@ export function buildLine(id, spec) {
   if (spec.verb === "heldxf") {
     return `${id} heldxf`;
   }
-  if (spec.verb === "itemgive" || spec.verb === "itemdrop") {
-    // The asset states proof: put one item of a prefab in the inventory, or drop it (LF_AssetStatesHarness).
+  if (spec.verb === "itemgive" || spec.verb === "itemdrop" || spec.verb === "itemon" || spec.verb === "itemoff") {
+    // The asset states proof: put one item of a prefab in the inventory, drop it, or switch it on and off (its use state, LF_AssetStatesHarness).
     if (!/^\{[0-9A-F]{16}\}[A-Za-z0-9_/.-]+\.et$/.test(spec.prefab ?? "")) throw new Error(`${spec.verb} needs a {GUID}path prefab: ${spec.prefab}`);
     return `${id} ${spec.verb} ${spec.prefab}`;
   }
