@@ -33,7 +33,7 @@ GenericEntity ATM_Debug {
 GenericEntity Bank_Counter_West {
  components {
   LF_AmbientEmitterComponent "{C91E5F69BE9C12FE}" {
-   m_sSoundProject "{6539B71BA4BFA1FC}Sounds/Atmosphere/Atmosphere_BankTill.acp"
+   m_sSoundSlot "atmo_bank_till"
    m_fRadius 11
    m_vOffset 0 1.1 0
   }
@@ -45,7 +45,7 @@ GenericEntity Bank_Counter_West {
 GenericEntity Bank_Counter_East {
  components {
   LF_AmbientEmitterComponent "{D25A477E7141C287}" {
-   m_sSoundProject "{9E627437CDE85DF1}Sounds/Atmosphere/Atmosphere_BankMurmur.acp"
+   m_sSoundSlot "atmo_bank_murmur"
    m_fRadius 15
    m_vOffset 0 1.1 0
   }

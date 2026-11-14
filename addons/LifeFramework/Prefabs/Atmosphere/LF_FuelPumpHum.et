@@ -5,7 +5,7 @@ GenericEntity {
    m_bStartsOn 0
   }
   LF_AmbientEmitterComponent "{E5C7586129AD61DE}" {
-   m_sSoundProject "{EC2B286A4A5D758A}Sounds/Atmosphere/Atmosphere_FuelPump.acp"
+   m_sSoundSlot "atmo_fuel_pump"
    m_fRadius 13
    m_sGroup "fuel_pump"
    m_vOffset 0 1.2 0
