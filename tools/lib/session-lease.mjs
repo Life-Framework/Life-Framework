@@ -3,7 +3,8 @@
 // others queue (tools/remote/pool.mjs reapIdleSessions). Kept in lease.json
 // beside session.json so a harness command never rewrites the session record.
 
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { writeFileAtomic } from "./atomic-file.mjs";
 import { basename, dirname, join, resolve } from "node:path";
 
 export function sessionBase(env = process.env) {
@@ -31,8 +32,7 @@ function writeLease(dir, lease) {
   try {
     mkdirSync(dir, { recursive: true });
     const f = leaseFile(dir);
-    writeFileSync(`${f}.${process.pid}.tmp`, JSON.stringify(lease));
-    renameSync(`${f}.${process.pid}.tmp`, f);
+    writeFileAtomic(f, JSON.stringify(lease));
   } catch {}
 }
 

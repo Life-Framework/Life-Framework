@@ -51,3 +51,7 @@ agent-box/areas.json merge=lf-json-keys
 addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c merge=lf-markdown
 docs/architecture/core-pack-inventory.md merge=lf-markdown
 docs/decisions.md merge=lf-markdown
+
+# Generated owner-config files: regenerated from the merged config classes (tools/merge/regen-config-schema.mjs).
+docs/config/config.schema.json merge=lf-regen-config-schema
+docs/config/config.example.json merge=lf-regen-config-schema
