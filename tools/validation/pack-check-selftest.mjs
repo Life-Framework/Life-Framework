@@ -166,7 +166,7 @@ const BAD_OVERLAY = `LF_ItemCatalogueConfig {
  }
 }
 `;
-const BAD_CRIME = `LF_CrimeCatalogConfig {\n m_aCrimes {\n  LF_CrimeEntry "{G1}" {\n   m_sOp "add"\n   m_sCrimeId "#LF-Offence_Smuggling"\n  }\n }\n}\n`;
+const BAD_CRIME = `LF_CrimeCatalogConfig {\n m_aCrimes {\n  LF_CrimeEntry "{G1}" {\n   m_sOp "add"\n   m_sCrimeId "#LF-Offence_Smuggling"\n  }\n  LF_CrimeEntry "{G2}" {\n   m_sOp "add"\n   m_sCrimeId "#E8F1F7"\n  }\n }\n}\n`;
 const UNLISTED = `LF_ShopPricesConfig {\n}\n`;
 pack(bad, "LF_Bad", { gproj: "6000000000000002", man: G.man2, mis: G.misB }, manifest("LF_Bad", "0.5.0", "0.6.0"),
   { files: [["Catalogue.conf", G.ovB, BAD_OVERLAY], ["Crime.conf", G.ovC, BAD_CRIME], ["Unlisted.conf", "6000000000000009", UNLISTED]], refs: [`{${G.ovB}}Configs/Catalogue.conf`, `{${G.ovC}}Configs/Crime.conf`, "{8888888888888888}Configs/Missing.conf"] },
@@ -190,6 +190,8 @@ const planted = [
   const lines = r.findings.map((f) => `${f.level === "error" ? "ERROR" : "WARN "} ${f.area.padEnd(8)} ${[f.file, f.id].filter(Boolean).join("  ")}: ${f.msg}`);
   for (const [name, re] of planted) if (!lines.some((l) => re.test(l))) fail(`planted error '${name}': nothing matched ${re}\n  got:\n  ${lines.join("\n  ")}`);
   if (!summary(r).errors) fail("a pack with errors summarised as clean");
+  // A #RRGGBB colour (a UI theme token, #966) is not a string key.
+  if (lines.some((l) => /string key E8F1F7/.test(l))) fail("a #RRGGBB colour was reported as a missing string key");
 }
 
 // ---- Two packs on one id: a warning naming both ----
