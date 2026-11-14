@@ -13,7 +13,7 @@ Install **Arma Reforger Server** (Steam app 1874900): Steam's Tools library on W
 
 ## 2. Copy the config
 
-Copy [`server-config.example.json`](server-config.example.json) next to the server as
+Quickest: copy the ready folder [`server/example/`](../../server/example/README.md) (server.json, config.json, start script). Or copy [`server-config.example.json`](server-config.example.json) next to the server as
 `server.json` and change:
 
 | Key | Set it to |
