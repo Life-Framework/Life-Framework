@@ -27,7 +27,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
       }
      }
      HandAdditiveRotation 90 -141.98 0
-     HandAdditiveTranslation -0.0063 0.045 0.0049
+     HandAdditiveTranslation 0 0.0758 0
     }
     CustomAttributes {
      PreviewRenderAttributes "{51B4D3B0C1A27E31}" {

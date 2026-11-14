@@ -2,7 +2,7 @@
 // Workbench. The numbers are checked against the vanilla range the table cites, and the three
 // committed pipeline specs must pass the budget they are measured by.
 // red-proof: 2026-11-14, one line broken, restored after its FAIL was seen:
-//   checkBudget without the floor test    -> FAIL budget: a handcuffs spec at 3,000 triangles is under the gadget floor
+//   checkBudget without the floor test    -> FAIL budget: a Meshy gadget spec at 3,000 triangles is under the gadget floor
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -37,8 +37,8 @@ export async function main() {
   ok(BUDGETS.weapon.lod0 >= VANILLA.handgun[0] && BUDGETS.weapon.lod0 <= VANILLA.handgun[1], "budget: a weapon's LOD0 sits inside the vanilla handgun range");
   ok(BUDGETS.gadget.lod0 >= VANILLA.gadget[0] && BUDGETS.gadget.lod0 <= VANILLA.gadget[1], "budget: a held gadget's LOD0 sits inside the vanilla gadget range");
 
-  const cuffs = spec("handcuffs");
-  ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod0_tris: 3000 } }).some((p) => /floor/.test(p)), "budget: a handcuffs spec at 3,000 triangles is under the gadget floor");
+  const cuffs = spec("money-bag"); // a gadget Meshy generated (the handcuffs are modelled in Blender now)
+  ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod0_tris: 3000 } }).some((p) => /floor/.test(p)), "budget: a Meshy gadget spec at 3,000 triangles is under the gadget floor");
   ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod0_tris: 14000 } }).some((p) => /cap/.test(p)), "budget: a gadget over the cap is refused");
   ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod_ratios: [0.5, 0.6] } }).some((p) => /shrink/.test(p)), "budget: LOD ratios that grow are refused");
   ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod_ratios: [0.9, 0.5] } }).some((p) => /almost all/.test(p)), "budget: a LOD1 that keeps 90 % of LOD0 is refused");
@@ -46,7 +46,7 @@ export async function main() {
 
   ok(checkBudget({ ...cuffs, source: { blender: "model.py" }, budget: { ...cuffs.budget, lod0_tris: 1400 } }).length === 0, "budget: a model our Blender script builds is not held to the floor");
 
-  for (const slug of ["taser", "handcuffs", "spike-strip"]) {
+  for (const slug of ["taser", "money-bag", "handcuffs", "spike-strip"]) {
     const s = spec(slug);
     ok(specProblems(s).length === 0, `budget: the committed ${slug} spec passes (${specProblems(s)[0]})`);
     const b = budgetFor(s.kind);

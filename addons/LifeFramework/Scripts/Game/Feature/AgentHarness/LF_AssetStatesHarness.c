@@ -34,13 +34,16 @@ class LF_AssetStatesHarness
 		if (parts[0] == "itemdrop")
 			return Drop(character, prefab);
 
+		if (parts[0] == "itemon" || parts[0] == "itemoff")
+			return SetUseState(character, prefab, parts[0] == "itemon");
+
 		return "error unknown_item_verb";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static bool IsItemVerb(string tool)
 	{
-		return tool.StartsWith("itemgive ") || tool.StartsWith("itemdrop ");
+		return tool.StartsWith("itemgive ") || tool.StartsWith("itemdrop ") || tool.StartsWith("itemon ") || tool.StartsWith("itemoff ");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -105,6 +108,54 @@ class LF_AssetStatesHarness
 			return "error no_room";
 
 		return "ok given " + prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The item's use state: SetActive on its LF_AssetAnimComponent (the cuffs' strands swing open while
+	//! it is on). Looks in the inventory first, then for the nearest one of the prefab lying within 3 m.
+	protected static string SetUseState(IEntity character, ResourceName prefab, bool active)
+	{
+		IEntity item;
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		if (manager)
+		{
+			array<IEntity> items = LF_InventoryUtils.FindItemsByPrefab(manager, prefab);
+			if (!items.IsEmpty())
+				item = items[0];
+		}
+
+		if (!item)
+		{
+			s_SwitchTarget = null;
+			s_SwitchPrefab = prefab;
+			GetGame().GetWorld().QueryEntitiesBySphere(character.GetOrigin(), 3, FindLying, null, EQueryEntitiesFlags.ALL);
+			item = s_SwitchTarget;
+		}
+
+		if (!item)
+			return "error not_found";
+
+		LF_AssetAnimComponent anim = LF_AssetAnimComponent.Cast(item.FindComponent(LF_AssetAnimComponent));
+		if (!anim)
+			return "error no_asset_anim";
+
+		if (!anim.SetActive(active))
+			return "error switch_refused";
+
+		return string.Format("ok %1 active=%2", FilePath.StripPath(prefab), active);
+	}
+
+	protected static IEntity s_SwitchTarget;
+	protected static ResourceName s_SwitchPrefab;
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool FindLying(IEntity entity)
+	{
+		if (!entity || LF_Utils.GetPrefabName(entity) != s_SwitchPrefab)
+			return true;
+
+		s_SwitchTarget = entity;
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

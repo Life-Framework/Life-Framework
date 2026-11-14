@@ -289,9 +289,18 @@ export function stageStates(ctx, { fix = false } = {}) {
   const h = spec.states.hand ? handValues(spec.states.hand) : null;
   if (h) console.log(`states: hand pose ${spec.states.hand.pose}, rotation ${vec(h.rotation)}, translation ${vec(h.translation)}`);
   for (const u of spec.states.use || []) console.log(`states: use state ${u.name} needs ${u.needs}${u.prefab ? ` (${u.prefab})` : ""}${u.bone ? ` (bone ${u.bone})` : ""}${u.planned ? ", planned" : ""}`);
-  const shots = declared(spec).filter((s) => s !== "use");
+  const shots = shotList(spec);
   console.log(`states: pictures to take: ${shots.join(", ")}; tools\\cli asset states ${spec.slug} --shots`);
   return { states: declared(spec), shots };
+}
+
+// What a session can photograph: the states with a picture of their own, plus "use" when a use state
+// is built on a bone (the harness switches the item on with itemon; a mesh or prefab state is a
+// separate item and has its own picture).
+export function shotList(spec) {
+  const out = declared(spec).filter((s) => s !== "use");
+  if ((spec.states?.use || []).some((u) => u.needs === "bone" && !u.planned)) out.push("use");
+  return out;
 }
 
 // ---- the pictures ---------------------------------------------------------------------------------
@@ -304,7 +313,7 @@ export function shootStates(root, spec, dir) {
   const guid = existsSync(meta) ? /Name "\{([0-9A-F]{16})\}/.exec(readFileSync(meta, "utf8"))?.[1] : null;
   if (!guid) { console.log(`FAIL  no GUID in ${meta}`); return 1; }
   const rel = spec.states.prefab || `${spec.prefab_dir}/${spec.name}.et`;
-  const shots = declared(spec).filter((s) => s !== "use");
+  const shots = shotList(spec);
   const out = join(dir, "states");
   const session = join(root, "agent-box", "session.mjs");
   const node = (args) => spawnSync(process.execPath, [session, ...args], { cwd: root, stdio: "inherit", windowsHide: true }).status;
