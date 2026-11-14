@@ -31,7 +31,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard. The written version is that list's length (31). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp. The written version is that list's length (32). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -75,6 +75,9 @@
 //! A version 30 save includes the identity card registry and has no case board (#148): its open
 //! cases come back with no time and no pinned cards; the evidence stays logged in the locker, and an
 //! officer pins it again at the board.
+//! A version 31 save includes the case board and has no build stamp (#980): the game build that wrote it
+//! is unknown, so the load logs "game build unknown". The host preflight reads the engine's own stamp
+//! (meta-info.json m_sGameVersion) before a boot either way.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -89,6 +92,50 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! with this still false has a save written before the pre-release LF_ rename (the engine matches
 	//! the component key LF_PersistenceComponent:<id> literally), see docs/persistence.md "Save reset".
 	protected static bool s_bStoreLoaded;
+
+	//! Payloads (the account and bank prefix included) that failed to read in the last store read.
+	protected static int s_iReadFailures;
+	//! True when the last store read lost data (#980): autosave is paused so the next autosave does not
+	//! overwrite the save on disk with what is left. A clean re-apply clears it.
+	protected static bool s_bLoadDamaged;
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Payloads that failed to read in the last store read.
+	static int GetReadFailures()
+	{
+		return s_iReadFailures;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the last load lost data and autosave must not overwrite the save.
+	static bool IsLoadDamaged()
+	{
+		return s_bLoadDamaged;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Marks a continued save whose store never loaded (the engine dropped it, or the component keys
+	//! do not match): the world runs fresh, so autosave must not overwrite the save on disk.
+	static void MarkStoreMissing()
+	{
+		s_bLoadDamaged = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test hook: clears the damaged flag a test's own broken load set.
+	static void ClearLoadDamaged()
+	{
+		s_bLoadDamaged = false;
+		s_iReadFailures = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One payload failed to read: count it and warn. The payload's live state is left untouched.
+	protected static void ReadFailed(string message)
+	{
+		s_iReadFailures++;
+		LF_Debug.Warn("Persistence", message);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! eturn True when a save payload was read into the stores this boot.
@@ -141,6 +188,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("wantedlooks");
 		order.Insert("idcards");
 		order.Insert("caseboard");
+		order.Insert("buildstamp");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -174,7 +222,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 31);
+		context.WriteValue("version", 32);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -247,6 +295,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	static bool DeserializeStore(notnull LF_PersistenceComponent persistence, notnull LoadContext context)
 	{
 		s_bStoreLoaded = true;
+		s_iReadFailures = 0;
+		LF_SaveStamp.ResetForLoad();
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
 
@@ -268,7 +318,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		}
 		else
 		{
-			LF_Debug.Warn("Persistence", "account records failed to read, leaving live accounts untouched");
+			ReadFailed("account records failed to read, leaving live accounts untouched");
 		}
 
 		array<ref LF_BankAccountRecord> bankRecords = new array<ref LF_BankAccountRecord>();
@@ -279,7 +329,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		}
 		else
 		{
-			LF_Debug.Warn("Persistence", "bank records failed to read, leaving live balances untouched");
+			ReadFailed("bank records failed to read, leaving live balances untouched");
 		}
 
 		for (int index = 0; index < order.Count(); index++)
@@ -305,7 +355,28 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (version <= order.Find("characters"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no character slots: %2 account(s) load their character into slot 1, keyed by the account uid", version, LF_PlayerAccountManager.CountAccountsWithCharacters()));
 
+		ReportLoad(version);
+		LF_SaveStamp.CaptureBoot();
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The one line every store read ends with (the host preflight waits for "save loaded:"), and the
+	//! fail-safe (#980): a read that lost payloads pauses autosave and says where the save is kept.
+	//! \param[in] version The version stored in the save.
+	protected static void ReportLoad(int version)
+	{
+		string build = LF_SaveStamp.LoadedGameBuild();
+		string running = LF_SaveStamp.CurrentGameBuild();
+		if (s_iReadFailures > 0)
+		{
+			s_bLoadDamaged = true;
+			LF_Debug.Error("Persistence", string.Format("save load damaged: %1 payload(s) failed to read (save version %2, game build %3, running %4). Autosave is paused so the save on disk is not overwritten; stop the server and restore the newest backup (tools/cli host restore, docs/ops/game-updates.md)", s_iReadFailures, version, build, running));
+			return;
+		}
+
+		s_bLoadDamaged = false;
+		LF_Debug.Info("Persistence", string.Format("save loaded: version %1, game build %2, running %3", version, build, running));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -555,6 +626,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			context.Write(caseRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 case board row(s)", caseRows.Count()));
 		}
+		else if (payload == "buildstamp")
+		{
+			// The game build and save version that wrote this save (#980).
+			int stampVersion = saveVersion;
+			if (stampVersion <= 0)
+			{
+				array<string> stampOrder = new array<string>();
+				RegisterPersistencePayloads(stampOrder);
+				stampVersion = stampOrder.Count();
+			}
+			array<ref LF_SaveStampRecord> stampRows = LF_SaveStamp.Export(stampVersion);
+			context.Write(stampRows);
+			LF_Debug.Log("Persistence", string.Format("saved build stamp: game build %1, save version %2", stampRows.Get(0).m_sGameBuild, stampVersion));
+		}
 		else
 		{
 			LF_Debug.Error("Persistence", string.Format("save skipped unknown payload '%1'", payload));
@@ -591,7 +676,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "survival records failed to read, leaving live stats untouched");
+				ReadFailed("survival records failed to read, leaving live stats untouched");
 			}
 		}
 		else if (payload == "organizations")
@@ -606,7 +691,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "organization records failed to read, leaving live organizations untouched");
+				ReadFailed("organization records failed to read, leaving live organizations untouched");
 			}
 		}
 		else if (payload == "hideout")
@@ -619,7 +704,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "hideout records failed to read, leaving live hideouts untouched");
+				ReadFailed("hideout records failed to read, leaving live hideouts untouched");
 			}
 		}
 		else if (payload == "vehicles")
@@ -633,7 +718,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "vehicle records failed to read, leaving live vehicles untouched");
+				ReadFailed("vehicle records failed to read, leaving live vehicles untouched");
 			}
 		}
 		else if (payload == "jail")
@@ -647,7 +732,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "jail records failed to read, leaving live sentences untouched");
+				ReadFailed("jail records failed to read, leaving live sentences untouched");
 			}
 		}
 		else if (payload == "carried")
@@ -661,7 +746,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "carried snapshots failed to read, leaving live snapshots untouched");
+				ReadFailed("carried snapshots failed to read, leaving live snapshots untouched");
 			}
 		}
 		else if (payload == "progression")
@@ -675,7 +760,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "progression records failed to read, leaving live progression untouched");
+				ReadFailed("progression records failed to read, leaving live progression untouched");
 			}
 		}
 		else if (payload == "introductions")
@@ -689,7 +774,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "introduction records failed to read, leaving live introductions untouched");
+				ReadFailed("introduction records failed to read, leaving live introductions untouched");
 			}
 		}
 		else if (payload == "itemstate")
@@ -703,7 +788,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "per-item state failed to read, restored magazines keep their prefab ammo");
+				ReadFailed("per-item state failed to read, restored magazines keep their prefab ammo");
 			}
 		}
 		else if (payload == "wanted")
@@ -717,7 +802,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "wanted reports failed to read, leaving live reports untouched");
+				ReadFailed("wanted reports failed to read, leaving live reports untouched");
 			}
 		}
 		else if (payload == "jobsignups")
@@ -731,7 +816,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "job sign-up records failed to read, leaving live sign-ups untouched");
+				ReadFailed("job sign-up records failed to read, leaving live sign-ups untouched");
 			}
 		}
 		else if (payload == "tickets")
@@ -745,7 +830,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "police tickets failed to read, leaving live tickets untouched");
+				ReadFailed("police tickets failed to read, leaving live tickets untouched");
 			}
 		}
 		else if (payload == "incidents")
@@ -759,7 +844,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "incident log failed to read, leaving the live log untouched");
+				ReadFailed("incident log failed to read, leaving the live log untouched");
 			}
 		}
 		else if (payload == "ledger")
@@ -773,7 +858,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "money ledger failed to read, leaving the live ledger untouched");
+				ReadFailed("money ledger failed to read, leaving the live ledger untouched");
 			}
 		}
 		else if (payload == "crimerecord")
@@ -787,7 +872,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "crime record failed to read, leaving the live record untouched");
+				ReadFailed("crime record failed to read, leaving the live record untouched");
 			}
 		}
 		else if (payload == "fenceserials")
@@ -801,7 +886,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "fence serial book failed to read, leaving the live book untouched");
+				ReadFailed("fence serial book failed to read, leaving the live book untouched");
 			}
 		}
 		else if (payload == "incidentflags")
@@ -815,7 +900,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "incident flags failed to read, leaving the live flags untouched");
+				ReadFailed("incident flags failed to read, leaving the live flags untouched");
 			}
 		}
 		else if (payload == "evidencelocker")
@@ -829,7 +914,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "evidence locker failed to read, leaving the live case file untouched");
+				ReadFailed("evidence locker failed to read, leaving the live case file untouched");
 			}
 		}
 		else if (payload == "bills")
@@ -843,7 +928,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "treatment bills failed to read, leaving the live bills untouched");
+				ReadFailed("treatment bills failed to read, leaving the live bills untouched");
 			}
 		}
 		else if (payload == "chainstations")
@@ -857,7 +942,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "chain stations failed to read, leaving the live stations untouched");
+				ReadFailed("chain stations failed to read, leaving the live stations untouched");
 			}
 		}
 		else if (payload == "storestock")
@@ -871,7 +956,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "store stock failed to read, leaving the live stock untouched");
+				ReadFailed("store stock failed to read, leaving the live stock untouched");
 			}
 		}
 		else if (payload == "itemserials")
@@ -885,7 +970,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "item serials failed to read, restored items stay unstamped");
+				ReadFailed("item serials failed to read, restored items stay unstamped");
 			}
 		}
 		else if (payload == "farmplots")
@@ -899,7 +984,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "farm plots failed to read, leaving the live plots untouched");
+				ReadFailed("farm plots failed to read, leaving the live plots untouched");
 			}
 		}
 		else if (payload == "characters")
@@ -914,6 +999,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
+				s_iReadFailures++;
 				LF_Debug.Error("Persistence", "character slots failed to read: characters keep the slot 1 default keys");
 			}
 		}
@@ -929,7 +1015,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "unpaid store tags failed to read, leaving the waiting tags untouched");
+				ReadFailed("unpaid store tags failed to read, leaving the waiting tags untouched");
 			}
 		}
 		else if (payload == "playtime")
@@ -943,7 +1029,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "playtime failed to read, leaving the live counts untouched");
+				ReadFailed("playtime failed to read, leaving the live counts untouched");
 			}
 		}
 		else if (payload == "orgranks")
@@ -957,7 +1043,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "organization rank rows failed to read, ranks keep the rights from their records");
+				ReadFailed("organization rank rows failed to read, ranks keep the rights from their records");
 			}
 		}
 		else if (payload == "joblevels")
@@ -973,7 +1059,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "job xp rows failed to read, job levels keep the values the progression records hold");
+				ReadFailed("job xp rows failed to read, job levels keep the values the progression records hold");
 			}
 		}
 		else if (payload == "wantedlooks")
@@ -988,7 +1074,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "wanted looks failed to read, the posters show no picture until the next crime");
+				ReadFailed("wanted looks failed to read, the posters show no picture until the next crime");
 			}
 		}
 		else if (payload == "idcards")
@@ -1003,7 +1089,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "identity card rows failed to read; carried cards print again at the next spawn");
+				ReadFailed("identity card rows failed to read; carried cards print again at the next spawn");
 			}
 		}
 		else if (payload == "caseboard")
@@ -1018,8 +1104,17 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 			else
 			{
-				LF_Debug.Warn("Persistence", "case board rows failed to read, the board shows its cases with nothing pinned");
+				ReadFailed("case board rows failed to read, the board shows its cases with nothing pinned");
 			}
+		}
+		else if (payload == "buildstamp")
+		{
+			// Last payload (#980): which game build wrote this save. A version 1-31 save never reaches it.
+			array<ref LF_SaveStampRecord> stampRows = new array<ref LF_SaveStampRecord>();
+			if (context.Read(stampRows))
+				LF_SaveStamp.Apply(stampRows);
+			else
+				ReadFailed("build stamp failed to read: the game build that wrote this save is unknown");
 		}
 		else
 		{

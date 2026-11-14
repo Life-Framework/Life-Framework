@@ -158,7 +158,7 @@ class LF_Test_ItemCatalogue : LF_Test
 		ctx.NotNull(Offer(patched, "gun_counter", PISTOL), "an offer the owner left out stays");
 
 		// The stream carries the server's catalogue to a client that has only the core one.
-		string payload = LF_ConfigStream.BuildPayload(null, true, null, null, null, patched);
+		string payload = LF_ConfigStream.BuildPayload(null, true, null, null, null, null, patched);
 		LF_ConfigService.Reset();
 		LF_ConfigStream.Reset();
 		LF_ConfigService.LoadOwnerString("{\"schemaVersion\":1}", "test-client");

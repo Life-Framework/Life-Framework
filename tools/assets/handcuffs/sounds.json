@@ -1,0 +1,182 @@
+{
+  "slug": "handcuffs",
+  "name": "Handcuffs",
+  "kind": "gadget",
+  "project_dir": "Sounds/Items/Handcuffs",
+  "project_prefix": "Items_Handcuffs",
+  "output_format": "pcm_48000",
+  "budget": {
+    "generations": 20
+  },
+  "sounds": [
+    {
+      "id": "close",
+      "event": "SOUND_LF_CLOSE",
+      "project": "Use",
+      "bus": "sfx",
+      "range": "near22",
+      "volume_db": -10,
+      "pitch_variance": 0.1,
+      "prompt": "A steel handcuff ratchet closing around a wrist: a quick metallic ratcheting zip of a few teeth and a final sharp locking click. Real nickel-plated police handcuffs, 1980s, a few small steel parts, nothing else. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "variations": 4,
+      "trim_db": -35,
+      "pick": [
+        2,
+        3
+      ],
+      "reason": "Takes 2 and 3 are short and clean: 0.24 s of five even ratchet teeth and 0.21 s of a ratchet burst, a clack and a final lock click, each ending on its last click with no tail. Take 1 has a half-second gap in the middle that reads as two actions, take 4 is a slow fade of ten teeth (0.67 s) that outlasts the 0.5 s the strands take to swing shut. Two takes for variety between cuffings."
+    },
+    {
+      "id": "open",
+      "event": "SOUND_LF_OPEN",
+      "project": "Use",
+      "bus": "sfx",
+      "range": "near22",
+      "volume_db": -14,
+      "pitch_variance": 0.1,
+      "prompt": "A single small steel click of a handcuff key releasing the lock and the swinging arm of a steel handcuff springing open, one short metallic snick. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.75,
+      "variations": 3,
+      "trim_db": -35,
+      "pick": [
+        2
+      ],
+      "reason": "Take 2 is one 90 ms spring snick with a small click after it, the strands springing out when the lock lets go. Take 1 is a string of faint ticks before the click, take 3 is 50 ms, too short to read as a swing."
+    }
+  ],
+  "generations": [
+    {
+      "id": "close",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A steel handcuff ratchet closing around a wrist: a quick metallic ratcheting zip of a few teeth and a final sharp locking click. Real nickel-plated police handcuffs, 1980s, a few small steel parts, nothing else. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "close",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A steel handcuff ratchet closing around a wrist: a quick metallic ratcheting zip of a few teeth and a final sharp locking click. Real nickel-plated police handcuffs, 1980s, a few small steel parts, nothing else. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "close",
+      "take": 3,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A steel handcuff ratchet closing around a wrist: a quick metallic ratcheting zip of a few teeth and a final sharp locking click. Real nickel-plated police handcuffs, 1980s, a few small steel parts, nothing else. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "close",
+      "take": 4,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A steel handcuff ratchet closing around a wrist: a quick metallic ratcheting zip of a few teeth and a final sharp locking click. Real nickel-plated police handcuffs, 1980s, a few small steel parts, nothing else. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "open",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A single small steel click of a handcuff key releasing the lock and the swinging arm of a steel handcuff springing open, one short metallic snick. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 130560,
+      "credits_estimate": 200
+    },
+    {
+      "id": "open",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A single small steel click of a handcuff key releasing the lock and the swinging arm of a steel handcuff springing open, one short metallic snick. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 130560,
+      "credits_estimate": 200
+    },
+    {
+      "id": "open",
+      "take": 3,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A single small steel click of a handcuff key releasing the lock and the swinging arm of a steel handcuff springing open, one short metallic snick. Recorded close, dry, no reverb, no music, no voice, no chain rattle.",
+      "duration_seconds": 0.7,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 130560,
+      "credits_estimate": 200
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-14",
+      "generations": 7,
+      "seconds": 6.1000000000000005,
+      "plan": "starter",
+      "credits_before": 7825,
+      "credits_after": 7825,
+      "credits": 0
+    }
+  ],
+  "wired": {
+    "Use": {
+      "project": "{E8150CA363574149}Sounds/Items/Handcuffs/Items_Handcuffs_Use.acp",
+      "events": [
+        "SOUND_LF_CLOSE",
+        "SOUND_LF_OPEN"
+      ],
+      "samples": [
+        "{F26555C2A63AD83F}Sounds/Items/Handcuffs/Samples/Items_Handcuffs_LF_CLOSE_01.wav",
+        "{83A427D0512DD8F5}Sounds/Items/Handcuffs/Samples/Items_Handcuffs_LF_CLOSE_02.wav",
+        "{609A0A0D5FDA1EB5}Sounds/Items/Handcuffs/Samples/Items_Handcuffs_LF_OPEN_01.wav"
+      ]
+    }
+  }
+}

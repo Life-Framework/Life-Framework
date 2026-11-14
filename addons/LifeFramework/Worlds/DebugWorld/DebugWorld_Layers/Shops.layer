@@ -176,6 +176,10 @@ $grp GenericEntity {
 }
 GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "FilmTill"
+   m_sId "street"
+  }
   ActionsManagerComponent "{5A4B0B84C86E4845}" {
    ActionContexts {
     UserActionContext "{5A4B0B84C86E4846}" {

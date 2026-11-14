@@ -1319,6 +1319,11 @@ function cmdHostStatus(dir) {
   }
   const saves = host.findSavePoints(p.profile);
   console.log(`  saves:    ${saves.length ? `${saves.length} save point(s), newest ${saves[0].dir}` : "none yet"}`);
+  if (saves.length) {
+    const gate = host.buildGate({ saveBuild: host.newestSaveBuild(p.profile), gameBuild: host.exeBuild(serverExe()) });
+    console.log(`  build:    ${gate.reason}${gate.changed ? " -> run 'tools\\cli host preflight' before opening" : ""}`);
+  }
+  if (s?.preflight) console.log(`  preflight: ${s.preflight.ok ? "PASS" : "FAIL"} ${s.preflight.saveBuild ?? "?"} -> ${s.preflight.gameBuild ?? "?"} at ${s.preflight.at}`);
   const backups = existsSync(p.backups) ? readdirSync(p.backups).sort() : [];
   console.log(`  backups:  ${backups.length ? `${backups.length}, newest ${join(p.backups, backups[backups.length - 1])}` : "none yet"}`);
   const log = host.newestConsoleLog(p.profile);
@@ -1339,6 +1344,17 @@ function cmdHostStart(root, dir, opts) {
   if (!existsSync(exe)) {
     console.log(`FAIL  dedicated server not found: ${exe}`);
     return 1;
+  }
+  // #980: the first boot on a new game build goes through `host preflight`.
+  if (!opts.preflight && host.findSavePoints(p.profile).length) {
+    const gate = host.buildGate({ saveBuild: host.newestSaveBuild(p.profile), gameBuild: host.exeBuild(exe) });
+    if (gate.changed && !opts.force) {
+      console.log(`FAIL  game update: ${gate.reason}`);
+      console.log("      run 'tools\\cli host preflight' first (backs the save up, proves it loads on this build, restores it if not)");
+      console.log("      --force starts anyway (docs/ops/game-updates.md)");
+      return 1;
+    }
+    if (gate.changed) console.log(`WARN  game update: ${gate.reason}; started with --force, no preflight`);
   }
   try {
     wt.acquireLock(root, SERVER_SLOT, { waitMs: opts.wait ? 1800000 : 0 });
@@ -1440,6 +1456,79 @@ function cmdHostStop(dir, opts) {
   return code;
 }
 
+// `host preflight` (#980): after a game update, before opening the server.
+// Back the save up, boot the host on the installed build with the save, wait
+// for the LF store's load line, stop it (shutdown save) and judge the log. On a
+// failure the backup goes back in place and the replaced saves are kept.
+function cmdHostPreflight(root, dir, opts) {
+  const p = host.hostPaths(dir);
+  const s = host.readHostState(dir);
+  if (s && host.pidAlive(s.pid)) {
+    console.log(`host: running (pid ${s.pid}); 'tools\\cli host stop' first`);
+    return 1;
+  }
+  if (!host.findSavePoints(p.profile).length) {
+    console.log("preflight: no save yet; nothing to prove. 'tools\\cli host start' starts a fresh world");
+    return 0;
+  }
+  const saveBuild = host.newestSaveBuild(p.profile);
+  const gameBuild = host.exeBuild(serverExe());
+  const gate = host.buildGate({ saveBuild, gameBuild });
+  console.log(`preflight: save build ${saveBuild ?? "unknown"}, installed game ${gameBuild ?? "unknown"} (${gate.reason})`);
+  const backup = host.backupSaves(dir, `preflight-${saveBuild ?? "unknown"}-to-${gameBuild ?? "unknown"}`);
+  console.log(`preflight: backed up saves -> ${backup}`);
+  const started = cmdHostStart(root, dir, { ...opts, preflight: true });
+  const log = host.newestConsoleLog(p.profile);
+  let stopped = 1;
+  if (started === 0) stopped = cmdHostStop(dir, opts);
+  else {
+    const st = host.readHostState(dir);
+    if (st && host.pidAlive(st.pid)) stopped = cmdHostStop(dir, opts);
+  }
+  const verdict = started === 0 && stopped === 0 ? host.preflightVerdict(log ? readFileSync(log, "utf8") : "") : { ok: false, reason: started !== 0 ? "the server did not come up" : "the server did not stop cleanly" };
+  const st = host.readHostState(dir) ?? {};
+  host.writeHostState(dir, { ...st, preflight: { ok: verdict.ok, saveBuild, gameBuild, backup, log, at: new Date().toISOString(), reason: verdict.reason } });
+  if (verdict.ok) {
+    console.log(`preflight: PASS ${verdict.reason}`);
+    console.log("preflight: the save loads on this build; open the server with 'tools\\cli host start'");
+    return 0;
+  }
+  console.log(`preflight: FAIL ${verdict.reason}`);
+  try {
+    const r = host.restoreBackup(dir, backup);
+    console.log(`preflight: restored the backup -> ${r.target}`);
+    if (r.kept) console.log(`preflight: the saves the failed boot left are kept in ${r.kept}`);
+  } catch (e) {
+    console.log(`preflight: restore FAILED (${e.message}); the backup is untouched at ${backup}`);
+  }
+  console.log(`preflight: log ${log ?? "(none)"}`);
+  console.log("preflight: do not open the server. Diagnose with -persistenceDiag logs (docs/ops/game-updates.md)");
+  return 1;
+}
+
+// `host restore [<backup>]`: put the newest (or the named) backup back.
+function cmdHostRestore(dir, name) {
+  const s = host.readHostState(dir);
+  if (s && host.pidAlive(s.pid)) {
+    console.log(`host: running (pid ${s.pid}); 'tools\\cli host stop' first`);
+    return 1;
+  }
+  const backup = host.pickBackup(dir, name);
+  if (!backup) {
+    console.log(name ? `host: no backup named ${name}` : "host: no backup yet");
+    return 1;
+  }
+  try {
+    const r = host.restoreBackup(dir, backup);
+    console.log(`host: restored ${backup} -> ${r.target}`);
+    if (r.kept) console.log(`host: the replaced saves are kept in ${r.kept}`);
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+}
+
 function cmdHost(args) {
   const list = args ?? [];
   const sub = list[0];
@@ -1449,12 +1538,14 @@ function cmdHost(args) {
   if (sub === "start") return cmdHostStart(ROOT, dir, opts);
   if (sub === "stop") return cmdHostStop(dir, opts);
   if (sub === "status") return cmdHostStatus(dir);
+  if (sub === "preflight") return cmdHostPreflight(ROOT, dir, opts);
+  if (sub === "restore") return cmdHostRestore(dir, list[1] && !list[1].startsWith("--") ? list[1] : null);
   if (sub === "backup") {
     const b = host.backupSaves(dir, "manual");
     console.log(b ? `host: backed up saves -> ${b}` : "host: no save to back up");
     return 0;
   }
-  console.log("usage: tools\\cli host start|stop|status|backup [--wait] [--timeout <s>] [--force]");
+  console.log("usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force]");
   return sub ? 1 : 0;
 }
 
@@ -2504,7 +2595,12 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 start the playtest-release workflow (worktree at origin/main)
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
-                                (docs/playtest.md; start refuses in the main checkout)
+                                (docs/playtest.md; start refuses in the main checkout).
+                                start refuses a save from another game build until a preflight passes
+  host preflight                after a game update, before opening: back up, load the save on
+                                the installed build, stop; restores the backup on any failure
+                                (docs/ops/game-updates.md)
+  host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
   test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --only runs just those tests (class, GetName(), or test file
@@ -2512,9 +2608,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
-  e2e [--local|--remote [name]] [--legacy-save]
+  e2e [--local|--remote [name]] [--legacy-save] [--old-build]
                                 two-boot save, restart, and reload proof in this worktree;
-                                --legacy-save writes the save before #331 (version 23) in boot 1
+                                --legacy-save writes the save before #331 (version 23) in boot 1;
+                                --old-build stamps boot 1's save as game build 1.8.0.13 (#980)
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -2736,11 +2833,13 @@ function wtHelp() {
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
-  tools\\cli wt e2e <slug> [--legacy-save]
+  tools\\cli wt e2e <slug> [--legacy-save] [--old-build]
                                        two-boot save-state E2E: persistence save boot ended by the
                                        host stop file (SHUTDOWN save), then reload same profile
                                        with -loadSessionSave (latest = the shutdown save);
                                        --legacy-save: boot 1 writes the pre-#331 format (version 23)
+                                       --old-build: boot 1 stamps game build 1.8.0.13; the build gate
+                                       backs the save up and boot 2 must load it (#980)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
@@ -2997,7 +3096,7 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save") });
+  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build") });
 }
 
 // The two-boot save/restart proof in one pool slot: both boots run on the same
@@ -3014,11 +3113,11 @@ async function runE2e(root, opts = {}) {
   let code = 3;
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-      code = runE2eHere(root, opts.legacySave);
+      code = runE2eHere(root, opts.legacySave, opts.oldBuild);
     }
     return code;
   } finally {
@@ -3032,12 +3131,15 @@ async function runE2e(root, opts = {}) {
 // Both boots run the suite's mission header: on a bare world the engine writes no SHUTDOWN save
 // (#830). Pass 1 ends through the host stop file, the path `host stop` takes, and must log the
 // SHUTDOWN save before the feature statics reset; pass 2 loads that save (tools/test/e2e-shutdown.mjs).
-function runE2eHere(root, legacySave = false) {
+// oldBuild (--old-build, #980): the save boot stamps its save as game build 1.8.0.13 (LF_E2E_OLD_BUILD,
+// and the engine's meta-info.json is rewritten to match), the build gate sees an update and backs the
+// save up beside the profile, and the reload boot on the real build must load it whole.
+function runE2eHere(root, legacySave = false, oldBuild = false) {
   const profile = join(root, "server", "profile", "test");
   const e = { path: root };
-  const legacy = legacySave ? "LF_E2E_LEGACY_SAVE" : "";
+  const legacy = [legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_OLD_BUILD" : ""].filter(Boolean).join(",");
   const mission = e2eShutdown.E2E_MISSION;
-  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacy ? ", legacy save format" : ""}) in ${e.path}`);
+  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacySave ? ", legacy save format" : ""}${oldBuild ? ", stamped as game build 1.8.0.13" : ""}) in ${e.path}`);
   const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
   let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines });
   if (pass1 === 0) {
@@ -3057,8 +3159,22 @@ function runE2eHere(root, legacySave = false) {
     console.log(`e2e: profile ${profile}`);
     return pass1;
   }
-  console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, LF_E2E_LOAD_BOOT)`);
-  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: legacy ? `LF_E2E_LOAD_BOOT,${legacy}` : "LF_E2E_LOAD_BOOT" });
+  if (oldBuild) {
+    const fake = "1.8.0.13";
+    const point = host.stampNewestSave(profile, fake);
+    const gameBuild = host.exeBuild(serverExe());
+    const gate = host.buildGate({ saveBuild: host.newestSaveBuild(profile), gameBuild });
+    console.log(`e2e: old build: save point ${point ?? "(none)"} stamped ${fake}; ${gate.reason}`);
+    const backup = gate.changed ? host.backupSaveRoot(profile, join(root, "server", "profile", "test-backups"), `build-${fake}-to-${gameBuild}`) : null;
+    if (!backup || !host.findSavePoints(backup).length) {
+      console.log(`e2e: FAILED old build: the build gate made no backup (${gate.reason})`);
+      return 1;
+    }
+    console.log(`e2e: old build: backed up the save before the reload boot -> ${backup} (${host.findSavePoints(backup).length} save point(s))`);
+  }
+  const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : ""].filter(Boolean).join(",");
+  console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
+  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines });
   const log2 = e2eShutdown.newestTestConsole(e.path);
   for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
   console.log(`e2e: profile ${profile}`);
@@ -3439,7 +3555,7 @@ const cmds = {
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
-    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save") });
+    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),

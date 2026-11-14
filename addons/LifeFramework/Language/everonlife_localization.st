@@ -9181,6 +9181,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy a handgun"
      Comment "Action prompt at the gun counter (#988)."
     }
+    CustomStringTableItem "{DF8BF4F56126B7CA}" {
+     Id "LF-Restrain_Interrupted"
+     Target_en_us "The cuffing was interrupted."
+     Comment "Toast to the officer when the cuff or uncuff hold stops by itself: someone moved out of reach, the cuffs left the hand, or a rule no longer holds."
+    }
   }
  }
 }

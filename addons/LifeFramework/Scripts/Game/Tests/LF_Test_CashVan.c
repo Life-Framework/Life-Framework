@@ -24,7 +24,7 @@ class LF_Test_CashVan : LF_Test
 		IEntity pack = LF_Utils.SpawnEntityPrefab("{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et", robber.GetOrigin());
 		ctx.True(pack != null && inventory.TryInsertItem(pack, EStoragePurpose.PURPOSE_LOADOUT_PROXY), "the robber wears a pack");
 
-		LF_Bank.Configure(vanId, 3, 400, 0, 0, 0, "");
+		LF_Bank.Configure(vanId, 3, 400, 0, 0, 0);
 		LF_Bank.ConfigureTools(vanId, "drill,charge", 0);
 		ResourceName chargePrefab = LF_Breach.FENCE_CHARGE_PREFAB;
 		LF_Bank.ConfigureHeist(vanId, LF_BankLoot.KIND_BAGS, "", LF_WantedReports.OFFENCE_CASH_VAN, false, -1, 0);

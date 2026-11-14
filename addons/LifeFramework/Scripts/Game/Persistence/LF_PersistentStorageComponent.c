@@ -29,7 +29,7 @@ class LF_PersistentStorageComponent : ScriptComponent
 	static const string SLOT_PLACED = "placed";
 	static const string FEATURE = "PlacedStorage";
 
-	[Attribute("", UIWidgets.EditBox, desc: "Stable key the contents are saved under, e.g. hideout:Roadmap_Hideout. Keep it when the entity moves. Empty uses the entity name.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Stable key the contents are saved under, e.g. hideout:<hideout id>. Keep it when the entity moves. Empty uses the entity name.")]
 	protected string m_sStorageKey;
 
 	//! Storage key -> placed entity. EntityID, not IEntity: entities can be deleted at any time.
