@@ -16,18 +16,18 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
     ItemAnimationAttributes ItemAnimationAttributes "{6A7E08711057A50F}" {
      AnimationAttachments {
       AnimationAttachmentInfo "{600D21DBE6A40875}" {
-       AnimGraph "{883777E45A6C4DA1}Assets/Items/Medicine/Workspaces/Gauze_01.agr"
-       AnimInstance "{79BD98038DD60F88}Assets/Items/Medicine/Workspaces/Gauze_01_player.asi"
+       AnimGraph "{82906ACD75DF8523}Assets/Items/Equipment/workspaces/Flashlight_MX991.agr"
+       AnimInstance "{903E4A0B96B34B8F}Assets/Items/Equipment/workspaces/MX991_player.asi"
        BindingName "Gadget"
       }
      }
-     HandAdditiveRotation -65 -60 -60
-     HandAdditiveTranslation 0 0 0
+     HandAdditiveRotation 90 -51.98 0
+     HandAdditiveTranslation 0.0197 0.045 0.0252
     }
     CustomAttributes {
      PreviewRenderAttributes "{51B4D3B0BBEC9E87}" {
-      CameraOrbitAngles -25 -25 0
-      CameraDistanceToItem 0.54
+      CameraOrbitAngles -55 -30 0
+      CameraDistanceToItem 0.6
       FOV 20
      }
     }
@@ -42,7 +42,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    ModelGeometry 1
   }
   SCR_GadgetComponent "{73D7E3E8DB91E0B1}" {
-   m_eAnimVariable LF_ITEM
+   m_eAnimVariable MX991
   }
   LF_HandcuffsComponent "{F3D6B1A411654CB0}" {
   }

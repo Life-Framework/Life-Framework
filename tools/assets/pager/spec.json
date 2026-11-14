@@ -57,5 +57,31 @@
         "base_scale": 0.8
       }
     }
+  },
+  "states": {
+    "prefab": "Prefabs/Items/Roleplay/LF_Pager.et",
+    "inventory": {
+      "angles": [
+        -15,
+        155,
+        0
+      ],
+      "distance": 0.3,
+      "fov": 20
+    },
+    "ground": {
+      "up": "Right"
+    },
+    "hand": {
+      "pose": "fist",
+      "grip": [
+        0,
+        -0.01,
+        0
+      ],
+      "up": "+y",
+      "out": "+x",
+      "turn": -118
+    }
   }
 }
