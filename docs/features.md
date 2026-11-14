@@ -2647,6 +2647,7 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+- ✅ (2026-11-14, #921) The player HUD root layout (`UI/Layouts/HUD/HUDLayouts/EL_HUDManagerRoot.layout`) has the vanilla `Slot_Vehicle`, `Slot_WeaponInfo` and `Slot_AvailableActions` slots again, so the vehicle dashboard indicators (lights, high beams) draw bottom-left instead of mid-screen. `validate-hud-root-slots` keeps them there. Harness `input` accepts `VehicleLightsToggle` and `CarLightsHiBeamToggle`; proof verb `vehicle-hud-proof`.
 - ✅ **Cash is always the money mesh** (#932). `MoneyStack.et` no longer swaps to a backpack mesh at 1000 and 10000; the playtest top-up carries 20000, so every cash item in the inventory showed as a field pack. `LF_Test_QuantityOperations` pins it. No save change.
 
 ### `LF_TestOrgSign` — `Feature/Organizations/LF_TestOrgSign.c` (#934, 2026-11-14)
