@@ -1,0 +1,40 @@
+Vehicle : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
+ ID "E1A601BE1A000002"
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
+  LF_VehicleStorageAccessControl "{E1A601BE1A000004}" {
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_VehicleLockAction "{E1A601BE1A000006}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{E1A601BE1A000007}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E000001D7}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F000001D7}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
+    }
+    LF_VehicleSearchAction "{5EA2C409000000D7}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40A000000D7}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
+   }
+  }
+ }
+}

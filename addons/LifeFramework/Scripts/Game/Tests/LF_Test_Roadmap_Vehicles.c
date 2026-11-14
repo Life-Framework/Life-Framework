@@ -141,7 +141,7 @@ class LF_Test_Roadmap_VehiclesWorld : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		ctx.Equal(5, lot.GetOfferCount(), "the lot lists the catalog");
+		ctx.Equal(7, lot.GetOfferCount(), "the lot lists the catalog");
 		ctx.Equal(500, lot.GetCashCeiling(), "the cash ceiling is configured");
 		ctx.Equal(1000, lot.GetPrice(LF_VehicleCatalog.S105), "the S105 price is above the cash ceiling");
 		ctx.True(LF_Component<LF_VehicleGarageComponent>.Find(lotEntity) == null, "the lot sells; it is not a garage");

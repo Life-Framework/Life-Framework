@@ -269,6 +269,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ParkBrakeWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneCallBackBook(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhoneCallBackWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneCallWorld(), LF_TestTier.WORLD);
