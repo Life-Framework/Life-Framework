@@ -230,7 +230,7 @@ export async function main() {
       const r = JSON.parse(readFileSync(join(base, slug, "sounds.json"), "utf8"));
       ok(sound.soundProblems(r).length === 0, `${slug}: sounds.json passes (${sound.soundProblems(r)[0]})`);
       ok((r.generations || []).length <= r.budget.generations, `${slug}: ${(r.generations || []).length} generations are within the cap of ${r.budget.generations}`);
-      for (const s of r.sounds.filter((x) => x.pick)) for (const n of s.pick) ok((r.generations || []).some((g) => g.id === s.id && g.take === n), `${slug}: pick ${s.id} ${n} is a recorded generation`);
+      for (const s of r.sounds.filter((x) => x.pick)) for (const n of s.pick) ok((r.generations || []).some((g) => g.id === s.id && g.take === n) || (s.compose && s.compose.as_take === n), `${slug}: pick ${s.id} ${n} is a recorded generation or a composed take`);
       for (const [project, w] of Object.entries(r.wired || {})) {
         const rel = w.project.slice(18);
         const file = join(ADDON, rel);
