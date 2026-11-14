@@ -24,4 +24,8 @@ language the mod ships, without copying the string table.
 A pack ships its own words: a `LF_TermsConfig` overlay (see `addons/LifeFramework/Configs/Tests/LF_Test_TermsOverlay.conf`)
 whose forms are string keys in the pack's table, so every language is translated. The owner's text wins over the pack's.
 
-Limits today: voiced lines keep the recorded word, and action prompts and item names are not on the terms path yet.
+Terms: `police`, `medic`, `town`, `currency`, `org` (an organization: `"org": "Gang"`), `fine`, `job`.
+
+Limits today: voiced lines keep the recorded word, and item and prop names, quest text, license and job names and
+the spawn menu are translated by the engine, so they keep the shipped words (`docs/` Terms `Feature.md` lists them).
+Action prompts, toasts, sheets and dialogue follow your words.

@@ -141,22 +141,22 @@ class LF_FineTicketComponent : ScriptComponent
 		outLines.Insert(WidgetManager.Translate("#LF-Ticket_Amount", LF_MoneyFormat.FormatMoney(m_iAmount)));
 		if (m_bPaid)
 		{
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_PaidLine", m_sPaidAt));
+			outLines.Insert(LF_Terms.Text("#LF-Ticket_PaidLine", m_sPaidAt));
 		}
 		else if (m_iStage == LF_FineTicketRules.STAGE_OPEN)
 		{
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_DueOpen", m_iMinutesLeft, LF_MoneyFormat.FormatMoney(m_iLateAmount)));
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_HowToPay"));
+			outLines.Insert(LF_Terms.Text("#LF-Ticket_DueOpen", m_iMinutesLeft.ToString(), LF_MoneyFormat.FormatMoney(m_iLateAmount)));
+			outLines.Insert(LF_Terms.Text("#LF-Ticket_HowToPay"));
 		}
 		else if (m_iStage == LF_FineTicketRules.STAGE_LATE)
 		{
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_DueLate", m_iMinutesLeft));
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_HowToPay"));
+			outLines.Insert(LF_Terms.Text("#LF-Ticket_DueLate", m_iMinutesLeft.ToString()));
+			outLines.Insert(LF_Terms.Text("#LF-Ticket_HowToPay"));
 		}
 		else
 		{
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_DueWanted"));
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_HowToPay"));
+			outLines.Insert(LF_Terms.Text("#LF-Ticket_DueWanted"));
+			outLines.Insert(LF_Terms.Text("#LF-Ticket_HowToPay"));
 		}
 
 		string rank = WidgetManager.Translate("#" + LF_PoliceRanks.TitleKey(m_iOfficerRank));

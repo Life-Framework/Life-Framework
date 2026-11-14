@@ -17,7 +17,7 @@ class LF_CaseBoardActionBase : ScriptedUserAction
 	{
 		if (!LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user)))
 		{
-			SetCannotPerformReason("#LF-Evidence_OnDutyOnly");
+			SetCannotPerformReason(LF_Terms.Text("#LF-Evidence_OnDutyOnly"));
 			return false;
 		}
 

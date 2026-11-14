@@ -142,10 +142,10 @@ class LF_OrgLedger
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, "#LF-Org_LedgerTitle"));
 		if (!page || !page.m_bHasOrg)
 		{
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_INTRO, WidgetManager.Translate("#LF-Org_FoundIntro", LF_OrgConfig.FoundingFee())));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_INTRO, LF_Terms.Text("#LF-Org_FoundIntro", LF_OrgConfig.FoundingFee().ToString())));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_NAME, "#LF-Org_NameField"));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_NOTICE, ""));
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_FOUND, WidgetManager.Translate("#LF-Org_FoundButton", LF_OrgConfig.FoundingFee())));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_FOUND, LF_Terms.Text("#LF-Org_FoundButton", LF_OrgConfig.FoundingFee().ToString())));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, PART_CLOSE, "#LF-Org_CloseLedger"));
 			return parts;
 		}

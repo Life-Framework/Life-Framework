@@ -152,7 +152,7 @@ class LF_JobStartRunAction : ScriptedUserAction
 		if (refusal.IsEmpty())
 			return true;
 
-		SetCannotPerformReason(refusal);
+		SetCannotPerformReason(LF_Terms.Text(refusal));
 		return false;
 	}
 
