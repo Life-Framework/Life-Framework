@@ -120,6 +120,9 @@ class LF_JobManager : Managed
 		if (amount <= 0 || !user)
 			return;
 
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "job reward"))
+			return;
+
 		// Cash is the only payout; the bank balance moves only through the ATM.
 		int paid = LF_MoneyUtils.GiveCash(user, amount, "job-pay");
 		if (paid != amount)

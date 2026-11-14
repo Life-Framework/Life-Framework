@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "test": "node scripts/configgen-selftest.mjs",
     "content": "node scripts/build-content.mjs",
     "snapshot": "node scripts/build-content.mjs --update-snapshot",
     "dev": "npm run content && vite",

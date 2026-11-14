@@ -172,6 +172,9 @@ class LF_Witness
 	//! Server: a crime report was filed. Records the scene and everyone in sight of the suspect.
 	static LF_WitnessScene RecordCrime(int report, string suspectUid, string offence, IEntity suspect, string clothing, string vehicle, string place)
 	{
+		if (LF_Systems.Refuses("Investigation", "witness scene"))
+			return null;
+
 		if (!Replication.IsServer() || !suspect)
 			return null;
 

@@ -310,6 +310,9 @@ class LF_PlayerJobComponent : ScriptComponent
 		if (!Replication.IsServer() && Replication.IsRunning())
 			return false;
 
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "job request"))
+			return false;
+
 		IEntity owner = GetOwner();
 		if (!owner)
 		{
@@ -670,6 +673,9 @@ class LF_PlayerJobComponent : ScriptComponent
 		if (!Replication.IsServer() && Replication.IsRunning())
 			return 0;
 
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "fruit catcher round"))
+			return 0;
+
 		if (m_eCurrentJob != LF_EJobType.FARMER)
 		{
 			LF_Debug.Warn("Jobs", string.Format("fruit round refused: caller holds %1, not FARMER", typename.EnumToString(LF_EJobType, m_eCurrentJob)));
@@ -734,6 +740,9 @@ class LF_PlayerJobComponent : ScriptComponent
 	int ClaimFruitCatcherReward(int roundId, int score, EHarvestJobType jobType)
 	{
 		if (!Replication.IsServer() && Replication.IsRunning())
+			return 0;
+
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "fruit catcher reward"))
 			return 0;
 
 		if (m_eCurrentJob != LF_EJobType.FARMER)

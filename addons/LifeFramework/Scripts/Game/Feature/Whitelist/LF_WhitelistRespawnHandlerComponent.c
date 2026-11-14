@@ -23,6 +23,14 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 			return;
 		}
 
+		// Whitelist off (#1074): the join gate is open and nobody is added to a list.
+		if (!LF_Systems.IsEnabled(LF_WhitelistManager.SYSTEM))
+		{
+			LF_Debug.Log("Whitelist", string.Format("join allowed: uuid=%1 (Whitelist is off)", LF_Utils.GetAccountUID(playerId)));
+			super.OnPlayerAuditSuccess(playerId);
+			return;
+		}
+
 		if (WhitelistExists(LF_WhitelistType.CONNECT) && !ConnectGateLoaded())
 		{
 			LF_Debug.Warn("Whitelist", "CONNECT whitelist configured but its file is missing/empty - join gate disabled (fail-safe)");

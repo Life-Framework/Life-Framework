@@ -31,37 +31,9 @@
   "asset_dir": "Assets/Items/Roleplay/Lockpick",
   "prefab_dir": "Prefabs/Items/Roleplay/Lockpick",
   "materials": {
-    "default": "leather",
-    "regions": [
-      {
-        "class": "pick_metal",
-        "metallic_above": 0.5
-      }
-    ],
-    "classes": {
-      "leather": {
-        "rough": [
-          0.55,
-          0.9
-        ],
-        "metal": [
-          0,
-          0
-        ],
-        "base_scale": 1
-      },
-      "pick_metal": {
-        "rough": [
-          0.45,
-          0.7
-        ],
-        "metal": [
-          0.55,
-          0.8
-        ],
-        "base_scale": 0.9
-      }
-    }
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
   },
   "states": {
     "prefab": "Prefabs/Items/Fence/LF_Lockpick.et",
@@ -89,6 +61,16 @@
     }
   },
   "source": {
-    "blender": "model.py"
+    "blender": "model.py",
+    "textures": [
+      {
+        "id": "Metal038",
+        "use": "pick and wrench steel: scratches and roughness"
+      },
+      {
+        "id": "Leather014",
+        "use": "wallet: worn brown leather grain, scuffs and pores"
+      }
+    ]
   }
 }

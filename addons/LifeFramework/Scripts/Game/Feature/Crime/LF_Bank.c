@@ -635,6 +635,9 @@ class LF_Bank
 			return false;
 		}
 
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "vault robbery of " + vaultId))
+			return false;
+
 		if (!GatesPass(vault, playerUid))
 			return false;
 
@@ -921,6 +924,10 @@ class LF_Bank
 	//------------------------------------------------------------------------------------------------
 	protected static void SpawnWave(LF_BankVaultState vault)
 	{
+		// A drill or fuse that finishes after Robbery went off ends without loot (#1073).
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "vault loot at " + vault.m_sVaultId))
+			return;
+
 		int count = CappedBagCount(vault.m_iBagCount, vault.m_iBagCount);
 		if (count <= 0 || vault.m_iCashPerBag <= 0)
 		{

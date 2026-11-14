@@ -7,6 +7,9 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!GetOwner())
 			return false;
 
@@ -28,6 +31,9 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_ArmoryDrawAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -75,6 +81,9 @@ class LF_RankPromoteAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!GetOwner())
 			return false;
 
@@ -96,6 +105,9 @@ class LF_RankPromoteAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_RankPromoteAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

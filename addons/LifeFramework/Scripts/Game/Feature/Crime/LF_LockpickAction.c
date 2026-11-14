@@ -28,6 +28,9 @@ class LF_LockpickAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		// A door or a vehicle: the #412 vehicle case was lost once in a merge with the door-only check.
 		return LF_Lockpick.ShowsPick(GetOwner());
 	}
@@ -46,6 +49,9 @@ class LF_LockpickAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_LockpickAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

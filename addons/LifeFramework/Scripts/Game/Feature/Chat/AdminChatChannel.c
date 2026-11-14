@@ -85,6 +85,9 @@ class AdminChatChannel : BaseChatChannel
 	//------------------------------------------------------------------------------------------------
 	override bool IsAvailable(BaseChatComponent sender)
 	{
+		if (!LF_Systems.IsEnabled("Chat"))
+			return false;
+
 		return IsAdminSender(sender);
 	}
 

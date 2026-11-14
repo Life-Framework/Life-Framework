@@ -257,6 +257,9 @@ class LF_FineTicketPayAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		return LF_FineTicketItem.FirstUnpaid(user) != null;
 	}
 
@@ -288,6 +291,9 @@ class LF_FineTicketPayAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_FineTicketPayAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
