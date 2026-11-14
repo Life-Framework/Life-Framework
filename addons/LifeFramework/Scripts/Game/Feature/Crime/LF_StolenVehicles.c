@@ -178,6 +178,13 @@ class LF_StolenVehicles
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The GUID the wanted board draws a stolen vehicle from; empty when the vehicle has no prefab.
+	static string PrefabGuidOf(IEntity vehicle)
+	{
+		return LF_WantedLook.GuidOf(LF_Utils.GetPrefabName(vehicle));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the owner reports their vehicle stolen. Refusals log and toast the reporter.
 	static LF_EStolenReportCheck Report(IEntity vehicle, IEntity reporter)
 	{
@@ -209,8 +216,8 @@ class LF_StolenVehicles
 		}
 
 		LF_StolenReport filed = FileReport(vehicleId, PlateOf(vehicle), LF_VehicleOwnership.GetNameKey(vehicleId), ownerUid, LF_WantedReports.DescribePlace(vehicle.GetOrigin()));
-		if (filed && vehicle.GetPrefabData())
-			filed.m_sPrefabGuid = LF_WantedLook.GuidOf(vehicle.GetPrefabData().GetPrefabName());
+		if (filed)
+			filed.m_sPrefabGuid = PrefabGuidOf(vehicle);
 		LF_Utils.NotifyEntity(reporter, "#LF-Stolen_Reported", "#LF-Stolen_Title", 4.0);
 		return check;
 	}
