@@ -376,7 +376,11 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   within 180 s, counts as down too: the run prints one line (`pool: <machine>:
   <reason>; <machine> marked down for this run, falling back to <next>`), does
   not retry that machine, and takes the next machine or this PC. `pool status`
-  bounds each probe at 12 s and prints `DOWN`. A waiting run prints one line
+  bounds each probe at 12 s (a machine that answered in the last 5 min gets a
+  second, 30 s probe). One missed answer is not DOWN: a machine that answered
+  within 5 min stays in use and `pool status` prints `slow (last answer N s ago,
+  M misses)`; DOWN needs 3 misses in a row over at least 90 s, or a miss with no
+  answer in the last 5 min, or a run that lost its machine mid-run. A waiting run prints one line
   when it queues and one when it gets its slot, nothing in between. A machine whose server Steam build differs from this PC's is skipped
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
