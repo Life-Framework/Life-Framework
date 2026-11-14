@@ -319,9 +319,17 @@ modded class SCR_ChimeraCharacter
 		{
 			if (account.IsOnDuty())
 			{
-				account.StopDutyClock();
-				account.SetOnDuty(false);
-				duty = 1;
+				// The real clock-out hands the civilian inventory back (the duty radio and kit go with the shift).
+				if (LF_DutyLocker.ClockOut(account, this, account.GetFaction()).IsEmpty())
+				{
+					duty = 1;
+				}
+				else
+				{
+					account.StopDutyClock();
+					account.SetOnDuty(false);
+					duty = 2;
+				}
 			}
 			account.SetFaction(LF_Faction.CIVILIAN);
 		}
