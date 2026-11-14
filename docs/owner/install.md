@@ -23,7 +23,7 @@ Copy [`docs/playtest/server-config.example.json`](../playtest/server-config.exam
 | Key | Set it to |
 |---|---|
 | `game.name` | your server's name in the browser |
-| `game.passwordAdmin` | an admin password with no spaces; log in in game with `#login <password>` |
+| `game.passwordAdmin` | an admin password with no spaces; in game, log in with `#login <password>` |
 | `game.password` | a join password, or leave it empty |
 | `bindPort`, `publicPort`, `a2s.port` | other ports when 2001 and 17777 are taken |
 | `game.maxPlayers` | up to 16 on the playtest town |
