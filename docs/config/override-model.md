@@ -95,6 +95,7 @@ LF_ItemCatalogueConfig {
 | `catalogue` | `items` | item id (`pistol_m9`) |
 | `catalogue` | `offers` | `outlet/item` (`gun_counter/pistol_m9`) |
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
+| `ui-theme` | `themes` | theme id (`paper`, `id-card`, `terminal`, `price-list`). Pack overlays only: no owner section, a look is a pack's job (`docs/architecture/ui-theme.md`) |
 | `shops` | `priceRules` | `prefab:<GUID>`, a prefab-path substring, or `type:<flags>,mode:<mode>` (`type:64` is `type:64,mode:2`). Two core rules can share a key; a layer addresses the last one, the one that wins the walk |
 
 The catalogue's `removed: true` is a field, not a verb: it hides an entry and a later layer can set

@@ -157,6 +157,12 @@ check(kit.problems([lay("addons/LifeFramework/UI/Layouts/Shop/NewMenu.layout")],
 check(kit.problems([lay("addons/LifeFramework/UI/Layouts/Police/Face.layout", FONT(kit.THEME_FONTS[0]))], base).length === 0, "an exception in the theme font was refused");
 check(kit.problems([lay("addons/LifeFramework/UI/Layouts/Police/Face.layout", FONT("{1111111111111111}"))], base).some((p) => p.includes("uses font")), "an exception with a foreign font was accepted");
 
+const kitScript = (name, text) => ({ path: `addons/LifeFramework/Scripts/Game/Feature/UIKit/${name}`, text });
+const NL = String.fromCharCode(10);
+check(kit.colorProblems([kitScript("LF_UISkin.c", "skin.m_Paper = Color.FromSRGBA(238, 230, 212, 255);")]).length === 1, "a colour literal in a kit script was accepted");
+check(kit.colorProblems([kitScript("LF_UIScreen.c", ["// Color.FromSRGBA(1, 2, 3, 4) in a comment", "x = Color.FromSRGBA(r, g, b, 255);", "c = Color.FromSRGBA(0, 0, 0, 0);"].join(NL))]).length === 0, "a comment, a variable colour or a transparent colour was refused");
+check(kit.colorProblems([kitScript("LF_UITheme.c", "x = Color.FromSRGBA(0, 0, 0, 255);")]).length === 0, "the theme's own script was refused a literal");
+
 if (failures.length) {
   console.log("agent-quality-selftest: FAIL");
   for (const f of failures) console.log(`  ${f}`);

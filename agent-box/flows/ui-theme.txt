@@ -1,0 +1,23 @@
+# Theme before and after in one session (#966): the flagship's 1989 sheet and cash machine, then
+# the same two with the test pack's theme (Configs/Tests/LF_Test_UIThemePack.conf: cold blue paper,
+# teal rule and accent, orange focus, cyan terminal). Nothing in the world opens these sheets.
+ui
+kit theme flagship
+kit show
+wait 800
+shot ui theme-flagship-sheet
+kit hide
+kit terminal
+wait 800
+shot ui theme-flagship-terminal
+kit hide
+kit theme testpack
+kit show
+wait 800
+shot ui theme-pack-sheet
+kit hide
+kit terminal
+wait 800
+shot ui theme-pack-terminal
+kit hide
+kit theme flagship

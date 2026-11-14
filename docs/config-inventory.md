@@ -6,10 +6,10 @@ fails on a tunable constant that is neither baselined nor marked fixed (#277).
 
 ## Counts
 
-- Config roots (a `.conf` file whose root class is script-defined): **26**
-- Config attributes (`[Attribute(` in the root's script file): **286**
-- Numeric constants in `Feature/`: **409**; tunable **241**, fixed **68**, unclassified **100**
-- Tunables that are config defaults or marked `// lf-fixed:`: **78**; baselined debt for #284: **163**
+- Config roots (a `.conf` file whose root class is script-defined): **39**
+- Config attributes (`[Attribute(` in the root's script file): **485**
+- Numeric constants in `Feature/`: **646**; tunable **424**, fixed **93**, unclassified **129**
+- Tunables that are config defaults or marked `// lf-fixed:`: **268**; baselined debt for #284: **156**
 
 A constant is **tunable** when its name holds a time, range, price, cap or rate word
 (`_MS`, `_RADIUS`, `_FINE`, `MAX_`, ...). It is **fixed** when it holds a structural word
@@ -22,16 +22,23 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 |---|---|---|---|---|---|
 | `LF_CharacterConfig` | persistence | core | 3 | `Configs/Account/LF_Characters.conf` | `Scripts/Game/Feature/Account/LF_CharacterConfig.c` |
 | `LF_ChopShopConfig` | crime | core | 15 | `Configs/Crime/LF_ChopShop.conf` | `Scripts/Game/Feature/Crime/LF_ChopShop.c` |
-| `LF_EvidenceConfig` | crime | core | 6 | `Configs/Investigation/LF_Evidence.conf` | `Scripts/Game/Feature/Investigation/LF_EvidenceConfig.c` |
+| `LF_CleanupConfig` | unrouted | core | 8 | `Configs/World/LF_CleanupConfig.conf` | `Scripts/Game/Feature/World/LF_Cleanup.c` |
+| `LF_CrimeCatalogConfig` | crime | core | 7 | `Configs/Crime/LF_CrimeCatalog.conf` | `Scripts/Game/Feature/Crime/LF_CrimeCatalog.c` |
+| `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Dialogue/LF_Dialogue_Clerk.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
+| `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Dialogue/LF_Dialogue_FuelClerk.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
+| `LF_EvidenceConfig` | crime | core | 7 | `Configs/Investigation/LF_Evidence.conf` | `Scripts/Game/Feature/Investigation/LF_EvidenceConfig.c` |
 | `LF_GarageConfig` | vehicles | split | 5 | `Configs/Vehicles/LF_Garage.conf` | `Scripts/Game/Feature/Vehicles/LF_Garage.c` |
 | `LF_IncidentConfig` | zones | core | 16 | `Configs/Moderation/LF_Incident.conf` | `Scripts/Game/Feature/Moderation/LF_IncidentConfig.c` |
-| `LF_JobsConfig` | jobs | split | 8 | `Configs/Jobs/LF_Jobs.conf` | `Scripts/Game/Feature/Jobs/LF_JobsConfig.c` |
+| `LF_ItemCatalogueConfig` | unrouted | core | 19 | `Configs/Catalogue/LF_ItemCatalogue.conf` | `Scripts/Game/Feature/Catalogue/LF_ItemCatalogueConfig.c` |
+| `LF_JobsConfig` | jobs | split | 20 | `Configs/Jobs/LF_Jobs.conf` | `Scripts/Game/Feature/Jobs/LF_JobsConfig.c` |
 | `LF_LedgerConfig` | shops | core | 4 | `Configs/Money/LF_Ledger.conf` | `Scripts/Game/Feature/Money/LF_LedgerConfig.c` |
-| `LF_MedicConfig` | jobs | core | 35 | `Configs/Medic/LF_Medic.conf` | `Scripts/Game/Feature/Medic/LF_MedicConfig.c` |
-| `LF_MissionHeader` | unrouted | core | 5 | `Configs/Tests/LF_Test_PackHeader.conf` | `Scripts/Game/Core/LF_MissionHeader.c` |
-| `LF_OrgConfig` | jobs | core | 9 | `Configs/Organizations/LF_Org.conf` | `Scripts/Game/Feature/Organizations/LF_OrgConfig.c` |
+| `LF_MedicConfig` | jobs | core | 36 | `Configs/Medic/LF_Medic.conf` | `Scripts/Game/Feature/Medic/LF_MedicConfig.c` |
+| `LF_MissionHeader` | unrouted | core | 6 | `Configs/Tests/LF_Test_PackHeader.conf` | `Scripts/Game/Core/LF_MissionHeader.c` |
+| `LF_OrgConfig` | jobs | core | 20 | `Configs/Organizations/LF_Org.conf` | `Scripts/Game/Feature/Organizations/LF_OrgConfig.c` |
 | `LF_PerfBudget` | unrouted | core | 12 | `Configs/Perf/LF_PerfBudget.conf` | `Scripts/Game/Core/LF_PerfBudget.c` |
-| `LF_PoliceConfig` | crime | split | 35 | `Configs/Police/LF_Police.conf` | `Scripts/Game/Feature/Police/LF_PoliceConfig.c` |
+| `LF_PhoneConfig` | unrouted | core | 10 | `Configs/Comms/LF_Phone.conf` | `Scripts/Game/Feature/Comms/LF_PhoneConfig.c` |
+| `LF_PhotoIdCardConfig` | unrouted | core | 2 | `Configs/Identity/LF_PhotoIdCard.conf` | `Scripts/Game/Feature/Identity/LF_PhotoIdCardConfig.c` |
+| `LF_PoliceConfig` | crime | split | 39 | `Configs/Police/LF_Police.conf` | `Scripts/Game/Feature/Police/LF_PoliceConfig.c` |
 | `LF_ResourceChainConfig` | unrouted | core | 12 | `Configs/Resources/ResourceChains.conf` | `Scripts/Game/Feature/Resources/LF_ResourceChainCatalog.c` |
 | `LF_RespawnConfig` | persistence | split | 5 | `Configs/Spawning/LF_Respawn.conf` | `Scripts/Game/Feature/Character/Spawning/LF_RespawnConfig.c` |
 | `LF_ServiceCallsConfig` | unrouted | core | 13 | `Configs/Comms/LF_ServiceCalls.conf` | `Scripts/Game/Feature/Comms/LF_ServiceCalls.c` |
@@ -42,60 +49,75 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | `LF_SignConfig` | zones | core | 10 | `Configs/Signs/LF_Signs.conf` | `Scripts/Game/Feature/Signs/LF_SignCatalog.c` |
 | `LF_SpawnHubConfig` | unrouted | core | 3 | `Configs/Debug/LF_SpawnHub.conf` | `Scripts/Game/Feature/Debug/LF_SpawnHub.c` |
 | `LF_SurvivalConfig` | unrouted | split | 9 | `Configs/Survival/LF_Survival.conf` | `Scripts/Game/Feature/Survival/LF_SurvivalConfig.c` |
+| `LF_SystemCatalog` | unrouted | core | 11 | `Configs/Systems/LF_SystemCatalog.conf` | `Scripts/Game/Feature/Systems/LF_Systems.c` |
+| `LF_SystemsConfig` | unrouted | core | 11 | `Configs/Tests/LF_Test_SystemsOverlay.conf` | `Scripts/Game/Feature/Systems/LF_Systems.c` |
+| `LF_UIThemeConfig` | unrouted | core | 20 | `Configs/Tests/LF_Test_UIThemePack.conf` | `Scripts/Game/Feature/UIKit/LF_UIThemeConfig.c` |
+| `LF_UIThemeConfig` | unrouted | core | 20 | `Configs/UI/LF_UITheme.conf` | `Scripts/Game/Feature/UIKit/LF_UIThemeConfig.c` |
 | `LF_VehiclePricesConfig` | vehicles | core | 15 | `Configs/Vehicles/LF_VehiclePrices.conf` | `Scripts/Game/Feature/Vehicles/LF_VehiclePrices.c` |
 | `LF_VehicleSettings` | unrouted | core | 1 | `Configs/Vehicles/VehicleSettings.conf` | `Scripts/Game/Configs/LF_VehicleSettings.c` |
+| `LF_WantedPostersConfig` | crime | core | 3 | `Configs/Police/LF_WantedPosters.conf` | `Scripts/Game/Feature/Police/LF_WantedPostersConfig.c` |
 | `LF_WitnessConfig` | crime | core | 11 | `Configs/Investigation/LF_Witness.conf` | `Scripts/Game/Feature/Investigation/LF_WitnessConfig.c` |
 | `LF_ZoneConfig` | zones | core | 16 | `Configs/Moderation/LF_Zones.conf` | `Scripts/Game/Feature/Moderation/LF_Zones.c` |
+| `LF_ZoneConfig` | zones | core | 16 | `Configs/Tests/LF_Test_ZoneRulesOff.conf` | `Scripts/Game/Feature/Moderation/LF_Zones.c` |
 
 ## Tunable constants by section
 
 | Section | Tunable | Baselined debt |
 |---|---|---|
-| jobs | 49 | 40 |
+| jobs | 77 | 37 |
 | shops | 24 | 13 |
-| crime | 93 | 57 |
+| crime | 180 | 54 |
 | licences | 3 | 3 |
 | vehicles | 12 | 7 |
-| zones | 16 | 8 |
-| persistence | 14 | 9 |
-| unrouted | 30 | 26 |
+| zones | 18 | 8 |
+| persistence | 17 | 8 |
+| unrouted | 93 | 26 |
 
 ## Tunable constants by feature area
 
 | Area | Section | Tunable | Baselined debt |
 |---|---|---|---|
 | ATM | shops | 3 | 3 |
-| Account | persistence | 6 | 1 |
-| AgentHarness | unrouted | 6 | 3 |
+| Account | persistence | 7 | 1 |
+| AgentHarness | unrouted | 13 | 3 |
+| AssetAnim | unrouted | 1 | 0 |
+| Atmosphere | unrouted | 2 | 0 |
+| Catalogue | unrouted | 4 | 0 |
 | Chains | jobs | 8 | 8 |
 | Character | persistence | 6 | 6 |
-| CharacterCreation | persistence | 2 | 2 |
-| Comms | unrouted | 5 | 5 |
-| Crime | crime | 35 | 35 |
-| Debug | unrouted | 3 | 2 |
+| CharacterCreation | persistence | 4 | 1 |
+| Comms | unrouted | 17 | 5 |
+| Crime | crime | 48 | 32 |
+| Debug | unrouted | 5 | 2 |
+| Dialogue | unrouted | 17 | 0 |
 | Farming | jobs | 1 | 1 |
 | Film | unrouted | 7 | 7 |
 | Gathering | jobs | 1 | 1 |
 | Hideouts | crime | 1 | 1 |
+| Identity | unrouted | 8 | 0 |
 | Interaction | unrouted | 5 | 5 |
-| Investigation | crime | 20 | 4 |
-| Jobs | jobs | 10 | 10 |
+| Investigation | crime | 26 | 4 |
+| Jobs | jobs | 27 | 7 |
+| Level | unrouted | 4 | 0 |
 | LicensePlate | licences | 3 | 3 |
-| Medic | jobs | 13 | 12 |
+| Medic | jobs | 15 | 12 |
 | Mining | jobs | 2 | 2 |
-| Moderation | zones | 10 | 2 |
+| Moderation | zones | 12 | 2 |
 | Money | shops | 5 | 1 |
-| Organizations | jobs | 9 | 1 |
-| Police | crime | 37 | 17 |
+| Npc | unrouted | 1 | 0 |
+| Organizations | jobs | 18 | 1 |
+| Police | crime | 105 | 17 |
 | Quantity | unrouted | 1 | 1 |
 | Quests | jobs | 5 | 5 |
 | Shop | shops | 16 | 9 |
 | Signs | zones | 6 | 6 |
 | SirenLights | vehicles | 2 | 2 |
+| Systems | unrouted | 1 | 0 |
 | Toys | unrouted | 1 | 1 |
 | UIKit | unrouted | 2 | 2 |
 | VehicleLock | vehicles | 1 | 1 |
 | Vehicles | vehicles | 9 | 4 |
+| World | unrouted | 4 | 0 |
 
 ## Tunable constants
 
@@ -110,14 +132,29 @@ Owner is core for every row until the M3 move.
 | `Account/LF_CharacterConfig.c` | `DEFAULT_MAX_PER_ACCOUNT` | `1` | persistence | config default |
 | `Account/LF_CharacterConfig.c` | `DEFAULT_MIN_AGE` | `18` | persistence | config default |
 | `Account/LF_CharacterConfig.c` | `DEFAULT_MAX_AGE` | `80` | persistence | config default |
+| `Account/LF_PlayerIdentity.c` | `LISTEN_WAIT_MS` | `30000` | persistence | fixed (marked) |
 | `Account/LF_Playtime.c` | `TICK_SECONDS` | `15` | persistence | fixed (marked) |
 | `Account/LF_Playtime.c` | `MAX_CREDIT_SECONDS` | `300` | persistence | fixed (marked) |
 | `AgentHarness/LF_AgentHarness.c` | `UI_TEXT_MAX` | `80` | unrouted | to move (#284) |
+| `AgentHarness/LF_AgentHarness.c` | `STAND_CAPSULE_RADIUS` | `0.4` | unrouted | fixed (marked) |
+| `AgentHarness/LF_AgentHarness.c` | `STAND_MAX_STEP` | `0.6` | unrouted | fixed (marked) |
 | `AgentHarness/LF_AgentHarness.c` | `PART_REACH` | `1.5` | unrouted | to move (#284) |
+| `AgentHarness/LF_AgentHarness.c` | `STAND_REMEMBER_MS` | `15000` | unrouted | fixed (marked) |
 | `AgentHarness/LF_AgentHarness_Character.c` | `LF_HARNESS_POSE_SAFE_MS` | `8000` | unrouted | to move (#284) |
+| `AgentHarness/LF_AgentHarness_Perf.c` | `MAX_SECONDS` | `60` | unrouted | fixed (marked) |
+| `AgentHarness/LF_AgentHarness_Perf.c` | `MAX_SAMPLES` | `20000` | unrouted | fixed (marked) |
 | `AgentHarness/LF_AgentHarness_Seen.c` | `DEFAULT_RADIUS` | `12` | unrouted | fixed (marked) |
 | `AgentHarness/LF_AgentHarness_Seen.c` | `MAX_RADIUS` | `60` | unrouted | fixed (marked) |
 | `AgentHarness/LF_AgentHarness_Seen.c` | `MAX_ENTRIES` | `8` | unrouted | fixed (marked) |
+| `AgentHarness/LF_ParkBrakeHarness.c` | `WAKE_MS` | `1000` | unrouted | fixed (marked) |
+| `AgentHarness/LF_SpikeStripHarness.c` | `SPEED` | `14` | unrouted | fixed (marked) |
+| `AssetAnim/LF_AssetAnimComponent.c` | `SOUND_RETRY_MS` | `2000` | unrouted | fixed (marked) |
+| `Atmosphere/LF_AmbientFuelPump.c` | `REACH_M` | `8` | unrouted | fixed (marked) |
+| `Atmosphere/LF_Atmosphere.c` | `TICK_MS` | `500` | unrouted | fixed (marked) |
+| `Catalogue/LF_ItemCatalogueConfig.c` | `PRICE_MIN` | `0` | unrouted | fixed (marked) |
+| `Catalogue/LF_ItemCatalogueConfig.c` | `PRICE_MAX` | `1000000` | unrouted | fixed (marked) |
+| `Catalogue/LF_ItemCatalogueConfig.c` | `RANK_MIN` | `0` | unrouted | fixed (marked) |
+| `Catalogue/LF_ItemCatalogueConfig.c` | `RANK_MAX` | `100` | unrouted | fixed (marked) |
 | `Chains/LF_ChainCatalog.c` | `MAX_TIER` | `5` | jobs | to move (#284) |
 | `Chains/LF_ChainSearch.c` | `BASE_CHANCE` | `0.3` | jobs | to move (#284) |
 | `Chains/LF_ChainSearch.c` | `CHANCE_PER_LOAD` | `0.2` | jobs | to move (#284) |
@@ -133,15 +170,41 @@ Owner is core for every row until the M3 move.
 | `Character/Spawning/LF_HospitalRespawn.c` | `MAX_WAIT_TRIES` | `40` | persistence | to move (#284) |
 | `Character/Spawning/LF_SpawnLogic.c` | `MAX_REGISTER_RETRIES` | `60` | persistence | to move (#284) |
 | `CharacterCreation/LF_CharacterCreationManager.c` | `FLOW_POLL_DELAY_MS` | `100` | persistence | to move (#284) |
-| `CharacterCreation/LF_IdCardView.c` | `CLOSE_DISTANCE` | `4` | persistence | to move (#284) |
+| `CharacterCreation/LF_CharacterCreationManager.c` | `IDENTITY_POLL_MS` | `500` | persistence | fixed (marked) |
+| `CharacterCreation/LF_CharacterCreationManager.c` | `IDENTITY_NOTICE_MS` | `3000` | persistence | fixed (marked) |
+| `CharacterCreation/LF_CharacterCreationManager.c` | `IDENTITY_GIVE_UP_MS` | `60000` | persistence | fixed (marked) |
+| `Comms/LF_PhoneCalls.c` | `TICK_MS` | `1000` | unrouted | fixed (marked) |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_RING_SECONDS` | `30` | unrouted | config default |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_RING_PULSE_SECONDS` | `4` | unrouted | config default |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_CORD_METERS` | `6` | unrouted | config default |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_MAX_CALL_SECONDS` | `600` | unrouted | config default |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_CALL_BACK_OFFER_SECONDS` | `120` | unrouted | config default |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_MESSAGE_MAX_CHARS` | `120` | unrouted | config default |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_MAX_CALL_BACKS` | `20` | unrouted | config default |
+| `Comms/LF_PhoneConfig.c` | `DEFAULT_VOICE_TRANSPORT` | `0` | unrouted | config default |
+| `Comms/LF_PhoneVoice.c` | `BAND_MIN` | `100000` | unrouted | fixed (marked) |
+| `Comms/LF_PhoneVoice.c` | `BAND_MAX` | `165000` | unrouted | fixed (marked) |
+| `Comms/LF_PhoneVoiceClient.c` | `ATTACH_RETRY_MS` | `250` | unrouted | fixed (marked) |
 | `Comms/LF_ServiceCalls.c` | `DEFAULT_PAYPHONE_COST` | `1` | unrouted | to move (#284) |
 | `Comms/LF_ServiceCalls.c` | `DEFAULT_PLAYER_COOLDOWN` | `60` | unrouted | to move (#284) |
 | `Comms/LF_ServiceCalls.c` | `DEFAULT_PHONE_COOLDOWN` | `30` | unrouted | to move (#284) |
 | `Comms/LF_ServiceCalls.c` | `DEFAULT_BOARD_EXPIRY` | `900` | unrouted | to move (#284) |
 | `Comms/LF_ServiceCalls.c` | `DEFAULT_PAGER_MESSAGES` | `5` | unrouted | to move (#284) |
+| `Crime/LF_BreachTargetComponent.c` | `SWING_SECONDS` | `3.0` | crime | fixed (marked) |
+| `Crime/LF_BreachTargetComponent.c` | `SWING_SETTLE_MS` | `2000` | crime | fixed (marked) |
+| `Crime/LF_BreachTargetComponent.c` | `SWING_STEP_MS` | `16` | crime | fixed (marked) |
 | `Crime/LF_ChopShop.c` | `FALLBACK_CAP` | `3000` | crime | to move (#284) |
 | `Crime/LF_ChopShop.c` | `FALLBACK_COOLDOWN` | `300` | crime | to move (#284) |
 | `Crime/LF_Contraband.c` | `DROP_RADIUS_M` | `25` | crime | to move (#284) |
+| `Crime/LF_CrimeCatalog.c` | `WANTED_MIN` | `0` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `WANTED_MAX` | `5` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `FINE_MIN` | `0` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `FINE_MAX` | `1000000` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `SENTENCE_MIN` | `0` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `SENTENCE_MAX` | `86400` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `THRESHOLD_MIN` | `0` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `THRESHOLD_MAX` | `1000` | crime | fixed (marked) |
+| `Crime/LF_CrimeCatalog.c` | `UNKNOWN_WANTED` | `1` | crime | fixed (marked) |
 | `Crime/LF_Hospital.c` | `DEFAULT_PAYOUT` | `200` | crime | to move (#284) |
 | `Crime/LF_Hospital.c` | `DEFAULT_COOLDOWN` | `60` | crime | to move (#284) |
 | `Crime/LF_Hotwire.c` | `BASE_SECONDS` | `15` | crime | to move (#284) |
@@ -166,14 +229,37 @@ Owner is core for every row until the M3 move.
 | `Crime/LF_Lockpick.c` | `MIN_NOISE` | `0.15` | crime | to move (#284) |
 | `Crime/LF_Lockpick.c` | `TICK_SECONDS` | `0.5` | crime | to move (#284) |
 | `Crime/LF_Lockpick.c` | `MAX_DISTANCE` | `4` | crime | to move (#284) |
+| `Crime/LF_RobHold.c` | `TILL_REACH` | `8.0` | crime | fixed (marked) |
+| `Crime/LF_RobHold.c` | `TICK_MS` | `250` | crime | fixed (marked) |
+| `Crime/LF_RobHoldHud.c` | `TICK_MS` | `100` | crime | fixed (marked) |
+| `Crime/LF_RobHoldHud.c` | `RESULT_SHOW_MS` | `5000` | crime | fixed (marked) |
 | `Crime/LF_WorkAnim.c` | `MAX_RANGE` | `5` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `SLACK_SECONDS` | `2` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `DRILL_SECONDS` | `6` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `WATCH_MS` | `400` | crime | to move (#284) |
 | `Crime/LF_WorkAnim.c` | `CHECK_MS` | `1500` | crime | to move (#284) |
 | `Debug/LF_DebugMenu.c` | `ACTION_DEBOUNCE_MS` | `150` | unrouted | to move (#284) |
+| `Debug/LF_DebugMenu.c` | `RESET_CONFIRM_MS` | `5000` | unrouted | fixed (marked) |
 | `Debug/LF_SpawnHub.c` | `GLOBE_RANGE` | `6.0` | unrouted | fixed (marked) |
+| `Debug/LF_SpawnHub.c` | `CONFIRM_MS` | `5000` | unrouted | fixed (marked) |
 | `Debug/LF_SpawnHub.c` | `CLOSE_RANGE` | `4.0` | unrouted | to move (#284) |
+| `Dialogue/LF_Dialogue.c` | `REACH` | `4.0` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueCamera.c` | `EASE_SECONDS` | `0.8` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueConfig.c` | `MAX_OPTIONS` | `4` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueConfig.c` | `SILENT_SECONDS_PER_CHAR` | `0.06` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueConfig.c` | `SILENT_SECONDS_MIN` | `2.0` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueMouth.c` | `ATTACK_SECONDS` | `0.04` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueMouth.c` | `RELEASE_SECONDS` | `0.1` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueMouth.c` | `MAX_OPEN` | `0.85` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueMouth.c` | `NOD_SECONDS` | `0.3` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueMouth.c` | `BLINK_SECONDS` | `0.16` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueMouth.c` | `BLINK_GAP_MIN` | `2.2` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueMouth.c` | `BLINK_GAP_MAX` | `5.0` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueScene.c` | `INPUT_GUARD_MS` | `350` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueScene.c` | `ANSWER_TIMEOUT_MS` | `5000` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueScene.c` | `LINE_TAIL_MS` | `300` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueTalkAction.c` | `SHOW_RANGE` | `3.0` | unrouted | fixed (marked) |
+| `Dialogue/LF_DialogueVoice.c` | `GAP_SECONDS` | `0.35` | unrouted | fixed (marked) |
 | `Farming/LF_FarmPlots.c` | `TICK_MS` | `1000` | jobs | to move (#284) |
 | `Film/LF_FilmActor.c` | `STUCK_SECONDS` | `6` | unrouted | to move (#284) |
 | `Film/LF_FilmActor.c` | `TICK_MS` | `100` | unrouted | to move (#284) |
@@ -184,11 +270,24 @@ Owner is core for every row until the M3 move.
 | `Film/LF_FilmRecorder.c` | `DEFAULT_MAX_SECONDS` | `300` | unrouted | to move (#284) |
 | `Gathering/LF_MiningArea.c` | `MIN_TO_MS` | `60000` | jobs | to move (#284) |
 | `Hideouts/LF_HideoutStashPlayerController.c` | `LF_STASH_REACH` | `5.0` | crime | to move (#284) |
+| `Identity/LF_IdCardView.c` | `CLOSE_DISTANCE` | `4` | unrouted | fixed (marked) |
+| `Identity/LF_IdCheck.c` | `REQUEST_SECONDS` | `30` | unrouted | fixed (marked) |
+| `Identity/LF_PhotoIdCardConfig.c` | `DEFAULT_FEE` | `50` | unrouted | config default |
+| `Identity/LF_PhotoIdCardConfig.c` | `FEE_MIN` | `0` | unrouted | fixed (marked) |
+| `Identity/LF_PhotoIdCardConfig.c` | `FEE_MAX` | `100000` | unrouted | fixed (marked) |
+| `Identity/LF_PhotoIdCardConfig.c` | `DEFAULT_SHOW_SECONDS` | `8` | unrouted | config default |
+| `Identity/LF_PhotoIdCardConfig.c` | `SHOW_MIN` | `2` | unrouted | fixed (marked) |
+| `Identity/LF_PhotoIdCardConfig.c` | `SHOW_MAX` | `60` | unrouted | fixed (marked) |
 | `Interaction/LF_GiveCashSheet.c` | `CLOSE_DISTANCE` | `4` | unrouted | to move (#284) |
 | `Interaction/LF_KnownNames.c` | `NAME_RANGE` | `4.0` | unrouted | to move (#284) |
 | `Interaction/LF_KnownNames.c` | `TICK_MS` | `200` | unrouted | to move (#284) |
 | `Interaction/LF_PlayerInteraction.c` | `REACH` | `2.0` | unrouted | to move (#284) |
 | `Interaction/LF_PlayerInteraction.c` | `GESTURE_MS` | `2000` | unrouted | to move (#284) |
+| `Investigation/LF_CaseBoard.c` | `MAX_CASES` | `3` | crime | fixed (marked) |
+| `Investigation/LF_CaseBoard.c` | `CARDS_PER_CASE` | `4` | crime | fixed (marked) |
+| `Investigation/LF_CaseBoard.c` | `COALESCE_MS` | `1500` | crime | fixed (marked) |
+| `Investigation/LF_CaseBoardFace.c` | `TICK_MS` | `1000` | crime | fixed (marked) |
+| `Investigation/LF_CaseBoardFace.c` | `DRAW_RADIUS` | `15` | crime | fixed (marked) |
 | `Investigation/LF_Evidence.c` | `SWEEP_MS` | `30000` | crime | to move (#284) |
 | `Investigation/LF_Evidence.c` | `DROP_SETTLE_MS` | `1500` | crime | to move (#284) |
 | `Investigation/LF_Evidence.c` | `MAX_PENDING_DROPS` | `64` | crime | to move (#284) |
@@ -198,6 +297,7 @@ Owner is core for every row until the M3 move.
 | `Investigation/LF_EvidenceConfig.c` | `DEFAULT_MAX_CASINGS_PER_SCENE` | `6` | crime | config default |
 | `Investigation/LF_EvidenceConfig.c` | `DEFAULT_MAX_EVIDENCE` | `40` | crime | config default |
 | `Investigation/LF_EvidenceConfig.c` | `DEFAULT_EXPIRY_SECONDS` | `900` | crime | config default |
+| `Investigation/LF_ScenePieces.c` | `SCATTER_MIN` | `0.45` | crime | fixed (marked) |
 | `Investigation/LF_WitnessActions.c` | `REACH` | `3.0` | crime | to move (#284) |
 | `Investigation/LF_WitnessConfig.c` | `DEFAULT_SIGHT_RANGE` | `60` | crime | config default |
 | `Investigation/LF_WitnessConfig.c` | `DEFAULT_CLOTHING_RANGE` | `25` | crime | config default |
@@ -212,13 +312,34 @@ Owner is core for every row until the M3 move.
 | `Jobs/LF_CivilianJob.c` | `PAY_PARCEL` | `40` | jobs | to move (#284) |
 | `Jobs/LF_CivilianJob.c` | `PAY_FUEL` | `60` | jobs | to move (#284) |
 | `Jobs/LF_CivilianJob.c` | `PAY_TAXI` | `80` | jobs | to move (#284) |
-| `Jobs/LF_CivilianJob.c` | `DEFAULT_XP_PER_RUN` | `100` | jobs | to move (#284) |
-| `Jobs/LF_CivilianJob.c` | `DEFAULT_XP_FIRST_LEVEL` | `500` | jobs | to move (#284) |
-| `Jobs/LF_CivilianJob.c` | `DEFAULT_XP_LEVEL_GROWTH` | `2` | jobs | to move (#284) |
 | `Jobs/LF_JobGuards.c` | `WORKPLACE_RADIUS` | `5.0` | jobs | to move (#284) |
 | `Jobs/LF_JobGuards.c` | `SWITCH_COOLDOWN_SECONDS` | `30.0` | jobs | to move (#284) |
 | `Jobs/LF_JobGuards.c` | `MIN_ROUND_SECONDS` | `30.0` | jobs | to move (#284) |
+| `Jobs/LF_JobsConfig.c` | `PAY_RATE_MIN` | `0` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `PAY_RATE_MAX` | `100` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `CASH_MIN` | `0` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `CASH_MAX` | `1000000` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `COOLDOWN_MIN` | `0` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `COOLDOWN_MAX` | `86400` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `XP_CAP_MIN` | `0` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `XP_CAP_MAX` | `100000000` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `XP_AWARD_MIN` | `0` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `XP_AWARD_MAX` | `100000` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `THRESHOLD_MIN` | `1` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `THRESHOLD_MAX` | `100000000` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `GATE_LEVEL_MIN` | `1` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `GATE_LEVEL_MAX` | `100` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `LEGACY_FIRST_MIN` | `1` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `LEGACY_FIRST_MAX` | `1000000` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `LEGACY_GROWTH_MIN` | `1` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `LEGACY_GROWTH_MAX` | `10` | jobs | fixed (marked) |
+| `Jobs/LF_JobsConfig.c` | `DEFAULT_JOB_XP_FIRST_LEVEL` | `500` | jobs | config default |
+| `Jobs/LF_JobsConfig.c` | `DEFAULT_JOB_XP_LEVEL_GROWTH` | `2` | jobs | config default |
 | `Jobs/LF_PlayerJobComponent.c` | `LF_FRUIT_CATCHER_MAX_SCORE` | `100` | jobs | to move (#284) |
+| `Level/LF_JobLevels.c` | `DAY_SECONDS` | `86400` | unrouted | fixed (marked) |
+| `Level/LF_JobLevels.c` | `LEGACY_MAX_SINGLE_LEVEL` | `1000` | unrouted | fixed (marked) |
+| `Level/LF_JobLevels.c` | `LEGACY_MAX_LEVEL` | `20` | unrouted | fixed (marked) |
+| `Level/LF_JobLevels.c` | `LEGACY_MAX_XP` | `2000000000` | unrouted | fixed (marked) |
 | `LicensePlate/LF_LicensePlateGeneratorGeneric.c` | `NUMBER_MIN` | `100` | licences | to move (#284) |
 | `LicensePlate/LF_LicensePlateGeneratorGeneric.c` | `NUMBER_MAX` | `9999` | licences | to move (#284) |
 | `LicensePlate/LF_LicensePlateRegistry.c` | `MAX_ATTEMPTS` | `32` | licences | to move (#284) |
@@ -229,6 +350,8 @@ Owner is core for every row until the M3 move.
 | `Medic/LF_Carry.c` | `TICK_MS` | `250` | jobs | to move (#284) |
 | `Medic/LF_Carry.c` | `LOAD_VERIFY_MS` | `1500` | jobs | to move (#284) |
 | `Medic/LF_Downed.c` | `MIN_LETHAL_CUT` | `0.01` | jobs | to move (#284) |
+| `Medic/LF_DownedPatient.c` | `TICK_MS` | `2000` | jobs | fixed (marked) |
+| `Medic/LF_DownedPatient.c` | `MAX_ARM_TRIES` | `5` | jobs | fixed (marked) |
 | `Medic/LF_MedicConfig.c` | `DEFAULT_DOWNED_HEALTH_SCALED` | `0.1` | jobs | config default |
 | `Medic/LF_ReviveAnim.c` | `HOLD_SECONDS` | `4` | jobs | to move (#284) |
 | `Medic/LF_ReviveAnim.c` | `MAX_SECONDS` | `7` | jobs | to move (#284) |
@@ -247,11 +370,22 @@ Owner is core for every row until the M3 move.
 | `Moderation/LF_IncidentConfig.c` | `DEFAULT_GM_WINDOW_SECONDS` | `3600` | zones | config default |
 | `Moderation/LF_IncidentConfig.c` | `DEFAULT_ZONE_NOTICE_SECONDS` | `8` | zones | config default |
 | `Moderation/LF_IncidentFlags.c` | `REPORT_COOLDOWN` | `1` | zones | to move (#284) |
+| `Moderation/LF_Zones.c` | `FINE_MULTIPLIER_MIN` | `0` | zones | fixed (marked) |
+| `Moderation/LF_Zones.c` | `FINE_MULTIPLIER_MAX` | `10` | zones | fixed (marked) |
 | `Money/LF_LedgerConfig.c` | `DEFAULT_MAX_ENTRIES` | `20000` | shops | config default |
 | `Money/LF_LedgerConfig.c` | `DEFAULT_MAX_AGE_DAYS` | `30` | shops | config default |
 | `Money/LF_LedgerConfig.c` | `DEFAULT_ATM_MAX_TRANSACTION` | `1000000` | shops | config default |
 | `Money/LF_LedgerConfig.c` | `DEFAULT_ATM_RANGE` | `5` | shops | config default |
 | `Money/LF_MoneyDeltaTracker.c` | `DEFAULT_RESET_SECONDS` | `4.0` | shops | to move (#284) |
+| `Npc/LF_RolesAction.c` | `REACH` | `3.0` | unrouted | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `FEE_MIN` | `0` | jobs | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `FEE_MAX` | `10000000` | jobs | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `OFFER_MS_MIN` | `5000` | jobs | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `OFFER_MS_MAX` | `3600000` | jobs | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `CASH_MOVE_MIN` | `1` | jobs | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `CASH_MOVE_MAX` | `100000000` | jobs | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `DESK_RANGE_MIN` | `1` | jobs | fixed (marked) |
+| `Organizations/LF_OrgConfig.c` | `DESK_RANGE_MAX` | `30` | jobs | fixed (marked) |
 | `Organizations/LF_OrgConfig.c` | `DEFAULT_FOUNDING_FEE` | `250` | jobs | config default |
 | `Organizations/LF_OrgConfig.c` | `DEFAULT_NAME_MIN` | `3` | jobs | config default |
 | `Organizations/LF_OrgConfig.c` | `DEFAULT_NAME_MAX` | `32` | jobs | config default |
@@ -261,6 +395,11 @@ Owner is core for every row until the M3 move.
 | `Organizations/LF_OrgConfig.c` | `DEFAULT_PRICE_PARKED_VEHICLE` | `750` | jobs | config default |
 | `Organizations/LF_OrgConfig.c` | `DEFAULT_DESK_RANGE` | `5` | jobs | config default |
 | `Organizations/LF_OrgLedger.c` | `CLOSE_RANGE` | `4.0` | jobs | to move (#284) |
+| `Organizations/LF_TestOrgSign.c` | `REACH` | `5.0` | jobs | fixed (marked) |
+| `Police/LF_Cuffing.c` | `MAX_SECONDS` | `8` | crime | fixed (marked) |
+| `Police/LF_Cuffing.c` | `PINNED_SECONDS` | `600` | crime | fixed (marked) |
+| `Police/LF_Cuffing.c` | `WATCH_MS` | `250` | crime | fixed (marked) |
+| `Police/LF_Cuffing.c` | `CLOSE_MS` | `650` | crime | fixed (marked) |
 | `Police/LF_DebugJailMe.c` | `SENTENCE_SECONDS` | `60` | crime | to move (#284) |
 | `Police/LF_DutyAction.c` | `LF_STATION_SOUND_RANGE` | `3` | crime | to move (#284) |
 | `Police/LF_FineTicket.c` | `STAGE_WANTED` | `2` | crime | to move (#284) |
@@ -274,6 +413,47 @@ Owner is core for every row until the M3 move.
 | `Police/LF_Jail.c` | `DISMOUNT_RETRY_MS` | `250` | crime | to move (#284) |
 | `Police/LF_Jail.c` | `DISMOUNT_MAX_TRIES` | `20` | crime | to move (#284) |
 | `Police/LF_JailArrestableComponent.c` | `TICK_MS` | `1000` | crime | to move (#284) |
+| `Police/LF_NpcStun.c` | `HIT_RADIUS` | `0.6` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `RANK_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `RANK_MAX` | `20` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `CATCH_RADIUS_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `CATCH_RADIUS_MAX` | `200` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `PLACE_RADIUS_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `PLACE_RADIUS_MAX` | `2000` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `BOARD_READ_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `BOARD_READ_MAX` | `30` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `BOARD_POSTERS_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `BOARD_POSTERS_MAX` | `20` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `ALARM_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `ALARM_MAX` | `600` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `DISPATCH_LINES_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `DISPATCH_LINES_MAX` | `20` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `DEADLINE_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `DEADLINE_MAX` | `86400` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `LATE_MULTIPLIER_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `LATE_MULTIPLIER_MAX` | `10` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `SEARCH_COOLDOWN_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `SEARCH_COOLDOWN_MAX` | `3600` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `TICKET_OPEN_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `TICKET_OPEN_MAX` | `20` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `TICKET_PAID_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `TICKET_PAID_MAX` | `20` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `REACH_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `REACH_MAX` | `30` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `JAIL_RADIUS_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `JAIL_RADIUS_MAX` | `50` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `DESK_RANGE_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `DESK_RANGE_MAX` | `30` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `COMPLIANT_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `COMPLIANT_MAX` | `600` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `SPIKE_LIFETIME_MIN` | `30` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `SPIKE_LIFETIME_MAX` | `7200` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `FINE_CAP_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `FINE_CAP_MAX` | `10000000` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `RANK_PAY_MIN` | `-1` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `RANK_PAY_MAX` | `1000` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `RANK_DUTY_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_PoliceConfig.c` | `RANK_DUTY_MAX` | `10000000` | crime | fixed (marked) |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_ARREST_MIN_RANK` | `0` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_ESCORT_MIN_RANK` | `0` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_CATCH_IN_ACT_RADIUS` | `10` | crime | config default |
@@ -286,18 +466,41 @@ Owner is core for every row until the M3 move.
 | `Police/LF_PoliceConfig.c` | `DEFAULT_TICKET_FIRST_DEADLINE` | `1800` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_TICKET_SECOND_DEADLINE` | `1800` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_TICKET_LATE_MULTIPLIER` | `2` | crime | config default |
-| `Police/LF_PoliceConfig.c` | `DEFAULT_TICKET_LATE_WANTED` | `1` | crime | config default |
-| `Police/LF_PoliceConfig.c` | `DEFAULT_MURDER_WANTED` | `3` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_SEARCH_COOLDOWN_SECONDS` | `120` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_TICKET_MAX_OPEN` | `3` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_TICKET_KEEP_PAID` | `3` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_ARREST_REACH` | `5` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_JAIL_ARRIVAL_RADIUS` | `8` | crime | config default |
 | `Police/LF_PoliceConfig.c` | `DEFAULT_APPLY_DESK_RANGE` | `6` | crime | config default |
+| `Police/LF_PoliceConfig.c` | `DEFAULT_COMPLIANT_SECONDS` | `60` | crime | config default |
+| `Police/LF_PoliceConfig.c` | `DEFAULT_SPIKE_STRIP_LIFETIME_SECONDS` | `600` | crime | config default |
 | `Police/LF_PoliceMenu.c` | `MAX_FINE` | `5000` | crime | to move (#284) |
 | `Police/LF_PoliceRanks.c` | `PATROL_FINE_CAP` | `1000` | crime | to move (#284) |
 | `Police/LF_PoliceRanks.c` | `DUTY_SECONDS` | `3600` | crime | to move (#284) |
 | `Police/LF_PoliceRanks.c` | `PROMOTE_RADIUS` | `5` | crime | to move (#284) |
+| `Police/LF_SpikeStrip.c` | `MAX_STEP` | `0.25` | crime | fixed (marked) |
+| `Police/LF_SpikeStrip.c` | `ROAD_REACH` | `12` | crime | fixed (marked) |
+| `Police/LF_SpikeStrip.c` | `TICK_MS` | `50` | crime | fixed (marked) |
+| `Police/LF_SpikeStrip.c` | `REACH_UP` | `1.5` | crime | fixed (marked) |
+| `Police/LF_SpikeStripPreview.c` | `TICK_MS` | `50` | crime | fixed (marked) |
+| `Police/LF_StunBuzz.c` | `MAX_MS` | `30000` | crime | fixed (marked) |
+| `Police/LF_WantedPosterBoard.c` | `PER_ROW` | `4` | crime | fixed (marked) |
+| `Police/LF_WantedPosterBoard.c` | `LIVE_MS` | `3000` | crime | fixed (marked) |
+| `Police/LF_WantedPosterBoard.c` | `SETTLE_REFRESH_MS` | `10000` | crime | fixed (marked) |
+| `Police/LF_WantedPosterBoard.c` | `LATE_REFRESH_MS` | `30000` | crime | fixed (marked) |
+| `Police/LF_WantedPosterBoard.c` | `REFRESH_LIVE_MS` | `2000` | crime | fixed (marked) |
+| `Police/LF_WantedPosterBoard.c` | `DUMMY_RELEASE_MS` | `33000` | crime | fixed (marked) |
+| `Police/LF_WantedPosterBoard.c` | `TICK_MS` | `1000` | crime | fixed (marked) |
+| `Police/LF_WantedPosters.c` | `COALESCE_MS` | `1500` | crime | fixed (marked) |
+| `Police/LF_WantedPostersConfig.c` | `DEFAULT_POSTERS` | `4` | crime | config default |
+| `Police/LF_WantedPostersConfig.c` | `DEFAULT_STOLEN_POSTERS` | `1` | crime | config default |
+| `Police/LF_WantedPostersConfig.c` | `DEFAULT_DRAW_RADIUS` | `30` | crime | config default |
+| `Police/LF_WantedPostersConfig.c` | `POSTERS_MIN` | `1` | crime | fixed (marked) |
+| `Police/LF_WantedPostersConfig.c` | `POSTERS_MAX` | `8` | crime | fixed (marked) |
+| `Police/LF_WantedPostersConfig.c` | `STOLEN_MIN` | `0` | crime | fixed (marked) |
+| `Police/LF_WantedPostersConfig.c` | `STOLEN_MAX` | `8` | crime | fixed (marked) |
+| `Police/LF_WantedPostersConfig.c` | `RADIUS_MIN` | `5` | crime | fixed (marked) |
+| `Police/LF_WantedPostersConfig.c` | `RADIUS_MAX` | `100` | crime | fixed (marked) |
 | `Quantity/LF_QuantityComponent.c` | `INTENT_TTL_MS` | `5000` | unrouted | to move (#284) |
 | `Quests/LF_QuestManager.c` | `GIVER_RADIUS` | `5.0` | jobs | to move (#284) |
 | `Quests/LF_QuestTrackerComponent.c` | `MAX_CHAIN_PASSES` | `16` | jobs | to move (#284) |
@@ -328,6 +531,7 @@ Owner is core for every row until the M3 move.
 | `Signs/LF_SignComponent.c` | `CLIENT_EM_PER_CHAR` | `0.62` | zones | to move (#284) |
 | `SirenLights/LF_LightEntries.c` | `TEN_SECONDS` | `10` | vehicles | to move (#284) |
 | `SirenLights/LF_SirenManagerComponent.c` | `MIN_TOGGLE_MS` | `300` | vehicles | to move (#284) |
+| `Systems/LF_Systems.c` | `MAX_DEPTH` | `8` | unrouted | fixed (marked) |
 | `Toys/LF_JumpPad.c` | `DEFAULT_UPWARD_SPEED` | `12` | unrouted | to move (#284) |
 | `UIKit/LF_UIClosePolicy.c` | `DISTANCE` | `4` | unrouted | to move (#284) |
 | `UIKit/LF_UIMenuInput.c` | `DEBOUNCE_MS` | `150` | unrouted | to move (#284) |
@@ -341,3 +545,7 @@ Owner is core for every row until the M3 move.
 | `Vehicles/LF_VehiclePrices.c` | `OVERRIDE_MIN` | `-1` | vehicles | fixed (marked) |
 | `Vehicles/LF_VehiclePrices.c` | `PERCENT_MIN` | `0` | vehicles | fixed (marked) |
 | `Vehicles/LF_VehiclePrices.c` | `PERCENT_MAX` | `1000` | vehicles | fixed (marked) |
+| `World/LF_Cleanup.c` | `INTERVAL_MAX` | `86400` | unrouted | fixed (marked) |
+| `World/LF_Cleanup.c` | `AGE_MAX` | `604800` | unrouted | fixed (marked) |
+| `World/LF_Cleanup.c` | `DISTANCE_MAX` | `100000` | unrouted | fixed (marked) |
+| `World/LF_Cleanup.c` | `PERCENT_MAX` | `100` | unrouted | fixed (marked) |
