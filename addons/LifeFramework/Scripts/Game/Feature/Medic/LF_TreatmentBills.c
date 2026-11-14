@@ -317,6 +317,28 @@ class LF_TreatmentBills
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Dev reset (harness `resetplayer`): drops every bill this player is the patient or the medic of,
+	//! so a proof does not inherit the last one's bills. \return How many records were dropped.
+	static int ForgetFor(string uid)
+	{
+		if (uid.IsEmpty())
+			return 0;
+
+		int dropped = 0;
+		for (int i = Bills().Count() - 1; i >= 0; i--)
+		{
+			LF_TreatmentBillRecord record = Bills().Get(i);
+			if (record.m_sPatientUid != uid && record.m_sMedicUid != uid)
+				continue;
+
+			Bills().Remove(i);
+			dropped++;
+		}
+
+		return dropped;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Keeps the newest paid bills per patient. A bill whose medic share is still unpaid stays.
 	protected static void PrunePaid(string patientUid)
 	{
