@@ -213,11 +213,20 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
 
-**Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
-or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
-A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes
-(driver-merged docs again do not count), so PRs on disjoint files gate side by side on different
-machines and overlapping ones keep their order.
+**Parallel gates.** Up to N Workbench gates run at once, N being `"shipQueue": { "parallel": N }` in
+`pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
+limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
+`pool.machines` entry (1 when unset; lf-cloud has 2). This PC is not counted. A queued PR starts only when
+no running gate and no earlier waiting PR changes a file it changes. Driver-merged docs and any
+`docs/**/*.md` do not count (two PRs that edit `docs/worktrees.md` gate side by side; a text conflict
+shows at the merge of main, in GitHub's mergeable state, or in `prs heal`), so PRs on disjoint files
+gate side by side on different machines and overlapping ones keep their order.
+
+**Gates with no Workbench take no slot.** A PR that changes nothing under `addons/` runs `validate --all`
+only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; it counts against
+`"shipQueue": { "light": N }` instead (default 4). The entry's `tier` (0|1|2) and `builds` fields are the
+hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
+sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
 
 **Waiting.** `wt ship` waits until the gate passed or failed and prints
 `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
