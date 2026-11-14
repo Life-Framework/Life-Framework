@@ -11,6 +11,7 @@ taught us is in [`docs/architecture/building-pipeline-spike.md`](../architecture
 
 ```
 tools\cli building run <slug> [--from <stage>] [--only <stage>] [--force]
+tools\cli building adopt <slug> [<file.blend>]   keep a scene polished by hand as the export source
 tools\cli building status [<slug>]
 tools\cli building doctor      Blender, the add-on, its licence, one headless generate
 tools\cli building selftest    the offline checks (also part of tools\cli validate)
@@ -45,7 +46,8 @@ neither.
 | `spec` | Checks the spec: Reforger proportions, vanilla openings, budget, folders, the red line | The agent writes the spec |
 | `generate` | Headless Blender: sets `scene.ab_gen` from the spec, runs ArchBuilder's generate (or its realistic-building generator for a `landmark`), saves `building.blend` | Review |
 | `review` | Front, side, top and three-quarter renders in `review/`, and `review/stats.json`: triangles per part, storeys, footprint and height in metres. Over the spec's budget fails | The agent reads the pictures (Review below) |
-| `export` | ArchBuilder's Reforger export into a staging addon, `tmp/buildings/<slug>/export/`, with its Workbench step off. Gives every `AB_*` material its game colour (Materials below). Fails on any export warning, any furniture ArchBuilder left out of the game, no vanilla props with furniture on, and fewer doors than `budget.min_doors` | The tool |
+| `polish` | Renders what a player sees into `polish/`: a plan section, the four sides and the street corner from eye height, the hall from inside. Lists the spec's hand edits; warns when a hand-polished `polished.blend` was made with other settings than the spec. Never fails | The human or agent polishing it by hand: [polish.md](polish.md) |
+| `export` | ArchBuilder's Reforger export (its scene export of `tools/buildings/<slug>/polished.blend` when there is one) into a staging addon, `tmp/buildings/<slug>/export/`, with its Workbench step off. Gives every `AB_*` material its game colour (Materials below). Fails on any export warning, any furniture ArchBuilder left out of the game, no vanilla props with furniture on, and fewer doors than `budget.min_doors`. Applies `spec.polish.entities` and warns about three or more door sets in a row on one wall | The tool |
 | `import` | Refuses any file carrying the licence watermark, moves the export into the addon with new GUIDs, compiles the model in a hidden Workbench and reads the `.xob` back | The tool |
 | `prefab` | Every reference in the building's files resolves: our own by `.meta`, the base game's by path and GUID in the game's resource database. Door sets, windows, the model and its collider surfaces are there | The tool; then a placement and a look |
 
@@ -86,6 +88,9 @@ after it, and `--force` reruns from the start.
   none, `vanilla_props` does nothing and the sign is a blank board. The spec stage refuses `vanilla_props` with furniture
   off, and `do_furniture: false` with furniture on (rooms with nothing to export). A bare shell says `vanilla_props: false`.
 - The same seed and settings build the same building. A different look is a different seed.
+- `polish` (optional) is the building's hand polish: `edits`, one line per hand edit carried by
+  `tools/buildings/<slug>/polished.blend`, and `entities`, nudges to the game entities the export places
+  (`{ "prefab": "SignCommercial_01_GroceryStore", "move": [x, y, z], "why": "..." }`). [polish.md](polish.md)
 - `red_line` is `core` or `pack` ([core-vs-pack](../architecture/core-vs-pack.md)). A building is what this server looks
   like, so it is usually `pack`; until the pack loads it lands in the core with a row in
   [core-pack-inventory.md](../architecture/core-pack-inventory.md).
@@ -154,12 +159,25 @@ ArchBuilder's own material colours, not the game's textures: the game look is ch
 
 ## Changes to ArchBuilder
 
-None. The pipeline uses ArchBuilder's operators, settings and licence check as an installed user would. It also reads,
+The pipeline uses ArchBuilder's operators, settings and licence check as an installed user would. It also reads,
 without changing, the report its `reforger.export.run` returns (warnings, props placed per kind, furniture left out),
-which the operator only summarises. The material fix is ours, in the export stage. If a change inside the add-on is ever
-needed, it is listed here in our words, so other users can make the same change or fall back.
+which the operator only summarises. The material fix is ours, in the export stage.
+
+One change inside the add-on, made in the maintainer's local copy (`Documents\Reforger\blender-addons\arch_builder`,
+a commit on its `main`) and copied to lf-testbox's copy at the same path:
+
+- **One service door for a hall's back rooms** (2026-11-14, `interiors.py` `_layout_hall`, `civic.py`). A hall program
+  (`('hall', kind, [rooms])`, a shop, supermarket, restaurant, workshop) gave every back room its own door onto the
+  hall: the supermarket's stockroom, office and two WCs were four doors in a row on its back wall. A room written
+  `@kind` in the list is now the only one that opens onto the hall; the rooms listed either side of it open into it
+  through the partitions, near the hall end. ArchBuilder's `SUPERMARKET` ground program is `office, @storage:3, wc`
+  (it was `storage:2, office, wc, wc, storage:2`). A stock ArchBuilder still builds the row of doors; to make the
+  same supermarket elsewhere, make the same edit to those two places.
 
 ## Not done yet
+
+- A delivery door at the back: ArchBuilder puts exterior doors on the street front only, so the supermarket's
+  stockroom has none ([polish.md](polish.md) "Patterns").
 
 - Shop interiors: the supermarket's gondolas, coolers and tills arrive empty as vanilla props; making them our store's
   slots and tills is the next step ([the spike](../architecture/building-pipeline-spike.md#supermarket-next-steps)).

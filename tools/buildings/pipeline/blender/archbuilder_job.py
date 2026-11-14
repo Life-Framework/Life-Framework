@@ -2,7 +2,7 @@
 #
 #   blender --background [building.blend] --python archbuilder_job.py -- <job.json>
 #
-# job.json: {"mode": "generate"|"review"|"export", "spec": {...}, "out": "<dir>", ...}. The script
+# job.json: {"mode": "generate"|"review"|"polish"|"export"|"materials", "spec": {...}, "out": "<dir>", ...}. The script
 # writes <out>/<mode>.json and exits 0, or exits 3 (--python-exit-code) on an exception, or 4 when
 # ArchBuilder is not installed, enabled or licensed (the stage then skips, it does not fail).
 #
@@ -158,7 +158,7 @@ def review():
     sc.camera = cam
     centre = (lo + hi) / 2
     span = max(hi - lo)
-    review_dir = os.path.join(out, "review")
+    review_dir = os.path.join(out, mode)
     os.makedirs(review_dir, exist_ok=True)
     shots = []
 
@@ -178,11 +178,45 @@ def review():
         shots.append(f)
 
     # ArchBuilder builds with the street front on -Y (Blender), which is the prefab's -Z after export.
-    shot("front", (0, -1, 0.0001))
-    shot("side", (1, 0, 0.0001))
-    shot("top", (0, 0, 1))
-    shot("iso", (-0.9, -1.2, 0.8), ortho=False)
-    done({"stats": stats, "shots": shots})
+    if mode == "review":
+        shot("front", (0, -1, 0.0001))
+        shot("side", (1, 0, 0.0001))
+        shot("top", (0, 0, 1))
+        shot("iso", (-0.9, -1.2, 0.8), ortho=False)
+        done({"stats": stats, "shots": shots})
+    # polish: what a player sees (docs/building-pipeline/polish.md): each side and the street corner
+    # from eye height, and the sales hall from inside the entrance facing the back wall.
+    # the plan: a section 2.2 m above the floor seen from above (the near clip cuts roof and ceiling)
+    cam_data.type = "ORTHO"
+    cam_data.ortho_scale = span * 1.15 * 1280 / 900
+    cam.location = Vector(((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, hi.z + 5))
+    cam.rotation_euler = (0, 0, 0)
+    cam_data.clip_start, cam_data.clip_end = hi.z + 5 - 2.2, hi.z + 10
+    sc.render.resolution_x, sc.render.resolution_y = 1280, 900
+    sc.render.filepath = os.path.join(review_dir, "plan.png")
+    bpy.ops.render.render(write_still=True)
+    shots.append(sc.render.filepath)
+    cam_data.clip_start, cam_data.clip_end = 0.1, span * 10
+    sc.render.resolution_x, sc.render.resolution_y = 1280, 720
+    cam_data.type, cam_data.lens = "PERSP", 24
+
+    def eye(name, at, look):
+        cam.location = Vector(at)
+        cam.rotation_euler = (Vector(look) - Vector(at)).to_track_quat("-Z", "Y").to_euler()
+        f = os.path.join(review_dir, name + ".png")
+        sc.render.filepath = f
+        bpy.ops.render.render(write_still=True)
+        shots.append(f)
+    c, w, d = (wlo + whi) / 2, whi.x - wlo.x, whi.y - wlo.y
+    for name, (dx, dy) in (("front", (0, -1)), ("back", (0, 1)), ("left", (-1, 0)), ("right", (1, 0))):
+        far = (d if dx == 0 else w) / 2 + max(w, d) * 0.9
+        eye(name, (c.x + dx * far, c.y + dy * far, 1.7), (c.x, c.y, 2.2))
+    eye("street", (c.x - w * 0.55, wlo.y - 9.0, 1.7), (c.x, wlo.y, 2.6))
+    sh.show_shadows = False                     # the roof would shade the whole hall
+    gobj.hide_render = True
+    eye("inside", (c.x, wlo.y + 1.2, 1.7), (c.x, whi.y, 1.4))
+    done({"stats": stats, "shots": shots,
+          "settings": {k: getattr(a.ab_bld, k) for k in spec["archbuilder"] if hasattr(a.ab_bld, k)}})
 
 
 # ------------------------------------------------------------------------------ export
@@ -228,7 +262,8 @@ def export():
     t = time.time()
     print("LF_BUILDING export start")
     try:
-        res = bpy.ops.ab.rf_export()
+        # a hand-polished .blend ships what was edited in its scene (docs/building-pipeline/polish.md)
+        res = bpy.ops.ab.rf_export_scene() if job.get("scene") else bpy.ops.ab.rf_export()
     finally:
         exp.run = inner
     print("LF_BUILDING export end")
@@ -298,7 +333,7 @@ def materials():
 
 
 try:
-    {"generate": generate, "review": review, "export": export, "materials": materials}[mode]()
+    {"generate": generate, "review": review, "polish": review, "export": export, "materials": materials}[mode]()
 except SystemExit:
     raise
 except Exception:
