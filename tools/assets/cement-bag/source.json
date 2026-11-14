@@ -1,0 +1,35 @@
+{
+  "slug": "cement-bag",
+  "provider": "Poly Haven",
+  "id": "cement_bag",
+  "name": "Cement Bag",
+  "url": "https://polyhaven.com/a/cement_bag",
+  "licence": "CC0 1.0 (https://polyhaven.com/license)",
+  "authors": "PierreB3D",
+  "resolution": "2k",
+  "filesHash": "5904dc1835a413b66e756f67f8561b82fa5fcdcf",
+  "published": "2026-06-08",
+  "fetched": "2026-11-14",
+  "polycount": 844,
+  "dimensions_cm": [
+    46.2,
+    70,
+    18
+  ],
+  "categories": [
+    "props",
+    "collection: project_lighthouse"
+  ],
+  "tags": [
+    "industrial",
+    "warehouse",
+    "factory",
+    "building",
+    "construction",
+    "cement",
+    "cement bag",
+    "building material",
+    "building supply",
+    "construction supply"
+  ]
+}

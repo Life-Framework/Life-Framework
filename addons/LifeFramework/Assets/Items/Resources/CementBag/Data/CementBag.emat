@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{CB4B1DCD22815562}Assets/Items/Resources/CementBag/Data/CementBag_BCR.edds"
+ NMOMap "{02FBE136DBD0F135}Assets/Items/Resources/CementBag/Data/CementBag_NMO.edds"
+}

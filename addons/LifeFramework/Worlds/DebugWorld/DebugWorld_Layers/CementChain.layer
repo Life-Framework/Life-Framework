@@ -20,12 +20,12 @@ GenericEntity CementBuilderStand {
    {
     $grp GenericEntity : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
      CementBag_01 {
-      coords -0.25 0 0
-      angleY 90
+      coords -0.26 0.09 0
+      angleY 180
      }
      CementBag_02 {
-      coords 0.25 0 0
-      angleY 90
+      coords 0.26 0.09 0
+      angleY 180
      }
     }
     $grp GenericEntity : "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et" {

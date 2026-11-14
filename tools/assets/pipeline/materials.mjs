@@ -24,6 +24,8 @@ export const CLASSES = {
   // A worked metal surface: dull, not a mirror. Ingots, tools, castings.
   brushed_metal: { rough: [0.4, 0.65], metal: [0.85, 0.95], base_scale: 1 },
   // Rock, ore and anything mineral: rough and never metal.
+  // A scanned or hand-painted PBR set (Poly Haven, ambientCG): the authored roughness and metallic are kept as they are.
+  scanned: { rough: [0, 1], metal: [0, 1], base_scale: 1 },
   stone: { rough: [0.78, 0.95], metal: [0, 0], base_scale: 1 },
 };
 const KEYS = ["rough", "metal", "base_scale", "base_lum"];
