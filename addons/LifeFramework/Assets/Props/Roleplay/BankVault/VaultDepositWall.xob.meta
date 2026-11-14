@@ -1,0 +1,58 @@
+MetaFileClass {
+ Name "{AFF764337DF91819}Assets/Props/Roleplay/BankVault/VaultDepositWall.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{EF8A68352B8A5F16}" {
+     SourceMaterial "BankVault_Paint"
+     AssignedMaterial "{D0802AB317A8F26B}Assets/Props/Roleplay/BankVault/Data/BankVault_Paint.emat"
+    }
+    MaterialAssignClass "{60FDEBE1DA6D1DF1}" {
+     SourceMaterial "BankVault_Dark"
+     AssignedMaterial "{A9B9953E8C8096FB}Assets/Props/Roleplay/BankVault/Data/BankVault_Dark.emat"
+    }
+    MaterialAssignClass "{DE5E94BAD22A2026}" {
+     SourceMaterial "BankVault_Steel"
+     AssignedMaterial "{A4FE49A2AE03F45F}Assets/Props/Roleplay/BankVault/Data/BankVault_Steel.emat"
+    }
+   }
+   MeshParams {
+    MeshParam VaultDepositWall {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_VaultDepositWall_00 {
+     LayerPreset "PropFireView"
+     SurfaceProperties {
+      "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{E1B1D3C9B3E6C4ED}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{4B10D458C959D088}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{450565F76820B732}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{5087EA8F81CEABB4}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{95AA850E2431AEF3}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

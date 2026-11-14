@@ -15,6 +15,8 @@
 //   buildPrompts dropping the frame          -> FAIL concepts: every prompt ends in the shared product-shot frame
 //   sheetLayout using rows for columns       -> FAIL concepts: ten cells make a 5x2 grid, numbered left to right
 //   pickByRubric breaking ties on the high n -> FAIL concepts: a tie goes to the lower number
+//   conceptRequest ignoring the reference    -> FAIL concepts: a reference sends image-to-image with the picture
+//   checkKitModel skipping the bone check    -> FAIL kit: a model missing a material, a collider or the door bone is flagged
 //   pickByRubric taking ranking()[0] (2026-11-14) -> FAIL concepts: a tie goes to the lower number, era_current 0 is skipped
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
 // red-proof: 2026-11-14 (variants, Blender source, material kind):
@@ -35,6 +37,7 @@ import { ematText, freshGuid, textureMeta, usedGuids, variantEmatText, writeAsse
 import { variantPlans } from "../assets/pipeline/materials.mjs";
 import { ammoListWith, ammoPrefab, magazinePrefab, weaponPrefab } from "../assets/pipeline/prefab.mjs";
 import { checkModel, parse, worldPositions } from "../assets/pipeline/xob.mjs";
+import { checkKitModel, kitModelMeta, kitProblems } from "../assets/pipeline/kit.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -363,6 +366,13 @@ export async function main() {
     const prompts = cc.buildPrompts("A police baton.", variants);
     ok(prompts.length === 10 && prompts.every((p) => p.prompt.endsWith(cc.FRAME) && p.prompt.startsWith("A police baton.")), "concepts: every prompt ends in the shared product-shot frame");
     ok(new Set(prompts.map((p) => p.prompt)).size === 10 && prompts[2].n === 3 && !prompts[0].prompt.includes(".."), "concepts: the ten prompts are distinct, numbered and tidy");
+    const plain = cc.conceptRequest("nano-banana-2-1", "p", null);
+    ok(plain.path === "/openapi/v1/text-to-image" && !("reference_image_urls" in plain.body), "concepts: without a reference the ten are text-to-image");
+    const withRef = cc.conceptRequest("nano-banana-2-1", "p", "data:image/jpeg;base64,AA");
+    ok(withRef.path === "/openapi/v1/image-to-image" && withRef.call === "image-to-image" && withRef.body.reference_image_urls[0] === "data:image/jpeg;base64,AA", "concepts: a reference sends image-to-image with the picture");
+    ok(cc.conceptProblems({ ...rec(), reference: { file: "tools/assets/stick/ref.gif" } }).some((m) => /reference.file/.test(m)), "concepts: a reference that is not a picture is refused");
+    ok(cc.conceptProblems({ ...rec(), reference: { file: "../outside/ref.png" } }).some((m) => /inside the repo/.test(m)), "concepts: a reference outside the repo is refused");
+    ok(cc.conceptProblems({ ...rec(), reference: { file: "tools/assets/stick/ref.jpg" } }).length === 0, "concepts: a repo-relative jpg reference passes");
     const nine = rec(); nine.variants.pop();
     ok(cc.conceptProblems(nine).some((m) => /exactly 10/.test(m)), "concepts: nine variants are refused");
     const same = rec(); same.variants[4].detail = same.variants[1].detail;
@@ -423,6 +433,25 @@ export async function main() {
     recordProvenance(prov, spec(), { imageTaskId: "i1", concept: 3, conceptTaskId: "c3", conceptPrompt: "p" }, new Date("2026-11-13T11:00:00Z"));
     const pg = JSON.parse(readFileSync(join(prov, "tools", "assets", "stick", "meshy.json"), "utf8")).generations;
     ok(pg.length === 1 && pg[0].tool === "Meshy image-to-3D" && pg[0].imageTaskId === "i1" && pg[0].conceptTaskId === "c3", "concepts: meshy.json records the image-to-3D task and the concept it came from, once");
+  }
+
+  // ---- kits: several models, shared materials, a meta per model with every material and collider --
+  {
+    const kit = JSON.parse(readFileSync(join(ROOT, "tools", "assets", "bank-vault", "kit.json"), "utf8"));
+    ok(kitProblems(kit).length === 0, `kit: the bank vault kit.json passes (${kitProblems(kit)[0]})`);
+    ok(kitProblems({ ...kit, colliders: { VaultFront: { layerPreset: "BuildingFireView", gamemat: "concrete.gamemat" } } }).some((m) => /gamemat/.test(m)), "kit: a collider game material without a GUID is refused");
+    const used = new Set();
+    const mats = ["A", "B", "C"].map((n, i) => ({ source: `Kit_${n}`, emat: `{${"1".repeat(15)}${i}}Assets/K/Data/Kit_${n}.emat` }));
+    const cols = ["UBX_K_00", "UBX_K_01"].map((name) => ({ name, layerPreset: "BuildingFireView", gamemat: "{1A05231C3FD1627A}Common/Materials/Game/concrete.gamemat" }));
+    const text = kitModelMeta("", used, { res: "Assets/K/K.xob", guid: "2222222222222222", materials: mats, colliders: cols, flags: { ExportSkinning: true } });
+    const assigns = [...text.matchAll(/MaterialAssignClass "\{([0-9A-F]{16})\}"/g)].map((m) => m[1]);
+    ok(assigns.length === 3 && new Set(assigns).size === 3 && (text.match(/GeometryParam UBX_K_0/g) || []).length === 2 && /ExportSkinning 1/.test(text), "kit: a model meta assigns every material once and lists every collider");
+    const again = kitModelMeta(text, used, { res: "Assets/K/K.xob", guid: "2222222222222222", materials: mats, colliders: cols, flags: {} });
+    ok([...again.matchAll(/MaterialAssignClass "\{([0-9A-F]{16})\}"/g)].map((m) => m[1]).join() === assigns.join(), "kit: a re-import keeps the material assign ids");
+    const model = { materials: [{ path: "Assets/K/Data/Kit_A.emat" }], colliders: ["UBX_K_00"], nodes: [] };
+    const emats = Object.fromEntries(mats.map((m) => [m.source, m.emat]));
+    const found = checkKitModel(model, { fbx: "K.fbx", materials: ["Kit_A", "Kit_B"], colliders: ["UBX_K_00", "UBX_K_01"], bones: [{ name: "door" }] }, emats);
+    ok(found.some((m) => /Kit_B/.test(m)) && found.some((m) => /UBX_K_01/.test(m)) && found.some((m) => /bone door/.test(m)) && !found.some((m) => /Kit_A\.emat/.test(m)), `kit: a model missing a material, a collider or the door bone is flagged (${found.join("; ")})`);
   }
 
   if (failed) {

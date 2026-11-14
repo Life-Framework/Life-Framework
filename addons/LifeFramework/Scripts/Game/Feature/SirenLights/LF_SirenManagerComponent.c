@@ -17,6 +17,16 @@ class LF_SirenManagerComponent : ScriptComponent
 	[Attribute("0", UIWidgets.ComboBox, enums: ParamEnumArray.FromEnum(LF_Faction), desc: "Service this vehicle belongs to: only an on-duty member of it may run the siren (police vehicle: police, ambulance: medic). Civilian: nobody (#464)")]
 	protected LF_Faction m_eService;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Sound project of this vehicle's own siren loop (#923). Set: it plays in every mode but default, and the shared vehicle siren (Vehicles_Siren.acp) stays silent on this vehicle.", "acp")]
+	protected ResourceName m_sLoopProject;
+
+	[Attribute("", UIWidgets.Auto, "Event of the loop in m_sLoopProject")]
+	protected string m_sLoopEvent;
+
+	//! Client only: the loop that plays now, and whether the mode wants one.
+	protected ref SCR_AudioSource m_LoopAudio;
+	protected bool m_bLoopOn;
+
 	// Used for sending only the necessary signals to the sound system
 	protected ref LF_SirenMode m_CurrentMode;
 	// Replicated: a client that streams the car in later or joins late gets the current value with
@@ -316,8 +326,9 @@ class LF_SirenManagerComponent : ScriptComponent
 		{
 			if (m_Knob) SetKnobMode(mode);
 
-			if (m_SoundComp) SetSirenMode(mode);
-			if (m_SoundComp && mode.GetName() != "default")
+			bool ownSiren = HasOwnLoop();
+			if (m_SoundComp && !ownSiren) SetSirenMode(mode);
+			if (m_SoundComp && !ownSiren && mode.GetName() != "default")
 			{
 				SetSignal("animSelector", 1);
 				m_SoundComp.SoundEventBone("SOUND_VEHICLE_HORN", "Scene_Root");
@@ -330,6 +341,8 @@ class LF_SirenManagerComponent : ScriptComponent
 		string modeName = "<none>";
 		if (mode)
 			modeName = mode.GetName();
+
+		UpdateLoop(modeName);
 		LF_Debug.Info("Siren", string.Format("mode -> %1 (index %2)", modeName, m_CurrentModeIndex));
 	}
 
@@ -345,6 +358,124 @@ class LF_SirenManagerComponent : ScriptComponent
 		if (nextModeIndex == m_CurrentModeIndex) return;
 		m_CurrentModeIndex = nextModeIndex;
 		SetMode();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when this vehicle has its own siren sound (the ambulance's hi-lo, #923).
+	bool HasOwnLoop()
+	{
+		return !m_sLoopProject.IsEmpty() && !m_sLoopEvent.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: start or stop the vehicle's own siren loop to match the mode. A dedicated server has
+	//! no listener, so it plays nothing.
+	protected void UpdateLoop(string modeName)
+	{
+		if (System.IsConsoleApp() || RplSession.Mode() == RplMode.Dedicated)
+			return;
+
+		bool wanted = LF_AmbulanceSiren.LoopWanted(HasOwnLoop(), modeName);
+		if (wanted == m_bLoopOn)
+			return;
+
+		m_bLoopOn = wanted;
+		if (wanted)
+		{
+			StartLoop();
+			GetGame().GetCallqueue().CallLater(RetryLoop, 2000, true);
+			return;
+		}
+
+		GetGame().GetCallqueue().Remove(RetryLoop);
+		StopLoop();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The listener was out of the siren's range when it started: try again until it is in range.
+	protected void RetryLoop()
+	{
+		if (m_bLoopOn && !m_LoopAudio)
+			StartLoop();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StartLoop()
+	{
+		if (m_LoopAudio)
+			return;
+
+		SCR_SoundManagerModule sound = SCR_SoundManagerModule.GetInstance(GetOwner().GetWorld());
+		if (!sound)
+		{
+			LF_Debug.Warn("Siren", "no sound manager in this world; the siren is silent");
+			return;
+		}
+
+		SCR_AudioSourceConfiguration config = new SCR_AudioSourceConfiguration();
+		config.m_sSoundProject = m_sLoopProject;
+		config.m_sSoundEventName = m_sLoopEvent;
+		// Not static: the vehicle drives.
+		config.m_eFlags = 0;
+
+		// Null while the listener is out of the project's audible range; RetryLoop tries again.
+		SCR_AudioSource audio = sound.CreateAudioSource(GetOwner(), config);
+		if (!audio)
+			return;
+
+		sound.PlayAudioSource(audio);
+		m_LoopAudio = audio;
+		LF_Debug.Info("Siren", string.Format("own siren loop started: %1", m_sLoopEvent));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StopLoop()
+	{
+		if (!m_LoopAudio)
+			return;
+
+		m_LoopAudio.Terminate();
+		m_LoopAudio = null;
+		LF_Debug.Info("Siren", "own siren loop stopped");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (m_bLoopOn)
+			GetGame().GetCallqueue().Remove(RetryLoop);
+
+		StopLoop();
+		m_bLoopOn = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether this user may run this vehicle's siren: an on-duty member of its service, read from the
+	//! replicated account state so a client can decide what its action menu shows.
+	bool MayOperate(IEntity user)
+	{
+		if (!user)
+			return false;
+
+		int state = LF_AccountReplication.GetState(user);
+		return LF_SirenRules.DutyAllows(m_eService, true, LF_AccountStateBits.GetFaction(state), LF_AccountStateBits.IsOnDuty(state));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the named mode is the one running now.
+	bool IsModeName(string name)
+	{
+		return m_CurrentMode && m_CurrentMode.GetName() == name;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a driver's menu pick of a named mode. The same duty rule and throttle as the key.
+	bool RequestModeStr(IEntity user, string name)
+	{
+		if (!Replication.IsServer() || !m_Modes)
+			return false;
+
+		return RequestBy(user, m_Modes.Find(name), GetGame().GetWorld().GetWorldTime());
 	}
 
 	//------------------------------------------------------------------------------------------------

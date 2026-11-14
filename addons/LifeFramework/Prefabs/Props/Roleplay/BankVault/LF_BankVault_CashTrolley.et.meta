@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3C103D64C3AF2262}Prefabs/Props/Roleplay/BankVault/LF_BankVault_CashTrolley.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

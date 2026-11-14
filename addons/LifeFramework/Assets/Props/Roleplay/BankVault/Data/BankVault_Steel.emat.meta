@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{A4FE49A2AE03F45F}Assets/Props/Roleplay/BankVault/Data/BankVault_Steel.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
