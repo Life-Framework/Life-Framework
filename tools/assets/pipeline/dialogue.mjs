@@ -3,8 +3,11 @@
 //
 //   asset dialogue <npc> [--dry-run] [--force <line>|all]     asset dialogue status
 //
-// A dialogue.json with "patches": "<core npc>" is a pack's text-only patch of that core dialogue (#957):
-// dialogue-patch.mjs, no ElevenLabs call, no budget.
+// A dialogue.json with "patches": "<core npc>" is a pack's patch of that core dialogue (#957):
+// dialogue-patch.mjs. Without a "voice" it is text only (no ElevenLabs call, no budget); with one the pack
+// owns the recordings: this stage writes the wavs, the audio project and the patch conf into the pack.
+// A dialogue.json with "text_only": true is a conversation with no voice at all (the neutral core clerk):
+// no recordings, a caption for reading time on every line.
 // The source is tools/assets/dialogue/<npc>/dialogue.json (tracked). For every line the stage
 //   1. generates speech with ElevenLabs (paid per character, capped by the spec's budget_chars),
 //   2. trims, normalises and converts it to the engine format with ffmpeg (mono 44.1 kHz 16-bit),
@@ -79,14 +82,39 @@ export function loadProvenance(root, id) {
   return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { id, service: "ElevenLabs text-to-speech", lines: {} };
 }
 
+// The voice and the character budget of a spec that records its lines (a full dialogue or a voiced pack patch).
+export function voiceProblems(spec) {
+  const out = [];
+  if (!spec.voice?.id) out.push("voice.id is missing (docs/asset-pipeline/dialogue.md \"Voices\")");
+  if (!(spec.budget_chars > 0 && spec.budget_chars <= MAX_BUDGET)) out.push(`budget_chars must be 1 to ${MAX_BUDGET}`);
+  return out;
+}
+
+// What is wrong with a line's `say` (the text sent to the voice with [audio tags]); nothing when it has none.
+export function sayProblems(id, line) {
+  const out = [];
+  if (line.say === undefined) return out;
+  const text = (line.text || "").trim();
+  const say = String(line.say).trim();
+  if (/[<>{}%]|#[A-Z]/.test(say)) out.push(`line ${id}: say has markup other than [audio tags]`);
+  if (untagged(say) !== text.replace(/\s+/g, " ")) out.push(`line ${id}: say without its [audio tags] must read exactly as text (the caption)`);
+  if (!/\[[a-z]/.test(say)) out.push(`line ${id}: say adds no [audio tag]; drop it and keep text`);
+  if (say.length > 400) out.push(`line ${id}: say must be at most 400 characters`);
+  return out;
+}
+
+// The lines a spec speaks: all of them, but for the ones a pack patch removes.
+export const spokenLines = (spec) => Object.fromEntries(Object.entries(spec.lines || {}).filter(([, l]) => l.op !== "remove"));
+
 // Everything wrong with a dialogue file, as a list. `strings` maps existing string ids to text.
 export function specProblems(spec, strings = new Map()) {
   const out = [];
   if (!/^[a-z][a-z0-9_]*$/.test(spec.id || "")) out.push("id must be lowercase letters, digits and underscores");
   if (!/^[A-Z][A-Za-z0-9]*$/.test(spec.name || "")) out.push("name must be PascalCase (it becomes file and key names)");
   if (!/^#/.test(spec.speaker_key || "")) out.push("speaker_key must be a localization key (#...)");
-  if (!spec.voice?.id) out.push("voice.id is missing (docs/asset-pipeline/dialogue.md \"Voices\")");
-  if (!(spec.budget_chars > 0 && spec.budget_chars <= MAX_BUDGET)) out.push(`budget_chars must be 1 to ${MAX_BUDGET}`);
+  if (spec.text_only) {
+    if (spec.voice || spec.budget_chars) out.push("a text_only dialogue has no voice and no budget_chars; drop them (or drop text_only to record it)");
+  } else out.push(...voiceProblems(spec));
   const lines = spec.lines || {};
   const replies = spec.replies || {};
   const nodes = spec.nodes || [];
@@ -99,13 +127,8 @@ export function specProblems(spec, strings = new Map()) {
     const text = (line.text || "").trim();
     if (text.length < 2 || text.length > 320) out.push(`line ${id}: text must be 2 to 320 characters (a longer speech is two lines)`);
     if (/[<>{}\[\]%]|#[A-Z]/.test(text)) out.push(`line ${id}: text has markup or a placeholder; the voice would read it aloud`);
-    if (line.say !== undefined) {
-      const say = String(line.say).trim();
-      if (/[<>{}%]|#[A-Z]/.test(say)) out.push(`line ${id}: say has markup other than [audio tags]`);
-      if (untagged(say) !== text.replace(/\s+/g, " ")) out.push(`line ${id}: say without its [audio tags] must read exactly as text (the caption)`);
-      if (!/\[[a-z]/.test(say)) out.push(`line ${id}: say adds no [audio tag]; drop it and keep text`);
-      if (say.length > 400) out.push(`line ${id}: say must be at most 400 characters`);
-    }
+    if (line.say !== undefined && spec.text_only) out.push(`line ${id}: a text_only dialogue has no voice to say it`);
+    else out.push(...sayProblems(id, line));
     if (line.for_key) {
       if (!strings.has(line.for_key.replace(/^#/, ""))) out.push(`line ${id}: for_key ${line.for_key} is not in the string table`);
       if (forKeys.has(line.for_key)) out.push(`line ${id}: for_key ${line.for_key} is spoken by two lines`);
@@ -180,7 +203,8 @@ export function upsertStrings(stText, entries, guid = () => freshGuid(new Set([.
 export function stringEntries(spec) {
   const out = [];
   for (const [id, line] of Object.entries(spec.lines)) {
-    out.push({ id: lineKey(spec, id), text: line.text.trim(), comment: `Dialogue caption, spoken by the ${spec.id} NPC (voiced; tools/assets/dialogue/${spec.id}). Changing it needs: tools\\cli asset dialogue ${spec.id}` });
+    const how = spec.text_only ? "text only" : "voiced";
+    out.push({ id: lineKey(spec, id), text: line.text.trim(), comment: `Dialogue caption, spoken by the ${spec.id} NPC (${how}; tools/assets/dialogue/${spec.id}). Changing it needs: tools\\cli asset dialogue ${spec.id}` });
   }
   for (const [id, text] of Object.entries(spec.replies)) {
     out.push({ id: replyKey(spec, id), text: text.trim(), comment: `Dialogue reply the player can pick when talking to the ${spec.id} NPC.` });
@@ -264,6 +288,7 @@ export function acpText(spec, lines) {
 
 // The dialogue config the game reads (class LF_DialogueConfig, Feature/Dialogue/LF_DialogueConfig.c).
 export function confText(spec, lines, acp) {
+  const voiced = Boolean(acp);
   const q = (s) => `"${String(s ?? "").replace(/"/g, '\\"')}"`;
   let nodes = "";
   for (const n of spec.nodes) {
@@ -279,18 +304,18 @@ export function confText(spec, lines, acp) {
   let rows = "";
   for (const l of lines) {
     rows += `  LF_DialogueLine "{${stableGuid(spec.id, "line", l.id)}}" {\n   m_sId ${q(l.id)}\n   m_sTextKey ${q("#" + lineKey(spec, l.id))}\n`
-      + (l.for_key ? `   m_sForKey ${q(l.for_key)}\n` : "") + `   m_sEvent ${q(l.event)}\n   m_fSeconds ${l.seconds}\n   m_sMouth ${q(l.mouth)}\n  }\n`;
+      + (l.for_key ? `   m_sForKey ${q(l.for_key)}\n` : "") + (voiced ? `   m_sEvent ${q(l.event)}\n   m_fSeconds ${l.seconds}\n   m_sMouth ${q(l.mouth)}\n` : "") + "  }\n";
   }
-  return `LF_DialogueConfig {\n m_sId ${q(spec.id)}\n m_sSpeakerKey ${q(spec.speaker_key)}\n m_sSoundProject ${q(acp)}\n m_fHearRange ${spec.hear_range_m ?? 12}\n m_sStart ${q(spec.start)}\n m_aNodes {\n${nodes} }\n m_aLines {\n${rows} }\n}\n`;
+  return `LF_DialogueConfig {\n m_sId ${q(spec.id)}\n m_sSpeakerKey ${q(spec.speaker_key)}\n${voiced ? ` m_sSoundProject ${q(acp)}\n` : ""} m_fHearRange ${spec.hear_range_m ?? 12}\n m_sStart ${q(spec.start)}\n m_aNodes {\n${nodes} }\n m_aLines {\n${rows} }\n}\n`;
 }
 
 // The rows the generated files are built from: spec order, with what the provenance knows.
 export function lineRows(spec, prov, addon) {
-  return Object.entries(spec.lines).map(([id, line]) => {
+  return Object.entries(spokenLines(spec)).map(([id, line]) => {
     const p = prov.lines[id] || {};
     const res = wavRes(spec, id);
     const guid = addon ? readGuid(join(addon, res + ".meta")) : null;
-    return { id, text: line.text.trim(), for_key: line.for_key || "", event: eventName(spec, id), res, wav: guid ? `{${guid}}${res}` : res, seconds: p.seconds ?? 0, mouth: p.mouth ?? "", hash: p.hash };
+    return { id, text: line.text.trim(), for_key: line.for_key || "", event: spec.text_only ? "" : eventName(spec, id), res, wav: guid ? `{${guid}}${res}` : res, seconds: p.seconds ?? 0, mouth: p.mouth ?? "", hash: p.hash };
   });
 }
 
@@ -298,43 +323,34 @@ export function lineRows(spec, prov, addon) {
 export function expectedFiles(root, spec, prov) {
   const addon = join(root, ADDON(spec));
   const rows = lineRows(spec, prov, addon);
+  if (spec.text_only) return { [confRes(spec)]: confText(spec, rows, "") };
   const acpGuid = readGuid(join(addon, acpRes(spec) + ".meta"));
   return { [acpRes(spec)]: acpText(spec, rows), [confRes(spec)]: confText(spec, rows, `{${acpGuid}}${acpRes(spec)}`) };
 }
 
 // Lines whose audio in the addon does not match the spec (new, reworded, or a new voice).
 export function staleLines(root, spec, prov) {
-  return Object.entries(spec.lines).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(spec.voice, voicedText(line)) || !existsSync(join(root, ADDON(spec), wavRes(spec, id)))).map(([id]) => id);
+  if (spec.text_only) return [];
+  return Object.entries(spokenLines(spec)).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(spec.voice, voicedText(line)) || !existsSync(join(root, ADDON(spec), wavRes(spec, id)))).map(([id]) => id);
 }
 
 // ---------------------------------------------------------------- the stage
-export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log, addon: addonName } = {}) {
-  const spec = withAddon(loadSpec(root, id), addonName);
-  if (spec.patches) {
-    // A pack's patch of a core dialogue: text only, no voice (dialogue-patch.mjs, #957).
-    const patch = await import("./dialogue-patch.mjs");
-    return patch.runPatch(root, { ...spec, addon: addonOf(spec) }, { dryRun, log });
-  }
+// Buys and converts the stale lines of a spec that records its lines (a full dialogue, or a pack's voiced patch)
+// into the addon that owns the voice: wav + meta per line, the provenance file, lines that left the spec removed,
+// the audio project's meta. The caller writes the audio project and the conf from the returned provenance.
+async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log }) {
   const addon = join(root, ADDON(spec));
-  const stFile = stringTable(root, spec);
-  if (!existsSync(stFile)) throw new Error(`${ADDON(spec)} has no ${stFile}; a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
-  const stText = readFileSync(stFile, "utf8");
-  const packFile = packStringFile(root);
-  let packText = packFile ? readFileSync(packFile, "utf8") : "";
-  const known = parseStrings(stText);
-  for (const [k, v] of parseStrings(packText)) known.set(k, v);
-  const problems = [...addonProblems(root, spec), ...specProblems(spec, known)];
-  if (problems.length) throw new Error("dialogue problems:\n  " + problems.join("\n  "));
+  const spoken = spokenLines(spec);
   const prov = loadProvenance(root, id);
   const dir = cacheDir(root, id);
   const ledger = join(dir, "chars.jsonl");
   const opts = fetchImpl ? { fetchImpl } : undefined;
 
   const stale = new Set(staleLines(root, spec, prov));
-  if (force === "all") Object.keys(spec.lines).forEach((l) => stale.add(l));
-  else if (force) { if (!spec.lines[force]) throw new Error(`--force ${force}: no such line`); stale.add(force); }
+  if (force === "all") Object.keys(spoken).forEach((l) => stale.add(l));
+  else if (force) { if (!spoken[force]) throw new Error(`--force ${force}: no such line`); stale.add(force); }
   const todo = [...stale].map((lineId) => {
-    const text = voicedText(spec.lines[lineId]);
+    const text = voicedText(spoken[lineId]);
     const hash = lineHash(spec.voice, text);
     const mp3 = join(dir, `${lineId}.${hash}.mp3`);
     // A forced line is a new paid take even when the old download is still there.
@@ -343,10 +359,10 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   });
   const need = todo.reduce((n, t) => n + t.chars, 0);
   const everSpent = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
-  log(`dialogue ${id}: ${Object.keys(spec.lines).length} lines, ${todo.length} to (re)generate, ${need} characters to buy; this NPC has cost ${everSpent} of its ${spec.budget_chars} budget`);
+  log(`dialogue ${id}: ${Object.keys(spoken).length} lines, ${todo.length} to (re)generate, ${need} characters to buy; this NPC has cost ${everSpent} of its ${spec.budget_chars} budget`);
   for (const t of todo) log(`  ${t.paid ? "generate" : "resume  "} ${t.lineId} (${t.text.length} chars)`);
   if (everSpent + need > spec.budget_chars) throw new Error(`that would take this NPC to ${everSpent + need} characters, over its budget of ${spec.budget_chars}. Shorten the lines or raise budget_chars on purpose.`);
-  if (dryRun) return { generated: 0, chars: 0, need };
+  if (dryRun) return { dry: true, need };
 
   let before = null;
   if (need > 0) {
@@ -391,19 +407,80 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   mkdirSync(sdir, { recursive: true });
   for (const f of readdirSync(sdir)) {
     const m = new RegExp(`^${spec.id}_(.+)\\.wav(\\.meta)?$`).exec(f);
-    if (m && !spec.lines[m[1]]) { unlinkSync(join(sdir, f)); log(`  removed ${f} (line no longer in the dialogue)`); }
+    if (m && !spoken[m[1]]) { unlinkSync(join(sdir, f)); log(`  removed ${f} (line no longer in the dialogue)`); }
   }
-  for (const lineId of Object.keys(prov.lines)) if (!spec.lines[lineId]) delete prov.lines[lineId];
+  for (const lineId of Object.keys(prov.lines)) if (!spoken[lineId]) delete prov.lines[lineId];
   prov.voice = { id: spec.voice.id, name: spec.voice.name, source: spec.voice.public_owner_id ? "voice library" : "premade" };
   writeFileSync(provenanceFile(root, id), JSON.stringify(prov, null, 2) + "\n");
 
   const acp = join(addon, acpRes(spec));
   if (!existsSync(acp + ".meta")) writeFileSync(acp + ".meta", simpleMeta(acpRes(spec), freshGuid(used), "AudioProjectResourceClass"));
+  let after = null;
+  if (before) {
+    after = await eleven.balance(opts);
+    log(`ElevenLabs: ${before.used} -> ${after.used} characters used (${after.used - before.used} this run, ${bought} billed to these lines); ${after.left} left`);
+  }
+  return { prov, generated: todo.length, chars: bought, before, after };
+}
+
+// A voiced patch of a core dialogue (a pack that owns the voice): the stage above, then the audio project in the
+// pack and the patch conf carrying each line's event, length and mouth (dialogue-patch.mjs).
+export async function runVoicedPatch(root, spec, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log } = {}, patch) {
+  const addon = join(root, ADDON(spec));
+  const stFile = patch.patchStringFile(root, spec);
+  if (!stFile) throw new Error(`${ADDON(spec)} has no Language/*.st; the pack's string table does not exist yet (core-pack-inventory.md, #325)`);
+  const stText = readFileSync(stFile, "utf8");
+  const known = parseStrings(readFileSync(stringTable(root, { addon: "LifeFramework" }), "utf8"));
+  for (const [k, v] of parseStrings(stText)) known.set(k, v);
+  const core = patch.loadCoreSpec(root, spec);
+  const problems = [...addonProblems(root, spec), ...patch.patchProblems(spec, core, known)];
+  if (problems.length) throw new Error("dialogue patch problems:\n  " + problems.join("\n  "));
+  const stage = await voiceStage(root, spec.id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log });
+  if (stage.dry) return { generated: 0, chars: 0, need: stage.need };
   const conf = join(addon, confRes(spec));
   mkdirSync(dirname(conf), { recursive: true });
-  if (!existsSync(conf + ".meta")) writeFileSync(conf + ".meta", simpleMeta(confRes(spec), freshGuid(used), "CONFResourceClass"));
-  const files = expectedFiles(root, spec, prov);
-  for (const [rel, text] of Object.entries(files)) writeFileSync(join(addon, rel), text);
+  if (!existsSync(conf + ".meta")) writeFileSync(conf + ".meta", simpleMeta(confRes(spec), freshGuid(guidsInUse(root)), "CONFResourceClass"));
+  for (const [rel, text] of Object.entries(patch.patchExpectedFiles(root, spec))) writeFileSync(join(addon, rel), text);
+  const newSt = upsertStrings(stText, patch.patchStringEntries(spec));
+  const stChanged = newSt !== stText;
+  if (stChanged) writeFileSync(stFile, newSt);
+  log(`wrote ${ADDON(spec)}/${confRes(spec)} and ${ADDON(spec)}/${acpRes(spec)} (${Object.keys(spokenLines(spec)).length} events); list the conf in the pack's mission header m_aLF_ConfigOverlays`);
+  if (stChanged) log("string table changed: run tools\\cli regen-localization");
+  return { generated: stage.generated, chars: stage.chars, before: stage.before, after: stage.after, stChanged };
+}
+
+export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log, addon: addonName } = {}) {
+  const spec = withAddon(loadSpec(root, id), addonName);
+  if (spec.patches) {
+    // A pack's patch of a core dialogue (dialogue-patch.mjs, #957): text only, or voiced when the pack owns the voice.
+    const patch = await import("./dialogue-patch.mjs");
+    const full = { ...spec, addon: addonOf(spec) };
+    if (!full.voice) return patch.runPatch(root, full, { dryRun, log });
+    return runVoicedPatch(root, full, { dryRun, force, fetchImpl, ffmpeg, convert, log }, patch);
+  }
+  const addon = join(root, ADDON(spec));
+  const stFile = stringTable(root, spec);
+  if (!existsSync(stFile)) throw new Error(`${ADDON(spec)} has no ${stFile}; a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
+  const stText = readFileSync(stFile, "utf8");
+  const packFile = packStringFile(root);
+  const packText = packFile ? readFileSync(packFile, "utf8") : "";
+  const known = parseStrings(stText);
+  for (const [k, v] of parseStrings(packText)) known.set(k, v);
+  const problems = [...addonProblems(root, spec), ...specProblems(spec, known)];
+  if (problems.length) throw new Error("dialogue problems:\n  " + problems.join("\n  "));
+
+  let stage = { prov: { lines: {} }, generated: 0, chars: 0, before: null, after: null };
+  if (spec.text_only) {
+    log(`dialogue ${id}: ${Object.keys(spec.lines).length} lines, text only: no recordings, 0 characters to buy`);
+    if (dryRun) return { generated: 0, chars: 0, need: 0 };
+  } else {
+    stage = await voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log });
+    if (stage.dry) return { generated: 0, chars: 0, need: stage.need };
+  }
+  const conf = join(addon, confRes(spec));
+  mkdirSync(dirname(conf), { recursive: true });
+  if (!existsSync(conf + ".meta")) writeFileSync(conf + ".meta", simpleMeta(confRes(spec), freshGuid(guidsInUse(root)), "CONFResourceClass"));
+  for (const [rel, text] of Object.entries(expectedFiles(root, spec, stage.prov))) writeFileSync(join(addon, rel), text);
   // A line whose key lives in the pack's table (its flavour text) is written there; the core keeps its neutral row.
   const inPack = new Set(parseStrings(packText).keys());
   const entries = stringEntries(spec);
@@ -413,15 +490,11 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   if (newSt !== stText) writeFileSync(stFile, newSt);
   if (newPack !== packText) writeFileSync(packFile, newPack);
 
-  let after = null;
-  if (before) {
-    after = await eleven.balance(opts);
-    log(`ElevenLabs: ${before.used} -> ${after.used} characters used (${after.used - before.used} this run, ${bought} billed to these lines); ${after.left} left`);
-  }
   assertBoundary(root, spec);
-  log(`wrote ${ADDON(spec)}/${confRes(spec)} and ${ADDON(spec)}/${acpRes(spec)} (${Object.keys(spec.lines).length} events)`);
+  const wrote = spec.text_only ? `${ADDON(spec)}/${confRes(spec)} (${Object.keys(spec.lines).length} text-only lines)` : `${ADDON(spec)}/${confRes(spec)} and ${ADDON(spec)}/${acpRes(spec)} (${Object.keys(spec.lines).length} events)`;
+  log(`wrote ${wrote}`);
   if (stChanged) log("string table changed: run tools\\cli regen-localization");
-  return { generated: todo.length, chars: bought, before, after, stChanged };
+  return { generated: stage.generated, chars: stage.chars, before: stage.before, after: stage.after, stChanged };
 }
 
 function status(root) {
@@ -429,7 +502,8 @@ function status(root) {
   if (!existsSync(base)) return 0;
   for (const id of readdirSync(base).filter((d) => existsSync(specFile(root, d)))) {
     const spec = loadSpec(root, id), prov = loadProvenance(root, id);
-    if (spec.patches) { console.log(`${id}: patch of '${spec.patches}' in ${addonOf(spec)}, text only, no characters spent`); continue; }
+    if (spec.text_only) { console.log(`${id}: text only, no recordings, no characters spent`); continue; }
+    if (spec.patches && !spec.voice) { console.log(`${id}: patch of '${spec.patches}' in ${addonOf(spec)}, text only, no characters spent`); continue; }
     const total = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
     const stale = staleLines(root, spec, prov);
     console.log(`${id}: voice ${spec.voice.name}, ${Object.keys(spec.lines).length} lines, ${total} of ${spec.budget_chars} characters spent, ${stale.length ? "stale: " + stale.join(", ") : "up to date"}`);

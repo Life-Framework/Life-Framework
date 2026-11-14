@@ -1024,16 +1024,6 @@ StringTable {
      Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
      Comment "Next-step line of the debug jail board."
     }
-    CustomStringTableItem "{BD4EFB2082D27D79}" {
-     Id "LF-Dialogue_Clerk_Done"
-     Target_en_us "Welcome to Everon. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board."
-     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
-    }
-    CustomStringTableItem "{1A14D27D9FCB619D}" {
-     Id "LF-Dialogue_Clerk_AboutTown"
-     Target_en_us "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well."
-     Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
-    }
     CustomStringTableItem "{296D485ED962E190}" {
      Id "LF-Sign_PoliceCases_Title"
      Target_en_us "Case board"
@@ -1227,6 +1217,51 @@ StringTable {
      Id "LF-QuizEveron_logout_Why"
      Target_en_us "No combat logging: disconnecting in the middle of an arrest, a robbery or a fight to avoid the result is not allowed. Play the scene out; staff will hear a complaint afterwards."
      Comment "The rule shown after a wrong answer to logout (#915)."
+    }
+    CustomStringTableItem "{F77528201E045744}" {
+     Id "LF-Dialogue_ClerkEveron_Register"
+     Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it."
+     Comment "Pack patch of the clerk dialogue's line register (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{E2C827BA18E56E95}" {
+     Id "LF-Dialogue_ClerkEveron_Board"
+     Target_en_us "Now read the town board on the square, right beside me. It shows where everything in town is."
+     Comment "Pack patch of the clerk dialogue's line board (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{81CF1DB7A3E00C95}" {
+     Id "LF-Dialogue_ClerkEveron_WorkErrand"
+     Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
+     Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{CC11854D6ADAF135}" {
+     Id "LF-Dialogue_ClerkEveron_Bank"
+     Target_en_us "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office."
+     Comment "Pack patch of the clerk dialogue's line bank (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{5DBBE1A397FCD089}" {
+     Id "LF-Dialogue_ClerkEveron_Done"
+     Target_en_us "Welcome to Everon. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board."
+     Comment "Pack patch of the clerk dialogue's line done (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{159E9BA7D068BC7A}" {
+     Id "LF-Dialogue_ClerkEveron_Idle"
+     Target_en_us "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office."
+     Comment "Pack patch of the clerk dialogue's line idle (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{669F4109EF7D13AC}" {
+     Id "LF-Dialogue_ClerkEveron_AboutWork"
+     Target_en_us "The post office always needs couriers. For anything else, read the town board. It lists who is hiring."
+     Comment "Pack patch of the clerk dialogue's line about_work (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{A09AF1D870526486}" {
+     Id "LF-Dialogue_ClerkEveron_AboutTown"
+     Target_en_us "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well."
+     Comment "Pack patch of the clerk dialogue's line about_town (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{E2643CF0C0B88D91}" {
+     Id "LF-Dialogue_ClerkEveron_Bye"
+     Target_en_us "Good day to you."
+     Comment "Pack patch of the clerk dialogue's line bye (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
   }
  }
