@@ -7,6 +7,7 @@ is the playbook for those. What the first run taught us is in
 
 ```
 tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--roadmap #N] [--no-run]
+tools\cli asset new <slug> --kind clothing --base "{GUID}Prefabs/Characters/...et" --slot Jacket [--route a|b|c]   a garment: clothing.md
 tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
 tools\cli asset score <slug> <n> <silhouette,era,scale_grip,background,no_text,image_to_3d> [note]
 tools\cli asset pick <slug> <n> [--why "..."]     the human's choice from the concept sheet
@@ -19,6 +20,11 @@ tools\cli asset selftest      the offline checks (also part of tools\cli validat
 
 Voiced NPC conversations are a separate stage with its own data file: `tools\cli asset dialogue <npc>`,
 [dialogue.md](dialogue.md).
+
+Clothing has its own stages (`spec`, `vanilla`, `textures`, `fit`, `import`, `prefab`, `verify`) and its own page,
+[clothing.md](clothing.md): what a vanilla garment is made of, the three routes (retexture, modify a published mesh,
+new mesh), the state pictures (worn front, side and back, crouch, prone, running, on the ground, the inventory
+preview) and the parity runs.
 
 Run it in a worktree. The spec is `tools/assets/<slug>/spec.json` and is committed. Everything a
 stage produces is cached in `tmp/assets/<slug>/`, which is not.
@@ -84,6 +90,7 @@ Read this before any `generate`.
 | `weapon` | proven with the taser | Scaled to the vanilla M9's height and put on its grip; skinned to the M9 skeleton with its sockets | convex `UCX_`, `WeaponFire` | weapon on `Handgun_M9_base.et`, magazine, projectile, config |
 | `gadget` | proven with the handcuffs (#664) | Centred on the origin, scaled to `size_m.length`; the origin is where the hand holds it | box `UBX_`, `ItemFireView` | one held item on the vanilla `Item_Base.et` (`prefab-gadget.mjs`): name, volume, the vanilla gauze hand attachment, `SCR_GadgetComponent`, preview camera, `gadget.components` |
 | `deployable` | proven with the spike strip | Standing on the origin, scaled to `size_m.length`; `fit.repeat` tiles one generated link along the length, `fit.fold` stacks the links into a second model | thin box `UBX_` (3 cm), `ItemFireView` | the deployed prop and the carried item (`prefab-deployable.mjs`) |
+| `clothing` | route (a) proven by the parity runs; (b) and (c) blocked at the Workbench import ([clothing.md](clothing.md)) | Inherits a vanilla garment; (b)/(c) are skinned to the vanilla skeleton from Bohemia's Samples with Enfusion Blender Tools | (b)/(c): rigid `UTM_` FireGeo pieces per bone, a `UBX_` box on the ground model | one prefab inheriting the vanilla garment, overriding its components by GUID (`clothing.mjs`) |
 
 The profiles are in `tools/assets/pipeline/kinds.mjs`. A new weapon family (a rifle, a melee
 weapon) is a new kind with its own reference skeleton: read it from the vanilla `.xob` with

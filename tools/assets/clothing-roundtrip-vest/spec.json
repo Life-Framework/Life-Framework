@@ -1,0 +1,44 @@
+{
+  "slug": "clothing-roundtrip-vest",
+  "name": "RoundTripVest",
+  "kind": "clothing",
+  "route": "c",
+  "roadmap": "",
+  "concept": "The route (b)/(c) fixture: Bohemia's sample vest (Arma Reforger Samples, APL) with its hand-made weights thrown away, skinned again from the base body by the fit stage, exported with LODs and FireGeo pieces, imported, and worn through the vanilla Lifchik vest's prefab. A vanilla mesh cannot be taken out of its .xob, so the sample is the vanilla-made mesh the round trip can use. Not a garment for the game: the generated files are not committed.",
+  "base": "{9713FE6DDCC9510D}Prefabs/Characters/Vests/Vest_Lifchik/Vest_Lifchik.et",
+  "slot": "Vest",
+  "hide": null,
+  "mesh": {
+    "source": "samples:vest",
+    "object": "Object_LOD0",
+    "compare_to": "Object_LOD0",
+    "material": "SampleVest_01",
+    "item_source": "samples:vest_item",
+    "item_object": "Object_LOD0",
+    "item_material": "SampleVest_01",
+    "maps": {
+      "BCRMap": "samples:vest_bcr",
+      "NMOMap": "samples:vest_nmo"
+    },
+    "weights_from": "body",
+    "smooth": 2
+  },
+  "materials": [],
+  "budget": {
+    "texture_px": 2048,
+    "lod0_tris": 2500,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ]
+  },
+  "asset_dir": "Assets/Characters/Vests/LF/RoundTripVest",
+  "prefab_dir": "Prefabs/Characters/Vests/LF",
+  "prefab": {
+    "name_key": null,
+    "description_key": null
+  },
+  "verify": {
+    "expect": "changed"
+  }
+}

@@ -2,6 +2,7 @@
 // tools\cli shots previews: draw every mod item's inventory preview on contact sheets.
 //
 //   shots previews [--out tmp/previews/<label>] [--only Apple,Plum] [--machine local] [--keep]
+//   shots previews --prefabs Label={GUID}path.et,Label2={GUID}path.et   any prefabs, vanilla ones too (the clothing verify stage)
 //
 // The game's harness `previews` verb draws prefabs through the same ItemPreviewWidget the inventory
 // slots use (LF_ItemPreviewSheet.c), 24 per page, each labelled with its prefab name. One page per
@@ -85,6 +86,16 @@ export function measure(png, count, cols = 6, rows = 4) {
   return out;
 }
 
+// "Label={GUID}path.et,..." -> [{ name, prefab }]: prefabs from anywhere, vanilla included.
+export function prefabList(text) {
+  return String(text).split(",").filter(Boolean).map((pair) => {
+    const at = pair.indexOf("=");
+    const name = pair.slice(0, at), prefab = pair.slice(at + 1);
+    if (at < 1 || !/^\{[0-9A-F]{16}\}\S+\.et$/.test(prefab)) throw new Error(`--prefabs takes Label={GUID}path.et pairs, not ${pair}`);
+    return { name, prefab };
+  });
+}
+
 export function pages(items, size = PAGE) {
   const out = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
@@ -96,7 +107,7 @@ function parse(argv) {
   for (let i = 0; i < argv.length; i++) {
     if (!argv[i].startsWith("--")) continue;
     const k = argv[i].slice(2);
-    flags[k] = ["out", "only", "machine"].includes(k) ? argv[++i] : true;
+    flags[k] = ["out", "only", "machine", "prefabs"].includes(k) ? argv[++i] : true;
   }
   return flags;
 }
@@ -104,7 +115,7 @@ function parse(argv) {
 export async function main(argv) {
   const f = parse(argv);
   if (f.selftest) return selftest();
-  let items = modItems();
+  let items = f.prefabs ? prefabList(f.prefabs) : modItems();
   if (f.only) {
     const want = new Set(f.only.split(","));
     items = items.filter((i) => want.has(i.name));
@@ -163,6 +174,7 @@ async function runRemote(f, outDir) {
   const rel = relative(ROOT, outDir).split("\\").join("/");
   const args = ["run", "agent-box/previews.mjs", "--inner", "--out", rel];
   if (f.only) args.push("--only", f.only);
+  if (f.prefabs) args.push("--prefabs", f.prefabs);
   const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...args], { stdio: "inherit", windowsHide: true, cwd: ROOT });
   const parent = dirname(outDir);
   mkdirSync(parent, { recursive: true });

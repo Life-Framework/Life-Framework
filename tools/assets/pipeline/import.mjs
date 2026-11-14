@@ -40,7 +40,7 @@ export function runLog(dir) {
   return "";
 }
 
-function newestLog(profile) {
+export function newestLog(profile) {
   const logs = join(profile, "logs");
   if (!existsSync(logs)) return "";
   const dirs = readdirSync(logs).map((d) => join(logs, d)).filter((d) => statSync(d).isDirectory()).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
