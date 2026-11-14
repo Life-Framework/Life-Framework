@@ -197,11 +197,24 @@ async function runJob(root, entry) {
     attempts++;
     update(root, entry.id, { state: "gating", attempts, files, gatedBase }, `gate ${attempts}: ${cmd.join(" ")} on main ${gatedBase.slice(0, 7)}`);
     const t0 = Date.now();
+    const startAt = readFileSync(log, "utf8").length;
     const code = await runLogged(log, process.execPath, [join(wtPath, "tools", "cli.mjs"), ...cmd], { cwd: wtPath, env: { ...process.env, LF_SHIP_QUEUE_JOB: entry.id } });
-    const text = readFileSync(log, "utf8");
+    const text = readFileSync(log, "utf8").slice(startAt);
     const machine = [...text.matchAll(/ci: Workbench compile \+ build on ([\w.-]+)/g)].map((x) => x[1]).pop() ?? (cmd[0] === "ci" ? null : "this PC (validate)");
     update(root, entry.id, { machine, gateS: Math.round((Date.now() - t0) / 1000) }, `gate ${attempts} exit ${code} in ${Math.round((Date.now() - t0) / 1000)} s`);
-    if (code !== 0) return fail(root, entry, `gate ${cmd.join(" ")} failed (exit ${code})`);
+    if (code !== 0) {
+      // The pool, not the PR: no machine answered, or a shard was placed nowhere. Back in the queue at its
+      // old place, at most MAX_ENV_RETRIES times; then it fails like any gate.
+      const env = sq.environmentFailure(text);
+      const retries = (entry.envRetries ?? 0) + 1;
+      if (env && retries <= sq.MAX_ENV_RETRIES) {
+        say(`gate ${attempts} failed on the pool, not the PR (${env}); back in the queue (retry ${retries} of ${sq.MAX_ENV_RETRIES})`);
+        update(root, entry.id, { state: "queued", envRetries: retries, attempts: attempts - 1, notBefore: new Date(Date.now() + 3 * 60 * 1000).toISOString() }, `requeued: ${env}`);
+        wlog(root, `requeued ${slug} (#${entry.pr}): ${env}`);
+        return;
+      }
+      return fail(root, entry, `gate ${cmd.join(" ")} failed (exit ${code})${env ? `; the pool failed it ${retries} times (${env})` : ""}`);
+    }
     wt.git(wtPath, ["fetch", "origin", "--prune"]);
     const newBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
     const mainFiles = newBase === gatedBase ? [] : wt.git(wtPath, ["diff", "--name-only", gatedBase, newBase]).stdout.split(/\r?\n/).filter(Boolean);

@@ -43,7 +43,7 @@ export function ordered(entries) {
 // machine). An entry starts when no running gate and no earlier waiting entry changes a file it
 // changes; so PRs on disjoint files gate side by side and overlapping ones keep their FIFO order.
 // Returns [{ entry, why }] for starts and [{ entry, why }] for the ones that wait.
-export function pickRunnable(entries, { slots = 1 } = {}) {
+export function pickRunnable(entries, { slots = 1, now = Date.now() } = {}) {
   const running = entries.filter((e) => RUNNING.includes(e.state));
   let free = Math.max(0, slots - running.length);
   const start = [];
@@ -51,7 +51,8 @@ export function pickRunnable(entries, { slots = 1 } = {}) {
   const ahead = [...running];
   for (const e of ordered(entries)) {
     const clash = ahead.map((o) => ({ o, files: overlap(o.files, e.files) })).find((c) => c.files.length);
-    if (clash) wait.push({ entry: e, why: `waits for ${clash.o.slug} (both change ${clash.files.slice(0, 3).join(", ")}${clash.files.length > 3 ? ", ..." : ""})` });
+    if (e.notBefore && Date.parse(e.notBefore) > now) wait.push({ entry: e, why: `retries after ${e.notBefore.slice(11, 16)} UTC (the pool failed its last gate)` });
+    else if (clash) wait.push({ entry: e, why: `waits for ${clash.o.slug} (both change ${clash.files.slice(0, 3).join(", ")}${clash.files.length > 3 ? ", ..." : ""})` });
     else if (free <= 0) wait.push({ entry: e, why: `waits for a gate slot (${slots} running)` });
     else {
       free--;
@@ -73,6 +74,18 @@ export function regateDecision({ prFiles = [], mainFiles = [], attempts = 1, max
   if (!why) return { regate: false, why: `main moved (${mainFiles.length} file(s)), none shared with this PR or generated; pushing the gated head` };
   if (attempts >= maxAttempts) return { regate: false, why: `${why}, but ${attempts} gates ran already; pushing, GitHub's validate check covers it`, capped: true };
   return { regate: true, why };
+}
+
+// A gate that failed because the pool could not run it (no machine answered ssh, a test shard placed
+// nowhere and ran 0 tests) says nothing about the PR: the worker requeues it instead of failing it.
+// Returns the reason, or null for a real failure (a shard that ran tests and failed one is real).
+export const MAX_ENV_RETRIES = 2;
+export function environmentFailure(text) {
+  const t = String(text);
+  if (/FAIL {2}pool: no reachable machine/.test(t)) return "no pool machine answered";
+  const shards = [...t.matchAll(/^shard \S+ \d+\/\d+: exit (\d+), [\d.]+ s, (\d+) test\(s\)/gm)];
+  if (shards.some((m) => m[1] === "3" && m[2] === "0") && !shards.some((m) => m[1] !== "0" && m[2] !== "0")) return "a test shard could not be placed (exit 3, 0 tests)";
+  return null;
 }
 
 // ---------------------------------------------------------------- state (tmp/wt/ship-queue.json in the main checkout)

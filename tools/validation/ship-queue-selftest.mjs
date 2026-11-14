@@ -4,7 +4,8 @@
 // red-proof 2026-11-14 (ship-train), each broken alone: pickRunnable without the earlier waiting entries in `ahead`
 // "b done: c starts, e still waits behind c" (e jumped c); regateDecision without the generated check "main changed
 // the test registry and the PR was re-gated"; overlap() counting driver-merged files "two PRs that only both append
-// to docs/features.md ran in parallel (abd start)".
+// to docs/features.md ran in parallel (abd start)"; environmentFailure without the 0-test shard rule "shards placed nowhere
+// (exit 3, 0 tests): requeued".
 
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -64,6 +65,15 @@ d = sq.regateDecision({ prFiles: pr, mainFiles: ["addons/LifeFramework/Language/
 check(d.regate, "main changed a generated language conf: re-gate");
 d = sq.regateDecision({ prFiles: pr, mainFiles: [REG], attempts: 3 });
 check(!d.regate && d.capped, "after 3 gates the head goes up (GitHub's validate covers the rest)");
+
+// 3b. A pool failure is requeued (with a back-off), a real test failure is not.
+const lines = (...l) => l.join("\n");
+check(sq.environmentFailure(lines("pool: lf-cloud does not answer ssh", "FAIL  pool: no reachable machine for this run (lf-testbox, lf-cloud)")) !== null, "no reachable machine: requeued, not failed");
+check(sq.environmentFailure(lines("shard normal 1/1: exit 3, 2.4 s, 0 test(s)", "shard core 1/1: exit 3, 2.5 s, 0 test(s)")) !== null, "shards placed nowhere (exit 3, 0 tests): requeued");
+check(sq.environmentFailure(lines("shard normal 1/2: exit 1, 80 s, 260 test(s)", "shard normal 2/2: exit 3, 2 s, 0 test(s)")) === null, "a shard that ran tests and failed is a real failure");
+check(sq.environmentFailure("FAIL  validate/validate-guids.mjs") === null, "a validate failure is a real failure");
+const later = { slug: "z", id: "z-1", seq: 1, state: "queued", files: ["z.c"], notBefore: "2026-11-14T10:05:00Z" };
+check(sq.pickRunnable([later], { slots: 2, now: Date.parse("2026-11-14T10:04:00Z") }).start.length === 0 && sq.pickRunnable([later], { slots: 2, now: Date.parse("2026-11-14T10:06:00Z") }).start.length === 1, "a requeued entry waits out its back-off, then starts");
 
 // 4. Queue file round trip; finished entries are capped; a running slug cannot be enqueued again.
 const dir = mkdtempSync(join(tmpdir(), "lf-shipq-"));

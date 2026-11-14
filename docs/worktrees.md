@@ -149,7 +149,10 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
    the Workbench compile and build on whichever pool machine has the `workbench` cap and room
    (`tools/lib/wb-gate.mjs`), the suite, core-only run and placement audit on pool test lanes. A branch
-   that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does.
+   that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
+   build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
+   so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
+   one worktree at a time behind the hub build lock, in the first queue run).
 3. **Re-gate rule.** When the gate passes, the worker fetches again. If main moved, it re-gates only
    when the new main commits change a file the PR changes, or a generated file (the test registry, a
    language conf, the string table). Driver-merged docs (`docs/features.md`, `docs/debug-log-triage.md`,
@@ -157,6 +160,9 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    `validate` check covers the combination. After three gates it pushes regardless.
 4. Pass: push, `gh pr merge --auto --merge`. Fail: a PR comment with the failing lines of the log and
    its path, the entry is marked failed, and the queue moves on. Fix, commit, `wt ship` again.
+   A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
+   is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
+   most twice, then fails like any gate.
 
 **Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
 or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
