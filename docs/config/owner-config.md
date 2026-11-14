@@ -107,9 +107,9 @@ renamed currency term) or `actionShown` (an action is offered or hidden, for a s
 three, `empty` is the shipped baseline for both kinds of read.
 
 ```
-toolscli session up --clients 1
-toolscli session config-harness-proof [--only <name>]
-toolscli session down
+tools\cli session up --clients 1
+tools\cli session config-harness-proof [--only <name>]
+tools\cli session down
 ```
 
 The proof writes each fixture as the server's owner `config.json`, runs `configreload` (the server streams it),
