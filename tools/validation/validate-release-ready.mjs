@@ -99,7 +99,7 @@ function checkGproj(root, addon, errors, coreGuid) {
 function checkTree(root, addon, errors) {
   const files = addonFiles(root, addon);
   const elBases = new Set();
-  for (const f of files) {
+  for (const f of [CORE, PACK].flatMap((a) => addonFiles(root, a))) {
     const b = basename(f).replace(/\.meta$/i, "");
     if (b.startsWith("EL_") && !b.endsWith(".c")) elBases.add(b.replace(/\.[^.]+$/, ""));
   }
