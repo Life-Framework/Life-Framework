@@ -691,7 +691,14 @@ export async function main(argv) {
     console.log(USAGE);
     return args.flags.help ? 0 : 2;
   }
-  return run(args);
+  // One of this PC's Workbench slots for the whole look (tools/lib/wb-lock.mjs).
+  const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
+  const wb = await acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
+  try {
+    return await run(args);
+  } finally {
+    wb.release();
+  }
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
