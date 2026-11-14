@@ -165,6 +165,7 @@ ok("rule 1: a direct wb-lock slot fails", probe("tools/x.mjs", 'import { acquire
 ok("rule 1: the route's own import is fine", probe("tools/lib/wb-route.mjs", 'import * as wbLock from "./wb-lock.mjs";\nwbLock.acquireWorkbench(root);').length === 0);
 ok("rule 1: a comment naming wb-lock is fine", probe("tools/x.mjs", '// tools/lib/wb-lock.mjs\nawait wbRoute.acquireWorkbench(root, {});').length === 0);
 ok("rule 2: an unguarded launcher fails", probe("tools/y.mjs", 'spawn("C:/Tools/ArmaReforgerWorkbenchSteamDiag.exe", args)').length === 1);
+ok("rule 2: a caller of look.runWorkbench with no guard fails", probe("tools/assets/y.mjs", 'const look = await import("../visual/look.mjs");\nawait look.runWorkbench(look.workbenchExe(), profile, 60)').length === 1);
 ok("rule 2: a launcher that consults the route passes", probe("tools/y.mjs", 'import * as route from "./lib/wb-route.mjs";\nspawn("ArmaReforgerWorkbenchSteamDiag.exe", args)').length === 0);
 ok("rule 2: a script with the guard variable passes", probe("tools/validation/z.ps1", 'if ($env:LF_WB_GUARDED -ne "1") { exit 2 }\n$wb = "ArmaReforgerWorkbenchSteamDiag.exe"').length === 0);
 

@@ -378,6 +378,8 @@ export function workbenchArgs(root, profile, plugin = "LF_VisualShotsPlugin") {
 
 // Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
 export async function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
+  // The one place a look-style run starts Workbench (look, look server, clothing shots): never on a PC without the workbench cap.
+  (await import("../lib/wb-route.mjs")).requireLocalWorkbench(ROOT, `Workbench run (${plugin})`);
   const args = workbenchArgs(ROOT, profile, plugin);
   const il = await import("../lib/interactive-launch.mjs");
   if (il.interactiveNeeded()) return runInteractive(il, exe, args, profile, budgetS);

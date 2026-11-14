@@ -3,7 +3,8 @@
 // Two rules, checked on the source:
 //   1. Only wb-route.mjs takes a Workbench slot from wb-lock.mjs. Anything else calling acquireWorkbench or
 //      acquireWorkbenchSync skips the cap check, so a new launcher cannot forget it.
-//   2. A file that names the Workbench executable (ArmaReforgerWorkbenchSteamDiag) carries a marker that the
+//   2. A file that names the Workbench executable (ArmaReforgerWorkbenchSteamDiag) or starts one through look.mjs
+//      (look.workbenchExe, look.runWorkbench) carries a marker that the
 //      cap check is in its path: it mentions wb-route, LF_WB_GUARDED or LF_WB_LOCAL. A launcher added without
 //      one fails here; add the check (or route the step) rather than a marker.
 // inputs: tools/**, agent-box/**
@@ -39,7 +40,7 @@ export function check(files) {
     if (/\bacquireWorkbench(Sync)?\b/.test(text) && IMPORTS_LOCK.test(text) && !LOCK_USERS.has(path)) {
       bad.push(`${path}: takes a Workbench slot from wb-lock directly; use acquireWorkbench from tools/lib/wb-route.mjs (it checks this PC's workbench cap)`);
     }
-    if (/ArmaReforgerWorkbenchSteamDiag/.test(text) && !EXE_NAMERS.has(path) && !MARKER.test(text)) {
+    if (/ArmaReforgerWorkbenchSteamDiag|look\.(workbenchExe|runWorkbench)/.test(text) && !EXE_NAMERS.has(path) && !MARKER.test(text)) {
       bad.push(`${path}: names the Workbench executable but never consults the workbench cap (wb-route.mjs localWorkbench / requireLocalWorkbench, or LF_WB_GUARDED / LF_WB_LOCAL in a script)`);
     }
   }
