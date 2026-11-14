@@ -1,0 +1,12 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "warn",
+      "line": 1,
+      "col": 50,
+      "msg": "shops.priceRules.Prefabs/Items/Typo/: no shipped record has this key; it adds a new record. A typo would sit unused"
+    }
+  ]
+}
