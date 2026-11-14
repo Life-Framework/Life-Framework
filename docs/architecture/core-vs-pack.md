@@ -93,4 +93,8 @@ Split them along these seams:
 
 A resource that moves keeps its `.meta`, so its GUID stays the same and every
 `{GUID}path` reference still resolves. A new pack resource gets its `.meta`
-from Workbench with the pack project loaded, never by hand.
+from Workbench with the pack project loaded, never by hand. The one exception
+is `tools\cli asset`, which writes the `.meta` files of what it imports (a
+headless Workbench cannot register a new `.fbx`) with GUIDs unique across both
+addons, and imports a pack asset with `--addon LF_Everon1989`
+([`asset-pipeline/README.md`](../asset-pipeline/README.md) "Target addon").

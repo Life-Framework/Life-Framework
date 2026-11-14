@@ -17,6 +17,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
+import { addonPath } from "./addon.mjs";
 
 // Vanilla hold sets a gadget can borrow whole. `grip` is the centre of the closed hand and `out` the
 // direction away from the palm, both in the LeftHandProp frame (x right, y up, z forward when the
@@ -268,7 +269,7 @@ export function applyStates(text, spec) {
   return t;
 }
 
-export const prefabPath = (root, spec) => join(root, "addons", "LifeFramework", spec.states?.prefab || `${spec.prefab_dir}/${spec.name}.et`);
+export const prefabPath = (root, spec) => join(addonPath(root, spec), spec.states?.prefab || `${spec.prefab_dir}/${spec.name}.et`);
 
 // The stage: check (and with fix, write) the prefab; list the pictures to take.
 export function stageStates(ctx, { fix = false } = {}) {
