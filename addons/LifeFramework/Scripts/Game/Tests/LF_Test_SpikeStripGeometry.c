@@ -33,24 +33,24 @@ class LF_Test_SpikeStripGeometry : LF_Test
 		ctx.False(LF_SpikeStripGeometry.SweepCrosses("10 0 10", alongX, hl, hw, "12 0 8", "12 0 12"), "a turned strip misses a path past its end");
 
 		// Which way it runs.
-		vector noRoad = LF_SpikeStripGeometry.Axis("0 -0.5 0.8", false, vector.Zero);
+		vector noRoad = LF_PlacementGeometry.Axis("0 -0.5 0.8", false, vector.Zero);
 		ctx.EqualFloat(1, noRoad[2], 0.001, "with no road the strip runs where the officer faces, flattened");
-		vector acrossRoad = LF_SpikeStripGeometry.Axis("0.6 0 0.8", true, "1 0 0");
+		vector acrossRoad = LF_PlacementGeometry.Axis("0.6 0 0.8", true, "1 0 0");
 		ctx.EqualFloat(0, acrossRoad[0], 0.001, "with a road along x the strip runs straight across it (x)");
 		ctx.EqualFloat(1, acrossRoad[2], 0.001, "with a road along x the strip runs straight across it (z)");
-		vector otherSide = LF_SpikeStripGeometry.Axis("0 0 -1", true, "1 0 0");
+		vector otherSide = LF_PlacementGeometry.Axis("0 0 -1", true, "1 0 0");
 		ctx.EqualFloat(-1, otherSide[2], 0.001, "an officer on the other verge lays it the other way");
 
 		// The road segment nearest the officer.
 		array<vector> road = {"0 0 0", "10 0 0", "10 0 10"};
 		float distance;
-		vector first = LF_SpikeStripGeometry.NearestSegmentDirection(road, "3 0 1", distance);
+		vector first = LF_PlacementGeometry.NearestSegmentDirection(road, "3 0 1", distance);
 		ctx.EqualFloat(1, first[0], 0.001, "the first segment runs along x");
 		ctx.EqualFloat(1, distance, 0.001, "one metre from the first segment");
-		vector second = LF_SpikeStripGeometry.NearestSegmentDirection(road, "9 0 6", distance);
+		vector second = LF_PlacementGeometry.NearestSegmentDirection(road, "9 0 6", distance);
 		ctx.EqualFloat(1, second[2], 0.001, "the second segment runs along z");
 		array<vector> onePoint = {"0 0 0"};
-		ctx.True(LF_SpikeStripGeometry.NearestSegmentDirection(onePoint, "1 0 1", distance) == vector.Zero, "one point is no road");
+		ctx.True(LF_PlacementGeometry.NearestSegmentDirection(onePoint, "1 0 1", distance) == vector.Zero, "one point is no road");
 
 		// The ground rule.
 		ctx.True(LF_SpikeStripGeometry.GroundAcceptable(0, 0.2, 0.25), "a 20 cm rise along the strip is fine");
@@ -58,13 +58,13 @@ class LF_Test_SpikeStripGeometry : LF_Test
 
 		// The laid transform.
 		vector flat[4];
-		LF_SpikeStripGeometry.Transform("0 0 0", "0 0 3.5", flat);
+		LF_PlacementGeometry.Transform("0 0 0", "0 0 3.5", flat);
 		ctx.EqualFloat(1, flat[2][2], 0.001, "forward runs from start to end");
 		ctx.EqualFloat(1, flat[0][0], 0.001, "right is x");
 		ctx.EqualFloat(1, flat[1][1], 0.001, "up is up on flat ground");
 		ctx.EqualFloat(1.75, flat[3][2], 0.001, "the origin is the middle");
 		vector slope[4];
-		LF_SpikeStripGeometry.Transform("0 0 0", "0 0.35 3.5", slope);
+		LF_PlacementGeometry.Transform("0 0 0", "0 0.35 3.5", slope);
 		ctx.InRange(slope[2][1], 0.09, 0.11, "on a slope the strip tilts with it");
 		ctx.InRange(slope[1][1], 0.99, 1.0, "and its up stays nearly up");
 	}

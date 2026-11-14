@@ -6,10 +6,6 @@ MetaFileClass {
    MergeMeshes 0
    ExportSceneHierarchy 1
    MaterialAssigns {
-    MaterialAssignClass "{38991718FFCC0EAB}" {
-     SourceMaterial "AB_Cabinet_White"
-     AssignedMaterial "{50427C1F6FF60920}Assets/Buildings/Materials/AB_Cabinet_White.emat"
-    }
     MaterialAssignClass "{1DEE65D5EAAD6ED3}" {
      SourceMaterial "AB_Carpet"
      AssignedMaterial "{934EF64464A22581}Assets/Buildings/Materials/AB_Carpet.emat"
@@ -29,18 +25,6 @@ MetaFileClass {
     MaterialAssignClass "{83E91890B782A819}" {
      SourceMaterial "AB_Frame_Dark"
      AssignedMaterial "{038F1BCB638D4C0B}Assets/Buildings/Materials/AB_Frame_Dark.emat"
-    }
-    MaterialAssignClass "{96C11EBB07D37E85}" {
-     SourceMaterial "AB_Glass_Frosted"
-     AssignedMaterial "{6ABAC259E263495C}Assets/Structures/BuildingsParts/Windows/Data/window_glass_dirty.emat"
-    }
-    MaterialAssignClass "{571D5FB18D7F874E}" {
-     SourceMaterial "AB_Lamp"
-     AssignedMaterial "{F94C5856EA411094}Assets/Buildings/Materials/AB_Lamp.emat"
-    }
-    MaterialAssignClass "{FA7C0DCAF812A50D}" {
-     SourceMaterial "AB_Metal_Black"
-     AssignedMaterial "{DC01D43F244616E5}Assets/Buildings/Materials/AB_Metal_Black.emat"
     }
     MaterialAssignClass "{82740D6F7B666A83}" {
      SourceMaterial "AB_Metal_Panel"
@@ -70,10 +54,6 @@ MetaFileClass {
      SourceMaterial "AB_Roof_Flat"
      AssignedMaterial "{FC145870AA937CDD}Assets/Buildings/Materials/AB_Roof_Flat.emat"
     }
-    MaterialAssignClass "{8E475E2706C89883}" {
-     SourceMaterial "AB_Sign"
-     AssignedMaterial "{06066674F6571CCE}Assets/Buildings/Materials/AB_Sign.emat"
-    }
     MaterialAssignClass "{0BF96C8768A6DAA9}" {
      SourceMaterial "AB_Stone"
      AssignedMaterial "{3FD84AFE0D74D08E}Assets/Buildings/Materials/AB_Stone.emat"
@@ -85,10 +65,6 @@ MetaFileClass {
     MaterialAssignClass "{BCACD794A6B7506B}" {
      SourceMaterial "AB_Tiles_Wall"
      AssignedMaterial "{4615B6849BF1827A}Assets/Buildings/Materials/AB_Tiles_Wall.emat"
-    }
-    MaterialAssignClass "{C657FDE97E040284}" {
-     SourceMaterial "AB_Trim_White"
-     AssignedMaterial "{1D9FE9A0F682E234}Assets/Buildings/Materials/AB_Trim_White.emat"
     }
    }
    MeshParams {
@@ -138,14 +114,6 @@ MetaFileClass {
      Mass 0
      Margin 0
     }
-    GeometryParam UTM_BD_plastic {
-     LayerPreset "BuildingFireView"
-     SurfaceProperties {
-      "{5EAA7FB0A83F90CF}Common/Materials/Game/plastic.gamemat"
-     }
-     Mass 0
-     Margin 0
-    }
     GeometryParam UTM_BD_stone {
      LayerPreset "BuildingFireView"
      SurfaceProperties {
@@ -162,26 +130,10 @@ MetaFileClass {
      Mass 0
      Margin 0
     }
-    GeometryParam UTM_BD_wood {
-     LayerPreset "BuildingFireView"
-     SurfaceProperties {
-      "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"
-     }
-     Mass 0
-     Margin 0
-    }
     GeometryParam UTM_BD_wood_floor {
      LayerPreset "BuildingFireView"
      SurfaceProperties {
       "{C727F17C8DD315A7}Common/Materials/Game/wood_floor.gamemat"
-     }
-     Mass 0
-     Margin 0
-    }
-    GeometryParam UTM_GL_glass {
-     LayerPreset "Glass"
-     SurfaceProperties {
-      "{3DC7C8A918E3F4A5}Common/Materials/Game/glass.gamemat"
      }
      Mass 0
      Margin 0

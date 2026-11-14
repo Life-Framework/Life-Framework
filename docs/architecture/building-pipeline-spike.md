@@ -110,6 +110,50 @@ Two side findings:
   `_SharedData` plaster and bitumen textures are near-white and expect a `Color` tint, and `AB_Stucco_White` has none.
   The spec now uses `AB_Stucco_Beige`; in evening light it still reads pale.
 
+## Parity with Blender (2026-11-14, second pass)
+
+The first export was a bare pale box in the game while ArchBuilder showed a dressed supermarket in Blender. Three root
+causes, each now a check or a fix in the pipeline.
+
+**1. Furniture off meant no vanilla props at all.** `reforger/export.py` `collect()` records furniture calls into the prop
+sink only when furniture is exported (`rec_props = [] if (vanilla_props and include_furniture) else None`). Every vanilla
+prop is such a call: shelves, coolers, counters and tills, lamps, switches, and the `SignCommercial_01_GroceryStore`
+fascia (`civic.extras` calls `FU.shop_sign` inside the recorder). With `export.furniture: false` nothing was recorded,
+`vanilla_props: true` did nothing, and the sign was drawn as a blank board. It was not the library: the bundled
+`vanilla_lib.json` holds 2665 props, the shop fixtures among them, and no data-folder scan is needed for props. The spec
+now has furniture on, and the spec stage refuses vanilla props with furniture off.
+
+**2. The export never failed.** ArchBuilder reports, it does not stop: warnings, and furniture records it found no prefab or
+no room for (`props_mesh`, dropped), are in the dict `reforger.export.run` returns, which the operator reduces to one
+line. The job now keeps that report (`export.json`) and the export stage fails on any warning, any dropped record, no
+props with furniture on, or a prop count that differs from the furniture prefab. With furniture on the supermarket gets
+68 vanilla props and drops none: 16 `ShelfShop_01` (four double gondolas), 4 `CoolingBoxShop_01`, 3 `CounterShop_01`
+with 3 `CashierShop_01` tills, 5 `ShelfDecorative_01_base` in the back rooms, lamps, switches, sockets, six
+`Toilet_01`, two sinks, a desk set, wall lights, the fascia sign. Recorded calls build no mesh (`furniture.SINK`), so
+nothing is baked: the model fell from 3434 to 707 LOD0 faces.
+
+**3. Why the walls read white.** Not the parameter: the base game tints `MatPBRBasic` with `Color` too (326 of its 443
+basic materials over `_SharedData` textures) and its building walls with `Color_n` per `MatPBRMulti` layer. The number
+was wrong. Measured with the game's own textures (linear mean of each BCR, from the paks):
+
+| | Albedo (Color x texture mean), luminance |
+|---|---|
+| Base game exterior plaster over `ST_Plaster_Clean_White_01/02`, 72 materials | p10 0.18, median 0.27, p90 0.385, max 0.50 |
+| Base game white walls: `Church_01_ExtWalls_White`, `Chapel_01_Ext_White` | 0.375, 0.360 |
+| Base game beige house: `House_E_1I01_exterior_Beige` | 0.26 |
+| Base game interior plaster, 121 materials | median 0.52, p90 0.68 |
+| Our `AB_Stucco_Beige`, `Color 0.76 0.66 0.5` over a 0.686 texture | **0.46**: brighter than the game's white church |
+| Our `AB_Roof_Flat`, no `Color` over bitumen (mean 0.77) | 0.77: white, where Blender shows dark grey 0.36 |
+
+ArchBuilder means `Color = tint / texture mean` with the tint equal to the material's Blender colour, but its bundled
+library has no means (only a scan of an extracted data folder makes them), so the tint is written raw, and a material
+without a tint gets the bare near-white texture. And a Blender colour is not a game albedo: ArchBuilder's white stucco is
+0.85 in Blender, the game's white plaster 0.37. The export stage now writes `Color = k x Blender colour / measured mean`,
+with `k` taking ArchBuilder's white plaster to the base game's (0.43 for a material whose faces look outside, 0.69 for an
+inside-only one; outside is measured by ray casts from each face, since one ArchBuilder `walls` part holds both faces of
+an outer wall). Beige walls now land at 0.29 (the base game's median), the flat roof at 0.15. A texture darker than the
+Blender colour (the granite floor tiles) caps at `Color 1` and stays darker than Blender; the stage says so.
+
 ## Decisions and open questions
 
 | Question | Who | State |
@@ -117,12 +161,12 @@ Two side findings:
 | Which building types the flagship needs, and how many of each (village houses, shops, a town hall, a police station, farms) | **Human** | Open. ArchBuilder has residential, government, services and military archetypes and a realistic-building set (town hall, church, ...) |
 | Buildings land in the core addon with a `pack` row in the inventory, until the pack loads (AGENTS.md rule 9) | Decided | Per the rule |
 | One export per spec, not a street at once | Decided | Simpler GUID and review story; revisit for village blocks |
-| Furniture: ArchBuilder's vanilla furniture, or ours | **Human** | Open. Off for the supermarket so the shop can fill it (below) |
+| Furniture: ArchBuilder's vanilla furniture, or ours | Decided | ArchBuilder's, as vanilla props: what Blender shows is what the game gets. The shop fixtures arrive empty for our store (below) |
 
 ## Supermarket next steps
 
-Research for the follow-up that furnishes the supermarket and opens it as a store. Not done in this PR: the building is
-exported with `do_furniture` off, so it has rooms, doors, windows and ceiling lamps and nothing else.
+Research for the follow-up that opens the supermarket as a store. Part (a) is done: the building is exported furnished
+(Parity with Blender, above). Part (b) is the next issue.
 
 ### (a) What ArchBuilder can put inside a supermarket
 

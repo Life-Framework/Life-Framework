@@ -1,4 +1,5 @@
 MatPBRBasic {
+ Color 0.4196 0.4059 0.3659 1
  BCRMap "{D2A6A3E55C5BD51C}Assets/_SharedData/Stone/ST_Blocks_Stone_01_BCR.edds"
  NMOMap "{EA7E1877852C8782}Assets/_SharedData/Stone/ST_Blocks_Stone_01_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{8D3752336872AA1B}" {

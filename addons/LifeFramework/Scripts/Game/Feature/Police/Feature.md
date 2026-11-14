@@ -83,7 +83,8 @@ is the entry point.
   reach, and the end shuts them with a click and puts them on the suspect (or takes them off). The
   server watches the pair, and accepts only an end it saw begin, after most of the duration.
 - Spike strip (#646): every rank's armory kit carries the folded strip. Deploy it from the
-  ground in front of you (on-duty police, rate limited); the server punctures each wheel whose path
+  ground in front of you (on-duty police, rate limited; placed where your ghost showed by the
+  placement service, #1026, `Feature/Placement`); the server punctures each wheel whose path
   crosses it through the vanilla wheel damage, and an officer picks it up again. It goes after
   `m_iSpikeStripLifetimeSeconds`. `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
 
