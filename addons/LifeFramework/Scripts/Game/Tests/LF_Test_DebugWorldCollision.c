@@ -26,8 +26,10 @@ class LF_Test_DebugWorldCollision : LF_Test
 			s_aTraderTables.Insert(entity.GetID());
 
 		string label = entity.GetName();
+		if (label.IsEmpty() && prefab)
+			label = prefab.GetPrefabName() + " at " + entity.GetOrigin().ToString();
 		if (label.IsEmpty())
-			label = type.ToString();
+			label = type.ToString() + " at " + entity.GetOrigin().ToString();
 
 		if (!(entity.GetFlags() & EntityFlags.TRACEABLE))
 		{
