@@ -79,10 +79,13 @@ export function earlyDeath({ status, seconds, text, freeMb, reserveMb = WB_RESER
 // (free Workbench slot AND RAM for a Workbench, ranked by free RAM and speed): this PC when it has a
 // free slot, no live `build` lock (local.buildLocked) and the RAM; else a pool machine that chooseGate
 // finds with a free slot and the RAM (never one it would only queue on); else this PC again, which
-// waits for its slot as before. mode "auto" (default), "local", or "pool" (a pool machine first even
-// when this PC is free). Pure; tools/validation/rdb-refresh-where-selftest.mjs proves it.
-export function chooseRefresh({ local, remotes = [], mode = "auto", reserveMb = WB_RESERVE_MB, minFreeMb = DEFAULTS.minFreeMb, roomyMb = DEFAULTS.roomyMb }) {
+// waits for its slot as before. Only a machine with the `rdb` cap (needCap) is a candidate: its refresh
+// is known to register resources (lf-cloud's Workbench exits 0 and registers none, 2026-11-14). mode
+// "auto" (default), "local", or "pool" (a pool machine first even when this PC is free). Pure;
+// tools/validation/rdb-refresh-where-selftest.mjs proves it.
+export function chooseRefresh({ local, remotes = [], mode = "auto", needCap = "rdb", reserveMb = WB_RESERVE_MB, minFreeMb = DEFAULTS.minFreeMb, roomyMb = DEFAULTS.roomyMb }) {
   if (mode === "local") return { where: "local", why: "LF_RDB_REFRESH_WHERE=local" };
+  remotes = remotes.filter((r) => (r.caps ?? []).includes(needCap));
   const need = reserveMb + minFreeMb;
   const slotFree = !local.buildLocked && local.busy + local.queued < local.limit;
   const ramOk = local.freeMb == null || local.freeMb >= need;
