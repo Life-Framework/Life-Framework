@@ -146,6 +146,25 @@ class LF_Progression
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Forgets every earned licence (the licences persistence switch, #689): each record keeps an
+	//! empty list, which leaves a body its starter licences at the next spawn.
+	//! \return How many records held a licence.
+	static int ClearAllLicences()
+	{
+		int cleared;
+		foreach (string uid, LF_ProgressionRecord record : Records())
+		{
+			if (!record || !record.m_aLicenses || record.m_aLicenses.IsEmpty())
+				continue;
+
+			record.m_aLicenses.Clear();
+			cleared++;
+		}
+
+		return cleared;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: one record per player with any progression.
 	//! A running duty clock is settled first (the clock keeps running), so a shift that ends in
 	//! the shutdown save keeps its seconds.
