@@ -46,6 +46,16 @@ async function runConfigHarnessProof(args) {
         wait(800);
         return list;
       }
+      if (read.kind === "uiText") {
+        on(1, { verb: "stand", entityName: read.entity });
+        wait(2500);
+        on(1, { verb: "use", className: read.class, entityName: read.entity }, 10000);
+        wait(1500);
+        const text = on(1, { verb: "ui", mode: "text" }, 10000).detail;
+        on(1, { verb: "click", widget: read.close ?? "CloseButton" });
+        wait(800);
+        return text;
+      }
       if (read.kind === "actionShown") {
         on(1, { verb: "stand", entityName: read.entity, side: "s" });
         wait(2500);

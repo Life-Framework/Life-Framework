@@ -56,12 +56,12 @@ StringTable {
     }
     CustomStringTableItem "{B0E7C6F894684DEC}" {
      Id "LF-Org_LedgerTitle"
-     Target_en_us "Organization Register - 1989 ledger"
+     Target_en_us "{Org} Register - 1989 ledger"
      Comment "Registry ledger page title."
     }
     CustomStringTableItem "{D8F9FC9FD0EEAC13}" {
      Id "LF-PoliceApp_Title"
-     Target_en_us "Application to the Everon Police"
+     Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
     }
     CustomStringTableItem "{41BDF9AA8EA3352E}" {
