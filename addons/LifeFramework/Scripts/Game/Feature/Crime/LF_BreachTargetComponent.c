@@ -144,10 +144,10 @@ class LF_BreachTargetComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	//! Turns the swing child to its open or closed yaw. A missing child is logged once per call and
 	//! the lock still works: the door only loses its motion.
-	protected void ApplySwing(bool isOpen)
+	protected IEntity ResolveSwingChild()
 	{
 		if (m_sSwingChild.IsEmpty() || !GetOwner())
-			return;
+			return null;
 
 		IEntity child = FindSwingChild(GetOwner());
 		if (!child && GetOwner().GetWorld())
@@ -160,6 +160,32 @@ class LF_BreachTargetComponent : ScriptComponent
 			m_SwingFound = null;
 		}
 
+		return child;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `seen`: this machine's open flag and the yaw its swing child stands at now, as
+	//! "open=O:yaw=Y" (yaw "none" without a swing child), so a proof reads what a client draws.
+	string DescribeSwing()
+	{
+		int open = 0;
+		if (m_bRplOpen)
+			open = 1;
+
+		IEntity child = ResolveSwingChild();
+		if (!child)
+			return string.Format("open=%1:yaw=none", open);
+
+		return string.Format("open=%1:yaw=%2", open, Math.Round(child.GetAngles()[1]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplySwing(bool isOpen)
+	{
+		if (m_sSwingChild.IsEmpty() || !GetOwner())
+			return;
+
+		IEntity child = ResolveSwingChild();
 		if (!child)
 		{
 			int count = 0;
