@@ -471,6 +471,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StoreShoplift(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreSnapToBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreStacks(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_StoreStaff(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreUnpaidPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_StringSplit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Stun(), LF_TestTier.WORLD);

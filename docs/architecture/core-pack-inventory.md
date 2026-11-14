@@ -187,6 +187,7 @@ under "Hard-coded flagship values in script".
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
 | `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
 | `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's ten recordings and audio project, moved out of the core's `Sounds/Dialogue/clerk/` (#323 batch 4) |
+| `Dialogue/LF_Dialogue_Shopkeeper.conf` | core | A store's shopkeeper, neutral and text only (#1143, `tools/assets/dialogue/shopkeeper/`): greeting, how to pay, what the store sells, and the line a store's staff say on a walk-out. The prefab `Characters/Npcs/LF_Shopkeeper.et` is core too; the pack places it in its supermarket |
 | `Dialogue/LF_Dialogue_Clerk.conf` | core | The neutral, text-only clerk conversation (generated from `tools/assets/dialogue/clerk/`, `text_only`); the Everon voice is a pack patch (#323) |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |

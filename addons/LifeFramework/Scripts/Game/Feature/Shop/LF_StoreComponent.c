@@ -65,6 +65,8 @@ class LF_StoreComponent : ScriptComponent
 
 	//! A restored world item within this many metres (flat) of a shelf point is the shelf's own copy.
 	protected static const float STRAY_RADIUS = 0.15;
+	//! ...and within this height of it: under the 0.36 m between two gondola boards (#1143).
+	protected static const float STRAY_HEIGHT = 0.2;
 	//! Seconds after a fill or a load when the shelf looks once more for copies the engine restored late.
 	protected static const int LATE_RECONCILE_MS = 4000;
 	//! The spawn trace runs from this far above a shelf point to SNAP_BELOW under it. Under the 0.36 m
@@ -574,9 +576,12 @@ class LF_StoreComponent : ScriptComponent
 		if (LF_InventoryUtils.GetStorageHierachyRoot(entity) != entity || LF_Stores.HoldsApart(entity))
 			return true;
 
+		// Flat distance plus a height limit: on a gondola the slot on the board above is a few
+		// centimetres away flat, and its copy must not be taken for this slot's (#1143).
 		vector flat = entity.GetOrigin() - s_vStrayPoint;
+		float rise = Math.AbsFloat(flat[1]);
 		flat[1] = 0;
-		if (flat.Length() <= STRAY_RADIUS)
+		if (flat.Length() <= STRAY_RADIUS && rise <= STRAY_HEIGHT)
 			s_aStrays.Insert(entity.GetID());
 
 		return true;
