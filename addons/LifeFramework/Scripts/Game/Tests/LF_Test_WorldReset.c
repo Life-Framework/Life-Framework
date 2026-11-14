@@ -54,12 +54,12 @@ class LF_Test_WorldReset : LF_Test
 		ctx.True(LF_WorldReset.RunCount() == runs + 1, "a run is counted");
 
 		// What the world started with stays; what play spilled goes.
-		array<ResourceName> bagPrefabs = {LF_Bank.BAG_PREFAB};
-		IEntity placedBag = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, "0 200 0");
+		array<ResourceName> bagPrefabs = {LF_Bank.BagPrefab()};
+		IEntity placedBag = LF_Utils.SpawnEntityPrefab(LF_Bank.BagPrefab(), "0 200 0");
 		ctx.True(placedBag != null, "a money bag to stand in for a placed one");
 		array<EntityID> placed = {};
 		LF_WorldReset.RememberPlaced(bagPrefabs, placed);
-		IEntity spilledBag = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, "5 200 0");
+		IEntity spilledBag = LF_Utils.SpawnEntityPrefab(LF_Bank.BagPrefab(), "5 200 0");
 		EntityID spilledId = EntityID.INVALID;
 		if (spilledBag)
 			spilledId = spilledBag.GetID();

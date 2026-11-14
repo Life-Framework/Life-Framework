@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{585C8B3D2EDA00E3}Configs/PrefabSlots/LF_PrefabSlots.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -420,6 +420,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "isInitialLicense": {
                 "type": "boolean"
               },
@@ -498,6 +510,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "withdraw": {
                 "type": "boolean"
               },
@@ -568,10 +592,22 @@
         },
         "ranks": {
           "type": "object",
-          "description": "Records are an object keyed by a stable key. The key is the rank id (patrol, senior). An id the ladder has changes that rank only in the fields given; an id it lacks appends a rung at the end, because a saved rank is its index and never moves. A rank written in the stream leaves out kit.",
+          "description": "Records are an object keyed by a stable key. The key is the rank id (patrol, senior). An id the ladder has changes that rank only in the fields given; an id it lacks appends a rung at the end, because a saved rank is its index and never moves. A remove is refused on a shipped rank and on any rank that is not the last. A rank written in the stream leaves out kit.",
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "titleKey": {
                 "type": "string",
                 "default": ""
@@ -989,6 +1025,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "blocksPlayerDamage": {
                 "type": "boolean"
               },

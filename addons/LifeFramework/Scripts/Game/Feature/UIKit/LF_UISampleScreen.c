@@ -35,6 +35,15 @@ class LF_UISampleScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The cash machine sheet in the terminal skin, for the theme pictures (#966).
+	static LF_UIScreen OpenTerminal()
+	{
+		Hide();
+		s_Screen = LF_UIScreen.Open(LF_ATMTerminal.BuildParts(), LF_UISkin.Terminal());
+		return s_Screen;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void Hide()
 	{
 		if (!s_Screen)

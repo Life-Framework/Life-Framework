@@ -14,6 +14,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AccountCharacterRoster(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountSaveRoundtrip(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountManagerCache(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_AccountPublishCost(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountActiveIndex(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountCachePolicy(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ActionGuards(), LF_TestTier.LOGIC);
@@ -75,6 +76,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CleanupSweep(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigConstantsBatch1(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigJsonProbe(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigListsOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeFields(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeKeyed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeReject(), LF_TestTier.LOGIC);
@@ -315,6 +317,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceStationWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceItemState(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
@@ -472,6 +475,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitClose(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UIThemePack(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDoorSwing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);

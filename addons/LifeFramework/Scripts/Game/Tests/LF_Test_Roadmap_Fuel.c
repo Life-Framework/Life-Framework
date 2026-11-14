@@ -129,7 +129,7 @@ class LF_Test_Roadmap_FuelWorld : LF_Test
 	{
 		Resource station = Resource.Load(FUEL_STATION_PREFAB);
 		ctx.True(station.IsValid(), "FuelStation_E_01_V1.et loads");
-		Resource cash = Resource.Load(LF_MoneyUtils.PREFAB_CASH);
+		Resource cash = Resource.Load(LF_MoneyUtils.CashPrefab());
 		ctx.True(cash.IsValid(), "MoneyStack.et loads");
 
 		IEntity till = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.FUEL_TILL);

@@ -26,8 +26,11 @@ a new key is appended, so it wins the rule walk.
 each record has an id and each layer adds, replaces, patches or removes it by id (`"op"` in JSON,
 `m_sOp` in a pack `.conf`, from `LF_ConfigRecord`). An id a verb needs that no lower layer has is
 refused with the source and id; two packs on one id warn and the later wins. On it today: `shops`
-(`priceRules`), `catalogue` (`items`, `offers`) and `crime` (`crimes`; it now reads pack overlays
-too). Verbs, examples and how to move a section: `docs/config/override-model.md`.
+(`priceRules`), `catalogue` (`items`, `offers`), `crime` (`crimes`; it now reads pack overlays
+too), and (#1108) `police` (`ranks`), `organizations` (`rankDefaults`), `zones` (`ruleSets`), `licences`
+(`rules`) and the system catalog (`LF_SystemDef`, pack overlays only). A list says what may not be
+removed with `LF_ConfigList.RemoveRefusal` (a shipped police rank, a zone rule set, a licence, a
+framework system). Verbs, examples and how to move a section: `docs/config/override-model.md`.
 
 The service is generic. A feature loads its core instance, then calls its own
 apply step (shops: `LF_ShopPricesConfig.ApplyLayers`), which asks the service
@@ -307,17 +310,21 @@ Each is a config class with a `SECTION`, an `ApplyOwner` with a handled-key list
 (`params` on the attribute, the same numbers as constants), and `ApplyLayers`, so the generated
 schema, `/config` form and reference page list them. A `config.json` that names none of them changes nothing.
 
-- `zones` (`LF_ZoneConfig`): `ruleSets` keyed by rule name (`NORMAL`, `SAFE`, `LAWLESS`), plus
+- `zones` (`LF_ZoneConfig`): `ruleSets` keyed by rule name (`NORMAL`, `SAFE`, `LAWLESS`; the override
+  model, pack overlays too; a remove is refused, every zone names a rule), plus
   `safeBlocksPlayerDamage` and `lawlessSuppressesWanted` (read for a rule with no table entry; the
   shipped table has all three). Server only: the damage hook and the crime features read it on the
   server and the HUD reads the rule, not its rule set.
 - `police` (`LF_PoliceConfig`): every tunable, and `ranks` keyed by rank id. An id the ladder has
   changes only the fields given; an id it lacks appends a rung (a saved rank is its index, so a
-  rung never moves). Prefab and sound names go through `ReadResource`: a name that does not load is
+  rung never moves). The override model (#1108) adds `replace` and `remove`: a remove is refused on a
+  shipped rung and on any rung that is not the last, so no saved index moves; a pack overlay's
+  `m_aRanks` layers first. A client drops a rung the server's stream no longer lists. Prefab and sound names go through `ReadResource`: a name that does not load is
   refused and the shipped one stays. Streamed to clients (arrest reach, desk range, ladder, ...);
   the alarm prefabs and each rank's kit stay on the server.
 - `organizations` (`LF_OrgConfig`): the tunables, and `rankDefaults` keyed by `founder`, `officer`
-  or `member`: a bool per permission, starting from the shipped rights
+  or `member` (override model: a `remove` drops the entry, so the rank is back to its shipped rights;
+  pack overlays too): a bool per permission, starting from the shipped rights
   (`LF_OrganizationConfig.ShippedRights`). `LF_OrganizationConfig.DefaultRights` returns the
   configured mask, so a new organization gets it; a saved organization keeps its ranks. A
   `nameMin` above `nameMax` is refused (no name would be valid). The tunables are streamed; the
@@ -328,7 +335,10 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   (`/configreload` does not move the timer). There is no retention setting: an autosave overwrites
   the one AUTO slot of the playthrough.
 - `licences` (`LF_LicencesConfig`, no `.conf`): `rules` keyed by licence name with
-  `isInitialLicense` and `requiresWhitelist`, layered over the catalog the licence manager builds.
+  `isInitialLicense` and `requiresWhitelist`, layered over the catalog the licence manager builds
+  (override model, #1108: pack overlays of `LF_LicencesConfig` first; the ids are the catalog's, so
+  an `add` of one it has, a licence it lacks and every `remove` are refused; `replace` turns both flags off
+  unless the layer gives them).
   `GiveInitialLicenses` reads the initial flags, in `LF_LicenseBits.Order`. The level a licence
   needs stays `jobs.licenceGates`. Server only; a character spawned after the change picks it up.
 - Tests: `LF_Test_ConfigSectionsA`, `LF_Test_ConfigSectionsB`, `LF_Test_ConfigSectionsBackcompat`.
@@ -352,6 +362,34 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   calls `LF_Systems.Reload()`.
 - `tools\cli config-check` refuses an id the catalog does not list; it cannot see LOCKED, NOT_YET or
   dependency refusals, which the server logs at boot.
+
+## Prefab slots (#964)
+
+A system that spawns or hands out an item asks for the prefab by slot id, so a pack changes the
+look without child prefabs of core items or script of its own.
+
+- `Configs/PrefabSlots/LF_PrefabSlots.conf` (`LF_PrefabSlotsConfig`) is one list of
+  `LF_PrefabSlot { m_sSlot, m_Prefab, m_aRequires }`. `m_aRequires` names the component classes the
+  system needs on the prefab (a subclass counts).
+- A pack lists an `LF_PrefabSlotsConfig` `.conf` in its header's overlay list and patches a slot by
+  id (`m_sOp "patch"`, `m_sSlot`, `m_Prefab`). Only `m_Prefab` is read from a pack; the requirements
+  are always the core file's, so a pack cannot loosen them.
+- `LF_PrefabSlots.Get(slot)` resolves every slot once per world, on first use. A pack prefab that
+  does not load or lacks a required component logs `LF_Debug.Error` with the reason and the slot
+  keeps the core default. A pack that removes a slot is refused the same way. A slot with no usable
+  prefab, or an id the core file does not list, logs one error and returns empty: that feature stops,
+  the rest run.
+- No owner (`config.json`) layer and no stream: client and server read the same mission header, so
+  they resolve the same prefab (the HUD counts cash by the slot's prefab on the client). A pack
+  change takes a restart.
+- Cash is saved in inventories by prefab. A server that swaps the `cash` slot after its first save
+  leaves the old stacks uncounted; pick the cash look before a server goes live.
+- A system declares its slot as `static const string SLOT... = "<id>"` beside a `...Prefab()`
+  accessor that calls `LF_PrefabSlots.Get`. `validate-prefab-slots` fails a slot GUID that does not
+  resolve and a script slot id the core file does not list.
+- Slots: `cash` (`LF_MoneyUtils.CashPrefab`), `money_bag` (`LF_Bank.BagPrefab`), `id_card`
+  (`LF_IdCard.Prefab`), `handcuffs_worn` (`LF_Restraint.WornPrefab`), `evidence_marker`
+  (`LF_Evidence.MarkerPrefab`). Test `prefabs/slots` (`LF_Test_PrefabSlots`).
 
 ## Files
 

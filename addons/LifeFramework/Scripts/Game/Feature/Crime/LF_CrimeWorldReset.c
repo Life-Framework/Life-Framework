@@ -50,7 +50,7 @@ class LF_WorldReset_Loot : LF_WorldResetStep
 
 	protected array<ResourceName> Prefabs()
 	{
-		array<ResourceName> prefabs = {LF_Bank.BAG_PREFAB, LF_Bank.DRILL_PREFAB, LF_Bank.KEYCARD_PREFAB, LF_Breach.FENCE_CHARGE_PREFAB, LF_Breach.CHARGE_PREFAB};
+		array<ResourceName> prefabs = {LF_Bank.BagPrefab(), LF_Bank.DRILL_PREFAB, LF_Bank.KEYCARD_PREFAB, LF_Breach.FENCE_CHARGE_PREFAB, LF_Breach.CHARGE_PREFAB};
 		return prefabs;
 	}
 
