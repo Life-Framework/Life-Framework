@@ -80,22 +80,22 @@ class LF_Test_OrgRegistry : LF_Test
 		// Hideout lease: the founder takes the free yard; a rival cannot; a member cannot.
 		LF_Organization other = LF_OrganizationManager.Create(rival, "South Dock");
 		ctx.NotNull(other, "a rival registers South Dock");
-		ctx.Equal(LF_EOrgLease.FREE, LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID), "the yard starts free");
+		ctx.Equal(LF_EOrgLease.FREE, LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId()), "the yard starts free");
 		ctx.Equal(LF_EOrgOfferResult.OFFERED, LF_OrgInvites.Offer(founder, 1, member, now), "the founder asks the member back");
 		ctx.Equal(LF_EOrgOfferResult.JOINED, LF_OrgInvites.Accept(member, founder, now), "the member is back");
-		ctx.False(LF_OrgHideoutLease.Lease(member, LF_Hideout.HIDEOUT_ID), "a member cannot take the lease");
-		ctx.True(LF_OrgHideoutLease.Lease(founder, LF_Hideout.HIDEOUT_ID), "the founder takes the lease");
-		ctx.Equal(LF_EOrgLease.OURS, LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID), "the yard is ours");
-		ctx.True(LF_Hideout.IsLocked(LF_Hideout.HIDEOUT_ID), "a new lease shuts the gate");
+		ctx.False(LF_OrgHideoutLease.Lease(member, LF_Hideout.OrgHideoutId()), "a member cannot take the lease");
+		ctx.True(LF_OrgHideoutLease.Lease(founder, LF_Hideout.OrgHideoutId()), "the founder takes the lease");
+		ctx.Equal(LF_EOrgLease.OURS, LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId()), "the yard is ours");
+		ctx.True(LF_Hideout.IsLocked(LF_Hideout.OrgHideoutId()), "a new lease shuts the gate");
 		if (other)
 		{
-			ctx.Equal(LF_EOrgLease.TAKEN, LF_OrgHideoutLease.StateFor(other.GetId(), LF_Hideout.HIDEOUT_ID), "the rival sees it taken");
-			ctx.False(LF_OrgHideoutLease.Lease(rival, LF_Hideout.HIDEOUT_ID), "the rival cannot take it");
+			ctx.Equal(LF_EOrgLease.TAKEN, LF_OrgHideoutLease.StateFor(other.GetId(), LF_Hideout.OrgHideoutId()), "the rival sees it taken");
+			ctx.False(LF_OrgHideoutLease.Lease(rival, LF_Hideout.OrgHideoutId()), "the rival cannot take it");
 		}
 
-		ctx.True(LF_Hideout.AllowsUnlock(member, LF_Hideout.HIDEOUT_ID, false), "the invited member opens the hideout gate");
-		ctx.False(LF_Hideout.AllowsUnlock(rival, LF_Hideout.HIDEOUT_ID, false), "the rival does not");
-		ctx.False(LF_Hideout.AllowsUnlock(outsider, LF_Hideout.HIDEOUT_ID, false), "an outsider does not");
+		ctx.True(LF_Hideout.AllowsUnlock(member, LF_Hideout.OrgHideoutId(), false), "the invited member opens the hideout gate");
+		ctx.False(LF_Hideout.AllowsUnlock(rival, LF_Hideout.OrgHideoutId(), false), "the rival does not");
+		ctx.False(LF_Hideout.AllowsUnlock(outsider, LF_Hideout.OrgHideoutId(), false), "an outsider does not");
 
 		LF_OrgInvites.Reset();
 		LF_Hideout.Reset();

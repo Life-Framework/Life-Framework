@@ -95,6 +95,10 @@ type; no per-map scripting. See `docs/design.md` §4.
 - `LF_ShopPriceResolver` / `LF_ShopPricesConfig` / `LF_ShopRules` / `LF_ShopItem`
   — price resolution and rules scaffolding.
 - `Configs/Shop/ShopPrices.conf` — the price table.
+- Outlets (#988): a shop with `m_sOutletId` sells the item catalogue's offers for that outlet at
+  catalogue prices, behind each offer's gate; its curated list and the price rules are not read. A gate
+  refusal (`NEEDS_LICENCE`, `NEEDS_JOB`, `NEEDS_RANK`, `NEEDS_ORG_RIGHT`) carries what is missing to the
+  slip. `Feature/Catalogue/Feature.md`.
 
 ## Dependencies
 

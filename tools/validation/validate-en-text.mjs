@@ -1,4 +1,5 @@
 // Non-English text must not leak into English strings (#609).
+// inputs: addons/**
 //
 // The safe action read "Robar Dinero" because the DebugWorld layer carried the
 // Spanish text as a literal UIInfo Name. This check scans two places:

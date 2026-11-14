@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{E8150CA363574149}Sounds/Items/Handcuffs/Items_Handcuffs_Use.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

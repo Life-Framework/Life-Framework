@@ -1,4 +1,5 @@
 // Proves the test pool's reclaim and re-plan rules without booting a game or
+// inputs: tools/**, agent-box/**, .githooks/**
 // an ssh session (tools/remote/pool.mjs, docs/worktrees.md "Test pool"):
 //   1. a remote slot whose owner pid on this PC is dead is reclaimed;
 //   2. a waiting ticket re-reads lf.local.json, so a re-enabled machine counts;
@@ -11,6 +12,24 @@
 //      record in runs.jsonl, and a retried request keeping its queue age;
 //   5. runtime budgets: learned 3x p95 with a 30 s floor, seeded defaults,
 //      machine multiplier, self-raise after timeouts, --budget.
+//   6. throughput (pool-throughput): a session of any size takes whichever machine has the lane, the RAM
+//      and the heat headroom; a machine down at the start is used when it comes back; live RAM per
+//      machine (never over-committed); backfill until a RAM head starves, then it drains; remote tests
+//      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
+// red-proof 2026-11-14 (pool-throughput), each rule broken alone: with the old early return
+// (machines.length < 2) in chooseSessionMachine "a 2-client request that started while the laptop was
+// down did not move to it when it came back (local after 80 ms)"; with a starved RAM head always
+// passable "a starved RAM head was still passed by smaller jobs (it would starve)"; with the first
+// server always admitted "the first session on a machine started without the RAM it needs"; with
+// slots = m.slots "remote tests do not try every test lane (server-test-1)"; with machineGone always
+// false "the machine that went away was not marked down"; with remoteSessionVerdict ignoring RAM "the
+// laptop was over-committed by a second 2-client session"; without the heat check "a session started
+// on a laptop at 93 °C"; without maxClients "a 3-client session went to the laptop past its
+// maxClients (heat)"; with the holder gate disabled "the holder's RAM gate let a test start under the
+// floor beside a running server"; without the disk-floor skip "a request went to this PC while its
+// disk floor refuses sessions (local)"; with the remote reaper always on the 30 min limit "the laptop's
+// idle session was not closed while a job here waits for it"; with the local reaper skipping sessions
+// nobody waits for "a session idle past sessionIdleMaxMin was kept with nobody waiting".
 // red-proof 2026-11-12 (#542, #675): with supersededTickets returning no drops it printed "3 stacked requests from one worktree are not one queue entry"; with the age test removed from planSessionGc it printed "gc plan removes the wrong folders"; with diskVerdict always null "hygiene gate does not refuse a start under the disk floor".
 // red-proof 2026-11-10 (bundle heal): with the retry fetch removed from psCheckout it printed "bundle fetch failure does not fetch origin and retry once".
 // red-proof 2026-11-10: dropping the hostname branch in loadMachines printed "an entry whose hostname is this machine is not the local machine with its own lanes".
@@ -40,6 +59,7 @@ import { trimScript } from "../lib/ws-trim.mjs";
 
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
+process.env.LF_POOL_POLL_MS = "100"; // read by tools/remote/pool.mjs on each poll
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
@@ -153,9 +173,26 @@ try {
   check(q.blocks({ ...bigHead, lane: "session", stuck: "lane" }, tk("3-t", "normal", 1, "test"), { ...lanes, lanes: null }, T0, min20, { starveMs: min20, freeMb: 3400 }) === true, "shared-lane head lost its turn");
   // Starvation: after 20 min the head holds its place once the RAM it needs is there, not before.
   const oldHead = { ...bigHead, at: new Date(T0 - 25 * 60000).toISOString() };
-  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a starved head reserves the lane before its RAM is there");
+  // Backfill keeps going only until the head starves: then it drains its machine (no job that
+  // would eat the RAM it waits for starts, tests on their own lanes included) as long as draining
+  // can help it, that is its need fits in free RAM plus what the pool's jobs there hold.
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400, heldMb: 3000 }) === true, "a starved RAM head was still passed by smaller jobs (it would starve)");
   check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 5200 }) === true, "a starved head with its RAM does not reserve the lane");
-  check(q.waitReason(bigHead) === "ram 3-client" && q.waitReason({ stuck: "lane" }) === "lane" && q.waitReason({}, 2) === "behind 2", "waitReason text");
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 1000, heldMb: 500 }) === false, "a starved head that cannot fit even on an empty machine drains it anyway");
+  check(q.blocks(oldHead, tk("3-t", "normal", 1, "test"), lanes, T0, min20, { starveMs: min20, freeMb: 3400, heldMb: 3000 }) === true, "a starved RAM head does not hold back a test on its own lane (tests eat the same RAM)");
+  check(q.blocks(bigHead, tk("3-t", "normal", 1, "test"), lanes, T0, min20, { starveMs: min20, freeMb: 3400, heldMb: 3000 }) === false, "a RAM head that has not starved holds back tests on their own lanes");
+  check(q.waitReason(bigHead, 0, { now: T0, starveMs: min20 }) === "ram 3-client: needs 5.0 GB free" && q.waitReason({ stuck: "lane" }) === "lane" && q.waitReason({}, 2) === "behind 2", `waitReason text (${q.waitReason(bigHead, 0, { now: T0, starveMs: min20 })})`);
+  check(q.waitReason({ ...bigHead, profile: "full", machines: ["local", "lf-testbox"] }, 0, { now: T0, starveMs: min20, freeMbOf: (n) => ({ local: 1126, "lf-testbox": 2867 })[n] }) === "ram 3-client full: needs 5.0 GB free, local has 1.1, lf-testbox has 2.8", "waitReason does not name the RAM each machine has");
+  check(q.waitReason({ ...bigHead, profile: "lowspec", clients: 2, needMb: 3700, machines: ["local", "lf-testbox"], busyOn: ["lf-testbox"] }, 0, { now: T0, starveMs: min20, freeMbOf: (n) => ({ local: 1126, "lf-testbox": 6300 })[n] }) === "ram 2-client lowspec: needs 3.6 GB free, local has 1.1; every session lane taken on lf-testbox", "waitReason blames RAM on a machine whose lanes are all taken");
+  check(/starved, so it holds its place/.test(q.waitReason(oldHead, 0, { now: T0, starveMs: min20 })), "waitReason does not say a starved head holds its place");
+  // A machine is never over-committed: even the first server there must fit in what is free.
+  check(!q.ramVerdict({ running: 0, freeMb: 2000, minFreeMb: 1500, reserveMb: 2300 }).ok && q.ramVerdict({ running: 0, freeMb: 2400, minFreeMb: 1500, reserveMb: 2300 }).ok, "the first session on a machine started without the RAM it needs");
+  check(!q.ramVerdict({ running: 0, freeMb: 2400, minFreeMb: 1500, reserveMb: 2300, pendingMb: 600 }).ok, "the first-server check ignores sessions still booting");
+  // Estimated start: the (ahead+1)-th lane release, then rounds of a typical hold.
+  check(q.estimateStart([T0 + 5000, T0, T0 + 3000], 0) === T0 && q.estimateStart([T0 + 5000, T0, T0 + 3000], 2) === T0 + 5000 && q.estimateStart([T0, T0 + 1000], 3, 60000) === T0 + 61000 && q.estimateStart([], 0) === null, "estimateStart");
+  check(q.projectedRelease({ atMs: T0 - 60000, now: T0, typicalMs: 300000 }) === T0 + 240000, "projectedRelease: start plus the typical hold");
+  check(q.projectedRelease({ atMs: T0 - 600000, now: T0, typicalMs: 300000, capMs: 1500000 }) === T0 + 150000, "projectedRelease: an overrunning job gets half a hold more");
+  check(q.projectedRelease({ atMs: T0 - 1400000, now: T0, typicalMs: 300000, capMs: 1500000 }) === T0 + 100000, "projectedRelease ignores the hold cap");
   {
     // #563: a late join is RAM-gated like `up`: trim first, refuse (one line) when still under the floor.
     const jroot = mkdtempSync(join(tmpdir(), "lf-join-"));
@@ -197,7 +234,10 @@ try {
   spawnSync("git", ["init", "-q", rdir], { windowsHide: true });
   writeFileSync(join(rdir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", disabled: true }, { name: "local", lanes: { test: 1 } }] } }));
   const hold = (name, extra = {}) => writeFileSync(join(rLockDir, `${name}.lock`), JSON.stringify({ pid: live.pid, at: new Date().toISOString(), name, root: rdir, slug: "holder", ...extra }));
-  const envKeys = ["LF_POOL_MIN_FREE_MB", "LF_POOL_PROMOTE_MIN", "LF_POOL_SESSION_IDLE_MIN"];
+  const envKeys = ["LF_POOL_MIN_FREE_MB", "LF_POOL_PROMOTE_MIN", "LF_POOL_SESSION_IDLE_MIN", "LF_POOL_SESSION_RESERVE_SERVER_MB", "LF_POOL_SESSION_RESERVE_CLIENT_MB"];
+  // The queue tests below take session lanes on this PC: its real free RAM must not decide them.
+  process.env.LF_POOL_SESSION_RESERVE_SERVER_MB = "1";
+  process.env.LF_POOL_SESSION_RESERVE_CLIENT_MB = "1";
   try {
     // RAM gate on a real lane: a second concurrent server waits under the floor.
     hold("server-2001", { purpose: "session" });
@@ -258,6 +298,7 @@ try {
     const closed = [];
     const reap = (tickets, extra = {}) => pool.reapIdleSessions(rdir, [lanes], tickets, { sessionIdleMin: 15, promoteMin: 20, minFreeMb: 1 }, { sessionDir: sdir, close: (i) => closed.push(i.pid), ...extra });
     check(reap([]).length === 0, "reaper closed a session nobody waits for");
+    check(pool.reapIdleSessions(rdir, [lanes], [], { sessionIdleMin: 15, sessionIdleMaxMin: 18, promoteMin: 20, minFreeMb: 1 }, { sessionDir: sdir, close: () => {}, now: Date.now() + 60000 }).length === 1, "a session idle past sessionIdleMaxMin was kept with nobody waiting");
     writeFileSync(join(sdir, "lease.json"), JSON.stringify({ lastCommandAt: new Date().toISOString() }));
     check(reap(waiting).length === 0, "reaper closed a session that just ran a command");
     writeFileSync(join(sdir, "lease.json"), JSON.stringify({ lastCommandAt: oldIso, leaseUntil: new Date(Date.now() + 600000).toISOString() }));
@@ -452,6 +493,8 @@ try {
       const alive = (pid) => pid === 777;
       const plan = gc.planSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
       check(plan.remove.map((r) => r.name).sort().join() === "wt-linked,wt-old,wt-stopped", "gc plan removes the wrong folders: " + plan.remove.map((r) => r.name).sort().join());
+      const orph = gc.planSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")], orphan: (n) => n === "wt-new" || n === "wt-live" || n === "wt-film-take" });
+      check(orph.remove.some((r) => r.name === "wt-new") && !orph.remove.some((r) => r.name === "wt-live" || r.name === "wt-film-take"), "gc orphan rule must remove a recent folder whose worktree is gone, never a live or film one");
       check(plan.keep.find((k) => k.name === "wt-live")?.why === "in use" && plan.keep.find((k) => k.name === "wt-film-take")?.why === "film" && plan.keep.find((k) => k.name === "wt-new")?.why === "recent", "gc kept reasons are wrong");
       const run = gc.runSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
       check(run.removed.length === 3 && !existsSync(join(base, "wt-old")) && existsSync(join(base, "wt-live")) && existsSync(join(base, "wt-film-take")) && existsSync(join(base, "wt-mine")) && existsSync(join(base, "wt-new")), "gc run did not remove exactly the old idle folders");
@@ -514,10 +557,11 @@ try {
   // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
-  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 3 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 2 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
   writeFileSync(join(dir, "lf.local.json"), "{}");
   check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
-  check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox", "session candidates are not this PC first, then the laptop");
+  check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox" && pool.sessionMachineCandidates(dir, 2).length === 2, "session candidates are not this PC first, then the laptop");
+  check(pool.sessionMachineCandidates(dir, 3).map((m) => m.name).join() === "local", "a 3-client session went to the laptop past its maxClients (heat)");
   // The box-side checkout shows git's stderr, fetches origin and retries once, then exits BUNDLE_FAILED so the caller resends a full bundle.
   const co = tb.psCheckoutOnly({ rDir: "C:/x/Life-Framework-rt-a", snap: { sha: "a".repeat(40) } }, "run-1.bundle");
   check(/bundle failed: \$LfGitOut/.test(co) && !/Out-Null/.test(co.split("git checkout")[0]), "bundle fetch failure does not carry git's stderr");
@@ -528,9 +572,140 @@ try {
   rmSync(dir, { recursive: true, force: true });
 }
 
+const dir0 = () => {
+  const d = mkdtempSync(join(tmpdir(), "lf-holdercfg2-"));
+  spawnSync("git", ["init", "-q", d], { windowsHide: true });
+  return d;
+};
+// 6. Throughput (pool-throughput): sessions of any size on any machine, live RAM per machine,
+// a machine that goes away requeues the job.
+{
+  const laptop = { name: "lf-testbox", via: "ssh", host: "lf-testbox", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 3, session: 3 }, caps: ["server", "clients"] };
+  const settings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
+  // The remote read gives the locks and the RAM.
+  const st = pool.parseRemoteState(['lf-pool: lock server-2001 True {"pid":5,"purpose":"session","clients":2,"profile":"full","at":"2026-01-01T00:00:00Z"}', "lf-pool: lock server-2011 free", 'lf-pool: lock server-2021 False {"pid":6}', "lf-pool: ram 2867 15606"].join(String.fromCharCode(13, 10)));
+  check(st.freeMb === 2867 && st.totalMb === 15606 && st.locks["server-2011"] === null && st.locks["server-2001"].alive && st.locks["server-2021"].alive === false, "parseRemoteState");
+  // The 15 GB laptop with one 2-client session up and 2.8 GB free: a second full 2-client session would
+  // breach the floor; a lowspec 1-client one fits once 4.5 GB is free.
+  const v2 = pool.remoteSessionVerdict(laptop, st, settings, { clients: 2, profile: "full" });
+  check(!v2.ok && v2.lane && /would be under/.test(v2.ram) && v2.needMb === 3800, `the laptop was over-committed by a second 2-client session (${JSON.stringify(v2)})`);
+  check(pool.remoteSessionVerdict(laptop, { ...st, freeMb: 4500 }, settings, { clients: 1, profile: "lowspec" }).ok, "a lowspec 1-client session that fits the laptop was refused");
+  check(pool.remoteSessionVerdict(laptop, null, settings).down === true, "an unreadable laptop is not reported down");
+  const allBusy = { ...st, locks: { "server-2001": { pid: 1, alive: true }, "server-2011": { pid: 2, alive: true }, "server-2021": { pid: 3, alive: true } } };
+  check(pool.remoteSessionVerdict(laptop, allBusy, settings).lane === false, "a laptop with every session lane taken has a lane");
+  check(pool.heldMbOf(settings, [{ purpose: "session", clients: 2, profile: "full" }, { purpose: "test only" }, { purpose: "session", clients: 1, profile: "lowspec", alive: false }]) === 2300 + 600, "heldMbOf");
+  // Remote tests use every test lane of the laptop (54 of 54 laptop test runs used server-test-1 only), behind the RAM gate.
+  const tdir = mkdtempSync(join(tmpdir(), "lf-holdercfg-"));
+  spawnSync("git", ["init", "-q", tdir], { windowsHide: true });
+  const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
+  const hc = pool.holderConfig(tdir, laptop, snap, { purpose: "test only", settings });
+  check(hc.slots.map((x) => x.lock).join() === "server-test-1,server-test-2,server-test-3", `remote tests do not try every test lane (${hc.slots.map((x) => x.lock).join()})`);
+  check(hc.ram?.floorMb === 1500 && hc.ram.locks.length === 6 && hc.ram.reserveMb === 0, "the holder carries no RAM gate");
+  check(pool.holderConfig(tdir, laptop, snap, { slots: 0, purpose: "session", settings }).slots.length === 0, "a sync-only holder takes a lock");
+  rmSync(tdir, { recursive: true, force: true });
+  // The holder's RAM gate itself, in PowerShell, against a fake lock dir.
+  {
+    const ld = mkdtempSync(join(tmpdir(), "lf-ramgate-"));
+    writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test only", at: new Date().toISOString() }));
+    const gate = (reserveMb, floorMb) => {
+      const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb, reserveMb, serverMb: 600, clientMb: 850 } };
+      const ps = ["$cfg = '" + JSON.stringify(cfg) + "' | ConvertFrom-Json", "$ld = '" + ld + "'", "$slots = @($cfg.slots)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", pool.PS_RAM_GATE, "Write-Host 'lf-pool: pass'"].join(String.fromCharCode(10));
+      const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+      return (r.stdout ?? "") + (r.stderr ?? "");
+    };
+    const refused = gate(0, 10 * 1024 * 1024);
+    check(/lf-pool: ram \d+ \d+ 1/.test(refused) && !/pass/.test(refused), `the holder's RAM gate let a test start under the floor beside a running server (${refused.trim().slice(0, 200)})`);
+    check(/lf-pool: pass/.test(gate(0, 1)), "the holder's RAM gate refused a test with RAM to spare");
+    rmSync(ld, { recursive: true, force: true });
+  }
+  // Heat (the laptop powers itself off at ~95 °C): a fresh reading at or over thermalHoldC holds new jobs there.
+  check(pool.parseRemoteState("lf-pool: ram 4000 15606" + String.fromCharCode(10) + "lf-pool: thermal 93.1").thermalC === 93.1, "parseRemoteState drops the temperature");
+  const hot = pool.remoteSessionVerdict({ ...laptop, thermalHoldC: 90 }, { ...st, freeMb: 9000, thermalC: 93.1 }, settings, { clients: 1, profile: "lowspec" });
+  check(!hot.ok && hot.lane && /93.1 °C/.test(hot.ram), "a session started on a laptop at 93 °C");
+  check(pool.remoteSessionVerdict({ ...laptop, thermalHoldC: 90 }, { ...st, freeMb: 9000, thermalC: 84 }, settings, { clients: 1, profile: "lowspec" }).ok, "a cool laptop held a session for heat");
+  {
+    const td = mkdtempSync(join(tmpdir(), "lf-thermal-"));
+    const csv = join(td, "thermal-2026-11-14.csv");
+    writeFileSync(csv, ["time,thrm_c,cpu_load", "2026-11-14T20:54:28,88.0,38", "2026-11-14T20:55:16,93.1,37"].join(String.fromCharCode(13, 10)) + String.fromCharCode(13, 10));
+    const read = () => {
+      const ps = ["$thermDir = '" + td + "'", pool.PS_THERMAL, "Write-Host ('therm=' + $thermC)"].join(String.fromCharCode(10));
+      const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+      return /therm=(\S*)/.exec(r.stdout ?? "")?.[1] ?? "?";
+    };
+    check(read() === "93.1", `the thermal reader did not read the newest thrm_c (${read()})`);
+    const old = new Date(Date.now() - 10 * 60000);
+    utimesSync(csv, old, old);
+    check(read() === "", "a stale thermal log still holds jobs");
+    rmSync(td, { recursive: true, force: true });
+  }
+  const hcHot = pool.holderConfig(dir0(), { ...laptop, thermalLog: "C:/LF/thermal-log", thermalHoldC: 90 }, snap, { purpose: "test only", settings });
+  check(hcHot.ram?.thermal?.holdC === 90 && hcHot.ram.thermal.dir === "C:/LF/thermal-log" && /lf-pool: hot/.test(pool.holderScript(hcHot)), "remote tests do not carry the heat gate");
+  // Idle sessions on the laptop are judged from this PC: 15 min while a job here waits for it, 30 with
+  // nobody waiting; a lease protects one; a fresh client command counts as activity.
+  {
+    const rroot = mkdtempSync(join(tmpdir(), "lf-rreap-"));
+    spawnSync("git", ["init", "-q", rroot], { windowsHide: true });
+    const now = Date.parse("2026-11-14T12:00:00Z");
+    const ago2 = (min) => new Date(now - min * 60000).toISOString();
+    const row = (name, idleMin, extra = {}) => ({ name, lock: { slug: name, root: "C:/LF/rt-" + name, at: ago2(60) }, readyAt: ago2(60), lease: { lastCommandAt: ago2(idleMin) }, mtimes: [], dir: "x", ...extra });
+    const rows = [row("server-2001", 22), row("server-2011", 40, { lease: { lastCommandAt: ago2(40), leaseUntil: ago2(-10) } }), row("server-2021", 22, { mtimes: [now - 60000] })];
+    const closed = [];
+    const st6 = { sessionIdleMin: 15, sessionIdleMaxMin: 30 };
+    const reapR = (waiting) => pool.reapRemoteIdleSessions(rroot, laptop, st6, { waiting, now, read: () => rows, close: (m, r) => closed.push(r.name) });
+    check(reapR(false).length === 0 && closed.length === 0, "a laptop session idle 22 min was closed with nobody waiting (limit 30)");
+    check(reapR(true).map((x) => x.name).join() === "server-2001" && closed.join() === "server-2001", `the laptop's idle session was not closed while a job here waits for it, or a leased/driven one was (${closed.join()})`);
+    check(pool.parseRemoteSessions('lf-pool: sess {"name":"server-2001","lock":{"pid":1},"mtimes":[5]}').length === 1, "parseRemoteSessions");
+    rmSync(rroot, { recursive: true, force: true });
+  }
+  // A machine that went away mid-run: the run is queued again, the machine marked down.
+  {
+    const groot = mkdtempSync(join(tmpdir(), "lf-gone-"));
+    spawnSync("git", ["init", "-q", groot], { windowsHide: true });
+    const slot = { local: false, machine: laptop, lost: false };
+    check(pool.machineGone(groot, slot, 255, { probe: () => ({ reachable: false }) }) === true, "a run whose machine stopped answering was not queued again");
+    const hf = join(groot, "tmp", "wt", "pool", "health.json");
+    check(existsSync(hf) && JSON.parse(readFileSync(hf, "utf8"))["lf-testbox"].reachable === false, "the machine that went away was not marked down");
+    check(pool.machineGone(groot, slot, 1, { probe: () => ({ reachable: false }) }) === false, "a plain test failure was queued again");
+    check(pool.machineGone(groot, slot, 255, { probe: () => ({ reachable: true }) }) === false, "an ssh failure on a machine that still answers was queued again");
+    check(pool.machineGone(groot, { ...slot, lost: true }, 0, { probe: () => ({ reachable: true }) }) === true, "a run whose slot holder dropped kept its untrusted verdict");
+    check(pool.machineGone(groot, { local: true }, 255) === false, "a local run counts as a lost machine");
+    rmSync(groot, { recursive: true, force: true });
+  }
+  // The root cause of 2026-11-14: the laptop was off when two 2-client requests arrived, so they went
+  // to this PC and queued there pinned for an hour while the laptop came back with free lanes. Now a
+  // request keeps every machine and takes the laptop as soon as it answers.
+  {
+    const croot = mkdtempSync(join(tmpdir(), "lf-choose-"));
+    spawnSync("git", ["init", "-q", croot], { windowsHide: true });
+    writeFileSync(join(croot, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", lanes: { test: 1, session: 1 } }] } }));
+    const holder = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
+    mkdirSync(join(croot, "tmp", "wt", "locks"), { recursive: true });
+    writeFileSync(join(croot, "tmp", "wt", "locks", "server-2001.lock"), JSON.stringify({ pid: holder.pid, at: new Date().toISOString(), name: "server-2001", root: join(croot, "other"), slug: "other", purpose: "session", clients: 1 }));
+    let probes = 0;
+    const freeState = { locks: { "server-2001": null, "server-2011": null, "server-2021": null }, freeMb: 9000, totalMb: 15606 };
+    const quiet = () => {};
+    try {
+      const t0 = Date.now();
+      const m = await pool.chooseSessionMachine(croot, { clients: 2, profile: "full", waitMs: 20000, meta: { slug: "two-client" }, log: quiet, opts: { probe: () => ({ reachable: ++probes > 2, build: null }), remoteState: () => freeState, reprobeMs: 200, pollMs: 100, diskMsg: null } });
+      check(m?.name === "lf-testbox" && Date.now() - t0 < 15000, `a 2-client request that started while the laptop was down did not move to it when it came back (${m?.name ?? "null"} after ${Date.now() - t0} ms)`);
+      const short = await pool.chooseSessionMachine(croot, { clients: 2, profile: "full", waitMs: 600, meta: { slug: "two-client-ram" }, log: quiet, opts: { probe: () => ({ reachable: true }), remoteState: () => ({ ...freeState, freeMb: 1200 }), pollMs: 100, diskMsg: null } });
+      check(short === null, "a 2-client request took a laptop lane without the RAM for it");
+      // This PC under its disk floor (it refuses every session start): the request goes to the laptop.
+      rmSync(join(croot, "tmp", "wt", "locks", "server-2001.lock"), { force: true });
+      const disk = await pool.chooseSessionMachine(croot, { clients: 1, profile: "lowspec", waitMs: 3000, meta: { slug: "disk" }, log: quiet, opts: { probe: () => ({ reachable: true }), remoteState: () => freeState, pollMs: 100, diskMsg: "free disk 3.5 GB is under 5 GB", localFreeMb: 9000 } });
+      check(disk?.name === "lf-testbox", `a request went to this PC while its disk floor refuses sessions (${disk?.name})`);
+    } catch (e) {
+      failures.push(`chooseSessionMachine threw: ${e.message}`);
+    } finally {
+      holder.kill();
+      rmSync(croot, { recursive: true, force: true });
+    }
+  }
+}
+
 if (failures.length) {
   console.log("pool-selftest: FAIL");
   for (const f of failures) console.log(`  ${f}`);
   process.exit(1);
 }
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine, a failed bundle fetch shows git's error, retries, then asks for a full bundle, stacked session requests collapse to one, old session folders are removed link-safely, a low disk refuses a start)");
+console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine, a failed bundle fetch shows git's error, retries, then asks for a full bundle, stacked session requests collapse to one, old session folders are removed link-safely, a low disk refuses a start, a session of any size takes whichever machine has the lane and the RAM, a machine that comes back is used, a starved RAM head drains its machine, the laptop is never over-committed, remote tests use every lane behind a RAM gate, a machine that goes away requeues the run)");

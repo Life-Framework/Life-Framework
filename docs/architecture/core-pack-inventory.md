@@ -45,9 +45,9 @@ and the DebugWorld village, which the tests depend on.
    `m_bTestCarLot`, `LF_Jail.SyncPlacedCell` re-applies the placed
    `LF_JailCellComponent`, the cash van route names its stops and van on the
    placed box, and the harness finds the stash and garage through components.
-   `validate-core-village-names` keeps that list empty. Hideout ids
-   (`Roadmap_Hideout`) are ids, not entity names, and still default in the
-   core; the hideout batch moves them. `validate-map-independence` (#1046) now holds the
+   `validate-core-village-names` keeps that list empty. The hideout the desk
+   leases and contraband starts from is the door with `m_bOrganizationHideout`
+   (LF_Places `OrgHideout`); its id (`Roadmap_Hideout`) is a layer value and the saved key (#1055). `validate-map-independence` (#1046) now holds the
    rest of the map knowledge in core Scripts (find-by-name, world coordinates, place names)
    to a shrink-only baseline; the harness folder is exempt as dev tooling.
 2. **Every config loads one hard-coded core path.** `LF_JobsConfig`,

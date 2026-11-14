@@ -39,7 +39,7 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, member), "founder adds the courier");
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, leaver), "founder adds the driver who leaves");
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, casualty), "founder adds the driver who dies");
-		ctx.True(LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId()), "the organization owns the hideout");
+		ctx.True(LF_Hideout.Assign(LF_Hideout.OrgHideoutId(), org.GetId()), "the organization owns the hideout");
 
 		ctx.False(LF_Contraband.Start(outsider, null), "a non-member cannot start the convoy");
 		ctx.EqualStr("convoy refused: not a member", LF_Contraband.GetLastRefusal(), "the non-member start is logged");
@@ -162,7 +162,7 @@ class LF_Test_Roadmap_ContrabandWorld : LF_Test
 
 		LF_OrganizationManager.Invite(org.GetId(), founder, arriving);
 		LF_OrganizationManager.Invite(org.GetId(), founder, quitting);
-		LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId());
+		LF_Hideout.Assign(LF_Hideout.OrgHideoutId(), org.GetId());
 
 		ctx.True(LF_Contraband.Start(arriving, null), "the arriving driver starts a run");
 		ctx.False(LF_Contraband.LeftVehicleAt(arriving, dropOrigin + "6 0 4"), "getting out beside the drop does not fail the run");

@@ -1,4 +1,5 @@
 // Owner config schema check (#280). Regenerates docs/config/config.schema.json
+// inputs: docs/config/**, tools/config/**
 // and config.example.json from the config classes' [Attribute] declarations and
 // fails when either committed file differs; validates the example, and the
 // example LF_ConfigService writes at runtime, against the schema.

@@ -1,4 +1,5 @@
 // Selftest for the feature scaffold (tools/feature/new.mjs), the PR body checks `wt ship` runs
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // (tools/lib/pr-quality.mjs) and the evidence table (tools/commands/evidence.mjs). No game, no git.
 // red-proof: see the two observed lines in docs/architecture/agent-quality.md "Proof of the checks".
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";

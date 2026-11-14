@@ -1,4 +1,5 @@
 # tools/validation/validate-tests.ps1 - every LF_Test file is registered and red-proofed.
+# inputs: addons/**, tools/validation/gen-test-registry.ps1
 #
 # Contract (mirrors gen-test-registry.ps1):
 #   1. The registry is machine-generated: gen-test-registry.ps1 derives

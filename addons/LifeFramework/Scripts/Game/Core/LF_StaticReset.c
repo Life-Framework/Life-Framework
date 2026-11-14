@@ -25,6 +25,7 @@ class LF_StaticReset
 		LF_JailWork.ResetStatics();
 		LF_JailEscort.ResetStatics();
 		LF_Restraint.ResetStatics();
+		LF_Cuffing.ResetStatics();
 		LF_JailCellComponent.ResetStatics();
 		LF_JailArrestableComponent.ResetStatics();
 		LF_Contraband.Reset();
@@ -106,6 +107,7 @@ class LF_StaticReset
 		LF_Roles.ResetStatics();
 		LF_DownedPatient.ResetStatics();
 		LF_PlacementGhost.ResetStatics();
+		LF_ItemCatalogue.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

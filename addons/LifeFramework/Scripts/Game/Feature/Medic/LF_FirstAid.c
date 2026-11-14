@@ -107,6 +107,7 @@ class LF_FirstAid
 }
 
 //------------------------------------------------------------------------------------------------
+[BaseContainerProps()]
 modded class SCR_ConsumableBandage
 {
 	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams)
@@ -117,6 +118,7 @@ modded class SCR_ConsumableBandage
 }
 
 //------------------------------------------------------------------------------------------------
+[BaseContainerProps()]
 modded class SCR_ConsumableTourniquet
 {
 	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams)
@@ -127,6 +129,7 @@ modded class SCR_ConsumableTourniquet
 }
 
 //------------------------------------------------------------------------------------------------
+[BaseContainerProps()]
 modded class SCR_ConsumableSalineBag
 {
 	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams)

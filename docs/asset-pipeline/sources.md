@@ -1,12 +1,14 @@
 # Sources: look for the asset before generating it
 
 The `source` stage runs before `concept` and `generate`. A real model is better than a generated one,
-so the stage tries three rungs in order and shows every candidate on one contact sheet:
+so the stage tries four rungs in order and shows every candidate on one contact sheet:
 
 | Rung | What | Licence we ship | Cost | What happens next |
 |---|---|---|---|---|
 | 1 Vanilla | The Arma Reforger base game: props, furniture, clutter, interiors, vehicle parts | Bohemia Interactive, in the engine | 0 | No import. The prefab points at the vanilla `.xob` or inherits the vanilla prefab (`game_duplicate`); we add states and `LF_` components |
 | 2 Open source | Poly Haven (CC0), Smithsonian Open Access (CC0), Sketchfab (CC0 or CC-BY) | CC0, or CC-BY with a credit row | 0 | The full pipeline after the source: `clean` (real size, LODs, material classes), `import` |
+| 2b Free download | Whatever [3d-asset-server](#3d-asset-server-search-and-the-paid-rung) finds with a direct file: 3dassets.dev, Kenney, Quaternius, BlenderKit and more | CC0, CC-BY (credit row) | 0 | The same: `source.provider "download"`, then `clean`, `import` |
+| 2c Paid | CGTrader (Royalty Free), also Fab and TurboSquid as links. A human buys; the pipeline never does | Royalty Free, with the extraction caveat below | the model's price | The human drops the download in `tmp/assets/<slug>/purchased/`; `source.provider "purchased"`, then `clean`, `import` |
 | 3 Generate | `concept` then Meshy | our Meshy plan | 70 credits | the rest of the pipeline |
 
 Textures come from ambientCG (CC0), which the search lists beside the models. **Sounds are not a ladder**: they stay on
@@ -18,6 +20,11 @@ Nothing skips a quality check because it came from a library: the clean stage's 
 import checks and the before and after `look` pictures all apply.
 
 ## Commands
+
+```
+tools\cli asset-search install                       clone 3d-asset-server at the pinned commit into tools/mcp/3d-asset-server/ and build it
+tools\cli asset-search "<words>" [--slug <spec>]       search the sites, gate the licences, score against the spec, write tmp/assets/<slug>/shortlist.md
+```
 
 ```
 tools\cli asset source search "<words>" [--size <metres>]    all rungs for a few words, plus a contact sheet
@@ -54,6 +61,69 @@ Pick `size_m` from the model's native size (`source` prints it) unless the game 
 
 A model with more than one texture set, or an alpha-cut or glass material, is refused with the reason: the clean stage packs one
 opaque atlas.
+
+## 3d-asset-server: search and the paid rung
+
+[arielshad/3d-asset-server](https://github.com/arielshad/3d-asset-server) (Apache-2.0, TypeScript) searches about 27 sites behind one
+result shape: licence, free or paid, formats, polygon count, preview and whether a direct file exists. `asset-search install` clones
+it at a pinned commit (`PIN` in `tools/assets/pipeline/assetserver.mjs`) into the gitignored `tools/mcp/3d-asset-server/` and builds
+the server only (`npm ci --ignore-scripts`, `tsc`; no web build). `source search` and `asset-search` load its library
+(`dist/index.js`) in our own process.
+
+**What it does on this PC** (source read at the pin, 2026-11-14): it sends HTTP GETs to the provider sites it searches (with its own
+User-Agent) and writes files only when a download is asked for, under the folder we give it (`tmp/assets/<slug>/download/`; zips are
+extracted with entry-count, size and zip-slip caps, and every download hop re-checks the host is public). It spawns no process and
+runs no package script. **Telemetry:** its `cli.js` (`serve`, `mcp`) sends anonymous usage events to `stats.shep.bot` unless
+`ASSET_SERVER_TELEMETRY=0` or `DO_NOT_TRACK=1`; we call the library, which sends none, and the MCP snippet below sets the variable. With
+`METRICS_PORT` set it would also fetch network ranges (we never set it). Bump the pin only after reading the diff.
+
+**Which providers.** `api` and `link` providers only. `scrape` providers parse HTML and their robots.txt was not audited, so they are
+opt-in (`--scrape`). CGTrader is never queried by us even though the tool can: its provider requests `/search?...`, and
+`cgtrader.com/robots.txt` says `Disallow: /search*` for every agent. A CGTrader, Fab, Poliigon and TurboSquid search is a link for the
+human, printed on the shortlist. Poly Haven stays on our own adapter (`source.mjs`): it checks the API's md5s, splits the packed
+`arm` map and filters by real size, which the tool's Poly Haven provider does not; the tool is better for everything else it
+reaches. The tool's Sketchfab and ambientCG results duplicate our adapters and are shown beside them.
+
+**Licence gate** (`licenceGate`):
+
+| Licence | Verdict | What happens |
+|---|---|---|
+| CC0, public domain | ok | no credit needed, a row in `docs/credits.md` anyway |
+| CC-BY | credit | author and URL in `docs/credits.md` before it ships |
+| Royalty Free (CGTrader) | paid | a human buys it; `source.risk_accepted: true` is their yes to the caveat |
+| CC-BY-SA, no-redistribution, custom, unrecognised | review | a human reads the terms, then `source.licence_checked: true`; the fit score is capped at 50 |
+| Editorial, non-commercial, no-derivatives, none stated | refuse | never a candidate |
+
+**CGTrader terms** (<https://www.cgtrader.com/pages/terms-and-conditions>, read 2026-11-14). Royalty Free, section 21A.2: the licence "is strictly
+limited to Incorporated Product", defined as "Product that cannot be extracted from an application or other product" and "used as a
+stand-alone object without the use of reverse engineering tools or techniques"; games are covered "if the Product is contained inside a
+proprietary format and displays inside the game during play", "but not for users to re-package as goods distributed or sold inside a virtual
+world". 21A.3: "you must take all commercially reasonable measures to prevent the end user from gaining access to the Product". 21A.1 and
+21A.6 forbid selling or giving the Product on "in the form it is downloaded from the Site". Editorial, section 22.2: such products may be used
+only "for legitimate, editorial purposes on some issue of journalistic, editorial, cultural or otherwise newsworthy value", and the Royalty Free
+restrictions still apply. **Consequence for a mod:** a compiled `.xob` in a published addon can be unpacked by a player, which is the grey
+area of "cannot be extracted". We ship only compiled assets, never the purchased files (`tmp/` is gitignored), but the risk is the owner's:
+the shortlist repeats this, and a purchased source does not validate without `risk_accepted: true`. For a hero prop where the risk matters,
+ask the seller in writing first.
+
+**Purchase is human-only.** The pipeline stops at `tmp/assets/<slug>/shortlist.md` (link, price, licence, formats, polygons, preview, fit
+score and why). It never logs in, never opens a cart and never enters payment details. After the human buys:
+
+```json
+"source": { "provider": "purchased", "url": "<store page>", "licence": "Royalty Free", "author": "<seller>", "risk_accepted": true }
+```
+
+unzip the download into `tmp/assets/<slug>/purchased/` and run `asset run <slug>`: `blender/incoming_prep.py` imports the glTF, FBX, OBJ
+or .blend, follows the Principled BSDF inputs to find the base colour, normal, roughness and metallic maps (a roughness or metallic read
+through a Separate node takes its channel) and writes the same `raw/` files as for Poly Haven; `clean` and `import` follow. A free one is
+`"source": { "provider": "download", "id": "<provider>:<id>" }` (`asset source pick <slug> <n>` writes it) and `asset run` fetches it first. Both
+write `tools/assets/<slug>/source.json` and a row under "Library and purchased models" in `docs/credits.md`. A model with several base colour
+textures is refused, as for Poly Haven.
+
+**For agents.** `tools\cli asset-search "<words>" --json` is the route (it needs no MCP restart, like `tools\cli call`). The tool also runs as
+an MCP server; to add it to an agent, in `opencode.json`:
+`"3d-asset-server": { "type": "local", "command": ["node", "tools/mcp/3d-asset-server/dist/cli.js", "mcp"], "environment": { "ASSET_SERVER_TELEMETRY": "0", "ASSET_DOWNLOAD_DIR": "tmp/downloads" } }`.
+Its `download_asset` writes where the agent asks, so prefer the pipeline's own download, which gates the licence first.
 
 ## Poly Haven
 
