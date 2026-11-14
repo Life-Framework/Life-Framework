@@ -1936,7 +1936,10 @@ function clock(ms) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export function cmdPoolStatus(root) {
+// Default output is what a decision needs: busy lanes, the queue with reasons and estimated starts, the
+// budgets and a one-line history. `pool status --verbose` adds the free and stale lanes, the last runs and
+// the last sessions.
+export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") {
   const settings = poolSettings(root);
   const machines = loadMachines(root);
   const hereBuild = tb.serverBuildId(tb.localServerDir(root));
@@ -1953,8 +1956,12 @@ export function cmdPoolStatus(root) {
     const st = h.reachable && m.via !== "local" ? remoteState(m) : null;
     const heat = st && Number.isFinite(st.thermalC) ? `  ${st.thermalC} °C (holds new jobs at ${m.thermalHoldC})` : m.thermalLog && st ? "  temperature unknown (thermal log stale)" : "";
     const ram = m.via === "local" ? ramText(root) : st && Number.isFinite(st.freeMb) ? `RAM ${(st.freeMb / 1024).toFixed(1)}/${(st.totalMb / 1024).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${heat}` : "";
-    console.log(`${m.name}  ${where}  ${h.reachable ? "up" : "DOWN"}  ${build}  ${ram ? `${ram}  ` : ""}${lanes}`.replace(/ {2,}$/, ""));
-    if (!h.reachable) continue;
+    const head = `${m.name}  ${where}  ${h.reachable ? "up" : "DOWN"}  ${build}  ${ram ? `${ram}  ` : ""}${lanes}`.replace(/ {2,}$/, "");
+    if (!h.reachable) {
+      console.log(head);
+      continue;
+    }
+    const laneRows = [];
     const infos = {};
     const capMin = {};
     const rows = m.lanes
@@ -1976,8 +1983,12 @@ export function cmdPoolStatus(root) {
       infos[lane.lock] = info;
       let row = laneRow(root, kind, lane, info, tickets, settings, now);
       if (m.via !== "local" && info?.origin && remoteOwnerGone(info)) row += `; STALE: owner pid ${info.originPid} gone here`;
-      console.log(row);
+      laneRows.push(row);
     }
+    const idle = laneRows.filter((r) => /sfrees*$/.test(r) || /sstales/.test(r));
+    const shown = verbose ? laneRows : laneRows.filter((r) => !idle.includes(r));
+    console.log(verbose || !idle.length ? head : `${head}  (${idle.length} lane(s) free or stale)`);
+    for (const r of shown) console.log(r);
     const freeMb = m.via === "local" ? Math.round(freemem() / 1048576) : st?.freeMb;
     seen.set(m.name, { m, infos, capMin, freeMb });
   }
@@ -1992,6 +2003,10 @@ export function cmdPoolStatus(root) {
   const freeMbOf = (name) => seen.get(name)?.freeMb;
   for (const t of ordered) {
     const lane = t.lane ?? "session";
+    if (!verbose && (perLane.get(lane) ?? 0) >= 4) {
+      perLane.set(lane, (perLane.get(lane) ?? 0) + 1);
+      continue;
+    }
     const pos = (perLane.get(lane) ?? 0) + 1;
     perLane.set(lane, pos);
     const base = q.normalizePriority(t.priority) ?? "normal";
@@ -2030,6 +2045,11 @@ export function cmdPoolStatus(root) {
     }
   } catch {}
   const last = runs.filter(isTestRun).slice(-8);
+  if (!verbose) {
+    const n = (res) => last.filter((r) => r.result === res).length;
+    console.log(`last ${last.length} run(s): ${n("pass")} pass, ${last.filter((r) => r.result !== "pass" && r.result !== "timeout").length} other, ${n("timeout")} timeout; --verbose lists them and the sessions`);
+    return 0;
+  }
   console.log(`last ${last.length} run(s):`);
   for (const r of last) {
     console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
@@ -2136,7 +2156,7 @@ export function cmdPoolPrune(root, flags = []) {
 
 export function cmdPool(root, args = []) {
   const [sub, ...rest] = args;
-  if (sub === "status" || !sub) return cmdPoolStatus(root);
+  if (sub === "status" || !sub) return cmdPoolStatus(root, rest.includes("--verbose") || process.env.LF_OUTPUT === "full");
   if (sub === "stats") return cmdPoolStats(root);
   if (sub === "prune") return cmdPoolPrune(root, rest);
   console.log(`usage: tools\\cli pool status|stats|prune [--dry-run] [--unmarked]

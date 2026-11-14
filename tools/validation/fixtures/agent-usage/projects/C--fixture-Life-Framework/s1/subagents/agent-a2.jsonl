@@ -1,0 +1,2 @@
+{"isSidechain":true,"agentId":"a2","type":"user","message":{"role":"user","content":"where is X"},"timestamp":"2026-11-01T10:00:00.000Z"}
+{"isSidechain":true,"agentId":"a2","message":{"model":"claude-haiku-5-5","id":"n1","type":"message","role":"assistant","content":[{"type":"text","text":"a.c:1"}],"usage":{"input_tokens":10,"cache_creation_input_tokens":20000,"cache_read_input_tokens":0,"output_tokens":40}},"type":"assistant","timestamp":"2026-11-01T10:00:05.000Z"}

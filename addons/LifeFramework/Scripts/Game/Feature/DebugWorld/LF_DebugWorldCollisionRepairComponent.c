@@ -5,6 +5,12 @@ class LF_DebugWorldCollisionRepairComponentClass : ScriptComponentClass
 
 class LF_DebugWorldCollisionRepairComponent : ScriptComponent
 {
+	[Attribute("0 0 0", UIWidgets.Coords, desc: "Centre of the sphere repaired when the Workbench world tree is not available (the map's middle).")]
+	protected vector m_vRepairCenter;
+
+	[Attribute("500", UIWidgets.EditBox, desc: "Radius of that sphere, in metres.")]
+	protected float m_fRepairRadius;
+
 	protected float m_fElapsed;
 	protected int m_iPasses;
 
@@ -48,8 +54,7 @@ class LF_DebugWorldCollisionRepairComponent : ScriptComponent
 		}
 		#endif
 
-		vector center = "256 0 256";
-		world.QueryEntitiesBySphere(center, 500, RepairEntity, null, EQueryEntitiesFlags.ALL);
+		world.QueryEntitiesBySphere(m_vRepairCenter, m_fRepairRadius, RepairEntity, null, EQueryEntitiesFlags.ALL);
 	}
 
 	//------------------------------------------------------------------------------------------------

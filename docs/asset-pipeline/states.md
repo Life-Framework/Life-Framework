@@ -138,9 +138,17 @@ Use it: `LF_AssetAnimComponent.SetActive(true)` opens both strands (replicated; 
 the same), `false` closes them. `LF_HandcuffsComponent.SetOpen(bool)` wraps that (server). The harness
 verbs `itemon <prefab>` and `itemoff <prefab>` do it from a session, and `asset states <slug>
 --shots` takes the `use` pictures (in the hand to the owner and to a second player, and dropped
-beside a closed pair) when a use state is built on a bone. The cuffing flow does not open the cuffs
-yet: the item is consumed in the same step that cuffs the suspect, so showing the open phase needs a
+beside a closed pair) when a use state is built on a bone. The cuffing flow did not open the cuffs
+at first: the item is consumed in the same step that cuffs the suspect, so showing the open phase needed a
 short cuffing action first; that action calls `SetOpen(true)`.
+
+That action exists now (`cuffing-open-state`, `LF_Cuffing.c`, `docs/features.md`): the Cuff and Uncuff
+actions are holds of about 1.8 s and 1.5 s. A Cuff opens the cuffs in the officer's hand, shuts them
+with a click at the end and only then puts them on the suspect; an Uncuff opens the cuffs on the
+wrist (the worn model carries the same two hinged strands, driven by a replicated flag on the
+character, `LF_AssetAnimComponent.ShowLocal`) before they come off. The strands take 0.5 s, so the
+server waits `CLOSE_MS` (650 ms) before the cuffs leave the hand. The click is the asset's own sound
+record, `tools/assets/handcuffs/sounds.json` (`SOUND_LF_CLOSE`, `SOUND_LF_OPEN`).
 
 ## Concepts for an asset with states
 

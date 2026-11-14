@@ -12,3 +12,5 @@ You answer one narrow question about the Life Framework repo and return the answ
 - Read in pieces (`grep`, line ranges, `head`); never dump whole logs.
 - Enfusion API questions: `tools\cli call api_search '<json>'` (or `game_read`, `asset_search`). Never guess an API.
 - If the question needs judgment or a change, say so and stop.
+- Budget: 30 tool calls. Put independent greps in one turn. At the budget, answer with what you found and what is still open.
+- At most five lines back; no file dumps.

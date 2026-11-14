@@ -43,7 +43,7 @@ class LF_Test_PlaytestOffers : LF_Test
 		ctx.NotNull(other, "the other organization exists");
 		if (holder && other)
 		{
-			ctx.True(LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, holder.GetId()), "the holder takes the hideout");
+			ctx.True(LF_Hideout.Assign(LF_Hideout.OrgHideoutId(), holder.GetId()), "the holder takes the hideout");
 			ctx.EqualStr("#LF-Contraband_NotHideoutOwner", LF_Contraband.StartRefusalKey(otherFounder), "another organization is told it needs the hideout");
 			ctx.EqualStr("", LF_Contraband.StartRefusalKey(holderFounder), "the holder may start");
 			ctx.True(LF_Contraband.Start(holderFounder, null), "the holder starts the convoy");

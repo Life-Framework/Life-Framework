@@ -42,7 +42,10 @@ enum LF_ELicenseType
 	CRIMINAL_BLACKMARKET = 202, // Acceso mercado negro
 	CRIMINAL_WEAPONS = 203,     // Comprar armas ilegales
 	CRIMINAL_VEHICLES = 204,    // Comprar vehículos ilegales
-	CRIMINAL_CLOTHES = 205      // Comprar ropa del mercado negro
+	CRIMINAL_CLOTHES = 205,     // Comprar ropa del mercado negro
+
+	// Civilian permits (#988): a licence an outlet's gate asks for. Its own range so a family never shifts.
+	FIREARM_PERMIT = 300        // Carry and buy a handgun at a licensed gun counter
 }
 
 //------------------------------------------------------------------------------------------------
@@ -166,7 +169,8 @@ class LF_LicenseBits
 				LF_ELicenseType.MEDIC_ACCESS, LF_ELicenseType.MEDIC_BASIC, LF_ELicenseType.MEDIC_ADVANCED, LF_ELicenseType.MEDIC_REVIVE,
 				LF_ELicenseType.POLICE_ACCESS, LF_ELicenseType.POLICE_ARREST, LF_ELicenseType.POLICE_FINE, LF_ELicenseType.POLICE_SEARCH,
 				LF_ELicenseType.CRIMINAL_WEED, LF_ELicenseType.CRIMINAL_ROBBERY, LF_ELicenseType.CRIMINAL_BLACKMARKET, LF_ELicenseType.CRIMINAL_WEAPONS,
-				LF_ELicenseType.CRIMINAL_VEHICLES, LF_ELicenseType.CRIMINAL_CLOTHES
+				LF_ELicenseType.CRIMINAL_VEHICLES, LF_ELicenseType.CRIMINAL_CLOTHES,
+				LF_ELicenseType.FIREARM_PERMIT
 			};
 			s_aOrder = order;
 		}
@@ -487,6 +491,14 @@ class LF_LicenseManagerComponent : ScriptComponent
 		criminalClothes.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(LF_ELicenseType.CRIMINAL_CLOTHES, criminalClothes);
 
+		// ============= Civilian permits (#988) =============
+		LF_LicenseConfig firearmPermit = new LF_LicenseConfig();
+		firearmPermit.m_eLicenseType = LF_ELicenseType.FIREARM_PERMIT;
+		firearmPermit.m_sLicenseName = "#LF-License_FirearmPermit_Name";
+		firearmPermit.m_sDescription = "#LF-License_FirearmPermit_Desc";
+		firearmPermit.m_iMinLevelRequired = 1;
+		m_mLicenseConfigs.Set(LF_ELicenseType.FIREARM_PERMIT, firearmPermit);
+
 		// The owner's `licences` section (D8): initial and whitelist flags.
 		LF_LicencesConfig.ApplyTo(m_mLicenseConfigs);
 	}
@@ -680,8 +692,12 @@ if (!Replication.IsServer())
 	
 	//------------------------------------------------------------------------------------------------
 	//! Obtener configuración de una licencia
+	//! Server only: the catalog is built on the server (OnPostInit); a client gets null.
 	LF_LicenseConfig GetLicenseConfig(LF_ELicenseType licenseType)
 	{
+		if (!m_mLicenseConfigs)
+			return null;
+
 		return m_mLicenseConfigs.Get(licenseType);
 	}
 	

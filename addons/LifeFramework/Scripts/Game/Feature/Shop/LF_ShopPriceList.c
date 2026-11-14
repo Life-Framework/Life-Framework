@@ -356,7 +356,7 @@ class LF_ShopPriceList
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: the till's answer to a buy or sell.
-	static void OnResult(bool buy, LF_EShopRefusal reason, string prefab, int quantity, int money, int cash)
+	static void OnResult(bool buy, LF_EShopRefusal reason, string prefab, int quantity, int money, int cash, string missing = "")
 	{
 		if (!s_Current)
 		{
@@ -364,11 +364,11 @@ class LF_ShopPriceList
 			return;
 		}
 
-		s_Current.ApplyResult(buy, reason, money, cash);
+		s_Current.ApplyResult(buy, reason, money, cash, missing);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ApplyResult(bool buy, LF_EShopRefusal reason, int money, int cash)
+	protected void ApplyResult(bool buy, LF_EShopRefusal reason, int money, int cash, string missing)
 	{
 		m_bWaiting = false;
 		if (GetGame() && GetGame().GetCallqueue())
@@ -379,9 +379,9 @@ class LF_ShopPriceList
 
 		if (reason != LF_EShopRefusal.NONE)
 		{
-			SetReceipt(LF_ShopRefusal.Key(reason));
+			SetReceipt(LF_ShopRefusal.Text(reason, missing));
 			LF_UISound.Play(m_sRefuseSound);
-			LF_Debug.Info("Shop", "slip shows refusal " + typename.EnumToString(LF_EShopRefusal, reason));
+			LF_Debug.Info("Shop", string.Format("slip shows refusal %1 %2", typename.EnumToString(LF_EShopRefusal, reason), missing));
 			return;
 		}
 
