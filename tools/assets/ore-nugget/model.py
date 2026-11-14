@@ -5,7 +5,7 @@
 #
 # Shape: a fist-sized lump broken off a rock face: a rounded core cut by flat fracture planes, with
 # a rough skin. Each ore is a material variant: iron is red-brown hematite and rust, copper is dark
-# rock with banded green malachite, gold is milky quartz with iron staining and gold flecks.
+# rock with banded green malachite, gold is ochre quartz with iron staining and gold flecks.
 import bpy, bmesh, json, math, os, random, shutil, sys
 from mathutils import Vector, noise
 
@@ -93,14 +93,14 @@ def copper(g):
 
 def gold(g):
     grain = g.img("Rock035", "Color", data=False)
-    quartz = g.mix((0.72, 0.71, 0.67), g.scale_color(grain, 2.2), 0.35)  # milky quartz with grey grain
-    quartz = g.mix(quartz, (0.42, 0.43, 0.45), g.ramp(g.noise(6, detail=3, w=4.0), 0.52, 0.66))  # grey glassy bands
+    quartz = g.mix((0.36, 0.25, 0.07), g.scale_color(grain, (1.5, 1.2, 0.55)), 0.3)  # ochre quartz: dull yellow-gold, not white
+    quartz = g.mix(quartz, (0.27, 0.22, 0.12), g.ramp(g.noise(6, detail=3, w=4.0), 0.52, 0.66))  # darker brown bands
     stain = g.ramp(g.noise(11, detail=5, w=8.0, distortion=0.5), 0.44, 0.58)
-    base = g.mix(quartz, g.scale_color(g.img("Rust009", "Color", data=False), (0.8, 0.6, 0.45)), g.math("MULTIPLY", stain, 0.8))  # limonite staining
+    base = g.mix(quartz, g.scale_color(g.img("Rust009", "Color", data=False), (0.75, 0.5, 0.25)), g.math("MULTIPLY", stain, 0.55))  # limonite staining
     base = g.mix(base, (0.12, 0.08, 0.05), g.math("MULTIPLY", crevice(g), 0.55))
-    cluster = g.ramp(g.noise(7, detail=2, w=11.0), 0.4, 0.55)
-    fleck = g.math("MULTIPLY", g.math("LESS_THAN", g.voronoi(80, randomness=0.9), 0.2), cluster)
-    base = g.mix(base, g.scale_color(g.img("Metal048B", "Color", data=False), (1.0, 0.7, 0.3)), fleck)
+    cluster = g.ramp(g.noise(7, detail=2, w=11.0), 0.3, 0.45)
+    fleck = g.math("MULTIPLY", g.math("LESS_THAN", g.voronoi(70, randomness=0.9), 0.4), cluster)
+    base = g.mix(base, g.scale_color(g.img("Metal048B", "Color", data=False), (1.0, 0.75, 0.12)), fleck)
     rough = g.mix(g.mix(0.4, g.img("Rock058", "Roughness"), 0.4, kind="FLOAT"), 0.3, fleck, kind="FLOAT")
     height = g.math("ADD", g.math("MULTIPLY", g.img("Rock058", "Displacement"), 0.7), g.math("MULTIPLY", fleck, 0.3))
     return {"base": base, "rough": rough, "metal": fleck, "height": height, "bump_strength": 0.7, "bump_distance": 0.0025}

@@ -67,11 +67,11 @@ def copper(g):
 def gold(g):
     col, rough, height, uv = host(g)
     core, halo, v, w = veins(g, 0.6, 0.018, 41.0, distortion=0.5)
-    quartz = g.mix((0.86, 0.85, 0.8), (0.62, 0.62, 0.62), g.ramp(g.noise(9, vec=v, w=g.math("ADD", w, 3.0)), 0.4, 0.7))
+    quartz = g.mix((0.8, 0.66, 0.34), (0.55, 0.47, 0.28), g.ramp(g.noise(9, vec=v, w=g.math("ADD", w, 3.0)), 0.4, 0.7))
     base = g.mix(col, g.scale_color(g.img("Rust009", "Color", data=False, vec=uv), (0.9, 0.75, 0.6)), g.math("MULTIPLY", halo, 0.18))
-    base = g.mix(base, quartz, core)  # white quartz reefs
-    fleck = g.math("MULTIPLY", g.math("LESS_THAN", g.voronoi(14, vec=v, w=g.math("ADD", w, 7.0), randomness=0.9), 0.16), core)
-    base = g.mix(base, g.scale_color(g.img("Metal048B", "Color", data=False, vec=uv), (1.0, 0.7, 0.3)), fleck)
+    base = g.mix(base, quartz, core)  # ochre quartz reefs
+    fleck = g.math("MULTIPLY", g.math("LESS_THAN", g.voronoi(14, vec=v, w=g.math("ADD", w, 7.0), randomness=0.9), 0.26), core)
+    base = g.mix(base, g.scale_color(g.img("Metal048B", "Color", data=False, vec=uv), (1.0, 0.72, 0.2)), fleck)
     rough = g.mix(g.mix(rough, 0.45, core, kind="FLOAT"), 0.3, fleck, kind="FLOAT")
     height = g.math("ADD", height, g.math("MULTIPLY", core, 0.2))
     return {"base": base, "rough": rough, "metal": fleck, "height": height, "bump_strength": 0.8, "bump_distance": 0.01}

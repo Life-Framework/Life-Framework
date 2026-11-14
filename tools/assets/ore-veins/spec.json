@@ -3,7 +3,7 @@
   "name": "OreVein",
   "kind": "material",
   "roadmap": "",
-  "concept": "The quarry rocks that give ore (Prefabs/Resources/Mining/IronOre.et, CopperOre.et, GoldOre.et) all wore the same vanilla granite. Each now shows the ore it gives: red-brown hematite veins and iron staining, green malachite veins with azurite pockets, or white quartz reefs with gold flecks, on the same grey host rock.",
+  "concept": "The quarry rocks that give ore (Prefabs/Resources/Mining/IronOre.et, CopperOre.et, GoldOre.et) all wore the same vanilla granite. Each now shows the ore it gives: red-brown hematite veins and iron staining, green malachite veins with azurite pockets, or ochre quartz reefs with gold flecks, on the same grey host rock.",
   "prompt": "Painted in Blender by paint.py: tiling granite-like rock with ore veins, one variant per ore. no text, no logos.",
   "texture_prompt": "",
   "source": {
