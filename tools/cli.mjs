@@ -2994,8 +2994,8 @@ function cmdSession(args) {
 }
 
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
-  if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
-    console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
+  if (tier !== "fast" && tier !== "all" && tier !== "persistence" && tier !== "perf") {
+    console.log(`unknown tier: ${tier} (expected fast, all, persistence, or perf)`);
     return 2;
   }
   let only = [];
@@ -3759,12 +3759,15 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence|perf] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --core-only boots with -addons LifeFramework only (the pack folder is not
                                 on -addonsDir) and skips tests whose NeedsPack() names a reason.
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
+                                --tier perf runs only the PERF-tier timing gates (perf/budget-128), with more repeats and windows, on
+                                the pool's RAM gate and after a bounded wait for an idle CPU; never sharded, never
+                                cached, and not part of --tier all (so gates cannot flake on it). tools\\cli perf runs it.
                                 --shards N|auto (tier all): the registry split into N balanced slices run as
                                 separate pool jobs at once, one merged SUMMARY and exit code (auto: free
                                 test lanes, at most 4; tools/lib/test-shards.mjs). --only-classes <A,B>
@@ -3788,7 +3791,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 prune removes remote run folders of gone worktrees;
                                 prune --idle <min> removes every remote run folder idle that long
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
-  dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
+  dev [--tier fast|all|persistence|perf]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
   ci [--skip-core-only] [--shards N|auto|1] [--tiered]  validate --full + build + test + test --core-only, both passes at once, each sharded;
                                 --tiered runs the T1 data-only gate when the diff still is one
@@ -4022,7 +4025,7 @@ function wtHelpFull() {
   tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
                                        'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
-  tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
+  tools\\cli wt test <slug> [--tier fast|all|persistence|perf] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids] [--cash-swap]
                                        two-boot save-state E2E: persistence save boot ended by the
