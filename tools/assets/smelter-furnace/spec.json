@@ -1,0 +1,39 @@
+{
+  "roadmap": "#497",
+  "texture_prompt": "",
+  "parts": [],
+  "fit": {
+    "flip_forward": true, "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "prefab": false,
+  "slug": "smelter-furnace",
+  "name": "SmelterFurnace",
+  "kind": "deployable",
+  "concept": "The ore smelting furnace of the quarry works: a squat steel-cased firebrick furnace with a front fire door, a charging hatch on top and a short chimney stack. Players put iron, copper or gold nuggets in at the front and smelt them into bars.",
+  "prompt": "Small industrial smelting furnace: a squat rectangular riveted steel casing lined with firebrick, a heavy hinged fire door on the front with a small glowing peephole, a round charging hatch with a lid on the top, a short round steel chimney stack at the back of the top, standing on a low brick plinth. no text, no logos.",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 8000,
+    "remesh": false
+  },
+  "size_m": {
+    "length": 1,
+    "height": 1.36,
+    "width": 1
+  },
+  "budget": {
+    "lod0_tris": 8000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 2048,
+    "credits": 70
+  },
+  "asset_dir": "Assets/Props/Roleplay/SmelterFurnace",
+  "prefab_dir": "Prefabs/Props/Roleplay/SmelterFurnace"
+}
