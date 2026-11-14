@@ -317,7 +317,7 @@ class LF_Cleanup
 					s_mLastNearMs.Set(key, nowMs);
 
 				int ageSeconds = (nowMs - s_mLastNearMs.Get(key)) / 1000;
-				stay = rule.Verdict(ageSeconds, distance, HealthPercent(entity), entity.GetPrefabData().GetPrefabName());
+				stay = rule.Verdict(ageSeconds, distance, HealthPercent(entity), LF_Utils.GetPrefabName(entity));
 			}
 
 			if (stay.IsEmpty())
