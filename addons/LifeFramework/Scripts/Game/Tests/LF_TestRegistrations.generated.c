@@ -70,6 +70,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopSteal(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Cleanup(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CleanupPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_CleanupSweep(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigConstantsBatch1(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigJsonProbe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeFields(), LF_TestTier.LOGIC);

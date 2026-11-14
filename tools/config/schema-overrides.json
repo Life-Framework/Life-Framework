@@ -1,5 +1,11 @@
 {
   "records": {
+    "LF_CleanupRule": {
+      "keyFields": [
+        "m_sKind"
+      ],
+      "key": "The key is the kind: item, vehicle or body. A kind the shipped config has not listed adds a rule."
+    },
     "LF_ShopPriceRule": {
       "keyFields": [
         "m_sFind",
