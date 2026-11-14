@@ -10,7 +10,7 @@
 //
 // Stages are an ordered registry. A stage gets one fixture and returns failure strings. The later
 // issues add theirs without touching these two:
-//   #299  "boot":   start a dedicated server on the fixture, expect its [LFDebug:Config] lines
+//   #299  "boot":   a fixture whose sidecar says `"boot": true` gets its own fresh dedicated server
 //   #300  "client": a client joins, the config is served to it, and a value it can see is read back
 // A stage with `needs: "server"` or `"client"` is skipped here unless the caller passes
 // `--stage <name>` explicitly, because it needs a game. Red-proof: tools/validation/config-harness-selftest.mjs.
@@ -56,12 +56,35 @@ const baseline = () => (existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE,
 // Without a driver every fixture that has reads fails, so the stage never passes by being skipped.
 let clientDriver = null;
 export function setClientDriver(driver) { clientDriver = driver; }
+let bootDriver = null;
+export function setBootDriver(driver) { bootDriver = driver; }
 
 /** Judges one read against what the client showed. `got` is the text (shopPrice) or a boolean (actionShown). */
 export function judgeRead(read, got) {
   if (read.kind === "shopPrice") return String(got).includes(read.expect) ? "" : `${read.item} in ${read.shop}: expected ${read.expect}, the client showed ${JSON.stringify(String(got))}`;
   if (read.kind === "actionShown") return got === read.expect ? "" : `${read.class} near ${read.entity}: expected ${read.expect ? "offered" : "hidden"}, the client ${got ? "offers it" : "does not offer it"}`;
   return `unknown read kind ${read.kind}`;
+}
+
+// The boot stage (#299). Some values a reload cannot apply: the autosave timer is scheduled once at game
+// start, a system the world switches off at boot, the pack overlays from the mission header, persistence
+// switches. A fixture whose sidecar has `"boot": true` is booted on a fresh dedicated server instead of
+// being streamed to the shared one (the client stage, #300, which is faster and stays for the reloadable
+// ones). The sidecar also carries the server log it must produce:
+//   "bootLog": { "has": [ "text a line of the log contains", ... ], "absent": [ "text no line may contain" ] }
+// Run by `tools\cli config-harness --stage boot` (tools/config/boot-run.mjs): per fixture `session up
+// --clients 0 --seed config.json` on whichever pool machine has room, `session config-boot-proof` reads the
+// server log there, `session down`.
+export const isBoot = (fx) => fx.expect?.boot === true;
+
+/** Judges a server log against a boot fixture's `bootLog`; returns failure strings. */
+export function judgeBootLog(boot, logText) {
+  const fails = [];
+  const text = String(logText ?? "");
+  for (const want of boot?.has ?? []) if (!text.includes(want)) fails.push(`boot: the server log has no line with "${want}"`);
+  for (const no of boot?.absent ?? []) if (text.includes(no)) fails.push(`boot: the server log has a line with "${no}" and must not`);
+  if (!(boot?.has?.length || boot?.absent?.length)) fails.push("boot: the sidecar has no bootLog (has/absent)");
+  return fails;
 }
 
 export const STAGES = [
@@ -92,8 +115,18 @@ export const STAGES = [
     },
   },
   {
+    name: "boot", needs: "server",
+    // The server log of a server booted on this fixture; the driver (boot-run.mjs) boots, reads and stops.
+    run(fx) {
+      if (!isBoot(fx)) return [];
+      if (!bootDriver) return ["boot: no server driver (run `tools\cli config-harness --stage boot`)"];
+      return judgeBootLog(fx.expect.bootLog, bootDriver.log(fx));
+    },
+  },
+  {
     name: "client", needs: "client",
     run(fx) {
+      if (isBoot(fx)) return [];
       const reads = fx.expect.client ?? [];
       if (!reads.length) return [];
       if (!clientDriver) return ["client: no client attached (run agent-box/session.mjs config-harness-proof on `session up --clients 1`)"];
@@ -128,6 +161,9 @@ export function main(args) {
   if (want !== "all" && !known.includes(want)) {
     console.log(`config-harness: unknown stage '${want}' (${known.join(", ")}, all)`);
     return 2;
+  }
+  if (want === "boot") {
+    return import("./boot-run.mjs").then((m) => m.runBootStage(val("--dir"), val("--only") ?? ""));
   }
   if (want === "client") {
     console.log("config-harness: the client stage needs a running game: `tools\cli session up --clients 1`, then `tools\cli session config-harness-proof`, then `session down`");
