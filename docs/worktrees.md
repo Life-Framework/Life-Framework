@@ -53,7 +53,7 @@ tools\cli wt list               # who's working, ports, dirty/merged state
 tools\cli wt test <slug>        # run the LFTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
 tools\cli wt gate <slug>        # validate --full + build + test (tier=all)
-tools\cli wt ship <slug>        # gate -> push -> PR -> auto-merge (merges main only on conflict)
+tools\cli wt ship <slug>        # push -> PR -> ship queue (merge main, gate on the pool) -> auto-merge
 tools\cli wt prune <slug>       # remove a merged worktree + branch
 ```
 
@@ -108,7 +108,8 @@ comment, close on pass). It runs none of them: the maintainer or lead reviews an
 
 ## Auto-merge
 
-`wt ship <slug> [--refs N] [--body-file F]`:
+`wt ship <slug> [--refs N] [--body-file F]` goes through the ship queue (next section). The steps
+below are the old local path, still used with `--no-queue` (or `LF_SHIP_QUEUE=0`, or without `gh`):
 
 1. Refuses a dirty tree or a branch with no commits beyond `origin/main`.
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
@@ -132,6 +133,47 @@ comment, close on pass). It runs none of them: the maintainer or lead reviews an
 conflicts, the ship stops with a message; fix, commit, and re-run the same
 command. Do not merge `origin/main` by hand unless GitHub reports the PR
 `CONFLICTING` or you need code from main.
+
+## Ship queue
+
+About fifteen agents ship at once. With a local gate each `wt ship` ran `validate --full`, a build and the
+suite on this PC, and often twice: main moved during the gate, GitHub reported the PR `CONFLICTING`, the
+agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules in
+`tools/lib/ship-queue.mjs`) is one merge train for the repo:
+
+1. `wt ship <slug>` checks the tree and the PR body as before, pushes `ws/<slug>`, opens the PR (or reuses
+   it, switching off an auto-merge left from an earlier ship, so the push cannot land ungated) and adds it
+   to the queue (`tmp/wt/ship-queue.json` in the main checkout). It starts the worker when none runs.
+2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
+   (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
+   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
+   the Workbench compile and build on whichever pool machine has the `workbench` cap and room
+   (`tools/lib/wb-gate.mjs`), the suite, core-only run and placement audit on pool test lanes. A branch
+   that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does.
+3. **Re-gate rule.** When the gate passes, the worker fetches again. If main moved, it re-gates only
+   when the new main commits change a file the PR changes, or a generated file (the test registry, a
+   language conf, the string table). Driver-merged docs (`docs/features.md`, `docs/debug-log-triage.md`,
+   the lint baseline) do not count. Otherwise it pushes the gated head as is, and GitHub's required
+   `validate` check covers the combination. After three gates it pushes regardless.
+4. Pass: push, `gh pr merge --auto --merge`. Fail: a PR comment with the failing lines of the log and
+   its path, the entry is marked failed, and the queue moves on. Fix, commit, `wt ship` again.
+
+**Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
+or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
+A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes
+(driver-merged docs again do not count), so PRs on disjoint files gate side by side on different
+machines and overlapping ones keep their order.
+
+**Waiting.** `wt ship` waits until the gate passed or failed and prints
+`SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
+default when stdout is not a terminal, so an agent's report says what really happened; a terminal
+returns once queued (`--no-wait`, `--wait` to force). `tools\cli ship-queue wait <slug>` resumes a wait
+(the wait gives up after 3 h with exit 2, the gate keeps going), `ship-queue status` and `pool status`
+show what gates, what waits and why, and the last few results; `ship-queue cancel <slug>` drops a
+waiting entry. A re-ship of a waiting slug replaces its entry and keeps its place; one whose gate runs
+is refused until it ends. The worker logs to `tmp/logs/ship-queue-worker.log`, each gate to
+`tmp/logs/ship-<slug>-<stamp>.log`; a gate is killed after 100 min, an idle worker exits after 3 min,
+and a worker that died leaves its running entries to be re-queued by the next one.
 
 ## Keeping PRs moving (`prs`)
 
