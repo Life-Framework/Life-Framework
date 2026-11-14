@@ -1,0 +1,14 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "boot": true,
+  "bootLog": {
+    "has": [
+      "owner config loaded from $profile:LifeFramework/config.json",
+      "[LFDebug:Jobs] site Annex_Job_Depot kind 0",
+      "[LFDebug:Jobs] site Annex_Job_Drop kind 1"
+    ],
+    "absent": [ "jobs: owner config read 0 fields", "rejected 1" ]
+  }
+}
