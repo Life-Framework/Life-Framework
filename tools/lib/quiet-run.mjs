@@ -37,7 +37,7 @@ const WARN_RE = /^WARN\b|^pool: .*(past its|warned|closes in|reclaimed|no server
 // validate prints the output of its self-tests too (pool and merge fixtures): only its own WARN lines count.
 const VALIDATE_WARN_RE = /^WARN\b/;
 // The command's own verdict: kept when the run passes, so the agent never needs the log for them.
-const KEEP_RE = /^(SUMMARY|validate:|test-e2e: (SUMMARY|OK|FAIL|log|feature debug)|pool: .* on .*: exit|session: (ready|nobody|\d+ (request|session)|full log)|look: \d+\/\d+|PR |gate:|ship:|merged|checks)|https:\/\/github\.com\/\S+\/pull\/\d+|\bproof: (PASS|FAIL)|^town (ok|FAILED)/;
+const KEEP_RE = /^(SUMMARY|validate:|incremental:|slowest:|test-e2e: (SUMMARY|OK|FAIL|log|feature debug)|pool: .* on .*: exit|session: (ready|nobody|\d+ (request|session)|full log)|look: \d+\/\d+|PR |gate:|ship:|merged|checks)|https:\/\/github\.com\/\S+\/pull\/\d+|\bproof: (PASS|FAIL)|^town (ok|FAILED)/;
 
 function clip(line, n = MAX_LINE) {
   const s = line.replace(/\s+$/, "");

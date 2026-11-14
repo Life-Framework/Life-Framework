@@ -1,4 +1,5 @@
 // Request audit (#693a). Every `RplRcver.Server` handler takes a request from a
+// inputs: addons/**
 // client (RpcAsk_* by convention; #693b widened the scope to any name, which
 // brought in the three RPC_LF_* quantity handlers), so the server must check it before acting: who sent it
 // (ownership, role or duty), how far away it is (range), what it costs (money

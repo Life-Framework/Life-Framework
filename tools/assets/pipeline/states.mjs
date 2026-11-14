@@ -14,7 +14,7 @@
 // bone's axes. HandAdditiveTranslation moves it in the bone's frame. HandAdditiveRotation (a b c)
 // turns it: the rows of the item's axes in the bone's frame are Rz(c) * Rx(a) * Ry(b), with
 // Rx(90) taking item y to -bone z and item z to bone y (an exact fit to four measured rotations).
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { addonPath } from "./addon.mjs";
@@ -305,10 +305,11 @@ export function shotList(spec) {
 }
 
 // ---- the pictures ---------------------------------------------------------------------------------
-// One picture per declared state (use states excepted) on a fresh `--profile full` session with two
-// clients: agent-box/proofs/asset-states-proof.mjs gives the item, holds it, drops it and opens the
-// preview sheet; the PNGs land in tmp/assets/<slug>/states/. Each step is a repo command that blocks
-// with its own budget.
+// One picture per declared state (use states excepted). The ground and inventory pictures need no session:
+// `look item` (tools/visual/look-item.mjs) poses the item the way the inventory drops it and renders the
+// prefab's own preview camera in a hidden Workbench. Only hand (and use) need a fresh `--profile full`
+// session with two clients: agent-box/proofs/asset-states-proof.mjs gives the item and holds it. The PNGs
+// land in tmp/assets/<slug>/states/. Each step is a repo command that blocks with its own budget.
 // local: --local pins the session to this PC; without it the session goes to whichever pool machine
 // has the lane and the RAM, and session.mjs relays the proof there and copies the pictures home.
 export function shootStates(root, spec, dir, { local = false } = {}) {
@@ -318,13 +319,25 @@ export function shootStates(root, spec, dir, { local = false } = {}) {
   const rel = spec.states.prefab || `${spec.prefab_dir}/${spec.name}.et`;
   const shots = shotList(spec);
   const out = join(dir, "states");
+  const lookShots = shots.filter((s) => s === "ground" || s === "inventory");
+  const sessionShots = shots.filter((s) => !lookShots.includes(s));
+  if (lookShots.length) {
+    const cli = join(root, "tools", "cli.mjs");
+    const r = spawnSync(process.execPath, [cli, "look", "item", `{${guid}}${rel}`, "--states", lookShots.join(","), "--wait"], { cwd: root, stdio: "inherit", windowsHide: true });
+    if (r.status !== 0) { console.log("FAIL  look item"); return 1; }
+    const leaf = rel.split("/").pop().replace(/\.et$/, "");
+    mkdirSync(out, { recursive: true });
+    for (const s of lookShots) copyFileSync(join(root, "tmp", "look", `item-${leaf.replace(/[^A-Za-z0-9_-]/g, "_")}`, `${s}.png`), join(out, `state_${s}_${leaf}.png`));
+    console.log(`states: ${lookShots.join(", ")} from look item (no session); ${sessionShots.length ? "hand/use need a session" : "no session was used"}`);
+  }
+  if (!sessionShots.length) { console.log(`states: pictures in ${out}; read every one`); return 0; }
   const session = join(root, "agent-box", "session.mjs");
   const node = (args) => spawnSync(process.execPath, [session, ...args], { cwd: root, stdio: "inherit", windowsHide: true }).status;
   const pin = local ? ["--local"] : [];
   if (node(["up", "--clients", "2", "--profile", "full", "--wait", ...(local ? ["--machine", "local"] : [])]) !== 0) { console.log("FAIL  session up"); return 1; }
   let code = 1;
   try {
-    code = node(["asset-states-proof", `{${guid}}${rel}`, shots.join(","), out, ...pin]);
+    code = node(["asset-states-proof", `{${guid}}${rel}`, sessionShots.join(","), out, ...pin]);
   } finally {
     node(["down", ...(local ? ["--machine", "local"] : [])]);
   }

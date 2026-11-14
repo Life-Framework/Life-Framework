@@ -1,4 +1,5 @@
 // tools/validation/validate-action-contexts.mjs
+// inputs: addons/**, tools/actions/**
 //
 // A world interactable must not keep the vanilla door volume: Offset 0 0 0,
 // Radius 0.650, Height 0. That point is the hinge. Run

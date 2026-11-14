@@ -1,4 +1,5 @@
 // Proves the trigger logic of the gate's placement step, offline (the audit run is stubbed).
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // red-proof: with `.layer` dropped from placementRelevant this printed "a .layer diff did not run the audit".
 import { placementRelevant, runPlacementGate } from "../lib/placement-gate.mjs";
 

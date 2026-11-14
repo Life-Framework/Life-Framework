@@ -1,4 +1,5 @@
 // Proves the release-gate tooling (#399/#400/#401) in a scratch repo with a fake GitHub:
+// inputs: tools/**, agent-box/**, .githooks/**
 //   1. `promote` lists exactly the PRs merged since stable, writes the checklist with each PR's manual steps;
 //   2. it refuses a non-fast-forward target, and a listing alone never moves stable;
 //   3. `--confirm` fast-forwards stable, tags it, and verifies + closes only the issues of PRs in range;

@@ -1,4 +1,5 @@
 // tools/validation/validate-release-ready.mjs
+// inputs: addons/**, docs/marketing/**
 //
 // A Workshop upload fails or ships junk when addon metadata is missing or the
 // tree holds generated files (#368). For each addon (the core LifeFramework and
