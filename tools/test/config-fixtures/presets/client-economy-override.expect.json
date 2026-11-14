@@ -1,0 +1,10 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "client": [
+    { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Apple", "expect": "$23" },
+    { "kind": "shopPrice", "shop": "Annex_GunCounter", "item": "M9", "gone": true, "expect": "$500" },
+    { "kind": "lotPrice", "shop": "Annex_Vehicle_Lot", "expect": "$1,250" }
+  ]
+}

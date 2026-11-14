@@ -131,6 +131,8 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
 
 - A line is a `patch` when the core has its id and an `add` when it does not (`"op": "remove"` removes). A
   node takes `"op"` the same way and a node with `options` replaces its reply list (a reply has no id).
+- A pack made with `toolscli pack new <Name>` is taken by `--addon LF_<Name>` (its `.gproj` is read; no list to edit). Its string table may still be the empty one `pack new` wrote.
+- A node with `options` replaces the core node's list, so write every reply the node should keep, and give each a text in `replies` (a reply the patch does not list is refused). `"options_from"` may name a core node.
 - Every patched line is text only: no ElevenLabs call, no budget, no wav. The core's recording keeps playing
   for the lines the patch does not touch; a reworded line shows its new caption over the old voice, so reword
   only where that reads right, or write a full dialogue (with `--addon`, its own voice) and `replace` the id in
@@ -138,7 +140,7 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
 - The tool refuses a patch of a line or node the core lacks, an add of one it has, a reply to an unknown
   node, a removed node a core node still leads to, a patch in the core addon, and a patch with a voice or
   budget. The captions go into the pack's string table.
-- List the written `.conf` in the pack's mission header `m_aLF_ConfigOverlays`. `tools\cli validate`
+- The stage prints the `"{GUID}path"` overlay line; list it in the pack's mission header `m_aLF_ConfigOverlays`. `tools\cli validate`
   (`validate-dialogue-patch.mjs`) reads it against the core dialogue, and `dialogue-pipeline-selftest.mjs`
   checks the file still matches the json.
 - The Everon pack's clerk is the worked example (`tools/assets/dialogue/clerk_everon/`).

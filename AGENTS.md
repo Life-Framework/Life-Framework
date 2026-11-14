@@ -90,6 +90,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | Command | Does |
 |---|---|
 | `tools\cli status` | Toolchain and MCP state |
+| `tools\cli lead [--prs N]` / `lead prune-safe [--dry-run]` | The lead's one-screen dispatch view in about 10 s: M2 and M3 issues by state, open PRs (conflicting first, with a generated-only hint), worktrees (active, idle, merged-prunable by GitHub PR, orphans, disk), pool machines and queue, accounts and slices when those commands exist. `prune-safe` prunes only worktrees whose PR is MERGED, clean, idle and unlocked, never forced (`docs/worktrees.md` "Lead view") |
 | `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports; claims a ready warm checkout (about 2 s) when the pool has one (`wt warm`, `docs/worktrees.md` "Fast `wt new`") |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
@@ -107,6 +108,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour: open M2 chapter and epic work first, then big player flows, polish last; one line can cover several issues. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
+| `tools\cli usage --accounts [--window 5h]` / `usage --pick` | Usage per Claude account (Personal `~/.claude`, Gaming `~/.claude-gaming` plus the laptop over ssh): cost-weighted tokens, messages, active sessions, last rate-limit hit, `≈X% of last observed limit` (an estimate). `--pick` names the provider id for the next agent (`claudeAgent`, `claudeAgent_claude_gaming` or `"laptop"`) |
 
 **Compact output.** Heavy commands (`validate`, `test`, `session up`, `look`, `wt gate|ship`, `asset run`, `harness.mjs flow`, proof verbs) print one `SUMMARY <cmd> ok|fail ... log=<path>` line and only the failing items with file:line; the full transcript is the log file in `tmp/logs/`. Never pipe them through `tail`/`Select-Object`. `--verbose` prints everything (`docs/agent-budget.md` "Compact command output").
 
@@ -258,6 +260,13 @@ The order is design, scaffold, look, place, build, test, look, review, ship
 when the diff touches replication, an RPC, persistence, money, inventory or
 GUIDs: findings go in `tmp/review-<slug>.md`, each ticked `fixed:` or
 `dismissed:` with a reason, and ship carries the file into the PR.
+
+A chapter or epic runs through the roadmap pipeline
+(`docs/process/roadmap-pipeline.md`): one Opus planner cuts file-disjoint
+slice cards (`docs/process/slice-card.md`, at most 45 min / 60 calls each),
+`tools\cli slice list <parent> --ready` is the dispatch queue by critical
+path, `slice brief <issue>` is the agent's brief, and `slice record` / `slice
+stats` tune model routing. A slice that runs over is split, never extended.
 
 ## What "done" means (issue states)
 
