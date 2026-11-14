@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8E41B6D07A2C9F35}Configs/Rules/LF_QuizBank.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

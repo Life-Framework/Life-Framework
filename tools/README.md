@@ -16,9 +16,10 @@ tools\cli mcp enable|disable <name>     # toggle a server in opencode.json
 tools\cli build                         # headless Workbench build (worktree only)
 tools\cli rdb                           # register new .meta files in this worktree's resourceDatabase.rdb (~10 s; boots do it when stale)
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
-tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>]
+tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>|--red <names>]
                                         # build + boot server + parse LFTEST results (worktree only)
                                         # first free slot on any pool machine (--any); --local, --remote [name]
+                                        # --red <names>: batched red proof, one boot, every listed test must FAIL with its RedProof() hook on
 tools\cli e2e [--local|--remote [name]] # two-boot save/restart proof in this worktree, on a pool slot
 tools\cli pool status|stats|prune       # test pool: machines, slots, queue, last runs (tools/pool.json)
 tools\cli testbox provision|status|prune # set up / inspect a remote pool machine (tools/remote/, docs/worktrees.md)

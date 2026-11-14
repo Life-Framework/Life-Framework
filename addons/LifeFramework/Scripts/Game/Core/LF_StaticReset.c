@@ -16,6 +16,7 @@ class LF_StaticReset
 	{
 		LF_Places.ResetStatics();
 		LF_PrefabSlots.ResetStatics();
+		LF_SoundSlots.ResetStatics();
 		LF_Breach.ResetStatics();
 		LF_PlayerIdentity.ResetStatics();
 		LF_Lockpick.ResetStatics();
@@ -114,6 +115,7 @@ class LF_StaticReset
 		LF_Systems.ResetStatics();
 		LF_ItemCatalogue.ResetStatics();
 		LF_Cleanup.ResetStatics();
+		LF_Quiz.ResetStatics();
 		LF_PlacementAim.ResetStatics();
 		LF_ClipStamp.ResetStatics();
 

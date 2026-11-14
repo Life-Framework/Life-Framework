@@ -670,7 +670,7 @@ const gproj = (dir) => {
 const scenario = (dir, file) => /Name "(\{[0-9A-F]{16}\}Missions\/[^"]+)"/.exec(fs.readFileSync(path.join(repo, "addons", dir, "Missions", `${file}.meta`), "utf8"))[1];
 const serverData = {
   template: JSON.parse(fs.readFileSync(path.join(repo, "docs", "playtest", "server-config.example.json"), "utf8")),
-  core: { ...gproj("LifeFramework"), scenario: scenario("LifeFramework", "LF_PlaytestTown.conf") },
+  core: { ...gproj("LifeFramework"), scenario: scenario("LifeFramework", "EL_DebugTest.conf") },
   pack: { ...gproj("LF_Everon1989"), scenario: scenario("LF_Everon1989", "LF_Everon1989.conf") },
 };
 fs.writeFileSync(

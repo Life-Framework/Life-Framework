@@ -7,7 +7,7 @@ class LF_TestRunnerComponent : ScriptComponent
 {
 	protected static const int RUN_DELAY_MS = 3000;
 	protected static const int CLOSE_DELAY_MS = 5000;
-	//! Written by tools/test/test-e2e.ps1 -Only (tools\cli test --only), read only under LF_TEST_ONLY.
+	//! Written by tools/test/test-e2e.ps1 -Only (tools\cli test --only, and --red, which adds LF_TEST_RED), read only under LF_TEST_ONLY.
 	protected static const string ONLY_PATH = "$profile:LF_TestOnly.txt";
 	//! Written by tools/test/test-e2e.ps1 under LF_TEST_HANG=run: the suite never starts, so the pool's runtime budget (tools/remote/pool.mjs) has a hang to kill.
 	protected static const string HANG_PATH = "$profile:LF_TestHang.txt";
@@ -35,6 +35,10 @@ class LF_TestRunnerComponent : ScriptComponent
 		int failures;
 #ifdef LF_TEST_ONLY
 		LF_TestManager.GetInstance().SetOnly(ReadOnlyNames());
+#endif
+#ifdef LF_TEST_RED
+		// tools\cli test --red: the --only tests run with RedProof() on and must all fail.
+		LF_TestManager.GetInstance().SetRed(true);
 #endif
 #ifdef LF_TEST_TIER_PERSISTENCE
 		failures = LF_TestManager.GetInstance().RunSuite(LF_TestSuiteMode.PERSISTENCE, reportXml);

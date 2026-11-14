@@ -16,6 +16,13 @@
 //      and the heat headroom; a machine down at the start is used when it comes back; live RAM per
 //      machine (never over-committed); backfill until a RAM head starves, then it drains; remote tests
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
+//   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
+//      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-14 (pool-parallel-start), each broken alone: burstAdmit always refusing (strict FIFO) "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (1 of 14)"; without the in-flight RAM term "a burst start ignored the RAM of the starts in flight ahead of it (14 admitted, 4 fit)"; the holder gate without aheadMb "the holder's gate let a burst start overshoot the floor"; blocks() without the granted check "a ticket that already holds its lane still blocks the queue"; sharedSnapshot never reusing "six runs asked together did not share one snapshot (6 takes, 6 shas)".
+// red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
+// laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
+// "lane ports collide: 2011 session 2 / test 10"; with the escape-less /sfrees*$/ of main back "pool status does not fold free and
+// stale lanes (one row per lane on a big machine)".
 // red-proof 2026-11-14 (pool-ram-select), each rule broken alone: with the rank sort disabled "a starved local was still tried before a roomy remote (local,lf-testbox)"; with the old first-server rule "the first test server on a starved machine (0.4 GB free) was admitted"; without the budgetMultiplier weight "a local machine with ample RAM lost to the slower laptop"; without the pinned hint "pool status does not say the other machine has room"; with rewriteTicket writing a dropped ticket "a replaced request came back when its waiter rewrote the ticket (one worktree queued twice)"; with pool.json sessionIdleMaxMin 30 "a session idle 6 min with nobody waiting was kept (limit 5)"; with acquireSlot in cmdCi "a lane is taken outside the suite run in: cmdCi"; with --local in auditTestArgs "the placement audit pins its test run to this PC"; without the cache "the remote RAM read was not cached for its ttl (3 reads for 3 decisions over 9 s)"; with pinWarning off "no queue-time warning for a pin onto a starved machine (null)"; without the upload step "a remote audit run does not carry its input and output".
 // red-proof 2026-11-14 (pool-throughput), each rule broken alone: with the old early return
 // (machines.length < 2) in chooseSessionMachine "a 2-client request that started while the laptop was
@@ -140,6 +147,57 @@ try {
   check(q.lanesFor(lanes2, "session").map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001,server-2011:2011", "two session lanes are not server-2001:2001 and server-2011:2011");
   check(q.portForLock("server-2011") === 2011 && q.sessionA2sPort(2001) === null && q.sessionA2sPort(2011) === 17877, "session lane 2 port / A2S port");
   check(!q.lanesFor(lanes2, "test").some((l) => l.port === 2011) && q.allLaneLocks(lanes2).length === 4, "a test lane shares a port with a session lane");
+  // Lane ports (pool-queue.mjs "Lane ports"): no lane ceiling in code but the port range, every port
+  // distinct, today's lanes unchanged, and older code that sees only a lock name gets the same port.
+  {
+    const big = { name: "big", via: "ssh", slots: 1, lanes: pool.laneSetting({ lanes: { test: 9, session: 4 }, lanesV2: { test: q.MAX_TEST_LANES, session: q.MAX_SESSION_LANES } }) };
+    check(q.MAX_TEST_LANES >= 32 && q.MAX_SESSION_LANES >= 16, `the lane port range is too small (${q.MAX_TEST_LANES} test, ${q.MAX_SESSION_LANES} session)`);
+    check(pool.laneSetting({ lanes: { test: 2, session: 8 } })?.session === 8, `session lanes are capped below the port range (asked 8, got ${pool.laneSetting({ lanes: { test: 2, session: 8 } })?.session})`);
+    check(pool.laneSetting({ lanes: { test: 40, session: 1 } })?.test === 40, "test lanes are capped below the port range");
+    check(pool.laneSetting({ lanes: { test: 9, session: 4 }, lanesV2: { test: 12, session: 6 } }).test === 12, "lanesV2 does not win over lanes");
+    check(pool.laneSetting({ lanes: { test: 999, session: 999 } }).test === q.MAX_TEST_LANES, "a count past the port range is not cut to it");
+    check(pool.laneNotes({ lanes: { test: 12, session: 4 } }).some((n) => /older than/.test(n)) && !pool.laneNotes({ lanes: { test: 9, session: 4 }, lanesV2: { test: 12, session: 6 } }).length, "pool status does not warn about lanes.test > 9 (older code puts test lane 10 on 2011)");
+    const ses = q.lanesFor(big, "session");
+    const tst = q.lanesFor(big, "test");
+    check(ses.length === q.MAX_SESSION_LANES && tst.length === q.MAX_TEST_LANES, `lanesFor does not give every configured lane (${ses.length} session, ${tst.length} test)`);
+    check(ses.slice(0, 4).map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001,server-2011:2011,server-2021:2021,server-2031:2031", "session lanes 1-4 changed name or port");
+    check(tst.slice(0, 9).map((l) => `${l.lock}:${l.port}`).join() === Array.from({ length: 9 }, (_, i) => `server-test-${i + 1}:${2002 + i}`).join(), "test lanes 1-9 changed name or port");
+    // Pool code of before 2026-11-14 (a remote run of an older snapshot) reads the port from the lock name only.
+    const oldPortForLock = (n) => (/^server-test-(\d+)$/.test(n) ? 2001 + Number(/\d+$/.exec(n)[0]) : /^server-(\d+)$/.test(n) ? Number(/\d+$/.exec(n)[0]) : 2001);
+    const wrongOld = [...ses, ...tst].filter((l) => oldPortForLock(l.lock) !== l.port || q.portForLock(l.lock) !== l.port);
+    check(!wrongOld.length, `a lane lock names another port than the lane listens on (${wrongOld.map((l) => `${l.lock}:${l.port}`).join()})`);
+    const owners = new Map();
+    const dupes = [];
+    const claim = (port, who) => {
+      if (port === null || port === undefined) return;
+      if (owners.has(port)) dupes.push(`${port} ${owners.get(port)} / ${who}`);
+      else owners.set(port, who);
+    };
+    for (const l of ses) {
+      claim(l.port, `session ${l.index}`);
+      claim(q.sessionA2sPort(l.port), `session ${l.index} A2S`);
+    }
+    for (const l of tst) {
+      claim(l.port, `test ${l.index}`);
+      if (l.index > q.LEGACY_TEST_LANES) claim(l.port + 1, `test ${l.index} A2S reserve`);
+    }
+    claim(17777, "the engine default A2S (session lane 1, remote test runs)");
+    check(new Set([...ses, ...tst].map((l) => l.lock)).size === ses.length + tst.length, "two lanes share a lock name");
+    // Worktree ports (wt.mjs allocatePorts): 2001 + 10 i and 17777 + 10 i for indices 0..2000. -server ignores
+    // -bindPort, so the game ports are never bound; lanes 1-4 of before sit on worktree 0-3's game port and lanes
+    // 2-4's A2S on worktree 10/20/30's (both as before). A block lane may meet none of them.
+    const known = new Set([2001, 2011, 2021, 2031, 17877, 17977, 18077]);
+    for (let i = 0; i <= 2000; i++) {
+      for (const p of [2001 + 10 * i, 17777 + 10 * i]) {
+        if (known.has(p) || p === 17777) continue;
+        claim(p, `worktree ${i}`);
+      }
+    }
+    check(!dupes.length, `lane ports collide: ${dupes.slice(0, 4).join("; ")}`);
+    // Ports other tools bind on 127.0.0.1 (agent-box/listen-host.mjs) stay outside the lane blocks.
+    check(pool.isIdleLaneRow("    test     server-2403     free") && pool.isIdleLaneRow("    test     server-test-1   stale (pid 1 gone; the next acquirer reclaims it)") && !pool.isIdleLaneRow("    session  server-2001     wt-a session    age 3m"), "pool status does not fold free and stale lanes (one row per lane on a big machine)");
+    check(![...ses, ...tst].some((l) => l.port >= 2302 && l.port <= 2306), "a lane sits on 2302-2306 (listen-host and the Reforger default range)");
+  }
   const ses = { sessionReserveServerMb: 800, sessionReserveClientMb: 1200 };
   check(q.sessionReserveMb(ses, 1) === 2000 && q.sessionReserveMb(ses, 2) === 3200, "session reserve per client count");
   // The working-set trim touches only live pids a session recorded.
@@ -641,6 +699,127 @@ const dir0 = () => {
     check(/lf-pool: ram \d+ \d+ 1/.test(refused) && !/pass/.test(refused), `the holder's RAM gate let a test start under the floor beside a running server (${refused.trim().slice(0, 200)})`);
     check(/lf-pool: pass/.test(gate(0, 1)), "the holder's RAM gate refused a test with RAM to spare");
     rmSync(ld, { recursive: true, force: true });
+  }
+  // Burst starts (#1195): with N free lanes and N queued runs for a machine, all N start together.
+  // Before, only the head of a machine's queue tried it and each remote start (2-3 s, 22 s for a new
+  // run folder) held everyone behind it: 14 runs on a 16-lane box never ran more than 7 at once.
+  {
+    const cloud = { name: "lf-cloud", via: "ssh", host: "lf-cloud", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 16, session: 6 }, caps: ["server"] };
+    const bst = { ...settings, testReserveMb: 800, testBootS: 60 };
+    const T1 = Date.parse("2026-11-14T16:00:00Z");
+    const run = (i, extra = {}) => ({ file: String(T1 - 60000 + i * 100).padStart(15, "0") + "-" + String(1000 + i).padStart(7, "0") + "-aaaaaa.json", at: new Date(T1 - 60000 + i * 100).toISOString(), priority: "normal", lane: "test", purpose: "test fast", machines: ["lf-cloud"], ...extra });
+    // Who of a queue starts now: each ticket against the tickets that block it (q.blocks), then q.burstAdmit.
+    const admitted = (tickets, view) => tickets.filter((me) => {
+      const ahead = tickets.filter((t) => t.file !== me.file && q.blocks(t, me, cloud, T1, 20 * 60000, { starveMs: 20 * 60000 }));
+      return q.burstAdmit(ahead, me, { ...view, minFreeMb: bst.minFreeMb, reserveOf: (t) => q.ticketReserveMb(t, bst) }).ok;
+    }).map((t) => t.file);
+    const fourteen = Array.from({ length: 14 }, (_, i) => run(i));
+    const roomy = { freeLanes: 16, freeMb: 24700, pendingMb: 0 };
+    check(admitted(fourteen, roomy).length === 14, "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (" + admitted(fourteen, roomy).length + " of 14)");
+    // Order kept: with 6 free lanes exactly the first 6 in queue order go, a later high run among them.
+    const mixed = [...fourteen.slice(0, 13), run(13, { priority: "high" })];
+    const six = admitted(mixed, { ...roomy, freeLanes: 6 });
+    const want = q.queueOrder(mixed, T1, 20 * 60000).slice(0, 6).map((t) => t.file);
+    check(six.length === 6 && six.join() === [...want].sort().join() && six.includes(mixed[13].file) && !six.includes(mixed[5].file), "6 free lanes did not go to the first 6 runs in queue order (a later run passed an earlier one): " + six.length);
+    // RAM: the reserves of the starts in flight count, so a burst cannot overshoot the floor.
+    // 5000 MB free, floor 1500, 800 per test: positions 0..3 fit (5000 - 4 x 800 >= 1500), the 5th does not.
+    check(admitted(fourteen, { freeLanes: 16, freeMb: 5000, pendingMb: 0 }).length === 4, "a burst start ignored the RAM of the starts in flight ahead of it (" + admitted(fourteen, { freeLanes: 16, freeMb: 5000, pendingMb: 0 }).length + " admitted, 4 fit)");
+    check(admitted(fourteen, { freeLanes: 16, freeMb: 5000, pendingMb: 1600 }).length === 2, "a burst start ignored the servers still booting there");
+    const a3 = q.burstAdmit(fourteen.slice(0, 3), fourteen[3], { freeLanes: 16, freeMb: 24700, minFreeMb: 1500, reserveOf: (t) => q.ticketReserveMb(t, bst) });
+    check(a3.ok && a3.aheadMb === 2400 && a3.position === 3, "burstAdmit does not hand the in-flight reserves to the start (" + JSON.stringify(a3) + ")");
+    // Fallbacks: unknown lanes or RAM, or a head waiting on RAM, keep plain FIFO.
+    check(admitted(fourteen, { freeLanes: null, freeMb: 24700 }).length === 1 && admitted(fourteen, { freeLanes: 16, freeMb: null }).length === 1, "a burst started on a machine whose lanes or RAM could not be read");
+    const ramHead = [run(0, { lane: "session", stuck: "ram", needMb: 30000, clients: 3 }), ...fourteen.slice(1)];
+    check(!q.burstAdmit([ramHead[0]], ramHead[1], { freeLanes: 16, freeMb: 24700, minFreeMb: 1500, reserveOf: () => 800 }).ok, "a burst passed a head that waits on RAM");
+    // A ticket whose holder took its lane no longer blocks anyone (its run-folder prep runs beside the queue).
+    check(q.blocks({ ...fourteen[0], granted: "lf-cloud" }, fourteen[1], cloud, T1, 20 * 60000) === false && q.blocks(fourteen[0], fourteen[1], cloud, T1, 20 * 60000) === true, "a ticket that already holds its lane still blocks the queue");
+    check(q.ticketReserveMb({ lane: "session", clients: 2, profile: "full" }, bst) === 2300 && q.ticketReserveMb({ lane: "test" }, bst) === 800 && q.ticketReserveMb({}, bst) === 1450, "ticketReserveMb");
+    // What still boots: a session under 3 min, a test under testBootS.
+    const ago = (sec) => new Date(T1 - sec * 1000).toISOString();
+    check(q.bootingMb([{ purpose: "test fast", at: ago(10) }, { purpose: "test fast", at: ago(90) }, { purpose: "session", at: ago(60), clients: 1, profile: "lowspec" }, { purpose: "test fast", at: ago(5), alive: false }], bst, T1) === 800 + 1400, "bootingMb counts the wrong locks");
+    check(pool.remotePendingMb(bst, [{ purpose: "test fast", at: ago(10), alive: true }, { purpose: "session", at: ago(10), alive: true, clients: 1, profile: "full" }], T1) === 800 + 1450, "the remote pending RAM leaves out the tests still booting");
+    // Starts in flight together spread over the free lanes: the k-th tries the k-th free lane first.
+    const sl = ["server-test-1", "server-test-2", "server-test-3", "server-test-4"].map((lock) => ({ lock }));
+    check(q.rotateSlots(sl, ["server-test-2", "server-test-4"], 1).map((x) => x.lock).join() === "server-test-4,server-test-1,server-test-2,server-test-3" && q.rotateSlots(sl, ["server-test-2"], 0) === sl, "rotateSlots");
+    const tdir2 = mkdtempSync(join(tmpdir(), "lf-burstcfg-"));
+    spawnSync("git", ["init", "-q", tdir2], { windowsHide: true });
+    const hb = pool.holderConfig(tdir2, cloud, { sha: "a".repeat(40), head: "b".repeat(40) }, { purpose: "test fast", settings: bst, aheadMb: 2400, freeLocks: ["server-test-3", "server-test-5"], position: 1 });
+    check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /-s5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
+    rmSync(tdir2, { recursive: true, force: true });
+    // The holder's gate itself (PowerShell): the reserves in flight ahead and a test lock still booting.
+    const ld = mkdtempSync(join(tmpdir(), "lf-burstgate-"));
+    const gate = (aheadMb, booting) => {
+      for (const n of ["server-test-1"]) rmSync(join(ld, n + ".lock"), { force: true });
+      if (booting) writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test fast", at: new Date().toISOString() }));
+      const os = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", "[int]((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1024)"], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+      const free = Number((os.stdout ?? "").trim());
+      // Floor just under what is free now: passes alone, fails with 2 GB more to find.
+      const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb: Math.max(1, free - 1024), reserveMb: 0, serverMb: 600, clientMb: 850, testMb: booting ? 2048 : 0, testBootS: 60, aheadMb } };
+      const ps = ["$cfg = '" + JSON.stringify(cfg) + "' | ConvertFrom-Json", "$ld = '" + ld + "'", "$slots = @($cfg.slots)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", pool.PS_RAM_GATE, "Write-Host 'lf-pool: pass'"].join(String.fromCharCode(10));
+      const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+      return (r.stdout ?? "") + (r.stderr ?? "");
+    };
+    check(/lf-pool: pass/.test(gate(0, false)), "the holder's gate refused a start with room (no starts in flight)");
+    check(/lf-pool: ram /.test(gate(2048, false)), "the holder's gate let a burst start overshoot the floor (2 GB of starts in flight ahead ignored)");
+    check(/lf-pool: ram /.test(gate(0, true)), "the holder's gate ignored a test server still booting there");
+    rmSync(ld, { recursive: true, force: true });
+    // Old and new code share the lock dirs: both take a lane with an atomic create (the holder's
+    // CreateNew, this PC's openSync "wx", unchanged since the pool began), so starts in flight together
+    // can race but never share a lane. 6 holders' lock loops at once on 3 lanes: 3 winners, all distinct.
+    const src = pool.holderScript({ main: "C:/x", slots: [] });
+    const loop = src.slice(src.indexOf("for ($i = 0; $i -lt $slots.Count"), src.indexOf("if ($slots.Count -gt 0 -and $got -lt 0)"));
+    check(loop.includes("[IO.FileMode]::CreateNew") && loop.length > 200, "the holder no longer takes its lane with an atomic create");
+    const rd = mkdtempSync(join(tmpdir(), "lf-lockrace-"));
+    const racer = ["$ld = '" + rd + "'", "$enc = New-Object System.Text.UTF8Encoding($false)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", "function Stop-Under($d) {}", "function Test-Server($d) { return $false }", "$cfg = [pscustomobject]@{ token = 'x'; slug = 's'; purpose = 'test'; origin = 'h'; originPid = 1 }", "$got = -1", "$slots = @(@{ lock = 'server-test-1'; dir = 'a' }, @{ lock = 'server-test-2'; dir = 'b' }, @{ lock = 'server-test-3'; dir = 'c' })", "while ((Get-Date) -lt [datetime]::Parse('" + new Date(Date.now() + 4000).toISOString() + "').ToLocalTime()) { Start-Sleep -Milliseconds 20 }", loop, "if ($got -ge 0) { Write-Host ('won ' + $slots[$got].lock) }", "Start-Sleep -Seconds 3"].join(String.fromCharCode(10));
+    const kids = Array.from({ length: 6 }, () => new Promise((res) => {
+      const c = spawn("powershell", ["-NoProfile", "-NonInteractive", "-Command", racer], { windowsHide: true });
+      let out = "";
+      c.stdout.on("data", (d) => (out += d));
+      c.on("close", () => res(out));
+    }));
+    const outs = await Promise.all(kids);
+    const wins = outs.map((o) => /won (\S+)/.exec(o)?.[1]).filter(Boolean);
+    check(wins.length === 3 && new Set(wins).size === 3, "holders racing for 3 lanes did not end with one owner per lane (" + wins.join(",") + ")");
+    rmSync(rd, { recursive: true, force: true });
+    // One snapshot per burst: runs asked together from one worktree share it (14 private snapshots at
+    // once took 5-19 s and one failed on a loose object another was writing).
+    const sr = mkdtempSync(join(tmpdir(), "lf-snapshare-"));
+    spawnSync("git", ["init", "-q", sr], { windowsHide: true });
+    writeFileSync(join(sr, "a.txt"), "a");
+    spawnSync("git", ["-C", sr, "add", "-A"], { windowsHide: true });
+    spawnSync("git", ["-C", sr, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "a"], { windowsHide: true });
+    let takes = 0;
+    let clock = 1000000;
+    const fake = () => ({ sha: "c".repeat(40), head: "d".repeat(40), n: ++takes });
+    const s1 = pool.sharedSnapshot(sr, { take: fake, now: () => clock });
+    const s2 = pool.sharedSnapshot(sr, { take: fake, now: () => clock + 3000 });
+    clock += 20000;
+    const s3 = pool.sharedSnapshot(sr, { take: fake, now: () => clock });
+    check(s1.n === 1 && s2.n === 1 && s3.n === 2 && takes === 2, "a snapshot is not shared within its window, or is kept past it (" + [s1.n, s2.n, s3.n].join() + ")");
+    let flaky = 0;
+    const s4 = pool.sharedSnapshot(sr, { take: () => { if (++flaky < 2) throw new Error("unable to write file"); return { sha: "e".repeat(40), n: flaky }; }, now: () => clock + 60000 });
+    check(s4.n === 2, "a snapshot that failed once is not retried");
+    writeFileSync(join(sr, "tmp", "remote", "snapshot.lock"), "");
+    const old = new Date(Date.now() - 120000);
+    utimesSync(join(sr, "tmp", "remote", "snapshot.lock"), old, old);
+    check(pool.sharedSnapshot(sr, { take: fake, now: () => clock + 120000, lockWaitMs: 3000 }).n === 3, "a snapshot lock left by a dead process blocks the next snapshot");
+    // Six processes at once on a real worktree with a change: one take, one sha for all.
+    rmSync(join(sr, "tmp", "remote", "snapshot-shared.json"), { force: true });
+    writeFileSync(join(sr, "b.txt"), "b");
+    const poolUrl = new URL("../remote/pool.mjs", import.meta.url).href;
+    const tbUrl = new URL("../remote/testbox.mjs", import.meta.url).href;
+    const child = "const pool = await import(" + JSON.stringify(poolUrl) + "); const tb = await import(" + JSON.stringify(tbUrl) + "); const fs = await import('node:fs'); const s = pool.sharedSnapshot(process.argv[1], { take: (r) => { fs.appendFileSync(process.argv[1] + '/takes.txt', 'x'); return tb.snapshotCommit(r); } }); console.log('sha ' + s.sha);";
+    const sixRuns = await Promise.all(Array.from({ length: 6 }, () => new Promise((res) => {
+      const c = spawn(process.execPath, ["--input-type=module", "-e", child, sr], { windowsHide: true });
+      let out = "";
+      c.stdout.on("data", (d) => (out += d));
+      c.stderr.on("data", (d) => (out += d));
+      c.on("close", () => res(out));
+    })));
+    const shas = sixRuns.map((o) => /sha ([0-9a-f]{40})/.exec(o)?.[1]);
+    const took = existsSync(join(sr, "takes.txt")) ? readFileSync(join(sr, "takes.txt"), "utf8").length : 0;
+    check(shas.every(Boolean) && new Set(shas).size === 1 && took === 1, "six runs asked together did not share one snapshot (" + took + " takes, " + new Set(shas).size + " shas; " + sixRuns.find((o) => !/sha /.test(o))?.slice(0, 200) + ")");
+    rmSync(sr, { recursive: true, force: true });
   }
   // Heat (the laptop powers itself off at ~95 °C): a fresh reading at or over thermalHoldC holds new jobs there.
   check(pool.parseRemoteState("lf-pool: ram 4000 15606" + String.fromCharCode(10) + "lf-pool: thermal 93.1").thermalC === 93.1, "parseRemoteState drops the temperature");

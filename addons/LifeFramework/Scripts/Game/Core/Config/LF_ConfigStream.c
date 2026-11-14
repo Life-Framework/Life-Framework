@@ -288,6 +288,8 @@ class LF_ConfigStream
 
 		// The clerk's fee for a replacement identity card (server).
 		LF_PhotoIdCardConfig.Reload();
+		LF_QuizConfig.Reload();
+		LF_QuizBank.Reload();
 
 		// Disconnect rules (#691, server).
 		LF_DisconnectConfig.Reload();

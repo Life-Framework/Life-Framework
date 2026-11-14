@@ -8,12 +8,19 @@ tools\cli audit placement [--area a]     numbers, no pixels, test server, about 
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
+tools\cli look serve                     one Workbench that stays up and takes every look in turn: a few seconds a look
+tools\cli call wb_preview '{"resource":"{GUID}path"}'   one resource in an open Workbench, about 2 s, PNG path returned
 tools\cli shots area <name>              pictures from a game client on a `--profile full` session (docs/agent-area-polish.md)
-tools\cli evidence <issue> before|after <area>   keep a look picture for the PR; `evidence <issue> table` prints the embed
+tools\cli evidence <issue> before|after <area|png>   keep a look or wb_preview picture for the PR; `evidence <issue> table` prints the embed
 ```
 
 What right looks like is `docs/style-guide.md`; the checklist to walk against the pictures is the
 `polish` skill. `wt ship` refuses a player-visible change whose PR body embeds no picture.
+
+**PR pictures come from `look`, `look item` or `wb_preview`, kept with `tools\cli evidence`.** A session is
+for what Workbench play cannot capture: HUD and other UI widgets, a second player or late joiner, motion,
+animation, sound, and filming. A session lane held for a picture is the slowest way to get it (the pool's
+session lanes had the longest waits on 2026-11-14: p90 about 6 min, worst 61 min).
 
 ## Use `look` unless you need motion, UI, input or a second player
 
@@ -26,7 +33,7 @@ Ask in this order and stop at the first yes.
 5. **Does it move, play a sound, or react to input?** A session (animation, the hold pose, a door opening, a hit, a siren).
 6. **Is it a UI sheet, HUD, or the inventory slot frame?** A session (Workbench play captures no UI).
 7. **Does a second player or a late joiner see it?** A session with `--clients 2`.
-8. **Is the picture for a PR or media?** `look` is for you while you iterate; the PR picture of a held item or a sheet comes from the session, and `tools\cli evidence` keeps a `look` pair for a world change.
+8. **Is the picture for a PR?** Same tools: `tools\cli evidence <issue> before|after <area|png>` keeps a `look`, `look item` or `wb_preview` picture, so a world, prop, sign, item, prefab, material or layer change needs no session for its PR pair. Only a picture of something steps 5 to 7 send to a session (a sheet, a held item, motion) comes from the session. Media (trailer, website gallery, graded look) is shot on a `full` session.
 
 What an agent session used to be needed for, and what does it now:
 
@@ -35,6 +42,7 @@ What an agent session used to be needed for, and what does it now:
 | A dropped item at rest | `asset states --shots` or `itemdrop` and a free camera, 2 clients | `look item` (ground) |
 | The inventory preview camera of an item | `asset states --shots`, preview sheet | `look item` (inventory): the 3D view, not the slot UI |
 | A prop, a placed object, a sign | `shots area` | `look <area>` |
+| The PR picture of a prop, sign, item, prefab, material or layer | `shots area` on a session | `look`, `look item` or `wb_preview`, kept with `evidence` |
 | The item in a hand | session, 2 clients | still a session (`asset states --shots` does hand and use) |
 | Dialogue shot, a door, a siren, a held pose | session | still a session |
 
@@ -112,6 +120,63 @@ On 2026-11-11 a run over all 23 areas raised no flag, while the sheets showed th
 moonshine still on its side, sack piles taller than the barrels beside them, a pole in front of the
 bank's wide shot). So the flags catch broken renders; the judgment is still the reading.
 
+### `tools\cli look serve`: one Workbench for every look
+
+A fresh `look` starts a Workbench (about 28 s, 1.9 GB peak) and exits. With about ten agents on a
+15.6 GB PC those spikes queue behind each other on the build lock. `look serve` keeps one hidden
+Workbench up for the whole machine; while it is up, every `tools\cli look <area>` from any worktree
+sends its plan there instead and costs a few seconds.
+
+```
+tools\cli look serve                 start it on this worktree's state (about 17 s on a PC), or say it is up
+tools\cli look serve --status        pid, snapshot, idle time, health
+tools\cli look serve --stop          stop it; --remove also removes the viewer checkout
+tools\cli look bank --serve          use the server, starting it when none is up
+tools\cli look bank --fresh          never use the server (the old path)
+tools\cli look bank --budget 240     a longer base budget (default 90 s fresh, 150 s through the server) on a slow box
+```
+
+The server runs on its own detached checkout beside the main one, `Life-Framework-look-viewer`
+(a git worktree with no branch and no junctions; `--stop --remove` deletes it through
+`tools/link-safety.mjs`). Each request carries a snapshot commit of the caller's worktree: HEAD plus
+uncommitted and untracked files, the same snapshot remote test runs use. The viewer checks it out
+(git writes only the files that differ) and the server shoots it. What changed between the snapshot
+the server last showed and this one decides how:
+
+| Change since the last request | How it is served (`served=` in the summary and `index.json`) |
+|---|---|
+| nothing (the same snapshot) | `server-same`: shot as is |
+| only files outside `addons/` (tools, docs: Workbench never loads them) | `server-reopen`: the world is reopened from disk (`SetOpenedResource`) |
+| any file under `addons/` (a `.layer`, an `.et`, a `.c`, a `.meta`, an asset, an added, deleted or renamed file), or the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started |
+| no server up, or it is dead, hung or crashed | `fresh`: a Workbench of the caller's own, as before |
+
+No addon file is on the fast path. A probe on 2026-11-14 reopened fine after editing a `.layer` or an
+`.et` in place, but through the viewer, where git checkout rewrites the file, reopening after a moved
+entity in a `.layer` crashed the server Workbench (access violation in `SetOpenedResource`) 4 of 4
+times, on lf-testbox and on lf-cloud. A changed script crashed it 2 of 2 in the probe. Closing the
+world first is no way round it: `WorldEditor.Close()` returns true and leaves the world open. So the
+server pays off for repeated looks at the same state (before/after pictures, other areas, `--hour`,
+`--edit`) and for changes outside `addons/`; an agent iterating on a layer gets a restart per look,
+about as long as a fresh run, with one Workbench instead of one per run. `FAST_PATH_EXT` in
+`tools/visual/look-serve.mjs` takes an extension only once it is proven through the viewer, several
+times in a row.
+`resourceDatabase.rdb` is not compared: it is Workbench's own cache of the files (`-forceUpdate`
+rebuilds it), and its bytes differ between worktrees at the same commit and size, so comparing it
+would restart every request. The viewer is seeded with the caller's copy once and keeps its own.
+
+Every request still takes the build lock for its seconds (never while the server idles), and a
+`look` waits up to 2 minutes for it when a server is up (`--wait` for 10). The RAM gate is asked
+only when a Workbench is about to start. Before every shot Node checks the viewer is exactly the
+snapshot (HEAD and `git status`), and the first status line must carry the request id, so a picture
+of an older state is never returned as this one. A server that is gone, whose heartbeat
+(`alive.txt`, every 3 s while idle) is stale, that dies during a request or does not answer in its
+budget is killed with its children (the `CrashReporter` a crash leaves on the hidden desktop),
+forgotten, and the caller runs a fresh Workbench and still gets its pictures. With no request for 10
+minutes the server exits and frees its memory. `look item` stays on the fresh path.
+
+Server-mode log lines in `console.log` under `Life-Framework-look-viewer/server/profile/visual-serve/logs/`
+start with `[LFVisual]`, like a fresh run's; `ok request <id> reload=<mode>` opens each request.
+
 ### `tools\cli look item`
 
 ```
@@ -161,7 +226,8 @@ not load ...` and keeps no pictures. The asset verify/states clothing shots use 
 - **Red fans and lines on the ground.** A Workbench debug overlay that the game client does not
   draw. Ignore them. `--edit` adds the editor's own helper shapes on top.
 - **The graded look.** Workbench uses its own graphics settings, and shots are at 14:00 unless you
-  pass `--hour`. Pictures for a PR or for media still come from `shots area` on a session.
+  pass `--hour`. Pictures for a PR come from here anyway (judge the same hour before and after); the graded
+  look for media and the website still comes from `shots area` on a session.
 - **Dynamic bodies after they settle.** Shots start about 3 s into play, so a log that tips off a
   table a minute later is not caught.
 - The wide camera is chosen by a ray to the area centre plus a fan of level rays across the lens (42
@@ -182,6 +248,26 @@ not load ...` and keeps no pictures. The asset verify/states clothing shots use 
 The session column is one recorded run (pool log: no wait, held 2.1 min) plus the per-process
 numbers measured on 2026-11-10. So `look` is 5x faster for one area with an empty queue, 16x per
 shot, and avoids the queue; it does not use less RAM at its peak, it uses it for seconds.
+
+## Measured: `look serve` (2026-11-14, lf-cloud: Windows Server 2025, 8 vCPU, Tesla T4, 31.6 GB)
+
+`look bank --close 2` (7 shots), `--budget 240`, run over ssh from a pool run folder. lf-cloud is
+slower than the PCs (Workbench start 13 to 84 s, entering play up to a minute while its caches were
+cold), so compare the columns, not these numbers with the 2026-11-11 table.
+
+| | run 1 | run 2 | run 3 |
+|---|---|---|---|
+| through the server, same snapshot (`server-same`) | 17.4 s | 11.6 s | 11.6 s |
+| fresh Workbench (`--fresh`) | 37.7 s | 67.3 s | 126.2 s |
+| through the server after a `.layer` or script change (`server-restart`) | 38.5 s | 41.3 s | 48.3 s |
+| through the server after a docs-only change (`server-reopen`) | 19.6 s | | |
+
+Starting the server took 13 to 24 s once warm (103 s on its first boot). The fresh runs went up as the
+box got busier (another agent's Workbench and a Steam download beside them); the server runs did not.
+Proofs on the same box: two run folders with different `Signs.layer` states, shot back to back
+through one server, read back Sign_Bank at x 190.06, 193.06 and 190.06; a script change restarted
+and shot correctly; a server killed 45 s into a 17-shot request fell back to a fresh Workbench that
+returned all 17.
 
 ## The tools surveyed
 

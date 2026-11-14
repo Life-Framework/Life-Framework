@@ -22,6 +22,11 @@ export const DEFAULTS = {
   // Per session profile (session up --profile): the same two numbers, measured per profile. A profile
   // missing here uses the full numbers above. tools/pool.json "sessionReserve" overrides these.
   sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } },
+  // Memory a test server takes while it boots, before free RAM shows it (MB): counted for a test lane
+  // locked less than testBootS ago and for each start still in flight ahead of a burst start (#1195).
+  // Measured 2026-11-14 on lf-cloud: 12 fast-tier test servers took 9.2 GB, about 770 MB each.
+  testReserveMb: 800,
+  testBootS: 60,
   bootBudgetS: 30,
   // A session older than sessionHoldMin while another session request queues is warned, then
   // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.
@@ -79,15 +84,53 @@ export const SESSION_PORT = 2001;
 // Session lane k listens on 2001 + 10 (k - 1), lock server-<port>; test lanes use 2002.. beside them.
 export const SESSION_LANE_STEP = 10;
 
+// Lane ports. The only ceiling on lanes in code is the port range below; the machine's lanes
+// setting, the live RAM gate, the thermal hold and maxClients decide what runs (docs/worktrees.md
+// "Lanes"). The first lanes keep the names and ports pool code of before 2026-11-14 uses (it runs
+// beside this code on older branches and shares the lock dirs): session lanes 1-4 on 2001, 2011,
+// 2021, 2031 and test lanes 1-9 (server-test-<k>) on 2002-2010. Later lanes sit in blocks no older
+// code uses, one lane per 5 ports, each lock named server-<port> so older code that only sees the
+// lock name (portForLock, a remote run of an older snapshot) still binds the right port. Every
+// lane port ends in 3 or 8: never a worktree game port (2001 + 10 i, ends in 1), never an A2S port
+// (17777 + 10 i, ends in 7), and below 17777. A block session lane's A2S port is its game port + 1
+// (ends in 4 or 9; the block reserves it for test lanes too). Test runs keep passing the worktree's
+// A2S port. Pool selftest "Lane ports" enumerates all of them.
+export const LEGACY_TEST_LANES = 9;
+export const LEGACY_SESSION_LANES = 4;
+export const MAX_TEST_LANES = 64;
+export const MAX_SESSION_LANES = 32;
+export const TEST_BLOCK_PORT = 2403; // test lanes 10..64: 2403..2678
+export const SESSION_BLOCK_PORT = 2803; // session lanes 5..32: 2803..2938
+const BLOCK_STEP = 5;
+
+export function laneCap(kind) {
+  return kind === "session" ? MAX_SESSION_LANES : MAX_TEST_LANES;
+}
+
 export function sessionLane(i) {
+  if (i > LEGACY_SESSION_LANES) {
+    const port = SESSION_BLOCK_PORT + BLOCK_STEP * (i - LEGACY_SESSION_LANES - 1);
+    return { lock: `server-${port}`, index: i, port };
+  }
   const port = SESSION_PORT + SESSION_LANE_STEP * (i - 1);
   return { lock: i === 1 ? slotLockName(1) : `server-${port}`, index: i, port };
 }
 
+export function testLane(i) {
+  if (i > LEGACY_TEST_LANES) {
+    const port = TEST_BLOCK_PORT + BLOCK_STEP * (i - LEGACY_TEST_LANES - 1);
+    return { lock: `server-${port}`, index: i, port };
+  }
+  return { lock: `server-test-${i}`, index: i, port: SESSION_PORT + i };
+}
+
 // The A2S query port of a session lane's server: the engine default for lane 1 (null, no flag),
-// 17777 + 10 x the port offset beside it.
+// 17777 + 10 x the port offset for lanes 2-4 (as before), the game port + 1 for a block lane.
+// (Observed 2026-11-14 on lf-cloud: a -server boot without -config binds only its game port.)
 export function sessionA2sPort(port) {
-  return port === SESSION_PORT ? null : 17777 + (port - SESSION_PORT) * 10;
+  if (port === SESSION_PORT) return null;
+  if (port >= TEST_BLOCK_PORT) return port + 1;
+  return 17777 + (port - SESSION_PORT) * 10;
 }
 
 // Memory (MB) a session of n clients adds, from the reserve settings; profile is the session's
@@ -106,8 +149,8 @@ export function laneKind(purpose) {
 // [{ lock, index, port }] for the lane kind.
 export function lanesFor(m, kind) {
   if (!m.lanes) return Array.from({ length: m.slots }, (_, i) => ({ lock: slotLockName(i + 1), index: i + 1, port: SESSION_PORT }));
-  if (kind === "session") return Array.from({ length: m.lanes.session ?? 1 }, (_, i) => sessionLane(i + 1));
-  return Array.from({ length: m.lanes.test }, (_, i) => ({ lock: `server-test-${i + 1}`, index: i + 1, port: SESSION_PORT + 1 + i }));
+  if (kind === "session") return Array.from({ length: Math.min(MAX_SESSION_LANES, m.lanes.session ?? 1) }, (_, i) => sessionLane(i + 1));
+  return Array.from({ length: Math.min(MAX_TEST_LANES, m.lanes.test) }, (_, i) => testLane(i + 1));
 }
 
 export function allLaneLocks(m) {
@@ -134,6 +177,8 @@ export function portForLock(name) {
 // (ctx.heldMb). A head that cannot fit even on an empty machine never blocks.
 // ctx: { starveMs, freeMb, heldMb } (all optional; per machine m).
 export function blocks(other, mine, m, now, promoteMs, ctx = {}) {
+  // A ticket whose holder already took its lane is leaving the queue: it waits on nothing.
+  if (other.granted) return false;
   if (!(other.machines ?? []).includes(m.name)) return false;
   if (!servedBefore(other, mine, now, promoteMs)) return false;
   const a = new Set(lanesFor(m, other.lane ?? "session").map((l) => l.lock));
@@ -195,6 +240,61 @@ export function projectedRelease({ atMs, now, typicalMs, capMs }) {
   let end = atMs + typ;
   if (end < now) end = now + typ / 2;
   return Math.max(now, Math.min(end, cap < now ? now + 60000 : cap));
+}
+
+// Burst admission (#1195). Strict FIFO let only the head of a machine's queue try it, and one remote
+// start (ssh, holder, RAM gate, lock, run-folder prep: 2-3 s, 22 s for a new run folder) held every
+// ticket behind it, so a 16-lane box filled one lane per start. A ticket may now start beside the
+// tickets served before it (ahead: those that block it on m, q.blocks) when
+//   - the machine has a free lane of its kind for each of them and one more for itself (so none of
+//     them can lose its lane to it; the lock itself is still taken atomically by each start),
+//   - none of them waits on RAM (a RAM-stuck head keeps its turn or drains the machine), and
+//   - live free RAM, less what is still booting there (pendingMb), covers all their reserves and its
+//     own above the floor.
+// aheadMb (their reserves) goes into this start's own RAM gate, so starts in flight together cannot
+// overshoot the floor. Unknown lanes or RAM fall back to plain FIFO (only the head tries).
+// opts: { freeLanes, freeMb, pendingMb, minFreeMb, reserveOf(ticket) -> MB }.
+export function burstAdmit(ahead, mine, { freeLanes, freeMb, pendingMb = 0, minFreeMb = DEFAULTS.minFreeMb, reserveOf = () => 0 } = {}) {
+  if (!ahead.length) return { ok: true, aheadMb: 0, position: 0 };
+  if (!Number.isFinite(freeLanes) || ahead.length >= freeLanes) return { ok: false, why: "lanes" };
+  if (ahead.some((t) => t.stuck === "ram")) return { ok: false, why: "ram-head" };
+  if (!Number.isFinite(freeMb)) return { ok: false, why: "ram-unknown" };
+  const aheadMb = ahead.reduce((n, t) => n + reserveOf(t), 0);
+  if (freeMb - (Number(pendingMb) || 0) - aheadMb - reserveOf(mine) < minFreeMb) return { ok: false, why: "ram" };
+  return { ok: true, aheadMb, position: ahead.length };
+}
+
+// What a queued ticket will take once it starts (MB), for burst admission: a session its reserve, a
+// test the test server's boot reserve. A ticket without a lane (an older CLI) is a session.
+export function ticketReserveMb(t, settings = {}) {
+  if ((t?.lane ?? "session") === "session") return sessionReserveMb(settings, t?.clients ?? 1, t?.profile ?? "full");
+  return settings.testReserveMb ?? DEFAULTS.testReserveMb;
+}
+
+// Memory still booting on a machine that its free RAM does not show yet (MB), from its live lane
+// lock records { purpose, at, clients?, profile? }: a session younger than three minutes its
+// reserve, a test younger than testBootS its boot reserve.
+export function bootingMb(infos, settings = {}, now = Date.now()) {
+  let mb = 0;
+  const testBootMs = (settings.testBootS ?? DEFAULTS.testBootS) * 1000;
+  for (const i of infos) {
+    if (!i || i.alive === false) continue;
+    const age = now - Date.parse(i.at);
+    if (!Number.isFinite(age)) continue;
+    if (i.purpose === "session") {
+      if (age < 180000) mb += sessionReserveMb(settings, i.clients ?? 1, i.profile ?? "full");
+    } else if (i.purpose && age < testBootMs) mb += settings.testReserveMb ?? DEFAULTS.testReserveMb;
+  }
+  return mb;
+}
+
+// The slots a burst start tries, rotated so the k-th free lane comes first: starts in flight together
+// spread over the free lanes instead of all racing for the first (each lock is still atomic).
+export function rotateSlots(slots, freeLocks, position) {
+  if (!position || !freeLocks?.length) return slots;
+  const want = freeLocks[position % freeLocks.length];
+  const i = slots.findIndex((s) => s.lock === want);
+  return i <= 0 ? slots : [...slots.slice(i), ...slots.slice(0, i)];
 }
 
 // Estimated start of a waiting job (epoch ms): the (ahead+1)-th lane release among the lanes it can

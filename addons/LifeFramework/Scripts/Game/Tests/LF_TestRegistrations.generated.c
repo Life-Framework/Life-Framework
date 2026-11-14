@@ -112,6 +112,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopRefusalReasons(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CounterScreenLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CraftingAssets(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Credits(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CrimeCatalogBackcompat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CrimeCatalogOwner(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CrimeRecord(), LF_TestTier.LOGIC);
@@ -347,6 +348,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuestSignal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestTracker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Quiz(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
@@ -446,12 +449,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignNext(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignPrice(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SignsOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Siren(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SirenDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Sit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SitWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SoundSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpawnHub(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpawnScale(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStrip(), LF_TestTier.WORLD);

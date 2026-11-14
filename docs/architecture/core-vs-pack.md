@@ -155,6 +155,8 @@ prefab brings the punch clock with the clock-in action, the place registration a
 slot, so a pack needs no hand-wired actions and no script. A job id that is not a duty job
 (`POLICE`, `MEDIC`) still registers its place; it shows no clock-in.
 
+Which licence your pack may carry, what it may copy from the core, and how to credit: [pack-licence.md](pack-licence.md) (#967).
+
 ## Checking a pack
 
 `tools\cli pack check <addon>` (#969) reads a pack offline and reports each finding with the

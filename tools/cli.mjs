@@ -18,6 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full|--all]           Run the checks in tools/validation/ whose inputs changed since their last green run (--all: every check; --full: every check plus the Workbench compile)
 //   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
+//   test --no-build --red <tests>     Batched red proof: ONE boot, each test's RedProof() hook on; passes only if every test FAILS, names any that still pass
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template|template-core-only]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
@@ -26,6 +27,7 @@
 //   audit placement [--top N] [--area a] [--layer L]  Ranked placement audit of every DebugWorld layer entity, on the test server (agent-box/place-audit.mjs)
 //   place on|against|ground|arrange|bounds|probe|verify  Place a world prop from real bounds and probe rays, then audit it (tools/place/place.mjs)
 //   look <area|x,z|all> [--edit] [--close N]   Area pictures from a hidden Workbench, no session (tools/visual/look.mjs, docs/visual-testing.md)
+//   look serve [--status|--stop]               One shared look Workbench every look uses while it is up (tools/visual/look-serve.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -68,6 +70,8 @@ import { interactiveNeeded, interactiveSpawnDetached, winQuote } from "./lib/int
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
+import * as shards from "./lib/test-shards.mjs";
+import * as testCache from "./lib/test-cache.mjs";
 import * as wbLock from "./lib/wb-lock.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
@@ -75,6 +79,7 @@ import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
+import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
 
 function mcpDirFor(root) {
@@ -2015,7 +2020,7 @@ function cmdSessionJoin(root, dir, flags) {
     return 1;
   }
   const log = session.newestLog(join(s.serverProfile, "logs"));
-  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  const marker = /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
   const before = (readFileSync(log, "utf8").match(marker) ?? []).length;
   const state = { ...s, clients: (s.clients ?? []).filter((x) => x.n !== n) };
   sessionLog = join(dir, "up.log");
@@ -2229,11 +2234,11 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player) \d+/g });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
-    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
+    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g, fail, state);
     if (joined < 0) return 1;
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     recordIdentities(dir, state);
@@ -2299,7 +2304,7 @@ function cmdSessionMeasure(root, dir, flags) {
     session.writeSession(dir, { ...state, stoppedAt: new Date().toISOString() });
     sleepMs(4000);
   };
-  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  const marker = /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
   try {
     for (const v of variants) {
       for (const n of v.only === null ? counts : [v.only]) {
@@ -2387,27 +2392,50 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   wt.transferLock(root, laneLockOf(state), srv.pid);
   session.writeSession(dir, state);
 
+  // Client 1 starts with the server (tools/lib/session-overlap.mjs): its 28-32 s of engine and script
+  // start-up hide the server's 10-15 s boot. The lane already belongs to the server's pid here.
+  const overlap = overlapPlan({ clients: paths.clients.length });
+  const launchedEarly = new Set();
+  if (overlap.early) {
+    const first = paths.clients[0];
+    const failed = sessionLaunchClient(root, dir, state, first, { game, mission, res, visible, fail, settleMs: 0 });
+    if (failed !== null) return failed;
+    launchedEarly.add(first.n);
+    slog(`client ${first.n} launched with the server (${overlap.reason})`);
+  }
+
   let log = null;
+  let readyAt = 0;
   const deadline = Date.now() + 300000;
   while (Date.now() < deadline && host.pidAlive(srv.pid)) {
-    sleepMs(2000);
+    sleepMs(500);
     const f = session.newestLog(join(paths.server, "logs"));
     if (f && !before.has(basenameOfLogDir(f))) log = f;
-    if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
+    if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) {
+      readyAt = Date.now();
+      break;
+    }
   }
   if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
-  slog(`server up (pid ${srv.pid}); log ${log}`);
+  slog(`server up (pid ${srv.pid}); log ${log}; ${Math.round((readyAt - Date.parse(state.startedAt)) / 100) / 10} s after the lane was taken`);
+
+  if (launchedEarly.has(1)) {
+    const failed = sessionFirstClientConnects(root, dir, state, paths.clients[0], { game, mission, res, visible, fail, readyAt });
+    if (failed !== null) return failed;
+  }
 
   for (const c of paths.clients) {
-    const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
-    if (failed !== null) return failed;
+    if (!launchedEarly.has(c.n)) {
+      const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
+      if (failed !== null) return failed;
+    }
     // Client n+1 starts once client n has joined, so player ids follow client numbers and two clients
     // do not load at once. This replaced a fixed 15 s sleep: a client joins in about 7 s (measured
     // 2026-11-10: 6.7 to 8.2 s from launch to the server's join line).
     if (marker && c.n < paths.clients.length) {
       const joinBy = Date.now() + 40000;
       while (Date.now() < joinBy && host.pidAlive(state.serverPid) && (readFileSync(log, "utf8").match(marker) ?? []).length < c.n) sleepMs(500);
-      slog(`client ${c.n} joined ${Math.round((Date.now() - Date.parse(state.clients.at(-1).launchedAt)) / 100) / 10} s after its launch`);
+      slog(`client ${c.n} joined ${Math.round((Date.now() - Date.parse(state.clients.find((x) => x.n === c.n).launchedAt)) / 100) / 10} s after its launch`);
     }
   }
   return log;
@@ -2415,7 +2443,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
 
 // Launches one session client (its own profile) and records it in the session state. Returns
 // null, or the code fail() returned.
-function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail }) {
+function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail, settleMs = 3000 }) {
   mkdirSync(c.box, { recursive: true });
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
@@ -2456,9 +2484,45 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
   state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs, launchedAt: new Date().toISOString() });
   session.writeSession(dir, state);
   // The next client waits for this one's join line (sessionLaunch); here only a client that dies at once is caught.
-  sleepMs(3000);
-  if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+  // settleMs 0: a client launched with the server is watched by sessionFirstClientConnects instead.
+  if (settleMs > 0) sleepMs(settleMs);
+  if (settleMs > 0 && !host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
   return null;
+}
+
+// Client 1 was launched together with the server: waits until it has connected, and relaunches it once
+// when it raced the server (tried before the server listened, or died, or never tried). Returns null, or
+// the code fail() returned. The wait costs nothing extra: a join needs this connection anyway.
+function sessionFirstClientConnects(root, dir, state, c, { game, mission, res, visible, fail, readyAt }) {
+  let retried = false;
+  let attemptSeenAt = 0;
+  const entry = () => state.clients.find((x) => x.n === c.n);
+  for (;;) {
+    const e = entry();
+    const cl = session.newestLog(c.logs);
+    const text = cl ? readFileSync(cl, "utf8") : "";
+    const now = Date.now();
+    if (!attemptSeenAt && CONNECT_TRY.test(text)) attemptSeenAt = now;
+    const verdict = firstClientVerdict({ now, serverReadyAt: readyAt, launchedAt: Date.parse(e.launchedAt), attemptSeenAt, connected: CONNECTED.test(text), alive: host.pidAlive(e.pid), retried });
+    if (verdict === "connected") {
+      slog(`client ${c.n} connected ${Math.round((now - Date.parse(e.launchedAt)) / 100) / 10} s after its launch${retried ? " (relaunched once)" : ""}`);
+      return null;
+    }
+    if (verdict === "stuck") return null;
+    if (verdict === "retry") {
+      slog(`client ${c.n} did not connect (attempt ${attemptSeenAt ? "seen" : "not seen"}, ${host.pidAlive(e.pid) ? "running" : "gone"}); relaunching it once now that the server is ready`);
+      console.log(`session: client ${c.n} raced the server; relaunching it once`);
+      killTree(e.pid);
+      state.clients = state.clients.filter((x) => x.n !== c.n);
+      retried = true;
+      attemptSeenAt = 0;
+      const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
+      if (failed !== null) return failed;
+      // The server is ready now: the relaunched client's clock starts at its launch.
+      continue;
+    }
+    sleepMs(500);
+  }
 }
 
 // One look at a starting session: { joined } while it is still coming up, or
@@ -2496,7 +2560,7 @@ function sessionAwaitJoin(log, clients, marker, fail, state) {
     }
     joined = v.joined;
     if (joined >= clients) return joined;
-    sleepMs(2000);
+    sleepMs(500);
   }
   fail(`${joined}/${clients} client(s) joined within 240s (server log ${log})`);
   return -1;
@@ -2529,7 +2593,7 @@ function cmdSessionWait(dir, flags) {
         return 1;
       }
       if (log && s.expectClients !== undefined && (s.clients ?? []).length >= s.expectClients) {
-        const marker = s.restartedAt ? /flow start for player \d+/g : /(?:registration form sent to player|spawning player) \d+/g;
+        const marker = s.restartedAt ? /flow start for player \d+/g : /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
         const v = sessionVerdict(s, log, marker);
         if (v.fail) {
           console.log(`FAIL  ${v.fail}`);
@@ -2667,13 +2731,26 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     return 2;
   }
   let only = [];
-  if (opts.only !== undefined) {
-    only = resolveOnlyNames(root, opts.only);
+  // --red <tests> is --only plus the red-proof hooks switched on (LF_TEST_RED): one boot, every test must FAIL.
+  if (opts.red !== undefined && opts.only !== undefined) {
+    console.log("test: pass --red <tests> or --only <tests>, not both");
+    return 2;
+  }
+  const red = opts.red !== undefined;
+  // --only-classes <A,B>: exact registered class names, no file-name expansion (what a shard passes).
+  const exact = opts.onlyClasses !== undefined;
+  const onlyFlag = red ? "--red" : "--only";
+  const onlySpec = red ? opts.red : opts.only;
+  if (exact) {
+    only = [...new Set(String(opts.onlyClasses).split(",").map((x) => x.trim()).filter(Boolean))];
+    console.log(`test: --only-classes ${only.length} test(s)`);
+  } else if (onlySpec !== undefined) {
+    only = resolveOnlyNames(root, onlySpec);
     if (only.length === 0) {
-      console.log("usage: tools\\cli test --no-build --only <LF_Test_Class|test-name|LF_Test_File>[,...]");
+      console.log("usage: tools\\cli test --no-build " + onlyFlag + " <LF_Test_Class|test-name|LF_Test_File>[,...]");
       return 2;
     }
-    console.log(`test: --only ${only.join(",")}`);
+    console.log("test: " + onlyFlag + " " + only.join(","));
   }
   guardHeavy(root, "test", opts.force);
   if (!noBuild) {
@@ -2685,28 +2762,119 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // it); when all are busy the run queues FIFO for whichever frees first.
   // A remote run ships this worktree's rdb, so refresh it before the choice.
   ensureResourceDatabase(root);
+  // --shards N|auto: the registry split into balanced slices, each its own pool job, run together (tools/lib/test-shards.mjs).
+  if (opts.shards !== undefined && !only.length && !opts.world && tier === "all") {
+    // A pass the cache already holds (identical inputs) is not run again.
+    const wanted = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
+    const specs = wanted.filter((sp) => !passCacheCheck(root, { tier, only, opts: { ...opts, coreOnly: sp.coreOnly, red } })?.hit);
+    if (!specs.length) return 0;
+    const r = await runShardedTests(root, specs, opts);
+    if (r !== null) return r;
+  }
   const purpose = only.length ? "test only" : `test ${tier}`;
+  // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
+  // key) and before the pool is asked for a slot. Only a pass is stored or reused.
+  const cache = passCacheCheck(root, { tier, only, opts: { ...opts, red } });
+  if (cache?.hit) return 0;
   // A pool machine that disappears mid-run (the laptop shuts down) is a normal case: it is marked
   // down and the run queues again for another machine (pool.machineGone).
+  let avoidLocal = false;
+  let shardWaits = 0;
   for (let attempt = 1; ; attempt++) {
-    const r = await testOnce(root, { purpose, tier, only, opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS });
-    if (!r.requeue) return r.code;
+    const r = await testOnce(root, { purpose, tier, only, red, exact, opts: avoidLocal ? { ...opts, local: false, machine: undefined, any: false, remote: "", waitMs: 20000 } : opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS, cacheKey: cache?.key });
+    if (r.shardWait) {
+      // Another slice of this worktree holds this PC's server profile: try a remote lane for a moment,
+      // else poll for the local one (a pin to this PC just waits).
+      if (++shardWaits > 400) {
+        console.log("FAIL  shard: no lane within the wait (this PC's server profile stayed busy, no remote lane)");
+        return 3;
+      }
+      avoidLocal = r.shardWait === "remote" && !avoidLocal;
+      if (!avoidLocal) sleepMs(3000);
+      attempt--;
+      continue;
+    }
+    avoidLocal = false;
+    if (r.requeue) continue;
+    if (cache?.key && r.code === 0) passCacheStore(root, cache, { tier, only, opts, run: r });
+    return r.code;
   }
 }
 
-async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
-  let slot;
+
+// { hit, key, inputs } for a run that may use the cache, null when it may not or the key fails.
+function passCacheCheck(root, { tier, only, opts }) {
+  const skip = testCache.skipReason({ tier, opts });
+  if (skip) {
+    if (!opts.noCache && process.env.LF_TEST_CACHE !== "0") console.log(`test: pass cache off (${skip})`);
+    return null;
+  }
+  let inputs;
   try {
-    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget });
+    inputs = testCache.keyInputs(root, { tier, only, world: opts.world, coreOnly: opts.coreOnly, build: testbox.serverBuildId(testbox.localServerDir(root)), addons: launchAddons(root) });
   } catch (e) {
+    console.log(`test: pass cache off (key failed: ${e.message})`);
+    return null;
+  }
+  const key = testCache.cacheKey(inputs);
+  const mainRoot = wt.mainRootOf(root);
+  const rec = testCache.lookup(mainRoot, key);
+  if (!rec) return { hit: false, key, inputs, mainRoot };
+  console.log(testCache.reuseLine(rec));
+  try {
+    const dir = join(root, "tmp", "test-results");
+    mkdirSync(dir, { recursive: true });
+    const sha = wt.git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha)) + "\n", "utf8");
+  } catch {}
+  return { hit: true, key, inputs, mainRoot };
+}
+
+function passCacheStore(root, cache, { tier, only, opts, run }) {
+  const stampTier = only.length ? "only" : opts.coreOnly ? `${tier}-core` : tier;
+  const rec = {
+    at: new Date().toISOString(),
+    code: 0,
+    failed: 0,
+    passed: run.passed,
+    total: run.total,
+    tier,
+    stampTier,
+    only,
+    machine: run.machine ?? null,
+    worktree: pool.slugFor(root),
+    consoleLog: run.consoleLog ?? "",
+    inputs: cache.inputs,
+  };
+  if (testCache.store(cache.mainRoot, cache.key, rec)) console.log(`test: pass cached (key ${cache.key.slice(0, 12)}); an identical run reuses it`);
+}
+
+async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, cacheKey }) {
+  let slot;
+  const inShardGroup = !!process.env.LF_SHARD_GROUP;
+  try {
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget, waitMs: opts.waitMs });
+  } catch (e) {
+    // A slice that only tried remote lanes for a short while: ask again with this PC allowed.
+    if (inShardGroup && opts.waitMs) return { shardWait: "local" };
     console.log(`FAIL  ${e.message}`);
     return { code: 3 };
   }
   let code = 3;
   let extra = {};
+  let tookLocal = false;
+  // The slices of one worktree share its server profile and ports: one at a time on this PC.
+  if (slot.local && !slot.inherited && inShardGroup) {
+    if (!shards.takeLocal(root)) {
+      slot.release();
+      return { shardWait: opts.local || opts.machine ? "local" : "remote" };
+    }
+    tookLocal = true;
+  }
   try {
     if (!slot.local) {
-      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      // --no-cache: the box runs what it was sent; this side owns the cache.
+      const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? [red ? "--red" : exact ? "--only-classes" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
       // The placement audit (agent-box/place-audit.mjs) hands its input list in through
       // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
       const auditIn = process.env.LF_PLACE_AUDIT_IN;
@@ -2715,20 +2883,25 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
+      recordTestTimes(root, r.localLog, tier, only, opts);
       if (!lastTry && pool.machineGone(root, slot, code)) {
         extra.lost = true;
         return { code, requeue: true };
       }
-      return { code };
+      return { code, machine: slot.machine?.name, passed: r.summary?.passed, total: r.summary?.total, failed: r.summary?.failed, consoleLog: r.summary?.consoleLog };
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-    code = runLocalTest(root, tier, only, opts.world, opts.coreOnly);
-    const stamp = newestStamp(root, before);
-    if (stamp) extra = { passed: stamp.passed, total: stamp.total };
-    return { code };
+    code = runLocalTest(root, tier, only, opts.world, opts.coreOnly, red);
+    // test-e2e.ps1 stamps summaries.jsonl lazily (at the next boot), so read this run's printed SUMMARY.
+    const sum = lastLocalSummary ?? newestStamp(root, before);
+    if (sum) extra = { passed: sum.passed, total: sum.total };
+    if (sum) recordTestTimes(root, sum.consoleLog, tier, only, opts);
+    return { code, machine: slot.machine?.name, passed: sum?.passed, total: sum?.total, failed: sum?.failed };
   } finally {
+    if (tookLocal) shards.dropLocal(root);
     slot.release();
+    if (cacheKey) extra.cacheKey = cacheKey.slice(0, 16);
     if (!slot.inherited) pool.recordRun(root, slot, { purpose, code, extra });
   }
 }
@@ -2745,6 +2918,116 @@ function newestStamp(root, since) {
   }
 }
 
+// Per-test seconds from a finished run's console.log into the pool's timing history (what the
+// next --shards split balances by). A full run and a slice both teach it; a core-only run skips
+// tests, so its log does not line up with the registry and is ignored (parseTimes returns null).
+function recordTestTimes(root, log, tier, only, opts) {
+  try {
+    if (!log || !existsSync(log) || opts.coreOnly) return;
+    const reg = shards.readRegistry(root);
+    const want = only.length ? new Set(only) : null;
+    if (!want && tier !== "all") return;
+    const classes = reg.filter((t) => !want || want.has(t.cls)).map((t) => t.cls);
+    const times = shards.parseTimes(readFileSync(log, "utf8"), classes);
+    if (times) shards.saveHistory(shards.historyFile(pool.poolDir(root)), times);
+  } catch {}
+}
+
+// The test flags a child slice inherits from the parent run.
+function shardPassThrough(opts) {
+  const out = [];
+  if (opts.local) out.push("--local");
+  if (opts.machine) out.push("--machine", opts.machine);
+  if (opts.remote !== undefined) out.push("--remote", ...(opts.remote ? [opts.remote] : []));
+  if (opts.any) out.push("--any");
+  if (opts.priority) out.push("--priority", opts.priority);
+  if (opts.budget) out.push("--budget", String(opts.budget));
+  if (opts.force) out.push("--force");
+  return out;
+}
+
+// Starts one slice as `test --no-build --tier all --only-classes ...`: its own pool ticket, lane and (remote)
+// snapshot of the uncommitted state. LF_SHARD_GROUP makes the slices of this worktree take turns on this PC.
+function runShardChild(root, job) {
+  const logDir = join(root, "tmp", "logs", "shards");
+  mkdirSync(logDir, { recursive: true });
+  const name = `${new Date().toISOString().replace(/[:.]/g, "-")}-${job.pass.name}-${job.index}of${job.count}.log`;
+  const logPath = join(logDir, name);
+  const args = [process.argv[1], "test", "--no-build", "--tier", "all", ...(job.full ? [] : ["--only-classes", job.classes.join(",")]), ...(job.pass.coreOnly ? ["--core-only"] : []), ...shardPassThrough(job.pass.opts)];
+  const t0 = Date.now();
+  return new Promise((resolveP) => {
+    const child = spawn(process.execPath, args, { cwd: root, windowsHide: true, env: { ...toolEnv(), LF_QUIET_CHILD: "1", LF_SHARD_GROUP: root }, stdio: ["ignore", "pipe", "pipe"] });
+    let text = "";
+    child.stdout.on("data", (c) => (text += c.toString("utf8")));
+    child.stderr.on("data", (c) => (text += c.toString("utf8")));
+    child.on("error", (e) => resolveP({ code: 3, text: `FAIL  could not start a shard: ${e.message}`, seconds: 0 }));
+    child.on("close", (code) => {
+      try {
+        writeFileSync(logPath, text);
+      } catch {}
+      resolveP({ code: code ?? 3, text, seconds: Math.round((Date.now() - t0) / 100) / 10, logPath });
+    });
+  });
+}
+
+// `test --shards` and `ci`: every pass (normal, core-only) split into slices, all slices running at once.
+// Returns the exit code, or null when there is nothing to gain (one slice, one pass): the caller runs as before.
+async function runShardedTests(root, specs, opts) {
+  const tests = shards.readRegistry(root);
+  if (!tests.length) return null;
+  let lanes = [];
+  try {
+    lanes = pool.freeTestLanes(root);
+  } catch (e) {
+    console.log(`shards: could not read the free lanes (${String(e.message).split("\n")[0]})`);
+  }
+  let n;
+  try {
+    n = shards.pickShardCount(opts.shards, lanes, specs.length, shards.estimateSeconds(tests, shards.loadHistory(shards.historyFile(pool.poolDir(root)))));
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 2;
+  }
+  if (n <= 1 && specs.length === 1) {
+    console.log("shards: one slice per pass (the suite is too short for a second slice to beat its own boot); running it whole");
+    return null;
+  }
+  const history = shards.loadHistory(shards.historyFile(pool.poolDir(root)));
+  const passes = specs.map((sp) => {
+    const plan = n <= 1 ? [tests.map((t) => t.cls)] : shards.planShards(tests, n, history);
+    return { name: sp.coreOnly ? "core" : "normal", coreOnly: sp.coreOnly, opts, classes: plan, full: plan.length === 1 };
+  });
+  const lanesText = lanes.map((l) => `${l.machine} ${l.free}`).join(", ") || "none read";
+  console.log(`shards: ${passes.map((p) => `${p.name} ${p.classes.length}`).join(" + ")} slice(s) over ${tests.length} tests; free test lanes: ${lanesText}${Object.keys(history).length ? "; balanced by timing history" : "; balanced by tier (no timing history yet)"}`);
+  const t0 = Date.now();
+  const results = await shards.runPasses(passes, (job) => runShardChild(root, { ...job, full: job.pass.full }));
+  let code = 0;
+  for (const { pass, merged, shards: ran } of results) {
+    for (const d of ran) {
+      const p = shards.parseShardOutput(d.text);
+      console.log(`shard ${pass.name} ${d.job.index}/${d.job.count}: exit ${d.code}, ${d.seconds} s, ${p.total} test(s)${p.where ? `, ${p.where}` : ""}${d.logPath ? `, log ${d.logPath}` : ""}`);
+    }
+    const tier = pass.coreOnly ? "all-core" : "all";
+    console.log(`=== tests ${pass.name}${pass.coreOnly ? " (core only)" : ""}, ${merged.shards} shard(s) ===`);
+    for (const l of shards.mergedLines(merged, { tier, label: pass.name })) console.log(l);
+    if (merged.code === 0) stampMergedSuite(root, tier, merged);
+    if (merged.code !== 0 && code === 0) code = merged.code;
+  }
+  console.log(`shards: ${((Date.now() - t0) / 1000).toFixed(1)} s wall for ${passes.length} pass(es)`);
+  return code;
+}
+
+// The merged verdict goes into summaries.jsonl as the tier a whole run would have stamped, so
+// `suite-stamp all` still answers after a sharded run.
+function stampMergedSuite(root, tier, m) {
+  try {
+    const dir = join(root, "tmp", "test-results");
+    mkdirSync(dir, { recursive: true });
+    const sha = sh("git", ["-C", root, "rev-parse", "HEAD"]).stdout.trim();
+    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify({ sha, tier, passed: m.passed, failed: m.failed, total: m.total, consoleLog: "", shards: m.shards }) + "\n", "utf8");
+  } catch {}
+}
+
 // --local / --remote [name] / --machine <name|any> / --any (default).
 // LF_TESTBOX_AUTO=0 keeps the default on this machine.
 function poolMode(root, opts) {
@@ -2759,7 +3042,7 @@ function poolMode(root, opts) {
 // world: another world or mission header to boot instead of DebugWorld (Worlds/CoreOnEveron/CoreOnEveron.ent
 // boots the core alone on vanilla Everon, #1047). Its layers must place an LF_TestRunner.
 // coreOnly: the core alone, the pack hidden (#326, test-e2e.ps1 -CoreOnly).
-function runLocalTest(root, tier, only, world, coreOnly) {
+function runLocalTest(root, tier, only, world, coreOnly, red = false) {
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [LFTEST] SUMMARY, self-terminates.
@@ -2781,13 +3064,17 @@ function runLocalTest(root, tier, only, world, coreOnly) {
       ...(laneListenAddr() ? ["-ListenAddr", laneListenAddr()] : []),
       ...budgetArgs(),
       ...(only.length ? ["-Only", only.join(",")] : []),
+      ...(red ? ["-Red"] : []),
       ...(world ? ["-Mission", world] : []),
       ...(coreOnly ? ["-CoreOnly"] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
+    const m = /test-e2e: SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(res.stdout);
+    lastLocalSummary = m ? { tier: m[1], passed: +m[2], failed: +m[3], total: +m[4] } : null;
     return res.status;
   });
 }
+let lastLocalSummary = null;
 
 async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // Fast dev loop: skip the headless Workbench build (the dedicated server
@@ -2799,7 +3086,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   if (v !== 0) return v;
   console.log("\n=== dev: test (no build) ===");
   process.env.LF_TEST_DEBUG_LINES = "1"; // dev is the verb that dumps the feature lines
-  return cmdTest(true, tier, root, opts);
+  return cmdTest(true, tier, root, { ...opts, dev: true }); // dev: no pass cache, it wants this run's lines
 }
 
 async function cmdCi(root = ROOT, opts = {}) {
@@ -2816,9 +3103,19 @@ async function cmdCi(root = ROOT, opts = {}) {
       const g = await gate;
       return v !== 0 || g !== 0 ? 1 : 0;
     }],
-    ["test", () => cmdTest(true, "all", root, opts)],
-    // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
-    ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
+    // Both passes at once, each split over the free pool lanes (`--shards 1` runs them one after the other, whole).
+    ...(opts.shards !== undefined && String(opts.shards) !== "1" ? [["test (sharded)", async () => {
+      const core = launchAddons(root).length > 1 && !opts.skipCoreOnly;
+      ensureResourceDatabase(root);
+      const r = await runShardedTests(root, [{ coreOnly: false }, ...(core ? [{ coreOnly: true }] : [])], opts);
+      if (r !== null) return r;
+      const a = await cmdTest(true, "all", root, { ...opts, shards: undefined });
+      return core ? (await cmdTest(true, "all", root, { ...opts, shards: undefined, coreOnly: true })) || a : a;
+    }]] : [
+      ["test", () => cmdTest(true, "all", root, opts)],
+      // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
+      ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
+    ]),
     // After the suite: a branch that moved or added world props must pass the placement audit. It
     // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
     ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
@@ -3048,15 +3345,22 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --core-only boots with -addons LifeFramework only (the pack folder is not
                                 on -addonsDir) and skips tests whose NeedsPack() names a reason.
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
+                                --shards N|auto (tier all): the registry split into N balanced slices run as
+                                separate pool jobs at once, one merged SUMMARY and exit code (auto: free
+                                test lanes, at most 4; tools/lib/test-shards.mjs). --only-classes <A,B>
+                                runs exactly those registered classes (what a slice passes); --both (with --shards)
+                                also runs the core-only pass, at the same time (what ci does)
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
-                                Remote runs carry uncommitted state too (docs/worktrees.md)
+                                Remote runs carry uncommitted state too (docs/worktrees.md).
+                                A pass on byte-identical inputs is reused, not rerun (pass cache,
+                                tmp/test-cache in the main checkout); --no-cache or LF_TEST_CACHE=0 runs it
   e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids] [--cash-swap] [--pre-move <ref>] [--mission playtest]
                                 two-boot save, restart, and reload proof in this worktree;
                                 --legacy-save writes the save before #331 (version 23) in boot 1;
@@ -3071,7 +3375,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
-  ci [--skip-core-only]         validate --full + build + test + test --core-only (full gate, worktree only)
+  ci [--skip-core-only] [--shards N|auto|1]  validate --full + build + test + test --core-only, both passes at once, each sharded
+                                (default auto; 1 = one after the other, whole) (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
                                 runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
@@ -3095,10 +3400,13 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | item <prefab|slug> [--states ground,inventory] | selftest
+  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
-                                (about 20 s; docs/visual-testing.md)
+                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md)
+  look serve [--status | --stop [--remove]]
+                                one Workbench for every worktree's looks, on the Life-Framework-look-viewer checkout;
+                                each look is served from a snapshot of the caller's worktree, stops after 10 min idle
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
   perf [--log <file>] [test flags]   run the 128-character cost benchmark (LF_Test_PerfBudget), print the report vs Configs/Perf/LF_PerfBudget.conf; exit 1 over budget
@@ -3283,7 +3591,10 @@ function wtHelpFull() {
   console.log(`worktree commands (parallel agent isolation)
 
   tools\\cli wt new <slug> [--wait] [--base B] [--priority low]  create Life-Framework-ws-<slug> at ws/<slug>, allocate ports;
-                                       --priority records the pool priority for that worktree (spikes: low)
+                                       --priority records the pool priority for that worktree (spikes: low);
+                                       claims a ready warm worktree when one exists (--no-warm: always fresh)
+  tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
+                                       'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
@@ -3336,8 +3647,9 @@ function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
-    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args) });
-    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""}`);
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 600000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args), warm: !args.includes("--no-warm") });
+    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""} in ${(r.ms / 1000).toFixed(1)} s (${r.warm ? "warm pool" : "fresh checkout"}; lock ${(r.lockMs / 1000).toFixed(1)} s)`);
+    console.log(`  time:   ${Object.entries(r.phases ?? {}).map(([k, v]) => `${k} ${(v / 1000).toFixed(1)}s`).join(", ")}`);
     console.log(`  base:   origin/${r.base}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
@@ -3386,6 +3698,10 @@ async function wtListCmd() {
   })));
   const dirtyOf = new Map(live.map((e, i) => [e.path, statuses[i].trim() ? "dirty" : "clean"]));
   for (const e of rows) {
+    if (e.status === "creating") {
+      console.log(line(e, "creating"));
+      continue;
+    }
     if (!existsSync(e.path)) {
       console.log(line(e, "MISSING"));
       continue;
@@ -3412,7 +3728,34 @@ async function wtListCmd() {
     else if (merged && ahead === 0) stateText = "dirty, uncommitted work (commit or discard before prune)";
     console.log(line(e, stateText));
   }
+  const warm = Object.values(state.warm ?? {});
+  if (warm.length) console.log(`warm pool: ${warm.filter((w) => w.status === "ready").length} ready, ${warm.filter((w) => w.status !== "ready").length} busy (tools\\cli wt warm)`);
   return 0;
+}
+
+function wtWarmCmd(args) {
+  const sub = args[0] ?? "status";
+  try {
+    if (sub === "fill") {
+      const r = wt.wtWarmFill(ROOT, { log: (m) => console.log(m) });
+      if (r.skipped) console.log(`warm: ${r.skipped}`);
+      else console.log(`warm: made ${r.made.length} tree(s)`);
+    } else if (sub === "drain") {
+      const gone = wt.wtWarmDrain(ROOT);
+      console.log(`warm: removed ${gone.length} tree(s)${gone.length ? ": " + gone.join(", ") : ""}`);
+    } else if (sub !== "status") {
+      console.log("usage: tools\\cli wt warm [status|fill|drain]");
+      return 1;
+    }
+    const s = wt.warmStatus(ROOT);
+    console.log(`warm pool: K=${s.k} (LF_WT_WARM), fills while free disk >= ${s.minFreeGb} GB (LF_WT_WARM_MIN_FREE_GB); free ${s.freeGb === null ? "unknown" : s.freeGb.toFixed(1) + " GB"}`);
+    for (const w of s.trees) console.log(`  ${w.status.padEnd(11)}${w.path}${w.head ? `  at ${w.head.slice(0, 8)}` : ""}${w.pid ? `  pid ${w.pid}` : ""}`);
+    if (!s.trees.length) console.log("  (empty)");
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
 }
 
 function wtSyncCmd(args) {
@@ -3867,7 +4210,7 @@ async function wtSyncBaseCmd(args) {
     const r = wt.wtNew(ROOT, slug, { base });
     const { healMerge } = await import("./prs.mjs");
     const m = healMerge(r.path, { base: "origin/" + source });
-    if (m.status === "needs-human") {
+    if (m.status === "needs-human" || m.status === "refused") {
       console.log("FAIL  origin/" + source + " does not merge into origin/" + base + " automatically: " + m.reason + (m.conflicted.length ? " (" + m.conflicted.join(", ") + ")" : ""));
       console.log("      resolve by hand: cd " + r.path + "; git merge origin/" + source + "; fix, commit; tools\\cli wt ship " + slug);
       return 1;
@@ -4063,6 +4406,7 @@ function cmdWt(rest) {
   const table = {
     new: () => wtNewCmd(subArgs),
     list: () => wtListCmd(),
+    warm: () => wtWarmCmd(subArgs),
     test: () => wtTestCmd(subArgs),
     e2e: () => wtE2eCmd(subArgs),
     dev: () => wtDevCmd(subArgs),
@@ -4121,10 +4465,13 @@ const cmds = {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
+    const red = list.includes("--red") ? (argValue(list, "--red") ?? "") : undefined;
+    const onlyClasses = list.includes("--only-classes") ? (argValue(list, "--only-classes") ?? "") : undefined;
+    const shardsFlag = list.includes("--shards") ? (argValue(list, "--shards") ?? "auto") : undefined;
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), only, onlyClasses, shards: shardsFlag, both: list.includes("--both"), red, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), noCache: (flags ?? []).includes("--no-cache"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), shards: (flags ?? []).includes("--shards") ? (argValue(flags ?? [], "--shards") ?? "auto") : "auto", ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids"), cashSwap: (flags ?? []).includes("--cash-swap"), ...e2eMoveFlags(ROOT, flags ?? []) });

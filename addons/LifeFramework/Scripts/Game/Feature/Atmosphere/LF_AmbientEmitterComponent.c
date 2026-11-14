@@ -18,7 +18,10 @@ class LF_AmbientEmitterComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_AmbientEmitterComponent : ScriptComponent
 {
-	[Attribute("", UIWidgets.ResourceNamePicker, "Sound project with the looped event", "acp")]
+	[Attribute("", UIWidgets.EditBox, "Sound slot (Configs/SoundSlots/LF_SoundSlots.conf) the project comes from, so a pack can swap the sound. Core props use this")]
+	protected string m_sSoundSlot;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Sound project with the looped event. A project named here wins over the slot: for a pack's own instance, not a core prop", "acp")]
 	protected ResourceName m_sSoundProject;
 
 	[Attribute("SOUND_LF_AMBIENT_LP", UIWidgets.EditBox, "Looped sound event in the project")]
@@ -53,6 +56,8 @@ class LF_AmbientEmitterComponent : ScriptComponent
 
 	protected ref LF_AmbientCandidate m_Candidate = new LF_AmbientCandidate();
 	protected ref SCR_AudioSource m_Audio;
+	//! The project this emitter plays: m_sSoundProject, else the slot's project. Set in OnPostInit.
+	protected ResourceName m_sProject;
 	protected bool m_bRegistered;
 	protected bool m_bBroken;
 	protected bool m_bVoiceSeen;
@@ -69,9 +74,13 @@ class LF_AmbientEmitterComponent : ScriptComponent
 		if (RplSession.Mode() == RplMode.Dedicated || System.IsConsoleApp())
 			return;
 
-		if (m_sSoundProject.IsEmpty() || m_sSoundEvent.IsEmpty())
+		m_sProject = m_sSoundProject;
+		if (m_sProject.IsEmpty() && !m_sSoundSlot.IsEmpty())
+			m_sProject = LF_SoundSlots.Get(m_sSoundSlot);
+
+		if (m_sProject.IsEmpty() || m_sSoundEvent.IsEmpty())
 		{
-			LF_Debug.Error(LF_Atmosphere.FEATURE, string.Format("%1 has no sound project or event; it stays silent", Label()));
+			LF_Debug.Error(LF_Atmosphere.FEATURE, string.Format("%1 has no sound project or event (slot '%2'); it stays silent", Label(), m_sSoundSlot));
 			return;
 		}
 
@@ -108,11 +117,18 @@ class LF_AmbientEmitterComponent : ScriptComponent
 		if (owner && !owner.GetName().IsEmpty())
 			return owner.GetName();
 
-		string project = FilePath.StripPath(m_sSoundProject);
+		string project = FilePath.StripPath(m_sProject);
 		if (project.IsEmpty())
 			return LF_Atmosphere.LabelOf(owner);
 
 		return FilePath.StripExtension(project);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sound project this emitter plays (empty when the slot has none), for tests and proofs.
+	ResourceName GetProject()
+	{
+		return m_sProject;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -176,7 +192,7 @@ class LF_AmbientEmitterComponent : ScriptComponent
 		}
 
 		SCR_AudioSourceConfiguration config = new SCR_AudioSourceConfiguration();
-		config.m_sSoundProject = m_sSoundProject;
+		config.m_sSoundProject = m_sProject;
 		config.m_sSoundEventName = m_sSoundEvent;
 		config.m_vOffset = m_vOffset;
 		config.m_eFlags = EAudioSourceConfigurationFlag.Static;
@@ -194,7 +210,7 @@ class LF_AmbientEmitterComponent : ScriptComponent
 		m_iRefusedTicks = 0;
 		m_bVoiceSeen = false;
 		LF_Atmosphere.CountStart();
-		LF_Debug.Info(LF_Atmosphere.FEATURE, string.Format("start %1 at %2 m (radius %3) %4", Label(), distance.ToString(-1, 1), m_fRadius, FilePath.StripPath(m_sSoundProject)));
+		LF_Debug.Info(LF_Atmosphere.FEATURE, string.Format("start %1 at %2 m (radius %3) %4", Label(), distance.ToString(-1, 1), m_fRadius, FilePath.StripPath(m_sProject)));
 		return true;
 	}
 
@@ -247,7 +263,7 @@ class LF_AmbientEmitterComponent : ScriptComponent
 		if (m_iPlayTicks * LF_Atmosphere.TICK_MS < 4000)
 			return;
 
-		LF_Debug.Error(LF_Atmosphere.FEATURE, string.Format("%1: the engine started no voice for %2 %3 (handle valid=%4); it stays silent", Label(), m_sSoundProject, m_sSoundEvent, valid));
+		LF_Debug.Error(LF_Atmosphere.FEATURE, string.Format("%1: the engine started no voice for %2 %3 (handle valid=%4); it stays silent", Label(), m_sProject, m_sSoundEvent, valid));
 		m_bBroken = true;
 		Stop("no voice");
 	}

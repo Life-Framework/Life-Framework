@@ -244,6 +244,10 @@ including, ${range.below}. Raise \`m_sCoreBelow\` once you have tested the pack 
 ${workplacePath ? `- [ ] \`${workplacePath}\`: the ${job} workplace. It inherits the core workplace (punch clock, place registration, optional NPC slot). Place it, name it in the world, and set the NPC prefab if it has a clerk.
 ` : ""}- [ ] Open the project in Workbench once, so it registers the resources.
 
+Licence: choose your pack's own. The core's GitHub source is MIT and its Workshop build is APL; what you may copy,
+how to credit it and what to do about base-game and CC-BY assets is
+[\`docs/architecture/pack-licence.md\`](../../docs/architecture/pack-licence.md) (not legal advice).
+
 No script here: a pack that needs code asks for an extension point in the core.
 \`validate-addon-boundary\` fails on a \`.c\` file in a pack.
 `);

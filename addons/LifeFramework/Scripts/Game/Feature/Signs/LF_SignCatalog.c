@@ -5,9 +5,10 @@
 // string table. An empty section is left off the card.
 
 //------------------------------------------------------------------------------------------------
-//! One sign. LF_SignComponent.m_sSignId names it.
+//! One sign. LF_SignComponent.m_sSignId names it. A pack overlay of LF_SignConfig adds, replaces,
+//! patches or removes a sign by id (LF_ConfigOverlay, docs/config/override-model.md).
 [BaseContainerProps()]
-class LF_SignDef
+class LF_SignDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Sign id, matched by LF_SignComponent.m_sSignId")]
 	string m_sId;
@@ -43,6 +44,131 @@ class LF_SignConfig
 {
 	[Attribute("", UIWidgets.Object, "Signs")]
 	ref array<ref LF_SignDef> m_aSigns;
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each pack overlay of this class the mission header lists, in load order (#323: the
+	//! pack's pictures and text for core sign ids). eturn Signs changed.
+	int ApplyPackOverlays()
+	{
+		if (!m_aSigns)
+			m_aSigns = new array<ref LF_SignDef>();
+
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(LF_SignCatalog.CONFIG_PATH, LF_SignConfig, "signs", resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		int total;
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info("Signs", string.Format("pack overlay %1 changed %2 signs", names[i], changed));
+			total += changed;
+		}
+
+		return total;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one overlay container's m_aSigns by the override verbs. eturn Signs changed.
+	int ApplyContainer(notnull BaseContainer container, string source = "pack", LF_ConfigClaims claims = null)
+	{
+		if (!m_aSigns)
+			m_aSigns = new array<ref LF_SignDef>();
+
+		return LF_ConfigOverlay.ApplyContainerList(new LF_SignList(this), container, "m_aSigns", source, claims);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The signs on the override model, keyed by sign id. A new or replaced sign needs a title.
+class LF_SignList : LF_ConfigList
+{
+	protected LF_SignConfig m_Config;
+
+	void LF_SignList(LF_SignConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "signs.signs";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aSigns.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aSigns[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_SignDef.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		LF_SignDef sign = new LF_SignDef();
+		sign.m_sId = id;
+		return sign;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_SignDef sign = LF_SignDef.Cast(record);
+		if (index < m_Config.m_aSigns.Count())
+			m_Config.m_aSigns.Set(index, sign);
+		else
+			m_Config.m_aSigns.Insert(sign);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aSigns.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_SignDef sign = LF_SignDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sTitle") && container.Get("m_sTitle", sign.m_sTitle))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sImage") && container.Get("m_sImage", sign.m_sImage))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sImageName") && container.Get("m_sImageName", sign.m_sImageName))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sWhat") && container.Get("m_sWhat", sign.m_sWhat))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sHow") && container.Get("m_sHow", sign.m_sHow))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sNeeds") && container.Get("m_sNeeds", sign.m_sNeeds))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sRules") && container.Get("m_sRules", sign.m_sRules))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sNext") && container.Get("m_sNext", sign.m_sNext))
+			changed++;
+
+		return changed;
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		if (LF_SignDef.Cast(record).m_sTitle.IsEmpty())
+			return "a sign needs a title (m_sTitle)";
+
+		return string.Empty;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -101,6 +227,8 @@ class LF_SignCatalog
 
 		s_bLoadAttempted = true;
 		s_Config = Load(CONFIG_PATH);
+		if (s_Config)
+			s_Config.ApplyPackOverlays();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -104,6 +104,23 @@ export function removeWorktree(mainRoot, path, { force = false } = {}) {
   return spawnSync("git", ["-C", mainRoot, "worktree", "remove", path, ...(force ? ["--force"] : [])], { windowsHide: true, encoding: "utf8" });
 }
 
+// Deletes a worktree that holds nothing worth keeping (a warm-pool tree, a
+// half-made one): removeWorktree with --force, then, when git no longer knows
+// the path, the leftover tree through safeRemoveTree. The only recycle path for
+// warm worktrees (tools/wt.mjs). Returns true when the directory is gone.
+export function recycleWorktree(mainRoot, path) {
+  if (!existsSync(path)) return true;
+  const rm = removeWorktree(mainRoot, path, { force: true });
+  if (rm.status !== 0 && existsSync(path)) {
+    const list = spawnSync("git", ["-C", mainRoot, "worktree", "list", "--porcelain"], { windowsHide: true, encoding: "utf8" }).stdout ?? "";
+    const norm = (p) => p.replace(/[\\/]+/g, "/").replace(/\/$/, "").toLowerCase();
+    const known = list.split(/\r?\n/).some((l) => l.startsWith("worktree ") && norm(l.slice(9).trim()) === norm(path));
+    if (known) return false;
+    safeRemoveTree(path);
+  }
+  return !existsSync(path);
+}
+
 // Builds a fake Steam install with a sentinel, a git worktree that junctions
 // to it the way game-addons does, removes the worktree with --force, and checks
 // the sentinel survived. Without the unlink, git deletes the sentinel.
@@ -137,6 +154,23 @@ export function selftestLinkSafety() {
     safeRemoveTree(tree);
     if (existsSync(tree)) failures.push("safeRemoveTree did not delete the tree");
     if (!existsSync(sentinel)) failures.push("safeRemoveTree followed the junction and deleted the install sentinel");
+
+    // Warm-pool recycle (tools/wt.mjs discardWarm): a detached worktree that
+    // somehow holds a game-addons junction, and a leftover tree git no longer
+    // knows, both go through recycleWorktree and keep the install.
+    const warm = join(base, "warm");
+    if (git(["-C", repo, "worktree", "add", "-q", "--detach", warm]).status !== 0) throw new Error("git worktree add --detach failed");
+    const warmAddons = join(warm, "server", "profile", "test", "game-addons");
+    mkdirSync(warmAddons, { recursive: true });
+    symlinkSync(install, join(warmAddons, "core"), "junction");
+    if (!recycleWorktree(repo, warm)) failures.push("recycleWorktree did not delete the warm worktree");
+    if (existsSync(warm)) failures.push("warm worktree still on disk after recycle");
+    if (!existsSync(sentinel)) failures.push("recycling a warm worktree followed the junction and deleted the install sentinel");
+    const orphan = join(base, "orphan");
+    mkdirSync(join(orphan, "server", "profile", "test", "game-addons"), { recursive: true });
+    symlinkSync(install, join(orphan, "server", "profile", "test", "game-addons", "core"), "junction");
+    if (!recycleWorktree(repo, orphan)) failures.push("recycleWorktree did not delete a tree git does not know");
+    if (!existsSync(sentinel)) failures.push("recycling an unknown tree followed the junction and deleted the install sentinel");
   } catch (e) {
     failures.push(`threw: ${e.message}`);
   } finally {

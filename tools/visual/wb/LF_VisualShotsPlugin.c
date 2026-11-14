@@ -39,6 +39,13 @@
 // status.txt gets one line per step (`<ms> ok shot <name> <file> pick= clear= cam=`,
 // `<ms> error <reason>`) and a final `done <shots> <failed>`; Node reads it after
 // Workbench exits.
+//
+// Server mode (tools\cli look serve, tools/visual/look-serve.mjs): with $profile:lf-visual/serve.txt
+// present, RunCommandline does not exit after one plan. It rewrites alive.txt every 3 s while idle;
+// for each go.txt (request id, then reload none|reopen) it leaves play mode, reopens the world from disk
+// when asked (only when nothing under addons/ changed: reopening after a changed script or a git-rewritten
+// .layer crashed Workbench every time), shoots plan.txt with the request id as
+// the first status line, and writes done.txt with the id. stop.txt, or 10 min with no request, ends it.
 
 [WorkbenchPluginAttribute(name: "LF Visual Shots", description: "Takes the shots of $profile:lf-visual/plan.txt (tools\\cli look)", wbModules: { "WorldEditor" }, category: "Life Framework")]
 class LF_VisualShotsPlugin : WorldEditorPlugin
@@ -46,6 +53,12 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	protected static const string DIR = "$profile:lf-visual";
 	protected static const int SHOT_TIMEOUT_MS = 5000;
 	protected static const int PLAY_TIMEOUT_MS = 90000;
+	protected static const int SERVE_IDLE_MS = 600000;
+	protected static const int SERVE_BEAT_MS = 3000;
+	//! Server mode: play mode gets this long in all; SwitchToGameMode is asked again every SERVE_PLAY_RETRY_MS
+	//! while it has not taken (right after leaving play it is ignored once in a while; probe 2026-11-14).
+	protected static const int SERVE_PLAY_TIMEOUT_MS = 40000;
+	protected static const int SERVE_PLAY_RETRY_MS = 8000;
 	protected static const float VERTICAL_FOV = 60;
 	// The wide lens also gets a fan of level rays across its view. A thin pole right in front of the
 	// lens (a lamp post, a sign) misses the one centre ray and ruins the picture (#814). The step is
@@ -56,6 +69,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 	protected ref array<string> m_aStatus = {};
 	protected int m_iStart;
+	protected bool m_bServe;
 	protected bool m_bPlay;
 	protected WorldEditorAPI m_Api;
 	protected BaseWorld m_World;
@@ -71,12 +85,127 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	override void RunCommandline()
 	{
 		m_iStart = System.GetTickCount();
+		if (FileIO.FileExists(DIR + "/serve.txt"))
+		{
+			m_bServe = true;
+			Serve();
+			Workbench.Exit(0);
+			return;
+		}
+
 		int failed = Shoot();
 		int code = 0;
 		if (failed != 0)
 			code = 1;
 
 		Workbench.Exit(code);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server mode (tools\cli look serve): this Workbench stays open and takes one plan after another.
+	//! Node writes plan.txt, then go.txt (line 1: request id, line 2: how to reload the world). The
+	//! answer is status.txt plus done.txt holding the id. stop.txt, or SERVE_IDLE_MS without a
+	//! request, ends it. alive.txt is rewritten every few seconds so Node can tell a dead server.
+	protected void Serve()
+	{
+		WorldEditor worldEditor = Workbench.GetModule(WorldEditor);
+		if (!worldEditor)
+			return;
+
+		int idle;
+		int beat = SERVE_BEAT_MS;
+		// FileIO.DeleteFile does not remove go.txt here (lf-cloud 2026-11-14: one request ran 40 times), so a
+		// request is told apart by its id: one already served is ignored until Node removes or replaces go.txt.
+		string lastId;
+		while (!FileIO.FileExists(DIR + "/stop.txt"))
+		{
+			if (beat >= SERVE_BEAT_MS)
+			{
+				beat = 0;
+				WriteLine(DIR + "/alive.txt", System.GetTickCount().ToString());
+			}
+
+			string id;
+			string reload;
+			if (FileIO.FileExists(DIR + "/go.txt"))
+			{
+				FileHandle go = FileIO.OpenFile(DIR + "/go.txt", FileMode.READ);
+				if (go)
+				{
+					go.ReadLine(id);
+					go.ReadLine(reload);
+					go.Close();
+				}
+
+				id.TrimInPlace();
+				reload.TrimInPlace();
+			}
+
+			if (id.IsEmpty() || id == lastId)
+			{
+				if (idle > SERVE_IDLE_MS)
+					break;
+
+				Sleep(200);
+				idle += 200;
+				beat += 200;
+				continue;
+			}
+
+			lastId = id;
+			idle = 0;
+			FileIO.DeleteFile(DIR + "/go.txt");
+			m_aStatus.Clear();
+			m_iStart = System.GetTickCount();
+			m_Camera = null;
+			m_ForceEntity = null;
+			// The first status line names the request, so Node never reads an older request's answer as this one's.
+			Note("ok request " + id + " reload=" + reload);
+			LeavePlay(worldEditor);
+			// reopen is only ever asked when no file under addons/ changed: after git rewrote a .layer under this
+			// Workbench, SetOpenedResource crashed it (access violation in Shoot, 2 of 2 on lf-testbox and 2 of 2 on
+			// lf-cloud, 2026-11-14), and WorldEditor.Close() returned true but left the world open, so closing first
+			// is no way round it. Node restarts the server for any addon change instead.
+			Shoot(reload == "reopen");
+
+			// The heartbeat first: a caller that sees done.txt finds the server healthy, not stale from the request.
+			WriteLine(DIR + "/alive.txt", System.GetTickCount().ToString());
+			beat = 0;
+			WriteLine(DIR + "/done.txt", id);
+		}
+
+		FileIO.DeleteFile(DIR + "/alive.txt");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void WriteLine(string path, string text)
+	{
+		FileHandle f = FileIO.OpenFile(path, FileMode.WRITE);
+		if (!f)
+			return;
+
+		f.WriteLine(text);
+		f.Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LeavePlay(notnull WorldEditor worldEditor)
+	{
+		WorldEditorAPI api = worldEditor.GetApi();
+		if (!api || !api.IsGameMode())
+			return;
+
+		worldEditor.SwitchToEditMode();
+		int waited;
+		while (api.IsGameMode() && waited < SERVE_PLAY_TIMEOUT_MS)
+		{
+			Sleep(100);
+			waited += 100;
+		}
+
+		// Leaving play reloads the game ("Workbench Reload Game"); give it a moment before the next SwitchToGameMode.
+		Sleep(1500);
+		Note("ok edit waited=" + waited);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -126,7 +255,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 	//------------------------------------------------------------------------------------------------
 	//! \return the number of failed steps (0 = every shot is on disk)
-	protected int Shoot()
+	protected int Shoot(bool reopen = false)
 	{
 		WorldEditor worldEditor = Workbench.GetModule(WorldEditor);
 		if (!worldEditor)
@@ -176,8 +305,9 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 			m_Api.GetWorldPath(opened);
 
 		// The requested world must be the one that is open. A Workbench that came up on a default scene (the green
-		// vegetable crate in an empty world) used to be accepted here and photographed (#1147).
-		if (!WorldIsOpen(opened, world))
+		// vegetable crate in an empty world) used to be accepted here and photographed (#1147). A server request
+		// with reopen loads it from disk again.
+		if (reopen || !WorldIsOpen(opened, world))
 		{
 			if (world.IsEmpty() || !worldEditor.SetOpenedResource(world))
 			{
@@ -242,13 +372,24 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 		worldEditor.SwitchToGameMode();
 
+		int timeout = PLAY_TIMEOUT_MS;
+		if (m_bServe)
+			timeout = SERVE_PLAY_TIMEOUT_MS;
+
 		int waited;
+		int asks = 1;
 		while (!m_Api.IsGameMode())
 		{
-			if (waited > PLAY_TIMEOUT_MS)
+			if (waited > timeout)
 			{
-				Note("error play_not_started");
+				Note("error play_not_started asks=" + asks);
 				return false;
+			}
+
+			if (m_bServe && waited > 0 && waited % SERVE_PLAY_RETRY_MS == 0)
+			{
+				worldEditor.SwitchToGameMode();
+				asks++;
 			}
 
 			Sleep(100);
@@ -258,7 +399,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		ArmaReforgerScripted game = GetGame();
 		while (!game || !game.GetWorld() || !game.GetCameraManager())
 		{
-			if (waited > PLAY_TIMEOUT_MS)
+			if (waited > timeout)
 			{
 				Note("error play_no_world");
 				return false;
@@ -278,7 +419,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		}
 
 		game.GetCameraManager().SetCamera(m_Camera);
-		Note("ok play waited=" + waited);
+		Note("ok play waited=" + waited + " asks=" + asks);
 		return true;
 	}
 

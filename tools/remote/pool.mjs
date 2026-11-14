@@ -23,7 +23,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { freemem, hostname, totalmem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -73,6 +73,8 @@ export function poolSettings(root) {
     minFreeDiskGb: pick("minFreeDiskGb", "LF_POOL_MIN_FREE_DISK_GB"),
     sessionReserveServerMb: pick("sessionReserveServerMb", "LF_POOL_SESSION_RESERVE_SERVER_MB"),
     sessionReserveClientMb: pick("sessionReserveClientMb", "LF_POOL_SESSION_RESERVE_CLIENT_MB"),
+    testReserveMb: pick("testReserveMb", "LF_POOL_TEST_RESERVE_MB"),
+    testBootS: pick("testBootS", "LF_POOL_TEST_BOOT_S"),
     // Per profile: pool.json / lf.local.json "sessionReserve": { "lowspec": { "serverMb", "clientMb" } }.
     sessionReserve: { ...q.DEFAULTS.sessionReserve, ...(base.sessionReserve ?? {}), ...(over.sessionReserve ?? {}) },
   };
@@ -229,13 +231,13 @@ function normalize(m) {
     host: via === "ssh" ? String(m.host || m.name) : null,
     root: via === "ssh" ? String(m.root || "C:/LF/Life-Framework").replace(/\\/g, "/").replace(/\/$/, "") : null,
     slots: Math.max(1, Number(m.slots) || 1),
-    // lanes: { test: N, session: 1 } gives tests their own servers on ports
-    // 2002.. beside the session server on 2001. Without it the machine keeps
-    // one shared lane (slots).
+    // lanes: { test: N, session: K } gives tests their own servers beside the session servers
+    // (ports in pool-queue.mjs, "Lane ports"). Without it the machine keeps one shared lane (slots).
     // Scales the seeded run budgets for a slower machine (the laptop).
     hostname: m.hostname ? String(m.hostname) : null,
     budgetMultiplier: Number(m.budgetMultiplier) > 0 ? Number(m.budgetMultiplier) : 1,
-    lanes: m.lanes && typeof m.lanes === "object" ? { test: Math.max(1, Number(m.lanes.test) || 1), session: Math.max(1, Math.min(4, Number(m.lanes.session) || 1)) } : null,
+    lanes: laneSetting(m),
+    laneNotes: laneNotes(m),
     caps: Array.isArray(m.caps) ? m.caps.map(String) : ["server"],
     // Heat: a folder of CSV logs with a thrm_c column (the laptop's thermal logger). While its newest
     // reading is fresh and at or above thermalHoldC, no new job starts there.
@@ -245,6 +247,30 @@ function normalize(m) {
     thermalHoldC: Number(m.thermalHoldC) > 0 ? Number(m.thermalHoldC) : 90,
     disabled: !!m.disabled,
   };
+}
+
+const isObj = (v) => !!v && typeof v === "object";
+
+// The lane counts a machine runs: lanesV2 when set, else lanes. No ceiling but the port range
+// (q.MAX_TEST_LANES / q.MAX_SESSION_LANES); the RAM gate and thermal hold decide what starts.
+// lanesV2 exists for older pool code (before 2026-11-14), which reads only "lanes", caps its session
+// lanes at 4 and puts a 10th test lane on 2011, the second session lane's port: keep "lanes" at
+// most 9 test + 4 session and put the full count in "lanesV2".
+export function laneSetting(m) {
+  const src = isObj(m.lanesV2) ? m.lanesV2 : isObj(m.lanes) ? m.lanes : null;
+  if (!src) return null;
+  const n = (v, cap) => Math.max(1, Math.min(cap, Math.floor(Number(v)) || 1));
+  return { test: n(src.test, q.MAX_TEST_LANES), session: n(src.session, q.MAX_SESSION_LANES) };
+}
+
+// Warnings about a machine's lane setting, printed by pool status.
+export function laneNotes(m) {
+  const out = [];
+  if (isObj(m.lanes) && Number(m.lanes.test) > q.LEGACY_TEST_LANES) out.push(`lanes.test ${m.lanes.test} > ${q.LEGACY_TEST_LANES}: pool code older than 2026-11-14 puts test lane 10 on session port 2011; set lanes.test to ${q.LEGACY_TEST_LANES} or less and the full count in lanesV2`);
+  const src = isObj(m.lanesV2) ? m.lanesV2 : isObj(m.lanes) ? m.lanes : null;
+  if (src && Number(src.test) > q.MAX_TEST_LANES) out.push(`test lanes ${src.test} cut to ${q.MAX_TEST_LANES} (the lane port range)`);
+  if (src && Number(src.session) > q.MAX_SESSION_LANES) out.push(`session lanes ${src.session} cut to ${q.MAX_SESSION_LANES} (the lane port range)`);
+  return out;
 }
 
 // Committed registry, then lf.local.json "pool": { "machines": [ { "name", ... } ] }
@@ -439,6 +465,24 @@ export function gateJoin(root, clientMb, opts = {}) {
 // The other session lanes of this PC with a live holder: { lock, pendingMb } where pendingMb is the
 // memory a session still booting is expected to take that free RAM does not show yet (0 once it
 // is ready, or after ten minutes).
+// Memory the local test servers still booting take that free RAM does not show yet (q.bootingMb over
+// this PC's live test lane locks, the lock named except left out).
+function localBootingTestsMb(root, m, except, settings = poolSettings(root)) {
+  const infos = [];
+  for (const l of lanesFor(m, "test")) {
+    if (l.lock === except) continue;
+    const info = readJson(localLockFile(root, l.lock), null);
+    if (!info || !pidAlive(info.pid) || info.purpose === "session") continue;
+    infos.push(info);
+  }
+  return q.bootingMb(infos, settings);
+}
+
+// What still boots on this PC (MB): sessions not yet ready plus test servers under testBootS.
+function localPendingMb(root, m, except) {
+  return otherSessionLanes(root, m, except).reduce((n, s) => n + s.pendingMb, 0) + localBootingTestsMb(root, m, except);
+}
+
 function otherSessionLanes(root, m, except) {
   const out = [];
   for (const l of lanesFor(m, "session")) {
@@ -493,7 +537,7 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
   // and every start counts the sessions still booting, whose memory free RAM does not show yet.
   const others = otherSessionLanes(root, m, name);
   const reserveMb = meta?.purpose === "session" ? q.sessionReserveMb(settings, meta.clients ?? 1, meta.profile ?? "full") : 0;
-  const pendingMb = others.reduce((n, s) => n + s.pendingMb, 0);
+  const pendingMb = others.reduce((n, s) => n + s.pendingMb, 0) + localBootingTestsMb(root, m, name, settings) + (Number(opts.aheadMb) || 0);
   const verdict = () => q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
   let ram = opts.noRam ? { ok: true } : verdict();
   // Before refusing for RAM, trim what idle sessions hold resident and look again (not under test seams).
@@ -580,8 +624,9 @@ if ($thermDir) {
 `;
 
 // The holder's RAM gate, before it takes a lock: the verdict of q.ramVerdict on the box's live free
-// RAM, its live lane locks and its sessions still booting (younger than 3 min). Needs $cfg, $ld,
-// $slots and Test-Alive. Exported for the selftest.
+// RAM, its live lane locks, what still boots there (as q.bootingMb: a session younger than 3 min, a
+// test younger than testBootS) and the reserves of the starts in flight ahead of this one (aheadMb,
+// q.burstAdmit). Needs $cfg, $ld, $slots and Test-Alive. Exported for the selftest.
 export const PS_RAM_GATE = String.raw`
 if ($cfg.ram -and $slots.Count -gt 0) {
   $os = Get-CimInstance Win32_OperatingSystem
@@ -594,8 +639,9 @@ if ($cfg.ram -and $slots.Count -gt 0) {
     if (-not (Test-Alive $h.pid)) { continue }
     $running++
     if ($h.purpose -eq 'session') { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt 180) { $c = 1; if ($h.clients) { $c = [int]$h.clients }; $pending += $cfg.ram.serverMb + $cfg.ram.clientMb * $c } } catch {} }
+    elseif ($h.purpose -and $cfg.ram.testMb) { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt [int]$cfg.ram.testBootS) { $pending += [int]$cfg.ram.testMb } } catch {} }
   }
-  $need = $cfg.ram.reserveMb + $pending + $cfg.ram.floorMb
+  $need = $cfg.ram.reserveMb + $pending + $cfg.ram.floorMb + [int]$cfg.ram.aheadMb
   # Only a lane that is free (or stale) makes RAM the reason; all lanes taken is plain busy.
   $anyFree = $false
   foreach ($s in $slots) { $h = $null; try { $h = [IO.File]::ReadAllText((Join-Path $ld ($s.lock + '.lock'))) | ConvertFrom-Json } catch {}; if (-not $h -or -not (Test-Alive $h.pid)) { $anyFree = $true } }
@@ -648,8 +694,18 @@ try {
   git -C $main cat-file -e "$($cfg.base)^{commit}" 2>$null
   if ($LASTEXITCODE) { git -C $main fetch -q origin 2>&1 | Out-Null; Write-Host 'lf-pool: fetched origin' }
   if (-not (Test-Path -LiteralPath (Join-Path $dir '.git'))) {
-    git -C $main worktree add -q --detach $dir $cfg.base 2>&1 | Out-Null
-    if ($LASTEXITCODE) { Write-Host "lf-pool: error worktree add $dir failed"; return }
+    # Holders that start together share the main clone: a fetch or worktree add beside this one can
+    # hold a ref or config lock for a moment, so a failed add is retried before the box counts as broken.
+    for ($wa = 0; $wa -lt 4; $wa++) {
+      git -C $main worktree add -q --detach $dir $cfg.base 2>&1 | Out-Null
+      if (-not $LASTEXITCODE) { break }
+      Start-Sleep -Milliseconds (700 + (Get-Random -Maximum 1500))
+      git -C $main worktree prune 2>&1 | Out-Null
+      git -C $main cat-file -e "$($cfg.base)^{commit}" 2>$null
+      if ($LASTEXITCODE) { git -C $main fetch -q origin 2>&1 | Out-Null }
+      if (Test-Path -LiteralPath (Join-Path $dir '.git')) { break }
+    }
+    if (-not (Test-Path -LiteralPath (Join-Path $dir '.git'))) { Write-Host "lf-pool: error worktree add $dir failed"; return }
     Write-Host 'lf-pool: new run folder'
   }
   New-Item -ItemType Directory -Force -Path (Join-Path $dir 'tmp\remote-in') | Out-Null
@@ -715,7 +771,7 @@ function hookExit() {
 // Starts a holder. Resolves { slot } once it holds a slot and the run folder
 // is ready, { busy: [holder json...] } when every slot there is taken, or
 // { error } when the machine could not be used.
-export function startHolder(root, m, cfg, { onLost } = {}) {
+export function startHolder(root, m, cfg, { onLost, onAcquired } = {}) {
   hookExit();
   return new Promise((resolvePromise) => {
     const child = spawn("ssh", tb.sshPsArgs(m.host, holderScript(cfg), { connectTimeout: 4 }), { windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
@@ -746,7 +802,13 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
       clearTimeout(silent);
       const t = line.trim();
       let mm;
-      if ((mm = /^lf-pool: acquired (\S+) (\d+)/.exec(t))) acquired = { lockName: mm[1], index: Number(mm[2]) };
+      if ((mm = /^lf-pool: acquired (\S+) (\d+)/.exec(t))) {
+        acquired = { lockName: mm[1], index: Number(mm[2]) };
+        // The lane is ours from here; the run-folder prep that follows must not hold the queue.
+        try {
+          onAcquired?.(acquired);
+        } catch {}
+      }
       else if ((mm = /^lf-pool: has ([0-9a-f]{40})/.exec(t))) prep.has.add(mm[1]);
       else if ((mm = /^lf-pool: rdb (\S+) ([0-9a-f]{40})/.exec(t))) prep.rdbs[mm[1]] = mm[2];
       else if (t === "lf-pool: fetched origin") prep.fetched = true;
@@ -879,7 +941,9 @@ export function slugFor(root) {
 
 // slots: how many of the machine's lanes of this kind the holder may try (all of them by default;
 // 0 = no lock, sync only). ram: the RAM gate the holder applies there before it takes a lock.
-export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = "", settings = poolSettings(root) } = {}) {
+// Burst starts (q.burstAdmit): aheadMb, the reserves of the starts in flight ahead of this one, goes
+// into that gate; freeLocks + position rotate the slots so starts in flight spread over the free lanes.
+export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = "", settings = poolSettings(root), aheadMb = 0, freeLocks = null, position = 0 } = {}) {
   const laneCount = lanesFor(m, laneKind(purpose)).length;
   if (slots === undefined) slots = laneCount;
   const slug = slugFor(root);
@@ -898,10 +962,78 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
     worktree: root.replace(/\\/g, "/"),
     base,
     candidates: [...new Set([snap.sha, snap.head, last, base].filter(Boolean))],
-    slots: slotList,
+    slots: q.rotateSlots(slotList, freeLocks, position),
     dir: remoteRunDir(m, slug, 1, suffix),
-    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: laneKind(purpose) === "session" ? q.sessionReserveMb(settings, 1, "full") : 0, serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb },
+    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: laneKind(purpose) === "session" ? q.sessionReserveMb(settings, 1, "full") : 0, serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb, testMb: settings.testReserveMb, testBootS: settings.testBootS, aheadMb: Math.max(0, Math.round(Number(aheadMb) || 0)) },
   };
+}
+
+// One snapshot per burst (#1195). Runs asked together from one worktree each took their own
+// (git add -A into a private index, write-tree, commit-tree: 0.5 s alone); 14 at once took 5-19 s
+// and one failed writing the same loose object ("unable to write file ... Permission denied"), which
+// left that run with no remote. Now one process at a time takes it, under a lock in the worktree's
+// tmp/remote, and a snapshot taken there less than shareMs ago at the same HEAD and index is reused:
+// the worktree as it was when the burst was asked for. A failed take is retried (twice).
+// opts.take / opts.now are test seams.
+export const SNAPSHOT_SHARE_MS = 10000;
+export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now, shareMs = SNAPSHOT_SHARE_MS, lockWaitMs = 30000 } = {}) {
+  const dir = join(root, "tmp", "remote");
+  mkdirSync(dir, { recursive: true });
+  const lock = join(dir, "snapshot.lock");
+  const cacheFile = join(dir, "snapshot-shared.json");
+  const key = () => {
+    const r = spawnSync("git", ["-C", root, "rev-parse", "HEAD", "--git-path", "index"], { windowsHide: true, encoding: "utf8" });
+    const [head, index] = (r.stdout ?? "").trim().split(/\r?\n/);
+    let indexMs = null;
+    try {
+      indexMs = statSync(resolve(root, index)).mtimeMs;
+    } catch {}
+    return r.status === 0 ? { head, indexMs } : null;
+  };
+  const takeRetried = () => {
+    for (let i = 0; ; i++) {
+      try {
+        return take(root);
+      } catch (e) {
+        if (i >= 2) throw e;
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 300 + Math.floor(Math.random() * 700));
+      }
+    }
+  };
+  let held = false;
+  const until = now() + lockWaitMs;
+  while (!held) {
+    try {
+      closeSync(openSync(lock, "wx"));
+      held = true;
+    } catch (e) {
+      if (e.code !== "EEXIST") break;
+      // A lock left by a process that died mid-snapshot goes after a minute.
+      try {
+        if (Date.now() - statSync(lock).mtimeMs > 60000) unlinkSync(lock);
+      } catch {}
+      if (now() > until) break;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
+    }
+  }
+  try {
+    const k = held ? key() : null;
+    const hit = k ? readJson(cacheFile, null) : null;
+    if (hit?.snap?.sha && hit.head === k.head && hit.indexMs === k.indexMs && now() - hit.at >= 0 && now() - hit.at < shareMs) return hit.snap;
+    const snap = takeRetried();
+    if (k) {
+      try {
+        writeFileSync(cacheFile, JSON.stringify({ at: now(), head: k.head, indexMs: k.indexMs, snap }));
+      } catch {}
+    }
+    return snap;
+  } finally {
+    if (held) {
+      try {
+        unlinkSync(lock);
+      } catch {}
+    }
+  }
 }
 
 // Whether a snapshot's own CLI honours LF_SERVER_SLOT_HELD (older branches do
@@ -1569,7 +1701,7 @@ export async function acquireSlot(root, opts = {}) {
     if (!snapTried && list.some((m) => m.via === "ssh")) {
       snapTried = true;
       try {
-        snap = tb.snapshotCommit(root);
+        snap = sharedSnapshot(root);
         if (!snapshotSupportsPool(root, snap.sha)) {
           console.log(`pool: this snapshot's tools/cli.mjs predates the pool (no ${SLOT_ENV}); merge origin/main to run remotely. Local only.`);
           snap = null;
@@ -1635,7 +1767,8 @@ export async function acquireSlot(root, opts = {}) {
   let waitingOn = [];
   let stuck = "";
   let needMb;
-  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
+  let grantedOn = null;
+  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
   const ticket = writeTicket(root, ticketBody());
   let lastReap = 0;
   const lastTry = new Map();
@@ -1659,6 +1792,34 @@ export async function acquireSlot(root, opts = {}) {
       budgetCache.set(m.name, b);
     }
     return budgetCache.get(m.name);
+  };
+  // Free lanes of this run's kind on m, its live free RAM and what still boots there, against the
+  // tickets ahead (q.burstAdmit). A remote is read through the cached state (8 s); unknown = no burst.
+  const burstFor = (m, ahead, me) => {
+    try {
+      const st = poolSettings(root);
+      let freeLocks;
+      let freeMb;
+      let pendingMb;
+      if (m.via === "local") {
+        freeLocks = laneList(m).filter((l) => {
+          const info = readJson(localLockFile(root, l.lock), null);
+          return !info || !pidAlive(info.pid);
+        }).map((l) => l.lock);
+        freeMb = Math.round(freemem() / 1048576);
+        pendingMb = localPendingMb(root, m, null);
+      } else {
+        const state = remoteStateCached(m);
+        if (!state) return { ok: false, why: "unread" };
+        if (Number.isFinite(state.thermalC) && state.thermalC >= (m.thermalHoldC ?? 90)) return { ok: false, why: "hot" };
+        freeLocks = laneList(m).filter((l) => !state.locks?.[l.lock]?.alive).map((l) => l.lock);
+        freeMb = state.freeMb;
+        pendingMb = remotePendingMb(st, Object.values(state.locks ?? {}).filter((i) => i?.alive));
+      }
+      return { ...q.burstAdmit(ahead, me, { freeLanes: freeLocks.length, freeMb, pendingMb, minFreeMb: st.minFreeMb, reserveOf: (t) => q.ticketReserveMb(t, st) }), freeLocks };
+    } catch {
+      return { ok: false, why: "error" };
+    }
   };
   const waitMs = opts.waitMs ?? 3600000;
   let announced = false;
@@ -1736,7 +1897,14 @@ export async function acquireSlot(root, opts = {}) {
           degrade(e);
         }
         aheadCounts.push(blockers.length);
-        if (blockers.length) {
+        // Burst admission (q.burstAdmit): start beside the tickets ahead when the machine has a free
+        // lane and the RAM for each of them and for this one.
+        let burst = null;
+        if (blockers.length && me && !degraded) {
+          burst = burstFor(m, blockers, me);
+          if (burst.ok) note(`burst-${m.name}`, `pool: starting beside ${blockers.length} earlier run(s) on ${m.name} (${burst.freeLocks.length} free ${kind} lane(s))`);
+        }
+        if (blockers.length && !burst?.ok) {
           // The idle-session reaper reads waitingOn: only this PC's locks count for it.
           for (const l of laneList(m)) waits.add(m.via === "local" ? l.lock : `${m.name}:${l.lock}`);
           continue;
@@ -1747,7 +1915,7 @@ export async function acquireSlot(root, opts = {}) {
             let s = null;
             try {
               const bud = budgetsOf(m);
-              s = tryLocal(root, m, lane, { slug, purpose, root, priority, ...(bud ? { budgetS: bud.runS } : {}) }, { blocked, noRam: degraded });
+              s = tryLocal(root, m, lane, { slug, purpose, root, priority, ...(bud ? { budgetS: bud.runS } : {}) }, { blocked, noRam: degraded, aheadMb: burst?.aheadMb ?? 0 });
               if (s && bud) {
                 s.budgetS = bud.runS;
                 s.bootS = bud.bootS;
@@ -1769,11 +1937,20 @@ export async function acquireSlot(root, opts = {}) {
         if (Date.now() - (lastTry.get(m.name) ?? 0) < REMOTE_RETRY_MS) continue;
         lastTry.set(m.name, Date.now());
         if (!usable(m)) continue;
-        const cfg = holderConfig(root, m, snap, { purpose });
+        const cfg = holderConfig(root, m, snap, { purpose, aheadMb: burst?.aheadMb ?? 0, freeLocks: burst?.freeLocks, position: burst?.position ?? 0 });
         const attemptAt = Date.now();
         const r = await startHolder(root, m, cfg, {
           onLost: (s) => console.log(`WARN  pool: lost the ssh session holding ${s.machine.name} ${s.lockName}; the run there is being stopped`),
+          // Holding the lane, this ticket stops blocking the ones behind it while its run folder is prepared.
+          onAcquired: () => {
+            grantedOn = m.name;
+            rewriteTicket(root, ticket, ticketBody());
+          },
         });
+        if (grantedOn && !r.slot) {
+          grantedOn = null;
+          rewriteTicket(root, ticket, ticketBody());
+        }
         if (r.hot !== undefined) {
           markHealth(root, m, { reachable: true });
           ramBlocked = ramBlocked ?? { ram: `${m.name} is at ${r.hot} °C (holds new jobs at ${m.thermalHoldC} °C)` };
@@ -2013,15 +2190,11 @@ export function heldMbOf(settings, infos) {
   return mb;
 }
 
-// Memory the sessions still booting on a remote take that its free RAM does not show yet: the
-// reserve of each live session lock younger than three minutes (a box session is ready in ~40 s).
+// Memory still booting on a remote that its free RAM does not show yet (q.bootingMb): the reserve of
+// each live session lock younger than three minutes (a box session is ready in ~40 s) and of each
+// test lock younger than testBootS. The holder's own gate counts the same.
 export function remotePendingMb(settings, infos, now = Date.now()) {
-  let mb = 0;
-  for (const i of infos) {
-    if (!i?.alive || i.purpose !== "session") continue;
-    if (now - Date.parse(i.at) < 180000) mb += q.sessionReserveMb(settings, i.clients ?? 1, i.profile ?? "full");
-  }
-  return mb;
+  return q.bootingMb(infos.filter((i) => i?.alive), settings, now);
 }
 
 // Whether a session (clients, profile) may start on a remote right now: a free session lane and
@@ -2064,6 +2237,12 @@ function holdNote(dir, info, lease, tickets, lane, settings, now) {
 
 // One line per lane: holder, purpose, age, idle (sessions: time since the last
 // harness command), and the lease note.
+// A free or stale lane row: default pool status folds these into a count on the machine line
+// (a 16-lane machine would otherwise print a row per free lane).
+export function isIdleLaneRow(r) {
+  return /\sfree\s*$/.test(r) || /\sstale\s/.test(r);
+}
+
 function laneRow(root, kind, lane, info, tickets, settings, now) {
   const head = `    ${kind.padEnd(8)} ${lane.lock.padEnd(15)}`;
   if (info === undefined) return `${head} unknown`;
@@ -2142,7 +2321,8 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const h = probe(root, m, { fresh: true });
     const where = m.via === "local" ? `this PC (${hostname()})` : `ssh ${m.host}`;
     const build = h.build ? `build ${h.build}${hereBuild && h.build !== hereBuild ? " (DIFFERS)" : ""}` : "";
-    const lanes = m.lanes ? `up to ${m.lanes.test} test + ${m.lanes.session} session lane(s), as RAM allows` : `${m.slots} shared slot(s)`;
+    const lanes = m.lanes ? `up to ${m.lanes.test} test + ${m.lanes.session} session lane(s) (port range allows ${q.MAX_TEST_LANES} + ${q.MAX_SESSION_LANES}), as RAM allows` : `${m.slots} shared slot(s)`;
+    for (const n of m.laneNotes ?? []) console.log(`WARN  ${m.name}: ${n}`);
     const st = h.reachable && m.via !== "local" ? remoteState(m) : null;
     const heat = st && Number.isFinite(st.thermalC) ? `  ${st.thermalC} °C (holds new jobs at ${m.thermalHoldC})` : m.thermalLog && st ? "  temperature unknown (thermal log stale)" : "";
     const ram = m.via === "local" ? ramText(root) : st && Number.isFinite(st.freeMb) ? `RAM ${(st.freeMb / 1024).toFixed(1)}/${(st.totalMb / 1024).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${heat}` : "";
@@ -2175,7 +2355,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
       if (m.via !== "local" && info?.origin && remoteOwnerGone(info)) row += `; STALE: owner pid ${info.originPid} gone here`;
       laneRows.push(row);
     }
-    const idle = laneRows.filter((r) => /sfrees*$/.test(r) || /sstales/.test(r));
+    const idle = laneRows.filter(isIdleLaneRow);
     const shown = verbose ? laneRows : laneRows.filter((r) => !idle.includes(r));
     console.log(verbose || !idle.length ? head : `${head}  (${idle.length} lane(s) free or stale)`);
     for (const r of shown) console.log(r);
@@ -2308,7 +2488,7 @@ export function cmdPoolPrune(root, flags = []) {
     }
     const list = tb.sshPs(m.host, [
       `$main = ${tb.psQuote(m.root)}`,
-      "$busy = @(Get-ChildItem -LiteralPath (Join-Path $main 'tmp\\wt\\locks') -Filter 'server-2001*.lock' -ErrorAction SilentlyContinue | ForEach-Object { try { $i = Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json; if ($i.rDir -and (Get-Process -Id $i.pid -ErrorAction SilentlyContinue)) { $i.rDir } } catch {} })",
+      "$busy = @(Get-ChildItem -LiteralPath (Join-Path $main 'tmp\\wt\\locks') -Filter 'server-*.lock' -ErrorAction SilentlyContinue | ForEach-Object { try { $i = Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json; if ($i.rDir -and (Get-Process -Id $i.pid -ErrorAction SilentlyContinue)) { $i.rDir } } catch {} })",
       "git -C $main worktree list --porcelain | Where-Object { $_ -like 'worktree *' } | ForEach-Object { $d = $_.Substring(9); if ((Split-Path -Leaf $d) -like 'Life-Framework-rt-*') { $o = Join-Path $d 'tmp\\pool-owner.json'; $own = ''; if (Test-Path -LiteralPath $o) { $own = (Get-Content -Raw -LiteralPath $o).Trim() }; $b = [bool]($busy | Where-Object { $_.Replace('\\','/').TrimEnd('/') -ieq $d.Replace('\\','/').TrimEnd('/') }); Write-Host \"lf-pool: dir $b $d|$own\" } }",
     ].join("\n"), { timeout: 60000 });
     const victims = [];
@@ -2390,4 +2570,36 @@ export function freeSlotOn(root, m) {
   if (!locks) return false;
   const info = locks[slotLockName(1)];
   return !info || !info.alive;
+}
+
+// Free test lanes per machine right now, for `test --shards auto`: [{ machine, local, free }].
+// A lane counts when its lock is free or dead; a remote machine also needs the RAM for that many
+// servers above the floor, and no lane is counted on one that is down or hot. Reads only.
+export function freeTestLanes(root) {
+  const out = [];
+  const settings = poolSettings(root);
+  const health = readJson(healthFile(root), {});
+  for (const m of resolveMachines(root, { mode: "any" })) {
+    const lanes = lanesFor(m, "test");
+    if (m.via === "local") {
+      const free = lanes.filter((l) => {
+        const info = readJson(localLockFile(root, l.lock), null);
+        return !info || !pidAlive(info.pid);
+      }).length;
+      out.push({ machine: m.name, local: true, free });
+      continue;
+    }
+    const h = health[m.name];
+    if (h && Date.now() - h.at < HEALTH_TTL_MS && !h.reachable) continue;
+    const st = remoteStateCached(m);
+    if (!st) continue;
+    if (m.thermalHoldC && st.thermalC != null && st.thermalC >= m.thermalHoldC) continue;
+    let free = lanes.filter((l) => {
+      const info = st.locks?.[l.lock];
+      return !info || !info.alive;
+    }).length;
+    if (st.freeMb != null) free = Math.min(free, Math.max(0, Math.floor((st.freeMb - settings.minFreeMb) / (settings.sessionReserveServerMb || 600))));
+    out.push({ machine: m.name, local: false, free });
+  }
+  return out;
 }
