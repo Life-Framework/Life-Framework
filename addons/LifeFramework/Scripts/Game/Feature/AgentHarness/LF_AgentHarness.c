@@ -36,6 +36,18 @@ class LF_AgentCommand
 
 	static const string SESSION_PREFIX = "s:";
 
+	//! Verbs that act on the local character (split in chunks: the compiler rejects one long formula).
+	static bool IsCharacterVerb(string verb)
+	{
+		if (verb == "scanner" || verb == "drill" || verb == "keycard" || verb == "charge" || verb == "apples" || verb == "nuggets" || verb == "crate" || verb == "parceldrop" || verb == "pistol" || verb == "moonshine" || verb == "stash" || verb == "park")
+			return true;
+
+		if (verb == "shelf" || verb == "keys" || verb == "spikedrop" || verb == "spikecar" || verb == "spikecheck")
+			return true;
+
+		return false;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Whether a client accepts a command. A session client (started with -lfSession <id>) runs
 	//! only commands addressed to that id, so a command written for another worktree's session
@@ -163,7 +175,7 @@ class LF_AgentCommand
 				cmd.Arg1 = parts[2];
 			return true;
 		}
-		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload")
+		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload" || cmd.Verb == "robhold")
 			return true;
 		if (cmd.Verb == "dialogue")
 		{
@@ -173,7 +185,7 @@ class LF_AgentCommand
 				cmd.Arg2 = parts[3];
 			return true;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "parceldrop" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
+		if (LF_AgentCommand.IsCharacterVerb(cmd.Verb))
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -1225,6 +1237,12 @@ class LF_AgentHarness
 			WriteResult(cmd.Id, "ok", LF_DialogueScene.Harness(cmd.Arg1, cmd.Arg2));
 			return;
 		}
+		if (cmd.Verb == "robhold")
+		{
+			// The held-robbery panel on this machine (#936): running or result, time left, distance.
+			WriteResult(cmd.Id, "ok", LF_RobHoldHud.Describe());
+			return;
+		}
 		if (cmd.Verb == "phone")
 		{
 			// What this machine's telephone lines show (#147): state, talker, rings heard.
@@ -1251,7 +1269,7 @@ class LF_AgentHarness
 			DoConfigReload(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "parceldrop" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
+		if (LF_AgentCommand.IsCharacterVerb(cmd.Verb))
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
@@ -2280,12 +2298,49 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `hold weapon`: draw the first weapon in a weapon slot (vanilla SCR_EquipPickedWeapon).
+	protected static string DrawWeapon(SCR_ChimeraCharacter character)
+	{
+		if (!character)
+			return "no_character";
+
+		CharacterControllerComponent controller = character.GetCharacterController();
+		BaseWeaponManagerComponent weapons;
+		if (controller)
+			weapons = controller.GetWeaponManagerComponent();
+
+		if (!weapons)
+			return "no_weapon_manager";
+
+		array<WeaponSlotComponent> slots = {};
+		weapons.GetWeaponsSlots(slots);
+		foreach (WeaponSlotComponent slot : slots)
+		{
+			IEntity weapon = slot.GetWeaponEntity();
+			if (!weapon)
+				continue;
+
+			bool equipped = controller.TryEquipRightHandItem(weapon, EEquipItemType.EEquipTypeWeapon, false);
+			return string.Format("drew %1 %2", LF_Utils.GetPrefabName(weapon), equipped);
+		}
+
+		return "no_weapon_in_slots";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `hold <name>`: this client takes a carried gadget whose prefab name contains <name> into
 	//! the left hand, as a quick-slot key press does (SCR_GadgetManagerComponent.SetGadgetMode on the
 	//! owner). The cuffs proof (#664) holds the handcuffs with it.
 	protected static void DoHold(LF_AgentCommand cmd)
 	{
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (cmd.Arg1 == "weapon")
+		{
+			// `hold weapon`: draw the first weapon in a weapon slot, as the vanilla equip does (#936).
+			WriteResult(cmd.Id, "ok", DrawWeapon(character));
+			return;
+		}
+
 		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(character);
 		InventoryStorageManagerComponent inventory;
 		if (character)

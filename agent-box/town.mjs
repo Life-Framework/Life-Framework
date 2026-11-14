@@ -45,7 +45,8 @@ export const TOWN = {
     { id: "general_store", entity: "Shop_GeneralStore_Debug", actions: ["LF_ShopAction"], sign: "general_store", step: 9 },
     { id: "black_market", entity: "Shop_BlackMarket_Debug", actions: ["LF_ShopAction"], sign: "black_market", step: 9 },
     { id: "vehicle_lot", entity: "Roadmap_Vehicle_Lot", actions: ["LF_VehicleBuyAction"], sign: "vehicle_lot", step: 10 },
-    { id: "fuel_station", entity: "Roadmap_Fuel_Till", actions: ["LF_RobAction"], sign: "fuel_station", step: 11 },
+    // The till is robbed through its attendant's dialogue with a weapon drawn (#936); its world action is retired.
+    { id: "fuel_station", entity: "Roadmap_Fuel_Clerk", actions: ["LF_DialogueTalkAction"], sign: "fuel_station", step: 11, when: "the robbery reply needs a weapon drawn" },
     { id: "hospital_till", entity: "Roadmap_Hospital_Till", actions: ["LF_RobAction"], sign: null, step: 11 },
     { id: "bank", entity: "Roadmap_Bank_Vault", actions: ["LF_BankRobAction"], sign: "bank", step: 12 },
     { id: "cash_van", entity: "Roadmap_Cash_Van_Box", actions: ["LF_HeistRobAction"], sign: null, step: 12, outskirts: true },

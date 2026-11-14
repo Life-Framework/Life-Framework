@@ -452,6 +452,20 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "pistol")
+		{
+			// A sidearm in a weapon slot, so a proof can draw it (`hold weapon`) for a robbery (#936).
+			IEntity pistol = LF_Utils.SpawnEntityPrefab("{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et", GetOrigin());
+			InventoryStorageManagerComponent manager = InventoryStorageManagerComponent.Cast(FindComponent(InventoryStorageManagerComponent));
+			EquipedWeaponStorageComponent weaponSlots = EquipedWeaponStorageComponent.Cast(FindComponent(EquipedWeaponStorageComponent));
+			bool slotted = pistol && manager && weaponSlots && manager.TryInsertItemInStorage(pistol, weaponSlots, -1);
+			if (!slotted && pistol)
+				SCR_EntityHelper.DeleteEntityAndChildren(pistol);
+
+			LF_HarnessReply(commandId, "ok", string.Format("pistol added=%1", slotted));
+			return;
+		}
+
 		if (tool == "shelf")
 		{
 			// A shopper taking the first shelf item in reach of the physical store (#202), through the

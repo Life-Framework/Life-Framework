@@ -1,0 +1,110 @@
+{
+  "id": "fuel_clerk",
+  "name": "FuelClerk",
+  "speaker_key": "#LF-FuelClerk_Name",
+  "voice": {
+    "id": "tda49Y4Ze5mq81eJdplu",
+    "name": "Richard Makovec",
+    "public_owner_id": "86c72f2c36e451961c75a96a4db1a6245ff64fbfe433e265072c7c00885d3492",
+    "why": "A young Czech man, a television actor with a wide range: a boy minding the till in a Czechoslovak island village who goes to pieces at gunpoint. eleven_v3 so the panic lines can carry audio tags.",
+    "model": "eleven_v3",
+    "settings": { "stability": 0.5 }
+  },
+  "budget_chars": 3200,
+  "hear_range_m": 15,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "where", "next": "where" },
+        { "text": "chat", "next": "chat" },
+        { "text": "rob", "next": "rob_panic", "condition": "RobArmed" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "where", "line": "about_where", "options_from": "greet" },
+    {
+      "id": "chat",
+      "line": "chat_quiet",
+      "options": [
+        { "text": "news", "next": "news" },
+        { "text": "where", "next": "where" },
+        { "text": "rob", "next": "rob_panic", "condition": "RobArmed" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "news", "line": "chat_news", "options_from": "greet" },
+    {
+      "id": "rob_panic",
+      "line": "rob_panic",
+      "options": [
+        { "text": "demand", "next": "rob_open", "condition": "RobReady", "action": "RobStart" },
+        { "text": "demand", "next": "rob_empty", "condition": "RobBlocked", "action": "RobRefused" },
+        { "text": "off", "next": "rob_off" }
+      ]
+    },
+    { "id": "rob_open", "line": "rob_open" },
+    { "id": "rob_empty", "line": "rob_empty" },
+    { "id": "rob_off", "line": "rob_off" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Hello. Pump two sticks, so use pump one. What can I do for you?" },
+    "about_where": { "text": "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street." },
+    "chat_quiet": { "text": "Quiet as a church. A tractor at nine, the post van at noon, and now you. The radio says rain by Thursday." },
+    "chat_news": { "text": "Army trucks on the coast road again, all night long. Nobody tells us anything. My mother says it is like sixty eight." },
+    "rob_panic": {
+      "text": "W-what? No, no, no. Please, put that away. I have a little girl at home. Please do not shoot me!",
+      "say": "[gasps] W-what? [panicked] No, no, no. Please, put that away. [voice trembling] I have a little girl at home. [begging] Please do not shoot me!"
+    },
+    "rob_open": {
+      "text": "Yes! Yes, I am opening it. The key, where is the... here, here it is. Just do not shoot, please, I am doing it!",
+      "say": "[panicked] Yes! Yes, I am opening it. [stammering] The key, where is the... here, here it is. [desperate] Just do not shoot, please, I am doing it!"
+    },
+    "rob_empty": {
+      "text": "It is empty! I swear on my mother, the boss took the cash to the bank. Look, look, there is nothing!",
+      "say": "[panicked] It is empty! I swear on my mother, the boss took the cash to the bank. [desperate] Look, look, there is nothing!"
+    },
+    "rob_off": {
+      "text": "Oh God. Oh God, thank you. Just go. Please, just go.",
+      "say": "[shaky breath] Oh God. Oh God, thank you. [whispering] Just go. Please, just go."
+    },
+    "beg": {
+      "for_key": "#LF-RobHold_ClerkBeg",
+      "text": "Please, I am not a hero. I will not call anyone, I swear it. Just take it.",
+      "say": "[crying] Please, I am not a hero. [voice breaking] I will not call anyone, I swear it. Just take it."
+    },
+    "stammer": {
+      "for_key": "#LF-RobHold_ClerkStammer",
+      "text": "My hands, I cannot stop my hands. It is coming, it is almost open, please...",
+      "say": "[stammering] My hands, I cannot stop my hands. [panicked] It is coming, it is almost open, please..."
+    },
+    "paid": {
+      "for_key": "#LF-RobHold_ClerkPaid",
+      "text": "There! That is all of it, all of it! Take it and go, please, just go!",
+      "say": "[desperate] There! That is all of it, all of it! [begging] Take it and go, please, just go!"
+    },
+    "police": {
+      "for_key": "#LF-RobHold_ClerkPolice",
+      "text": "Police! In here! He has a gun! Help me!",
+      "say": "[shouting] Police! In here! He has a gun! [screaming] Help me!"
+    },
+    "gone": {
+      "for_key": "#LF-RobHold_ClerkGone",
+      "text": "He is gone? Oh God. Somebody call the police!",
+      "say": "[shaky breath] He is gone? [crying] Oh God. [shouting] Somebody call the police!"
+    },
+    "bye": { "text": "Drive safe. Mind the potholes on the coast road." }
+  },
+  "replies": {
+    "where": "Hey, where are we?",
+    "chat": "Quiet day?",
+    "news": "Anything happening in town?",
+    "rob": "This is a robbery. Hands where I can see them!",
+    "demand": "Open the till. Now, or you die behind that counter.",
+    "off": "Forget it. You never saw me.",
+    "bye": "Goodbye."
+  }
+}

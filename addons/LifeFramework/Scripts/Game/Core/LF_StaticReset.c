@@ -40,6 +40,8 @@ class LF_StaticReset
 		LF_Dialogue.ResetStatics();
 		LF_DialogueVoice.ResetStatics();
 		LF_DialogueScene.ResetStatics();
+		LF_RobHold.ResetStatics();
+		LF_RobHoldHud.ResetStatics();
 		LF_DialogueCamera.ResetStatics();
 		LF_EventBus.ResetStatics();
 		LF_ChainCatalog.ResetStatics();
