@@ -15,8 +15,8 @@
     { "name": "panic line from inside", "take": "INSIDE", "anchor": "voice", "rel": [1.97, 6.6], "audio": { "take": "SIDE", "anchor": "voice" } },
     { "name": "please don't shoot me", "take": "SIDE", "anchor": "voice", "rel": [6.6, 10.1], "audio": { "take": "SIDE", "anchor": "voice" } },
     { "name": "intruder alarm, beacon", "take": "BEACON", "anchor": "alarm", "rel": [-0.25, 3.45], "audio": { "take": "SIDE", "anchor": "alarm" } },
-    { "name": "robber under the flashing light", "take": "SIDE", "anchor": "alarm", "rel": [4.45, 7.15], "audio": { "take": "SIDE", "anchor": "alarm", "rel": 3.45 } },
-    { "name": "bank vault, the bell", "take": "BANK", "from": 2.3, "to": 7.3, "audio": { "take": "BANK", "from": 2.3 } },
+    { "name": "robber under the flashing light", "take": "SIDE", "anchor": "alarm", "rel": [3.25, 5.85], "audio": { "take": "SIDE", "anchor": "alarm", "rel": 3.45 } },
+    { "name": "bank vault, the bell", "take": "BANK", "from": 2.8, "to": 7.8, "audio": { "take": "BANK", "from": 2.8 } },
     { "name": "police car, lights and siren", "take": "POLICE", "from": 7.5, "to": 13.8, "audio": { "take": "POLICE", "from": 7.5, "gainDb": 8 }, "fadeOut": 0.9, "audioTail": 3.8 }
   ],
   "black": 0.6,
