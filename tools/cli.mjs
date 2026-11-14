@@ -2699,6 +2699,9 @@ async function cmdCi(root = ROOT, opts = {}) {
 
 // The Workbench compile (validate-scripts.ps1) and the build, on this PC, under one Workbench slot.
 async function ciWorkbench(root, opts = {}) {
+  // Over ssh (a pool machine's remote gate) this is session 0, which has no GPU device: Workbench
+  // dies with "Couldn't build device list for any adapter". Rerun in the signed-in desktop session.
+  if (opts.wbOnly && process.platform === "win32" && process.env.SSH_CONNECTION && process.env.LF_WB_INTERACTIVE !== "1") return ciWorkbenchInSession(root);
   const wb = await wbLock.acquireWorkbench(root, { purpose: "ci compile+build" });
   try {
     let ok = true;
@@ -2717,6 +2720,34 @@ async function ciWorkbench(root, opts = {}) {
   } finally {
     wb.release();
   }
+}
+
+// `ci --wb-only` again, in the signed-in session through a one-shot scheduled task
+// (tools/remote/desktop/run-interactive.ps1); its transcript and exit code come back through files.
+// No one signed in, or no exit code: 3, so the caller runs the steps on its own machine.
+function ciWorkbenchInSession(root) {
+  const dir = join(root, "tmp", "wb-session");
+  mkdirSync(dir, { recursive: true });
+  const [log, codeFile, ps1] = ["ci.log", "ci.code", "ci.ps1"].map((n) => join(dir, n));
+  for (const f of [log, codeFile]) rmSync(f, { force: true });
+  const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
+  writeFileSync(ps1, [
+    "$env:LF_WB_INTERACTIVE = '1'",
+    `Set-Location -LiteralPath ${q(root)}`,
+    `& ${q(process.execPath)} tools\\cli.mjs ci --wb-only --local *> ${q(log)}`,
+    `Set-Content -LiteralPath ${q(codeFile)} -Value $LASTEXITCODE`,
+  ].join("\n"));
+  console.log("ci: running the Workbench steps in this machine's signed-in desktop session (ssh has no GPU device)");
+  const r = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, "tools", "remote", "desktop", "run-interactive.ps1"),
+    "-Exe", "powershell.exe", "-WorkDir", root, "-WaitSec", "2400", "-Arguments", `-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "${ps1}"`], { cwd: root });
+  process.stdout.write(r.stdout + r.stderr);
+  if (existsSync(log)) process.stdout.write(readFileSync(log, "utf8"));
+  const code = existsSync(codeFile) ? Number(readFileSync(codeFile, "utf8").trim()) : NaN;
+  if (!Number.isInteger(code)) {
+    console.log("FAIL  the desktop-session run left no exit code (is a user signed in on this machine?)");
+    return 3;
+  }
+  return code === 3 ? 1 : code;
 }
 
 // Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine

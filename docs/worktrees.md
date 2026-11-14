@@ -309,7 +309,7 @@ this PC while its Workbench limit has room, else a pool machine with the
 `workbench` cap, a free Workbench slot and 3.5 GB free, else this PC (it
 queues). The remote run is `ci --wb-only --local` in a
 `Life-Framework-rt-<slug>-gate` run folder, synced like a remote test
-(uncommitted state included). `ci --local` keeps everything here;
+(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and this PC runs the steps. `ci --local` keeps everything here;
 `ci --remote [name]` sends the Workbench steps out even when this PC is free.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
