@@ -46,6 +46,16 @@ async function runConfigHarnessProof(args) {
         wait(800);
         return list;
       }
+      if (read.kind === "lotPrice") {
+        on(1, { verb: "stand", entityName: read.shop });
+        wait(2000);
+        on(1, { verb: "use", className: "LF_VehicleBuyAction", entityName: read.shop }, 10000);
+        wait(1500);
+        const sheet = on(1, { verb: "ui", mode: "text" }, 10000).detail;
+        on(1, { verb: "click", widget: "LotClose" });
+        wait(800);
+        return sheet;
+      }
       if (read.kind === "actionShown") {
         on(1, { verb: "stand", entityName: read.entity, side: "s" });
         wait(2500);

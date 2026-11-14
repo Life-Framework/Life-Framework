@@ -24,7 +24,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
-import { freemem, hostname, totalmem } from "node:os";
+import { freemem, hostname as osHostname, totalmem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
@@ -41,6 +41,14 @@ const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json
 const HEALTH_TTL_MS = 60000;
 const REMOTE_RETRY_MS = 4000;
 export const SLOT_ENV = "LF_SERVER_SLOT_HELD";
+
+// This machine's name for the pool: the OS hostname, or what a self-test set (setHostnameForTest) so it
+// never depends on the PC it runs on (a pool entry with "hostname": this PC turns into the local machine).
+let hostnameOverride = null;
+const hostname = () => hostnameOverride ?? osHostname();
+export function setHostnameForTest(name) {
+  hostnameOverride = name ? String(name) : null;
+}
 
 export const slotLockName = q.slotLockName;
 export const { lanesFor, laneKind, portForLock, normalizePriority } = q;
