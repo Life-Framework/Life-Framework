@@ -100,3 +100,10 @@ onto the mattress, calls `LF_Downed.Clear`, writes the reduced revive bill (`LF_
 then `LF_OnPatientDelivered`. A downed patient seated in a vehicle listed in `m_aStretcherVehicles` (flagship: the
 ambulance) does not bleed out (`LF_BedDelivery.IsLoaded`, read by `LF_BleedOut.Advance`). Loading is `LF_Carry.Load`.
 No stretcher-load sound yet.
+
+## Downed patient
+
+- **Player sees:** a man lying on the grass in front of the hospital (playtest town), downed like a player: a solo tester clocks in, Revives or bandages him, Carries or Drags him, Loads him into the ambulance and Puts him in a bed. Playtest only (decision: the prefab is placed only in the DebugWorld layers, and `LF_DownedPatient` does nothing unless `LF_SpawnHub.IsEnabled()`, so a live server that placed it would get an ordinary standing character).
+- **Owner and side:** `LF_DownedPatient` decides on the server.
+- **Data:** `Prefabs/Medic/LF_DownedPatient.et` (a `Character_Base` character with the same Revive, Drag, Carry, Put down and Load actions as a player, vanilla shirt, trousers and boots from the townsfolk row of `tools/assets/outfits/roles.json`) plus `LF_DownedPatientComponent`; `m_fPatientResetSeconds` (45) in `LF_Medic.conf`. Nothing persists. It is downed by `Kill` through the hit-zone path (`LF_Downed.IsEligible` lets the patient component through), never bleeds out (`LF_BleedOut.Advance` skips it), and is put back at its spot, healed and downed again by a shared 2 s tick once treated for `m_fPatientResetSeconds`, or at once by the world reset step `patient` (`LF_MedicWorldReset.c`). A dead or deleted patient is respawned from its prefab.
+- **Proof:** `medic/downed-patient` (LOGIC), `medic/downed-patient-world` (WORLD), `node agent-box/session.mjs downed-patient-proof`.

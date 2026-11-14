@@ -1,10 +1,10 @@
 GenericEntity Roadmap_Fuel_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 283.6 0 237.2
+ coords 283.6 0.345 237.65
  angleY 0
 }
 GenericEntity Roadmap_Fuel_Till : "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et" {
  Flags 0x403 0
- coords 283.6 1.04 237.2
+ coords 283.656 1.384 237.43
  angleY 0
 }
 SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
@@ -13,7 +13,7 @@ SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefab
 }
 
 LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et" {
- coords 283.6 0.245 238.2
+ coords 283.6 0.34 238.831
  angleY 180
 }
 

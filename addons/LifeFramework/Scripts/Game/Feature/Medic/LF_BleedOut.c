@@ -139,6 +139,10 @@ class LF_BleedOut
 			if (LF_BedDelivery.IsLoaded(character))
 				continue;
 
+			// The playtest town's practice patient waits for a medic as long as it takes.
+			if (LF_DownedPatient.IsPatient(character))
+				continue;
+
 			if (character.LF_BleedStep(dt))
 				expired.Insert(character);
 		}

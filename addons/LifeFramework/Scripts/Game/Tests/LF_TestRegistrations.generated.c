@@ -30,6 +30,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AssetAnim(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AssetStatesHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AtmosphereMix(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BackRoomDoor(), LF_TestTier.LOGIC);
@@ -126,6 +127,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DownedPatient(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DownedPatientWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
@@ -343,6 +346,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Roadmap_Vehicles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_VehiclesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_VehiclesPersistence(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_RobberyAlarms(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RobberyAlarmsShipped(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobHold(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobReward(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobWeaponVehicle(), LF_TestTier.WORLD);

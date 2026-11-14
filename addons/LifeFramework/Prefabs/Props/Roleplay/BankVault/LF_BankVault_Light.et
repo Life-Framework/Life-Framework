@@ -1,6 +1,22 @@
 GenericEntity {
  ID "5C2A9E41B7D03F16"
  {
+  GenericEntity Fixture : "{E34303CB179E13D6}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_01.et" {
+   ID "5C2A9E41B7D03F30"
+   components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{5C2A9E41B7D03F31}" {
+       SourceMaterial "Glass"
+       AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+      }
+     }
+    }
+   }
+   coords 0 -0.2 0
+   angles -90 0 0
+   scale 1.4
+  }
   $grp LightEntity {
    LightAmbient {
     ID "5C2A9E41B7D03F21"

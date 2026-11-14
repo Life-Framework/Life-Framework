@@ -48,12 +48,12 @@ name of the person who ran the agent.
 | Asset | Tool | Source | Terms | Recorded in |
 |---|---|---|---|---|
 | Taser model (`Assets/Weapons/Handguns/Taser/Taser.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/taser/meshy.json` (generation ids), `tools/assets/taser/spec.json` (prompt) |
-| Handcuffs model (`Assets/Items/Roleplay/Handcuffs/Handcuffs.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/handcuffs/meshy.json` (generation ids), `tools/assets/handcuffs/spec.json` (prompt) |
+| Handcuffs model (`Assets/Items/Roleplay/Handcuffs/Handcuffs.xob`) | Modelled in Blender by `tools/assets/handcuffs/model.py` (articulated strands; the first version was generated with Meshy, see `meshy.json`), textures baked from procedural nodes | n/a | Our own work, no licence needed | `tools/assets/handcuffs/model.py`, `tools/assets/handcuffs/spec.json`, `tools/assets/handcuffs/meshy.json` (the replaced Meshy generation) |
 | Vault drill model (`Assets/Items/Roleplay/Drill/Drill.xob`), from a generated concept picture (concept 1 of `tools/assets/drill/concepts.json`) | Meshy text-to-image, then Meshy image-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; generated 2026-11-13, under the sign-off of 2026-11-13 for generated models (#664, `docs/decisions.md`) | `tools/assets/drill/meshy.json` (generation ids, the concept's prompt), `tools/assets/drill/spec.json` |
 | Bank vault door and frame detail (`Assets/Props/Roleplay/BankVault/VaultDoor.xob`, the frame ring of `VaultFront.xob`): Meshy image-to-3D of a concept picture, itself made by Meshy image-to-image from the vault-door concept 1 | Meshy image-to-image and image-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/vault-front/meshy.json` (generation ids), `tools/assets/vault-front/concepts.json` (prompts, reference, pick) |
 | Spike strip model (`Assets/Props/Roleplay/SpikeStrip/SpikeStrip.xob`, `SpikeStrip_Folded.xob`): one generated link, repeated and stacked by the clean stage | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; signed off 2026-11-13 (#664) | `tools/assets/spike-strip/meshy.json` (generation ids), `tools/assets/spike-strip/spec.json` (prompt) |
 | Cash strongbox model (`Assets/Props/Roleplay/CashStrongbox/CashStrongbox.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/cash-strongbox/meshy.json` (generation ids), `tools/assets/cash-strongbox/spec.json` (prompt) |
-| Lockpick model (`Assets/Items/Roleplay/Lockpick/Lockpick.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/lockpick/meshy.json` (generation ids), `tools/assets/lockpick/spec.json` (prompt) |
+| Lockpick model (`Assets/Items/Roleplay/Lockpick/Lockpick.xob`) | Modelled in Blender by `tools/assets/lockpick/model.py` (a leather wallet, hook pick and tension wrench; the first version was generated with Meshy, see `meshy.json`), textures baked from procedural nodes | n/a | Our own work, no licence needed | `tools/assets/lockpick/model.py`, `tools/assets/lockpick/spec.json`, `tools/assets/lockpick/meshy.json` (the replaced Meshy generation) |
 | Evidence marker model (`Assets/Props/Roleplay/EvidenceMarker/EvidenceMarker.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/evidence-marker/meshy.json` (generation ids), `tools/assets/evidence-marker/spec.json` (prompt) |
 | Pager model (`Assets/Items/Roleplay/Pager/Pager.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/pager/meshy.json` (generation ids), `tools/assets/pager/spec.json` (prompt) |
 | Money bag model (`Assets/Items/Roleplay/MoneyBag/MoneyBag.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/money-bag/meshy.json` (generation ids), `tools/assets/money-bag/spec.json` (prompt) |
@@ -73,9 +73,20 @@ https://creativecommons.org/publicdomain/zero/1.0/): no attribution required, cr
 | Metal 058 C | ambientCG | https://ambientcg.com/view?id=Metal058C | CC0 1.0 | Copper ingot patina; malachite in copper ore and the copper veins |
 | Rust 009 | ambientCG | https://ambientcg.com/view?id=Rust009 | CC0 1.0 | Iron ingot rust spots; iron ore; iron staining on the ore rocks |
 | Rock 035 | ambientCG | https://ambientcg.com/view?id=Rock035 | CC0 1.0 | Host rock of the iron and copper nuggets; grain in the gold quartz |
-| Rock 058 | ambientCG | https://ambientcg.com/view?id=Rock058 | CC0 1.0 | Host rock of the ore veins on the quarry rocks (`Assets/Resources/Mining/OreVein/`) |
+| Rock 058 | ambientCG | https://ambientcg.com/view?id=Rock058 | CC0 1.0 | Host rock of the ore veins on the quarry rocks (darkened and desaturated; ore only in its crevices and thin veins) (`Assets/Resources/Mining/OreVein/`) |
 
 Which set feeds which map is in each asset's spec (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`, `source.textures`).
+
+## Poly Haven models (CC0)
+
+Taken whole from [Poly Haven](https://polyhaven.com/models) by the source stage of `toolscli asset` instead of being generated
+(`docs/asset-pipeline/sources.md`). Poly Haven releases its models under CC0 1.0 (https://polyhaven.com/license): no attribution
+required, credited here anyway with the URL. The stage writes each row; `tools/assets/<slug>/source.json` holds the file hash.
+A model under CC-BY would also need its author credited in this table.
+
+| Model | Author | Source | Licence | Recorded in |
+|---|---|---|---|---|
+| Cement Bag (`Assets/Items/Resources/CementBag/CementBag.xob`) | PierreB3D | https://polyhaven.com/a/cement_bag | CC0 1.0 | `tools/assets/cement-bag/source.json` |
 
 ## Generated sound effects (ElevenLabs)
 
@@ -85,6 +96,8 @@ Which set feeds which map is in each asset's spec (`tools/assets/metal-ingot`, `
 
 ## Generated audio
 | Vault drill sounds: motor loop, grinding loop (`Sounds/Items/Drill/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above | `tools/assets/drill/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
+
+| Robbery alarms: bank bell, fuel station intruder alarm, store buzzer, van horn (`Sounds/Alarm/Robbery/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above. The fuel, store and van loops are one generated take cut into an on/off cadence (`derive` in `sounds.json`) | `tools/assets/robbery-alarms/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
 
 Music and ambience generated with ElevenLabs.
 

@@ -1,0 +1,80 @@
+SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
+ ID "B01D578B056E0730"
+ components {
+  LF_DownedPatientComponent "{6A8AC733EA64E77C}" {
+  }
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Identity Identity "{6A8AC733EA64E77D}" {
+    Name "Walt"
+    Surname "Hollis"
+   }
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{86E0117B630414B5}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{2D6E53B6B5B3EC88}" {
+     ContextName "LF_ID"
+     Position PointInfo "{DB55E50CDC453806}" {
+      PivotID "spine3"
+     }
+     Radius 1
+    }
+   }
+   additionalActions + {
+    LF_ReviveAction "{5A51BD86E2120FDA}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{92406312ED579808}" {
+      Name "#LF-Revive_Action"
+     }
+     Duration 4
+    }
+    LF_DragAction "{3A6086A2B4F926DF}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{872120ABF93F4D20}" {
+      Name "#LF-Carry_Drag"
+     }
+    }
+    LF_CarryAction "{97E3384E36C49EFD}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{B5D843DBD86A0F0C}" {
+      Name "#LF-Carry_Carry"
+     }
+    }
+    LF_DropAction "{847E9A26503251CB}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{13230C30689BCAC8}" {
+      Name "#LF-Carry_Drop"
+     }
+    }
+    LF_LoadPatientAction "{19C520FB3103628F}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{780E1A88FA1208E4}" {
+      Name "#LF-Carry_Load"
+     }
+    }
+   }
+  }
+ }
+}

@@ -13,6 +13,7 @@ tools\cli asset score <slug> <n> <silhouette,era,scale_grip,background,no_text,i
 tools\cli asset pick <slug> <n> [--why "..."]     the human's choice from the concept sheet
 tools\cli asset status [<slug>]
 tools\cli asset anim <slug> [--fix]  moving parts, the character's clips, effects: animation.md
+tools\cli asset states <slug> [--fix] [--shots]  inventory, ground, hand and use states: states.md
 tools\cli asset sound <slug>  generated sound effects, after the prefab stage: sounds.md
 tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
@@ -34,6 +35,7 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | Stage | Does | Who judges the result |
 |---|---|---|
 | `spec` | Checks the spec: prompt length, size, triangle and credit budgets, part bones | The agent writes the spec: [prompt-writing.md](prompt-writing.md) |
+| `source` | Optional, first rung of the ladder (base game, then Poly Haven and other CC0 / CC-BY libraries, then generate). A spec with `source` set takes a found model through `clean` and `import` and skips `concept`, `generate` and `remesh`; a vanilla source skips `clean` and `import` too. [sources.md](sources.md) | The agent picks from the contact sheet |
 | `concept` | Optional. 10 prompts become 10 Meshy text-to-image pictures and a numbered 5x2 contact sheet; each is scored against a rubric; one is picked. No `concepts.json`, no stage. [concepts.md](concepts.md) | A human picks (`asset pick`), or the agent with `--pick` |
 | `generate` | With a picked concept: Meshy image-to-3D from that picture (one task, PBR maps). Otherwise text-to-3D preview, then refine. Downloads the GLB, the maps and a thumbnail; logs credits | The agent reads `raw/refined.png`: [review-generation.md](review-generation.md) |
 | `remesh` | One Meshy remesh call (5 credits) on the accepted generation, to exactly `budget.lod0_tris` triangles (per link for a `fit.repeat` deployable), with the PBR maps rebaked onto the new mesh. That mesh is LOD0, so the clean stage no longer collapses a 20,000 to 30,000 triangle raw mesh, which smeared UVs and dented flat panels (#664). `meshy.remesh: false` skips it and the clean stage collapses the raw mesh as before | The agent reads `clean/review/*.png` after `clean` |
@@ -42,8 +44,9 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry; a gadget: one held item; a deployable: the deployed prop and the carried item). Every kind but `weapon` has its own `prefab-<kind>.mjs` | The agent finishes them: strings, feature component, placement |
 
 | `anim` | Only for a spec with an `anim` block: solves the custom character clips and has Workbench compile them, writes the character workspace and the spark effect, and checks the prefab's `LF_AssetAnimComponent` against the spec. The bones and sockets the block names are built in `clean` and checked in `import` | The tool checks reach, feet and loops; the agent reads the pose previews and films the result: [animation.md](animation.md) |
+| `states` | Only for a spec with a `states` block: writes the inventory camera, the rest pose on the ground, and the borrowed hand pose with the `HandAdditive*` values that put the spec's grip point in the closed hand; checks the prefab against the spec. `asset states <slug> --shots` takes one picture per declared state in a session | The tool checks the values; the agent reads the pictures: [states.md](states.md) |
 
-After `anim` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
+After `states` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
 Sound is its own command with its own record, because a review sits in the middle of it:
 [sounds.md](sounds.md).
 
@@ -88,7 +91,7 @@ Read this before any `generate`.
 | Kind | State | Fit | Collider | Prefab scaffold |
 |---|---|---|---|---|
 | `weapon` | proven with the taser | Scaled to the vanilla M9's height and put on its grip; skinned to the M9 skeleton with its sockets | convex `UCX_`, `WeaponFire` | weapon on `Handgun_M9_base.et`, magazine, projectile, config |
-| `gadget` | proven with the handcuffs (#664) | Centred on the origin, scaled to `size_m.length`; the origin is where the hand holds it | box `UBX_`, `ItemFireView` | one held item on the vanilla `Item_Base.et` (`prefab-gadget.mjs`): name, volume, the vanilla gauze hand attachment, `SCR_GadgetComponent`, preview camera, `gadget.components` |
+| `gadget` | proven with the handcuffs (#664) | Centred on the origin, scaled to `size_m.length`; `states.hand` puts the grip in the hand ([states.md](states.md)) | box `UBX_`, `ItemFireView` | one held item on the vanilla `Item_Base.et` (`prefab-gadget.mjs`): name, volume, the vanilla gauze hand attachment, `SCR_GadgetComponent`, preview camera, `gadget.components` |
 | `deployable` | proven with the spike strip | Standing on the origin, scaled to `size_m.length`; `fit.repeat` tiles one generated link along the length, `fit.fold` stacks the links into a second model | thin box `UBX_` (3 cm), `ItemFireView` | the deployed prop and the carried item (`prefab-deployable.mjs`) |
 | `clothing` | route (a) proven by the parity runs; (b) and (c) blocked at the Workbench import ([clothing.md](clothing.md)) | Inherits a vanilla garment; (b)/(c) are skinned to the vanilla skeleton from Bohemia's Samples with Enfusion Blender Tools | (b)/(c): rigid `UTM_` FireGeo pieces per bone, a `UBX_` box on the ground model | one prefab inheriting the vanilla garment, overriding its components by GUID (`clothing.mjs`) |
 
@@ -124,6 +127,10 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   spike strip the bake left dark dents around every spike; the generator's own normal map reads better there.
 - `fit` corrects what the clean stage guessed: `up_axis` (`"x"`, `"y"`, `"z"`), `flip_up`,
   `flip_forward`, `pitch_deg`, `scale`, `offset` (metres, Enfusion axes: x right, y up, z forward).
+- `states` (optional) is how the item sits in each state it has: `inventory`, `ground`, `hand` (pose, grip
+  point, which axis runs up through the fist and which points away from the palm), `use` (declared needs)
+  ([states.md](states.md)). A gadget with states must declare `hand`. Declaring states also adds the
+  build criteria to the concept rubric ([concepts.md](concepts.md)).
 - `anim` (optional) is what moves: bones, sockets, effects, sounds, the character's clips, the carry profile
   ([animation.md](animation.md)).
 - `parts` are the moving parts. Every face whose centre lies in the box is split off and skinned
@@ -131,8 +138,10 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
 - `sockets` (optional) overrides a socket position by name.
 - `weapon.components` are extra components written into the weapon prefab, with their values.
 - A gadget has a `gadget` block instead: `name_key`, `description_key`, `weight`, `volume`, `components`, and `hand`
-  (`rotation`, `translation`: the `HandAdditive*` values; the default is the lockpick's). Vanilla held gadgets have no
-  bones or sockets (`Gauze_01_packed.xob`): the hand holds the model at its origin, so move the grip there with `fit.offset`.
+  (`rotation`, `translation`: the `HandAdditive*` values the scaffold writes). The scaffold borrows the gauze's hand
+  graph, whose anim set has no hold clips, so the hand stays open: declare `states.hand` and the states stage swaps
+  in a real hold pose and computes the values ([states.md](states.md)). The model's origin goes on the left hand's
+  `LeftHandProp` bone; vanilla held gadgets have no grip sockets.
 - A gadget is scaled on its length, so the size check holds the length to 5 % and the height and width to 40 %.
 - `fit.stretch` (not for a weapon) fits each axis to `size_m` on its own instead of scaling by the
   length: right for a flat prop whose height the generator guesses.
@@ -185,6 +194,16 @@ Meshy run leaves, so `clean` and `import` work unchanged. `budget.credits` may b
 `raw/review_<Variant>.png` on the maps after the material step: read those before `clean`. Worked
 examples: `tools/assets/metal-ingot` and `tools/assets/ore-nugget`. Every set used gets a row in
 `docs/credits.md`.
+
+Where a mesh comes from, in this order: the base game (`tools\cli call asset_search` / `game_read`;
+reuse a vanilla item when it fits), then a CC0 or CC-BY library, then a model our own script builds, and
+only then a concept and Meshy. Our own script is the right tool for what a generator gets wrong:
+thin parts (a lockpick came back as a pen) and parts that must move (Meshy fused each ring of the
+handcuffs into one surface, so a strand could not be cut off). Such a model needs no textures
+downloaded: a recipe over procedural noise and a vertex colour that names the material of each piece
+is enough (`tools/assets/lockpick/model.py` bakes leather, thread, brass, steel and a black handle
+into one atlas). The cuffs (`tools/assets/handcuffs/model.py`) show how to build parts the `anim`
+stage can cut off ([states.md](states.md) "Use states").
 
 ## Variants
 

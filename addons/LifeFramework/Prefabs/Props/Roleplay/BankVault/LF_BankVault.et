@@ -32,9 +32,10 @@ GenericEntity : "{4E0A07E8E86EA538}Prefabs/Props/Roleplay/BankVault/LF_BankVault
   LF_BreachTargetComponent "{3B1F6C0A7D2E4857}" {
    m_fFuseSeconds 0
    m_sSwingChild "VaultDoor"
-   m_fSwingYaw 100
+   m_fSwingYaw 70
   }
   LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+   m_sAlarmKind "bank"
    m_fJamChance 0
    m_iBagCount 1
    m_iCashPerBag 500

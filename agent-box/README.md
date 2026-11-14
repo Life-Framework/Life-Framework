@@ -224,7 +224,18 @@ the game profile). Hooks:
   `state` also reports the own `downed=` and `life=`. Both end with `cuffed=0|1`, the replicated
   handcuffs flag (#664).
 - `hold <name>` (runs on the client) takes a carried gadget whose prefab name contains `<name>`
-  into the left hand, as a quick-slot key does. Replies `held <name>` or `not_carried`.
+  into the left hand, as a quick-slot key does; a prefab whose file name is exactly `<name>` wins
+  over one that only contains it. Replies `held <name>` or `not_carried`.
+- `itemon <{GUID}path>` / `itemoff <{GUID}path>` (server, dev gate) switch the item's use state (`LF_AssetAnimComponent.SetActive`: the
+  handcuffs' strands swing open), looking in the inventory first, then for one lying within 3 m.
+- `itemgive <{GUID}path>` and `itemdrop <{GUID}path>` (server, dev gate) put one item of a prefab in
+  the character's inventory, or drop the carried one the way the inventory screen does (it rests by
+  its RestingUP; the reply has its position and angles). `heldxf` (client) reports where the held
+  gadget sits in the character's frame: its origin and axes, and the `LeftHandProp` bone's, which is
+  how the hand poses in `tools/assets/pipeline/states.mjs` were measured. Proof:
+  `session.mjs asset-states-proof <{GUID}path>[,...] [hand,ground,inventory,use] [out dir]` (one
+  picture per state; `tools\cli asset states <slug> --shots` runs it on a fresh session,
+  `docs/asset-pipeline/states.md`).
 - `seen [radius]` (read-only, runs on the client) reports what THIS client's copy of the world says: replicated account state (`me=faction/duty/wanted`), carried `cash`, own `downed`/`life`/`bleed`, nearby vehicles (`eng`, `lock`, `ign`, `stolen`, nearest first), doors (`locked`), loose money `bags`, the chop yard `chop` percent, the last `toast` and radio `dispatches`. Unlike `state` (the server's word) a missed `BumpMe` or RPC shows here. Proofs call `clientSees(on, wait, n, judge)` from `session.mjs` to poll it until the replicated value lands (`clientSeesPeer` does the same for `peers`). #522 added client reads to `carry`, `cash-van`, `lockpick`, `hotwire`, `downed`, `medic` and `chop` proofs.
 - `perf <seconds> [label]` (runs on the client) samples this client's frame time once a frame for the window and returns `frames`, `meanMs`, `p50Ms`, `p95Ms`, `p99Ms`, `maxMs`, `fps` and `memKB=start->end (delta)` (`System.MemoryAllocationKB`). Compare a window with the thing in view against one without it. A session's `-maxFPS` cap (30 full, 15 lowspec) hides any frame faster than the cap, so measure on `session up --profile full --levers uncapped`. `session.mjs board-perf` is the poster-board measurement (`docs/architecture/visual-boards-budget.md`).
 - Proof verbs are one module each, `agent-box/proofs/<verb>.mjs`, default-exporting `{ name, usage, run(ctx), film? }` (`ctx.args` is the rest of the command line). `session.mjs` discovers the folder and prints them under `--help`, so a new proof adds a file and touches no shared list (`validate-registries`).

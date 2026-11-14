@@ -11,17 +11,41 @@ docs with the milestones, their issues, and each epic's sub-issues from GitHub.
 The November 2025 community checklist is in git history
 (`website/content/archive/roadmap-2025.json`, removed in `4c96b4e`).
 
-## Milestones
+## Milestones, chapters and foundation
 
-| # | Milestone | Status | Plan |
+A **milestone** is a release: a public build, then an update to the live server.
+Inside a milestone, work is grouped into **chapters** (GitHub label `chapter`):
+a story a player can live through end to end, in one 60 to 120 second video.
+Every chapter issue has the same parts: a pitch from the player's view, a beat
+sheet (the video, and the acceptance test), a **Framework (core)** section and a
+**Flagship (1989 pack)** section listing its sub-issues, and a release note. A
+chapter is done when its video can be filmed on `main` and the maintainer has
+verified it; the clip and a post go out then, and the clips make the
+milestone's trailer. Plumbing with no video is a **foundation** epic (label
+`foundation`) and gets a line in the release notes.
+
+After launch (M4), each update deepens the stage of a player's life most of the
+community has reached, and carries one **story chapter** that moves the 1989
+relocation arc on (ideas: #214).
+
+Listed in the order they run (restructured 2026-11-14).
+
+| # | Milestone | Status | Chapters |
 | --- | --- | --- | --- |
-| M1 | Playtest Town | **Current** (issues labelled `m1`) | [m1-playtest-town.md](m1-playtest-town.md) |
-| M2 | Living Town | Outline: moderation, medic, comms, investigation (epics #145-#148, each broken into sub-issues) | [m2-outline.md](m2-outline.md) |
-| M2.5 | Showcase and Outreach | Outline: hero video, landing page, Discord onboarding, outreach kit, playtester roster (epic #566; starts when M2 closes) | [m2-5-outline.md](m2-5-outline.md) |
-| M3 | Framework Release | Outline: two addons, config layer, web generator, owner docs, example server, config harness, Workshop release (epics #223-#229, #366, sub-issues under #224-#229) | [m3-outline.md](m3-outline.md), execution plan [m3-plan.md](m3-plan.md) |
-| M4 | Flagship Live | Outline: hosting and ops, staff and community, showcase (epics #230-#232, each broken into sub-issues) | [m4-outline.md](m4-outline.md) |
-| M5 | Flagship Story | Outline, two tracks (Framework systems #632, Flagship content #633): arrival arc, music, voiced NPCs, food, state factory, bus stops, the Meshy-to-Blender-to-Reforger 3D harness (#339), and the ideas from the Genetic Life review (idea epic #214) | [m5-outline.md](m5-outline.md) |
-| M6 | Homes and Land | Ideas only: property, renting, the dacha, farming (split from M5, 2026-11-09) | epic #214 items 6 and 7 |
+| M1 | Playtest Town | **Closed** 2026-11-14. The Workshop publish (#109) moved to M3 | [m1-playtest-town.md](m1-playtest-town.md) |
+| M2 | Living Town | **Current.** Built; a few fixes, then a playtest pass ([m2-outline.md](m2-outline.md)) | Cops and robbers #1003 · The investigation #148 · Downed, not dead #146 · Crime pays #410. Foundation: moderation #145 |
+| M3 | Framework Release | Next. Nothing is published until the whole addon move is done ([m3-outline.md](m3-outline.md), [m3-plan.md](m3-plan.md)) | Your town in five minutes #1004 · Make it yours #1005. Foundation: two addons #223, upgrade path #229, Workshop release #366, record shapes #746, patterns #684 |
+| M2.5 | Showcase and Outreach | After M3, before M4, so outreach points at a build people can get ([m2-5-outline.md](m2-5-outline.md)) | The showcase #566 |
+| M4 | Flagship Live | The public 1989 server ([m4-outline.md](m4-outline.md)) | Opening day #1006 |
+| M5 | Settling in | First weeks after launch: every player is new | Arrival · Armed and dressed · On patrol · Evenings in the village · Read all about it · story: The relocated |
+| M6 | Making a living | Players with jobs and money want more from them | The market moves · Getting better at the job · Working the routes · Scrap and salvage · The bank · story: The state factory |
+| M7 | Power and turf | Organisations form and crime escalates | Gang war · The convoy job · The big heist · Dirty money · Behind bars · Making detective · story: The shipment |
+| M8 | Roots | Long-term players want something of their own | A place of your own · Working the land · Garages and lockers · Neighbours (pull forward if launch is quiet) · story: The anniversary |
+| Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | GitHub milestone "Backlog" |
+
+Beside them runs **Development** (tooling and pipelines), which is not a release.
+The asset pipelines (#339 to #343) and the ArchBuilder harness (#995) are
+foundation epics in M5.
 
 Each outline is planned in full only after the milestone before it closes.
 

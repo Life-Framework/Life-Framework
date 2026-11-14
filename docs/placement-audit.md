@@ -65,6 +65,12 @@ fence and rock runs overlap at their joints; something much smaller sitting insi
 crate or table group is its contents; a layer parent and its child do not overlap each other; road
 furniture, vehicles and markings may stand in a road.
 
+Known blind spots: the audit sees layer entities only. A prop that pokes through a building wall or stands in a furniture
+piece baked into a building prefab (the kiosk's own counter and register) is not an overlap: buildings are exempt from the
+overlap and clip checks by design. Look at the `look` close-up for those. A prop whose name contains a kind word is
+exempt for that kind: `Roadmap_Fuel_Counter` matched "Map" (a hung map) and was never checked for floating or sinking until
+#936's follow-up anchored `Map` to a word start; keep kind regexes anchored.
+
 ## Expected sizes
 
 `scale` only catches a number on the entity; "absurdly sized" also means a 1.4 m money bag or a sack pile

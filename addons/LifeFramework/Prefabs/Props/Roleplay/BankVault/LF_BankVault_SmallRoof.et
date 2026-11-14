@@ -1,0 +1,12 @@
+GenericEntity {
+ ID "1CB5FBA4D6B7B291"
+ components {
+  MeshObject "{7D0972082E9A7573}" {
+   Object "{EE90BCA0BCD2069A}Assets/Structures/BuildingsParts/Misc/SmallRoof_01.xob"
+  }
+  RigidBody "{8070DDE81BDB2F48}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+}

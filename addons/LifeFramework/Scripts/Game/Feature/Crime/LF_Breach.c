@@ -51,6 +51,8 @@ class LF_BreachTarget : Managed
 	string m_sOffence;
 	//! The loud alarm even with officers on duty.
 	bool m_bLoud;
+	//! The robbery type's alarm (an LF_AlarmKind id). Empty takes the offence's kind, else the plain siren.
+	string m_sAlarmKind;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -125,6 +127,30 @@ class LF_Breach
 
 		target.m_sOffence = offence;
 		target.m_bLoud = loud;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Which alarm kind arming this target sounds (a bank vault's bell). Empty is the offence's kind.
+	static void SetAlarmKind(string targetId, string alarmKind)
+	{
+		LF_BreachTarget target = Targets().Get(targetId);
+		if (!target)
+		{
+			LF_Debug.Error("Breach", string.Format("alarm kind refused: target %1 is not configured", targetId));
+			return;
+		}
+
+		target.m_sAlarmKind = alarmKind;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string AlarmKind(string targetId)
+	{
+		LF_BreachTarget target = Targets().Get(targetId);
+		if (!target)
+			return "";
+
+		return target.m_sAlarmKind;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -236,7 +262,7 @@ class LF_Breach
 		if (!suspect)
 			suspect = chargeCarrier;
 
-		LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId), -1, target.m_bLoud);
+		LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId), -1, target.m_bLoud, target.m_sAlarmKind);
 		LF_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
 
 		target.m_bChargeArmed = true;

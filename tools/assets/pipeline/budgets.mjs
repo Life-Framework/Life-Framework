@@ -47,7 +47,8 @@ export function checkBudget(spec, sourceTris) {
   // nothing is collapsed, so the floor and the step rules do not apply.
   if (!b || spec.source?.blender) return out;
   const s = spec.budget || {};
-  if (s.lod0_tris < b.min) out.push(`budget.lod0_tris ${s.lod0_tris} is under the ${spec.kind} floor of ${b.min} (vanilla items of this kind are at ${b.lod0}); it will look faceted`);
+  // A library model is as detailed as its author made it; the floor guards a generator's output only.
+  if (s.lod0_tris < b.min && spec.source?.provider !== "polyhaven") out.push(`budget.lod0_tris ${s.lod0_tris} is under the ${spec.kind} floor of ${b.min} (vanilla items of this kind are at ${b.lod0}); it will look faceted`);
   if (s.lod0_tris > b.max) out.push(`budget.lod0_tris ${s.lod0_tris} is over the ${spec.kind} cap of ${b.max}`);
   const r = s.lod_ratios || [];
   if (r.length < 2) out.push("budget.lod_ratios needs at least two entries (LOD1 and LOD2)");

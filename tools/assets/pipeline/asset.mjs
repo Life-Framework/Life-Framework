@@ -4,6 +4,7 @@
 //   asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name N] [--no-run]
 //   asset new <slug> --kind clothing --base "{GUID}Prefabs/...et" --slot Jacket [--route a|b|c] (clothing.mjs)
 //   asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
+//   asset states <slug> [--fix] [--shots]   the inventory, ground, hand and use states (states.md)
 //   asset status [<slug>]      asset doctor      asset selftest
 //
 // The spec is tools/assets/<slug>/spec.json (tracked). Everything a stage produces is cached in
@@ -16,13 +17,15 @@ import * as meshy from "./meshy.mjs";
 import { KINDS } from "./kinds.mjs";
 import { BUDGETS, checkBudget, defaultBudget } from "./budgets.mjs";
 import * as concepts from "./concepts.mjs";
+import * as source from "./source.mjs";
 import { pickedImage } from "./concepts.mjs";
 import { materialProblems, resolveMaterials, variantPlans } from "./materials.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
 import { animProblems, hasAnim, withAnim } from "./anim.mjs";
+import { hasStates, shootStates, stageStates, statesProblems } from "./states.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGES = ["spec", "concept", "generate", "remesh", "clean", "import", "prefab", "anim"];
+export const STAGES = ["spec", "source", "concept", "generate", "remesh", "clean", "import", "prefab", "anim", "states"];
 
 export const specFile = (root, slug) => join(root, "tools", "assets", slug, "spec.json");
 export const cacheDir = (root, slug) => join(root, "tmp", "assets", slug);
@@ -40,10 +43,11 @@ export function specProblems(spec) {
   if (!/^[A-Z][A-Za-z0-9]*$/.test(spec.name || "")) out.push("name must be PascalCase letters and digits (it becomes file and material names)");
   const kind = KINDS[spec.kind];
   if (!kind) out.push(`kind must be one of ${Object.keys(KINDS).join(", ")}`);
+  const lib = source.isPolyHaven(spec) || source.isVanilla(spec); // a found model: no prompt, no Meshy call, no credits (source.mjs)
   const blender = !!spec.source?.blender; // modelled or painted by our own script: no Meshy call, no credits
   const textureOnly = kind?.fit === "none";
-  if (!spec.prompt) out.push("prompt is empty");
-  else if (spec.prompt.length > 800) out.push(`prompt is ${spec.prompt.length} characters; Meshy allows 800`);
+  if (!spec.prompt && !lib) out.push("prompt is empty");
+  else if (spec.prompt?.length > 800) out.push(`prompt is ${spec.prompt.length} characters; Meshy allows 800`);
   if ((spec.texture_prompt || "").length > 800) out.push("texture_prompt is over 800 characters");
   const s = spec.size_m || {};
   const b = spec.budget || {};
@@ -56,7 +60,7 @@ export function specProblems(spec) {
     if (kind && spec.meshy?.target_polycount && spec.meshy.target_polycount * Math.max(spec.fit?.repeat || 1, 1) < b.lod0_tris) out.push(`meshy.target_polycount ${spec.meshy.target_polycount} is under budget.lod0_tris ${b.lod0_tris}: the generator would hand over less than LOD0 keeps`);
   }
   if (![256, 512, 1024, 2048].includes(b.texture_px)) out.push("budget.texture_px must be 256, 512, 1024 or 2048");
-  if (!(b.credits >= (blender ? 0 : 1) && b.credits <= 300)) out.push(`budget.credits must be ${blender ? 0 : 1} to 300 (the per-asset cap)`);
+  if (!(b.credits >= (blender || lib ? 0 : 1) && b.credits <= 300)) out.push(`budget.credits must be ${blender || lib ? 0 : 1} to 300 (the per-asset cap)`);
   if (textureOnly && !blender) out.push("a material asset is painted by a Blender script: set source.blender");
   if (blender && !/^[\w-]+\.py$/.test(spec.source.blender)) out.push("source.blender names a .py file beside the spec");
   for (const t of spec.source?.textures || []) {
@@ -70,13 +74,15 @@ export function specProblems(spec) {
     if (v.emat !== undefined && !/^Assets\/.+\.emat$/.test(v.emat)) out.push(`variant ${v.name}: emat must be an Assets/... .emat path`);
   }
   if (textureOnly && !vnames.size) out.push("a material asset needs at least one variant");
-  if (spec.prompt && !/no text/i.test(spec.prompt)) out.push('prompt should say "no text, no logos" (generated lettering is garbled)');
+  out.push(...source.sourceProblems(spec));
+  if (spec.prompt && !lib && !/no text/i.test(spec.prompt)) out.push('prompt should say "no text, no logos" (generated lettering is garbled)');
   for (const p of spec.parts || []) {
     if (!p.name || !p.bone || !Array.isArray(p.box) || p.box.length !== 6) out.push(`part ${p.name || "?"} needs name, bone and box [x0,y0,z0,x1,y1,z1]`);
     else if (kind && !kind.skeleton?.some((n) => n.name === p.bone)) out.push(`part ${p.name}: bone ${p.bone} is not in the ${spec.kind} skeleton`);
   }
   out.push(...materialProblems(spec));
   out.push(...animProblems(spec));
+  out.push(...statesProblems(spec));
   if (!/^Assets\//.test(spec.asset_dir || "")) out.push("asset_dir must start with Assets/");
   if (!/^Prefabs\//.test(spec.prefab_dir || "")) out.push("prefab_dir must start with Prefabs/");
   return out;
@@ -95,9 +101,9 @@ function writeState(dir, state) {
 async function stageSpec(ctx) {
   const problems = specProblems(ctx.spec);
   if (problems.length) throw new Error("spec problems:\n  " + problems.join("\n  "));
-  const est = ctx.spec.source?.blender ? 0 : meshy.estimate(ctx.spec);
+  const est = ctx.spec.source?.blender || source.skipsStage(ctx.spec, "generate") ? 0 : meshy.estimate(ctx.spec);
   if (est > ctx.spec.budget.credits) throw new Error(`one attempt costs about ${est} credits, over the spec's budget of ${ctx.spec.budget.credits}`);
-  console.log(`concept ok: ${ctx.spec.name} (${ctx.spec.kind}), ${ctx.spec.prompt.length}-char prompt, about ${est} credits per attempt`);
+  console.log(`concept ok: ${ctx.spec.name} (${ctx.spec.kind}), ${(ctx.spec.prompt || "").length}-char prompt, about ${est} credits per attempt`);
   return { estimate: est };
 }
 
@@ -359,11 +365,26 @@ async function stageAnim(ctx) {
   return runAnim({ ...ctx, blender: runBlender }, { fix: ctx.fix });
 }
 
+// Stage "states": the prefab's inventory camera, rest pose, hand pose and grip from spec.states
+// (states.mjs, docs/asset-pipeline/states.md). An asset that declares none skips it.
+async function stageStatesRun(ctx) {
+  if (!hasStates(ctx.spec)) {
+    console.log("states: the spec declares none; the prefab keeps what the scaffold wrote");
+    if (ctx.spec.kind === "gadget") console.log("states: NOTE a gadget without states.hand keeps the scaffold's gauze graph, which holds it in an open hand (docs/asset-pipeline/states.md)");
+    return { skipped: true };
+  }
+  return stageStates(ctx, { fix: true });
+}
+
 async function stageConcepts(ctx) {
   return concepts.stageConcept(ctx, { writeState, resolveFfmpeg });
 }
 
-const RUN = { spec: stageSpec, concept: stageConcepts, generate: stageGenerate, remesh: stageRemesh, clean: stageClean, import: stageImport, prefab: stagePrefab, anim: stageAnim };
+async function stageSource(ctx) {
+  return source.stageSource(ctx, { runBlender, blenderDir: join(dirname(fileURLToPath(import.meta.url)), "blender") });
+}
+
+const RUN = { spec: stageSpec, source: stageSource, concept: stageConcepts, generate: stageGenerate, remesh: stageRemesh, clean: stageClean, import: stageImport, prefab: stagePrefab, anim: stageAnim, states: stageStatesRun };
 
 // The stage list and the stage table of a spec's kind: clothing has its own (clothing.mjs).
 export async function stagesFor(spec) {
@@ -389,6 +410,13 @@ export async function run(root, slug, { from, only, force, workbench, pick, fix,
     }
     rerun = true; // a rerun stage invalidates every later one
     const started = Date.now();
+    const why = source.skipsStage(spec, stage); // a found model makes the generator stages pointless
+    if (why) {
+      console.log(`--- ${stage}: skipped (${why})`);
+      fullState.stages[stage] = { ok: true, at: new Date().toISOString(), secs: 0, result: { skipped: why } };
+      writeState(dir, fullState);
+      continue;
+    }
     const ctx = { root, slug, spec, dir, fullState, workbench, pick, fix, flags, blender: runBlender, state: (fullState.work ||= {}) };
     console.log(`--- ${stage}`);
     if (stage === "generate" && force && ctx.state.generate?.refineLogged) {
@@ -498,6 +526,7 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "ambience") return (await import("./ambience.mjs")).main(root, rest); // docs/architecture/atmosphere.md
   if (sub === "selftest") return (await import("../../validation/asset-pipeline-selftest.mjs")).main(rest);
   if (sub === "dialogue") return (await import("./dialogue.mjs")).main(rest);
+  if (sub === "source") return source.main(root, rest); // docs/asset-pipeline/sources.md
   if (sub === "pick") return concepts.cmdPick(root, rest);
   if (sub === "score") return concepts.cmdScore(root, rest);
   if (sub === "doctor") return cmdDoctor();
@@ -509,6 +538,15 @@ export async function main(flags, { workbench } = {}) {
     const slug = rest.find((f) => !f.startsWith("--"));
     if (!slug) { console.log("usage: tools\\cli asset anim <slug> [--fix]"); return 2; }
     return run(root, slug, { only: "anim", fix: rest.includes("--fix"), workbench });
+  }
+  if (sub === "states") { // the states stage alone: tools\cli asset states <slug> [--fix] [--shots]
+    const wt = await import("../../wt.mjs");
+    if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
+    const slug = rest.find((f) => !f.startsWith("--"));
+    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots]"); return 2; }
+    const spec = loadSpec(root, slug);
+    stageStates({ root, spec }, { fix: rest.includes("--fix") });
+    return rest.includes("--shots") ? shootStates(root, spec, cacheDir(root, slug)) : 0;
   }
   if (sub === "kit") {
     const wt = await import("../../wt.mjs");
@@ -528,6 +566,7 @@ export async function main(flags, { workbench } = {}) {
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]     stages: ${STAGES.join(", ")}; clothing: spec, vanilla, textures, fit, import, prefab, verify [--previews] [--no-shots]
        tools\\cli asset status [<slug>] | doctor | selftest
        tools\\cli asset anim <slug> [--fix]     moving parts, character clips, effects (docs/asset-pipeline/animation.md)
+       tools\\cli asset states <slug> [--fix] [--shots]     inventory, ground, hand and use states (docs/asset-pipeline/states.md)
        tools\\cli asset kit <slug> [--only build|import]     several models from one Blender script (a room, a vault)
        tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
        tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)

@@ -9,7 +9,8 @@
       "imageTaskId": "01a1d8ec-9c72-7628-8db3-756224d3190f",
       "concept": 3,
       "conceptTaskId": "01a1d6cf-63ca-76b2-8153-005c0dac1255",
-      "conceptPrompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Just two tools laid together: a slim steel hook pick with a black plastic handle and an L-shaped tension wrench. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+      "conceptPrompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Just two tools laid together: a slim steel hook pick with a black plastic handle and an L-shaped tension wrench. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "superseded": "2026-11-14: replaced by a Blender model (tools/assets/lockpick/model.py); the Meshy mesh read as a pen and is no longer in the addon"
     }
   ]
 }
