@@ -128,6 +128,36 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `tools\cli wt sync-base m3 [--source main]` opens a PR that merges `origin/main` into `m3` from a `ws/sync-m3-<stamp>` worktree (merge drivers resolve generated files; any other conflict stops with the file list). It never force-pushes; prune the sync worktree after the merge.
 - The `validate` workflow runs on every `pull_request` (no branch filter), so PRs into `m3` get it. Making `validate` a required check on `m3` is a GitHub branch-protection setting, not done by the tooling.
 
+### Gate tiers
+
+`wt gate` and `wt ship` (and the ship queue, which runs `wt ship`) pick the gate from the diff
+against the merge base with `origin/<base>`, uncommitted and untracked files included
+(`tools/lib/gate-tier.mjs`, proven by `tools/validation/gate-tier-selftest.mjs`):
+
+| Tier | When | Runs |
+|---|---|---|
+| T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
+| T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
+| T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
+
+T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
+head have the same line count, every line holding a brace is unchanged (same blocks, same
+component and widget GUIDs), and each changed line keeps its key and swaps one scalar value with no
+`{GUID}` in it. Per type: `.conf` and `.layout` any number, vector, quoted string or word
+(`Text "#Key"`, `Color 1 0.8 0.8 1`, `m_iPrice 7`); `.et` numbers and vectors only; `.st`
+only `Target_*` text and `Comment`; a language `.conf` never its `Ids` block. `ID`, `Id`,
+`Name`, `Parent` and prefab keys are identities, never values.
+
+Always T2: a `.c` file, a `.meta`, an added, deleted, renamed or untracked file under `addons/`,
+a `.layer`/`.ent`, a binary asset, a changed resource reference, a `.conf` that **adds or removes
+a key** (the key can switch on a code path its default never ran, and an equal line count is how the
+classifier knows the blocks did not move), and a `.et` string value or component change.
+
+T1 skips the build because `test --no-build` loads the addons from source; the build only
+packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
+diff is no longer data-only. Measured on a one-value `.conf` change: see the PR that added this
+(#TIERPR).
+
 ## Release gates (`stable`, `promote`)
 
 `main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `toolscli release` use. Playtests run on `main`.
@@ -162,10 +192,9 @@ comment, close on pass). It runs none of them: the maintainer or lead reviews an
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
    merge drivers in `tools/merge/` then resolve the generated files). A clean
    branch ships as is.
-3. Runs the gate (never incremental; see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
-   build + `test` tier=all. A branch that changes nothing under `addons/`
-   (docs, website, tools) runs plain `validate` instead and never waits for a
-   pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule). After the suite,
+3. Runs the gate for the diff's tier ("Gate tiers" below). T2 is never incremental (see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
+   build + `test` tier=all. T0 (nothing under `addons/`) runs plain `validate --all` and never waits for a
+   pool slot. T1 (values changed in place) skips the compile, build and full suite. `--full-gate` forces T2 (`wt gate` follows the same rule); the gate prints the tier and why, and ship adds it to the PR body under `## Gate`. After the suite,
    a branch that touches a `.layer`, a `Prefabs` `.et` or LF_Utils/spawn code also runs
    `audit placement --strict` (queued like `test`); anything flagged and not in the allowlist fails the
    gate, and it prints the entities with the allowlist fix hint (`docs/placement-audit.md`).
