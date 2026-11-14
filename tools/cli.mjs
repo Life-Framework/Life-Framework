@@ -2818,7 +2818,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     const r = await runShardedTests(root, specs, opts);
     if (r !== null) return r;
   }
-  const purpose = only.length ? "test only" : `test ${tier}`;
+  const purpose = pool.testPurpose({ tier, only, coreOnly: opts.coreOnly });
   // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
   // key) and before the pool is asked for a slot. Only a pass is stored or reused.
   const cache = passCacheCheck(root, { tier, only, opts: { ...opts, red } });
@@ -2943,7 +2943,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
     code = runLocalTest(root, tier, only, opts.world, opts.coreOnly, red);
     // test-e2e.ps1 stamps summaries.jsonl lazily (at the next boot), so read this run's printed SUMMARY.
-    const sum = lastLocalSummary ?? newestStamp(root, before);
+    const sum = lastLocalSummary ?? newestStamp(root, before, opts.coreOnly);
     if (sum) extra = { passed: sum.passed, total: sum.total };
     if (sum) recordTestTimes(root, sum.consoleLog, tier, only, opts);
     return { code, machine: slot.machine?.name, passed: sum?.passed, total: sum?.total, failed: sum?.failed };
@@ -2956,12 +2956,14 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
 }
 
 // The summary this run stamped (tools/test/test-e2e.ps1 appends one line).
-function newestStamp(root, since) {
+function newestStamp(root, since, coreOnly = false) {
   const f = join(root, "tmp", "test-results", "summaries.jsonl");
   try {
     if (statSync(f).mtimeMs < since) return null;
     const lines = readFileSync(f, "utf8").trim().split(/\r?\n/);
-    return JSON.parse(lines[lines.length - 1]);
+    const rec = JSON.parse(lines[lines.length - 1]);
+    // Never take another run's line (the stamp is lazy): a core-only run's tier ends in "-core", a full run's does not.
+    return /-core$/.test(String(rec.tier ?? "")) === !!coreOnly ? rec : null;
   } catch {
     return null;
   }
@@ -3173,6 +3175,8 @@ async function cmdCi(root = ROOT, opts = {}) {
       const cg = await import("./commands/config-gate.mjs");
       return (await import("./lib/config-gate.mjs")).runConfigGate(changedFiles(root), { static: () => cg.runStatic(root), sessions: () => cg.runSessions(root) });
     }],
+    // A save made before the pack move (#327, D7 (a)) must still load: two boots, only when persistence code, a mission header or the pack boundary changed.
+    ["pre-move save", async () => (await import("./lib/pre-move-gate.mjs")).runPreMoveGate(changedFiles(root), (o) => runE2e(root, { ...opts, ...e2eMoveFlags(root, ["--pre-move", o.preMove, "--mission", o.mission]) }))],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -3197,8 +3201,17 @@ async function ciWorkbench(root, opts = {}) {
     else {
       const t0 = Date.now();
       const res = await invokeScriptAsync(join(root, "tools", "validation", "validate-scripts.ps1"), { cwd: root, env: toolEnv() });
-      console.log(`${res.status === 0 ? "PASS" : "FAIL"}  validate/validate-scripts.ps1 (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+      const seconds = (Date.now() - t0) / 1000;
+      // Workbench died within seconds with no verdict on a machine short of RAM: the machine failed, not
+      // the scripts. Say so and skip the build (it would die or hang the same way); the caller retries
+      // on another machine once (ENV_SHORT_CODE).
+      const died = wbGate.earlyDeath({ status: res.status, seconds, text: `${res.stdout ?? ""}\n${res.stderr ?? ""}`, freeMb: Math.round(os.freemem() / 1048576), minFreeMb: pool.poolSettings(root).minFreeMb });
       for (const t of [res.stdout, res.stderr]) if (t) process.stdout.write(t.endsWith("\n") ? t : `${t}\n`);
+      if (died) {
+        console.log(`ENV   validate/validate-scripts.ps1 on ${os.hostname()}: ${died}; an environment failure, not a compile failure`);
+        return wbGate.ENV_SHORT_CODE;
+      }
+      console.log(`${res.status === 0 ? "PASS" : "FAIL"}  validate/validate-scripts.ps1 (${seconds.toFixed(1)} s)`);
       ok = res.status === 0;
     }
     console.log("--- ci: build ---");
@@ -3254,35 +3267,112 @@ function ciWorkbenchInSession(root) {
   return code === 3 ? 1 : code;
 }
 
+// The live view of every machine with the workbench cap, for wbGate.chooseGate: this PC's Workbench
+// slots and free RAM, each pool machine's over one ssh round trip (null when it does not answer).
+function workbenchMachines(root, { mode, machine }) {
+  const machines = pool.loadMachines(root).filter((m) => !m.disabled && (m.caps ?? []).includes("workbench"));
+  const limit = wbLock.wbLimit(root);
+  const localM = machines.find((m) => m.via === "local");
+  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, freeMb: Math.round(os.freemem() / 1048576), multiplier: localM?.budgetMultiplier ?? 1 };
+  const remotes = mode === "local" || machine === "local" ? [] : machines
+    .filter((m) => m.via === "ssh" && (!machine || m.name === machine))
+    .map((m) => ({ name: m.name, caps: m.caps, multiplier: m.budgetMultiplier ?? 1, m, state: wbGate.remoteWbState(m) }));
+  return { local, remotes };
+}
+
 // Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine
-// gets this worktree's snapshot, uncommitted state included, through pool.syncAndRun.
-function workbenchGate(root, opts = {}) {
+// gets this worktree's snapshot, uncommitted state included, through pool.syncAndRun. Nobody with
+// the RAM: wait (re-read every 30 s) up to the Workbench queue's budget (LF_WB_RAM_WAIT_S, 1 h). A
+// Workbench that dies early on a RAM-short machine (wbGate.ENV_SHORT_CODE) is retried once elsewhere.
+async function workbenchGate(root, opts = {}) {
   const machine = opts.machine && opts.machine !== "any" ? opts.machine : opts.remote || null;
   let mode = "any";
   if (opts.local) mode = "local";
   else if (opts.remote !== undefined || machine) mode = "remote";
   else if (!opts.any && envOf().LF_TESTBOX_AUTO === "0") mode = "local";
-  const limit = wbLock.wbLimit(root);
-  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit };
-  let remotes = [];
-  if (mode === "remote" || (mode === "any" && local.busy + local.queued >= limit)) {
-    remotes = pool.loadMachines(root)
-      .filter((m) => m.via === "ssh" && (m.caps ?? []).includes("workbench") && (!machine || m.name === machine))
-      .map((m) => ({ name: m.name, caps: m.caps, m, state: wbGate.remoteWbState(m) }));
-  }
-  const c = wbGate.chooseGate({ local, remotes, mode, machine });
-  console.log(`ci: Workbench compile + build on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
-  if (c.where === "local") return ciWorkbench(root, opts);
-  const m = remotes.find((r) => r.name === c.where).m;
-  const t0 = Date.now();
-  return pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" }).then((r) => {
-    console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
-    if (r.code === 3) {
-      console.log(`ci: ${m.name} could not take the Workbench steps; running them here`);
-      return ciWorkbench(root, opts);
+  const settings = pool.poolSettings(root);
+  const waitS = Number(process.env.LF_WB_RAM_WAIT_S) > 0 ? Number(process.env.LF_WB_RAM_WAIT_S) : 3600;
+  const tried = [];
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    // A retry after an early death is not pinned and may use this PC: whatever has the RAM now.
+    const retry = attempt > 1;
+    const choose = () => {
+      const view = workbenchMachines(root, { mode: retry ? "any" : mode, machine: retry ? null : machine });
+      return { ...view, c: wbGate.chooseGate({ ...view, mode: retry ? "any" : mode, machine: retry ? null : machine, exclude: tried, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb }) };
+    };
+    let pick = choose();
+    const t0w = Date.now();
+    if (pick.c.where === "wait") console.log(`ci: Workbench compile + build waits: ${pick.c.why}; re-checking every 30 s for up to ${Math.round(waitS / 60)} min`);
+    while (pick.c.where === "wait" && Date.now() - t0w < waitS * 1000) {
+      await new Promise((res) => setTimeout(res, 30000));
+      pick = choose();
     }
-    return r.code === 0 ? 0 : 1;
-  });
+    const { c, remotes } = pick;
+    if (c.where === "none") {
+      console.log(`FAIL  pool: no reachable machine left for the Workbench steps (${c.why})`);
+      return 3;
+    }
+    if (c.where === "wait") {
+      console.log(`FAIL  pool: no reachable machine has the RAM for a Workbench after ${Math.round((Date.now() - t0w) / 1000)} s (${c.why})`);
+      return 3;
+    }
+    console.log(`ci: Workbench compile + build on ${c.where === "local" ? "this PC" : c.where}: ${c.why}${retry ? " (retry)" : ""}`);
+    tried.push(c.where);
+    let code;
+    if (c.where === "local") code = await ciWorkbench(root, opts);
+    else {
+      const m = remotes.find((r) => r.name === c.where).m;
+      const t0 = Date.now();
+      const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" });
+      console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+      if (r.code === 0 && r.rDir) pullRemoteRdb(root, m, r.rDir);
+      if (r.code === 3 && !retry) {
+        console.log(`ci: ${m.name} could not take the Workbench steps; choosing again`);
+        continue;
+      }
+      code = r.code;
+    }
+    if (code === wbGate.ENV_SHORT_CODE) {
+      if (!retry) {
+        console.log(`ci: the Workbench on ${c.where === "local" ? "this PC" : c.where} died for lack of RAM (environment, not the PR); retrying once on another machine`);
+        continue;
+      }
+      console.log("FAIL  pool: no reachable machine kept a Workbench alive (died early for lack of RAM twice)");
+      return 3;
+    }
+    return code === 0 ? 0 : 1;
+  }
+  return 1;
+}
+
+// After a remote Workbench build the run folder's resource database is current. A local one that is
+// stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
+// headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
+// registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
+function pullRemoteRdb(root, m, rDir) {
+  for (const name of rdbAddons(root)) {
+    const addon = addonDir(root, name);
+    const local = join(addon, "resourceDatabase.rdb");
+    const before = rdbFreshness(addon);
+    if (before.missing.length === 0) continue;
+    const got = `${local}.remote`;
+    const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
+    if (down.status !== 0 || !existsSync(got)) {
+      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      continue;
+    }
+    const keep = `${local}.local`;
+    if (existsSync(local)) copyFileSync(local, keep);
+    copyFileSync(got, local);
+    const after = rdbFreshness(addon);
+    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    else if (existsSync(keep)) {
+      copyFileSync(keep, local);
+      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+    }
+    rmSync(got, { force: true });
+    rmSync(keep, { force: true });
+  }
 }
 
 // The placement audit takes a test lane through the pool like `test` (any machine by default). On a
@@ -3420,7 +3510,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
   pool status|stats|prune       test pool: machines, lanes and holders, queue, last runs;
-                                prune removes remote run folders of gone worktrees
+                                prune removes remote run folders of gone worktrees;
+                                prune --idle <min> removes every remote run folder idle that long
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
@@ -3507,6 +3598,16 @@ function priorityFlag(list) {
   const p = pool.normalizePriority(v);
   if (!p) throw new Error(`--priority must be high, normal or low (got '${v}')`);
   return p;
+}
+
+// The machine pin of `wt ship` / `wt gate` (--local, --remote [name], --machine <name>) as ci flags,
+// so the gate runs where it was pinned. [] when there is none.
+function pinFlags(list) {
+  const f = remoteFlags(list);
+  if (f.local) return ["--local"];
+  if (f.machine) return ["--machine", f.machine];
+  if (f.remote !== undefined) return f.remote ? ["--remote", f.remote] : ["--remote"];
+  return [];
 }
 
 function remoteFlags(list) {
@@ -3640,7 +3741,10 @@ function wtHelpFull() {
   console.log(`worktree commands (parallel agent isolation)
 
   tools\\cli wt new <slug> [--wait] [--base B] [--priority low]  create Life-Framework-ws-<slug> at ws/<slug>, allocate ports;
-                                       --priority records the pool priority for that worktree (spikes: low)
+                                       --priority records the pool priority for that worktree (spikes: low);
+                                       claims a ready warm worktree when one exists (--no-warm: always fresh)
+  tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
+                                       'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
@@ -3665,11 +3769,14 @@ function wtHelpFull() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
-                                       clean-tree check -> merge origin/<base> only if it conflicts ->
-                                       gate -> push -> PR (or reuse the open one) -> gh auto-merge
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local]
+                                       clean-tree and PR-body checks -> push -> PR (auto-merge off) -> ship queue:
+                                       merge origin/<base> once, ci --remote on a pool machine, push, auto-merge
+                                       (docs/worktrees.md "Ship queue"); waits until gated unless --no-wait
+                                       (a terminal defaults to --no-wait); --no-queue gates here the old way;
+                                       a machine pin (humans and the lead only) goes to the gate's ci
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
-  tools\\cli wt prune --merged [--yes]  list every merged, clean, idle (30 min), unlocked worktree; --yes prunes them
+  tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
   tools\\cli wt main                   print the main checkout path
@@ -3693,8 +3800,9 @@ function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
-    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args) });
-    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""}`);
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 600000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args), warm: !args.includes("--no-warm") });
+    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""} in ${(r.ms / 1000).toFixed(1)} s (${r.warm ? "warm pool" : "fresh checkout"}; lock ${(r.lockMs / 1000).toFixed(1)} s)`);
+    console.log(`  time:   ${Object.entries(r.phases ?? {}).map(([k, v]) => `${k} ${(v / 1000).toFixed(1)}s`).join(", ")}`);
     console.log(`  base:   origin/${r.base}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
@@ -3743,6 +3851,10 @@ async function wtListCmd() {
   })));
   const dirtyOf = new Map(live.map((e, i) => [e.path, statuses[i].trim() ? "dirty" : "clean"]));
   for (const e of rows) {
+    if (e.status === "creating") {
+      console.log(line(e, "creating"));
+      continue;
+    }
     if (!existsSync(e.path)) {
       console.log(line(e, "MISSING"));
       continue;
@@ -3769,7 +3881,34 @@ async function wtListCmd() {
     else if (merged && ahead === 0) stateText = "dirty, uncommitted work (commit or discard before prune)";
     console.log(line(e, stateText));
   }
+  const warm = Object.values(state.warm ?? {});
+  if (warm.length) console.log(`warm pool: ${warm.filter((w) => w.status === "ready").length} ready, ${warm.filter((w) => w.status !== "ready").length} busy (tools\\cli wt warm)`);
   return 0;
+}
+
+function wtWarmCmd(args) {
+  const sub = args[0] ?? "status";
+  try {
+    if (sub === "fill") {
+      const r = wt.wtWarmFill(ROOT, { log: (m) => console.log(m) });
+      if (r.skipped) console.log(`warm: ${r.skipped}`);
+      else console.log(`warm: made ${r.made.length} tree(s)`);
+    } else if (sub === "drain") {
+      const gone = wt.wtWarmDrain(ROOT);
+      console.log(`warm: removed ${gone.length} tree(s)${gone.length ? ": " + gone.join(", ") : ""}`);
+    } else if (sub !== "status") {
+      console.log("usage: tools\\cli wt warm [status|fill|drain]");
+      return 1;
+    }
+    const s = wt.warmStatus(ROOT);
+    console.log(`warm pool: K=${s.k} (LF_WT_WARM), fills while free disk >= ${s.minFreeGb} GB (LF_WT_WARM_MIN_FREE_GB); free ${s.freeGb === null ? "unknown" : s.freeGb.toFixed(1) + " GB"}`);
+    for (const w of s.trees) console.log(`  ${w.status.padEnd(11)}${w.path}${w.head ? `  at ${w.head.slice(0, 8)}` : ""}${w.pid ? `  pid ${w.pid}` : ""}`);
+    if (!s.trees.length) console.log("  (empty)");
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
 }
 
 function wtSyncCmd(args) {
@@ -3794,6 +3933,10 @@ function wtPruneMergedCmd(args) {
     return 1;
   }
   for (const s of plan.skip) console.log(`  keep   ${s.slug}: ${s.why}`);
+  if (plan.ghError) {
+    console.log(`WARN  cannot list merged PRs (${plan.ghError}); pruning nothing. Ancestry alone never qualifies a worktree.`);
+    return 1;
+  }
   for (const t of plan.take) console.log(`  prune  ${t.slug} (${t.via})`);
   if (!plan.take.length) {
     console.log("nothing to prune");
@@ -3899,7 +4042,19 @@ function runE2ePass(root, tier, opts = {}) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
-  ensureResourceDatabase(root);
+  let rdbStale = ensureResourceDatabase(root);
+  // The pre-move save gate (#327) boots an older tree whose resources the copied rdb never registered.
+  // A server on a still-stale rdb dies with an opaque "Unable to initialize the game", so retry the
+  // refresh once and then fail with the real cause (2026-11-14: lf-cloud's Workbench exited 0 without
+  // writing the rdb while other gates ran Workbenches; this PC held the build lock).
+  if (rdbStale && opts.requireFreshRdb) {
+    console.log("e2e: resource database still stale after the refresh; retrying the refresh once");
+    rdbStale = ensureResourceDatabase(root);
+    if (rdbStale) {
+      console.log("FAIL  e2e: the resource database is still stale after two refreshes, so the server cannot load the pre-move tree. This is the machine (Workbench could not register the resources), not the saved build; rerun when its Workbench is free (tools\cli pool status).");
+      return 1;
+    }
+  }
   const ports = wt.portsForRoot(root);
   const psArgs = [
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -4060,16 +4215,16 @@ function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
     return r.status;
   };
   try {
-    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back);
+    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, Boolean(opts.preMove));
   } finally {
     back();
   }
 }
 
-function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back) {
+function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, preMove = false) {
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacySave ? ", legacy save format" : ""}${oldBuild ? ", stamped as game build 1.8.0.13" : ""}) in ${e.path}`);
   const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
-  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines });
+  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines, requireFreshRdb: preMove });
   if (pass1 === 0) {
     const log = e2eShutdown.newestTestConsole(e.path);
     const check = e2eShutdown.checkShutdownSave(log ? readFileSync(log, "utf8") : "");
@@ -4101,9 +4256,9 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
     }
     console.log(`e2e: old build: backed up the save before the reload boot -> ${backup} (${host.findSavePoints(backup).length} save point(s))`);
   }
-  const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : ""].filter(Boolean).join(",");
+  const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : "", preMove ? "LF_E2E_PRE_MOVE" : ""].filter(Boolean).join(",");
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
-  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines });
+  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove });
   const log2 = e2eShutdown.newestTestConsole(e.path);
   for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
   console.log(`e2e: profile ${profile}`);
@@ -4252,6 +4407,66 @@ async function wtSyncBaseCmd(args) {
   }
 }
 
+// `wt ship` through the ship queue. Returns at once with a status line (--no-wait), or blocks until the
+// gate passed or failed (--wait; the default when stdout is not a terminal, so an agent's report holds).
+async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const q = await import("./ship-queue.mjs");
+  const sql = await import("./lib/ship-queue.mjs");
+  const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
+  let body = customBody ?? [
+    `Automated ship from worktree \`${slug}\`.`,
+    "",
+    "Gated by the ship queue: origin/" + base + " merged in, then `ci --remote` (validate --full, build, test tier=all on pool machines).",
+    "",
+    "## Commits",
+    ...subjects.map((s) => `- ${s}`),
+  ].join("\n");
+  body = refsBody(body, closes);
+  let pr = wt.findOpenPrGh(wtRoot, e.branch);
+  // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
+  if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
+  console.log("=== ship: push (auto-merge waits for the ship queue's gate) ===");
+  const push = wt.git(wtRoot, ["push", "-u", "origin", e.branch]);
+  if (push.status !== 0) {
+    console.log(`FAIL  push: ${push.stderr || push.stdout}`);
+    return 1;
+  }
+  try {
+    if (!pr) pr = wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base });
+  } catch (err) {
+    console.log(`FAIL  PR creation: ${err.message}`);
+    return 1;
+  }
+  const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
+  const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15);
+  const log = join(wt.mainRootOf(ROOT), "tmp", "logs", `ship-${slug}-${stamp}.log`);
+  mkdirSync(dirname(log), { recursive: true });
+  let entry;
+  try {
+    entry = q.withQueue(ROOT, (qq) => sql.enqueue(qq, { slug, branch: e.branch, base, wtPath: wtRoot, pr: pr.number, prUrl: pr.url, head, files, log, fullGate: flags.includes("--full-gate"), pin: pinFlags(flags) }));
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+  const w = await q.ensureWorker(ROOT);
+  const qq = q.readQueue(ROOT);
+  const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
+  const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
+  const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
+  console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
+  console.log(`PR: ${pr.url}`);
+  const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
+  if (!wait) {
+    console.log(`ship: queued. 'tools\\cli ship-queue wait ${slug}' blocks until it is gated; 'tools\\cli pool status' shows the queue.`);
+    return 0;
+  }
+  const code = await q.waitFor(ROOT, slug);
+  if (code === 0) console.log(`ship: gated and auto-merge queued; merged, in-dev once GitHub merges it. Prune after merge: 'cli wt prune ${slug}'`);
+  console.log(`PR ${pr.url}, head ${wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim()}`);
+  return code;
+}
+
 async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
@@ -4326,6 +4541,11 @@ async function wtShipCmd(args) {
     }
     if (customBody !== null) customBody = withReview(customBody, reviewText);
   }
+  // The ship queue (tools/ship-queue.mjs, docs/worktrees.md "Ship queue"): push, open the PR with
+  // auto-merge off, enqueue; the queue worker merges main once, gates on the pool, pushes, queues
+  // auto-merge. --no-queue (or LF_SHIP_QUEUE=0) is the old local gate below.
+  const useQueue = !flags.includes("--no-queue") && process.env.LF_SHIP_QUEUE !== "0" && !skipGate && !prOnly && wt.ghAvailable();
+  if (useQueue) return shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
@@ -4349,7 +4569,7 @@ async function wtShipCmd(args) {
     }
   }
   if (!skipGate) {
-    const gateFlags = flags.includes("--full-gate") ? ["--wait", "--full-gate"] : ["--wait"];
+    const gateFlags = [...(flags.includes("--full-gate") ? ["--wait", "--full-gate"] : ["--wait"]), ...pinFlags(flags)];
     const code = runWorktreeCli(wtRoot, gateArgs(wtRoot, gateFlags));
     if (code !== 0) {
       console.log(`FAIL  gate failed; not shipping. Fix, commit, re-run 'cli wt ship ${slug}'.`);
@@ -4422,6 +4642,7 @@ function cmdWt(rest) {
   const table = {
     new: () => wtNewCmd(subArgs),
     list: () => wtListCmd(),
+    warm: () => wtWarmCmd(subArgs),
     test: () => wtTestCmd(subArgs),
     e2e: () => wtE2eCmd(subArgs),
     dev: () => wtDevCmd(subArgs),

@@ -169,6 +169,13 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "resetcrime")
 			return true;
+		if (cmd.Verb == "resetplayer")
+		{
+			cmd.Arg1 = "-1";
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "gm")
 		{
 			if (parts.Count() > 2)
@@ -1306,6 +1313,11 @@ class LF_AgentHarness
 			DoResetCrime(cmd);
 			return;
 		}
+		if (cmd.Verb == "resetplayer")
+		{
+			DoResetPlayer(cmd);
+			return;
+		}
 		if (cmd.Verb == "gm")
 		{
 			DoGm(cmd);
@@ -2043,6 +2055,22 @@ class LF_AgentHarness
 		// The count this client heard is client state; the server clears the rest.
 		SCR_PlayerController.LF_ResetDispatchCount();
 		character.LF_AskHarnessResetCrime(cmd.Id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `resetplayer [cash]` (#496): cuffs, sentence, duty, faction, wanted and crime stores,
+	//! all server side behind the dev gate.
+	protected static void DoResetPlayer(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		SCR_PlayerController.LF_ResetDispatchCount();
+		character.LF_AskHarnessResetPlayer(cmd.Id, cmd.Arg1.ToInt());
 	}
 
 	//------------------------------------------------------------------------------------------------

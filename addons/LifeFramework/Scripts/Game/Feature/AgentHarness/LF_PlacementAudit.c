@@ -155,12 +155,14 @@ class LF_PlacementAudit
 		// Something whose bounds start above this entity's bottom rests on it (a crate stacked on a
 		// crate, a vice on a bench): it is not the floor, so the trace goes on below it.
 		float bottom = startY - 0.5;
+		float top = startY;
 		if (self)
 		{
 			vector smin;
 			vector smax;
 			self.GetWorldBounds(smin, smax);
 			bottom = smin[1];
+			top = smax[1];
 		}
 		for (int n = 0; n < 6; n++)
 		{
@@ -179,7 +181,10 @@ class LF_PlacementAudit
 				above = hmin[1] > bottom + 0.1;
 			}
 
-			if (hit && (IsOwnPart(self, hit) || ChimeraCharacter.Cast(hit) || above))
+			// A surface above this entity's own top is a shelf board over it (goods on a gondola), not
+			// what it stands on (#1143): the trace goes on below it.
+			bool overhead = hit && hitY > top + 0.02;
+			if (hit && (IsOwnPart(self, hit) || ChimeraCharacter.Cast(hit) || above || overhead))
 			{
 				fromY = hitY - 0.02;
 				continue;

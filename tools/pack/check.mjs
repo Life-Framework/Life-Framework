@@ -132,7 +132,7 @@ export function checkPack(root, pack) {
         } else if (g[2] && [CORE, pack].some((a) => existsSync(join(addonsDir, a, g[2])))) {
           add("error", "guids", o.file, s, `GUID {${g[1]}} is in no .meta, but ${g[2]} exists in this repo; the reference is stale`);
         } else unchecked++;
-      } else if (s.startsWith("#") && /^#[A-Za-z]/.test(s) && !known.has(s.slice(1))) {
+      } else if (s.startsWith("#") && /^#[A-Za-z]/.test(s) && !/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(s) && !known.has(s.slice(1))) {
         add("error", "strings", o.file, s, `string key ${s.slice(1)} is in no string table of ${CORE} or ${pack}`);
       }
     }

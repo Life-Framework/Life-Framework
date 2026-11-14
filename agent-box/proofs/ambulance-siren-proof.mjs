@@ -26,6 +26,11 @@ async function runAmbulanceSirenProof() {
   };
 
   arrive(on, 1, wait);
+  // The siren row is for a medic on duty: clock in at the hospital desk first.
+  must(on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" }), "stand at the duty desk");
+  wait(2000);
+  must(on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000), "clock in");
+  wait(2000);
   must(on(1, { verb: "stand", entityName: SITE }), "stand at the site");
   wait(2500);
   const look = must(on(1, { verb: "look" }), "look");

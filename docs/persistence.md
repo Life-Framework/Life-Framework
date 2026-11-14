@@ -242,6 +242,32 @@ Apart from the police rank, no payload stores pack content by index or by a bare
 - Spawning: `LF_SpawnLogic : SCR_SpawnLogic`; `Prefabs/MP/Spawn/SpawnPoint_LIFE.et`
   is a vanilla `SCR_SpawnPoint`.
 
+## Record shapes: append only (#761)
+
+A payload is an array of record objects written by reflection, so a record's
+saved shape is its serialized fields in declaration order (base class first,
+nested `LF_` records inline). The rule, adapted from Overthrow's
+`OVT_PlayerManagerSerializer`: new data is only ever appended, and every older
+save still loads.
+
+- A shipped field is never removed, renamed, reordered or retyped. A retired
+  field stays as padding (`LF_SurvivalStatsRecord.m_fHealth`).
+- New data is a **sidecar payload**: a `[NonSerialized()]` field on the live
+  record and a row class (`int m_iVersion` first) in a payload appended to
+  `RegisterPersistencePayloads` with a version bump, which an older save simply
+  lacks (`orgranks` #750a, `joblevels` #749). One PR per reshape (D6).
+- Before the persistent launch (#556) a serialized field may be appended to a
+  record only with a save version bump and a read path for the older shape.
+  After it, a shipped record takes no new serialized field at all.
+- `tools/validation/validate-record-shapes.mjs` locks every record's fields in
+  `tools/validation/record-shapes.json` and fails on a removed, renamed,
+  reordered or retyped field, a dropped payload, or an append or new record
+  without a bump. After a legal change (a bump with appends or a new payload)
+  run `node tools/validation/validate-record-shapes.mjs --update` and commit
+  the lock. At #556 set `"launched": true` in the lock.
+- The audit of every record, its version and whether it is final for launch:
+  [`docs/architecture/record-shape-audit.md`](architecture/record-shape-audit.md).
+
 ## Layer 2: orchestration (when a save happens)
 
 Without this layer nothing asked for a save point, so a dedicated-server
@@ -384,8 +410,8 @@ across the `wt e2e` restart, keepLicences off from the owner file).
   character persistence id and slot name) is captured at each save point and on
   disconnect, and applied on spawn in place of the starter kit. Apply reconciles
   against what the entity already has, so it is idempotent. Death clears it.
-- A field added to a persisted record class breaks every older positional save.
-  The M3 record reshapes follow this as sidecar payloads: `docs/architecture/record-shape-vehicle.md`
+- A field added to a persisted record class breaks every older positional save
+  ("Record shapes: append only" above). The M3 record reshapes follow this as sidecar payloads: `docs/architecture/record-shape-vehicle.md`
   (#752a) and `docs/architecture/record-shape-held-ground.md` (#751).
   Per-item state (`LF_StorageItemRecord.m_iAmmo`) is `[NonSerialized()]` and
   travels in its own payload instead; `police/item-state` proves the carried
@@ -438,3 +464,30 @@ across the `wt e2e` restart, keepLicences off from the owner file).
 - In-session round trips prove nothing; the restart is ground truth. `wt e2e`
   covers save -> host-stop shutdown -> boot -> load with two processes; a
   single `LF_Test` run cannot survive a game-state transition.
+
+## Pre-move save gate (#327, decision D7 (a))
+
+A move keeps each GUID and changes its path, so a save made before the pack move must still load
+after it. That is a standing guarantee, not a one-off check of #323:
+
+- **Pinned reference:** `PRE_MOVE_REF` in `tools/lib/pre-move-gate.mjs` is `502ebf39` (PR #1144),
+  the last commit before the first move batch. It is a fixed commit, not "the previous release",
+  so the guarantee does not slide forward with `main`. The playtest header (GUID `1054CC8646357708`)
+  is the save key a real host has; it lives in the core at that commit and in the pack now.
+- **Proof:** `tools\cli e2e --pre-move 502ebf39 --mission playtest`. Pass 1 checks out the ref (a
+  clean tree is required; the checkout returns either way), boots core only, and ends through the
+  host stop file so the engine writes the SHUTDOWN save. Pass 2 runs on the current tree with both
+  addons and `-loadSessionSave latest`; `e2e/pass2-verify-load` asserts the marker values (cash, the
+  carried inventory, the jail sentence, the card, the accounts) came back.
+- **Gate:** `ci`, `wt gate` and `wt ship` run it as the `pre-move save` step when the diff touches
+  persistence code (`Scripts/Game/Persistence/`, `*Persist*.c`, `*SaveAlias*.c`, `*SaveIds*.c`), any
+  `Missions/` file, a `.gproj`, the pack/core boundary (`tools/lib/addons.mjs`,
+  `validate-addon-boundary.mjs`) or the e2e harness. Other diffs skip it with one line. The trigger
+  is `tools/validation/pre-move-gate-selftest.mjs`, offline.
+- **Newer-than-ref assertions:** pass 2 compiles with `LF_E2E_PRE_MOVE`. An e2e assertion about state the ref build never wrote (a record, flag or owner file added after `PRE_MOVE_REF`) goes inside `#ifndef LF_E2E_PRE_MOVE`; without that the gate fails on the test, not on the save. Today: the rules quiz flag (`LF_Test_E2E_SaveState`) and the switches reload boot (`LF_Test_PersistSwitchesRestart`).
+- **Failure reading:** a load that resolves a prefab by path instead of GUID shows as a missing
+  marker value in `pass2-verify-load` or an `Unable to find` line in the second boot. Fix the loader
+  to compare GUIDs (`LF_SaveIds`), never re-point the ref.
+- **When the ref may change:** never to hide a failure. Only if a later save-format break makes the
+  old save unreadable by design (record that in "Save reset" above), then pin the newest commit
+  that is still readable and say why in the PR.

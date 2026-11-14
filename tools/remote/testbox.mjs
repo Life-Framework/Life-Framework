@@ -202,12 +202,17 @@ function sha1File(file) {
   return createHash("sha1").update(readFileSync(file)).digest("hex");
 }
 
-function appendStamp(root, line, sha, consoleLog, host) {
+// A core-only run stamps tier "<tier>-core" (test-e2e.ps1 does the same locally), so it never stands in for the full run.
+export function stampTierOf(tier, coreOnly) {
+  return coreOnly ? `${tier}-core` : tier;
+}
+
+function appendStamp(root, line, sha, consoleLog, host, coreOnly = false) {
   const m = /\[LFTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(line);
   if (!m) return null;
   const dir = join(root, "tmp", "test-results");
   mkdirSync(dir, { recursive: true });
-  const rec = { sha, tier: m[1], passed: +m[2], failed: +m[3], total: +m[4], consoleLog: consoleLog || "", host };
+  const rec = { sha, tier: stampTierOf(m[1], coreOnly), passed: +m[2], failed: +m[3], total: +m[4], consoleLog: consoleLog || "", host };
   appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(rec) + "\n", "utf8");
   return rec;
 }
@@ -486,7 +491,7 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
       for (const l of key) console.log(`  ${l.trim()}`);
     }
   }
-  const summary = summaryLine ? appendStamp(root, summaryLine, snap.head, localLog, m.name) : null;
+  const summary = summaryLine ? appendStamp(root, summaryLine, snap.head, localLog, m.name, args.includes("--core-only")) : null;
   if (localLog) console.log(`remote: log ${localLog}`);
   return { code: slot.lost && code === 0 ? 3 : code, summary, localLog, sync };
 }

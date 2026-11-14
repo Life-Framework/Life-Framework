@@ -90,7 +90,8 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | Command | Does |
 |---|---|
 | `tools\cli status` | Toolchain and MCP state |
-| `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports |
+| `tools\cli lead [--prs N]` / `lead prune-safe [--dry-run]` | The lead's one-screen dispatch view in about 10 s: M2 and M3 issues by state, open PRs (conflicting first, with a generated-only hint), worktrees (active, idle, merged-prunable by GitHub PR, orphans, disk), pool machines and queue, accounts and slices when those commands exist. `prune-safe` prunes only worktrees whose PR is MERGED, clean, idle and unlocked, never forced (`docs/worktrees.md` "Lead view") |
+| `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports; claims a ready warm checkout (about 2 s) when the pool has one (`wt warm`, `docs/worktrees.md` "Fast `wt new`") |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
 | `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci`, `wt gate`, `wt ship` and CI run every check plus the compile |
@@ -103,10 +104,11 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge. Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
+| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / push, PR, then the ship queue: main merged once, `ci --remote` on a pool machine, auto-merge; waits until gated and prints `SUMMARY ship ok|fail` (docs/worktrees.md "Ship queue"). Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
 | `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour: open M2 chapter and epic work first, then big player flows, polish last; one line can cover several issues. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
+| `tools\cli usage --accounts [--window 5h]` / `usage --pick` | Usage per Claude account (Personal `~/.claude`, Gaming `~/.claude-gaming` plus the laptop over ssh): cost-weighted tokens, messages, active sessions, last rate-limit hit, `≈X% of last observed limit` (an estimate). `--pick` names the provider id for the next agent (`claudeAgent`, `claudeAgent_claude_gaming` or `"laptop"`) |
 
 **Compact output.** Heavy commands (`validate`, `test`, `session up`, `look`, `wt gate|ship`, `asset run`, `harness.mjs flow`, proof verbs) print one `SUMMARY <cmd> ok|fail ... log=<path>` line and only the failing items with file:line; the full transcript is the log file in `tmp/logs/`. Never pipe them through `tail`/`Select-Object`. `--verbose` prints everything (`docs/agent-budget.md` "Compact command output").
 
@@ -169,7 +171,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
 - **Pass cache.** `test` (and the suite inside `ci`, `wt gate`, `wt ship`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
-- Wait with one blocking call: run `test`, `e2e`, `session up` or `session wait` in the foreground with a timeout up to 600000 ms; never `sleep`/`until` loops, Monitor, ScheduleWakeup or status polls (`docs/agent-budget.md`).
+- Wait with one blocking call: run `test`, `e2e`, `session up` or `session wait` in the foreground with a timeout up to 600000 ms; never `sleep`/`until` loops, Monitor, ScheduleWakeup or status polls (`docs/agent-budget.md`). A subagent or delegated task is never woken by a background run, so ending its turn while one runs ends the task unfinished; run in the foreground (timeout up to 600000 ms) or call `t3_background_wait` before ending the turn.
 - A rule that keeps getting broken becomes a check: `tools\cli validate` runs every script in `tools/validation/`.
 
 ## Logging and fail-safe
@@ -258,6 +260,13 @@ The order is design, scaffold, look, place, build, test, look, review, ship
 when the diff touches replication, an RPC, persistence, money, inventory or
 GUIDs: findings go in `tmp/review-<slug>.md`, each ticked `fixed:` or
 `dismissed:` with a reason, and ship carries the file into the PR.
+
+A chapter or epic runs through the roadmap pipeline
+(`docs/process/roadmap-pipeline.md`): one Opus planner cuts file-disjoint
+slice cards (`docs/process/slice-card.md`, at most 45 min / 60 calls each),
+`tools\cli slice list <parent> --ready` is the dispatch queue by critical
+path, `slice brief <issue>` is the agent's brief, and `slice record` / `slice
+stats` tune model routing. A slice that runs over is split, never extended.
 
 ## What "done" means (issue states)
 

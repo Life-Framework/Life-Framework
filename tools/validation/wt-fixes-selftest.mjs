@@ -1,7 +1,7 @@
 // Selftest for `wt ship --refs` parsing and `wt prune` merge detection (tools/wt.mjs).
 // inputs: tools/**
 // Scratch git repos with a bare origin and a stubbed gh lookup; no game, no network.
-// red-proof: see the PR body (parseIssueFlag accepting 0, and branchMerged ignoring the merged-PR head).
+// red-proof: see the PR body (parseIssueFlag accepting 0; branchMerged ignoring the merged-PR head; prMergedVerdict falling back to ancestry keeps no fresh branch).
 import { mkdirSync, mkdtempSync, writeFileSync, utimesSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -33,6 +33,12 @@ ok(!/Refs #/.test(refsBody("Body text\n", null)), "no issue: no Refs line is add
 ok(refsBody("Body\n", "5").startsWith("Refs #5"), "issue 5: Refs line added");
 const body = "## Summary\nA tooling change.\n\n## Manual testing\nNone: tooling only.\n";
 ok(pq.bodyProblems({ body, files: ["tools/wt.mjs"], hasBodyFile: false }).length === 0, "PR-quality gate accepts a body with no Refs line");
+
+// --- 1b. ship merge conflict message: files on one line (the compact FAIL line keeps only line 1)
+const cm = wt.mergeFailureDetail("docs/a.md\ndocs/b.md\n", "ignored");
+ok(!cm.includes("\n"), "conflict message is a single line");
+ok(/conflicts in: docs\/a\.md, docs\/b\.md/.test(cm), `conflict message lists the files, got '${cm}'`);
+ok(wt.mergeFailureDetail("", "  boom\n") === "boom", "no unmerged files: the raw git output is used");
 
 // --- 2. prune merge detection
 const dir = mkdtempSync(join(tmpdir(), "lf-wtfix-"));
@@ -78,29 +84,42 @@ try {
   ok(sqTip.length > 0, "sanity");
   ok(!wt.branchMerged(repo, "ws/nope", "main", { mergedHeads: noPr }).merged, "missing branch is not merged");
 
-  // --merged candidates: hand-written hub state beside the scratch repo
-  const wtPath = join(dir, "wt-sq");
-  sh(repo, "worktree", "add", wtPath, "ws/sq");
-  const openPath = join(dir, "wt-open");
-  sh(repo, "worktree", "add", openPath, "ws/open");
+  // --merged candidates: hand-written hub state beside the scratch repo. Only a merged PR qualifies a worktree.
+  sh(repo, "checkout", "--detach", "origin/main");
+  const initSha = sh(repo, "rev-parse", "ws/ff~1");
+  sh(repo, "branch", "ws/fresh", "origin/main"); // fresh worktree, no commit yet: an ancestor of main
+  sh(repo, "branch", "ws/ff2", "ws/ff");          // ancestor of main, its PR head is older than the tip
+  const slugs = ["sq", "open", "fresh", "ff", "ff2", "more"];
+  const paths = {};
+  for (const sl of slugs) { paths[sl] = join(dir, `wt-${sl}`); sh(repo, "worktree", "add", paths[sl], `ws/${sl}`); }
   mkdirSync(join(repo, "tmp", "wt", "locks"), { recursive: true });
-  const state = { version: 1, nextPortIndex: 2, worktrees: {
-    sq: { slug: "sq", branch: "ws/sq", path: wtPath, ports: { gamePort: 1, a2sPort: 2 } },
-    open: { slug: "open", branch: "ws/open", path: openPath, ports: { gamePort: 3, a2sPort: 4 } },
-  } };
+  const state = { version: 1, nextPortIndex: slugs.length, worktrees: Object.fromEntries(slugs.map((sl, i) =>
+    [sl, { slug: sl, branch: `ws/${sl}`, path: paths[sl], ports: { gamePort: 2 * i + 1, a2sPort: 2 * i + 2 } }])) };
   writeFileSync(join(repo, "tmp", "wt", "state.json"), JSON.stringify(state));
+  const wtPath = paths.sq;
+  const pr = (number, branch, head) => ({ number, headRefName: branch, headRefOid: head, baseRefName: "main", mergedAt: "2026-11-14T10:00:00Z" });
+  const prs = [pr(11, "ws/sq", sqTip), pr(12, "ws/more", oldHead), pr(13, "ws/ff2", initSha), pr(14, "ws/open", "deadbeef")];
+  const mergedPrs = () => ({ ok: true, prs });
   const later = Date.now() + 40 * 60 * 1000;
-  let plan = wt.pruneCandidates(repo, { now: later, mergedHeads: noPr });
-  ok(plan.take.map((t) => t.slug).join() === "sq", `only the merged worktree qualifies, got ${JSON.stringify(plan)}`);
-  ok(plan.skip.some((s) => s.slug === "open" && /not merged/.test(s.why)), "unmerged worktree is kept");
-  plan = wt.pruneCandidates(repo, { now: Date.now(), mergedHeads: noPr });
+  const why = (plan, sl) => (plan.skip.find((x) => x.slug === sl) || {}).why || "";
+  let plan = wt.pruneCandidates(repo, { now: later, mergedPrs });
+  ok(plan.take.map((t) => t.slug).join() === "sq", `only the merged-PR worktree qualifies, got ${JSON.stringify(plan)}`);
+  ok(/merged PR #11/.test((plan.take[0] || {}).via || ""), "the reason names the merged PR");
+  ok(/no merged PR \(ancestor only\)/.test(why(plan, "fresh")), `a fresh branch with no PR is kept, got '${why(plan, "fresh")}'`);
+  ok(/no merged PR \(ancestor only\)/.test(why(plan, "ff")), `an ancestor-only branch is kept, got '${why(plan, "ff")}'`);
+  ok(/commits after/.test(why(plan, "ff2")), `an ancestor whose merged PR head is older than the tip is kept, got '${why(plan, "ff2")}'`);
+  ok(/commits after/.test(why(plan, "more")), `a merged-PR branch with a new commit after the merge is kept, got '${why(plan, "more")}'`);
+  ok(/commits after/.test(why(plan, "open")), "a merged PR with another head SHA keeps the branch");
+  plan = wt.pruneCandidates(repo, { now: later, mergedPrs: () => ({ ok: false, error: "gh pr list timed out" }) });
+  ok(!plan.take.length && plan.ghError === "gh pr list timed out", "gh unavailable or timed out: nothing is pruned, no ancestry fallback");
+  plan = wt.pruneCandidates(repo, { now: Date.now(), mergedPrs });
   ok(!plan.take.length && plan.skip.some((s) => s.slug === "sq" && /touched/.test(s.why)), "a worktree touched under 30 min ago is kept");
   writeFileSync(join(wtPath, "dirty.txt"), "d\n");
-  plan = wt.pruneCandidates(repo, { now: later, mergedHeads: noPr });
+  plan = wt.pruneCandidates(repo, { now: later, mergedPrs });
   ok(plan.skip.some((s) => s.slug === "sq" && /uncommitted/.test(s.why)), "a dirty worktree is kept");
   rmSync(join(wtPath, "dirty.txt"));
   writeFileSync(join(repo, "tmp", "wt", "locks", "server-9.lock"), JSON.stringify({ pid: process.pid, root: wtPath, name: "server-9" }));
-  plan = wt.pruneCandidates(repo, { now: later, mergedHeads: noPr });
+  plan = wt.pruneCandidates(repo, { now: later, mergedPrs });
   ok(plan.skip.some((s) => s.slug === "sq" && /lock/.test(s.why)), "a worktree with a live lock is kept");
 } catch (e) {
   failures.push(`selftest crashed: ${e.stack || e.message}`);

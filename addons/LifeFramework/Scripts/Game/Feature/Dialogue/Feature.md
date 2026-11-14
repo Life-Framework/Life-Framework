@@ -28,6 +28,7 @@ Rules:
   Hooks hold no state.
 - Every way out of the scene restores the camera, the controls and the HUD (`LF_DialogueScene.Close`).
 - An NPC whose config is missing or broken talks the way it did before; the reason is logged once.
+- The core ships dialogues text only or voiced: the fuel clerk is voiced, the clerk is text only (`"text_only": true`). A pack gives the clerk its voice with a patch that carries `voice` (`tools/assets/dialogue/clerk_everon/`): the patch conf sets `m_sSoundProject` and each line's event, length and mouth, and the recordings live in the pack (#323).
 - A pack patches a dialogue by node and line id (`m_sOp`), never by copying the `.conf`. Replies have no id: a node patch replaces its reply list. Tests `dialogue/override-verbs`, `config/pack-patch-overlays`.
 
 Converted so far: the town clerk (`Prefabs/Characters/Quests/QuestGiver_Clerk.et`, hooks in
