@@ -253,4 +253,18 @@ class LF_Terms
 
 		return string.Format(expanded, p1, p2, p3, p4);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Text a widget is about to show: a bare string key ("#LF-Ticket_Title") goes through Text, anything
+	//! already translated has its placeholders expanded. The UI kit calls it for every title, line and button.
+	static string Shown(string value)
+	{
+		if (value.IsEmpty())
+			return value;
+
+		if (value.Get(0) == "#")
+			return Text(value);
+
+		return Expand(value);
+	}
 }

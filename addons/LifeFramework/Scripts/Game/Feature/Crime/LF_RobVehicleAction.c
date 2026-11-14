@@ -39,7 +39,7 @@ class LF_RobVehicleAction : ScriptedUserAction
 		int policeOnDuty = GetPoliceOnDutyCount();
 		if (policeOnDuty < m_iMinPoliceOnDuty)
 		{
-			SetCannotPerformReason(WidgetManager.Translate("#LF-Rob_NeedPoliceCount", m_iMinPoliceOnDuty));
+			SetCannotPerformReason(LF_Terms.Text("#LF-Rob_NeedPoliceCount", m_iMinPoliceOnDuty.ToString()));
 			return false;
 		}
 

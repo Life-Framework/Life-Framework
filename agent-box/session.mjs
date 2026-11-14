@@ -41,6 +41,7 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
+import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { addonsArgs, launchAddons, PACK_MISSION, playtestMission } from "../tools/lib/addons.mjs";
@@ -82,13 +83,18 @@ export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
-export const MISSIONS = ["debug", "playtest"];
+export const MISSIONS = ["debug", "playtest", "template"];
+// `--mission template` boots the example server folder (server/example, #295): the scenario and mods
+// server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
+// `--mission template-<variant>` boots tools/server-template/variants/<variant>/server.json instead (#297):
+// the same file with only mods and scenarioId swapped, e.g. template-core-only boots the core with no pack.
 
 export function parseMission(args) {
   const i = args.indexOf("--mission");
   if (i === -1) return "debug";
   const m = args[i + 1];
-  if (!MISSIONS.includes(m)) throw new Error(`--mission must be ${MISSIONS.join(" or ")}`);
+  const variantNames = templateVariants(ROOT).map((v) => `template-${v}`);
+  if (!MISSIONS.includes(m) && !variantNames.includes(m)) throw new Error(`--mission must be ${[...MISSIONS, ...variantNames].join(" or ")}`);
   return m;
 }
 
@@ -96,7 +102,7 @@ export function parseMission(args) {
 // ("remote script source code checksum does not match").
 export function defineArgs(mission = "debug") {
   const args = ["-scrDefine", SESSION_DEFINE];
-  if (mission === "playtest") args.push("-scrDefine", HARNESS_DEFINE);
+  if (mission === "playtest" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
   return args;
 }
 
@@ -203,10 +209,13 @@ export function laneArgs(port) {
 // rp: the resolved session profile (session-profile.mjs); absent means full.
 // addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header.
 export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons() }) {
+  // The template mission boots what server/example/server.json names: its scenario and its mods. The
+  // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
+  const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
     "-addonsDir", addonsDir,
-    ...addonsArgs(addons),
+    ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
     "-maxFPS", String(rp.server?.maxFps ?? 30),
     "-logLevel", "normal",
@@ -232,6 +241,8 @@ export function windowFor(n, res = WINDOW) {
 
 export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false, rp = resolveProfile("full"), addons = launchAddons() }) {
   const w = windowFor(n, res);
+  // A client loads the mods the server's server.json lists, or the join is refused on a mismatch.
+  if (isTemplateMission(mission)) addons = templateLaunch(ROOT, templateVariant(mission)).addons;
   return [
     "-client", port && port !== 2001 ? `${address}:${port}` : address,
     "-addonsDir", addonsDir,
@@ -486,6 +497,11 @@ export function selftestSession() {
     failures.push("--mission prod was accepted");
   } catch {}
   if (laneArgs(2001).length || laneArgs(2011).join(" ") !== "-addr 127.0.0.1:2011 -a2sPort 17877") failures.push("laneArgs: lane 1 keeps the defaults, lane 2 gets -addr and its A2S port");
+  // #297: the core-only template variant boots the core's header with the core alone, on both sides.
+  const ts = serverArgs({ addonsDir: "A", profile: "SP", mission: "template-core-only" });
+  const tc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "template-core-only" });
+  if (!/LF_PlaytestTown\.conf$/.test(ts[1]) || ts[ts.indexOf("-addons") + 1] !== "LifeFramework" || tc[tc.indexOf("-addons") + 1] !== "LifeFramework") failures.push("--mission template-core-only does not boot the core alone");
+  if (parseMission(["--mission", "template-core-only"]) !== "template-core-only") failures.push("parseMission template-core-only");
   if (!serverArgs({ addonsDir: "A", profile: "SP", port: 2011 }).includes("127.0.0.1:2011") || serverArgs({ addonsDir: "A", profile: "SP" }).includes("-addr")) failures.push("serverArgs lane port");
   if (clientArgs({ n: 1, addonsDir: "A", profile: "P", port: 2011 })[1] !== "127.0.0.1:2011" || clientArgs({ n: 1, addonsDir: "A", profile: "P" })[1] !== "127.0.0.1") failures.push("clientArgs lane port");
   if (sessionDir({ LF_SESSION_DIR: "X" }) !== "X") failures.push("LF_SESSION_DIR does not override");
@@ -1181,7 +1197,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -1261,7 +1277,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {

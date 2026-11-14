@@ -55,7 +55,7 @@ hydrates the static HTML. Moving between pages after that is client-side.
 | Config generator (`/config`) | `docs/config/config.schema.json`, copied to `src/generated/data/config-schema.json` at build time. The form and defaults are derived from it (`src/lib/configgen.ts`). Validation is `tools/config/rules.mjs`, the same module `toolscli config-check` runs, applied to the file the page would export; the download is off while any error remains. A config.json can be imported (file or paste): unknown keys are kept on export, an older or newer `schemaVersion` is reported. The download holds only values changed from the defaults plus `schemaVersion`. `npm test` (`scripts/configgen-selftest.mjs`) tests that logic against the config-check fixtures. Linked from `/servers` and the footer |
 | Credits (`/credits`) | `docs/credits.md` rendered at build time (a doc with its own route, like decisions), plus the GitHub contributor list. Linked from the footer. Add a credit in `docs/credits.md`, never in the page |
 | Decisions (`/decisions`) | `docs/decisions.md`, split into its sections and dated entries |
-| Docs (`/docs`, `/docs/:slug`) | Setup and playtest guides, direction and decisions, engineering references, research and community docs, and every `docs/roadmap/**/*.md` |
+| Docs (`/docs`, `/docs/:slug`) | Setup and playtest guides, the player FAQ (`docs/player-faq.md`) and the clip guide (`docs/player-clips.md`), direction and decisions, engineering references, research and community docs, and every `docs/roadmap/**/*.md` |
 
 Markdown is turned into HTML at build time (remark and rehype); the browser
 never parses markdown. Relative links in the docs are rewritten: a link to a
