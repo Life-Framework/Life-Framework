@@ -71,7 +71,7 @@ and the DebugWorld village, which the tests depend on.
    `LF_UISkin` (paper forms, a green-phosphor ATM) hold the period palette as
    constants. Another setting cannot reskin the UI without a skin config.
 6. **The playtest mission is the test world.** `LF_PlaytestTown.conf` (the
-   flagship header) and `EL_DebugTest.conf` (the suite) both load
+   developer playtest header) and `EL_DebugTest.conf` (the suite) both load
    `DebugWorld.ent`. The pack needs its own world that holds the village; the
    core keeps DebugWorld with the annex.
 
@@ -231,11 +231,11 @@ its save.
 | Path | Class | Reason |
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
-| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The legacy playtest header, hidden from the scenario list since #374 (`LF_Everon1989.conf` is the listed flagship; this id still boots for existing servers and saves); its world is the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
+| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The developer playtest header, hidden from the scenario list since #374 (`LF_Everon1989.conf` is the one listed flagship; this id still boots for `host`, `playtest`, `session --mission playtest`, the e2e `--mission playtest` and existing saves) and the one that keeps the playtest helpers on; its world is the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
 | `LF_PlaytestTown_Preview.{edds,jpg}` | pack, moved (batch 1) | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack, moved (batch 1) | The MainWorld header |
 | `LF_HostedTest.conf` | core | Test fixture (#323 batch 1): a hosted header on DebugWorld with dev tools closed, read by `host/playtest-mission` and `harness/dev-gate-dedicated` |
-| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The pack's own playtest header (2026-11-14, #322): a copy of `LF_PlaytestTown.conf` that `host`, `playtest` and `session --mission playtest` boot with both addons. Since batch 1 it loads the pack world `Everon1989Town.ent` and uses the moved preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
+| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The flagship header, the only scenario Workshop players see (#322, #374, #1339). It closes the playtest helpers (`m_bLF_PlaytestHelpersOff 1`) and leaves `m_bLF_FirstPlayerPolice` and `m_bLF_InstantPoliceApproval` off, so a real server gets no test cars, top-up, spawn hub or auto-police; the listen-host proof boots it. Since batch 1 it loads the pack world `Everon1989Town.ent` and uses the moved preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 
 ## Worlds
