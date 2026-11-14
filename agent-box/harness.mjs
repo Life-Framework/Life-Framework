@@ -30,6 +30,8 @@ const MENU_ACTIONS = new Set([
   // Character actions the harness drives for melee proof (pickaxe swing at an ore rock).
   "CharacterMelee",
   "CharacterTurnUp",
+  // The clip stamp key (#1173), so the proof presses the real binding.
+  "LF_ClipStamp",
   // Vehicle lights, to light the dashboard indicators for the vehicle HUD proof (#921).
   "VehicleLightsToggle",
   "CarLightsHiBeamToggle",

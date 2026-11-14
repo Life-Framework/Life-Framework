@@ -323,6 +323,95 @@ class LF_StorageSnapshot
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Drops every snapshot of one slot (the carried-gear persistence switch, #689).
+	//! \return How many snapshots were dropped.
+	static int ClearSlot(string slot)
+	{
+		if (!s_mSnapshots)
+			return 0;
+
+		array<string> keys = {};
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (record && record.m_sSlot == slot)
+				keys.Insert(key);
+		}
+
+		foreach (string dropKey : keys)
+		{
+			s_mSnapshots.Remove(dropKey);
+		}
+
+		return keys.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes every item of one prefab that holds nothing from the snapshots of one slot (the cash
+	//! persistence switch, #689). The items after a removed one move up, so their parent indexes are
+	//! remapped; their ammo and serial travel on the item record and stay with it.
+	//! \return The total quantity removed.
+	static int StripPrefab(string slot, ResourceName prefab)
+	{
+		if (!s_mSnapshots || prefab.IsEmpty())
+			return 0;
+
+		int removed;
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (!record || record.m_sSlot != slot || !record.m_aItems)
+				continue;
+
+			removed += StripPrefabFrom(record, prefab);
+		}
+
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The quantity of the prefab removed from one record (only items nothing sits in).
+	static int StripPrefabFrom(notnull LF_StorageSnapshotRecord record, ResourceName prefab)
+	{
+		int count = record.m_aItems.Count();
+		array<bool> holds = {};
+		holds.Resize(count);
+		foreach (LF_StorageItemRecord held : record.m_aItems)
+		{
+			if (held && held.m_iParent >= 0 && held.m_iParent < count)
+				holds[held.m_iParent] = true;
+		}
+
+		int removed;
+		array<int> newIndex = {};
+		newIndex.Resize(count);
+		array<ref LF_StorageItemRecord> kept = {};
+		for (int index = 0; index < count; index++)
+		{
+			LF_StorageItemRecord entry = record.m_aItems[index];
+			if (entry && !holds[index] && LF_Utils.SamePrefab(entry.m_sPrefab, prefab))
+			{
+				removed += entry.m_iQuantity;
+				newIndex[index] = -1;
+				continue;
+			}
+
+			newIndex[index] = kept.Count();
+			kept.Insert(entry);
+		}
+
+		if (kept.Count() == count)
+			return 0;
+
+		foreach (LF_StorageItemRecord moved : kept)
+		{
+			if (moved && moved.m_iParent >= 0 && moved.m_iParent < count)
+				moved.m_iParent = newIndex[moved.m_iParent];
+		}
+
+		record.m_aItems = kept;
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Death drops what you carry: the account loses the carried snapshot, the body keeps the items.
 	static void OnCharacterDied(string characterId)
 	{
