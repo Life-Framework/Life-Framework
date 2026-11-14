@@ -1,0 +1,17 @@
+{
+  "slug": "cement-bag",
+  "name": "CementBag",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "The 50 kg paper cement sack the quarry's cement plant fills and the cement stand sells (Configs/Resources/ResourceChains.conf). It was the vanilla sandbag.",
+  "search": "cement bag",
+  "source": { "provider": "polyhaven", "id": "cement_bag", "resolution": "2k" },
+  "size_m": { "length": 0.7, "height": 0.18, "width": 0.46 },
+  "budget": { "lod0_tris": 844, "lod_ratios": [0.6, 0.3], "texture_px": 1024, "credits": 0 },
+  "fit": { "offset": [0, 0, 0] },
+  "parts": [],
+  "asset_dir": "Assets/Items/Resources/CementBag",
+  "prefab_dir": "Prefabs/Items/Resources",
+  "prefab": false,
+  "materials": { "default": "scanned", "regions": [] }
+}

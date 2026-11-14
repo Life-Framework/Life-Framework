@@ -7,6 +7,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { extname, isAbsolute, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import * as meshy from "./meshy.mjs";
+import { conceptMatches, pickCandidate } from "./source.mjs";
 
 export const COUNT = 10;
 export const COLS = 5;
@@ -217,7 +218,9 @@ export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
   rec.variants.forEach((v, i) => { v.prompt = prompts[i].prompt; if (st[i + 1]?.taskId) v.taskId = st[i + 1].taskId; });
   const ff = resolveFfmpeg();
   if (!ff) throw new Error("ffmpeg not found (tools/film/.bin, or set FFMPEG_PATH): node tools/film/film.mjs fetch");
-  const sheet = buildSheet(ff.path, folder, rec, "sheet.png");
+  // Models the source ladder found (Poly Haven and the libraries) sit on the same sheet, numbered after the concepts.
+  const matches = await conceptMatches(ctx, folder, rec.variants.length);
+  const sheet = buildSheet(ff.path, folder, { variants: [...rec.variants, ...matches] }, "sheet.png");
   console.log(`contact sheet ${sheet}`);
   if (!rec.pick && ctx.pick) {
     pickByRubric(rec);
@@ -236,6 +239,8 @@ export function cmdPick(root, args) {
   const slug = args[0];
   const rec = slug && loadConcepts(root, slug);
   const n = Number(args[1]);
+  if (rec && Number.isInteger(n) && n > rec.variants.length) return pickCandidate(root, slug, n);
+  if (rec && /^Assets\//.test(args[1] || "")) return pickCandidate(root, slug, args[1]);
   if (!rec || !Number.isInteger(n)) { console.log('usage: tools\\cli asset pick <slug> <n> [--why "..."]   (needs tools/assets/<slug>/concepts.json)'); return 2; }
   const i = args.indexOf("--why");
   pickConcept(rec, n, { by: "human", why: i >= 0 ? args.slice(i + 1).join(" ") : "" });
