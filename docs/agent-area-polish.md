@@ -146,7 +146,7 @@ toolscli shots crop wide 900,0,380,140
 - **`--pick`** copies the best-scoring wide and the best-scoring close-up (by importance: actions and size) to
   `website/public/docs-images/area-<n>-<slug>/` as `wide.png` and `detail.png`; `--detail <Entity>` picks
   another close-up. The builder may override either.
-- **Known limits.** The player camera cannot pitch, so by default the wide is a level view from 12 m up and there is no top-down. `--free-camera` flies a free camera (real pitch, real top-down) but the client crashed about 4 s after the first shot, so it is opt-in until that is fixed. The field of view used by `--annotate` is an assumption (60 degrees vertical); the labels lined up with the entities in the hospital run.
+- **Known limits.** The player camera cannot pitch, so by default the wide is a level view from 12 m up and there is no top-down. `--free-camera` flies a free camera (real pitch, real top-down). It is opt-in, not the default, because the character-camera shots are already enough for most areas; it used to crash the client about 4 s after the first shot (#506: the camera prefab was spawned without its GUID, see `docs/debug-log-triage.md`). The field of view used by `--annotate` is an assumption (60 degrees vertical); the labels lined up with the entities in the hospital run.
 - **Images** are quantised to a palette PNG when a full-colour one is over 500 KB (`agent-box/bmp.mjs`).
 - **Harness against a remote session.** `harness.mjs <verb> ...` relays through `session.mjs run` when the session is on a pool machine (`--local` keeps it here); `session.mjs up --help` prints help.
 - **Session.** It reuses a running session, or starts one (`session.mjs up --machine any --profile full --wait`, one client,

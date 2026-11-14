@@ -5353,11 +5353,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "New Life Rule return"
      Comment "Incident kind: a player wearing the New Life wristband came back near where they died."
     }
-    CustomStringTableItem "{46261105E82813B6}" {
-     Id "LF-IncidentGm_Kind_logout"
-     Target_en_us "Logout in custody"
-     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
-    }
     CustomStringTableItem "{5934A766F9EB76E9}" {
      Id "LF-NewLife_WakeToast"
      Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
@@ -8347,6 +8342,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_pt "$"
      Target_pt_br "$"
      Comment "Term "currency" (#958): the symbol that goes before an amount, {currency:sym}."
+    }
+    CustomStringTableItem "{42E27FF2B0C5A49F}" {
+     Id "LF-Placement_Title"
+     Target_en_us "Placing"
+     Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{CC9466F58FD8A430}" {
+     Id "LF-Placement_NotAllowed"
+     Target_en_us "You are not allowed to place this."
+     Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
+    }
+    CustomStringTableItem "{70A8229A6F903FA6}" {
+     Id "LF-Placement_NoGround"
+     Target_en_us "There is no flat ground there."
+     Comment "Toast when a placement is refused because the ground under it is missing or rises too much (a kerb, a slope) (#1026)."
+    }
+    CustomStringTableItem "{284442A5E34D1270}" {
+     Id "LF-Placement_Moved"
+     Target_en_us "You moved. Look at the spot again and retry."
+     Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
+    }
+    CustomStringTableItem "{46261105E82813B6}" {
+     Id "LF-IncidentGm_Kind_logout"
+     Target_en_us "Logout in custody"
+     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
  }
 }
