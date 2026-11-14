@@ -60,14 +60,16 @@ export const stableGuid = (...parts) => createHash("sha1").update(parts.join("|"
 export function loadSpec(root, id) {
   const file = specFile(root, id);
   if (!existsSync(file)) throw new Error(`no dialogue at ${file} (docs/asset-pipeline/dialogue.md "A new NPC")`);
-  return expand(JSON.parse(readFileSync(file, "utf8")));
+  const raw = JSON.parse(readFileSync(file, "utf8"));
+  // A patch may copy the reply list of a node only the core has; runPatch expands it against the core.
+  return raw.patches ? raw : expand(raw);
 }
 
 // "options_from": "<node>" on a node copies that node's options, so a hub is written once.
-export function expand(spec) {
+export function expand(spec, base = []) {
   for (const n of spec.nodes || []) {
     if (!n.options_from) continue;
-    const from = spec.nodes.find((x) => x.id === n.options_from);
+    const from = spec.nodes.find((x) => x.id === n.options_from) || base.find((x) => x.id === n.options_from);
     if (!from) throw new Error(`node ${n.id}: options_from '${n.options_from}' does not exist`);
     n.options = (from.options || []).map((o) => ({ ...o }));
   }
@@ -172,7 +174,9 @@ export function upsertStrings(stText, entries, guid = () => freshGuid(new Set([.
     }
   }
   if (!add.length) return text;
-  const tail = text.lastIndexOf("  }\n }\n}");
+  let tail = text.lastIndexOf("  }\n }\n}");
+  // `pack new` writes an empty table (` Items {\n }\n}`); the first rows go in before its closing braces.
+  if (tail < 0 && /\n Items \{\n \}\n\}\n?$/.test(text)) tail = text.lastIndexOf(" }\n}");
   if (tail < 0) throw new Error("string table does not end with the Items block");
   return text.slice(0, tail) + add.join("") + text.slice(tail);
 }

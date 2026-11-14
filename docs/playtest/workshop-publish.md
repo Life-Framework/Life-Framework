@@ -1,12 +1,24 @@
-# Publish the playtest town to the Workshop
+# Publish the two Workshop items
 
 Click-by-click for the maintainer. Only the **Publish** button uploads, and only the maintainer
 presses it, signed in with the Bohemia Account that will own the item. Every field value is in
 [`docs/marketing/workshop/`](../marketing/workshop/README.md).
 
-What gets published: the `LifeFramework` addon (mod ID `79636E668EA37AC9`, no dependencies beyond
-the base game). Its scenario **Life Framework: Playtest Town**
-(`{1054CC8646357708}Missions/LF_PlaytestTown.conf`) is the DebugWorld town with the playtest
+What gets published: two items, the core first and the pack second (decision 2026-11-09 "Two Workshop
+items, two brands"; briefs in [`docs/branding/`](../branding/core.md)).
+
+| Item | Addon | Mod ID | Kit |
+|---|---|---|---|
+| Life Framework (Core) | `LifeFramework` | `79636E668EA37AC9` | [`docs/marketing/workshop/`](../marketing/workshop/README.md) |
+| Life Framework: Everon 1989 | `LF_Everon1989` | `B1E84D5687E11724` | [`docs/marketing/workshop/everon-1989/`](../marketing/workshop/everon-1989/README.md) |
+
+Run the steps below once per item, core first: the pack depends on the core, so its Workshop upload
+needs the core item to exist. Nothing is uploaded before the whole pack move lands (D3 in
+[`release-process.md`](../release-process.md)); `tools\cli release <version>` stamps one version into
+both addons.
+
+The pack's scenario **Life Framework: Playtest Town**
+(`{1054CC8646357708}Missions/LF_PlaytestTown.conf`) is the Everon 1989 village with the playtest
 settings on: cash and bank top-up, two test cars per new character, the first player on an empty
 police roster, saves across restarts, and the debug menu closed to everyone but admins. The
 spawn hub (#607) lands in DebugWorld, so it ships in the first publish after it merges.
@@ -40,29 +52,30 @@ the same commit as the latest zip so the two do not drift.
 
 ## Publish in Workbench
 
-1. Open Workbench and load `addons/LifeFramework/LifeFramework.gproj` **from that worktree**
+1. Open Workbench and load the item's `.gproj` (`addons/LifeFramework/LifeFramework.gproj`, then
+   `addons/LF_Everon1989/LF_Everon1989.gproj`) **from that worktree**
    (Workbench launcher > Add Existing > the `.gproj`). The main checkout's world-editor state
    does not belong in the upload.
 2. Wait for the Resource Browser to finish loading. In the Script Editor, **Build > Compile and
    Reload Scripts** must finish with no errors.
 3. **Workbench > Publish Project**.
-4. Fill the dialog from [`docs/marketing/workshop/README.md`](../marketing/workshop/README.md):
-   1. **Project Name**: `Life Framework`
+4. Fill the dialog from the item's kit README (table above). Values for the core:
+   1. **Project Name**: `Life Framework (Core)` (the pack: `Life Framework: Everon 1989`)
    2. **Working Dir**: leave the default
       (`%USERPROFILE%\Documents\My Games\ArmaReforger\publish\LifeFramework`). Never a folder
       inside the addon.
    3. **Preview Image**: `docs/marketing/workshop/preview.jpg`
-   4. **Screenshots**: add the nine files in `docs/marketing/workshop/screenshots/`, in name order.
+   4. **Screenshots**: the pack takes the nine village files in `docs/marketing/workshop/screenshots/`, in name order; the core takes none until neutral art exists.
    5. **Contributors**: leave empty, or add a second maintainer who may publish updates.
    6. **Category**: Game Mode. Add Scenario as well if the list offers it.
-   7. **Tags**: `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989`
+   7. **Tags**: from the kit README.
    8. **License**: Arma Public License (APL).
    9. **Version**: `0.1.0`. Raise it on every later publish, even a text-only change.
    10. **Visibility**: `Unlisted` for the private rounds (decision 2026-11-08: two or three
        rounds first). `Public` only together with the showcase video.
    11. **Summary**: paste `summary.txt`.
    12. **Description**: open the large editor and paste `description.bbcode`.
-   13. **Change Notes**: paste the 0.1.0 block from `changelog.md`.
+   13. **Change Notes**: paste the item's 0.1.0 block from `changelog.md`.
 5. Click **Publish**. Workbench bundles (about a minute), then shows the upload size, about
    55 MB. Confirm and wait for the upload to finish.
 6. Workbench reports the item published. The Workshop page address starts with
@@ -75,8 +88,9 @@ the same commit as the latest zip so the two do not drift.
 The local test (below) proved everything except the Workshop download itself, which only exists
 after publish.
 
-1. Start Arma Reforger normally. **Workshop**, search `Life Framework` (or open the Unlisted link
-   from the page above), **Subscribe**, wait for the download.
+1. Start Arma Reforger normally. **Workshop**, search `Life Framework: Everon 1989` (or open the
+   Unlisted link from the page above), **Subscribe**, wait for the download. The core item arrives
+   with it.
 2. **Scenarios**: `Life Framework: Playtest Town` is listed with 16 players, the preview image,
    and the description. Select it and press **Play**.
 3. The loading screen shows the town picture and the playtest text. In town, form R-89 opens;

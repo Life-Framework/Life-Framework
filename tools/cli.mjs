@@ -3228,12 +3228,43 @@ function workbenchGate(root, opts = {}) {
   const t0 = Date.now();
   return pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" }).then((r) => {
     console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+    if (r.code === 0 && r.rDir) pullRemoteRdb(root, m, r.rDir);
     if (r.code === 3) {
       console.log(`ci: ${m.name} could not take the Workbench steps; running them here`);
       return ciWorkbench(root, opts);
     }
     return r.code === 0 ? 0 : 1;
   });
+}
+
+// After a remote Workbench build the run folder's resource database is current. A local one that is
+// stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
+// headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
+// registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
+function pullRemoteRdb(root, m, rDir) {
+  for (const name of rdbAddons(root)) {
+    const addon = addonDir(root, name);
+    const local = join(addon, "resourceDatabase.rdb");
+    const before = rdbFreshness(addon);
+    if (before.missing.length === 0) continue;
+    const got = `${local}.remote`;
+    const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
+    if (down.status !== 0 || !existsSync(got)) {
+      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      continue;
+    }
+    const keep = `${local}.local`;
+    if (existsSync(local)) copyFileSync(local, keep);
+    copyFileSync(got, local);
+    const after = rdbFreshness(addon);
+    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    else if (existsSync(keep)) {
+      copyFileSync(keep, local);
+      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+    }
+    rmSync(got, { force: true });
+    rmSync(keep, { force: true });
+  }
 }
 
 // The placement audit takes a test lane through the pool like `test` (any machine by default). On a
@@ -3591,7 +3622,10 @@ function wtHelpFull() {
   console.log(`worktree commands (parallel agent isolation)
 
   tools\\cli wt new <slug> [--wait] [--base B] [--priority low]  create Life-Framework-ws-<slug> at ws/<slug>, allocate ports;
-                                       --priority records the pool priority for that worktree (spikes: low)
+                                       --priority records the pool priority for that worktree (spikes: low);
+                                       claims a ready warm worktree when one exists (--no-warm: always fresh)
+  tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
+                                       'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
@@ -3617,10 +3651,12 @@ function wtHelpFull() {
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
   tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
-                                       clean-tree check -> merge origin/<base> only if it conflicts ->
-                                       gate -> push -> PR (or reuse the open one) -> gh auto-merge
+                                       clean-tree and PR-body checks -> push -> PR (auto-merge off) -> ship queue:
+                                       merge origin/<base> once, ci --remote on a pool machine, push, auto-merge
+                                       (docs/worktrees.md "Ship queue"); waits until gated unless --no-wait
+                                       (a terminal defaults to --no-wait); --no-queue gates here the old way
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
-  tools\\cli wt prune --merged [--yes]  list every merged, clean, idle (30 min), unlocked worktree; --yes prunes them
+  tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
   tools\\cli wt main                   print the main checkout path
@@ -3644,8 +3680,9 @@ function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
-    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args) });
-    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""}`);
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 600000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args), warm: !args.includes("--no-warm") });
+    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""} in ${(r.ms / 1000).toFixed(1)} s (${r.warm ? "warm pool" : "fresh checkout"}; lock ${(r.lockMs / 1000).toFixed(1)} s)`);
+    console.log(`  time:   ${Object.entries(r.phases ?? {}).map(([k, v]) => `${k} ${(v / 1000).toFixed(1)}s`).join(", ")}`);
     console.log(`  base:   origin/${r.base}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
@@ -3694,6 +3731,10 @@ async function wtListCmd() {
   })));
   const dirtyOf = new Map(live.map((e, i) => [e.path, statuses[i].trim() ? "dirty" : "clean"]));
   for (const e of rows) {
+    if (e.status === "creating") {
+      console.log(line(e, "creating"));
+      continue;
+    }
     if (!existsSync(e.path)) {
       console.log(line(e, "MISSING"));
       continue;
@@ -3720,7 +3761,34 @@ async function wtListCmd() {
     else if (merged && ahead === 0) stateText = "dirty, uncommitted work (commit or discard before prune)";
     console.log(line(e, stateText));
   }
+  const warm = Object.values(state.warm ?? {});
+  if (warm.length) console.log(`warm pool: ${warm.filter((w) => w.status === "ready").length} ready, ${warm.filter((w) => w.status !== "ready").length} busy (tools\\cli wt warm)`);
   return 0;
+}
+
+function wtWarmCmd(args) {
+  const sub = args[0] ?? "status";
+  try {
+    if (sub === "fill") {
+      const r = wt.wtWarmFill(ROOT, { log: (m) => console.log(m) });
+      if (r.skipped) console.log(`warm: ${r.skipped}`);
+      else console.log(`warm: made ${r.made.length} tree(s)`);
+    } else if (sub === "drain") {
+      const gone = wt.wtWarmDrain(ROOT);
+      console.log(`warm: removed ${gone.length} tree(s)${gone.length ? ": " + gone.join(", ") : ""}`);
+    } else if (sub !== "status") {
+      console.log("usage: tools\\cli wt warm [status|fill|drain]");
+      return 1;
+    }
+    const s = wt.warmStatus(ROOT);
+    console.log(`warm pool: K=${s.k} (LF_WT_WARM), fills while free disk >= ${s.minFreeGb} GB (LF_WT_WARM_MIN_FREE_GB); free ${s.freeGb === null ? "unknown" : s.freeGb.toFixed(1) + " GB"}`);
+    for (const w of s.trees) console.log(`  ${w.status.padEnd(11)}${w.path}${w.head ? `  at ${w.head.slice(0, 8)}` : ""}${w.pid ? `  pid ${w.pid}` : ""}`);
+    if (!s.trees.length) console.log("  (empty)");
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
 }
 
 function wtSyncCmd(args) {
@@ -3745,6 +3813,10 @@ function wtPruneMergedCmd(args) {
     return 1;
   }
   for (const s of plan.skip) console.log(`  keep   ${s.slug}: ${s.why}`);
+  if (plan.ghError) {
+    console.log(`WARN  cannot list merged PRs (${plan.ghError}); pruning nothing. Ancestry alone never qualifies a worktree.`);
+    return 1;
+  }
   for (const t of plan.take) console.log(`  prune  ${t.slug} (${t.via})`);
   if (!plan.take.length) {
     console.log("nothing to prune");
@@ -4201,6 +4273,66 @@ async function wtSyncBaseCmd(args) {
   }
 }
 
+// `wt ship` through the ship queue. Returns at once with a status line (--no-wait), or blocks until the
+// gate passed or failed (--wait; the default when stdout is not a terminal, so an agent's report holds).
+async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const q = await import("./ship-queue.mjs");
+  const sql = await import("./lib/ship-queue.mjs");
+  const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
+  let body = customBody ?? [
+    `Automated ship from worktree \`${slug}\`.`,
+    "",
+    "Gated by the ship queue: origin/" + base + " merged in, then `ci --remote` (validate --full, build, test tier=all on pool machines).",
+    "",
+    "## Commits",
+    ...subjects.map((s) => `- ${s}`),
+  ].join("\n");
+  body = refsBody(body, closes);
+  let pr = wt.findOpenPrGh(wtRoot, e.branch);
+  // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
+  if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
+  console.log("=== ship: push (auto-merge waits for the ship queue's gate) ===");
+  const push = wt.git(wtRoot, ["push", "-u", "origin", e.branch]);
+  if (push.status !== 0) {
+    console.log(`FAIL  push: ${push.stderr || push.stdout}`);
+    return 1;
+  }
+  try {
+    if (!pr) pr = wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base });
+  } catch (err) {
+    console.log(`FAIL  PR creation: ${err.message}`);
+    return 1;
+  }
+  const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
+  const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15);
+  const log = join(wt.mainRootOf(ROOT), "tmp", "logs", `ship-${slug}-${stamp}.log`);
+  mkdirSync(dirname(log), { recursive: true });
+  let entry;
+  try {
+    entry = q.withQueue(ROOT, (qq) => sql.enqueue(qq, { slug, branch: e.branch, base, wtPath: wtRoot, pr: pr.number, prUrl: pr.url, head, files, log, fullGate: flags.includes("--full-gate") }));
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+  const w = await q.ensureWorker(ROOT);
+  const qq = q.readQueue(ROOT);
+  const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
+  const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
+  const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
+  console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
+  console.log(`PR: ${pr.url}`);
+  const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
+  if (!wait) {
+    console.log(`ship: queued. 'tools\\cli ship-queue wait ${slug}' blocks until it is gated; 'tools\\cli pool status' shows the queue.`);
+    return 0;
+  }
+  const code = await q.waitFor(ROOT, slug);
+  if (code === 0) console.log(`ship: gated and auto-merge queued; merged, in-dev once GitHub merges it. Prune after merge: 'cli wt prune ${slug}'`);
+  console.log(`PR ${pr.url}, head ${wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim()}`);
+  return code;
+}
+
 async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
@@ -4275,6 +4407,11 @@ async function wtShipCmd(args) {
     }
     if (customBody !== null) customBody = withReview(customBody, reviewText);
   }
+  // The ship queue (tools/ship-queue.mjs, docs/worktrees.md "Ship queue"): push, open the PR with
+  // auto-merge off, enqueue; the queue worker merges main once, gates on the pool, pushes, queues
+  // auto-merge. --no-queue (or LF_SHIP_QUEUE=0) is the old local gate below.
+  const useQueue = !flags.includes("--no-queue") && process.env.LF_SHIP_QUEUE !== "0" && !skipGate && !prOnly && wt.ghAvailable();
+  if (useQueue) return shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
@@ -4371,6 +4508,7 @@ function cmdWt(rest) {
   const table = {
     new: () => wtNewCmd(subArgs),
     list: () => wtListCmd(),
+    warm: () => wtWarmCmd(subArgs),
     test: () => wtTestCmd(subArgs),
     e2e: () => wtE2eCmd(subArgs),
     dev: () => wtDevCmd(subArgs),

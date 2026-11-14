@@ -16,7 +16,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JsonSyntaxError, parseJson, parseShopRuleKey, checkOwner, typeKey, prefabKey } from "./rules.mjs";
-import { SCHEMA_PATH } from "./schema.mjs";
+import { SCHEMA_PATH, build } from "./schema.mjs";
 import { loadManifest, planMigrations, renderPlan } from "./migrations.mjs";
 import { checkProfitLoops, judge, parseConf, DEFAULT_SOURCES } from "../economy/profit-loops.mjs";
 
@@ -103,9 +103,11 @@ export function main(args) {
   const flags = new Set(args.filter((a) => a.startsWith("--")));
   const schemaAt = args.indexOf("--schema");
   const migAt = args.indexOf("--migrations");
-  const file = args.find((a, n) => !a.startsWith("--") && (schemaAt < 0 || n !== schemaAt + 1) && (migAt < 0 || n !== migAt + 1));
+  const addonsAt = args.indexOf("--addons");
+  const valueAt = [schemaAt, migAt, addonsAt].filter((i) => i >= 0).map((i) => i + 1);
+  const file = args.find((a, n) => !a.startsWith("--") && !valueAt.includes(n));
   if (!file) {
-    console.log("usage: tools\\cli config-check <path/to/config.json> [--strict] [--no-loops] [--json] [--schema f] [--migrations f]");
+    console.log("usage: tools\\cli config-check <path/to/config.json> [--strict] [--no-loops] [--json] [--schema f] [--addons dir] [--migrations f]");
     return 2;
   }
   if (!existsSync(file)) {
@@ -113,7 +115,9 @@ export function main(args) {
     return 1;
   }
   const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : [];
-  const schema = schemaAt >= 0 ? JSON.parse(readFileSync(args[schemaAt + 1], "utf8")) : undefined;
+  // --addons <dir>: the core plus the packs under <dir> (a test pack outside addons/); --schema wins when both are given.
+  const schema = schemaAt >= 0 ? JSON.parse(readFileSync(args[schemaAt + 1], "utf8"))
+    : addonsAt >= 0 ? build(args[addonsAt + 1]).schema : undefined;
   const manifest = migAt >= 0 ? loadManifest(args[migAt + 1]) : undefined;
   const { problems, migrations } = checkText(readFileSync(file, "utf8"), { source: file, schema, loops: !flags.has("--no-loops"), baseline, manifest });
   const errors = problems.filter((p) => p.level === "error").length;

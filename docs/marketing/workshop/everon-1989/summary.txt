@@ -1,1 +1,1 @@
-DRAFT. A content pack for Life Framework (Core): a village on 1989 Everon, with its place names, prices, vehicles and look. It needs Life Framework (Core) and adds no game rules of its own. Unfinished.
+Everon, 1989. A village where everyone knows everyone and nobody has told you the rules. Fill in form R-89, get your ID card, take a job, bank your pay, buy a car, or take a darker road and meet the police. Needs Life Framework (Core), which comes with it. Unfinished; report what breaks on Discord or GitHub.
