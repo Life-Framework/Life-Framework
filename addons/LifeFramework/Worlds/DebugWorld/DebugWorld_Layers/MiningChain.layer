@@ -141,10 +141,6 @@ LF_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/Min
 GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
  coords 169.777 0 171.497
 }
-GenericEntity LF_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
- coords 172.4 0 170.2
- angleY 0
-}
 GenericEntity Quarry_BarrierW1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
  coords 171 0 192
 }

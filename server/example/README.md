@@ -54,7 +54,7 @@ The template boots the core with any pack, or with none. Change two things in `s
 1. `game.mods`: keep the core (`79636E668EA37AC9`, always first), replace the second entry with your pack's Workshop id
    (its `.gproj` GUID), or delete it to run the core alone.
 2. `game.scenarioId`: the mission header of that pack, `{GUID}Missions/<Name>.conf` (`tools\cli pack new <Name>` writes one,
-   `Missions/LF_<Name>.conf`). The core alone boots its own header, `{1054CC8646357708}Missions/LF_PlaytestTown.conf`.
+   `Missions/LF_<Name>.conf`). The core alone boots its own header, `{5A1E5A1E5A1E0002}Missions/EL_DebugTest.conf` (DebugWorld; the playtest town is the pack's since #323).
 
 `config.json`, ports, name and the start scripts stay as they are. A pack's own values go in its config overlay; the owner
 `config.json` keeps winning over both (`tools\cli pack explain <key>`).
