@@ -1,4 +1,5 @@
 // red-proof: IsStaff returns true for every caller: '[LFTEST] SUMMARY tier=only passed=0 failed=1 total=1', restored (2026-11-14)
+// red-proof (level column, 2026-11-14): with ReadRoster taking the whole trimmed line as the uid: '[LFTEST] SUMMARY tier=only passed=0 failed=1 total=1', restored
 // tier: LOGIC
 class LF_Test_PoliceApplicationStaff : LF_Test
 {
@@ -20,6 +21,7 @@ class LF_Test_PoliceApplicationStaff : LF_Test
 		FileIO.DeleteFile(rosterPath);
 
 		string staff = "test-staff-clerk";
+		string moderator = "test-staff-mod";
 		string civilian = "test-staff-civilian";
 		string ann = "test-staff-ann";
 		string bo = "test-staff-bo";
@@ -35,8 +37,13 @@ class LF_Test_PoliceApplicationStaff : LF_Test
 		handle.WriteLine("# staff account uids");
 		handle.WriteLine("");
 		handle.WriteLine("  " + staff + "  ");
+		handle.WriteLine("#pending administrator Jasper");
+		handle.WriteLine(moderator + "	moderator   # Mo, a display name");
 		handle.Close();
 		ctx.True(LF_PoliceApplicationStaff.IsStaff(staff, false), "an account on the roster file is staff");
+		ctx.True(LF_PoliceApplicationStaff.IsStaff(moderator, false), "a line with a level column and a trailing comment is read by its uid");
+		ctx.False(LF_PoliceApplicationStaff.IsStaff("moderator", false), "the level column is not a uid");
+		ctx.False(LF_PoliceApplicationStaff.IsStaff("Jasper", false), "a #pending line is a comment, not a uid");
 		ctx.False(LF_PoliceApplicationStaff.IsStaff(civilian, false), "an account off the roster is not");
 		ctx.False(LF_PoliceApplicationStaff.IsStaff("", false), "an empty uid is not staff");
 		ctx.True(LF_PoliceApplicationStaff.IsStaff(civilian, true), "the engine administrator is staff");
