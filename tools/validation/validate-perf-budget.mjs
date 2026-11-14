@@ -4,8 +4,8 @@
 // count is at least 128, and every limit is a positive number. A budget nobody can read is not a
 // gate. LF_Test_PerfBudget does the measuring; this keeps the thresholds honest without a boot.
 //
-// red-proof: 2026-11-11, deleting `m_iMaxCrimeEventUs` from the conf printed
-// `FAIL conf has no value for m_iMaxCrimeEventUs` and exited 1; restored, it prints OK.
+// red-proof: 2026-11-11, deleting `m_iMaxCrimeEventRef` from the conf printed
+// `FAIL conf has no value for m_iMaxCrimeEventRef` and exited 1; restored, it prints OK.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
