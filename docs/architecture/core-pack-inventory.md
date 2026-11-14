@@ -5,7 +5,7 @@ line in [`core-vs-pack.md`](core-vs-pack.md). Taken on 2026-11-08 from `main`
 at `b0f5b8e`. **Batch 1 moved (#323, 2026-11-14):** the rows marked *moved* below now live in
 `addons/LF_Everon1989/` at the same relative path and GUID, except the village layers, which sit in
 the pack world `Worlds/Everon1989Town/Everon1989Town_Layers/` (a SubScene of the core DebugWorld,
-`pack-move-spike.md` section 1). **Batch 2 moved (#323, 2026-11-14):** the supermarket prefabs and model. The other pack rows each have a core user, so they move with the batch that splits it: the bank vault kit is spawned by the core tests `LF_Test_SystemsEconomy` and `LF_Test_SystemsWorld` and placed by the core `Street_Bank.layer` (a core example vault first, with the layers); the clerk dialogue is listed by the core `LF_DialogueIndex.conf` (configs); the atmosphere sounds were named by core prefabs and layers, which now ask for sound slots (`Configs/SoundSlots/LF_SoundSlots.conf`, #323); the core slot defaults still name them, so the files move with batch 4 and the defaults become pack overlay rows; `medic_flow` is named by the core `LF_Signs.conf` (configs). **Batch 3 moved (#323, 2026-11-14):** the bank vault kit (prefabs and model; the core tests use the annex example vault `Annex_Bank_Vault`, and `Roadmap_Bank_Vault` with its hood is placed by the pack layer `Village_Buildings`) and `medic_flow` (the signs catalogue takes pack overlays; the pack's `Configs/Signs/LF_Signs_Everon1989.conf` gives the core `hospital` sign its picture). Left for batch 4: the clerk dialogue (`tools/assets/pipeline/dialogue.mjs` writes the conversation and its recordings into one addon, and the core ID-card and arrival hooks and `LF_Test_DialogueClerk` need a voiced core clerk; it needs the generator to split the voice into a pack patch) and the atmosphere sounds (the sound slots exist; the files move and the core defaults empty into a pack overlay). The move is an M3 freeze under epic #223,
+`pack-move-spike.md` section 1). **Batch 2 moved (#323, 2026-11-14):** the supermarket prefabs and model. The other pack rows each have a core user, so they move with the batch that splits it: the bank vault kit is spawned by the core tests `LF_Test_SystemsEconomy` and `LF_Test_SystemsWorld` and placed by the core `Street_Bank.layer` (a core example vault first, with the layers); the clerk dialogue is listed by the core `LF_DialogueIndex.conf` (configs); the atmosphere sounds were named by core prefabs and layers, which now ask for sound slots (`Configs/SoundSlots/LF_SoundSlots.conf`, #323); the core slot defaults still name them, so the files move with batch 4 and the defaults become pack overlay rows; `medic_flow` is named by the core `LF_Signs.conf` (configs). **Batch 3 moved (#323, 2026-11-14):** the bank vault kit (prefabs and model; the core tests use the annex example vault `Annex_Bank_Vault`, and `Roadmap_Bank_Vault` with its hood is placed by the pack layer `Village_Buildings`) and `medic_flow` (the signs catalogue takes pack overlays; the pack's `Configs/Signs/LF_Signs_Everon1989.conf` gives the core `hospital` sign its picture). **Clerk voice split (#323, 2026-11-14):** the generator now writes a voice into the addon that owns it (`asset dialogue` on a pack patch with a `voice`), the core clerk is a neutral text-only conversation, and the Everon recordings and wording are the pack patch `LF_Dialogue_ClerkEveron.conf` with its sounds in `LF_Everon1989/Sounds/Dialogue/clerk_everon/` (moved with their GUIDs); `LF_Test_DialogueClerk` needs no voice. Left for batch 4: the atmosphere sounds (the sound slots exist; the files move and the core defaults empty into a pack overlay). The move is an M3 freeze under epic #223,
 after the maintainer signs off on M1: load the pack (#322), move in batches
 (#323), split the string table (#325), prove the core boots alone (#326), and
 load a pre-move save (#327).
@@ -135,7 +135,7 @@ under "Hard-coded flagship values in script".
 | Path | Class | Reason |
 | --- | --- | --- |
 | `Building/` | core | Building preview |
-| `Buildings/Supermarket/` | pack, moved (batch 2) | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`, which now sets `"addon": "LF_Everon1989"`): the building is this server's look. Its placement left the core `Annex.layer` (`Annex_Supermarket`) for the pack layer `Village_Buildings` as `Village_Supermarket`, same coordinates; `building-proof` defaults to the new name |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`, which now sets `"addon": "LF_Everon1989"`): the building is this server's look. Its placement left the core `Annex.layer` (`Annex_Supermarket`) for the pack layer `Village_Buildings` as `Village_Supermarket`, same coordinates; `building-proof` defaults to the new name. `Supermarket_Store.et` (#1143) is the placed one: the building plus our store components, written by the pipeline's `store` stage |
 | `Characters/Core/` | core | Player and NPC bases |
 | `Characters/Presets/` (3) | core | Neutral spawn bodies the game mode lists |
 | `Characters/Npcs/Npc_Default_01.et` | split | Base of every NPC, dressed in the M88 uniform; core needs a neutral base |
@@ -185,8 +185,9 @@ under "Hard-coded flagship values in script".
 | `Core/EditorManagerCore.conf` | core | Engine setup |
 | `UI/LF_UITheme.conf` | split | The theme shape (`LF_UIThemeRecord`, the reader) is core; the 1989 paper, brass and phosphor values are the flagship's look, kept as the core default until the M3 move. A pack overlay patches a theme by id (#966) |
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
-| `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`); a text-only line, listed in the pack's mission header |
-| `Dialogue/LF_Dialogue_Clerk.conf` | pack | The town clerk's conversation (generated from `tools/assets/dialogue/clerk/`); the scene system in `Feature/Dialogue/` is core |
+| `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
+| `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's ten recordings and audio project, moved out of the core's `Sounds/Dialogue/clerk/` (#323 batch 4) |
+| `Dialogue/LF_Dialogue_Clerk.conf` | core | The neutral, text-only clerk conversation (generated from `tools/assets/dialogue/clerk/`, `text_only`); the Everon voice is a pack patch (#323) |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
 | `NameTags/` | core | Tag rules |
@@ -255,8 +256,8 @@ its save.
 
 | Path | Class | Reason |
 | --- | --- | --- |
-| `Buildings/Supermarket/` | pack, moved (batch 2) | Model and `.xob.meta` of the supermarket above; the `.xob` keeps its core `Buildings/Materials/` assignments (a pack may reference the core) |
-| `Buildings/Materials/` | split | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building: neutral, but only pack buildings use them today; they move with the first pack building or stay as a core material set |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | Model and `.xob.meta` of the supermarket above |
+| `Buildings/Materials/` | pack, moved (#1143) | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building. Only pack buildings use them, so they moved with the first one (same GUIDs); the import writes a building's materials into its own addon |
 | `Crafting/` | core | Station meshes |
 | `Items/` | core | Cash, ID card, food, roleplay meshes |
 | `Props/CementMound/`, `Props/Military/Sandbags/` | core | Chain item textures |
@@ -284,7 +285,7 @@ its save.
 | `Assets/Items/Resources/CementBag/` | core | The cement bag item, a CC0 Poly Haven model through the source stage (`docs/asset-pipeline/sources.md`): the quarry's cement chain is core. |
 | `Sounds/Alarm/Robbery/`, `Prefabs/Police/LF_SiteAlarm_{Bank,Fuel,Store,Van}*.et` | core | The site alarm of each robbery type (#740): bank bell, fuel station intruder alarm, store buzzer, van horn, each with a loud twin. They play through `LF_SiteAlarmComponent` and are picked by the `m_aAlarmKinds` rows of `LF_Police.conf`; the kinds' ids and offences are data, so a pack changes which robbery sounds which alarm without code |
 | `Prefabs/Jobs/LF_Workplace.et` | core | The generic workplace (#1111): a desk, a punch clock with the clock-in action, `LF_WorkplaceComponent` (job id, place registration, optional NPC slot). The police and medic duty desks inherit it; a pack inherits it for its own job (`pack new --job`) |
-| `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
+| `Sounds/Dialogue/clerk/` | moved | Moved to `LF_Everon1989/Sounds/Dialogue/clerk_everon/`: the core clerk is text only (#323) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |
 

@@ -35,9 +35,31 @@ commands below work because tags sit on release commits.
 | Game build | `docs/ops/game-updates.md` changelog table: the game build the release was tested on. |
 | Migrations | `tools\cli config-check <old-config.json> --no-loops` prints the `Migrations:` lines (steps in order, fields renamed, dropped or defaulted; from `docs/config/config.migrations.json`). Paste them. At schema 1 none ship, so the section says "none". |
 
-No tool writes the page for you yet. A generator that prints the config and
-save-version diff for a tag is not built. Until then, fill the template by
-hand from the sources above.
+## The generator
+
+`tools\cli upgrade-page <fromRef> [<toRef>] [--version x.y.z] [--out <file>]`
+prints the page filled in from the template. `toRef` defaults to `HEAD`. It runs
+offline: it only calls `git show` on the two refs. Start every release page from it:
+
+```
+tools\cli upgrade-page v0.1.0 v0.2.0 --version 0.2.0 --out docs/upgrades/0.2.0.md
+```
+
+It fills these sections from the two refs:
+
+| Section | Read from | Lists |
+|---|---|---|
+| Config changes | `docs/config/config.schema.json` | sections and fields added or removed; type changes; changed defaults; changed min, max or allowed values |
+| Save version changes | `tools/validation/record-shapes.json` (the lock `validate-persistence-version` and `validate-record-shapes` keep) | the save version before and after, payloads added, removed or given another record class |
+| Migrations | `docs/config/config.migrations.json` | migrations that exist now and did not at `fromRef`, with each rename, drop or default |
+| Summary | each pack's `Configs/LF_PackManifest.conf` | a pack whose core range (`m_sCoreMin`, `m_sCoreBelow`) moved, appeared or went |
+
+It cannot know why a value changed or whether an old save loads. Every such
+spot is a `TODO:` for you to fill; the Summary, Manual steps and the game build
+stay yours too. Search the output for `TODO` before you commit it. A `fromRef`
+from before the record-shapes lock existed prints the new save version alone.
+`tools/validation/upgrade-page-selftest.mjs` proves the diff on two fixture
+schemas.
 
 ## Rules for the page
 

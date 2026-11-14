@@ -27,7 +27,7 @@ expect(silently(() => main(["--stage", "nope"])) === 2, "an unknown stage exits 
 for (const fx of fixtures) {
   expect(fx.expect, `${fx.name}: no .expect.json`);
   if (!fx.expect) continue;
-  if (fx.kind === "preset") expect(fx.expect.problems.length === 0 && fx.expect.exit === 0, `${fx.name}: a preset must expect nothing`);
+  if (fx.kind === "preset") expect(fx.expect.problems.every((p) => p.level === "warn") && fx.expect.exit === 0, `${fx.name}: a preset must expect no error (a warning for a rule key it adds is fine)`);
   else expect(fx.expect.problems.length > 0, `${fx.name}: a broken fixture must expect a log line`);
 }
 expect(fixtures.filter((f) => f.kind === "broken").length >= 12, "fewer than 12 reject classes covered");
@@ -58,13 +58,16 @@ const clientFx = fixtures.filter((f) => f.expect?.client?.length);
 expect(clientFx.length >= 3, "fewer than 3 client fixtures (price, term, system switch)");
 const CLIENT = STAGES.find((s) => s.name === "client");
 expect(runHarness(clientFx, [CLIENT]).length === clientFx.length, "with no client attached every client fixture must fail");
-setClientDriver({ apply() {}, read: (fx, r) => (r.kind === "actionShown" ? r.expect : r.expect + " ") });
+setClientDriver({ apply() {}, read: (fx, r) => (r.kind === "actionShown" ? r.expect : r.gone ? "empty list" : r.expect + " ") });
 expect(runHarness(clientFx, [CLIENT]).length === 0, "a client that shows every expected value must pass");
 setClientDriver({ apply() {}, read: (fx, r) => (r.kind === "actionShown" ? !r.expect : "$999") });
 expect(runHarness(clientFx, [CLIENT]).length === clientFx.length, "a client that shows the wrong value must fail every fixture");
 setClientDriver(null);
 expect(judgeRead({ kind: "shopPrice", shop: "S", item: "Water", expect: "$17" }, "Water $17 Buy") === "", "a price on the list passes");
 expect(judgeRead({ kind: "shopPrice", shop: "S", item: "Water", expect: "$17" }, "Water $6 Buy") !== "", "another price fails");
+expect(judgeRead({ kind: "shopPrice", shop: "S", item: "M9", gone: true, expect: "$500" }, "empty list") === "", "a removed item that is not listed passes");
+expect(judgeRead({ kind: "shopPrice", shop: "S", item: "M9", gone: true, expect: "$500" }, "M9 $500 Buy") !== "", "a removed item still listed fails");
+expect(judgeRead({ kind: "lotPrice", shop: "L", expect: "$1,250" }, "S105 $1,000") !== "", "a lot sheet with the old price fails");
 expect(judgeRead({ kind: "actionShown", entity: "E", class: "C", expect: false }, true) !== "", "an offered action fails a hidden expectation");
 expect(judgeRead({ kind: "nope" }, "") !== "", "an unknown read kind fails");
 

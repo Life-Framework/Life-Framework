@@ -776,10 +776,17 @@ export function wtSync(root, slug) {
   const merge = git(e.path, ["merge", `origin/${base}`, "--no-edit", "--no-ff"]);
   if (merge.status !== 0) {
     const unmerged = git(e.path, ["diff", "--name-only", "--diff-filter=U"]).stdout.trim();
-    const detail = unmerged ? `conflicts in:\n${unmerged}\nresolve them, commit, and re-run` : (merge.stderr || merge.stdout).trim();
-    throw new Error(`merge origin/${base} into ${e.branch} failed: ${detail}`);
+    throw new Error(`merge origin/${base} into ${e.branch} failed: ${mergeFailureDetail(unmerged, merge.stderr || merge.stdout)}`);
   }
   return { slug, branch: e.branch, path: e.path, base };
+}
+
+// One line on purpose: the compact console summary keeps only the first line of a FAIL message,
+// so the conflicting files must sit on it.
+export function mergeFailureDetail(unmerged, raw) {
+  const files = String(unmerged || "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  if (files.length) return `conflicts in: ${files.join(", ")} (resolve them, commit, and re-run)`;
+  return String(raw || "").trim();
 }
 
 // True when merging `theirs` into the worktree branch would conflict. Uses

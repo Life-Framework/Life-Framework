@@ -1,4 +1,5 @@
-// red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_PackPatchOverlays`: making LF_DialogueNodeList.RemoveAt a no-op failed `- remove: the work node is gone` and `- one node added, one removed (expected 5, got 6)`; dropping the m_iBasePrice copy in LF_VehiclePriceList.PatchFromContainer failed `- patch: the S105 base price is the pack's (expected 1200, got 1000)`; making vehicle RemoveAt a no-op failed `- remove: the UAZ is unlisted (expected -1, got 2500)`. Restored; green.
+// red-proof: observed 2026-11-14 (#323 clerk voice split): ignoring the patch's m_sSoundProject in LF_DialogueConfig.ApplyContainer while the shipped clerk conf also named a project failed `- voiced: the shipped clerk still has no audio project` (`--only LF_Test_PackPatchOverlays`). Restored; green.
+// earlier red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_PackPatchOverlays`: making LF_DialogueNodeList.RemoveAt a no-op failed `- remove: the work node is gone` and `- one node added, one removed (expected 5, got 6)`; dropping the m_iBasePrice copy in LF_VehiclePriceList.PatchFromContainer failed `- patch: the S105 base price is the pack's (expected 1200, got 1000)`; making vehicle RemoveAt a no-op failed `- remove: the UAZ is unlisted (expected -1, got 2500)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! A stand-in for the D4 pack source: patches the clerk's dialogue (the good or the bad fixture)
@@ -7,9 +8,12 @@ class LF_Test_PackPatchSourceStub : LF_ConfigPackSource
 {
 	static const ResourceName DIALOGUE_GOOD = "{38D29E0E9DC24207}Configs/Tests/LF_Test_DialogueClerkPatch.conf";
 	static const ResourceName DIALOGUE_BAD = "{B34964F9C0AB3BB7}Configs/Tests/LF_Test_DialogueClerkBadPatch.conf";
+	//! A patch that gives the text-only core clerk a voice: an audio project and one recording (#323).
+	static const ResourceName DIALOGUE_VOICED = "{855BB5B68C938277}Configs/Tests/LF_Test_DialogueClerkVoicedPatch.conf";
 	static const ResourceName VEHICLES = "{1C85EEE80FBE2238}Configs/Tests/LF_Test_VehiclePricesOverlay.conf";
 
 	bool m_bBadDialogue;
+	bool m_bVoicedDialogue;
 
 	override void GetOverlays(ResourceName coreConf, notnull array<ResourceName> overlays)
 	{
@@ -17,6 +21,8 @@ class LF_Test_PackPatchSourceStub : LF_ConfigPackSource
 		{
 			if (m_bBadDialogue)
 				overlays.Insert(DIALOGUE_BAD);
+			else if (m_bVoicedDialogue)
+				overlays.Insert(DIALOGUE_VOICED);
 			else
 				overlays.Insert(DIALOGUE_GOOD);
 		}
@@ -76,7 +82,9 @@ class LF_Test_PackPatchOverlays : LF_Test
 			if (bye)
 			{
 				ctx.EqualStr("#LF-Dialogue_Clerk_Greet", bye.m_sTextKey, "patch: the line's text key is replaced");
-				ctx.EqualStr("SOUND_DLG_CLERK_BYE", bye.m_sEvent, "patch: a field the pack leaves out keeps the core recording");
+				LF_DialogueLine coreBye = LF_DialogueFlow.FindLine(core, "bye");
+				if (coreBye)
+					ctx.EqualStr(coreBye.m_sEvent, bye.m_sEvent, "patch: a field the pack leaves out keeps the core's value");
 			}
 			// `reload dialogue` (#970) overrides a caption by its text key, so it reaches the patched line too.
 			if (bye)
@@ -128,6 +136,26 @@ class LF_Test_PackPatchOverlays : LF_Test
 			if (fallbackBye)
 				ctx.EqualStr("#LF-Dialogue_Clerk_Bye", fallbackBye.m_sTextKey, "a broken patch is dropped whole: the core line text, not the patch's");
 		}
+
+		// A pack that owns the voice (#323): the core clerk is text only, the pack's patch gives it a project and a recording.
+		source.m_bBadDialogue = false;
+		source.m_bVoicedDialogue = true;
+		LF_DialogueConfig voiced = LF_DialogueConfig.Layered(CLERK);
+		ctx.NotNull(voiced, "a voiced patch leaves a playable clerk");
+		if (voiced)
+		{
+			LF_DialogueLine voicedGreet = LF_DialogueFlow.FindLine(voiced, "greet");
+			LF_DialogueLine voicedBye = LF_DialogueFlow.FindLine(voiced, "bye");
+			ctx.True(voicedGreet != null && !voicedGreet.IsTextOnly(), "voiced: the patched line has a recording");
+			ctx.True(voicedBye != null && voicedBye.IsTextOnly(), "voiced: a line the pack leaves alone stays text only");
+			ctx.True(!voiced.m_sSoundProject.IsEmpty() && Resource.Load(voiced.m_sSoundProject).IsValid(), "voiced: the patch sets an audio project that resolves");
+			if (voicedGreet)
+				ctx.EqualStr(core.m_aLines[0].m_sTextKey, voicedGreet.m_sTextKey, "voiced: the core's caption key stays when the pack gives only the recording");
+		}
+
+		LF_DialogueConfig stillCore = LF_DialogueConfig.Load(CLERK);
+		if (stillCore)
+			ctx.True(stillCore.m_sSoundProject.IsEmpty(), "voiced: the shipped clerk still has no audio project");
 
 		// Vehicle prices: patch, remove, add and a refused patch of a vehicle no layer lists.
 		Resource resource = BaseContainerTools.LoadContainer(LF_VehiclePricesConfig.CONFIG_PATH);

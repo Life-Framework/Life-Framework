@@ -585,7 +585,7 @@ class LF_Stores
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Harness `shelf` (dev gate): the character takes the first display copy it can find in the store
+	//! Harness `shelf` (dev gate): the character takes the display copy nearest it in the store
 	//! it stands in, through the inventory insert a pickup uses. The next look of the server tags it.
 	static string HarnessTakeFromShelf(IEntity character)
 	{
@@ -598,28 +598,43 @@ class LF_Stores
 			if (!storage)
 				return "shelf no_inventory";
 
+			// The display copy nearest the shopper, so a proof picks a gondola side or a cooler by
+			// standing at it (#1143).
+			IEntity item;
+			ResourceName prefab;
+			float best;
 			for (int line = 0; line < store.GetLineCount(); line++)
 			{
-				ResourceName prefab = store.GetLinePrefab(line);
-				for (int slot = 0; slot < 16; slot++)
+				ResourceName linePrefab = store.GetLinePrefab(line);
+				for (int slot = 0; slot < 64; slot++)
 				{
-					IEntity item = store.GetShelfItem(prefab, slot);
-					if (!item)
+					IEntity candidate = store.GetShelfItem(linePrefab, slot);
+					if (!candidate)
 						continue;
 
-					if (!storage.TryInsertItem(item))
-						return string.Format("shelf insert_failed store=%1 item=%2", key, prefab);
+					float distance = vector.Distance(candidate.GetOrigin(), character.GetOrigin());
+					if (item && distance >= best)
+						continue;
 
-					EntityID itemId = item.GetID();
-					bool handleAlive = item != null;
-					bool found = GetGame().GetWorld().FindEntityByID(itemId) != null;
-					int held = LF_InventoryUtils.GetAmount(character, prefab);
-					store.DetectTaken();
-					return string.Format("shelf took store=%1 item=%2 stock=%3 unpaid=%4 owed=%5 handle=%6 found=%7 held=%8", key, prefab, store.GetStock(prefab), UnpaidCount(), OwedBy(key, character), handleAlive, found, held);
+					item = candidate;
+					prefab = linePrefab;
+					best = distance;
 				}
 			}
 
-			return string.Format("shelf empty store=%1", key);
+			if (!item)
+				return string.Format("shelf empty store=%1", key);
+
+			vector at = store.GetOwner().CoordToLocal(item.GetOrigin());
+			if (!storage.TryInsertItem(item))
+				return string.Format("shelf insert_failed store=%1 item=%2", key, prefab);
+
+			EntityID itemId = item.GetID();
+			bool handleAlive = item != null;
+			bool found = GetGame().GetWorld().FindEntityByID(itemId) != null;
+			int held = LF_InventoryUtils.GetAmount(character, prefab);
+			store.DetectTaken();
+			return string.Format("shelf took store=%1 item=%2 from=%3 dist=%4 stock=%5 unpaid=%6 owed=%7 handle=%8 found=%9", key, prefab, at.ToString(false), best, store.GetStock(prefab), UnpaidCount(), OwedBy(key, character), handleAlive, found) + string.Format(" held=%1", held);
 		}
 
 		return "shelf not_in_a_store";
@@ -963,7 +978,7 @@ class LF_Stores
 //------------------------------------------------------------------------------------------------
 //! The till of a physical store (#202, #582): "Pay for goods" on the cash register itself. The
 //! register is its own entity on the counter and names its store by key; an action put straight on a
-//! store entity still works. The server does all of it (LF_Stores.Pay) and checks the payer stands at
+//! store entity still works, and a building store (#1143) carries one context per register on itself. The server does all of it (LF_Stores.Pay) and checks the payer stands at
 //! the register; a client only asks, so the action performs on every machine and acts on the server alone.
 class LF_StoreTillAction : ScriptedUserAction
 {
@@ -977,6 +992,39 @@ class LF_StoreTillAction : ScriptedUserAction
 			return LF_Stores.Find(m_sStoreKey);
 
 		return LF_Component<LF_StoreComponent>.Find(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: how far the payer stands from the register, measured to the nearest context this action
+	//! belongs to. A building store (#1143) carries one context per till on the building itself, metres
+	//! from the building's origin; a register entity has one context on itself.
+	protected float DistanceToRegister(notnull IEntity owner, notnull IEntity user)
+	{
+		float best = vector.Distance(owner.GetOrigin(), user.GetOrigin());
+		ActionsManagerComponent manager = ActionsManagerComponent.Cast(owner.FindComponent(ActionsManagerComponent));
+		if (!manager)
+			return best;
+
+		array<UserActionContext> contexts = {};
+		manager.GetContextList(contexts);
+		bool found;
+		foreach (UserActionContext context : contexts)
+		{
+			if (!context || GetContextIndex(context.GetContextName()) == -1)
+				continue;
+
+			vector mat[4];
+			if (!context.GetTransformationWorld(mat))
+				continue;
+
+			float distance = vector.Distance(mat[3], user.GetOrigin());
+			if (!found || distance < best)
+				best = distance;
+
+			found = true;
+		}
+
+		return best;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1007,7 +1055,7 @@ class LF_StoreTillAction : ScriptedUserAction
 		LF_StoreComponent store = ResolveStore(pOwnerEntity);
 		if (store && pOwnerEntity && pUserEntity)
 		{
-			float distance = vector.Distance(pOwnerEntity.GetOrigin(), pUserEntity.GetOrigin());
+			float distance = DistanceToRegister(pOwnerEntity, pUserEntity);
 			if (!LF_StoreRules.TillInReach(distance))
 			{
 				LF_Debug.Warn(LF_Stores.FEATURE, string.Format("store %1: till refused %2, %3 m from the register", store.GetStoreKey(), LF_Stores.ThiefKey(pUserEntity), distance));

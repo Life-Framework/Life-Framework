@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "terms": {
+    "police": "Sheriff",
+    "org": "Gang",
+    "currency": {
+      "sym": "£"
+    }
+  }
+}

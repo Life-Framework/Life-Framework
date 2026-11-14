@@ -1,0 +1,101 @@
+SCR_DestructibleBuildingEntity : "{BD5FE43FC26CAF21}Prefabs/Buildings/Supermarket/Supermarket.et" {
+ ID "4B5B4AF195DFB0FF"
+ components {
+  LF_ShopComponent "{F60BB8E07CF3123F}" {
+   m_aShopItems {
+    LF_ShopItem "{6FD8055700BAA41E}" {
+     m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{C3621B7F7A0179B3}" {
+     m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{2D2CB008DDEA168E}" {
+     m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+   }
+  }
+  LF_StoreComponent "{97D5403365CBF1C1}" {
+   m_sStoreKey "everon_supermarket"
+   m_aLines {
+    LF_StoreLine "{23DBCE987188B411}" {
+     m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+     m_iMaxStock 12
+     m_iRestockAmount 4
+     m_sSlots "-2.707 0.946 -3.517 | -2.707 0.946 -2.8 | -2.707 0.946 -2.083 | -2.295 0.946 -2.083 | -2.295 0.946 -2.8 | -2.295 0.946 -3.517"
+    }
+    LF_StoreLine "{82E498451D153D38}" {
+     m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+     m_iMaxStock 10
+     m_iRestockAmount 3
+     m_sSlots "0.223 0.554 -3.517 | 0.223 0.554 -2.8 | 0.223 0.554 -2.083 | 0.775 0.554 -2.083 | 0.775 0.554 -2.8 | 0.775 0.554 -3.517"
+    }
+    LF_StoreLine "{949E68F7F2C404DE}" {
+     m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+     m_iMaxStock 12
+     m_iRestockAmount 4
+     m_sSlots "-8.036 0.79 -4.9 | -8.036 0.79 -5.3 | -8.036 0.79 -5.7 | -8.036 0.79 -6.101"
+    }
+   }
+   m_vBoundaryCenter 0 0 0
+   m_vBoundaryHalf 8.6 0 6.6
+   m_iRestockSeconds 120
+  }
+  ActionsManagerComponent "{D5923D1EC3E1B5CA}" {
+   ActionContexts {
+    UserActionContext "{57CF0519E8AB8024}" {
+     ContextName "till1"
+     Position PointInfo "{E391114FF3D5EE65}" {
+      Offset 8.174 1.389 -5.394
+     }
+     Radius 1.5
+    }
+    UserActionContext "{5379440773C39DBA}" {
+     ContextName "till2"
+     Position PointInfo "{886129C76B603112}" {
+      Offset 8.174 1.389 -3.394
+     }
+     Radius 1.5
+    }
+    UserActionContext "{BEB3AB9CFAD76E9D}" {
+     ContextName "till3"
+     Position PointInfo "{DEAFF584A7EAED08}" {
+      Offset 8.174 1.389 -1.394
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{CC66F9BD2CA1F7B5}" {
+     ParentContextList {
+      "till1"
+     }
+     UIInfo UIInfo "{AB4EBB7FFD58889E}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+    LF_StoreTillAction "{D4E998B579CA3B32}" {
+     ParentContextList {
+      "till2"
+     }
+     UIInfo UIInfo "{D913C5AC83A9FE8E}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+    LF_StoreTillAction "{39536478A83240C9}" {
+     ParentContextList {
+      "till3"
+     }
+     UIInfo UIInfo "{8E28FAF10042BEBC}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+   }
+  }
+ }
+}
