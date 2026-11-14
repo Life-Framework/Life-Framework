@@ -1,3 +1,4 @@
+// lf-register: registerWbPreview(server, wbClient, config)
 /**
  * `wb_preview` - look at one resource, or the edit-mode viewport, without play mode.
  *
