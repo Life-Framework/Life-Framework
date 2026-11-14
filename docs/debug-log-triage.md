@@ -304,3 +304,7 @@ When a new message appears:
 | `[LFDebug:<Id>] <reason>: off` | BY DESIGN | #960/#1047: a system switched itself off at run time (`LF_Systems.SwitchOff`), for example a map with none of its places. Holds until the world ends. |
 | `Trying to register a SCR_BuildingDestructionManagerComponent, but one is already registered!` | OPEN | #1104: core alone on vanilla Everon (`Worlds/CoreOnEveron`). `GameMode_Roleplay.et` brings a child `MPDestructionManager` and `Eden.ent` already places one. Not seen on DebugWorld. |
 | `'SCR_BaseResupplySupportStationComponent' needs a entity catalog manager!` | OPEN | #1104: core alone on vanilla Everon. The vanilla world's resupply stations want an `SCR_EntityCatalogManagerComponent` on the game mode; the LF game mode has none. |
+| `[LFDebug:Disconnect] <uid> left <state>: <outcome>` | BY DESIGN | #691: a player logged out cuffed, escorted, downed, wanted or jailed; the outcome is the owner's `disconnect` rules. One incident row of kind `logout` goes with it. |
+| `[LFDebug:Disconnect] <uid> could not be jailed at logout: fine instead` / `[LFDebug:Jail] sentence on return refused: ...` | EXPECTED | #691: the jail rule needs a placed cell and no running sentence; the fine applies instead. A map with no cell always fines. |
+| `[LFDebug:Jail] sentence started on logout <uid> seconds=<n>` | BY DESIGN | #691: the cuffed logout's sentence; the rejoin goes to the cell (`spawned prisoner ... returned to the cell`). |
+

@@ -1,4 +1,4 @@
-// red-proof: TODO
+// red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_DisconnectCuffedPersist`: `if (false)` in place of the ImprisonOnReturn call in LF_DisconnectRules.Apply failed `- the cuffed logout is jailed` and `- the loaded save has the rejoin jailed`. Restored; green. The restart path is wt e2e.
 // tier: PERSISTENCE
 //! Acceptance of #691 (`disconnect/cuffed`): a cuffed player who logs out has a sentence and the
 //! charge that ride the real save (the "jail" payload and the account), so after the store is

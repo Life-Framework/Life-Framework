@@ -1,4 +1,4 @@
-// red-proof: TODO
+// red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_DisconnectJail`: `if (false)` in place of the ImprisonOnReturn call in LF_DisconnectRules.Apply failed `- the cuffed logout is jailed (expected 'jail', got 'fine')`; `if (false)` in place of `!online && clockOffline` in LF_Jail.TickOnline failed `- jailClockOffline: the away prisoner serves time (expected 30, got 50)`. Restored; green.
 // tier: WORLD (needs DebugWorld's placed cell to restore after the stand-in cell)
 //! Disconnect rules (#691) on the server path with no body: a cuffed logout starts a paused
 //! sentence and adds the charge; the rejoin serves it; the fine rule takes the fine from the bank;
