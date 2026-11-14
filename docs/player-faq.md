@@ -1,6 +1,6 @@
 # Player FAQ
 
-Short answers for players on the Life Framework server. For the download and the first join, see [Open the playtest](playtest.md). For clips and appeals, see [Record a clip](clip-guide.md).
+Short answers for players on the Life Framework server. For the download and the first join, see [Open the playtest](playtest.md). For clips and appeals, see [Record a clip](player-clips.md).
 
 ## Joining
 
@@ -102,7 +102,7 @@ Post in **#playtest-feedback** on [Discord](https://discord.gg/MjMexJteqz). Use 
 - What you expected, and what happened.
 - The server name and the real time, with your time zone.
 - The names of the other players involved.
-- A clip, if you have one. See [Record a clip](clip-guide.md).
+- A clip, if you have one. See [Record a clip](player-clips.md).
 
 **What is /report?**
 Type `/report` in chat right after an incident you want staff to see. It flags your recent incidents from the last 10 minutes, including incidents where you were the other party. You can send it once every 2 minutes. Staff see the flag on the Game Master list.
