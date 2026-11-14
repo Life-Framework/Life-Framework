@@ -842,6 +842,24 @@
           "default": 600,
           "minimum": 30,
           "maximum": 7200
+        },
+        "applyMinPlaytimeHours": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "applyRejectCooldownHours": {
+          "type": "integer",
+          "default": 72,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "trialHours": {
+          "type": "integer",
+          "default": 168,
+          "minimum": 0,
+          "maximum": 100000
         }
       },
       "additionalProperties": false,
