@@ -91,7 +91,8 @@ const theirsAfter = item("00000000000000C2", "LF-Theirs_After", ['Target_en_us "
 const baseSt = table([basePolice, baseLong]);
 const oursSt = table([basePolice, baseLong, oursFine, oursMoney, oursFormat]);
 const theirsSt = table([basePolice, baseLongTheirs, theirsCost, theirsAfter]);
-const expectedSt = table([basePolice, baseLongTheirs, oursFine, oursMoney, oursFormat, theirsCost, theirsAfter]);
+// The driver writes the union sorted by Id (tools/merge/sort-string-table.mjs).
+const expectedSt = table([baseLongTheirs, basePolice, oursFine, oursFormat, oursMoney, theirsAfter, theirsCost]);
 
 const triageHead = "# Debug log triage\n\n| Message | Verdict | Notes |\n|---|---|---|\n| `[LFDebug:A] a` | INFO | base row |\n";
 const triageTail = "\n## How to add a row\n\nAppend it.\n";

@@ -13,6 +13,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { canonicalStringTable } from "../merge/sort-string-table.mjs";
 
 export const help = "credits [--check]   generate the in-game credits rows and strings from docs/credits.md";
 
@@ -142,7 +143,7 @@ export function stBlock(list) {
   return rows.join("\n");
 }
 
-// The table with every LF-Credits_ row replaced by the block (appended before the closing braces).
+// The table with every LF-Credits_ row replaced by the block, sorted by Id.
 export function patchSt(st, list) {
   const items = /\n    CustomStringTableItem "\{[0-9A-F]{16}\}" \{\n     Id "LF-Credits_[^"]*"\n(?:     [^\n]*\n)*?    \}/g;
   const stripped = st.replace(items, "");
@@ -150,7 +151,11 @@ export function patchSt(st, list) {
   let end = stripped.lastIndexOf("\n  }\n }\n}");
   if (end === -1) end = stripped.lastIndexOf("\n }\n}");
   if (end === -1) throw new Error(`${ST}: closing braces not found`);
-  return `${stripped.slice(0, end)}\n${stBlock(list)}${stripped.slice(end)}`;
+  const patched = `${stripped.slice(0, end)}\n${stBlock(list)}${stripped.slice(end)}`;
+  // The table is kept sorted by Id (tools/merge/sort-string-table.mjs); one that does not parse
+  // whole stays as patched and regen-localization reports it.
+  const sorted = canonicalStringTable(patched);
+  return sorted.ok ? sorted.text : patched;
 }
 
 export function dataFile(list) {

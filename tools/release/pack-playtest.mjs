@@ -70,7 +70,8 @@ export function makeZip(entries, when = new Date(Date.UTC(2026, 0, 1))) {
     locals.push(head, name, body);
     const cen = Buffer.alloc(46);
     cen.writeUInt32LE(0x02014b50, 0);
-    cen.writeUInt16LE(20, 4);
+    // An entry with a unix `mode` (start.sh: 0o755) is stored as made on Unix, so unzip keeps the bit.
+    cen.writeUInt16LE(e.mode ? (3 << 8) | 20 : 20, 4);
     cen.writeUInt16LE(20, 6);
     cen.writeUInt16LE(0x0800, 8);
     cen.writeUInt16LE(stored ? 0 : 8, 10);
@@ -80,6 +81,7 @@ export function makeZip(entries, when = new Date(Date.UTC(2026, 0, 1))) {
     cen.writeUInt32LE(body.length, 20);
     cen.writeUInt32LE(data.length, 24);
     cen.writeUInt16LE(name.length, 28);
+    if (e.mode) cen.writeUInt32LE(((0o100000 | e.mode) << 16) >>> 0, 38);
     cen.writeUInt32LE(offset, 42);
     centrals.push(cen, name);
     offset += head.length + name.length + body.length;
@@ -109,7 +111,7 @@ export function readZip(buf) {
     const lnlen = buf.readUInt16LE(local + 26);
     const lxlen = buf.readUInt16LE(local + 28);
     const raw = buf.subarray(local + 30 + lnlen + lxlen, local + 30 + lnlen + lxlen + csize);
-    out.push({ name, data: method === 8 ? inflateRawSync(raw) : Buffer.from(raw) });
+    out.push({ name, data: method === 8 ? inflateRawSync(raw) : Buffer.from(raw), mode: (buf.readUInt32LE(p + 38) >>> 16) & 0o7777 });
     p += 46 + nlen + buf.readUInt16LE(p + 30) + buf.readUInt16LE(p + 32);
   }
   return out;
