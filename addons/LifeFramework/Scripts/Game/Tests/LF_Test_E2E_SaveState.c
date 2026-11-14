@@ -636,7 +636,10 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		}
 
 		ctx.True(LF_Progression.HasTurnedIn(COURIER_UID, LF_TestProgressionKit.QUEST_ID), "e2e turned-in quest stays done after the save load");
+#ifndef LF_E2E_PRE_MOVE
+		// --pre-move: the ref build never wrote the quiz pass (#915 landed later).
 		ctx.True(LF_Progression.HasFlag(COURIER_UID, LF_Quiz.PASS_FLAG), "e2e rules quiz pass is remembered after the restart (#915)");
+#endif
 
 		VerifyDutyInventories(ctx);
 		VerifyMedicInventory(ctx);

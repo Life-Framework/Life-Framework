@@ -2247,6 +2247,7 @@
   `session up`, `look`, `place` and `audit placement` use the pack world when the pack is in the
   checkout; `tools\cli test` still boots the core DebugWorld. `e2e --pre-move <ref> --mission playtest`
   reloads a save made before the move.
+  The `ci` step `pre-move save` (`tools/lib/pre-move-gate.mjs`, #327) runs it against the pinned `502ebf39` whenever persistence code, a mission header or the pack boundary changes (`docs/persistence.md` "Pre-move save gate").
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
