@@ -2690,10 +2690,14 @@
   with a photo box, stamp and seal. No real agency names or logos. Prefab GUIDs unchanged; the
   states stage sets the inventory camera, the flat rest pose and the hand pose.
 - ✅ **128-player cost budget and benchmark gate (#335).** `LF_Perf` (`Core/LF_Perf.c`) holds server counters, timers and gauges behind `-lfPerf` (or `LF_Perf.SetEnabled`), printed as `[LFDebug:Perf] count/time/gauge` every minute and read by tests; sites today: account refresh and publish, account-state bumps, ledger record, bleed-out advance, save point. `Configs/Perf/LF_PerfBudget.conf` (`LF_PerfBudget`) holds the limits. PERSISTENCE test `perf/budget-128` builds 128 synthetic characters (accounts, banks, crime, a money log at its 20000-row cap) through the managers, bus and serializer and fails when a cost passes a limit; `tools\cli perf` prints the table and writes `tmp/perf/report.md`. Validate: `validate-perf-budget.mjs`, `perf-report-selftest.mjs`. Numbers and what a synthetic run cannot show: `docs/architecture/performance.md`. ⚠️ No network or live-player measure yet; that needs a multi-client run (steps in the doc).
-- ✅ **Perf budget scales to machine load** (#1000, 2026-11-14). `LF_Test_PerfBudget` times a fixed
-  CPU loop (best of 3) and scales its wall-clock limits by the ratio, between 100 and 400 percent;
-  byte limits stay fixed. A real regression does not slow the calibration loop, so the budget still
-  bites. It prints a `BENCH calibration-ms` line. Test-only.
+- ✅ **Perf budget is a multiple of a reference loop** (2026-11-14). `LF_PerfBudget` limits for time are
+  counts of reference ops (`m_iMax*Ref`), not microseconds. `LF_Test_PerfBudget` times a small script loop
+  (allocate a row, build a key, append, map set; best of 3) right before each measure and compares the
+  measure against `limit x one ref op`, so a 2x slower box (lf-cloud) or a busy one stretches both sides.
+  Each measure is the cheapest of several chunks or repeats, and the LF_Debug console chatter is muted
+  while measuring (a log line costs the box's console, not the code). No scale cap, no floor: a 3x
+  regression fails on any pool machine. Byte limits stay fixed. Test-only; the BENCH lines carry
+  `refOps`, `maxRefOps` and `refNs`.
 - ✅ **Police application (#128).** Duty desk action `LF_PoliceApplyAction` opens a paper form (`LF_PoliceApplicationForm`: name, why, availability) that `RpcAsk_LF_PoliceApplication` sends to the server. `LF_PoliceApplications` validates through `LF_PoliceApplicationRules` (one open application per player, not for an officer, field length), appends `STATUS|uid|name|why|availability|unix` to `$profile:LifeFramework/police_applications.txt` (not part of the save, no persistence bump), logs `[LFDebug:Police]` and toasts a receipt. Approval writes the police roster through `LF_WhitelistManager.AddFactionWhitelist`: an administrator picks `LF_PoliceReviewAction` (oldest open first; server re-checks the role), or a mission with `m_bLF_InstantPoliceApproval` (the playtest town) approves on submit. Test `police/application`; `session.mjs police-application-proof`. Not done from the issue: reject with cooldown, a letter at the desk, chief-rank approval.
 - ✅ **Fuel till reachable (#729).** The till moved from inside the closed kiosk to `Roadmap_Fuel_Counter` (a `CounterShop_01` at the south service window, 283.6 237.2); the clerk stays behind the window mesh. The rob action faces -Z (anchors.json), so a robber standing south of the counter gets "Rob the till" with the till and clerk in view. `harness.mjs stand Roadmap_Fuel_Till s`; `crime/rob-reward` unchanged.
 - ✅ **Fuel kiosk counter sits on the floor** (#936, 2026-11-14). `Roadmap_Fuel_Counter` stood at
