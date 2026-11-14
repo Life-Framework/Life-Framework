@@ -16,10 +16,10 @@
     "width": 0.35
   },
   "budget": {
-    "lod0_tris": 4000,
+    "lod0_tris": 6000,
     "lod_ratios": [
       0.5,
-      0.2
+      0.25
     ],
     "texture_px": 1024,
     "credits": 120
