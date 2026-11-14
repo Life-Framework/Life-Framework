@@ -1,3 +1,4 @@
+// lf-register: registerTextureRecolor(server, config, wbClient)
 /**
  * `texture_recolor` — create a recolored variant of an `.edds` texture.
  *
