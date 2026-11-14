@@ -189,6 +189,13 @@ report["scale"] = float(scale)
 report["size"] = [float(hi[1] - lo[1]), float(hi[2] - lo[2]), float(hi[0] - lo[0])]  # length, height, width
 report["bounds"] = {"min": b2e(lo), "max": b2e(hi)}
 
+# The fitted, cleaned, undecimated mesh: the source of the high-to-low normal bake below.
+high = obj.copy()
+high.data = obj.data.copy()
+high.name = "lf_high"
+bpy.context.collection.objects.link(high)
+report["source"]["tris_after_cleanup"] = tri_count(high)
+
 # ---------------------------------------------------------------- UVs and the one material
 uvs = obj.data.uv_layers
 while len(uvs) > 1:
@@ -331,6 +338,82 @@ obj.name = name + "_LOD0"
 obj.data.name = obj.name
 for p in obj.data.polygons:
     p.use_smooth = True
+
+
+def bake_normal(high, low, px, normal_img, lod_mat, tex_node):
+    """Tangent-space normal map of `high` on `low`'s UVs (what a normal map is for). Returns an
+    (px, px, 3) array in the orientation pixels() uses, or None when the bake failed."""
+    scene = bpy.context.scene
+    scene.render.engine = "CYCLES"
+    scene.cycles.device = "CPU"
+    scene.cycles.samples = 1
+    img = bpy.data.images.new("lf_bake_normal", px, px, alpha=False, float_buffer=False)
+    img.colorspace_settings.name = "Non-Color"
+    # The low mesh bakes into an image texture node that is active in its material.
+    node = lod_mat.node_tree.nodes.new("ShaderNodeTexImage")
+    node.image = img
+    lod_mat.node_tree.nodes.active = node
+    # The high mesh carries the generator's own normal map, so its fine detail lands in the bake too.
+    hm = bpy.data.materials.new("lf_high_mat")
+    hm.use_nodes = True
+    if normal_img is not None:
+        nm = hm.node_tree.nodes.new("ShaderNodeNormalMap")
+        tn = hm.node_tree.nodes.new("ShaderNodeTexImage")
+        tn.image = normal_img
+        normal_img.colorspace_settings.name = "Non-Color"
+        hm.node_tree.links.new(tn.outputs["Color"], nm.inputs["Color"])
+        hm.node_tree.links.new(nm.outputs["Normal"], hm.node_tree.nodes["Principled BSDF"].inputs["Normal"])
+    high.data.materials.clear()
+    high.data.materials.append(hm)
+    co, lo, hi = bounds(low)
+    diag = float(np.linalg.norm(hi - lo))
+    bpy.ops.object.select_all(action="DESELECT")
+    high.select_set(True)
+    low.select_set(True)
+    bpy.context.view_layer.objects.active = low
+    try:
+        bpy.ops.object.bake(type="NORMAL", use_selected_to_active=True, normal_space="TANGENT",
+                            cage_extrusion=0.01 * diag, max_ray_distance=0.03 * diag, margin=16, margin_type="EXTEND")
+    except Exception as e:  # a failed bake keeps the generator's own map
+        report["notes"].append("normal bake failed: %s" % e)
+        lod_mat.node_tree.nodes.remove(node)
+        return None
+    arr = np.empty(px * px * 4, np.float32)
+    img.pixels.foreach_get(arr)
+    arr = arr.reshape(px, px, 4)[::-1, :, :3].copy()
+    lod_mat.node_tree.nodes.remove(node)
+    # Tilt statistics: how strong the map is (0 degrees is a flat map).
+    v = arr * 2 - 1
+    z = np.clip(v[:, :, 2] / np.maximum(np.linalg.norm(v, axis=2), 1e-6), -1, 1)
+    ang = np.degrees(np.arccos(z))
+    empty = float((arr.sum(axis=2) < 0.02).mean())
+    report["bake"] = {"ok": empty < 0.5, "source_tris": tri_count(high), "low_tris": tri_count(low),
+                      "mean_tilt_deg": float(ang.mean()), "p95_tilt_deg": float(np.percentile(ang, 95)), "empty_share": empty,
+                      "cage_extrusion_m": 0.01 * diag, "max_ray_distance_m": 0.03 * diag}
+    return arr if empty < 0.5 else None
+
+
+# A remeshed model arrives at LOD0 already: there is nothing to bake from. A collapse from a bigger
+# source (a model that skipped the remesh stage) gets its normals baked, unless fit.bake is false:
+# on a flat plate studded with spikes (the spike strip) the bake turns the collapse error into dark
+# dents around every spike, and the generator's own map reads better.
+if fit.get("bake", True) is False:
+    report["textures"]["normal"] = "the generator's own map (fit.bake is false)"
+elif px >= 256 and tri_count(high) > 1.15 * tri_count(obj):
+    baked = bake_normal(high, obj, px, maps["normal"], mat, None)
+    if baked is not None:
+        normal = baked
+        nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal[:, :, 0], np.ones((px, px), np.float32)])
+        write_tiff(os.path.join(out, name + "_NMO.tif"), (np.clip(nmo, 0, 1) * 255 + 0.5).astype(np.uint8))
+        report["textures"]["normal"] = "baked from %d source triangles" % tri_count(high)
+    else:
+        report["textures"]["normal"] = "the generator's own map"
+bpy.data.objects.remove(high, do_unlink=True)
+mat.node_tree.nodes.active = tex
+bpy.context.scene.render.engine = "BLENDER_WORKBENCH"
+report["textures"]["source_normal_mean_tilt_deg"] = float(np.degrees(np.arccos(np.clip(
+    (lambda v: v[:, :, 2] / np.maximum(np.linalg.norm(v, axis=2), 1e-6))(pixels(maps["normal"], 256, (0.5, 0.5, 1, 1))[:, :, :3] * 2 - 1), -1, 1))).mean())
+
 lods = [obj]
 for i, ratio in enumerate(spec["budget"].get("lod_ratios", []), start=1):
     activate(obj)

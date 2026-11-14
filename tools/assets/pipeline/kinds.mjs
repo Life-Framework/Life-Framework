@@ -23,14 +23,16 @@ const M9 = {
   ],
 };
 
+import { BUDGETS } from "./budgets.mjs";
+
 export const KINDS = {
   weapon: {
     proven: true,
     assetRoot: "Assets/Weapons/Handguns",
     prefabRoot: "Prefabs/Weapons/Handguns",
     defaultSize: { length: 0.2, height: 0.14, width: 0.036 },
-    defaultTris: 8000,
-    maxTris: 15000,
+    defaultTris: BUDGETS.weapon.lod0,
+    maxTris: BUDGETS.weapon.max,
     reference: M9,
     skeleton: M9.nodes,
     // The hand pose and the reload clips assume the M9 grip, so the mesh is scaled to the M9's
@@ -50,8 +52,8 @@ export const KINDS = {
     assetRoot: "Assets/Items/Roleplay",
     prefabRoot: "Prefabs/Items/Roleplay",
     defaultSize: { length: 0.15, height: 0.08, width: 0.03 },
-    defaultTris: 3000,
-    maxTris: 8000,
+    defaultTris: BUDGETS.gadget.lod0,
+    maxTris: BUDGETS.gadget.max,
     fit: "centre",
     collider: { prefix: "UBX_", layerPreset: "ItemFireView", gamemat: "{13581C35484F3000}Common/Materials/Game/fabric.gamemat" },
     requiredSockets: [],
@@ -65,8 +67,8 @@ export const KINDS = {
     assetRoot: "Assets/Props/Roleplay",
     prefabRoot: "Prefabs/Props/Roleplay",
     defaultSize: { length: 3.0, height: 0.05, width: 0.3 },
-    defaultTris: 4000,
-    maxTris: 12000,
+    defaultTris: BUDGETS.deployable.lod0,
+    maxTris: BUDGETS.deployable.max,
     fit: "ground",
     // maxHeight: the box covers the base only, so a wheel rolls over the strip instead of climbing it.
     collider: { prefix: "UBX_", layerPreset: "ItemFireView", gamemat: "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat", maxHeight: 0.03 },

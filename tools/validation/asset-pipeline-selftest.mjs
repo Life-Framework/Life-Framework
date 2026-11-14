@@ -54,7 +54,7 @@ export async function main() {
     slug: "stick", name: "Stick", kind: "weapon", prompt: "A police baton, single object, no text, no logos.", texture_prompt: "",
     meshy: { ai_model: "meshy-6-lite", target_polycount: 20000 },
     size_m: { length: 0.2, height: 0.14, width: 0.036 },
-    budget: { lod0_tris: 8000, lod_ratios: [0.5, 0.2], texture_px: 1024, credits: 300 },
+    budget: { lod0_tris: 8000, lod_ratios: [0.5, 0.25], texture_px: 1024, credits: 300 },
     fit: { offset: [0, 0, 0] }, parts: [{ name: "trigger", bone: "w_trigger", box: [0, 0, 0, 1, 1, 1] }],
     asset_dir: "Assets/Weapons/Handguns/Stick", prefab_dir: "Prefabs/Weapons/Handguns/Stick",
   });

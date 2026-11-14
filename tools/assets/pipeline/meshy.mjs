@@ -6,6 +6,7 @@ import { existsSync, readFileSync, writeFileSync, appendFileSync, mkdirSync } fr
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
+import { BUDGETS } from "./budgets.mjs";
 export const BASE = "https://api.meshy.ai";
 export const KEY_FILE = () => process.env.LF_MESHY_KEY_FILE || join(homedir(), ".life-framework", "meshy-key");
 
@@ -75,7 +76,7 @@ export function previewBody(spec) {
     ai_model: m.ai_model || "meshy-6-lite",
     should_remesh: true,
     topology: "triangle",
-    target_polycount: m.target_polycount || 20000,
+    target_polycount: m.target_polycount || (BUDGETS[spec.kind] ? BUDGETS[spec.kind].source : 20000),
     target_formats: ["glb"],
   };
 }
@@ -90,11 +91,20 @@ export function imageTo3dBody(spec, imageUri) {
     enable_pbr: true,
     should_remesh: true,
     topology: "triangle",
-    target_polycount: m.target_polycount || 20000,
+    target_polycount: m.target_polycount || (BUDGETS[spec.kind] ? BUDGETS[spec.kind].source : 20000),
     target_formats: ["glb"],
   };
   if (spec.texture_prompt) body.texture_prompt = spec.texture_prompt.slice(0, 800);
   return body;
+}
+
+// Remesh: Meshy rebuilds the finished model at exactly the triangle count we want and rebakes its PBR
+// maps onto the new topology. This replaces a Blender collapse from the raw mesh, which smears UVs and
+// dents flat panels (measured by the meshy-3d-compare run, 2026-11-14). 5 credits.
+export function remeshBody(spec, inputTaskId, targetPolycount) {
+  if (!inputTaskId) throw new Error("remesh needs the task id of the accepted generation");
+  if (!(targetPolycount >= 100 && targetPolycount <= 300000)) throw new Error(`remesh target_polycount ${targetPolycount} is outside 100 to 300000`);
+  return { input_task_id: inputTaskId, target_formats: ["glb"], topology: "triangle", target_polycount: Math.round(targetPolycount) };
 }
 
 export function refineBody(spec, previewTaskId) {
