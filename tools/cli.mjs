@@ -44,7 +44,7 @@ import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync,
 import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
 import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
 import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
@@ -56,7 +56,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
-import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
+import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -1178,10 +1178,78 @@ function rdbBudget() {
 }
 function ensureResourceDatabase(root) {
   wt.copyResourceDatabase(root);
+  refreshOnPool(root);
   // The core always; another addon once it declares a resource (tools/lib/addons.mjs rdbAddons).
   let worst = 0;
   for (const name of rdbAddons(root)) worst = Math.max(worst, ensureAddonResourceDatabase(root, name));
   return worst;
+}
+
+// The fallback for a refresh that has to run on THIS PC (a local run: build, serve, session up, `rdb`,
+// a gate; or a run headed for a machine without the "rdb" cap: prepareResourceDatabase/rdbForSlot below
+// keep the rdb-cap rule of #1256, a machine with the cap refreshes in its own run and never gets here).
+// A headless Workbench is ~15 s per addon but queued 10-50 min behind the hub build lock and this PC's
+// one Workbench slot (2026-11-14: a session waited 20 min, ship proofs 30-50 min). When this PC is busy,
+// short of RAM, or its build lock is held, the refresh runs on a pool machine with the "rdb" cap and a
+// free Workbench slot AND RAM instead (tools/lib/wb-gate.mjs chooseRefresh): the run folder gets this
+// worktree's snapshot, `rdb --local` refreshes there, and pullRemoteRdb copies the rdb home. Any failure
+// leaves the rdb stale and the local refresh below takes over. LF_RDB_REFRESH_WHERE=local|pool|auto
+// (default auto); `pool` tries an rdb-cap machine first. Sync callers cannot await syncAndRun, so
+// `rdb --pool-run` does it in a child process. Never inside a pool run folder (tmp/pool-owner.json): the
+// box refreshes its own copy and must not route onward.
+function buildLockHeld(root) {
+  try {
+    wt.acquireLock(root, "build", { waitMs: 0 });
+  } catch {
+    return true;
+  }
+  wt.releaseLock(root, "build");
+  return false;
+}
+
+function refreshOnPool(root, force = false) {
+  const mode = force ? "pool" : (process.env.LF_RDB_REFRESH_WHERE || "auto").toLowerCase();
+  if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0" || process.env.LF_RDB_POOL === "0" || mode === "local") return;
+  if (existsSync(join(root, "tmp", "pool-owner.json"))) return;
+  const stale = rdbAddons(root).filter((name) => rdbFreshness(addonDir(root, name)).missing.length > 0);
+  if (!stale.length) return;
+  // The same live view `ci` ranks machines by (workbenchMachines: slots and free RAM, here and over ssh),
+  // narrowed to machines whose refresh is known to register resources (the "rdb" cap, #1256).
+  const view = workbenchMachines(root, { mode: "any", machine: null });
+  const settings = pool.poolSettings(root);
+  const c = wbGate.chooseRefresh({ local: { ...view.local, buildLocked: buildLockHeld(root) }, remotes: view.remotes, mode: mode === "pool" ? "pool" : "auto", minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
+  console.log(`rdb: ${stale.length} addon(s) stale (${stale.join(", ")}); refresh on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
+  if (c.where === "local") return;
+  const t0 = Date.now();
+  const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "rdb", "--pool-run", c.where], { cwd: root, stdio: "inherit", windowsHide: true, timeout: 2100000, env: { ...process.env, LF_RDB_POOL: "0" } });
+  const left = stale.filter((name) => rdbFreshness(addonDir(root, name)).missing.length > 0);
+  const secs = Math.round((Date.now() - t0) / 1000);
+  if (!left.length) console.log(`rdb: refreshed on ${c.where} in ${secs} s (${stale.length} addon(s), no wait for this PC's Workbench)`);
+  else console.log(`rdb: ${c.where} left ${left.join(", ")} stale after ${secs} s (exit ${r.status ?? r.error?.code ?? "?"}); refreshing here`);
+}
+
+// `rdb --pool-run <machine>`: the async half of refreshOnPool, run in a child process.
+async function cmdRdbPoolRun(root, machine) {
+  const m = pool.loadMachines(root).find((x) => x.name === machine && x.via === "ssh");
+  if (!m) {
+    console.log(`FAIL  rdb: no ssh pool machine '${machine}'`);
+    return 1;
+  }
+  const t0 = Date.now();
+  const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["rdb", "--local"], suffix: "-rdb", purpose: "rdb refresh" });
+  console.log(`rdb: ${m.name} finished the refresh run (exit ${r.code}) in ${Math.round((Date.now() - t0) / 1000)} s`);
+  if (r.rDir) pullRemoteRdb(root, m, r.rDir, "rdb");
+  return r.code === 0 ? 0 : 1;
+}
+
+function cmdRdb(root, flags) {
+  const i = flags.indexOf("--pool-run");
+  if (i >= 0) return cmdRdbPoolRun(root, flags[i + 1]);
+  if (flags.includes("--local")) process.env.LF_RDB_POOL = "0";
+  // `--wait` is the default (the local refresh queues for the slot and the build lock); `--budget <s>` bounds that queue.
+  const b = flags.indexOf("--budget");
+  if (b >= 0 && Number(flags[b + 1]) > 0) process.env.LF_RDB_WAIT_S = String(Number(flags[b + 1]));
+  return ensureResourceDatabase(root);
 }
 
 // Before a pool run (test, e2e), whose machine is not known yet: copy main's rdb when it is the better
@@ -1253,7 +1321,13 @@ function ensureAddonResourceDatabase(root, name) {
   }
   console.log(`resource database stale${tag}: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
   let locked = false;
+  let wbSlot = null;
+  const queuedAt = Date.now();
   try {
+    // One of this machine's Workbench slots, so a pool machine running this refresh shows busy to the
+    // next chooseRefresh/chooseGate (tools/lib/wb-lock.mjs); the order matches cmdBuild (slot, then lock).
+    // Its wait is drawn from the same budget as the build lock's (rdbBudget, lock-wait.mjs).
+    wbSlot = wbLock.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
     const lockFile = join(wt.ensureHub(root), "locks", "build.lock");
     waitForLock({
       what: `the build lock for the rdb refresh${tag}`,
@@ -1279,16 +1353,22 @@ function ensureAddonResourceDatabase(root, name) {
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
-      console.log(`resource database${tag} refreshed in ${secs}s (${after.total} resources registered)`);
+      console.log(`resource database${tag} refreshed on ${os.hostname()} in ${secs}s, ${started - queuedAt > 1000 ? `${Math.round((started - queuedAt) / 1000)}s queued first, ` : ""}(${after.total} resources registered)`);
       return 0;
     }
     console.log(`WARN  resource database still stale${tag} after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${after.missing.length} unregistered: ${describeMissing(after.missing)}`);
     return 1;
   } catch (e) {
     console.log(`WARN  resource database refresh failed: ${e.message}`);
+    // The wait for this PC's Workbench slot or build lock ran out: last resort is a pool machine.
+    if (/is held|no free Workbench slot/.test(e.message) && process.env.LF_RDB_POOL !== "0" && process.env.LF_RDB_REFRESH_WHERE !== "local" && !wt.isMainCheckout(root)) {
+      refreshOnPool(root, true);
+      if (rdbFreshness(addon).missing.length === 0) return 0;
+    }
     return 1;
   } finally {
     if (locked) wt.releaseLock(root, "build");
+    wbSlot?.release();
   }
 }
 
@@ -1753,6 +1833,34 @@ function cmdHostRestore(dir, name) {
   }
 }
 
+// Host subcommands that live one file each in tools/host/commands/ (export `help` and
+// `main(args, { root, hostDir })`), the way tools/commands/ works for top-level commands.
+// Add a host subcommand there, not to cmdHost: this file is not edited for it.
+// LF_HOST_COMMANDS_DIR points at another folder (the selftest uses a temp one).
+function hostCommandsDir() {
+  return process.env.LF_HOST_COMMANDS_DIR || join(ROOT, "tools", "host", "commands");
+}
+
+function hostCommandFile(name) {
+  if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) return null;
+  const file = join(hostCommandsDir(), `${name}.mjs`);
+  return existsSync(file) ? file : null;
+}
+
+async function hostCommandsHelp() {
+  const dir = hostCommandsDir();
+  if (!existsSync(dir)) return;
+  const names = readdirSync(dir).filter((n) => /^[a-z][a-z0-9-]*\.mjs$/.test(n)).sort();
+  if (!names.length) return;
+  console.log("\nMore host commands (tools/host/commands/, one file each):");
+  for (const f of names) {
+    const mod = await import(pathToFileURL(join(dir, f)).href);
+    if (mod.help) console.log(`  ${mod.help}`);
+  }
+}
+
+const HOST_USAGE = "usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force]";
+
 function cmdHost(args) {
   const list = args ?? [];
   const sub = list[0];
@@ -1769,7 +1877,10 @@ function cmdHost(args) {
     console.log(b ? `host: backed up saves -> ${b}` : "host: no save to back up");
     return 0;
   }
-  console.log("usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force]");
+  const file = hostCommandFile(sub);
+  if (file) return import(pathToFileURL(file).href).then((m) => m.main(list.slice(1), { root: ROOT, hostDir: dir }));
+  console.log(HOST_USAGE);
+  if (sub === "help") return hostCommandsHelp().then(() => 0);
   return sub ? 1 : 0;
 }
 
@@ -2215,7 +2326,14 @@ function cmdSessionUp(root, dir, flags) {
   // --roster / --seed fixtures are written into the server profile by sessionLaunch, right before the server boots.
   const seeds = session.parseSeeds(flags);
   const clients = session.parseClients(flags);
-  const mission = session.parseMission(flags);
+  // --pack <LF_Name>: boot that pack (addons/<name>, header Missions/<name>.conf) on the core instead of the flagship.
+  const packArg = parsePackFlag(flags, root);
+  if (packArg?.error) {
+    console.log(`FAIL  ${packArg.error}`);
+    return 1;
+  }
+  // A pack session runs the harness build (LF_HARNESS) like the playtest mission, so proofs can read the client.
+  const mission = packArg ? "playtest" : session.parseMission(flags);
   const rp = session.parseSessionProfile(flags);
   const res = session.sessionRes(flags, rp);
   const visible = flags.includes("--visible");
@@ -2286,7 +2404,7 @@ function cmdSessionUp(root, dir, flags) {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, pack: packArg?.name, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
     // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
     holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
   if (hold.note) console.log(hold.note);
@@ -2310,7 +2428,7 @@ function cmdSessionUp(root, dir, flags) {
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     recordIdentities(dir, state);
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
-    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${playtestMission(launchAddons(ROOT)).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${(packArg?.header ?? playtestMission(launchAddons(ROOT))).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
     sessionCapNote(root, settings, hold.min);
     console.log(`session: full log ${sessionLog}`);
     return 0;
@@ -2449,7 +2567,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     copyFileSync(join(root, "server", "example", "config.json"), join(owner, "config.json"));
     slog(`template: config.json copied to ${owner}`);
   }
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddonsFor(root, state.pack), header: state.pack ? parsePackFlag(["--pack", state.pack], root)?.header : "" });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
@@ -2515,7 +2633,7 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
   session.applyClientSettings(c.profile, rp);
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddons(root) });
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddonsFor(root, state.pack) });
   slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
@@ -3430,7 +3548,7 @@ async function workbenchGate(root, opts = {}) {
 // stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
 // headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
 // registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
-function pullRemoteRdb(root, m, rDir) {
+function pullRemoteRdb(root, m, rDir, tag = "ci") {
   for (const name of rdbAddons(root)) {
     const addon = addonDir(root, name);
     const local = join(addon, "resourceDatabase.rdb");
@@ -3439,17 +3557,17 @@ function pullRemoteRdb(root, m, rDir) {
     const got = `${local}.remote`;
     const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
     if (down.status !== 0 || !existsSync(got)) {
-      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      console.log(`${tag}: could not fetch ${name}'s resource database from ${m.name}; it is refreshed here`);
       continue;
     }
     const keep = `${local}.local`;
     if (existsSync(local)) copyFileSync(local, keep);
     copyFileSync(got, local);
     const after = rdbFreshness(addon);
-    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    if (after.missing.length < before.missing.length) console.log(`${tag}: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
     else if (existsSync(keep)) {
       copyFileSync(keep, local);
-      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+      console.log(`${tag}: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
     }
     rmSync(got, { force: true });
     rmSync(keep, { force: true });
@@ -4850,7 +4968,7 @@ const cmds = {
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
-  rdb: () => ensureResourceDatabase(ROOT),
+  rdb: () => cmdRdb(ROOT, rest),
   "ui-image": () => cmdUiImage(rest),
   help: () => cmdHelp(),
 };

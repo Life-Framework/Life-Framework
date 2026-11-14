@@ -12,6 +12,15 @@ const base = () => defaultOf(schema);
 assert.deepEqual(minimalDiff(schema, base()), { schemaVersion: 1 }, "defaults produce only schemaVersion");
 assert.deepEqual(checkConfig(schema, exportText(schema, base())), [], "defaults validate");
 
+// A checkbox the game ships switched on shows on, and turning it off exports an explicit false (#286): the
+// schema reads [Attribute("1")] as true, so false differs from the default and is kept.
+assert.equal(base().persistence.keepCash, true, "keepCash defaults to on, as in the game");
+{
+  const off = base();
+  off.persistence.keepCash = false;
+  assert.deepEqual(minimalDiff(schema, off).persistence, { keepCash: false }, "unchecking a default-on box exports false");
+}
+
 const v = base();
 v.shops.defaultBuyPrice = 70;
 v.shops.priceRules["Prefabs/Items/Food/"] = { prefab: "", buyPrice: 10, sellPrice: 50, hidden: false };
@@ -53,10 +62,14 @@ assert.ok(typedErrs[".shops.defaultBuyPrice"]?.includes("below the minimum 0"), 
 assert.ok(typedErrs[".shops.priceRules.Prefabs/Items/Food/.sellPrice"]?.includes("whole number"));
 
 // #288: import then export of a valid file is byte-equivalent after formatting, unknown keys kept.
-for (const text of [fx("good.json"), fs.readFileSync(new URL("../../docs/config/config.example.json", import.meta.url), "utf8")]) {
+// Keys come back in the order the file had them (the flagship file is not in schema order).
+const roundTrip = [fx("good.json"), fs.readFileSync(new URL("../../docs/config/config.example.json", import.meta.url), "utf8"), fs.readFileSync(new URL("../../server/example/config.json", import.meta.url), "utf8")];
+const presetDir = new URL("../../tools/test/config-fixtures/presets/", import.meta.url);
+for (const f of fs.readdirSync(presetDir).filter((f) => f.endsWith(".json") && !f.endsWith(".expect.json"))) roundTrip.push(fs.readFileSync(new URL(f, presetDir), "utf8"));
+for (const text of roundTrip) {
   const raw = plain(parseJson(text));
   const { value, extras, keep } = importConfig(schema, raw);
-  assert.equal(exportText(schema, value, extras, keep), JSON.stringify(raw, null, 2) + "\n", "import then export round-trips");
+  assert.equal(exportText(schema, value, extras, keep, raw), JSON.stringify(raw, null, 2) + "\n", "import then export round-trips");
 }
 {
   const raw = { schemaVersion: 1, mystery: 1, shops: { defaultBuyPrice: 70, bogus: true, priceRules: { "Prefabs/A/": { buyPrice: 5, colour: 1 }, "Prefabs/B/": 5 } } };
@@ -88,9 +101,10 @@ for (const text of [fx("good.json"), fs.readFileSync(new URL("../../docs/config/
   for (const want of ["flagship-1989", "small-server", "hardcore-economy"]) assert.ok(names.includes(want + ".json"), `preset ${want} exists`);
   for (const f of names) {
     const text = fs.readFileSync(new URL(f, dir), "utf8");
-    const { value, extras, keep } = importConfig(schema, plain(parseJson(text)));
-    const out = exportText(schema, value, extras, keep);
-    assert.deepEqual(JSON.parse(out), JSON.parse(text), `${f}: loads into the form and exports unchanged`);
+    const raw = plain(parseJson(text));
+    const { value, extras, keep } = importConfig(schema, raw);
+    const out = exportText(schema, value, extras, keep, raw);
+    assert.equal(out, JSON.stringify(raw, null, 2) + "\n", `${f}: loads into the form and exports unchanged, byte for byte`);
     assert.deepEqual(checkConfig(schema, out).filter((p) => p.level === "error"), [], `${f}: no errors`);
   }
   assert.ok(importConfig(schema, JSON.parse(fs.readFileSync(new URL("hardcore-economy.json", dir), "utf8"))).value.shops.defaultBuyPrice === 80, "hardcore loads its prices into the form");

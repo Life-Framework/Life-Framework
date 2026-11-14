@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { scaffoldPack } from "../pack/new.mjs";
+import { launchAddonsFor, packLaunch } from "../lib/addons.mjs";
 import { checkBoundary } from "./validate-addon-boundary.mjs";
 import { checkPackManifest } from "./validate-pack-manifest.mjs";
 
@@ -26,6 +27,8 @@ function tree() {
   const root = mkdtempSync(join(tmpdir(), "lf-packnew-"));
   put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "79636E668EA37AC9"\n}\n');
   put(root, "addons/LifeFramework/Scripts/Game/Feature/Packs/LF_PackManifest.c", 'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\n');
+  put(root, "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent.meta", 'MetaFileClass {\n Name "{F3AA388E8466788C}Worlds/DebugWorld/DebugWorld.ent"\n}\n');
+  put(root, "addons/LifeFramework/Configs/Systems/LifeFrameworkSystems.conf.meta", 'MetaFileClass {\n Name "{2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf"\n}\n');
   put(root, "docs/architecture/public-surface.json", JSON.stringify({ version: 1, configClasses: ["LF_PackManifest", "LF_MissionHeader", "LF_ShopPricesConfig"], deprecated: [] }));
   put(root, "addons/LifeFramework/Scripts/Game/Feature/Shop/LF_ShopPricesConfig.c", "class LF_ShopPricesConfig\n{\n}\nclass LF_MissionHeader\n{\n}\n");
   return root;
@@ -55,6 +58,12 @@ try {
     const header = readFileSync(join(r.dir, "Missions/LF_Test.conf"), "utf8");
     const manifestGuid = readFileSync(join(r.dir, "Configs/LF_PackManifest.conf.meta"), "utf8").match(/\{([0-9A-F]{16})\}/)?.[1];
     if (!manifestGuid || !header.includes(`{${manifestGuid}}Configs/LF_PackManifest.conf`)) fail("mission header does not name the manifest by its GUID");
+    // session up --pack boots this header: it needs a world and the systems config (the core's).
+    if (!header.includes('World "{F3AA388E8466788C}Worlds/DebugWorld/DebugWorld.ent"') || !header.includes('SystemsConfig "{2104C177A245B6D1}')) fail("mission header does not name the core DebugWorld and SystemsConfig, so session up --pack has no world to boot");
+    const launch = packLaunch(root, "LF_Test");
+    if (launch.error || !/^\{[0-9A-F]{16}\}Missions\/LF_Test\.conf$/.test(launch.header)) fail(`packLaunch does not find the scaffold's header: ${JSON.stringify(launch)}`);
+    if (!packLaunch(root, "LF_Nope").error || !packLaunch(root, "LifeFramework").error || !packLaunch(root, "").error) fail("packLaunch accepts a missing pack, the core, or nothing");
+    if (launchAddonsFor(root, "LF_Test").join(",") !== "LifeFramework,LF_Test") fail("a --pack launch does not load the core and the pack");
     const manifest = readFileSync(join(r.dir, "Configs/LF_PackManifest.conf"), "utf8");
     if (!manifest.includes('m_sCoreMin "0.1.0"') || !manifest.includes('m_sCoreBelow "0.2.0"')) fail("manifest does not hold the core range");
 
