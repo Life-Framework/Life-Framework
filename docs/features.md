@@ -958,6 +958,7 @@
   rocks show their ore as veins on the granite (`Assets/Resources/Mining/OreVein/`). Made in Blender
   from CC0 textures by `tools\cli asset` (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`);
   prefab and emat GUIDs are unchanged, so mining, smelting and selling are untouched.
+  Follow-up: the gold nugget and gold rock now read as dull ochre-yellow ore with gold flecks (they were white quartz and previewed pinkish-white); the copper nugget stays dark rock with malachite green. Close-up of each rock: `tools\cli look 182,175 --radius 8`.
 - ⚠️ The pickaxe uses the pistol rig and is gripped at the handle end;
   `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
   needs a re-exported mesh with the pivot up the handle.
