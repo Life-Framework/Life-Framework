@@ -1174,6 +1174,53 @@ function ensureResourceDatabase(root) {
   return worst;
 }
 
+// Before a pool run (test, e2e), whose machine is not known yet: copy main's rdb when it is the better
+// copy, but leave a stale one alone unless the run can only land on this PC (pinned, LF_TESTBOX_AUTO=0)
+// or this is the main checkout (warn only, as before). rdbForSlot decides once the slot is known.
+// Before this, every run refreshed here first: a headless Workbench (~17 s, ~2 GB on the RAM-starved
+// PC) behind the build lock that every worktree here shares, so a run headed for a pool machine waited
+// up to 10 min behind other worktrees' refreshes (2026-11-14).
+// rdbHandled: roots whose rdb this process already refreshed (or tried to), so a run on a pool machine
+// (`test --local`, which refreshes before its queue) does not start Workbench a second time in rdbForSlot.
+const rdbHandled = new Set();
+function prepareResourceDatabase(root, opts = {}) {
+  if (wt.isMainCheckout(root) || poolMode(root, opts).mode === "local") {
+    rdbHandled.add(root);
+    return ensureResourceDatabase(root);
+  }
+  wt.copyResourceDatabase(root);
+  return 0;
+}
+
+// The slot is known: a run here, or on a machine without the "rdb" cap, refreshes this PC's rdb as
+// before. A pool machine with it (testbox.refreshesRdb) refreshes in the run itself (its `test --local` / `e2e --local` runs
+// ensureResourceDatabase in the run folder, in its desktop session since #1158), and syncToSlot does
+// not send it the stale copy, so the folder keeps the rdb it refreshed.
+function rdbForSlot(root, slot) {
+  if (rdbHandled.has(root)) return 0;
+  if (slot.local || !testbox.refreshesRdb(slot.machine)) {
+    rdbHandled.add(root);
+    return ensureResourceDatabase(root);
+  }
+  const stale = testbox.staleRdbAddons(root);
+  if (stale.length) console.log(`resource database stale here (${stale.join(", ")}): ${slot.machine.name} refreshes it in its run folder; this PC's Workbench is not started`);
+  return 0;
+}
+
+// A run that got a lane on this PC with a stale rdb gives the lane back, refreshes (the build lock may
+// queue it behind other worktrees for minutes), and asks again: a held lane keeps everyone else out
+// (cmdSessionUp refreshes before its queue for the same reason). Once per process; true = requeue.
+function releaseLaneForRdb(root, slot) {
+  if (!slot.local || slot.inherited || wt.isMainCheckout(root) || rdbHandled.has(root)) return false;
+  const stale = testbox.staleRdbAddons(root);
+  if (!stale.length) return false;
+  rdbHandled.add(root);
+  slot.release();
+  console.log(`resource database stale here (${stale.join(", ")}): gave this PC's lane back to refresh it, then queuing again`);
+  ensureResourceDatabase(root);
+  return true;
+}
+
 function ensureAddonResourceDatabase(root, name) {
   const addon = addonDir(root, name);
   const tag = name === CORE ? "" : ` [${name}]`;
@@ -2760,8 +2807,8 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // The test pool (tools/remote/pool.mjs) picks the machine: the first free
   // slot on this PC or any reachable remote (--local / --remote [name] narrow
   // it); when all are busy the run queues FIFO for whichever frees first.
-  // A remote run ships this worktree's rdb, so refresh it before the choice.
-  ensureResourceDatabase(root);
+  // The rdb is refreshed once the machine is known (rdbForSlot in testOnce).
+  prepareResourceDatabase(root, opts);
   // --shards N|auto: the registry split into balanced slices, each its own pool job, run together (tools/lib/test-shards.mjs).
   if (opts.shards !== undefined && !only.length && !opts.world && tier === "all") {
     // A pass the cache already holds (identical inputs) is not run again.
@@ -2860,6 +2907,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     console.log(`FAIL  ${e.message}`);
     return { code: 3 };
   }
+  if (releaseLaneForRdb(root, slot)) return { code: 3, requeue: true };
   let code = 3;
   let extra = {};
   let tookLocal = false;
@@ -2872,6 +2920,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     tookLocal = true;
   }
   try {
+    rdbForSlot(root, slot);
     if (!slot.local) {
       // --no-cache: the box runs what it was sent; this side owns the cache.
       const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? [red ? "--red" : exact ? "--only-classes" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
@@ -4061,7 +4110,7 @@ async function wtE2eCmd(args) {
 // The two-boot save/restart proof in one pool slot: both boots run on the same
 // machine, back to back, with nothing else on that slot in between.
 async function runE2e(root, opts = {}) {
-  ensureResourceDatabase(root);
+  prepareResourceDatabase(root, opts);
   for (let attempt = 1; ; attempt++) {
     const r = await e2eOnce(root, opts, attempt >= pool.FAILOVER_ATTEMPTS);
     if (!r.requeue) return r.code;
@@ -4076,9 +4125,11 @@ async function e2eOnce(root, opts, lastTry) {
     console.log(`FAIL  ${err.message}`);
     return { code: 3 };
   }
+  if (releaseLaneForRdb(root, slot)) return { code: 3, requeue: true };
   let code = 3;
   let extra = {};
   try {
+    rdbForSlot(root, slot);
     if (!slot.local) {
       const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(opts.cashSwap ? ["--cash-swap"] : []), ...(opts.preMove ? ["--pre-move", opts.preMove] : []), ...(opts.mission ? ["--mission", opts.mission] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;

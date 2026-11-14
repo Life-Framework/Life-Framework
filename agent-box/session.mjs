@@ -1013,9 +1013,6 @@ async function routeMachine(cmd, rest) {
   if (want === "local") return { local: true, args };
   const clients = parseClients(args);
   const profile = parseSessionProfile(args).profile;
-  // A remote leg ships this worktree's resourceDatabase.rdb: refresh it here first, before the queue,
-  // as `test` does (a fresh worktree sent a 0.1 MiB rdb and the box ran its own headless Workbench).
-  spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
   // A record whose machine went away is not a session any more: forget it.
   if (ptr) {
     const pm = pool.findMachine(machines, ptr.machine);
@@ -1095,6 +1092,11 @@ async function upOnRemote(pool, target, args, clients, ptr) {
     mkdirSync(dirname(remotePointerFile()), { recursive: true });
     writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir, at: new Date().toISOString(), root: ROOT }));
   };
+  // The remote leg ships this worktree's resourceDatabase.rdb. A machine with Workbench refreshes a stale
+  // one in its own `up` (in its desktop session since #1158) and is not sent the stale copy
+  // (testbox.syncToSlot); only for one without, this PC's headless Workbench refreshes it first.
+  const tb = await import("../tools/remote/testbox.mjs");
+  if (!tb.refreshesRdb(target)) spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
   const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", "--machine", "local", ...args], onSlot: (rDir) => writePtr(rDir) });
   if (r.code === 0) {
     writePtr(r.rDir);

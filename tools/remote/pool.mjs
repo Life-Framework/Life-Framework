@@ -650,6 +650,16 @@ export function remoteRunDir(m, slug, i = 1, suffix = "") {
   return `${dirname(m.root).replace(/\\/g, "/")}/Life-Framework-rt-${slug}${suffix}${i > 1 ? `-s${i}` : ""}`;
 }
 
+// The run folder of one test lane on a pool machine, shared by every worktree: whoever holds the
+// lane's lock owns the folder, so two runs never share one. A worktree's first run on a lane no
+// longer creates a folder (git worktree add of ~5000 files: 17-24 s); it checks its snapshot out
+// over the last one and drops what that run left (tools/remote/testbox.mjs psCheckout,
+// tools/link-safety.mjs cleanRunFolder). pool prune leaves these; --lanes removes the idle ones.
+export const LANE_DIR_PREFIX = "Life-Framework-lane-";
+export function laneRunDir(m, lock) {
+  return `${dirname(m.root).replace(/\\/g, "/")}/${LANE_DIR_PREFIX}${lock}`;
+}
+
 // The holder: acquire (when cfg.slots is non-empty), prepare the run folder,
 // report what the folder already has, then hold until its ssh session ends.
 // Stops processes whose command line names a run folder (never deletes files,
@@ -1002,7 +1012,8 @@ function spawnHolder(root, m, cfg, { onLost, onAcquired } = {}) {
       else if ((mm = /^lf-pool: error (.*)$/.exec(t))) done({ error: `${m.name}: ${mm[1]}` });
       else if (/^lf-pool: (reclaiming|stopping)/.test(t)) console.log(`pool: ${m.name}: ${t.slice(9)}`);
       else if (t === "lf-pool: ready") {
-        const dir = acquired ? cfg.slots[acquired.index - 1].dir : cfg.dir;
+        const held = acquired ? cfg.slots[acquired.index - 1] : null;
+        const dir = held ? held.dir : cfg.dir;
         const slot = {
           machine: m,
           index: acquired?.index ?? 0,
@@ -1010,6 +1021,8 @@ function spawnHolder(root, m, cfg, { onLost, onAcquired } = {}) {
           local: false,
           token: cfg.token,
           rDir: dir,
+          // A lane folder another worktree may have used last: the checkout cleans it (psCheckout).
+          shared: !!held?.shared,
           prep,
           child,
           lost: false,
@@ -1128,9 +1141,12 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
   const slug = slugFor(root);
   const base = originMain(root) ?? snap.head;
   const last = readSyncState(root)[m.name]?.sha;
+  // Test lanes of a machine with lanes run in the lane's shared folder; sessions (their saves stay
+  // with the worktree) and a machine without lanes keep the per-worktree folders.
+  const shared = laneKind(purpose) === "test" && !!m.lanes && !suffix;
   const slotList = lanesFor(m, laneKind(purpose))
     .slice(0, slots)
-    .map((l) => ({ lock: l.lock, dir: remoteRunDir(m, slug, l.index, suffix) }));
+    .map((l) => (shared ? { lock: l.lock, dir: laneRunDir(m, l.lock), shared: true } : { lock: l.lock, dir: remoteRunDir(m, slug, l.index, suffix) }));
   return {
     main: m.root,
     token: randomBytes(8).toString("hex"),
@@ -2664,9 +2680,13 @@ ${q.formatRunsByPurpose(kinds)}`);
 // says which PC and slug it belongs to (tmp/pool-owner.json); only this PC's
 // are touched. --unmarked also takes folders from before the marker whose slug
 // has no worktree here. Folders behind a live slot lock are kept.
+// --lanes also takes the shared lane folders (laneRunDir) whose lock is no longer one of the machine's
+// test lanes (after its lane count went down); a configured lane's folder is never pruned, a run may
+// take its lock at any moment.
 export function cmdPoolPrune(root, flags = []) {
   const dry = flags.includes("--dry-run");
   const unmarked = flags.includes("--unmarked");
+  const lanes = flags.includes("--lanes");
   const known = new Set(Object.keys(wt.readState(root).worktrees ?? {}));
   const known2 = new Set(wt.listWorktrees(root).map((w) => w.path.replace(/\\/g, "/").toLowerCase()));
   let fail = 0;
@@ -2679,8 +2699,22 @@ export function cmdPoolPrune(root, flags = []) {
       `$main = ${tb.psQuote(m.root)}`,
       "$busy = @(Get-ChildItem -LiteralPath (Join-Path $main 'tmp\\wt\\locks') -Filter 'server-*.lock' -ErrorAction SilentlyContinue | ForEach-Object { try { $i = Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json; if ($i.rDir -and (Get-Process -Id $i.pid -ErrorAction SilentlyContinue)) { $i.rDir } } catch {} })",
       "git -C $main worktree list --porcelain | Where-Object { $_ -like 'worktree *' } | ForEach-Object { $d = $_.Substring(9); if ((Split-Path -Leaf $d) -like 'Life-Framework-rt-*') { $o = Join-Path $d 'tmp\\pool-owner.json'; $own = ''; if (Test-Path -LiteralPath $o) { $own = (Get-Content -Raw -LiteralPath $o).Trim() }; $b = [bool]($busy | Where-Object { $_.Replace('\\','/').TrimEnd('/') -ieq $d.Replace('\\','/').TrimEnd('/') }); Write-Host \"lf-pool: dir $b $d|$own\" } }",
+      `git -C $main worktree list --porcelain | Where-Object { $_ -like 'worktree *' } | ForEach-Object { $d = $_.Substring(9); if ((Split-Path -Leaf $d) -like '${LANE_DIR_PREFIX}*') { $b = [bool]($busy | Where-Object { $_.Replace('\\','/').TrimEnd('/') -ieq $d.Replace('\\','/').TrimEnd('/') }); Write-Host \"lf-pool: lane $b $d\" } }`,
     ].join("\n"), { timeout: 60000 });
     const victims = [];
+    const liveLanes = new Set(lanesFor(m, "test").map((l) => l.lock));
+    for (const l of (list.stdout ?? "").split(/\r?\n/)) {
+      const lm = /^lf-pool: lane (True|False) (.+)$/.exec(l.trim());
+      if (!lm || !lanes) continue;
+      const lock = lm[2].replace(/\\/g, "/").split("/").pop().slice(LANE_DIR_PREFIX.length);
+      if (liveLanes.has(lock)) continue;
+      if (lm[1] === "True") {
+        console.log(`pool prune: ${m.name} ${lm[2]} is in use; kept`);
+        continue;
+      }
+      victims.push(lm[2]);
+      console.log(`pool prune: ${m.name} ${lm[2]}: lane ${lock} is no longer one of its test lanes${dry ? " (dry run)" : ""}`);
+    }
     for (const l of (list.stdout ?? "").split(/\r?\n/)) {
       const mm = /^lf-pool: dir (True|False) ([^|]+)\|(.*)$/.exec(l.trim());
       if (!mm) continue;
@@ -2740,11 +2774,13 @@ export function cmdPool(root, args = []) {
   if (sub === "status" || !sub) return cmdPoolStatus(root, rest.includes("--verbose") || process.env.LF_OUTPUT === "full");
   if (sub === "stats") return cmdPoolStats(root);
   if (sub === "prune") return rest.includes("--idle") ? cmdPoolPruneIdle(root, rest) : cmdPoolPrune(root, rest);
-  console.log(`usage: tools\\cli pool status|stats|prune [--dry-run] [--unmarked] | prune --idle <min> [--dry-run]
+  console.log(`usage: tools\\cli pool status|stats|prune [--dry-run] [--unmarked] [--lanes] | prune --idle <min> [--dry-run]
   status   machines, reachability, server build, slots and holders, queue, last 20 runs
   stats    runs per machine: count, passes, average wait and run time
-  prune    remove remote run folders whose worktree on this PC is gone (junction-safe)
-  prune --idle <min>  remove every remote run folder idle that long (no lock, no process, no write), oldest first
+  prune    remove remote run folders whose worktree on this PC is gone (junction-safe);
+           --lanes also removes idle lane folders of lanes a machine no longer has
+  prune --idle <min>  remove every remote run folder idle that long (no lock, no process, no write), oldest first;
+           lane folders are not run folders of a worktree and are never taken
 machines: tools/pool.json, overridden by "pool" in lf.local.json`);
   return sub === "help" ? 0 : 2;
 }

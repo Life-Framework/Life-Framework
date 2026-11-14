@@ -104,6 +104,34 @@ export function removeWorktree(mainRoot, path, { force = false } = {}) {
   return spawnSync("git", ["-C", mainRoot, "worktree", "remove", path, ...(force ? ["--force"] : [])], { windowsHide: true, encoding: "utf8" });
 }
 
+// A shared pool run folder (Life-Framework-lane-<lock>, tools/remote/pool.mjs) is checked out with
+// `git checkout -f <snapshot>` for each run; this then drops what the previous run, from any worktree,
+// left under `scope` that git does not track: untracked and ignored files (git clean -x would take
+// them), except the `keep` file names (each addon's resourceDatabase.rdb, which the pool sends by
+// hash). git only lists the paths; every delete goes through `remove` (safeRemoveTree), which
+// unlinks a junction instead of following it. Returns the removed paths, relative to dir; throws when
+// git cannot list them or a path survives. Self-contained (its dependencies come in as arguments):
+// tools/remote/testbox.mjs ships its source to the box, where the box's own clone may be older.
+export function cleanRunFolder(dir, { spawnSync, join, remove, keep = ["resourceDatabase.rdb"], scope = ["addons"] }) {
+  const list = () => {
+    const r = spawnSync("git", ["-c", "core.quotepath=off", "-C", dir, "clean", "-ndx", ...keep.flatMap((k) => ["-e", k]), "--", ...scope], { encoding: "utf8", windowsHide: true });
+    if (r.status !== 0) throw new Error(`git clean -n failed: ${String(r.stderr || r.stdout || "").trim()}`);
+    const out = [];
+    for (const line of String(r.stdout).split(/\r?\n/)) {
+      const m = /^Would remove (.+)$/.exec(line.trim());
+      if (!m) continue;
+      if (m[1].startsWith('"')) throw new Error(`cannot read the quoted path ${m[1]}`);
+      out.push(m[1].replace(/\/$/, ""));
+    }
+    return out;
+  };
+  const removed = list();
+  for (const rel of removed) remove(join(dir, rel));
+  const left = list();
+  if (left.length) throw new Error(`still there after the clean: ${left.join(", ")}`);
+  return removed;
+}
+
 // Deletes a worktree that holds nothing worth keeping (a warm-pool tree, a
 // half-made one): removeWorktree with --force, then, when git no longer knows
 // the path, the leftover tree through safeRemoveTree. The only recycle path for
@@ -154,6 +182,35 @@ export function selftestLinkSafety() {
     safeRemoveTree(tree);
     if (existsSync(tree)) failures.push("safeRemoveTree did not delete the tree");
     if (!existsSync(sentinel)) failures.push("safeRemoveTree followed the junction and deleted the install sentinel");
+
+    // A reused pool run folder: what the previous run left under addons/ goes, the rdb, the tracked
+    // files, everything outside addons/ and every junction target stay.
+    const lane = join(base, "lane");
+    git(["init", "-q", lane]);
+    const addon = join(lane, "addons", "A");
+    mkdirSync(join(addon, "Scripts"), { recursive: true });
+    writeFileSync(join(addon, "Scripts", "Tracked.c"), "tracked");
+    writeFileSync(join(lane, ".gitignore"), "log/\nresourceDatabase.rdb\nserver/\n");
+    git(["-C", lane, "add", "-A"]);
+    git(["-C", lane, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "snapshot"]);
+    writeFileSync(join(addon, "Scripts", "Stray.c"), "left by another worktree's run");
+    mkdirSync(join(addon, "log"), { recursive: true });
+    writeFileSync(join(addon, "log", "old.log"), "ignored output");
+    writeFileSync(join(addon, "resourceDatabase.rdb"), "rdb");
+    mkdirSync(join(addon, "gen"), { recursive: true });
+    symlinkSync(install, join(addon, "gen", "core"), "junction");
+    const profileAddons = join(lane, "server", "profile", "test", "game-addons");
+    mkdirSync(profileAddons, { recursive: true });
+    symlinkSync(install, join(profileAddons, "core"), "junction");
+    const cleaned = cleanRunFolder(lane, { spawnSync, join, remove: safeRemoveTree });
+    if (existsSync(join(addon, "Scripts", "Stray.c"))) failures.push("cleanRunFolder kept an untracked file under addons/");
+    if (existsSync(join(addon, "log"))) failures.push("cleanRunFolder kept ignored output under addons/");
+    if (existsSync(join(addon, "gen"))) failures.push("cleanRunFolder kept an untracked folder holding a junction");
+    if (!existsSync(join(addon, "resourceDatabase.rdb"))) failures.push("cleanRunFolder deleted resourceDatabase.rdb");
+    if (!existsSync(join(addon, "Scripts", "Tracked.c"))) failures.push("cleanRunFolder deleted a tracked file");
+    if (!existsSync(join(profileAddons, "core", "core.gproj"))) failures.push("cleanRunFolder touched server/profile (outside addons/)");
+    if (!existsSync(sentinel)) failures.push("cleanRunFolder followed a junction and deleted the install sentinel");
+    if (cleaned.length !== 3) failures.push(`cleanRunFolder reported ${cleaned.length} paths, expected 3 (${cleaned.join(", ")})`);
 
     // Warm-pool recycle (tools/wt.mjs discardWarm): a detached worktree that
     // somehow holds a game-addons junction, and a leftover tree git no longer

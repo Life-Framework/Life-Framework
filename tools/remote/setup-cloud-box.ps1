@@ -32,6 +32,9 @@ if (-not $admin) {
 
 $work = "C:\LF\setup"
 New-Item -ItemType Directory -Force -Path $work | Out-Null
+# Users modify on C:\LF, inherited. ssh runs elevated and the desktop session's Workbench does not; a
+# stock Server image's root denies it write access to the elevated session's files (provision-testbox.ps1 step 0).
+& icacls "C:\LF" /grant "*S-1-5-32-545:(OI)(CI)M" | Out-Null
 
 $results = New-Object System.Collections.ArrayList
 function Step([string]$name, [scriptblock]$body) {
