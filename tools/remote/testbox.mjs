@@ -319,10 +319,26 @@ function psCheckout(slot, bundleName, slug) {
   ].join("\n");
 }
 
+// Files a run takes to the box and brings back (the placement audit: its input list goes up through an
+// env var, its out.txt comes down), as the scp pairs and the env lines to run with. files:
+// { env: { NAME: localFile }, down: [{ from: path under the run folder, to: local path }] }. Pure.
+export function remoteFilePlan(rDir, files = {}) {
+  const base = String(rDir).replace(/\\/g, "/").replace(/\/+$/, "");
+  const uploads = [];
+  const env = [];
+  for (const [name, local] of Object.entries(files.env ?? {})) {
+    const to = `${base}/tmp/remote-in/${basename(local)}`;
+    uploads.push({ from: local, to });
+    env.push(`$env:${name} = ${psQuote(to.replace(/\//g, "\\"))}`);
+  }
+  const downloads = (files.down ?? []).map((d) => ({ from: `${base}/${d.from}`, to: d.to }));
+  return { uploads, env, downloads };
+}
+
 // Syncs, then runs `node <script> <args>` in the slot's run folder (cliArgs[0]
 // is the script path relative to the repo, default tools/cli.mjs). Returns
-// { code, summary, localLog }. code 3: the box could not be prepared.
-export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", writeSyncState, fetchLog = true }) {
+// { code, summary, localLog }. code 3: the box could not be prepared. files: remoteFilePlan.
+export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", writeSyncState, fetchLog = true, files }) {
   const m = slot.machine;
   const slug = basename(slot.rDir).replace(/^Life-Framework-rt-/, "");
   const snap = slot.snap;
@@ -336,10 +352,19 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
     if (!sync.ok) return { code: 3 };
     const quiet = "$env:LF_QUIET_CHILD = '1'"; // this run is parsed here, so the box prints the full transcript
     const env0 = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
+    const plan = remoteFilePlan(slot.rDir, files);
+    for (const u of plan.uploads) {
+      const up = scp([u.from, `${m.host}:${u.to}`]);
+      if (up.status !== 0) {
+        console.log(`FAIL  could not copy ${u.from} to ${m.name}: ${(up.stderr || up.stdout).trim()}`);
+        return { code: 3 };
+      }
+    }
     const ps = [
       psCheckout(slot, sync.bundleName, slug),
       quiet,
       env0,
+      ...plan.env,
       `& node ${psQuote(script)} ${args.map(psQuote).join(" ")}`,
       "$code = $LASTEXITCODE",
       "$ld = Get-ChildItem -LiteralPath (Join-Path $dir 'server\\profile\\test\\logs') -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1",
@@ -360,6 +385,11 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
     slot.prep.has = new Set();
   }
   if (slot.lost) console.log(`WARN  the slot on ${m.name} was lost during the run; its verdict is not trusted`);
+  for (const d of remoteFilePlan(slot.rDir, files).downloads) {
+    mkdirSync(dirname(d.to), { recursive: true });
+    const down = scp([`${m.host}:${d.from}`, d.to]);
+    if (down.status !== 0) console.log(`WARN  could not fetch ${d.from} from ${m.name}: ${(down.stderr || down.stdout).trim()}`);
+  }
 
   let localLog = "";
   if (remoteLog && fetchLog) {

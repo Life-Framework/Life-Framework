@@ -1,6 +1,9 @@
 GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
  ID "00F81CC40A5C0803"
  components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "MEDIC"
+  }
   LF_AmbientEmitterComponent "{0E22F63132093424}" {
    m_sSoundProject "{EB0DB92516AB336C}Sounds/Atmosphere/Atmosphere_HospitalWard.acp"
    m_fRadius 15
@@ -31,7 +34,6 @@ GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
         Description "#LF-Duty_ClockDesc"
        }
        "Sort Priority" 1
-       m_eRole MEDIC
       }
       LF_TreatmentBillPayAction "{5C2E8A71D4B93F06}" {
        ParentContextList {

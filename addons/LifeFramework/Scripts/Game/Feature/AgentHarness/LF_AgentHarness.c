@@ -28,7 +28,7 @@ class LF_AgentCommand
 	bool HasCameraOffset;
 	//! capture world: a 24h clock hour after the offset makes a clean shot (that clock, clear sky, no HUD).
 	float Hour = -1;
-	//! ... and a trailing `free` flies a free camera (it can pitch; it crashed the client about 4 s later, so it is opt-in).
+	//! ... and a trailing `free` flies a free camera (it can pitch, for a real top-down; opt-in because it makes each shot slower).
 	bool FreeCamera;
 	string Error;
 	//! The session a command is addressed to; empty when the sender named none.
@@ -203,7 +203,7 @@ class LF_AgentCommand
 
 			return true;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 			return true;
 		if (cmd.Verb == "emote")
 		{
@@ -1394,13 +1394,17 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", emoted);
 			return;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 		{
 			string seen;
 			if (cmd.Verb == "spikeverge")
 				seen = LF_SpikeStripHarness.Verge();
 			else if (cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 				seen = LF_SpikeStripHarness.Preview(cmd.Verb == "spikepreview");
+			else if (cmd.Verb == "spikeplace")
+				seen = LF_SpikeStripHarness.Place();
+			else if (cmd.Verb == "spikewhere")
+				seen = LF_SpikeStripHarness.Where();
 			else
 				seen = LF_SpikeStripHarness.Seen();
 			if (seen.StartsWith("ok "))
@@ -3503,7 +3507,10 @@ class LF_AgentHarness
 	protected static EntityID s_CleanCameraId = EntityID.INVALID;
 	protected static EntityID s_CleanPrevCameraId = EntityID.INVALID;
 	protected static EntityID s_CleanDeadCameraId = EntityID.INVALID;
-	protected static const ResourceName CLEAN_CAMERA_PREFAB = "Prefabs/Editor/Camera/ManualCameraBase.et";
+	// The GUID is required. Spawned by path alone ("Prefabs/Editor/...") the engine logs
+	// `Wrong GUID/name for resource {0000000000000000}Prefabs/Editor/Camera/ManualCameraBase.et` and the client
+	// crashes about 4 s after the first shot (#506). Same reference as LF_FilmCameraPath and LF_DialogueCamera.
+	protected static const ResourceName CLEAN_CAMERA_PREFAB = "{D6DE32D1C0FCC1C7}Prefabs/Editor/Camera/ManualCameraBase.et";
 	protected static const float CLEAN_VERTICAL_FOV = 60;
 
 	//! A clean shot flies a free camera (the character camera ignores pitch set from script). The player's
