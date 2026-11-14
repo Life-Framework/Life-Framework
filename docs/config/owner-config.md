@@ -103,3 +103,7 @@ refused verb and a second pack on one id print under the entry. A field no layer
 default. Offline; exit 1 when the key names nothing. Lists today: `catalogue.items`,
 `catalogue.offers`, `crime.crimes`, `shops.priceRules`. The website config check (#281) does not
 have this view yet.
+
+## Fixtures a reload cannot apply (boot fixtures)
+
+`tools\cli config-harness --stage boot` boots a fresh dedicated server for each fixture whose sidecar says `"boot": true` and checks the server log against the sidecar's `bootLog` (`has`: text a line must contain, `absent`: text none may). The other fixtures run on one shared server with `configreload` (`session config-harness-proof`), which is faster. Use a boot fixture for a value read once at start: the autosave timer (`persistence`), a pack overlay, a system a world switches off at boot. `--only <name part>` runs one. It uses the pool, so it takes whichever machine has room; it is not part of `wt gate`.
