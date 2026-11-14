@@ -101,7 +101,7 @@ tools\cli wt list               # who's working, ports, dirty/merged state
 tools\cli wt test <slug>        # run the LFTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
 tools\cli wt gate <slug>        # validate --full + build + test (tier=all)
-tools\cli wt ship <slug>        # gate -> push -> PR -> auto-merge (merges main only on conflict)
+tools\cli wt ship <slug>        # push -> PR -> ship queue (merge main, gate on the pool) -> auto-merge
 tools\cli wt prune <slug>       # remove a merged worktree + branch
 ```
 
@@ -156,7 +156,8 @@ comment, close on pass). It runs none of them: the maintainer or lead reviews an
 
 ## Auto-merge
 
-`wt ship <slug> [--refs N] [--body-file F]`:
+`wt ship <slug> [--refs N] [--body-file F]` goes through the ship queue (next section). The steps
+below are the old local path, still used with `--no-queue` (or `LF_SHIP_QUEUE=0`, or without `gh`):
 
 1. Refuses a dirty tree or a branch with no commits beyond `origin/main`.
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
@@ -180,6 +181,54 @@ comment, close on pass). It runs none of them: the maintainer or lead reviews an
 conflicts, the ship stops with a message; fix, commit, and re-run the same
 command. Do not merge `origin/main` by hand unless GitHub reports the PR
 `CONFLICTING` or you need code from main.
+
+## Ship queue
+
+About fifteen agents ship at once. With a local gate each `wt ship` ran `validate --full`, a build and the
+suite on this PC, and often twice: main moved during the gate, GitHub reported the PR `CONFLICTING`, the
+agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules in
+`tools/lib/ship-queue.mjs`) is one merge train for the repo:
+
+1. `wt ship <slug>` checks the tree and the PR body as before, pushes `ws/<slug>`, opens the PR (or reuses
+   it, switching off an auto-merge left from an earlier ship, so the push cannot land ungated) and adds it
+   to the queue (`tmp/wt/ship-queue.json` in the main checkout). It starts the worker when none runs.
+2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
+   (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
+   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
+   the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
+   free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
+   the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
+   that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
+   build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
+   so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
+   one worktree at a time behind the hub build lock, in the first queue run).
+3. **Re-gate rule.** When the gate passes, the worker fetches again. If main moved, it re-gates only
+   when the new main commits change a file the PR changes, or a generated file (the test registry, a
+   language conf, the string table). Driver-merged docs (`docs/features.md`, `docs/debug-log-triage.md`,
+   the lint baseline) do not count. Otherwise it pushes the gated head as is, and GitHub's required
+   `validate` check covers the combination. After three gates it pushes regardless.
+4. Pass: push, `gh pr merge --auto --merge`. Fail: a PR comment with the failing lines of the log and
+   its path, the entry is marked failed, and the queue moves on. Fix, commit, `wt ship` again.
+   A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
+   is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
+   most twice, then fails like any gate.
+
+**Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
+or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
+A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes
+(driver-merged docs again do not count), so PRs on disjoint files gate side by side on different
+machines and overlapping ones keep their order.
+
+**Waiting.** `wt ship` waits until the gate passed or failed and prints
+`SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
+default when stdout is not a terminal, so an agent's report says what really happened; a terminal
+returns once queued (`--no-wait`, `--wait` to force). `tools\cli ship-queue wait <slug>` resumes a wait
+(the wait gives up after 3 h with exit 2, the gate keeps going), `ship-queue status` and `pool status`
+show what gates, what waits and why, and the last few results; `ship-queue cancel <slug>` drops a
+waiting entry. A re-ship of a waiting slug replaces its entry and keeps its place; one whose gate runs
+is refused until it ends. The worker logs to `tmp/logs/ship-queue-worker.log`, each gate to
+`tmp/logs/ship-<slug>-<stamp>.log`; a gate is killed after 100 min, an idle worker exits after 3 min,
+and a worker that died leaves its running entries to be re-queued by the next one.
 
 ## Keeping PRs moving (`prs`)
 
@@ -299,6 +348,7 @@ tools\cli e2e --remote                                     # the two-boot save/r
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
 tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
+tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
 - **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
@@ -376,7 +426,11 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   within 180 s, counts as down too: the run prints one line (`pool: <machine>:
   <reason>; <machine> marked down for this run, falling back to <next>`), does
   not retry that machine, and takes the next machine or this PC. `pool status`
-  bounds each probe at 12 s and prints `DOWN`. A waiting run prints one line
+  bounds each probe at 12 s (a machine that answered in the last 5 min gets a
+  second, 30 s probe). One missed answer is not DOWN: a machine that answered
+  within 5 min stays in use and `pool status` prints `slow (last answer N s ago,
+  M misses)`; DOWN needs 3 misses in a row over at least 90 s, or a miss with no
+  answer in the last 5 min, or a run that lost its machine mid-run. A waiting run prints one line
   when it queues and one when it gets its slot, nothing in between. A machine whose server Steam build differs from this PC's is skipped
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
@@ -404,6 +458,19 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   (`--unmarked` also takes older folders without the marker). Both go through
   the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
   holds junctions into the server install.
+- **Remote disk GC.** Run folders (`Life-Framework-rt-<slug>[-session][-sN]`, about 1.4 GB each)
+  pile up while their worktree still exists (2026-11-14: lf-cloud hit 0 GB free and every run
+  sent there failed the disk floor). Before the pool starts a run on an ssh machine it reads the
+  box's free disk (one ssh call); under `rtGcFreeFactor` x `minFreeDiskGb` (3 x 5 = 15 GB) it
+  removes that box's idle run folders, oldest first, until it is back above that, and logs one
+  `pool: gc <machine>: removed <dir> (idle ..., freed .. GB, .. GB free)` line per folder. A folder is
+  kept when a live lock in `<box>/tmp/wt/locks` names it (`rDir`), a process's command line names
+  it, anything in it was written in the last `rtIdleMin` (60) minutes, or it is one the run is about
+  to use. Deletion is the box's own `tools/safe-rm.mjs`, then `git worktree prune`. Settings:
+  `rtIdleMin`, `rtGcFreeFactor` (`LF_POOL_RT_IDLE_MIN`, `LF_POOL_RT_GC_FREE_FACTOR`;
+  `LF_POOL_RT_GC=0` turns it off). `pool prune --idle <min>` does the same by hand on every
+  reachable ssh machine whatever the free disk. A box with nothing idle left to remove is said
+  so once and not asked again for five minutes.
 - **Cost.** A box run of the full suite takes about 22 s door to door (10 s
   suite plus ssh, checkout, CLI start, log copy), this PC about 8 s. Four
   concurrent `--tier all` runs from four worktrees (2026-11-09): 28-31 s wall,
@@ -456,13 +523,35 @@ queues FIFO (tickets in `tmp/wt/wb-queue`) and prints one
 parallel ships ran seven compiles and builds on this 15.6 GB PC at once.
 
 `ci` (so `wt gate` and `wt ship`) runs the cheap validate checks here and the
-Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`):
-this PC while its Workbench limit has room, else a pool machine with the
-`workbench` cap, a free Workbench slot and 3.5 GB free, else this PC (it
-queues). The remote run is `ci --wb-only --local` in a
+Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`).
+Every machine with the `workbench` cap (this PC, and each pool machine that
+answers ssh) is ranked like the pool ranks machines for tests: live free RAM
+less a Workbench reserve (2.25 GB), weighted by speed (`budgetMultiplier`).
+A machine whose headroom after the reserve is under the floor (`minFreeMb`,
+so about 3.7 GB free in all) is never chosen while another has room: on
+2026-11-14 this PC, at 1.5 GB free, started a Workbench that died after 6 s
+three gates in a row while `lf-cloud` had 18 GB free. The first ranked
+machine with RAM and a free Workbench slot runs the steps; if every roomy
+machine's Workbench limit is full, they queue on the best of those. If no
+machine has the RAM, the gate prints why (each machine's free RAM) and
+re-checks every 30 s for up to an hour (`LF_WB_RAM_WAIT_S`), then fails as a
+pool failure, which the ship queue requeues. A pool machine that does not
+answer, or answers and exits 3, leaves the choice to the rest (this PC when
+nothing else answers).
+
+A Workbench compile that ends within a minute with `NO VERDICT` on a machine
+under the reserve is an environment failure, not a compile failure: it
+prints `ENV  ... GB free`, skips the build, exits 4, and the gate retries the
+steps once on the best other machine. A second early death fails the gate as
+a pool failure.
+
+The remote run is `ci --wb-only --local` in a
 `Life-Framework-rt-<slug>-gate` run folder, synced like a remote test
-(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and this PC runs the steps. `ci --local` keeps everything here;
-`ci --remote [name]` sends the Workbench steps out even when this PC is free.
+(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and the gate chooses again. `ci --local` keeps everything here;
+`ci --remote` uses pool machines only; `ci --remote <name>` / `--machine <name>`
+pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
+`--remote [name]` and `--machine <name>` through to that `ci` (the ship queue
+gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
 
@@ -1132,3 +1221,25 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
+
+## Lead view
+
+`tools\cli lead` is the dispatch screen for the lead agent (about 30 lines, about 10 s, no session or lock taken). The sections run in
+parallel, each with its own timeout; one that fails prints one line and the rest still print.
+
+- MILESTONES: open M2 and M3 issues split by label: needs code (`agent:working` counted separately), `in-dev`, `needs-playtest`,
+  `needs-human`. A human gate beats a playtest, a playtest beats in-dev. M2.5 is not M2.
+- PRS: every open PR, conflicting first, then BLOCKED/UNSTABLE/BEHIND, then CLEAN; checks and age. A conflicting PR names whether only
+  generated or driver-merged files conflict (`prs heal` fixes those) or a source file needs a human (`git merge-tree`, no checkout).
+  A PR GitHub has not graded yet (UNKNOWN) is asked through the REST endpoint.
+- WORKTREES: active (a file, commit or log touched in 30 min) vs idle; merged-prunable; orphans (in the registry but not a git worktree
+  or missing, or a `Life-Framework-ws-*` folder nobody registered); disk. A worktree is merged only through a merged GitHub PR whose head
+  SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
+  Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
+  `~N GB (k/n measured)`; the walk never follows a junction.
+- POOL: one line per machine (free RAM, lanes busy/total, temperature, DOWN or slow) and the queue length, read from `pool status`.
+- ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
+
+`tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
+a merged PR on GitHub, no uncommitted change, idle 30 min, no live lock or session, and re-checked clean just before the delete. When
+GitHub cannot list the merged PRs it prunes nothing.

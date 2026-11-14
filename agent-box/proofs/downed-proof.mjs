@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ROB_TARGET, ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeBleed, judgeDowned, parseState, sessionDir } from "../session.mjs";
 
@@ -68,7 +68,10 @@ async function runDownedProof() {
   if (process.argv.includes("--no-late-join")) {
     console.log("late join skipped (--no-late-join)");
   } else {
-    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
+    // #504: a second run in the same session finds client 3 already connected; reuse it instead of joining again.
+    const already = existsSync(clientBox(dir, 3)) && on(3, { verb: "state" }, 8000).status === "ok";
+    const joined = already ? { status: 0 } : spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
+    if (already) console.log("client 3 already in the session: reusing it for the late-join read");
     if (joined.status !== 0) {
       fails.push("client 3 did not join late");
     } else {

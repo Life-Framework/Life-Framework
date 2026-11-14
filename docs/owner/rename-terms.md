@@ -26,6 +26,8 @@ whose forms are string keys in the pack's table, so every language is translated
 
 Terms: `police`, `medic`, `town`, `currency`, `org` (an organization: `"org": "Gang"`), `fine`, `job`.
 
+A pack's own string table overrides the core row for the same key: if the pack hard-codes "police" in a line, your rename does not reach it. Write `{Police}`, `{Org}` in pack text too (the flagship's police application title and org ledger title do).
+
 Limits today: voiced lines keep the recorded word, and item and prop names, quest text, license and job names and
 the spawn menu are translated by the engine, so they keep the shipped words (`docs/` Terms `Feature.md` lists them).
 Action prompts, toasts, sheets and dialogue follow your words.

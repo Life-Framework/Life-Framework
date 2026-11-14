@@ -163,8 +163,12 @@ items fighting shared machines, and up to eight agents ran at once.
      `wt gate`) runs as one foreground call with a timeout up to 600000 ms. It
      queues quietly and prints a short verdict. `session.mjs wait` joins a
      session another call started.
-   - A step longer than that runs in the background and the agent ends its
-     turn. The completion notice wakes it.
+   - A step longer than that runs in the background and a lead ends its
+     turn; the completion notice wakes it.
+   - A subagent or delegated task is never woken by a background run, so ending
+     its turn while one runs ends the task unfinished. It runs in the
+     foreground (timeout up to 600000 ms) or calls `t3_background_wait` before
+     ending the turn.
    - Never use `sleep` or `until` loops, Monitor, ScheduleWakeup,
      `session status` / `pool status` polls, or reads of a background job's
      progress file to wait. Each poll is a turn that pays for the whole
