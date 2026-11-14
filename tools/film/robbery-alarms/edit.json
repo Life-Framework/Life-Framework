@@ -1,0 +1,167 @@
+{
+  "about": "The cut of the robbery alarms video. Times are seconds in each take's muxed mp4 (takes/<take>.mp4). The robbery angles are one robbery shot once per angle; they share the SIDE take's audio (master), placed on one clock: anchors.voice is the clerk's first word and anchors.alarm the alarm's first window in each take, from `cut.mjs --measure` (paste its output here after a re-shoot). gainDb lifts a quiet bed before the loudness pass.",
+  "fps": 30,
+  "size": [
+    1920,
+    1080
+  ],
+  "loudnessLufs": -14,
+  "truePeakDb": -1.5,
+  "maxBytes": 9800000,
+  "anchors": {
+    "voice": {
+      "WINDOW": 2.625,
+      "CLERK": 3.125,
+      "FRONT": 3.5,
+      "SIDE": 3.0,
+      "BEACON": 2.875
+    },
+    "alarm": {
+      "WINDOW": 15.75,
+      "CLERK": 15.25,
+      "FRONT": 15.25,
+      "SIDE": 15.25,
+      "BEACON": 15.25
+    }
+  },
+  "segments": [
+    {
+      "name": "establishing",
+      "take": "EST",
+      "from": 2.3,
+      "to": 6.8,
+      "audio": {
+        "take": "EST",
+        "from": 2.3
+      },
+      "fadeIn": 0.7
+    },
+    {
+      "name": "at the window, pistol in hand",
+      "take": "WINDOW",
+      "anchor": "voice",
+      "rel": [
+        -0.73,
+        1.97
+      ],
+      "audio": {
+        "take": "SIDE",
+        "anchor": "voice"
+      }
+    },
+    {
+      "name": "the clerk hears it",
+      "take": "CLERK",
+      "anchor": "voice",
+      "rel": [
+        1.97,
+        4.6
+      ],
+      "audio": {
+        "take": "SIDE",
+        "anchor": "voice"
+      }
+    },
+    {
+      "name": "pistol on the clerk",
+      "take": "FRONT",
+      "anchor": "voice",
+      "rel": [
+        4.6,
+        7.35
+      ],
+      "audio": {
+        "take": "SIDE",
+        "anchor": "voice"
+      }
+    },
+    {
+      "name": "please don't shoot me (the wide, pushing in)",
+      "take": "WINDOW",
+      "anchor": "voice",
+      "rel": [
+        7.35,
+        10.1
+      ],
+      "audio": {
+        "take": "SIDE",
+        "anchor": "voice"
+      }
+    },
+    {
+      "name": "intruder alarm, beacon",
+      "take": "BEACON",
+      "anchor": "alarm",
+      "rel": [
+        0.05,
+        3.45
+      ],
+      "audio": {
+        "take": "SIDE",
+        "anchor": "alarm"
+      }
+    },
+    {
+      "name": "robber under the flashing light",
+      "take": "SIDE",
+      "anchor": "alarm",
+      "rel": [
+        3.25,
+        5.85
+      ],
+      "audio": {
+        "take": "SIDE",
+        "anchor": "alarm",
+        "rel": 3.45
+      }
+    },
+    {
+      "name": "bank vault swings open, nobody there, the bell",
+      "take": "BANK",
+      "from": 4.5,
+      "to": 9.0,
+      "audio": {
+        "take": "BANK",
+        "from": 4.5
+      }
+    },
+    {
+      "name": "police car, lights and siren",
+      "take": "POLICE",
+      "from": 8.0,
+      "to": 11.6,
+      "audio": {
+        "take": "POLICE",
+        "from": 8.0,
+        "gainDb": 8
+      },
+      "fadeOut": 0.9,
+      "audioTail": 3.7
+    }
+  ],
+  "black": 0.5,
+  "endCard": {
+    "seconds": 3.2,
+    "fadeIn": 0.45,
+    "fadeOut": 0.6,
+    "mark": "website/public/brand/mark-512.png",
+    "lines": [
+      {
+        "text": "LIFE FRAMEWORK",
+        "font": "C:/Windows/Fonts/seguisb.ttf",
+        "size": 78
+      },
+      {
+        "text": "Playtest build 6",
+        "font": "C:/Windows/Fonts/segoeuisl.ttf",
+        "size": 40
+      },
+      {
+        "text": "life-framework.org",
+        "font": "C:/Windows/Fonts/segoeuisl.ttf",
+        "size": 34,
+        "color": "0x7FB2DA"
+      }
+    ]
+  }
+}

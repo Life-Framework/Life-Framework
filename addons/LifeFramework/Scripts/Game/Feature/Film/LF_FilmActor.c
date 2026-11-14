@@ -535,6 +535,14 @@ class LF_FilmDirector
 	protected static const string PLACE_KIND_TILL = "FilmTill";
 	protected static const ResourceName CHARACTER = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 	protected static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
+	protected static const ResourceName POLICE_CAR = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";
+	//! The spawned police car's name, so the harness `siren` verb and a camera can find it.
+	static const string POLICE_CAR_NAME = "Film_Police_Car";
+	protected static const ref array<ResourceName> POLICE_DRIVER_CLOTHES = {
+		"{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et",
+		"{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et",
+		"{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et"
+	};
 	protected static const float TICK_MS = 100;
 	protected static const float MAX_SECONDS = 90;
 
@@ -554,7 +562,7 @@ class LF_FilmDirector
 		if (s_bRunning)
 			return "error:scene_running";
 		bool envOnly = LF_FilmSceneEnv.IsEnvOnly(scene);
-		if (scene != "street" && !envOnly)
+		if (scene != "street" && scene != LF_FilmSceneEnv.ROBBERY_POLICE && !envOnly)
 			return "error:unknown_scene";
 
 		LF_FilmSceneEnv env = LF_FilmSceneEnv.ForScene(scene);
@@ -572,7 +580,12 @@ class LF_FilmDirector
 			s_bRunning = true;
 			return string.Format("scene %1 started, light only", scene);
 		}
-		if (!BuildStreet())
+		bool built;
+		if (scene == LF_FilmSceneEnv.ROBBERY_POLICE)
+			built = BuildRobberyPolice();
+		else
+			built = BuildStreet();
+		if (!built)
 		{
 			Clear();
 			return "error:build_failed";
@@ -700,6 +713,52 @@ class LF_FilmDirector
 		for (x = 150; x <= 250; x += 25)
 			drive.Path.Insert(OnGround(x, 250));
 		driver.AddStep("wait", 0, "", 1);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "robbery-police": a police UAZ, lights and siren on, comes east down the main street (z 250) and
+	//! pulls up short of the ambulance bay in front of the fuel station (cones from x 262).
+	protected static bool BuildRobberyPolice()
+	{
+		vector carPos = OnGround(206, 250);
+		IEntity car = LF_Utils.SpawnEntityPrefab(POLICE_CAR, carPos, Vector(90, 0, 0));
+		if (!car)
+		{
+			LF_Debug.Error(FEATURE, "scene robbery-police: police car did not spawn");
+			return false;
+		}
+		car.SetName(POLICE_CAR_NAME);
+		s_aSpawned.Insert(car.GetID());
+		s_mVehicles.Set("car", car.GetID());
+
+		LF_SirenManagerComponent siren = LF_SirenManagerComponent.Cast(car.FindComponent(LF_SirenManagerComponent));
+		if (!siren || !siren.ApplyRequest(1, GetGame().GetWorld().GetWorldTime()))
+			LF_Debug.Warn(FEATURE, "scene robbery-police: the siren did not start; the car drives dark");
+
+		LF_FilmActor driver = SpawnActor("officer", OnGround(206, 252.5));
+		if (!driver)
+			return false;
+		// The bare roleplay character has no clothes, and there is no police uniform yet: a dark plain-clothes
+		// driver reads as a silhouette behind the windscreen.
+		IEntity driverBody = GetGame().GetWorld().FindEntityByID(driver.Id);
+		foreach (ResourceName piece : POLICE_DRIVER_CLOTHES)
+		{
+			if (!driverBody)
+				break;
+
+			string worn = LF_AssetStatesHarness.Wear(driverBody, piece);
+			if (!worn.StartsWith("ok"))
+				LF_Debug.Warn(FEATURE, "scene robbery-police: the driver could not wear " + piece + ": " + worn);
+		}
+		driver.AddStep("enter", 0.3, "car");
+		LF_FilmStep drive = driver.AddStep("drive", 0, "", 45, 2);
+		float x;
+		for (x = 220; x <= 250; x += 10)
+			drive.Path.Insert(OnGround(x, 250));
+		drive.Path.Insert(OnGround(256, 250));
+		driver.AddStep("wait", 0, "", 20);
+		LF_Debug.Info(FEATURE, string.Format("scene robbery-police: car %1 at %2", POLICE_CAR_NAME, carPos));
 		return true;
 	}
 

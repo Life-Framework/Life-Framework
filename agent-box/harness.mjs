@@ -151,8 +151,11 @@ export function buildLine(id, spec) {
   if (spec.verb === "heldxf") {
     return `${id} heldxf`;
   }
-  if (spec.verb === "itemgive" || spec.verb === "itemdrop" || spec.verb === "itemon" || spec.verb === "itemoff") {
+  if (["itemgive", "itemdrop", "itemon", "itemoff", "itemwear", "itemstrip"].includes(spec.verb)) {
     // The asset states proof: put one item of a prefab in the inventory, drop it, or switch it on and off (its use state, LF_AssetStatesHarness).
+    // itemwear dresses the character in a clothing prefab (its slot's old item is deleted); `itemwear list`
+    // prints what each loadout slot holds; itemstrip deletes a carried item (a film actor's backpack).
+    if (spec.verb === "itemwear" && spec.prefab === "list") return `${id} itemwear list`;
     if (!/^\{[0-9A-F]{16}\}[A-Za-z0-9_/.-]+\.et$/.test(spec.prefab ?? "")) throw new Error(`${spec.verb} needs a {GUID}path prefab: ${spec.prefab}`);
     return `${id} ${spec.verb} ${spec.prefab}`;
   }
