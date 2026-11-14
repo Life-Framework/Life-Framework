@@ -1,5 +1,6 @@
 import { GoLink, Figure, PageHeader, Section, ClipPlayer } from "@/components/ui";
 import { JoinCta } from "@/components/JoinCta";
+import { RunYourOwn } from "@/components/RunYourOwn";
 import { siteData, still } from "@/lib/content";
 
 // The page every outreach post links to (#568). Routes: /join and /join/<source>, where <source> is
@@ -88,12 +89,23 @@ const Join = () => {
         <div className="mt-8">
           <JoinCta />
         </div>
+        <div id="alpha" className="mt-12 max-w-3xl">
+          <h3 className="heading mb-2">Joining the alpha server</h3>
+          <p>
+            In the server browser, look for <strong>Life Framework | Everon 1989 (Alpha)</strong>. It has a password. We do not
+            print it here: ask for it in the Discord, in <span className="font-mono">#playtest-feedback</span>, and a staff member
+            will send it. The next session time is announced in the Discord.
+          </p>
+        </div>
         {ANALYTICS_ON ? (
           <p className="mt-10 max-w-prose text-[0.9375rem] muted">
             We count visits to this site with Cloudflare Web Analytics, which sets no cookies and keeps no personal data. We do not
             ask for your email.
           </p>
         ) : null}
+      </Section>
+      <Section id="run-your-own" kicker="Run your own" title="Want your own server?">
+        <RunYourOwn />
       </Section>
     </>
   );

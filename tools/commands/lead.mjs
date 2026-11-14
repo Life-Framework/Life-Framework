@@ -1,23 +1,26 @@
 // tools\cli lead: the lead agent's one-screen dispatch view, so it stops gathering state with ad-hoc commands.
 //
-//   tools\cli lead [--prs N]          milestones, PRs, worktrees, pool, accounts, slices (about 40 lines, under 15 s)
+//   tools\cli lead [--prs N]          milestones, PRs, worktrees, pool, ship queue, accounts, slices (about 40 lines, under 15 s)
 //   tools\cli lead prune-safe [--dry-run]   prune only worktrees whose PR is MERGED on GitHub, clean, idle and unlocked
 //
 // The sections run in parallel, each with its own timeout; one that fails or times out prints one line and the rest
-// still print. The classification is pure and lives in tools/lib/lead.mjs (proved by tools/validation/lead-selftest.mjs).
+// still print. The pool section reads each machine in its own process, in parallel, with a per-machine timeout
+// (LF_LEAD_POOL_MACHINE_MS, 9 s) inside an overall budget (LF_LEAD_POOL_BUDGET_MS, 12 s): a slow machine prints "slow"
+// or "DOWN" beside the rest, and the budget line prints when it is hit. The classification is pure and lives in tools/lib/lead.mjs (proved by tools/validation/lead-selftest.mjs).
 // A worktree counts as merged only through a merged PR whose head SHA is the branch tip, never through git ancestry:
 // a fresh worktree is an ancestor of main and must never be listed.
 import { execFile } from "node:child_process";
-import { existsSync, lstatSync, opendirSync, readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, lstatSync, opendirSync, readFileSync, readdirSync, writeFileSync, writeSync, mkdirSync } from "node:fs";
 import { basename, dirname, join, normalize } from "node:path";
 import * as wt from "../wt.mjs";
 import { predictConflicts } from "../prs.mjs";
 import {
-  classifyWorktree, conflictHint, isConflicting, milestoneCounts, milestoneLine, parsePoolStatus,
-  poolLine, prLine, sortPrs, unregisteredDirs, worktreeSummary,
+  classifyWorktree, conflictHint, gatherPool, isConflicting, milestoneCounts, milestoneLine, poolLines,
+  prLine, shipQueueLine, sortPrs, timeoutHealth, unregisteredDirs, worktreeSummary,
 } from "../lib/lead.mjs";
+import { readQueue } from "../lib/ship-queue.mjs";
 
-export const help = "lead [--prs N] | lead prune-safe [--dry-run]   one-screen dispatch view: milestones, PRs, worktrees, pool, accounts, slices";
+export const help = "lead [--prs N] | lead prune-safe [--dry-run]   one-screen dispatch view: milestones, PRs, worktrees, pool, ship queue, accounts, slices";
 
 
 // ---------------------------------------------------------------- process helpers
@@ -288,12 +291,57 @@ async function worktreesSection(gh, root) {
 
 // ---------------------------------------------------------------- pool
 
+// One machine per child process (`lead --pool-worker <name>`): its ssh calls are synchronous, so a slow machine can
+// only be cut off by killing its process. The worker prints one JSON snapshot per stage; the last complete one wins.
+const NL = String.fromCharCode(10);
+
+function poolProbe(root) {
+  return (m, { report, signal }) => new Promise((resolve) => {
+    let buf = "";
+    let last = null;
+    const child = execFile(process.execPath, [join(root, "tools", "cli.mjs"), "lead", "--pool-worker", m.name], { cwd: root, windowsHide: true, encoding: "utf8", maxBuffer: 8 * 1024 * 1024 }, () => resolve(last));
+    child.stdout.on("data", (d) => {
+      buf += d;
+      const lines = buf.split(NL);
+      buf = lines.pop();
+      for (const l of lines) {
+        try { last = JSON.parse(l); report(last); } catch { /* not a snapshot line */ }
+      }
+    });
+    signal.addEventListener("abort", () => { child.kill(); resolve(last); });
+  });
+}
+
+const envMs = (name, dflt) => (/^[0-9]+$/.test(process.env[name] ?? "") ? Number(process.env[name]) : dflt);
+
 async function poolSection(root) {
-  const r = await sh(process.execPath, [join(root, "tools", "cli.mjs"), "pool", "status"], { cwd: root, timeout: 13000 });
-  if (r.timedOut) throw new Error("pool status timed out");
-  const p = parsePoolStatus(r.out);
-  if (!p.machines.length) throw new Error(`pool status printed no machines (exit ${r.code})`);
-  return [`POOL queue ${p.queue ?? "?"} waiting`, ...p.machines.map((m) => `  ${poolLine(m)}`)];
+  const pool = await import("../remote/pool.mjs");
+  const machines = pool.loadMachines(root);
+  if (!machines.length) throw new Error("pool has no machines (tools/pool.json)");
+  const budgetMs = envMs("LF_LEAD_POOL_BUDGET_MS", 12000);
+  const g = await gatherPool({
+    machines,
+    probe: poolProbe(root),
+    machineMs: envMs("LF_LEAD_POOL_MACHINE_MS", 9000),
+    budgetMs,
+    fallback: (m) => timeoutHealth(pool.lastHealth(root, m.name), Date.now(), pool.RECENT_OK_MS),
+  });
+  return poolLines({ snaps: g.snaps, queue: pool.liveTickets(root).length, exceeded: g.exceeded, budgetMs, elapsedMs: g.elapsedMs });
+}
+
+async function poolWorker(root, name) {
+  const pool = await import("../remote/pool.mjs");
+  const m = pool.findMachine(pool.loadMachines(root), name);
+  if (!m) { console.log(JSON.stringify({ name, health: "DOWN", note: "not in the pool" })); return 1; }
+  const emit = (snap) => writeSync(1, JSON.stringify(snap) + NL);
+  emit(pool.poolSnapshot(root, m, emit));
+  return 0;
+}
+
+// ---------------------------------------------------------------- ship queue
+
+async function shipSection(root) {
+  return [shipQueueLine(readQueue(wt.ensureHub(root)), Date.now())];
 }
 
 // ---------------------------------------------------------------- accounts, slices (other branches; skipped until they land)
@@ -365,6 +413,7 @@ function diskWorker(root) {
 
 export async function main(args, { root }) {
   if (args[0] === "--disk-worker") return diskWorker(root);
+  if (args[0] === "--pool-worker") return poolWorker(root, args[1]);
   if (args[0] === "prune-safe") return pruneSafe(root, args.slice(1));
   const t0 = Date.now();
   const gh = wt.ghBin();
@@ -376,12 +425,13 @@ export async function main(args, { root }) {
     section("PRS", 13000, () => needGh("PRS", () => prsSection(gh, root, maxPrs))),
     section("WORKTREES", 14000, () => needGh("WORKTREES", async () => worktreeLines(await gatherWorktrees(root, gh)))),
     section("POOL", 13500, () => poolSection(root)),
+    section("SHIP QUEUE", 5000, () => shipSection(root)),
     section("ACCOUNTS", 13000, () => accountsSection(root)),
     section("SLICES", 13000, () => slicesSection(root)),
   ]);
   // Disk: its own process (the walk is synchronous), cached sizes refreshed inside a deadline; appended to the worktree block.
   const diskP = sh(process.execPath, [join(root, "tools", "cli.mjs"), "lead", "--disk-worker"], { cwd: root, timeout: 12500 });
-  const [ms, prs, wts, pool, acc, sl] = await sections;
+  const [ms, prs, wts, pool, ship, acc, sl] = await sections;
   let diskLine;
   try {
     const dr = await diskP;
@@ -395,7 +445,7 @@ export async function main(args, { root }) {
     diskLine = "  disk: unavailable (size walk failed)";
   }
   wts.push(diskLine);
-  const out = [...ms, ...prs, ...wts, ...pool, ...acc, ...sl];
+  const out = [...ms, ...prs, ...wts, ...pool, ...ship, ...acc, ...sl];
   out.push(`lead ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(out.join("\n"));
   return 0;

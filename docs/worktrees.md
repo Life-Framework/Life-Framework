@@ -244,6 +244,13 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
+   A queue write is bookkeeping and never fails a gate. On Windows the rename of `ship-queue.json.tmp`
+   throws EPERM/EBUSY/EACCES while a `ship-queue status` or `wait` has the file open, so
+   `tools/lib/atomic-file.mjs` retries it (10 tries over about 1 s); the worker's `update` then retries
+   the whole read-modify-write, and if that still fails it logs `queue write ... the gate result is kept`
+   in the worker log instead of failing the PR. A read that keeps failing throws rather than returning an
+   empty queue. The session lease, test cache, shard history, pool tickets and look-serve state use the
+   same helper. `ship-queue-eperm-selftest.mjs` holds the file open from a child process to prove it.
 
 **Stale rdb refresh when this PC is busy (the fallback).** A stale `resourceDatabase.rdb` is registered by a
 headless Workbench: ~15 s per addon, but it queued 10-50 min behind the hub `build` lock and this PC's one
@@ -1324,6 +1331,10 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
+  prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
+  validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
+  that freeze is printed once as `WARN  validate: this process was frozen N s`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
 
 ## Lead view
@@ -1341,7 +1352,13 @@ parallel, each with its own timeout; one that fails prints one line and the rest
   SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
   Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
   `~N GB (k/n measured)`; the walk never follows a junction.
-- POOL: one line per machine (free RAM, lanes busy/total, temperature, DOWN or slow) and the queue length, read from `pool status`.
+- POOL: one line per machine (free RAM, lanes busy/total, temperature, `up`, `slow` or `DOWN`) and the queue length. Each machine is
+  read in its own process (`lead --pool-worker <name>`), all at once, with a per-machine timeout (9 s, `LF_LEAD_POOL_MACHINE_MS`) inside
+  an overall budget (12 s, `LF_LEAD_POOL_BUDGET_MS`). A machine that has not finished shows what it had: `slow` when it answered within
+  5 min (a busy box, lf-cloud's 7 s ssh), `DOWN` otherwise, with `** slow: no answer in 9 s **`; a slow machine never drops the section.
+  When the budget itself cuts a machine the section ends with `pool budget N s exceeded ... partial rows for ...`. A machine whose
+  free RAM is under the pool floor (`minFreeMb`, 1.5 GB) adds `WARN RAM: <machine> has 0.5 GB free, under its 1.5 GB floor`: it takes no new job.
+- SHIP QUEUE: `SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (<slug> #<pr>)`, from the same file `ship-queue status` prints.
 - ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
 
 `tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
