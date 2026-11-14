@@ -353,6 +353,11 @@ class LF_Utils : Managed
 #ifdef LF_SESSION_IDENTITY
 		sessionDefine = true;
 #endif
+		// A session slot goes to a connected player only: a late lookup for a player id that already left
+		// (a callback queued before the disconnect) must not claim a slot nobody releases.
+		if (sessionDefine && Replication.IsServer() && !LF_PlayerIdentity.HoldsSlot(playerId) && !GetGame().GetPlayerManager().IsPlayerConnected(playerId))
+			return "";
+
 		bool noBackend = System.IsCLIParam("noBackend");
 #ifdef WORKBENCH
 		// Workbench play has no online service: vanilla's peer-tool polyfill is all it gets.

@@ -2855,3 +2855,6 @@
 
 ### Config initializers (#1077, 2026-11-14)
 - ✅ `.conf` zeros are read on every config class: an `[Attribute]` member initializer used to beat a `.conf` or pack-overlay value of 0 (`m_bDownedEnabled 0` read as on). Medic, Phone, Survival, Organizations, Police, Shop limits, Incident, Ledger, Character, Jobs, Garage and Persistence configs (86 members) now carry no initializers; Medic, Phone and Survival build script defaults with `CreateDefault()`. Test `config/conf-zero`. enforce-lint L9 (`attr-initializer`) fails a new `[Attribute]` member with a non-zero initializer; `LF_JumpPadComponent` (2 prefab fields) and `LF_SignDef.m_sImageName` are baselined.
+
+### Session fixtures and rejoin identity (2026-11-14)
+- ✅ Harness sessions: `session up --roster 2,3` and `--seed <file>` write the police roster or any `LifeFramework/` file into the server profile just before the server boots, on the machine that runs it (a roster written on this PC never reached a pool machine); `session roster` on a live session reloads it through `LF_HostStop` (`$profile:lf-reload-roster`). A harness client is keyed by a session slot (`LF_PlayerIdentity.SlotOf`, only for connected players), so `session rejoin <n>` brings a client back as the same account under a new player id; `session identity` and `session.mjs rejoin-proof`. Test `session/slots` (LOGIC). No save change.
