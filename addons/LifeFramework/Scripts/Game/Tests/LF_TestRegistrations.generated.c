@@ -523,6 +523,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleOverrideVerbs(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleStateBadRow(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleStateLegacy(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_VehicleStateRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_WantedLook(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WantedLooksPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_WantedPosterFace(), LF_TestTier.LOGIC);

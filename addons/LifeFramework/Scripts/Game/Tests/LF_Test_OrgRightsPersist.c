@@ -141,7 +141,7 @@ class LF_Test_OrgRightsPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the version 27 save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(32, version, "the save is written at version 32 (orgranks is payload 27)");
+			ctx.Equal(33, version, "the save is written at version 33 (orgranks is payload 27)");
 
 			JsonLoadContext load = new JsonLoadContext(false);
 			load.LoadFromString(saved);
@@ -197,6 +197,9 @@ class LF_TestLegacySnapshot : Managed
 	protected ref array<ref LF_WantedReportRecord> m_aWanted;
 	//! The identity card registry (#902): a test that resets it must not take the e2e card's row.
 	protected ref array<ref LF_PhotoIdRow> m_aIdCards;
+	//! Vehicle state (#752a): an older save has no "vehiclestate", so loading one resets the tow,
+	//! inspection and compartment the e2e garaged car must still hold at the shutdown save.
+	protected ref array<ref LF_VehicleStateRow> m_aVehicleState;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_TestLegacySnapshot Take()
@@ -207,6 +210,7 @@ class LF_TestLegacySnapshot : Managed
 		snapshot.m_aJobXp = LF_JobLevels.ExportAll();
 		snapshot.m_aWanted = LF_WantedReports.ExportAll();
 		snapshot.m_aIdCards = LF_PhotoIdCard.ExportAll();
+		snapshot.m_aVehicleState = LF_VehicleOwnership.ExportState();
 		return snapshot;
 	}
 
@@ -218,5 +222,6 @@ class LF_TestLegacySnapshot : Managed
 		LF_JobLevels.ApplyAll(m_aJobXp);
 		LF_WantedReports.ApplyAll(m_aWanted);
 		LF_PhotoIdCard.ApplyAll(m_aIdCards);
+		LF_VehicleOwnership.ApplyState(m_aVehicleState);
 	}
 }
