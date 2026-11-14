@@ -1923,7 +1923,7 @@
   refusal is logged. The door is `EL_Door_Base` with the inherited
   `LF_LockComponent`. The organization id is written onto that lock. The door
   does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
-- ✅ (2026-11-08, M1-17) An organization takes the yard (`LF_Hideout.HIDEOUT_ID`,
+- ✅ (2026-11-08, M1-17) An organization takes the yard (the door marked `m_bOrganizationHideout`, id `Roadmap_Hideout`, found through `LF_Places`;
   gate `302.4 0 288` since M1-25) with "Take the lease" on the registry ledger; taking it locks the gate.
   The gate prompt on a client compares the organization replicated on the
   character with the owner on the lock and shows `#EL-Hideout_NotMember` to a
