@@ -17,6 +17,9 @@ export const SHARED = [
   "addons/LF_Everon1989/Language/**",
   "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistry*",
   "tools/validation/enforce-lint-baseline.json",
+  "docs/config/config.schema.json",
+  "docs/config/config.example.json",
+  "addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c",
 ];
 // The routing table (docs/process/roadmap-pipeline.md "Model routing"). Risky work goes to Opus whatever its type.
 export const ROUTING = {
