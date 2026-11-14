@@ -501,7 +501,7 @@ export function selftestSession() {
   // #297: the core-only template variant boots the core's header with the core alone, on both sides.
   const ts = serverArgs({ addonsDir: "A", profile: "SP", mission: "template-core-only" });
   const tc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "template-core-only" });
-  if (!/LF_PlaytestTown\.conf$/.test(ts[1]) || ts[ts.indexOf("-addons") + 1] !== "LifeFramework" || tc[tc.indexOf("-addons") + 1] !== "LifeFramework") failures.push("--mission template-core-only does not boot the core alone");
+  if (!/EL_DebugTest\.conf$/.test(ts[1]) || ts[ts.indexOf("-addons") + 1] !== "LifeFramework" || tc[tc.indexOf("-addons") + 1] !== "LifeFramework") failures.push("--mission template-core-only does not boot the core alone");
   if (parseMission(["--mission", "template-core-only"]) !== "template-core-only") failures.push("parseMission template-core-only");
   if (!serverArgs({ addonsDir: "A", profile: "SP", port: 2011 }).includes("127.0.0.1:2011") || serverArgs({ addonsDir: "A", profile: "SP" }).includes("-addr")) failures.push("serverArgs lane port");
   if (clientArgs({ n: 1, addonsDir: "A", profile: "P", port: 2011 })[1] !== "127.0.0.1:2011" || clientArgs({ n: 1, addonsDir: "A", profile: "P" })[1] !== "127.0.0.1") failures.push("clientArgs lane port");
