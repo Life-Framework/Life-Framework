@@ -11,4 +11,130 @@ FrameWidgetClass {
   SizeY 0
   OffsetBottom 0
  }
+ {
+  FrameWidgetClass "{B96C0BEBC5DCED57}" {
+   Name "Layer_Slots"
+   Slot FrameWidgetSlot "{A6335D816C8C6242}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   {
+    VerticalLayoutWidgetClass "{E8B47138FBA07924}" {
+     Name "Group_Bottom"
+     Slot FrameWidgetSlot "{59A36DDB58E65DF8}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     components {
+      SCR_HUDGroupUIComponent "{149DC90B67BBA859}" {
+      }
+     }
+     {
+      FrameWidgetClass "{2D71B4E69AA9A6E0}" {
+       Name "Filler"
+       Slot LayoutSlot {
+        HorizontalAlign 2
+        SizeMode Fill
+       }
+      }
+      FrameWidgetClass "{3A69B3D503AC435E}" {
+       Name "Slot_WeaponInfo"
+       Slot LayoutSlot {
+        HorizontalAlign 2
+        VerticalAlign 3
+       }
+       Clipping False
+       components {
+        SCR_HUDSlotUIComponent "{C823151BA80D45D4}" {
+         m_iPriority 4
+         m_aHeightSteps {
+          250
+         }
+         m_aWidthSteps {
+          600
+         }
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{2E992692C3C3FB49}" {
+     Name "Group_Left"
+     Slot FrameWidgetSlot "{63ED7A37A5D083F4}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX -1320
+      OffsetRight 1320
+      SizeY 0
+      OffsetBottom 0
+     }
+     Clipping False
+     components {
+      SCR_HUDGroupUIComponent "{FBB637D70B6AF48F}" {
+      }
+     }
+     {
+      FrameWidgetClass "{6FEBC1709DE1AB00}" {
+       Name "Filler"
+       Slot LayoutSlot {
+        SizeMode Fill
+       }
+      }
+      FrameWidgetClass "{9A7A9B4136E0557A}" {
+       Name "Slot_AvailableActions"
+       Slot LayoutSlot {
+       }
+       components {
+        SCR_HUDSlotUIComponent "{BFF5B52597CDFEBA}" {
+         m_iPriority 2
+         m_aHeightSteps {
+          100 200
+         }
+         m_aWidthSteps {
+          600
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{F8FE3653559DE20C}" {
+       Name "Slot_Vehicle"
+       Slot LayoutSlot {
+       }
+       Clipping False
+       components {
+        SCR_HUDSlotUIComponent "{C20764AEB6ECDBD1}" {
+         m_iPriority 3
+         m_aHeightSteps {
+          100 220
+         }
+         m_aWidthSteps {
+          600
+         }
+         m_bSizeToContent 1
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
 }

@@ -714,10 +714,10 @@ export function judgeCarry(peerLine, id, carrierId, carrierAt, maxGap) {
 // and nowhere on the server, which is why a proof of a player-visible result reads it on the OTHER client.
 export function parseSeen(detail) {
   const text = String(detail ?? "");
-  const m = /^me=(\w+)\/(\d)\/(\d+) cash=(-?\d+) downed=(\d) life=(\w+) bleed=(-?\d+) veh=(\S*) door=(\S*) bags=(\d+) chop=(-?\d+) toast=(\S*) dispatches=(\d+) lastdispatch=(\S*)(?: posters=(\S+))?/.exec(text);
+  const m = /^me=(\w+)\/(\d)\/(\d+) cash=(-?\d+) downed=(\d) life=(\w+) bleed=(-?\d+) veh=(\S*) door=(\S*) bags=(\d+) chop=(-?\d+) toast=(\S*) dispatches=(\d+) lastdispatch=(\S*)(?: posters=(\S+))?(?: cases=(\S+))?/.exec(text);
   if (!m) return null;
   const list = (raw) => (raw === "none" ? [] : raw.split("|").map((e) => Object.fromEntries(e.split(":").map((x, i) => (i === 0 ? ["name", x] : x.split("=")))))); 
-  return { faction: m[1], duty: m[2], wanted: Number(m[3]), cash: Number(m[4]), downed: m[5], life: m[6], bleed: Number(m[7]), veh: list(m[8]), door: list(m[9]), bags: Number(m[10]), chop: Number(m[11]), toast: m[12], dispatches: Number(m[13]), lastdispatch: m[14], posters: m[15] ?? "" };
+  return { faction: m[1], duty: m[2], wanted: Number(m[3]), cash: Number(m[4]), downed: m[5], life: m[6], bleed: Number(m[7]), veh: list(m[8]), door: list(m[9]), bags: Number(m[10]), chop: Number(m[11]), toast: m[12], dispatches: Number(m[13]), lastdispatch: m[14], posters: m[15] ?? "", cases: m[16] ?? "" };
 }
 
 // Read client n (`seen` by default) until judge(parsed) returns no failures or the budget runs out (a

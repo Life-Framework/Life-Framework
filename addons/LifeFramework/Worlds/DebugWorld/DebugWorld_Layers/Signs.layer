@@ -406,3 +406,7 @@ GenericEntity Sign_Quarry_Info : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_
  coords 184 0 189.8
  angleY 0
 }
+GenericEntity Sign_TestOrg : "{256EE1573D428340}Prefabs/Props/Signs/LF_Sign_TestOrg.et" {
+ coords 285.301 0 255.515
+ angleY 180
+}

@@ -302,6 +302,33 @@ FrameWidgetClass {
         }
        }
       }
+      HorizontalLayoutWidgetClass "{F4FE47A4AF974663}" {
+       Slot LayoutSlot "{FD33E183C0414AD5}" {
+        SizeMode Fill
+       }
+       {
+        ButtonWidgetClass "{C779FE4B07C740F2}" {
+         Name "ResetWorldButton"
+         Slot LayoutSlot "{D3764B60E60D4C41}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 0 0 0 0
+         }
+         {
+          TextWidgetClass "{E2710F1E826645B3}" {
+           Name "ResetWorldButtonLabel"
+           Text "#LF-DebugMenu_ResetWorld"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{48394FADA04C4CF3}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+       }
+      }
      }
     }
    }

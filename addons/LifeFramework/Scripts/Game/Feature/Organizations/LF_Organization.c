@@ -1305,6 +1305,61 @@ class LF_OrganizationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Playtest only (LF_TestOrgSign): the organization with this name, or null. Case and outer
+	//! spaces do not matter, as for IsNameTaken.
+	static LF_Organization FindByName(string name)
+	{
+		if (!s_Instance)
+			return null;
+
+		string key = LF_OrgRules.NameKey(name);
+		foreach (string orgId, LF_Organization org : s_Instance.m_mOrganizations)
+		{
+			if (org && LF_OrgRules.NameKey(org.GetName()) == key)
+				return org;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Playtest only (LF_TestOrgSign): puts a character in an organization with no invite and no
+	//! rights check, at \rankId. Refused when the character already belongs to one.
+	static bool JoinDirect(string orgId, string characterId, string rankId)
+	{
+		if (!Server())
+			return false;
+
+		LF_Organization org = Get(orgId);
+		if (!org || characterId.IsEmpty() || GetByCharacter(characterId))
+			return false;
+
+		if (!org.AddMember(characterId, rankId))
+			return false;
+
+		GetInstance().m_mMembership.Set(characterId, orgId);
+		LF_Debug.Log("Organizations", string.Format("direct join org=%1 member=%2 rank=%3", orgId, characterId, rankId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Playtest only (LF_TestOrgSign): a character leaves, founder included (Leave keeps the founder
+	//! in). The organization stays on the register, even with no member, so it can be joined again.
+	static bool LeaveDirect(string characterId)
+	{
+		if (!Server())
+			return false;
+
+		LF_Organization org = GetByCharacter(characterId);
+		if (!org || !org.RemoveMember(characterId))
+			return false;
+
+		GetInstance().m_mMembership.Remove(characterId);
+		LF_Debug.Log("Organizations", string.Format("direct leave org=%1 member=%2", org.GetId(), characterId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool Deposit(string orgId, string characterId, int amount)
 	{
 		if (!Server())

@@ -70,6 +70,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string WANTED_LOOK = "9B5BB216CC7FF18E|1=9F546CCA2582D16F";
 	//! The holder of the identity card in the carrier's pocket (#902, "idcards", save version 30).
 	static const string ID_HOLDER = "e2e-card-holder";
+	//! The time on the robbery's case (#148, "caseboard" payload, save version 31).
+	static const string CASE_TIME = "14:05";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -222,6 +224,22 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 		LF_WantedReportRecord robbery = LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
 		robbery.m_sAppearance = WANTED_LOOK;
+
+		// The case board (#148, "caseboard" payload, save version 31): the robbery's time and one
+		// pinned footprint card must come back.
+		array<ref LF_CaseBoardRow> caseRows = {};
+		LF_CaseBoardRow caseTime = new LF_CaseBoardRow();
+		caseTime.m_iReport = robbery.m_iSequence;
+		caseTime.m_sNote = CASE_TIME;
+		caseRows.Insert(caseTime);
+		LF_CaseBoardRow caseCard = new LF_CaseBoardRow();
+		caseCard.m_iReport = robbery.m_iSequence;
+		caseCard.m_iNumber = 9;
+		caseCard.m_sKind = LF_Evidence.KIND_FOOTPRINT;
+		caseCard.m_sNote = "#AR-Boots_Jungle";
+		caseCard.m_iPinned = 1;
+		caseRows.Insert(caseCard);
+		LF_CaseBoard.ApplyAll(caseRows);
 
 		// A logged evidence bag (#269) must be on file after the restart.
 		LF_EvidenceLockerRow lockerRow = new LF_EvidenceLockerRow();
@@ -632,6 +650,16 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.WANTED_LOOK, robberyLook, "e2e the robber's look survives the restart");
 #endif
 		LF_Debug.Info(LF_WantedPosters.FEATURE, "e2e restart: robbery report look '" + robberyLook + "'");
+		int robberyReport;
+		if (robberyReports && !robberyReports.IsEmpty())
+			robberyReport = robberyReports[0].m_iSequence;
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.Equal(0, LF_CaseBoard.PinnedCount(robberyReport), "e2e the version 23 save has nothing pinned on the case board");
+#else
+		ctx.Equal(1, LF_CaseBoard.PinnedCount(robberyReport), "e2e the pinned card stays on the case board after the restart");
+		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.CASE_TIME, LF_CaseBoard.TimeOf(robberyReport), "e2e the case keeps the time of the crime after the restart");
+#endif
+		LF_Debug.Info(LF_CaseBoard.FEATURE, string.Format("e2e restart: case #%1 time '%2' pinned %3", robberyReport, LF_CaseBoard.TimeOf(robberyReport), LF_CaseBoard.PinnedCount(robberyReport)));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
@@ -733,9 +761,16 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The pocket card comes back with its number and nothing printed; the registry prints it again.
-	//! A version 23 save (--legacy-save) has the number (itemserials) but no registry: it stays blank
-	//! until the holder's next spawn prints a new card.
+	//! The pocket card comes back with its number, and the restore prints it again from the registry:
+	//! LF_SerialComponent.RestoreSerial looks the number up as the snapshot is applied (#902), so the
+	//! card is never seen blank and RepairCarried finds nothing left to print (#909: this test still
+	//! expected a blank card and a repair, from before RestoreSerial printed it). A version 23 save
+	//! (--legacy-save) has the number (itemserials) but no registry: it stays blank until the holder's
+	//! next spawn prints a new card.
+	//! red-proof: Observed 2026-11-14 with `tools\cli wt e2e fix-909`: with RestoreSerial no longer printing
+	//! (its EnsurePrinted call removed) pass 2 failed `- e2e the restore prints the card again from the registry`
+	//! and `- e2e a printed card leaves the repair nothing to print (expected 0, got 1)`. Restored; green, and
+	//! green with `--legacy-save`.
 	protected void VerifyIdCard(LF_TestContext ctx, IEntity restored)
 	{
 		array<LF_IdCardComponent> cards = {};
@@ -747,11 +782,12 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		LF_IdCardComponent card = cards[0];
 		string number = LF_IdCard.NumberOf(card);
 		ctx.False(number.IsEmpty(), "e2e the identity card keeps its number after the restart");
-		ctx.False(card.IsIssued(), "e2e the restored card comes back with nothing printed");
 #ifdef LF_E2E_LEGACY_SAVE
+		ctx.False(card.IsIssued(), "e2e a version 23 save has no registry: the restored card comes back blank");
 		ctx.Equal(0, LF_IdCard.RepairCarried(restored), "e2e a version 23 save has no registry: the card stays blank");
 #else
-		ctx.Equal(1, LF_IdCard.RepairCarried(restored), "e2e the registry prints the restored card again");
+		ctx.True(card.IsIssued(), "e2e the restore prints the card again from the registry");
+		ctx.Equal(0, LF_IdCard.RepairCarried(restored), "e2e a printed card leaves the repair nothing to print");
 		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.ID_HOLDER, card.GetHolderId(), "e2e the card is printed for its holder after the restart");
 		ctx.EqualStr("Register", card.GetLastName(), "e2e the card's surname survives the restart");
 		ctx.True(LF_IdCard.IsValid(card), "e2e the restored card is still the holder's valid card");
