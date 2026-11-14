@@ -3943,7 +3943,7 @@ async function wtSyncBaseCmd(args) {
     const r = wt.wtNew(ROOT, slug, { base });
     const { healMerge } = await import("./prs.mjs");
     const m = healMerge(r.path, { base: "origin/" + source });
-    if (m.status === "needs-human") {
+    if (m.status === "needs-human" || m.status === "refused") {
       console.log("FAIL  origin/" + source + " does not merge into origin/" + base + " automatically: " + m.reason + (m.conflicted.length ? " (" + m.conflicted.join(", ") + ")" : ""));
       console.log("      resolve by hand: cd " + r.path + "; git merge origin/" + source + "; fix, commit; tools\\cli wt ship " + slug);
       return 1;
