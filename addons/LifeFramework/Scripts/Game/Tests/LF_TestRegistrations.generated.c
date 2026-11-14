@@ -306,6 +306,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PhotoIdCardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PickaxeCount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Placement(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PlacementAim(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementConfirm(), LF_TestTier.WORLD);
