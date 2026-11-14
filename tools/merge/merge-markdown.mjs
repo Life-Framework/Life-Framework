@@ -111,7 +111,36 @@ export function mergeLines(baseText, oursText, theirsText) {
     rmSync(dir, { recursive: true, force: true });
   }
   const resolved = resolveInsertions(diff3);
-  return { ok: resolved.conflicts === 0, conflicts: resolved.conflicts, text: resolved.text };
+  const text = resolved.conflicts === 0 ? dropDoubleAdds(baseText, oursText, theirsText, resolved.text) : resolved.text;
+  return { ok: resolved.conflicts === 0, conflicts: resolved.conflicts, text };
+}
+
+// A line both sides added (new to the base) is one row, even when the two
+// sides put it at different spots: a branch that copied main's rows by hand,
+// then merged main, got the #1026 and #1111 features.md sections twice
+// (2026-11-14). Keeps the first copy. Short lines (blank, `---`, `|---|`) are
+// left alone, since two sections may each add one.
+function dropDoubleAdds(baseText, oursText, theirsText, mergedText) {
+  const key = (line) => line.replace(/\r?\n$/, "").trimEnd();
+  const counts = (text) => {
+    const map = new Map();
+    for (const line of splitKeep(text ?? "")) map.set(key(line), (map.get(key(line)) || 0) + 1);
+    return map;
+  };
+  const [base, ours, theirs] = [baseText, oursText, theirsText].map(counts);
+  const lines = splitKeep(mergedText);
+  const seen = new Map();
+  const out = [];
+  for (const line of lines) {
+    const k = key(line);
+    const n = (seen.get(k) || 0) + 1;
+    seen.set(k, n);
+    const allowed = Math.max(ours.get(k) || 0, theirs.get(k) || 0);
+    const doubleAdd = k.trim().length >= 12 && !base.has(k) && ours.has(k) && theirs.has(k);
+    if (doubleAdd && n > allowed) continue;
+    out.push(line);
+  }
+  return out.join("");
 }
 
 function runDriver() {
