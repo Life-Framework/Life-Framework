@@ -167,7 +167,9 @@
   are per account (`LF_PoliceApplications.ApplicantUid`). Every character-scoped record is keyed
   by the character's record key (`LF_Utils.GetPlayerUID`; slot 1 = the account
   uid, later slots their own id; the key is replicated on the body for clients);
-  whitelists and staff actions use `LF_Utils.GetAccountUID`. Wanted level, police
+  whitelists and staff actions use `LF_Utils.GetAccountUID`. An account change
+  replicates to its own player's body only, and the police count once a frame (#716,
+  `account/publish-cost`). Wanted level, police
   rank and duty totals belong to the character (`LF_CharacterStanding`). An old
   save loads its one character as slot 1 with nothing rewritten
   (`docs/persistence.md`). Tests `account/characters-per-account`,

@@ -38,6 +38,11 @@ off:
   re-clamps the active index and `SetActiveCharacter` ignores a non-member.
   Fields effectively public (BIS ticket T174113 workaround).
 - `LF_PlayerAccountManager` — load + cache + save/release.
+- `LF_AccountReplication.Publish` (#716) — an account change writes its player's body at
+  once; the player comes from `LF_AccountOwnerIndex` (cached owner checked with one identity
+  read, at most one walk over the players per frame) and the police count is recounted
+  once at the end of the frame, not per change. 128 changes at 128 players: 32768 identity
+  reads before, at most 256 after. `account/publish-cost`.
 - `LF_PlayerIdentity` — the key a connected player's account opens under
   (`LF_Utils.GetAccountUID`). Waits ("") while the platform identity can still
   arrive (a listen host gets it about a second after the join), keys by name on

@@ -14,6 +14,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AccountCharacterRoster(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountSaveRoundtrip(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountManagerCache(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_AccountPublishCost(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountActiveIndex(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountCachePolicy(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ActionGuards(), LF_TestTier.LOGIC);
