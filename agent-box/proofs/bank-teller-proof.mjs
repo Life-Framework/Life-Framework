@@ -1,10 +1,10 @@
 import { arrive, clientBox, sessionDir } from "../session.mjs";
 
-// #590 on a running `up --wait` session (one client): the 1989 bank teller. The character stands at the
-// teller window (Bank_Teller behind the west counter), a world shot shows the teller, the player uses
+// #590 on a running `up --wait` session (one client): the 1989 bank teller. The character stands in the bank
+// lobby (Bank_Teller behind the vanilla post-office counter inside the building, #931), a world shot shows the teller, the player uses
 // "Talk to the teller" (LF_ATMAction on the teller), keys in 100 and withdraws it. `state` before and
 // after shows cash up and bank down by 100; the server log carries `[LFDebug:ATM] withdraw -100`.
-// Demo for the playtest town: run it, or walk to (177, 258) and press the interact key at the teller.
+// Demo for the playtest town: run it, or walk in through the bank door to the lobby counter at (175.4, 262.4) and press the interact key at the teller.
 async function runBankTellerProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
@@ -18,9 +18,9 @@ async function runBankTellerProof() {
   const fails = [];
   arrive(on, 1, wait);
   wait(6000);
-  on(1, { verb: "capture", mode: "world", name: "bank_teller_world", x: 177, y: 1.5, z: 259.5, ox: 1.5, oy: 0.4, oz: -3 }, 25000);
+  on(1, { verb: "capture", mode: "world", name: "bank_teller_world", x: 175.4, y: 1.4, z: 264.4, ox: 0.6, oy: 0.2, oz: -2.6 }, 25000);
   const before = on(1, { verb: "state" }, 10000);
-  on(1, { verb: "stand", entityName: "Bank_Teller" });
+  on(1, { verb: "stand", entityName: "Bank_Teller", side: "s" });
   wait(2500);
   on(1, { verb: "look" });
   const use = on(1, { verb: "use", className: "LF_ATMAction", entityName: "Bank_Teller" }, 10000);
