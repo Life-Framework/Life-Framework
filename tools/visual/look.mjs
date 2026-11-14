@@ -20,10 +20,11 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { deflateSync, inflateSync } from "node:zlib";
 import { quietSpawn } from "../lib/quiet-launch.mjs";
+import { townWorld } from "../lib/addons.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PLUGIN = join(ROOT, "tools", "visual", "wb", "LF_VisualShotsPlugin.c");
-const WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+const WORLD = townWorld(); // the pack world (a SubScene of DebugWorld that holds the village) when the pack is here
 const WORKBENCH_MB = 1900; // peak working set of the run, measured 2026-11-11 (docs/visual-testing.md)
 const RAM_MARGIN_MB = 300;
 const BOOT_BUDGET_S = 90;
@@ -579,7 +580,7 @@ export function selftest() {
   ok(shots[6].line === "close test_area__c02_Commercial_Sack - 104 0 200 -90", `unnamed close line: ${shots[6].line}`);
   ok(shotsFor(area, world, { close: 0 }).length === 5, "--close 0 still planned a close-up");
   const plan = planText(shots, [area], { hour: 9 });
-  ok(/^world Worlds\/DebugWorld\/DebugWorld\.ent\nmode play\nhour 9\nsettle 350\nfirst 3000\npark -60 40\nshot /.test(plan), `plan head: ${plan.slice(0, 110)}`);
+  ok(/^world Worlds\/(DebugWorld\/DebugWorld|Everon1989Town\/Everon1989Town)\.ent\nmode play\nhour 9\nsettle 350\nfirst 3000\npark -60 40\nshot /.test(plan), `plan head: ${plan.slice(0, 110)}`);
   ok(planText(shots, [area], { edit: true }).includes("\nmode edit\n"), "--edit did not reach the plan");
   ok(resolveArea("12.5,40", []).name === "xz-13-40" && resolveArea("bank", [{ name: "bank", x: 1, z: 2, radius: 5 }], 9).radius === 9, "resolveArea");
   let threw = false;

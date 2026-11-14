@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! LF_MissionHeader - a mission header that can close dev tools and listen for a host stop request.
-//! Used by Missions/LF_PlaytestTown.conf. That mission reuses DebugWorld, whose game mode prefab
+//! Used by the pack's playtest headers and the core fixture Missions/LF_HostedTest.conf. They reuse DebugWorld, whose game mode prefab
 //! opts every player into dev tools, so the header overrides that. tools\cli host stop asks for a
 //! graceful close through a stop file. The engine writes its SHUTDOWN save point on that close.
 class LF_MissionHeader : SCR_MissionHeader

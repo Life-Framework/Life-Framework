@@ -24,6 +24,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { layerFile, worldLayerDirs } from "../lib/addons.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
 import { LIMITS, analyse, auditRecords, doorZone, insideFraction, isKind, measureTown, obbAabb, obbPenetration, parseDoor, parseKv, parseRoads, parseRow, polylineDistance, readJson } from "../../agent-box/place-audit.mjs";
@@ -293,10 +294,11 @@ function safeBounds(root, mesh) {
 }
 
 export function loadModel(root = ROOT) {
-  const dir = join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
   const ents = [];
-  for (const file of readdirSync(dir)) {
-    if (file.endsWith(".layer")) ents.push(...modelOf(root, readFileSync(join(dir, file), "utf8"), file));
+  for (const dir of worldLayerDirs(root)) {
+    for (const file of readdirSync(dir)) {
+      if (file.endsWith(".layer")) ents.push(...modelOf(root, readFileSync(join(dir, file), "utf8"), file));
+    }
   }
   return ents;
 }
@@ -758,7 +760,7 @@ export function offlineProblems(cand, { ents = [], roads = [], doors = [], allow
 
 function loadRoads(root) {
   try {
-    return parseRoads(readFileSync(join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers", "Village_Roads.layer"), "utf8"));
+    return parseRoads(readFileSync(layerFile(root, "Village_Roads.layer"), "utf8"));
   } catch {
     return [];
   }
@@ -894,7 +896,7 @@ function itemsOf(ctx, prefabArgs, flags) {
   if (!prefabArgs.length) throw new PlaceError("give a prefab to place, or --move <Entity>");
   if (ctx.prefabFile) throw new PlaceError("--in re-places a prefab's existing children: use --move <Child>");
   if (!flags.layer) throw new PlaceError("--layer <File.layer> says which layer gets the new entity");
-  if (!existsSync(join(LAYERS_DIR, String(flags.layer)))) throw new PlaceError(`no layer ${flags.layer} in DebugWorld_Layers`);
+  if (!existsSync(layerFile(ROOT, String(flags.layer)))) throw new PlaceError(`no layer ${flags.layer} in DebugWorld_Layers or the pack world's layers`);
   const count = Number(flags.count ?? 1);
   const list = prefabArgs.length === 1 && count > 1 ? Array(count).fill(prefabArgs[0]) : prefabArgs;
   const names = flags.name ? String(flags.name).split(",") : [];
@@ -996,9 +998,9 @@ function commit(ctx, plans, flags) {
         coords = [lx, p.y - par.y, lz];
         yaw = p.yaw - par.yaw;
       }
-      edit(ctx.prefabFile ?? join(LAYERS_DIR, it.ent.file), (t) => setTransform(t, it.ent.name || it.ent, { coords, yaw, scale: it.setScale ?? null }));
+      edit(ctx.prefabFile ?? layerFile(ROOT, it.ent.file), (t) => setTransform(t, it.ent.name || it.ent, { coords, yaw, scale: it.setScale ?? null }));
     } else {
-      edit(join(LAYERS_DIR, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, p.y, p.z], yaw: p.yaw, scale: it.setScale }));
+      edit(layerFile(ROOT, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, p.y, p.z], yaw: p.yaw, scale: it.setScale }));
     }
   }
   const files = [...originals.keys()].map((f) => f.slice(ROOT.length + 1).replace(/\\/g, "/"));
@@ -1225,10 +1227,9 @@ function cmdAgainst(args, flags) {
 // Every vanilla prefab (one the addon does not hold) the layers reference, measured once from the .xob headers.
 export function vanillaPrefabs(root = ROOT) {
   const set = new Set();
-  for (const file of readdirSync(LAYERS_DIR)) {
-    if (!file.endsWith(".layer")) continue;
-    for (const m of readFileSync(join(LAYERS_DIR, file), "utf8").matchAll(/"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/g)) {
-      if (!existsSync(join(ADDON, m[1]))) set.add(m[1]);
+  for (const file of worldLayerDirs(root).flatMap((d) => readdirSync(d).filter((f) => f.endsWith(".layer")).map((f) => join(d, f)))) {
+    for (const m of readFileSync(file, "utf8").matchAll(/"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/g)) {
+      if (!existsSync(join(ADDON, m[1])) && !existsSync(join(root, "addons", "LF_Everon1989", m[1]))) set.add(m[1]);
     }
   }
   return [...set].sort();

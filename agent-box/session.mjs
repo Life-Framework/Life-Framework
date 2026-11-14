@@ -43,13 +43,14 @@ import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { addonsArgs, launchAddons, PACK_MISSION, playtestMission } from "../tools/lib/addons.mjs";
+import { addonsArgs, launchAddons, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 export { applyClientSettings, resolveProfile };
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-export const SERVER_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+// The bare world: the pack world (DebugWorld plus the village, #323 batch 1) when the pack is here.
+export const SERVER_WORLD = townWorld();
 export const MAX_CLIENTS = 3;
 // LF_SESSION_WINDOW=1280x720 sets the window when no --res is given.
 export function parseWindow(text) {

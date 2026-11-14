@@ -18,6 +18,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadWorld } from "./layers.mjs";
+import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -483,7 +484,7 @@ export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit")
   rmSync(outFile, { force: true });
   writeFileSync(inFile, inputText(records, extra));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
-  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--local", "--verbose"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", townWorld(), "--local", "--verbose"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
   const keep = text.split(/\r?\n/).filter((l) => /SUMMARY|^pool:|FAILED|TIMEOUT|error/i.test(l));
   for (const l of keep.slice(-4)) log(`  ${l.trim()}`);
@@ -523,7 +524,7 @@ async function placement(argv) {
   const { flags } = parseArgs(argv);
   const areas = readJson(AREAS_FILE, { areas: [] }).areas;
   const allow = readJson(ALLOW_FILE, { allow: [] }).allow ?? [];
-  const roads = parseRoads(readFileSync(join(LAYERS_DIR, "Village_Roads.layer"), "utf8"));
+  const roads = parseRoads(readFileSync(layerFile(ROOT, "Village_Roads.layer"), "utf8"));
   let records = auditRecords({ layers: flags.layer ? String(flags.layer).split(",") : null, area: flags.area, areas, annex: !!flags.annex });
   const outDir = resolve(flags.out ?? join(ROOT, "tmp", "place-audit"));
   mkdirSync(outDir, { recursive: true });
@@ -591,9 +592,9 @@ function worldSelftest(fail) {
   else {
     const addon = join(ROOT, "addons", "LifeFramework");
     const unlisted = new Set();
-    for (const f of readdirSync(LAYERS_DIR).filter((n) => n.endsWith(".layer"))) {
-      for (const m of readFileSync(join(LAYERS_DIR, f), "utf8").matchAll(/"{[0-9A-Fa-f]{16}}([^"]+.et)"/g)) {
-        if (!existsSync(join(addon, m[1])) && !list.prefabs[m[1]] && !(list.unmeasured ?? []).includes(m[1])) unlisted.add(m[1]);
+    for (const f of worldLayerDirs(ROOT).flatMap((d) => readdirSync(d).filter((n) => n.endsWith(".layer")).map((n) => join(d, n)))) {
+      for (const m of readFileSync(f, "utf8").matchAll(/"{[0-9A-Fa-f]{16}}([^"]+.et)"/g)) {
+        if (!existsSync(join(addon, m[1])) && !existsSync(join(ROOT, "addons", "LF_Everon1989", m[1])) && !list.prefabs[m[1]] && !(list.unmeasured ?? []).includes(m[1])) unlisted.add(m[1]);
       }
     }
     if (unlisted.size) fail(`vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`);
