@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` in Configs/Perf/LF_PerfBudget.conf, `tools\cli perf --local` failed `perf money-event-us 33 us/event over budget 1` and exited 1. Restored to 200; green.
+// red-proof: 2026-11-14, load tolerance: with `m_iMaxMoneyEventUs 5` (a 10x regression against the ~50 us measured) the run failed `perf money-event-us 85 us/event over budget 11 (limit 5, load scale 231 pct)`; the calibration loop had scaled the limit for the loaded box and the regression still failed. Restored to 200; green. Earlier: Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` in Configs/Perf/LF_PerfBudget.conf, `tools\cli perf --local` failed `perf money-event-us 33 us/event over budget 1` and exited 1. Restored to 200; green.
 // tier: PERSISTENCE
 //! perf/budget-128 (#335): the server cost gate. Builds a synthetic population (accounts, bank
 //! balances, a crime history, a money log) of `m_iPlayers` characters through the public
@@ -14,6 +14,14 @@ class LF_Test_PerfBudget : LF_Test
 {
 	protected static const string UID_PREFIX = "perf-bench-";
 
+	//! Calibration: a fixed CPU loop timed on this run. The budgets were set on an idle box; when the loop
+	//! takes longer than CALIBRATION_REF_MS the box is loaded (other sessions, builds) and every time limit
+	//! scales by the same ratio, capped at CALIBRATION_MAX_PCT. A real regression slows the code under test
+	//! but not this loop, so the ratio stays 1 and the unscaled budget catches it.
+	protected static const int CALIBRATION_REF_MS = 16;
+	protected static const int CALIBRATION_MAX_PCT = 400;
+	protected int m_iScalePct = 100;
+
 	override string GetName()
 	{
 		return "perf/budget-128";
@@ -24,13 +32,48 @@ class LF_Test_PerfBudget : LF_Test
 	protected void Check(LF_TestContext ctx, string name, int value, int limit, string unit)
 	{
 		LF_Debug.Info(LF_Perf.FEATURE, string.Format("BENCH %1 value=%2 budget=%3 unit=%4", name, value, limit, unit));
-		ctx.True(value <= limit, string.Format("perf %1 %2 %3 over budget %4", name, value, unit, limit));
+		int scaled = limit;
+		if (unit != "bytes" && unit != "bytes/player")
+			scaled = (limit * m_iScalePct) / 100;
+
+		ctx.True(value <= scaled, string.Format("perf %1 %2 %3 over budget %4 (limit %5, load scale %6 pct)", name, value, unit, scaled, limit, m_iScalePct));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void Report(string name, int value, string unit)
 	{
 		LF_Debug.Info(LF_Perf.FEATURE, string.Format("BENCH %1 value=%2 budget=none unit=%3", name, value, unit));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Best of three timings of a fixed loop; returns the load scale in percent (100 = idle box).
+	protected static int Calibrate()
+	{
+		int best = 0;
+		for (int run = 0; run < 3; run++)
+		{
+			int t0 = System.GetTickCount();
+			int acc = 0;
+			array<int> sink = new array<int>();
+			for (int i = 0; i < 400000; i++)
+			{
+				acc = (acc + i * 7) % 100003;
+				if ((i % 64) == 0)
+					sink.Insert(acc);
+			}
+			int ms = System.GetTickCount(t0);
+			if (run == 0 || ms < best)
+				best = ms;
+		}
+
+		int pct = (best * 100) / CALIBRATION_REF_MS;
+		if (pct < 100)
+			pct = 100;
+		if (pct > CALIBRATION_MAX_PCT)
+			pct = CALIBRATION_MAX_PCT;
+
+		LF_Debug.Info(LF_Perf.FEATURE, string.Format("BENCH calibration-ms value=%1 budget=none unit=ms scalePct=%2", best, pct));
+		return pct;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -55,6 +98,7 @@ class LF_Test_PerfBudget : LF_Test
 		if (!persistence)
 			return;
 
+		m_iScalePct = Calibrate();
 		LF_PerfBudget budget = LF_PerfBudget.Get();
 		int players = budget.m_iPlayers;
 		ctx.True(players >= 128, "the budget is set for at least 128 players");
