@@ -1,0 +1,96 @@
+AnimSrcGraphFile {
+ Sheets {
+  AnimSrcGraphSheet LF_DrillPush {
+   Nodes {
+    AnimSrcNodeStateMachine MasterControl {
+     EditorPos 0 -1
+     states {
+      AnimSrcNodeState Use {
+       EditorPos 0 1
+       Child "UseG"
+       StartCondition "Gestures == 562"
+       IsExit 1
+      }
+     }
+    }
+    AnimSrcNodeGroupSelect UseG {
+     EditorPos 0 3
+     Child "UseSequenceSTM"
+     Group "Use"
+     Column "Default"
+    }
+    AnimSrcNodeStateMachine UseSequenceSTM {
+     EditorPos 0 5
+     states {
+      AnimSrcNodeState In {
+       EditorPos -3 7
+       Child "UseInSrc"
+       StartCondition "true"
+       TimeStorage "Real Time"
+      }
+      AnimSrcNodeState Loop {
+       EditorPos 0 8
+       Child "UseLoopSwitch"
+       StartCondition "false"
+       TimeStorage "Real Time"
+      }
+      AnimSrcNodeState Out {
+       EditorPos 3 7
+       Child "UseOutSrc"
+       TimeStorage "Real Time"
+       IsExit 1
+      }
+     }
+     transitions {
+      AnimSrcNodeTransition "{F002ACB882579AC4}" {
+       FromState "In"
+       ToState "Loop"
+       Duration "0.2"
+       Condition "RemainingTimeLess(0.1)"
+       PostEval 1
+      }
+      AnimSrcNodeTransition "{F44F97ABE1E0F1C6}" {
+       FromState "Loop"
+       ToState "Out"
+       Duration "0.5"
+       Condition "Gestures == -1"
+       Reentering "Blendout Only"
+      }
+      AnimSrcNodeTransition "{E2050D7FA39D4787}" {
+       FromState "In"
+       ToState "Out"
+       Duration "0.5"
+       StartTime "1-GetLowerTime()"
+       Condition "Gestures == -1"
+       PostEval 1
+       Reentering "Blendout Only"
+      }
+     }
+    }
+    AnimSrcNodeSource UseInSrc {
+     EditorPos -3 10
+     Source "Use.In"
+    }
+    AnimSrcNodeSwitch UseLoopSwitch {
+     EditorPos 0 10
+     BlendTime 0.2
+     FirstProbabilities "1"
+     SwitchItems {
+      AnimSrcNodeSwitchItem "{47B45F2A32C3D08C}" {
+       Child "UseLoopSrc"
+       NextProbabilities "100"
+      }
+     }
+    }
+    AnimSrcNodeSource UseLoopSrc {
+     EditorPos 0 12
+     Source "Use.Loop"
+    }
+    AnimSrcNodeSource UseOutSrc {
+     EditorPos 3 10
+     Source "Use.Out"
+    }
+   }
+  }
+ }
+}

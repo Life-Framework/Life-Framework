@@ -29,8 +29,10 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AmbulanceSirenWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AssetAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AtmosphereMix(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BackRoomDoor(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BackRoomRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankAccountMath(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankSaveRoundtrip(), LF_TestTier.LOGIC);
@@ -165,6 +167,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FirstPlayerPolice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Handcuffs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
@@ -340,6 +343,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Roadmap_Vehicles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_VehiclesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_VehiclesPersistence(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_RobHold(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobReward(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobWeaponVehicle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Robustness(), LF_TestTier.LOGIC);

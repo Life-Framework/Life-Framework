@@ -25,8 +25,18 @@ class LF_ShopComponent : ScriptComponent
 	[Attribute("0", UIWidgets.CheckBox, desc: "Back room: an on-duty officer can search it and seize its stock as evidence")]
 	protected bool m_bBackRoom;
 
+	//! A line the shopkeeper adds to this shop's sheet: a localization key, or empty. The general
+	//! store uses it to point a buyer at the back room (#933).
+	[Attribute("", UIWidgets.Auto, desc: "Shopkeeper's word on the sheet: a localization key (such as a pointer to the back room); empty shows nothing")]
+	protected string m_sShopHint;
+
 	//! Server only, world time in ms. Not saved: a raid closes the room for the rest of the session at most.
 	protected int m_iClosedUntilMs;
+
+	//! The shutter as clients see it, so the door prompt can say "shut" before anyone walks up and
+	//! knocks. The server's m_iClosedUntilMs stays the authority; this follows it.
+	[RplProp()]
+	protected bool m_bShutShown;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -78,8 +88,41 @@ class LF_ShopComponent : ScriptComponent
 		}
 
 		m_iClosedUntilMs = LF_BackRoomRules.ClosedUntil(nowMs);
+		SetShutShown(true);
+		GetGame().GetCallqueue().CallLater(OpenShutter, LF_ShopLimitsConfig.BackRoomShutMs(), false);
 		LF_Debug.Info("Shop", string.Format("back room '%1' searched by %2: %3 stock line(s) seized, shut until %4", m_sShopName, officerUid, seized, m_iClosedUntilMs));
 		return LF_EBackRoomRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client and server: whether the room's shutter is down (a raid shut it and the time has not passed).
+	bool IsShutShown()
+	{
+		return m_bShutShown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetShutShown(bool shut)
+	{
+		if (m_bShutShown == shut)
+			return;
+
+		m_bShutShown = shut;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the shut time has passed.
+	protected void OpenShutter()
+	{
+		SetShutShown(false);
+		LF_Debug.Info("Shop", string.Format("back room '%1' open again", m_sShopName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetShopHint()
+	{
+		return m_sShopHint;
 	}
 
 	//------------------------------------------------------------------------------------------------

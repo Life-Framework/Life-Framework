@@ -2791,7 +2791,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B50F85FC9F4CC91E}" {
      Id "LF-Shop_Open_BackRoom"
-     Target_en_us "Knock on the back door"
+     Target_en_us "Knock to buy a handgun"
      Target_es_es "Abrir mercado negro"
      Comment "Interaction name on the black-market shop"
     }
@@ -2814,7 +2814,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F1C7C0F870099A03}" {
      Id "LF-Shop_OpenDesc_BackRoom"
-     Target_en_us "Buy equipment"
+     Target_en_us "Back room. Cash only."
      Target_es_es "Comprar equipamiento"
      Comment "Interaction description on the black-market shop"
     }
@@ -3921,12 +3921,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
-     Target_en_us "Knock on the back door."
+     Target_en_us "Stand at the stall and knock (F). The price list opens: pick the handgun and pay."
      Comment "Sign card for the back room shop in the alley (no printed title), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{62B0D34EDFA21A7A}" {
      Id "LF-Sign_BlackMarket_Needs"
-     Target_en_us "Cash."
+     Target_en_us "Cash: the handgun costs 500. No licence and no contact needed, at any hour."
      Comment "Sign card for the back room shop in the alley (no printed title), Needs section."
     }
     CustomStringTableItem "{6F09655B2F839902}" {
@@ -6703,7 +6703,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7B1E5A0C00000001}" {
      Id "LF-Shop_RefuseClosed"
-     Target_en_us "The back room is shut. Police have been through it."
+     Target_en_us "The back room is shut. Police have been through it. Come back in a few minutes."
      Comment "Shop refusal: a raided back room is shut for a while (#600)."
     }
     CustomStringTableItem "{7B1E5A0C00000002}" {
@@ -8151,116 +8151,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
      Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
     }
-    CustomStringTableItem "{C3D98F355E87E01F}" {
-     Id "LF-TestOrgSign_Title"
-     Target_en_us "Test organisation"
-     Comment "Toast title of the playtest organisation sign (#934)."
-    }
-    CustomStringTableItem "{B249F0D4F960A3F9}" {
-     Id "LF-TestOrgSign_Join"
-     Target_en_us "Join test organisation"
-     Comment "F-key action on the playtest sign: join the shared Test Organisation (#934)."
-    }
-    CustomStringTableItem "{920FCADF747D40B0}" {
-     Id "LF-TestOrgSign_Leave"
-     Target_en_us "Leave organisation"
-     Comment "F-key action on the playtest sign: leave your organisation, founder included (#934)."
-    }
-    CustomStringTableItem "{20EB5D2AA9C99C49}" {
-     Id "LF-TestOrgSign_Denied"
-     Target_en_us "Playtest only. This sign works in the playtest town."
-     Comment "Toast when the playtest gate or the dev gate refuses the org sign (#934)."
-    }
-    CustomStringTableItem "{50FAC5EDA66028A3}" {
-     Id "LF-TestOrgSign_NoCharacter"
-     Target_en_us "You have no character yet."
-     Comment "Toast when the org sign is used with no character (#934)."
-    }
-    CustomStringTableItem "{213816480AB942FE}" {
-     Id "LF-TestOrgSign_TooFar"
-     Target_en_us "Step up to the sign."
-     Comment "Toast when the org sign is used from too far (#934)."
-    }
-    CustomStringTableItem "{D09E099C90D56448}" {
-     Id "LF-TestOrgSign_AlreadyIn"
-     Target_en_us "You already belong to an organisation. Leave it first."
-     Comment "Greyed-out reason and toast: Join while already in an organisation (#934)."
-    }
-    CustomStringTableItem "{4EA24B0F715B7041}" {
-     Id "LF-TestOrgSign_NotIn"
-     Target_en_us "You are not in an organisation."
-     Comment "Greyed-out reason and toast: Leave with no organisation (#934)."
-    }
-    CustomStringTableItem "{8E9D6E84A80978B5}" {
-     Id "LF-TestOrgSign_Joined"
-     Target_en_us "You are in the Test organisation. The hideout door in the alley opens for you."
-     Comment "Toast after joining the Test Organisation (#934)."
-    }
-    CustomStringTableItem "{92F24781D1DE033B}" {
-     Id "LF-TestOrgSign_YardTaken"
-     Target_en_us "You are in the Test organisation, but another organisation holds the hideout yard."
-     Comment "Toast after joining when the hideout lease belongs to someone else (#934)."
-    }
-    CustomStringTableItem "{88BA7C53158F4683}" {
-     Id "LF-TestOrgSign_Left"
-     Target_en_us "You left the organisation. Its door is shut to you now."
-     Comment "Toast after leaving the organisation (#934)."
-    }
-    CustomStringTableItem "{A9A2726808B24C57}" {
-     Id "LF-Hideout_Open"
-     Target_en_us "Open"
-     Comment "Prompt on a locked hideout door for a member of the owning organisation (#934)."
-    }
-    CustomStringTableItem "{6A4D04C9867F8E55}" {
-     Id "LF-Hideout_MembersOnly"
-     Target_en_us "Members only (%1)"
-     Comment "Prompt on a locked hideout door for a non-member; %1 is the owning organisation (#934)."
-    }
-    CustomStringTableItem "{F763318319EA320C}" {
-     Id "LF-Hideout_MembersOnlyPlain"
-     Target_en_us "Members only"
-     Comment "Prompt on a locked hideout door when the owner name has not reached the client yet (#934)."
-    }
-    CustomStringTableItem "{1B66611A4CED0EC1}" {
-     Id "LF-Hideout_MembersOnlyReason"
-     Target_en_us "Only members of %1 can open this door."
-     Comment "Refusal under the hideout door prompt; %1 is the owning organisation (#934)."
-    }
-    CustomStringTableItem "{2C929FC1D06CD839}" {
-     Id "LF-Hideout_Unowned"
-     Target_en_us "Locked (no owner)"
-     Comment "Prompt on a hideout door nobody holds (#934)."
-    }
-    CustomStringTableItem "{C252650C7A89CED7}" {
-     Id "LF-Hideout_UnownedReason"
-     Target_en_us "Nobody holds this yard. Found an organisation and take the lease at the registry desk."
-     Comment "Refusal under the hideout door prompt when no organisation holds the yard (#934)."
-    }
-    CustomStringTableItem "{EE39881CFABC1E92}" {
-     Id "LF-Sign_TestOrg_Title"
-     Target_en_us "Test organisation"
-     Comment "Title of the playtest organisation sign (#934)."
-    }
-    CustomStringTableItem "{0D48BB18722E316D}" {
-     Id "LF-Sign_TestOrg_What"
-     Target_en_us "Playtest only: a shared organisation for one tester."
-     Comment "Sign card of the playtest organisation sign (#934)."
-    }
-    CustomStringTableItem "{DFA15542C4155B52}" {
-     Id "LF-Sign_TestOrg_How"
-     Target_en_us "Use Join test organisation. The first one in founds it and takes the hideout yard. Use Leave organisation to get out again."
-     Comment "Sign card of the playtest organisation sign (#934)."
-    }
-    CustomStringTableItem "{C4E999C65CA365AF}" {
-     Id "LF-Sign_TestOrg_Needs"
-     Target_en_us "Nothing. This sign works in the playtest town only."
-     Comment "Sign card of the playtest organisation sign (#934)."
-    }
-    CustomStringTableItem "{39447CA62CCE01E3}" {
-     Id "LF-Sign_TestOrg_Next"
-     Target_en_us "The hideout door is at the end of the cobbled alley: members open it, everyone else is told whose it is."
-     Comment "Sign card of the playtest organisation sign (#934)."
-    }
     CustomStringTableItem "{D8050889F5E6497E}" {
      Id "LF-DebugMenu_ResetWorld"
      Target_en_us "Reset world"
@@ -8391,6 +8281,366 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You dropped the parcel. It is on the ground nearby, marked with a glow."
      Comment "Toast when a carried courier parcel lands on the ground (#920)."
     }
+    CustomStringTableItem "{74C05AD0FF1A649C}" {
+     Id "LF-BackRoom_DoorShut"
+     Target_en_us "Back room (shut)"
+     Comment "Prompt on the back room's counter while it is shut after a police search (#933)."
+    }
+    CustomStringTableItem "{B4FBE7394CA00159}" {
+     Id "LF-Shop_Hint_General"
+     Target_en_us "Looking for something stronger? Try the back room at the head of the cobbled alley, east of the square. Knock, and bring cash."
+     Comment "The general store keeper's word on his sheet: where the back room is (#933)."
+    }
+    CustomStringTableItem "{06F11B7C90FB5AF0}" {
+     Id "LF-Sign_BlackMarket_Rules"
+     Target_en_us "Police can search it. After a search the room stays shut for about ten minutes."
+     Comment "Sign card of the back room: the one thing that closes it (#933)."
+    }
+    CustomStringTableItem "{77F083725C2B630B}" {
+     Id "LF-Police_NpcStunned"
+     Target_en_us "%1 is stunned"
+     Comment "Toast to the officer whose taser dart downed a town NPC (#922). %1 is the NPC's name."
+    }
+    CustomStringTableItem "{C3D98F355E87E01F}" {
+     Id "LF-TestOrgSign_Title"
+     Target_en_us "Test organisation"
+     Comment "Toast title of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{B249F0D4F960A3F9}" {
+     Id "LF-TestOrgSign_Join"
+     Target_en_us "Join test organisation"
+     Comment "F-key action on the playtest sign: join the shared Test Organisation (#934)."
+    }
+    CustomStringTableItem "{920FCADF747D40B0}" {
+     Id "LF-TestOrgSign_Leave"
+     Target_en_us "Leave organisation"
+     Comment "F-key action on the playtest sign: leave your organisation, founder included (#934)."
+    }
+    CustomStringTableItem "{20EB5D2AA9C99C49}" {
+     Id "LF-TestOrgSign_Denied"
+     Target_en_us "Playtest only. This sign works in the playtest town."
+     Comment "Toast when the playtest gate or the dev gate refuses the org sign (#934)."
+    }
+    CustomStringTableItem "{50FAC5EDA66028A3}" {
+     Id "LF-TestOrgSign_NoCharacter"
+     Target_en_us "You have no character yet."
+     Comment "Toast when the org sign is used with no character (#934)."
+    }
+    CustomStringTableItem "{213816480AB942FE}" {
+     Id "LF-TestOrgSign_TooFar"
+     Target_en_us "Step up to the sign."
+     Comment "Toast when the org sign is used from too far (#934)."
+    }
+    CustomStringTableItem "{D09E099C90D56448}" {
+     Id "LF-TestOrgSign_AlreadyIn"
+     Target_en_us "You already belong to an organisation. Leave it first."
+     Comment "Greyed-out reason and toast: Join while already in an organisation (#934)."
+    }
+    CustomStringTableItem "{4EA24B0F715B7041}" {
+     Id "LF-TestOrgSign_NotIn"
+     Target_en_us "You are not in an organisation."
+     Comment "Greyed-out reason and toast: Leave with no organisation (#934)."
+    }
+    CustomStringTableItem "{8E9D6E84A80978B5}" {
+     Id "LF-TestOrgSign_Joined"
+     Target_en_us "You are in the Test organisation. The hideout door in the alley opens for you."
+     Comment "Toast after joining the Test Organisation (#934)."
+    }
+    CustomStringTableItem "{92F24781D1DE033B}" {
+     Id "LF-TestOrgSign_YardTaken"
+     Target_en_us "You are in the Test organisation, but another organisation holds the hideout yard."
+     Comment "Toast after joining when the hideout lease belongs to someone else (#934)."
+    }
+    CustomStringTableItem "{88BA7C53158F4683}" {
+     Id "LF-TestOrgSign_Left"
+     Target_en_us "You left the organisation. Its door is shut to you now."
+     Comment "Toast after leaving the organisation (#934)."
+    }
+    CustomStringTableItem "{A9A2726808B24C57}" {
+     Id "LF-Hideout_Open"
+     Target_en_us "Open"
+     Comment "Prompt on a locked hideout door for a member of the owning organisation (#934)."
+    }
+    CustomStringTableItem "{6A4D04C9867F8E55}" {
+     Id "LF-Hideout_MembersOnly"
+     Target_en_us "Members only (%1)"
+     Comment "Prompt on a locked hideout door for a non-member; %1 is the owning organisation (#934)."
+    }
+    CustomStringTableItem "{F763318319EA320C}" {
+     Id "LF-Hideout_MembersOnlyPlain"
+     Target_en_us "Members only"
+     Comment "Prompt on a locked hideout door when the owner name has not reached the client yet (#934)."
+    }
+    CustomStringTableItem "{1B66611A4CED0EC1}" {
+     Id "LF-Hideout_MembersOnlyReason"
+     Target_en_us "Only members of %1 can open this door."
+     Comment "Refusal under the hideout door prompt; %1 is the owning organisation (#934)."
+    }
+    CustomStringTableItem "{2C929FC1D06CD839}" {
+     Id "LF-Hideout_Unowned"
+     Target_en_us "Locked (no owner)"
+     Comment "Prompt on a hideout door nobody holds (#934)."
+    }
+    CustomStringTableItem "{C252650C7A89CED7}" {
+     Id "LF-Hideout_UnownedReason"
+     Target_en_us "Nobody holds this yard. Found an organisation and take the lease at the registry desk."
+     Comment "Refusal under the hideout door prompt when no organisation holds the yard (#934)."
+    }
+    CustomStringTableItem "{EE39881CFABC1E92}" {
+     Id "LF-Sign_TestOrg_Title"
+     Target_en_us "Test organisation"
+     Comment "Title of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{0D48BB18722E316D}" {
+     Id "LF-Sign_TestOrg_What"
+     Target_en_us "Playtest only: a shared organisation for one tester."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{DFA15542C4155B52}" {
+     Id "LF-Sign_TestOrg_How"
+     Target_en_us "Use Join test organisation. The first one in founds it and takes the hideout yard. Use Leave organisation to get out again."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{C4E999C65CA365AF}" {
+     Id "LF-Sign_TestOrg_Needs"
+     Target_en_us "Nothing. This sign works in the playtest town only."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{39447CA62CCE01E3}" {
+     Id "LF-Sign_TestOrg_Next"
+     Target_en_us "The hideout door is at the end of the cobbled alley: members open it, everyone else is told whose it is."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{57F981BB07357D29}" {
+     Id "LF-FuelClerk_Name"
+     Target_en_us "Fuel attendant"
+     Comment "Speaker name of the fuel station attendant in a conversation."
+    }
+    CustomStringTableItem "{5BF4FCC1A15400BB}" {
+     Id "LF-FuelClerk_Talk"
+     Target_en_us "Talk to the attendant"
+     Comment "Action on the fuel station attendant: opens the conversation."
+    }
+    CustomStringTableItem "{94A1952EED77A6E8}" {
+     Id "LF-RobHold_ClerkBeg"
+     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{0F045151110132ED}" {
+     Id "LF-RobHold_ClerkStammer"
+     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{AB28C43BB756D769}" {
+     Id "LF-RobHold_ClerkPaid"
+     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{2040F7D3825AA900}" {
+     Id "LF-RobHold_ClerkPolice"
+     Target_en_us "Police! In here! He has a gun! Help me!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{EFA416C7403C71CF}" {
+     Id "LF-RobHold_ClerkGone"
+     Target_en_us "He is gone? Oh God. Somebody call the police!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{FE6717CB3E1F9AF6}" {
+     Id "LF-RobHold_Title"
+     Target_en_us "ROBBERY"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Header of the hold panel."
+    }
+    CustomStringTableItem "{A117438990F577D9}" {
+     Id "LF-RobHold_Timer"
+     Target_en_us "Keep the clerk at gunpoint: %1"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the time left, as 0:20."
+    }
+    CustomStringTableItem "{653858F0C99AEAC1}" {
+     Id "LF-RobHold_Range"
+     Target_en_us "Stay within %1 m of the till. You are %2 m away."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the radius, %2 the distance."
+    }
+    CustomStringTableItem "{0846C4E67EC47B16}" {
+     Id "LF-RobHold_Edge"
+     Target_en_us "Too far! Back to the counter: %2 m of %1 m"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Shown near the edge of the radius. %1 is the radius, %2 the distance."
+    }
+    CustomStringTableItem "{09906F4013CF0802}" {
+     Id "LF-RobHold_Rules"
+     Target_en_us "It fails if you leave, put your weapon away, go down, or the police arrive."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{917C7F209A2E5AE2}" {
+     Id "LF-RobHold_Success"
+     Target_en_us "The till is open. You took the cash."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{8851882B617E8962}" {
+     Id "LF-RobHold_Fail_Left"
+     Target_en_us "Robbery failed: you left the counter."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{985FFEE6750F2BA2}" {
+     Id "LF-RobHold_Fail_Weapon"
+     Target_en_us "Robbery failed: you put your weapon away."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{D6A9DD47C75E011F}" {
+     Id "LF-RobHold_Fail_Police"
+     Target_en_us "Robbery failed: the police arrived."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{C823A75E1A8C79F8}" {
+     Id "LF-RobHold_Fail_Downed"
+     Target_en_us "Robbery failed: you went down."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{90B712FFFF5477C3}" {
+     Id "LF-RobHold_Fail_Till"
+     Target_en_us "Robbery failed: the till could not pay out."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{008CB39C11D31B0D}" {
+     Id "LF-RobHold_Refused_Cooldown"
+     Target_en_us "(The till was emptied a short while ago. Come back later.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{0078A75E091ED0E8}" {
+     Id "LF-RobHold_Refused_Police"
+     Target_en_us "(Not enough police on duty for a robbery.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{7A61B157428F9D30}" {
+     Id "LF-RobHold_Refused_Busy"
+     Target_en_us "(This till is already being robbed.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{66AD4C2125D11C00}" {
+     Id "LF-RobHold_Refused_NoTill"
+     Target_en_us "(There is no till here to rob.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{670B9380BE43A60E}" {
+     Id "LF-RobHold_Refused_Rate"
+     Target_en_us "(Too soon. Wait a moment.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{2014B40942A90812}" {
+     Id "LF-RobHold_Refused_Civilian"
+     Target_en_us "(Only civilians can rob.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{34CD07CABFFB2080}" {
+     Id "LF-RobHold_Refused_Weapon"
+     Target_en_us "(You need a weapon drawn.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{7FFE44F7F81E5976}" {
+     Id "LF-Dialogue_FuelClerk_Greet"
+     Target_en_us "Hello. Pump two sticks, so use pump one. What can I do for you?"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{D472603DD9705158}" {
+     Id "LF-Dialogue_FuelClerk_AboutWhere"
+     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{ADE95A91477ED67E}" {
+     Id "LF-Dialogue_FuelClerk_ChatQuiet"
+     Target_en_us "Quiet as a church. A tractor at nine, the post van at noon, and now you. The radio says rain by Thursday."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{F89E614A9ED832B3}" {
+     Id "LF-Dialogue_FuelClerk_ChatNews"
+     Target_en_us "Army trucks on the coast road again, all night long. Nobody tells us anything. My mother says it is like sixty eight."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{0FC2714512F080F2}" {
+     Id "LF-Dialogue_FuelClerk_RobPanic"
+     Target_en_us "W-what? No, no, no. Please, put that away. I have a little girl at home. Please do not shoot me!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{5DE47529DF3B5A69}" {
+     Id "LF-Dialogue_FuelClerk_RobOpen"
+     Target_en_us "Yes! Yes, I am opening it. The key, where is the... here, here it is. Just do not shoot, please, I am doing it!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{27029AD6A4C46ABD}" {
+     Id "LF-Dialogue_FuelClerk_RobEmpty"
+     Target_en_us "It is empty! I swear on my mother, the boss took the cash to the bank. Look, look, there is nothing!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{3D26F89BA596C1B8}" {
+     Id "LF-Dialogue_FuelClerk_RobOff"
+     Target_en_us "Oh God. Oh God, thank you. Just go. Please, just go."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{EB24FB16C4F34B2F}" {
+     Id "LF-Dialogue_FuelClerk_Beg"
+     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{7A946164FACF3403}" {
+     Id "LF-Dialogue_FuelClerk_Stammer"
+     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{74D57E4F126FE30F}" {
+     Id "LF-Dialogue_FuelClerk_Paid"
+     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{E769B1D12183A675}" {
+     Id "LF-Dialogue_FuelClerk_Police"
+     Target_en_us "Police! In here! He has a gun! Help me!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{CC61CA49E7915664}" {
+     Id "LF-Dialogue_FuelClerk_Gone"
+     Target_en_us "He is gone? Oh God. Somebody call the police!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{0896B3E1E8535C8F}" {
+     Id "LF-Dialogue_FuelClerk_Bye"
+     Target_en_us "Drive safe. Mind the potholes on the coast road."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{169564188FA741B2}" {
+     Id "LF-Dialogue_FuelClerk_SayWhere"
+     Target_en_us "Hey, where are we?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{DCA9D412FEC4B04C}" {
+     Id "LF-Dialogue_FuelClerk_SayChat"
+     Target_en_us "Quiet day?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{E0C9B717E8A63B4D}" {
+     Id "LF-Dialogue_FuelClerk_SayNews"
+     Target_en_us "Anything happening in town?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{78F76EB9DCC3A7F0}" {
+     Id "LF-Dialogue_FuelClerk_SayRob"
+     Target_en_us "This is a robbery. Hands where I can see them!"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{C3A3478410D6A6C7}" {
+     Id "LF-Dialogue_FuelClerk_SayDemand"
+     Target_en_us "Open the till. Now, or you die behind that counter."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{47B1E52CE1513EFD}" {
+     Id "LF-Dialogue_FuelClerk_SayOff"
+     Target_en_us "Forget it. You never saw me."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{30BA5B858FBF23FC}" {
+     Id "LF-Dialogue_FuelClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
     CustomStringTableItem "{53FFDC4A55C11ED4}" {
      Id "LF-Siren_AmbulanceOn"
      Target_en_us "Siren: on"
@@ -8400,11 +8650,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Siren_AmbulanceOff"
      Target_en_us "Siren: off"
      Comment "Action on the ambulance's light switch: stop the siren and the light bar (#923)."
-    }
-    CustomStringTableItem "{77F083725C2B630B}" {
-     Id "LF-Police_NpcStunned"
-     Target_en_us "%1 is stunned"
-     Comment "Toast to the officer whose taser dart downed a town NPC (#922). %1 is the NPC's name."
     }
   }
  }

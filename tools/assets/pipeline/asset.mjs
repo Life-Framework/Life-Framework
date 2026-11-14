@@ -13,13 +13,15 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import * as meshy from "./meshy.mjs";
 import { KINDS } from "./kinds.mjs";
+import { BUDGETS, checkBudget, defaultBudget } from "./budgets.mjs";
 import * as concepts from "./concepts.mjs";
 import { pickedImage } from "./concepts.mjs";
 import { materialProblems, resolveMaterials, variantPlans } from "./materials.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
+import { animProblems, hasAnim, withAnim } from "./anim.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGES = ["spec", "concept", "generate", "clean", "import", "prefab"];
+export const STAGES = ["spec", "concept", "generate", "remesh", "clean", "import", "prefab", "anim"];
 
 export const specFile = (root, slug) => join(root, "tools", "assets", slug, "spec.json");
 export const cacheDir = (root, slug) => join(root, "tmp", "assets", slug);
@@ -49,7 +51,8 @@ export function specProblems(spec) {
       if (!(s[k] > 0.005 && s[k] < 20)) out.push(`size_m.${k} must be a size in metres`);
     }
     if (!(b.lod0_tris >= 100 && b.lod0_tris <= 60000)) out.push("budget.lod0_tris must be 100 to 60000");
-    if (kind && b.lod0_tris > kind.maxTris) out.push(`budget.lod0_tris ${b.lod0_tris} is over the ${spec.kind} cap of ${kind.maxTris}`);
+    if (kind) out.push(...checkBudget(spec));
+    if (kind && spec.meshy?.target_polycount && spec.meshy.target_polycount * Math.max(spec.fit?.repeat || 1, 1) < b.lod0_tris) out.push(`meshy.target_polycount ${spec.meshy.target_polycount} is under budget.lod0_tris ${b.lod0_tris}: the generator would hand over less than LOD0 keeps`);
   }
   if (![256, 512, 1024, 2048].includes(b.texture_px)) out.push("budget.texture_px must be 256, 512, 1024 or 2048");
   if (!(b.credits >= (blender ? 0 : 1) && b.credits <= 300)) out.push(`budget.credits must be ${blender ? 0 : 1} to 300 (the per-asset cap)`);
@@ -72,6 +75,7 @@ export function specProblems(spec) {
     else if (kind && !kind.skeleton?.some((n) => n.name === p.bone)) out.push(`part ${p.name}: bone ${p.bone} is not in the ${spec.kind} skeleton`);
   }
   out.push(...materialProblems(spec));
+  out.push(...animProblems(spec));
   if (!/^Assets\//.test(spec.asset_dir || "")) out.push("asset_dir must start with Assets/");
   if (!/^Prefabs\//.test(spec.prefab_dir || "")) out.push("prefab_dir must start with Prefabs/");
   return out;
@@ -251,6 +255,50 @@ export function runBlender(script, args, { timeoutMs = 600000, log } = {}) {
   }
 }
 
+// The Meshy task the remesh starts from: the accepted generation recorded in tools/assets/<slug>/meshy.json.
+export function acceptedTaskId(root, slug) {
+  const file = join(root, "tools", "assets", slug, "meshy.json");
+  if (!existsSync(file)) return null;
+  const gens = JSON.parse(readFileSync(file, "utf8")).generations.filter((g) => g.accepted !== false);
+  const g = gens[gens.length - 1];
+  return g ? g.imageTaskId || g.refineId || null : null;
+}
+
+// LOD0 straight from Meshy: one remesh call to the budget's triangle count (per link for a repeat),
+// so the clean stage never collapses a big raw mesh. spec.meshy.remesh: false skips it.
+async function stageRemesh(ctx) {
+  const { spec, dir, state } = ctx;
+  if (spec.meshy?.remesh === false) return { skipped: "spec.meshy.remesh is false" };
+  if (spec.source?.blender) return { skipped: "modelled in Blender, not by Meshy" };
+  if (KINDS[spec.kind]?.fit === "none") return { skipped: "a material has no mesh" };
+  const ledger = join(dir, "credits.jsonl");
+  const out = join(dir, "raw-remesh");
+  const g = state.remesh || (state.remesh = {});
+  const target = Math.round(spec.budget.lod0_tris / Math.max(spec.fit?.repeat || 1, 1));
+  if (!g.taskId) {
+    const input = acceptedTaskId(ctx.root, spec.slug);
+    if (!input) throw new Error(`no accepted Meshy task for ${spec.slug} in tools/assets/${spec.slug}/meshy.json`);
+    const spentSoFar = meshy.spent(ledger);
+    if (spentSoFar + meshy.COST.remesh > spec.budget.credits) throw new Error(`remesh costs ${meshy.COST.remesh} credits over the cap of ${spec.budget.credits}`);
+    g.taskId = (await meshy.call("POST", "/openapi/v1/remesh", meshy.remeshBody(spec, input, target))).result;
+    g.input = input;
+    g.target = target;
+    writeState(dir, ctx.fullState);
+  }
+  const final = await meshy.waitTask(g.taskId, { path: "/openapi/v1/remesh", onProgress: (t) => console.log(`  remesh ${t.status} ${t.progress}%`) });
+  if (!g.logged) {
+    meshy.logCredits(ledger, { call: "remesh", task: g.taskId, credits: final.consumed_credits ?? meshy.COST.remesh });
+    g.logged = true;
+    writeState(dir, ctx.fullState);
+  }
+  if (!final.model_urls?.glb) throw new Error("Meshy remesh returned no GLB");
+  await meshy.download(final.model_urls.glb, join(out, "model.glb"));
+  const tex = final.texture_urls?.[0] || {};
+  for (const [k, url] of Object.entries(tex)) if (url) await meshy.download(url, join(out, `tex_${k}.png`));
+  console.log(`remesh: ${join(out, "model.glb")} at ${target} triangles from ${g.input}; maps ${Object.keys(tex).join(",") || "embedded in the GLB"}`);
+  return { task: g.taskId, input: g.input, target, maps: Object.keys(tex) };
+}
+
 async function stageClean(ctx) {
   const { spec, dir } = ctx;
   const out = join(dir, "clean");
@@ -267,14 +315,20 @@ async function stageClean(ctx) {
     return v;
   };
   if (KINDS[spec.kind].fit === "none") return { variants: packVariants() };
-  const glb = join(dir, "raw", "model.glb");
+  // A remeshed model (raw-remesh/) is LOD0 already; otherwise the generator's raw output. A spec
+  // with meshy.remesh false uses the raw output even when an earlier run left a remesh behind.
+  const remeshed = spec.meshy?.remesh !== false && existsSync(join(dir, "raw-remesh", "model.glb"));
+  const rawDir = remeshed ? join(dir, "raw-remesh") : join(dir, "raw");
+  const glb = join(rawDir, "model.glb");
   if (!existsSync(glb)) throw new Error(`no ${glb}; run the generate stage first (or drop a GLB there)`);
   const job = join(out, "job.json");
-  writeFileSync(job, JSON.stringify({ spec, kind: KINDS[spec.kind], materials: resolveMaterials(spec), glb, raw: join(dir, "raw"), out }, null, 1));
+  // The anim block adds a skeleton (a bone per moving part, the sockets) and the parts to split off.
+  const { kind, parts } = withAnim(KINDS[spec.kind], spec);
+  writeFileSync(job, JSON.stringify({ spec: { ...spec, parts }, kind, materials: resolveMaterials(spec), glb, raw: rawDir, out }, null, 1));
   runBlender(join(blenderDir, "clean.py"), [job], { log: join(out, "blender.log") });
   const report = JSON.parse(readFileSync(join(out, "report.json"), "utf8"));
   const { checkReport } = await import("./checks.mjs");
-  const problems = checkReport(spec, KINDS[spec.kind], report);
+  const problems = checkReport(spec, kind, report);
   for (const p of problems) console.log(`FAIL  ${p}`);
   console.log(`clean: LODs ${report.lods.map((l) => l.tris).join("/")} tris, size ${report.size.map((v) => v.toFixed(3)).join(" x ")} m, ${report.sockets.length} sockets, review ${join(out, "review")}`);
   if (problems.length) throw new Error(`${problems.length} check(s) failed; fix the spec (fit, parts, budget) and rerun --only clean`);
@@ -296,13 +350,21 @@ async function stagePrefab(ctx) {
   return writePrefabs(ctx);
 }
 
+// Stage "anim": moving parts, the character's animation, effects and sounds (anim.mjs). An asset
+// with no anim block has nothing to do here.
+async function stageAnim(ctx) {
+  if (!hasAnim(ctx.spec)) { console.log("anim: the spec has no anim block; nothing moves"); return { skipped: true }; }
+  const { stageAnim: runAnim } = await import("./anim.mjs");
+  return runAnim({ ...ctx, blender: runBlender }, { fix: ctx.fix });
+}
+
 async function stageConcepts(ctx) {
   return concepts.stageConcept(ctx, { writeState, resolveFfmpeg });
 }
 
-const RUN = { spec: stageSpec, concept: stageConcepts, generate: stageGenerate, clean: stageClean, import: stageImport, prefab: stagePrefab };
+const RUN = { spec: stageSpec, concept: stageConcepts, generate: stageGenerate, remesh: stageRemesh, clean: stageClean, import: stageImport, prefab: stagePrefab, anim: stageAnim };
 
-export async function run(root, slug, { from, only, force, workbench, pick } = {}) {
+export async function run(root, slug, { from, only, force, workbench, pick, fix } = {}) {
   const spec = loadSpec(root, slug);
   const dir = cacheDir(root, slug);
   const fullState = readState(dir);
@@ -317,7 +379,7 @@ export async function run(root, slug, { from, only, force, workbench, pick } = {
     }
     rerun = true; // a rerun stage invalidates every later one
     const started = Date.now();
-    const ctx = { root, slug, spec, dir, fullState, workbench, pick, state: (fullState.work ||= {}) };
+    const ctx = { root, slug, spec, dir, fullState, workbench, pick, fix, state: (fullState.work ||= {}) };
     console.log(`--- ${stage}`);
     if (stage === "generate" && force && ctx.state.generate?.refineLogged) {
       // A forced generate is a new attempt: keep the old download beside it and start new tasks.
@@ -361,9 +423,9 @@ function cmdNew(root, flags, workbench) {
   const spec = {
     slug, name, kind: kindName, roadmap: flag(flags, "--roadmap") || "",
     concept: "", prompt, texture_prompt: "",
-    meshy: { ai_model: "meshy-6-lite", target_polycount: 20000 },
+    meshy: { ai_model: "meshy-6-lite", target_polycount: BUDGETS[kindName] ? BUDGETS[kindName].source : 20000 },
     size_m: kind.defaultSize,
-    budget: { lod0_tris: kind.defaultTris, lod_ratios: [0.5, 0.2], texture_px: 1024, credits: 300 },
+    budget: BUDGETS[kindName] ? defaultBudget(kindName) : { lod0_tris: kind.defaultTris, lod_ratios: [0.5, 0.25], texture_px: 1024, credits: 300 },
     fit: { offset: [0, 0, 0] }, parts: [],
     asset_dir: `${kind.assetRoot}/${name}`, prefab_dir: `${kind.prefabRoot}/${name}`,
   };
@@ -408,6 +470,13 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "sound") return (await import("./sound.mjs")).main(root, rest); // docs/asset-pipeline/sounds.md
+  if (sub === "anim") { // the anim stage alone: tools\cli asset anim <slug> [--fix]
+    const wt = await import("../../wt.mjs");
+    if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
+    const slug = rest.find((f) => !f.startsWith("--"));
+    if (!slug) { console.log("usage: tools\\cli asset anim <slug> [--fix]"); return 2; }
+    return run(root, slug, { only: "anim", fix: rest.includes("--fix"), workbench });
+  }
   if (sub === "kit") {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
@@ -424,6 +493,7 @@ export async function main(flags, { workbench } = {}) {
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
+       tools\\cli asset anim <slug> [--fix]     moving parts, character clips, effects (docs/asset-pipeline/animation.md)
        tools\\cli asset kit <slug> [--only build|import]     several models from one Blender script (a room, a vault)
        tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
        tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)

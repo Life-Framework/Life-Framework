@@ -10,10 +10,9 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
     CustomAttributes {
      PreviewRenderAttributes "{7B5358BFBD1526AC}" {
-      CameraPreset Front
-      CameraOrbitAngles -35 30 0
-      CameraDistanceToItem 10
-      FOV 10
+      CameraOrbitAngles -20 60 0
+      CameraDistanceToItem 1.6
+      FOV 20
      }
     }
     ItemDisplayName UIInfo "{A8603D4A4EF634C5}" {
@@ -29,7 +28,32 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{D83CA877ADEF48C9}Assets/Props/Industrial/BenchDrill_01/BenchDrill_01.xob"
+   Object "{4A3AFEB6AAC4902E}Assets/Items/Roleplay/Drill/Drill.xob"
+  }
+  LF_AssetAnimComponent "{7646A31BA2135ABF}" {
+   m_aBones {
+    LF_AssetAnimBone "{7646A31BA2135AC0}" {
+     m_sBone "chuck"
+     m_eMotion SPIN
+     m_vAngles 0 0 1440
+    }
+   }
+   m_aEffects {
+    LF_AssetAnimEffect "{7646A31BA2135AC1}" {
+     m_sSocket "fx_bit"
+     m_sParticle "{5702289A28BA229E}Particles/LF/Drill_fx_bit.ptc"
+    }
+   }
+   m_aSounds {
+    LF_AssetAnimSound "{7646A31BA2135AC2}" {
+     m_sProject "{7C4797BC82794F5A}Sounds/Items/Drill/Items_Drill_Use.acp"
+     m_sEvent "SOUND_LF_DRILL_MOTOR_LP"
+    }
+    LF_AssetAnimSound "{7646A31BA2135AC3}" {
+     m_sProject "{7C4797BC82794F5A}Sounds/Items/Drill/Items_Drill_Use.acp"
+     m_sEvent "SOUND_LF_DRILL_GRIND_LP"
+    }
+   }
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {
@@ -44,5 +68,4 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
   }
  }
- scale 0.4
 }

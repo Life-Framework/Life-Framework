@@ -1,0 +1,15 @@
+{
+  "slug": "money-bag",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "latest",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d8ec-3909-7788-a935-1aee020c606c",
+      "concept": 2,
+      "conceptTaskId": "01a1d6cb-f141-7056-bdef-0345d2410c42",
+      "conceptPrompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Grey-brown coarse hessian sack, tall, rope wound around the neck, a faded band. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

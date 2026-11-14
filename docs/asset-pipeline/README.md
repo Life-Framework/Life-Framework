@@ -11,6 +11,7 @@ tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
 tools\cli asset score <slug> <n> <silhouette,era,scale_grip,background,no_text,image_to_3d> [note]
 tools\cli asset pick <slug> <n> [--why "..."]     the human's choice from the concept sheet
 tools\cli asset status [<slug>]
+tools\cli asset anim <slug> [--fix]  moving parts, the character's clips, effects: animation.md
 tools\cli asset sound <slug>  generated sound effects, after the prefab stage: sounds.md
 tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
@@ -29,11 +30,14 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | `spec` | Checks the spec: prompt length, size, triangle and credit budgets, part bones | The agent writes the spec: [prompt-writing.md](prompt-writing.md) |
 | `concept` | Optional. 10 prompts become 10 Meshy text-to-image pictures and a numbered 5x2 contact sheet; each is scored against a rubric; one is picked. No `concepts.json`, no stage. [concepts.md](concepts.md) | A human picks (`asset pick`), or the agent with `--pick` |
 | `generate` | With a picked concept: Meshy image-to-3D from that picture (one task, PBR maps). Otherwise text-to-3D preview, then refine. Downloads the GLB, the maps and a thumbnail; logs credits | The agent reads `raw/refined.png`: [review-generation.md](review-generation.md) |
+| `remesh` | One Meshy remesh call (5 credits) on the accepted generation, to exactly `budget.lod0_tris` triangles (per link for a `fit.repeat` deployable), with the PBR maps rebaked onto the new mesh. That mesh is LOD0, so the clean stage no longer collapses a 20,000 to 30,000 triangle raw mesh, which smeared UVs and dented flat panels (#664). `meshy.remesh: false` skips it and the clean stage collapses the raw mesh as before | The agent reads `clean/review/*.png` after `clean` |
 | `clean` | Headless Blender: orientation, scale in metres, origin, floaters, decimation to LODs, one UV atlas packed as `_BCR` and `_NMO`, collider, and for a weapon the vanilla pistol skeleton, sockets and moving parts | The tool checks the numbers; the agent reads `clean/review/*.png`: [review-clean.md](review-clean.md), [socket-checks.md](socket-checks.md) |
 | `import` | Copies the sources into the addon, writes every `.meta` with fresh GUIDs and the `.emat`, rebuilds them in a hidden Workbench, then reads the `.xob` back and checks bones, sockets, material and collider | The tool |
 | `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry; a gadget: one held item; a deployable: the deployed prop and the carried item). Every kind but `weapon` has its own `prefab-<kind>.mjs` | The agent finishes them: strings, feature component, placement |
 
-After `prefab` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
+| `anim` | Only for a spec with an `anim` block: solves the custom character clips and has Workbench compile them, writes the character workspace and the spark effect, and checks the prefab's `LF_AssetAnimComponent` against the spec. The bones and sockets the block names are built in `clean` and checked in `import` | The tool checks reach, feet and loops; the agent reads the pose previews and films the result: [animation.md](animation.md) |
+
+After `anim` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
 Sound is its own command with its own record, because a review sits in the middle of it:
 [sounds.md](sounds.md).
 
@@ -94,7 +98,7 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   "prompt": "...", "texture_prompt": "...",
   "meshy": { "ai_model": "latest", "target_polycount": 20000 },
   "size_m": { "length": 0.2, "height": 0.14, "width": 0.036 },
-  "budget": { "lod0_tris": 8000, "lod_ratios": [0.5, 0.2], "texture_px": 1024, "credits": 300 },
+  "budget": { "lod0_tris": 12000, "lod_ratios": [0.5, 0.25, 0.125], "texture_px": 1024, "credits": 300 },
   "fit": { "offset": [0, 0, 0] },
   "parts": [{ "name": "trigger", "bone": "w_trigger", "box": [x0, y0, z0, x1, y1, z1] }],
   "asset_dir": "Assets/Weapons/Handguns/Taser", "prefab_dir": "Prefabs/Weapons/Handguns/Taser",
@@ -102,8 +106,19 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
 }
 ```
 
+- `budget` comes from `tools/assets/pipeline/budgets.mjs`: per kind a LOD0 default, a floor (under it the model looks
+  faceted next to vanilla) and a cap, measured from vanilla `.xob` files (weapon 12,000, gadget 8,000, deployable
+  14,000 for the whole thing). Each `lod_ratios` step keeps at least half of the LOD before it; a bigger step
+  collapses UVs. The spec stage refuses a budget that breaks these, except for a model our own Blender script
+  builds (`source.blender`), which collapses nothing.
+- `meshy.remesh: false` keeps the raw generation as the source of LOD0. Use it when the remesh comes back worse
+  than the raw mesh: on the spike strip it puffed the flat rubber links into pillows with ragged edges.
+- `fit.bake: false` turns off the high-to-low normal bake the clean stage runs when it collapses a raw mesh. On the
+  spike strip the bake left dark dents around every spike; the generator's own normal map reads better there.
 - `fit` corrects what the clean stage guessed: `up_axis` (`"x"`, `"y"`, `"z"`), `flip_up`,
   `flip_forward`, `pitch_deg`, `scale`, `offset` (metres, Enfusion axes: x right, y up, z forward).
+- `anim` (optional) is what moves: bones, sockets, effects, sounds, the character's clips, the carry profile
+  ([animation.md](animation.md)).
 - `parts` are the moving parts. Every face whose centre lies in the box is split off and skinned
   to the bone. Boxes are in Enfusion model space after the fit.
 - `sockets` (optional) overrides a socket position by name.

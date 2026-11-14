@@ -18,6 +18,7 @@ export function checkReport(spec, kind, report) {
   }
   if (report.uv.min < -0.01 || report.uv.max > 1.01) out.push(`UVs leave the 0..1 square (${report.uv.min.toFixed(2)}..${report.uv.max.toFixed(2)}); the atlas would tile`);
   if (!report.textures.found.includes("base_color")) out.push("no base colour map");
+  if (report.bake && !report.bake.ok) out.push(`the high-to-low normal bake left ${(100 * report.bake.empty_share).toFixed(0)} % of the map empty; the generator's own normal map was kept, which is flat on most generated models`);
   if (report.collider.name !== kind.collider.prefix + spec.name) out.push(`collider is named ${report.collider.name}`);
   if (report.collider.usage !== kind.collider.layerPreset) out.push(`collider usage is ${report.collider.usage}, not ${kind.collider.layerPreset}`);
   if (report.collider.faces < 4) out.push("collider has no volume");

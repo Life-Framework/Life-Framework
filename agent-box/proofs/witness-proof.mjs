@@ -1,5 +1,6 @@
 import { rosterHas } from "./scanner-proof.mjs";
-import { ROB_TARGET, arrive, clientBox, sessionDir } from "../session.mjs";
+import { arrive, clientBox, sessionDir } from "../session.mjs";
+import { TILL, armAndDraw, demandTill } from "./fuel-robbery-proof.mjs";
 
 async function runWitnessProof() {
   const h = await import("../harness.mjs");
@@ -23,13 +24,16 @@ async function runWitnessProof() {
   }
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
-  // Client 2 stands at the till (a witness within a few metres), client 1 robs it.
-  on(2, { verb: "stand", entityName: ROB_TARGET });
+  // Client 2 stands at the fuel till (a witness within a few metres), client 1 robs it through the
+  // attendant (#936): the crime is reported when the demand starts the hold, before the till pays.
+  on(2, { verb: "stand", entityName: TILL, side: "w" });
   wait(2500);
-  on(1, { verb: "stand", entityName: ROB_TARGET });
+  on(1, { verb: "stand", entityName: TILL, side: "s" });
   wait(2500);
   on(1, { verb: "look" });
-  must(on(1, { verb: "use", className: "LF_RobAction", entityName: ROB_TARGET }, 10000), "rob");
+  must(armAndDraw(on, 1, wait), "pistol");
+  const robbed = demandTill(on, 1, wait);
+  if (!/node=rob_open|closed/.test(robbed.demanded)) fails.push(`the robbery did not start through the attendant (${robbed.demanded})`);
   wait(3000);
 
   // The witness walks to the payphone and describes the suspect's clothing.
