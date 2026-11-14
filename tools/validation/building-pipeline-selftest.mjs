@@ -9,12 +9,17 @@
 //   skipped() not skipping EXPORT_INFO.txt                     -> FAIL map: EXPORT_INFO.txt (the buyer's name) is never copied
 //   scanForMarks not lower-casing the marks                    -> FAIL watermark: a file with the buyer id in another case is refused
 //   run() without the archBuilderSetup check                   -> FAIL skip: review skips without ArchBuilder
+//   exportProblems ignoring props_mesh (2026-11-14, parity)     -> FAIL export: furniture ArchBuilder left out of the game fails, by kind
+//   specProblems allowing vanilla props with furniture off       -> FAIL spec: vanilla props with furniture off are refused
+//   unzstd stopping after one frame (2026-11-14, polish)        -> FAIL polish: every zstd frame of a compressed .blend is read
+//   moveEntities moving every child (entities[0])               -> FAIL polish: an entity nudge moves only the named prefab
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { checkBuildingModel, metaDrift, metaMaterials, metaSurfaces, planImport, skipped, targetPath, writePlan, importBuilding } from "../buildings/pipeline/import.mjs";
-import { STAGES, badGameRefs, countOpenings, reviewProblems, run, specProblems } from "../buildings/pipeline/building.mjs";
+import { STAGES, badGameRefs, countOpenings, countProps, doorRows, exportProblems, moveEntities, reviewProblems, run, settingsDrift, specProblems, unzstd } from "../buildings/pipeline/building.mjs";
+import { zstdCompressSync } from "node:zlib";
 import { archBuilderSetup, licenseMarks, scanForMarks } from "../buildings/pipeline/archbuilder.mjs";
 import { guidIn, rdbRecord } from "../buildings/pipeline/gamedb.mjs";
 
@@ -74,6 +79,31 @@ export async function main() {
     bad({ asset_dir: "Assets/ArchBuilder/Shop" }, /asset_dir/, "asset_dir must be under Assets/Buildings");
     bad({ red_line: undefined }, /red_line/, "every building is classified core or pack");
     bad({ name: "Materials", asset_dir: "Assets/Buildings/Materials" }, /Materials/, "a building called Materials is refused (the shared materials folder)");
+    bad({ export: { furniture: false, vanilla_props: true } }, /records no vanilla props/, "vanilla props with furniture off are refused (ArchBuilder then records none, the shop sign included)");
+    bad({ archbuilder: { do_furniture: false }, export: { furniture: true } }, /do_furniture/, "exporting furniture from a building generated without it is refused");
+    ok(!specProblems({ ...SPEC, export: { furniture: false, vanilla_props: false } }).some((p) => /furniture/.test(p)), "spec: a deliberately bare shell (vanilla_props false) passes");
+
+    // ---- export report
+    const furn = [
+      "GenericEntity : \"{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et\" {",
+      " {",
+      "  GenericEntity : \"{AAAAAAAAAAAAAAAA}Prefabs/Props/Commercial/ShelfShop_01.et\" {",
+      "  }",
+      "  GenericEntity : \"{AAAAAAAAAAAAAAAA}Prefabs/Props/Commercial/ShelfShop_01.et\" {",
+      "  }",
+      "  GenericEntity : \"{BBBBBBBBBBBBBBBB}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et\" {",
+      "  }",
+      " }",
+      "}",
+    ].join("\n") + "\n";
+    const props = countProps(furn);
+    ok(props.total === 3 && props.kinds.ShelfShop_01 === 2 && !props.kinds.BuildingFurniture_base, `export: props are the furniture prefab's children, not its parent (${JSON.stringify(props)})`);
+    const clean = { warnings: [], props: 3, props_mesh: {} };
+    ok(exportProblems(SPEC, clean, [], props).length === 0, `export: a clean report passes (${exportProblems(SPEC, clean, [], props).join("; ")})`);
+    ok(exportProblems(SPEC, null).length === 1, "export: no report from the export fails");
+    ok(exportProblems(SPEC, { ...clean, warnings: ["Sin prefab vanilla para win (90, 142): hueco vacio"] }, [], props).length === 1, "export: an ArchBuilder warning fails the stage");
+    ok(exportProblems(SPEC, { ...clean, props_mesh: { cooler: 2 } }, [], props).some((p) => /2 cooler/.test(p)), "export: furniture ArchBuilder left out of the game fails, by kind");
+    ok(exportProblems(SPEC, { ...clean, props: 0 }, [], { total: 0, kinds: {} }).some((p) => /no vanilla props/.test(p)), "export: furniture on but no vanilla props fails");
     ok(reviewProblems(SPEC, { tris: 70000, footprint_m: [18, 14], height_m: 8 }).length === 1, "review: over the triangle budget fails");
     ok(reviewProblems(SPEC, { tris: 3000, footprint_m: [18, 14], height_m: 8 }).length === 0, "review: inside the budget passes");
 
@@ -115,7 +145,13 @@ export async function main() {
     ok([...again.map.values()].every((r) => r.kept && r.guid === plan.map.get([...plan.map.keys()].find((k) => plan.map.get(k).oldPath === r.oldPath)).guid), "guid: a re-import keeps every GUID (saved worlds keep resolving)");
     // a changed shared material is refused
     put(staging, "Assets/ArchBuilder/Materials/AB_Brick_Red.emat", 'MatPBRBasic {\n BCRMap "{0000000000000001}Assets/Other.edds"\n}\n');
-    ok(planImport({ staging, spec: SPEC, addonDir: addon, used: new Set() }).problems.some((p) => /shared by other buildings/.test(p)), "guid: an export that changes a shared material is refused");
+    ok(!planImport({ staging, spec: SPEC, addonDir: addon, used: new Set() }).problems.some((p) => /shared by other buildings/.test(p)), "guid: a material only this building uses may change (a recolour)");
+    put(addon, "Assets/Buildings/Other/Other.xob.meta", `MetaFileClass {
+ Name "{4444444444444444}Assets/Buildings/Other/Other.xob"
+  AssignedMaterial "{0000000000000002}Assets/Buildings/Materials/AB_Brick_Red.emat"
+}
+`);
+    ok(planImport({ staging, spec: SPEC, addonDir: addon, used: new Set() }).problems.some((p) => /shared by other buildings/.test(p)), "guid: an export that changes a material another building uses is refused");
     fixtureExport(staging);
     put(staging, "Prefabs/ArchBuilder/Shop/Extra.et", 'GenericEntity : "{9999999999999999}Prefabs/ArchBuilder/Gone/Gone.et" {\n}\n');
     ok(planImport({ staging, spec: SPEC, addonDir: addon, used: new Set() }).problems.some((p) => /did not write/.test(p)), "guid: a reference to an ArchBuilder resource the export lacks is refused");
@@ -210,11 +246,23 @@ export async function main() {
       console.log = log;
     }
     const out = lines.join("\n");
-    for (const s of ["generate", "review", "export"]) ok(new RegExp(`SKIP  ${s}: the ArchBuilder add-on is not installed`).test(out), `skip: ${s} skips without ArchBuilder`);
+    for (const s of ["generate", "review", "polish", "export"]) ok(new RegExp(`SKIP  ${s}: the ArchBuilder add-on is not installed`).test(out), `skip: ${s} skips without ArchBuilder`);
     ok(/FAIL  import: no ArchBuilder export/.test(out) && code === 1, "skip: import then says the export must come from the ArchBuilder machine");
     const state = JSON.parse(readFileSync(join(root, "tmp", "buildings", "shop", "state.json"), "utf8"));
     ok(state.stages.spec.ok && state.stages.generate.skipped, "skip: status records the skip, not a failure");
-    ok(STAGES.join() === "spec,generate,review,export,import,prefab", "stages: the order the docs describe");
+    ok(STAGES.join() === "spec,generate,review,polish,export,import,prefab", "stages: the order the docs describe");
+
+    // ---- polish (docs/building-pipeline/polish.md)
+    const shell = (doors) => `SCR_DestructibleBuildingEntity : "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et" {\n {\n${doors.map(([x, z, yaw]) => `  GenericEntity : "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et" {\n   ID "0000000000000001"\n   coords ${x} 0.1 ${z}\n${yaw ? `   angleY ${yaw}\n` : ""}  }\n`).join("")} }\n}\n`;
+    const row = doorRows(shell([[-6, 2.358], [-2.1, 2.358], [0.9, 2.358], [5.6, 2.358], [0, -6.8]]));
+    ok(row.length === 1 && row[0].at.length === 4, `polish: four door sets on one wall line are reported as a row (${JSON.stringify(row)})`);
+    ok(doorRows(shell([[-6, 2.358], [3, 2.358], [7.2, 0, 90], [7.2, 4, 90]])).length === 0, "polish: two doors on a wall and two on the side wall are no row");
+    const furnText = `GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {\n {\n  GenericEntity : "{1A299FE9842C8DB3}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et" {\n   ID "2CB7F53CEB3B3AC9"\n   coords -0.063 3.85 -7.025\n   angleY 180\n  }\n  GenericEntity : "{AAAAAAAAAAAAAAAA}Prefabs/Props/Commercial/ShelfShop_01.et" {\n   ID "0000000000000002"\n   coords 1 0 1\n  }\n }\n}\n`;
+    const moved = moveEntities(furnText, [{ prefab: "SignCommercial_01_GroceryStore", move: [-5.1, 0.2, 0] }]);
+    ok(moved.hits.SignCommercial_01_GroceryStore === 1 && moved.text.includes("coords -5.163 4.05 -7.025") && moved.text.includes("coords 1 0 1"), "polish: an entity nudge moves only the named prefab");
+    ok(settingsDrift({ archbuilder: { seed: 1989, width: 18, archetype: "SUPERMARKET" } }, { seed: 7, width: 18.0000001, archetype: "SUPERMARKET" }).join() === "seed 7 (spec 1989)", "polish: a polished blend made with other settings is named, setting by setting");
+    const frames = Buffer.concat([zstdCompressSync(Buffer.from("BLENDER-head-")), zstdCompressSync(Buffer.from(`made for ${FAKE_BUYER}`)), Buffer.from([0x5e, 0x2a, 0x4d, 0x18, 2, 0, 0, 0, 9, 9])]);
+    ok(unzstd(frames).toString() === `BLENDER-head-made for ${FAKE_BUYER}`, "polish: every zstd frame of a compressed .blend is read (a watermark past the first frame is seen)");
   } finally {
     for (const k of Object.keys(process.env)) if (!(k in savedEnv)) delete process.env[k];
     Object.assign(process.env, savedEnv);

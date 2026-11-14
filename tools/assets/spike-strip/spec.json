@@ -62,10 +62,11 @@
     ],
     "item_components": [
       {
-        "class": "LF_DeployableItemComponent",
+        "class": "LF_PlaceableComponent",
         "props": {
-          "m_sDeployedPrefab": "$deployed",
-          "m_fDeployedLength": 3.5
+          "m_sPlacedPrefab": "$deployed",
+          "m_eSnap": "ACROSS_ROAD",
+          "m_eWho": "ON_DUTY_POLICE"
         }
       }
     ],

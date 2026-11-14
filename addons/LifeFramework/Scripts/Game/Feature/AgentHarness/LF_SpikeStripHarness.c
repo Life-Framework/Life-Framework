@@ -14,19 +14,25 @@
 //!   spikepreview / spikepreviewoff  (client) the deploy preview ghost (#928) on or off, as
 //!               selecting Deploy starts it, then held in place so a world shot can move the
 //!               camera body; replies with the verdict and where the ghost lies
+//!   spikeplace  (client) Deploy as the F key does it (#1026): the ghost for the strip at the
+//!               officer's feet starts as selecting Deploy starts it, then the character performs
+//!               the action through the engine, so the action's data carries the ghost's spot
+//!   spikewhere  (client) where the deployed strip by the verge lies on this machine
 //! Everything after the push is the real path: the strip's own tick, the vanilla wheel damage.
 //------------------------------------------------------------------------------------------------
 class LF_SpikeStripHarness
 {
 	static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
-	static const ResourceName STRIP = "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et";
-	static const float STRIP_LENGTH = 3.5; // lf-fixed: SpikeStrip_Item.et m_fDeployedLength, for the harness preview
 	static const vector VERGE = "300 0 245.5";
 	//! Metres before the strip the car starts, and its speed across (m/s).
 	static const float RUN_UP = 6; // lf-fixed: harness geometry, not a gameplay knob
 	static const float SPEED = 14; // lf-fixed: harness push speed, not a gameplay knob
 
+	//! Metres around the verge a deployed strip is looked for (the display strip lies further away).
+	static const float WHERE_RADIUS = 6; // lf-fixed: harness geometry, not a gameplay knob
+
 	protected static EntityID s_LastCar;
+	protected static IEntity s_GroundStrip;
 	protected static vector s_vPush;
 
 	//------------------------------------------------------------------------------------------------
@@ -76,7 +82,7 @@ class LF_SpikeStripHarness
 
 		vector transform[4];
 		strip.GetOwner().GetWorldTransform(transform);
-		vector axis = LF_SpikeStripGeometry.Flat(transform[2]);
+		vector axis = LF_PlacementGeometry.Flat(transform[2]);
 		vector across = Vector(axis[2], 0, -axis[0]);
 		// In line with the strip's far half: the wheels on one side cross it, the others pass its end.
 		vector start = transform[3] + axis * 1.75 - across * RUN_UP;
@@ -149,7 +155,8 @@ class LF_SpikeStripHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: the deploy preview (#928) for the strip prefab, from where the local character stands.
+	//! Client: the deploy preview (#928) for the strip the local character carries (or that lies at
+	//! their feet), from where they stand.
 	static string Preview(bool on)
 	{
 		if (!on)
@@ -158,17 +165,204 @@ class LF_SpikeStripHarness
 			return "ok preview off";
 		}
 
-		if (!LF_Utils.GetLocalCharacter())
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
 			return "error no_character";
 
+		IEntity item = CarriedStrip(character);
+		if (!item)
+			item = GroundStrip(character);
+		if (!item)
+			return "error no_strip";
+
 		// One plan from where the officer stands, then held: a world shot moves the body to the camera.
-		LF_EPlacementVerdict verdict = LF_SpikeStripPreview.Begin(STRIP, STRIP_LENGTH, null);
+		LF_EPlacementVerdict verdict = LF_SpikeStripPreview.BeginFor(item);
 		LF_SpikeStripPreview.Hold();
 		IEntity ghost = LF_PlacementGhost.GetGhost();
 		if (!ghost)
 			return "error no_ghost " + LF_PlacementRules.Name(verdict);
 
 		return string.Format("ok preview %1 at %2 %3", LF_PlacementRules.Name(verdict), ghost.GetOrigin(), LF_SpikeStripPreview.GetReason());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: Deploy on the strip at the officer's feet, the way the F key performs it: the ghost
+	//! starts (what selecting Deploy does), then ChimeraCharacter.DoStartObjectAction and
+	//! DoPerformObjectAction, the calls SCR_InteractionHandlerComponent makes. Replies with where
+	//! the ghost lay when the action's data was written.
+	static string Place()
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+			return "error no_character";
+
+		IEntity item = GroundStrip(character);
+		if (!item)
+			return "error no_strip_on_ground";
+
+		BaseActionsManagerComponent manager = BaseActionsManagerComponent.Cast(item.FindComponent(BaseActionsManagerComponent));
+		array<BaseUserAction> actions = {};
+		if (manager)
+			manager.GetActionsList(actions);
+
+		LF_SpikeStripDeployAction deploy;
+		foreach (BaseUserAction action : actions)
+		{
+			if (!deploy)
+				deploy = LF_SpikeStripDeployAction.Cast(action);
+		}
+
+		if (!deploy)
+			return "error no_deploy_action";
+
+		if (!deploy.CanBeShownScript(character) || !deploy.CanBePerformedScript(character))
+			return "error cannot_perform";
+
+		LF_EPlacementVerdict verdict = LF_SpikeStripPreview.BeginFor(item);
+		vector origin;
+		vector forward;
+		if (!LF_SpikeStripPreview.CurrentSpot(item, origin, forward))
+			return "error no_ghost " + LF_PlacementRules.Name(verdict);
+
+		character.DoStartObjectAction(deploy);
+		character.DoPerformObjectAction(deploy);
+		LF_Debug.Info(LF_SpikeStrips.FEATURE, string.Format("harness deploy performed with the ghost %1 at %2 heading %3", LF_PlacementRules.Name(verdict), origin, forward));
+		return string.Format("ok ghost %1 at %2 heading %3", LF_PlacementRules.Name(verdict), origin, forward);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: aimed placement (#1028), driving what the keys drive.
+	//!   begin        the strip at the officer's feet: the "Place where I aim" action, through the engine
+	//!   face N       the character turns to yaw N degrees where it stands (the aim follows the camera)
+	//!   turn N       the ghost turns N steps of 15 degrees (negative left); fine N: N degrees
+	//!   hold|release freeze the ghost where it lies for a world shot, or let it follow again
+	//!   place        the Place key: the ghost's spot goes to the server
+	//!   cancel       the Cancel key
+	//!   state        where the ghost lies now and whether it is shown
+	static string Aim(string action, string value)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+			return "error no_character";
+
+		if (action == "begin")
+		{
+			IEntity item = GroundStrip(character);
+			if (!item)
+				return "error no_strip_on_ground";
+
+			BaseActionsManagerComponent manager = BaseActionsManagerComponent.Cast(item.FindComponent(BaseActionsManagerComponent));
+			array<BaseUserAction> actions = {};
+			if (manager)
+				manager.GetActionsList(actions);
+
+			LF_PlacementAimAction aim;
+			foreach (BaseUserAction candidate : actions)
+			{
+				if (!aim)
+					aim = LF_PlacementAimAction.Cast(candidate);
+			}
+
+			if (!aim)
+				return "error no_aim_action";
+
+			if (!aim.CanBeShownScript(character) || !aim.CanBePerformedScript(character))
+				return "error cannot_perform";
+
+			character.DoStartObjectAction(aim);
+			character.DoPerformObjectAction(aim);
+			if (!LF_PlacementAim.IsRunning())
+				return "error aim_did_not_start";
+		}
+		else if (action == "face")
+		{
+			vector transform[4];
+			character.GetWorldTransform(transform);
+			vector at = transform[3];
+			Math3D.AnglesToMatrix(Vector(value.ToFloat(), 0, 0), transform);
+			transform[3] = at;
+			character.Teleport(transform);
+			return string.Format("ok face yaw %1", value);
+		}
+		else if (action == "hold" || action == "release")
+			LF_PlacementAim.SetHeld(action == "hold");
+		else if (action == "turn")
+			LF_PlacementAim.Turn(value.ToInt(), false);
+		else if (action == "fine")
+			LF_PlacementAim.Turn(value.ToInt(), true);
+		else if (action == "place")
+		{
+			vector sentOrigin;
+			vector sentForward;
+			if (!LF_PlacementAim.CurrentSpot(sentOrigin, sentForward))
+				return "error no_ghost";
+
+			if (!LF_PlacementAim.Place())
+				return "error place_held_back " + LF_PlacementRules.Name(LF_PlacementAim.GetVerdict());
+
+			return string.Format("ok sent ghost %1 at %2 heading %3", LF_PlacementRules.Name(LF_PlacementAim.GetVerdict()), sentOrigin, sentForward);
+		}
+		else if (action == "cancel")
+		{
+			LF_PlacementAim.Cancel();
+			return string.Format("ok cancelled running=%1 ghost=%2", LF_PlacementAim.IsRunning(), LF_PlacementGhost.IsShown());
+		}
+		else if (action != "state")
+			return "error unknown_aim_action " + action;
+
+		LF_PlacementAim.Refresh();
+		vector origin;
+		vector forward;
+		if (!LF_PlacementAim.CurrentSpot(origin, forward))
+			return string.Format("ok no ghost running=%1", LF_PlacementAim.IsRunning());
+
+		return string.Format("ok ghost %1 at %2 heading %3 yaw %4 clamped %5", LF_PlacementRules.Name(LF_PlacementAim.GetVerdict()), origin, forward, LF_PlacementAim.GetYaw(), LF_PlacementAim.WasClamped());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the deployed strip by the verge as this machine has it.
+	static string Where()
+	{
+		LF_SpikeStripComponent strip = LF_SpikeStrips.Nearest(VERGE, WHERE_RADIUS);
+		if (!strip || !strip.GetOwner())
+			return "error no_strip";
+
+		vector transform[4];
+		strip.GetOwner().GetWorldTransform(transform);
+		return string.Format("ok strip at %1 heading %2", transform[3], transform[2]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static IEntity CarriedStrip(IEntity character)
+	{
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		if (!manager)
+			return null;
+
+		array<IEntity> items = LF_InventoryUtils.FindItemsByPrefab(manager, LF_PoliceRanks.SPIKE_STRIP);
+		if (items.IsEmpty())
+			return null;
+
+		return items[0];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The folded strip lying loose within 3 m of the character (not in anyone's storage).
+	protected static IEntity GroundStrip(IEntity character)
+	{
+		s_GroundStrip = null;
+		GetGame().GetWorld().QueryEntitiesBySphere(character.GetOrigin(), 3, CollectGroundStrip, null, EQueryEntitiesFlags.ALL);
+		return s_GroundStrip;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectGroundStrip(IEntity entity)
+	{
+		if (!entity.FindComponent(LF_PlaceableComponent) || LF_InventoryUtils.GetStorageHierachyRoot(entity) != entity)
+			return true;
+
+		s_GroundStrip = entity;
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

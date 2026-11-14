@@ -1708,6 +1708,3 @@ GenericEntity Annex_GunCounter : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_
  coords 88 0 75.036
  angleY 180
 }
-SCR_DestructibleBuildingEntity Annex_Supermarket : "{BD5FE43FC26CAF21}Prefabs/Buildings/Supermarket/Supermarket.et" {
- coords 76 0.1 96.45
-}

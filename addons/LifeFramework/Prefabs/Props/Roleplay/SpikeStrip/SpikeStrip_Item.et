@@ -30,9 +30,15 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{743D79EAD6CD0B4E}Assets/Props/Roleplay/SpikeStrip/SpikeStrip_Folded.xob"
   }
-  LF_DeployableItemComponent "{AB368E29C85278A9}" {
-   m_sDeployedPrefab "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et"
-   m_fDeployedLength 3.5
+  LF_PlaceableComponent "{AB368E29C85278A9}" {
+   m_sPlacedPrefab "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et"
+   m_vFootprintMins -0.2 0.1 -1.75
+   m_vFootprintMaxs 0.2 0.6 1.75
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap ACROSS_ROAD
+   m_eWho ON_DUTY_POLICE
+   m_eLifetime TEMPORARY
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {
    ActionContexts {
@@ -46,6 +52,11 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
    additionalActions {
     LF_SpikeStripDeployAction "{7143B0D0A967F5B1}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_PlacementAimAction "{7143B0D0A967F5C2}" {
      ParentContextList {
       "default"
      }

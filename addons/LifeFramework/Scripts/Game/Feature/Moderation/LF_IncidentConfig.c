@@ -14,6 +14,7 @@ class LF_IncidentConfig
 	static const string KIND_AIM = "aim";
 	static const string KIND_ADMIN = "admin";
 	static const string KIND_NLR = "nlr";
+	static const string KIND_LOGOUT = "logout";
 	static const string KINDS_ALL = "all";
 
 	static const int DEFAULT_MAX_RECORDS = 2000;
@@ -28,7 +29,7 @@ class LF_IncidentConfig
 	protected static ref LF_IncidentConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
-	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed, holdup, aim, admin, nlr")]
+	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed, holdup, aim, admin, nlr, logout")]
 	string m_sKinds;
 
 	[Attribute("2000", UIWidgets.Auto, "Most records kept; the oldest go first")]
@@ -75,6 +76,12 @@ class LF_IncidentConfig
 
 	[Attribute("1", UIWidgets.CheckBox, "1 = aim alone counts; 0 = the aim line must also reach the player unobstructed")]
 	bool m_bAimAloneCounts;
+
+	[Attribute("1", UIWidgets.CheckBox, "1 = players may switch the on-screen clip stamp on with its key (it starts off); 0 = the stamp never shows")]
+	bool m_bClipStampAllowed;
+
+	[Attribute("LF", UIWidgets.Auto, "Short server name printed on the clip stamp")]
+	string m_sClipStampServerName;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -266,6 +273,26 @@ class LF_IncidentConfig
 			return 1;
 
 		return config.m_fAimCheckSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool ClipStampAllowed()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config)
+			return true;
+
+		return config.m_bClipStampAllowed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string ClipStampServerName()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config)
+			return "";
+
+		return config.m_sClipStampServerName;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,83 @@
+{
+  "slug": "police-cap",
+  "name": "PoliceCap",
+  "kind": "clothing",
+  "route": "a",
+  "roadmap": "",
+  "concept": "1989 Everon police peaked cap: the vanilla peaked cap in dark navy with a gold badge (route a).",
+  "base": "{3523CB7D5961246B}Prefabs/Characters/HeadGear/Hat_PeakedCap_USSR_01/Hat_PeakedCap_USSR_01.et",
+  "slot": "Hat",
+  "hide": null,
+  "materials": [
+    {
+      "use": "worn",
+      "maps": {
+        "BCRMap": {
+          "tint": {
+            "rgb": [
+              0.06,
+              0.08,
+              0.14
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          },
+          "paint": "badge.png"
+        }
+      }
+    },
+    {
+      "use": "item",
+      "maps": {
+        "BCRMap": {
+          "tint": {
+            "rgb": [
+              0.06,
+              0.08,
+              0.14
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          },
+          "paint": "badge.png"
+        }
+      }
+    }
+  ],
+  "budget": {
+    "texture_px": 1024,
+    "lod0_tris": 9000,
+    "lod_ratios": [
+      0.5,
+      0.25,
+      0.12
+    ]
+  },
+  "asset_dir": "Assets/Characters/Uniforms/LF/PoliceCap",
+  "prefab_dir": "Prefabs/Characters/Uniforms/LF",
+  "prefab": {
+    "name_key": "#LF-Police_Cap_Name",
+    "description_key": null
+  },
+  "verify": {
+    "expect": "changed"
+  }
+}

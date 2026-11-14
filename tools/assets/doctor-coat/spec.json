@@ -1,0 +1,101 @@
+{
+  "slug": "doctor-coat",
+  "name": "DoctorCoat",
+  "kind": "clothing",
+  "route": "a",
+  "roadmap": "",
+  "concept": "1989 Everon doctor white coat: the vanilla suit jacket cloth in white, shirt and tie unchanged under it (route a; clothing.md: no vanilla garment has the cut).",
+  "base": "{E652D625A46A00FC}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Grey_V1.et",
+  "slot": "Jacket",
+  "hide": null,
+  "materials": [
+    {
+      "use": "worn",
+      "maps": {
+        "BCR_1": {
+          "tint": {
+            "rgb": [
+              0.7,
+              0.71,
+              0.73
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.12,
+                0.55
+              ],
+              "sat": [
+                0.08,
+                0.45
+              ]
+            }
+          }
+        },
+        "DirtBCRMap": {
+          "tint": {
+            "rgb": [
+              0.7,
+              0.71,
+              0.73
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.12,
+                0.55
+              ],
+              "sat": [
+                0.08,
+                0.45
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "use": "item",
+      "maps": {
+        "BCRMap": {
+          "tint": {
+            "rgb": [
+              0.7,
+              0.71,
+              0.73
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.12,
+                0.55
+              ],
+              "sat": [
+                0.08,
+                0.45
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "budget": {
+    "texture_px": 2048,
+    "lod0_tris": 9000,
+    "lod_ratios": [
+      0.5,
+      0.25,
+      0.12
+    ]
+  },
+  "asset_dir": "Assets/Characters/Uniforms/LF/DoctorCoat",
+  "prefab_dir": "Prefabs/Characters/Uniforms/LF",
+  "prefab": {
+    "name_key": "#LF-Doctor_Coat_Name",
+    "description_key": null
+  },
+  "verify": {
+    "expect": "changed"
+  }
+}

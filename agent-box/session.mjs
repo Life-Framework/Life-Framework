@@ -41,15 +41,17 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
+import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { addonsArgs, launchAddons, PACK_MISSION, playtestMission } from "../tools/lib/addons.mjs";
+import { addonsArgs, launchAddons, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 export { applyClientSettings, resolveProfile };
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-export const SERVER_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+// The bare world: the pack world (DebugWorld plus the village, #323 batch 1) when the pack is here.
+export const SERVER_WORLD = townWorld();
 export const MAX_CLIENTS = 3;
 // LF_SESSION_WINDOW=1280x720 sets the window when no --res is given.
 export function parseWindow(text) {
@@ -82,13 +84,18 @@ export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
-export const MISSIONS = ["debug", "playtest"];
+export const MISSIONS = ["debug", "playtest", "template"];
+// `--mission template` boots the example server folder (server/example, #295): the scenario and mods
+// server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
+// `--mission template-<variant>` boots tools/server-template/variants/<variant>/server.json instead (#297):
+// the same file with only mods and scenarioId swapped, e.g. template-core-only boots the core with no pack.
 
 export function parseMission(args) {
   const i = args.indexOf("--mission");
   if (i === -1) return "debug";
   const m = args[i + 1];
-  if (!MISSIONS.includes(m)) throw new Error(`--mission must be ${MISSIONS.join(" or ")}`);
+  const variantNames = templateVariants(ROOT).map((v) => `template-${v}`);
+  if (!MISSIONS.includes(m) && !variantNames.includes(m)) throw new Error(`--mission must be ${[...MISSIONS, ...variantNames].join(" or ")}`);
   return m;
 }
 
@@ -96,7 +103,7 @@ export function parseMission(args) {
 // ("remote script source code checksum does not match").
 export function defineArgs(mission = "debug") {
   const args = ["-scrDefine", SESSION_DEFINE];
-  if (mission === "playtest") args.push("-scrDefine", HARNESS_DEFINE);
+  if (mission === "playtest" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
   return args;
 }
 
@@ -203,10 +210,13 @@ export function laneArgs(port) {
 // rp: the resolved session profile (session-profile.mjs); absent means full.
 // addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header.
 export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons() }) {
+  // The template mission boots what server/example/server.json names: its scenario and its mods. The
+  // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
+  const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
     "-addonsDir", addonsDir,
-    ...addonsArgs(addons),
+    ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
     "-maxFPS", String(rp.server?.maxFps ?? 30),
     "-logLevel", "normal",
@@ -232,6 +242,8 @@ export function windowFor(n, res = WINDOW) {
 
 export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false, rp = resolveProfile("full"), addons = launchAddons() }) {
   const w = windowFor(n, res);
+  // A client loads the mods the server's server.json lists, or the join is refused on a mismatch.
+  if (isTemplateMission(mission)) addons = templateLaunch(ROOT, templateVariant(mission)).addons;
   return [
     "-client", port && port !== 2001 ? `${address}:${port}` : address,
     "-addonsDir", addonsDir,
@@ -406,6 +418,35 @@ export function selftestSession() {
     if (liveSessionsElsewhere(join(base, "me"), (pid) => live.has(pid), base).filter((o) => !o.serverUp).length) failures.push("an orphan still listed after the reap");
     rmSync(base, { recursive: true, force: true });
   }
+  {
+    // red-proof 2026-11-14: with assignIdentities handing every client the first slot line, the rejoin check below failed ("a rejoined client keeps its slot").
+    const seeds = parseSeeds(["--clients", "2", "--roster", "2,3", "--seed", "x/fix.txt"], () => "hello");
+    if (seeds.length !== 2 || seeds[0].name !== "whitelist.txt" || seeds[0].text !== rosterText([2, 3]) || seeds[1].name !== "fix.txt" || seeds[1].text !== "hello") failures.push(`parseSeeds: ${JSON.stringify(seeds)}`);
+    const inl = inlineSeedFlags(["--seed", "a/b.txt", "--clients", "1"], () => "hi");
+    if (inl.join(" ") !== `--seed-b64 b.txt=${Buffer.from("hi").toString("base64")} --clients 1`) failures.push(`inlineSeedFlags: ${inl.join(" ")}`);
+    if (parseSeeds(inl, () => "no")[0]?.text !== "hi") failures.push("an inlined seed did not round trip");
+    try {
+      parseSeeds(["--roster", "x"]);
+      failures.push("--roster x was accepted");
+    } catch {}
+    const dir = mkdtempSync(join(tmpdir(), "lf-seed-"));
+    try {
+      const [f] = seedProfile(dir, seeds);
+      if (f !== join(fixtureDir(dir), "whitelist.txt") || readFileSync(f, "utf8") !== rosterText([2, 3])) failures.push("seedProfile wrote the roster to the wrong place");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+    const uid = (n) => sessionUid(n);
+    const log = [`x [LFDebug:Account] session slot 1 for player 1: ${uid(1)}`, `x [LFDebug:Account] session slot 2 for player 2: ${uid(2)}`, "x [LFDebug:Account] session slot 2 released: player 2 left", `x [LFDebug:Account] session slot 2 for player 3: ${uid(2)}`].join("\n");
+    const slots = parseSlotLines(log);
+    if (slots.length !== 3 || countSlotReleases(log) !== 1) failures.push(`slot lines parsed as ${JSON.stringify(slots)}`);
+    let a = assignIdentities([{ n: 1, launchedAt: "1" }, { n: 2, launchedAt: "2" }], slots.slice(0, 2), 0);
+    if (a.clients[1].identity.slot !== 2 || a.seen !== 2) failures.push("up: client 2 did not get slot 2");
+    // Client 2 quit and rejoined: only it lacks an identity, and the next slot line is its.
+    a = assignIdentities([a.clients[0], { n: 2, launchedAt: "3" }], slots, a.seen);
+    if (a.clients[1].identity.uid !== uid(2) || a.clients[1].identity.playerId !== 3) failures.push(`a rejoined client keeps its slot: ${JSON.stringify(a.clients[1])}`);
+    if (a.clients[0].identity.slot !== 1) failures.push("a client that did not rejoin lost its identity");
+  }
   const p = sessionPaths("S", 2);
   if (p.clients.length !== 2) failures.push("sessionPaths did not list 2 clients");
   if (p.clients[1].box !== join("S", "client2", "profile", "agent-box")) failures.push(`client 2 box is ${p.clients[1].box}`);
@@ -457,6 +498,11 @@ export function selftestSession() {
     failures.push("--mission prod was accepted");
   } catch {}
   if (laneArgs(2001).length || laneArgs(2011).join(" ") !== "-addr 127.0.0.1:2011 -a2sPort 17877") failures.push("laneArgs: lane 1 keeps the defaults, lane 2 gets -addr and its A2S port");
+  // #297: the core-only template variant boots the core's header with the core alone, on both sides.
+  const ts = serverArgs({ addonsDir: "A", profile: "SP", mission: "template-core-only" });
+  const tc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "template-core-only" });
+  if (!/EL_DebugTest\.conf$/.test(ts[1]) || ts[ts.indexOf("-addons") + 1] !== "LifeFramework" || tc[tc.indexOf("-addons") + 1] !== "LifeFramework") failures.push("--mission template-core-only does not boot the core alone");
+  if (parseMission(["--mission", "template-core-only"]) !== "template-core-only") failures.push("parseMission template-core-only");
   if (!serverArgs({ addonsDir: "A", profile: "SP", port: 2011 }).includes("127.0.0.1:2011") || serverArgs({ addonsDir: "A", profile: "SP" }).includes("-addr")) failures.push("serverArgs lane port");
   if (clientArgs({ n: 1, addonsDir: "A", profile: "P", port: 2011 })[1] !== "127.0.0.1:2011" || clientArgs({ n: 1, addonsDir: "A", profile: "P" })[1] !== "127.0.0.1") failures.push("clientArgs lane port");
   if (sessionDir({ LF_SESSION_DIR: "X" }) !== "X") failures.push("LF_SESSION_DIR does not override");
@@ -636,7 +682,7 @@ export function sessionUid(playerId) {
 }
 
 // The police roster file the server reads on first use ($profile:LifeFramework/whitelist.txt,
-// LF_WhitelistManager format: version, faction entries, job entries). Write it before `up`.
+// LF_WhitelistManager format: version, faction entries, job entries).
 export function rosterText(playerIds) {
   const lines = ["1", String(playerIds.length)];
   for (const id of playerIds) lines.push(sessionUid(id), "POLICE");
@@ -644,12 +690,95 @@ export function rosterText(playerIds) {
   return lines.join("\n") + "\n";
 }
 
-function writeRoster(playerIds) {
-  const dir = join(sessionPaths(sessionDir()).server, "profile", "LifeFramework");
+// Where the server's $profile: points: <session dir>/server/profile. A fixture lives in its LifeFramework folder.
+export function fixtureDir(serverDir) {
+  return join(serverDir, "profile", "LifeFramework");
+}
+
+// `up` seeds: --roster 2,3 (the police roster), --seed <file> (copied to LifeFramework/<basename>),
+// --seed-b64 <name>=<base64> (what the router sends a remote machine in place of a local file).
+// Pure but for the file read, which is passed in. Returns [{ name, text }].
+export function parseSeeds(flags, readText = (f) => readFileSync(f, "utf8")) {
+  const seeds = [];
+  for (let i = 0; i < flags.length; i++) {
+    const v = flags[i + 1];
+    if (flags[i] === "--roster") {
+      const ids = String(v ?? "").split(",").map(Number).filter((n) => Number.isInteger(n) && n > 0);
+      if (!ids.length) throw new Error("--roster needs player ids, like --roster 2,3");
+      seeds.push({ name: "whitelist.txt", text: rosterText(ids) });
+    } else if (flags[i] === "--seed") {
+      if (!v) throw new Error("--seed needs a file");
+      seeds.push({ name: basename(v), text: readText(v) });
+    } else if (flags[i] === "--seed-b64") {
+      const eq = String(v ?? "").indexOf("=");
+      if (eq < 1) throw new Error("--seed-b64 needs name=base64");
+      seeds.push({ name: basename(v.slice(0, eq)), text: Buffer.from(v.slice(eq + 1), "base64").toString("utf8") });
+    }
+  }
+  return seeds;
+}
+
+// Pure but for the file read: the flags with each --seed <file> turned into --seed-b64 <name>=<base64>,
+// so the machine that runs `up` needs no copy of the file.
+export function inlineSeedFlags(flags, readText = (f) => readFileSync(f, "utf8")) {
+  const out = [];
+  for (let i = 0; i < flags.length; i++) {
+    if (flags[i] === "--seed" && flags[i + 1]) {
+      out.push("--seed-b64", `${basename(flags[i + 1])}=${Buffer.from(readText(flags[i + 1]), "utf8").toString("base64")}`);
+      i++;
+    } else out.push(flags[i]);
+  }
+  return out;
+}
+
+// Writes the seeds into the server profile. Called by the leg that boots the server, just before
+// it does, on the machine it runs on. Returns the files written.
+export function seedProfile(serverDir, seeds) {
+  const dir = fixtureDir(serverDir);
   mkdirSync(dir, { recursive: true });
-  const file = join(dir, "whitelist.txt");
-  writeFileSync(file, rosterText(playerIds));
-  console.log(`roster: ${playerIds.map(sessionUid).join(", ")} -> ${file}`);
+  return seeds.map((s) => {
+    const f = join(dir, basename(s.name));
+    writeFileSync(f, s.text);
+    return f;
+  });
+}
+
+// The server logs `session slot S for player P: <uid>` when a harness client first resolves an
+// identity (LF_PlayerIdentity.SlotOf) and `session slot S released: player P left` when it quits.
+export function parseSlotLines(text) {
+  const out = [];
+  for (const m of String(text).matchAll(/session slot (\d+) for player (\d+): (\S+)/g)) out.push({ slot: Number(m[1]), playerId: Number(m[2]), uid: m[3] });
+  return out;
+}
+
+export function countSlotReleases(text) {
+  return (String(text).match(/session slot \d+ released: player \d+ left/g) ?? []).length;
+}
+
+// Pure: gives each client that has no identity the next slot line the server logged, in launch
+// order. `seen` is how many slot lines earlier calls already used. Returns { clients, seen }.
+export function assignIdentities(clients, slotLines, seen = 0) {
+  const out = clients.map((c) => ({ ...c }));
+  const order = out.filter((c) => !c.identity).sort((a, b) => String(a.launchedAt).localeCompare(String(b.launchedAt)));
+  for (const c of order) {
+    if (seen >= slotLines.length) break;
+    c.identity = slotLines[seen++];
+  }
+  return { clients: out, seen };
+}
+
+function writeRoster(playerIds) {
+  const server = sessionPaths(sessionDir()).server;
+  const files = seedProfile(server, [{ name: "whitelist.txt", text: rosterText(playerIds) }]);
+  console.log(`roster: ${playerIds.map(sessionUid).join(", ")} -> ${files[0]}`);
+  // A live server read its roster once at boot: this file asks it to read the new one.
+  const s = readSession(sessionDir());
+  if (s && !s.stoppedAt && pidIsAlive(s.serverPid)) {
+    writeFileSync(join(server, "profile", "lf-reload-roster"), "1\n");
+    console.log("roster: the running server reloads it within 2 s (`[LFDebug:Host] roster reloaded` in its log)");
+  } else {
+    console.log("roster: no running session here. A server boots with a roster only through `up --roster <ids>` (a remote machine never sees a file written on this PC)");
+  }
   return 0;
 }
 
@@ -823,6 +952,8 @@ function runLocalUp(args) {
 }
 
 async function routeMachine(cmd, rest) {
+  // A --seed file lives on this PC: it travels inline, so the machine that boots the server needs no copy.
+  if (cmd === "up") rest = inlineSeedFlags(rest);
   const i = rest.indexOf("--machine");
   const want = i === -1 ? null : String(rest[i + 1] ?? "");
   const args = i === -1 ? rest : rest.filter((_, k) => k !== i && k !== i + 1);
@@ -1067,7 +1198,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -1100,7 +1231,7 @@ async function runReset(args = []) {
 // remote session recorded (tmp/session-remote.json) they are relayed there, like harness.mjs does;
 // --local keeps one on this PC. Proof verbs count too (a proof drives the harness in-process, so on
 // this PC it found no session: `reset: no session`, `no_live_session`, 2026-11-14).
-const SESSION_BOUND = new Set(["reset", "roster", "join", "film"]);
+const SESSION_BOUND = new Set(["reset", "roster", "join", "film", "identity", "rejoin"]);
 
 // Pure: maps the absolute paths inside root among args to the same place in the remote run folder
 // rdir, so a proof's out dir lands in its run folder; `back` lists what to copy home afterwards.
@@ -1147,7 +1278,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {
@@ -1195,7 +1326,7 @@ async function main(argv) {
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
   }
-  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart" || cmd === "wait" || cmd === "join") {
+  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart" || cmd === "wait" || cmd === "join" || cmd === "identity" || cmd === "rejoin") {
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd(), env: { ...process.env, LF_SESSION_ROUTED: "1" } });
     return r.status ?? 1;
   }

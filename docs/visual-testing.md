@@ -39,6 +39,16 @@ What an agent session used to be needed for, and what does it now:
 | The item in a hand | session, 2 clients | still a session (`asset states --shots` does hand and use) |
 | Dialogue shot, a door, a siren, a held pose | session | still a session |
 
+## Profile fixtures and rejoin (agent-box sessions)
+
+A proof that needs a police roster (or any file the server reads from `$profile:LifeFramework/`) seeds it
+in `up`: `session.mjs up --clients 2 --mission playtest --roster 2` or `--seed <file>`. The leg that boots
+the server writes the fixture just before the server starts, on the machine the session runs on; a file
+written on this PC before `up` never reaches a pool machine. `session.mjs roster <id>` on a live session
+writes the roster and the server reloads it. A client that quits and rejoins keeps its identity (a session
+slot, not the player id): `session.mjs rejoin <n>`, worked example `rejoin-proof`. Details:
+`agent-box/README.md` "Stable client identity and rejoin".
+
 ## The matrix
 
 Evidence levels: **(a)** data only (layer, prefab and config files), **(b)** a world query with no
@@ -194,6 +204,13 @@ rdb refresh; `--wait` queues for up to 10 minutes. It needs about 2.2 GB of free
 seconds and asks the pool to trim idle sessions first; under that it fails at once with one line
 (`--force` skips the check). The run is killed at its budget (90 s plus about 1 s per shot) and
 says `TIMEOUT`. It refuses the main checkout.
+
+A run never hands back fallback pictures (#1147): the plugin opens the requested world or errors
+(`world_not_opened`, `world_mismatch`), the Node side re-checks the world path from `status.txt`, and 3 or more
+byte-identical frames fail the run. A Workbench that came up on its default scene (an empty world with a green
+vegetable crate, seen under memory pressure and after `--force`) now prints `FAIL  look: the requested world did
+not load ...` and keeps no pictures. The asset verify/states clothing shots use the same check. `look <area> --world
+<path>` overrides the world, which is how to force the failure.
 
 ### What it does not show
 

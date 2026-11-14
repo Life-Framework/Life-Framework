@@ -365,6 +365,8 @@ schema, `/config` form and reference page list them. A `config.json` that names 
 
 ## Prefab slots (#964)
 
+_#1128 added `hospital_bill`, `fine_ticket`, `jail_slip`, `store_receipt`, `evidence_casing|bag|footprint|statement`, `phone_handset`, `notice_board_face`, `sign_face`, `courier_parcel`. Skipped: prefabs also named by path in `ShopPrices.conf`, `ResourceChains.conf`, the fence NPC or another prefab (drill, keycard, fence charge, lockpick, car parts, contraband, scanner, service radio, vehicle key, iron nugget/bar); a slot swap there would leave those references on the old prefab. Uniform outfits live in the generated roles table; the light bar, pager and vault door have no script-chosen prefab._
+
 A system that spawns or hands out an item asks for the prefab by slot id, so a pack changes the
 look without child prefabs of core items or script of its own.
 
@@ -382,8 +384,13 @@ look without child prefabs of core items or script of its own.
 - No owner (`config.json`) layer and no stream: client and server read the same mission header, so
   they resolve the same prefab (the HUD counts cash by the slot's prefab on the client). A pack
   change takes a restart.
-- Cash is saved in inventories by prefab. A server that swaps the `cash` slot after its first save
-  leaves the old stacks uncounted; pick the cash look before a server goes live.
+- Cash is saved in inventories by prefab, so a swapped `cash` slot leaves older stacks under the
+  old prefab (#1130). They still count: `LF_MoneyUtils` counts and spends the core default cash and
+  every prefab the save alias table (#965, `LF_SaveAliases.conf`) leads to the slot prefab
+  (`LF_PrefabSlots.LegacyPrefabs`), old stacks first, and new cash is always the slot prefab, so
+  the old stacks drain as they are spent. A pack that swaps cash from its own prefab A to B lists
+  `prefab: A -> B` in its alias table. No save format change. Proof: `prefabs/cash-slot-swap`,
+  `tools\cli e2e --cash-swap` (save, swap the slot, restart, still counted).
 - A system declares its slot as `static const string SLOT... = "<id>"` beside a `...Prefab()`
   accessor that calls `LF_PrefabSlots.Get`. `validate-prefab-slots` fails a slot GUID that does not
   resolve and a script slot id the core file does not list.

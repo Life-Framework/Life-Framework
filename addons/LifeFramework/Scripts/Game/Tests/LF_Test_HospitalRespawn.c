@@ -130,7 +130,7 @@ class LF_Test_HospitalWard : LF_Test
 		LF_HospitalBedComponent.GetBedPositions(beds);
 		ctx.True(beds.Count() >= 3, string.Format("DebugWorld has a ward of at least three beds (found %1)", beds.Count()));
 
-		IEntity bill = LF_Utils.SpawnEntityPrefab(LF_HospitalBill.PREFAB, "0 0 0");
+		IEntity bill = LF_Utils.SpawnEntityPrefab(LF_HospitalBill.Prefab(), "0 0 0");
 		ctx.True(bill != null, "the hospital bill prefab spawns");
 		if (!bill)
 			return;

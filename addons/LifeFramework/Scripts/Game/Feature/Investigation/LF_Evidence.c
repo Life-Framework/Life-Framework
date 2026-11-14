@@ -43,7 +43,14 @@ class LF_Evidence
 	static const string KIND_DROPPED = "dropped";
 	static const string KIND_FOOTPRINT = "footprint";
 	static const string KIND_STATEMENT = "statement";
-	static const ResourceName CASING_PREFAB = "{7D3A9E15C2B4F680}Prefabs/Investigation/LF_EvidenceCasing.et";
+	//! The prefab slot (#1128): The shell casing a shot leaves.
+	static const string SLOT_CASING = "evidence_casing";
+
+	//! The prefab (slot "evidence_casing"), or empty when no usable prefab resolves (logged).
+	static ResourceName CasingPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_CASING);
+	}
 	//! The prefab slot (#964) of the paper marker beside a dropped item.
 	static const string SLOT_MARKER = "evidence_marker";
 
@@ -53,9 +60,30 @@ class LF_Evidence
 		return LF_PrefabSlots.Get(SLOT_MARKER);
 	}
 
-	static const ResourceName BAG_PREFAB = "{A2E64B90F1C8D357}Prefabs/Investigation/LF_EvidenceBag.et";
-	static const ResourceName FOOTPRINT_PREFAB = "{BDD2844E23A8782C}Prefabs/Investigation/LF_EvidenceFootprint.et";
-	static const ResourceName STATEMENT_PREFAB = "{964BD33ED81ADE29}Prefabs/Investigation/LF_EvidenceStatement.et";
+	//! The prefab slot (#1128): The bag a bagged item goes into.
+	static const string SLOT_BAG = "evidence_bag";
+
+	//! The prefab (slot "evidence_bag"), or empty when no usable prefab resolves (logged).
+	static ResourceName BagPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_BAG);
+	}
+	//! The prefab slot (#1128): The footprint paper left at a scene.
+	static const string SLOT_FOOTPRINT = "evidence_footprint";
+
+	//! The prefab (slot "evidence_footprint"), or empty when no usable prefab resolves (logged).
+	static ResourceName FootprintPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_FOOTPRINT);
+	}
+	//! The prefab slot (#1128): The witness statement paper left at a scene.
+	static const string SLOT_STATEMENT = "evidence_statement";
+
+	//! The prefab (slot "evidence_statement"), or empty when no usable prefab resolves (logged).
+	static ResourceName StatementPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_STATEMENT);
+	}
 	static const int SWEEP_MS = 30000;
 	static const int DROP_SETTLE_MS = 1500;
 	static const int MAX_PENDING_DROPS = 64;
@@ -226,7 +254,7 @@ class LF_Evidence
 		// under it (LF_ScenePieces.GroundSpot): a burst leaves a few casings on the floor, not a pile
 		// in the air.
 		vector spot = LF_ScenePieces.GroundSpot(LF_ScenePieces.Scatter(origin, scene.m_iCasings), LF_ScenePieces.CASING_BASE);
-		IEntity casing = LF_Utils.SpawnEntityPrefab(CASING_PREFAB, spot, Vector(LF_ScenePieces.ScatterYaw(scene.m_iCasings), 0, 0));
+		IEntity casing = LF_Utils.SpawnEntityPrefab(CasingPrefab(), spot, Vector(LF_ScenePieces.ScatterYaw(scene.m_iCasings), 0, 0));
 		if (!casing)
 			return null;
 
@@ -459,7 +487,7 @@ class LF_Evidence
 			return null;
 		}
 
-		IEntity bag = LF_Utils.SpawnEntityPrefab(BAG_PREFAB, item.GetOrigin() + "0 0.1 0");
+		IEntity bag = LF_Utils.SpawnEntityPrefab(BagPrefab(), item.GetOrigin() + "0 0.1 0");
 		LF_EvidenceBagComponent bagComponent;
 		if (bag)
 			bagComponent = LF_EvidenceBagComponent.Cast(bag.FindComponent(LF_EvidenceBagComponent));

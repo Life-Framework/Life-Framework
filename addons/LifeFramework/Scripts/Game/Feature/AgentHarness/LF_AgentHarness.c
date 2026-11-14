@@ -203,7 +203,15 @@ class LF_AgentCommand
 
 			return true;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+		if (cmd.Verb == "spikeaim")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			if (parts.Count() > 3)
+				cmd.Arg2 = parts[3];
+			return true;
+		}
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 			return true;
 		if (cmd.Verb == "emote")
 		{
@@ -706,12 +714,13 @@ class LF_AgentCommand
 			return false;
 		}
 
-		// Optional side: e (default), w, n, s. Stand on that side of the entity, facing it.
+		// Optional side: e (default), w, n, s, with an optional distance in whole metres (s9: 9 m
+		// south of the origin, the street side of a building). Stand there, facing the entity.
 		cmd.Arg2 = "e";
 		if (parts.Count() > 3)
 		{
 			cmd.Arg2 = parts[3];
-			if (LF_AgentHarness.SideCompass(cmd.Arg2) == "" || (cmd.Arg2.Length() == 2 && cmd.Arg2.Substring(1, 1) != "2"))
+			if (LF_AgentHarness.SideCompass(cmd.Arg2) == "")
 			{
 				cmd.Error = "bad_side";
 				return false;
@@ -1002,6 +1011,9 @@ class LF_AgentCommand
 	//! the harness must not drive the character by injecting WASD.
 	static bool IsMenuAction(string actionName)
 	{
+		// The clip stamp key (#1173): the proof presses the real binding.
+		if (actionName == "LF_ClipStamp")
+			return true;
 		if (actionName == "MenuBack")
 			return true;
 		if (actionName == "MenuUp")
@@ -1049,6 +1061,10 @@ class LF_AgentHarness
 	protected static const int UI_TEXT_MAX = 80;
 	//! stand puts the character this far along +X from the entity, facing it.
 	static const float STAND_SIDE = 1.2;
+	//! The farthest a side token may stand from the origin (a building's street side).
+	// lf-fixed: input check on a dev-only harness argument, not a gameplay tunable
+	static const int MAX_STAND_METRES = 30;
+	protected static const string DIGITS = "0123456789";
 	// lf-fixed: dev-harness geometry, the width of a character capsule
 	static const float STAND_CAPSULE_RADIUS = 0.4;
 	// lf-fixed: dev-harness geometry, a counter top is higher than this above the floor
@@ -1394,13 +1410,26 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", emoted);
 			return;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+		if (cmd.Verb == "spikeaim")
+		{
+			string aimed = LF_SpikeStripHarness.Aim(cmd.Arg1, cmd.Arg2);
+			if (aimed.StartsWith("ok "))
+				WriteResult(cmd.Id, "ok", aimed.Substring(3, aimed.Length() - 3));
+			else
+				WriteResult(cmd.Id, "error", aimed);
+			return;
+		}
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 		{
 			string seen;
 			if (cmd.Verb == "spikeverge")
 				seen = LF_SpikeStripHarness.Verge();
 			else if (cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 				seen = LF_SpikeStripHarness.Preview(cmd.Verb == "spikepreview");
+			else if (cmd.Verb == "spikeplace")
+				seen = LF_SpikeStripHarness.Place();
+			else if (cmd.Verb == "spikewhere")
+				seen = LF_SpikeStripHarness.Where();
 			else
 				seen = LF_SpikeStripHarness.Seen();
 			if (seen.StartsWith("ok "))
@@ -1846,23 +1875,48 @@ class LF_AgentHarness
 	//! The compass letter of a side token ("n2" is north, 2 m out); "" when it is not one.
 	static string SideCompass(string side)
 	{
-		if (side.Length() < 1 || side.Length() > 2)
+		if (side.Length() < 1 || side.Length() > 3)
 			return "";
 
 		string letter = side.Substring(0, 1);
-		if (letter == "e" || letter == "w" || letter == "n" || letter == "s")
-			return letter;
+		if (letter != "e" && letter != "w" && letter != "n" && letter != "s")
+			return "";
 
-		return "";
+		if (side.Length() > 1 && SideMetres(side) == 0)
+			return "";
+
+		return letter;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How far out stand puts the character: STAND_SIDE, or 2 m for a token with a trailing 2
-	//! (the proof of an action with a longer reach, such as an NPC's Talk).
+	//! The distance in a side token ("s9" is 9), 0 when it has none or it is not 1 to MAX_STAND_METRES.
+	static int SideMetres(string side)
+	{
+		if (side.Length() < 2)
+			return 0;
+
+		string digits = side.Substring(1, side.Length() - 1);
+		for (int i = 0; i < digits.Length(); i++)
+		{
+			if (DIGITS.IndexOf(digits.Substring(i, 1)) < 0)
+				return 0;
+		}
+
+		int metres = digits.ToInt();
+		if (metres < 1 || metres > MAX_STAND_METRES)
+			return 0;
+
+		return metres;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far out stand puts the character: STAND_SIDE, or the token's metres ("n2" for an action
+	//! with a longer reach such as an NPC's Talk, "s9" for the street side of a building).
 	static float StandDistance(string side)
 	{
-		if (side.Length() == 2 && side.Substring(1, 1) == "2")
-			return 2.0;
+		int metres = SideMetres(side);
+		if (metres > 0)
+			return metres;
 
 		return STAND_SIDE;
 	}

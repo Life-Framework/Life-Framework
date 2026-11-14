@@ -19,6 +19,7 @@ Reference:
 - [Install a server](owner/install.md) — from a server install to a player joining, then the save across restarts.
 - [Add a delivery job](owner/add-job.md) — a depot and a drop on your own map, then the XP and levels in `config.json`.
 - [Add a shop](owner/add-shop.md) — a counter, its stock, and its prices, or a catalogue outlet.
+- [Upgrade notes](upgrades/README.md): one page per release, with the config changes, save versions, migrations and manual steps.
 - [Owner config check](config/owner-config.md) — `tools\cli config-check <config.json>`: what the server would log about your config.json, before a restart.
 
 ## Direction and decisions
@@ -39,9 +40,11 @@ Reference:
 
 - [Performance budget](architecture/performance.md) - the 128-player cost budget, the `perf/budget-128` gate, `tools\cli perf`, measured numbers.
 - [Core vs pack](architecture/core-vs-pack.md) — what goes in the core addon and what goes in the flagship pack; [inventory](architecture/core-pack-inventory.md).
+- Record shapes (M3, #746): [vehicle state](architecture/record-shape-vehicle.md) (#752a) and [held ground](architecture/record-shape-held-ground.md) (#751): the sidecar payloads, their fields, save-version plan and tests.
 - [Features](features.md) — implemented behavior and fragile paths.
 - [Persistence](persistence.md) — saved data, serializers, and restart rules.
 - [Foundation design](foundation-design.md) — economy, trade, processing, and ownership primitives.
+- [Release process](release-process.md): how a release is cut, promoted and rolled back, and the playtest builds and game updates around it.
 - [Worktrees](worktrees.md) — parallel changes, ports, validation, and shipping.
 - [Dedicated server session](dedicated-session.md) — multiplayer proof on a dedicated server.
 - [Debug log triage](debug-log-triage.md) — known boot messages and what they mean.

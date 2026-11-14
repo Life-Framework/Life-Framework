@@ -1,0 +1,4 @@
+MatPBRMulti : "{C5B6564B9002F293}Assets/Characters/Uniforms/Pants_Trousers_01/Data/Pants_Trousers_01_DarkGrey.emat" {
+ BCR_1 "{63E900AF25AEBF38}Assets/Characters/Uniforms/LF/PoliceTrousers/Data/PoliceTrousers_Worn_BCR.edds"
+ DirtBCRMap "{7060E20F898A8D41}Assets/Characters/Uniforms/LF/PoliceTrousers/Data/PoliceTrousers_Worn_DirtBCR.edds"
+}

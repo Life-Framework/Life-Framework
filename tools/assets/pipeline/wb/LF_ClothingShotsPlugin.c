@@ -96,6 +96,25 @@ class LF_ClothingShotsPlugin : WorldEditorPlugin
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Returns true when the open world path ends in the requested world's file name (the path may carry a $addon: or {GUID} prefix)
+	protected bool WorldIsOpen(string opened, string wanted)
+	{
+		if (opened.IsEmpty() || wanted.IsEmpty())
+			return false;
+
+		array<string> parts = {};
+		wanted.Split("/", parts, true);
+		if (parts.IsEmpty())
+			return false;
+
+		string file = parts[parts.Count() - 1];
+		file.ToLower();
+		string lowOpened = opened;
+		lowOpened.ToLower();
+		return lowOpened.IndexOf(file) >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void ShootPlan()
 	{
 		WorldEditor worldEditor = Workbench.GetModule(WorldEditor);
@@ -144,15 +163,26 @@ class LF_ClothingShotsPlugin : WorldEditorPlugin
 		if (m_Api)
 			m_Api.GetWorldPath(opened);
 
-		if (opened.IsEmpty())
+		// The requested world must be the one that is open. A Workbench that came up on a default scene (the green
+		// vegetable crate in an empty world) used to be accepted here and photographed (#1147).
+		if (!WorldIsOpen(opened, world))
 		{
 			if (world.IsEmpty() || !worldEditor.SetOpenedResource(world))
 			{
-				Fail("world_not_opened " + world);
+				Fail("world_not_opened " + world + " (open: " + opened + ")");
 				return;
 			}
 
 			m_Api = worldEditor.GetApi();
+			opened = "";
+			if (m_Api)
+				m_Api.GetWorldPath(opened);
+
+			if (!WorldIsOpen(opened, world))
+			{
+				Fail("world_mismatch wanted=" + world + " open=" + opened + "");
+				return;
+			}
 		}
 
 		if (!m_Api || !m_Api.GetWorld())

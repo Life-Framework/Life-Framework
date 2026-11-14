@@ -1,0 +1,52 @@
+SCR_DestructibleBuildingEntity : "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et" {
+ ID "CE367696EF440DC9"
+ components {
+  MeshObject "{506EDA9D46FC6C06}" {
+   Object "{CE97DD08BDFF9431}Assets/Buildings/Supermarket/Supermarket.xob"
+  }
+ }
+ {
+  GenericEntity : "{01555BEA32ADC8D5}Prefabs/Structures/BuildingParts/Windows/Glass_200x260/Glass_200x260.et" {
+   ID "7148E4F6013ABF79"
+   coords -6.125 1.9 -6.905
+   angleY 180
+  }
+  GenericEntity : "{01555BEA32ADC8D5}Prefabs/Structures/BuildingParts/Windows/Glass_200x260/Glass_200x260.et" {
+   ID "7BAAC0027B166398"
+   coords -4.075 1.9 -6.905
+   angleY 180
+  }
+  GenericEntity : "{2F51CBF130077DAA}Prefabs/Structures/BuildingParts/Doors/DoorSet_Services_E_A_Double_UNI_B_EXT.et" {
+   ID "F8065FA7EB1C4FA0"
+   coords 0 0.1 -6.775
+  }
+  GenericEntity : "{01555BEA32ADC8D5}Prefabs/Structures/BuildingParts/Windows/Glass_200x260/Glass_200x260.et" {
+   ID "BA081426891001C7"
+   coords 4.075 1.9 -6.905
+   angleY 180
+  }
+  GenericEntity : "{01555BEA32ADC8D5}Prefabs/Structures/BuildingParts/Windows/Glass_200x260/Glass_200x260.et" {
+   ID "3A01ED3A047C7078"
+   coords 6.125 1.9 -6.905
+   angleY 180
+  }
+  GenericEntity : "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et" {
+   ID "EF690F2AC6CFB981"
+   coords 0.3375 0.1 2.358
+  }
+  GenericEntity : "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et" {
+   ID "81B30B78DA0238BC"
+   coords -5.175 0.1 3.413
+   angleY -90
+  }
+  GenericEntity : "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et" {
+   ID "4FC2F52575F7F5D4"
+   coords 5.85 0.1 3.413
+   angleY -90
+  }
+  GameEnvironmentProbeEntity : "{565470F7BA530E0D}Prefabs/Structures/Core/ProbeHouse_Base.et" {
+   ID "DB8578EEADD77B03"
+   coords 0 1.96 0
+  }
+ }
+}

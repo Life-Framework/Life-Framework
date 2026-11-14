@@ -1,9 +1,10 @@
 //------------------------------------------------------------------------------------------------
 //! Client: the ghost of the spike strip an officer is about to lay (#928, the placement foundation's
 //! first prototype, docs/roadmap/building-foundation.md). While the officer has the folded strip's
-//! Deploy action selected, a ghost of the deployed strip lies where LF_SpikeStrips.Deploy would put
+//! Deploy action selected, a ghost of the deployed strip lies where the placement service would put
 //! it: across the road, green when the spot is valid, red when not. It runs the server's own plan
-//! (LF_SpikeStrips.Plan) every TICK_MS, so the colour is the answer the server will give.
+//! (LF_PlacementService.Plan) every TICK_MS, so the colour is the answer the server will give, and
+//! Deploy sends the spot it shows as the proposal (LF_SpikeStripDeployAction.OnSaveActionData).
 //! Behind a flag: only while the game mode has dev tools on (DebugWorld), until #928 ships it.
 //------------------------------------------------------------------------------------------------
 class LF_SpikeStripPreview
@@ -11,11 +12,13 @@ class LF_SpikeStripPreview
 	static const int TICK_MS = 50; // lf-fixed: refresh period of a cosmetic ghost, not a gameplay knob
 
 	protected static EntityID s_ItemId = EntityID.INVALID;
-	protected static ResourceName s_sDeployedPrefab;
-	protected static float s_fLength;
 	protected static bool s_bRunning;
 	protected static LF_EPlacementVerdict s_eVerdict = LF_EPlacementVerdict.NO_GROUND;
 	protected static string s_sReason;
+	//! Where the ghost lies now (its origin and forward), for the proposal Deploy sends.
+	protected static bool s_bSpot;
+	protected static vector s_vSpotOrigin;
+	protected static vector s_vSpotForward;
 
 	//------------------------------------------------------------------------------------------------
 	//! The prototype flag: the running game mode has dev tools on (LF_GameModeRoleplay
@@ -27,31 +30,19 @@ class LF_SpikeStripPreview
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: starts the ghost for the folded strip `item` (an LF_DeployableItemComponent).
-	//! Returns the first verdict, or NO_GROUND with an error logged when there is nothing to show.
+	//! Client: starts (or retargets) the ghost for the folded strip `item` (an LF_PlaceableComponent),
+	//! on the ground or carried. The preview ends by itself when the item is gone (laid, or taken
+	//! away). Returns the first verdict, or NO_GROUND with an error logged when there is nothing to show.
 	static LF_EPlacementVerdict BeginFor(IEntity item)
 	{
-		LF_DeployableItemComponent deployable = LF_Component<LF_DeployableItemComponent>.Find(item);
-		if (!deployable || deployable.GetDeployedPrefab().IsEmpty())
+		LF_PlaceableComponent placeable = LF_Component<LF_PlaceableComponent>.Find(item);
+		if (!placeable || placeable.GetPlacedPrefab().IsEmpty())
 		{
-			LF_Debug.Error(LF_SpikeStrips.FEATURE, "preview skipped: the item names no deployed prefab");
+			LF_Debug.Error(LF_SpikeStrips.FEATURE, "preview skipped: the item names no placed prefab");
 			return LF_EPlacementVerdict.NO_GROUND;
 		}
 
-		return Begin(deployable.GetDeployedPrefab(), deployable.GetDeployedLength(), item);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Client: starts (or retargets) the ghost of `deployedPrefab`, `length` metres long. With an
-	//! `item`, the preview ends by itself when that item is gone (laid, or taken away).
-	static LF_EPlacementVerdict Begin(ResourceName deployedPrefab, float length, IEntity item)
-	{
-		s_ItemId = EntityID.INVALID;
-		if (item)
-			s_ItemId = item.GetID();
-
-		s_sDeployedPrefab = deployedPrefab;
-		s_fLength = length;
+		s_ItemId = item.GetID();
 		if (!s_bRunning)
 		{
 			s_bRunning = true;
@@ -73,6 +64,7 @@ class LF_SpikeStripPreview
 			LF_Debug.Info(LF_SpikeStrips.FEATURE, "preview off");
 
 		s_bRunning = false;
+		s_bSpot = false;
 		s_ItemId = EntityID.INVALID;
 		LF_PlacementGhost.Hide();
 	}
@@ -108,6 +100,18 @@ class LF_SpikeStripPreview
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: where the ghost of `item` lies now (origin and forward), when one is shown for it.
+	static bool CurrentSpot(IEntity item, out vector origin, out vector forward)
+	{
+		if (!item || !s_bSpot || s_ItemId != item.GetID() || !LF_PlacementGhost.IsShown())
+			return false;
+
+		origin = s_vSpotOrigin;
+		forward = s_vSpotForward;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Called from LF_SpikeStrips.ResetStatics when a world ends.
 	static void ResetStatics()
 	{
@@ -115,6 +119,7 @@ class LF_SpikeStripPreview
 			GetGame().GetCallqueue().Remove(Tick);
 
 		s_bRunning = false;
+		s_bSpot = false;
 		s_ItemId = EntityID.INVALID;
 		s_eVerdict = LF_EPlacementVerdict.NO_GROUND;
 		s_sReason = "";
@@ -123,14 +128,19 @@ class LF_SpikeStripPreview
 	//------------------------------------------------------------------------------------------------
 	protected static void Tick()
 	{
+		// The aimed mode owns the one ghost while it runs (#1028).
+		if (LF_PlacementAim.IsRunning())
+			return;
+
 		IEntity officer = LF_Utils.GetLocalCharacter();
 		BaseWorld world = GetGame().GetWorld();
 		IEntity item;
 		if (world && s_ItemId != EntityID.INVALID)
 			item = world.FindEntityByID(s_ItemId);
 
+		LF_PlaceableComponent placeable = LF_Component<LF_PlaceableComponent>.Find(item);
 		// The officer is gone, or the strip was laid or taken away: nothing left to preview.
-		if (!officer || !world || (s_ItemId != EntityID.INVALID && !item))
+		if (!officer || !world || !placeable)
 		{
 			End();
 			return;
@@ -138,12 +148,15 @@ class LF_SpikeStripPreview
 
 		vector transform[4];
 		LF_PlacementProbe probe = new LF_PlacementProbe();
-		LF_EPlacementVerdict verdict = LF_SpikeStrips.Plan(officer, s_fLength, item, transform, probe);
+		LF_EPlacementVerdict verdict = LF_PlacementService.Plan(officer, placeable, item, transform, probe);
+		string reason = LF_PlacementRules.Reason(verdict, probe, LF_PlacementService.MAX_STEP);
 		if (verdict != s_eVerdict)
-			LF_Debug.Info(LF_SpikeStrips.FEATURE, string.Format("preview %1 at %2 %3", LF_PlacementRules.Name(verdict), transform[3], LF_PlacementRules.Reason(verdict, probe, LF_SpikeStrips.MAX_STEP)));
+			LF_Debug.Info(LF_SpikeStrips.FEATURE, string.Format("preview %1 at %2 %3", LF_PlacementRules.Name(verdict), transform[3], reason));
 
 		s_eVerdict = verdict;
-		s_sReason = LF_PlacementRules.Reason(verdict, probe, LF_SpikeStrips.MAX_STEP);
-		LF_PlacementGhost.Show(s_sDeployedPrefab, transform, verdict == LF_EPlacementVerdict.VALID);
+		s_sReason = reason;
+		s_bSpot = LF_PlacementGhost.Show(placeable.GetPlacedPrefab(), transform, verdict == LF_EPlacementVerdict.VALID);
+		s_vSpotOrigin = transform[3];
+		s_vSpotForward = transform[2];
 	}
 }

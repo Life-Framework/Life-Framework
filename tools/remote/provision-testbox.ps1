@@ -106,6 +106,15 @@ if ($steamServer -and $steamServer.State -eq "4" -and (Test-Path -LiteralPath (J
     Step "server present, update skipped: $ServerDir"
   } else {
     New-Item -ItemType Directory -Force -Path $ServerDir | Out-Null
+    # A provision stopped part-way (ssh dropped, ctrl-c) leaves its SteamCMD
+    # running in session 0; a second one on the same folder fails on the
+    # lock. Let the first finish (it was seen completing after the ssh died).
+    $running = @(Get-Process steamcmd -ErrorAction SilentlyContinue)
+    if ($running.Count -gt 0) {
+      Step "steamcmd already running (pid $($running.Id -join ', ')); waiting up to 30 min for it to finish"
+      $running | Wait-Process -Timeout 1800 -ErrorAction SilentlyContinue
+      if (Get-Process steamcmd -ErrorAction SilentlyContinue) { throw "steamcmd still running after 30 min; stop it or wait, then provision again" }
+    }
     # SteamCMD updates itself on first start and sometimes exits nonzero (7/8)
     # after that self-update; a retry covers it. Anonymous login only.
     for ($try = 1; $try -le 3; $try++) {
@@ -163,7 +172,9 @@ if (Test-Path -LiteralPath $local) {
 }
 $cfg["ENFUSION_SERVER_PATH"] = $ServerDir.Replace("\", "/")
 $cfg["LF_GAME_ADDONS"] = (Join-Path $ServerDir "addons").Replace("\", "/")
-$json = ($cfg | ConvertTo-Json)
+# Depth: a box that is a pool member keeps its own "pool" entry here (nested
+# objects); the default depth of 2 would flatten it to strings.
+$json = ($cfg | ConvertTo-Json -Depth 10)
 [System.IO.File]::WriteAllText($local, $json + "`n", (New-Object System.Text.UTF8Encoding $false))
 Step "wrote $local"
 

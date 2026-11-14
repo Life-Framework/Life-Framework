@@ -24,6 +24,10 @@ class LF_PackManifest
 	[Attribute("", desc: "First core version the pack does not support, x.y.z, exclusive. Empty: no upper bound.")]
 	string m_sCoreBelow;
 
+	//! Owner-config sections this pack adds (#553), namespaced by the pack id; see LF_PackConfigSection.
+	[Attribute("", UIWidgets.Object, desc: "Owner-config sections this pack adds, named from the pack namespace (example, exampleChains).")]
+	ref array<ref LF_PackConfigSection> m_aConfigSections;
+
 	//------------------------------------------------------------------------------------------------
 	//! Pure. Parses "x.y.z" into three ints. \return false for anything else.
 	static bool ParseVersion(string text, out int major, out int minor, out int patch)

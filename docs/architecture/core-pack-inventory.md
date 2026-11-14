@@ -2,7 +2,10 @@
 
 Every folder and file group in `addons/LifeFramework/`, classified with the red
 line in [`core-vs-pack.md`](core-vs-pack.md). Taken on 2026-11-08 from `main`
-at `b0f5b8e`. **Nothing has moved.** The move is an M3 freeze under epic #223,
+at `b0f5b8e`. **Batch 1 moved (#323, 2026-11-14):** the rows marked *moved* below now live in
+`addons/LF_Everon1989/` at the same relative path and GUID, except the village layers, which sit in
+the pack world `Worlds/Everon1989Town/Everon1989Town_Layers/` (a SubScene of the core DebugWorld,
+`pack-move-spike.md` section 1). **Batch 2 moved (#323, 2026-11-14):** the supermarket prefabs and model. The other pack rows each have a core user, so they move with the batch that splits it: the bank vault kit is spawned by the core tests `LF_Test_SystemsEconomy` and `LF_Test_SystemsWorld` and placed by the core `Street_Bank.layer` (a core example vault first, with the layers); the clerk dialogue is listed by the core `LF_DialogueIndex.conf` (configs); the atmosphere sounds are placed by core layers and `LF_ChopBench.et` (layers); `medic_flow` is named by the core `LF_Signs.conf` (configs). The move is an M3 freeze under epic #223,
 after the maintainer signs off on M1: load the pack (#322), move in batches
 (#323), split the string table (#325), prove the core boots alone (#326), and
 load a pre-move save (#327).
@@ -132,7 +135,7 @@ under "Hard-coded flagship values in script".
 | Path | Class | Reason |
 | --- | --- | --- |
 | `Building/` | core | Building preview |
-| `Buildings/Supermarket/` | pack | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`): the building is this server's look. The `Annex_Supermarket` placement in the core `Annex.layer` is the pipeline's proof and must go or be replaced by a neutral building before the M3 move |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`, which now sets `"addon": "LF_Everon1989"`): the building is this server's look. Its placement left the core `Annex.layer` (`Annex_Supermarket`) for the pack layer `Village_Buildings` as `Village_Supermarket`, same coordinates; `building-proof` defaults to the new name |
 | `Characters/Core/` | core | Player and NPC bases |
 | `Characters/Presets/` (3) | core | Neutral spawn bodies the game mode lists |
 | `Characters/Npcs/Npc_Default_01.et` | split | Base of every NPC, dressed in the M88 uniform; core needs a neutral base |
@@ -157,7 +160,7 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/LF_Sign*.et` (10) | core | Generic boards and faces |
 | `Props/Signs/LF_BoardFace.et` | core | The 16:9 render-target face a board draws on (wanted posters, #758) |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
-| `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
+| `Props/Signs/EL_MiningSign.et` | pack, moved (batch 1) | Soviet undermined-area warning sign; its placement left the core `MiningChain.layer` for the pack layer `Village_Signs` |
 | `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
 | `Props/Roleplay/BankVault/` | pack | The 1989 bank vault kit: the round door in its frame and wall, the steel room, the deposit box wall, the cash trolley, and the assembled vault closed and open. The assembled vault carries the rob, breach and swing components and is the town bank vault (#925); `LF_BankVault_Light` is its two ceiling lights (each with a vanilla caged bulkhead fixture); `LF_BankVault_SmallRoof` is the door hood (the vanilla `SmallRoof_01` mesh); the vault room and front use a vanilla concrete material in place of the dark generated one. The gameplay components (`LF_BankVaultComponent`, `LF_BreachTargetComponent`) are core |
 | `Assets/Props/Roleplay/BankVault/` | pack | Meshes and materials of the vault kit (door generated with Meshy, `docs/credits.md`; the rest built by `tools/assets/bank-vault/build.py`) |
@@ -181,6 +184,8 @@ under "Hard-coded flagship values in script".
 | `Chat/` | core | Channels |
 | `Core/EditorManagerCore.conf` | core | Engine setup |
 | `UI/LF_UITheme.conf` | split | The theme shape (`LF_UIThemeRecord`, the reader) is core; the 1989 paper, brass and phosphor values are the flagship's look, kept as the core default until the M3 move. A pack overlay patches a theme by id (#966) |
+| `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
+| `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`); a text-only line, listed in the pack's mission header |
 | `Dialogue/LF_Dialogue_Clerk.conf` | pack | The town clerk's conversation (generated from `tools/assets/dialogue/clerk/`); the scene system in `Feature/Dialogue/` is core |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
@@ -224,10 +229,11 @@ its save.
 | Path | Class | Reason |
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
-| `LF_PlaytestTown.conf` | pack | The flagship playtest header |
-| `LF_PlaytestTown_Preview.{edds,jpg}` | pack | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
-| `EveronLifeGameMode.conf` | pack | The MainWorld header |
-| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The pack's own playtest header (2026-11-14, #322): a copy of `LF_PlaytestTown.conf` that `host`, `playtest` and `session --mission playtest` boot with both addons. It still points at the core's DebugWorld and preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
+| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The flagship playtest header; its world is now the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
+| `LF_PlaytestTown_Preview.{edds,jpg}` | pack, moved (batch 1) | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
+| `EveronLifeGameMode.conf` | pack, moved (batch 1) | The MainWorld header |
+| `LF_HostedTest.conf` | core | Test fixture (#323 batch 1): a hosted header on DebugWorld with dev tools closed, read by `host/playtest-mission` and `harness/dev-gate-dedicated` |
+| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The pack's own playtest header (2026-11-14, #322): a copy of `LF_PlaytestTown.conf` that `host`, `playtest` and `session --mission playtest` boot with both addons. Since batch 1 it loads the pack world `Everon1989Town.ent` and uses the moved preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 
 ## Worlds
@@ -238,24 +244,24 @@ its save.
 | Annex layers: `Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat` | core | Every top-level entity sits inside the annex fence |
 | `Factions`, `Shops` | core | Empty layers |
 | `Quests` | split | One giver in the annex, the clerk on the square |
-| `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack | Vanilla buildings, props, and roads; no test names them |
+| `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack, moved (batch 1) | Vanilla buildings, props, and roads; no test names them. Now in the pack world `Everon1989Town` (SubScene of DebugWorld), with `Village_Signs` |
 | `Street_*` (13, with `Street_SpawnHub`) | split | Village sites that hold test-named fixtures |
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
-| `MainWorld/` | pack | The Everon town, St Philippe apple farm |
+| `MainWorld/` | pack, moved (batch 1) | The Everon town, St Philippe apple farm |
 
 ## Assets
 
 | Path | Class | Reason |
 | --- | --- | --- |
-| `Buildings/Supermarket/` | pack | Model and `.xob.meta` of the supermarket above |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | Model and `.xob.meta` of the supermarket above; the `.xob` keeps its core `Buildings/Materials/` assignments (a pack may reference the core) |
 | `Buildings/Materials/` | split | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building: neutral, but only pack buildings use them today; they move with the first pack building or stay as a core material set |
 | `Crafting/` | core | Station meshes |
 | `Items/` | core | Cash, ID card, food, roleplay meshes |
 | `Props/CementMound/`, `Props/Military/Sandbags/` | core | Chain item textures |
 | `Props/GreenScreen/` | core | Filming tooling |
-| `Props/TitlePoster/` | pack | Everon title poster |
+| `Props/TitlePoster/` | split, mesh moved (batch 1) | The poster mesh (`titleposter.{fbx,txo,xob}`) moved; `Data/` (the Everon title texture and `.emat`) stays in the core because the core `Signs/LF_BoardFace.xob` bakes that material. A neutral board material frees it |
 | `Resources/` | core | Ore and wood meshes |
 | `Signs/` | core | Sign face material; `LF_BoardFace.xob`, a copy of the title poster's 16:9 quad with its own GUID (the title poster itself is pack) |
 | `Tools/` | core | Axe, pickaxe |
@@ -277,6 +283,7 @@ its save.
 | `Assets/Items/Roleplay/Drill/`, `Anims/LF/Drill/`, `Anims/Workspaces/Work/LF_DrillPush.*`, `Particles/LF/Drill_fx_bit.ptc`, `Sounds/Items/Drill/` | core | The vault drill and its scene (#340): model, push clips, sparks, motor and grinding loops. They follow `Prefabs/Items/Fence/LF_Drill.et`, the robbery's tool; the component that plays them (`Feature/AssetAnim/`) is core |
 | `Assets/Items/Resources/CementBag/` | core | The cement bag item, a CC0 Poly Haven model through the source stage (`docs/asset-pipeline/sources.md`): the quarry's cement chain is core. |
 | `Sounds/Alarm/Robbery/`, `Prefabs/Police/LF_SiteAlarm_{Bank,Fuel,Store,Van}*.et` | core | The site alarm of each robbery type (#740): bank bell, fuel station intruder alarm, store buzzer, van horn, each with a loud twin. They play through `LF_SiteAlarmComponent` and are picked by the `m_aAlarmKinds` rows of `LF_Police.conf`; the kinds' ids and offences are data, so a pack changes which robbery sounds which alarm without code |
+| `Prefabs/Jobs/LF_Workplace.et` | core | The generic workplace (#1111): a desk, a punch clock with the clock-in action, `LF_WorkplaceComponent` (job id, place registration, optional NPC slot). The police and medic duty desks inherit it; a pack inherits it for its own job (`pack new --job`) |
 | `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |

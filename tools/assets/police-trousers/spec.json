@@ -1,0 +1,107 @@
+{
+  "slug": "police-trousers",
+  "name": "PoliceTrousers",
+  "kind": "clothing",
+  "route": "a",
+  "roadmap": "",
+  "concept": "1989 Everon police trousers: the vanilla trousers in dark navy (route a).",
+  "base": "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et",
+  "slot": "Pants",
+  "hide": [
+    "Leg_L",
+    "Leg_R",
+    "Groin",
+    "Calf_L",
+    "Calf_R"
+  ],
+  "materials": [
+    {
+      "use": "worn",
+      "maps": {
+        "BCR_1": {
+          "tint": {
+            "rgb": [
+              0.06,
+              0.08,
+              0.14
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "DirtBCRMap": {
+          "tint": {
+            "rgb": [
+              0.06,
+              0.08,
+              0.14
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "use": "item",
+      "maps": {
+        "BCRMap": {
+          "tint": {
+            "rgb": [
+              0.06,
+              0.08,
+              0.14
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "budget": {
+    "texture_px": 2048,
+    "lod0_tris": 9000,
+    "lod_ratios": [
+      0.5,
+      0.25,
+      0.12
+    ]
+  },
+  "asset_dir": "Assets/Characters/Uniforms/LF/PoliceTrousers",
+  "prefab_dir": "Prefabs/Characters/Uniforms/LF",
+  "prefab": {
+    "name_key": "#LF-Police_Trousers_Name",
+    "description_key": null
+  },
+  "verify": {
+    "expect": "changed"
+  }
+}

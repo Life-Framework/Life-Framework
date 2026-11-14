@@ -47,7 +47,7 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 
 		if (!LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user)))
 		{
-			SetCannotPerformReason("#EL-Jail_NotOfficer");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Jail_NotOfficer"));
 			return false;
 		}
 

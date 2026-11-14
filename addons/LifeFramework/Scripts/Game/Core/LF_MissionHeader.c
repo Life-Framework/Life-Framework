@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! LF_MissionHeader - a mission header that can close dev tools and listen for a host stop request.
-//! Used by Missions/LF_PlaytestTown.conf. That mission reuses DebugWorld, whose game mode prefab
+//! Used by the pack's playtest headers and the core fixture Missions/LF_HostedTest.conf. They reuse DebugWorld, whose game mode prefab
 //! opts every player into dev tools, so the header overrides that. tools\cli host stop asks for a
 //! graceful close through a stop file. The engine writes its SHUTDOWN save point on that close.
 class LF_MissionHeader : SCR_MissionHeader
@@ -54,6 +54,8 @@ class LF_MissionHeader : SCR_MissionHeader
 class LF_HostStop
 {
 	static const string STOP_FILE = "$profile:lf-host-stop";
+	//! agent-box/session.mjs roster writes the police roster, then this file: the server reloads it.
+	static const string RELOAD_ROSTER_FILE = "$profile:lf-reload-roster";
 	static const int POLL_MS = 2000;
 
 	protected static bool s_bRunning;
@@ -83,6 +85,14 @@ class LF_HostStop
 	//------------------------------------------------------------------------------------------------
 	static void Poll()
 	{
+		if (FileIO.FileExists(RELOAD_ROSTER_FILE))
+		{
+			FileIO.DeleteFile(RELOAD_ROSTER_FILE);
+			LF_WhitelistManager.Reset();
+			LF_WhitelistManager.Load();
+			LF_Debug.Info("Host", "roster reloaded from the profile (session roster verb)");
+		}
+
 		if (!FileIO.FileExists(STOP_FILE))
 			return;
 

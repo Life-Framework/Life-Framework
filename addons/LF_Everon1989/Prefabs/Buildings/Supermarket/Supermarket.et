@@ -1,0 +1,9 @@
+SCR_DestructibleBuildingEntity : "{1AADA3892C469AD5}Prefabs/Buildings/Supermarket/Supermarket_Base.et" {
+ ID "18602B97671A1281"
+ {
+  GenericEntity : "{11C46B870238004E}Prefabs/Buildings/Supermarket/Furniture/Supermarket_furniture_01.et" {
+   ID "BEDC9A53CAE85B25"
+   coords 0 0 0
+  }
+ }
+}

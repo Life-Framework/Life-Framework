@@ -57,6 +57,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CaseBoard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CaseBoardPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CaseBoardWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CashSlotSwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainMoonshine(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainsConfig(), LF_TestTier.LOGIC);
@@ -74,6 +75,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Cleanup(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CleanupPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CleanupSweep(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ClipStamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigConstantsBatch1(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigJsonProbe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigListsOverlay(), LF_TestTier.LOGIC);
@@ -88,6 +90,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigOwnerFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigPackHeader(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ConfigPackSection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSchemaVersion(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSectionsA(), LF_TestTier.LOGIC);
@@ -135,6 +138,10 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DialogueFlow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueMouth(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueOverrideVerbs(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DialoguePackOverlay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DisconnectCuffedPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_DisconnectJail(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DisconnectRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);
@@ -146,6 +153,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_E2E_CashSlotSwap(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_ContentIds(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
@@ -195,6 +203,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessScreenText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessSessionScope(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessStandClear(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HarnessStandSide(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HaulTidy(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
@@ -284,6 +293,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PersistSwitches(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PersistSwitchesRestart(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PhoneCallBackBook(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhoneCallBackWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneCallWorld(), LF_TestTier.WORLD);
@@ -295,9 +306,12 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PhotoIdCardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PickaxeCount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Placement(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PlacementAim(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementConfirm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementRoad(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesBankBag(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesCashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesDispatch(), LF_TestTier.WORLD);
@@ -311,6 +325,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplication(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
@@ -319,6 +335,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceWantedBoard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceStationWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceItemState(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceTrialExpiry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
@@ -407,6 +424,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ServiceRadio(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceTake(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SessionSlots(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMAmountGuard(), LF_TestTier.LOGIC);
@@ -509,6 +527,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnimTargets(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Workplace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorldReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorldResetGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ZoneConfOff(), LF_TestTier.WORLD);

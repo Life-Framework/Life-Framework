@@ -18,7 +18,7 @@ class LF_BackRoomSearchAction : ScriptedUserAction
 	{
 		if (!LF_PlayerInteraction.IsOnDutyPolice(user))
 		{
-			SetCannotPerformReason("#EL-Confiscate_OnDutyOnly");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Confiscate_OnDutyOnly"));
 			return false;
 		}
 

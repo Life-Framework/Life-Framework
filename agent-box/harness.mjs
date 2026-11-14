@@ -30,6 +30,8 @@ const MENU_ACTIONS = new Set([
   // Character actions the harness drives for melee proof (pickaxe swing at an ore rock).
   "CharacterMelee",
   "CharacterTurnUp",
+  // The clip stamp key (#1173), so the proof presses the real binding.
+  "LF_ClipStamp",
   // Vehicle lights, to light the dashboard indicators for the vehicle HUD proof (#921).
   "VehicleLightsToggle",
   "CarLightsHiBeamToggle",
@@ -106,9 +108,10 @@ export function buildLine(id, spec) {
     return `${id} interact ${spec.step}`;
   }
   if (spec.verb === "stand") {
-    // Optional side (e default, w, n, s; a trailing 2 stands 2 m out, not 1.2): stand on that side of the entity, facing it.
+    // Optional side (e default, w, n, s; trailing whole metres 1 to 30 stand that far out, not 1.2, e.g.
+    // s9 for a building's street side): stand on that side of the entity, facing it.
     if (spec.side) {
-      if (!["e", "w", "n", "s", "e2", "w2", "n2", "s2"].includes(spec.side)) throw new Error(`bad stand side ${spec.side}`);
+      if (!/^[ewns]([1-9]|[12][0-9]|30)?$/.test(spec.side)) throw new Error(`bad stand side ${spec.side}`);
       return `${id} stand ${token(spec.entityName, "entity")} ${spec.side}`;
     }
     return `${id} stand ${token(spec.entityName, "entity")}`;
@@ -134,7 +137,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "spikeplace" || spec.verb === "spikewhere" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "sound") {
@@ -170,6 +173,9 @@ export function buildLine(id, spec) {
     // reload [config|dialogue|config,dialogue]: the server reads the owner config and the dev caption file again (#970).
     if (spec.what !== undefined && !/^[a-z]+(,[a-z]+)*$/.test(spec.what)) throw new Error(`reload what must be names joined by commas (config,dialogue): ${spec.what}`);
     return spec.what ? `${id} reload ${spec.what}` : `${id} reload`;
+  }
+  if (spec.verb === "spikeaim") {
+    return `${id} spikeaim ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
   }
   if (spec.verb === "dialogue") {
     return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
@@ -1526,13 +1532,16 @@ function main(argv) {
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
     }
+    if (cmd === "spikeaim") {
+      return printResult(sendCommand({ verb: "spikeaim", arg: rest[0], value: rest[1] }, 10000));
+    }
     if (cmd === "dialogue") {
       return printResult(sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 15000));
     }
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "spikeplace" || cmd === "spikewhere" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {

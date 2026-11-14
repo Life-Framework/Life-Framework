@@ -67,7 +67,7 @@ modded class SCR_InventoryStorageManagerComponent
 			return;
 		}
 
-		SCR_HintManagerComponent.ShowCustomHint(WidgetManager.Translate("#EL-Item_Sold", totalValue), "#EL-Trade_Successful", 3.0);
+		SCR_HintManagerComponent.ShowCustomHint(LF_Terms.Text("#EL-Item_Sold", totalValue.ToString()), "#EL-Trade_Successful", 3.0);
 		this.SetReturnCode(EInventoryRetCode.RETCODE_OK);
 		if (cb)
 			cb.InvokeOnComplete();

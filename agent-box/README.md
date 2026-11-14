@@ -221,7 +221,7 @@ the game profile). Hooks:
 - `reload [config|dialogue|config,dialogue]` (dev gate; no name means both) asks the server to read the owner `config.json`
   and the dev caption file `$profile:LifeFramework/dev/dialogue.json` again and stream them (#970). Replies at once with
   `reload asked: <what>`; the server's log has `[LFDebug:Config] reload ...`. `dialogue caption <#key>` (client) reports
-  `caption=<text> overrides=N`: what this client shows for the key; `dialogue shown` reports the last caption the scene put on screen. Proof: `session.mjs live-reload-proof`
+  `caption=<text> overrides=N`: what this client shows for the key; `dialogue shown` reports the last caption the scene put on screen. Proof: `session.mjs live-reload-proof`. `session.mjs config-harness-proof` (`up --clients 1`) is the config harness's client stage (#300): each fixture in `tools/test/config-fixtures` with a `client` block is served as the owner config and client 1 reads a shop price or whether an action is offered (`docs/config/owner-config.md`)
   (`up --clients 1`); `docs/worktrees.md` "Live reload".
 - `peers` (read-only, runs on the client) lists every player body this client has streamed in as
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
@@ -665,9 +665,14 @@ node agent-box/session.mjs down               # closes every process the session
 - Memory: each client takes about 2.1 GB private, the server about 0.8 GB. With
   Workbench also open the server logged `Out of memory. Free system ~300 MB`
   during client load and kept running.
-- Police: there is no faction screen. `roster <id>` writes the server profile's
-  `LifeFramework/whitelist.txt` with that player id's session identity before
-  `up`; that client can then Clock in at `Roadmap_Police_Desk`. `proof` still
+- Police: there is no faction screen. A police roster is the server profile's
+  `LifeFramework/whitelist.txt` with the client's session identity. Seed it in the `up` that boots the
+  server: `up --clients 2 --mission playtest --roster 2` (player ids, comma separated; `--seed <file>`
+  copies any file into `LifeFramework/` the same way). The leg that boots the server writes the files
+  right before it starts the server, on whichever machine it runs on (a `--machine lf-testbox` session
+  included, which is why a roster written on this PC before `up` never reached it). `roster <id>...` on a
+  live session rewrites the file and makes the server reload it within 2 s (`[LFDebug:Host] roster
+  reloaded`). That client can then Clock in at `Roadmap_Police_Desk`. `proof` still
   uses the debug menu (`FactionPoliceButton`), which sets the role without the
   inventory swap. The wanted card's posters are logged on the reading client
   (`[LFDebug:WantedBoard] poster N: ...`); read the client log after `down`.
@@ -746,3 +751,15 @@ still the old menu, #168), playtest restart kept cash, bank, and org but lost
 the signed-up job; the `jobsignups` payload (save version 11) keeps it since.
 
 - `session.mjs world-reset-proof` (#937, one client): rob the till, die, press Respawn; the world reset restocks the till and clears wanted. Also the demo of the playtest world reset.
+
+## Stable client identity and rejoin
+
+A harness client is keyed by a session slot, not by its player id: the server hands out the lowest slot
+no connected player holds (`LF_PlayerIdentity.SlotOf`, logged as `[LFDebug:Account] session slot S for
+player P: <uid>` and `session slot S released: player P left`), so a client that quits and rejoins is
+the same account under a new player id. `session.mjs identity [n]` prints each client's player id, slot
+and identity (recorded at join in `session.json`); `session.mjs rejoin <n>` closes client n, waits for the
+server to release the slot, starts it again and exits 0 only when the identity is the same. A proof that
+needs "the same player came back" calls it and then reads the server log (`spawning player <new id>` is a
+returning account; `registration form sent` is a new one). `session.mjs rejoin-proof` is the worked example
+(`up --clients 2 --mission playtest --roster 2`).

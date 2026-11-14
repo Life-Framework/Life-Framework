@@ -1,4 +1,5 @@
 MatPBRBasic {
+ Color 0.3924 0.388 0.3749 1
  BCRMap "{DCA6AE7323E0A4C6}Assets/_SharedData/Plaster/ST_Plaster_Clean_White_02_BCR.edds"
  NMOMap "{E47E15E1FA97F658}Assets/_SharedData/Plaster/ST_Plaster_Clean_White_02_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{0607812C10893F16}" {

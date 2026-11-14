@@ -1,4 +1,5 @@
 MatPBRBasic {
+ Color 0.7394 0.7712 0.8121 1
  BCRMap "{B03E555A974171AC}Assets/_SharedData/Tiles/ST_Tiles_Mosaic_1m_01_BCR.edds"
  NMOMap "{88E6EEC84E362332}Assets/_SharedData/Tiles/ST_Tiles_Mosaic_1m_01_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{B7240423BDA6DC6E}" {

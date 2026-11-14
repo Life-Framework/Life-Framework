@@ -68,6 +68,7 @@ class LF_StaticReset
 		LF_WantedPosterBoardComponent.ResetStatics();
 		LF_WantedPostersConfig.Reload();
 		LF_PhotoIdCardConfig.Reload();
+		LF_DisconnectConfig.Reload();
 		LF_EvidenceLocker.ResetStatics();
 		LF_Evidence.ResetStatics();
 		LF_Witness.ResetStatics();
@@ -109,9 +110,12 @@ class LF_StaticReset
 		LF_Roles.ResetStatics();
 		LF_DownedPatient.ResetStatics();
 		LF_PlacementGhost.ResetStatics();
+		LF_PlacementService.ResetStatics();
 		LF_Systems.ResetStatics();
 		LF_ItemCatalogue.ResetStatics();
 		LF_Cleanup.ResetStatics();
+		LF_PlacementAim.ResetStatics();
+		LF_ClipStamp.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

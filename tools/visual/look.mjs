@@ -6,7 +6,7 @@
 //   tools\cli look selftest                      the Node checks (plan, status, PNG stats, flags); no Workbench
 //   flags: --edit (the World Editor view instead of play mode)  --close N (close-ups per area, default 12; 0 = none)
 //          --radius m  --hour h (local solar time, default 14)  --settle ms  --out dir  --measure (peak RAM)
-//          --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
+//          --world <path> (override the world; the proof for a failed load)  --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
 //          --budget s (base budget before the per-shot part: 90 fresh, 150 through the server; raise it on a slow box)
 //          --serve (use the look server, starting one) --fresh (never use it); look serve [--status|--stop [--remove]]
 //
@@ -17,16 +17,18 @@
 
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { freemem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { deflateSync, inflateSync } from "node:zlib";
 import { quietSpawn } from "../lib/quiet-launch.mjs";
 import * as tb from "../remote/testbox.mjs";
+import { townWorld } from "../lib/addons.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PLUGIN = join(ROOT, "tools", "visual", "wb", "LF_VisualShotsPlugin.c");
-const WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+const WORLD = townWorld(); // the pack world (a SubScene of DebugWorld that holds the village) when the pack is here
 const WORKBENCH_MB = 1900; // peak working set of the run, measured 2026-11-11 (docs/visual-testing.md)
 const RAM_MARGIN_MB = 300;
 const BOOT_BUDGET_S = 90;
@@ -39,7 +41,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["close", "radius", "hour", "settle", "first", "out", "states", "at", "budget"]);
+  const valued = new Set(["world", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -131,7 +133,7 @@ export function planText(shots, areas, opts = {}) {
   const minX = Math.min(...areas.map((a) => a.x - a.radius));
   const minZ = Math.min(...areas.map((a) => a.z - a.radius));
   const lines = [
-    `world ${WORLD}`,
+    `world ${opts.world || WORLD}`,
     `mode ${opts.edit ? "edit" : "play"}`,
     `hour ${opts.hour ?? DEFAULTS.hour}`,
     `settle ${opts.settle ?? DEFAULTS.settle}`,
@@ -172,6 +174,25 @@ export function parseStatus(text) {
     }
   }
   return out;
+}
+
+
+// #1147: a Workbench that came up on a default scene (an empty world with a green vegetable crate) once got
+// photographed and reported as a success. The plugin opens the requested world or errors; this re-checks what it
+// reported, from the status file, so a stale or lying plugin cannot hand back fallback pictures.
+export function worldProblem(status, wanted) {
+  const want = String(wanted || "").split("/").pop().toLowerCase();
+  const bad = status.errors.find((e) => /^world_(not_opened|mismatch)|^no_world_api|^play_no_world/.test(e));
+  if (bad) return `the requested world did not load (${bad})`;
+  if (!status.world) return "the plugin never opened the world";
+  if (want && !status.world.toLowerCase().includes(want)) return `the open world is ${status.world}, not the requested ${wanted} (Workbench fell back to a default scene)`;
+  return null;
+}
+
+// Backup only: every frame byte-identical across 3+ shots of different views means the camera never saw a world.
+export function identicalFrames(hashes) {
+  const real = hashes.filter(Boolean);
+  return real.length >= 3 && new Set(real).size === 1;
 }
 
 // ------------------------------------------------------------------ PNG (8-bit RGB / RGBA, not interlaced)
@@ -515,7 +536,7 @@ async function run(args) {
     return 2;
   }
   const world = itemPerArea ? null : loadWorld(ROOT);
-  const opts = { edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
+  const opts = { world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
   const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
   for (const n of itemNotes) console.log(`look: ${n}`);
   const shots = perArea.flatMap((p) => p.shots);
@@ -573,6 +594,13 @@ async function run(args) {
         },
         parseStatus,
       }).catch((e) => ({ ok: false, why: `look server error: ${e.message}` }));
+      // A served answer on the wrong world (#1147: a default scene) is a broken server, not a failed look.
+      const wrongWorld = r.ok ? worldProblem(parseStatus(r.statusText), opts.world || WORLD) : null;
+      if (wrongWorld) {
+        serve.killServer(ROOT, serve.readServeState(ROOT));
+        r.ok = false;
+        r.why = wrongWorld;
+      }
       if (r.ok) {
         served = r.served;
         sha = r.sha;
@@ -605,10 +633,12 @@ async function run(args) {
   }
 
   if (res.timedOut) console.log(`TIMEOUT after ${Math.round(res.seconds)}s: Workbench was killed; ${Object.keys(status.shots).length}/${shots.length} shot(s) written`);
-  if (!status.world) {
+  const wantedWorld = opts.world || WORLD;
+  const wp = worldProblem(status, wantedWorld);
+  if (wp) {
     const log = latestLog(profile);
     const errs = compileErrors(log);
-    console.log(`FAIL  look: Workbench exit ${res.code} after ${r1(res.seconds)} s and the plugin never opened the world${status.errors.length ? ` (${status.errors.join("; ")})` : ""}`);
+    console.log(`FAIL  look: ${wp}; no pictures kept. Workbench exit ${res.code} after ${r1(res.seconds)} s${status.errors.length ? ` (${status.errors.join("; ")})` : ""}`);
     for (const e of errs) console.log(`      ${e.trim()}`);
     if (log) console.log(`      log: ${log}`);
     return 1;
@@ -621,6 +651,7 @@ async function run(args) {
   let missing = 0;
   const overview = [];
   const summaries = [];
+  const frameHashes = [];
   for (const { area, shots: list } of perArea) {
     const dir = join(outRoot, safe(area.name));
     mkdirSync(dir, { recursive: true });
@@ -633,7 +664,9 @@ async function run(args) {
       if (st) {
         try {
           renameSync(join(raw, st.file), file);
-          px = pixelStats(decodePng(readFileSync(file)));
+          const bytes = readFileSync(file);
+          frameHashes.push(createHash("md5").update(bytes).digest("hex"));
+          px = pixelStats(decodePng(bytes));
         } catch (e) {
           px = null;
           if (!existsSync(file)) st.file = null;
@@ -659,6 +692,11 @@ async function run(args) {
   }
   // A server's raw folder also holds serve.txt and alive.txt, which are the server's; only request files go.
   if (!args.flags.keep) for (const f of readdirSync(raw)) if (served === "fresh" || serve.REQUEST_FILES.test(f)) rmSync(join(raw, f), { force: true });
+
+  if (identicalFrames(frameHashes)) {
+    console.log(`FAIL  look: all ${frameHashes.length} frames are byte-identical, so the camera never saw the requested world (Workbench likely rendered a fallback scene). Retry when RAM is free; do not use these pictures.`);
+    return 1;
+  }
 
   const total = (Date.now() - started) / 1000;
   const ram = res.peakMb ? `, Workbench peak ${res.peakMb} MB` : "";
@@ -731,7 +769,7 @@ export async function selftest() {
   ok(shots[6].line === "close test_area__c02_Commercial_Sack - 104 0 200 -90", `unnamed close line: ${shots[6].line}`);
   ok(shotsFor(area, world, { close: 0 }).length === 5, "--close 0 still planned a close-up");
   const plan = planText(shots, [area], { hour: 9 });
-  ok(/^world Worlds\/DebugWorld\/DebugWorld\.ent\nmode play\nhour 9\nsettle 350\nfirst 3000\npark -60 40\nshot /.test(plan), `plan head: ${plan.slice(0, 110)}`);
+  ok(/^world Worlds\/(DebugWorld\/DebugWorld|Everon1989Town\/Everon1989Town)\.ent\nmode play\nhour 9\nsettle 350\nfirst 3000\npark -60 40\nshot /.test(plan), `plan head: ${plan.slice(0, 110)}`);
   ok(planText(shots, [area], { edit: true }).includes("\nmode edit\n"), "--edit did not reach the plan");
   ok(resolveArea("12.5,40", []).name === "xz-13-40" && resolveArea("bank", [{ name: "bank", x: 1, z: 2, radius: 5 }], 9).radius === 9, "resolveArea");
   let threw = false;
@@ -860,11 +898,22 @@ export async function selftest() {
   ok(/id == lastId/.test(plugin), "the plugin must skip a request id it already served (its DeleteFile of go.txt does not take)");
   for (const f of ["serve.txt", "alive.txt", "go.txt", "done.txt", "stop.txt", "ok request "]) ok(plugin.includes(f), `the plugin lost the server protocol piece '${f}'`);
 
+  // #1147: fallback scene guard.
+  const good = parseStatus("1018 ok world $LifeFramework:Worlds/DebugWorld/DebugWorld.ent view=1x1 entities=909");
+  ok(worldProblem(good, "Worlds/DebugWorld/DebugWorld.ent") === null, "the right world was refused");
+  ok(/did not load/.test(worldProblem(parseStatus("40 error world_not_opened Worlds/Nope/Nope.ent (open: )"), "Worlds/Nope/Nope.ent") ?? ""), "world_not_opened was not a failure");
+  ok(/did not load/.test(worldProblem(parseStatus("40 error world_mismatch wanted=A open=B"), "A") ?? ""), "world_mismatch was not a failure");
+  ok(/never opened/.test(worldProblem(parseStatus(""), WORLD) ?? ""), "an empty status passed");
+  const crate = parseStatus("20 ok world $ArmaReforger:worlds/Default/Default.ent view=1x1 entities=1");
+  ok(/fell back/.test(worldProblem(crate, WORLD) ?? ""), "a default scene was accepted as the requested world");
+  ok(identicalFrames(["a", "a", "a"]) && !identicalFrames(["a", "b", "a"]) && !identicalFrames(["a", "a"]) && !identicalFrames([null, "a", "a"]), "identical-frame backup");
+  ok(planText([], [{ x: 0, z: 0, radius: 1 }], { world: "Worlds/Bad/Bad.ent" }).startsWith("world Worlds/Bad/Bad.ent"), "--world did not reach the plan");
+
   if (failures.length) {
     for (const f of failures) console.log(`look selftest FAIL: ${f}`);
     return 1;
   }
-  console.log("look selftest: OK (plan, status, PNG stats, flags, plugin directives, lens fan, look server classifier and protocol)");
+  console.log("look selftest: OK (plan, status, PNG stats, flags, plugin directives, lens fan, world guard, look server classifier and protocol)");
   return 0;
 }
 
@@ -880,7 +929,14 @@ export async function main(argv) {
     console.log(USAGE);
     return args.flags.help ? 0 : 2;
   }
-  return run(args);
+  // One of this PC's Workbench slots for the whole look (tools/lib/wb-lock.mjs).
+  const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
+  const wb = await acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
+  try {
+    return await run(args);
+  } finally {
+    wb.release();
+  }
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {

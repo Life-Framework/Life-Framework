@@ -54,7 +54,7 @@ class LF_Test_CaseBoardWorld : LF_Test
 
 		LF_WantedReportRecord robbery = LF_WantedReports.Add(ROBBER, LF_WantedReports.OFFENCE_ROBBERY, "", "", "Fuel station", false);
 		LF_CaseBoard.OnReport(robbery.m_iSequence);
-		IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Evidence.BAG_PREFAB, "1000 0 1000");
+		IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Evidence.BagPrefab(), "1000 0 1000");
 		LF_EvidenceBagComponent bagComponent;
 		if (bag)
 			bagComponent = LF_EvidenceBagComponent.Cast(bag.FindComponent(LF_EvidenceBagComponent));
@@ -93,8 +93,8 @@ class LF_Test_CaseBoardWorld : LF_Test
 	//! an officer carrying a footprint and a statement pinned one card (session, 2026-11-13).
 	protected void RunBagsDoNotStack(LF_TestContext ctx)
 	{
-		IEntity first = LF_Utils.SpawnEntityPrefab(LF_Evidence.BAG_PREFAB, "1000 0 1012");
-		IEntity second = LF_Utils.SpawnEntityPrefab(LF_Evidence.BAG_PREFAB, "1000 0 1013");
+		IEntity first = LF_Utils.SpawnEntityPrefab(LF_Evidence.BagPrefab(), "1000 0 1012");
+		IEntity second = LF_Utils.SpawnEntityPrefab(LF_Evidence.BagPrefab(), "1000 0 1013");
 		LF_QuantityComponent firstQuantity;
 		LF_QuantityComponent secondQuantity;
 		if (first)
