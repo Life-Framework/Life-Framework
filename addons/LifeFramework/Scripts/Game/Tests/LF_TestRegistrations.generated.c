@@ -426,6 +426,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SurvivalLight(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalRealHealth(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SurvivalSync(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Systems(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SystemsKeepData(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_SystemsWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.LOGIC);

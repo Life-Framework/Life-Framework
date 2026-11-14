@@ -120,6 +120,9 @@
     },
     "extraItemPrefabs": []
   },
+  "systems": {
+    "switches": {}
+  },
   "vehicles": {
     "buyPercent": 100,
     "sellBackPercent": 50,

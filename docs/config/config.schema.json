@@ -615,6 +615,27 @@
       "additionalProperties": false,
       "x-class": "LF_ShopPricesConfig"
     },
+    "systems": {
+      "type": "object",
+      "description": "The `systems` section: which systems this server runs.",
+      "properties": {
+        "switches": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is a system id: a Feature/<Area> folder name (Farming) or a named part of one (Robbery, Pager), as Configs/Systems/LF_SystemCatalog.conf lists them. Turning a system off hides its actions, refuses its requests and spawns nothing; its saved data is kept, so turning it on again restores it. A framework system (LOCKED), a system with no switch yet (NOT_YET), and turning off one that an enabled system needs are refused at boot, and the system stays on.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_SystemsConfig"
+    },
     "vehicles": {
       "type": "object",
       "description": "Vehicle prices.",

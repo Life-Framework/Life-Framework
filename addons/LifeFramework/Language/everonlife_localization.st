@@ -9076,6 +9076,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Something is in the way."
      Comment "Toast when a placement is refused because something stands where it would go: a car, a post, a spike strip already lying there (#928)."
     }
+    CustomStringTableItem "{64BA75A2F63B70CD}" {
+     Id "LF-Systems_Off"
+     Target_en_us "That is turned off on this server."
+     Comment "Caption or toast when a player reaches something whose system the server owner turned off: a till robbery begun before the switch, a farm plot (#960)."
+    }
   }
  }
 }

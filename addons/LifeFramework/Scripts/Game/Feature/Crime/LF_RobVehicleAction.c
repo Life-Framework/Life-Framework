@@ -12,6 +12,13 @@ class LF_RobVehicleAction : ScriptedUserAction
 	protected float m_fLastRobTime = LF_RobCooldown.NEVER;
 
 	//------------------------------------------------------------------------------------------------
+	//! Hidden while the Robbery system is off (#960).
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled(LF_RobAction.SYSTEM);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		float currentTime = GetGame().GetWorld().GetWorldTime();
@@ -62,6 +69,9 @@ class LF_RobVehicleAction : ScriptedUserAction
 	//! \return The spawned vehicle, or null when nothing spawned.
 	static IEntity CommitVehicleRobbery(string playerUid, IEntity user, ResourceName vehiclePrefab)
 	{
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "vehicle robbery"))
+			return null;
+
 		if (!user)
 		{
 			LF_Debug.Error("Crime", "vehicle robbery skipped: no user entity");

@@ -196,7 +196,7 @@ class LF_ConfigService
 	//! adds its key here when its feature reads it (#282, #283).
 	static bool IsKnownTopLevelKey(string key)
 	{
-		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION;
+		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_SystemsConfig.SECTION;
 	}
 
 	//------------------------------------------------------------------------------------------------

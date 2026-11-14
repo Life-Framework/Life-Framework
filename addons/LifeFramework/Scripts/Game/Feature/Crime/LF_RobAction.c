@@ -6,6 +6,9 @@ class LF_RobAction : ScriptedUserAction
 	static const string REFUSED_NOT_CIVILIAN = "robbery refused: only civilians can rob";
 	static const string REFUSED_POLICE = "robbery refused: not enough police on duty";
 	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
+	static const string REFUSED_OFF = "robbery refused: the Robbery system is off";
+	//! The system id (LF_Systems, #960): till, weapon and vehicle robbery and the till hold.
+	static const string SYSTEM = "Robbery";
 
 	[Attribute(defvalue: "100", uiwidget: UIWidgets.Auto, desc: "Amount of money to steal when no range is set")]
 	protected int m_iMoneyAmount;
@@ -163,6 +166,12 @@ class LF_RobAction : ScriptedUserAction
 	static int CommitRobbery(string playerUid, IEntity user, int payout, int policeOnDuty, int minPolice, float cooldownSeconds, float lastRobTimeMs, float nowMs, out float outLastRobTimeMs, string alarmKind = "")
 	{
 		outLastRobTimeMs = lastRobTimeMs;
+
+		if (LF_Systems.Refuses(SYSTEM, "till robbery"))
+		{
+			s_sLastRefusal = REFUSED_OFF;
+			return 0;
+		}
 
 		string refusal = Gate(playerUid, payout, policeOnDuty, minPolice, cooldownSeconds, lastRobTimeMs, nowMs);
 		if (!refusal.IsEmpty())
@@ -358,6 +367,10 @@ class LF_RobAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		// A server with robbery off offers no robbery anywhere (#960).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return false;
+
 		// A dialogue-only till is robbed by talking to its attendant with a weapon drawn.
 		return !m_bDialogueOnly;
 	}
