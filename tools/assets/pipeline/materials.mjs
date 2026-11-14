@@ -21,6 +21,10 @@ export const CLASSES = {
   rubber: { rough: [0.88, 0.95], metal: [0, 0], base_scale: 0.6 },
   metal: { rough: [0.3, 0.5], metal: [0.8, 0.95], base_scale: 0.9 },
   fabric: { rough: [0.85, 1], metal: [0, 0], base_scale: 1 },
+  // A worked metal surface: dull, not a mirror. Ingots, tools, castings.
+  brushed_metal: { rough: [0.4, 0.65], metal: [0.85, 0.95], base_scale: 1 },
+  // Rock, ore and anything mineral: rough and never metal.
+  stone: { rough: [0.78, 0.95], metal: [0, 0], base_scale: 1 },
 };
 const KEYS = ["rough", "metal", "base_scale", "base_lum"];
 
@@ -35,8 +39,17 @@ export function resolveMaterials(spec) {
   return { default: m.default || "plastic", regions: m.regions || [], classes };
 }
 
+// The plan of each spec variant (docs/asset-pipeline/README.md "Variants"): its own materials block,
+// or the spec's when it has none.
+export function variantPlans(spec) {
+  return (spec.variants || []).map((v) => ({ name: v.name, plan: resolveMaterials({ materials: v.materials || spec.materials }) }));
+}
+
 export function materialProblems(spec) {
   const out = [];
+  for (const v of spec.variants || []) {
+    if (v.materials) out.push(...materialProblems({ materials: v.materials }).map((p) => `variant ${v.name}: ${p}`));
+  }
   if (spec.materials === undefined) return out;
   const m = spec.materials;
   const r = resolveMaterials(spec);

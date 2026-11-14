@@ -140,8 +140,9 @@ and only what Meshy's own metallic map marks above 0.5 stays metal.
 }
 ```
 
-- Built-in classes: `plastic` (rough 0.75 to 0.85, metal 0 to 0.03), `rubber`, `metal`, `fabric`
-  (`materials.mjs`). `classes` overrides or adds one.
+- Built-in classes: `plastic` (rough 0.75 to 0.85, metal 0 to 0.03), `rubber`, `metal`, `fabric`,
+  `brushed_metal` (rough 0.4 to 0.65, metal 0.85 to 0.95: a worked casting, not a mirror) and `stone`
+  (rough 0.78 to 0.95, never metal) (`materials.mjs`). `classes` overrides or adds one.
 - `rough` and `metal` are `[lo, hi]`: Meshy's value 0..1 maps linearly onto it, so `[0.8, 0.8]` pins it.
   Colour is `base_scale` (darken, keep the hue) or `base_lum` (grey from the original luminance, scuffs kept).
 - A region picks pixels by `metallic_above` (Meshy's metallic map) or `above_height_m` (faces whose centre
@@ -149,6 +150,40 @@ and only what Meshy's own metallic map marks above 0.5 stays metal.
 - Edit the spec and rerun `asset run <slug> --from clean`; the raw maps stay Meshy's. The handcuffs and
   the spike strip are the worked examples. Selftest: `tools\cli asset selftest`
   (`validation/asset-materials-selftest.mjs`).
+
+## Modelled in Blender
+
+Simple shapes (a bar, a lump of rock) do not need a generator. With `"source": { "blender": "model.py",
+"textures": [{ "id": "Metal046B", "use": "..." }] }` the `generate` stage spends no credits: it downloads
+each named [ambientCG](https://ambientcg.com) set (all CC0 1.0; only the JPG maps are unpacked) into
+`tmp/assets/<slug>/src/` and runs `tools/assets/<slug>/model.py` headless. The script builds the mesh,
+bakes its maps from node recipes over those sets and procedural masks
+(`tools/assets/pipeline/blender/texbake.py`), and writes the same `raw/model.glb` and `raw/tex_*.png` a
+Meshy run leaves, so `clean` and `import` work unchanged. `budget.credits` may be 0. It also renders
+`raw/review_<Variant>.png` on the maps after the material step: read those before `clean`. Worked
+examples: `tools/assets/metal-ingot` and `tools/assets/ore-nugget`. Every set used gets a row in
+`docs/credits.md`.
+
+## Variants
+
+One model, several materials: `"variants": [{ "name": "Copper", "emat": "Assets/.../Copper.emat",
+"materials": { ... } }]`. The model script writes `raw/<Variant>/tex_*.png`; `clean` packs each set through
+that variant's material classes into `<Name>_<Variant>_BCR.tif` and `_NMO.tif`; `import` rebuilds them
+and writes one emat per variant. A variant that names an existing emat keeps its GUID, so the prefabs
+that reference it need no edit; the emat's text is the import's output and is rewritten each run. The
+model's own material is the first variant's; the other prefabs assign theirs with a
+`MaterialAssignClass` on the model's material name. `emat_template` (a file beside the spec, with
+`$BCR` and `$NMO` in it) replaces the plain two-map emat, for one that inherits a vanilla material.
+`"prefab": false` skips the scaffold when the prefabs already exist.
+
+## Material assets
+
+Kind `material` is a texture set with no model: tiling maps for a mesh that already exists. It needs
+`source.blender` and at least one variant; `clean` runs only the material step and `import` only the
+textures and emats. `tools/assets/ore-veins` paints rock-with-ore tiles for the vanilla quarry boulder
+and lays them on with an emat that inherits `GraniteStone_01.emat`, so the boulder keeps its mask and
+macro maps. A texture that must tile samples its CC0 sets at whole-number UV scales and its noise on a
+torus (`Graph.torus`), so the tile has no seam.
 
 ## What the tool does not do
 

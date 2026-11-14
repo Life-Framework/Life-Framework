@@ -34,7 +34,15 @@ Attribution Required: [Yes/No and how]
 
 ## Textures
 
-*No third-party textures currently used.*
+```
+Asset Name: ambientCG sets Metal046B, Metal047B, Metal048B, Metal058C, Rust009, Rock035, Rock058
+Author: ambientCG
+Source: https://ambientcg.com (one page per set: https://ambientcg.com/view?id=<set>)
+License: CC0 1.0 Universal (public domain dedication)
+Usage: baked into the mining ingot, nugget and ore-vein maps (Assets/Resources/Mining/{Ingot,Nugget,OreVein}/Data);
+       the downloaded sets are not in the repository (tools/assets/<slug>/spec.json lists them)
+Attribution Required: No (credited in docs/credits.md)
+```
 
 ---
 

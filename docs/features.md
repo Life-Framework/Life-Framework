@@ -952,11 +952,13 @@
   no longer re-sets the base mesh, which dropped the prefab's material
   overrides and rendered the items white. Cash, pickaxe, axe, ore and bar
   inventory previews use the Front preset with a narrow FOV.
-- ⚠️ Inventory previews draw the mesh's baked material and ignore the prefab's
-  material override, so nuggets preview as grey stone and bars as red brick
-  (re-applying the remap to `ResolvePreviewEntityForPrefab` did not change the
-  render, 2026-11-08). The fix is a mesh that bakes the ore material (Workbench
-  FBX import). The pickaxe uses the pistol rig and is gripped at the handle end;
+- ✅ Each ore and metal reads at a glance (2026-11-14): one cast ingot model for the three bars
+  (`Assets/Resources/Mining/Ingot/`), one fractured lump for the three nuggets
+  (`Assets/Resources/Mining/Nugget/`), each with a material per metal, and the iron, copper and gold
+  rocks show their ore as veins on the granite (`Assets/Resources/Mining/OreVein/`). Made in Blender
+  from CC0 textures by `tools\cli asset` (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`);
+  prefab and emat GUIDs are unchanged, so mining, smelting and selling are untouched.
+- ⚠️ The pickaxe uses the pistol rig and is gripped at the handle end;
   `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
   needs a re-exported mesh with the pivot up the handle.
 
@@ -2649,6 +2651,9 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+
+### `LF_AmbulanceSiren` — `Feature/SirenLights/LF_AmbulanceSiren.c` (#923, 2026-11-13)
+- The ambulance has a siren: an on-duty medic driving it picks "Siren: on" in the light controls and hears a two-tone hi-lo with the light bar. Tests: `sirenlights/ambulance-siren` (LOGIC), `sirenlights/ambulance-siren-world` (WORLD); session proof `ambulance-siren-proof`.
 
 ### `LF_NpcStun` — `Feature/Police/LF_NpcStun.c`, `Core/Npcs/LF_NpcBaseEntity.c` (#922, 2026-11-14)
 - ✅ **The taser stuns town NPCs.** A town NPC is an `LF_NpcBaseEntity` with no damage manager, so a dart that hits one reports to nobody (the clerk never went down). The shot is read from the shooter instead: the server's `OnProjectileShot` handler on every player body (`LF_EvidenceShooter`) calls `LF_NpcStun.OnShot`, which, when the held weapon carries `LF_StunWeaponComponent`, follows the aim line for the weapon's reach and stuns the nearest NPC within 0.6 m of it (`PickTarget`, the pure rule) with a clear line (`Blocked`). The stunned NPC falls onto its back (`LF_NpcBaseEntity`: replicated `m_bLF_Stunned` plus rest origin and angles, each peer poses it from them, so a late joiner sees it), the shooter gets the toast `#LF-Police_NpcStunned`, a talk, shop or witness question is refused (`LF_NpcStun.BlocksTalk` in `LF_Dialogue`, `LF_QuestAction`, `LF_ShopAction`, `LF_WitnessAskAction`; an open conversation ends), and the server stands it up after the weapon's `m_fStunSeconds` (token-guarded). A dying NPC or one already down is not stunned. Guns still do not hurt protected NPCs. Tests `police/npc-stun` (pick), `police/npc-stun-world` (pose, talk block, wake, stale wake); harness `shootnpc <name>` with the taser in hand runs the same code, `seen` reports `npc=<name>:stun=S:up=Y`; session proof `npc-stun-proof`.

@@ -17,6 +17,10 @@
 //   pickByRubric breaking ties on the high n -> FAIL concepts: a tie goes to the lower number
 //   pickByRubric taking ranking()[0] (2026-11-14) -> FAIL concepts: a tie goes to the lower number, era_current 0 is skipped
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
+// red-proof: 2026-11-14 (variants, Blender source, material kind):
+//   writeVariantMetas drawing a fresh emat GUID -> FAIL variants: a variant keeps the GUID of the emat it names
+//   variantEmatText ignoring the template     -> FAIL variants: the template's $BCR and $NMO are filled in
+//   specProblems without the material check   -> FAIL spec: a material asset with no variant is refused
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -27,7 +31,8 @@ import { checkReport, checkSockets } from "../assets/pipeline/checks.mjs";
 import { logProblems, runLog } from "../assets/pipeline/import.mjs";
 import { KINDS } from "../assets/pipeline/kinds.mjs";
 import * as meshy from "../assets/pipeline/meshy.mjs";
-import { ematText, freshGuid, textureMeta, usedGuids, writeAssetMetas, xobMeta, xobMetaIds } from "../assets/pipeline/meta.mjs";
+import { ematText, freshGuid, textureMeta, usedGuids, variantEmatText, writeAssetMetas, writeVariantMetas, xobMeta, xobMetaIds } from "../assets/pipeline/meta.mjs";
+import { variantPlans } from "../assets/pipeline/materials.mjs";
 import { ammoListWith, ammoPrefab, magazinePrefab, weaponPrefab } from "../assets/pipeline/prefab.mjs";
 import { checkModel, parse, worldPositions } from "../assets/pipeline/xob.mjs";
 
@@ -191,6 +196,37 @@ export async function main() {
     ok(/TextureNType\.conf/.test(textureMeta("a_NMO.edds", "TextureNType.conf", guids[0])), "meta: a normal map is a normal-type texture");
     const ids = xobMetaIds(text1, new Set());
     ok(xobMeta("Assets/W/Stick/Stick.xob", guids[3], { materials: [{ source: "Stick", emat: first.emat }], colliders: [args.collider], ids, flags: args.flags }) === text1, "meta: xobMetaIds reads back what xobMeta wrote");
+  }
+
+  // ---- variants: one model, a material per variant, existing emats keep their GUIDs ----------------
+  {
+    const addon = join(tmp, "vaddon");
+    mkdirSync(join(addon, "Assets", "M", "Data"), { recursive: true });
+    mkdirSync(join(addon, "Assets", "M", "Bar", "Data"), { recursive: true });
+    writeFileSync(join(addon, "Assets", "M", "Data", "Iron.emat"), "MatPBRBasic {\n}\n");
+    writeFileSync(join(addon, "Assets", "M", "Data", "Iron.emat.meta"), 'MetaFileClass {\n Name "{29473C87C35726A4}Assets/M/Data/Iron.emat"\n}\n');
+    const variants = [{ name: "Iron", emat: "Assets/M/Data/Iron.emat" }, { name: "Gold", emat_template: "t.txt" }];
+    const tpl = 'MatPBR2Layers : "{E9C191F08ACE8804}x.emat" {\n BCRMap "$BCR"\n NMOMap "$NMO"\n BCRMap2 "$BCR"\n}\n';
+    const refs = writeVariantMetas(addon, { assetDir: "Assets/M/Bar", name: "Bar", variants, templates: { Gold: tpl } });
+    ok(refs[0].emat === "{29473C87C35726A4}Assets/M/Data/Iron.emat", "variants: a variant keeps the GUID of the emat it names");
+    ok(readFileSync(join(addon, "Assets", "M", "Data", "Iron.emat"), "utf8") === ematText(refs[0]), "variants: the named emat is rewritten to the variant's maps");
+    ok(refs[0].bcr.endsWith("Assets/M/Bar/Data/Bar_Iron_BCR.edds") && refs[1].nmo.endsWith("Assets/M/Bar/Data/Bar_Gold_NMO.edds"), "variants: maps are <Name>_<Variant>_BCR/NMO under the asset's Data");
+    const gold = readFileSync(join(addon, "Assets", "M", "Bar", "Data", "Bar_Gold.emat"), "utf8");
+    ok(gold === variantEmatText(refs[1], tpl) && gold.split(refs[1].bcr).length === 3 && !gold.includes("$"), "variants: the template's $BCR and $NMO are filled in");
+    const again = writeVariantMetas(addon, { assetDir: "Assets/M/Bar", name: "Bar", variants, templates: { Gold: tpl } });
+    ok(JSON.stringify(again) === JSON.stringify(refs), "variants: a re-import keeps every GUID");
+    const def = writeAssetMetas(addon, { assetDir: "Assets/M/Bar", name: "Bar", collider: { name: "UBX_Bar", layerPreset: "ItemFireView", gamemat: "{0}g.gamemat" }, defaultEmat: refs[0].emat });
+    ok(def.emat === refs[0].emat && !def.bcr && readFileSync(join(addon, "Assets", "M", "Bar", "Bar.xob.meta"), "utf8").includes(`AssignedMaterial "${refs[0].emat}"`), "variants: the model's own material is the first variant's, with no base set");
+    const plans = variantPlans({ materials: { default: "stone" }, variants: [{ name: "A" }, { name: "B", materials: { default: "brushed_metal" } }] });
+    ok(plans[0].plan.default === "stone" && plans[1].plan.default === "brushed_metal" && plans[1].plan.classes.stone, "variants: a variant without materials takes the spec's");
+
+    const bl = { ...spec(), kind: "gadget", source: { blender: "model.py", textures: [{ id: "Metal046B" }] }, budget: { ...spec().budget, lod0_tris: 3000, credits: 0 }, parts: [] };
+    ok(specProblems(bl).length === 0, `spec: a Blender-made asset may have no credit budget (${specProblems(bl)[0]})`);
+    ok(specProblems({ ...bl, source: { blender: "model.py", textures: [{ id: "../x" }] } }).some((p) => /ambientCG asset id/.test(p)), "spec: a texture that is not an ambientCG id is refused");
+    ok(specProblems({ ...bl, kind: "material" }).some((p) => /needs at least one variant/.test(p)), "spec: a material asset with no variant is refused");
+    ok(specProblems({ ...bl, kind: "material", variants: [{ name: "Iron" }] }).length === 0, "spec: a material asset skips the size and triangle checks");
+    ok(specProblems({ ...bl, variants: [{ name: "Iron", emat: "Prefabs/x.et" }] }).some((p) => /emat must be/.test(p)), "spec: a variant emat outside Assets is refused");
+    ok(specProblems({ ...spec(), budget: { ...spec().budget, credits: 0 } }).some((p) => /credits must be 1/.test(p)), "spec: a Meshy asset still needs a credit budget");
   }
 
   // ---- clean report: budget, size, UVs, collider -------------------------------------------------
