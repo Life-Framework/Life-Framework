@@ -19,6 +19,7 @@ Reference:
 - [Install a server](owner/install.md) — from a server install to a player joining, then the save across restarts.
 - [Add a delivery job](owner/add-job.md) — a depot and a drop on your own map, then the XP and levels in `config.json`.
 - [Add a shop](owner/add-shop.md) — a counter, its stock, and its prices, or a catalogue outlet.
+- [M3 release notes](releases/m3-framework-release.md): what the framework release gives a server owner, what is not in it, and what waits for the maintainer.
 - [Upgrade notes](upgrades/README.md): one page per release, with the config changes, save versions, migrations and manual steps.
 - [Owner config check](config/owner-config.md) — `tools\cli config-check <config.json>`: what the server would log about your config.json, before a restart.
 
