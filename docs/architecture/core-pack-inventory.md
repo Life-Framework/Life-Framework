@@ -132,6 +132,7 @@ under "Hard-coded flagship values in script".
 | Path | Class | Reason |
 | --- | --- | --- |
 | `Building/` | core | Building preview |
+| `Buildings/Supermarket/` | pack | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`): the building is this server's look. The `Annex_Supermarket` placement in the core `Annex.layer` is the pipeline's proof and must go or be replaced by a neutral building before the M3 move |
 | `Characters/Core/` | core | Player and NPC bases |
 | `Characters/Presets/` (3) | core | Neutral spawn bodies the game mode lists |
 | `Characters/Npcs/Npc_Default_01.et` | split | Base of every NPC, dressed in the M88 uniform; core needs a neutral base |
@@ -247,6 +248,8 @@ its save.
 
 | Path | Class | Reason |
 | --- | --- | --- |
+| `Buildings/Supermarket/` | pack | Model and `.xob.meta` of the supermarket above |
+| `Buildings/Materials/` | split | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building: neutral, but only pack buildings use them today; they move with the first pack building or stay as a core material set |
 | `Crafting/` | core | Station meshes |
 | `Items/` | core | Cash, ID card, food, roleplay meshes |
 | `Props/CementMound/`, `Props/Military/Sandbags/` | core | Chain item textures |
