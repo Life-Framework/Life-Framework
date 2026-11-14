@@ -10,8 +10,10 @@ import { spawnSync } from "node:child_process";
 import { networkInterfaces, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, PACK, PACK_MISSION, playtestMission } from "../lib/addons.mjs";
 
-export const PLAYTEST_MISSION = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
+// The core's playtest header. A fresh host boots the pack's (hostMission).
+export const PLAYTEST_MISSION = CORE_PLAYTEST_MISSION;
 export const GAME_PORT = 2001;
 // -profile <dir> puts script files ($profile:) in <dir>\profile.
 export const STOP_FILE = ["profile", "lf-host-stop"];
@@ -35,11 +37,13 @@ export function hostPaths(dir) {
 // The launch flags. No -config (fatal with -addons), no -bindPort (ignored
 // in -server mode, the server listens on 2001), no test defines: without
 // LF_AUTOTEST the DebugWorld test runner stays idle.
-export function hostArgs({ mission = PLAYTEST_MISSION, addonsDir, profile, loadSave }) {
+// `addons` is the -addons list (tools/lib/addons.mjs launchAddons); the mission defaults to
+// the playtest header for those addons.
+export function hostArgs({ addons = launchAddons(), mission = playtestMission(addons), addonsDir, profile, loadSave }) {
   const args = [
     "-server", mission,
     "-addonsDir", addonsDir,
-    "-addons", "LifeFramework",
+    ...addonsArgs(addons),
     "-profile", profile,
     "-maxFPS", "60",
     "-logLevel", "normal",
@@ -71,6 +75,34 @@ export function findSavePoints(profile) {
   };
   walk(profile, 0);
   return out.sort((a, b) => b.mtime - a.mtime);
+}
+
+// The mission header GUID a save point belongs to: the engine writes a header's save under
+// .save/game/<header GUID>-<name>/ (pack-move-spike.md section 2). Null when the path has none.
+export function saveHeaderGuid(savePointDir) {
+  const m = /[\\/]game[\\/]([0-9A-Fa-f]{16})-[^\\/]*/.exec(savePointDir);
+  return m ? m[1].toUpperCase() : null;
+}
+
+function guidOf(resource) {
+  return /^\{([0-9A-Fa-f]{16})\}/.exec(resource)?.[1].toUpperCase() ?? null;
+}
+
+// The header a host boots and whether it continues a save (#322). A save continues only on
+// the header it was made on, so a host whose newest save belongs to the core's playtest header
+// keeps booting that one (with the pack loaded); a fresh host boots the pack's header.
+// loadSave is true only when a save point of the chosen header exists (or one whose header the
+// path does not name, the old behaviour).
+export function hostMission(profile, addons = launchAddons()) {
+  const saves = findSavePoints(profile);
+  const known = [CORE_PLAYTEST_MISSION, ...(addons.includes(PACK) ? [PACK_MISSION] : [])];
+  const newest = saves.length ? saveHeaderGuid(saves[0].dir) : null;
+  const mission = known.find((m) => guidOf(m) === newest) ?? playtestMission(addons);
+  const loadSave = saves.some((sp) => {
+    const g = saveHeaderGuid(sp.dir);
+    return g === null || g === guidOf(mission);
+  });
+  return { mission, loadSave };
 }
 
 // The folder that holds the save points: the common root of every save
@@ -267,7 +299,7 @@ export function selftestHost() {
   const fresh = hostArgs({ addonsDir: "A", profile: "P", loadSave: false });
   const reload = hostArgs({ addonsDir: "A", profile: "P", loadSave: true });
   const has = (args, flag) => args.includes(flag);
-  if (fresh[0] !== "-server" || fresh[1] !== PLAYTEST_MISSION) failures.push("first boot does not run the playtest mission");
+  if (fresh[0] !== "-server" || fresh[1] !== playtestMission()) failures.push("first boot does not run the playtest mission");
   if (has(fresh, "-loadSessionSave")) failures.push("a boot with no save passes -loadSessionSave");
   if (!has(reload, "-loadSessionSave")) failures.push("a boot with a save does not pass -loadSessionSave");
   for (const args of [fresh, reload]) {
@@ -276,6 +308,9 @@ export function selftestHost() {
     if (args[args.indexOf("-profile") + 1] !== "P") failures.push("host args do not use the host profile");
   }
   if (!/Missions\/LF_PlaytestTown\.conf$/.test(PLAYTEST_MISSION)) failures.push("mission constant is not LF_PlaytestTown.conf");
+  // #322: the pack loads beside the core when it is in the checkout.
+  if (fresh[fresh.indexOf("-addons") + 1] !== "LifeFramework,LF_Everon1989") failures.push(`host loads ${fresh[fresh.indexOf("-addons") + 1]}, not the core and the pack`);
+  if (fresh[1] !== PACK_MISSION) failures.push("a fresh host does not boot the pack's mission header");
   const d = hostDir({ LOCALAPPDATA: "L" });
   if (d !== join("L", "LifeFramework", "host")) failures.push(`default host dir is ${d}`);
   if (hostDir({ LF_HOST_DIR: "X", LOCALAPPDATA: "L" }) !== "X") failures.push("LF_HOST_DIR does not override the host dir");
@@ -309,6 +344,23 @@ export function selftestHost() {
     if (!pickBackup(fixture)?.endsWith("replaced-by-restore")) failures.push("pickBackup does not return the newest backup");
     const twin = backupSaves(fixture, "stop", new Date(2026, 10, 8, 9, 5, 7));
     if (!twin || !twin.endsWith("2026-11-08_09-05-07-stop-2")) failures.push(`a second backup in the same second did not get its own folder (${twin})`);
+
+    // #322: a save keeps the header it was made on; a fresh host boots the pack's.
+    const both = ["LifeFramework", "LF_Everon1989"];
+    const hp = join(fixture, "hm");
+    const freshHost = hostMission(hp, both);
+    if (freshHost.mission !== PACK_MISSION || freshHost.loadSave) failures.push(`a fresh host boots ${freshHost.mission} loadSave=${freshHost.loadSave}`);
+    const coreSave = join(hp, "profile", ".save", "game", "1054CC8646357708-LF-PlaytestTown", "playthrough000", "savepoint000");
+    mkdirSync(coreSave, { recursive: true });
+    writeFileSync(join(coreSave, "meta-info.json"), "{}");
+    if (saveHeaderGuid(coreSave) !== "1054CC8646357708") failures.push(`saveHeaderGuid read ${saveHeaderGuid(coreSave)}`);
+    const keep = hostMission(hp, both);
+    if (keep.mission !== CORE_PLAYTEST_MISSION || !keep.loadSave) failures.push(`a host with an LF_PlaytestTown save boots ${keep.mission} loadSave=${keep.loadSave}`);
+    const worldSave = join(fixture, "hw", "profile", ".save", "game", "DebugWorld", "playthrough000", "savepoint000");
+    mkdirSync(worldSave, { recursive: true });
+    writeFileSync(join(worldSave, "meta-info.json"), "{}");
+    if (!hostMission(join(fixture, "hw"), both).loadSave) failures.push("a save whose header the path does not name stopped loading");
+    if (hostMission(hp, ["LifeFramework"]).mission !== CORE_PLAYTEST_MISSION) failures.push("a core-only host does not boot LF_PlaytestTown");
   } finally {
     safeRemoveTree(fixture);
   }

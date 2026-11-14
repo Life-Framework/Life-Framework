@@ -27,6 +27,9 @@
 # to close itself and write its SHUTDOWN save (wt e2e pass 1, #830). LF_HostStop only
 # watches the file under an LF_MissionHeader with m_bLF_HostStopFile, so pass -Mission.
 #
+# -Addons <a,b> is the -addons list. Omitted, tools/lib/addons.mjs decides: the core, plus
+# LF_Everon1989 when its project is in the checkout (#322). Pass LifeFramework for a core-only run.
+#
 # -Only <a,b> runs just those tests (class names or GetName() strings): it
 # writes $profile:LF_TestOnly.txt and defines LF_TEST_ONLY; the suite then
 # reports tier=only, so suite-stamp never mistakes it for a full tier run.
@@ -50,7 +53,8 @@ param(
   [string]$HostStopAfter,
   [int]$GracefulCloseSeconds = 30,
   [string]$ExtraDefine,
-  [string]$Only
+  [string]$Only,
+  [string]$Addons
 )
 
 $ErrorActionPreference = "Stop"
@@ -68,6 +72,16 @@ if (-not (Test-Path (Join-Path $root "addons\LifeFramework\LifeFramework.gproj")
 # resourceDatabase.rdb is gitignored; cli test/dev/serve copy it from the main
 # checkout. Without it world tests fail as "wrong GUID", "invalid prefab" or
 # GetCash returning 0, so a world tier stops here with that named cause.
+if (-not $Addons) { $Addons = (& node (Join-Path $root "tools\lib\addons.mjs") launch $root | Select-Object -Last 1) }
+if (-not $Addons) { Write-Host "ERROR tools/lib/addons.mjs gave no -addons list"; exit 2 }
+$Addons = "$Addons".Trim()
+Write-Host "test-e2e: addons $Addons"
+# Another loaded addon's rdb (the pack's) is refreshed by tools\cli the same way; without it
+# the server still boots, so it only warns.
+foreach ($a in @($Addons.Split(',') | Where-Object { $_ -and $_ -ne 'LifeFramework' })) {
+  $other = Join-Path $root "addons\$a\resourceDatabase.rdb"
+  if (-not (Test-Path -LiteralPath $other)) { Write-Host "WARN  resourceDatabase.rdb missing for ${a}: $other (its resources would fail with Wrong GUID/name)" }
+}
 $rdb = Join-Path $root "addons\LifeFramework\resourceDatabase.rdb"
 if (-not (Test-Path -LiteralPath $rdb)) {
   if ($Tier -eq "fast") {
@@ -214,7 +228,7 @@ $args = @(
   "-server", $serverTarget,
   "-worldSystemsConfig", "{2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf",
   "-addonsDir", $addonsDir,
-  "-addons", "LifeFramework",
+  "-addons", $Addons,
   "-profile", $profile,
   "-maxFPS", "30",
   "-logLevel", "normal",

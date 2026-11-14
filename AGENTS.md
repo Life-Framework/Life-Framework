@@ -26,7 +26,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 |---|---|
 | `addons/LifeFramework/Scripts/Game/` | Enforce Script: `Core/`, `Feature/<Area>/` (each with a `Feature.md`), `Persistence/`, `UI/`, `Tests/`, ... |
 | `addons/LifeFramework/{Prefabs,Configs,UI,Language,Missions}/` | Resources (`.et`, `.conf`, `.layout`, `.st`) |
-| `addons/LF_Everon1989/` | The 1989 Everon flagship pack: a skeleton, not loaded yet. What goes there: `docs/architecture/core-vs-pack.md` |
+| `addons/LF_Everon1989/` | The 1989 Everon flagship pack. Every launch loads it beside the core (`tools/lib/addons.mjs`); its own header is `Missions/LF_Everon1989.conf`. What goes there: `docs/architecture/core-vs-pack.md` |
 | `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
 | `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
