@@ -4,6 +4,8 @@
 // 0, and the rules follow the schema (a range or a version changed in the schema changes the
 // verdict with no edit to the checker). Fixtures: tools/validation/fixtures/config-check/.
 //
+// red-proof (#304): with the rename line of `describeChange` in tools/config/migrations.mjs printing "renamed" the run printed
+// "FAIL migrate old: changes [...]" and exited 1; restored, it prints OK.
 // red-proof: with the maximum test in `range` loosened to `v > sch.maximum + 99999999` the run printed
 // "FAIL bad: range above max" and exited 1; with the unknown-key branch of `object` no longer
 // adding the warning it printed "FAIL bad: unknown nested key"; restored, it prints
@@ -12,7 +14,8 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkText, parseJson, parseShopRuleKey, main } from "../config/check.mjs";
-import { SCHEMA_PATH } from "../config/schema.mjs";
+import { SCHEMA_PATH, SERVICE } from "../config/schema.mjs";
+import { loadManifest, renderPlan } from "../config/migrations.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fx = (f) => join(here, "fixtures", "config-check", f);
@@ -109,8 +112,44 @@ expect(codes[2] === 0, `exit: warnings only gave ${codes[2]}`);
 expect(codes[3] === 1, `exit: --strict warning gave ${codes[3]}`);
 expect(codes[4] === 1, `exit: a missing file gave ${codes[4]}`);
 
+// Migration report (#304): an old file lists its steps in order with the fields each touches, a
+// current file says none, a future file is refused, and nothing is ever written.
+const manifest = JSON.parse(text("migrations-test.json"));
+const mig = (f, o = {}) => run(f, { manifest, schema: v3, ...o }).migrations;
+const old = mig("migrate-old.json");
+expect(old.status === "older" && old.fileVersion === 1 && old.build === 3 && old.missing === null, `migrate old: ${JSON.stringify(old)}`);
+expect(old.steps.map((s) => `${s.from}>${s.to}:${s.name}`).join() === "1>2:shop-to-shops,2>3:add-price-floor", "migrate old: steps in version order");
+expect(old.steps[0].changes.map((c) => c.text).join("|") === "rename shop -> shops (in your file)|drop legacyFlag (in your file)", `migrate old: changes ${JSON.stringify(old.steps[0].changes)}`);
+expect(old.steps[1].changes[0].text === "default shops.priceFloor = 1 (missing from your file; added)", "migrate old: default");
+const oldText = renderPlan(old).join("\n");
+expect(oldText.includes("2 would run") && oldText.includes("v1 -> v2  shop-to-shops: Rename the shop section to shops.") && oldText.includes("Dry run: nothing was written"), "migrate old: rendered");
+const cur = mig("migrate-current.json");
+expect(cur.status === "current" && cur.steps.length === 0 && renderPlan(cur).join("").includes("none needed"), "migrate current: none needed");
+const future = mig("too-new.json", { schema });
+expect(future.status === "newer" && future.steps.length === 0 && renderPlan(future).join("").includes("refused"), "migrate future: refused");
+expect(run("too-new.json", { schema }).problems.some((p) => p.level === "error"), "migrate future: still an error (exit 1)");
+expect(mig("good.json", { schema }).status === "current", "migrate: a file at the build's version needs none");
+expect(mig("syntax.json").status === "unreadable", "migrate: an unparseable file plans nothing");
+const gap = run("migrate-old.json", { manifest: { migrations: [manifest.migrations[1]] }, schema: v3 }).migrations;
+expect(gap.missing === 1 && gap.steps.length === 0 && renderPlan(gap).join("").includes("no migration reads version 1"), "migrate: a missing step breaks the chain");
+// main(): the report reaches the terminal, and the dry run leaves the file byte for byte as it was.
+const before = readFileSync(fx("migrate-old.json"), "utf8");
+const lines = [];
+console.log = (...a) => lines.push(a.join(" "));
+const mcode = main([fx("migrate-old.json"), "--no-loops", "--schema", fx("schema-v3.json"), "--migrations", fx("migrations-test.json")]);
+console.log = quiet;
+expect(mcode === 0 && lines.some((l) => l.includes("1. v1 -> v2  shop-to-shops")), `main migrate: ${mcode} ${lines.join("|")}`);
+expect(readFileSync(fx("migrate-old.json"), "utf8") === before, "dry run must not write the file");
+// The shipped manifest matches LF_ConfigMigrator.BuildShipped: same steps, version order, no gaps.
+const shipped = loadManifest().migrations;
+const buildShipped = /static void BuildShipped[\s\S]*?\n\t\}/.exec(readFileSync(join(dirname(SERVICE), "LF_ConfigMigration.c"), "utf8"))?.[0] ?? "";
+const inserted = (buildShipped.match(/steps\.Insert\(/g) ?? []).length;
+expect(inserted === shipped.length, `manifest has ${shipped.length} migration(s), BuildShipped inserts ${inserted}; keep docs/config/config.migrations.json in step`);
+const buildSchema = Number(/SCHEMA_VERSION\s*=\s*(\d+)/.exec(readFileSync(SERVICE, "utf8"))?.[1]);
+expect(shipped.every((m, i) => m.from === i + 1 && m.name && m.description) && shipped.length === buildSchema - 1, "manifest: one entry per version step 1..SCHEMA_VERSION-1, each with a name and description");
+
 if (fails.length) {
   for (const f of fails) console.log(`FAIL ${f}`);
   process.exit(1);
 }
-console.log("config-check-selftest: OK (syntax line:col, type, range, unknown key, schemaVersion, record key, profit loop, exit codes; rules follow the schema)");
+console.log("config-check-selftest: OK (migration report, syntax line:col, type, range, unknown key, schemaVersion, record key, profit loop, exit codes; rules follow the schema)");

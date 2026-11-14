@@ -283,7 +283,7 @@ class LF_WantedPosterFace : Managed
 		Line(poster, "Header", header, 10, 96, 88);
 		Line(poster, "Name", plate, 466, 84, 64);
 		Line(poster, "Offence", LF_WantedBoard.ResolveKey(entry.m_sVehicle), 560, 56, 36);
-		Line(poster, "Detail", WidgetManager.Translate("#LF-Wanted_PosterStolenTip"), 620, 50, 26);
+		Line(poster, "Detail", LF_Terms.Text("#LF-Wanted_PosterStolenTip"), 620, 50, 26);
 		Line(poster, "Reward", string.Empty, 664, 50, 34);
 	}
 

@@ -1,32 +1,35 @@
 # Merge drivers selected by .gitattributes.
 # Register once per clone (the pre-commit hook does this):
 #   git config --local --add include.path <repo>/tools/merge/drivers.gitconfig
-# The driver commands run with the worktree as the current directory.
+# The driver commands run with the worktree as the current directory, so a
+# plain `node tools/merge/<driver>` runs the copy on the branch being merged
+# into. run-driver.mjs picks the newest copy (HEAD, the commit merged in, or
+# origin/main); the `else` covers a branch forked before the launcher existed.
 
 [merge "lf-string-table"]
 	name = Union localization string ids
-	driver = node tools/merge/union-string-table.mjs %O %A %B %P
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs union-string-table.mjs %O %A %B %P; else node tools/merge/union-string-table.mjs %O %A %B %P; fi"
 
 [merge "lf-regen-localization"]
 	name = Regenerate language confs
-	driver = node tools/merge/regen-generated.mjs %O %A %B %P
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs regen-generated.mjs %O %A %B %P; else node tools/merge/regen-generated.mjs %O %A %B %P; fi"
 
 [merge "lf-regen-tests"]
 	name = Regenerate the test registry
-	driver = node tools/merge/regen-generated.mjs %O %A %B %P
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs regen-generated.mjs %O %A %B %P; else node tools/merge/regen-generated.mjs %O %A %B %P; fi"
 
 [merge "lf-markdown"]
 	name = Line merge that keeps both sides appended rows
-	driver = node tools/merge/merge-markdown.mjs %O %A %B %P
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs merge-markdown.mjs %O %A %B %P; else node tools/merge/merge-markdown.mjs %O %A %B %P; fi"
 
 [merge "lf-lint-baseline"]
 	name = Three-way multiset merge of the enforce-lint baseline
-	driver = node tools/merge/union-lint-baseline.mjs %O %A %B %P
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs union-lint-baseline.mjs %O %A %B %P; else node tools/merge/union-lint-baseline.mjs %O %A %B %P; fi"
 
 [merge "lf-table-rows"]
 	name = Markdown table union keyed by the Prefab or Item column
-	driver = node tools/merge/merge-table-rows.mjs %O %A %B %P
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs merge-table-rows.mjs %O %A %B %P; else node tools/merge/merge-table-rows.mjs %O %A %B %P; fi"
 
 [merge "lf-json-keys"]
 	name = JSON union by key, conflict only on a key both sides changed
-	driver = node tools/merge/merge-json-keys.mjs %O %A %B %P
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs merge-json-keys.mjs %O %A %B %P; else node tools/merge/merge-json-keys.mjs %O %A %B %P; fi"

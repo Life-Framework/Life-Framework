@@ -17,6 +17,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JsonSyntaxError, parseJson, parseShopRuleKey, checkOwner, typeKey, prefabKey } from "./rules.mjs";
 import { SCHEMA_PATH } from "./schema.mjs";
+import { loadManifest, planMigrations, renderPlan } from "./migrations.mjs";
 import { checkProfitLoops, judge, parseConf, DEFAULT_SOURCES } from "../economy/profit-loops.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -77,9 +78,10 @@ export function checkText(text, opts = {}) {
   let root;
   try { root = parseJson(text); } catch (e) {
     if (!(e instanceof JsonSyntaxError)) throw e;
-    return { problems: [{ level: "error", line: e.line, col: e.col, msg: `${source} is not valid JSON (${e.message}); every section uses the shipped defaults`, path: null }], loops: [] };
+    return { problems: [{ level: "error", line: e.line, col: e.col, msg: `${source} is not valid JSON (${e.message}); every section uses the shipped defaults`, path: null }], loops: [], migrations: planMigrations(null, 1, { migrations: [] }) };
   }
   const problems = checkOwner(root, schema, source, shippedKeys(sources));
+  const migrations = planMigrations(root, schema.properties?.schemaVersion?.maximum ?? 1, opts.manifest ?? loadManifest());
   const loops = [];
   if (opts.loops !== false && root.t === "obj") {
     const drop = new Set(problems.filter((p) => p.path).map((p) => p.path.join("\u0000")));
@@ -94,15 +96,16 @@ export function checkText(text, opts = {}) {
     }
   }
   problems.sort((a, b) => a.line - b.line || a.col - b.col);
-  return { problems, loops };
+  return { problems, loops, migrations };
 }
 
 export function main(args) {
   const flags = new Set(args.filter((a) => a.startsWith("--")));
   const schemaAt = args.indexOf("--schema");
-  const file = args.find((a, n) => !a.startsWith("--") && (schemaAt < 0 || n !== schemaAt + 1));
+  const migAt = args.indexOf("--migrations");
+  const file = args.find((a, n) => !a.startsWith("--") && (schemaAt < 0 || n !== schemaAt + 1) && (migAt < 0 || n !== migAt + 1));
   if (!file) {
-    console.log("usage: tools\\cli config-check <path/to/config.json> [--strict] [--no-loops] [--json] [--schema f]");
+    console.log("usage: tools\\cli config-check <path/to/config.json> [--strict] [--no-loops] [--json] [--schema f] [--migrations f]");
     return 2;
   }
   if (!existsSync(file)) {
@@ -111,13 +114,15 @@ export function main(args) {
   }
   const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : [];
   const schema = schemaAt >= 0 ? JSON.parse(readFileSync(args[schemaAt + 1], "utf8")) : undefined;
-  const { problems } = checkText(readFileSync(file, "utf8"), { source: file, schema, loops: !flags.has("--no-loops"), baseline });
+  const manifest = migAt >= 0 ? loadManifest(args[migAt + 1]) : undefined;
+  const { problems, migrations } = checkText(readFileSync(file, "utf8"), { source: file, schema, loops: !flags.has("--no-loops"), baseline, manifest });
   const errors = problems.filter((p) => p.level === "error").length;
   const warns = problems.length - errors;
-  if (flags.has("--json")) console.log(JSON.stringify({ file, errors, warnings: warns, problems }, null, 2));
+  if (flags.has("--json")) console.log(JSON.stringify({ file, errors, warnings: warns, problems, migrations }, null, 2));
   else {
     console.log(`config-check: ${file}`);
     for (const p of problems) console.log(`${p.level === "error" ? "ERROR" : "WARN "}  ${p.line}:${p.col}  ${p.msg}`);
+    for (const l of renderPlan(migrations, file)) console.log(l);
     console.log(`config-check: ${errors} error(s), ${warns} warning(s)`);
   }
   return errors > 0 || (flags.has("--strict") && warns > 0) ? 1 : 0;

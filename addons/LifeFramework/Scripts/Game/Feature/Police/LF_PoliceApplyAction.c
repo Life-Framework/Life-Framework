@@ -16,7 +16,7 @@ class LF_PoliceApplyAction : ScriptedUserAction
 
 		if (LF_AccountStateBits.IsOnRoster(state))
 		{
-			SetCannotPerformReason("#LF-PoliceApp_Error_OnRoster");
+			SetCannotPerformReason(LF_Terms.Text("#LF-PoliceApp_Error_OnRoster"));
 			return false;
 		}
 

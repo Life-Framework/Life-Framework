@@ -50,10 +50,10 @@
     "bye": { "text": "Good day to you." }
   },
   "replies": {
-    "new": "I am new in town.",
+    "new": "I am new in {town}.",
     "next": "What should I do now?",
     "work": "Where can I find work?",
-    "town": "Tell me about this town.",
+    "town": "Tell me about this {town}.",
     "lost": "I have lost my identity card.",
     "bye": "Goodbye."
   }

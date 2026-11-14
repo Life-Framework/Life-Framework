@@ -896,7 +896,7 @@ class LF_UIScreen
 			return;
 		}
 
-		button.SetText(text);
+		button.SetText(LF_Terms.Shown(text));
 
 		TextWidget label = button.GetTextWidget();
 		if (label)
@@ -946,7 +946,7 @@ class LF_UIScreen
 		text.SetFont(GetSkin().m_Font);
 		text.SetOutline(0);
 		text.SetShadow(0);
-		text.SetText(value);
+		text.SetText(LF_Terms.Shown(value));
 	}
 
 	//------------------------------------------------------------------------------------------------
