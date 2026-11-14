@@ -48,6 +48,28 @@ If the upstream clone ever renames a file this bundle touches, the copy still
 overwrites it (the tool is ours, not upstream's); fix any `server.ts` merge
 conflict by re-applying the two lines above.
 
+## `wb_resources`: live browse and batch register/rebuild
+
+Spec items 1-2 of `docs/tooling/workbench-tooling-spec.md`. Files:
+
+- `mod/Scripts/WorkbenchGame/EnfusionMCP/EMCP_WB_Resources.c`: the handler (upstream file, replaced)
+- `src/tools/wb-resources.ts`: the tool; `src/tools/wb-resources-params.ts`: pure request/response helpers
+- `src/tools/__tests__/wb-resources-params.test.ts`: unit tests (`npx vitest run src/tools/__tests__` in the clone)
+
+| Action | Parameters | Output |
+|---|---|---|
+| `browse` | `rootPath?` (`$LifeFramework:Prefabs`; empty = every loaded addon; `path` is accepted as the root too), `extensions?` (no dots), `filters?` (path substrings), `recursive?` (default true), `limit?` (default 200, max 1000) | `{ status, count, limit, entries: [{ name, path, resourceName }] }`; `resourceName` is the live `{GUID}path`. An unknown root is `ok` with count 0. |
+| `register` / `rebuild` | `paths[]` (or `path`), `configuration?` (default `PC`), `waitMs?` (default 5000, 0 skips), `buildRuntime?` (register) | `{ status, processed: [{ path, reason }], failed: [{ path, reason }], configuration }` |
+
+`browse` runs `ResourceDatabase.SearchResources` against the live database, so a resource registered or
+generated a second ago is found; the offline `asset_search` reads PAK and unpacked files and misses it.
+The handler keeps matches in a static collector and clears it before returning, so no call sees another's
+hits. `register`/`rebuild` resolve `$Addon:relative` with `Workbench.GetAbsolutePath` (verified absolute
+paths also work; a malformed or missing path goes to `failed[]` and the rest still run), call
+`RebuildResourceFiles` once for the whole batch, then `ResourceManager.WaitForFile` per processed path, so
+the next step does not race the asset. The list parameters travel to the handler as `|` separated
+strings (the JSON request parser is only trusted with scalars).
+
 ## Keeping it in sync
 
 Edit the source here, then re-copy into the clone to test:
