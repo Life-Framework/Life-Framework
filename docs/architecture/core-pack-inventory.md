@@ -168,10 +168,10 @@ under "Hard-coded flagship values in script".
 | `Vegetation/` | core | Crops and fruit trees |
 | `Vehicles/Core/`, `Vehicles/Test/` | core | Vehicle base and test fixtures |
 | `Vehicles/LicensePlate/`, `Vehicles/SirenLights/` | core | System parts |
-| `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
+| `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1,V2101,T601}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
 | `Vehicles/Wheeled/M151A2/` | split | The police car; core needs a police-car slot, the model is a catalogue pick |
 | `Weapons/Handguns/Taser/` | split | Mesh of the stun weapon above: example in core, police-issue item in pack |
-| `Configs/Vehicles/LF_VehiclePrices.conf` | split | The multiplier shape is core; the five vehicle rows are the flagship catalogue's prices (#688) |
+| `Configs/Vehicles/LF_VehiclePrices.conf` | split | The multiplier shape is core; the seven vehicle rows are the flagship catalogue's prices (#688, #981) |
 
 ## Configs
 
@@ -294,7 +294,7 @@ set them. File and constant, then the value.
 | `Feature/Police/LF_PoliceRanks.c` | `PATROL_FINE_CAP`, `DUTY_SECONDS` | 1000, 3600 s | `LF_Police.conf` (it already has a cap default) |
 | `Feature/Police/LF_PoliceMenu.c` | `MAX_FINE` | 5000 | `LF_Police.conf` |
 | `Feature/Police/LF_FineTicket.c` | `MAX_OPEN_PER_HOLDER` | 3 | `LF_Police.conf` |
-| `Feature/Vehicles/LF_VehicleCatalog.c` | five cars and five `LF_` variants | S105, UAZ-469, S1203, UAZ-452, M923A1 | vehicles config |
+| `Feature/Vehicles/LF_VehicleCatalog.c` | seven cars and seven `LF_` variants | S105, UAZ-469, S1203, UAZ-452, M923A1, Dana 2101, Sputnik T601 | vehicles config |
 | `Feature/Vehicles/LF_Garage.c` | `FALLBACK_FEE` | 250 | `LF_Garage.conf` (fallback only) |
 | `Feature/Mining/LF_MiningForge.c` | `IRON_BAR`, `IRON_SECONDS` | iron bar, 5 s | resource chains |
 | `Feature/UIKit/LF_UITheme.c`, `LF_UISkin.c` | palette, paper and phosphor skins | the 1989 look | a skin config |
