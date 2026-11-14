@@ -28,10 +28,56 @@ export function generated(path) {
 
 const norm = (p) => String(p).replace(/\\/g, "/");
 
-// The files two PRs both change, driver-merged files left out.
+// Prose under docs/ (docs/worktrees.md, docs/architecture/*.md ...). Two PRs that both edit one, or only
+// append to it, are not made to wait for each other: a text conflict shows at merge time (the worker's
+// merge of origin/<base>, then GitHub's mergeable state, then `prs heal`), and no gate result depends on it.
+export function docsText(path) {
+  return /^docs\/.+\.md$/i.test(norm(path));
+}
+
+// The files two PRs both change, driver-merged files and docs/**/*.md left out.
 export function overlap(a = [], b = []) {
-  const set = new Set(a.map(norm).filter((p) => !driverMerged(p)));
+  const skip = (p) => driverMerged(p) || docsText(p);
+  const set = new Set(a.map(norm).filter((p) => !skip(p)));
   return [...new Set(b.map(norm))].filter((p) => set.has(p));
+}
+
+// ---------------------------------------------------------------- gate slots
+
+// How many Workbench gates run at once. `cfg` is poolSettings(root).shipQueue ({ parallel } from pool.json
+// or the "pool" key of lf.local.json) and wins when set; else the sum of the Workbench limits of the ssh
+// machines with the workbench cap (a machine's own "workbenchLimit", 1 when unset), at least 1. This PC
+// ("local") is not counted: its RAM is short and the gate's Workbench steps run on a pool machine.
+export function slotCount({ cfg = {}, machines = [] } = {}) {
+  const par = Math.floor(Number(cfg?.parallel));
+  if (par > 0) return par;
+  const n = machines
+    .filter((m) => m.via === "ssh" && !m.disabled && (m.caps ?? []).includes("workbench"))
+    .reduce((s, m) => s + Math.max(1, Math.floor(Number(m.workbenchLimit)) || 1), 0);
+  return Math.max(1, n);
+}
+
+// Gates that need no Workbench (validate only) run beside the Workbench gates, up to this many at once
+// ("shipQueue": { "light": N }); they are cheap but not free (validate --all spawns a node per check).
+export const DEFAULT_LIGHT = 4;
+export function lightCount({ cfg = {} } = {}) {
+  const n = Math.floor(Number(cfg?.light));
+  return n > 0 ? n : DEFAULT_LIGHT;
+}
+
+// Does this entry's gate take a Workbench slot (the ci compile and build on a pool machine)?
+//   - no file under addons/: T0 of docs/worktrees.md "Gate tiers", `validate --all` only: no.
+//   - e.tier 0: the same, no. e.tier 1 (data only, one LOGIC boot): only when e.builds is true.
+//   - otherwise (T2, or a tier nobody recorded yet): yes.
+// The tier of a PR that touches addons/ is known only once `ci --tiered` classifies the merged diff
+// (PR #1252, tools/lib/gate-tier.mjs). The hook: the worker records it on the entry as `tier` (0|1|2)
+// and `builds` (does the T1 gate compile?) and this rule picks it up from there.
+export function needsWorkbench(e) {
+  const files = e.files ?? [];
+  if (files.length && !files.some((f) => norm(f).startsWith("addons/"))) return false;
+  if (e.tier === 0) return false;
+  if (e.tier === 1) return e.builds === true;
+  return true;
 }
 
 // Queued entries in arrival order (seq, then enqueue time).
@@ -39,13 +85,15 @@ export function ordered(entries) {
   return entries.filter((e) => e.state === "queued").sort((x, y) => (x.seq - y.seq) || String(x.enqueuedAt).localeCompare(String(y.enqueuedAt)));
 }
 
-// Which queued entries start now. `slots` gates run at once (the pool's Workbench room decides the
-// machine). An entry starts when no running gate and no earlier waiting entry changes a file it
-// changes; so PRs on disjoint files gate side by side and overlapping ones keep their FIFO order.
+// Which queued entries start now. `slots` Workbench gates run at once (the pool's Workbench room decides
+// the machine); an entry that needs no Workbench (needsWorkbench) takes none of them and counts against
+// `lightSlots` instead. An entry starts when no running gate and no earlier waiting entry changes a file
+// it changes; so PRs on disjoint files gate side by side and overlapping ones keep their FIFO order.
 // Returns [{ entry, why }] for starts and [{ entry, why }] for the ones that wait.
-export function pickRunnable(entries, { slots = 1, now = Date.now() } = {}) {
+export function pickRunnable(entries, { slots = 1, lightSlots = DEFAULT_LIGHT, now = Date.now() } = {}) {
   const running = entries.filter((e) => RUNNING.includes(e.state));
-  let free = Math.max(0, slots - running.length);
+  let free = Math.max(0, slots - running.filter(needsWorkbench).length);
+  let freeLight = Math.max(0, lightSlots - running.filter((e) => !needsWorkbench(e)).length);
   const start = [];
   const wait = [];
   const ahead = [...running];
@@ -53,7 +101,13 @@ export function pickRunnable(entries, { slots = 1, now = Date.now() } = {}) {
     const clash = ahead.map((o) => ({ o, files: overlap(o.files, e.files) })).find((c) => c.files.length);
     if (e.notBefore && Date.parse(e.notBefore) > now) wait.push({ entry: e, why: `retries after ${e.notBefore.slice(11, 16)} UTC (the pool failed its last gate)` });
     else if (clash) wait.push({ entry: e, why: `waits for ${clash.o.slug} (both change ${clash.files.slice(0, 3).join(", ")}${clash.files.length > 3 ? ", ..." : ""})` });
-    else if (free <= 0) wait.push({ entry: e, why: `waits for a gate slot (${slots} running)` });
+    else if (!needsWorkbench(e)) {
+      if (freeLight <= 0) wait.push({ entry: e, why: `waits for a gate slot (${lightSlots} validate-only gates running)` });
+      else {
+        freeLight--;
+        start.push({ entry: e, why: "validate-only gate: takes no Workbench slot" });
+      }
+    } else if (free <= 0) wait.push({ entry: e, why: `waits for a gate slot (${slots} running)` });
     else {
       free--;
       start.push({ entry: e, why: running.length + start.length > 0 ? "starts beside the running gate(s): no shared files" : "head of the queue" });
