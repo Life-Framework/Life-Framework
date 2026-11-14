@@ -58,6 +58,9 @@ class LF_BreachTarget : Managed
 //------------------------------------------------------------------------------------------------
 class LF_Breach
 {
+	//! LF_Places kind of a placed breach target (LF_BreachTargetComponent); the id is the target id.
+	static const string PLACE_KIND = "BreachTarget";
+
 	static const ResourceName CHARGE_PREFAB = "{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et";
 	//! The fence charge (#271), serial-stamped; it forces a door the same as the vanilla block.
 	static const ResourceName FENCE_CHARGE_PREFAB = "{E78C99E5029D52A5}Prefabs/Items/Fence/LF_Charge.et";
@@ -547,7 +550,7 @@ class LF_Breach
 		if (!target || !GetGame() || !GetGame().GetWorld())
 			return;
 
-		IEntity entity = GetGame().GetWorld().FindEntityByName(target.m_sTargetId);
+		IEntity entity = LF_Places.Find(PLACE_KIND, target.m_sTargetId);
 		if (!entity)
 			return;
 
@@ -588,7 +591,7 @@ class LF_Breach
 		if (!GetGame() || !GetGame().GetWorld())
 			return null;
 
-		IEntity entity = GetGame().GetWorld().FindEntityByName(targetId);
+		IEntity entity = LF_Places.Find(PLACE_KIND, targetId);
 		if (!entity)
 			return null;
 
@@ -602,18 +605,10 @@ class LF_Breach
 	//------------------------------------------------------------------------------------------------
 	protected static vector TargetOrigin(string targetId)
 	{
-		vector origin = "0 0 0";
-		if (!GetGame() || !GetGame().GetWorld())
-			return origin;
-
-		IEntity entity = GetGame().GetWorld().FindEntityByName(targetId);
-		if (!entity)
-			return origin;
-
 		// World position: the cash van door is a child of the van and moves with it.
-		vector transform[4];
-		entity.GetWorldTransform(transform);
-		return transform[3];
+		vector origin = "0 0 0";
+		LF_Places.FindOrigin(PLACE_KIND, targetId, origin);
+		return origin;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -629,7 +624,7 @@ class LF_Breach
 		}
 
 		// An unplaced target is script-driven: its fuse advances only through Advance.
-		IEntity entity = GetGame().GetWorld().FindEntityByName(targetId);
+		IEntity entity = LF_Places.Find(PLACE_KIND, targetId);
 		if (!entity)
 		{
 			LF_Debug.Log("Breach", string.Format("fuse timer not scheduled: %1 is not a placed entity; Advance drives it", targetId));

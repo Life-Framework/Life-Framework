@@ -18,11 +18,12 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import * as eleven from "./elevenlabs.mjs";
-import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { freshGuid, readGuid } from "./meta.mjs";
+import { addonFlag, addonOf, addonProblems, assertBoundary, guidsInUse, stringTable, withAddon } from "./addon.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-const ADDON = "addons/LifeFramework";
-const ST = `${ADDON}/Language/everonlife_localization.st`;
+// The addon a dialogue writes into: the spec's `addon`, or `--addon` (#971); the core by default.
+const ADDON = (spec) => `addons/${addonOf(spec)}`;
 export const MAX_OPTIONS = 4; // the screen has four rows and the keys 1 to 4
 export const MAX_BUDGET = 6000; // characters one NPC may ever cost
 export const ENVELOPE_MS = 50;
@@ -302,7 +303,7 @@ export function lineRows(spec, prov, addon) {
 
 // What the tracked files should hold for this spec, for the validator: { path: text }.
 export function expectedFiles(root, spec, prov) {
-  const addon = join(root, ADDON);
+  const addon = join(root, ADDON(spec));
   const rows = lineRows(spec, prov, addon);
   const acpGuid = readGuid(join(addon, acpRes(spec) + ".meta"));
   return { [acpRes(spec)]: acpText(spec, rows), [confRes(spec)]: confText(spec, rows, `{${acpGuid}}${acpRes(spec)}`) };
@@ -310,16 +311,17 @@ export function expectedFiles(root, spec, prov) {
 
 // Lines whose audio in the addon does not match the spec (new, reworded, or a new voice).
 export function staleLines(root, spec, prov) {
-  return Object.entries(spec.lines).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(spec.voice, voicedText(line)) || !existsSync(join(root, ADDON, wavRes(spec, id)))).map(([id]) => id);
+  return Object.entries(spec.lines).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(spec.voice, voicedText(line)) || !existsSync(join(root, ADDON(spec), wavRes(spec, id)))).map(([id]) => id);
 }
 
 // ---------------------------------------------------------------- the stage
-export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log } = {}) {
-  const spec = loadSpec(root, id);
-  const addon = join(root, ADDON);
-  const stFile = join(root, ST);
+export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log, addon: addonName } = {}) {
+  const spec = withAddon(loadSpec(root, id), addonName);
+  const addon = join(root, ADDON(spec));
+  const stFile = stringTable(root, spec);
+  if (!existsSync(stFile)) throw new Error(`${ADDON(spec)} has no ${stFile}; a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
   const stText = readFileSync(stFile, "utf8");
-  const problems = specProblems(spec, parseStrings(stText));
+  const problems = [...addonProblems(root, spec), ...specProblems(spec, parseStrings(stText))];
   if (problems.length) throw new Error("dialogue problems:\n  " + problems.join("\n  "));
   const prov = loadProvenance(root, id);
   const dir = cacheDir(root, id);
@@ -353,7 +355,7 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
     if (voiceState === "added") log(`added voice ${spec.voice.name} to the account from the voice library`);
   }
   const ff = todo.length && convert === processAudio ? ffmpeg || await ffmpegPath() : ffmpeg;
-  const used = usedGuids(addon);
+  const used = guidsInUse(root);
   let bought = 0;
   for (const t of todo) {
     let requestId = prov.lines[t.lineId]?.hash === t.hash ? prov.lines[t.lineId].request_id : "";
@@ -379,7 +381,7 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
     };
     // Saved after every line: a run that dies keeps what it paid for.
     writeFileSync(provenanceFile(root, id), JSON.stringify(prov, null, 2) + "\n");
-    log(`  ${t.lineId}: ${env.seconds} s -> ${ADDON}/${res}`);
+    log(`  ${t.lineId}: ${env.seconds} s -> ${ADDON(spec)}/${res}`);
   }
 
   // Lines that left the spec leave the addon too.
@@ -409,7 +411,8 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
     after = await eleven.balance(opts);
     log(`ElevenLabs: ${before.used} -> ${after.used} characters used (${after.used - before.used} this run, ${bought} billed to these lines); ${after.left} left`);
   }
-  log(`wrote ${ADDON}/${confRes(spec)} and ${ADDON}/${acpRes(spec)} (${Object.keys(spec.lines).length} events)`);
+  assertBoundary(root, spec);
+  log(`wrote ${ADDON(spec)}/${confRes(spec)} and ${ADDON(spec)}/${acpRes(spec)} (${Object.keys(spec.lines).length} events)`);
   if (stChanged) log("string table changed: run tools\\cli regen-localization");
   return { generated: todo.length, chars: bought, before, after, stChanged };
 }
@@ -430,7 +433,7 @@ export async function main(flags) {
   const [id, ...rest] = flags;
   if (id === "status") return status(ROOT);
   if (!id || id.startsWith("--")) {
-    console.log("usage: tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all]\n       tools\\cli asset dialogue status\nplaybook: docs/asset-pipeline/dialogue.md");
+    console.log("usage: tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] [--addon <name>]\n       tools\\cli asset dialogue status\nplaybook: docs/asset-pipeline/dialogue.md");
     return id ? 2 : 0;
   }
   const dryRun = rest.includes("--dry-run");
@@ -439,6 +442,6 @@ export async function main(flags) {
     if (wt.isMainCheckout(ROOT)) { console.log("FAIL  asset dialogue runs only in a worktree"); return 1; }
   }
   const f = rest.indexOf("--force");
-  await run(ROOT, id, { dryRun, force: f >= 0 ? rest[f + 1] || "" : "" });
+  await run(ROOT, id, { dryRun, force: f >= 0 ? rest[f + 1] || "" : "", addon: addonFlag(rest) });
   return 0;
 }

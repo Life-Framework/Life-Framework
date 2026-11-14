@@ -1,0 +1,69 @@
+{
+  "slug": "receipt-paper",
+  "name": "ReceiptSheet",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A narrow till receipt from an Everon general store: grey-white thin paper, dot-matrix capitals, dotted rules, a PAID stamp.",
+  "prompt": "Modelled and painted in Blender by model.py: a printed paper item with its layout drawn by script. no text, no logos from the real world.",
+  "texture_prompt": "",
+  "source": {
+    "blender": "model.py"
+  },
+  "size_m": {
+    "length": 0.18,
+    "height": 0.0075,
+    "width": 0.058
+  },
+  "budget": {
+    "lod0_tris": 264,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 2048,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ],
+    "stretch": true,
+    "bake": false
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Roleplay/Paper/Receipt",
+  "prefab_dir": "Prefabs/Items/Roleplay/Paper/Receipt",
+  "prefab": false,
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "states": {
+    "prefab": "Prefabs/Items/Roleplay/LF_Receipt.et",
+    "inventory": {
+      "angles": [
+        -80,
+        0,
+        180
+      ],
+      "distance": 0.65,
+      "fov": 20
+    },
+    "ground": {
+      "up": "Up"
+    },
+    "hand": {
+      "pose": "fist",
+      "grip": [
+        0,
+        0,
+        -0.08
+      ],
+      "up": "+z",
+      "out": "+y"
+    }
+  }
+}

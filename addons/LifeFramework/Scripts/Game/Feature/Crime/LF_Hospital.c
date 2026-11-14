@@ -34,6 +34,9 @@ class LF_HospitalCabinetState : Managed
 //------------------------------------------------------------------------------------------------
 class LF_Hospital
 {
+	//! LF_Places kind of a placed till or cabinet (LF_HospitalTillComponent, LF_HospitalCabinetComponent).
+	static const string PLACE_KIND = "HospitalSite";
+
 	static const int DEFAULT_PAYOUT = 200;
 	static const float DEFAULT_COOLDOWN = 60;
 
@@ -481,14 +484,8 @@ class LF_Hospital
 	protected static vector TargetOrigin(string targetId)
 	{
 		vector origin = "0 0 0";
-		if (!GetGame() || !GetGame().GetWorld())
-			return origin;
-
-		IEntity entity = GetGame().GetWorld().FindEntityByName(targetId);
-		if (!entity)
-			return origin;
-
-		return entity.GetOrigin();
+		LF_Places.FindOrigin(PLACE_KIND, targetId, origin);
+		return origin;
 	}
 
 	//------------------------------------------------------------------------------------------------

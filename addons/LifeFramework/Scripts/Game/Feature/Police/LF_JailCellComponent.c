@@ -44,7 +44,7 @@ class LF_JailCellComponent : ScriptComponent
 	[Attribute("1", UIWidgets.EditBox, desc: "Wanted levels removed when the sentence ends.")]
 	protected int m_iWantedReduction;
 
-	[Attribute("", UIWidgets.EditBox, desc: "Breach target id of the jail door (its entity name). Confinement pauses while that door is open. Empty: no door gates the sentence.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Breach target id of the jail door (its LF_BreachTargetComponent id). Confinement pauses while that door is open. Empty: no door gates the sentence.")]
 	protected string m_sDoorTargetId;
 
 	[Attribute("0 0 -5", UIWidgets.EditBox, desc: "Where a released prisoner stands, in this entity's local frame (outside the cell door).")]

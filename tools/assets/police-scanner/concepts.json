@@ -1,0 +1,238 @@
+{
+  "slug": "police-scanner",
+  "image_model": "nano-banana-2-lite",
+  "realism": {
+    "how": "A hand-held VHF/UHF scanning receiver of the kind amateurs and the curious bought or built in the late 1980s: a black plastic Japanese, West German or Czechoslovak set with a short rubber antenna, a keypad and a small LCD, sold from under the counter. Police traffic was meant to be private, which is why the fence sells it.",
+    "current": "A local sees a black pocket receiver with an LCD and a keypad as a modern gadget of the day, nothing like the olive tin box with fins that the army carried."
+  },
+  "subject": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below.",
+  "variants": [
+    {
+      "label": "Black keypad scanner",
+      "detail": "Glossy black ABS, a short stubby rubber antenna, a wide LCD above a three-by-four grid of grey keys, a slotted speaker grille at the bottom",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Glossy black ABS, a short stubby rubber antenna, a wide LCD above a three-by-four grid of grey keys, a slotted speaker grille at the bottom. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-ea7d-77fc-981a-08529bbd7d5e",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 0,
+        "image_to_3d": 1,
+        "mesh_clean": 1,
+        "parts_separate": 2,
+        "hold_point": 2,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"lettering on the LCD and keys\""
+    },
+    {
+      "label": "Dark grey, rotary",
+      "detail": "Dark grey matt plastic, a short antenna, a tiny LCD, a large rotary tuning knob and a volume knob on the top edge, a round speaker grille",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Dark grey matt plastic, a short antenna, a tiny LCD, a large rotary tuning knob and a volume knob on the top edge, a round speaker grille. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-eb59-7301-acc7-8f0118005028",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1,
+        "mesh_clean": 1,
+        "parts_separate": 2,
+        "hold_point": 2,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"readable digits, big knob\""
+    },
+    {
+      "label": "Black and silver trim",
+      "detail": "Black body with a brushed silver front panel, a short antenna, a green LCD window, two rows of rubber buttons, a belt clip on the back",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Black body with a brushed silver front panel, a short antenna, a green LCD window, two rows of rubber buttons, a belt clip on the back. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-ec1e-70d5-a7de-05c6b4226686",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1,
+        "mesh_clean": 2,
+        "parts_separate": 1,
+        "hold_point": 1,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"belt clip is a thin separate piece\""
+    },
+    {
+      "label": "Rubber-armoured black",
+      "detail": "Chunky black rubber-coated body with moulded ribs, a thick short antenna, a small LCD and eight large buttons, a speaker grille with horizontal slots",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Chunky black rubber-coated body with moulded ribs, a thick short antenna, a small LCD and eight large buttons, a speaker grille with horizontal slots. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-ece9-73db-8b21-298a9b0a8862",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1,
+        "mesh_clean": 1,
+        "parts_separate": 2,
+        "hold_point": 2,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"ribbed rubber detail, small labels\""
+    },
+    {
+      "label": "Charcoal, orange keys",
+      "detail": "Charcoal plastic body, a short antenna, an LCD window, a keypad with a few orange function keys, a square speaker grille at the bottom",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Charcoal plastic body, a short antenna, an LCD window, a keypad with a few orange function keys, a square speaker grille at the bottom. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-edb7-71ac-b1e8-11756dcc6df8",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1,
+        "mesh_clean": 2,
+        "parts_separate": 2,
+        "hold_point": 2,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"clean, dark keys merge in shadow\""
+    },
+    {
+      "label": "Slim black wedge",
+      "detail": "Slim black wedge-shaped body, a short antenna, a narrow vertical LCD, a column of small keys down the side, a grille at the lower front",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Slim black wedge-shaped body, a short antenna, a narrow vertical LCD, a column of small keys down the side, a grille at the lower front. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-ee7e-7459-833c-6771f2920b37",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 0,
+        "image_to_3d": 1,
+        "mesh_clean": 1,
+        "parts_separate": 2,
+        "hold_point": 1,
+        "flat_base": 1,
+        "reads_small": 1,
+        "no_floaters": 1
+      },
+      "note": "\"printed labels, odd wedge\""
+    },
+    {
+      "label": "Black, two knobs",
+      "detail": "Plain black rectangular body, a short antenna, a rectangular LCD strip, two chunky ribbed knobs and a row of four push buttons, a speaker grille below",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Plain black rectangular body, a short antenna, a rectangular LCD strip, two chunky ribbed knobs and a row of four push buttons, a speaker grille below. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-ef48-760b-a56a-031d5e34d596",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2,
+        "mesh_clean": 2,
+        "parts_separate": 2,
+        "hold_point": 2,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"plain black body, blank LCD, flat back\""
+    },
+    {
+      "label": "Dark blue-grey",
+      "detail": "Dark blue-grey moulded plastic body, a short stubby antenna, a small amber LCD, a compact keypad, a speaker grille of round holes",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Dark blue-grey moulded plastic body, a short stubby antenna, a small amber LCD, a compact keypad, a speaker grille of round holes. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-f00b-7247-a7e7-6ca3b1c3e58d",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 0,
+        "image_to_3d": 1,
+        "mesh_clean": 1,
+        "parts_separate": 2,
+        "hold_point": 2,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"digits and key labels\""
+    },
+    {
+      "label": "Black with LED row",
+      "detail": "Black body, a short antenna, a row of small red LED channel lights above a small LCD, a handful of buttons, a speaker grille",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Black body, a short antenna, a row of small red LED channel lights above a small LCD, a handful of buttons, a speaker grille. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-f0df-73b5-86f0-477ee632d37a",
+      "scores": {
+        "silhouette": 1,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1,
+        "mesh_clean": 1,
+        "parts_separate": 2,
+        "hold_point": 1,
+        "flat_base": 1,
+        "reads_small": 1,
+        "no_floaters": 1
+      },
+      "note": "\"shot lying down, long antenna\""
+    },
+    {
+      "label": "Two-tone grey",
+      "detail": "Light grey lower body and dark grey upper housing, a short antenna, an LCD window, a keypad of square keys, a speaker grille at the bottom",
+      "prompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Light grey lower body and dark grey upper housing, a short antenna, an LCD window, a keypad of square keys, a speaker grille at the bottom. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95a-f1a5-74d2-a908-5a4ccd98ed87",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 2,
+        "mesh_clean": 2,
+        "parts_separate": 2,
+        "hold_point": 2,
+        "flat_base": 2,
+        "reads_small": 2,
+        "no_floaters": 1
+      },
+      "note": "\"two-tone good, digits on LCD\""
+    }
+  ],
+  "pick": {
+    "n": 7,
+    "label": "Black, two knobs",
+    "by": "rubric",
+    "why": "highest combined looks and build total 25/26; weaker on no_floaters; \"plain black body, blank LCD, flat back\"",
+    "at": "2026-11-14"
+  }
+}
