@@ -2906,6 +2906,12 @@ function cmdSession(args) {
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
   if (list[0] === "wait") return cmdSessionWait(dir, list.slice(1));
+  // A proof verb (agent-box/proofs/<verb>.mjs) runs through the router, as the owner docs and the PR
+  // templates write it: `tools\cli session config-harness-proof --only walkthrough`.
+  if (list[0] && /^[a-z][a-z0-9-]*$/.test(list[0]) && existsSync(join(ROOT, "agent-box", "proofs", `${list[0]}.mjs`))) {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...list], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   console.log(SESSION_USAGE);
   return list[0] ? 1 : 0;
 }

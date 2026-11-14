@@ -25,7 +25,7 @@ mod's owner config):
 
 - **The example server download** (`LifeFramework-ExampleServer.zip`, or the folder
   [`server/example/`](../../server/example/README.md)): `server.json`, `config.json`, `start.cmd` and
-  `start.sh`. Unzip it anywhere, for example `C:LFServer`.
+  `start.sh`. Unzip it anywhere, for example `C:\LFServer`.
 - **The config generator** at [life-framework.org/config](https://life-framework.org/config): pick a preset,
   change prices, set the server name, ports and admin password, then **Download both files**. Put the two files
   in a folder; the start line (step 4) is on the same page.
@@ -65,13 +65,16 @@ firewall. Change the numbers in `server.json` if they are taken, and forward the
 
 With the example server folder, run `start.cmd` (Windows) or `./start.sh` (Linux). It copies `config.json` to
 where the mod reads it (step 6) and runs the line below. Set `LF_REFORGER_SERVER` first when the server is not in
-the default Steam folder. With the generator's two files, run the line yourself:
+the default Steam folder. With the generator's two files, copy `config.json` to the place step 6 names (create the
+folders; the generator's own start line, `-profile ./profile`, puts it at `profile/profile/LifeFramework/config.json`
+beside `server.json`), then run the line yourself. `ArmaReforgerServer.exe` is not on the path, so give its full path
+(Windows, default Steam folder):
 
 ```
-ArmaReforgerServer.exe -config server.json -profile C:\LFServer\profile -maxFPS 60
+"%ProgramFiles(x86)%\Steam\steamapps\common\Arma Reforger Server\ArmaReforgerServer.exe" -config C:\LFServer\server.json -profile C:\LFServer\profile -maxFPS 60
 ```
 
-Linux: `./ArmaReforgerServer -config server.json -profile ~/lfserver/profile -maxFPS 60`.
+Linux, from the server folder: `./ArmaReforgerServer -config ~/lfserver/server.json -profile ~/lfserver/profile -maxFPS 60`.
 
 The first boot downloads the mod and logs `[LFDebug:...]` lines as the town comes up. Wait for:
 
@@ -137,7 +140,7 @@ Stop the server normally (Ctrl+C in its console, or `tools\cli host stop` if you
 then add `-loadSessionSave` to the command:
 
 ```
-ArmaReforgerServer.exe -config server.json -profile C:\LFServer\profile -maxFPS 60 -loadSessionSave
+"%ProgramFiles(x86)%\Steam\steamapps\common\Arma Reforger Server\ArmaReforgerServer.exe" -config C:\LFServer\server.json -profile C:\LFServer\profile -maxFPS 60 -loadSessionSave
 ```
 
 Without the flag the town starts fresh. Do not delete the profile folder between runs.
