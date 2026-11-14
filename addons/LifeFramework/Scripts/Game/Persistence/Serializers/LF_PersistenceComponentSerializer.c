@@ -297,6 +297,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		s_bStoreLoaded = true;
 		s_iReadFailures = 0;
 		LF_SaveStamp.ResetForLoad();
+		LF_SaveIds.BeginLoad();
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
 
@@ -313,6 +314,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		array<ref LF_PlayerAccountRecord> accountRecords = new array<ref LF_PlayerAccountRecord>();
 		if (context.Read(accountRecords))
 		{
+			LF_SaveIds.ResolveAccounts(accountRecords);
 			LF_PlayerAccountManager.ApplyAll(accountRecords);
 			LF_Debug.Log("Persistence", string.Format("applied %1 account record(s)", accountRecords.Count()));
 		}
@@ -355,6 +357,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (version <= order.Find("characters"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no character slots: %2 account(s) load their character into slot 1, keyed by the account uid", version, LF_PlayerAccountManager.CountAccountsWithCharacters()));
 
+		LF_SaveIds.ReportLoad();
 		ReportLoad(version);
 		LF_SaveStamp.CaptureBoot();
 		return true;
@@ -699,6 +702,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_HideoutRecord> hideoutRecords = new array<ref LF_HideoutRecord>();
 			if (context.Read(hideoutRecords))
 			{
+				LF_SaveIds.ResolveHideouts(hideoutRecords);
 				LF_Hideout.ApplyAll(hideoutRecords);
 				LF_Debug.Log("Persistence", string.Format("applied %1 hideout record(s)", hideoutRecords.Count()));
 			}
@@ -712,6 +716,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_VehicleRecord> vehicleRecords = new array<ref LF_VehicleRecord>();
 			if (context.Read(vehicleRecords))
 			{
+				LF_SaveIds.ResolveVehicles(vehicleRecords);
 				LF_VehicleOwnership.ApplyAll(vehicleRecords);
 				int impounded = LF_VehicleOwnership.ImpoundStreetVehicles();
 				LF_Debug.Log("Persistence", string.Format("applied %1 vehicle record(s), %2 at the impound lot", vehicleRecords.Count(), impounded));
@@ -741,6 +746,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StorageSnapshotRecord> carriedRecords = new array<ref LF_StorageSnapshotRecord>();
 			if (context.Read(carriedRecords))
 			{
+				LF_SaveIds.ResolveSnapshots(carriedRecords);
 				LF_StorageSnapshot.ApplyAll(carriedRecords);
 				LF_Debug.Log("Persistence", string.Format("applied %1 carried snapshot(s)", carriedRecords.Count()));
 			}
@@ -755,6 +761,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_ProgressionRecord> progressionRecords = new array<ref LF_ProgressionRecord>();
 			if (context.Read(progressionRecords))
 			{
+				LF_SaveIds.ResolveProgression(progressionRecords);
 				LF_Progression.ApplyAll(progressionRecords);
 				LF_Debug.Log("Persistence", string.Format("applied %1 progression record(s)", progressionRecords.Count()));
 			}
@@ -783,6 +790,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StorageItemStateRecord> stateRecords = new array<ref LF_StorageItemStateRecord>();
 			if (context.Read(stateRecords))
 			{
+				LF_SaveIds.ResolveItemState(stateRecords);
 				int matched = LF_StorageSnapshot.ApplyItemState(stateRecords);
 				LF_Debug.Log("Persistence", string.Format("applied per-item state to %1 of %2 snapshot(s)", matched, stateRecords.Count()));
 			}
@@ -811,6 +819,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_JobSignUpRecord> signUpRecords = new array<ref LF_JobSignUpRecord>();
 			if (context.Read(signUpRecords))
 			{
+				LF_SaveIds.ResolveSignUps(signUpRecords);
 				LF_CivilianJob.ApplySignUps(signUpRecords);
 				LF_Debug.Log("Persistence", string.Format("applied %1 job sign-up record(s)", signUpRecords.Count()));
 			}
@@ -881,6 +890,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_FenceSerialRow> serialRows = new array<ref LF_FenceSerialRow>();
 			if (context.Read(serialRows))
 			{
+				LF_SaveIds.ResolveFenceSerials(serialRows);
 				LF_FenceSerials.ApplyAll(serialRows);
 				LF_Debug.Log("Persistence", string.Format("applied %1 fence serial row(s)", serialRows.Count()));
 			}
@@ -909,6 +919,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_EvidenceLockerRow> lockerRows = new array<ref LF_EvidenceLockerRow>();
 			if (context.Read(lockerRows))
 			{
+				LF_SaveIds.ResolveEvidenceLocker(lockerRows);
 				LF_EvidenceLocker.ApplyAll(lockerRows);
 				LF_Debug.Log("Persistence", string.Format("applied %1 evidence locker row(s)", lockerRows.Count()));
 			}
@@ -937,6 +948,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_ChainStationRow> stationRows = new array<ref LF_ChainStationRow>();
 			if (context.Read(stationRows))
 			{
+				LF_SaveIds.ResolveChainStations(stationRows);
 				LF_ChainStations.ApplyAll(stationRows);
 				LF_Debug.Log("Persistence", string.Format("applied %1 chain station batch(es)", stationRows.Count()));
 			}
@@ -951,6 +963,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StoreStockRow> stockRows = new array<ref LF_StoreStockRow>();
 			if (context.Read(stockRows))
 			{
+				LF_SaveIds.ResolveStoreStock(stockRows);
 				LF_Stores.ApplyAll(stockRows);
 				LF_Debug.Log("Persistence", string.Format("applied %1 store stock row(s)", stockRows.Count()));
 			}
@@ -965,6 +978,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StorageItemSerialRecord> serialRecords = new array<ref LF_StorageItemSerialRecord>();
 			if (context.Read(serialRecords))
 			{
+				LF_SaveIds.ResolveItemSerials(serialRecords);
 				int serialMatched = LF_StorageSnapshot.ApplyItemSerials(serialRecords);
 				LF_Debug.Log("Persistence", string.Format("applied item serials to %1 of %2 snapshot(s)", serialMatched, serialRecords.Count()));
 			}
@@ -979,6 +993,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_FarmPlotRow> plotRows = new array<ref LF_FarmPlotRow>();
 			if (context.Read(plotRows))
 			{
+				LF_SaveIds.ResolveFarmPlots(plotRows);
 				LF_FarmPlots.ApplyAll(plotRows);
 				LF_Debug.Log("Persistence", string.Format("applied %1 planted farm plot(s)", plotRows.Count()));
 			}
@@ -1010,6 +1025,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StoreUnpaidRow> unpaidRows = new array<ref LF_StoreUnpaidRow>();
 			if (context.Read(unpaidRows))
 			{
+				LF_SaveIds.ResolveStoreUnpaid(unpaidRows);
 				int boundNow = LF_Stores.ApplyUnpaid(unpaidRows);
 				LF_Debug.Info("Persistence", string.Format("applied %1 unpaid store tag(s), %2 back on characters in the world now", unpaidRows.Count(), boundNow));
 			}
@@ -1024,6 +1040,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_PlaytimeRecord> playtimeRows = new array<ref LF_PlaytimeRecord>();
 			if (context.Read(playtimeRows))
 			{
+				LF_SaveIds.ResolvePlaytime(playtimeRows);
 				int playtimeApplied = LF_Playtime.ApplyAll(playtimeRows);
 				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 playtime row(s)", playtimeApplied, playtimeRows.Count()));
 			}
@@ -1054,6 +1071,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_JobXpRow> jobXpRows = new array<ref LF_JobXpRow>();
 			if (context.Read(jobXpRows))
 			{
+				LF_SaveIds.ResolveJobXp(jobXpRows);
 				int jobXpApplied = LF_JobLevels.ApplyAll(jobXpRows);
 				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 job xp row(s)", jobXpApplied, jobXpRows.Count()));
 			}

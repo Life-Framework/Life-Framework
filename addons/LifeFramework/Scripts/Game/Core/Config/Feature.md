@@ -195,7 +195,8 @@ The mission header lists the pack's config overlays:
   the overlay files.
 - Each feature's apply step keeps the overlays whose class matches its own core file and
   logs the rest as skipped (`LF_ShopPricesConfig.ApplyLayers`), so one list can carry
-  overlays for several sections. A header that lists the core file itself as an overlay is
+  overlays for several sections. The save alias table (`LF_SaveIds`, #965) reads the same list
+  and keeps the `LF_SaveAliasesConfig` files. A header that lists the core file itself as an overlay is
   skipped with an error.
 - Precedence is owner over pack over core, per field and per key. Several overlays apply in
   list order.
