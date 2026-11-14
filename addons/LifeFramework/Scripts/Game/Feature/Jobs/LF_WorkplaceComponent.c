@@ -43,7 +43,7 @@ class LF_Workplace
 
 	//! How far from a workplace its punch clock may stand, metres. The clock is a separate world
 	//! entity placed beside the desk (a prefab child has no parent at runtime).
-	static const float CLOCK_RANGE = 3;
+	static const float CLOCK_RANGE = 3; // lf-fixed: layout reach of a punch clock beside its desk, not tuning
 
 	protected static vector s_vOrigin;
 	protected static float s_fBestDist;
