@@ -9071,6 +9071,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Siren: off"
      Comment "Action on the ambulance's light switch: stop the siren and the light bar (#923)."
     }
+    CustomStringTableItem "{DF8BF4F56126B7CA}" {
+     Id "LF-Restrain_Interrupted"
+     Target_en_us "The cuffing was interrupted."
+     Comment "Toast to the officer when the cuff or uncuff hold stops by itself: someone moved out of reach, the cuffs left the hand, or a rule no longer holds."
+    }
     CustomStringTableItem "{F4BBE2F164436809}" {
      Id "LF-Placement_Blocked"
      Target_en_us "Something is in the way."
