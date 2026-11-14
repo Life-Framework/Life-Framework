@@ -26,7 +26,7 @@ session lanes had the longest waits on 2026-11-14: p90 about 6 min, worst 61 min
 
 Ask in this order and stop at the first yes.
 
-1. **Numbers or files are enough?** (a placement, a GUID, a prefab value, a scale) `validate`, `audit placement`, `asset states <slug>`. No picture.
+1. **Numbers or files are enough?** (a placement, a GUID, a prefab value, a scale, a shelf height) `validate`, `measure <prefab> --surfaces`, `audit placement`, `asset states <slug>`. No picture.
 2. **A still of a place, a placed prop, a sign, an NPC standing?** `look <area>`. Close-ups of every placed prop are in the sheet.
 3. **A still of one item: lying on the ground, or as the inventory sees it?** `look item <prefab|slug>` (`--states ground,inventory`, `--at area|x,z`).
 4. **Two or three variants side by side?** `look item a b c`: one sheet each, 3 m apart.
