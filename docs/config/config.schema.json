@@ -69,15 +69,18 @@
               },
               "concealsFace": {
                 "type": "boolean",
-                "description": "Clothing: hides the wearer's face from a witness"
+                "description": "Clothing: hides the wearer's face from a witness",
+                "default": false
               },
               "concealsBuild": {
                 "type": "boolean",
-                "description": "Clothing: hides the wearer's build from a witness"
+                "description": "Clothing: hides the wearer's build from a witness",
+                "default": false
               },
               "removed": {
                 "type": "boolean",
-                "description": "Hidden: no outlet sells it; a later layer can set it back. The remove verb takes the item out of the list instead"
+                "description": "Hidden: no outlet sells it; a later layer can set it back. The remove verb takes the item out of the list instead",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -125,7 +128,8 @@
               },
               "removed": {
                 "type": "boolean",
-                "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead"
+                "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -154,7 +158,8 @@
             "properties": {
               "enabled": {
                 "type": "boolean",
-                "description": "Sweep this kind at all"
+                "description": "Sweep this kind at all",
+                "default": true
               },
               "maxAgeSeconds": {
                 "type": "integer",
@@ -269,7 +274,8 @@
         },
         "escortedCountsAsCuffed": {
           "type": "boolean",
-          "description": "A player escorted on foot by an officer counts as cuffed"
+          "description": "A player escorted on foot by an officer counts as cuffed",
+          "default": true
         },
         "cuffedWantedAdd": {
           "type": "integer",
@@ -294,11 +300,13 @@
         },
         "cuffedFineAllowsDebt": {
           "type": "boolean",
-          "description": "The fine may take the bank below zero (debt). Off: only what the bank holds"
+          "description": "The fine may take the bank below zero (debt). Off: only what the bank holds",
+          "default": true
         },
         "downedDies": {
           "type": "boolean",
-          "description": "Logging out while downed is death. Off: the body is left to the base game, and the rejoin is alive"
+          "description": "Logging out while downed is death. Off: the body is left to the base game, and the rejoin is alive",
+          "default": true
         },
         "wantedLogoutAdd": {
           "type": "integer",
@@ -309,7 +317,8 @@
         },
         "jailClockOffline": {
           "type": "boolean",
-          "description": "A jail sentence counts down while the prisoner is offline. Off: only online time is served"
+          "description": "A jail sentence counts down while the prisoner is offline. Off: only online time is served",
+          "default": false
         }
       },
       "additionalProperties": false,
@@ -530,11 +539,13 @@
               },
               "isInitialLicense": {
                 "type": "boolean",
-                "description": "Granted free when a character starts with no licences"
+                "description": "Granted free when a character starts with no licences",
+                "default": false
               },
               "requiresWhitelist": {
                 "type": "boolean",
-                "description": "Needs the job whitelist before it can be unlocked"
+                "description": "Needs the job whitelist before it can be unlocked",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -631,39 +642,48 @@
               },
               "withdraw": {
                 "type": "boolean",
-                "description": "May take cash out of the fund"
+                "description": "May take cash out of the fund",
+                "default": false
               },
               "invite": {
                 "type": "boolean",
-                "description": "May invite players"
+                "description": "May invite players",
+                "default": false
               },
               "kick": {
                 "type": "boolean",
-                "description": "May kick members below this rank"
+                "description": "May kick members below this rank",
+                "default": false
               },
               "buyUpgrade": {
                 "type": "boolean",
-                "description": "May buy upgrades from the fund"
+                "description": "May buy upgrades from the fund",
+                "default": false
               },
               "manageRanks": {
                 "type": "boolean",
-                "description": "May promote and demote members below this rank"
+                "description": "May promote and demote members below this rank",
+                "default": false
               },
               "declareWar": {
                 "type": "boolean",
-                "description": "Reserved for the war record: no effect yet"
+                "description": "Reserved for the war record: no effect yet",
+                "default": false
               },
               "useStash": {
                 "type": "boolean",
-                "description": "Reserved: the hideout stash opens for every member today"
+                "description": "Reserved: the hideout stash opens for every member today",
+                "default": false
               },
               "manageTerritory": {
                 "type": "boolean",
-                "description": "Reserved for territory: no effect yet"
+                "description": "Reserved for territory: no effect yet",
+                "default": false
               },
               "spendFund": {
                 "type": "boolean",
-                "description": "Reserved: spending the fund on something other than an upgrade"
+                "description": "Reserved: spending the fund on something other than an upgrade",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -679,7 +699,8 @@
       "properties": {
         "enableAutosave": {
           "type": "boolean",
-          "description": "Save the campaign periodically while it runs. Off leaves saving to the save points and the shutdown save"
+          "description": "Save the campaign periodically while it runs. Off leaves saving to the save points and the shutdown save",
+          "default": true
         },
         "autosaveInterval": {
           "type": "number",
@@ -690,27 +711,33 @@
         },
         "keepCash": {
           "type": "boolean",
-          "description": "Cash on hand survives a restart. Off: carried cash is gone after a restart; the bank is kept"
+          "description": "Cash on hand survives a restart. Off: carried cash is gone after a restart; the bank is kept",
+          "default": true
         },
         "keepCarriedGear": {
           "type": "boolean",
-          "description": "Carried gear survives a restart. Off: a character respawns with the starting loadout, cash on hand included"
+          "description": "Carried gear survives a restart. Off: a character respawns with the starting loadout, cash on hand included",
+          "default": true
         },
         "keepSurvival": {
           "type": "boolean",
-          "description": "Hunger and thirst survive a restart. Off: both start full"
+          "description": "Hunger and thirst survive a restart. Off: both start full",
+          "default": true
         },
         "keepWanted": {
           "type": "boolean",
-          "description": "Wanted levels survive a restart. Off: every warrant is cleared and its poster comes down"
+          "description": "Wanted levels survive a restart. Off: every warrant is cleared and its poster comes down",
+          "default": true
         },
         "keepJail": {
           "type": "boolean",
-          "description": "Jail sentences survive a restart. Off: every prisoner is free after a restart"
+          "description": "Jail sentences survive a restart. Off: every prisoner is free after a restart",
+          "default": true
         },
         "keepLicences": {
           "type": "boolean",
-          "description": "Earned licences survive a restart. Off: characters keep only the starter licences"
+          "description": "Earned licences survive a restart. Off: characters keep only the starter licences",
+          "default": true
         }
       },
       "additionalProperties": false,
@@ -910,7 +937,8 @@
         },
         "officerKillOfWantedExempt": {
           "type": "boolean",
-          "description": "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder"
+          "description": "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder",
+          "default": true
         },
         "searchCooldownSeconds": {
           "type": "integer",
@@ -999,11 +1027,13 @@
       "properties": {
         "enabled": {
           "type": "boolean",
-          "description": "Ask new players the rules quiz. Off lets everyone through"
+          "description": "Ask new players the rules quiz. Off lets everyone through",
+          "default": true
         },
         "repeatOnConnect": {
           "type": "boolean",
-          "description": "Ask on every connect, not once per account. The pass is still remembered for the staff tools"
+          "description": "Ask on every connect, not once per account. The pass is still remembered for the staff tools",
+          "default": false
         },
         "passPercent": {
           "type": "integer",
@@ -1111,7 +1141,8 @@
             "properties": {
               "enabled": {
                 "type": "boolean",
-                "description": "On. Off hides the system's actions, refuses its requests and spawns nothing; its saved data is kept"
+                "description": "On. Off hides the system's actions, refuses its requests and spawns nothing; its saved data is kept",
+                "default": true
               }
             },
             "additionalProperties": false
@@ -1293,23 +1324,28 @@
               },
               "blocksPlayerDamage": {
                 "type": "boolean",
-                "description": "Player-on-player damage is refused when either side stands inside"
+                "description": "Player-on-player damage is refused when either side stands inside",
+                "default": false
               },
               "suppressesWanted": {
                 "type": "boolean",
-                "description": "A murder inside raises no wanted level"
+                "description": "A murder inside raises no wanted level",
+                "default": false
               },
               "allowsRobbery": {
                 "type": "boolean",
-                "description": "Robbery is allowed inside"
+                "description": "Robbery is allowed inside",
+                "default": true
               },
               "allowsVehicleTheft": {
                 "type": "boolean",
-                "description": "Vehicle theft is allowed inside"
+                "description": "Vehicle theft is allowed inside",
+                "default": true
               },
               "allowsWeaponDraw": {
                 "type": "boolean",
-                "description": "Drawing a weapon is allowed inside"
+                "description": "Drawing a weapon is allowed inside",
+                "default": true
               },
               "fineMultiplier": {
                 "type": "number",
@@ -1320,7 +1356,8 @@
               },
               "copsEnter": {
                 "type": "boolean",
-                "description": "Police may enter and act inside"
+                "description": "Police may enter and act inside",
+                "default": true
               }
             },
             "additionalProperties": false
@@ -1328,11 +1365,13 @@
         },
         "safeBlocksPlayerDamage": {
           "type": "boolean",
-          "description": "Legacy: SAFE zones refuse player-on-player damage. Ignored once the rule table has a SAFE entry"
+          "description": "Legacy: SAFE zones refuse player-on-player damage. Ignored once the rule table has a SAFE entry",
+          "default": true
         },
         "lawlessSuppressesWanted": {
           "type": "boolean",
-          "description": "Legacy: a murder inside a LAWLESS zone raises no wanted level. Ignored once the rule table has a LAWLESS entry"
+          "description": "Legacy: a murder inside a LAWLESS zone raises no wanted level. Ignored once the rule table has a LAWLESS entry",
+          "default": false
         }
       },
       "additionalProperties": false,

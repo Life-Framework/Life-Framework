@@ -155,7 +155,8 @@ function attrInfo(args) {
 const SCALAR = { int: "integer", float: "number", bool: "boolean", string: "string", ResourceName: "string" };
 
 function scalarDefault(type, def) {
-  if (type === "bool") return def === "true" ? true : def === "false" ? false : undefined;
+  // [Attribute("1")] is how most checkboxes spell "on"; reading only true/false left 39 booleans without a default (#286).
+  if (type === "bool") return def === "true" || def === "1" ? true : def === "false" || def === "0" ? false : undefined;
   if (type === "int" || type === "float") return /^-?\d+(\.\d+)?$/.test(def) ? Number(def) : undefined;
   return def;
 }
