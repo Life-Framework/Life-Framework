@@ -16,7 +16,6 @@ class LF_Test_SystemsKeepData : LF_Test
 {
 	static const string E2E_PLOT = "e2e-systems-farm";
 	static const int E2E_SECONDS = 45;
-	static const string E2E_OWNER = "{\"schemaVersion\":1,\"systems\":{\"switches\":{\"Farming\":{\"enabled\":false}}}}";
 
 	override string GetName()
 	{
@@ -103,8 +102,10 @@ class LF_Test_SystemsKeepData : LF_Test
 		ctx.False(plot.IsEmpty(), "the crop loads while Farming is off");
 		ctx.EqualFloat(40, plot.GetGrownSeconds(), 0.001, "with its 40 seconds");
 
-		// On again: the same crop, growing.
-		Owner(string.Empty);
+		// On again: the same crop, growing. An owner layer with no switches, not string.Empty: in the
+		// e2e save boot persistence/switches has already written the owner file (Farming off), and an
+		// empty layer would read it back (#689).
+		Owner("{\"schemaVersion\":1}");
 		ctx.True(LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM), "Farming is on again");
 		ctx.EqualFloat(40, plot.GetGrownSeconds(), 0.001, "turning it on finds the crop as it was");
 		ctx.True(LF_FarmPlots.AdvanceAll(5) >= 1, "and it grows again (other planted plots grow with it)");
@@ -117,14 +118,8 @@ class LF_Test_SystemsKeepData : LF_Test
 	//! The e2e save boot: Farming off from a real owner file, and a crop for the save.
 	protected void SeedSaveBoot(LF_TestContext ctx)
 	{
-		ctx.False(FileIO.FileExists(LF_ConfigService.OWNER_PATH), "the save boot's fresh profile has no owner config");
-		FileHandle handle = FileIO.OpenFile(LF_ConfigService.OWNER_PATH, FileMode.WRITE);
-		ctx.True(handle != null, "the save boot writes an owner config.json with Farming off");
-		if (!handle)
-			return;
-
-		handle.WriteLine(E2E_OWNER);
-		handle.Close();
+		// The one e2e owner file, shared with persistence/switches (#689), which may have written it.
+		ctx.True(LF_Test_PersistSwitchesRestart.WriteE2EOwner(), "the save boot writes an owner config.json with Farming off");
 		LF_ConfigService.Reset();
 		LF_Systems.Reload();
 		ctx.False(LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM), "the owner file turns Farming off before the shutdown save");
