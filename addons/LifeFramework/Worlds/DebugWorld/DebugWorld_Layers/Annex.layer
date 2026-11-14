@@ -1704,3 +1704,7 @@ GenericEntity Annex_Convoy_Drop_Near {
  coords 63 0 70
  Flags 0x403 0
 }
+GenericEntity Annex_GunCounter : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ coords 88 0 75.036
+ angleY 180
+}

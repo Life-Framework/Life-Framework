@@ -24,6 +24,7 @@ export const DEFAULT_SOURCES = {
   chains: join(CFG, "Resources", "ResourceChains.conf"),
   vehicles: join(CFG, "Vehicles", "LF_VehiclePrices.conf"),
   chop: join(CFG, "Crime", "LF_ChopShop.conf"),
+  catalogue: join(CFG, "Catalogue", "LF_ItemCatalogue.conf"),
   layers: ["Street_Vehicles.layer", "Annex.layer"].map((f) => join(LAYERS, f)),
   owner: null,
 };
@@ -275,6 +276,42 @@ export function findVehicleLoops(shop, veh) {
 }
 
 /** Every loop the sources hold, largest margin first. */
+// ---- Item catalogue (#988) --------------------------------------------------------------------
+/** The catalogue's live items with prefab, price and sell price; the owner's `catalogue.items` patched by id. */
+export function loadCatalogue(conf, ownerSection) {
+  const out = new Map();
+  if (conf) {
+    for (const it of items(conf, "m_aItems")) {
+      const id = it.props.m_sId;
+      if (!id) continue;
+      out.set(id, { id, prefab: it.props.m_Prefab || "", price: num(it.props.m_iPrice, 100), sell: num(it.props.m_iSellPrice, 50), removed: !!num(it.props.m_bRemoved, 0) });
+    }
+  }
+  for (const [id, rec] of Object.entries(ownerSection?.items || {})) {
+    if (!rec || typeof rec !== "object") continue;
+    const it = out.get(id) ?? (typeof rec.prefab === "string" ? { id, prefab: rec.prefab, price: 100, sell: 50, removed: false } : null);
+    if (!it) continue;
+    if (Number.isInteger(rec.price)) it.price = rec.price;
+    if (Number.isInteger(rec.sellPrice)) it.sell = rec.sellPrice;
+    if (typeof rec.removed === "boolean") it.removed = rec.removed;
+    out.set(id, it);
+  }
+  return [...out.values()].filter((it) => !it.removed && it.prefab);
+}
+
+/** An outlet that pays more for an item than a price-rule shop asks, or asks less than a shop pays, is a loop. */
+export function findCatalogueLoops(shop, catalogue) {
+  const out = [];
+  for (const it of catalogue) {
+    const pr = resolvePrice(shop, it.prefab);
+    if (pr.hidden) continue;
+    const name = nameOf(it.prefab);
+    if (it.sell > pr.buy && pr.buy > 0) out.push(loop("outlet", `outlet-sell:${it.id}`, `buy ${name} at a shop ${pr.buy}, sell to an outlet ${it.sell}`, pr.buy, it.sell));
+    if (pr.sell > it.price && it.price > 0) out.push(loop("outlet", `outlet-buy:${it.id}`, `buy ${name} at an outlet ${it.price}, sell to a shop ${pr.sell}`, it.price, pr.sell));
+  }
+  return out;
+}
+
 export function checkProfitLoops(src = DEFAULT_SOURCES) {
   const read = (p) => readFileSync(p, "utf8");
   const maybe = (p) => (p && existsSync(p) ? parseConf(read(p)) : null);
@@ -283,7 +320,8 @@ export function checkProfitLoops(src = DEFAULT_SOURCES) {
   if (owner) applyOwnerShops(shop, owner.shops);
   const chains = parseConf(read(src.chains));
   const veh = loadVehicles(maybe(src.vehicles), maybe(src.chop), (src.layers || []).filter(existsSync).map(read));
-  return [...findShopLoops(shop), ...findRecipeLoops(shop, chains), ...findVehicleLoops(shop, veh)]
+  const catalogue = loadCatalogue(maybe(src.catalogue), owner?.catalogue);
+  return [...findShopLoops(shop), ...findRecipeLoops(shop, chains), ...findVehicleLoops(shop, veh), ...findCatalogueLoops(shop, catalogue)]
     .sort((a, b) => b.margin - a.margin || a.id.localeCompare(b.id));
 }
 
