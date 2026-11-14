@@ -101,6 +101,21 @@
   "persistence": {
     "autosaveInterval": 600
   },
+  "placement": {
+    "policies": {
+      "spike_strip": {
+        "minRank": 1,
+        "cash": 50
+      },
+      "market_stall": {
+        "placeKind": "market",
+        "placeRadius": 20,
+        "blockedZones": "SAFE",
+        "road": "off",
+        "cash": 25
+      }
+    }
+  },
   "police": {
     "arrestMinRank": 0,
     "escortMinRank": 0,

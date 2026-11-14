@@ -301,6 +301,9 @@ class LF_ConfigStream
 		// The item catalogue and its outlets: the next read layers the owner file (server) or the stream (client).
 		LF_ItemCatalogueConfig.Reload();
 
+		// Placement policies (#1030, server rule): the next read layers the owner file.
+		LF_PlacementPolicyConfig.Reload();
+
 		// Terms (#958): the next text that names one layers the owner file (server) or the stream (client).
 		LF_Terms.Reload();
 	}

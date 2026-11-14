@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6E3A9B1D4C7F2085}Configs/Placement/LF_PlacementPolicy.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

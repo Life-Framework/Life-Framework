@@ -1,5 +1,11 @@
 {
   "records": {
+    "LF_PlacementPolicy": {
+      "keyFields": [
+        "m_sId"
+      ],
+      "key": "The key is the policy id a placeable names (spike_strip). An id no shipped policy has adds one; an existing id changes only the fields given. Who is the catalogue's gate (job, minRank, licence, orgRight), where is blockedZones, onlyZone, placeKind with placeRadius, and road ('on' or 'off'), the cost is cash or costItem with costItemCount."
+    },
     "LF_CleanupRule": {
       "keyFields": [
         "m_sKind"
@@ -182,6 +188,21 @@
       "rules": {
         "POLICE_FINE": {
           "requiresWhitelist": false
+        }
+      }
+    },
+    "placement": {
+      "policies": {
+        "spike_strip": {
+          "minRank": 1,
+          "cash": 50
+        },
+        "market_stall": {
+          "placeKind": "market",
+          "placeRadius": 20,
+          "blockedZones": "SAFE",
+          "road": "off",
+          "cash": 25
         }
       }
     },

@@ -640,6 +640,95 @@
       "additionalProperties": false,
       "x-class": "LF_PersistenceConfig"
     },
+    "placement": {
+      "type": "object",
+      "description": "The policy list: Configs/Placement/LF_PlacementPolicy.conf, then each pack overlay of this class, then the owner's `placement` section.",
+      "properties": {
+        "policies": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the policy id a placeable names (spike_strip). An id no shipped policy has adds one; an existing id changes only the fields given. Who is the catalogue's gate (job, minRank, licence, orgRight), where is blockedZones, onlyZone, placeKind with placeRadius, and road ('on' or 'off'), the cost is cash or costItem with costItemCount.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
+              "licence": {
+                "type": "string",
+                "default": ""
+              },
+              "job": {
+                "type": "string",
+                "default": ""
+              },
+              "minRank": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 100
+              },
+              "orgRight": {
+                "type": "string",
+                "default": ""
+              },
+              "blockedZones": {
+                "type": "string",
+                "default": ""
+              },
+              "onlyZone": {
+                "type": "string",
+                "default": ""
+              },
+              "placeKind": {
+                "type": "string",
+                "default": ""
+              },
+              "placeRadius": {
+                "type": "number",
+                "default": 25,
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "road": {
+                "type": "string",
+                "default": ""
+              },
+              "cash": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "costItem": {
+                "type": "string",
+                "default": ""
+              },
+              "costItemCount": {
+                "type": "integer",
+                "default": 1,
+                "minimum": 1,
+                "maximum": 100
+              },
+              "refundOnPickup": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_PlacementPolicyConfig"
+    },
     "police": {
       "type": "object",
       "description": "Police tuning: per-rank permissions, the wanted board and crime reports (M1-11), and the paper ticket (M1-19): offences with fixed amounts, both deadlines, and the late rule.",

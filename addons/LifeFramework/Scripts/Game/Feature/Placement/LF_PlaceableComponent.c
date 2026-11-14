@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! The placement service's data (#1026, docs/roadmap/building-foundation.md section 4): on a carried
 //! item that the player puts into the world (the folded spike strip first). It names what is placed,
-//! the box it needs, how it finds its spot, who may place it and how long it stays.
+//! the box it needs, how it finds its spot, which policy rules it (#1030) and how long it stays.
 //! LF_PlacementService plans, probes and confirms from it; nothing here runs by itself.
 //------------------------------------------------------------------------------------------------
 
@@ -16,13 +16,6 @@ enum LF_EPlacementSnap
 	FLOOR,
 	//! Against a wall face (#1028).
 	WALL
-}
-
-//! Who may place it, until the per-kind policy from a .conf takes over (#1030).
-enum LF_EPlacementWho
-{
-	ANYONE,
-	ON_DUTY_POLICE
 }
 
 //! What happens to it after it is placed.
@@ -57,8 +50,8 @@ class LF_PlaceableComponent : ScriptComponent
 	[Attribute("0", UIWidgets.ComboBox, desc: "How the spot is found", enums: ParamEnumArray.FromEnum(LF_EPlacementSnap))]
 	protected LF_EPlacementSnap m_eSnap;
 
-	[Attribute("0", UIWidgets.ComboBox, desc: "Who may place it (until the placement policy, #1030)", enums: ParamEnumArray.FromEnum(LF_EPlacementWho))]
-	protected LF_EPlacementWho m_eWho;
+	[Attribute("", UIWidgets.EditBox, "Placement policy id (Configs/Placement/LF_PlacementPolicy.conf, #1030): who may place it, where, and what it costs. Empty is anyone, anywhere, free")]
+	protected string m_sPolicy;
 
 	[Attribute("0", UIWidgets.ComboBox, desc: "Temporary (goes by itself) or permanent (stays until picked up)", enums: ParamEnumArray.FromEnum(LF_EPlacementLifetime))]
 	protected LF_EPlacementLifetime m_eLifetime;
@@ -101,9 +94,9 @@ class LF_PlaceableComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	LF_EPlacementWho GetWho()
+	string GetPolicyId()
 	{
-		return m_eWho;
+		return m_sPolicy;
 	}
 
 	//------------------------------------------------------------------------------------------------

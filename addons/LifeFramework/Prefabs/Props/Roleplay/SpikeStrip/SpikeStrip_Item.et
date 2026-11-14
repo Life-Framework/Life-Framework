@@ -36,7 +36,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    m_vFootprintMaxs 0.2 0.6 1.75
    m_fReach 1
    m_eSnap ACROSS_ROAD
-   m_eWho ON_DUTY_POLICE
+   m_sPolicy "spike_strip"
    m_eLifetime TEMPORARY
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {

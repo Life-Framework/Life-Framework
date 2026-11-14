@@ -59,7 +59,7 @@ class LF_Test_PlacementConfirm : LF_Test
 		}
 
 		ctx.True(LF_Utils.SamePrefab(placeable.GetPlacedPrefab(), STRIP), "the folded strip places the strip prefab");
-		ctx.Equal(LF_EPlacementWho.ON_DUTY_POLICE, placeable.GetWho(), "only on-duty police place it");
+		ctx.EqualStr("spike_strip", placeable.GetPolicyId(), "the strip is ruled by the spike_strip policy (on-duty police)");
 
 		// The server's own spot for the officer: what their ghost shows.
 		vector own[4];
@@ -90,7 +90,7 @@ class LF_Test_PlacementConfirm : LF_Test
 
 		// The civilian at the officer's spot proposes the same place.
 		IEntity civilianItem = LF_Utils.SpawnEntityPrefab(ITEM, civilian.GetOrigin() + "0.5 0 0");
-		ExpectRefused(ctx, civilian, civilianItem, own, "not on-duty police", "a civilian's proposal");
+		ExpectRefused(ctx, civilian, civilianItem, own, "policy spike_strip: needs job POLICE", "a civilian's proposal");
 		LF_TestCharacterFixture.Delete(civilianItem);
 
 		// The ghost's spot after the officer stepped 1 m back from it and turned 25 degrees (the

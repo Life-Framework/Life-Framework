@@ -4,10 +4,12 @@
 //!   Plan     (both sides) the spot in front of the player by the item's snap mode, and its verdict;
 //!            the client's ghost shows it, the server uses it as the reference for a proposal
 //!   ProbeAt  (both sides) the probes at one given spot: ground, step, clearance, surface
-//!   Confirm  (server) the client proposes a spot; the server rejects a malformed one, accepts it
-//!            within the item's reach plus TOLERANCE_METRES of where the player stands now (and,
-//!            across a road, within TOLERANCE_DEGREES of straight across), re-probes it, refuses
-//!            anything not VALID, rate-limits (SPAWN), spawns the placed prefab and uses the item up
+//!   Confirm  (server) the client proposes a spot; the server applies the item's placement policy
+//!            (who, #1030), rejects a malformed proposal, accepts it within the item's reach plus
+//!            TOLERANCE_METRES of where the player stands now (and, across a road, within
+//!            TOLERANCE_DEGREES of straight across), applies the policy's where rules, re-probes it,
+//!            refuses anything not VALID, rate-limits (SPAWN), takes the policy's cost, spawns the
+//!            placed prefab and uses the item up
 //! The proposal arrives through the placing action's own data (OnSaveActionData/OnLoadActionData,
 //! LF_SpikeStripDeployAction), so there is no extra RPC. The ghost is never replicated.
 //------------------------------------------------------------------------------------------------
@@ -187,18 +189,32 @@ class LF_PlacementService
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server and client: whether `user` may place `placeable`. The server reads the account, a
-	//! client the replicated state (to hide an action the server would refuse). Cheap: an action's
-	//! CanBeShown calls it every frame.
+	//! Server and client: whether `user` may place `placeable` by its policy's who rules. The server
+	//! reads the account, a client the replicated state (to hide an action the server would refuse).
+	//! Cheap: an action's CanBeShown calls it every frame.
 	static bool MayPlace(IEntity user, LF_PlaceableComponent placeable)
 	{
 		if (!user || !placeable)
 			return false;
 
-		if (placeable.GetWho() == LF_EPlacementWho.ON_DUTY_POLICE)
-			return LF_PoliceUtils.IsOnDutyCharacter(user);
+		LF_PlacementPolicy policy;
+		string reason;
+		return CheckWho(user, placeable, policy, reason) == LF_EPlacementPolicyVerdict.ALLOWED;
+	}
 
-		return true;
+	//------------------------------------------------------------------------------------------------
+	//! The placeable's policy and the answer of its who rules (an unknown policy id is refused).
+	protected static LF_EPlacementPolicyVerdict CheckWho(IEntity user, notnull LF_PlaceableComponent placeable, out LF_PlacementPolicy policy, out string reason)
+	{
+		bool known;
+		policy = LF_PlacementPolicies.Find(placeable.GetPolicyId(), known);
+		if (!known)
+		{
+			reason = string.Format("policy '%1' does not exist", placeable.GetPolicyId());
+			return LF_EPlacementPolicyVerdict.UNKNOWN_POLICY;
+		}
+
+		return LF_PlacementPolicies.CheckWho(policy, LF_PlacementBuyerFacts.For(user), reason);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -313,8 +329,11 @@ class LF_PlacementService
 		if (!placeable || placeable.GetPlacedPrefab().IsEmpty())
 			return Refuse(player, "refused: the item names no placed prefab", "");
 
-		if (!MayPlace(player, placeable))
-			return Refuse(player, string.Format("refused: %1 is not on-duty police", LF_PoliceRanks.ResolveUid(player)), "#LF-Placement_NotAllowed");
+		LF_PlacementPolicy policy;
+		string policyReason;
+		LF_EPlacementPolicyVerdict policyVerdict = CheckWho(player, placeable, policy, policyReason);
+		if (policyVerdict != LF_EPlacementPolicyVerdict.ALLOWED)
+			return Refuse(player, string.Format("refused: %1 (%2)", policyReason, LF_PoliceRanks.ResolveUid(player)), LF_PlacementPolicies.ToastKey(policyVerdict));
 
 		// Only an item on the ground or in the player's own inventory: not one in someone's car.
 		IEntity holder = LF_InventoryUtils.GetStorageHierachyRoot(item);
@@ -350,6 +369,11 @@ class LF_PlacementService
 				return Refuse(player, "refused: " + roadProblem, "#LF-Placement_Moved");
 		}
 
+		// The policy's where rules at the proposed spot, before the probes' traces.
+		policyVerdict = LF_PlacementPolicies.CheckWhere(policy, LF_WorldSpotFacts.At(proposal[3]), policyReason);
+		if (policyVerdict != LF_EPlacementPolicyVerdict.ALLOWED)
+			return Refuse(player, "refused: " + policyReason, LF_PlacementPolicies.ToastKey(policyVerdict));
+
 		vector transform[4];
 		LF_PlacementProbe probe = new LF_PlacementProbe();
 		LF_EPlacementVerdict verdict = ProbeAt(player, placeable, item, proposal, transform, probe);
@@ -359,12 +383,23 @@ class LF_PlacementService
 		if (verdict != LF_EPlacementVerdict.VALID)
 			return Refuse(player, "refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_NoGround");
 
+		// The cost is taken only now, with the spot VALID, and given back when the spawn fails.
+		policyVerdict = LF_PlacementPolicies.CheckCost(policy, LF_EntityPayer.Of(player), policyReason);
+		if (policyVerdict != LF_EPlacementPolicyVerdict.ALLOWED)
+			return Refuse(player, "refused: " + policyReason, LF_PlacementPolicies.ToastKey(policyVerdict));
+
+		if (!LF_PlacementPolicies.Charge(policy, player))
+			return Refuse(player, "refused: the cost could not be taken", LF_PlacementPolicies.ToastKey(LF_EPlacementPolicyVerdict.CANNOT_PAY));
+
 		IEntity placed = SpawnAt(placeable.GetPlacedPrefab(), transform);
 		if (!placed)
+		{
+			LF_PlacementPolicies.Refund(policy, player);
 			return Refuse(player, string.Format("refused: spawn failed for %1", placeable.GetPlacedPrefab()), "");
+		}
 
 		SCR_EntityHelper.DeleteEntityAndChildren(item);
-		LF_Debug.Info(FEATURE, string.Format("placed %1 for %2 at %3 heading %4 (%5), %6", LF_PlacementRules.Describe(placed), LF_PoliceRanks.ResolveUid(player), transform[3], transform[2], typename.EnumToString(LF_EPlacementLifetime, placeable.GetLifetime()), offBy));
+		LF_Debug.Info(FEATURE, string.Format("placed %1 for %2 at %3 heading %4 (%5), %6, policy '%7'", LF_PlacementRules.Describe(placed), LF_PoliceRanks.ResolveUid(player), transform[3], transform[2], typename.EnumToString(LF_EPlacementLifetime, placeable.GetLifetime()), offBy, placeable.GetPolicyId()));
 		return placed;
 	}
 

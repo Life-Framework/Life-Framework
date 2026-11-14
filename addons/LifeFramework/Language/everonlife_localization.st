@@ -8362,6 +8362,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You moved. Look at the spot again and retry."
      Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
     }
+    CustomStringTableItem "{3B7E1A5C9D204F61}" {
+     Id "LF-Placement_WrongZone"
+     Target_en_us "You cannot place this in this zone."
+     Comment "Toast when a placement policy refuses the zone rule at the spot (#1030)."
+    }
+    CustomStringTableItem "{3B7E1A5C9D204F62}" {
+     Id "LF-Placement_WrongPlace"
+     Target_en_us "This cannot be placed here: it needs a spot near the right place."
+     Comment "Toast when a placement policy needs a registered place nearby (a house, an organisation base) and there is none (#1030)."
+    }
+    CustomStringTableItem "{3B7E1A5C9D204F63}" {
+     Id "LF-Placement_RoadRule"
+     Target_en_us "This cannot be placed on or off the road like that."
+     Comment "Toast when a placement policy refuses the spot because of the road rule (#1030)."
+    }
+    CustomStringTableItem "{3B7E1A5C9D204F64}" {
+     Id "LF-Placement_CannotPay"
+     Target_en_us "You cannot afford to place this."
+     Comment "Toast when the placement costs cash or an item the player does not have (#1030)."
+    }
     CustomStringTableItem "{F06569B011E7028F}" {
      Id "LF-Police_Shirt_Name"
      Target_en_us "Officer's shirt"
