@@ -76,8 +76,8 @@
       }
     },
     {
-      "name": "please don't shoot me",
-      "take": "CLERK",
+      "name": "please don't shoot me (the wide, pushing in)",
+      "take": "WINDOW",
       "anchor": "voice",
       "rel": [
         7.35,
@@ -116,30 +116,30 @@
       }
     },
     {
-      "name": "bank vault, the bell",
+      "name": "bank vault swings open, nobody there, the bell",
       "take": "BANK",
-      "from": 3.0,
-      "to": 8.0,
+      "from": 4.5,
+      "to": 9.0,
       "audio": {
         "take": "BANK",
-        "from": 3.0
+        "from": 4.5
       }
     },
     {
       "name": "police car, lights and siren",
       "take": "POLICE",
       "from": 8.0,
-      "to": 12.3,
+      "to": 11.6,
       "audio": {
         "take": "POLICE",
         "from": 8.0,
         "gainDb": 8
       },
       "fadeOut": 0.9,
-      "audioTail": 3.8
+      "audioTail": 3.7
     }
   ],
-  "black": 0.6,
+  "black": 0.5,
   "endCard": {
     "seconds": 3.2,
     "fadeIn": 0.45,

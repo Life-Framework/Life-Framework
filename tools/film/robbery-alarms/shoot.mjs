@@ -122,9 +122,10 @@ export const SHOTS = {
   CLERK: ROB(CAMS.clerk, "inside, close on the clerk: the panic line"),
   FRONT: ROB(CAMS.front, "the robber in profile at the window, the wall box out of frame"),
   BEACON: ROB(CAMS.beacon, "the alarm box on the kiosk wall: the beacon flashing, the intruder alarm"),
-  BANK: { seconds: 10, scene: "trailer-bank", park: "Roadmap_Garage", cam: CAMS.bank, note: "the vault door swings open, the bank bell",
+  BANK: { seconds: 10, scene: "trailer-bank", park: PARK, cam: CAMS.bank, note: "the vault door swings open, the bank bell",
     prep: () => { on(1, { verb: "resetcrime" }, 10000); stand(1, "Roadmap_Bank_RobKit", "w"); on(1, { verb: "charge" }); },
-    body: async (at) => { await at(1.5); use(1, "LF_BankRobAction", "Roadmap_Bank_Vault"); } },
+    // The robber sets it off and is gone before the door turns: nobody stands by the vault when it swings open.
+    body: async (at) => { await at(1.5); use(1, "LF_BankRobAction", "Roadmap_Bank_Vault"); await at(1.7); stand(1, PARK, "s"); } },
   POLICE: { seconds: 14, scene: false, cam: CAMS.police, note: "the patrol car comes down the main street, lights and siren",
     prep: () => { on(1, { verb: "resetcrime" }, 10000); stand(1, PARK, "s"); },
     body: async (at) => { await at(0); on(2, { verb: "scene", args: `start robbery-police ${HOUR} Clear` }, 12000); } },
