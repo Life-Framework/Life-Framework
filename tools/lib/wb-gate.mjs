@@ -74,19 +74,25 @@ export function earlyDeath({ status, seconds, text, freeMb, reserveMb = WB_RESER
   return `Workbench exited after ${Math.round(seconds)} s with no verdict and ${(freeMb / 1024).toFixed(1)} GB free (needs ${((reserveMb + minFreeMb) / 1024).toFixed(1)})`;
 }
 
-// Where a stale resourceDatabase.rdb is refreshed (a headless Workbench, ~10 min per addon behind
-// the build lock on this PC, one worktree at a time). Same rule as chooseGate, plus one local
-// signal: the hub `build` lock held by a live process (a refresh, a build, an asset import) counts as
-// a busy PC, because the local refresh would queue behind it. `mode`: "auto" (default; remote only
-// when this PC is busy), "local", or "pool" (a pool machine whenever one answers; falls back to local).
-// Pure; tools/validation/rdb-refresh-where-selftest.mjs proves it.
-export function chooseRefresh({ local, remotes = [], mode = "auto", machine = null, needMb = GATE_NEED_MB }) {
+// Where a stale resourceDatabase.rdb is refreshed (a headless Workbench, ~15 s per addon, but it queued
+// 10-50 min behind the hub `build` lock and this PC's one Workbench slot). Built on chooseGate's rule
+// (free Workbench slot AND RAM for a Workbench, ranked by free RAM and speed): this PC when it has a
+// free slot, no live `build` lock (local.buildLocked) and the RAM; else a pool machine that chooseGate
+// finds with a free slot and the RAM (never one it would only queue on); else this PC again, which
+// waits for its slot as before. mode "auto" (default), "local", or "pool" (a pool machine first even
+// when this PC is free). Pure; tools/validation/rdb-refresh-where-selftest.mjs proves it.
+export function chooseRefresh({ local, remotes = [], mode = "auto", reserveMb = WB_RESERVE_MB, minFreeMb = DEFAULTS.minFreeMb, roomyMb = DEFAULTS.roomyMb }) {
   if (mode === "local") return { where: "local", why: "LF_RDB_REFRESH_WHERE=local" };
-  // This PC counts as busy when its build lock is held or it is short of RAM for a Workbench
-  // (local.freeMb, when given): a headless Workbench dies or times out there.
-  const ramShort = local.freeMb != null && local.freeMb < needMb;
-  const busyLocal = local.buildLocked || ramShort ? { ...local, busy: local.limit, queued: 0 } : local;
-  return chooseGate({ local: busyLocal, remotes, mode: mode === "pool" ? "remote" : "any", machine, needMb });
+  const need = reserveMb + minFreeMb;
+  const slotFree = !local.buildLocked && local.busy + local.queued < local.limit;
+  const ramOk = local.freeMb == null || local.freeMb >= need;
+  if (mode === "auto" && slotFree && ramOk) return { where: "local", why: `this PC has a free Workbench slot (${local.busy}/${local.limit} busy) and ${local.freeMb ?? "?"} MB free` };
+  const c = chooseGate({ local, remotes, mode: "remote", reserveMb, minFreeMb, roomyMb });
+  if (c.where !== "local" && c.where !== "wait" && c.where !== "none" && !c.queue) {
+    const here = local.buildLocked ? "this PC's build lock is held" : !slotFree ? `this PC is busy (${local.busy}/${local.limit}, ${local.queued} queued)` : !ramOk ? `this PC has ${local.freeMb} MB free (needs ${need})` : "asked for a pool machine";
+    return { where: c.where, why: `${here}; ${c.why}` };
+  }
+  return { where: "local", why: `no pool machine has a free Workbench slot and the RAM (${c.why}); refreshing here` };
 }
 
 // One ssh round trip: the box's live Workbench locks and free RAM. null when it does not answer.

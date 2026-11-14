@@ -217,7 +217,7 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
 `rdb`) first checks that `resourceDatabase.rdb` registers every `.meta`. A fresh worktree's copy of main's
 rdb usually does not, and registering takes a headless Workbench (~10 min per addon, one at a time behind
 the hub `build` lock). `refreshOnPool` (`tools/cli.mjs`, decision `chooseRefresh` in `tools/lib/wb-gate.mjs`)
-asks first: if this PC's Workbench slot is busy, queued for, the `build` lock is held, or free RAM is under what a Workbench needs (3500 MB), and a pool machine
+asks first: if this PC's Workbench slot is busy, queued for, the `build` lock is held, or free RAM is under what a Workbench needs (`WB_RESERVE_MB` plus the pool's `minFreeMb`), and a pool machine
 with the `workbench` cap has a free slot and the RAM, the refresh runs there. The run folder gets the
 snapshot, `rdb --local` refreshes in it (taking one of that machine's Workbench slots, so the next caller sees it
 busy), and `pullRemoteRdb` (the #1227 copy-back) copies the rdb home. No machine with room, or any failure,

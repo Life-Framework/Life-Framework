@@ -1198,15 +1198,10 @@ function refreshOnPool(root, force = false) {
   if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0" || process.env.LF_RDB_POOL === "0" || mode === "local") return;
   const stale = rdbAddons(root).filter((name) => rdbFreshness(addonDir(root, name)).missing.length > 0);
   if (!stale.length) return;
-  const limit = wbLock.wbLimit(root);
-  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, buildLocked: buildLockHeld(root), freeMb: Math.round(os.freemem() / 1048576) };
-  let remotes = [];
-  if (mode === "pool" || local.buildLocked || local.freeMb < wbGate.GATE_NEED_MB || local.busy + local.queued >= limit) {
-    remotes = pool.loadMachines(root)
-      .filter((m) => m.via === "ssh" && (m.caps ?? []).includes("workbench"))
-      .map((m) => ({ name: m.name, caps: m.caps, m, state: wbGate.remoteWbState(m) }));
-  }
-  const c = wbGate.chooseRefresh({ local, remotes, mode: mode === "pool" ? "pool" : "auto" });
+  // The same live view `ci` ranks machines by (workbenchMachines: slots and free RAM, here and over ssh).
+  const view = workbenchMachines(root, { mode: "any", machine: null });
+  const settings = pool.poolSettings(root);
+  const c = wbGate.chooseRefresh({ local: { ...view.local, buildLocked: buildLockHeld(root) }, remotes: view.remotes, mode: mode === "pool" ? "pool" : "auto", minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
   console.log(`rdb: ${stale.length} addon(s) stale (${stale.join(", ")}); refresh on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
   if (c.where === "local") return;
   const t0 = Date.now();
