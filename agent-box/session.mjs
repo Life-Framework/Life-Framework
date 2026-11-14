@@ -850,6 +850,9 @@ async function routeMachine(cmd, rest) {
   if (want === "local") return { local: true, args };
   const clients = parseClients(args);
   const profile = parseSessionProfile(args).profile;
+  // A remote leg ships this worktree's resourceDatabase.rdb: refresh it here first, before the queue,
+  // as `test` does (a fresh worktree sent a 0.1 MiB rdb and the box ran its own headless Workbench).
+  spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
   // A record whose machine went away is not a session any more: forget it.
   if (ptr) {
     const pm = pool.findMachine(machines, ptr.machine);
