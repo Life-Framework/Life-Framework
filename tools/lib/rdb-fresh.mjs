@@ -97,6 +97,8 @@ export function movedOut(rdb, addonDir, own = addonResources(addonDir)) {
   } catch {}
   for (const s of siblings) {
     for (const r of addonResources(join(parent, s.name))) {
+      // Folder metas (Missions.meta) are not resources and share ids across addons; skip them.
+      if (!/\.[^/]+$/.test(r.path)) continue;
       if (r.guid && !mine.has(r.guid) && rdb.includes(guidBytes(r.guid))) out.push({ path: `${s.name}:${r.path}`, guid: r.guid, stale: true });
     }
   }
