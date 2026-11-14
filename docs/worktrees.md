@@ -195,8 +195,9 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
 2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
    (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
    confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
-   the Workbench compile and build on whichever pool machine has the `workbench` cap and room
-   (`tools/lib/wb-gate.mjs`), the suite, core-only run and placement audit on pool test lanes. A branch
+   the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
+   free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
+   the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
    that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
    build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
    so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
@@ -508,13 +509,35 @@ queues FIFO (tickets in `tmp/wt/wb-queue`) and prints one
 parallel ships ran seven compiles and builds on this 15.6 GB PC at once.
 
 `ci` (so `wt gate` and `wt ship`) runs the cheap validate checks here and the
-Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`):
-this PC while its Workbench limit has room, else a pool machine with the
-`workbench` cap, a free Workbench slot and 3.5 GB free, else this PC (it
-queues). The remote run is `ci --wb-only --local` in a
+Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`).
+Every machine with the `workbench` cap (this PC, and each pool machine that
+answers ssh) is ranked like the pool ranks machines for tests: live free RAM
+less a Workbench reserve (2.25 GB), weighted by speed (`budgetMultiplier`).
+A machine whose headroom after the reserve is under the floor (`minFreeMb`,
+so about 3.7 GB free in all) is never chosen while another has room: on
+2026-11-14 this PC, at 1.5 GB free, started a Workbench that died after 6 s
+three gates in a row while `lf-cloud` had 18 GB free. The first ranked
+machine with RAM and a free Workbench slot runs the steps; if every roomy
+machine's Workbench limit is full, they queue on the best of those. If no
+machine has the RAM, the gate prints why (each machine's free RAM) and
+re-checks every 30 s for up to an hour (`LF_WB_RAM_WAIT_S`), then fails as a
+pool failure, which the ship queue requeues. A pool machine that does not
+answer, or answers and exits 3, leaves the choice to the rest (this PC when
+nothing else answers).
+
+A Workbench compile that ends within a minute with `NO VERDICT` on a machine
+under the reserve is an environment failure, not a compile failure: it
+prints `ENV  ... GB free`, skips the build, exits 4, and the gate retries the
+steps once on the best other machine. A second early death fails the gate as
+a pool failure.
+
+The remote run is `ci --wb-only --local` in a
 `Life-Framework-rt-<slug>-gate` run folder, synced like a remote test
-(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and this PC runs the steps. `ci --local` keeps everything here;
-`ci --remote [name]` sends the Workbench steps out even when this PC is free.
+(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and the gate chooses again. `ci --local` keeps everything here;
+`ci --remote` uses pool machines only; `ci --remote <name>` / `--machine <name>`
+pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
+`--remote [name]` and `--machine <name>` through to that `ci` (the ship queue
+gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
 
