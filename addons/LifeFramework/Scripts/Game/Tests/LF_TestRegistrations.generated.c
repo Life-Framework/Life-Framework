@@ -134,6 +134,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DialogueClerk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DialogueFlow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueMouth(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DialogueOverrideVerbs(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);
@@ -274,6 +275,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PackManifest(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PackPatchOverlays(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Pager(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelCarry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelCollision(), LF_TestTier.WORLD);
@@ -490,6 +492,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLockPolish(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleOverrideVerbs(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WantedLook(), LF_TestTier.WORLD);

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{38D29E0E9DC24207}Configs/Tests/LF_Test_DialogueClerkPatch.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
