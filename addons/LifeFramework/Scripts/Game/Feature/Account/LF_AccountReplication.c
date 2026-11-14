@@ -109,6 +109,145 @@ class LF_AccountStateBits
 }
 
 //------------------------------------------------------------------------------------------------
+//! Server: which connected player(s) play an account uid, for LF_AccountReplication.Publish.
+//! Publish used to walk every player per account change, and refresh the police count (another
+//! walk) each time: D changes in a frame cost 2*D*N identity reads, 32768 at 128 players (#716).
+//! Here a cached owner is checked with one read; a miss walks the players once and caches every
+//! owner, and further misses in the same frame (offline accounts) cost nothing. EndFrame allows
+//! the next walk. A frame of D changes now costs at most N + D reads.
+//------------------------------------------------------------------------------------------------
+class LF_AccountOwnerIndex
+{
+	protected ref map<string, ref array<int>> m_mOwners = new map<string, ref array<int>>();
+	protected int m_iScanFrame = -1;
+	protected bool m_bScanValid;
+	protected int m_iUidReads;
+	protected int m_iScans;
+
+	//------------------------------------------------------------------------------------------------
+	//! Fills owners with the player ids playing uid (normally one, empty when nobody does).
+	//! Returns false when the answer is "nobody" taken from a walk earlier this frame, so a player
+	//! whose identity resolved since then could be missed; the caller may ask again next frame.
+	bool Resolve(string uid, notnull array<int> owners)
+	{
+		owners.Clear();
+		if (uid.IsEmpty())
+			return true;
+
+		array<int> cached = m_mOwners.Get(uid);
+		if (cached && IsCurrent(uid, cached))
+		{
+			owners.Copy(cached);
+			return true;
+		}
+
+		if (m_bScanValid && m_iScanFrame == CurrentFrame())
+			return false;
+
+		Scan();
+		cached = m_mOwners.Get(uid);
+		if (cached)
+			owners.Copy(cached);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next miss may walk the players again. A new frame does this by itself.
+	void EndFrame()
+	{
+		m_bScanValid = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetUidReads()
+	{
+		return m_iUidReads;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetScans()
+	{
+		return m_iScans;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsCurrent(string uid, array<int> cached)
+	{
+		if (cached.IsEmpty())
+			return false;
+
+		foreach (int playerId : cached)
+		{
+			if (ReadUid(playerId) != uid)
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Scan()
+	{
+		m_bScanValid = true;
+		m_iScanFrame = CurrentFrame();
+		m_iScans++;
+		LF_Perf.Count("Account.ownerScan");
+		m_mOwners.Clear();
+
+		array<int> playerIds = {};
+		ListPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			string uid = ReadUid(playerId);
+			if (uid.IsEmpty())
+				continue;
+
+			array<int> owners = m_mOwners.Get(uid);
+			if (!owners)
+			{
+				owners = {};
+				m_mOwners.Set(uid, owners);
+			}
+
+			owners.Insert(playerId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string ReadUid(int playerId)
+	{
+		m_iUidReads++;
+		return UidOf(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Overridden by the cost test with synthetic players.
+	protected void ListPlayers(notnull array<int> playerIds)
+	{
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return;
+
+		GetGame().GetPlayerManager().GetPlayers(playerIds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int CurrentFrame()
+	{
+		if (!GetGame() || !GetGame().GetWorld())
+			return -1;
+
+		return GetGame().GetWorld().GetFrameNumber();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string UidOf(int playerId)
+	{
+		return LF_Utils.GetAccountUID(playerId);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Server -> client bridge for the account cache. LF_PlayerAccountManager lives on the server
 //! only, so client-side CanBePerformed / CanBeShown / menus read the replicated copy instead:
 //!   - the packed state above on each player's character (SCR_ChimeraCharacter RplProp), and
@@ -122,9 +261,17 @@ class LF_AccountReplication
 	//! Seconds between the server's self-healing pass over every connected player.
 	static const int REFRESH_INTERVAL_MS = 10000;
 
+	protected static ref LF_AccountOwnerIndex s_OwnerIndex = new LF_AccountOwnerIndex();
+	protected static bool s_bFlushQueued;
+	protected static int s_iFlushFrame;
+	//! Accounts whose owner lookup missed on a walk made earlier in the same frame: retried once.
+	protected static ref array<ref LF_PlayerAccount> s_aRetry = {};
+
 	//------------------------------------------------------------------------------------------------
-	//! Server: an account field changed. Pushes the packed state to that player's character
-	//! and refreshes the police count. No connected player for the account is a no-op.
+	//! Server: an account field changed. Pushes the packed state to the character of the player
+	//! playing that account, at once, and queues one police-count refresh for the end of the frame.
+	//! No connected player for the account is a no-op. The owner comes from LF_AccountOwnerIndex,
+	//! so a burst of changes in one frame (load, payday) walks the players at most once (#716).
 	static void Publish(LF_PlayerAccount account)
 	{
 		if (!account || !Replication.IsServer() || !GetGame())
@@ -136,13 +283,20 @@ class LF_AccountReplication
 			return;
 
 		LF_Perf.Count("Account.publish");
-		array<int> playerIds = {};
-		playerManager.GetPlayers(playerIds);
-		foreach (int playerId : playerIds)
-		{
-			if (LF_Utils.GetAccountUID(playerId) != uid)
-				continue;
+		if (!WriteOwners(account, uid, playerManager) && s_aRetry.Find(account) < 0)
+			s_aRetry.Insert(account);
 
+		QueueFlush();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Returns false when the owner lookup was not fresh (see LF_AccountOwnerIndex.Resolve).
+	protected static bool WriteOwners(LF_PlayerAccount account, string uid, PlayerManager playerManager)
+	{
+		array<int> owners = {};
+		bool fresh = s_OwnerIndex.Resolve(uid, owners);
+		foreach (int playerId : owners)
+		{
 			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(playerManager.GetPlayerControlledEntity(playerId));
 			if (character)
 			{
@@ -150,6 +304,50 @@ class LF_AccountReplication
 				character.LF_SetCharacterKey(account.GetActiveCharacterKey());
 			}
 		}
+
+		return fresh;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One end-of-frame pass however many accounts changed: the police count is counted once and
+	//! the owner index may walk the players again next frame.
+	protected static void QueueFlush()
+	{
+		if (!GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		int frame = -1;
+		if (GetGame().GetWorld())
+			frame = GetGame().GetWorld().GetFrameNumber();
+
+		// A queued flush runs next frame; one still pending two frames on was dropped (world change).
+		if (s_bFlushQueued && frame >= s_iFlushFrame && frame - s_iFlushFrame < 2)
+			return;
+
+		s_bFlushQueued = true;
+		s_iFlushFrame = frame;
+		GetGame().GetCallqueue().CallLater(Flush, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Flush()
+	{
+		s_bFlushQueued = false;
+		s_OwnerIndex.EndFrame();
+
+		// One more lookup for the misses, on a fresh walk; a second miss means offline.
+		PlayerManager playerManager;
+		if (GetGame())
+			playerManager = GetGame().GetPlayerManager();
+		if (playerManager)
+		{
+			foreach (LF_PlayerAccount account : s_aRetry)
+			{
+				if (account)
+					WriteOwners(account, account.GetPersistentId(), playerManager);
+			}
+		}
+		s_aRetry.Clear();
 
 		RefreshPoliceOnDuty();
 	}
@@ -192,6 +390,7 @@ class LF_AccountReplication
 			return;
 
 		int perfToken = LF_Perf.Begin();
+		s_OwnerIndex.EndFrame();
 		array<int> playerIds = {};
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)

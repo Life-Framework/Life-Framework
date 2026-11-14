@@ -3,7 +3,7 @@
 //! is 1 plus the thresholds its XP has reached, so a rebalanced table reaches old saves (the save
 //! holds XP, never a level).
 [BaseContainerProps()]
-class LF_JobTrackDef
+class LF_JobTrackDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Job id, e.g. CIVILIAN, DELIVERY, FARMER. The record key")]
 	string m_sJob;
@@ -68,7 +68,7 @@ class LF_JobTrackDef
 //! same character may earn it again. The game names the action (LF_JobLevels.Award); the numbers
 //! live here.
 [BaseContainerProps()]
-class LF_JobXpAwardDef
+class LF_JobXpAwardDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Action id the game awards, e.g. delivery_run, fruit_pick, gather. The record key")]
 	string m_sAction;
@@ -98,7 +98,7 @@ class LF_JobXpAwardDef
 //! A licence's job gate (#749, D12): the job level a licence needs. A licence with no row keeps the
 //! gate LF_LicenseManagerComponent ships with it (its family's job and its minimum level).
 [BaseContainerProps()]
-class LF_JobLicenceGateDef
+class LF_JobLicenceGateDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Licence name (LF_ELicenseType), e.g. MINER_GOLD. The record key")]
 	string m_sLicence;
@@ -160,7 +160,7 @@ class LF_JobsConfig
 	float m_fPoliceDutyPayPerSecond;
 
 	[Attribute("0.4", UIWidgets.Auto, "Medic duty pay in cash per second on duty, paid at the hospital desk on going off duty. 0 disables duty pay", params: "0 100")]
-	float m_fMedicDutyPayPerSecond = 0.4;
+	float m_fMedicDutyPayPerSecond;
 
 	[Attribute("500", UIWidgets.Auto, "Unemployment benefit: a bank balance strictly below this may collect", params: "0 1000000")]
 	int m_iBenefitBalanceThreshold;
@@ -232,23 +232,51 @@ class LF_JobsConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "jobs" section over this instance, which holds the core `.conf`.
+	//! Merges the layers over this instance, which holds the core `.conf`: each pack overlay of this
+	//! class in load order (its three lists), then the owner's "jobs" section (LF_ConfigOverlay, #1106).
 	void ApplyLayers()
 	{
+		EnsureLists();
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_JobsConfig, SECTION, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			BaseContainer root = resource.GetResource().ToBaseContainer();
+			int changed = LF_ConfigOverlay.ApplyContainerList(new LF_JobTrackList(this), root, "m_aTracks", names[i], claims);
+			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobXpAwardList(this), root, "m_aXpAwards", names[i], claims);
+			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobLicenceGateList(this), root, "m_aLicenceGates", names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("jobs: pack overlay %1 changed %2 entries", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (!reader)
 			return;
 
-		ApplyOwner(reader);
+		ApplyOwner(reader, LF_ConfigService.GetOwnerSource());
 		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("jobs: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Applies the owner's "jobs" section field by field: a key the owner leaves out keeps the shipped
-	//! value. `tracks` is keyed by job id, `xpAwards` by action id and `licenceGates` by licence name;
-	//! a key no shipped record has adds one, an existing key changes only the fields given.
+	protected void EnsureLists()
+	{
+		if (!m_aTracks)
+			m_aTracks = new array<ref LF_JobTrackDef>();
+		if (!m_aXpAwards)
+			m_aXpAwards = new array<ref LF_JobXpAwardDef>();
+		if (!m_aLicenceGates)
+			m_aLicenceGates = new array<ref LF_JobLicenceGateDef>();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the owner's "jobs" section: a key the owner leaves out keeps the shipped value.
+	//! `tracks` is keyed by job id, `xpAwards` by action id and `licenceGates` by licence name; each
+	//! record may carry an "op" (add, replace, patch, remove). With no op an existing key changes only
+	//! the fields given and a new key adds a record (docs/config/override-model.md).
 	//! \param[in] reader A reader on the section.
-	void ApplyOwner(notnull LF_ConfigReader reader)
+	//! \param[in] source The file, for log lines.
+	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
 		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "jobXpFirstLevel", "jobXpLevelGrowth", "tracks", "xpAwards", "licenceGates"};
 		reader.WarnUnknownKeys(ownerKeys);
@@ -260,162 +288,10 @@ class LF_JobsConfig
 		reader.ReadInt("jobXpFirstLevel", m_iJobXpFirstLevel, LEGACY_FIRST_MIN, LEGACY_FIRST_MAX);
 		reader.ReadFloat("jobXpLevelGrowth", m_fJobXpLevelGrowth, LEGACY_GROWTH_MIN, LEGACY_GROWTH_MAX);
 
-		ApplyOwnerTracks(reader);
-		ApplyOwnerAwards(reader);
-		ApplyOwnerGates(reader);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ApplyOwnerTracks(notnull LF_ConfigReader reader)
-	{
-		if (!m_aTracks)
-			m_aTracks = new array<ref LF_JobTrackDef>();
-
-		int count = reader.BeginRecords("tracks");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
-
-			LF_JobTrackDef track = FindTrack(key);
-			if (!track && !reader.Has("levelThresholds"))
-			{
-				reader.RejectRecord("a job the shipped tracks do not list needs levelThresholds");
-				reader.EndRecord();
-				continue;
-			}
-
-			array<string> trackKeys = {"levelThresholds", "dailyXpCap"};
-			reader.WarnUnknownKeys(trackKeys);
-			array<int> thresholds = {};
-			if (reader.ReadInts("levelThresholds", thresholds, THRESHOLD_MIN, THRESHOLD_MAX))
-			{
-				if (!track)
-				{
-					track = LF_JobTrackDef.Make(key, thresholds);
-					m_aTracks.Insert(track);
-				}
-				else
-				{
-					track.m_aLevelThresholds = {};
-					track.m_aLevelThresholds.Copy(thresholds);
-				}
-			}
-
-			if (track)
-				reader.ReadInt("dailyXpCap", track.m_iDailyXpCap, XP_CAP_MIN, XP_CAP_MAX);
-
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ApplyOwnerAwards(notnull LF_ConfigReader reader)
-	{
-		if (!m_aXpAwards)
-			m_aXpAwards = new array<ref LF_JobXpAwardDef>();
-
-		int count = reader.BeginRecords("xpAwards");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
-
-			LF_JobXpAwardDef award = FindAward(key);
-			if (!award && !reader.Has("job"))
-			{
-				reader.RejectRecord("an action the shipped awards do not list needs a job");
-				reader.EndRecord();
-				continue;
-			}
-
-			if (!award)
-			{
-				award = LF_JobXpAwardDef.Make(key, "", 0);
-				m_aXpAwards.Insert(award);
-			}
-
-			array<string> awardKeys = {"job", "xp", "cooldownSeconds"};
-			reader.WarnUnknownKeys(awardKeys);
-			reader.ReadString("job", award.m_sJob);
-			reader.ReadInt("xp", award.m_iXp, XP_AWARD_MIN, XP_AWARD_MAX);
-			reader.ReadFloat("cooldownSeconds", award.m_fCooldownSeconds, COOLDOWN_MIN, COOLDOWN_MAX);
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ApplyOwnerGates(notnull LF_ConfigReader reader)
-	{
-		if (!m_aLicenceGates)
-			m_aLicenceGates = new array<ref LF_JobLicenceGateDef>();
-
-		int count = reader.BeginRecords("licenceGates");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
-
-			LF_ELicenseType licence = typename.StringToEnum(LF_ELicenseType, key);
-			if (typename.EnumToString(LF_ELicenseType, licence) != key)
-			{
-				reader.RejectRecord("the key is not a licence name (LF_ELicenseType)");
-				reader.EndRecord();
-				continue;
-			}
-
-			LF_JobLicenceGateDef gate = FindLicenceGate(key);
-			if (!gate && (!reader.Has("job") || !reader.Has("minLevel")))
-			{
-				reader.RejectRecord("a licence gate the shipped config does not list needs a job and a minLevel");
-				reader.EndRecord();
-				continue;
-			}
-
-			string job;
-			int minLevel = 1;
-			if (gate)
-			{
-				job = gate.m_sJob;
-				minLevel = gate.m_iMinLevel;
-			}
-
-			array<string> gateKeys = {"job", "minLevel"};
-			reader.WarnUnknownKeys(gateKeys);
-			bool jobRead = reader.ReadString("job", job);
-			bool levelRead = reader.ReadInt("minLevel", minLevel, GATE_LEVEL_MIN, GATE_LEVEL_MAX);
-			if (!gate)
-			{
-				if (!jobRead || !levelRead)
-				{
-					reader.RejectRecord("a new licence gate needs a valid job and minLevel");
-					reader.EndRecord();
-					continue;
-				}
-
-				gate = LF_JobLicenceGateDef.Make(key, job, minLevel);
-				m_aLicenceGates.Insert(gate);
-			}
-			else
-			{
-				gate.m_sJob = job;
-				gate.m_iMinLevel = minLevel;
-			}
-
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
+		EnsureLists();
+		LF_ConfigOverlay.ApplyRecords(reader, "tracks", new LF_JobTrackList(this), source);
+		LF_ConfigOverlay.ApplyRecords(reader, "xpAwards", new LF_JobXpAwardList(this), source);
+		LF_ConfigOverlay.ApplyRecords(reader, "licenceGates", new LF_JobLicenceGateList(this), source);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -464,5 +340,309 @@ class LF_JobsConfig
 		}
 
 		return null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The `tracks` list for the shared merge (LF_ConfigOverlay), keyed by job id. A new or replaced
+//! track needs level thresholds.
+class LF_JobTrackList : LF_ConfigList
+{
+	protected LF_JobsConfig m_Config;
+
+	void LF_JobTrackList(LF_JobsConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "jobs.tracks";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aTracks.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aTracks[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_JobTrackDef.Cast(record).m_sJob;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sJob", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a job id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		array<int> none = {};
+		return LF_JobTrackDef.Make(id, none);
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_JobTrackDef track = LF_JobTrackDef.Cast(record);
+		if (index < m_Config.m_aTracks.Count())
+			m_Config.m_aTracks.Set(index, track);
+		else
+			m_Config.m_aTracks.Insert(track);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aTracks.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_JobTrackDef track = LF_JobTrackDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_aLevelThresholds"))
+		{
+			array<int> thresholds = {};
+			if (container.Get("m_aLevelThresholds", thresholds))
+			{
+				track.m_aLevelThresholds = {};
+				track.m_aLevelThresholds.Copy(thresholds);
+				changed++;
+			}
+		}
+		if (container.IsVariableSetDirectly("m_iDailyXpCap") && container.Get("m_iDailyXpCap", track.m_iDailyXpCap))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_JobTrackDef track = LF_JobTrackDef.Cast(record);
+		array<string> recordKeys = {"op", "levelThresholds", "dailyXpCap"};
+		reader.WarnUnknownKeys(recordKeys);
+		array<int> thresholds = {};
+		if (reader.ReadInts("levelThresholds", thresholds, LF_JobsConfig.THRESHOLD_MIN, LF_JobsConfig.THRESHOLD_MAX))
+		{
+			track.m_aLevelThresholds = {};
+			track.m_aLevelThresholds.Copy(thresholds);
+		}
+		reader.ReadInt("dailyXpCap", track.m_iDailyXpCap, LF_JobsConfig.XP_CAP_MIN, LF_JobsConfig.XP_CAP_MAX);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_JobTrackDef track = LF_JobTrackDef.Cast(record);
+		if (!track.m_aLevelThresholds || track.m_aLevelThresholds.IsEmpty())
+			return "a job the shipped tracks do not list needs levelThresholds";
+
+		return string.Empty;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The `xpAwards` list for the shared merge, keyed by action id. A new or replaced award needs a job.
+class LF_JobXpAwardList : LF_ConfigList
+{
+	protected LF_JobsConfig m_Config;
+
+	void LF_JobXpAwardList(LF_JobsConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "jobs.xpAwards";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aXpAwards.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aXpAwards[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_JobXpAwardDef.Cast(record).m_sAction;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sAction", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "an action id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_JobXpAwardDef.Make(id, string.Empty, 0);
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_JobXpAwardDef award = LF_JobXpAwardDef.Cast(record);
+		if (index < m_Config.m_aXpAwards.Count())
+			m_Config.m_aXpAwards.Set(index, award);
+		else
+			m_Config.m_aXpAwards.Insert(award);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aXpAwards.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_JobXpAwardDef award = LF_JobXpAwardDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sJob") && container.Get("m_sJob", award.m_sJob))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iXp") && container.Get("m_iXp", award.m_iXp))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fCooldownSeconds") && container.Get("m_fCooldownSeconds", award.m_fCooldownSeconds))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_JobXpAwardDef award = LF_JobXpAwardDef.Cast(record);
+		array<string> recordKeys = {"op", "job", "xp", "cooldownSeconds"};
+		reader.WarnUnknownKeys(recordKeys);
+		reader.ReadString("job", award.m_sJob);
+		reader.ReadInt("xp", award.m_iXp, LF_JobsConfig.XP_AWARD_MIN, LF_JobsConfig.XP_AWARD_MAX);
+		reader.ReadFloat("cooldownSeconds", award.m_fCooldownSeconds, LF_JobsConfig.COOLDOWN_MIN, LF_JobsConfig.COOLDOWN_MAX);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		if (LF_JobXpAwardDef.Cast(record).m_sJob.IsEmpty())
+			return "an action the shipped awards do not list needs a job";
+
+		return string.Empty;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The `licenceGates` list for the shared merge, keyed by licence name (LF_ELicenseType). A new or
+//! replaced gate needs a job and a level; NewRecord leaves the level at 0 so a missing one is seen.
+class LF_JobLicenceGateList : LF_ConfigList
+{
+	protected LF_JobsConfig m_Config;
+
+	void LF_JobLicenceGateList(LF_JobsConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "jobs.licenceGates";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aLicenceGates.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aLicenceGates[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_JobLicenceGateDef.Cast(record).m_sLicence;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sLicence", id);
+		return id;
+	}
+
+	//! An owner key must be a licence name.
+	override string CanonicalId(string key)
+	{
+		LF_ELicenseType licence = typename.StringToEnum(LF_ELicenseType, key);
+		if (typename.EnumToString(LF_ELicenseType, licence) != key)
+			return string.Empty;
+
+		return key;
+	}
+
+	override string IdHint()
+	{
+		return "a licence name (LF_ELicenseType)";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_JobLicenceGateDef.Make(id, string.Empty, 0);
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_JobLicenceGateDef gate = LF_JobLicenceGateDef.Cast(record);
+		if (index < m_Config.m_aLicenceGates.Count())
+			m_Config.m_aLicenceGates.Set(index, gate);
+		else
+			m_Config.m_aLicenceGates.Insert(gate);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aLicenceGates.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_JobLicenceGateDef gate = LF_JobLicenceGateDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sJob") && container.Get("m_sJob", gate.m_sJob))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iMinLevel") && container.Get("m_iMinLevel", gate.m_iMinLevel))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_JobLicenceGateDef gate = LF_JobLicenceGateDef.Cast(record);
+		array<string> recordKeys = {"op", "job", "minLevel"};
+		reader.WarnUnknownKeys(recordKeys);
+		reader.ReadString("job", gate.m_sJob);
+		reader.ReadInt("minLevel", gate.m_iMinLevel, LF_JobsConfig.GATE_LEVEL_MIN, LF_JobsConfig.GATE_LEVEL_MAX);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_JobLicenceGateDef gate = LF_JobLicenceGateDef.Cast(record);
+		if (gate.m_sJob.IsEmpty() || gate.m_iMinLevel < LF_JobsConfig.GATE_LEVEL_MIN)
+			return "a licence gate the shipped config does not list needs a job and a minLevel";
+
+		return string.Empty;
 	}
 }

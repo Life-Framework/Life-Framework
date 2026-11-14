@@ -29,7 +29,7 @@ class LF_Test_Survival : LF_Test
 		ctx.True(Math.AbsFloat(stats.GetThirst() - 100) < 0.001, "thirst clamps at 100");
 
 		// Explicit rates so the arithmetic below does not move with the flagship config.
-		LF_SurvivalConfig rates = new LF_SurvivalConfig();
+		LF_SurvivalConfig rates = LF_SurvivalConfig.CreateDefault();
 		rates.m_fHungerDrainPerSecond = 0.1;
 		rates.m_fThirstDrainPerSecond = 0.15;
 		stats.SetHunger(50);

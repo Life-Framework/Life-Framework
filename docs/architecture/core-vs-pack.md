@@ -133,3 +133,17 @@ core's range, and a README of what to fill in. The `.meta` GUIDs are random and 
 against every GUID in `addons/`, so none repeats. It refuses a name the core already uses (`Test`:
 `LF_Test` is the test base class). `validate-pack-manifest` and `validate-addon-boundary` hold every
 `LF_*` addon, so a fresh pack passes with no edits (`pack-new-selftest.mjs`).
+
+## Checking a pack
+
+`tools\cli pack check <addon>` (#969) reads a pack offline and reports each finding with the
+pack file and the id: the version range and public surface, the boundary, a mission header that
+names the manifest and lists overlays that resolve, overlay ids against the merged layers (an `add`
+of an id that exists, a `patch`, `replace` or `remove` of one that does not, an unknown verb, an
+offer for an item the catalogue lacks), a `{GUID}path` that names another path or a stale GUID,
+a `#Key` no string table defines, and a second pack changing an id an earlier pack changed (a
+warning). Base-game GUIDs cannot be resolved offline and are counted, not listed. Dialogue (#957),
+terms (#958), map independence (#961) and profit loops over pack prices (#686) are not in it yet.
+Exit 1 on any error. `pack explain` is its other half: `docs/config/owner-config.md` "Where a value came from".
+The list sections both read are one table, `SECTIONS` in `tools/pack/layers.mjs`; a section moved onto the
+override model adds its row there (`pack-check-selftest.mjs` fails until it does).
