@@ -29,10 +29,16 @@ class LF_JailArrestAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!GetOwner() || !user)
 			return false;
 
 		if (GetOwner() == user)
+			return false;
+
+		if (!LF_Systems.IsEnabled(LF_Jail.SYSTEM))
 			return false;
 
 		// One entry in the player interaction menu: same reach as the rest of the list.
@@ -84,6 +90,9 @@ class LF_JailArrestAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_JailArrestAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

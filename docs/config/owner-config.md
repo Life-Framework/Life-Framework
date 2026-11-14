@@ -55,7 +55,8 @@ changed `params: "min max"` range, reaches this check with no edit to it. The tw
 cannot say live in `tools/config/check.mjs`: the grammar of a record key (`shops.priceRules` accepts
 a prefab-path substring, `prefab:<GUID>` or `type:<flags>,mode:<mode>`) and where shipped record keys come from.
 
-`docs/config/config.example.json` is a file that passes clean. Proof of the rules:
+`docs/config/config.example.json` is a file with no errors (its vehicle record is a warning, because
+it adds a record). Proof of the rules:
 `node tools/validation/config-check-selftest.mjs`.
 
 ## Fixture harness

@@ -115,6 +115,11 @@ class LF_JailMoveRules
 class LF_Jail
 {
 	static const ResourceName DOOR_PREFAB = "{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et";
+	//! The system id (LF_Systems, #960). Off on a map with no cell (#1047): no arrest, no confinement.
+	static const string SYSTEM = "Jail";
+	//! LF_Places kind and id of the placed cell (LF_JailCellComponent; one per world).
+	static const string PLACE_KIND = "JailCell";
+	static const string PLACE_ID = "cell";
 
 	static const int RELEASE_DOOR_OPEN_MS = 5000;
 	static const int RELEASE_TOAST_DELAY_MS = 1500;
@@ -276,6 +281,9 @@ class LF_Jail
 			LF_Debug.Error("Jail", "arrest refused: officer or prisoner uid is empty");
 			return false;
 		}
+
+		if (LF_Systems.Refuses(SYSTEM, "arrest of " + prisonerUid))
+			return false;
 
 		if (!s_bCellPlaced)
 		{
@@ -460,6 +468,10 @@ class LF_Jail
 		if (!Confines(playerUid))
 			return current;
 
+		// A map with no cell switched the jail off at game start, with its one line (#1047).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return current;
+
 		if (!s_bCellPlaced)
 		{
 			LF_Debug.Error("Jail", "confine skipped: no cell is placed");
@@ -546,6 +558,9 @@ class LF_Jail
 	static void OnPlayerSpawned(string playerUid, IEntity body)
 	{
 		if (playerUid.IsEmpty() || !body || !IsServing(playerUid))
+			return;
+
+		if (!LF_Systems.IsEnabled(SYSTEM))
 			return;
 
 		if (!s_bCellPlaced)
@@ -1012,7 +1027,7 @@ class LF_Jail
 
 	//------------------------------------------------------------------------------------------------
 	//! The escape rule with the position given. Public so a LOGIC test drives it.
-	//! eturn True when this call reported a new escape.
+	//! \return True when this call reported a new escape.
 	static bool NoteEscape(string playerUid, vector current, IEntity body)
 	{
 		LF_JailSentence sentence = Sentences().Get(playerUid);

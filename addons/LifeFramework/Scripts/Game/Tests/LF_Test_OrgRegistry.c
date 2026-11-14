@@ -1,7 +1,7 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_OrgRegistry,LF_Test_OrgInviteRole`:
 // making LF_OrganizationManager.IsNameTaken never match failed `[LFTEST] FAIL org/registry`,
 // `- the name is taken whatever the case`, `- a duplicate name is refused`. Restored; green.
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 //! M1-17 registry rules: names, duplicates, face-to-face offers (rank, accept, wrong inviter,
 //! lapse, a leader who lost the rank), founder cannot be removed, leave, and the hideout lease.
 class LF_Test_OrgRegistry : LF_Test

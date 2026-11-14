@@ -554,6 +554,9 @@ class LF_ChopAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		if (!m_Shop)
 			return false;
 
@@ -581,6 +584,9 @@ class LF_ChopAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_ChopAction"))
+			return;
+
 		if (!m_Shop || !pUserEntity)
 		{
 			LF_Debug.Error(LF_ChopShopComponent.FEATURE, "bench action performed without a bench or a user");

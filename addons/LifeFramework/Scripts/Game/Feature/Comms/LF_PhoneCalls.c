@@ -169,6 +169,9 @@ class LF_PhoneCalls
 	//! Server, from the dial action: the player at a payphone rings the station of service.
 	static LF_EPhoneRefusal ServerDial(IEntity user, IEntity phoneEntity, string service)
 	{
+		if (LF_Systems.Refuses("Comms", "phone dial"))
+			return LF_EPhoneRefusal.NO_LINE;
+
 		if (!Replication.IsServer())
 			return LF_EPhoneRefusal.NOT_SERVER;
 

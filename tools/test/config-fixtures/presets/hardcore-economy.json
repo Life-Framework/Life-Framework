@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "persistence": { "enableAutosave": true, "autosaveInterval": 600 },
+  "shops": { "defaultBuyPrice": 80, "defaultSellPrice": 15 },
+  "jobs": { "policeDutyPayPerSecond": 0.3, "benefitAmount": 0, "benefitCooldownSeconds": 3600 },
+  "vehicles": { "buyPercent": 150, "sellBackPercent": 30, "impoundPercent": 25, "garagePercent": 5 },
+  "idCard": { "replacementFee": 150 },
+  "police": { "ticketLateMultiplier": 3 }
+}

@@ -220,7 +220,7 @@ moves and the config is not edited in the same change):
 between two live entities (`LF_QuantityComponent.c:290`, the inventory UI
 key) are safe.
 
-**Batch 0 (2026-11-12, #323):** done. `LF_Utils.SamePrefab` / `PrefabGuid` replace
+**Batch 0 (2026-11-12, #323):** done. Proof 2026-11-14: `--tier all` is 480/480 green normally and again with the `Village_Buildings`, `Village_Dressing` and `Village_Roads` layers removed from DebugWorld, so no test depends on them. `LF_Utils.SamePrefab` / `PrefabGuid` replace
 both helpers above, and every site in the two lists compares by GUID, plus
 `LF_PoliceRanks.ContainsPrefab`, `LF_Contraband.IsContraband` and the store's
 stray-copy check. Single-prefab `ShopPrices.conf` rules moved to `m_Prefab` (GUID).
@@ -323,3 +323,6 @@ it needs loader rewrites. They resolve, and the loader needs no rewrite:
 the batch's base, then pass 2 after the move with both addons (`e2e` split in
 two, about 20 s a boot). Batch 0 must add the split to `cli e2e`, the pack to
 the rdb and pack tooling, and the GUID compare.
+
+**Guard (2026-11-14):** alidate-prefab-compare flags a new GetPrefabName() or *Prefab* variable compare by path (mark a meant one // lf-path-ok: <why>); the sweep also moved LF_BankRobKit and LF_AssetStatesHarness to SamePrefab. WORLD test prefab/guid-compare pins a right GUID under a wrong path.
+

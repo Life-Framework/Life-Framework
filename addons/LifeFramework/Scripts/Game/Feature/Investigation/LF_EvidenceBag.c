@@ -126,6 +126,9 @@ class LF_BagEvidenceAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Investigation"))
+			return false;
+
 		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
@@ -144,6 +147,9 @@ class LF_BagEvidenceAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_BagEvidenceAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -167,6 +173,9 @@ class LF_ReadEvidenceBagAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Investigation"))
+			return false;
+
 		LF_EvidenceBagComponent bag = LF_EvidenceBagComponent.Cast(GetOwner().FindComponent(LF_EvidenceBagComponent));
 		return bag && bag.IsStamped();
 	}
@@ -180,6 +189,9 @@ class LF_ReadEvidenceBagAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_ReadEvidenceBagAction"))
+			return;
+
 		if (!pOwnerEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 

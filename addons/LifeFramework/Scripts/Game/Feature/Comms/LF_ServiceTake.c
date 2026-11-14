@@ -134,6 +134,12 @@ class LF_ServiceCallTakenNotifier : LF_EventSubscriber
 //! service, standing at the board, a call with room); the client only reaches.
 class LF_ServiceTakeAction : ScriptedUserAction
 {
+	//! The Comms system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Comms");
+	}
+
 	[Attribute("", UIWidgets.EditBox, "Service key whose board this is (police, medic, ...)")]
 	protected string m_sService;
 
@@ -147,6 +153,9 @@ class LF_ServiceTakeAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Comms", "LF_ServiceTakeAction"))
+			return;
+
 		if (!Replication.IsServer() || !pOwnerEntity || !pUserEntity)
 			return;
 

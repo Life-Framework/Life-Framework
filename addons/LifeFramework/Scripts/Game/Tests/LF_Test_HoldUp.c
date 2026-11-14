@@ -1,6 +1,6 @@
 // red-proof: Observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_HoldUp`: asserting two incident rows instead of one failed `one hold-up logs one incident (expected 2, got 1)`; restored.
 
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 //! incident/holdup: one hold-up publishes one intent that the incident log records (actor, target,
 //! position, zone); out of range, no weapon, and the cooldown are refused and record nothing.
 class LF_Test_HoldUp : LF_Test

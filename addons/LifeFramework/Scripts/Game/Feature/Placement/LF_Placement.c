@@ -178,6 +178,7 @@ class LF_PlacementGhost
 	//! \return false with an error logged when the prefab has no mesh to show.
 	static bool Show(ResourceName prefab, vector transform[4], bool valid)
 	{
+		// lf-path-ok: cache key of the string just shown, not a saved name
 		if (!s_Ghost || s_sPrefab != prefab)
 		{
 			Hide();

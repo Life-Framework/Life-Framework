@@ -188,6 +188,10 @@ function fieldSchema(classes, m, overrides, owner) {
   const d = scalarDefault(known ? m.type : "int", m.def);
   if (d !== undefined) s.default = d;
   if (m.min !== null && s.type !== "string" && s.type !== "boolean") { s.minimum = m.min; s.maximum = m.max; }
+  if (m.member === "m_sOp") { // the overlay verb of a list record (LF_ConfigRecord, #962)
+    s.enum = ["", "add", "replace", "patch", "remove"];
+    s.description = "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).";
+  }
   if (!s.description) delete s.description;
   return s;
 }
@@ -396,7 +400,8 @@ export function readerProblems(files, schema) {
       for (const k of lv.keys) if (!list.includes(k)) msgs.push(`${lv.name}: the schema lists "${k}" but the reader in ${cls.name} does not handle it`);
       for (const k of list) {
         if (!lv.keys.includes(k)) msgs.push(`${lv.name}: the reader in ${cls.name} handles "${k}" but the schema has no such field`);
-        else if (!new RegExp(String.raw`\.(?:Read\w+|BeginRecords)\(\s*"${k}"`).test(src)) msgs.push(`${lv.name}: "${k}" is in the reader key list but no Read*/BeginRecords call reads it`);
+        // "op" is the overlay verb, read by the shared merge (LF_ConfigOverlay.ApplyRecords).
+        else if (k !== "op" && !new RegExp(String.raw`(?:\.(?:Read\w+|BeginRecords)\(|ApplyRecords\(\s*\w+\s*,)\s*"${k}"`).test(src)) msgs.push(`${lv.name}: "${k}" is in the reader key list but no Read*/BeginRecords call reads it`);
       }
     }
     levels.forEach((lv, i) => { if (!used.has(i)) msgs.push(`${lv.name}: the reader in ${cls.name} has no key list for this level`); });
