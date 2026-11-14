@@ -203,6 +203,22 @@ downscale, PNG. `--list` shows the pid's windows, `--find` the Workbench pids, `
   your desktop again.
 - `wt open --workbench` and `wt open` are for you, so they still open visibly.
 
+**Modal dialogs on the hidden desktop.** `RegisterResourceFile` on a new
+`.fbx` opens "Register Resource File(s)" (as Model / as Animation), and the
+first restricted script call can open "Script Authorization Required". On
+`LF-Agents` nobody can click them, so the NET API call hangs. Set
+`LF_WB_DIALOG_WATCHER=1` (or pass `dialogWatcher: true` to
+`ensureQuietWorkbench`; `startDialogWatcher({ workbenchPid, log })` for a
+Workbench you launched yourself) and `tools/lib/wb-dialog-watcher.ps1` runs
+beside that Workbench on `LF-Agents`. It answers only those two titles, only
+on windows owned by that one Workbench pid, by `BM_CLICK` on a Button child,
+then a posted Alt mnemonic, then a click posted at a fixed offset from the
+dialog's bottom-right corner ("as Model" for the FBX prompt). It never moves
+the cursor or injects input, and it exits 3 without looking at a window when
+its thread is not on `LF-Agents`. Each answer is one JSON line in
+`<checkout>/tmp/wb-dialog-watcher.jsonl`, with a PNG of the dialog in
+`tmp/wb-dialog-snaps/`; it exits with the Workbench.
+
 ### Video post-production (optional, `film-make`)
 
 `tools\cli film-make video/<name>.json` joins footage into a trailer with cards, crossfades, captions, voice-over and a

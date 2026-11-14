@@ -155,7 +155,15 @@ class LF_IdCardRules
 //! (LF_PhotoIdCard) holds what is printed and the photo.
 class LF_IdCard
 {
-	static const ResourceName PREFAB = "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et";
+	//! The prefab slot (#964) of the card item: Configs/PrefabSlots/LF_PrefabSlots.conf.
+	static const string SLOT = "id_card";
+
+	//! The card prefab (slot "id_card"), or empty when no usable prefab resolves (logged).
+	static ResourceName Prefab()
+	{
+		return LF_PrefabSlots.Get(SLOT);
+	}
+
 	//! Stands for a void (replaced) card in the holder list LF_IdCardRules reads: it is nobody's
 	//! card any more, and it is not blank either.
 	static const string VOID_HOLDER = "#void";
@@ -397,14 +405,14 @@ class LF_IdCard
 			return false;
 		}
 
-		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(Prefab(), character.GetOrigin());
 		if (!item)
 			return false;
 
 		LF_IdCardComponent card = LF_IdCardComponent.Cast(item.FindComponent(LF_IdCardComponent));
 		if (!card)
 		{
-			LF_Debug.Error("IdCard", "card not granted: " + PREFAB + " has no LF_IdCardComponent");
+			LF_Debug.Error("IdCard", "card not granted: " + Prefab() + " has no LF_IdCardComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return false;
 		}
@@ -439,7 +447,7 @@ class LF_IdCard
 		LF_SerialComponent serial = LF_SerialComponent.Cast(card.GetOwner().FindComponent(LF_SerialComponent));
 		if (!serial)
 		{
-			LF_Debug.Error(LF_PhotoIdCard.FEATURE, "card " + row.m_sNumber + " not numbered: " + PREFAB + " has no LF_SerialComponent; it prints blank after a restart");
+			LF_Debug.Error(LF_PhotoIdCard.FEATURE, "card " + row.m_sNumber + " not numbered: " + Prefab() + " has no LF_SerialComponent; it prints blank after a restart");
 			return;
 		}
 

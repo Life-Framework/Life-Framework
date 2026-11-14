@@ -96,7 +96,15 @@ class LF_Bank
 	//! LF_Places kind of a vault's hand-carry money bag (LF_PlaceComponent); the id is the vault id.
 	static const string BAG_PLACE_KIND = "BankBag";
 
-	static const ResourceName BAG_PREFAB = "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et";
+	//! The prefab slot (#964) of the vault's hand-carry money bag.
+	static const string SLOT_BAG = "money_bag";
+
+	//! The money bag prefab (slot "money_bag"), or empty when no usable prefab resolves (logged).
+	static ResourceName BagPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_BAG);
+	}
+
 	static const ResourceName DOOR_PREFAB = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";
 	static const ResourceName SHELL_PREFAB = "{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et";
 	static const ResourceName CRATE_MESH = "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob";
@@ -872,7 +880,7 @@ class LF_Bank
 		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(bag);
 		if (manager)
 		{
-			int stored = LF_InventoryUtils.GetAmount(manager, LF_MoneyUtils.PREFAB_CASH);
+			int stored = LF_InventoryUtils.GetAmount(manager, LF_MoneyUtils.CashPrefab());
 			if (stored > 0)
 				return stored;
 		}
@@ -1012,7 +1020,7 @@ class LF_Bank
 			return false;
 		}
 
-		Resource money = Resource.Load(LF_MoneyUtils.PREFAB_CASH);
+		Resource money = Resource.Load(LF_MoneyUtils.CashPrefab());
 		if (!money || !money.IsValid())
 		{
 			LF_Debug.Error("Bank", "money bag fill refused: MoneyStack prefab missing");
@@ -1029,7 +1037,7 @@ class LF_Bank
 		IEntity cashEntity = FindCashChild(bag);
 		if (!cashEntity)
 		{
-			cashEntity = LF_Utils.SpawnEntityPrefab(LF_MoneyUtils.PREFAB_CASH, bag.GetOrigin());
+			cashEntity = LF_Utils.SpawnEntityPrefab(LF_MoneyUtils.CashPrefab(), bag.GetOrigin());
 			if (!cashEntity)
 			{
 				LF_Debug.Error("Bank", "money bag fill refused: MoneyStack did not spawn");

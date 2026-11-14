@@ -84,6 +84,20 @@ references the pack" and test 3: it fails when a core file names a pack GUID,
 path, class, or the pack addon ID, and when the pack holds a `.c` file that is
 not on its allowlist (empty today).
 
+**The boot half of test 1 is `tools\cli test --core-only`** (#326). It boots DebugWorld with
+`-addons LifeFramework` only, with the pack folder left off `-addonsDir` (the core is reached through a
+junction in the generated `game-addons`), and defines `LF_CORE_ONLY`. Add it to any `test` run:
+`tools\cli test --no-build --tier all --core-only` (the pool runs it on any machine; `--only` and `--tier`
+work as usual). `tools\cli ci`, `wt gate` and `wt ship` run it after the normal suite whenever the
+checkout holds the pack (`--skip-core-only` drops it). Its stamp in `tmp/test-results/summaries.jsonl` is
+tier `all-core`, so it never stands in for a normal full run. `core/only-boot` fails the run if anything
+besides the core and the base game is loaded.
+
+A failure here names the missing resource, and the fix is a neutral core default or a core fixture,
+never a pack reference. A test that genuinely needs pack content overrides `NeedsPack()` with a
+one-line reason; a core-only run skips it, prints `SKIP <test> (core-only run: needs the pack: <reason>)`
+and counts it in `skipped=N` on the `SUMMARY` line. Today none do. Prefer a core fixture to a skip.
+
 ## Grey cases, decided
 
 | Case | Core | Pack |
@@ -92,6 +106,7 @@ not on its allowlist (empty today).
 | Vehicles | Ownership, garage, impound, and the base vehicle prefabs with LF components | The catalogue: which cars, their prices, liveries |
 | Police | The system and the rank mechanics | Faction names, uniforms, rank titles |
 | Strings | Functional UI and prompt keys | Flavour copy, in the pack's own string table |
+| Terms (Police, town, currency) | The placeholders (`{police}`) and neutral default words | The pack's own words for a term, in its table, or the owner's (#958, [owner guide](../owner/rename-terms.md)) |
 | DebugWorld | The test annex with neutral fixtures | The village |
 | Voice, dialogue, animation | The systems and generic animations | Voice lines and story content |
 

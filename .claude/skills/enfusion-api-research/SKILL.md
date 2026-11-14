@@ -26,6 +26,7 @@ Call the tools from any terminal with `tools\cli call <tool> '<json>'` (or `@arg
 - Prefer reading the vanilla source for behavior questions. The API index says a method exists; the source says what it does.
 - When the mod overrides a vanilla class (`modded class SCR_...`), read both the vanilla source and the mod's override. The interaction is where bugs live.
 - Use the Workbench MCP for resolved truth: `wb_read_props` reads a prefab's property through the engine (inheritance already resolved). It beats reading `.et` text for a single value.
+- `wb_eval` runs a few lines of Enforce Script in the live Workbench for a one-off read-only question (`docs/wb-eval.md`). A VME in the snippet wedges Workbench, and anything you would run twice belongs in a committed tool.
 
 ## Grounding in this repo
 

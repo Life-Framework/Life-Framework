@@ -25,7 +25,7 @@ class LF_Test_SpawnScale : LF_Test
 		vector at = Vector(300, world.GetSurfaceY(300, 205), 205);
 		Check(ctx, "{9CB52FAF71DA568F}Prefabs/Crafting/Gunpowder.et", at, 0.02, 0.3);
 		Check(ctx, "{F0F6577FD74790D2}Prefabs/Crafting/Linen.et", at + "1.5 0 0", 0.05, 0.4);
-		Check(ctx, LF_Bank.BAG_PREFAB, at + "3 0 0", 0.4, 0.6);
+		Check(ctx, LF_Bank.BagPrefab(), at + "3 0 0", 0.4, 0.6);
 		Check(ctx, LF_Bank.DRILL_PREFAB, at + "4.5 0 0", 0.45, 0.7);
 	}
 

@@ -104,6 +104,7 @@ LF_ItemCatalogueConfig {
 | `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |
 | `jobs` | `xpAwards` | action id (`gather`). A new or replaced award needs a `job` |
 | `jobs` | `licenceGates` | licence name (`MINER_GOLD`, an `LF_ELicenseType` name). A new or replaced gate needs a `job` and a `minLevel`; removing a gate gives the licence its shipped gate back |
+| `prefabs` | `slots` | slot id (`cash`); packs only, no owner section. A pack patches `m_Prefab`; the required components stay the core file's (`Core/Config/Feature.md`, "Prefab slots") |
 | `shops` | `priceRules` | `prefab:<GUID>`, a prefab-path substring, or `type:<flags>,mode:<mode>` (`type:64` is `type:64,mode:2`). Two core rules can share a key; a layer addresses the last one, the one that wins the walk |
 
 The catalogue's `removed: true` is a field, not a verb: it hides an entry and a later layer can set

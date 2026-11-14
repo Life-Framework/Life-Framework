@@ -99,6 +99,7 @@ class LF_TestManager
 		int failures = 0;
 		int total = 0;
 		int passed = 0;
+		int skippedNeedsPack = 0;
 		string cases = "";
 
 		PrintFormat("[LFTEST] SUITE START tier=%1", tierName);
@@ -123,6 +124,13 @@ class LF_TestManager
 					PrintFormat("[LFTEST] SKIP %1 (tier=%2, %3 run)", EscapeXml(test.GetName()), TierName(test.Tier()), tierName);
 					continue;
 				}
+			}
+
+			if (CoreOnlyRun() && test.NeedsPack() != "")
+			{
+				skippedNeedsPack++;
+				PrintFormat("[LFTEST] SKIP %1 (core-only run: needs the pack: %2)", EscapeXml(test.GetName()), EscapeXml(test.NeedsPack()));
+				continue;
 			}
 
 			total++;
@@ -171,12 +179,23 @@ class LF_TestManager
 			cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"no test matches --only\"/></testcase>\n", missing);
 		}
 
-		PrintFormat("[LFTEST] SUMMARY tier=%1 passed=%2 failed=%3 total=%4", tierName, passed, failures, total);
+		PrintFormat("[LFTEST] SUMMARY tier=%1 passed=%2 failed=%3 total=%4 skipped=%5", tierName, passed, failures, total, skippedNeedsPack);
 		reportXml = string.Format(
 			"<testsuites><testsuite name=\"LifeFramework-%1\" tests=\"%2\" failures=\"%3\" errors=\"0\" time=\"0\">%4</testsuite></testsuites>",
 			tierName, total, failures, cases);
 
 		return failures;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True on a core-only run (-scrDefine LF_CORE_ONLY): only LifeFramework is loaded.
+	static bool CoreOnlyRun()
+	{
+		#ifdef LF_CORE_ONLY
+		return true;
+		#else
+		return false;
+		#endif
 	}
 
 	//------------------------------------------------------------------------------------------------

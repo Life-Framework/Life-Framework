@@ -29,7 +29,7 @@ class LF_Test_HaulTidy : LF_Test
 		array<IEntity> bags = LF_BankLoot.SpillBags(box, box.GetOrigin(), 3, 100);
 		ctx.Equal(3, bags.Count(), "three bags spill");
 
-		float scale = LF_Utils.PrefabScale(Resource.Load(LF_Bank.BAG_PREFAB));
+		float scale = LF_Utils.PrefabScale(Resource.Load(LF_Bank.BagPrefab()));
 		for (int i = 0; i < bags.Count(); i++)
 		{
 			IEntity bag = bags[i];
