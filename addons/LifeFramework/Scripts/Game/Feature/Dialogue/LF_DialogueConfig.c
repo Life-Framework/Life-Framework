@@ -342,6 +342,13 @@ class LF_DialogueLine : LF_ConfigRecord
 
 	[Attribute("", UIWidgets.EditBox, "Mouth envelope: one digit 0 to 9 per 50 ms of the recording")]
 	string m_sMouth;
+
+	//------------------------------------------------------------------------------------------------
+	//! A line a pack adds without a recording (#957): no event and no length. It shows as a caption.
+	bool IsTextOnly()
+	{
+		return m_sEvent.IsEmpty() && m_fSeconds <= 0;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -535,7 +542,9 @@ class LF_DialogueFlow
 				if (line.m_sTextKey.IsEmpty())
 					problems.Insert(string.Format("line %1 has no caption key", line.m_sId));
 
-				if (line.m_sEvent.IsEmpty() || line.m_fSeconds <= 0)
+				// A line with no event and no length is text only (#957): the caption shows and holds for reading time.
+				// One of the two without the other is a half-made recording.
+				if (!line.IsTextOnly() && (line.m_sEvent.IsEmpty() || line.m_fSeconds <= 0))
 					problems.Insert(string.Format("line %1 has no recording", line.m_sId));
 			}
 		}

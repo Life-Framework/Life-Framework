@@ -14,6 +14,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFil
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import * as patchTool from "../assets/pipeline/dialogue-patch.mjs";
 import * as dlg from "../assets/pipeline/dialogue.mjs";
 import * as eleven from "../assets/pipeline/elevenlabs.mjs";
 
@@ -218,6 +219,19 @@ export async function main() {
     if (packSt) for (const [k, v] of dlg.parseStrings(readFileSync(packSt, "utf8"))) real.set(k, v);
     for (const id of existsSync(base) ? readdirSync(base).filter((d) => existsSync(dlg.specFile(ROOT, d))) : []) {
       const s = dlg.loadSpec(ROOT, id);
+      if (s.patches) {
+        // A pack's text-only patch of a core dialogue (#957): its .conf and strings match, no recording involved.
+        const pfix = `run: tools\\cli asset dialogue ${id}`;
+        const pproblems = patchTool.patchProblems(s, patchTool.loadCoreSpec(ROOT, s), real);
+        ok(pproblems.length === 0, `${id}: dialogue.json has problems: ${pproblems.join(" | ")}`);
+        for (const [rel, text] of Object.entries(patchTool.patchExpectedFiles(ROOT, s))) {
+          const file = join(ROOT, "addons", s.addon, rel);
+          ok(existsSync(file) && readFileSync(file, "utf8") === text, `${id}: addons/${s.addon}/${rel} does not match dialogue.json (${pfix})`);
+        }
+        const pst = new Map(dlg.parseStrings(readFileSync(patchTool.patchStringFile(ROOT, s), "utf8")));
+        for (const e of patchTool.patchStringEntries(s)) ok(pst.get(e.id) === e.text.replace(/"/g, '\\"'), `${id}: string ${e.id} does not match dialogue.json (${pfix})`);
+        continue;
+      }
       const prov = dlg.loadProvenance(ROOT, id);
       const fix = `run: tools\\cli asset dialogue ${id}`;
       const problems = dlg.specProblems(s, real);
@@ -232,6 +246,23 @@ export async function main() {
       const total = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
       ok(total <= s.budget_chars, `${id}: ${total} characters spent, over its budget of ${s.budget_chars}`);
     }
+  }
+
+  // A patch spec read against its core (#957): what it refuses and what it writes.
+  {
+    const core = { id: "npc", lines: { greet: { text: "Hello there." }, bye: { text: "Bye now." } }, nodes: [{ id: "greet", line: "greet", options: [{ text: "x", next: "menu" }] }, { id: "menu", options: [{ text: "x", next: "bye" }] }, { id: "bye", line: "bye" }], replies: { x: "X" } };
+    const base = { id: "npc_pack", name: "NpcPack", patches: "npc", addon: "LF_Everon1989" };
+    const has = (spec, re) => patchTool.patchProblems(spec, core).some((p) => re.test(p));
+    ok(patchTool.patchProblems({ ...base, lines: { greet: { text: "Morning." } } }, core).length === 0, "patch: a text patch of a core line is sound");
+    ok(has({ ...base, lines: { ghost: { op: "patch", text: "Hi." } } }, /patch names a line the core dialogue lacks/), "patch: a patch of a line the core lacks is refused");
+    ok(has({ ...base, lines: { greet: { op: "add", text: "Hi there." } } }, /add names a line the core dialogue already has/), "patch: an add of a core line is refused");
+    ok(has({ ...base, addon: "LifeFramework", lines: { greet: { text: "Morning." } } }, /lives in a pack/), "patch: a patch in the core is refused");
+    ok(has({ ...base, voice: { id: "v" }, lines: { greet: { text: "Morning." } } }, /text only/), "patch: a voice on a patch is refused");
+    ok(has({ ...base, nodes: [{ id: "bye", op: "remove" }] }, /still leads to 'bye', which this patch removes/), "patch: removing a node a core node leads to is refused");
+    ok(has({ ...base, nodes: [{ id: "menu", options: [{ text: "x", next: "nowhere" }] }], replies: { x: "X" } }, /unknown node 'nowhere'/), "patch: a reply to an unknown node is refused");
+    const text = patchTool.patchConfText({ ...base, lines: { greet: { text: "Morning." }, extra: { text: "More." } } }, core);
+    ok(/m_sId "npc"/.test(text) && /m_sOp "patch"\s+m_sId "greet"/.test(text) && /m_sOp "add"\s+m_sId "extra"/.test(text), "patch: the conf carries the core id and a verb per line");
+    ok(!/m_sEvent|m_fSeconds/.test(text), "patch: a text-only line has no event and no length");
   }
 
   if (failed) {

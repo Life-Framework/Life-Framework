@@ -9,7 +9,8 @@ Adding an NPC: `docs/asset-pipeline/dialogue.md`.
 |---|---|---|
 | `LF_DialogueOverrides.c` | both | Dev caption overrides (#970): `$profile:LifeFramework/dev/dialogue.json` read by `reload dialogue`, streamed to clients; the scene shows the override instead of the translated key |
 | `LF_DialogueConfig.c` | both | The data classes and `LF_DialogueFlow`, the pure rules (which replies are offered, what is said, the mouth envelope, config problems). Nodes and lines are `LF_ConfigRecord`s: a pack patch of a dialogue adds, replaces, patches or removes them by id (`LF_DialogueConfig.Layered`, `docs/config/override-model.md` "Dialogue patches", #1109); a patch that leaves the conversation broken is dropped and the core plays |
-| `LF_DialogueComponent.c` | both | On the NPC prefab; loads and checks the config once |
+| `LF_DialogueComponent.c` | both | On the NPC prefab; names its dialogue by id (`m_sDialogueId`, or a path in `m_sDialogue`), loads and checks the config once |
+| `LF_DialogueRegistry.c` | both | Dialogue by id (#957): the core index `Configs/Dialogue/LF_DialogueIndex.conf` plus pack overlays (add, replace, remove an id). `LF_DialogueRegistry.Resolve(id)` |
 | `LF_DialogueHook.c` | server | Base of a reply's condition or action; `Find("Name")` resolves class `LF_DialogueHook_Name` |
 | `LF_Dialogue.c` | server | Sessions: start, choose, end; tells bystanders what to hear |
 | `LF_DialoguePlayerController.c` | both | The RPCs, on the player's controller |

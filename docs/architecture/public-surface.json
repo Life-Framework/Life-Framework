@@ -5,6 +5,7 @@
     "LF_ChopShopConfig",
     "LF_CrimeCatalogConfig",
     "LF_DialogueConfig",
+    "LF_DialogueIndexConfig",
     "LF_EvidenceConfig",
     "LF_GarageConfig",
     "LF_IncidentConfig",

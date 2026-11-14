@@ -1098,6 +1098,11 @@ StringTable {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+      CustomStringTableItem "{ED0681FDD3AE4F14}" {
+     Id "LF-Dialogue_ClerkEveron_Greet"
+     Target_en_us "Good day. This is the town clerk's desk. What can I do for you?"
+     Comment "Pack patch of the clerk dialogue's line greet (text only; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+  }
  }
 }
