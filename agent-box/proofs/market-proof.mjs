@@ -25,7 +25,7 @@ async function runMarketProof() {
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const fails = [];
-  arrive(on, 1, wait);
+  arrive((_n, spec, timeout) => on(spec, timeout), 1, wait);
   wait(6000);
   on({ verb: "capture", mode: "world", name: "market_wide", ...SQUARE, ox: 4, oy: 1.6, oz: 13, hour: 15 }, 30000);
   for (const s of STALLS) {

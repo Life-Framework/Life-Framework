@@ -1,0 +1,20 @@
+{
+  "slug": "clothing-parity-suit",
+  "name": "ParitySuitJacket",
+  "kind": "clothing",
+  "route": "a",
+  "roadmap": "",
+  "concept": "The pipeline's parity fixture: the vanilla grey suit jacket pushed through route a with its own textures unchanged. Its materials inherit the vanilla ones and repaint nothing, so every state picture must match vanilla (docs/asset-pipeline/clothing.md \"Parity\"). Not a garment for the game: the generated files are not committed.",
+  "base": "{E652D625A46A00FC}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Grey_V1.et",
+  "slot": "Jacket",
+  "hide": null,
+  "materials": [
+    { "use": "worn", "maps": {} },
+    { "use": "item", "maps": {} }
+  ],
+  "budget": { "texture_px": 2048 },
+  "asset_dir": "Assets/Characters/Uniforms/LF/ParitySuitJacket",
+  "prefab_dir": "Prefabs/Characters/Uniforms/LF",
+  "prefab": { "name_key": null, "description_key": null },
+  "verify": { "expect": "same" }
+}
