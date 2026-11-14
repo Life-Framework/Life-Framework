@@ -20,7 +20,7 @@ export const MAX_AUTO_SHARDS = 4;
 // remote lane), so `auto` only adds a slice that carries at least this many seconds of tests.
 export const MIN_SHARD_SECONDS = 15;
 // Seconds per test when there is no history yet (measured, see above).
-export const DEFAULT_WEIGHT = { LOGIC: 0.003, WORLD: 0.015, PERSISTENCE: 0.01 };
+export const DEFAULT_WEIGHT = { LOGIC: 0.003, WORLD: 0.015, PERSISTENCE: 0.01, PERF: 8 };
 const REGISTRY = ["addons", "LifeFramework", "Scripts", "Game", "Tests", "LF_TestRegistrations.generated.c"];
 
 // ---------------------------------------------------------------- registry and history
@@ -30,8 +30,9 @@ export function parseRegistry(text) {
   return [...String(text).matchAll(/new (LF_Test_\w+)\(\),\s*LF_TestTier\.(\w+)/g)].map((m) => ({ cls: m[1], tier: m[2] }));
 }
 
+// The tests a `--tier all` run executes: the PERF tier runs only under `--tier perf`, so it is not in a shard plan or a timing history.
 export function readRegistry(root) {
-  return parseRegistry(readFileSync(join(root, ...REGISTRY), "utf8"));
+  return parseRegistry(readFileSync(join(root, ...REGISTRY), "utf8")).filter((t) => t.tier !== "PERF");
 }
 
 // Seconds per test from one console.log: the gap between a test's START line and the next one (or the
