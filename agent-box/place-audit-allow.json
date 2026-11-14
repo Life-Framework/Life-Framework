@@ -2,9 +2,9 @@
   "_note": "Placements that are meant to look this way. tools\\cli audit placement skips a problem whose kind matches and whose name or prefab matches the regex (docs/placement-audit.md). Give the reason a reviewer can check in a shot.",
   "allow": [
     {
-      "match": "^Annex_BankVault_Kit",
+      "match": "^(Annex_BankVault_Kit|Roadmap_Bank_Vault)",
       "kind": "clips",
-      "why": "The vault door is the prefab's own child (VaultDoor) on its hinge pivot, seated in the frame ring of VaultFront by design; in the _Open vault it stands on the same hinge beside the frame (tools/assets/bank-vault, #925)."
+      "why": "The vault door is the prefab's own child (VaultDoor) on its hinge pivot, seated in the frame ring of VaultFront by design; in the _Open vault it stands on the same hinge beside the frame (tools/assets/bank-vault, #925). The town vault swings it open with the breach state."
     },
     {
       "match": "^Axe_",
@@ -17,7 +17,7 @@
       "why": "The small money bag on the bank floor is meant to be small (#740)."
     },
     {
-      "match": "^Annex_Bank_Bag_Cash",
+      "match": "^(Annex|Roadmap)_Bank_Bag_Cash",
       "kind": "sunk",
       "why": "The cash stack is the bag prefab's child, drawn inside the 0.4-scale bag the way the town bag is (#323 batch 0)."
     },

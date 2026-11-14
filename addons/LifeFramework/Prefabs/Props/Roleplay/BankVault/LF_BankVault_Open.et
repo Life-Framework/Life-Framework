@@ -25,5 +25,13 @@ GenericEntity : "{4E0A07E8E86EA538}Prefabs/Props/Roleplay/BankVault/LF_BankVault
    coords 0 0.47 -2.95
    angleY 180
   }
+  GenericEntity LightB1 : "{5C2A9E41B7D03F77}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Light.et" {
+   ID "5C2A9E41B7D05100"
+   coords 0 3.17 -1.6
+  }
+  GenericEntity LightB2 : "{5C2A9E41B7D03F77}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Light.et" {
+   ID "5C2A9E41B7D05200"
+   coords 0 3.17 -3.0
+  }
  }
 }

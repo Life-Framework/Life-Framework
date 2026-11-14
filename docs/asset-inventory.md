@@ -66,7 +66,7 @@ looked at yet.
 | Store counter | `Shop_GeneralStore_Debug` | placeholder | vanilla `CounterShop_01` (a yellow market cart) | a shop counter with a till | General store, area 3 | low |
 | Market stall | `Market_Stall_Veg/Fruit/Juice` (`Village_Dressing.layer`) | final | vanilla `MarketStand_01` under rowan trees on the cobbled market square (#924) | (a market stall) | Market, area 3 | none |
 | Site alarm beacon | `LF_SiteAlarm.et` | final | vanilla `HazardBeacon_01` at 0.4 (0.21 m), no collision, while the alarm runs; on an alarm mount (bank bell box, cash van roof) or the surface under the site | (a small rotating beacon) | Alarm at store, bank, till, area 3 | none |
-| Bank alarm bell box | `Roadmap_Bank_AlarmBox` (layer, `Street_Bank.layer`) | final | vanilla `ElectricityBox_small_01` on the bank's east wall above the vault door, carries `LF_AlarmMountComponent` | (a wall alarm box) | Bank vault, area 2 | none |
+| Bank alarm bell box | `Roadmap_Bank_AlarmBox` (layer, `Street_Bank.layer`) | final | vanilla `ElectricityBox_small_01` on the bank's east wall above the vault room roof, carries `LF_AlarmMountComponent` | (a wall alarm box) | Bank vault, area 2 | none |
 | Hideout machine | `Roadmap_Hideout_Machine` | placeholder | vanilla `CoffeeGrinderShop_01` | contraband press | Hideout, area 13 | medium |
 | Hideout stash | `LF_HideoutStash.et` | final | vanilla chest | (a trunk) | Hideout, area 13 | none |
 | Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |

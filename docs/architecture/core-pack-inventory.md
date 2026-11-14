@@ -156,7 +156,7 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
 | `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
-| `Props/Roleplay/BankVault/` | pack | The 1989 bank vault kit: the round door in its frame and wall, the steel room, the deposit box wall, the cash trolley, and the assembled vault closed and open. Display only so far; the gameplay vault (`LF_BankVaultComponent`) is core and is moved inside the bank under roadmap item 9 |
+| `Props/Roleplay/BankVault/` | pack | The 1989 bank vault kit: the round door in its frame and wall, the steel room, the deposit box wall, the cash trolley, and the assembled vault closed and open. The assembled vault carries the rob, breach and swing components and is the town bank vault (#925); `LF_BankVault_Light` is its two ceiling lights. The gameplay components (`LF_BankVaultComponent`, `LF_BreachTargetComponent`) are core |
 | `Assets/Props/Roleplay/BankVault/` | pack | Meshes and materials of the vault kit (door generated with Meshy, `docs/credits.md`; the rest built by `tools/assets/bank-vault/build.py`) |
 | `Assets/Props/Roleplay/SpikeStrip/` | split | Mesh of the strip above (generated with Meshy, `docs/credits.md`): example in core, the police stinger in pack |
 | `Resources/` | core | Ore, trees, logs |

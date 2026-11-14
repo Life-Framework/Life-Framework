@@ -1685,11 +1685,3 @@ GenericEntity Annex_Convoy_Drop_Near {
  coords 63 0 70
  Flags 0x403 0
 }
-GenericEntity Annex_BankVault_Kit : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
- coords 34 0.007 86
- angleY 90
-}
-GenericEntity Annex_BankVault_Kit_Open : "{68C47ED515B362B8}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Open.et" {
- coords 34 0.007 93
- angleY 90
-}

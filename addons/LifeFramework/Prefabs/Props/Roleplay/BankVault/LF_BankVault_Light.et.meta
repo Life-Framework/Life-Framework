@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5C2A9E41B7D03F77}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Light.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
