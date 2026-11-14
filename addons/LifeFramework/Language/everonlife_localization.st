@@ -487,13 +487,13 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
   }
   CustomStringTableItem "{51406463B7ACAB53}" {
    Id "EL-Stole_Money"
-   Target_en_us "Stole $%1!"
-   Target_es_es "Robó $%1!"
-   Target_de_de "$%1 gestohlen!"
-   Target_fr_fr "Volé $%1!"
-   Target_it_it "Rubato $%1!"
-   Target_pt_pt "Roubou $%1!"
-   Target_pt_br "Roubou $%1!"
+   Target_en_us "Stole {currency:sym}%1!"
+   Target_es_es "Robó {currency:sym}%1!"
+   Target_de_de "{currency:sym}%1 gestohlen!"
+   Target_fr_fr "Volé {currency:sym}%1!"
+   Target_it_it "Rubato {currency:sym}%1!"
+   Target_pt_pt "Roubou {currency:sym}%1!"
+   Target_pt_br "Roubou {currency:sym}%1!"
   }
   CustomStringTableItem "{769912DD3060E56A}" {
    Id "EL-Vehicle_Stolen"
@@ -527,13 +527,13 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
   }
   CustomStringTableItem "{C60F134F56CDE9BE}" {
    Id "EL-Job_Earned"
-   Target_en_us "Earned $%1 for work!"
-   Target_es_es "Ganó $%1 por trabajo!"
-   Target_de_de "$%1 für Arbeit verdient!"
-   Target_fr_fr "Gagné $%1 pour le travail!"
-   Target_it_it "Guadagnato $%1 per lavoro!"
-   Target_pt_pt "Ganhou $%1 pelo trabalho!"
-   Target_pt_br "Ganhou $%1 pelo trabalho!"
+   Target_en_us "Earned {currency:sym}%1 for work!"
+   Target_es_es "Ganó {currency:sym}%1 por trabajo!"
+   Target_de_de "{currency:sym}%1 für Arbeit verdient!"
+   Target_fr_fr "Gagné {currency:sym}%1 pour le travail!"
+   Target_it_it "Guadagnato {currency:sym}%1 per lavoro!"
+   Target_pt_pt "Ganhou {currency:sym}%1 pelo trabalho!"
+   Target_pt_br "Ganhou {currency:sym}%1 pelo trabalho!"
   }
   CustomStringTableItem "{FDB3A4352A9457A4}" {
    Id "EL-Item_Sold"
@@ -3725,7 +3725,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9E5C42E17A717873}" {
      Id "LF-Wanted_TitlePolice"
-     Target_en_us "WANTED - police notices"
+     Target_en_us "WANTED - {police} notices"
      Comment "Title of the wanted board card an on-duty officer reads."
     }
     CustomStringTableItem "{208346B2A0835221}" {
@@ -4130,7 +4130,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4AA0194A741E081B}" {
      Id "LF-SafeZone_ShotRefused"
-     Target_en_us "The town square is a safe zone. Your shot hurt nobody."
+     Target_en_us "The {town} square is a safe zone. Your shot hurt nobody."
      Comment "Toast to a player whose shot was refused in or into the spawn safe zone. Rate-limited."
     }
     CustomStringTableItem "{9823FC0642192065}" {
@@ -4385,7 +4385,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C80206F362C570EC}" {
      Id "LF-Ticket_Received"
-     Target_en_us "An officer gave you a ticket. Read it in your inventory; pay it at the police desk."
+     Target_en_us "An officer gave you a ticket. Read it in your inventory; pay it at the {police} desk."
      Comment "Toast to the person who got a ticket."
     }
     CustomStringTableItem "{A85CDAFEB439AA39}" {
@@ -4410,7 +4410,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DBEBFF247E50B272}" {
      Id "LF-Ticket_NowWanted"
-     Target_en_us "You did not pay your ticket. The police want you."
+     Target_en_us "You did not pay your ticket. The {police} want you."
      Comment "Toast at the second deadline."
     }
     CustomStringTableItem "{5EDD1F09C108B2CB}" {
@@ -4550,12 +4550,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{869A6F273AAC96A0}" {
      Id "LF-Service_Police"
-     Target_en_us "Police"
+     Target_en_us "{Police}"
      Comment "Service name callers see for the police service."
     }
     CustomStringTableItem "{7A099928BD809AE7}" {
      Id "LF-Service_Medic"
-     Target_en_us "Medic"
+     Target_en_us "{Medic}"
      Comment "Service name callers see for the medic service."
     }
     CustomStringTableItem "{46622CE72B35428C}" {
@@ -5255,7 +5255,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{79B69A24A6715B00}" {
      Id "LF-Bill_Received"
-     Target_en_us "The medic left you a treatment bill of %1. Pay it in cash at the hospital desk."
+     Target_en_us "The {medic} left you a treatment bill of %1. Pay it in cash at the hospital desk."
      Comment "Toast to a revived patient. %1 is the amount."
     }
     CustomStringTableItem "{60B397ACEEF7B02C}" {
@@ -7162,7 +7162,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{447080BA06948A97}" {
      Id "LF-IdCard_RequestBody"
-     Target_en_us "A police officer asks to see your identity card."
+     Target_en_us "A {police} officer asks to see your identity card."
      Comment "Body of the ID check sheet (#902)."
     }
     CustomStringTableItem "{6E11F94962BCC683}" {
@@ -8265,6 +8265,83 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Cleanup_Denied"
      Target_en_us "Cleanup is not available."
      Comment "Greyed-out reason and toast when cleanup is refused (#690)."
+    }
+    CustomStringTableItem "{67F7742CC0C6E47C}" {
+     Id "LF-Term_Police"
+     Target_en_us "police"
+     Target_de_de "Polizei"
+     Target_fr_fr "police"
+     Target_it_it "polizia"
+     Target_es_es "policía"
+     Target_pt_pt "polícia"
+     Target_pt_br "polícia"
+     Comment "Term "police" (#958): the police service as a sentence names it. Core text writes {police} or {Police}; a pack or the owner renames it."
+    }
+    CustomStringTableItem "{04400B2027C380FF}" {
+     Id "LF-Term_Medic"
+     Target_en_us "medic"
+     Target_de_de "Sanitäter"
+     Target_fr_fr "médecin"
+     Target_it_it "medico"
+     Target_es_es "médico"
+     Target_pt_pt "médico"
+     Target_pt_br "médico"
+     Comment "Term "medic" (#958): singular."
+    }
+    CustomStringTableItem "{D16A258D77A04F85}" {
+     Id "LF-Term_Medic_Plural"
+     Target_en_us "medics"
+     Target_de_de "Sanitäter"
+     Target_fr_fr "médecins"
+     Target_it_it "medici"
+     Target_es_es "médicos"
+     Target_pt_pt "médicos"
+     Target_pt_br "médicos"
+     Comment "Term "medic" (#958): plural, {medic:pl}."
+    }
+    CustomStringTableItem "{7653CEA2A3D01C1D}" {
+     Id "LF-Term_Town"
+     Target_en_us "town"
+     Target_de_de "Stadt"
+     Target_fr_fr "ville"
+     Target_it_it "città"
+     Target_es_es "ciudad"
+     Target_pt_pt "cidade"
+     Target_pt_br "cidade"
+     Comment "Term "town" (#958): what the settlement is called. Core text writes {town} or {Town}."
+    }
+    CustomStringTableItem "{D4EF4181AF1095B4}" {
+     Id "LF-Term_Currency"
+     Target_en_us "dollar"
+     Target_de_de "Dollar"
+     Target_fr_fr "dollar"
+     Target_it_it "dollaro"
+     Target_es_es "dólar"
+     Target_pt_pt "dólar"
+     Target_pt_br "dólar"
+     Comment "Term "currency" (#958): the money unit, singular."
+    }
+    CustomStringTableItem "{4C9D9FCD0F57F53F}" {
+     Id "LF-Term_Currency_Plural"
+     Target_en_us "dollars"
+     Target_de_de "Dollar"
+     Target_fr_fr "dollars"
+     Target_it_it "dollari"
+     Target_es_es "dólares"
+     Target_pt_pt "dólares"
+     Target_pt_br "dólares"
+     Comment "Term "currency" (#958): the money unit, plural, {currency:pl}."
+    }
+    CustomStringTableItem "{F8FF62CD88A6A2E3}" {
+     Id "LF-Term_Currency_Sym"
+     Target_en_us "$"
+     Target_de_de "$"
+     Target_fr_fr "$"
+     Target_it_it "$"
+     Target_es_es "$"
+     Target_pt_pt "$"
+     Target_pt_br "$"
+     Comment "Term "currency" (#958): the symbol that goes before an amount, {currency:sym}."
     }
  }
 }

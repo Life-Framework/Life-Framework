@@ -92,6 +92,7 @@ not on its allowlist (empty today).
 | Vehicles | Ownership, garage, impound, and the base vehicle prefabs with LF components | The catalogue: which cars, their prices, liveries |
 | Police | The system and the rank mechanics | Faction names, uniforms, rank titles |
 | Strings | Functional UI and prompt keys | Flavour copy, in the pack's own string table |
+| Terms (Police, town, currency) | The placeholders (`{police}`) and neutral default words | The pack's own words for a term, in its table, or the owner's (#958, [owner guide](../owner/rename-terms.md)) |
 | DebugWorld | The test annex with neutral fixtures | The village |
 | Voice, dialogue, animation | The systems and generic animations | Voice lines and story content |
 
