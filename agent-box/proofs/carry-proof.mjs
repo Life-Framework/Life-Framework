@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
-import { ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeCarry, parsePeer, parseState, sessionDir } from "../session.mjs";
+import { ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeCarry, parseState, sessionDir } from "../session.mjs";
 
 async function runCarryProof() {
   const h = await import("../harness.mjs");
@@ -13,7 +13,6 @@ async function runCarryProof() {
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const state = (n) => on(n, { verb: "state" }, 10000).detail;
-  const peers = (n) => on(n, { verb: "peers" }, 10000).detail;
   const at = (n) => String(parseState(state(n)).pos ?? "0,0,0").split(",").map(Number);
   const fails = [];
   const need = (cond, text) => { if (!cond) fails.push(text); };
@@ -97,12 +96,18 @@ async function runCarryProof() {
   wait(4000);
   const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: patient }, 10000);
   need(load.status === "ok", `load returned ${load.status} ${load.detail}`);
-  wait(9000);
-  const seated = { 1: peers(1), 2: peers(2) };
-  if (afterDrag3) seated[3] = peers(3);
-  for (const n of Object.keys(seated)) {
-    const p = parsePeer(seated[n], 2);
-    need(p && p.seat === "1" && p.carrier === 0, `seat, client ${n}: ${seated[n]}`);
+  // The seat is the owner's to take: the server asks client 2 to get in (MoveInVehicleOwner), the
+  // client seats itself and the compartment state replicates back out. That round trip took a few
+  // hundred ms on a quiet box and seconds on a loaded one; the old single read straight after the
+  // load (#697) caught it half way, while the server's own check saw the body seated. Read each
+  // client until it sees the body seated, and print how long that took.
+  const seated = {};
+  const clients = afterDrag3 ? [1, 2, 3] : [1, 2];
+  for (const n of clients) {
+    const r = clientSeesPeer(on, wait, n, 2, (p) => (p.seat === "1" && p.carrier === 0 ? [] : [`seat=${p.seat} carrier=${p.carrier}`]), { label: "seated", budgetMs: 15000 });
+    seated[n] = r.line;
+    console.log(`client ${n}: body ${r.fails.length ? "not " : ""}seated after ${r.seconds.toFixed(1)} s`);
+    for (const f of r.fails) fails.push(`seat, ${f}`);
   }
   on(1, { verb: "capture", mode: "world", name: "m2_261_loaded_world", x: cx, y: cy + 0.8, z: cz, ox: 3.5, oy: 1.6, oz: 0 }, 25000);
   console.log(`afterDrag ${JSON.stringify(afterDrag)} late ${afterDrag3} seated ${JSON.stringify(seated)}`);
