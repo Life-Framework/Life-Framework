@@ -32,6 +32,7 @@ named but does not load as an `LF_PackManifest` also refuses.
 | Bus events | `Feature/<Area>/LF_<Area>Events.c` declarations | to be listed |
 | Dialogue hooks and params | the dialogue config and action params | to be listed |
 | Prefab slots | the slots a pack prefab fills | to be listed (#964) |
+| Sound slots | the slots a pack sound fills (`Configs/SoundSlots/LF_SoundSlots.conf`) | to be listed (#323) |
 | Terms list | the vocabulary a pack renames | to be listed (#958) |
 | Systems list | the system ids the owner switches on and off | to be listed (#960) |
 
