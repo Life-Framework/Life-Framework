@@ -64,7 +64,7 @@ class LF_Test_RobReward : LF_Test
 		int paid = LF_RobAction.CommitRobbery(uid, robber, PAYOUT, 0, 0, COOLDOWN_S, last, nowMs, next);
 		ctx.Equal(PAYOUT, paid, "accepted robbery reports the payout");
 		ctx.Equal(PAYOUT, LF_MoneyUtils.GetCash(robber), "payout lands in the robber's inventory as MoneyStack");
-		ctx.Equal(PAYOUT, LF_InventoryUtils.GetAmount(robber, LF_MoneyUtils.PREFAB_CASH), "the cash is the MoneyStack prefab");
+		ctx.Equal(PAYOUT, LF_InventoryUtils.GetAmount(robber, LF_MoneyUtils.CashPrefab()), "the cash is the MoneyStack prefab");
 		ctx.EqualFloat(nowMs, next, 0.5, "accepted robbery starts the till cooldown");
 
 		LF_BankAccount bank = atm.GetAccount(uid);

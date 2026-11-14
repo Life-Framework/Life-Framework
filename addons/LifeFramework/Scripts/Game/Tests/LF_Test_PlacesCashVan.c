@@ -28,7 +28,7 @@ class LF_Test_PlacesCashVan : LF_Test
 		vector at = anchor.GetOrigin() + "0 -20 0";
 		array<IEntity> spawned = {};
 		for (int i = 0; i < 4; i++)
-			spawned.Insert(LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, at + Vector(3 * i, 0, 0), "0 0 0", false));
+			spawned.Insert(LF_Utils.SpawnEntityPrefab(LF_Bank.BagPrefab(), at + Vector(3 * i, 0, 0), "0 0 0", false));
 
 		IEntity van = spawned[0];
 		IEntity stopA = spawned[1];
