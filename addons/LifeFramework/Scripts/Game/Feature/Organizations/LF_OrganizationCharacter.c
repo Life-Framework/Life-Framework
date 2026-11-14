@@ -52,6 +52,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationView()
 	{
+		if (LF_RefuseOrganizationsOff("view"))
+			return;
+
 		LF_PushOrganizationView("");
 	}
 
@@ -59,6 +62,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationCreate(string name)
 	{
+		if (LF_RefuseOrganizationsOff("found"))
+			return;
+
 		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization founding"))
 			return;
 
@@ -84,6 +90,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationDeposit(int amount)
 	{
+		if (LF_RefuseOrganizationsOff("deposit"))
+			return;
+
 		string notice = "#LF-Org_CashRefused";
 		if (!LF_RefuseAwayFromOrganizationDesk("deposit", amount) && LF_OrganizationPlayer.DepositCash(this, amount))
 			notice = "#LF-Org_Deposited";
@@ -95,6 +104,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationWithdraw(int amount)
 	{
+		if (LF_RefuseOrganizationsOff("withdraw"))
+			return;
+
 		string notice = "#LF-Org_CashRefused";
 		if (!LF_RefuseAwayFromOrganizationDesk("withdraw", amount) && LF_OrganizationPlayer.WithdrawCash(this, amount))
 			notice = "#LF-Org_Withdrawn";
@@ -106,6 +118,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationLeave()
 	{
+		if (LF_RefuseOrganizationsOff("leave"))
+			return;
+
 		string notice = "#LF-Org_LeaveRefused";
 		if (!LF_RefuseAwayFromOrganizationDesk("leave", 0))
 		{
@@ -122,15 +137,31 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationLease()
 	{
+		if (LF_RefuseOrganizationsOff("lease"))
+			return;
+
 		string notice = "#LF-Org_LeaseRefused";
 		if (!LF_RefuseAwayFromOrganizationDesk("lease", 0))
 		{
 			string characterId = LF_OrganizationPlayer.CharacterId(this);
-			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Lease(characterId, LF_Hideout.HIDEOUT_ID))
+			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Lease(characterId, LF_Hideout.OrgHideoutId()))
 				notice = "#LF-Org_Leased";
 		}
 
 		LF_PushOrganizationView(notice);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a request while Organizations is off (#1074) is refused with the caption, and the ledger
+	//! page the player may still have open shows it.
+	//! eturn true when the request was refused.
+	protected bool LF_RefuseOrganizationsOff(string request)
+	{
+		if (!LF_Systems.Refuses(LF_OrgRules.SYSTEM, "organization " + request))
+			return false;
+
+		LF_PushOrganizationView("#LF-Systems_Off");
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,6 +189,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationBuy(int upgrade)
 	{
+		if (LF_RefuseOrganizationsOff("buy"))
+			return;
+
 		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization upgrade"))
 			return;
 
@@ -206,7 +240,7 @@ modded class SCR_ChimeraCharacter
 			fund = org.GetFund();
 			rights = LF_OrgRules.RightsOf(org, characterId);
 			processing = org.HasProcessingSlot();
-			lease = LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID);
+			lease = LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId());
 			members = LF_OrganizationPlayer.MemberLines(org);
 			rank = org.GetRankName(characterId);
 		}

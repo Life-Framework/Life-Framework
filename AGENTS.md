@@ -14,8 +14,11 @@ and Sonnet (`lf-builder`) does a scoped issue. Opus (`lf-hard`) takes design,
 replication and persistence, and anything Sonnet failed twice. The free
 DeepSeek model in opencode takes background docs, website work and issue
 grooming. A subagent does the work itself and starts no helper agents unless
-its brief says to. It reads files in pieces and stops after two environment
-failures instead of grinding.
+its brief says to (`lf-scout` for a search is the exception). It reads files
+in pieces and stops after two environment failures instead of grinding. Each
+agent type has a tool-call budget; past it the agent writes
+`tmp/handoff-<slug>.md` and ends with a `RESUME` line. A town-wide job is one
+agent per area. `tools\cli usage` shows where the tokens went.
 
 ## Repo map
 
@@ -23,7 +26,7 @@ failures instead of grinding.
 |---|---|
 | `addons/LifeFramework/Scripts/Game/` | Enforce Script: `Core/`, `Feature/<Area>/` (each with a `Feature.md`), `Persistence/`, `UI/`, `Tests/`, ... |
 | `addons/LifeFramework/{Prefabs,Configs,UI,Language,Missions}/` | Resources (`.et`, `.conf`, `.layout`, `.st`) |
-| `addons/LF_Everon1989/` | The 1989 Everon flagship pack: a skeleton, not loaded yet. What goes there: `docs/architecture/core-vs-pack.md` |
+| `addons/LF_Everon1989/` | The 1989 Everon flagship pack. Every launch loads it beside the core (`tools/lib/addons.mjs`); its own header is `Missions/LF_Everon1989.conf`. What goes there: `docs/architecture/core-vs-pack.md` |
 | `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
 | `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
@@ -52,7 +55,9 @@ failures instead of grinding.
    copy.
 7. **User-facing strings are localization keys** in
    `Language/everonlife_localization.st` (append, never rewrite; then
-   `tools\cli regen-localization`). Layouts reference `#Key`.
+   `tools\cli regen-localization`). Layouts reference `#Key`. Core text is neutral: place
+   names and flavour copy go in the pack table (`LF_Everon1989/Language/`), and a pack key
+   with the same Id overrides the core row (`validate-core-place-names`).
 8. **Update `docs/features.md` in the same change** that alters a feature.
    Append or edit only your rows; the merge driver keeps rows both sides
    append and stops with conflict markers when both edit the same line.
@@ -85,7 +90,7 @@ failures instead of grinding.
 | `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
-| `tools\cli validate [--full]` | The repo checks in `tools/validation/`. The default skips the Workbench compile (`validate-scripts.ps1`); `--full`, `ci`, `wt gate`, and `wt ship` run it |
+| `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci`, `wt gate`, `wt ship` and CI run every check plus the compile |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `LF_Test` suite; exit code is pass/fail; a compile error fails it |
 | `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the red-proof loop); prints `SUMMARY tier=only` |
 | `tools\cli test` / `e2e` / `pool status` | In-game runs take the first free slot on any pool machine (this PC, `lf-testbox`; `tools/pool.json`) and queue FIFO when all are busy; `--local` / `--remote [name]` pin it; remote runs carry uncommitted state and the rdb (`docs/worktrees.md` "Test pool") |
@@ -94,8 +99,11 @@ failures instead of grinding.
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
 | `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge. Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
+| `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour, M2 first. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
+
+**Compact output.** Heavy commands (`validate`, `test`, `session up`, `look`, `wt gate|ship`, `asset run`, `harness.mjs flow`, proof verbs) print one `SUMMARY <cmd> ok|fail ... log=<path>` line and only the failing items with file:line; the full transcript is the log file in `tmp/logs/`. Never pipe them through `tail`/`Select-Object`. `--verbose` prints everything (`docs/agent-budget.md` "Compact command output").
 
 **Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. A session idle 15 min while others wait is closed; any harness command keeps it, `session.mjs lease [min]` holds it. A session older than 20 min while another session request queues gets a one-line warning on its next harness or session command and is closed 5 min later (`session up --hold <min>`, at most 45, for a known-long job). Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
 
@@ -218,7 +226,12 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 
 ## Research before code
 
-Never guess an Enfusion API. Look it up from any terminal:
+Never guess an Enfusion API. Start from the installed game, not the docs dump:
+`toolscli api class <Name>` prints the real declaration (attributes such as
+`[BaseContainerProps()]` included) from the game paks, `api grep <regex>`
+searches them, and every answer carries the game build and a STALE note when
+`api_search`'s dump predates the install. `api_search` is the fallback. Other
+lookups, from any terminal:
 `tools\cli call api_search|game_read|wb_read_props|asset_search '<json>'`
 (use `@args.json` from PowerShell). `wb_read_props` gives resolved inherited
 prefab values; `asset_search` gives `{GUID}path`. Reading sibling features and
@@ -265,6 +278,6 @@ observe, whether a restart is needed.
 ## CI
 
 GitHub Actions `validate` runs `tools\cli validate` on every PR and is a
-required check on `main`. CI sets `LF_VALIDATE_SKIP=validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs`
+required check on `main`. CI sets `LF_VALIDATE_SKIP=validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs,validate-modded-container-props.mjs`
 because the runner has no Reforger install or MCP build. Script compilation
 and the in-game suite stay local (`tools\cli test --no-build` in a worktree).

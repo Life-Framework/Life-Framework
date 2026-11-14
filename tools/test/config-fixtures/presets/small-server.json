@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "persistence": { "enableAutosave": true, "autosaveInterval": 300 },
+  "jobs": { "policeDutyPayPerSecond": 0.8, "benefitAmount": 150, "benefitCooldownSeconds": 600 },
+  "vehicles": { "sellBackPercent": 60, "garagePercent": 0 },
+  "police": { "ticketMaxOpen": 5 }
+}

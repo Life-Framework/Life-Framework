@@ -35,7 +35,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["close", "radius", "hour", "settle", "first", "out"]);
+  const valued = new Set(["close", "radius", "hour", "settle", "first", "out", "states", "at"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -340,9 +340,14 @@ function peakWorkingSetMb(marker) {
 
 // Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
 export function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
-  const gproj = join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
+  // With the pack in the checkout, open its project: it depends on the core, so both load and the pack's
+  // string table shows (a sign board reads its own title, not the core's neutral one; #325).
+  const packGproj = join(ROOT, "addons", "LF_Everon1989", "LF_Everon1989.gproj");
+  const gproj = existsSync(packGproj) ? packGproj : join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
   const game = process.env.ENFUSION_GAME_PATH || join(steamCommon(), "Arma Reforger");
-  const args = ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=" + plugin, "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", join(game, "addons")];
+  const addonDirs = [join(game, "addons")];
+  if (existsSync(packGproj)) addonDirs.push(join(ROOT, "addons"));
+  const args = ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=" + plugin, "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", addonDirs.join(",")];
   return new Promise((done) => {
     const started = Date.now();
     let peakMb = 0;
@@ -393,15 +398,30 @@ async function run(args) {
   const all = JSON.parse(readFileSync(join(ROOT, "agent-box", "areas.json"), "utf8")).areas;
   const radius = args.flags.radius === undefined ? undefined : num(args.flags.radius, undefined);
   let areas;
+  let itemNotes = [];
+  let itemPerArea = null;
   try {
-    areas = args.pos[0] === "all" ? all.map((a) => ({ ...a })) : args.pos.map((p) => resolveArea(p, all, radius));
+    if (args.pos[0] === "item") {
+      // look item <prefab> [prefab...] [--states ground,inventory] [--at area|x,z]: items are spawned, so play mode.
+      const li = await import("./look-item.mjs");
+      const at = resolveArea(args.flags.at || "spawn-square", all, radius);
+      if (args.flags.edit) throw new Error("look item spawns the item, so it needs play mode (no --edit)");
+      const plan = li.itemPlan(ROOT, args.pos.slice(1), { states: String(args.flags.states || li.ITEM_STATES.join(",")).split(",").filter(Boolean), at });
+      if (!plan.areas.length) throw new Error("look item needs a prefab: {GUID}path, a path under addons/<addon>/, or an asset slug");
+      areas = plan.areas;
+      itemPerArea = plan.perArea;
+      itemNotes = plan.notes;
+    } else {
+      areas = args.pos[0] === "all" ? all.map((a) => ({ ...a })) : args.pos.map((p) => resolveArea(p, all, radius));
+    }
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
     return 2;
   }
-  const world = loadWorld(ROOT);
+  const world = itemPerArea ? null : loadWorld(ROOT);
   const opts = { edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
-  const perArea = areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
+  const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
+  for (const n of itemNotes) console.log(`look: ${n}`);
   const shots = perArea.flatMap((p) => p.shots);
 
   // RAM: Workbench peaks at about 1.9 GB for the 20 s it lives. It has to fit in free RAM with a margin; it is
@@ -662,7 +682,7 @@ export function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] | look selftest";
+const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);

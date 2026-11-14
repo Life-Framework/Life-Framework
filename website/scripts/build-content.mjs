@@ -125,6 +125,11 @@ addRepoDoc("docs/setup.md", { slug: "setup", group: "Start here", order: 0, titl
 addRepoDoc("docs/playtest.md", { slug: "playtest", group: "Start here", order: 1, title: "Open the playtest" });
 addRepoDoc("CONTRIBUTING.md", { slug: "contributing", group: "Start here", order: 2 });
 
+addRepoDoc("docs/owner/install.md", { slug: "owner-install", group: "For server owners", order: 0, title: "Install a server" });
+addRepoDoc("docs/owner/add-job.md", { slug: "owner-add-job", group: "For server owners", order: 1, title: "Add a delivery job" });
+addRepoDoc("docs/owner/add-shop.md", { slug: "owner-add-shop", group: "For server owners", order: 2, title: "Add a shop" });
+addRepoDoc("docs/config/owner-config.md", { slug: "owner-config", group: "For server owners", order: 3, title: "Check your owner config" });
+
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
 // Lands in its own PR; addRepoDoc skips a file that is not there yet.
 addRepoDoc("docs/architecture/core-vs-pack.md", { slug: "core-vs-pack", group: "Direction & decisions", order: 1 });
@@ -138,6 +143,7 @@ addRepoDoc("docs/worktrees.md", { slug: "worktrees", group: "Engineering referen
 addRepoDoc("docs/dedicated-session.md", { slug: "dedicated-session", group: "Engineering reference", order: 4 });
 addRepoDoc("docs/debug-log-triage.md", { slug: "debug-log-triage", group: "Engineering reference", order: 5 });
 addRepoDoc("docs/street-manifest.md", { slug: "street-manifest", group: "Engineering reference", order: 6 });
+addRepoDoc("docs/building-pipeline/README.md", { slug: "building-pipeline", group: "Engineering reference", order: 7, title: "Make a building" });
 
 addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Research & community", order: 0 });
 addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Research & community", order: 1 });
@@ -638,7 +644,35 @@ fs.writeFileSync(path.join(dataDir, "gallery.json"), JSON.stringify(gallery));
 console.log(`[content] gallery: ${gallery.count} pictures`);
 
 // The config page renders its form from this file, so it cannot drift from the schema.
-fs.copyFileSync(path.join(repo, "docs", "config", "config.schema.json"), path.join(dataDir, "config-schema.json"));
+// It also carries the presets (the real files tools\cli config-harness checks, #289) and what the
+// server bundle needs (#381): the base game's server.json shape and the two addon ids, read from the repo.
+const presetDir = path.join(repo, "tools", "test", "config-fixtures", "presets");
+const presetNotes = {
+  "flagship-1989": ["Flagship 1989", "What the 1989 Everon server runs: the shipped economy, written out so you can see every value you can change."],
+  "small-server": ["Small server", "For a handful of friends: faster autosave, a better police wage and benefit, more open tickets."],
+  "hardcore-economy": ["Hardcore economy", "Scarce money: dear shops with a poor buyback, no benefit to speak of, dearer cars, a steeper ticket penalty."],
+};
+// The folder also holds plain harness fixtures (empty, shop-prices); only the named presets are offered.
+const presets = Object.entries(presetNotes).map(([id, [title, blurb]]) => ({
+  id,
+  title,
+  blurb,
+  config: JSON.parse(fs.readFileSync(path.join(presetDir, `${id}.json`), "utf8")),
+}));
+const gproj = (dir) => {
+  const t = fs.readFileSync(path.join(repo, "addons", dir, `${dir}.gproj`), "utf8");
+  return { id: /GUID "([0-9A-F]{16})"/.exec(t)[1], name: /TITLE "([^"]+)"/.exec(t)?.[1] ?? dir };
+};
+const scenario = (dir, file) => /Name "(\{[0-9A-F]{16}\}Missions\/[^"]+)"/.exec(fs.readFileSync(path.join(repo, "addons", dir, "Missions", `${file}.meta`), "utf8"))[1];
+const serverData = {
+  template: JSON.parse(fs.readFileSync(path.join(repo, "docs", "playtest", "server-config.example.json"), "utf8")),
+  core: { ...gproj("LifeFramework"), scenario: scenario("LifeFramework", "LF_PlaytestTown.conf") },
+  pack: { ...gproj("LF_Everon1989"), scenario: scenario("LF_Everon1989", "LF_Everon1989.conf") },
+};
+fs.writeFileSync(
+  path.join(dataDir, "config-schema.json"),
+  JSON.stringify({ schema: JSON.parse(fs.readFileSync(path.join(repo, "docs", "config", "config.schema.json"), "utf8")), presets, server: serverData }),
+);
 
 // The reference page (/config/reference) lists every field from the same schema, plus the example
 // file for its snippets, so neither can drift from the docs.

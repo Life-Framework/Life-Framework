@@ -1,4 +1,5 @@
 // Proves every enforce-lint rule fires on its known-bad fixture, stays quiet on
+// inputs: tools/**, agent-box/**, .githooks/**
 // its known-good fixture, and that the baseline ratchet fails only new hits.
 // Fixtures: tools/validation/fixtures/enforce-lint/<rule>.{bad,good}.c. Each runs
 // in a throwaway addon tree (the L6 .meta lives there, not in the repo, so the
@@ -19,7 +20,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const fixtures = join(here, "fixtures", "enforce-lint");
 
 // Findings each bad fixture must produce for its own rule.
-const EXPECT = { L1: 1, L2: 7, L3: 2, L4: 1, L5: 1, L6: 3, L7: 1, L8: 1 };
+const EXPECT = { L1: 1, L2: 7, L3: 2, L4: 1, L5: 1, L6: 3, L7: 1, L8: 1, L9: 3 };
 
 function runFixture(name) {
   const tmp = mkdtempSync(join(tmpdir(), "lf-enforce-lint-"));

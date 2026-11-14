@@ -403,6 +403,10 @@ class LF_VehicleOwnership
 	//! \param[out] reasonKey What the owner reads, success or refusal.
 	static bool CollectFromImpound(string vehicleId, string ownerUid, IEntity payer, int fee, string padId, out string reasonKey)
 	{
+		reasonKey = "#LF-Systems_Off";
+		if (LF_Systems.Refuses("Vehicles", "impound collect"))
+			return false;
+
 		reasonKey = "#LF-Impound_NothingHere";
 		if (!Replication.IsServer())
 		{
@@ -552,6 +556,31 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when this entity is the live car of a saved vehicle record, by session or by the key id
+	//! its lock carries. The world cleanup never sweeps one.
+	static bool IsOwnedEntity(IEntity entity)
+	{
+		if (!entity)
+			return false;
+
+		string lockId;
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(entity);
+		if (vehicleLock)
+			lockId = vehicleLock.GetVehicleIdentifier();
+
+		foreach (string vehicleId, LF_VehicleRecord record : Records())
+		{
+			if (GetVehicle(vehicleId) == entity)
+				return true;
+
+			if (!lockId.IsEmpty() && record.m_sKeyId == lockId)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static IEntity GetVehicle(string vehicleId)
 	{
 		LF_VehicleSession session = Sessions().Get(vehicleId);
@@ -640,6 +669,12 @@ class LF_VehicleOwnership
 	//------------------------------------------------------------------------------------------------
 	static bool Buy(string buyerUid, string catalogPrefab, string spawnPrefab, int price, int cashCeiling, string shopId, string nameKey, vector origin, IEntity buyer, out string vehicleId, out int cashCharged, out string reasonKey)
 	{
+		vehicleId = "";
+		cashCharged = 0;
+		reasonKey = "#LF-Systems_Off";
+		if (LF_Systems.Refuses("Vehicles", "vehicle purchase"))
+			return false;
+
 		vehicleId = "";
 		cashCharged = 0;
 		reasonKey = "#EL-Vehicle_NotSold";
@@ -762,6 +797,9 @@ class LF_VehicleOwnership
 	//------------------------------------------------------------------------------------------------
 	static bool GiveExtraKey(string vehicleId, string ownerUid, int price, int cashCeiling, IEntity buyer, vector origin, out int cashCharged)
 	{
+		if (LF_Systems.Refuses("Vehicles", "extra key"))
+			return false;
+
 		cashCharged = 0;
 		if (!CanIssueExtraKey(vehicleId, ownerUid))
 			return false;
@@ -797,6 +835,9 @@ class LF_VehicleOwnership
 	//------------------------------------------------------------------------------------------------
 	static bool Store(string vehicleId, string ownerUid)
 	{
+		if (LF_Systems.Refuses("Vehicles", "vehicle store"))
+			return false;
+
 		LF_VehicleRecord record = Records().Get(vehicleId);
 		if (!Owned(record, ownerUid))
 		{
@@ -858,6 +899,9 @@ class LF_VehicleOwnership
 	//! Record half of retrieve. Does not spawn. The world retrieve calls this after the spawn.
 	static bool RestoreRecord(string vehicleId, string ownerUid)
 	{
+		if (LF_Systems.Refuses("Vehicles", "vehicle retrieve"))
+			return false;
+
 		LF_VehicleRecord record = Records().Get(vehicleId);
 		if (!Owned(record, ownerUid))
 		{
@@ -1016,6 +1060,9 @@ class LF_VehicleOwnership
 	//! \return How many cars were granted.
 	static int GrantTestCars(string ownerUid, IEntity holder, notnull array<LF_VehicleOffer> offers, string shopId)
 	{
+		if (LF_Systems.Refuses("Vehicles", "test car grant"))
+			return 0;
+
 		if (ownerUid.IsEmpty() || !holder)
 		{
 			LF_Debug.Error("Vehicle", "test cars not granted: no owner or no body for the keys");

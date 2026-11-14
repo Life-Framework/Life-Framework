@@ -8,7 +8,7 @@
 // returns them. An open door does not. Restart mid-sentence keeps the
 // remaining time. Vehicle escort is the next slice and is not covered here.
 
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 class LF_Test_Roadmap_Jailing : LF_Test
 {
 	override string GetName()

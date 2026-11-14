@@ -1,7 +1,7 @@
 // red-proof: 2026-11-08 (M1-14) LF_Contraband.ITEM pointed back at RowanBerries.et, `tools\cli test --no-build --only LF_Test_Roadmap_Contraband,LF_Test_Roadmap_ContrabandWorld` printed [LFTEST] SUMMARY tier=only passed=0 failed=2 / - rowan berries are food again, not contraband / - the contraband crate is carried in both hands. Restored: passed=5 failed=0.
 // red-proof: 2026-10-11 fast boot logs_2026-10-11_05-19-01 printed [LFTEST] FAIL roadmap/contraband / [LFTEST]   - delivery pays the configured cash once (expected 0, got 200)
 
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 class LF_Test_Roadmap_Contraband : LF_Test
 {
 	override string GetName()
@@ -39,7 +39,7 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, member), "founder adds the courier");
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, leaver), "founder adds the driver who leaves");
 		ctx.True(LF_OrganizationManager.Invite(org.GetId(), founder, casualty), "founder adds the driver who dies");
-		ctx.True(LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId()), "the organization owns the hideout");
+		ctx.True(LF_Hideout.Assign(LF_Hideout.OrgHideoutId(), org.GetId()), "the organization owns the hideout");
 
 		ctx.False(LF_Contraband.Start(outsider, null), "a non-member cannot start the convoy");
 		ctx.EqualStr("convoy refused: not a member", LF_Contraband.GetLastRefusal(), "the non-member start is logged");
@@ -162,7 +162,7 @@ class LF_Test_Roadmap_ContrabandWorld : LF_Test
 
 		LF_OrganizationManager.Invite(org.GetId(), founder, arriving);
 		LF_OrganizationManager.Invite(org.GetId(), founder, quitting);
-		LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId());
+		LF_Hideout.Assign(LF_Hideout.OrgHideoutId(), org.GetId());
 
 		ctx.True(LF_Contraband.Start(arriving, null), "the arriving driver starts a run");
 		ctx.False(LF_Contraband.LeftVehicleAt(arriving, dropOrigin + "6 0 4"), "getting out beside the drop does not fail the run");

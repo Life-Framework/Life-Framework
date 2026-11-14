@@ -1,4 +1,5 @@
 // Proves the anchor math and the reach check on fixed bounds (no game files needed).
+// inputs: tools/**, agent-box/**, .githooks/**
 import { anchorPoint, suggestRadius, gapToBounds, reachDistance } from "../actions/action-anchor.mjs";
 
 const min = [-1, 0, -0.5];

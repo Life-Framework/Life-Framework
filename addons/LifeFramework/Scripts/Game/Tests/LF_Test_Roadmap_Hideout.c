@@ -5,7 +5,7 @@
 // `[LFTEST] FAIL roadmap/hideout-save` (`- one hideout record is exported (expected 1, got 0)`).
 // Restored; green.
 
-// tier: LOGIC
+// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
 class LF_Test_Roadmap_Hideout : LF_Test
 {
 	override string GetName()
@@ -21,7 +21,7 @@ class LF_Test_Roadmap_Hideout : LF_Test
 		string founder = "roadmap-hideout-founder";
 		string member = "roadmap-hideout-member";
 		string outsider = "roadmap-hideout-outsider";
-		string hideoutId = LF_Hideout.HIDEOUT_ID;
+		string hideoutId = LF_Hideout.OrgHideoutId();
 
 		LF_Organization org = LF_OrganizationManager.Create(founder, "Hideout Outfit");
 		ctx.NotNull(org, "founder creates the owning organization");

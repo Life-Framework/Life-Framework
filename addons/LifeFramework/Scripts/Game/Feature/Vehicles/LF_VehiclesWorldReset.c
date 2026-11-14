@@ -37,19 +37,23 @@ class LF_WorldReset_Vehicles : LF_WorldResetStep
 		world.GetBoundBox(mins, maxs);
 		vector centre = (mins + maxs) * 0.5;
 		// The cash van keeps to its route: its box moves with it.
-		array<string> vans = {};
+		array<EntityID> vans = {};
 		array<IEntity> all = LF_WorldResetScan.All();
 		foreach (IEntity entity : all)
 		{
 			LF_CashVanRouteComponent route = LF_CashVanRouteComponent.Cast(entity.FindComponent(LF_CashVanRouteComponent));
-			if (route)
-				vans.Insert(route.GetVanEntityName());
+			if (!route)
+				continue;
+
+			IEntity van = LF_CashVanRoute.FindVan(route.GetRouteId());
+			if (van)
+				vans.Insert(van.GetID());
 		}
 
 		array<IEntity> vehicles = LF_Utils.GetNearbyVehicles(centre, vector.Distance(mins, maxs) * 0.5 + 100);
 		foreach (IEntity vehicle : vehicles)
 		{
-			if (!vehicle || (!vehicle.GetName().IsEmpty() && vans.Find(vehicle.GetName()) >= 0))
+			if (!vehicle || vans.Find(vehicle.GetID()) >= 0)
 				continue;
 
 			LF_VehicleSpot spot = new LF_VehicleSpot();

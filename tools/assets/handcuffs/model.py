@@ -226,18 +226,24 @@ texbake.cycles(16)
 
 
 def nickel(g):
+    # Dark nickel / blued steel, the 1989 duty cuff: mid-grey metal (metalness near 1, so it reflects
+    # instead of lighting like paint), fairly smooth with fine scratches from the ambientCG set
+    # Metal038 (CC0), dark in the recesses (an occlusion bake goes to the NMO alpha).
     wear = g.pointiness(0.5, 0.62)
-    crev = g.math("SUBTRACT", 1.0, g.ao(0.006))
+    ao = g.ao(0.006)
+    crev = g.math("SUBTRACT", 1.0, ao)
     fine = g.noise(260, detail=3)
     streak = g.ramp(g.noise(70, detail=5, w=2.0), 0.55, 0.7)
-    base = g.mix((0.27, 0.28, 0.3), (0.4, 0.41, 0.43), g.ramp(fine, 0.4, 0.7))       # nickel plate, cool grey
-    base = g.mix(base, (0.62, 0.63, 0.65), g.math("MULTIPLY", wear, 0.8))                 # bright worn edges
-    base = g.mix(base, (0.08, 0.08, 0.09), g.math("MULTIPLY", g.ramp(crev, 0.25, 0.65), 0.85))   # dark in the recesses
-    base = g.mix(base, (0.2, 0.2, 0.21), g.math("MULTIPLY", streak, 0.5))              # hand-worn dull patches
-    rough = g.math("ADD", g.math("MULTIPLY", fine, 0.25), g.math("ADD", g.math("MULTIPLY", streak, 0.35), g.math("MULTIPLY", crev, 0.3)), clamp=True)
-    metal = g.math("SUBTRACT", 1.0, g.math("MULTIPLY", g.ramp(crev, 0.4, 0.8), 0.3))
-    height = g.math("ADD", g.math("MULTIPLY", fine, 0.35), g.math("MULTIPLY", streak, 0.2))
-    return {"base": base, "rough": rough, "metal": metal, "height": height, "bump_strength": 0.4, "bump_distance": 0.0006}
+    scratch = g.img("Metal038", "Color", data=False)
+    base = g.mix((0.045, 0.047, 0.052), (0.085, 0.088, 0.094), g.ramp(scratch, 0.2, 0.5))     # blued-nickel grey, scratches pick out lighter
+    base = g.mix(base, (0.2, 0.205, 0.215), g.math("MULTIPLY", wear, 0.6))                # bright worn edges, still steel not chrome
+    base = g.mix(base, (0.012, 0.012, 0.014), g.math("MULTIPLY", g.ramp(crev, 0.25, 0.65), 0.85))   # dark in the recesses
+    base = g.mix(base, (0.04, 0.04, 0.043), g.math("MULTIPLY", streak, 0.4))                # hand-worn dull patches
+    rough = g.math("ADD", 0.5, g.math("ADD", g.math("MULTIPLY", g.img("Metal038", "Roughness"), 0.45), g.math("ADD", g.math("MULTIPLY", streak, 0.18), g.math("MULTIPLY", crev, 0.2))), clamp=True)
+    metal = g.math("SUBTRACT", 0.96, g.math("MULTIPLY", g.ramp(crev, 0.5, 0.9), 0.15))
+    height = g.math("ADD", g.math("MULTIPLY", g.img("Metal038", "Displacement"), 0.5), g.math("MULTIPLY", fine, 0.15))
+    return {"base": base, "rough": rough, "metal": metal, "height": height, "bump_strength": 0.5, "bump_distance": 0.0006,
+            "ao": g.math("ADD", 0.35, g.math("MULTIPLY", ao, 0.65))}
 
 
 g = texbake.Graph("Handcuffs_nickel", sets, tile=0.2)

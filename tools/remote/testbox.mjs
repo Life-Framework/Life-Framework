@@ -13,7 +13,8 @@
 // resourceDatabase.rdb is gitignored, so it travels beside the bundle: the
 // local copy is refreshed first (headless Workbench, tools/lib/rdb-fresh.mjs;
 // the box has no Workbench build) and sent only when its SHA-1 differs from
-// the run folder's.
+// the run folder's. Each addon has its own (the pack's too, #322); the core's
+// travels as resourceDatabase.rdb, another addon's as resourceDatabase.<name>.rdb.
 //
 // The remote command runs under the slot the holder owns (LF_SERVER_SLOT_HELD
 // names the lock and its token); output streams back live and the exit code is
@@ -32,6 +33,7 @@ import { gzipSync } from "node:zlib";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import * as wt from "../wt.mjs";
+import { ADDONS, CORE } from "../lib/addons.mjs";
 import { localSetting } from "../lib/local-config.mjs";
 import { cmdRecord, cmdScreenshot, cmdStart, cmdVdd } from "./desktop.mjs";
 
@@ -241,10 +243,11 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
     console.log(`FAIL  bundle: ${e.message}`);
     return { ok: false };
   }
-  const rdb = join(root, "addons", "LifeFramework", "resourceDatabase.rdb");
-  const rdbHash = existsSync(rdb) ? sha1File(rdb) : null;
-  const sendRdb = rdbHash && rdbHash !== slot.prep.rdb;
-  const send = [bundle, sendRdb ? rdb : null].filter(Boolean);
+  const rdbs = localRdbs(root);
+  const toSend = rdbs.filter((r) => r.hash !== slot.prep.rdbs?.[r.name]);
+  const sendRdb = toSend.length > 0;
+  const send = [bundle, ...toSend.map((r) => stageRdb(root, r))].filter(Boolean);
+  const rdbHash = Object.fromEntries(rdbs.map((r) => [r.name, r.hash]));
   const bundleBytes = bundle ? statSync(bundle).size : 0;
   if (send.length) {
     const up = scp([...send, `${m.host}:${slot.rDir}/tmp/remote-in/`]);
@@ -260,11 +263,28 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
   const what = [
     slot.prep.fresh ? "new run folder" : "reused run folder",
     bundle ? `bundle ${(bundleBytes / 1024).toFixed(1)} KiB` : "no bundle (box has the snapshot)",
-    sendRdb ? `rdb ${(statSync(rdb).size / 1048576).toFixed(1)} MiB` : rdbHash ? "rdb unchanged" : "no local rdb",
+    sendRdb ? toSend.map((r) => `rdb${r.name === CORE ? "" : ` ${r.name}`} ${(statSync(r.path).size / 1048576).toFixed(1)} MiB`).join(", ") : rdbs.length ? "rdb unchanged" : "no local rdb",
     slot.prep.fetched ? "box fetched origin" : null,
   ].filter(Boolean).join(", ");
   console.log(`pool: sync to ${m.name}: ${what} (${(ms / 1000).toFixed(1)} s)`);
   return { ok: true, sentBundle: !!bundle, bundleBytes, sentRdb: !!sendRdb, ms, bundleName: bundle ? basename(bundle) : null };
+}
+
+// Every addon's local resourceDatabase.rdb: { name, path, hash, wire } (wire is the file name it
+// travels under; the box's psCheckout moves it into addons/<name>/).
+function localRdbs(root) {
+  return ADDONS.map(({ name }) => ({ name, path: join(root, "addons", name, "resourceDatabase.rdb") }))
+    .filter((r) => existsSync(r.path))
+    .map((r) => ({ ...r, hash: sha1File(r.path), wire: r.name === CORE ? "resourceDatabase.rdb" : `resourceDatabase.${r.name}.rdb` }));
+}
+
+// The path scp sends: the core's rdb as it is, another addon's copied under its wire name.
+function stageRdb(root, r) {
+  if (r.name === CORE) return r.path;
+  const out = join(root, "tmp", "remote", r.wire);
+  mkdirSync(dirname(out), { recursive: true });
+  copyFileSync(r.path, out);
+  return out;
 }
 
 // Exit code of psCheckout when the bundle cannot be applied, even after a fetch of origin.
@@ -294,6 +314,8 @@ function psCheckout(slot, bundleName, slug) {
     "git checkout -q --detach -f $sha 2>&1 | Out-Null; if ($LASTEXITCODE) { Write-Host \"lf-remote: checkout $sha failed\"; exit 3 }",
     "$rdbIn = Join-Path $in 'resourceDatabase.rdb'",
     "if (Test-Path -LiteralPath $rdbIn) { Move-Item -LiteralPath $rdbIn -Destination (Join-Path $dir 'addons\\LifeFramework\\resourceDatabase.rdb') -Force }",
+    // Another addon's rdb travels as resourceDatabase.<name>.rdb (localRdbs).
+    "foreach ($f in @(Get-ChildItem -LiteralPath $in -Filter 'resourceDatabase.*.rdb' -File -ErrorAction SilentlyContinue)) { $an = $f.Name.Substring(17, $f.Name.Length - 21); $ad = Join-Path $dir \"addons\\$an\"; if (Test-Path -LiteralPath $ad) { Move-Item -LiteralPath $f.FullName -Destination (Join-Path $ad 'resourceDatabase.rdb') -Force } }",
   ].join("\n");
 }
 
@@ -312,10 +334,12 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
   for (let attempt = 0; attempt < 2; attempt++) {
     sync = syncToSlot(root, slot, { writeSyncState });
     if (!sync.ok) return { code: 3 };
-    const env = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
+    const quiet = "$env:LF_QUIET_CHILD = '1'"; // this run is parsed here, so the box prints the full transcript
+    const env0 = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
     const ps = [
       psCheckout(slot, sync.bundleName, slug),
-      env,
+      quiet,
+      env0,
       `& node ${psQuote(script)} ${args.map(psQuote).join(" ")}`,
       "$code = $LASTEXITCODE",
       "$ld = Get-ChildItem -LiteralPath (Join-Path $dir 'server\\profile\\test\\logs') -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1",
@@ -409,10 +433,9 @@ function cmdProvision(root, host, flags) {
   if (res.status !== 0) return res.status ?? 1;
   // The box has no Workbench to build resourceDatabase.rdb; give its main
   // clone this checkout's copy so runs started on the box find one.
-  const rdb = join(wt.mainRootOf(root), "addons", "LifeFramework", "resourceDatabase.rdb");
-  if (existsSync(rdb)) {
-    const r = scp([rdb, `${host}:${rRoot}/addons/LifeFramework/resourceDatabase.rdb`]);
-    console.log(r.status === 0 ? `testbox: sent resourceDatabase.rdb (${statSync(rdb).size} bytes)` : `WARN  rdb copy failed: ${(r.stderr || r.stdout).trim()}`);
+  for (const { name, path: rdb } of localRdbs(wt.mainRootOf(root))) {
+    const r = scp([rdb, `${host}:${rRoot}/addons/${name}/resourceDatabase.rdb`]);
+    console.log(r.status === 0 ? `testbox: sent ${name} resourceDatabase.rdb (${statSync(rdb).size} bytes)` : `WARN  ${name} rdb copy failed: ${(r.stderr || r.stdout).trim()}`);
   }
   return 0;
 }

@@ -25,7 +25,8 @@ class LF_FarmPlotAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		if (!m_Plot)
+		// A server with farming off offers nothing at the plot; the bed keeps showing its crop (#960).
+		if (!m_Plot || !LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM))
 			return false;
 
 		if (m_eMode == LF_EFarmPlotMode.PLANT)

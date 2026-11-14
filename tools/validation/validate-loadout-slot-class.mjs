@@ -1,4 +1,5 @@
 // A prefab that overrides a vanilla loadout slot uses the vanilla slot class (issue #976).
+// inputs: addons/**, tools/outfits/**
 //
 // BaseLoadoutManagerComponent keys its slots by name, but the override has to be the same class the
 // base declares: since 1.8 the base boots slot is SCR_FeetLoadoutSlotInfo, and a `LoadoutSlotInfo

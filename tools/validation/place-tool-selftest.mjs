@@ -1,4 +1,5 @@
 // Proves the placement tool's primitives (tools/place/place.mjs) on fixed bounds and synthetic probe
+// inputs: tools/**, agent-box/**, .githooks/**
 // rays: no game files, no server. Each block names the failure it guards (docs/placement-tool.md).
 // red-proof: 2026-11-11, one line broken per primitive, each restored after its FAIL was seen:
 //   restOn without the edge clamp       -> FAIL on: an east anchor keeps the till inside the edge

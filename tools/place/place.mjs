@@ -7,6 +7,7 @@
 //   place arrange on <surface> <prefab>... --layer L.layer [--count n] [--spacing 0.05] [--at north]
 //   place arrange row <x1,z1> <x2,z2> <prefab>... --layer L.layer [--yaw deg]
 //   place bounds <prefab|entity>      size, base, scale, rigid body
+//   place measure                    write tools/place/prefab-bounds.json: mesh bounds of every vanilla prefab the layers use
 //   place probe <surface>             trace a surface's real top into tools/place/surface-cache.json
 //   place verify <entity>...          the placement audit, on those entities only
 //
@@ -118,9 +119,29 @@ const baseOf = (path) => String(path || "").split("/").pop().replace(/\.et$/, ""
 // What a prefab resolves to through its parents: entity class, mesh, mesh bounds, root scale, and whether
 // its rigid body is simulated (a pickup with `Active Active` rolls and tips; a `Static 1` prop stays).
 const infoCache = new Map();
-export function prefabInfo(root, path) {
+// The measured list of the vanilla prefabs the layers use (`place measure`), read instead of re-measuring.
+export const BOUNDS_FILE = join(ROOT, "tools", "place", "prefab-bounds.json");
+let boundsList = null;
+export function measuredBounds() {
+  if (!boundsList) {
+    try {
+      boundsList = JSON.parse(readFileSync(BOUNDS_FILE, "utf8")).prefabs ?? {};
+    } catch {
+      boundsList = {};
+    }
+  }
+  return boundsList;
+}
+
+export function prefabInfo(root, path, { fresh = false } = {}) {
   const key = `${root}|${path}`;
   if (infoCache.has(key)) return infoCache.get(key);
+  const hit = fresh ? null : measuredBounds()[path];
+  if (hit) {
+    const info = { path, cls: hit.cls, mesh: hit.mesh, bounds: hit.bounds, scale: hit.scale, dynamic: hit.dynamic, found: true, listed: true };
+    infoCache.set(key, info);
+    return info;
+  }
   const info = { path, cls: "GenericEntity", mesh: null, bounds: null, scale: 1, dynamic: false, found: false };
   try {
     let text = readResource(root, path);
@@ -1201,6 +1222,38 @@ function cmdAgainst(args, flags) {
   return commit(ctx, [plan], flags);
 }
 
+// Every vanilla prefab (one the addon does not hold) the layers reference, measured once from the .xob headers.
+export function vanillaPrefabs(root = ROOT) {
+  const set = new Set();
+  for (const file of readdirSync(LAYERS_DIR)) {
+    if (!file.endsWith(".layer")) continue;
+    for (const m of readFileSync(join(LAYERS_DIR, file), "utf8").matchAll(/"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/g)) {
+      if (!existsSync(join(ADDON, m[1]))) set.add(m[1]);
+    }
+  }
+  return [...set].sort();
+}
+
+function cmdMeasure() {
+  const prefabs = {};
+  const unmeasured = [];
+  for (const path of vanillaPrefabs()) {
+    const info = prefabInfo(ROOT, path, { fresh: true });
+    if (!info.bounds) {
+      unmeasured.push(path);
+      continue;
+    }
+    prefabs[path] = { cls: info.cls, mesh: info.mesh, bounds: { min: info.bounds.min.map(r3), max: info.bounds.max.map(r3) }, scale: info.scale, dynamic: info.dynamic };
+  }
+  const note = "Mesh bounds of the vanilla prefabs the layers use, written by `tools/cli place measure` and read by prefabInfo so place does not re-measure. Re-run after a layer starts using a new vanilla prefab. unmeasured: no mesh (managers, road generators).";
+  const rows = Object.entries(prefabs).map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`);
+  const body = ["{", ` "_note": ${JSON.stringify(note)},`, ` "unmeasured": ${JSON.stringify(unmeasured)},`, ' "prefabs": {', rows.join(",\n"), " }", "}", ""].join("\n");
+  writeFileSync(BOUNDS_FILE, body);
+  console.log(`place measure: ${Object.keys(prefabs).length} vanilla prefabs measured -> ${BOUNDS_FILE}`);
+  if (unmeasured.length) console.log(`  no mesh bounds (kept out, measured on demand): ${unmeasured.join(", ")}`);
+  return 0;
+}
+
 function cmdBounds(args) {
   const [arg] = args;
   if (!arg) throw new PlaceError("usage: place bounds <prefab|entity>");
@@ -1283,6 +1336,7 @@ export async function main(argv) {
     if (cmd === "ground") return cmdGround(args, flags);
     if (cmd === "arrange") return cmdArrange(args, flags);
     if (cmd === "bounds") return cmdBounds(args, flags);
+    if (cmd === "measure") return cmdMeasure();
     if (cmd === "probe") return cmdProbe(args, flags);
     if (cmd === "verify") return cmdVerify(args, flags);
   } catch (e) {

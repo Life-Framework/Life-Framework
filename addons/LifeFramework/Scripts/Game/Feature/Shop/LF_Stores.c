@@ -973,6 +973,13 @@ class LF_StoreTillAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		// Hidden while the Shop system is off (#1074).
+		return LF_Systems.IsEnabled(LF_ShopRefusal.SYSTEM);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		if (!m_sStoreKey.IsEmpty())
@@ -985,6 +992,9 @@ class LF_StoreTillAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "store till"))
 			return;
 
 		LF_StoreComponent store = ResolveStore(pOwnerEntity);

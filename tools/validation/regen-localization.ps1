@@ -1,17 +1,21 @@
 # tools/validation/regen-localization.ps1 - keep the runtime string tables in sync with the .st source.
+# inputs: addons/**
 #
-# Language/everonlife_localization.st is the source of truth for every UI string.
-# The per-language runtime tables (everonlife_localization.<lang>.conf) are compiled
-# artifacts the engine loads at boot; when they drift from the .st the game logs
-# "GUI (W): Missing string ID = EL-..." for every key the .st has but the .conf does not.
+# Two string tables (#325): the core's Language/everonlife_localization.st (functional UI and prompt
+# keys, with neutral text) and each pack's, when its folder is in the checkout
+# (LF_Everon1989/Language/lf_everon1989_localization.st: sign cards, the arrival copy, the
+# Everon-named forms). A pack key with the same Id as a core key overrides it at runtime; the core
+# keeps the neutral text, so the core alone never shows a raw key.
+# The per-language runtime tables (<prefix>.<lang>.conf) are compiled artifacts the engine loads at
+# boot; when they drift from the .st the game logs "GUI (W): Missing string ID = ..." for every key
+# the .st has but the .conf does not.
 #
-# This script derives the runtime .conf files from the .st, so adding a key to the
-# .st and running -Write refreshes every language. Bare run (e.g. `cli validate`)
-# is check mode: it fails when a .conf is out of sync, so a drifted table cannot
-# slip back in silently.
+# This script derives the runtime .conf files from each .st, so adding a key to a .st and running
+# -Write refreshes every language. Bare run (e.g. `cli validate`) is check mode: it fails when a
+# .conf is out of sync, so a drifted table cannot slip back in silently.
 #
 # Modes:
-#   -Write  regenerate all Language/everonlife_localization.<lang>.conf from the .st
+#   -Write  regenerate every table's <prefix>.<lang>.conf from its .st
 #   -Check  regenerate to strings and compare with disk (exit 1 on drift)
 #
 # Fallback rule: a key missing its Target_<lang> falls back to Target_en_us so a
@@ -30,8 +34,13 @@ $ErrorActionPreference = "Stop"
 $root = git rev-parse --show-toplevel
 if (-not $root) { Write-Host "ERROR not a git work tree"; exit 1 }
 
-$stPath = Join-Path $root "addons\LifeFramework\Language\everonlife_localization.st"
-$dir = Split-Path -Parent $stPath
+$tables = @(
+  @{ Name = "core"; Dir = (Join-Path $root "addons\LifeFramework\Language"); Prefix = "everonlife_localization" }
+)
+$packDir = Join-Path $root "addons\LF_Everon1989\Language"
+if (Test-Path -LiteralPath (Join-Path $packDir "lf_everon1989_localization.st")) {
+  $tables += @{ Name = "LF_Everon1989"; Dir = $packDir; Prefix = "lf_everon1989_localization" }
+}
 
 # Order matters: Ids[] and Texts[] in a StringTableRuntime are position-parallel,
 # so both arrays must be emitted in the same .st item order.
@@ -45,42 +54,35 @@ $languages = @(
   @{ Code = "pt_br"; Target = "Target_pt_br" }
 )
 
-if (-not (Test-Path -LiteralPath $stPath)) {
-  Write-Host "regen-localization: FAILED - source not found: $stPath"
-  exit 1
-}
-
-$stText = [System.IO.File]::ReadAllText($stPath, [System.Text.Encoding]::UTF8)
-
-# Each item is a flat property block: CustomStringTableItem "{GUID}" { Id ... Target_xx ... }
-$blockPattern = 'CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{([^}]*)\}'
-$items = @()
-foreach ($m in [regex]::Matches($stText, $blockPattern)) {
-  $body = $m.Groups[1].Value
-  $idMatch = [regex]::Match($body, 'Id\s+"([^"]+)"')
-  if (-not $idMatch.Success) { continue }
-  $item = [ordered]@{ Id = $idMatch.Groups[1].Value }
-  foreach ($lang in $languages) {
-    $t = [regex]::Match($body, [regex]::Escape($lang.Target) + '\s+"([^"]*)"')
-    $item[$lang.Target] = if ($t.Success) { $t.Groups[1].Value } else { $null }
+function Read-Items {
+  param($StPath)
+  $stText = [System.IO.File]::ReadAllText($StPath, [System.Text.Encoding]::UTF8)
+  # Each item is a flat property block: CustomStringTableItem "{GUID}" { Id ... Target_xx ... }
+  $blockPattern = 'CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{([^}]*)\}'
+  $list = @()
+  foreach ($m in [regex]::Matches($stText, $blockPattern)) {
+    $body = $m.Groups[1].Value
+    $idMatch = [regex]::Match($body, 'Id\s+"([^"]+)"')
+    if (-not $idMatch.Success) { continue }
+    $item = [ordered]@{ Id = $idMatch.Groups[1].Value }
+    foreach ($lang in $languages) {
+      $t = [regex]::Match($body, [regex]::Escape($lang.Target) + '\s+"([^"]*)"')
+      $item[$lang.Target] = if ($t.Success) { $t.Groups[1].Value } else { $null }
+    }
+    $list += $item
   }
-  $items += $item
-}
-
-if ($items.Count -eq 0) {
-  Write-Host "regen-localization: FAILED - no CustomStringTableItem entries parsed from $stPath"
-  exit 1
+  return ,$list
 }
 
 function New-ConfContent {
-  param($Language)
+  param($Items, $Language)
   $sb = New-Object System.Text.StringBuilder
   [void]$sb.Append("StringTableRuntime {")
   [void]$sb.Append("`r`n Ids {")
-  foreach ($item in $items) { [void]$sb.Append("`r`n  `"" + $item.Id + "`"") }
+  foreach ($item in $Items) { [void]$sb.Append("`r`n  `"" + $item.Id + "`"") }
   [void]$sb.Append("`r`n }")
   [void]$sb.Append("`r`n Texts {")
-  foreach ($item in $items) {
+  foreach ($item in $Items) {
     $text = $item[$Language.Target]
     if ($null -eq $text -or $text -eq "") { $text = $item["Target_en_us"] }
     if ($null -eq $text) { continue }
@@ -94,36 +96,50 @@ function New-ConfContent {
 
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 $failed = $false
+$stIdSet = @{}
+$totalKeys = 0
 
-foreach ($lang in $languages) {
-  $confPath = Join-Path $dir "everonlife_localization.$($lang.Code).conf"
-  $content = New-ConfContent $lang
-
-  if ($Write) {
-    [System.IO.File]::WriteAllText($confPath, $content, $utf8NoBom)
-    Write-Host "regen-localization: wrote $($lang.Code).conf ($($items.Count) keys)"
-    continue
+foreach ($table in $tables) {
+  $stPath = Join-Path $table.Dir ($table.Prefix + ".st")
+  if (-not (Test-Path -LiteralPath $stPath)) {
+    Write-Host "regen-localization: FAILED - source not found: $stPath"
+    exit 1
   }
-
-  if (-not (Test-Path -LiteralPath $confPath)) {
-    Write-Host "regen-localization: FAILED - $($lang.Code).conf missing (run 'tools\cli regen-localization' with -Write)"
-    $failed = $true
-    continue
+  $items = Read-Items $stPath
+  if ($items.Count -eq 0 -and $table.Name -eq "core") {
+    Write-Host "regen-localization: FAILED - no CustomStringTableItem entries parsed from $stPath"
+    exit 1
   }
-  $onDisk = [System.IO.File]::ReadAllText($confPath, [System.Text.Encoding]::UTF8)
-  if ($onDisk -ne $content) {
-    Write-Host "regen-localization: FAILED - $($lang.Code).conf out of sync with the .st (run regen-localization -Write)"
-    $failed = $true
+  foreach ($item in $items) { $stIdSet[$item.Id] = $true }
+  $totalKeys += $items.Count
+
+  foreach ($lang in $languages) {
+    $confPath = Join-Path $table.Dir "$($table.Prefix).$($lang.Code).conf"
+    $content = New-ConfContent $items $lang
+
+    if ($Write) {
+      [System.IO.File]::WriteAllText($confPath, $content, $utf8NoBom)
+      Write-Host "regen-localization: wrote $($table.Name) $($lang.Code).conf ($($items.Count) keys)"
+      continue
+    }
+
+    if (-not (Test-Path -LiteralPath $confPath)) {
+      Write-Host "regen-localization: FAILED - $($table.Name) $($lang.Code).conf missing (run 'tools\cli regen-localization')"
+      $failed = $true
+      continue
+    }
+    $onDisk = [System.IO.File]::ReadAllText($confPath, [System.Text.Encoding]::UTF8)
+    if ($onDisk -ne $content) {
+      Write-Host "regen-localization: FAILED - $($table.Name) $($lang.Code).conf out of sync with its .st (run regen-localization)"
+      $failed = $true
+    }
   }
 }
 
-# Every #EL-/#LF- key referenced in code, layouts, or prefabs must exist in the .st,
+# Every #EL-/#LF- key referenced in code, layouts, or prefabs must exist in a .st (either table),
 # or the game logs "GUI (W): Missing string ID = <key>" at runtime. This is the other
 # half of the same drift: a key can be missing from the source, not just from the confs.
-$stIdSet = @{}
-foreach ($item in $items) { $stIdSet[$item.Id] = $true }
-
-$addonDir = Join-Path $root "addons\LifeFramework"
+$addonDir = Join-Path $root "addons"
 $refPattern = '#((?:EL-|LF-)[A-Za-z0-9_]+)'
 $missingRefs = @()
 if (Test-Path -LiteralPath $addonDir) {
@@ -141,7 +157,7 @@ if (Test-Path -LiteralPath $addonDir) {
 }
 $missingRefs = $missingRefs | Sort-Object -Unique
 if ($missingRefs.Count -gt 0) {
-  Write-Host "regen-localization: FAILED - $($missingRefs.Count) referenced key(s) not declared in the .st (add them to Language/everonlife_localization.st then re-run):"
+  Write-Host "regen-localization: FAILED - $($missingRefs.Count) referenced key(s) not declared in a .st (add them to a Language/*.st then re-run):"
   foreach ($r in $missingRefs) { Write-Host "  - $r" }
   exit 1
 }
@@ -149,9 +165,9 @@ if ($missingRefs.Count -gt 0) {
 if ($failed) { exit 1 }
 
 if ($Write) {
-  Write-Host "regen-localization: OK ($($items.Count) keys -> $($languages.Count) languages)"
+  Write-Host "regen-localization: OK ($totalKeys keys in $($tables.Count) table(s) -> $($languages.Count) languages)"
   exit 0
 }
 
-Write-Host "regen-localization: OK ($($items.Count) keys, all $($languages.Count) language tables in sync)"
+Write-Host "regen-localization: OK ($totalKeys keys in $($tables.Count) table(s), all $($languages.Count) language tables in sync)"
 exit 0

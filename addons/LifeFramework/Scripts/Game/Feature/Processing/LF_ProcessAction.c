@@ -20,6 +20,9 @@ class LF_ProcessingOutput
 
 class LF_ProcessAction : ScriptedUserAction
 {
+	//! The system a server switches the machines off with (#1075).
+	static const string SYSTEM = "Processing";
+
 	[Attribute("", UIWidgets.EditBox, "Chain machine id. When set, inputs and outputs come from ResourceChains.conf")]
 	string m_sMachineId;
 
@@ -47,6 +50,8 @@ class LF_ProcessAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!pOwnerEntity || !LF_NetworkUtils.ShouldApplyAction(pOwnerEntity)) return;
+		if (LF_Systems.Refuses(SYSTEM, "process at " + m_sMachineId))
+			return;
 		if (!LF_NetworkUtils.IsOwner(pOwnerEntity))
 			LF_Debug.Warn("Processing", string.Format("process applied without replication owner on %1", pOwnerEntity.GetName()));
 
@@ -120,6 +125,13 @@ class LF_ProcessAction : ScriptedUserAction
 
 		// The machine is heard running for a while (Feature/Atmosphere); no switch on the prefab, no sound.
 		LF_AmbientSwitchComponent.PulseOn(pOwnerEntity, m_fRunSoundSeconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A server with Processing off offers nothing at the machine (#1075).
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled(SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------

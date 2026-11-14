@@ -26,12 +26,18 @@ class LF_PoliceApplyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		return !LF_AccountStateBits.IsOnRoster(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_PoliceApplyAction"))
+			return;
+
 		// The form is a local screen: only the acting machine opens it.
 		if (!pUserEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
@@ -55,6 +61,9 @@ class LF_PoliceReviewAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		PlayerController pc = GetGame().GetPlayerController();
 		if (!pc)
 			return false;
@@ -65,6 +74,9 @@ class LF_PoliceReviewAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_PoliceReviewAction"))
+			return;
+
 		if (!pUserEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 

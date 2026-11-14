@@ -1,4 +1,5 @@
 # Static material/texture chain gate.
+# inputs: addons/**
 #
 # Verifies the prefab -> .emat -> .edds reference chain that textures items, and
 # flags the one authoring pattern that renders white meshes: a mod .xob baking a

@@ -33,9 +33,9 @@ class LF_HandcuffsComponent : ScriptComponent
 {
 	//------------------------------------------------------------------------------------------------
 	//! Server: the cuffs' use state (docs/asset-pipeline/states.md). Open swings both strands out on their
-	//! hinges (LF_AssetAnimComponent, replicated, late joiners included); closed puts them back. Nothing in
-	//! the cuffing flow calls it yet: the cuffs leave the officer's hand in the same step that cuffs the
-	//! suspect, so a visible open phase needs a short cuffing action first. That action opens here.
+	//! hinges (LF_AssetAnimComponent, replicated, late joiners included); closed puts them back. The
+	//! cuffing hold (LF_Cuffing) opens them in the officer's hand and closes them before they go onto
+	//! the suspect. Every change plays its click on every machine in earshot.
 	bool SetOpen(bool open)
 	{
 		LF_AssetAnimComponent anim = LF_Component<LF_AssetAnimComponent>.Find(GetOwner());
@@ -45,7 +45,39 @@ class LF_HandcuffsComponent : ScriptComponent
 			return false;
 		}
 
-		return anim.SetActive(open);
+		bool changed = anim.IsRunning() != open;
+		if (!anim.SetActive(open))
+			return false;
+
+		if (changed)
+			Click(open);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsOpen()
+	{
+		LF_AssetAnimComponent anim = LF_Component<LF_AssetAnimComponent>.Find(GetOwner());
+		return anim && anim.IsRunning();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: tell every machine to play the click of the strands opening or shutting.
+	protected void Click(bool open)
+	{
+		RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
+		if (rpl)
+			Rpc(RpcDo_Click, open);
+
+		RpcDo_Click(open);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	protected void RpcDo_Click(bool open)
+	{
+		LF_Restraint.PlayClick(GetOwner(), open);
 	}
 }
 
@@ -70,6 +102,11 @@ class LF_Restraint
 	static const float WORN_PITCH = 90; // lf-fixed: geometry of the handcuffs model, not a gameplay knob
 	static const float WORN_RING_Z = 0.0525; // lf-fixed: ring centre in Handcuffs.xob
 	static const float WORN_WRIST_Z = -0.07; // lf-fixed: wrist behind righthandprop on the vanilla skeleton
+
+	//! The click of the cuffs shutting (SOUND_LF_CLOSE) and opening (SOUND_LF_OPEN): tools/assets/handcuffs/sounds.json.
+	static const ResourceName CLICK_PROJECT = "{E8150CA363574149}Sounds/Items/Handcuffs/Items_Handcuffs_Use.acp";
+	static const string CLICK_CLOSE = "SOUND_LF_CLOSE";
+	static const string CLICK_OPEN = "SOUND_LF_OPEN";
 
 	//! Prisoner uid -> who cuffed them and which cuffs. Server only.
 	protected static ref map<string, ref LF_RestraintHold> s_mHolds;
@@ -198,6 +235,58 @@ class LF_Restraint
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: may this officer cuff this target right now, with what they hold? No side effects: the
+	//! cuffing hold asks it when it starts and on every watch pass.
+	static LF_ERestrain CheckRestrain(IEntity officer, IEntity target)
+	{
+		bool downed = LF_Downed.IsDowned(target);
+		bool compliant = !downed && IsCompliantNow(target);
+		return DecideRestrain(LF_PoliceUtils.IsOnDutyOfficer(LF_PoliceUtils.GetAccountForEntity(officer)), HeldCuffs(officer) != null, downed, compliant, IsRestrained(target));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: may this officer take the cuffs off this target right now? No side effects.
+	static LF_ERestrain CheckRelease(IEntity officer, IEntity target)
+	{
+		return DecideRelease(LF_PoliceUtils.IsOnDutyOfficer(LF_PoliceUtils.GetAccountForEntity(officer)), IsRestrained(target));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every machine with a speaker: the click of cuffs shutting or opening, from `at`. Out of earshot
+	//! (the project's range) the sound manager returns nothing and the click is skipped.
+	static void PlayClick(IEntity at, bool open)
+	{
+		if (!at || System.IsConsoleApp() || RplSession.Mode() == RplMode.Dedicated)
+			return;
+
+		string eventName = CLICK_CLOSE;
+		if (open)
+			eventName = CLICK_OPEN;
+
+		SCR_SoundManagerModule sound = SCR_SoundManagerModule.GetInstance(at.GetWorld());
+		if (!sound)
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1 not played: this machine has no sound manager", eventName));
+			return;
+		}
+
+		SCR_AudioSourceConfiguration config = new SCR_AudioSourceConfiguration();
+		config.m_sSoundProject = CLICK_PROJECT;
+		config.m_sSoundEventName = eventName;
+		// Not static: the cuffs are in a hand, or on a wrist, and move with it.
+		config.m_eFlags = 0;
+		SCR_AudioSource audio = sound.CreateAudioSource(at, config);
+		if (!audio)
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1 not played: out of earshot here (or %2 failed to load)", eventName, CLICK_PROJECT));
+			return;
+		}
+
+		sound.PlayAudioSource(audio);
+		LF_Debug.Info(FEATURE, string.Format("%1 played at %2", eventName, LF_Utils.GetPrefabName(at)));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: cuff target with the handcuffs officer holds. Logs and toasts every refusal.
 	static LF_ERestrain Restrain(IEntity officer, IEntity target)
 	{
@@ -224,12 +313,12 @@ class LF_Restraint
 
 		IEntity cuffs = HeldCuffs(officer);
 		bool downed = LF_Downed.IsDowned(target);
-		bool compliant = !downed && IsCompliantNow(target);
-		LF_ERestrain result = DecideRestrain(LF_PoliceUtils.IsOnDutyOfficer(LF_PoliceUtils.GetAccountForEntity(officer)), cuffs != null, downed, compliant, IsRestrained(target));
+		LF_ERestrain result = CheckRestrain(officer, target);
 		if (result != LF_ERestrain.OK)
 		{
 			LF_Debug.Info(FEATURE, string.Format("restrain refused: %1 -> %2 (%3)", officerUid, prisonerUid, typename.EnumToString(LF_ERestrain, result)));
-			LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Restrain_Title", RefusalKey(result), 3.0, LF_ENotificationType.WARNING);
+			if (officerId > 0)
+				LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Restrain_Title", RefusalKey(result), 3.0, LF_ENotificationType.WARNING);
 			return result;
 		}
 
@@ -278,12 +367,13 @@ class LF_Restraint
 		if (!LF_RateLimit.AllowCharacter(officer, LF_ERequestKind.SPAWN, "release restraint"))
 			return LF_ERestrain.RATE_LIMITED;
 
-		LF_ERestrain result = DecideRelease(LF_PoliceUtils.IsOnDutyOfficer(LF_PoliceUtils.GetAccountForEntity(officer)), IsRestrained(target));
+		LF_ERestrain result = CheckRelease(officer, target);
 		string prisonerUid = LF_Utils.GetPlayerUID(target);
 		if (result != LF_ERestrain.OK)
 		{
 			LF_Debug.Info(FEATURE, string.Format("release refused: %1 -> %2 (%3)", LF_Utils.GetPlayerUID(officer), prisonerUid, typename.EnumToString(LF_ERestrain, result)));
-			LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Restrain_Title", RefusalKey(result), 3.0, LF_ENotificationType.WARNING);
+			if (officerId > 0)
+				LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Restrain_Title", RefusalKey(result), 3.0, LF_ENotificationType.WARNING);
 			return result;
 		}
 
@@ -349,7 +439,10 @@ class LF_Restraint
 
 		SCR_ChimeraCharacter chimera = SCR_ChimeraCharacter.Cast(prisoner);
 		if (chimera)
+		{
+			chimera.LF_SetCuffsOpen(false);
 			chimera.LF_SetRestrained(false);
+		}
 
 		string returned = "lost: nobody to take them";
 		if (!prefab.IsEmpty() && returnTo)
@@ -390,12 +483,17 @@ class LF_Restraint
 
 //------------------------------------------------------------------------------------------------
 //! Interaction menu entry on another player: Cuff. Offered to an on-duty officer holding handcuffs.
-//! Whether the target is downed or held up is decided on the server; a refusal says why.
+//! A short hold (`Duration` on the action, the vanilla progress bar): the cuffs open in the officer's
+//! hand, then close and go onto the suspect (LF_Cuffing). Whether the target is downed or held up is
+//! decided on the server; a refusal says why.
 class LF_RestrainAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;
 
@@ -406,8 +504,24 @@ class LF_RestrainAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The hold began on the acting client: ask the server to open the cuffs.
+	override void OnActionStart(IEntity pUserEntity)
+	{
+		LF_Cuffing.AskFromAction(pUserEntity, GetOwner(), LF_ECuffingKind.CUFF, LF_ECuffingPhase.START);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnActionCanceled(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		LF_Cuffing.AskFromAction(pUserEntity, pOwnerEntity, LF_ECuffingKind.CUFF, LF_ECuffingPhase.CANCEL);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_RestrainAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -415,10 +529,11 @@ class LF_RestrainAction : ScriptedUserAction
 		if (refusal != LF_EInteractionRefusal.NONE)
 		{
 			LF_Debug.Warn(LF_Restraint.FEATURE, "restrain action refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
+			LF_Cuffing.End(pUserEntity, "refused at the end of the hold");
 			return;
 		}
 
-		LF_Restraint.Restrain(pUserEntity, pOwnerEntity);
+		LF_Cuffing.Complete(pUserEntity, pOwnerEntity, LF_ECuffingKind.CUFF, GetActionDuration());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -431,11 +546,15 @@ class LF_RestrainAction : ScriptedUserAction
 
 //------------------------------------------------------------------------------------------------
 //! Interaction menu entry on a cuffed player: Uncuff. Any on-duty officer may take the cuffs off.
+//! The same kind of hold: the cuffs on the wrist open, then come off.
 class LF_ReleaseRestraintAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;
 
@@ -443,8 +562,23 @@ class LF_ReleaseRestraintAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void OnActionStart(IEntity pUserEntity)
+	{
+		LF_Cuffing.AskFromAction(pUserEntity, GetOwner(), LF_ECuffingKind.RELEASE, LF_ECuffingPhase.START);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnActionCanceled(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		LF_Cuffing.AskFromAction(pUserEntity, pOwnerEntity, LF_ECuffingKind.RELEASE, LF_ECuffingPhase.CANCEL);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_ReleaseRestraintAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -452,10 +586,11 @@ class LF_ReleaseRestraintAction : ScriptedUserAction
 		if (refusal != LF_EInteractionRefusal.NONE)
 		{
 			LF_Debug.Warn(LF_Restraint.FEATURE, "release action refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
+			LF_Cuffing.End(pUserEntity, "refused at the end of the hold");
 			return;
 		}
 
-		LF_Restraint.Release(pUserEntity, pOwnerEntity);
+		LF_Cuffing.Complete(pUserEntity, pOwnerEntity, LF_ECuffingKind.RELEASE, GetActionDuration());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -473,8 +608,15 @@ modded class SCR_ChimeraCharacter
 	[RplProp(onRplName: "LF_OnRestrainedReplicated")]
 	protected bool m_bLF_Restrained;
 
+	//! The cuffs on the wrist are unlocked and open: the officer is taking them off. Replicated, so a
+	//! player who joins in the middle of it sees them open.
+	[RplProp(onRplName: "LF_OnCuffsOpenReplicated")]
+	protected bool m_bLF_CuffsOpen;
+
 	//! Client-local model on the wrist; never replicated.
 	protected IEntity m_LF_WornCuffs;
+	//! What the worn model shows here, so a click plays only when it changes.
+	protected bool m_bLF_WornShownOpen;
 
 	//------------------------------------------------------------------------------------------------
 	//! Server only.
@@ -493,6 +635,30 @@ modded class SCR_ChimeraCharacter
 	bool LF_IsRestrained()
 	{
 		return m_bLF_Restrained;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server only: the cuffs on the wrist open (the release hold) or shut again.
+	void LF_SetCuffsOpen(bool open)
+	{
+		if (!Replication.IsServer() || open == m_bLF_CuffsOpen)
+			return;
+
+		m_bLF_CuffsOpen = open;
+		Replication.BumpMe();
+		LF_OnCuffsOpenReplicated();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool LF_AreCuffsOpen()
+	{
+		return m_bLF_CuffsOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_OnCuffsOpenReplicated()
+	{
+		LF_ShowWornOpen(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -531,6 +697,7 @@ modded class SCR_ChimeraCharacter
 				SCR_EntityHelper.DeleteEntityAndChildren(m_LF_WornCuffs);
 
 			m_LF_WornCuffs = null;
+			m_bLF_WornShownOpen = false;
 			return;
 		}
 
@@ -575,5 +742,31 @@ modded class SCR_ChimeraCharacter
 		vector worn[4];
 		m_LF_WornCuffs.GetWorldTransform(worn);
 		LF_Debug.Info(LF_Restraint.FEATURE, string.Format("worn handcuffs at %1, the hand at %2", worn[3], CoordToParent(hand[3])));
+		// Joined, or woke up, while the release hold is running: show them open at once.
+		m_bLF_WornShownOpen = false;
+		LF_ShowWornOpen(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every machine with a renderer: swing the worn cuffs' strands open or shut to match the replicated
+	//! flag, with the click. `snap` skips the swing (a model that has only just appeared).
+	protected void LF_ShowWornOpen(bool snap)
+	{
+		if (!m_LF_WornCuffs || m_bLF_CuffsOpen == m_bLF_WornShownOpen)
+			return;
+
+		LF_AssetAnimComponent anim = LF_AssetAnimComponent.Of(m_LF_WornCuffs);
+		if (!anim)
+		{
+			LF_Debug.Error(LF_Restraint.FEATURE, "the worn handcuffs have no LF_AssetAnimComponent: they cannot open");
+			return;
+		}
+
+		m_bLF_WornShownOpen = m_bLF_CuffsOpen;
+		anim.ShowLocal(m_bLF_CuffsOpen, snap);
+		if (!snap)
+			LF_Restraint.PlayClick(m_LF_WornCuffs, m_bLF_CuffsOpen);
+
+		LF_Debug.Info(LF_Restraint.FEATURE, string.Format("worn handcuffs shown open=%1 on %2", m_bLF_CuffsOpen, LF_Utils.GetPlayerUID(this)));
 	}
 }

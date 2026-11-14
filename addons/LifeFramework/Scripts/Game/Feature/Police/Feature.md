@@ -77,6 +77,11 @@ is the entry point.
   back on release, at the cell (`LF_Jail.Arrest`), on the suspect's death or disconnect. A cuffed
   player has no weapon controls (replicated `m_bLF_Restrained`). No restrained animation exists
   in the base game (#340); the cuffs show on the right hand.
+- Cuffing is a hold (`cuffing-open-state`, `LF_Cuffing.c`): about 1.8 s to cuff and 1.5 s to uncuff on
+  the vanilla progress bar. The cuffs in the officer's hand swing open at the start of a Cuff (the
+  cuffs on the wrist open at the start of an Uncuff), the hold cancels if either person moves out of
+  reach, and the end shuts them with a click and puts them on the suspect (or takes them off). The
+  server watches the pair, and accepts only an end it saw begin, after most of the duration.
 - Spike strip (#646): every rank's armory kit carries the folded strip. Deploy it from the
   ground in front of you (on-duty police, rate limited; placed where your ghost showed by the
   placement service, #1026, `Feature/Placement`); the server punctures each wheel whose path

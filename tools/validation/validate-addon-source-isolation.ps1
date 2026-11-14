@@ -1,4 +1,5 @@
 # Workbench and dedicated-server launches require different base addon sets.
+# inputs: always
 # Sharing one generated game-addons directory lets either launch overwrite the
 # other's core/data junctions and can crash Workbench during game creation.
 

@@ -18,6 +18,9 @@ class LF_SpikeStripDeployAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		LF_PlaceableComponent placeable = LF_Component<LF_PlaceableComponent>.Find(GetOwner());
 		return placeable && LF_PlacementService.MayPlace(user, placeable);
 	}
@@ -38,6 +41,9 @@ class LF_SpikeStripDeployAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_SpikeStripDeployAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -161,6 +167,9 @@ class LF_SpikeStripPickUpAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!GetOwner())
 			return false;
 
@@ -182,6 +191,9 @@ class LF_SpikeStripPickUpAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_SpikeStripPickUpAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

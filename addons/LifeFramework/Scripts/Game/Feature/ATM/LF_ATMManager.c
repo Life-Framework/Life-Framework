@@ -1,5 +1,9 @@
 class LF_ATMManager : Managed
 {
+	//! The system id the Banking switch answers to (#1074): the account ledger. The cash machines on it
+	//! are LF_ATMAction.SYSTEM.
+	static const string SYSTEM = "Banking";
+
 	protected static ref LF_ATMManager s_Instance;
 	protected ref map<string, ref LF_BankAccount> m_mAccounts = new map<string, ref LF_BankAccount>();
 
@@ -150,6 +154,9 @@ class LF_ATMManager : Managed
 			return false;
 		}
 
+		if (LF_Systems.Refuses(SYSTEM, "deposit to " + accountId))
+			return false;
+
 		if (!IsValidAmount(amount))
 		{
 			LF_Debug.Warn("ATM", string.Format("deposit rejected: invalid amount %1", amount));
@@ -176,6 +183,9 @@ class LF_ATMManager : Managed
 			LF_Debug.Warn("ATM", "withdraw rejected: not running on the server");
 			return false;
 		}
+
+		if (LF_Systems.Refuses(SYSTEM, "withdrawal from " + accountId))
+			return false;
 
 		if (!IsValidAmount(amount))
 		{

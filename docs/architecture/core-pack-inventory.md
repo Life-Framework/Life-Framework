@@ -45,9 +45,11 @@ and the DebugWorld village, which the tests depend on.
    `m_bTestCarLot`, `LF_Jail.SyncPlacedCell` re-applies the placed
    `LF_JailCellComponent`, the cash van route names its stops and van on the
    placed box, and the harness finds the stash and garage through components.
-   `validate-core-village-names` keeps that list empty. Hideout ids
-   (`Roadmap_Hideout`) are ids, not entity names, and still default in the
-   core; the hideout batch moves them.
+   `validate-core-village-names` keeps that list empty. The hideout the desk
+   leases and contraband starts from is the door with `m_bOrganizationHideout`
+   (LF_Places `OrgHideout`); its id (`Roadmap_Hideout`) is a layer value and the saved key (#1055). `validate-map-independence` (#1046) now holds the
+   rest of the map knowledge in core Scripts (find-by-name, world coordinates, place names)
+   to a shrink-only baseline; the harness folder is exempt as dev tooling.
 2. **Every config loads one hard-coded core path.** `LF_JobsConfig`,
    `LF_PoliceConfig`, `LF_SignCatalog`, `LF_GarageConfig`, `LF_SurvivalConfig`,
    `LF_RespawnConfig`, and `LF_ResourceChainCatalog` each hold a
@@ -130,6 +132,7 @@ under "Hard-coded flagship values in script".
 | Path | Class | Reason |
 | --- | --- | --- |
 | `Building/` | core | Building preview |
+| `Buildings/Supermarket/` | pack | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`): the building is this server's look. The `Annex_Supermarket` placement in the core `Annex.layer` is the pipeline's proof and must go or be replaced by a neutral building before the M3 move |
 | `Characters/Core/` | core | Player and NPC bases |
 | `Characters/Presets/` (3) | core | Neutral spawn bodies the game mode lists |
 | `Characters/Npcs/Npc_Default_01.et` | split | Base of every NPC, dressed in the M88 uniform; core needs a neutral base |
@@ -166,10 +169,10 @@ under "Hard-coded flagship values in script".
 | `Vegetation/` | core | Crops and fruit trees |
 | `Vehicles/Core/`, `Vehicles/Test/` | core | Vehicle base and test fixtures |
 | `Vehicles/LicensePlate/`, `Vehicles/SirenLights/` | core | System parts |
-| `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
+| `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1,V2101,T601}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
 | `Vehicles/Wheeled/M151A2/` | split | The police car; core needs a police-car slot, the model is a catalogue pick |
 | `Weapons/Handguns/Taser/` | split | Mesh of the stun weapon above: example in core, police-issue item in pack |
-| `Configs/Vehicles/LF_VehiclePrices.conf` | split | The multiplier shape is core; the five vehicle rows are the flagship catalogue's prices (#688) |
+| `Configs/Vehicles/LF_VehiclePrices.conf` | split | The multiplier shape is core; the seven vehicle rows are the flagship catalogue's prices (#688, #981) |
 
 ## Configs
 
@@ -199,7 +202,7 @@ under "Hard-coded flagship values in script".
 
 | Path | Class | Reason |
 | --- | --- | --- |
-| `everonlife_localization.st` (862 keys) | split | Functional keys stay; about 138 `LF-Sign_*` titles and texts, the arrival and intro quest copy, and the Everon-named forms move to a pack table |
+| `everonlife_localization.st` (1468 keys after #325) | split, done | Functional and neutral keys stay. 195 per-sign `LF-Sign_*` rows and the Everon-named, arrival and clerk copy moved to `LF_Everon1989/Language/lf_everon1989_localization.st`; the core keeps a neutral row under the same key (the pack's text wins when it loads) |
 | `everonlife_localization.*.conf` (7) | split | Generated from the `.st`; regenerated per table |
 
 The flavour keys that name the setting today: `LF-Sign_TownMap_*` ("Welcome to
@@ -223,6 +226,7 @@ its save.
 | `LF_PlaytestTown.conf` | pack | The flagship playtest header |
 | `LF_PlaytestTown_Preview.{edds,jpg}` | pack | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack | The MainWorld header |
+| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The pack's own playtest header (2026-11-14, #322): a copy of `LF_PlaytestTown.conf` that `host`, `playtest` and `session --mission playtest` boot with both addons. It still points at the core's DebugWorld and preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 
 ## Worlds
@@ -244,6 +248,8 @@ its save.
 
 | Path | Class | Reason |
 | --- | --- | --- |
+| `Buildings/Supermarket/` | pack | Model and `.xob.meta` of the supermarket above |
+| `Buildings/Materials/` | split | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building: neutral, but only pack buildings use them today; they move with the first pack building or stay as a core material set |
 | `Crafting/` | core | Station meshes |
 | `Items/` | core | Cash, ID card, food, roleplay meshes |
 | `Props/CementMound/`, `Props/Military/Sandbags/` | core | Chain item textures |
@@ -292,7 +298,7 @@ set them. File and constant, then the value.
 | `Feature/Police/LF_PoliceRanks.c` | `PATROL_FINE_CAP`, `DUTY_SECONDS` | 1000, 3600 s | `LF_Police.conf` (it already has a cap default) |
 | `Feature/Police/LF_PoliceMenu.c` | `MAX_FINE` | 5000 | `LF_Police.conf` |
 | `Feature/Police/LF_FineTicket.c` | `MAX_OPEN_PER_HOLDER` | 3 | `LF_Police.conf` |
-| `Feature/Vehicles/LF_VehicleCatalog.c` | five cars and five `LF_` variants | S105, UAZ-469, S1203, UAZ-452, M923A1 | vehicles config |
+| `Feature/Vehicles/LF_VehicleCatalog.c` | seven cars and seven `LF_` variants | S105, UAZ-469, S1203, UAZ-452, M923A1, Dana 2101, Sputnik T601 | vehicles config |
 | `Feature/Vehicles/LF_Garage.c` | `FALLBACK_FEE` | 250 | `LF_Garage.conf` (fallback only) |
 | `Feature/Mining/LF_MiningForge.c` | `IRON_BAR`, `IRON_SECONDS` | iron bar, 5 s | resource chains |
 | `Feature/UIKit/LF_UITheme.c`, `LF_UISkin.c` | palette, paper and phosphor skins | the 1989 look | a skin config |

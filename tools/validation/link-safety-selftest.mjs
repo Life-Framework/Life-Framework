@@ -1,4 +1,5 @@
 // Proves a worktree delete never follows a game-addons junction into Steam.
+// inputs: tools/**, agent-box/**, .githooks/**
 // red-proof: with the unlink removed from removeWorktree, git 2.47.1.windows
 // emptied the fixture install and this printed "removing the worktree followed
 // the junction and deleted the install sentinel".

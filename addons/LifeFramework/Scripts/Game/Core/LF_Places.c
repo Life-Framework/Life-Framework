@@ -112,6 +112,17 @@ class LF_Places
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The id of the order-th place of a series that shares an id (the stops of one route). A
+	//! negative order is not a series: the id itself.
+	static string OrderedId(string id, int order)
+	{
+		if (order < 0)
+			return id;
+
+		return string.Format("%1#%2", id, order);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! World end: the next world registers its own places.
 	static void ResetStatics()
 	{

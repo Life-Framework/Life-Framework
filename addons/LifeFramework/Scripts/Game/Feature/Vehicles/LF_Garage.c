@@ -26,13 +26,13 @@ class LF_GarageConfig
 	int m_iImpoundFee;
 
 	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from a garage or impound desk for the server to accept a desk action", params: "1 30")]
-	float m_fDeskReach = 5;
+	float m_fDeskReach;
 
 	[Attribute("15", UIWidgets.Auto, "Metres from a garage within which a player and their vehicle can park or retrieve", params: "3 100")]
-	float m_fGarageRadius = 15;
+	float m_fGarageRadius;
 
 	[Attribute("3", UIWidgets.Auto, "Metres around a vehicle pad that count as occupied by a parked vehicle", params: "1 20")]
-	float m_fPadOccupiedRadius = 3;
+	float m_fPadOccupiedRadius;
 
 	protected static ref LF_GarageConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -362,9 +362,18 @@ modded class SCR_PlayerController
 //! "Read the ledger" at a garage or the impound desk.
 class LF_GarageLedgerAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_GarageLedgerAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 
@@ -412,9 +421,18 @@ class LF_ImpoundDeskComponent : ScriptComponent
 //! vehicle onto the yard pad. The server checks ownership, the impound state, and the cash.
 class LF_ImpoundCollectAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_ImpoundCollectAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 

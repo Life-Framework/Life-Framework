@@ -493,6 +493,13 @@ class LF_SpawnLogic : SCR_SpawnLogic
 				continue;
 			}
 
+			// An item that belongs to a system turned off on this server is left out (#960).
+			if (!LF_Systems.IsItemAllowed(loadoutItem.m_rPrefab))
+			{
+				LF_Debug.Info("Spawn", "loadout leaves out " + loadoutItem.m_rPrefab + ": its system is off");
+				continue;
+			}
+
 			IEntity slotEntity = SpawnDefaultCharacterItem(storageManager, loadoutItem);
 			if (!slotEntity)
 				continue;
@@ -678,7 +685,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! than into a specific loadout slot. Items that fail to insert are deleted by the fail-safe.
 	//! \param storageManager Storage manager of the character to give the items to.
 	//! \param directItems Prefabs to spawn and insert.
-	protected void SpawnDirectCharacterItems(InventoryStorageManagerComponent storageManager, array<ResourceName> directItems)
+	//! Public for the systems test (#960): a loadout leaves out the items of a system that is off.
+	void SpawnDirectCharacterItems(InventoryStorageManagerComponent storageManager, array<ResourceName> directItems)
 	{
 		if (!storageManager || !directItems)
 			return;
@@ -690,6 +698,13 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		{
 			if (prefab == ResourceName.Empty)
 				continue;
+
+			// The pager of a server with the Pager system off, and the like (#960).
+			if (!LF_Systems.IsItemAllowed(prefab))
+			{
+				LF_Debug.Info("Spawn", "loadout leaves out " + prefab + ": its system is off");
+				continue;
+			}
 
 			IEntity item = GetGame().SpawnEntityPrefabEx(prefab, false, null, spawnParams);
 			if (!item)

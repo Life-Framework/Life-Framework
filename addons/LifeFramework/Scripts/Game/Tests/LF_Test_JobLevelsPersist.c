@@ -80,7 +80,7 @@ class LF_Test_JobLevelsPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(31, version, "the save is written at version 31 (joblevels is payload 28)");
+			ctx.Equal(32, version, "the save is written at version 32 (joblevels is payload 28)");
 			ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, loadContext), "the save loads");
 
 			string tag = string.Format(" (load %1)", pass);

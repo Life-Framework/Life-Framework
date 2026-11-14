@@ -196,7 +196,7 @@ class LF_ConfigService
 	//! adds its key here when its feature reads it (#282, #283).
 	static bool IsKnownTopLevelKey(string key)
 	{
-		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION;
+		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_ItemCatalogueConfig.SECTION || key == LF_SystemsConfig.SECTION || key == LF_CleanupConfig.SECTION;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -223,6 +223,14 @@ class LF_ConfigService
 			LF_Debug.Warn(FEATURE, string.Format("%1: unknown top-level key %2; ignored", source, key));
 		}
 		return unknown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The owner file's path (or the test's source name), for log lines; empty without one.
+	static string GetOwnerSource()
+	{
+		EnsureLoaded();
+		return s_sOwnerSource;
 	}
 
 	//------------------------------------------------------------------------------------------------

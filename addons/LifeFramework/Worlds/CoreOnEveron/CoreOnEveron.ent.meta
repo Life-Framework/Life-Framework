@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6D36CAAA1FDB3123}Worlds/CoreOnEveron/CoreOnEveron.ent"
+ Configurations {
+  ENTResourceClass PC {
+  }
+  ENTResourceClass XBOX_ONE : PC {
+  }
+  ENTResourceClass XBOX_SERIES : PC {
+  }
+  ENTResourceClass PS4 : PC {
+  }
+  ENTResourceClass HEADLESS : PC {
+  }
+ }
+}

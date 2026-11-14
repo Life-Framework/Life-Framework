@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! The /report chat command (#241): a player flags their recent incidents for staff in one press.
 //! The command runs on the client and only asks the server; the server picks the incidents.
+[BaseContainerProps(configRoot: true)]
 modded class SCR_ChatPanelManager
 {
 	//------------------------------------------------------------------------------------------------

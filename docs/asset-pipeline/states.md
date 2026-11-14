@@ -6,7 +6,7 @@ asset declares in `spec.states`, after the `prefab` and `anim` stages:
 ```
 tools\cli asset states <slug>            check the prefab against spec.states
 tools\cli asset states <slug> --fix      write the values into the prefab
-tools\cli asset states <slug> --shots    one picture per declared state (a fresh --profile full session)
+tools\cli asset states <slug> --shots    one picture per declared state: ground and inventory by `look item` (no session), hand and use on a --profile full session
 tools\cli asset run <slug>               the states stage runs last and writes the values itself
 ```
 
@@ -100,11 +100,17 @@ write its grip centre and out direction into `HAND_POSES` from the bone and fing
 
 ## The pictures
 
-`--shots` brings up two clients, gives the item to client 1 (`itemgive`), holds it (`hold`), logs
-`heldxf`, and shoots client 1's own view and client 2's view of the hand; drops it (`itemdrop`) and
-looks down on it with client 2's free camera; and opens the inventory preview sheet. The PNGs land
-in `tmp/assets/<slug>/states/`. Read every one: the stage proves the numbers, the pictures prove the
-look.
+`--shots` takes the **ground** and **inventory** pictures with `tools\cli look item` (a hidden
+Workbench, about 30 s, no session): the item posed the way the inventory drops it (`RestingUP`,
+`RestingAdditiveOffsetLS`, lowest point on the ground) and the prefab's own preview camera
+(`CameraOrbitAngles`, distance, FOV, offset) on the item frozen in the air. That inventory picture is the
+3D view the engine's picture is made from, not the inventory UI: no slot frame, and the orbit angle
+sign convention (a negative pitch looks down from the item's front) is read from one vanilla-like
+prefab, so compare once with the sheet from a session before trusting an odd angle. The **hand**
+(and **use**) pictures still need a session: it brings up two clients, gives the item to client 1
+(`itemgive`), holds it (`hold`), logs `heldxf`, and shoots client 1's own view and client 2's view of
+the hand. The PNGs land in `tmp/assets/<slug>/states/`. Read every one: the stage proves the numbers,
+the pictures prove the look.
 
 ## Use states
 
@@ -138,9 +144,17 @@ Use it: `LF_AssetAnimComponent.SetActive(true)` opens both strands (replicated; 
 the same), `false` closes them. `LF_HandcuffsComponent.SetOpen(bool)` wraps that (server). The harness
 verbs `itemon <prefab>` and `itemoff <prefab>` do it from a session, and `asset states <slug>
 --shots` takes the `use` pictures (in the hand to the owner and to a second player, and dropped
-beside a closed pair) when a use state is built on a bone. The cuffing flow does not open the cuffs
-yet: the item is consumed in the same step that cuffs the suspect, so showing the open phase needs a
+beside a closed pair) when a use state is built on a bone. The cuffing flow did not open the cuffs
+at first: the item is consumed in the same step that cuffs the suspect, so showing the open phase needed a
 short cuffing action first; that action calls `SetOpen(true)`.
+
+That action exists now (`cuffing-open-state`, `LF_Cuffing.c`, `docs/features.md`): the Cuff and Uncuff
+actions are holds of about 1.8 s and 1.5 s. A Cuff opens the cuffs in the officer's hand, shuts them
+with a click at the end and only then puts them on the suspect; an Uncuff opens the cuffs on the
+wrist (the worn model carries the same two hinged strands, driven by a replicated flag on the
+character, `LF_AssetAnimComponent.ShowLocal`) before they come off. The strands take 0.5 s, so the
+server waits `CLOSE_MS` (650 ms) before the cuffs leave the hand. The click is the asset's own sound
+record, `tools/assets/handcuffs/sounds.json` (`SOUND_LF_CLOSE`, `SOUND_LF_OPEN`).
 
 ## Concepts for an asset with states
 

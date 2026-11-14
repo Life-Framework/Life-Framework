@@ -1,4 +1,5 @@
 // Proves offline that every stage of tools\cli asset writes into the addon the spec (or --addon) names,
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // and that no stage can make the core name the pack (#971; docs/architecture/core-vs-pack.md). The
 // fixture is a temp repo with a core and a pack addon. No Meshy, no Blender, no Workbench.
 // red-proof: 2026-11-14, one line broken per block, each restored after its FAIL was seen:

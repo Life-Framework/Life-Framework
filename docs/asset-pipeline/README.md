@@ -20,6 +20,9 @@ tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
 ```
 
+Buildings are not made here: they come from [ArchBuilder](https://arribas22.github.io/archbuilder/) through
+`tools\cli building` ([docs/building-pipeline/README.md](../building-pipeline/README.md)).
+
 Voiced NPC conversations are a separate stage with its own data file: `tools\cli asset dialogue <npc>`,
 [dialogue.md](dialogue.md).
 
@@ -85,6 +88,9 @@ Read this before any `generate`.
 - Blender 4.5 LTS at `C:\Users\jaspe\Tools\blender-4.5.9-windows-x64\blender.exe`, or set
   `LF_BLENDER`. The clean stage needs no add-on.
 - Arma Reforger Tools (Workbench), which `tools\cli build` already uses.
+- Optional: the LF Bridge extension (`tools\cli blender install`) lets `asset run <slug> --only clean --live`
+  and `tools\cli blender show <slug>` use the Blender window you have open, and `asset shot <slug>`
+  take pictures of the cleaned model. Headless stays the default ([blender-bridge.md](../blender-bridge.md)).
 - `tools\cli asset doctor` checks both and prints the Meshy balance.
 
 ## Kinds

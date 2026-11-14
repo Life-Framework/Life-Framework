@@ -100,6 +100,9 @@ class LF_ReadSerialAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		LF_SerialComponent serial = LF_SerialComponent.Cast(GetOwner().FindComponent(LF_SerialComponent));
 		return serial && !serial.GetSerial().IsEmpty();
 	}
@@ -113,6 +116,9 @@ class LF_ReadSerialAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_ReadSerialAction"))
+			return;
+
 		if (!pOwnerEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 

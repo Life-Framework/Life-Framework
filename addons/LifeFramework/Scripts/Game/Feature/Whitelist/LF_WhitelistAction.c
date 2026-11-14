@@ -12,7 +12,7 @@ class LF_WhitelistAction : ScriptedUserAction
 		if (!super.CanBePerformedScript(user))
 			return false;
 
-		if (m_eWhitelistOnlyType == 0)
+		if (m_eWhitelistOnlyType == 0 || !LF_Systems.IsEnabled(LF_WhitelistManager.SYSTEM))
 			return true;
 
 		LF_PlayerWhitelistComponent whitelistComponent = LF_PlayerWhitelistComponent.Cast(user.FindComponent(LF_PlayerWhitelistComponent));

@@ -48,12 +48,26 @@ modded class SCR_DoorUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A hideout door shows nothing while Hideouts is off (#1075).
+	override bool CanBeShownScript(IEntity user)
+	{
+		if (m_pHideoutDoor && !LF_Systems.IsEnabled(LF_Hideout.SYSTEM))
+			return false;
+
+		return super.CanBeShownScript(user);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		if (!super.CanBePerformedScript(user))
 			return false;
 
 		if (!m_pHouseLock || !m_pHouseLock.IsLocked())
+			return true;
+
+		// Houses off: a house door is a plain door. The lock state stays saved and comes back (#1075).
+		if (!m_pHideoutDoor && !LF_Systems.IsEnabled(LF_LockComponent.SYSTEM))
 			return true;
 
 		if (m_pHideoutDoor)

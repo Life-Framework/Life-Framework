@@ -1,4 +1,5 @@
 // Proves the deterministic parts of tools\cli asset (tools/assets/pipeline/) offline: no Meshy call,
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // no Blender, no Workbench. The network is replaced by a fetch that fails the test when touched.
 // Each block names the failure it guards (docs/asset-pipeline/README.md).
 // red-proof: 2026-11-13, one line broken per block, each restored after its FAIL was seen:
