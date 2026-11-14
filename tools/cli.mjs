@@ -1185,7 +1185,13 @@ function ensureAddonResourceDatabase(root, name) {
 // timeoutMs (a hung Workbench is killed with its job). Used by tools\cli asset (stage import).
 // `addon` (name, default the core) picks the project Workbench opens: the pack's project loads the
 // core as its dependency, so a pack asset's .meta and .xob resolve beside it (#971).
-function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addon = CORE }) {
+// With `doneWhen` (a function) Workbench is not told to exit after init: the call returns a
+// promise, polls doneWhen() every 2 s, and stops Workbench settleMs after it first returns true (or
+// at timeoutMs). A model with many colliders needs it: with -exitAfterInit Workbench exits while it
+// is still writing the collider surfaces and the .meta and .xob keep only the first few
+// (tools\cli building, docs/architecture/building-pipeline-spike.md).
+function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addon = CORE, doneWhen, settleMs = 3000 }) {
+  if (doneWhen) return runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, logFile, addon, doneWhen, settleMs });
   const addonInfo = resolveAddon(addon);
   if (!addonInfo) throw new Error(`unknown addon "${addon}"; known: LifeFramework, LF_Everon1989`);
   const exe = workbenchExe();
@@ -1204,6 +1210,50 @@ function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addo
     ], { cwd: gameDir, timeoutMs, stdout: logFile, stderr: logFile });
     return { status: res.status, profile };
   } finally {
+    wt.releaseLock(root, "build");
+  }
+}
+
+async function runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, logFile, addon, doneWhen, settleMs }) {
+  const addonInfo = resolveAddon(addon);
+  if (!addonInfo) throw new Error(`unknown addon "${addon}"; known: LifeFramework, LF_Everon1989`);
+  const exe = workbenchExe();
+  if (!existsSync(exe)) throw new Error("Workbench not found: " + exe);
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(root, "server", "profile", "rdb");
+  mkdirSync(profile, { recursive: true });
+  wt.acquireLock(root, "build", { waitMs: 900000 });
+  let child = null;
+  let exited = null;
+  let exitResolve;
+  const exitedP = new Promise((r) => { exitResolve = r; });
+  try {
+    child = quietSpawn(exe, [
+      "-gproj", gprojOf(root, addonInfo.name),
+      "-wbModule=ResourceManager", "-noSplash", "-run",
+      "-plugin=" + plugin, ...pluginArgs,
+      "-profile", profile,
+      ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
+    ], { cwd: gameDir, stdout: logFile, stderr: logFile });
+    child.on("exit", (code) => { exited = code; exitResolve(); });
+    // A predicate that throws (a file Workbench is writing that moment) counts as "not yet".
+    const done = () => { try { return !!doneWhen(); } catch { return false; } };
+    const started = Date.now();
+    let doneAt = 0;
+    while (exited === null && Date.now() - started < timeoutMs) {
+      await new Promise((r) => setTimeout(r, 2000));
+      // It must still hold when the settle time is up: Workbench may be re-saving a file.
+      if (done()) doneAt ||= Date.now();
+      else doneAt = 0;
+      if (doneAt && Date.now() - doneAt >= settleMs) break;
+    }
+    return { status: exited, done: !!doneAt, timedOut: !doneAt && exited === null, profile };
+  } finally {
+    // Stopped and gone before the lock is released: the next Workbench must not meet this one.
+    if (child && exited === null) {
+      child.kill(); // the helper's kill-on-close job ends Workbench with it
+      await Promise.race([exitedP, new Promise((r) => setTimeout(r, 30000))]);
+    }
     wt.releaseLock(root, "build");
   }
 }
@@ -3830,7 +3880,7 @@ function cmdSuiteValid(flags) {
   return 1;
 }
 
-// Commands that live one file each in tools/commands/ (export `help` and `main(args, { root })`).
+// Commands that live one file each in tools/commands/ (export `help` and `main(args, { root, workbench })`).
 // Add a command there, not to `cmds` above: this file was edited by 66 commits in ten days.
 function discoveredCommand(name) {
   return /^[a-z][a-z0-9-]*$/.test(name) && existsSync(join(ROOT, "tools", "commands", `${name}.mjs`));
@@ -3871,7 +3921,8 @@ try {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "asset" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
   } else if (cmd && discoveredCommand(cmd)) {
     // tools/commands/<cmd>.mjs: a new command is one file and touches no shared list.
-    code = (await import(`./commands/${cmd}.mjs`)).main(rest, { root: ROOT });
+    // `workbench` runs one hidden ResourceManager plugin under the build lock (runWorkbenchPlugin).
+    code = (await import(`./commands/${cmd}.mjs`)).main(rest, { root: ROOT, workbench: runWorkbenchPlugin });
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

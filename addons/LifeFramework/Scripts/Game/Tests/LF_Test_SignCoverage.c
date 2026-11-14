@@ -74,6 +74,10 @@ class LF_Test_SignCoverage : LF_Test
 		if (!value.IsEmpty() && !LF_SignCatalog.IsKey(value))
 			ok = true;
 
+		// The per-sign text is the pack's (#325): with no pack table the card falls back to the neutral title.
+		if (!ok && WidgetManager.Translate("#LF-Sign_Mining_Title") == "#LF-Sign_Mining_Title")
+			ok = true;
+
 		ctx.True(ok, string.Format("sign '%1' %2 has text (%3)", id, field, value));
 	}
 }

@@ -1,0 +1,9 @@
+MatPBRBasic {
+ Color 0.5 0.33 0.18 1
+ BCRMap "{42D93EA9992BB127}Assets/_SharedData/Wood/ST_WoodPlanks_02_BCR.edds"
+ NMOMap "{7A01853B405CE3B9}Assets/_SharedData/Wood/ST_WoodPlanks_02_NMO.edds"
+ GlobalMapsUVTransform MatUVTransform "{C9C95A815BEF19E0}" {
+  TilingU 0.5
+  TilingV 0.5
+ }
+}
