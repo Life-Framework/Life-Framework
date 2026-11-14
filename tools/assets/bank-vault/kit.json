@@ -1,6 +1,7 @@
 {
   "slug": "bank-vault",
   "about": "The 1989 bank vault as a modular kit: the round door #1 in its frame and wall (VaultFront and VaultDoor), the steel room behind it (VaultRoom), the deposit box wall (VaultDepositWall) and the cash trolley (VaultCashTrolley). Built by build.py in headless Blender; only the door detail is generated (tools/assets/vault-front, Meshy image-to-3D from front concept 1).",
+  "addon": "LF_Everon1989",
   "asset_dir": "Assets/Props/Roleplay/BankVault",
   "prefab_dir": "Prefabs/Props/Roleplay/BankVault",
   "script": "build.py",

@@ -27,19 +27,6 @@ GenericEntity Roadmap_Bank_RobKit : "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_Ba
  coords 196.7 0 258.501
  angleY 180
 }
-GenericEntity Roadmap_Bank_Vault : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
- components {
-  LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
-  }
- }
- coords 194.3 0.007 259.6
- angleY 180
-}
-GenericEntity Roadmap_Bank_VaultHood : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
- coords 194.4 2.9 259.944
- angleY 180
- scale 1.2
-}
 GenericEntity Roadmap_Bank_VaultLight : "{E34303CB179E13D6}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_01.et" {
  coords 195.74 2.1 259.58
  angleY 180

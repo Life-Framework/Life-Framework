@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6BF6404AB2FD3B8D}Configs/Tests/LF_Test_SignsOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

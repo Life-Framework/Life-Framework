@@ -17,7 +17,7 @@ const VAULT = "Roadmap_Bank_Vault";
 const PATIENT = "Patient";
 const PATIENT_HOME = [268.2, 0, 254.6];
 // The kit's swing angle, read from the prefab so the proof follows a retune.
-const SWING_YAW = Number(/m_fSwingYaw\s+(-?[\d.]+)/.exec(readFileSync(join(ROOT, "addons", "LifeFramework", "Prefabs", "Props", "Roleplay", "BankVault", "LF_BankVault.et"), "utf8"))?.[1] ?? 100);
+const SWING_YAW = Number(/m_fSwingYaw\s+(-?[\d.]+)/.exec(readFileSync(join(ROOT, "addons", "LF_Everon1989", "Prefabs", "Props", "Roleplay", "BankVault", "LF_BankVault.et"), "utf8"))?.[1] ?? 100);
 // Outfit sites: placed role NPCs, each read by every client from the same spot.
 const OUTFIT_SITES = ["Hospital_Doctor", CLERK, "Shop_Clerk", "CarLot_Mechanic"];
 

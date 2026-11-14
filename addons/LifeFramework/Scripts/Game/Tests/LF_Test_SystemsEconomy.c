@@ -12,7 +12,6 @@ class LF_Test_SystemsEconomy : LF_Test
 {
 	static const string UID = "systems-economy-tester";
 	static const ResourceName GUN_COUNTER = "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et";
-	static const ResourceName VAULT = "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et";
 	static const ResourceName TRADER = "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et";
 	static const ResourceName PISTOL = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
 
@@ -119,7 +118,8 @@ class LF_Test_SystemsEconomy : LF_Test
 		ctx.True(LF_Bank.Advance(fuseVault, 5), "the fuse still runs out");
 		ctx.Equal(0, LF_Bank.GetSpawnedBagCount(fuseVault), "but a drill that ends after Robbery went off pays no loot");
 
-		IEntity vault = LF_Utils.SpawnEntityPrefab(VAULT, user.GetOrigin());
+		// The annex example vault (core); the town vault kit is the pack's (#323).
+		IEntity vault = Named(LF_TestAnnex.BANK_VAULT, user);
 		IEntity kit = Named(LF_TestAnnex.BANK_ROB_KIT, user);
 		Owner(string.Empty);
 		int offered = ShownActions(vault, user, LF_BankRobAction);
@@ -131,7 +131,6 @@ class LF_Test_SystemsEconomy : LF_Test
 		Owner("{\"Robbery\":{\"enabled\":false}}");
 		ctx.Equal(0, ShownActions(vault, user, LF_BankRobAction), "with Robbery off the vault (and a heist target) offers nothing");
 		ctx.Equal(0, ShownActions(kit, user, LF_BankRobKitAction), "and the rob kit stand offers no kit");
-		SCR_EntityHelper.DeleteEntityAndChildren(vault);
 		Owner(string.Empty);
 	}
 
