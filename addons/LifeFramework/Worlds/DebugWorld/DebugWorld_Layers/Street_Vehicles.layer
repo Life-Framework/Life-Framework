@@ -53,6 +53,18 @@ GenericEntity Roadmap_Vehicle_Lot {
      m_iPrice 8000
      m_sNameKey "#EL-Vehicle_M923"
     }
+    LF_VehicleOffer "{E1B0E70100000016}" {
+     m_sPrefab "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
+     m_sSpawnPrefab "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et"
+     m_iPrice 1800
+     m_sNameKey "#EL-Vehicle_Dana2101"
+    }
+    LF_VehicleOffer "{E1B0E70100000017}" {
+     m_sPrefab "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
+     m_sSpawnPrefab "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et"
+     m_iPrice 700
+     m_sNameKey "#EL-Vehicle_SputnikT601"
+    }
    }
   }
   LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
@@ -235,4 +247,12 @@ GenericEntity Lot_Display_uaz452 : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/U
 }
 LF_NpcBaseEntity CarLot_Mechanic : "{009A8952A2537BB4}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_2.et" {
  coords 213.2 -0.005 263.569
+}
+Vehicle Lot_Display_dana2101 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
+ coords 233.56 0 261
+ angleY 180
+}
+Vehicle Lot_Display_t601 : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
+ coords 208 -0.186 259.868
+ angleY 180
 }

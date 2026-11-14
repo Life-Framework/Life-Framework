@@ -1853,6 +1853,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cargo truck"
      Comment "Lot catalog row for the M923 cargo truck"
     }
+    CustomStringTableItem "{E1C0E00100000F01}" {
+     Id "EL-Vehicle_Dana2101"
+     Target_en_us "Dana 2101"
+     Comment "Lot catalog row for the beige Dana 2101 (vanilla V2101, free in 1.9)"
+    }
+    CustomStringTableItem "{E1C0E00100000F02}" {
+     Id "EL-Vehicle_SputnikT601"
+     Target_en_us "Sputnik T601"
+     Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
+    }
     CustomStringTableItem "{E1C0E0010000000C}" {
      Id "EL-Vehicle_Bought"
      Target_en_us "Vehicle purchased"
