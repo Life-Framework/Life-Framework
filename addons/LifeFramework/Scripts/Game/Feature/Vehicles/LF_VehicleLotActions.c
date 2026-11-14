@@ -1,6 +1,12 @@
 //------------------------------------------------------------------------------------------------
 class LF_VehicleBuyAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, desc: "Catalog prefab this action buys. Empty buys the first offer.", "et")]
 	protected ResourceName m_sPrefab;
 
@@ -15,6 +21,9 @@ class LF_VehicleBuyAction : ScriptedUserAction
 	//! The purchase itself happens when the player presses Buy on a row.
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_VehicleBuyAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 
@@ -70,6 +79,12 @@ class LF_VehicleBuyAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 class LF_VehicleExtraKeyAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -82,6 +97,9 @@ class LF_VehicleExtraKeyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_VehicleExtraKeyAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 
@@ -136,6 +154,12 @@ class LF_VehicleExtraKeyAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 class LF_VehicleStoreAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -164,6 +188,9 @@ class LF_VehicleStoreAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_VehicleStoreAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 
@@ -274,6 +301,9 @@ class LF_VehicleStoreHereAction : LF_VehicleStoreAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Vehicles"))
+			return false;
+
 		if (!user || !GetOwner() || OwnedId(GetOwner(), user).IsEmpty())
 			return false;
 
@@ -312,6 +342,12 @@ class LF_VehicleStoreHereAction : LF_VehicleStoreAction
 //------------------------------------------------------------------------------------------------
 class LF_VehicleRetrieveAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -330,6 +366,9 @@ class LF_VehicleRetrieveAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_VehicleRetrieveAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 

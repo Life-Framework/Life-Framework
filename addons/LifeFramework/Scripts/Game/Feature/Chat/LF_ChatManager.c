@@ -8,8 +8,18 @@ class LF_ChatManagerComponentClass : ScriptComponentClass
 class LF_ChatManagerComponent : ScriptComponent
 {
 	//------------------------------------------------------------------------------------------------
+	//! Chat off (#1076): the base game's chat panels stay as they are.
+	static bool HidesPanels()
+	{
+		return LF_Systems.IsEnabled("Chat");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void ToggleChat(bool active)
 	{
+		if (!HidesPanels())
+			return;
+
 		SCR_ChatPanelManager chatManager = SCR_ChatPanelManager.GetInstance();
 		if (!chatManager)
 			return;
