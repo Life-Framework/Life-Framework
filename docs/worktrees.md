@@ -34,7 +34,7 @@ harmless to your editor because the worktree is a separate directory.
   the server refuses it (`Wrong GUID/name`, inventory operations that never complete). When
   stale, the worktree copy is refreshed by a headless `-wbModule=ResourceManager` Workbench on
   the hidden desktop, under the `build` lock (one line: `resource database stale: N
-  unregistered resource(s) ... -> refreshing`, about 10 s). `toolscli rdb` does the same on
+  unregistered resource(s) ... -> refreshing`, about 10 s). `tools\cli rdb` does the same on
   demand, and `validate` warns. The main checkout's copy is the human's editor file: it is
   only warned about, never rewritten. `LF_RDB_REFRESH=0` turns the refresh off. Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
@@ -128,16 +128,48 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `tools\cli wt sync-base m3 [--source main]` opens a PR that merges `origin/main` into `m3` from a `ws/sync-m3-<stamp>` worktree (merge drivers resolve generated files; any other conflict stops with the file list). It never force-pushes; prune the sync worktree after the merge.
 - The `validate` workflow runs on every `pull_request` (no branch filter), so PRs into `m3` get it. Making `validate` a required check on `m3` is a GitHub branch-protection setting, not done by the tooling.
 
+### Gate tiers
+
+`wt gate` and `wt ship` (and the ship queue, which runs `wt ship`) pick the gate from the diff
+against the merge base with `origin/<base>`, uncommitted and untracked files included
+(`tools/lib/gate-tier.mjs`, proven by `tools/validation/gate-tier-selftest.mjs`):
+
+| Tier | When | Runs |
+|---|---|---|
+| T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
+| T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
+| T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
+
+T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
+head have the same line count, every line holding a brace is unchanged (same blocks, same
+component and widget GUIDs), and each changed line keeps its key and swaps one scalar value with no
+`{GUID}` in it. Per type: `.conf` and `.layout` any number, vector, quoted string or word
+(`Text "#Key"`, `Color 1 0.8 0.8 1`, `m_iPrice 7`); `.et` numbers and vectors only; `.st`
+only `Target_*` text and `Comment`; a language `.conf` never its `Ids` block. `ID`, `Id`,
+`Name`, `Parent` and prefab keys are identities, never values.
+
+Always T2: a `.c` file, a `.meta`, an added, deleted, renamed or untracked file under `addons/`,
+a `.layer`/`.ent`, a binary asset, a changed resource reference, a `.conf` that **adds or removes
+a key** (the key can switch on a code path its default never ran, and an equal line count is how the
+classifier knows the blocks did not move), and a `.et` string value or component change.
+
+T1 skips the build because `test --no-build` loads the addons from source; the build only
+packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
+diff is no longer data-only. Measured 2026-11-14 on a one-value `.conf` change (`m_iPrice 500 -> 505`), same worktree, warm rdb:
+T2 (`--full-gate`) 630 s (compile + build 390 s on lf-cloud, both suite passes about 2 min, config
+sessions about 2 min); T1 112 s (validate 49 s, one boot of 267 tests 57 s); T0 44 s. Both T1 runs in
+that measurement failed on the related test that asserts the changed value.
+
 ## Release gates (`stable`, `promote`)
 
-`main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `toolscli release` use. Playtests run on `main`.
+`main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `tools\cli release` use. Playtests run on `main`.
 
-- `toolscli promote [--to <sha>]` fetches, lists the PRs merged to `main` since `stable` (first-parent merge commits) and writes `tmp/promote/checklist-<sha>.md`: one item per PR with its issues and the manual steps from its body. It changes nothing.
-- `toolscli promote --to <sha> --confirm` fast-forwards `origin/stable` to the commit you verified (default: `origin/main`), tags it `stable-<yyyymmdd>-<sha8>`, then marks the issues those PRs ref `verified` and closes them. An issue that a later, unverified PR on `main` also refs stays open. It refuses a target that is not a descendant of `stable` and never forces.
-- `toolscli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
-- `toolscli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
-- `toolscli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
-- **`toolscli release <x.y.z>` (#369), human step.** Run from `main` or `stable` (or a detached HEAD at `origin/main` or `origin/stable`) on a clean tree. Without flags it is a dry run: it prints the plan, names every refusal (dirty tree, wrong branch, bad version, tag taken) and runs the cheap `release-ready --strict` check; nothing changes. `--confirm` stamps the version in both `.gproj` files and both Workshop kit READMEs, runs `validate --full`, `release-ready --strict`, the full suite, `audit placement --strict` and a `pack` of each addon, writes `tmp/release/notes-<x.y.z>.md` from the PRs merged since the previous `v*` tag, and tags `v<x.y.z>` on a release commit that no branch points at. A failed gate restores the files and tags nothing. `--push` also pushes that one tag; without it nothing leaves the machine. It never uploads to the Workshop (#370, by hand in Workbench). Agents run the dry run only, never `--confirm`.
+- `tools\cli promote [--to <sha>]` fetches, lists the PRs merged to `main` since `stable` (first-parent merge commits) and writes `tmp/promote/checklist-<sha>.md`: one item per PR with its issues and the manual steps from its body. It changes nothing.
+- `tools\cli promote --to <sha> --confirm` fast-forwards `origin/stable` to the commit you verified (default: `origin/main`), tags it `stable-<yyyymmdd>-<sha8>`, then marks the issues those PRs ref `verified` and closes them. An issue that a later, unverified PR on `main` also refs stays open. It refuses a target that is not a descendant of `stable` and never forces.
+- `tools\cli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
+- `tools\cli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
+- `tools\cli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
+- **`tools\cli release <x.y.z>` (#369), human step.** Run from `main` or `stable` (or a detached HEAD at `origin/main` or `origin/stable`) on a clean tree. Without flags it is a dry run: it prints the plan, names every refusal (dirty tree, wrong branch, bad version, tag taken) and runs the cheap `release-ready --strict` check; nothing changes. `--confirm` stamps the version in both `.gproj` files and both Workshop kit READMEs, runs `validate --full`, `release-ready --strict`, the full suite, `audit placement --strict` and a `pack` of each addon, writes `tmp/release/notes-<x.y.z>.md` from the PRs merged since the previous `v*` tag, and tags `v<x.y.z>` on a release commit that no branch points at. A failed gate restores the files and tags nothing. `--push` also pushes that one tag; without it nothing leaves the machine. It never uploads to the Workshop (#370, by hand in Workbench). Agents run the dry run only, never `--confirm`.
 - **Issue states.** `agent:working` (being built) to `in-dev` (merged to `main`) to `needs-playtest` (merged, and the PR has a `## Manual testing` section with real steps) to `verified`. Only `verified` closes an issue; `regression` marks a failed one. The `issue-state` workflow (`tools/issue-state.mjs`) runs when a PR merges into `main`: every issue it refs (`Refs/Closes/Fixes/Resolves #N`) gets `in-dev` or `needs-playtest` and stays open; an issue an older CLI's `Closes #N` closed is reopened, a `verified` one is left alone, and a merged `Reverts #P` PR sets `regression` on P's issues. `promote --confirm` sets `verified` and closes. The website reads `verified` (or closed) as done and `in-dev`/`needs-playtest` as "built, not verified".
 - **Quorum sign-off (#575).** `docs/playtest/quorum.json` switches a rule that is off by default: when `"enabled": true`, `promote --confirm` needs `--confirmations <file>` and moves `stable` only when every issue whose PR lists manual steps has enough distinct roster testers (`docs/playtest/testers.json`) reporting pass, and none reporting fail. Rule, roster and disputes: `docs/playtest/quorum.md`. Session logistics: `docs/playtest/session-playbook.md`. Until the maintainer approves the rule, agents still never run `promote`.
 - Risky changes ship behind a config flag that defaults off, so one unverified feature does not block the rest.
@@ -145,13 +177,13 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 **Manual, maintainer (GitHub settings, not done by tooling):** protect `stable` (Settings, Branches): restrict pushes to the maintainer account, block force pushes and deletion, no pull-request requirement. `promote` pushes a fast-forward as the signed-in `gh`/git user.
 
 **One session, many issues (#402, #403).** The human check is the bottleneck, so a pass is planned, not improvised.
-`toolscli playtest checklist` collects the `## Manual testing` steps of the merged PRs of every open `needs-playtest` or
+`tools\cli playtest checklist` collects the `## Manual testing` steps of the merged PRs of every open `needs-playtest` or
 `in-dev` issue, shows a repeated step once, groups the rest by place in a walking route, marks two-player, restart,
 late-joiner and dedicated-server steps, estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass box and
 a `fail [ ]` box per issue. The default is the top hour; `--all` lists everything. The hour is ranked in tiers: issues under an open M1 or M2 chapter or epic (GitHub sub-issues, two levels; `--chapters N,N` adds more) first, then big player flows named in the title (robbery, vault, clerk, cuffs and arrest, medic and downed, dispatch, pagers and payphones, evidence and witnesses, dialogue, the item catalogue and licences), then the rest, and polish, visual-only and tooling items last (`tierOf` in `tools/lib/playtest-checklist.mjs`). Chapter work takes at most 70% of the hour, and a flow that does not fit closes the door on filler below it. Issues whose steps one walk covers share one line that lists every number; its tick or fail covers all of them. The fixed smoke list
 ([playtest/smoke-list.md](playtest/smoke-list.md): boot, join, save, restart, reload, late joiner) is always its first
 section, and only a regression in an already-verified feature blocks promotion. After the pass,
-`toolscli playtest verdicts <file>` reads the ticked file and prints the `gh` commands (verified or regression label, a
+`tools\cli playtest verdicts <file>` reads the ticked file and prints the `gh` commands (verified or regression label, a
 comment, close on pass). It runs none of them: the maintainer or lead reviews and runs them. Agents never do.
 
 ## Auto-merge
@@ -163,10 +195,9 @@ below are the old local path, still used with `--no-queue` (or `LF_SHIP_QUEUE=0`
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
    merge drivers in `tools/merge/` then resolve the generated files). A clean
    branch ships as is.
-3. Runs the gate (never incremental; see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
-   build + `test` tier=all. A branch that changes nothing under `addons/`
-   (docs, website, tools) runs plain `validate` instead and never waits for a
-   pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule). After the suite,
+3. Runs the gate for the diff's tier ("Gate tiers" below). T2 is never incremental (see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
+   build + `test` tier=all. T0 (nothing under `addons/`) runs plain `validate --all` and never waits for a
+   pool slot. T1 (values changed in place) skips the compile, build and full suite. `--full-gate` forces T2 (`wt gate` follows the same rule); the gate prints the tier and why, and ship adds it to the PR body under `## Gate`. After the suite,
    a branch that touches a `.layer`, a `Prefabs` `.et` or LF_Utils/spawn code also runs
    `audit placement --strict` (queued like `test`); anything flagged and not in the allowlist fails the
    gate, and it prints the entities with the allowlist fix hint (`docs/placement-audit.md`).
@@ -194,9 +225,11 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    to the queue (`tmp/wt/ship-queue.json` in the main checkout). It starts the worker when none runs.
 2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
    (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
-   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
-   the Workbench compile and build on whichever pool machine has the `workbench` cap and room
-   (`tools/lib/wb-gate.mjs`), the suite, core-only run and placement audit on pool test lanes. A branch
+   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote --tiered` there
+   (`--full-gate` drops `--tiered`; a data-only diff gets the T1 gate, "Gate tiers" below, else the full gate):
+   the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
+   free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
+   the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
    that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
    build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
    so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
@@ -212,11 +245,20 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
 
-**Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
-or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
-A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes
-(driver-merged docs again do not count), so PRs on disjoint files gate side by side on different
-machines and overlapping ones keep their order.
+**Parallel gates.** Up to N Workbench gates run at once, N being `"shipQueue": { "parallel": N }` in
+`pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
+limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
+`pool.machines` entry (1 when unset; lf-cloud has 2). This PC is not counted. A queued PR starts only when
+no running gate and no earlier waiting PR changes a file it changes. Driver-merged docs and any
+`docs/**/*.md` do not count (two PRs that edit `docs/worktrees.md` gate side by side; a text conflict
+shows at the merge of main, in GitHub's mergeable state, or in `prs heal`), so PRs on disjoint files
+gate side by side on different machines and overlapping ones keep their order.
+
+**Gates with no Workbench take no slot.** A PR that changes nothing under `addons/` runs `validate --all`
+only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; it counts against
+`"shipQueue": { "light": N }` instead (default 4). The entry's `tier` (0|1|2) and `builds` fields are the
+hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
+sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
 
 **Waiting.** `wt ship` waits until the gate passed or failed and prints
 `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
@@ -346,10 +388,12 @@ tools\cli test --no-build --tier all --shards auto --both  # normal + core-only 
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
-tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
+tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders of gone worktrees
+tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
 - **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
+- **Nothing in a gate waits silently.** The rdb refresh before the suite waits for the hub `build` lock through `tools/lib/lock-wait.mjs`: it prints the holder (`waiting on the build lock ...: held by pid N (rdb refresh in <worktree>), held N s; budget ...`), repeats every 30 s, and gives up at `LF_RDB_WAIT_S` (900 s) for the whole process, every addon together; a later addon fails at once instead of waiting again. Shard children run with `LF_RDB_CHECKED=1`, so the slices never refresh or wait a second time (before, the gate and each slice each waited 15 min per addon, silently: 25+ min with no output). While slices run, the parent prints `shards: <pass> i/n still running after N s: <last line>` every `LF_SHARD_HEARTBEAT_S` (120 s) and stops a slice after `LF_SHARD_TIMEOUT_S` (2700 s). `lock-wait-selftest` proves it.
 - **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
   waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer
@@ -358,7 +402,8 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   default `--local`.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
-  (`server`, `clients`, `workbench`). The gitignored `lf.local.json` overrides
+  (`server`, `clients`, `workbench`, `rdb`: refreshes a stale
+  `resourceDatabase.rdb` in its own runs, see "Sync"). The gitignored `lf.local.json` overrides
   per machine with a `"pool"` key (`docs/setup.md`). `slots` is 1 everywhere
   today; slot 1 is the machine's own `server-2001` lock (the one `serve`,
   `host`, and `session` take too) and slot k is `server-2001-s<k>`, so a
@@ -433,17 +478,48 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
   edits plus untracked, non-ignored files, as one snapshot commit built from a
-  copy of the index (your index, HEAD, and branch do not change). The run
-  folder `C:\LF\Life-Framework-rt-<slug>` is a linked worktree of the box's
-  clone, kept between runs. The holder reports which of the snapshot, the
+  copy of the index (your index, HEAD, and branch do not change). A test,
+  e2e or audit run uses its lane's folder `C:\LF\Life-Framework-lane-<lock>`
+  (`-lane-server-test-3`), a linked worktree of the box's clone shared by
+  every worktree; sessions, `-gate` syncs and a machine without lanes keep
+  the per-worktree `C:\LF\Life-Framework-rt-<slug>` folders. The holder reports which of the snapshot, the
   last commit this worktree sent, and `origin/main` the box has, and the git
-  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored:
-  `test` refreshes the local copy first (headless Workbench; the box has none)
-  and sends it when its SHA-1 differs from the run folder's. Measured
+  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored
+  and sent when its SHA-1 differs from the run folder's. A stale one (a
+  resource the rdb does not register) is refreshed by a headless Workbench
+  where the run lands: this PC for a run here or on a machine without the
+  `rdb` cap; a machine with the cap (lf-testbox) refreshes the run folder's
+  copy in its own `test --local`, `e2e --local` or `session up`, is not sent
+  the stale copy, and keeps the refreshed one for the next run. Before
+  2026-11-14 every run refreshed here first, behind the build lock all
+  worktrees on this PC share: runs headed for a pool machine waited up to
+  10 min behind other worktrees' refreshes. lf-cloud has no `rdb` cap: its
+  Workbench exits 0 without registering anything (`ResourceDB: could not
+  open cache file`); add the cap in its `lf.local.json` entry once a refresh
+  there registers resources. A run that gets this PC's lane with a stale rdb
+  gives the lane back, refreshes, and queues again. Measured
   2026-11-09: new run folder 5.1 s holder + 1.3 s sync, repeat 3.0 s + 0.0 s
   (no bundle, rdb unchanged); an edit sends a ~2 KiB bundle. A run folder
   whose rdb predated `LF_HideoutStash` got the fresh one by hash and passed the
   stash tests (the box's main clone rdb has no `LF_HideoutStash` entry).
+- **Lane folders (2026-11-14).** Whoever holds a lane's lock owns its folder,
+  so two runs never share one, and a worktree's first run on a lane no longer
+  creates a folder (`git worktree add` of ~5000 files: holder + prep 17-24 s).
+  Each run checks its snapshot out with `git checkout -f`, which resets every
+  tracked file and removes the ones the snapshot does not have, then drops
+  what git does not track under `addons/` (untracked and ignored: a stray
+  script, an addon `log`, `.gproj.user`), keeping each addon's
+  `resourceDatabase.rdb`, which is sent by hash. git only lists those paths;
+  each delete goes through the box clone's `safeRemoveTree`, which unlinks a
+  junction instead of following it (`tools/link-safety.mjs` `cleanRunFolder`,
+  shipped to the box with the run). `server/` (the test profile, which
+  `test-e2e.ps1` deletes and rebuilds every boot, and its `game-addons`
+  junctions) and `tmp/` stay. A clean that fails stops the run (exit 3).
+  Measured on lf-cloud: a lane's first use 19-20 s holder + prep, a reused
+  lane 2-5 s; a compile-breaking `LF_ZZStray.c` planted in a lane folder was
+  removed by the next run there (`cleaned 1 untracked path(s)`), which passed.
+  A worktree on an older branch still uses its `rt-<slug>` folders; both kinds
+  take the same lane locks.
 - **What comes back.** The run streams live. The remote `console.log` is
   copied to `server/profile/test/logs/remote-<machine>-<logdir>/`, so
   `tools\cli logs` greps it; on a failure its `SCRIPT (E)`, VME, and `Unable
@@ -453,9 +529,24 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
 - **Cleanup.** Each run folder holds `tmp/pool-owner.json` (PC, slug,
   worktree). `wt prune <slug>` removes that worktree's remote run folders;
   `pool prune` removes every folder whose worktree on this PC is gone
-  (`--unmarked` also takes older folders without the marker). Both go through
+  (`--unmarked` also takes older folders without the marker). Lane folders
+  belong to no worktree and stay; `pool prune --lanes` removes the idle ones
+  of lanes a machine no longer has (its lane count went down). All of it goes through
   the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
   holds junctions into the server install.
+- **Remote disk GC.** Run folders (`Life-Framework-rt-<slug>[-session][-sN]`, about 1.4 GB each)
+  pile up while their worktree still exists (2026-11-14: lf-cloud hit 0 GB free and every run
+  sent there failed the disk floor). Before the pool starts a run on an ssh machine it reads the
+  box's free disk (one ssh call); under `rtGcFreeFactor` x `minFreeDiskGb` (3 x 5 = 15 GB) it
+  removes that box's idle run folders, oldest first, until it is back above that, and logs one
+  `pool: gc <machine>: removed <dir> (idle ..., freed .. GB, .. GB free)` line per folder. A folder is
+  kept when a live lock in `<box>/tmp/wt/locks` names it (`rDir`), a process's command line names
+  it, anything in it was written in the last `rtIdleMin` (60) minutes, or it is one the run is about
+  to use. Deletion is the box's own `tools/safe-rm.mjs`, then `git worktree prune`. Settings:
+  `rtIdleMin`, `rtGcFreeFactor` (`LF_POOL_RT_IDLE_MIN`, `LF_POOL_RT_GC_FREE_FACTOR`;
+  `LF_POOL_RT_GC=0` turns it off). `pool prune --idle <min>` does the same by hand on every
+  reachable ssh machine whatever the free disk. A box with nothing idle left to remove is said
+  so once and not asked again for five minutes.
 - **Cost.** A box run of the full suite takes about 22 s door to door (10 s
   suite plus ssh, checkout, CLI start, log copy), this PC about 8 s. Four
   concurrent `--tier all` runs from four worktrees (2026-11-09): 28-31 s wall,
@@ -508,13 +599,35 @@ queues FIFO (tickets in `tmp/wt/wb-queue`) and prints one
 parallel ships ran seven compiles and builds on this 15.6 GB PC at once.
 
 `ci` (so `wt gate` and `wt ship`) runs the cheap validate checks here and the
-Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`):
-this PC while its Workbench limit has room, else a pool machine with the
-`workbench` cap, a free Workbench slot and 3.5 GB free, else this PC (it
-queues). The remote run is `ci --wb-only --local` in a
+Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`).
+Every machine with the `workbench` cap (this PC, and each pool machine that
+answers ssh) is ranked like the pool ranks machines for tests: live free RAM
+less a Workbench reserve (2.25 GB), weighted by speed (`budgetMultiplier`).
+A machine whose headroom after the reserve is under the floor (`minFreeMb`,
+so about 3.7 GB free in all) is never chosen while another has room: on
+2026-11-14 this PC, at 1.5 GB free, started a Workbench that died after 6 s
+three gates in a row while `lf-cloud` had 18 GB free. The first ranked
+machine with RAM and a free Workbench slot runs the steps; if every roomy
+machine's Workbench limit is full, they queue on the best of those. If no
+machine has the RAM, the gate prints why (each machine's free RAM) and
+re-checks every 30 s for up to an hour (`LF_WB_RAM_WAIT_S`), then fails as a
+pool failure, which the ship queue requeues. A pool machine that does not
+answer, or answers and exits 3, leaves the choice to the rest (this PC when
+nothing else answers).
+
+A Workbench compile that ends within a minute with `NO VERDICT` on a machine
+under the reserve is an environment failure, not a compile failure: it
+prints `ENV  ... GB free`, skips the build, exits 4, and the gate retries the
+steps once on the best other machine. A second early death fails the gate as
+a pool failure.
+
+The remote run is `ci --wb-only --local` in a
 `Life-Framework-rt-<slug>-gate` run folder, synced like a remote test
-(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and this PC runs the steps. `ci --local` keeps everything here;
-`ci --remote [name]` sends the Workbench steps out even when this PC is free.
+(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and the gate chooses again. `ci --local` keeps everything here;
+`ci --remote` uses pool machines only; `ci --remote <name>` / `--machine <name>`
+pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
+`--remote [name]` and `--machine <name>` through to that `ci` (the ship queue
+gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
 
@@ -1049,6 +1162,11 @@ password or repo credential.
    which does not update itself, so run `provision` again after a server update. It then clones the repo to
    `C:\LF\Life-Framework` and sends the rdb (above). `pool status` must show the same server build as this PC.
    A provision stopped part-way leaves SteamCMD running on the box; the next run waits for it.
+   It also gives `Users` modify on `C:\LF` (inherited, so new and existing files). ssh runs elevated, so the
+   clone, the run folders and the rdb `scp` sends belong to Administrators, while Workbench in the desktop session
+   runs with a standard token. A stock Server image's `C:\` gives Users no modify, so that Workbench could not save
+   `resourceDatabase.rdb` (`ResourceDB: could not open cache file`, exit 0, nothing registered). A client image
+   inherits `Authenticated Users:Modify` from `C:\` and never shows it.
 6. **Join the pool** with the gitignored `lf.local.json`. A rented box stays out of `tools/pool.json`.
    Give the same entry to both sides: this PC's `lf.local.json`, and the box's own
    `C:\LF\Life-Framework\lf.local.json` with `hostname` set to the box's hostname. On the box, the box-side
@@ -1064,6 +1182,9 @@ password or repo credential.
    Start with `"caps": ["server"]`. Add `clients` once a pinned `session up --machine lf-cloud --clients 1`
    joins. Add `workbench` once the box's Workbench has run a gate: `ci --remote lf-cloud` must print
    `Workbench compile + build on lf-cloud: exit 0`. `--wb-only` runs here and proves nothing about the box.
+   Add `rdb` once a run there with a stale rdb prints `resource database refreshed in Ns (N resources
+   registered)`; `workbench` alone does not prove it (lf-cloud's Workbench compiles but registered nothing
+   on 2026-11-14).
    `{"name": "lf-cloud", "disabled": true}` takes it out. Session lanes stop at 4 (`pool.mjs`). Test lane k
    uses port 2001+k, so more than 9 test lanes would collide with session port 2011. A box-side
    `"workbenchLimit": 2` under `pool` lets two headless Workbenches run at once there.
@@ -1184,3 +1305,25 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
+
+## Lead view
+
+`tools\cli lead` is the dispatch screen for the lead agent (about 30 lines, about 10 s, no session or lock taken). The sections run in
+parallel, each with its own timeout; one that fails prints one line and the rest still print.
+
+- MILESTONES: open M2 and M3 issues split by label: needs code (`agent:working` counted separately), `in-dev`, `needs-playtest`,
+  `needs-human`. A human gate beats a playtest, a playtest beats in-dev. M2.5 is not M2.
+- PRS: every open PR, conflicting first, then BLOCKED/UNSTABLE/BEHIND, then CLEAN; checks and age. A conflicting PR names whether only
+  generated or driver-merged files conflict (`prs heal` fixes those) or a source file needs a human (`git merge-tree`, no checkout).
+  A PR GitHub has not graded yet (UNKNOWN) is asked through the REST endpoint.
+- WORKTREES: active (a file, commit or log touched in 30 min) vs idle; merged-prunable; orphans (in the registry but not a git worktree
+  or missing, or a `Life-Framework-ws-*` folder nobody registered); disk. A worktree is merged only through a merged GitHub PR whose head
+  SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
+  Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
+  `~N GB (k/n measured)`; the walk never follows a junction.
+- POOL: one line per machine (free RAM, lanes busy/total, temperature, DOWN or slow) and the queue length, read from `pool status`.
+- ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
+
+`tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
+a merged PR on GitHub, no uncommitted change, idle 30 min, no live lock or session, and re-checked clean just before the delete. When
+GitHub cannot list the merged PRs it prunes nothing.

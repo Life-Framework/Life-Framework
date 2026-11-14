@@ -184,9 +184,12 @@ class LF_Test_PersistSwitchesRestart : LF_Test
 	protected void RunReloadBoot(LF_TestContext ctx, LF_PersistenceComponent persistence)
 	{
 		LF_ConfigService.Reset();
+#ifndef LF_E2E_PRE_MOVE
+		// --pre-move: the ref build wrote neither the owner file nor this progression record.
 		ctx.False(LF_PersistenceConfig.ResolveKeep().m_bKeepLicences, "e2e keepLicences is off after the restart, from the owner file");
-		array<LF_ELicenseType> licences = {};
 		ctx.NotNull(LF_Progression.Get(E2E_UID), "e2e the progression record saved before the restart is loaded");
+#endif
+		array<LF_ELicenseType> licences = {};
 		ctx.Equal(0, LF_Progression.GetLicenses(E2E_UID, licences), "e2e the licence saved with keepLicences off is reset by the restart");
 
 		// The owner turns the switch on again (an owner layer without the key; the file stays for

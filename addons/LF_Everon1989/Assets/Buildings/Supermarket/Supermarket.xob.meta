@@ -26,10 +26,6 @@ MetaFileClass {
      SourceMaterial "AB_Frame_Dark"
      AssignedMaterial "{038F1BCB638D4C0B}Assets/Buildings/Materials/AB_Frame_Dark.emat"
     }
-    MaterialAssignClass "{82740D6F7B666A83}" {
-     SourceMaterial "AB_Metal_Panel"
-     AssignedMaterial "{FA3937942FC2956C}Assets/Buildings/Materials/AB_Metal_Panel.emat"
-    }
     MaterialAssignClass "{DFEE9EDE5976C313}" {
      SourceMaterial "AB_Metal_Steel"
      AssignedMaterial "{9158CBDAAF24D034}Assets/Buildings/Materials/AB_Metal_Steel.emat"
@@ -49,6 +45,10 @@ MetaFileClass {
     MaterialAssignClass "{D5FFBB2A0A39E080}" {
      SourceMaterial "AB_Plaster_Interior"
      AssignedMaterial "{7F20E1B950833B80}Assets/Buildings/Materials/AB_Plaster_Interior.emat"
+    }
+    MaterialAssignClass "{12F2F571EBC1EE4C}" {
+     SourceMaterial "AB_Red_Paint"
+     AssignedMaterial "{8C93C00D990FC788}Assets/Buildings/Materials/AB_Red_Paint.emat"
     }
     MaterialAssignClass "{6242F5B1173D0F1A}" {
      SourceMaterial "AB_Roof_Flat"

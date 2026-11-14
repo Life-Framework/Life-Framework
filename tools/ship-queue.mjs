@@ -1,7 +1,7 @@
 // tools/ship-queue.mjs - the ship queue's worker and its commands (`tools\cli ship-queue ...`).
 // `wt ship` pushes the branch, opens the PR (auto-merge off) and enqueues it (tools/lib/ship-queue.mjs);
 // one worker per repo takes queued entries in FIFO order, as many at once as there are pool Workbench
-// slots and as long as their files do not overlap, and for each:
+// slots (a validate-only gate takes none) and as long as their files do not overlap, and for each:
 //   1. merges origin/<base> into the worktree once (prs.mjs healMerge: merge drivers + regeneration);
 //   2. runs `ci --remote` there (Workbench steps and the suite on pool machines; a branch with no
 //      addons/ change runs `validate --all`, as `wt gate` does);
@@ -53,14 +53,18 @@ function update(root, id, patch, note) {
   });
 }
 
-// How many gates run at once: pool.json / lf.local.json "shipQueue": { "parallel": N }, else the sum of
-// the Workbench limits of the ssh machines with the workbench cap (at least 1).
-export async function gateSlots(root) {
+// How many Workbench gates run at once, and how many validate-only gates beside them (tools/lib/ship-queue.mjs
+// slotCount / lightCount). Override: "shipQueue": { "parallel": N, "light": N } in pool.json or the "pool" key
+// of lf.local.json; else the sum of the Workbench limits of the ssh machines with the workbench cap, where a
+// machine's own "workbenchLimit" (in its pool.machines entry) counts, 1 when unset, at least 1 in all.
+export async function gateLimits(root) {
   const pool = await import("./remote/pool.mjs");
-  const cfg = pool.poolSettings(root)?.shipQueue ?? {};
-  if (Number(cfg.parallel) > 0) return Number(cfg.parallel);
-  const n = pool.loadMachines(root).filter((m) => m.via === "ssh" && !m.disabled && (m.caps ?? []).includes("workbench")).reduce((s, m) => s + (Number(m.workbenchLimit) > 0 ? Number(m.workbenchLimit) : 1), 0);
-  return Math.max(1, n);
+  const cfg = pool.poolSettings(root).shipQueue;
+  return { slots: sq.slotCount({ cfg, machines: pool.loadMachines(root) }), light: sq.lightCount({ cfg }) };
+}
+
+export async function gateSlots(root) {
+  return (await gateLimits(root)).slots;
 }
 
 // ---------------------------------------------------------------- worker
@@ -118,9 +122,9 @@ export async function runWorker(root) {
       }
     });
     while (Date.now() - t0 < WORKER_LIFE_MS) {
-      const slots = await gateSlots(root);
+      const { slots, light } = await gateLimits(root);
       const q = readQueue(root);
-      const { start } = sq.pickRunnable(q.entries, { slots });
+      const { start } = sq.pickRunnable(q.entries, { slots, lightSlots: light });
       for (const { entry, why } of start) {
         const claimed = update(root, entry.id, { state: "merging", startedAt: now(), workerPid: process.pid }, `start: ${why}`);
         if (!claimed) continue;
@@ -170,9 +174,15 @@ function runLogged(log, exe, args, { cwd, budgetMs = JOB_BUDGET_MS, env = proces
 
 const changedFiles = (wtPath, base) => wt.git(wtPath, ["diff", "--name-only", `${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
 
-// The gate a branch gets: `ci --remote` when addons/ changed (or --full-gate), else `validate --all` (cheap, here).
-export function gateCommand(files, fullGate = false) {
-  return fullGate || files.some((f) => f.startsWith("addons/")) ? ["ci", "--remote"] : ["validate", "--all"];
+// The gate a branch gets: `validate --all` (cheap, here) when nothing under addons/ changed; else `ci --remote`,
+// tiered unless --full-gate: ci classifies the merged diff again and runs the T1 data-only gate when it holds
+// (tools/lib/gate-tier.mjs, docs/worktrees.md "Gate tiers").
+// pin: the machine flags `wt ship` was given (--remote <name> / --machine <name> / --local), in place
+// of the bare --remote. Agents do not pin; a human or the lead can.
+export function gateCommand(files, fullGate = false, pin = []) {
+  const where = pin.length ? pin : ["--remote"];
+  if (fullGate) return ["ci", ...where];
+  return files.some((f) => f.startsWith("addons/")) ? ["ci", "--tiered", ...where] : ["validate", "--all"];
 }
 
 async function runJob(root, entry) {
@@ -193,7 +203,7 @@ async function runJob(root, entry) {
     say(`merged ${baseRef}: ${m.status}${m.resolved?.length ? ` (resolved ${m.resolved.join(", ")})` : ""}`);
     const gatedBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
     const files = changedFiles(wtPath, baseRef);
-    const cmd = gateCommand(files, entry.fullGate);
+    const cmd = gateCommand(files, entry.fullGate, entry.pin ?? []);
     attempts++;
     update(root, entry.id, { state: "gating", attempts, files, gatedBase }, `gate ${attempts}: ${cmd.join(" ")} on main ${gatedBase.slice(0, 7)}`);
     const t0 = Date.now();
@@ -299,7 +309,8 @@ export async function waitFor(root, slug, { budgetMs = 3 * 60 * 60 * 1000, print
 
 export async function printStatus(root, print = console.log) {
   const q = readQueue(root);
-  const { wait } = sq.pickRunnable(q.entries, { slots: await gateSlots(root) });
+  const { slots, light } = await gateLimits(root);
+  const { wait } = sq.pickRunnable(q.entries, { slots, lightSlots: light });
   for (const l of sq.statusLines(q, { waits: wait })) print(l);
   const pid = workerAlive(root);
   print(`  worker: ${pid ? `pid ${pid}` : "not running (the next wt ship starts it)"}; log ${workerLog(root)}`);

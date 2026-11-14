@@ -4,6 +4,9 @@
   "problems": [],
   "client": [
     { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Water", "expect": "$6" },
+    { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Apple", "expect": "$8" },
+    { "kind": "shopPrice", "shop": "Annex_GunCounter", "item": "M9", "expect": "$500" },
+    { "kind": "lotPrice", "shop": "Annex_Vehicle_Lot", "expect": "S105 | line:Car0=$1,000" },
     { "kind": "actionShown", "entity": "Bank_Teller", "class": "LF_ATMAction", "expect": true }
   ]
 }

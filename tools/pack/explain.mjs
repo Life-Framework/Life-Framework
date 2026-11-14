@@ -13,14 +13,15 @@
 // A field is named the way the owner file names it (`m_iPrice` is `price`). The merge is the
 // server's: add, replace, patch, remove by id; a refused verb and a second pack on one id are
 // printed under the entry. Fields no layer sets keep the class default and are not listed.
-// Exit 1 when the key names nothing. red-proof: tools/validation/pack-check-selftest.mjs.
+// Exit 1 when the key names nothing. `--root <dir>` reads <dir>/addons instead of the repo's, so a
+// test pack kept outside addons/ can be explained. red-proof: tools/validation/pack-check-selftest.mjs.
 import { join } from "node:path";
 import { jsonKey, validateJson } from "../config/schema.mjs";
 import { loadPackSections, sectionSchema } from "../config/pack-sections.mjs";
 import { SECTIONS, fieldsOf, layerName, loadCore, loadOwner, loadPackOverlays, mergeList, metaIndex, sectionDef, sectionLayers, sectionNames, show } from "./layers.mjs";
 import { coreKeysFor, packDirs, resolvePack } from "./check.mjs";
 
-const USAGE = `usage: tools\\cli pack explain <key> [--pack <addon>] [--config <config.json>] [--json]
+const USAGE = `usage: tools\\cli pack explain <key> [--pack <addon>] [--config <config.json>] [--root <dir>] [--json]
   key: <section>.<list>.<id>[.<field>] or <section>.<key>
   lists: ${Object.keys(SECTIONS).join(", ")}; plain keys of: ${sectionNames().join(", ")}`;
 
@@ -173,10 +174,11 @@ export function explain(root, key, opts = {}) {
 
 export async function main(args, ctx) {
   const val = (f) => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] : undefined; };
-  const skip = new Set(["--pack", "--config"].flatMap((f) => (args.includes(f) ? [args.indexOf(f) + 1] : [])));
+  const skip = new Set(["--pack", "--config", "--root"].flatMap((f) => (args.includes(f) ? [args.indexOf(f) + 1] : [])));
   const key = args.find((a, i) => !a.startsWith("--") && !skip.has(i));
   if (!key) { console.log(USAGE); return 2; }
-  const r = explain(ctx.root, key, { pack: val("--pack"), config: val("--config") });
+  // --root <dir>: read the packs under <dir>/addons instead of the repo's (a test pack outside addons/).
+  const r = explain(val("--root") ?? ctx.root, key, { pack: val("--pack"), config: val("--config") });
   if (args.includes("--json")) console.log(JSON.stringify({ key, code: r.code, lines: r.lines, ...(r.data ?? {}) }, null, 2));
   else for (const l of r.lines) console.log(l);
   return r.code;
