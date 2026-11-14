@@ -36,6 +36,7 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
+import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import os from "node:os";
@@ -2599,7 +2600,37 @@ function cmdHidden(flags) {
   return 0;
 }
 
-function cmdHelp() {
+// Default help is the command names; `help --verbose` is the full usage (docs/agent-budget.md).
+function compactNames(runFull, header, strip, extra = []) {
+  if (process.env.LF_OUTPUT === "full") return runFull();
+  const lines = [];
+  const orig = console.log;
+  console.log = (...a) => lines.push(a.join(" "));
+  let code;
+  try { code = runFull(); } finally { console.log = orig; }
+  const names = [];
+  for (const l of lines.join("\n").split("\n")) {
+    const m = /^ {2}(?! )(.*?)(?: {2,}|$)/.exec(l);
+    if (!m) continue;
+    const w = m[1].replace(strip, "").split(/\s+/)[0];
+    if (/^[a-z][a-z0-9-]*$/.test(w) && !names.includes(w)) names.push(w);
+  }
+  for (const n of extra) if (/^[a-z][a-z0-9-]*$/.test(n) && !names.includes(n)) names.push(n);
+  console.log(header);
+  let row = " ";
+  for (const n of names) {
+    if (row.length + n.length > 100) { console.log(row); row = " "; }
+    row += ` ${n}`;
+  }
+  if (row.trim()) console.log(row);
+  console.log("full usage: add --verbose; a command run with no arguments prints its own usage");
+  return code;
+}
+const CLI_NAME = "tools" + String.fromCharCode(92) + "cli";
+function cmdHelp() { return compactNames(cmdHelpFull, `${CLI_NAME} <command> [args]; commands:`, /^$/, [...Object.keys(cmds), ...(existsSync(join(ROOT, "tools", "commands")) ? readdirSync(join(ROOT, "tools", "commands")).filter((n) => n.endsWith(".mjs")).map((n) => n.slice(0, -4)) : [])]); }
+function wtHelp() { return compactNames(wtHelpFull, `${CLI_NAME} wt <command>; commands:`, /^tools.cli wt\s+/); }
+
+function cmdHelpFull() {
   console.log(`Life Framework dev CLI
 
 usage: tools\\cli <command> [args]
@@ -2825,6 +2856,7 @@ function cmdLogs(flags, root = ROOT) {
     return 0;
   }
   const shown = tail ? hits.slice(-limit) : hits.slice(0, limit);
+  const full = list.includes("--full") || process.env.LF_OUTPUT === "full";
   console.log(`=== ${file}`);
   console.log(`${hits.length} match(es) of /${pattern}/ (before=${before} after=${after})${hits.length > limit ? `, showing ${tail ? "last" : "first"} ${limit}` : ""}`);
   // Merge overlapping context windows so context lines print once.
@@ -2839,7 +2871,8 @@ function cmdLogs(flags, root = ROOT) {
   for (const b of blocks) {
     for (let i = b.start; i <= b.end; i++) {
       const marker = b.hits.has(i) ? ">" : " ";
-      console.log(`${marker} ${i + 1}: ${lines[i]}`);
+      const text = full || lines[i].length <= 300 ? lines[i] : `${lines[i].slice(0, 299)}... (+${lines[i].length - 299} chars; --full)`;
+      console.log(`${marker} ${i + 1}: ${text}`);
     }
     console.log("  ---");
   }
@@ -2857,7 +2890,7 @@ function wtSlug(args) {
   return slug;
 }
 
-function wtHelp() {
+function wtHelpFull() {
   console.log(`worktree commands (parallel agent isolation)
 
   tools\\cli wt new <slug> [--wait] [--base B] [--priority low]  create Life-Framework-ws-<slug> at ws/<slug>, allocate ports;

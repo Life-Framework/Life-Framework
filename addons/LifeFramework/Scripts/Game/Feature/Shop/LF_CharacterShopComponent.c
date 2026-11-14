@@ -94,24 +94,25 @@ class LF_CharacterShopComponent : ScriptComponent
 		// #693b: the slip prints the refusal, so the limiter does not toast as well.
 		if (!LF_RateLimit.AllowCharacter(player, LF_ERequestKind.PURCHASE, "shop trade", false))
 		{
-			RespondResult(buy, LF_EShopRefusal.TOO_FAST, prefabName, quantity, 0, LF_MoneyUtils.GetCash(player));
+			RespondResult(buy, LF_EShopRefusal.TOO_FAST, prefabName, quantity, 0, LF_MoneyUtils.GetCash(player), string.Empty);
 			return;
 		}
 
+		string missing;
 		LF_EShopRefusal reason = CheckRequest(player, shopId, prefabName, quantity);
 		if (reason == LF_EShopRefusal.NONE)
 		{
 			LF_ShopComponent shop = ResolveShop(shopId);
 			if (buy)
-				reason = shop.Buy(prefabName, quantity, player, money);
+				reason = shop.Buy(prefabName, quantity, player, money, missing);
 			else
-				reason = shop.Sell(prefabName, quantity, player, money);
+				reason = shop.Sell(prefabName, quantity, player, money, missing);
 		}
 
 		if (reason == LF_EShopRefusal.NONE)
 			PlayTillSound(player);
 
-		RespondResult(buy, reason, prefabName, quantity, money, LF_MoneyUtils.GetCash(player));
+		RespondResult(buy, reason, prefabName, quantity, money, LF_MoneyUtils.GetCash(player), missing);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -162,24 +163,25 @@ class LF_CharacterShopComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	//! Delivers the transaction outcome to the owning client. A listen-server host has no wire hop
 	//! for an Owner-targeted RPC to itself, so the handler runs directly there.
-	protected void RespondResult(bool buy, LF_EShopRefusal reason, ResourceName prefab, int quantity, int money, int cash)
+	//! missing is what an outlet's gate found the buyer lacks (a localization key, #988), else empty.
+	protected void RespondResult(bool buy, LF_EShopRefusal reason, ResourceName prefab, int quantity, int money, int cash, string missing)
 	{
 		string prefabString = prefab;
 		if (IsLocalPlayer())
 		{
-			RpcDo_TransactionResult(buy, reason, prefabString, quantity, money, cash);
+			RpcDo_TransactionResult(buy, reason, prefabString, quantity, money, cash, missing);
 			return;
 		}
 
-		Rpc(RpcDo_TransactionResult, buy, reason, prefabString, quantity, money, cash);
+		Rpc(RpcDo_TransactionResult, buy, reason, prefabString, quantity, money, cash, missing);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: outcome of a buy or sell request, printed on the order slip.
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_TransactionResult(bool buy, int reason, string prefab, int quantity, int money, int cash)
+	protected void RpcDo_TransactionResult(bool buy, int reason, string prefab, int quantity, int money, int cash, string missing)
 	{
-		LF_ShopPriceList.OnResult(buy, LF_ShopRefusal.FromWire(reason), prefab, quantity, money, cash);
+		LF_ShopPriceList.OnResult(buy, LF_ShopRefusal.FromWire(reason), prefab, quantity, money, cash, missing);
 	}
 
 	//------------------------------------------------------------------------------------------------

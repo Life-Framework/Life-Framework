@@ -1684,7 +1684,9 @@ function laneRow(root, kind, lane, info, tickets, settings, now) {
   return `${head} ${who.padEnd(16).slice(0, 22)} ${purpose.padEnd(10)} age ${age.padStart(4)}  idle ${idle.padStart(4)}  ${note}`.trimEnd();
 }
 
-export function cmdPoolStatus(root) {
+// Default output is what a decision needs: busy lanes, the queue, the budgets and a one-line history.
+// `pool status --verbose` adds the free and stale lanes, the last runs and the last sessions.
+export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") {
   const settings = poolSettings(root);
   const machines = loadMachines(root);
   const hereBuild = tb.serverBuildId(tb.localServerDir(root));
@@ -1695,9 +1697,13 @@ export function cmdPoolStatus(root) {
     const where = m.via === "local" ? `this PC (${hostname()})` : `ssh ${m.host}`;
     const build = h.build ? `build ${h.build}${hereBuild && h.build !== hereBuild ? " (DIFFERS)" : ""}` : "";
     const lanes = m.lanes ? `${m.lanes.test} test + ${m.lanes.session} session lane(s)` : `${m.slots} shared slot(s)`;
-    console.log(`${m.name}  ${where}  ${h.reachable ? "up" : "DOWN"}  ${build}  ${m.via === "local" ? `${ramText(root)}  ` : ""}${lanes}`.replace(/ {2,}$/, ""));
-    if (!h.reachable) continue;
+    const head = `${m.name}  ${where}  ${h.reachable ? "up" : "DOWN"}  ${build}  ${m.via === "local" ? `${ramText(root)}  ` : ""}${lanes}`.replace(/ {2,}$/, "");
+    if (!h.reachable) {
+      console.log(head);
+      continue;
+    }
     const locks = m.via === "local" ? null : remoteLocks(m);
+    const laneRows = [];
     const rows = m.lanes
       ? [...lanesFor(m, "session").map((l) => ["session", l]), ...lanesFor(m, "test").map((l) => ["test", l])]
       : lanesFor(m, "test").map((l) => ["shared", l]);
@@ -1712,8 +1718,12 @@ export function cmdPoolStatus(root) {
       }
       let row = laneRow(root, kind, lane, info, tickets, settings, now);
       if (m.via !== "local" && info?.origin && remoteOwnerGone(info)) row += `; STALE: owner pid ${info.originPid} gone here`;
-      console.log(row);
+      laneRows.push(row);
     }
+    const idle = laneRows.filter((r) => /\sfree\s*$/.test(r) || /\sstale\s/.test(r));
+    const shown = verbose ? laneRows : laneRows.filter((r) => !idle.includes(r));
+    console.log(verbose || !idle.length ? head : `${head}  (${idle.length} lane(s) free or stale)`);
+    for (const r of shown) console.log(r);
   }
   const diskGb = gc.freeDiskGb(sessionBase());
   console.log(`disk: ${diskGb === null ? "unknown" : `${diskGb.toFixed(1)} GB free`} on the session volume (floor ${settings.minFreeDiskGb} GB; session folders older than ${settings.sessionKeepHours} h are removed on the next session or test start)`);
@@ -1724,6 +1734,10 @@ export function cmdPoolStatus(root) {
   const dupFiles = q.duplicateSessionTickets(tickets);
   for (const t of ordered) {
     const lane = t.lane ?? "session";
+    if (!verbose && (perLane.get(lane) ?? 0) >= 4) {
+      perLane.set(lane, (perLane.get(lane) ?? 0) + 1);
+      continue;
+    }
     const pos = (perLane.get(lane) ?? 0) + 1;
     perLane.set(lane, pos);
     const base = q.normalizePriority(t.priority) ?? "normal";
@@ -1747,6 +1761,11 @@ export function cmdPoolStatus(root) {
     }
   } catch {}
   const runs = readRuns(root).filter(isTestRun).slice(-8);
+  if (!verbose) {
+    const n = (res) => runs.filter((r) => r.result === res).length;
+    console.log(`last ${runs.length} run(s): ${n("pass")} pass, ${runs.filter((r) => r.result !== "pass" && r.result !== "timeout").length} other, ${n("timeout")} timeout; --verbose lists them and the sessions`);
+    return 0;
+  }
   console.log(`last ${runs.length} run(s):`);
   for (const r of runs) {
     console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
@@ -1853,7 +1872,7 @@ export function cmdPoolPrune(root, flags = []) {
 
 export function cmdPool(root, args = []) {
   const [sub, ...rest] = args;
-  if (sub === "status" || !sub) return cmdPoolStatus(root);
+  if (sub === "status" || !sub) return cmdPoolStatus(root, rest.includes("--verbose") || process.env.LF_OUTPUT === "full");
   if (sub === "stats") return cmdPoolStats(root);
   if (sub === "prune") return cmdPoolPrune(root, rest);
   console.log(`usage: tools\\cli pool status|stats|prune [--dry-run] [--unmarked]
