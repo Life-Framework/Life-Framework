@@ -9071,6 +9071,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Siren: off"
      Comment "Action on the ambulance's light switch: stop the siren and the light bar (#923)."
     }
+    CustomStringTableItem "{5EBE8CF2BBC1E139}" {
+     Id "LF-Sit_Action"
+     Target_en_us "Sit"
+     Comment "F-key action on a chair or bench: sit down on it (#982)."
+    }
+    CustomStringTableItem "{41F7E124C0FE4E7B}" {
+     Id "LF-Sit_Denied"
+     Target_en_us "You cannot sit down now"
+     Comment "Greyed-out reason on Sit when the body cannot sit: dead, stunned, in a vehicle or playing a gesture (#982)."
+    }
+    CustomStringTableItem "{A9D554987763FD86}" {
+     Id "LF-Sit_StandUp"
+     Target_en_us "Stand up"
+     Comment "F-key action on the seat you are sitting on: stand up (#982)."
+    }
+    CustomStringTableItem "{48019BCFB08527D2}" {
+     Id "LF-Sit_Occupied"
+     Target_en_us "Someone is sitting here"
+     Comment "Greyed-out reason on Sit when another player sits on that place (#982)."
+    }
+    CustomStringTableItem "{946FA59E4FF609B8}" {
+     Id "LF-Emote_Restrained"
+     Target_en_us "Not while restrained"
+     Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
+    }
+    CustomStringTableItem "{623C4879FE9C4E51}" {
+     Id "LF-Emote_MenuTitle"
+     Target_en_us "Emotes"
+     Comment "Title of the emote radial (hold F1) (#982)."
+    }
   }
  }
 }

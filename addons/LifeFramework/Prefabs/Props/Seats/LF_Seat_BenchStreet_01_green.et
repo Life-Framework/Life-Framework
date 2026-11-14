@@ -1,0 +1,46 @@
+GenericEntity : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+ ID "C304813A1D730F42"
+ components {
+  ActionsManagerComponent "{290693804EFE7D1E}" {
+   ActionContexts {
+    UserActionContext "{02C6B8BEBC16946C}" {
+     ContextName "LF_Seat1"
+     Position PointInfo "{A0602ACF5922AE49}" {
+      Offset -0.45 0.5 0.15
+     }
+     Radius 0.9
+    }
+    UserActionContext "{7C986407E8B10AC6}" {
+     ContextName "LF_Seat2"
+     Position PointInfo "{33517A318202E1DE}" {
+      Offset 0.45 0.5 0.15
+     }
+     Radius 0.9
+    }
+   }
+   additionalActions {
+    LF_SitAction "{54B4824BB76979AC}" {
+     ParentContextList {
+      "LF_Seat1"
+     }
+     m_vSeatOffset -0.45 0 0.3
+     m_SitAnimation SCR_LoiterCustomAnimData "{9FA1F10ECB4D672D}" {
+      m_iCommandValue 7
+     }
+    }
+    LF_SitAction "{0ECC9441F5CDA5D7}" {
+     ParentContextList {
+      "LF_Seat2"
+     }
+     m_vSeatOffset 0.45 0 0.3
+     m_SitAnimation SCR_LoiterCustomAnimData "{257CBF688DB32437}" {
+      m_iCommandValue 7
+     }
+    }
+   }
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

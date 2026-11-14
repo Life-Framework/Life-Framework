@@ -161,6 +161,10 @@ export function buildLine(id, spec) {
   if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload" || spec.verb === "robhold") {
     return `${id} ${spec.verb}`;
   }
+  if (spec.verb === "emote") {
+    // emote open|close|seen|<radial command>: the emote radial (LF_EmoteHarness, #982).
+    return `${id} emote ${token(spec.arg, "emote")}`;
+  }
   if (spec.verb === "dialogue") {
     return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
   }

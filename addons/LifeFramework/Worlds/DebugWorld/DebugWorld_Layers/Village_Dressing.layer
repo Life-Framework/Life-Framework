@@ -14,17 +14,17 @@ SCR_DestructibleBuildingEntity Village_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Com
  coords 129.8 0 240.5
  angleY 90
 }
-GenericEntity : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
  coords 104 0 239
 }
-GenericEntity : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
  coords 122 0 239
 }
-GenericEntity : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
  coords 104 0 261
  angleY 180
 }
-GenericEntity : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
  coords 122 0 261
  angleY 180
 }
@@ -267,11 +267,11 @@ GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/Flowerpo
 GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
  coords 122.4 0 268.6
 }
-GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
  coords 110.8 0 263.3
  angleY 90
 }
-GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
  coords 113.2 0 263.3
  angleY 270
 }
@@ -290,7 +290,7 @@ GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/Flowerpo
 GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
  coords 157.6 0 258
 }
-SCR_DestructibleEntity : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+SCR_DestructibleEntity : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
  coords 162.5 0 257
 }
 SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et" {
@@ -358,7 +358,7 @@ GenericEntity : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
  coords 224 0 238.2
  angleY 80
 }
-GenericEntity : "{C9A6A89E58BE2A61}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_red.et" {
+GenericEntity : "{24388E37E11BA18F}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et" {
  coords 226.5 0 243.6
 }
 GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
@@ -370,7 +370,7 @@ SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots
 SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
  coords 271.6 0 257.3
 }
-SCR_DestructibleEntity : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+SCR_DestructibleEntity : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
  coords 273.6 0 256.9
 }
 GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
@@ -554,7 +554,7 @@ GenericEntity SquareClerkDesk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_
  coords 136 0 243.5
  angleY 90
 }
-GenericEntity SquareClerkChair : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+GenericEntity SquareClerkChair : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
  coords 137.4 0 243.5
  angleY 270
 }
@@ -616,7 +616,7 @@ Tree Market_Tree_4 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucupar
  angleY -68
  scale 1.3
 }
-GenericEntity Market_Bench_W : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+GenericEntity Market_Bench_W : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
  coords 193.243 0.002 238.501
  angleY 90
 }
@@ -632,7 +632,7 @@ GenericEntity Market_PalletBox : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pal
  coords 218.103 0.021 232.401
  angleY 90
 }
-GenericEntity Market_Bench_E : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+GenericEntity Market_Bench_E : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
  coords 217.557 0.002 238.499
  angleY -90
 }
@@ -738,4 +738,8 @@ Vehicle Market_Delivery_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/
 GenericEntity Market_Sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
  coords 196.306 0.03 241.893
  angleY 20
+}
+GenericEntity Bank_Bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 184.001 0.002 254.957
+ angleY 180
 }

@@ -199,6 +199,18 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
 			return true;
+		if (cmd.Verb == "emote")
+		{
+			// emote open|close|seen|<command>: the emote radial (LF_EmoteHarness, #982).
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_emote";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "animseen" || cmd.Verb == "animhold" || cmd.Verb == "animoff")
 			return true;
 		if (cmd.Verb == "engine")
@@ -1328,6 +1340,15 @@ class LF_AgentHarness
 		{
 			// What this client shows of the nearest animated asset (LF_AssetAnimHarness, #340).
 			WriteResult(cmd.Id, "ok", LF_AssetAnimHarness.Seen());
+			return;
+		}
+		if (cmd.Verb == "emote")
+		{
+			string emoted = LF_EmoteHarness.Run(cmd.Arg1);
+			if (emoted.StartsWith("ok"))
+				WriteResult(cmd.Id, "ok", emoted);
+			else
+				WriteResult(cmd.Id, "error", emoted);
 			return;
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")

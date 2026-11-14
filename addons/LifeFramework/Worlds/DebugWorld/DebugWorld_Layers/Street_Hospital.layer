@@ -158,7 +158,7 @@ SCR_DestructibleEntity Hospital_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/D
 SCR_DestructibleEntity Hospital_Flowerpot_2 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
  coords 263.45 0 258.1
 }
-SCR_DestructibleEntity Hospital_WaitBench : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+SCR_DestructibleEntity Hospital_WaitBench : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
  coords 260.1 0 258.0
  angleY 180
 }
