@@ -1,4 +1,4 @@
-// red-proof: 2026-11-14, reference-op budgets: with the money publish tripled in the measured path (a planted 3x), `perf-budget` failed `perf money-event-us 23.4375 us/event over budget 20.72 (63 ref ops against 56, one ref op 370 ns)` on this PC and `... 124.219 us/event over budget 89.6 (77 ref ops against 56, one ref op 1600 ns)` on lf-cloud. Removed the plant; green on this PC, lf-testbox and lf-cloud. Earlier: Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` the run failed `perf money-event-us 33 us/event over budget 1` and exited 1.
+// red-proof: 2026-11-14, reference-op budgets: with the money publish tripled in the measured path (a planted 3x), `perf-budget` failed `perf money-event-us 23.4375 us/event over budget 20.72 (63 ref ops against 56, one ref op 370 ns)` on this PC and `... 124.219 us/event over budget 89.6 (77 ref ops against 56, one ref op 1600 ns)` on lf-cloud. Skips in the wt e2e boots (LF_E2E_HOST_STOP, LF_E2E_LOAD_BOOT). Removed the plant; green on this PC, lf-testbox and lf-cloud. Earlier: Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` the run failed `perf money-event-us 33 us/event over budget 1` and exited 1.
 //! One row of the calibration workload in LF_Test_PerfBudget.
 class LF_PerfRefItem
 {
@@ -138,6 +138,18 @@ class LF_Test_PerfBudget : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
+		// A restart proof (wt e2e: the save boot, LF_E2E_HOST_STOP, and the reload boot, LF_E2E_LOAD_BOOT) is
+		// not a perf proof. This test also resets the managers and writes 128 synthetic accounts, so it has
+		// no business in those boots; the ordinary suite and `tools\cli perf` still run it.
+#ifdef LF_E2E_HOST_STOP
+		LF_Debug.Info(LF_Perf.FEATURE, "perf/budget-128 skipped: restart-proof boot (LF_E2E_HOST_STOP)");
+		return;
+#endif
+#ifdef LF_E2E_LOAD_BOOT
+		LF_Debug.Info(LF_Perf.FEATURE, "perf/budget-128 skipped: restart-proof boot (LF_E2E_LOAD_BOOT)");
+		return;
+#endif
+
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves");
 		if (!gameMode)
