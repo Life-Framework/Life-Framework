@@ -50,10 +50,11 @@ worktree.
    The rule key is the `m_sFind` string; a rule with the core's key replaces its prices, a new key
    is appended. Give a new rule a GUID of your own.
 2. `tools\cli session up --pack LF_DemoPack --clients 1`
-3. Stand at the debug general store and open its price list, then read the client:
-   `node agent-box/harness.mjs --client 1 stand entityName=Shop_GeneralStore_Debug`,
-   `use className=LF_ShopAction entityName=Shop_GeneralStore_Debug`, `type widget=Search text=Water`,
-   `ui mode=text`. The water line shows `$31`. Without `--pack` it shows `$6`.
+3. A fresh character opens the civil registry form first. Fill it, then stand at the debug general store
+   and open its price list (verbs take positional arguments), then read the client:
+   `node agent-box/harness.mjs --client 1 type RegFirstName Ada`, `type RegLastName Vale`, `type RegAge 30`,
+   `click SignButton`, `stand Shop_GeneralStore_Debug`, `use LF_ShopAction Shop_GeneralStore_Debug`,
+   `type Search Water`, `ui text`. The Waterbottle line shows `$31`. Without `--pack` it shows `$6`.
    (`agent-box/proofs/config-stream-proof.mjs` drives the same screen.)
 4. The server log line `[LFDebug:Config] shops: pack overlay ... set N fields` says the overlay applied.
 
