@@ -143,10 +143,12 @@ class LF_Test_PerfBudget : LF_Test
 		// no business in those boots; the ordinary suite and `tools\cli perf` still run it.
 #ifdef LF_E2E_HOST_STOP
 		LF_Debug.Info(LF_Perf.FEATURE, "perf/budget-128 skipped: restart-proof boot (LF_E2E_HOST_STOP)");
+		ctx.True(true, "perf budget not measured in a restart-proof boot");
 		return;
 #endif
 #ifdef LF_E2E_LOAD_BOOT
 		LF_Debug.Info(LF_Perf.FEATURE, "perf/budget-128 skipped: restart-proof boot (LF_E2E_LOAD_BOOT)");
+		ctx.True(true, "perf budget not measured in a restart-proof boot");
 		return;
 #endif
 
