@@ -97,6 +97,11 @@ LF_ItemCatalogueConfig {
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
 | `vehicles` | `vehicles` | the lot prefab's GUID, 16 hex digits, braces and case ignored (`54C3CC22DEBD57BE`). A key naming the locked child's GUID addresses the same entry. A new or replaced vehicle needs `basePrice` above 0 |
 | `dialogue` | `lines`, `nodes` | line id, node id. Pack patch only (see "Dialogue patches") |
+| `police` | `ranks` | rank id (`patrol`). A saved rank is its index: a remove is refused on a shipped rung and on any rung that is not the last |
+| `organizations` | `rankDefaults` | `founder`, `officer` or `member`. A remove drops the entry, so the rank keeps its shipped rights; a new or replaced entry starts from them |
+| `zones` | `ruleSets` | rule name `NORMAL`, `SAFE` or `LAWLESS`. A remove is refused (every zone names a rule); a new or replaced entry starts from the legacy flags |
+| `licences` | `rules` | licence name (`POLICE_ACCESS`). The ids are the catalog's: add of an existing one, a name the catalog lacks and every remove are refused; replace turns both flags off unless the layer gives them |
+| `systems` (catalog) | `LF_SystemDef` list | system id (`Pager`). Pack overlays only. A framework (`LOCKED`) system and one another system names as parent or requirement cannot be removed |
 | `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |
 | `jobs` | `xpAwards` | action id (`gather`). A new or replaced award needs a `job` |
 | `jobs` | `licenceGates` | licence name (`MINER_GOLD`, an `LF_ELicenseType` name). A new or replaced gate needs a `job` and a `minLevel`; removing a gate gives the licence its shipped gate back |
@@ -140,6 +145,8 @@ LF_DialogueConfig {
 - `reload dialogue` (#970) overrides a caption by its text key, so it reaches a patched line like any other.
 
 Not here (still #957): naming a dialogue by id instead of a prefab path, the `asset dialogue --addon` tool output, the text-only line (the check still wants a recording on every line), the neutral core clerk and the Everon clerk as a pack patch, and the `validate` rule that reads a pack patch against its core.
+A list that must keep some entries says so in `LF_ConfigList.RemoveRefusal(index)`: the reason is
+logged like any refusal and the entry stays.
 
 ## Moving a section onto the model
 
@@ -152,7 +159,9 @@ Not here (still #957): naming a dialogue by id instead of a prefab path, the `as
    `LF_ConfigOverlay.ApplyRecords(reader, "field", list, source)`.
 4. `node tools/config/schema.mjs --write`: the schema gains `op` on the section's records.
 
-Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`), `LF_Test_VehicleOverrideVerbs` (`config/vehicle-override-verbs`), `LF_Test_DialogueOverrideVerbs` (`dialogue/override-verbs`), `LF_Test_PackPatchOverlays` (`config/pack-patch-overlays`, pack `.conf` files for vehicles and the clerk).
-Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`); jobs: `LF_Test_JobsOverrideModel`
+Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`); police, organizations, zones, licences and
+systems: `LF_Test_ConfigListsOverlay` (`config/lists-overlay`, remove and a refused patch per list); jobs: `LF_Test_JobsOverrideModel`
 (`config/jobs-override-model`, owner verbs per list) and `LF_Test_JobsPackOverlay`
 (`config/jobs-pack-overlay`, a pack `.conf` over the shipped `LF_Jobs.conf`).
+
+Tests (vehicles, dialogue): `LF_Test_VehicleOverrideVerbs` (`config/vehicle-override-verbs`), `LF_Test_DialogueOverrideVerbs` (`dialogue/override-verbs`), `LF_Test_PackPatchOverlays` (`config/pack-patch-overlays`, pack `.conf` files for vehicles and the clerk).
