@@ -26,6 +26,7 @@
 //   audit placement [--top N] [--area a] [--layer L]  Ranked placement audit of every DebugWorld layer entity, on the test server (agent-box/place-audit.mjs)
 //   place on|against|ground|arrange|bounds|probe|verify  Place a world prop from real bounds and probe rays, then audit it (tools/place/place.mjs)
 //   look <area|x,z|all> [--edit] [--close N]   Area pictures from a hidden Workbench, no session (tools/visual/look.mjs, docs/visual-testing.md)
+//   look serve [--status|--stop]               One shared look Workbench every look uses while it is up (tools/visual/look-serve.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -3095,10 +3096,13 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | item <prefab|slug> [--states ground,inventory] | selftest
+  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
-                                (about 20 s; docs/visual-testing.md)
+                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md)
+  look serve [--status | --stop [--remove]]
+                                one Workbench for every worktree's looks, on the Life-Framework-look-viewer checkout;
+                                each look is served from a snapshot of the caller's worktree, stops after 10 min idle
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
   perf [--log <file>] [test flags]   run the 128-character cost benchmark (LF_Test_PerfBudget), print the report vs Configs/Perf/LF_PerfBudget.conf; exit 1 over budget

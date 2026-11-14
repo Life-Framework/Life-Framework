@@ -7,6 +7,8 @@
 //   flags: --edit (the World Editor view instead of play mode)  --close N (close-ups per area, default 12; 0 = none)
 //          --radius m  --hour h (local solar time, default 14)  --settle ms  --out dir  --measure (peak RAM)
 //          --world <path> (override the world; the proof for a failed load)  --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
+//          --budget s (base budget before the per-shot part: 90 fresh, 150 through the server; raise it on a slow box)
+//          --serve (use the look server, starting one) --fresh (never use it); look serve [--status|--stop [--remove]]
 //
 // One hidden Workbench (LF-Agents desktop) opens DebugWorld, enters play mode with a free
 // camera, takes every shot and exits: about 10 s of start-up and 0.5 s per shot, no server,
@@ -21,6 +23,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { deflateSync, inflateSync } from "node:zlib";
 import { quietSpawn } from "../lib/quiet-launch.mjs";
+import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -29,6 +32,7 @@ const WORLD = townWorld(); // the pack world (a SubScene of DebugWorld that hold
 const WORKBENCH_MB = 1900; // peak working set of the run, measured 2026-11-11 (docs/visual-testing.md)
 const RAM_MARGIN_MB = 300;
 const BOOT_BUDGET_S = 90;
+const SERVE_BUDGET_S = 150;
 
 export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 
@@ -37,7 +41,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["world", "close", "radius", "hour", "settle", "first", "out", "states", "at"]);
+  const valued = new Set(["world", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -144,7 +148,7 @@ export function planText(shots, areas, opts = {}) {
 
 // status.txt -> { world, done, errors: [..], shots: { name: { file, ms, clear, pick, found, size:[x,y,z], cam:[x,y,z] } } }
 export function parseStatus(text) {
-  const out = { world: null, play: false, done: null, errors: [], warnings: [], shots: {}, readyMs: null };
+  const out = { world: null, play: false, done: null, errors: [], warnings: [], shots: {}, readyMs: null, request: null };
   for (const raw of String(text).split(/\r?\n/)) {
     const m = /^(\d+) (ok|error|warn|done) ?(.*)$/.exec(raw.trim());
     if (!m) continue;
@@ -155,6 +159,7 @@ export function parseStatus(text) {
       out.done = { ms, shots, failed };
     } else if (m[2] === "error") out.errors.push(rest);
     else if (m[2] === "warn") out.warnings.push(rest);
+    else if (rest.startsWith("request ")) out.request = rest.split(" ")[1];
     else if (rest.startsWith("world ")) {
       out.world = rest.split(" ")[1];
       out.readyMs = ms;
@@ -359,16 +364,23 @@ function peakWorkingSetMb(marker) {
   return Math.round(peak);
 }
 
-// Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
-export function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
+// The Workbench command line for a look run on checkout `root` (the caller's, or the shared viewer's).
+export function workbenchArgs(root, profile, plugin = "LF_VisualShotsPlugin") {
   // With the pack in the checkout, open its project: it depends on the core, so both load and the pack's
   // string table shows (a sign board reads its own title, not the core's neutral one; #325).
-  const packGproj = join(ROOT, "addons", "LF_Everon1989", "LF_Everon1989.gproj");
-  const gproj = existsSync(packGproj) ? packGproj : join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
+  const packGproj = join(root, "addons", "LF_Everon1989", "LF_Everon1989.gproj");
+  const gproj = existsSync(packGproj) ? packGproj : join(root, "addons", "LifeFramework", "LifeFramework.gproj");
   const game = process.env.ENFUSION_GAME_PATH || join(steamCommon(), "Arma Reforger");
   const addonDirs = [join(game, "addons")];
-  if (existsSync(packGproj)) addonDirs.push(join(ROOT, "addons"));
-  const args = ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=" + plugin, "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", addonDirs.join(",")];
+  if (existsSync(packGproj)) addonDirs.push(join(root, "addons"));
+  return ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=" + plugin, "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", addonDirs.join(",")];
+}
+
+// Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
+export async function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
+  const args = workbenchArgs(ROOT, profile, plugin);
+  const il = await import("../lib/interactive-launch.mjs");
+  if (il.interactiveNeeded()) return runInteractive(il, exe, args, profile, budgetS);
   return new Promise((done) => {
     const started = Date.now();
     let peakMb = 0;
@@ -390,6 +402,31 @@ export function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_Visu
   });
 }
 
+// Over ssh (a pool machine): Workbench on the signed-in user's desktop, which is the only place it renders.
+// The process is not our child, so its exit is watched by pid; its exit code is not known (0 when it exited).
+async function runInteractive(il, exe, args, profile, budgetS) {
+  const started = Date.now();
+  let pid;
+  try {
+    pid = il.interactiveSpawnDetached(exe, args, { cwd: dirname(exe), marker: profile });
+  } catch (e) {
+    console.log(`look: ${e.message}`);
+    return { code: 1, timedOut: false, seconds: (Date.now() - started) / 1000, peakMb: 0 };
+  }
+  const alive = () => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  while (alive() && Date.now() - started < budgetS * 1000) await new Promise((r) => setTimeout(r, 500));
+  const timedOut = alive();
+  if (timedOut) spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"], { windowsHide: true, timeout: 15000 });
+  return { code: timedOut ? 124 : 0, timedOut, seconds: (Date.now() - started) / 1000, peakMb: 0 };
+}
+
 export function latestLog(profile) {
   const logs = join(profile, "logs");
   if (!existsSync(logs)) return null;
@@ -400,6 +437,65 @@ export function latestLog(profile) {
 export function compileErrors(logFile) {
   if (!logFile || !existsSync(logFile)) return [];
   return readFileSync(logFile, "utf8").split(/\r?\n/).filter((l) => /SCRIPT\s+\(E\)|Can't compile/.test(l)).slice(0, 5);
+}
+
+// null when a Workbench fits in free RAM now (idle sessions are trimmed first), else the reason.
+async function ramShort(force) {
+  if (force) return null;
+  const need = WORKBENCH_MB + RAM_MARGIN_MB;
+  const freeMb = () => Math.round(freemem() / 1048576);
+  if (freeMb() < need) {
+    const pool = await import("../remote/pool.mjs");
+    pool.trimIfShort(ROOT, need);
+  }
+  if (freeMb() >= need) return null;
+  return `look: ${freeMb()} MB of RAM free, a Workbench needs about ${need} MB. Wait for whatever holds it (a session, an encode), or pass --force.`;
+}
+
+// null when this process holds the machine-wide build lock, else why not.
+function takeBuildLock(wt, waitMs) {
+  try {
+    wt.acquireLock(ROOT, "build", { waitMs: 0 });
+    return null;
+  } catch {}
+  if (waitMs <= 0) return "a headless Workbench (build, rdb refresh, another look or a look-server request) holds the build lock; pass --wait to queue (up to 10 min)";
+  console.log(`look: waiting for the build lock (another headless Workbench is running; up to ${Math.round(waitMs / 1000)} s)`);
+  try {
+    wt.acquireLock(ROOT, "build", { waitMs });
+    return null;
+  } catch (e) {
+    return e.message;
+  }
+}
+
+// The snapshot commit of this checkout (HEAD plus uncommitted and untracked files): what the pictures show.
+function snapshotSha() {
+  try {
+    return tb.snapshotCommit(ROOT).sha;
+  } catch {
+    return null;
+  }
+}
+
+// The fresh path: a Workbench of its own on this checkout, which exits after the plan.
+async function freshRun(exe, profile, raw, plan, shots, opts, args, areas) {
+  const injected = join(ROOT, "addons", "LifeFramework", "Scripts", "WorkbenchGame", "LFVisual");
+  try {
+    mkdirSync(raw, { recursive: true });
+    for (const f of readdirSync(raw)) rmSync(join(raw, f), { force: true });
+    writeFileSync(join(raw, "plan.txt"), plan);
+    // Injected like the MCP handlers: Scripts/WorkbenchGame/ is git-ignored, and the copy is removed after the run.
+    mkdirSync(injected, { recursive: true });
+    cpSync(PLUGIN, join(injected, "LF_VisualShotsPlugin.c"));
+    const budgetS = num(args.flags.budget, BOOT_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+    console.log(`look: ${shots.length} shot(s) of ${areas.length} area(s), ${opts.edit ? "edit" : "play"} mode, hidden Workbench (budget ${budgetS} s)`);
+    return await runWorkbench(exe, profile, budgetS, args.flags.measure === true);
+  } finally {
+    rmSync(join(injected, "LF_VisualShotsPlugin.c"), { force: true });
+    try {
+      if (existsSync(injected) && readdirSync(injected).length === 0) rmSync(injected, { recursive: false });
+    } catch {}
+  }
 }
 
 async function run(args) {
@@ -447,65 +543,95 @@ async function run(args) {
 
   // RAM: Workbench peaks at about 1.9 GB for the 20 s it lives. It has to fit in free RAM with a margin; it is
   // not held against the pool's 1.5 GB floor the way a session's lasting reserve is. Idle sessions are trimmed first.
-  if (!args.flags.force) {
-    const need = WORKBENCH_MB + RAM_MARGIN_MB;
-    const freeMb = () => Math.round(freemem() / 1048576);
-    if (freeMb() < need) {
-      const pool = await import("../remote/pool.mjs");
-      pool.trimIfShort(ROOT, need);
-    }
-    if (freeMb() < need) {
-      console.log(`FAIL  look: ${freeMb()} MB of RAM free, a Workbench needs about ${need} MB. Wait for whatever holds it (a session, an encode), or pass --force.`);
+  // Asked only when a Workbench is about to start (a request to a live server needs none).
+  const ramGate = () => ramShort(args.flags.force === true);
+
+  // A live look server (tools\cli look serve) takes the plan; `look item` stays on the fresh path (its spawned
+  // prefabs are not proven through the server). --serve starts one when none is up; --fresh never uses it.
+  const serve = await import("./look-serve.mjs");
+  const useServer = !itemPerArea && !args.flags.fresh && (args.flags.serve === true || serve.serverUp(ROOT));
+  if (!useServer) {
+    const ram = await ramGate();
+    if (ram) {
+      console.log(`FAIL  ${ram}`);
       return 3;
     }
   }
 
-  // One Workbench at a time beside the headless build and the rdb refresh (shared shader cache).
-  let locked = false;
-  try {
-    wt.acquireLock(ROOT, "build", { waitMs: 0 });
-    locked = true;
-  } catch {
-    if (!args.flags.wait) {
-      console.log("FAIL  look: a headless Workbench (build, rdb refresh or another look) holds the build lock; pass --wait to queue (up to 10 min)");
-      return 3;
-    }
-    console.log("look: waiting for the build lock (another headless Workbench is running)");
-    try {
-      wt.acquireLock(ROOT, "build", { waitMs: 600000 });
-      locked = true;
-    } catch (e) {
-      console.log(`FAIL  look: ${e.message}`);
-      return 3;
-    }
+  // One Workbench at a time beside the headless build and the rdb refresh (shared shader cache). A server request
+  // takes the lock too; it lasts seconds, so look queues behind a server for up to 2 minutes without --wait.
+  const lockErr = takeBuildLock(wt, args.flags.wait ? 600000 : useServer ? 120000 : 0);
+  if (lockErr) {
+    console.log(`FAIL  look: ${lockErr}`);
+    return 3;
   }
 
-  const profile = join(ROOT, "server", "profile", "visual");
-  const raw = join(profile, "profile", "lf-visual");
-  const injected = join(ROOT, "addons", "LifeFramework", "Scripts", "WorkbenchGame", "LFVisual");
   const outRoot = resolve(ROOT, args.flags.out || join("tmp", "look"));
   const started = Date.now();
+  const plan = planText(shots, areas, opts);
   let res;
+  let raw;
+  let status;
+  let served = "fresh";
+  let sha = null;
+  let profile = join(ROOT, "server", "profile", "visual");
   try {
-    mkdirSync(raw, { recursive: true });
-    for (const f of readdirSync(raw)) rmSync(join(raw, f), { force: true });
-    writeFileSync(join(raw, "plan.txt"), planText(shots, areas, opts));
-    // Injected like the MCP handlers: Scripts/WorkbenchGame/ is git-ignored, and the copy is removed after the run.
-    mkdirSync(injected, { recursive: true });
-    cpSync(PLUGIN, join(injected, "LF_VisualShotsPlugin.c"));
-    const budgetS = BOOT_BUDGET_S + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
-    console.log(`look: ${shots.length} shot(s) of ${areas.length} area(s), ${opts.edit ? "edit" : "play"} mode, hidden Workbench (budget ${budgetS} s)`);
-    res = await runWorkbench(exe, profile, budgetS, args.flags.measure === true);
+    if (useServer) {
+      // A request includes leaving play, maybe a reopen, and entering play again: about 10 s on a PC, a minute on lf-cloud.
+      const budgetS = num(args.flags.budget, SERVE_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+      let ramMsg = null;
+      // A throw in the server path (git, file system) is one more reason to fall back, never a failed look.
+      const r = await serve.serveLook(ROOT, {
+        plan,
+        budgetS,
+        exe,
+        workbenchArgs,
+        snapshot: (root) => tb.snapshotCommit(root),
+        allowStart: args.flags.serve === true,
+        ramGate: async () => {
+          ramMsg = await ramGate();
+          return ramMsg;
+        },
+        parseStatus,
+      }).catch((e) => ({ ok: false, why: `look server error: ${e.message}` }));
+      // A served answer on the wrong world (#1147: a default scene) is a broken server, not a failed look.
+      const wrongWorld = r.ok ? worldProblem(parseStatus(r.statusText), opts.world || WORLD) : null;
+      if (wrongWorld) {
+        serve.killServer(ROOT, serve.readServeState(ROOT));
+        r.ok = false;
+        r.why = wrongWorld;
+      }
+      if (r.ok) {
+        served = r.served;
+        sha = r.sha;
+        raw = r.raw;
+        status = parseStatus(r.statusText);
+        res = { code: 0, timedOut: false, seconds: r.seconds, peakMb: 0 };
+        console.log(`look: ${shots.length} shot(s) of ${areas.length} area(s), ${opts.edit ? "edit" : "play"} mode, served by the look server (${served}: ${r.reason})`);
+      } else {
+        console.log(`look: the look server did not take it (${r.why}); a fresh Workbench instead`);
+        if (ramMsg) {
+          console.log(`FAIL  ${ramMsg}`);
+          return 3;
+        }
+      }
+    }
+    if (!raw) {
+      const ram = useServer ? await ramGate() : null;
+      if (ram) {
+        console.log(`FAIL  ${ram}`);
+        return 3;
+      }
+      sha = snapshotSha();
+      raw = join(profile, "profile", "lf-visual");
+      res = await freshRun(exe, profile, raw, plan, shots, opts, args, areas);
+      const statusFile = join(raw, "status.txt");
+      status = parseStatus(existsSync(statusFile) ? readFileSync(statusFile, "utf8") : "");
+    }
   } finally {
-    rmSync(join(injected, "LF_VisualShotsPlugin.c"), { force: true });
-    try {
-      if (existsSync(injected) && readdirSync(injected).length === 0) rmSync(injected, { recursive: false });
-    } catch {}
-    if (locked) wt.releaseLock(ROOT, "build");
+    wt.releaseLock(ROOT, "build");
   }
 
-  const statusFile = join(raw, "status.txt");
-  const status = parseStatus(existsSync(statusFile) ? readFileSync(statusFile, "utf8") : "");
   if (res.timedOut) console.log(`TIMEOUT after ${Math.round(res.seconds)}s: Workbench was killed; ${Object.keys(status.shots).length}/${shots.length} shot(s) written`);
   const wantedWorld = opts.world || WORLD;
   const wp = worldProblem(status, wantedWorld);
@@ -555,7 +681,7 @@ async function run(args) {
     const { cols } = sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
-    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), contact, shots: rows }, null, 2) + "\n");
+    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, contact, shots: rows }, null, 2) + "\n");
     const bad = rows.filter((r) => r.flags.length);
     summaries.push({ area: area.name, contact, bad, count: rows.length });
     if (rows[0].file) overview.push({ file: rows[0].file, label: `${area.name}${bad.length ? `  [${bad.length} flagged]` : ""}`, marks: [] });
@@ -564,7 +690,8 @@ async function run(args) {
     const { cols } = sheetLayout(overview.length);
     image({ op: "sheet", tiles: overview, out: join(outRoot, "overview.jpg"), cols, maxWidth: cols * 480, quality: 74 });
   }
-  if (!args.flags.keep) for (const f of readdirSync(raw)) rmSync(join(raw, f), { force: true });
+  // A server's raw folder also holds serve.txt and alive.txt, which are the server's; only request files go.
+  if (!args.flags.keep) for (const f of readdirSync(raw)) if (served === "fresh" || serve.REQUEST_FILES.test(f)) rmSync(join(raw, f), { force: true });
 
   if (identicalFrames(frameHashes)) {
     console.log(`FAIL  look: all ${frameHashes.length} frames are byte-identical, so the camera never saw the requested world (Workbench likely rendered a fallback scene). Retry when RAM is free; do not use these pictures.`);
@@ -573,7 +700,8 @@ async function run(args) {
 
   const total = (Date.now() - started) / 1000;
   const ram = res.peakMb ? `, Workbench peak ${res.peakMb} MB` : "";
-  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s (Workbench start ${r1(bootS)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
+  const startLabel = served === "fresh" ? "Workbench start" : "request to first step";
+  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
     for (const b of s.bad) console.log(`    ${b.flags.join(",")}: ${b.kind} ${b.label}${b.size ? ` ${sizeText(b.size)}` : ""}`);
@@ -585,9 +713,40 @@ async function run(args) {
   return missing || res.timedOut || status.errors.length ? 1 : 0;
 }
 
+// ------------------------------------------------------------------ look serve
+
+async function serveMain(args) {
+  const wt = await import("../wt.mjs");
+  const serve = await import("./look-serve.mjs");
+  if (!args.flags.status && wt.isMainCheckout(ROOT)) {
+    console.log("REFUSE  'look serve' runs from a worktree (the server shows that worktree's state): tools\cli wt new <feature>");
+    return 2;
+  }
+  const exe = workbenchExe();
+  if (!exe && !args.flags.status && !args.flags.stop) {
+    console.log("FAIL  Workbench not found (set ENFUSION_WORKBENCH_PATH to the Arma Reforger Tools folder)");
+    return 2;
+  }
+  let locked = false;
+  return serve.serveCommand(ROOT, args.flags, {
+    exe,
+    workbenchArgs,
+    snapshot: (root) => tb.snapshotCommit(root),
+    ramGate: () => ramShort(args.flags.force === true),
+    acquire: (waitMs) => {
+      const err = takeBuildLock(wt, args.flags.wait ? 600000 : waitMs);
+      locked = !err;
+      return err;
+    },
+    release: () => {
+      if (locked) wt.releaseLock(ROOT, "build");
+    },
+  });
+}
+
 // ------------------------------------------------------------------ selftest
 
-export function selftest() {
+export async function selftest() {
   const failures = [];
   const ok = (cond, what) => {
     if (!cond) failures.push(what);
@@ -703,10 +862,42 @@ export function selftest() {
   ok(fanHits([188, 242], [187, 244.6], 0.1, [188, 260]), "the lens fan misses a lamp pole 2.8 m in front of the bank wide camera");
   ok(fanHits([188, 242], [186.5, 244.5], 0.1, [188, 260]) && !fanHits([188, 242], [188, 250], 0.1, [188, 252]), "fan geometry: a pole inside the reach is hit, one beyond it is not");
 
-  if (failures.length) {
-    for (const f of failures) console.log(`look selftest FAIL: ${f}`);
-    return 1;
-  }
+  // The look server (look-serve.mjs): the diff classifier and the request protocol.
+  // red-proof: 2026-11-14 adding ".c" to FAST_PATH_EXT failed "a script change must restart"; dropping the world check
+  // in answerProblem failed "an answer with no world was taken"; both restored.
+  const serve = await import("./look-serve.mjs");
+  const ns = serve.parseNameStatus("M\taddons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer\r\nM\taddons/LifeFramework/Prefabs/Props/LF_Till.et\nA\taddons/LifeFramework/Prefabs/Props/New.et\nD\tdocs/x.md\nR100\ta.et\tb.et\n");
+  ok(ns.length === 5 && ns[0].status === "M" && ns[0].path.endsWith("Shops.layer") && ns[2].status === "A" && ns[4].status === "R", `parseNameStatus: ${JSON.stringify(ns)}`);
+  const cls = (changes, extra = {}) => serve.classifyChange({ from: "aaa", to: "bbb", changes, ...extra }).reload;
+  const M = (path) => ({ status: "M", path });
+  ok(serve.classifyChange({ from: null, to: "bbb" }).reload === "restart", "no server must restart");
+  ok(serve.classifyChange({ from: "aaa", to: "aaa", changes: [] }).reload === "none", "an identical snapshot must shoot as is");
+  ok(cls([]) === "reopen", "a different commit with the same files must still reopen, never none");
+  ok(cls([M("addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer")]) === "restart", "a modified .layer must restart (a git-rewritten layer crashed the reopen 4 of 4)");
+  ok(cls([M("addons/LifeFramework/Prefabs/Props/LF_Till.et")]) === "restart", "a modified .et must restart (not proven through the viewer)");
+  ok(cls([M("addons/LifeFramework/Scripts/Game/Feature/Shop/LF_Shop.c")]) === "restart", "a script change must restart");
+  ok(cls([M("addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer"), M("addons/LifeFramework/Scripts/Game/X.c")]) === "restart", "a script change beside a layer must restart");
+  for (const p of ["addons/LifeFramework/Prefabs/Props/LF_Till.et.meta", "addons/LifeFramework/Assets/x.xob", "addons/LifeFramework/Assets/x.emat", "addons/LifeFramework/Assets/x.edds", "addons/LifeFramework/UI/x.layout", "addons/LifeFramework/Language/everonlife_localization.st", "addons/LifeFramework/Configs/x.conf", "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent"])
+    ok(cls([M(p)]) === "restart", `a modified ${p.split(".").slice(1).join(".")} must restart (not proven live)`);
+  for (const st of ["A", "D", "R", "C", "T"]) ok(cls([{ status: st, path: "addons/LifeFramework/Prefabs/Props/LF_Till.et" }]) === "restart", `status ${st} must restart`);
+  ok(cls([M("tools/visual/look.mjs"), { status: "A", path: "docs/new.md" }]) === "reopen", "a change outside addons/ alone must reopen, not restart");
+  ok(cls([M("tools/visual/look.mjs"), { status: "A", path: "addons/LifeFramework/Prefabs/New.et" }]) === "restart", "an added addon file beside a tools change must restart");
+  ok(cls([], { pluginChanged: true }) === "restart" && cls([M("a.layer")], { pluginChanged: true }) === "restart", "a changed plugin must restart");
+  ok(serve.goText("123-456", "reopen") === "123-456\nreopen\n", "go.txt text");
+  ok(serve.doneMatches("123-456\r\n", "123-456") && !serve.doneMatches("123-45\n", "123-456") && !serve.doneMatches("", "1"), "done.txt matching");
+  ok(serve.aliveFresh(1000, 15000) && !serve.aliveFresh(1000, 16001) && !serve.aliveFresh(null, 1), "alive.txt freshness");
+  ok(serve.REQUEST_FILES.test("status.txt") && serve.REQUEST_FILES.test("a__wide.png") && !serve.REQUEST_FILES.test("serve.txt") && !serve.REQUEST_FILES.test("alive.txt"), "a request must not clear the server's own files");
+  const reqStatus = parseStatus("5 ok request 123-456 reload=reopen\n900 ok world $LifeFramework:Worlds/DebugWorld/DebugWorld.ent view=1x1 entities=1\n");
+  ok(reqStatus.request === "123-456" && reqStatus.world, "status request id");
+  ok(parseStatus("12 ok world X view=1x1 entities=0").request === null, "a status with no request line has an id");
+  const full = parseStatus("5 ok request 7-1 reload=none\n900 ok world W view=1x1 entities=1\n950 done 1 0\n");
+  ok(serve.answerProblem(full, "7-1") === null, "a complete answer was refused");
+  ok(/not 7-2/.test(serve.answerProblem(full, "7-2") || ""), "another request's answer was taken");
+  ok(/never opened/.test(serve.answerProblem(parseStatus("5 ok request 7-1 reload=none\n6 ok edit waited=0\n"), "7-1") || ""), "an answer with no world was taken (lf-cloud 2026-11-14: a re-run request had rewritten status.txt)");
+  ok(/no done/.test(serve.answerProblem(parseStatus("5 ok request 7-1 reload=none\n900 ok world W view=1x1 entities=1\n"), "7-1") || ""), "an unfinished answer was taken");
+  ok(/id == lastId/.test(plugin), "the plugin must skip a request id it already served (its DeleteFile of go.txt does not take)");
+  for (const f of ["serve.txt", "alive.txt", "go.txt", "done.txt", "stop.txt", "ok request "]) ok(plugin.includes(f), `the plugin lost the server protocol piece '${f}'`);
+
   // #1147: fallback scene guard.
   const good = parseStatus("1018 ok world $LifeFramework:Worlds/DebugWorld/DebugWorld.ent view=1x1 entities=909");
   ok(worldProblem(good, "Worlds/DebugWorld/DebugWorld.ent") === null, "the right world was refused");
@@ -717,17 +908,23 @@ export function selftest() {
   ok(/fell back/.test(worldProblem(crate, WORLD) ?? ""), "a default scene was accepted as the requested world");
   ok(identicalFrames(["a", "a", "a"]) && !identicalFrames(["a", "b", "a"]) && !identicalFrames(["a", "a"]) && !identicalFrames([null, "a", "a"]), "identical-frame backup");
   ok(planText([], [{ x: 0, z: 0, radius: 1 }], { world: "Worlds/Bad/Bad.ent" }).startsWith("world Worlds/Bad/Bad.ent"), "--world did not reach the plan");
-  console.log("look selftest: OK (plan, status, PNG stats, flags, plugin directives, lens fan)");
+
+  if (failures.length) {
+    for (const f of failures) console.log(`look selftest FAIL: ${f}`);
+    return 1;
+  }
+  console.log("look selftest: OK (plan, status, PNG stats, flags, plugin directives, lens fan, world guard, look server classifier and protocol)");
   return 0;
 }
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);
   if (args.pos[0] === "selftest") return selftest();
+  if (args.pos[0] === "serve") return serveMain(args);
   if (!args.pos.length || args.flags.help) {
     console.log(USAGE);
     return args.flags.help ? 0 : 2;
