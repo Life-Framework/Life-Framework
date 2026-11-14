@@ -8161,6 +8161,246 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Siren: off"
      Comment "Action on the ambulance's light switch: stop the siren and the light bar (#923)."
     }
+    CustomStringTableItem "{C3D98F355E87E01F}" {
+     Id "LF-TestOrgSign_Title"
+     Target_en_us "Test organisation"
+     Comment "Toast title of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{B249F0D4F960A3F9}" {
+     Id "LF-TestOrgSign_Join"
+     Target_en_us "Join test organisation"
+     Comment "F-key action on the playtest sign: join the shared Test Organisation (#934)."
+    }
+    CustomStringTableItem "{920FCADF747D40B0}" {
+     Id "LF-TestOrgSign_Leave"
+     Target_en_us "Leave organisation"
+     Comment "F-key action on the playtest sign: leave your organisation, founder included (#934)."
+    }
+    CustomStringTableItem "{20EB5D2AA9C99C49}" {
+     Id "LF-TestOrgSign_Denied"
+     Target_en_us "Playtest only. This sign works in the playtest town."
+     Comment "Toast when the playtest gate or the dev gate refuses the org sign (#934)."
+    }
+    CustomStringTableItem "{50FAC5EDA66028A3}" {
+     Id "LF-TestOrgSign_NoCharacter"
+     Target_en_us "You have no character yet."
+     Comment "Toast when the org sign is used with no character (#934)."
+    }
+    CustomStringTableItem "{213816480AB942FE}" {
+     Id "LF-TestOrgSign_TooFar"
+     Target_en_us "Step up to the sign."
+     Comment "Toast when the org sign is used from too far (#934)."
+    }
+    CustomStringTableItem "{D09E099C90D56448}" {
+     Id "LF-TestOrgSign_AlreadyIn"
+     Target_en_us "You already belong to an organisation. Leave it first."
+     Comment "Greyed-out reason and toast: Join while already in an organisation (#934)."
+    }
+    CustomStringTableItem "{4EA24B0F715B7041}" {
+     Id "LF-TestOrgSign_NotIn"
+     Target_en_us "You are not in an organisation."
+     Comment "Greyed-out reason and toast: Leave with no organisation (#934)."
+    }
+    CustomStringTableItem "{8E9D6E84A80978B5}" {
+     Id "LF-TestOrgSign_Joined"
+     Target_en_us "You are in the Test organisation. The hideout door in the alley opens for you."
+     Comment "Toast after joining the Test Organisation (#934)."
+    }
+    CustomStringTableItem "{92F24781D1DE033B}" {
+     Id "LF-TestOrgSign_YardTaken"
+     Target_en_us "You are in the Test organisation, but another organisation holds the hideout yard."
+     Comment "Toast after joining when the hideout lease belongs to someone else (#934)."
+    }
+    CustomStringTableItem "{88BA7C53158F4683}" {
+     Id "LF-TestOrgSign_Left"
+     Target_en_us "You left the organisation. Its door is shut to you now."
+     Comment "Toast after leaving the organisation (#934)."
+    }
+    CustomStringTableItem "{A9A2726808B24C57}" {
+     Id "LF-Hideout_Open"
+     Target_en_us "Open"
+     Comment "Prompt on a locked hideout door for a member of the owning organisation (#934)."
+    }
+    CustomStringTableItem "{6A4D04C9867F8E55}" {
+     Id "LF-Hideout_MembersOnly"
+     Target_en_us "Members only (%1)"
+     Comment "Prompt on a locked hideout door for a non-member; %1 is the owning organisation (#934)."
+    }
+    CustomStringTableItem "{F763318319EA320C}" {
+     Id "LF-Hideout_MembersOnlyPlain"
+     Target_en_us "Members only"
+     Comment "Prompt on a locked hideout door when the owner name has not reached the client yet (#934)."
+    }
+    CustomStringTableItem "{1B66611A4CED0EC1}" {
+     Id "LF-Hideout_MembersOnlyReason"
+     Target_en_us "Only members of %1 can open this door."
+     Comment "Refusal under the hideout door prompt; %1 is the owning organisation (#934)."
+    }
+    CustomStringTableItem "{2C929FC1D06CD839}" {
+     Id "LF-Hideout_Unowned"
+     Target_en_us "Locked (no owner)"
+     Comment "Prompt on a hideout door nobody holds (#934)."
+    }
+    CustomStringTableItem "{C252650C7A89CED7}" {
+     Id "LF-Hideout_UnownedReason"
+     Target_en_us "Nobody holds this yard. Found an organisation and take the lease at the registry desk."
+     Comment "Refusal under the hideout door prompt when no organisation holds the yard (#934)."
+    }
+    CustomStringTableItem "{EE39881CFABC1E92}" {
+     Id "LF-Sign_TestOrg_Title"
+     Target_en_us "Test organisation"
+     Comment "Title of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{0D48BB18722E316D}" {
+     Id "LF-Sign_TestOrg_What"
+     Target_en_us "Playtest only: a shared organisation for one tester."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{DFA15542C4155B52}" {
+     Id "LF-Sign_TestOrg_How"
+     Target_en_us "Use Join test organisation. The first one in founds it and takes the hideout yard. Use Leave organisation to get out again."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{C4E999C65CA365AF}" {
+     Id "LF-Sign_TestOrg_Needs"
+     Target_en_us "Nothing. This sign works in the playtest town only."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{39447CA62CCE01E3}" {
+     Id "LF-Sign_TestOrg_Next"
+     Target_en_us "The hideout door is at the end of the cobbled alley: members open it, everyone else is told whose it is."
+     Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{D8050889F5E6497E}" {
+     Id "LF-DebugMenu_ResetWorld"
+     Target_en_us "Reset world"
+     Comment "Debug menu: first press of the reset-world button (asks again before it resets)."
+    }
+    CustomStringTableItem "{42E123AF9D0648DA}" {
+     Id "LF-DebugMenu_ResetWorldSure"
+     Target_en_us "Press again: reset for everyone"
+     Comment "Debug menu: reset-world button after the first press."
+    }
+    CustomStringTableItem "{A3B9C629E6434881}" {
+     Id "LF-SpawnHub_ResetWorld"
+     Target_en_us "Reset the world"
+     Comment "Travel globe list row: puts the playtest world back as it was for everyone."
+    }
+    CustomStringTableItem "{EE3AD272B57D4B3B}" {
+     Id "LF-SpawnHub_ResetSure"
+     Target_en_us "Sure? Resets for everyone"
+     Comment "Travel globe reset row after the first press."
+    }
+    CustomStringTableItem "{960E19EA6B5BB672}" {
+     Id "LF-CaseBoard_Title"
+     Target_en_us "Case board"
+     Comment "Toast title for the police case board (#148)."
+    }
+    CustomStringTableItem "{0B29DE154C616F79}" {
+     Id "LF-CaseBoard_Pin_Action"
+     Target_en_us "Pin evidence"
+     Comment "F-key action on the case board: pin carried evidence bags, or the next logged card (#148)."
+    }
+    CustomStringTableItem "{576F32E08182B47E}" {
+     Id "LF-CaseBoard_Unpin_Action"
+     Target_en_us "Unpin evidence"
+     Comment "F-key action on the case board: take down the card pinned last (#148)."
+    }
+    CustomStringTableItem "{88E53769C33A742A}" {
+     Id "LF-CaseBoard_Pinned"
+     Target_en_us "%1 card(s) pinned to the case board."
+     Comment "Toast after pinning; %1 is the number of cards (#148)."
+    }
+    CustomStringTableItem "{7B64365A819C2F84}" {
+     Id "LF-CaseBoard_NothingToPin"
+     Target_en_us "No evidence to pin. Bag it at the scene or log it at the locker first."
+     Comment "Toast when pinning finds nothing (#148)."
+    }
+    CustomStringTableItem "{E3F153BC2DA3B463}" {
+     Id "LF-CaseBoard_Unpinned"
+     Target_en_us "Card taken down. It stays logged in the locker."
+     Comment "Toast after unpinning (#148)."
+    }
+    CustomStringTableItem "{EDC95AB6DCC1E098}" {
+     Id "LF-CaseBoard_NothingPinned"
+     Target_en_us "Nothing is pinned to the board."
+     Comment "Toast when unpinning finds nothing (#148)."
+    }
+    CustomStringTableItem "{78EF82E35BB73ADD}" {
+     Id "LF-CaseBoard_CaseHeader"
+     Target_en_us "Case %1"
+     Comment "Header of a case sheet on the board face; %1 is the report number. Printed in capitals (#148)."
+    }
+    CustomStringTableItem "{676FF529BB3B6D09}" {
+     Id "LF-CaseBoard_PlaceTime"
+     Target_en_us "%1, %2"
+     Comment "A case's place and the time of the crime on the board face (#148)."
+    }
+    CustomStringTableItem "{B601E7BA839D3417}" {
+     Id "LF-CaseBoard_NoNote"
+     Target_en_us "Found at the scene"
+     Comment "Evidence card line when the piece says nothing more (#148)."
+    }
+    CustomStringTableItem "{498C53D90C725BD5}" {
+     Id "LF-CaseBoard_FootprintNote"
+     Target_en_us "Print of %1"
+     Comment "Footprint card line; %1 is the suspect's footwear (#148)."
+    }
+    CustomStringTableItem "{F5143D4581991E31}" {
+     Id "LF-CaseBoard_Kind_casing"
+     Target_en_us "Shell casing"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{6A7F76059AF3CDD5}" {
+     Id "LF-CaseBoard_Kind_dropped"
+     Target_en_us "Dropped item"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{CC4F6A7D13DA03D0}" {
+     Id "LF-CaseBoard_Kind_footprint"
+     Target_en_us "Footprint"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{B9E3D8B120B88890}" {
+     Id "LF-CaseBoard_Kind_statement"
+     Target_en_us "Witness statement"
+     Comment "Evidence card title (#148)."
+    }
+    CustomStringTableItem "{296D485ED962E190}" {
+     Id "LF-Sign_PoliceCases_Title"
+     Target_en_us "Case board"
+     Comment "Sign Read card title for the police case board (#148)."
+    }
+    CustomStringTableItem "{9CB43F394C2650F6}" {
+     Id "LF-Sign_PoliceCases_What"
+     Target_en_us "Open cases, one column each: the crime, where and when, the suspect, and the evidence pinned against it."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{F33E84A46C3A3659}" {
+     Id "LF-Sign_PoliceCases_How"
+     Target_en_us "Bag what a scene left (casings, footprint cards, dropped items, witness statements), then Pin evidence here. Unpin takes down the last card."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{FCBCE38D272C85F0}" {
+     Id "LF-Sign_PoliceCases_Rules"
+     Target_en_us "On-duty police only. A case closes when the suspect is no longer wanted."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{2306825FF804F997}" {
+     Id "LF-Sign_PoliceCases_Next"
+     Target_en_us "The evidence locker keeps every logged bag; the wanted board shows the suspects to the public."
+     Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{7D3A91E4C2B8F650}" {
+     Id "LF-Parcel_DroppedTitle"
+     Target_en_us "Parcel"
+     Comment "Toast title when a carried courier parcel lands on the ground."
+    }
+    CustomStringTableItem "{7D3A91E4C2B8F651}" {
+     Id "LF-Parcel_DroppedNearby"
+     Target_en_us "You dropped the parcel. It is on the ground nearby, marked with a glow."
+     Comment "Toast when a carried courier parcel lands on the ground (#920)."
+    }
   }
  }
 }

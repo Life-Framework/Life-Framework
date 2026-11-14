@@ -1,3 +1,4 @@
+// red-proof (#932): restore the two backpack tiers in MoneyStack.et; "a large cash stack stays the money mesh" fails.
 // red-proof: revert the Combine source-quantity clamp (min with source
 // quantity), the Split bounds guard, SortByQuantity's int keys to string keys,
 // the init-quantity application in EOnInit, or the top-tier model swap in
@@ -7,7 +8,6 @@ class LF_Test_QuantityOperations : LF_Test
 {
 	protected static const ResourceName MONEY_STACK_PREFAB = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";
 	protected static const ResourceName MONEY_STACK_MODEL = "{773BE5E227A5A9CB}Assets/Items/Currencies/MoneyStack.xob";
-	protected static const ResourceName MONEY_STACK_BAG_MODEL = "{582D5ED9889AB099}Assets/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack/Backpack_IIFS_FieldPack_item.xob";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -151,7 +151,7 @@ class LF_Test_QuantityOperations : LF_Test
 
 		qty.SetQuantity(10000);
 		ctx.Equal(10000, qty.GetQuantity(), "stack set to the top tier quantity");
-		ctx.True(qty.GetActiveStackModel() == MONEY_STACK_BAG_MODEL, "top tier quantity swaps to the bag model");
+		ctx.True(qty.GetActiveStackModel() == MONEY_STACK_MODEL, "a large cash stack stays the money mesh, never a backpack (#932)");
 
 		qty.SetQuantity(50);
 		ctx.True(qty.GetActiveStackModel().IsEmpty(), "quantity below every tier restores the base model");

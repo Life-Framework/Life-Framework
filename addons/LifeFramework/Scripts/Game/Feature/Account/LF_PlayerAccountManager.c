@@ -379,6 +379,29 @@ class LF_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: every loaded account's wanted level back to 0 (the world reset, which also takes their
+	//! posters down through SetWantedLevel).
+	//! eturn How many accounts had a wanted level.
+	int ClearAllWanted()
+	{
+		if (!m_mAccounts)
+			return 0;
+
+		int cleared = 0;
+		for (int i = 0; i < m_mAccounts.Count(); i++)
+		{
+			LF_PlayerAccount account = m_mAccounts.GetElement(i);
+			if (!account || account.GetWantedLevel() <= 0)
+				continue;
+
+			account.SetWantedLevel(0);
+			cleared++;
+		}
+
+		return cleared;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	LF_PlayerAccount GetAccount(int playerId)
 	{
 		return GetFromCache(playerId);
