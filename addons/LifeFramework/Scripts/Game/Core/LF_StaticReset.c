@@ -90,6 +90,7 @@ class LF_StaticReset
 		LF_RateLimit.ResetStatics();
 		LF_SpikeStrips.ResetStatics();
 		LF_ConfigStream.Reset();
+		LF_DialogueOverrides.Reset();
 		LF_CaseBoard.ResetStatics();
 		LF_CaseBoardView.ResetStatics();
 		LF_CaseBoardComponent.ResetStatics();

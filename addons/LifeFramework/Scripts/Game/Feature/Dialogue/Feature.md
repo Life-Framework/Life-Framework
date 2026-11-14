@@ -7,6 +7,7 @@ Adding an NPC: `docs/asset-pipeline/dialogue.md`.
 
 | File | Side | Does |
 |---|---|---|
+| `LF_DialogueOverrides.c` | both | Dev caption overrides (#970): `$profile:LifeFramework/dev/dialogue.json` read by `reload dialogue`, streamed to clients; the scene shows the override instead of the translated key |
 | `LF_DialogueConfig.c` | both | The data classes and `LF_DialogueFlow`, the pure rules (which replies are offered, what is said, the mouth envelope, config problems) |
 | `LF_DialogueComponent.c` | both | On the NPC prefab; loads and checks the config once |
 | `LF_DialogueHook.c` | server | Base of a reply's condition or action; `Find("Name")` resolves class `LF_DialogueHook_Name` |
