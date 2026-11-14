@@ -42,7 +42,7 @@ const REMOTE_RETRY_MS = 4000;
 export const SLOT_ENV = "LF_SERVER_SLOT_HELD";
 
 export const slotLockName = q.slotLockName;
-export const { lanesFor, laneKind, portForLock, normalizePriority } = q;
+export const { lanesFor, laneKind, portForLock, normalizePriority, testPurpose, runsByPurpose, formatRunsByPurpose } = q;
 
 // Settings: pool.json top level, overridden by the "pool" key of lf.local.json,
 // then by env (tests use LF_POOL_*): sessionIdleMin (a session idle this long
@@ -2413,6 +2413,9 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     }
   } catch {}
   const last = runs.filter(isTestRun).slice(-8);
+  const kinds = q.runsByPurpose(runs.filter(isTestRun).slice(-100));
+  if (kinds.length) console.log(`recent runs by kind (core-only counted apart):
+${q.formatRunsByPurpose(kinds)}`);
   if (!verbose) {
     const n = (res) => last.filter((r) => r.result === res).length;
     console.log(`last ${last.length} run(s): ${n("pass")} pass, ${last.filter((r) => r.result !== "pass" && r.result !== "timeout").length} other, ${n("timeout")} timeout; --verbose lists them and the sessions`);
@@ -2420,7 +2423,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
   }
   console.log(`last ${last.length} run(s):`);
   for (const r of last) {
-    console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
+    console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(19)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
   printSessions(runs.filter(isSession), 8);
   return 0;
@@ -2456,6 +2459,9 @@ export function cmdPoolStats(root) {
     by.get(k).push(r);
   }
   console.log(`pool stats: ${runs.length} run(s)`);
+  const kinds = q.runsByPurpose(runs);
+  if (kinds.length) console.log(`by kind (a core-only suite is its own kind):
+${q.formatRunsByPurpose(kinds)}`);
   for (const [k, rs] of by) {
     const avg = (f) => (rs.reduce((a, r) => a + (Number(r[f]) || 0), 0) / rs.length).toFixed(1);
     const pass = rs.filter((r) => r.result === "pass").length;

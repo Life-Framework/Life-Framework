@@ -421,7 +421,37 @@ export const BUDGET_MIN_RUNS = 5;
 export const TIMEOUT_RATE_RAISE = 0.02;
 export const BOOT_BUDGET_S = 30;
 // Starting budgets (seconds) until a kind has history. e2e is per pass.
-export const DEFAULT_BUDGET_S = { "test only": 30, "test fast": 45, "test all": 90, "test persistence": 120, e2e: 120 };
+export const DEFAULT_BUDGET_S = { "test only": 30, "test fast": 45, "test all": 90, "test all core-only": 90, "test persistence": 120, e2e: 120 };
+
+// The run-log label of a test run (runs.jsonl "purpose", the budget key, the pool status column).
+// `ci`'s core-only suite (the pack hidden, #326) is its own kind: its budget, count and history
+// must not mix with the full run's.
+export function testPurpose({ tier = "all", only = [], coreOnly = false } = {}) {
+  const base = only.length ? "test only" : `test ${tier}`;
+  return coreOnly ? `${base} core-only` : base;
+}
+
+// Test runs grouped by purpose: [{ purpose, n, pass, avgDurS, lastPassed, lastTotal }], in first-seen order.
+export function runsByPurpose(runs) {
+  const by = new Map();
+  for (const r of runs) {
+    if (!r.purpose || r.kind === "session" || r.purpose === "reclaim" || r.purpose === "session" || !/^test /.test(r.purpose)) continue;
+    const g = by.get(r.purpose) ?? { purpose: r.purpose, n: 0, pass: 0, durS: 0, lastPassed: null, lastTotal: null };
+    g.n++;
+    if (r.result === "pass") g.pass++;
+    g.durS += Number(r.durS) || 0;
+    if (r.total !== undefined) {
+      g.lastPassed = r.passed;
+      g.lastTotal = r.total;
+    }
+    by.set(r.purpose, g);
+  }
+  return [...by.values()].map((g) => ({ purpose: g.purpose, n: g.n, pass: g.pass, avgDurS: g.n ? Math.round((g.durS / g.n) * 10) / 10 : 0, lastPassed: g.lastPassed, lastTotal: g.lastTotal }));
+}
+
+export function formatRunsByPurpose(groups) {
+  return groups.map((g) => `  ${g.purpose.padEnd(20)} runs ${String(g.n).padStart(4)}  pass ${String(g.pass).padStart(4)}  avg run ${g.avgDurS.toFixed(1).padStart(6)} s${g.lastTotal !== null ? `  last ${g.lastPassed}/${g.lastTotal}` : ""}`).join("\n");
+}
 
 export function p95(values) {
   const v = values.filter((x) => Number.isFinite(x) && x > 0).sort((a, b) => a - b);

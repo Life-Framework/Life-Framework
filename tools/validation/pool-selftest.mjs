@@ -621,6 +621,22 @@ try {
   check(q.budgetSeconds(passRuns("test all", 20, 20), "test all", "local").runS === 60, "budget is not 3x the p95");
   check(q.budgetSeconds(passRuns("test only", 9, 4), "test only", "local").source === "default", "4 passes already count as history");
   check(q.budgetSeconds(passRuns("e2e", 40, 6), "e2e", "local").runS === 60, "e2e budget is not per pass");
+  // 5b. the core-only suite is its own run kind: label, budget, counts, stamp tier.
+  check(q.testPurpose({ tier: "all" }) === "test all" && q.testPurpose({ tier: "all", coreOnly: true }) === "test all core-only", "ci core-only run is not labelled `test all core-only`");
+  check(q.testPurpose({ tier: "fast", only: ["LF_Test_X"] }) === "test only" && q.testPurpose({ tier: "all", only: ["A"], coreOnly: true }) === "test only core-only", "--only label wrong");
+  check(q.budgetSeconds([], "test all core-only", "local").runS === 90, "core-only has no seeded budget");
+  check(q.budgetSeconds(passRuns("test all", 20, 20), "test all core-only", "local").source === "default", "core-only budget borrowed the full run history");
+  const kindRuns = [
+    { purpose: "test all", result: "pass", durS: 30, passed: 531, total: 531 },
+    { purpose: "test all core-only", result: "pass", durS: 20, passed: 480, total: 480 },
+    { purpose: "test all", result: "fail", durS: 10, passed: 530, total: 531 },
+    { purpose: "session", kind: "session" }, { purpose: "reclaim" }, { purpose: "e2e", result: "pass", durS: 5 },
+  ];
+  const kinds = q.runsByPurpose(kindRuns);
+  check(kinds.length === 2 && kinds[0].purpose === "test all" && kinds[0].n === 2 && kinds[0].pass === 1 && kinds[0].lastTotal === 531, "runsByPurpose does not group the full run");
+  check(kinds[1].purpose === "test all core-only" && kinds[1].n === 1 && kinds[1].lastTotal === 480 && kinds[1].avgDurS === 20, "runsByPurpose mixes the core-only count into the full run");
+  check(/test all core-only +runs +1/.test(q.formatRunsByPurpose(kinds)) && q.formatRunsByPurpose(kinds).includes("last 480/480"), "formatRunsByPurpose omits the core-only row");
+  check(tb.stampTierOf("all", true) === "all-core" && tb.stampTierOf("all", false) === "all", "a remote core-only summary is not stamped all-core");
   check(q.budgetSeconds(passRuns("test only", 9, 20, "lf-testbox"), "test only", "local").source === "default", "another machine's history was used");
   const flaky = [...passRuns("test only", 9, 40), ...Array.from({ length: 3 }, () => ({ purpose: "test only", machine: "local", result: "timeout", durS: 30 }))];
   check(q.budgetSeconds(flaky, "test only", "local").runS === 60, "a 7% timeout rate did not raise the budget");
