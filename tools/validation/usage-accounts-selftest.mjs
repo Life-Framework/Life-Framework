@@ -9,10 +9,15 @@
 //   4. the window counts only what was spent since the last reset, the observed limit is what was spent
 //      in the block behind the last hit, the percentage and headroom are hand-worked, an account that
 //      never hit a limit borrows the other's limit scaled by plan tier;
-//   5. pick takes the most headroom, a tie the fewer active sessions, and never a blocked account;
+//   5. pick scores headroom x plan weight / (active + 1), so Personal (max_20x) counts 4 x Gaming (max_5x) and
+//      busy accounts lose; never a blocked account, nor one whose last 5h limit hit is under 5 h old (it prints
+//      "limited until HH:MM" even when its logged reset passed and its usage looks empty); the pick line says why;
 //   6. an unreachable laptop is said plainly and the PC accounts still print: one line each plus the pick.
 // red-proof: 2026-11-14, with the clip at the last reset removed the window counted the 14:30 turn and it
-// printed "FAIL usage-accounts: gaming window usage: 12300 != 2300".
+// printed "FAIL usage-accounts: gaming window usage: 12300 != 2300". Pick, same day: with the 5h rule set to 0
+// it printed "FAIL usage-accounts: limited until the hit plus 5 h: 0 != ..."; with the plan weight forced to 1,
+// "FAIL usage-accounts: plan weight: 50% of a max_20x beats 100% of a max_5x: Gaming != Personal"; with the
+// active count dropped from the score, "FAIL usage-accounts: same plan, same headroom: fewer active agents wins: a != b".
 import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -137,11 +142,40 @@ const line = accountLine(G, { now: NOW });
 if (!/â‰ˆ28% of last observed limit/.test(line) || !/estimate/.test(line) || !/pc 1, laptop 3/.test(line)) failures.push(`account line: ${line}`);
 
 // 5: pick
-const mk = (label, headroom, active, blocked = null) => ({ label, ids: [label], headroom, active, blocked, pct: 100 - headroom });
-eq(pickAccount([mk("a", 40, 2), mk("b", 60, 9)]).label, "b", "most headroom wins");
-eq(pickAccount([mk("a", 60.2, 5), mk("b", 59.8, 2)]).label, "b", "a tie (whole percent) goes to fewer active sessions");
-eq(pickAccount([mk("a", 0, 1, { type: "five_hour", until: 1 }), mk("b", 5, 9)]).label, "b", "blocked is skipped");
-eq(pickAccount([mk("a", 0, 1, { type: "five_hour", until: 1 }), mk("b", 0, 9, { type: "five_hour", until: 1 })]).label, "a", "all blocked still names one");
+const M5 = "default_claude_max_5x";
+const M20 = "default_claude_max_20x";
+const mk = (label, headroom, active, o = {}) => ({ label, ids: [label], headroom, active, blocked: null, limitedUntil: 0, tier: M5, pct: 100 - headroom, ...o });
+eq(pickAccount([mk("a", 40, 2), mk("b", 60, 2)]).label, "b", "same plan, same load: most headroom wins");
+eq(pickAccount([mk("a", 60, 5), mk("b", 60, 2)]).label, "b", "same plan, same headroom: fewer active agents wins");
+// plan size: Personal (max_20x) has 4 x Gaming's capacity, so half-used Personal still beats an empty Gaming
+eq(pickAccount([mk("Gaming", 100, 0, { tier: M5 }), mk("Personal", 50, 0, { tier: M20 })]).label, "Personal", "plan weight: 50% of a max_20x beats 100% of a max_5x");
+eq(pickAccount([mk("Gaming", 100, 0, { tier: M5 }), mk("Personal", 20, 0, { tier: M20 })]).label, "Gaming", "plan weight: 20% of a max_20x loses to 100% of a max_5x");
+// active agents share the capacity
+eq(pickAccount([mk("Gaming", 100, 0, { tier: M5 }), mk("Personal", 100, 12, { tier: M20 })]).label, "Gaming", "twelve agents on Personal leave an idle Gaming the larger share");
+eq(pickAccount([mk("Gaming", 100, 5, { tier: M5 }), mk("Personal", 100, 12, { tier: M20 })]).label, "Personal", "but five on Gaming and twelve on Personal is Personal");
+// limits
+const lim = { type: "five_hour", until: 1 };
+eq(pickAccount([mk("a", 0, 1, { blocked: lim }), mk("b", 5, 9)]).label, "b", "blocked is skipped");
+eq(pickAccount([mk("a", 100, 0, { limitedUntil: NOW + 3 * 3600e3 }), mk("b", 5, 9)]).label, "b", "an account inside its 5h limit is skipped whatever its headroom says");
+eq(pickAccount([mk("a", 0, 1, { blocked: lim }), mk("b", 0, 9, { blocked: lim })]).label, "a", "all blocked still names one");
+eq(pickAccount([mk("a", 100, 0, { limitedUntil: NOW + 3 * 3600e3 }), mk("b", 100, 0, { limitedUntil: NOW + 1 * 3600e3 })]).label, "b", "all limited: the one that is back first");
+// the real case: a 5h limit hit 2 min ago whose reset time already passed; usage is low because it was blocked
+const hitAgo = { ts: NOW - 2 * 60000, type: "five_hour", resetsAt: NOW - 60000 };
+const freshHit = { label: "Gaming", email: "", tier: M5, ids: ["claudeAgent_claude_gaming"], sources: [{ machine: "pc", active: 2, files: 2 }], minutes: {}, hits: [hitAgo] };
+const idle = { label: "Personal", email: "", tier: M20, ids: ["claudeAgent"], sources: [{ machine: "pc", active: 9, files: 9 }], minutes: { [NOW - 600e3]: [20000, 4] }, hits: [] };
+const real = analyze([freshHit, idle], { now: NOW, windowMs: 5 * 3600e3 });
+const rg = real.find((r) => r.label === "Gaming");
+const rp = real.find((r) => r.label === "Personal");
+eq(rg.limitedUntil, hitAgo.ts + 5 * 3600e3, "limited until the hit plus 5 h");
+eq(rg.blocked, null, "the logged reset time is past, so only the 5 h rule holds it");
+eq(rg.headroom, 100, "and its headroom looks full, which is the bug");
+eq(rp.limitedUntil, 0, "an account with no hit is not limited");
+eq(pickAccount(real).label, "Personal", "the pick skips the account hit 2 min ago");
+if (!/limited until \d\d:\d\d|limited until \d+\/\d+ \d\d:\d\d/.test(accountLine(rg, { now: NOW }))) failures.push(`account line has no "limited until": ${accountLine(rg, { now: NOW })}`);
+const reason = pickLine(pickAccount(real), { rows: real, now: NOW });
+if (!/plan x20/.test(reason) || !/9 active/.test(reason) || !/score/.test(reason) || !/skipped Gaming limited until/.test(reason)) failures.push(`pick reason: ${reason}`);
+eq(analyze([freshHit], { now: hitAgo.ts + 5 * 3600e3 + 1000, windowMs: 5 * 3600e3 })[0].limitedUntil, 0, "5 h after the hit the account is available again");
+eq(analyze([{ ...freshHit, hits: [{ ...hitAgo, type: "seven_day" }] }], { now: NOW, windowMs: 5 * 3600e3 })[0].limitedUntil, 0, "only a 5-hour hit sets the 5 h rule");
 eq(pickLine(G.ids ? G : null).startsWith('pick: claudeAgent_claude_gaming (this PC) or "laptop"'), true, "pick shows the PC provider id and laptop for Gaming");
 eq(pickLine(P).startsWith("pick: claudeAgent "), true, "pick shows the Personal provider id");
 
