@@ -2,8 +2,10 @@
 //! Sound slots (#323): the sound twin of prefab slots (LF_PrefabSlots). A prop or system that plays
 //! a looped or one-shot sound asks for it by slot id instead of naming a sound project, so a pack
 //! swaps the sound by overriding the slot. One core file (Configs/SoundSlots/LF_SoundSlots.conf)
-//! maps each slot id to its default sound project (.acp); a pack overlay of the same class patches
-//! a slot's m_Project by id through the override model (LF_ConfigOverlay, docs/config/override-model.md).
+//! lists each slot id and may give it a default sound project (.acp); a pack overlay of the same class
+//! patches a slot's m_Project by id through the override model (LF_ConfigOverlay,
+//! docs/config/override-model.md). A slot with no core default is filled by a pack or stays silent:
+//! the town ambience (atmo_*) has no core sound since #323 batch 4; the flagship pack fills it.
 //!
 //! A pack project that does not load is rejected at first use with a named reason and the slot
 //! falls back to the core default. A slot nobody can resolve logs LF_Debug.Error once and Get
@@ -17,7 +19,7 @@ class LF_SoundSlot : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "Stable slot id a prop or system asks for (atmo_pub_radio). Never rename one")]
 	string m_sSlot;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The sound project the slot plays", "acp")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The sound project the slot plays. Empty in core: a pack fills it, or the slot is silent", "acp")]
 	ResourceName m_Project;
 
 	//------------------------------------------------------------------------------------------------
@@ -266,6 +268,13 @@ class LF_SoundSlots
 				{
 					LF_Debug.Error(FEATURE, string.Format("slot '%1': pack project %2 rejected, %3; it falls back to the core default %4", slot, packSlot.m_Project, packWhy, coreSlot.m_Project));
 				}
+			}
+
+			if (!fromPack && coreSlot.m_Project.IsEmpty())
+			{
+				LF_Debug.Info(FEATURE, string.Format("slot '%1' has no core sound and no pack fills it; it plays nothing", slot));
+				s_mResolved.Set(slot, ResourceName.Empty);
+				continue;
 			}
 
 			string coreWhy;
