@@ -1,5 +1,10 @@
 {
   "exit": 0,
   "parse": "ok",
-  "problems": []
+  "problems": [],
+  "boot": true,
+  "bootLog": {
+    "has": [ "persistence: owner config read 2 fields, rejected 0", "autosave scheduled every 300 seconds", "vehicles: owner config read 2 fields, rejected 0", "police: owner config read 1 fields, rejected 0" ],
+    "absent": [ "autosave scheduled every 600" ]
+  }
 }
