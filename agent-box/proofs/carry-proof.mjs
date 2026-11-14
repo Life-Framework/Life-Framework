@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { ROOT, arrive, clientBox, clientSees, clientSeesPeer, judgeCarry, parseState, sessionDir } from "../session.mjs";
 
@@ -68,7 +69,9 @@ async function runCarryProof() {
   // A late joiner reads the hold and the body next to the carrier.
   let afterDrag3 = "";
   if (!process.argv.includes("--no-late-join")) {
-    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
+    // A repeat run in the same session finds client 3 already connected: reuse it instead of joining again (#504).
+    const already = existsSync(clientBox(dir, 3)) && on(3, { verb: "state" }, 8000).status === "ok";
+    const joined = already ? { status: 0 } : spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
     if (joined.status !== 0) {
       fails.push("client 3 did not join late");
     } else {
