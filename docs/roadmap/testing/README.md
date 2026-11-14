@@ -14,6 +14,7 @@ Every roadmap setup is done only when three gates are green. A scope doc's Proof
 
 - One test file per setup: `Scripts/Game/Tests/LF_Test_Roadmap_<Setup>.c`. Do not add cases to another setup's file.
 - `// tier: LOGIC` or `// tier: WORLD` or `// tier: PERSISTENCE` above each class. `// red-proof:` records one observed failure before the test is trusted.
+- Batched red proof (`tools\cli test --no-build --red LF_Test_A,LF_Test_B`): one boot runs every listed test with `RedProof()` on (`LF_Test.RedProof()`; false in every other run). Put the hook in one place of `Run()`, on the act the assertions depend on: `if (!RedProof()) LF_X.Use(true);`. The command passes only if every listed test FAILS (`[LFTEST] RED-OK`, with the assertion it failed on) and exits 1 naming any test that still passes (`HOLLOW`: no hook, or the hook breaks nothing the assertions check). Run the plain `--only` first: a test that is already red passes the proof for the wrong reason. `tools\cli feature new` writes the hook in. A bug fix needs none of this: its fail-on-unfixed, pass-on-fixed run is the proof.
 - `tools\cli regen-tests` after adding the file. `tools\cli validate` checks the registry.
 - Logic test name: `roadmap/<setup>`. World test name: `e2e/roadmap-<setup>`.
 - Assertions go through public functions. A persistence test mutates, reloads, and reads back. It does not touch save internals.

@@ -12,6 +12,7 @@ enum LF_TestTier
 class LF_Test
 {
 	protected LF_TestTier m_Tier;
+	protected bool m_bRedProof;
 
 	//------------------------------------------------------------------------------------------------
 	string GetName()
@@ -29,6 +30,23 @@ class LF_Test
 	LF_TestTier Tier()
 	{
 		return m_Tier;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Set by LF_TestManager. True only in a `tools\cli test --red` run (docs/roadmap/testing/README.md "File rules").
+	void SetRedProof(bool on)
+	{
+		m_bRedProof = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The red-proof hook, checked in ONE place of Run(): when true, break what the assertions
+	//! guard, most simply by skipping the act (`if (!RedProof()) LF_X.Use(true);`). A run with
+	//! --red passes only if every listed test then FAILS; a test that still passes is hollow.
+	//! False in every other run, so a test behaves exactly as written there.
+	bool RedProof()
+	{
+		return m_bRedProof;
 	}
 
 	//------------------------------------------------------------------------------------------------
