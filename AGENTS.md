@@ -14,8 +14,11 @@ and Sonnet (`lf-builder`) does a scoped issue. Opus (`lf-hard`) takes design,
 replication and persistence, and anything Sonnet failed twice. The free
 DeepSeek model in opencode takes background docs, website work and issue
 grooming. A subagent does the work itself and starts no helper agents unless
-its brief says to. It reads files in pieces and stops after two environment
-failures instead of grinding.
+its brief says to (`lf-scout` for a search is the exception). It reads files
+in pieces and stops after two environment failures instead of grinding. Each
+agent type has a tool-call budget; past it the agent writes
+`tmp/handoff-<slug>.md` and ends with a `RESUME` line. A town-wide job is one
+agent per area. `tools\cli usage` shows where the tokens went.
 
 ## Repo map
 

@@ -55,7 +55,11 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
 8. **Close what you opened.** Stop servers, Workbench, and game clients you
    started (`tools\cli host stop`, close the play session). Leave no process
    holding a lock.
-9. **Report.** A few lines: what changed, timings or evidence, what stays
-   manual. The last line is exactly
-   `PR <full URL>, head <SHA>, checks and reviews <state>`
-   (`gh pr view <n> --json statusCheckRollup,reviewDecision,mergeStateStatus`).
+9. **Budget.** Your agent file sets a tool-call budget (`docs/agent-budget.md`).
+   At it, hand off at the next checkpoint: commit to `ws/<slug>`, write
+   `tmp/handoff-<slug>.md` (at most 15 lines), and end with
+   `RESUME <worktree>\tmp\handoff-<slug>.md`.
+10. **Report.** Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, and
+   last exactly `PR <full URL>, head <SHA>, checks and reviews <state>`
+   (`gh pr view <n> --json statusCheckRollup,reviewDecision,mergeStateStatus`),
+   or the `RESUME` line.

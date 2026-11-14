@@ -39,10 +39,13 @@ fix, so the history proves the fix.
 
 ## Guard the context window
 
-Read narrowly first. Delegate broad scans and bulky MCP output, pass file
-paths rather than pasted files, and keep only decisions and evidence. A
-delegate's summary is a claim: inspect the diff or artifact it points at
-before trusting it.
+Every turn re-reads the whole context, so a turn at 400k costs ten times a
+fresh agent's turn; long runs, not big reads, are what cost the most
+(`tools\cli usage`). Size jobs to fit the budget, hand off past it, read
+narrowly, and put independent reads in one turn. Delegate broad scans to
+`lf-scout`, pass file paths rather than pasted files, and keep only decisions
+and evidence. A delegate's summary is a claim: inspect the diff or artifact it
+points at before trusting it.
 
 ## Never block on the human
 
