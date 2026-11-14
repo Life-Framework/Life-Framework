@@ -72,6 +72,26 @@ function Find-SteamApp([string]$appId) {
   return $null
 }
 
+# ---- 0. Work folder ACL -------------------------------------------------------
+# ssh runs elevated, so every file it writes under the work folder (the clone, the run folders, the
+# rdb that scp sends) belongs to Administrators. The signed-in desktop session starts Workbench and
+# the game with a standard token (tools/remote/desktop/run-interactive.ps1, RunLevel Limited), which
+# can only read such a file. On a stock Windows Server image the root grants Users read and create
+# but not modify, so Workbench could not save resourceDatabase.rdb: it logged
+# `ResourceDB: could not open cache file`, exited 0 and registered nothing (lf-cloud, 2026-11-14).
+# A client image inherits Authenticated Users:Modify from C:\ and never shows it. Grant Users modify
+# on the work folder: the grant is inherited by new files and Windows propagates it to existing ones
+# (no /T needed; icacls /T over every run folder takes more than 10 min).
+$workRoot = Split-Path -Parent $RepoDir
+New-Item -ItemType Directory -Force -Path $workRoot | Out-Null
+if (((& icacls $workRoot) -join "`n") -match 'BUILTIN\\Users:\(OI\)\(CI\)\(M\)') {
+  Step "$workRoot already grants Users modify"
+} else {
+  Step "granting Users modify on $workRoot (inherited by new and existing files)"
+  & icacls $workRoot /grant "*S-1-5-32-545:(OI)(CI)M" | Out-Null
+  if ($LASTEXITCODE -ne 0) { Write-Warning "icacls on $workRoot exit $LASTEXITCODE; Workbench in the desktop session may not be able to save the resource database" }
+}
+
 # ---- 1. Git + Node -----------------------------------------------------------
 if (Have git) { Step "git present: $(& git --version)" } else { Winget-Install "Git.Git" }
 $nodeOk = $false

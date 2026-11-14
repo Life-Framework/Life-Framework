@@ -379,7 +379,7 @@ tools\cli test --no-build --tier all --shards auto --both  # normal + core-only 
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
-tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
+tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders of gone worktrees
 tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
@@ -392,7 +392,8 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   default `--local`.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
-  (`server`, `clients`, `workbench`). The gitignored `lf.local.json` overrides
+  (`server`, `clients`, `workbench`, `rdb`: refreshes a stale
+  `resourceDatabase.rdb` in its own runs, see "Sync"). The gitignored `lf.local.json` overrides
   per machine with a `"pool"` key (`docs/setup.md`). `slots` is 1 everywhere
   today; slot 1 is the machine's own `server-2001` lock (the one `serve`,
   `host`, and `session` take too) and slot k is `server-2001-s<k>`, so a
@@ -467,17 +468,48 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
   edits plus untracked, non-ignored files, as one snapshot commit built from a
-  copy of the index (your index, HEAD, and branch do not change). The run
-  folder `C:\LF\Life-Framework-rt-<slug>` is a linked worktree of the box's
-  clone, kept between runs. The holder reports which of the snapshot, the
+  copy of the index (your index, HEAD, and branch do not change). A test,
+  e2e or audit run uses its lane's folder `C:\LF\Life-Framework-lane-<lock>`
+  (`-lane-server-test-3`), a linked worktree of the box's clone shared by
+  every worktree; sessions, `-gate` syncs and a machine without lanes keep
+  the per-worktree `C:\LF\Life-Framework-rt-<slug>` folders. The holder reports which of the snapshot, the
   last commit this worktree sent, and `origin/main` the box has, and the git
-  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored:
-  `test` refreshes the local copy first (headless Workbench; the box has none)
-  and sends it when its SHA-1 differs from the run folder's. Measured
+  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored
+  and sent when its SHA-1 differs from the run folder's. A stale one (a
+  resource the rdb does not register) is refreshed by a headless Workbench
+  where the run lands: this PC for a run here or on a machine without the
+  `rdb` cap; a machine with the cap (lf-testbox) refreshes the run folder's
+  copy in its own `test --local`, `e2e --local` or `session up`, is not sent
+  the stale copy, and keeps the refreshed one for the next run. Before
+  2026-11-14 every run refreshed here first, behind the build lock all
+  worktrees on this PC share: runs headed for a pool machine waited up to
+  10 min behind other worktrees' refreshes. lf-cloud has no `rdb` cap: its
+  Workbench exits 0 without registering anything (`ResourceDB: could not
+  open cache file`); add the cap in its `lf.local.json` entry once a refresh
+  there registers resources. A run that gets this PC's lane with a stale rdb
+  gives the lane back, refreshes, and queues again. Measured
   2026-11-09: new run folder 5.1 s holder + 1.3 s sync, repeat 3.0 s + 0.0 s
   (no bundle, rdb unchanged); an edit sends a ~2 KiB bundle. A run folder
   whose rdb predated `LF_HideoutStash` got the fresh one by hash and passed the
   stash tests (the box's main clone rdb has no `LF_HideoutStash` entry).
+- **Lane folders (2026-11-14).** Whoever holds a lane's lock owns its folder,
+  so two runs never share one, and a worktree's first run on a lane no longer
+  creates a folder (`git worktree add` of ~5000 files: holder + prep 17-24 s).
+  Each run checks its snapshot out with `git checkout -f`, which resets every
+  tracked file and removes the ones the snapshot does not have, then drops
+  what git does not track under `addons/` (untracked and ignored: a stray
+  script, an addon `log`, `.gproj.user`), keeping each addon's
+  `resourceDatabase.rdb`, which is sent by hash. git only lists those paths;
+  each delete goes through the box clone's `safeRemoveTree`, which unlinks a
+  junction instead of following it (`tools/link-safety.mjs` `cleanRunFolder`,
+  shipped to the box with the run). `server/` (the test profile, which
+  `test-e2e.ps1` deletes and rebuilds every boot, and its `game-addons`
+  junctions) and `tmp/` stay. A clean that fails stops the run (exit 3).
+  Measured on lf-cloud: a lane's first use 19-20 s holder + prep, a reused
+  lane 2-5 s; a compile-breaking `LF_ZZStray.c` planted in a lane folder was
+  removed by the next run there (`cleaned 1 untracked path(s)`), which passed.
+  A worktree on an older branch still uses its `rt-<slug>` folders; both kinds
+  take the same lane locks.
 - **What comes back.** The run streams live. The remote `console.log` is
   copied to `server/profile/test/logs/remote-<machine>-<logdir>/`, so
   `tools\cli logs` greps it; on a failure its `SCRIPT (E)`, VME, and `Unable
@@ -487,7 +519,9 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
 - **Cleanup.** Each run folder holds `tmp/pool-owner.json` (PC, slug,
   worktree). `wt prune <slug>` removes that worktree's remote run folders;
   `pool prune` removes every folder whose worktree on this PC is gone
-  (`--unmarked` also takes older folders without the marker). Both go through
+  (`--unmarked` also takes older folders without the marker). Lane folders
+  belong to no worktree and stay; `pool prune --lanes` removes the idle ones
+  of lanes a machine no longer has (its lane count went down). All of it goes through
   the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
   holds junctions into the server install.
 - **Remote disk GC.** Run folders (`Life-Framework-rt-<slug>[-session][-sN]`, about 1.4 GB each)
@@ -1118,6 +1152,11 @@ password or repo credential.
    which does not update itself, so run `provision` again after a server update. It then clones the repo to
    `C:\LF\Life-Framework` and sends the rdb (above). `pool status` must show the same server build as this PC.
    A provision stopped part-way leaves SteamCMD running on the box; the next run waits for it.
+   It also gives `Users` modify on `C:\LF` (inherited, so new and existing files). ssh runs elevated, so the
+   clone, the run folders and the rdb `scp` sends belong to Administrators, while Workbench in the desktop session
+   runs with a standard token. A stock Server image's `C:\` gives Users no modify, so that Workbench could not save
+   `resourceDatabase.rdb` (`ResourceDB: could not open cache file`, exit 0, nothing registered). A client image
+   inherits `Authenticated Users:Modify` from `C:\` and never shows it.
 6. **Join the pool** with the gitignored `lf.local.json`. A rented box stays out of `tools/pool.json`.
    Give the same entry to both sides: this PC's `lf.local.json`, and the box's own
    `C:\LF\Life-Framework\lf.local.json` with `hostname` set to the box's hostname. On the box, the box-side
@@ -1133,6 +1172,9 @@ password or repo credential.
    Start with `"caps": ["server"]`. Add `clients` once a pinned `session up --machine lf-cloud --clients 1`
    joins. Add `workbench` once the box's Workbench has run a gate: `ci --remote lf-cloud` must print
    `Workbench compile + build on lf-cloud: exit 0`. `--wb-only` runs here and proves nothing about the box.
+   Add `rdb` once a run there with a stale rdb prints `resource database refreshed in Ns (N resources
+   registered)`; `workbench` alone does not prove it (lf-cloud's Workbench compiles but registered nothing
+   on 2026-11-14).
    `{"name": "lf-cloud", "disabled": true}` takes it out. Session lanes stop at 4 (`pool.mjs`). Test lane k
    uses port 2001+k, so more than 9 test lanes would collide with session port 2011. A box-side
    `"workbenchLimit": 2` under `pool` lets two headless Workbenches run at once there.
