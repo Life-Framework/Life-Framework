@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9A4538F65940FB2D}Configs/Dialogue/LF_Dialogue_Shopkeeper.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

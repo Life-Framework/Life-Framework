@@ -187,6 +187,7 @@ under "Hard-coded flagship values in script".
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
 | `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
 | `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's ten recordings and audio project, moved out of the core's `Sounds/Dialogue/clerk/` (#323 batch 4) |
+| `Dialogue/LF_Dialogue_Shopkeeper.conf` | core | A store's shopkeeper, neutral and text only (#1143, `tools/assets/dialogue/shopkeeper/`): greeting, how to pay, what the store sells, and the line a store's staff say on a walk-out. The prefab `Characters/Npcs/LF_Shopkeeper.et` is core too; the pack places it in its supermarket |
 | `Dialogue/LF_Dialogue_Clerk.conf` | core | The neutral, text-only clerk conversation (generated from `tools/assets/dialogue/clerk/`, `text_only`); the Everon voice is a pack patch (#323) |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
@@ -230,7 +231,7 @@ its save.
 | Path | Class | Reason |
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
-| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The flagship playtest header; its world is now the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
+| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The legacy playtest header, hidden from the scenario list since #374 (`LF_Everon1989.conf` is the listed flagship; this id still boots for existing servers and saves); its world is the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
 | `LF_PlaytestTown_Preview.{edds,jpg}` | pack, moved (batch 1) | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack, moved (batch 1) | The MainWorld header |
 | `LF_HostedTest.conf` | core | Test fixture (#323 batch 1): a hosted header on DebugWorld with dev tools closed, read by `host/playtest-mission` and `harness/dev-gate-dedicated` |

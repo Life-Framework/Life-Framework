@@ -15,6 +15,7 @@
 //   moveEntities moving every child (entities[0])               -> FAIL polish: an entity nudge moves only the named prefab
 //   toBuilding with the yaw sign flipped (2026-11-14, #1143)      -> FAIL store: yaw 90 turns a fixture's front (+Z) onto +X
 //   storePrefab without the m_aShopItems allowlist (review)    -> FAIL store: the shop sells only the store's own lines (an empty allowlist sells every priced item)
+//   alarmChild written inside the components block (#1143 PR 2) -> FAIL store: the alarm bell box is a child entity carrying the alarm mount, after the components
 //   addProps inserting before the children's opening brace       -> FAIL polish: a hand-placed prop lands at the end of the furniture child list
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -291,6 +292,10 @@ export async function main() {
     ok(prefabA === storePrefab("shop", storeSpec, storePlan(storeSpec, storeFurn), "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et") && /m_sSlots "-2\.7 /.test(prefabA) && (prefabA.match(/LF_StoreTillAction "/g) || []).length === 1 && prefabA.includes('m_sStoreKey "test_store"'), "store: the store prefab is the same text on every run, with the slots, the key and a till per register");
     const allowlist = /m_aShopItems \{\n((?: {4}[^\n]*\n)+) {3}\}/.exec(prefabA)?.[1] || "";
     ok(allowlist.includes('m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"') && (allowlist.match(/LF_ShopItem "/g) || []).length === storeSpec.lines.length, "store: the shop sells only the store's own lines (an empty allowlist sells every priced item)");
+    const alarmSpec = { ...storeSpec, alarm: { prefab: "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et", at: [2.6, 4.2, -7], yaw: 180, offset: [0, 0.167, 0.065], reach: 10 } };
+    const withAlarm = storePrefab("shop", alarmSpec, storePlan(alarmSpec, storeFurn), "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et");
+    ok(/\n \}\n \{\n  GenericEntity : "\{CDE4035B661F9555\}[^\n]*\n   ID "[0-9A-F]{16}"\n   components \{\n    LF_AlarmMountComponent "\{[0-9A-F]{16}\}" \{\n     m_vOffset 0 0\.167 0\.065\n     m_fReach 10\n/.test(withAlarm) && withAlarm.endsWith("   angleY 180\n  }\n }\n}\n"), "store: the alarm bell box is a child entity carrying the alarm mount, after the components");
+    ok(storePlan({ ...alarmSpec, alarm: { ...alarmSpec.alarm, reach: 6 } }, storeFurn).problems.some((p) => /store\.alarm: reach 6/.test(p)), "store: an alarm mount whose reach does not cover the store origin is refused");
   } finally {
     for (const k of Object.keys(process.env)) if (!(k in savedEnv)) delete process.env[k];
     Object.assign(process.env, savedEnv);
