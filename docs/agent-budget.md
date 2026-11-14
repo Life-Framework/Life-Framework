@@ -148,6 +148,55 @@ items fighting shared machines, and up to eight agents ran at once.
      context and learns nothing.
 9. **Prepare before a session.** Make every edit before `session up`; the
    session's turns are the most expensive ones in a run.
+10. **Read the summary, not the transcript.** Heavy commands print one `SUMMARY` line and only the failing items; the full output is the `log=` file ("Compact command output" below).
+
+## Compact command output
+
+About 40% of the cost-weighted tokens in the last 30 threads went to reading code and logs, and every turn re-reads
+what an earlier command printed. So the heavy commands print a summary and keep the transcript in a file.
+Do not pipe them through `tail`, `head` or `Select-Object` any more.
+
+A run of `validate`, `test`, `e2e`, `build`, `pack`, `ci`, `dev`, `look`, `shots`, `audit`, `session up|down|restart|wait|join`,
+`wt gate|ship|e2e`, `asset run|anim|states|kit|sound|dialogue`, `harness.mjs flow|shot|chains|journey|town|pillar|play`,
+and a `session.mjs <proof>` verb prints:
+
+```
+SUMMARY <cmd> ok|fail exit=N 43.4s lines=245 failures=0 warnings=39 log=tmp\logs\validate-20261114-114747.log
+<each failing item with file:line and the exact error, up to 30 lines>
+<warnings that change a decision (a pool cap or reclaim, a stale machine, a lowspec capture), up to 6>
+skipped 3 check(s): validate-scripts.ps1, ...
+<the command's own verdict lines: validate: 90 check(s), session: ready ..., the PR url, proof: PASS>
+```
+
+- **The full transcript is the log**, in `<worktree>\tmp\logs\<cmd>-<time>.log` (kept 3 days, never committed). Read it with
+  `grep -n` or a line range when the summary names something you need to see.
+- **`--verbose`** (or `LF_VERBOSE=1`) prints the full output as before, nothing filtered. Use it for one run, not by habit.
+- **A failure, a timeout and a skipped check are never dropped.** If a failed run has no recognisable error line, the summary
+  shows the end of the transcript. Failures past the cap are counted with the log named.
+- A passing run of 10 lines or fewer prints as it is.
+- `help` prints the command names (`help --verbose` is the full usage), `pool status` prints busy lanes, the queue and the
+  budgets (`--verbose` adds the free lanes, last runs and sessions), `logs` clips a line at 300 characters (`--full`).
+- A proof step that returns `error` or `timeout` shows as a failing line, and the proof's own `... proof: PASS|FAIL` line is kept.
+- Tools that parse another command's output run it with `--verbose` or `LF_QUIET_CHILD=1`; a command run inside another
+  one (`wt ship` runs validate and test) writes its transcript to the outer log.
+- `tools/validation/output-budget-selftest.mjs` fails when a default output goes over its line budget.
+
+Lines printed by default, before and after (2026-11-14, measured in one worktree):
+
+| Command | Before | After |
+|---|---|---|
+| `validate` (skip mode) | 267 | 10 |
+| `test --only <class>` | 15 | 6 |
+| `session up` (lowspec, queued behind two sessions) | 14 | 5 |
+| `session down` | 2 | 3 |
+| `session.mjs keys-proof` | 13 | 3 |
+| `harness.mjs town` | 33 | 2 |
+| `look <area>` | 4 | 5 |
+| `help` | 100 | 5 |
+| `wt help` | 44 | 3 |
+| `pool status` | 38 | 12 |
+
+A run of at most 10 lines prints as it is plus the one SUMMARY line, which is why `session down` and `look` gain a line.
 
 ## Settings
 
