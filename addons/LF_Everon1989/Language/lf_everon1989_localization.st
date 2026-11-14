@@ -1129,6 +1129,51 @@ StringTable {
      Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
      Comment "Quarry info board, What section."
     }
+    CustomStringTableItem "{2AFCEED3736DE810}" {
+     Id "LF-Sign_Rules_Next"
+     Target_en_us "Take a complaint to staff after the scene, not during it. This is an alpha: the world can be wiped, with 24 hours' notice."
+     Comment "Sign card for the server rules, Next section. Alpha wipe notice per the alpha decision (#1279)."
+    }
+    CustomStringTableItem "{959AAEBFBD88D318}" {
+     Id "LF-Sign_Rules_Rules"
+     Target_en_us "No random violence: hurt someone only for a reason your character has.|Fear for your life: with a gun on you, comply, then report it.|New life: after a death, forget what led to it. Do not hunt the killer.|Keep disputes out of the streets. No stalking, no harassing.|No combat logging: play out an arrest, a robbery or a fight."
+     Comment "Sign card for the server rules, Rules list. One line per rule of the orientation quiz (LF-QuizEveron_*_Why); wording held for Q1 (#1279)."
+    }
+    CustomStringTableItem "{C777A9AB11F1C70B}" {
+     Id "LF-Sign_Rules_Title"
+     Target_en_us "Town rules"
+     Comment "Title of the server rules sign. Shown in the prompt as Read: Town rules (#1279)."
+    }
+    CustomStringTableItem "{8CE329D171CCAD28}" {
+     Id "LF-Sign_Rules_What"
+     Target_en_us "Life Framework | Everon 1989 (Alpha). You are a person with a life here, not a soldier. These rules hold for everyone in town."
+     Comment "Sign card for the server rules, What section. Server name per the alpha decision (#1279)."
+    }
+    CustomStringTableItem "{A38A2CBAEF0AB852}" {
+     Id "LF-Sign_RunYourOwn_How"
+     Target_en_us "Framework and install guide: life-framework.org/servers|Config generator for your server file: life-framework.org/config|Questions: the Life Framework Discord"
+     Comment "Sign card for Run your own, How list. Links are the site's real routes (#1279)."
+    }
+    CustomStringTableItem "{911F3863B8019F4D}" {
+     Id "LF-Sign_RunYourOwn_Needs"
+     Target_en_us "Arma Reforger and a server to run it on."
+     Comment "Sign card for Run your own, Needs section (#1279)."
+    }
+    CustomStringTableItem "{2D80969EC76FCAA4}" {
+     Id "LF-Sign_RunYourOwn_Next"
+     Target_en_us "Read the install guide first, then ask on the Discord."
+     Comment "Sign card for Run your own, Next section (#1279)."
+    }
+    CustomStringTableItem "{2280390EEFC27B12}" {
+     Id "LF-Sign_RunYourOwn_Title"
+     Target_en_us "Run your own"
+     Comment "Title of the Run your own sign. Shown in the prompt as Read: Run your own (#1279)."
+    }
+    CustomStringTableItem "{B19DE546540FAF56}" {
+     Id "LF-Sign_RunYourOwn_What"
+     Target_en_us "Life Framework is the free toolkit this town runs on. Take it, build your own town and set your own rules."
+     Comment "Sign card for Run your own, What section (#1279)."
+    }
     CustomStringTableItem "{A0732BEC5B5104E5}" {
      Id "LF-Sign_SafeZone_How"
      Target_en_us "Put your weapon away on the square. Settle disputes somewhere else, or report them at the police station."
