@@ -45,7 +45,7 @@ class LF_Test_CrimeRecordPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(31, version, "the save is written at version 31 (crimerecord is payload 15)");
+		ctx.Equal(32, version, "the save is written at version 32 (crimerecord is payload 15)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "crimerecord");
 		ctx.Equal(1, LF_CrimeRecord.Count(UID, LF_WantedReports.OFFENCE_ROBBERY), "the robbery count is back");
 		ctx.Equal(1, LF_CrimeRecord.Total(UID), "no extra rows after the load");

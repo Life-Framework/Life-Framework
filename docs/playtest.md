@@ -40,6 +40,9 @@ The launcher logs to `%LOCALAPPDATA%\LifeFramework\launcher.log`.
   `tools\cli playtest server off` when it stops. It opens an auto-merge PR that rewrites
   `website/public/playtest-server.json`; the site serves it a few minutes after the merge. The host must run the
   release's commit: a different build has a different script checksum and the game refuses the join.
+- **After a game update:** `tools\cli host preflight` before `host start`. It backs the save up, loads it on the
+  new game build, stops, and restores the backup when the load failed; `host start` refuses a save from another
+  build until then (`docs/ops/game-updates.md`).
 
 ## Subscribe and join
 
