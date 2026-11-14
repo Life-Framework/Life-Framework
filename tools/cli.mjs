@@ -3620,7 +3620,19 @@ function runE2ePass(root, tier, opts = {}) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
-  ensureResourceDatabase(root);
+  let rdbStale = ensureResourceDatabase(root);
+  // The pre-move save gate (#327) boots an older tree whose resources the copied rdb never registered.
+  // A server on a still-stale rdb dies with an opaque "Unable to initialize the game", so retry the
+  // refresh once and then fail with the real cause (2026-11-14: lf-cloud's Workbench exited 0 without
+  // writing the rdb while other gates ran Workbenches; this PC held the build lock).
+  if (rdbStale && opts.requireFreshRdb) {
+    console.log("e2e: resource database still stale after the refresh; retrying the refresh once");
+    rdbStale = ensureResourceDatabase(root);
+    if (rdbStale) {
+      console.log("FAIL  e2e: the resource database is still stale after two refreshes, so the server cannot load the pre-move tree. This is the machine (Workbench could not register the resources), not the saved build; rerun when its Workbench is free (tools\cli pool status).");
+      return 1;
+    }
+  }
   const ports = wt.portsForRoot(root);
   const psArgs = [
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -3788,7 +3800,7 @@ function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
 function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, preMove = false) {
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacySave ? ", legacy save format" : ""}${oldBuild ? ", stamped as game build 1.8.0.13" : ""}) in ${e.path}`);
   const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
-  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines });
+  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines, requireFreshRdb: preMove });
   if (pass1 === 0) {
     const log = e2eShutdown.newestTestConsole(e.path);
     const check = e2eShutdown.checkShutdownSave(log ? readFileSync(log, "utf8") : "");
@@ -3822,7 +3834,7 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
   }
   const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : "", preMove ? "LF_E2E_PRE_MOVE" : ""].filter(Boolean).join(",");
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
-  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines });
+  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove });
   const log2 = e2eShutdown.newestTestConsole(e.path);
   for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
   console.log(`e2e: profile ${profile}`);
