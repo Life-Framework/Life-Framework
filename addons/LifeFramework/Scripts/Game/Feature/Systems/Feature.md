@@ -52,6 +52,10 @@ just before a reload) is refused with a log line and, where the player sees a re
   - `NOT_YET`: not gated yet; a config that turns it off is refused with a logged reason and it
     stays on. Follow-ups move them to `SWITCHABLE` one by one.
   - `LOCKED`: framework plumbing (Account, Character, Interaction, UIKit, ...); always on.
+- **Catalog overlays (#1108):** a pack overlay of `LF_SystemCatalog` in the mission header adds its
+  own systems or changes one by id (`m_sOp`: add, replace, patch, remove; `docs/config/override-model.md`).
+  A `LOCKED` system, and one another system names as parent or requirement, cannot be removed. The
+  owner file does not edit the catalog; its say is on or off (`systems.switches`).
 - **Layers:** the catalog default (on unless opt-in), then the pack's `LF_SystemsConfig` overlays
   from the mission header, then the owner's `systems.switches.<id>.enabled`. A client takes the
   server's effective values from the config stream (`systems` section) and needs no layer itself.

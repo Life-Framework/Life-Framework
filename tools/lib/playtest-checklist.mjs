@@ -4,7 +4,7 @@
 // PRs and writes the result; tools/validation/playtest-checklist-selftest.mjs feeds it fixtures.
 //
 //   buildItems(issues, prs)    one item per open issue: its de-duplicated manual steps, tags, place, minutes
-//   selectItems(items, opts)   the "top hour" cut (M2 first), or everything
+//   selectItems(items, opts)   the "top hour" cut (chapter work, then player flows, then the rest, polish last), or everything
 //   renderChecklist(...)       markdown: smoke list, then solo walk by place, two players, restart, desk
 //   parseVerdicts(text)        read the ticked checklist back: [{ id, verdict: pass|fail|open, note }]
 //   verdictCommands(...)       the gh commands the maintainer would run (never run here)
@@ -135,11 +135,23 @@ export function milestoneRank(title) {
   return i === -1 ? 90 : i;
 }
 
-// issues: [{ number, title, labels: [{name}|string], milestone: {title}|null }]; prs: merged [{ number, title, body, url }].
+// What a player meets first. A title or step that names one of these big flows ranks above the ordinary issue.
+export const FLOW_RE = /\bvault\b|\brobber(?:y|ies)?\b|\brob (?:the |a )?(?:till|bank|store|kiosk|fuel)|fuel (?:station|till)|\bclerk\b|\bcuff|\barrest|\btaser?\b|\bmedic\b|\bdowned\b|\brevive|\bdispatch|\bpagers?\b|\bpayphones?\b|case board|\bevidence\b|\bwitness|wanted poster|\bdialogue\b|\bconversation\b|\bcatalogue\b|\blicen[cs]e/i;
+// Polish and visual-only: a look at a prop, an icon, a label, a clipped line. Last in the cut unless a chapter owns it.
+export const POLISH_RE = /^visual\b|\bclip(?:s|ped|ping)?\b|\brenders?\b|\bicons?\b|\boverlap|\bindicators?\b|\btypo\b|\bspanish\b|\btranslat|plain white|\bpolish\b|regroup|\bfloats?\b|\bflicker|\bjuice\b|too spread|\bmis-?aligned|\bz-?fight|\bsubtitle|\bfont\b|\bmaterials? quarry/i;
+// Work on the tools and the proofs, not the game: no player meets it, so it goes with the polish.
+export const TOOLING_RE = /\bproofs?\b|\bharness\b|benchmark|\bwt e2e\b|^dev\b|\bdev-video|\bdev epic|\bagent\b|\bfixtures?\b|selftest|\bvalidate|\bconfig reload|reload config|\bdiscord\b|\blanding page|\bhero demo|\bscreenshot and gif|\bmerge driver/i;
+// M3 framework work (config, packs, specs, patterns) is for server owners, not the first hour of a player.
+export const FRAMEWORK_RE = /^M[3-9](?:\.\d+)?-/;
+const RECENT_DAYS = 14;
+const DAY = 86400000;
+
+// issues: [{ number, title, labels: [{name}|string], milestone: {title}|null }]; prs: merged [{ number, title, body, url, mergedAt }].
+// chapters: Map<open chapter or epic number, [issue numbers under it]> (tools/commands/playtest-checklist.mjs reads it from GitHub).
 // An issue keeps the manual steps of every merged PR that refs it. Steps another issue already shows are
 // dropped from the later one (`sameAs` names the first); an issue whose steps are all covered stays in the list
 // at zero extra time so it still gets a pass/fail box.
-export function buildItems(issues, prs) {
+export function buildItems(issues, prs, { chapters = new Map(), now = Date.now() } = {}) {
   const byIssue = new Map();
   for (const pr of prs) {
     for (const n of new Set(parseRefs(pr.body))) {
@@ -162,6 +174,8 @@ export function buildItems(issues, prs) {
       }
     }
     const text = steps.join("\n");
+    const inChapters = [...chapters].filter(([epic, subs]) => epic === issue.number || subs.includes(issue.number)).map(([epic]) => epic);
+    const merged = myPrs.map((p) => Date.parse(p.mergedAt ?? "")).filter((t) => Number.isFinite(t));
     const item = {
       id: String(issue.number),
       number: issue.number,
@@ -175,7 +189,14 @@ export function buildItems(issues, prs) {
       keys: [...seen],
       tags: tagsOf(text),
       noSteps: steps.length === 0,
+      chapters: inChapters,
+      isEpic: chapters.has(issue.number),
+      mergedDaysAgo: merged.length ? Math.max(0, Math.floor((now - Math.max(...merged)) / DAY)) : null,
     };
+    item.flowTitle = FLOW_RE.test(issue.title);
+    item.flow = item.flowTitle || FLOW_RE.test(text);
+    item.polish = POLISH_RE.test(issue.title) || TOOLING_RE.test(issue.title) || (item.tags.look && !item.flowTitle);
+    item.tier = tierOf(item);
     item.place = placeOf(issue.title, text);
     item.block = blockOf(item);
     item.est = item.noSteps ? 1 : estimateMinutes(item);
@@ -184,10 +205,24 @@ export function buildItems(issues, prs) {
   return items;
 }
 
-// Order for the cut: milestone rank, then player-facing before dev tooling, then issues with steps before ones with none,
-// then cheap before dear (more issues per minute), then issue number.
+// 0 an open chapter or epic, or an issue under one: what closes an M2 chapter. 1 a big player flow named in the title, or one named in
+// the steps of a feature merged in the last two weeks (title flows first). 2 the rest. 3 polish and visual-only (and dev tooling, which no player meets).
+export function tierOf(item) {
+  if (item.chapters.length) return 0;
+  if (item.devTrack || item.polish) return 3;
+  if (FRAMEWORK_RE.test(item.title)) return 2;
+  if (item.flowTitle) return 1;
+  if (item.flow && item.mergedDaysAgo !== null && item.mergedDaysAgo <= RECENT_DAYS) return 1;
+  return 2;
+}
+
+// Order for the cut: tier, then milestone rank, then issues with steps before ones with none, then (chapter work and flows)
+// newest merge first by the week, then cheap before dear (more issues per minute), then issue number.
 export function rankItems(items) {
-  return [...items].sort((a, b) => a.rank - b.rank || Number(a.devTrack) - Number(b.devTrack) || Number(a.noSteps) - Number(b.noSteps) || a.est - b.est || a.number - b.number);
+  // Milestone breaks ties in every tier but the player flows: a flow the player meets first is not made to wait for its milestone.
+  const rk = (i) => (i.tier === 1 ? 0 : i.rank);
+  const age = (i) => (i.tier <= 1 ? Math.floor((i.mergedDaysAgo ?? 999) / 7) : 0);
+  return [...items].sort((a, b) => a.tier - b.tier || rk(a) - rk(b) || Number(!a.isEpic) - Number(!b.isEpic) || Number(!a.flowTitle) - Number(!b.flowTitle) || Number(a.noSteps) - Number(b.noSteps) || age(a) - age(b) || a.est - b.est || a.number - b.number);
 }
 
 // Assign steps to items in rank order: an item shows only the steps no earlier chosen item shows; an item whose steps are
@@ -209,19 +244,30 @@ function place(item, owner) {
   };
 }
 
+// How much of the hour each tier may fill: chapter work takes at most 70%, so the player flows still get their place; polish and
+// the rest only fill what is left over. A tier takes whatever the earlier ones left unused.
+export const TIER_SHARE = [0.7, 1, 1, 1];
+
 // The "top hour": walk the ranked list and take what fits in the budget (item minutes plus the setup and travel they cause).
-// `reserve` is minutes already spoken for (the smoke list). A fully de-duplicated item costs nothing, so it always rides along. `all` takes everything.
+// `reserve` is minutes already spoken for (the smoke list). A fully de-duplicated item costs nothing, so it always rides along.
+// A player flow that does not fit closes the door on the tiers below it: leftover minutes are not spent on filler while a
+// big flow waits (it leads the next pass). `all` takes everything.
 export function selectItems(items, { all = false, budget = 60, reserve = 0 } = {}) {
   const owner = new Map();
   const chosen = [];
   const skipped = [];
+  let closedBelow = 3;
   for (const item of rankItems(items)) {
     const p = place(item, owner);
     const trial = { ...item, shownSteps: p.shown, sameAs: p.sameAs, minutes: p.minutes };
-    if (all || p.minutes === 0 || totalMinutes([...chosen, trial]) + reserve <= budget) {
+    const fits = totalMinutes([...chosen, trial]) + reserve <= budget * TIER_SHARE[item.tier];
+    if (all || p.minutes === 0 || (item.tier <= closedBelow && fits)) {
       for (const k of p.keys) owner.set(k, item.number);
       chosen.push(trial);
-    } else skipped.push(item);
+    } else {
+      skipped.push(item);
+      if (item.tier === 1 && item.tier <= closedBelow && !fits) closedBelow = 1;
+    }
   }
   return { chosen, skipped };
 }
@@ -259,10 +305,30 @@ export function tagLabels(item) {
 
 // `- [ ] #123 Title (~3 min) [2P] [RESTART]   fail [ ]` then the steps. Pass = the first box, fail = the last.
 export const SHOWN_STEPS = 4;
+// One walk can prove several issues: an issue whose steps another chosen issue already shows, in the same place and block,
+// rides on that issue's line (`also`), so the line lists every number and its pass or fail covers all of them.
+export function foldCovered(chosen) {
+  const byNumber = new Map(chosen.map((c) => [c.number, c]));
+  const folded = new Set();
+  const also = new Map();
+  for (const c of chosen) {
+    if (c.noSteps || c.minutes !== 0 || c.sameAs?.length !== 1) continue;
+    const owner = byNumber.get(c.sameAs[0]);
+    if (!owner || owner.block !== c.block || owner.place !== c.place || folded.has(owner.number)) continue;
+    folded.add(c.number);
+    if (!also.has(owner.number)) also.set(owner.number, []);
+    also.get(owner.number).push(c);
+  }
+  return chosen.filter((c) => !folded.has(c.number)).map((c) => (also.has(c.number) ? { ...c, also: also.get(c.number) } : c));
+}
+
 export function itemLines(item, { steps = false } = {}) {
   const tags = tagLabels(item).map((t) => ` [${t}]`).join("");
   const min = item.minutes ? ` (~${item.minutes} min)` : "";
-  const lines = [`- [ ] #${item.number} ${oneLine(item.title, 110)}${min}${tags}   fail [ ]`];
+  const ids = [item.number, ...(item.also ?? []).map((a) => a.number)].map((n) => "#" + n).join(" ");
+  const ch = item.chapters?.length ? ` [chapter ${item.chapters.map((n) => "#" + n).join(" ")}]` : "";
+  const lines = [`- [ ] ${ids} ${oneLine(item.title, 110)}${min}${tags}${ch}   fail [ ]`];
+  for (const a of item.also ?? []) lines.push(`  - also proves #${a.number}: ${oneLine(a.title, 110)}`);
   if (item.sameAs?.length) lines.push(`  - same steps as ${item.sameAs.map((n) => "#" + n).join(", ")}`);
   const shown = item.shownSteps ?? item.steps;
   if (item.noSteps) lines.push(`  - no manual steps in ${item.prs.length ? "PR " + item.prs.map((n) => "#" + n).join(", ") : "any merged PR"}: confirm it in play, or tick on the PR evidence`);
@@ -275,13 +341,14 @@ export function itemLines(item, { steps = false } = {}) {
 }
 
 // smoke: [{ id: "S1", text }] from docs/playtest/smoke-list.md.
-export function renderChecklist({ chosen, skipped = [], smoke = [], steps = false, all = false, budget = 60, sha = "", date = "", openCount = null }) {
+export function renderChecklist({ chosen: chosenAll, skipped = [], smoke = [], steps = false, all = false, budget = 60, sha = "", date = "", openCount = null }) {
   const out = [];
+  const chosen = foldCovered(chosenAll);
   const total = totalMinutes(chosen) + smoke.reduce((n, s) => n + (s.minutes ?? 1), 0);
   out.push(`# Playtest checklist${all ? " (everything)" : ` (top ${budget} minutes)`}${date ? `: ${date}` : ""}`);
   out.push("");
   out.push(
-    `${chosen.length} issue(s), about ${total} min` +
+    `${chosenAll.length} issue(s) on ${chosen.length} line(s), about ${total} min` +
       (smoke.length ? ` including the ${smoke.length} smoke checks` : "") +
       (skipped.length ? `; ${skipped.length} more open issue(s) wait for the next pass (\`--all\` lists them)` : "") +
       (openCount !== null ? `; ${openCount} open in-dev or needs-playtest in all` : "") +
@@ -338,24 +405,24 @@ export function parseSmokeList(md) {
 
 // ------------------------------------------------------------------ verdicts
 
-// Reads a ticked checklist. A line `- [x] #12 ... fail [ ]` passes #12; `fail [x]` fails it whatever the first box says;
+// Reads a ticked checklist. A line `- [x] #12 ... fail [ ]` passes #12 (`- [x] #12 #13 ...` passes both); `fail [x]` fails it whatever the first box says;
 // both empty is "open". An indented `> note: text` line under an item is its comment. Smoke ids (S1) count too.
 export function parseVerdicts(text) {
   const out = [];
   let cur = null;
   for (const raw of String(text ?? "").replace(/\r\n/g, "\n").split("\n")) {
-    const m = /^\s*[-*]\s+\[([^\]]?)\]\s+(#\d+|S\d+)\b(.*)$/.exec(raw);
+    const m = /^\s*[-*]\s+\[([^\]]?)\]\s+((?:#\d+\s+)*#\d+|S\d+)\b(.*)$/.exec(raw);
     if (m) {
       const front = m[1].trim().toLowerCase();
       const fail = /\bfail\s*\[\s*([^\]]?)\s*\]\s*$/i.exec(m[3]);
       const failTicked = !!fail && fail[1].trim() !== "";
       const passTicked = front !== "" && front !== " ";
-      cur = { id: m[2].startsWith("#") ? m[2].slice(1) : m[2], smoke: m[2].startsWith("S"), verdict: failTicked ? "fail" : passTicked ? "pass" : "open", note: "" };
-      out.push(cur);
+      cur = m[2].split(/\s+/).map((id) => ({ id: id.startsWith("#") ? id.slice(1) : id, smoke: id.startsWith("S"), verdict: failTicked ? "fail" : passTicked ? "pass" : "open", note: "" }));
+      out.push(...cur);
       continue;
     }
     const n = /^\s*>\s*note:\s*(.*)$/i.exec(raw);
-    if (n && cur) cur.note = cur.note ? `${cur.note} ${n[1].trim()}` : n[1].trim();
+    if (n && cur) for (const c of cur) c.note = c.note ? `${c.note} ${n[1].trim()}` : n[1].trim();
     else if (/^\s*#/.test(raw)) cur = null;
   }
   return out;
