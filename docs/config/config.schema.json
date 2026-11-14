@@ -1152,6 +1152,31 @@
       },
       "additionalProperties": false,
       "x-class": "LF_ZoneConfig"
+    },
+    "everon1989": {
+      "type": "object",
+      "description": "Pack LF_Everon1989: Settings of the 1989 Everon pack. A sample section: the owner's config.json can set it, but nothing reads it yet (the M5 chains will).",
+      "properties": {
+        "festivalDay": {
+          "type": "integer",
+          "default": 3,
+          "description": "Day of the week the harbour festival runs, 1 to 7.",
+          "minimum": 1,
+          "maximum": 7
+        },
+        "harbourName": {
+          "type": "string",
+          "default": "Saint Philippe",
+          "description": "The harbour town name the pack uses in announcements."
+        },
+        "chainsEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the pack turns its resource chains on."
+        }
+      },
+      "additionalProperties": false,
+      "x-pack": "LF_Everon1989"
     }
   },
   "additionalProperties": false

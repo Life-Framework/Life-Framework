@@ -9,7 +9,7 @@
 import { cpSync, mkdtempSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { FIXTURES, STAGES, judgeRead, loadFixtures, main, runHarness, setClientDriver } from "../config/harness.mjs";
+import { FIXTURES, STAGES, isBoot, judgeBootLog, judgeRead, loadFixtures, main, runHarness, setBootDriver, setClientDriver } from "../config/harness.mjs";
 
 const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(msg); };
@@ -67,6 +67,24 @@ expect(judgeRead({ kind: "shopPrice", shop: "S", item: "Water", expect: "$17" },
 expect(judgeRead({ kind: "shopPrice", shop: "S", item: "Water", expect: "$17" }, "Water $6 Buy") !== "", "another price fails");
 expect(judgeRead({ kind: "actionShown", entity: "E", class: "C", expect: false }, true) !== "", "an offered action fails a hidden expectation");
 expect(judgeRead({ kind: "nope" }, "") !== "", "an unknown read kind fails");
+
+// Boot stage (#299): a fixture that says "boot": true is judged against the server log of its own boot.
+const bootFx = fixtures.filter(isBoot);
+expect(bootFx.length >= 2, "fewer than 2 boot fixtures (a preset a reload cannot do, a broken one)");
+expect(bootFx.some((f) => f.kind === "broken"), "no broken boot fixture (it boots, logs the field, keeps the default)");
+expect(bootFx.every((f) => !f.expect.client), "a boot fixture also lists client reads: those run on the shared server");
+const BOOT = STAGES.find((s) => s.name === "boot");
+expect(runHarness(bootFx, [BOOT]).length === bootFx.length, "with no server driver every boot fixture must fail");
+setBootDriver({ log: (fx) => [...fx.expect.bootLog.has, "unrelated line"].join(" | ") });
+expect(runHarness(bootFx, [BOOT]).length === 0, "a server log with every expected line must pass");
+setBootDriver({ log: () => "[LFDebug:Persistence] autosave scheduled every 600 seconds" });
+expect(runHarness(bootFx, [BOOT]).length > 0, "a log missing the fixture's line must fail");
+setBootDriver(null);
+expect(judgeBootLog({ has: ["a"], absent: ["b"] }, "a b").length === 1, "an absent line that shows up fails");
+expect(judgeBootLog({}, "a").length === 1, "a sidecar with no bootLog fails");
+expect(runHarness(fixtures.filter((f) => !isBoot(f)), [BOOT]).length === 0, "a reloadable fixture is not booted");
+const only = clientFx.every((f) => !isBoot(f));
+expect(only, "a client fixture must not be a boot fixture");
 
 if (fails.length) {
   for (const f of fails) console.log(`FAIL ${f}`);

@@ -96,6 +96,9 @@ export function resolvePrefab(root, arg) {
       file = dirs.map((d) => join(addons, d, path)).find(existsSync) ?? null;
     }
   }
+  // A base-game prefab (a full `{GUID}path` with no file under addons/) is passed to the plugin as is,
+  // so a vanilla item can stand beside ours; its preview attributes are engine defaults.
+  if (!file && /^\{[0-9A-Fa-f]{16}\}.+\.et$/.test(arg)) return { file: null, ref: arg, leaf: rel.split("/").pop().replace(/\.et$/, "") };
   if (!file) throw new Error(`no prefab for "${arg}" (give {GUID}path, a path under addons/<addon>/, or an asset slug)`);
   const meta = `${file}.meta`;
   const guid = existsSync(meta) ? /Name "\{([0-9A-F]{16})\}/.exec(readFileSync(meta, "utf8"))?.[1] : null;
@@ -115,7 +118,7 @@ export function itemPlan(root, prefabs, { states = ITEM_STATES, at }) {
   const notes = [];
   prefabs.forEach((arg, n) => {
     const r = resolvePrefab(root, arg);
-    const attrs = itemAttributes(readFileSync(r.file, "utf8"));
+    const attrs = itemAttributes(r.file ? readFileSync(r.file, "utf8") : "");
     // Items stand 3 m apart along x so several prefabs in one run never touch.
     const x = at.x + n * 3;
     const area = { name: `item-${safe(r.leaf)}`, x, y: 0, z: at.z, radius: 3, front: 180 };

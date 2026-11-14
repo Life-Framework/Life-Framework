@@ -20,7 +20,7 @@
 //   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
-//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template|template-core-only]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
 //   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   audit placement [--top N] [--area a] [--layer L]  Ranked placement audit of every DebugWorld layer entity, on the test server (agent-box/place-audit.mjs)
@@ -50,6 +50,7 @@ import * as playtest from "./host/playtest.mjs";
 import { cmdPlaytestServer } from "./release/playtest-server.mjs";
 import { cmdPlaytestRelease } from "./release/release-playtest.mjs";
 import * as session from "../agent-box/session.mjs";
+import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
@@ -2354,7 +2355,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     console.log(`session: seeded ${f}`);
     slog(`seeded ${f}`);
   }
-  if (mission === "template") {
+  if (isTemplateMission(mission)) {
     // What server/example/start.cmd does: the owner config goes to $profile:LifeFramework/config.json (#295).
     const owner = join(paths.server, "profile", "LifeFramework");
     mkdirSync(owner, { recursive: true });

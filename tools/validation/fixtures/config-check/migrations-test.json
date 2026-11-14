@@ -1,0 +1,8 @@
+{
+  "migrations": [
+    { "from": 1, "name": "shop-to-shops", "description": "Rename the shop section to shops.",
+      "changes": [ { "op": "rename", "path": "shop", "to": "shops" }, { "op": "drop", "path": "legacyFlag" } ] },
+    { "from": 2, "name": "add-price-floor", "description": "Give shops a default minimum price.",
+      "changes": [ { "op": "default", "path": "shops.priceFloor", "value": 1 } ] }
+  ]
+}

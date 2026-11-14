@@ -168,6 +168,10 @@ class LF_ConfigService
 		else
 			LF_Debug.Info(FEATURE, string.Format("owner config loaded from %1 (schemaVersion %2, this build reads %3)", source, schemaVersion, buildSchema));
 
+		// Log, once per load, every pack section the server ignores (#553); the lookups after it are quiet.
+		array<ref LF_PackConfigSection> packSections = {};
+		LF_PackConfigSections.Collect(packSections);
+
 		WarnUnknownSections(json, source);
 		return true;
 	}
@@ -192,9 +196,17 @@ class LF_ConfigService
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The top-level keys this build reads: schemaVersion and one key per section. A new section
-	//! adds its key here when its feature reads it (#282, #283).
+	//! The top-level keys this build reads: schemaVersion, one key per core section, and the
+	//! sections the running pack declares (#553). A new core section adds its key to
+	//! IsCoreTopLevelKey when its feature reads it (#282, #283).
 	static bool IsKnownTopLevelKey(string key)
+	{
+		return IsCoreTopLevelKey(key) || LF_PackConfigSections.IsPackSection(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The core's own top-level keys. A pack section may never take one of these names.
+	static bool IsCoreTopLevelKey(string key)
 	{
 		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_ItemCatalogueConfig.SECTION || key == LF_SystemsConfig.SECTION || key == LF_CleanupConfig.SECTION || key == LF_DisconnectConfig.SECTION || key == LF_Terms.SECTION;
 	}
@@ -385,6 +397,14 @@ class LF_ConfigPackSource
 	string GetName()
 	{
 		return "none";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn The running pack's manifest (it declares the pack's config sections, #553), or null
+	//! when there is no pack or the core refused it.
+	LF_PackManifest GetManifest()
+	{
+		return null;
 	}
 };
 
