@@ -12,7 +12,7 @@ class LF_Test_ParcelCollision : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		Resource resource = Resource.Load(LF_CivilianJob.PARCEL_PREFAB);
+		Resource resource = Resource.Load(LF_CivilianJob.ParcelPrefab());
 		ctx.True(resource.IsValid(), "the parcel prefab loads");
 		if (!resource.IsValid())
 			return;

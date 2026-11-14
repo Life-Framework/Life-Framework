@@ -12,7 +12,14 @@ class LF_SignComponentClass : ScriptComponentClass
 
 class LF_SignComponent : ScriptComponent
 {
-	static const ResourceName FACE_PREFAB = "{B7765F4913B42527}Prefabs/Props/Signs/LF_SignFace.et";
+	//! The prefab slot (#1128): The face a sign draws its text on.
+	static const string SLOT_FACE = "sign_face";
+
+	//! The prefab (slot "sign_face"), or empty when no usable prefab resolves (logged).
+	static ResourceName FacePrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_FACE);
+	}
 	static const ResourceName FACE_LAYOUT = "{ED05AC4807160345}UI/Layouts/Signs/LF_SignFace.layout";
 	// LF_SignFace.layout: RTTexture0 size, Title margin, Title font size.
 	static const float FACE_WIDTH = 512;
@@ -254,10 +261,10 @@ class LF_SignComponent : ScriptComponent
 			return;
 		}
 
-		Resource resource = Resource.Load(FACE_PREFAB);
+		Resource resource = Resource.Load(FacePrefab());
 		if (!resource || !resource.IsValid())
 		{
-			LF_Debug.Error("Signs", "sign face prefab does not load: " + FACE_PREFAB);
+			LF_Debug.Error("Signs", "sign face prefab does not load: " + FacePrefab());
 			return;
 		}
 
