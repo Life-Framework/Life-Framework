@@ -70,7 +70,7 @@ AudioClass {
  sounds {
   SoundClass {
    id 102409
-   name "SOUND_DLG_CLERK_GREET"
+   name "SOUND_DLG_CLERK_EVERON_GREET"
    version 5
    tl 680 0
    ins {
@@ -92,7 +92,7 @@ AudioClass {
   }
   SoundClass {
    id 103433
-   name "SOUND_DLG_CLERK_REGISTER"
+   name "SOUND_DLG_CLERK_EVERON_REGISTER"
    version 5
    tl 680 280
    ins {
@@ -114,7 +114,7 @@ AudioClass {
   }
   SoundClass {
    id 104457
-   name "SOUND_DLG_CLERK_BOARD"
+   name "SOUND_DLG_CLERK_EVERON_BOARD"
    version 5
    tl 680 560
    ins {
@@ -136,7 +136,7 @@ AudioClass {
   }
   SoundClass {
    id 105481
-   name "SOUND_DLG_CLERK_WORK_ERRAND"
+   name "SOUND_DLG_CLERK_EVERON_WORK_ERRAND"
    version 5
    tl 680 840
    ins {
@@ -158,7 +158,7 @@ AudioClass {
   }
   SoundClass {
    id 106505
-   name "SOUND_DLG_CLERK_BANK"
+   name "SOUND_DLG_CLERK_EVERON_BANK"
    version 5
    tl 680 1120
    ins {
@@ -180,7 +180,7 @@ AudioClass {
   }
   SoundClass {
    id 107529
-   name "SOUND_DLG_CLERK_DONE"
+   name "SOUND_DLG_CLERK_EVERON_DONE"
    version 5
    tl 680 1400
    ins {
@@ -202,7 +202,7 @@ AudioClass {
   }
   SoundClass {
    id 108553
-   name "SOUND_DLG_CLERK_IDLE"
+   name "SOUND_DLG_CLERK_EVERON_IDLE"
    version 5
    tl 680 1680
    ins {
@@ -224,7 +224,7 @@ AudioClass {
   }
   SoundClass {
    id 109577
-   name "SOUND_DLG_CLERK_ABOUT_WORK"
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_WORK"
    version 5
    tl 680 1960
    ins {
@@ -246,7 +246,7 @@ AudioClass {
   }
   SoundClass {
    id 110601
-   name "SOUND_DLG_CLERK_ABOUT_TOWN"
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_TOWN"
    version 5
    tl 680 2240
    ins {
@@ -268,7 +268,7 @@ AudioClass {
   }
   SoundClass {
    id 111625
-   name "SOUND_DLG_CLERK_BYE"
+   name "SOUND_DLG_CLERK_EVERON_BYE"
    version 5
    tl 680 2520
    ins {
@@ -382,7 +382,7 @@ AudioClass {
  shaders {
   ShaderClass {
    id 204818
-   name "SOUND_DLG_CLERK_GREET"
+   name "SOUND_DLG_CLERK_EVERON_GREET"
    version 5
    tl 432 0
    ins {
@@ -429,7 +429,7 @@ AudioClass {
   }
   ShaderClass {
    id 205842
-   name "SOUND_DLG_CLERK_REGISTER"
+   name "SOUND_DLG_CLERK_EVERON_REGISTER"
    version 5
    tl 432 280
    ins {
@@ -476,7 +476,7 @@ AudioClass {
   }
   ShaderClass {
    id 206866
-   name "SOUND_DLG_CLERK_BOARD"
+   name "SOUND_DLG_CLERK_EVERON_BOARD"
    version 5
    tl 432 560
    ins {
@@ -523,7 +523,7 @@ AudioClass {
   }
   ShaderClass {
    id 207890
-   name "SOUND_DLG_CLERK_WORK_ERRAND"
+   name "SOUND_DLG_CLERK_EVERON_WORK_ERRAND"
    version 5
    tl 432 840
    ins {
@@ -570,7 +570,7 @@ AudioClass {
   }
   ShaderClass {
    id 208914
-   name "SOUND_DLG_CLERK_BANK"
+   name "SOUND_DLG_CLERK_EVERON_BANK"
    version 5
    tl 432 1120
    ins {
@@ -617,7 +617,7 @@ AudioClass {
   }
   ShaderClass {
    id 209938
-   name "SOUND_DLG_CLERK_DONE"
+   name "SOUND_DLG_CLERK_EVERON_DONE"
    version 5
    tl 432 1400
    ins {
@@ -664,7 +664,7 @@ AudioClass {
   }
   ShaderClass {
    id 210962
-   name "SOUND_DLG_CLERK_IDLE"
+   name "SOUND_DLG_CLERK_EVERON_IDLE"
    version 5
    tl 432 1680
    ins {
@@ -711,7 +711,7 @@ AudioClass {
   }
   ShaderClass {
    id 211986
-   name "SOUND_DLG_CLERK_ABOUT_WORK"
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_WORK"
    version 5
    tl 432 1960
    ins {
@@ -758,7 +758,7 @@ AudioClass {
   }
   ShaderClass {
    id 213010
-   name "SOUND_DLG_CLERK_ABOUT_TOWN"
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_TOWN"
    version 5
    tl 432 2240
    ins {
@@ -805,7 +805,7 @@ AudioClass {
   }
   ShaderClass {
    id 214034
-   name "SOUND_DLG_CLERK_BYE"
+   name "SOUND_DLG_CLERK_EVERON_BYE"
    version 5
    tl 432 2520
    ins {
@@ -884,121 +884,121 @@ AudioClass {
  banks_local {
   BankLocalClass {
    id 307204
-   name "DLG_CLERK_GREET"
+   name "DLG_CLERK_EVERON_GREET"
    version 7
    tl 150 0
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{185D8F3131C696F1}Sounds/Dialogue/clerk/clerk_greet.wav"
+     Filename "{185D8F3131C696F1}Sounds/Dialogue/clerk_everon/clerk_everon_greet.wav"
     }
    }
   }
   BankLocalClass {
    id 308228
-   name "DLG_CLERK_REGISTER"
+   name "DLG_CLERK_EVERON_REGISTER"
    version 7
    tl 150 280
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{2C408EFBF1B147F2}Sounds/Dialogue/clerk/clerk_register.wav"
+     Filename "{2C408EFBF1B147F2}Sounds/Dialogue/clerk_everon/clerk_everon_register.wav"
     }
    }
   }
   BankLocalClass {
    id 309252
-   name "DLG_CLERK_BOARD"
+   name "DLG_CLERK_EVERON_BOARD"
    version 7
    tl 150 560
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{5390B35400CD0325}Sounds/Dialogue/clerk/clerk_board.wav"
+     Filename "{5390B35400CD0325}Sounds/Dialogue/clerk_everon/clerk_everon_board.wav"
     }
    }
   }
   BankLocalClass {
    id 310276
-   name "DLG_CLERK_WORK_ERRAND"
+   name "DLG_CLERK_EVERON_WORK_ERRAND"
    version 7
    tl 150 840
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{83DA38918E11087D}Sounds/Dialogue/clerk/clerk_work_errand.wav"
+     Filename "{83DA38918E11087D}Sounds/Dialogue/clerk_everon/clerk_everon_work_errand.wav"
     }
    }
   }
   BankLocalClass {
    id 311300
-   name "DLG_CLERK_BANK"
+   name "DLG_CLERK_EVERON_BANK"
    version 7
    tl 150 1120
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{906ECFAB2FD9EB1A}Sounds/Dialogue/clerk/clerk_bank.wav"
+     Filename "{906ECFAB2FD9EB1A}Sounds/Dialogue/clerk_everon/clerk_everon_bank.wav"
     }
    }
   }
   BankLocalClass {
    id 312324
-   name "DLG_CLERK_DONE"
+   name "DLG_CLERK_EVERON_DONE"
    version 7
    tl 150 1400
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{EEE890CC119E39DF}Sounds/Dialogue/clerk/clerk_done.wav"
+     Filename "{EEE890CC119E39DF}Sounds/Dialogue/clerk_everon/clerk_everon_done.wav"
     }
    }
   }
   BankLocalClass {
    id 313348
-   name "DLG_CLERK_IDLE"
+   name "DLG_CLERK_EVERON_IDLE"
    version 7
    tl 150 1680
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{04E07AAF5EFD4EBD}Sounds/Dialogue/clerk/clerk_idle.wav"
+     Filename "{04E07AAF5EFD4EBD}Sounds/Dialogue/clerk_everon/clerk_everon_idle.wav"
     }
    }
   }
   BankLocalClass {
    id 314372
-   name "DLG_CLERK_ABOUT_WORK"
+   name "DLG_CLERK_EVERON_ABOUT_WORK"
    version 7
    tl 150 1960
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{5B882E7AC13736A5}Sounds/Dialogue/clerk/clerk_about_work.wav"
+     Filename "{5B882E7AC13736A5}Sounds/Dialogue/clerk_everon/clerk_everon_about_work.wav"
     }
    }
   }
   BankLocalClass {
    id 315396
-   name "DLG_CLERK_ABOUT_TOWN"
+   name "DLG_CLERK_EVERON_ABOUT_TOWN"
    version 7
    tl 150 2240
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{A35D61C0B0ABB729}Sounds/Dialogue/clerk/clerk_about_town.wav"
+     Filename "{A35D61C0B0ABB729}Sounds/Dialogue/clerk_everon/clerk_everon_about_town.wav"
     }
    }
   }
   BankLocalClass {
    id 316420
-   name "DLG_CLERK_BYE"
+   name "DLG_CLERK_EVERON_BYE"
    version 7
    tl 150 2520
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
-     Filename "{7865940A4C544558}Sounds/Dialogue/clerk/clerk_bye.wav"
+     Filename "{7865940A4C544558}Sounds/Dialogue/clerk_everon/clerk_everon_bye.wav"
     }
    }
   }

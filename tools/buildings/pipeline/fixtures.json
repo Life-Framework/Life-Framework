@@ -1,0 +1,28 @@
+{
+  "_measured": "2026-11-14, #1143: vertical traces through each vanilla prefab spawned alone (a throwaway LF_Test, TraceMove with Include = the fixture), every 0.1-0.15 m across its footprint. Prefab space: +Z is the front, y up from the origin. A board is { y: top of the board, z: the depth the goods stand at }. The store spawns each copy a short trace above y, so a few centimetres off still lands on the board (LF_StoreComponent.SnapToSurface).",
+  "ShelfShop_01": {
+    "what": "one-sided shop gondola shelf, 2.48 m long, back at z 0; stepped boards, deepest at the bottom. Two back to back make a gondola",
+    "x": [-1.05, 1.1],
+    "boards": [
+      { "y": 0.102, "z": 0.3 },
+      { "y": 0.428, "z": 0.27 },
+      { "y": 0.82, "z": 0.2 },
+      { "y": 1.177, "z": 0.2 }
+    ]
+  },
+  "CoolingBoxShop_01": {
+    "what": "chilled display counter, 1.93 m long: a glass front (top 0.874 at z -0.6) over a deck at 0.66 open from above between z -0.3 and 0, and a top shelf at 1.21 behind it (z 0.15 to 0.3)",
+    "x": [-0.8, 0.8],
+    "boards": [
+      { "y": 0.66, "z": -0.15 },
+      { "y": 1.209, "z": 0.22 }
+    ]
+  },
+  "CounterShop_01": {
+    "what": "shop counter, 1.5 m long; top at 1.039 from z -0.52 to 0.2",
+    "x": [-0.6, 0.6],
+    "boards": [
+      { "y": 1.039, "z": -0.15 }
+    ]
+  }
+}

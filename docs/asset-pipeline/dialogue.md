@@ -110,7 +110,10 @@ and the offline check").
 ## Text-only lines
 
 A line with no recording (`m_sEvent` empty and `m_fSeconds` 0) is a caption that holds for reading time and
-plays nothing. The generated dialogues voice every line; text-only lines come from a pack patch (below).
+plays nothing. A whole dialogue can be text only: `"text_only": true` in its `dialogue.json` (no `voice`, no
+`budget_chars`) writes a conf with no events, no audio project and no wavs, and costs nothing. The core clerk is
+one (`tools/assets/dialogue/clerk/`): neutral wording, no voice. A pack gives it its voice with a voiced patch
+(below). A patch that adds a line without a `voice` is text only too.
 
 ## Patching a core dialogue from a pack
 
@@ -126,21 +129,28 @@ A pack that rewords the core clerk, adds a reply or drops a node does not copy t
 
 ```
 tools\cli asset dialogue clerk_everon --dry-run     check the patch against the core dialogue
-tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Dialogue_ClerkEveron.conf and the strings
+tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Dialogue_ClerkEveron.conf, the strings, and (with a voice) the pack's recordings
 ```
 
 - A line is a `patch` when the core has its id and an `add` when it does not (`"op": "remove"` removes). A
   node takes `"op"` the same way and a node with `options` replaces its reply list (a reply has no id).
 - A pack made with `toolscli pack new <Name>` is taken by `--addon LF_<Name>` (its `.gproj` is read; no list to edit). Its string table may still be the empty one `pack new` wrote.
 - A node with `options` replaces the core node's list, so write every reply the node should keep, and give each a text in `replies` (a reply the patch does not list is refused). `"options_from"` may name a core node.
-- Every patched line is text only: no ElevenLabs call, no budget, no wav. The core's recording keeps playing
-  for the lines the patch does not touch; a reworded line shows its new caption over the old voice, so reword
-  only where that reads right, or write a full dialogue (with `--addon`, its own voice) and `replace` the id in
-  the dialogue registry.
+- Without a `voice` every patched line is text only: no ElevenLabs call, no budget, no wav. The core's
+  recording (if it has one) keeps playing for the lines the patch does not touch; a reworded line shows its
+  new caption over the old voice, so reword only where that reads right.
+- **A pack that owns the voice** adds `"voice"` (as in "Voices") and `"budget_chars"` to the patch. Every line
+  it keeps is then recorded into the pack: `addons/<pack>/Sounds/Dialogue/<id>/<id>_<line>.wav`, an audio
+  project `Dialogue_<id>.acp` and the conf `Configs/Dialogue/LF_Dialogue_<Name>.conf`, which also sets
+  `m_sSoundProject` and each line's event, length and mouth over the core's text-only dialogue. The provenance
+  (hashes, characters spent) is `tools/assets/dialogue/<id>/elevenlabs.json`. Put the words the voice says in the
+  patch's `text` (the pack's caption); the core keeps its neutral row. The core clerk's voice is the worked
+  example: `clerk` is text only, `clerk_everon` records it in `LF_Everon1989`. Only a patch of a `text_only` core
+  dialogue may voice it, so the core never ships recordings of a pack's voice.
 - The tool refuses a patch of a line or node the core lacks, an add of one it has, a reply to an unknown
-  node, a removed node a core node still leads to, a patch in the core addon, and a patch with a voice or
-  budget. The captions go into the pack's string table.
-- The stage prints the `"{GUID}path"` overlay line; list it in the pack's mission header `m_aLF_ConfigOverlays`. `tools\cli validate`
+  node, a removed node a core node still leads to, a patch in the core addon, a budget with no voice and a
+  voice with no budget. The captions go into the pack's string table.
+- List the written `.conf` in the pack's mission header `m_aLF_ConfigOverlays`. `tools\cli validate`
   (`validate-dialogue-patch.mjs`) reads it against the core dialogue, and `dialogue-pipeline-selftest.mjs`
   checks the file still matches the json.
 - The Everon pack's clerk is the worked example (`tools/assets/dialogue/clerk_everon/`).
