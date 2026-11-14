@@ -19,6 +19,8 @@ committed. The current tree is classified in
 resource the rule calls pack still lands in the core for now, and gets a pack
 row in the inventory so the M3 move takes it along.
 
+**What a pack may rely on** is the declared public surface, [`public-surface.md`](public-surface.md); a pack also ships a manifest naming the core versions it supports.
+
 ## Core
 
 The core gets anything that:
