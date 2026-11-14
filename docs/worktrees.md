@@ -683,7 +683,7 @@ node agent-box/harness.mjs --client 1 dialogue caption '#LF-Dialogue_Clerk_Greet
 node agent-box/session.mjs live-reload-proof                  the proof (up --clients 1)
 ```
 
-- Gate: `config` passes `LF_ConfigReload.IsAllowed` (harness build, dev tools or an administrator). `dialogue`
+- Gate: `config` needs the dev gate (`LF_DevGate.CheckPlayerRequest`: dev tools or an administrator; a harness build opens it). `dialogue`
   also needs dev tools open in the game mode (`LF_ContentReload.DevToolsOpen`: a dev world or a harness
   build); an administrator alone does not read it, so a live server never reads a developer's file.
 - Dialogue: the text is a caption only. The voice is the recording and does not change; node structure,

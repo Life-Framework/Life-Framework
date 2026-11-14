@@ -85,7 +85,7 @@ class LF_ContentReload
 	//! The decision, pure so the suite can test every cell.
 	//! \param[in] needsDevTools The reloader reads a developer's file.
 	//! \param[in] devTools The game mode opens dev tools, or this is a harness build.
-	//! \param[in] allowed The requester passes LF_ConfigReload.IsAllowed (harness build, dev tools or an administrator).
+	//! \param[in] allowed The requester passes the dev gate (harness build, dev tools or an administrator).
 	static bool Permits(bool needsDevTools, bool devTools, bool allowed)
 	{
 		if (!allowed)
@@ -119,13 +119,11 @@ class LF_ContentReload
 		if (!Replication.IsServer())
 			return "not the server";
 
-		bool allowed = LF_ConfigReload.IsAllowed(playerId);
+		// A harness build opens the gate; otherwise the dev tools of the game mode or an administrator.
+		bool allowed = LF_DevGate.HarnessBuild() || LF_DevGate.CheckPlayerRequest(playerId, LF_ConfigService.FEATURE, "reload '" + what + "'");
 		bool devTools = DevToolsOpen();
 		if (!allowed)
-		{
-			LF_Debug.Warn(LF_ConfigService.FEATURE, string.Format("reload '%1' refused for player %2: administrators only", what, playerId));
 			return "refused";
-		}
 
 		// A client sends the names; never parse more than the few that exist.
 		if (what.Length() > MAX_ASK_LENGTH)
