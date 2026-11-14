@@ -38,7 +38,8 @@ const sleep = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 
 
 function writeProbe(token, broken = false) {
   let src = readFileSync(join(HERE, "LF_WarmProbe.c.tmpl"), "utf8").replaceAll("__TOKEN__", token);
-  if (broken) src += "\nvoid LF_WarmProbeBroken() { int x = ; }\n";
+  if (broken === "lenient") src += "\nvoid LF_WarmProbeBroken() { int x = ; }\n";
+  else if (broken) src += "\nvoid LF_WarmProbeBroken() { LF_NoSuchFunction_Zz(); }\n";
   writeFileSync(PROBE, src);
 }
 
