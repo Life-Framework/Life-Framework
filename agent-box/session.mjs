@@ -44,7 +44,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { addonsArgs, launchAddons, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
+import { addonsArgs, launchAddons, launchAddonsFor, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
 export { applyClientSettings, resolveProfile };
@@ -211,13 +211,14 @@ export function laneArgs(port) {
 }
 
 // rp: the resolved session profile (session-profile.mjs); absent means full.
-// addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header.
-export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons() }) {
+// addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header, or `header` (a
+// `--pack` session: the pack's own Missions/<name>.conf, tools/lib/addons.mjs packLaunch).
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons(), header = "" }) {
   // The template mission boots what server/example/server.json names: its scenario and its mods. The
   // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
   const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", tpl ? tpl.scenario : mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : SERVER_WORLD,
     "-addonsDir", addonsDir,
     ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,

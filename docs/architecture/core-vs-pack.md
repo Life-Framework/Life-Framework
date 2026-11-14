@@ -155,6 +155,8 @@ prefab brings the punch clock with the clock-in action, the place registration a
 slot, so a pack needs no hand-wired actions and no script. A job id that is not a duty job
 (`POLICE`, `MEDIC`) still registers its place; it shows no clock-in.
 
+The header names the core `DebugWorld` and `SystemsConfig`, so `toolscli session up --pack LF_<Name>` boots the pack in a test session with its overlays applied and the harness on (`docs/owner/pack-session.md`).
+
 Which licence your pack may carry, what it may copy from the core, and how to credit: [pack-licence.md](pack-licence.md) (#967).
 
 ## Checking a pack

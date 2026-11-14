@@ -5,7 +5,7 @@
 // LifeFramework) fails with `dependency '79636E668EA37AC9' can't be added`. One
 // flag with comma-separated folders works. Every launcher builds its flag here.
 
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -62,6 +62,37 @@ export function launchAddonsIn(addonsDir) {
 
 export function launchAddons(root = REPO) {
   return launchAddonsIn(join(root, "addons"));
+}
+
+// `--pack <name>` (session up): a pack author boots THEIR pack, not the flagship. The pack is a
+// folder addons/<name> of this checkout (where `pack new` writes it), so a remote pool machine
+// gets it with the worktree snapshot. The launch loads the core plus that pack, and boots the
+// header `pack new` scaffolds: Missions/<name>.conf, which names the core DebugWorld and lists the
+// pack's config overlays (the same header mechanism the flagship uses).
+// Returns { name, header } or { error }.
+export function packLaunch(root, arg) {
+  const name = String(arg ?? "").trim().replace(/[\\/]+$/, "").split(/[\\/]/).pop();
+  if (!name) return { error: "--pack needs a pack folder under addons/, like --pack LF_DemoPack" };
+  if (name === CORE) return { error: "--pack names a pack; the core always loads" };
+  const dir = addonDir(root, name);
+  if (!existsSync(join(dir, `${name}.gproj`))) return { error: `--pack ${name}: no addons/${name}/${name}.gproj in this checkout (tools\\cli pack new <Name> writes one)` };
+  const meta = join(dir, "Missions", `${name}.conf.meta`);
+  if (!existsSync(join(dir, "Missions", `${name}.conf`)) || !existsSync(meta)) return { error: `--pack ${name}: no Missions/${name}.conf (+ .meta) mission header; 'tools\\cli pack new' writes one` };
+  const guid = readFileSync(meta, "utf8").match(/Name\s+"\{([0-9A-F]{16})\}/)?.[1];
+  if (!guid) return { error: `--pack ${name}: Missions/${name}.conf.meta has no GUID` };
+  return { name, header: `{${guid}}Missions/${name}.conf` };
+}
+
+// `--pack <name>` out of a flag list: undefined when absent, { name, header } or { error }.
+export function parsePackFlag(flags, root = REPO) {
+  const i = flags.indexOf("--pack");
+  if (i === -1) return undefined;
+  return packLaunch(root, flags[i + 1] && !flags[i + 1].startsWith("--") ? flags[i + 1] : "");
+}
+
+// The -addons list of a launch: this checkout's, or the core plus one pack when a session runs `--pack`.
+export function launchAddonsFor(root, pack) {
+  return pack ? [CORE, pack] : launchAddons(root);
 }
 
 // ["-addons", "LifeFramework,LF_Everon1989"]: the one place a launch names its addons.
