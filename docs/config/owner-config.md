@@ -89,11 +89,20 @@ it adds a record). Proof of the rules:
 the exact log line, line and column. Stages are a list in `tools/config/harness.mjs`; the server-boot
 (#299) stage plugs in there. Proof: `node tools/validation/config-harness-selftest.mjs`.
 
+### Changing prices, removing an item (#1005)
+
+`tools/test/config-fixtures/presets/client-economy-override.json` is the worked owner file: it patches the food shop price, removes the M9 from the gun counter and patches the S105's lot price. The same three edits as pack overlays are in `tools/test/config-fixtures/pack-economy/` (`ShopPrices.conf`, `Catalogue.conf`, `VehiclePrices.conf`; copy into a pack's `Configs/` and list each in the mission header's `m_aLF_ConfigOverlays`). Rules an author trips on:
+
+- A shop price rule is addressed by the key the shipped rule has (`Prefabs/Items/Food/` changes every food; a longer substring is a new rule, so give it `"op": "add"`, as `patch` of an id nobody has is refused).
+- Removing a catalogue item: also `remove` its offers (`gun_counter/pistol_m9`), or `pack check` reports an offer for an item the catalogue lacks.
+- A vehicle is keyed by GUID, braces and case ignored; a patch needs no `m_Prefab` change but the pack `.conf` must repeat `m_Prefab` to name the entry.
+- Check offline: `config-check`, then `pack explain <key> --config <file>` shows the layer that set the value; `pack check <addon>` for a pack.
+
 ### Client stage (#300): is the value on the client?
 
 A fixture's `.expect.json` may carry `"client": [ read, ... ]`. Each read names a value a player sees and
 what it must be: `shopPrice` (the shop's list, searched for an item, shows `expect`, for a config price or a
-renamed currency term) or `actionShown` (an action is offered or hidden, for a switched-off system).
+renamed currency term) or `actionShown` (an action is offered or hidden, for a switched-off system), `shopPrice` with `"gone": true` (an item an owner or pack removed is not listed) and `lotPrice` (the car lot's price sheet shows `expect`). Run it with `node agent-box/session.mjs config-harness-proof` (a proof verb, not `harness.mjs`).
 `tools/test/config-fixtures/presets/client-shop-price`, `client-term-currency` and `client-system-off` are the
 three, `empty` is the shipped baseline for both kinds of read.
 
@@ -124,7 +133,7 @@ changed. The layers are the core `.conf`, each pack under `addons/` in order (`-
 one), then your file (`--config`); the merge is the server's (`docs/config/override-model.md`), so a
 refused verb and a second pack on one id print under the entry. A field no layer sets is the class
 default. Offline; exit 1 when the key names nothing. Lists today: `catalogue.items`,
-`catalogue.offers`, `crime.crimes`, `shops.priceRules`. The website config check (#281) does not
+`catalogue.offers`, `crime.crimes`, `shops.priceRules`, `vehicles.vehicles` (key: the lot prefab's 16-digit GUID, `vehicles.vehicles.54C3CC22DEBD57BE.basePrice`). The website config check (#281) does not
 have this view yet.
 
 ## Fixtures a reload cannot apply (boot fixtures)
