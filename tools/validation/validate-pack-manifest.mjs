@@ -41,8 +41,8 @@ export function checkPackManifest(root) {
   const errors = [];
   const addons = join(root, "addons");
   const core = join(addons, "LifeFramework");
-  const pack = join(addons, "LF_Everon1989");
-  if (!existsSync(pack)) return errors;
+  const packs = existsSync(addons) ? readdirSync(addons).filter((n) => n.startsWith("LF_") && statSync(join(addons, n)).isDirectory()).sort() : [];
+  if (!packs.length) return errors;
 
   const surfacePath = join(root, "docs", "architecture", "public-surface.json");
   const basePath = join(root, "docs", "architecture", "public-surface-baseline.json");
@@ -71,6 +71,8 @@ export function checkPackManifest(root) {
     }
   }
 
+  for (const packName of packs) {
+  const pack = join(addons, packName);
   const manifests = [];
   for (const f of walk(pack).filter((p) => p.endsWith(".conf"))) {
     const text = readFileSync(f, "utf8");
@@ -79,26 +81,27 @@ export function checkPackManifest(root) {
     if (!cls) continue;
     if (cls === "LF_PackManifest") manifests.push({ r, text });
     if (cls.startsWith("LF_") && declared.has(cls) && !listed.has(cls)) {
-      errors.push(`LF_Everon1989/${r} uses ${cls}, which is not in the core's public surface (docs/architecture/public-surface.md)`);
+      errors.push(`${packName}/${r} uses ${cls}, which is not in the core's public surface (docs/architecture/public-surface.md)`);
     }
   }
 
   if (manifests.length !== 1) {
-    errors.push(`LF_Everon1989 needs exactly one LF_PackManifest .conf, found ${manifests.length}`);
+    errors.push(`${packName} needs exactly one LF_PackManifest .conf, found ${manifests.length}`);
   } else {
     const { r, text } = manifests[0];
     const min = field(text, "m_sCoreMin") ?? "";
     const below = field(text, "m_sCoreBelow") ?? "";
     const id = field(text, "m_sPackId") ?? "";
-    if (id !== "LF_Everon1989") errors.push(`LF_Everon1989/${r}: m_sPackId is "${id}", expected "LF_Everon1989"`);
+    if (id !== packName) errors.push(`${packName}/${r}: m_sPackId is "${id}", expected "${packName}"`);
     for (const [n, v] of [["m_sCoreMin", min], ["m_sCoreBelow", below]]) {
-      if (v && !SEMVER.test(v)) errors.push(`LF_Everon1989/${r}: ${n} "${v}" is not x.y.z`);
+      if (v && !SEMVER.test(v)) errors.push(`${packName}/${r}: ${n} "${v}" is not x.y.z`);
     }
-    if (SEMVER.test(min) && SEMVER.test(below) && cmp(min, below) >= 0) errors.push(`LF_Everon1989/${r}: the range [${min}, ${below}) is empty`);
+    if (SEMVER.test(min) && SEMVER.test(below) && cmp(min, below) >= 0) errors.push(`${packName}/${r}: the range [${min}, ${below}) is empty`);
     if (coreVersion && SEMVER.test(coreVersion)) {
       const out = (SEMVER.test(min) && cmp(coreVersion, min) < 0) || (SEMVER.test(below) && cmp(coreVersion, below) >= 0);
-      if (out) errors.push(`LF_Everon1989/${r}: the range [${min}, ${below}) excludes the running core ${coreVersion}`);
+      if (out) errors.push(`${packName}/${r}: the range [${min}, ${below}) excludes the running core ${coreVersion}`);
     }
+  }
   }
   return errors;
 }
