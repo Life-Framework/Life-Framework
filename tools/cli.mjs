@@ -56,7 +56,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
-import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
+import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -83,6 +83,8 @@ import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
+import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
+import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -645,16 +647,34 @@ function invokeScriptAsync(full, opts = {}) {
   if (full.endsWith(".ps1")) [cmd, args] = [PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full]];
   else if (full.endsWith(".cmd") || full.endsWith(".bat")) [cmd, args] = ["cmd", ["/c", full]];
   else if (full.endsWith(".sh")) [cmd, args] = ["bash", [full]];
-  return new Promise((done) => {
+  const { onSpawn, ...spawnOpts } = opts;
+  return new Promise((resolveRun) => {
     let stdout = "";
     let stderr = "";
-    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...opts });
+    let settled = false;
+    const done = (r) => {
+      if (!settled) {
+        settled = true;
+        resolveRun(r);
+      }
+    };
+    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...spawnOpts });
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
     child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+    // kill(why): end the check and its children now and settle with a failure (the budget ran out).
+    // Settles without waiting for `close`: a grandchild holding the pipes open must not hold the run.
+    onSpawn?.({
+      pid: child.pid,
+      kill(why) {
+        killTreeSync(child.pid);
+        done({ status: 124, stdout, stderr: `${stderr}${stderr && !stderr.endsWith("\n") ? "\n" : ""}${why}\n`, timedOut: true });
+      },
+    });
   });
 }
+
 
 async function cmdRunArea(area, root = ROOT, opts = {}) {
   // Worktree checks must use the target checkout's scripts. Using the main
@@ -696,6 +716,15 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const lastSecs = (j) => state?.checks[j.s]?.secs ?? 0;
   const queue = jobs.filter((j) => !j.skipped).sort((a, b) => lastSecs(b) - lastSecs(a));
   const env = toolEnv();
+  // Per-check budget (tools/lib/check-budget.mjs): a check over it is killed and fails by name. Times
+  // leave out any freeze of this process, which is reported once below instead of blamed on a check.
+  const handles = new Map();
+  const dog = createWatchdog({
+    onTimeout: (s, ms) => {
+      console.log(`TIMEOUT ${area}/${s}: over its ${Math.round(ms / 1000)} s budget (LF_VALIDATE_CHECK_BUDGET_S); killing it`);
+      handles.get(s)?.kill(`TIMEOUT ${area}/${s}: killed after ${Math.round(ms / 1000)} s, over the per-check budget (LF_VALIDATE_CHECK_BUDGET_S, default ${checkBudgetMs({}) / 1000} s)`);
+    },
+  });
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
       const started = Date.now();
@@ -709,15 +738,19 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
         const wb = FULL_ONLY.has(job.s) ? await wbRoute.acquireWorkbench(root, { purpose: job.s }) : null;
         try {
           // LF_WB_GUARDED: validate-scripts.ps1 refuses to start Workbench unless the CLI passed the cap check above.
-          job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env: FULL_ONLY.has(job.s) ? { ...env, LF_WB_GUARDED: "1" } : env });
+          dog.start(job.s, checkBudgetMs(process.env, FULL_ONLY.has(job.s) ? 1200 : null));
+          job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env: FULL_ONLY.has(job.s) ? { ...env, LF_WB_GUARDED: "1" } : env, onSpawn: (h) => handles.set(job.s, h) });
         } finally {
           wb?.release();
         }
       }
-      job.secs = (Date.now() - started) / 1000;
+      const own = dog.end(job.s);
+      job.secs = own ? own.ownMs / 1000 : (Date.now() - started) / 1000;
+      job.frozen = own ? own.frozenMs / 1000 : 0;
     }
   };
   await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
+  dog.stop();
   let failed = 0;
   let skippedIncr = 0;
   for (const job of jobs) {
@@ -728,7 +761,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     }
     const { res } = job;
     const ok = res.status === 0;
-    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s)`);
+    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok) failed++;
@@ -748,6 +781,9 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
       console.log(`slowest: ${slow}`);
     }
     if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+  }
+  if (dog.frozenMs() >= 5000) {
+    console.log(`WARN  ${area}: this process was frozen ${(dog.frozenMs() / 1000).toFixed(0)} s (longest ${(dog.longestFreezeMs() / 1000).toFixed(0)} s) by a synchronous call beside the checks (a lock wait or spawnSync in the same process); check times above leave it out`);
   }
   console.log(`${area}: ${ran.length} check(s) run, ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
   return failed ? 1 : 0;
@@ -964,7 +1000,7 @@ async function cmdBuild(root = ROOT, opts = {}) {
   }
 }
 
-function buildAddon(root, opts) {
+async function buildAddon(root, opts) {
   const exe = workbenchExe();
   if (!existsSync(exe)) {
     console.log(`FAIL  workbench not found: ${exe}`);
@@ -974,9 +1010,16 @@ function buildAddon(root, opts) {
   // One Workbench build at a time across ALL worktrees: concurrent instances
   // fight over the shared shader cache and can corrupt the user's editor
   // session. The fast dev loop (cli dev) skips the build, so this rarely blocks.
+  // The async wait: `ci` runs validate --full beside this build in one process (tools/wt.mjs acquireLockAsync).
   let lock;
   try {
-    lock = wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
+    try {
+      lock = wt.acquireLock(root, "build", { waitMs: 0 });
+    } catch (e) {
+      if (!opts.wait || !/is held/.test(e.message)) throw e;
+      console.log(`build: waiting up to 900 s for the build lock, held by ${describeHolder(join(wt.ensureHub(root), "locks", "build.lock"))}`);
+      lock = await wt.acquireLockAsync(root, "build", { waitMs: 900000 });
+    }
   } catch (e) {
     console.log(`FAIL  ${e.message} (a headless Workbench build is running in another worktree)`);
     return Promise.resolve(1);
@@ -1339,6 +1382,33 @@ function releaseLaneForRdb(root, slot) {
   return true;
 }
 
+// The refresh Workbench, stopped once the rdb is complete and has stopped changing for 3 s
+// (tools/lib/wb-until.mjs): on this PC it writes the rdb in ~2 s and then freezes until the 600 s
+// timeout. Shape of the spawnSync result the caller reads ({ status, error }).
+function refreshUntilFresh(exe, args, gameDir, addon, tag) {
+  let pid;
+  try {
+    pid = quietSpawnDetached(exe, args, { cwd: gameDir });
+  } catch (e) {
+    return { status: null, error: e };
+  }
+  let lastMtime = null;
+  const r = waitUntilDone({
+    timeoutMs: 600000,
+    alive: () => wbPidAlive(pid),
+    done: () => {
+      const f = rdbFreshness(addon);
+      const steady = f.mtimeMs !== undefined && f.mtimeMs === lastMtime;
+      lastMtime = f.mtimeMs;
+      return f.missing.length === 0 && steady;
+    },
+  });
+  if (!r.exited) killTreeSync(pid);
+  if (r.done && !r.exited) console.log(`resource database${tag}: rdb complete after ${(r.ms / 1000).toFixed(0)} s; stopped Workbench instead of waiting for it to exit`);
+  if (r.timedOut) console.log(`WARN  resource database refresh${tag}: Workbench ran the full 600 s without a complete rdb; stopped it`);
+  return { status: r.exited ? 0 : r.done ? 0 : null, error: r.timedOut ? { code: "ETIMEDOUT" } : undefined };
+}
+
 function ensureAddonResourceDatabase(root, name) {
   const addon = addonDir(root, name);
   const tag = name === CORE ? "" : ` [${name}]`;
@@ -1397,7 +1467,7 @@ function ensureAddonResourceDatabase(root, name) {
       "-profile", profile,
       ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ];
-    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
+    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : refreshUntilFresh(exe, args, gameDir, addon, tag);
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
@@ -2380,7 +2450,14 @@ function cmdSessionUp(root, dir, flags) {
   // --roster / --seed fixtures are written into the server profile by sessionLaunch, right before the server boots.
   const seeds = session.parseSeeds(flags);
   const clients = session.parseClients(flags);
-  const mission = session.parseMission(flags);
+  // --pack <LF_Name>: boot that pack (addons/<name>, header Missions/<name>.conf) on the core instead of the flagship.
+  const packArg = parsePackFlag(flags, root);
+  if (packArg?.error) {
+    console.log(`FAIL  ${packArg.error}`);
+    return 1;
+  }
+  // A pack session runs the harness build (LF_HARNESS) like the playtest mission, so proofs can read the client.
+  const mission = packArg ? "playtest" : session.parseMission(flags);
   const rp = session.parseSessionProfile(flags);
   const res = session.sessionRes(flags, rp);
   const visible = flags.includes("--visible");
@@ -2451,7 +2528,7 @@ function cmdSessionUp(root, dir, flags) {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, pack: packArg?.name, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
     // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
     holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
   if (hold.note) console.log(hold.note);
@@ -2475,7 +2552,7 @@ function cmdSessionUp(root, dir, flags) {
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     recordIdentities(dir, state);
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
-    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${playtestMission(launchAddons(ROOT)).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${(packArg?.header ?? playtestMission(launchAddons(ROOT))).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
     sessionCapNote(root, settings, hold.min);
     console.log(`session: full log ${sessionLog}`);
     return 0;
@@ -2614,7 +2691,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     copyFileSync(join(root, "server", "example", "config.json"), join(owner, "config.json"));
     slog(`template: config.json copied to ${owner}`);
   }
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddonsFor(root, state.pack), header: state.pack ? parsePackFlag(["--pack", state.pack], root)?.header : "" });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
@@ -2680,7 +2757,7 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
   session.applyClientSettings(c.profile, rp);
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddons(root) });
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddonsFor(root, state.pack) });
   slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
@@ -2953,6 +3030,12 @@ function cmdSession(args) {
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
   if (list[0] === "wait") return cmdSessionWait(dir, list.slice(1));
+  // A proof verb (agent-box/proofs/<verb>.mjs) runs through the router, as the owner docs and the PR
+  // templates write it: `tools\cli session config-harness-proof --only walkthrough`.
+  if (list[0] && /^[a-z][a-z0-9-]*$/.test(list[0]) && existsSync(join(ROOT, "agent-box", "proofs", `${list[0]}.mjs`))) {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...list], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   console.log(SESSION_USAGE);
   return list[0] ? 1 : 0;
 }

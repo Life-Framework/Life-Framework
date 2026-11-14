@@ -525,7 +525,8 @@ async function run(args) {
       const li = await import("./look-item.mjs");
       const at = resolveArea(args.flags.at || "spawn-square", all, radius);
       if (args.flags.edit) throw new Error("look item spawns the item, so it needs play mode (no --edit)");
-      const plan = li.itemPlan(ROOT, args.pos.slice(1), { states: String(args.flags.states || li.ITEM_STATES.join(",")).split(",").filter(Boolean), at });
+      const names = await li.resolveGameNames(ROOT, args.pos.slice(1), { log: (m) => console.log(`look: ${m}`) });
+      const plan = li.itemPlan(ROOT, names, { states: String(args.flags.states || li.ITEM_STATES.join(",")).split(",").filter(Boolean), at });
       if (!plan.areas.length) throw new Error("look item needs a prefab: {GUID}path, a path under addons/<addon>/, or an asset slug");
       areas = plan.areas;
       itemPerArea = plan.perArea;

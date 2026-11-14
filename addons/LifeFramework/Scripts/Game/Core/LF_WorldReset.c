@@ -204,13 +204,13 @@ class LF_WorldReset
 			if (!entity || entity.GetParent())
 				continue;
 
-			EntityPrefabData data = entity.GetPrefabData();
-			if (!data)
+			ResourceName entityPrefab = LF_Utils.GetPrefabName(entity);
+			if (entityPrefab.IsEmpty())
 				continue;
 
 			foreach (ResourceName prefab : prefabs)
 			{
-				if (!LF_Utils.SamePrefab(data.GetPrefabName(), prefab))
+				if (!LF_Utils.SamePrefab(entityPrefab, prefab))
 					continue;
 
 				loose.Insert(entity);

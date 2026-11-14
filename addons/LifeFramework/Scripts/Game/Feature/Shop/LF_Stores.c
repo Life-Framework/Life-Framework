@@ -328,6 +328,28 @@ class LF_Stores
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: whether the character carries a copy of the prefab that is a store's (still on its books
+	//! as a shelf copy, or tagged unpaid). Such goods cannot be sold.
+	static bool CarriesHeldApart(IEntity character, ResourceName prefab)
+	{
+		InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		if (!storage)
+			return false;
+
+		array<IEntity> items = LF_InventoryUtils.FindItemsByPrefab(storage, prefab);
+		if (!items)
+			return false;
+
+		foreach (IEntity item : items)
+		{
+			if (HoldsApart(item))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Test seam: deletes the last receipt when it lies loose in the world (its holder was deleted with it
 	//! already otherwise).
 	static void DeleteLooseReceipt()
@@ -495,7 +517,75 @@ class LF_Stores
 		LF_WantedReports.Identify(uid, "leaving a store with unpaid goods");
 		LF_Debug.Info(FEATURE, string.Format("store %1: %2 walked out with %3 unpaid item(s) worth %4; alarm, dispatch, wanted level and name", key, uid, items.Count(), value));
 		LF_Utils.NotifyEntity(thief, "#LF-Store_Thief", "#LF-Store_Title", 5.0);
+		int spoke = StaffReact(store, KEY_STAFF_THIEF);
+		if (spoke > 0)
+			LF_Debug.Info(FEATURE, string.Format("store %1: %2 member(s) of staff called after %3", key, spoke, uid));
+
 		return value;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Staff (#1143): the people working in a store react to a walk-out
+	//------------------------------------------------------------------------------------------------
+
+	//! The line a store's staff say when a shopper walks out with unpaid goods (their dialogue's `for_key`).
+	static const string KEY_STAFF_THIEF = "#LF-Store_ClerkThief";
+	//! Staff are looked for this far from the store's origin, then kept only inside its boundary.
+	static const float STAFF_SEARCH = 15;
+	protected static ref array<EntityID> s_aStaff;
+	protected static LF_StoreComponent s_pStaffStore;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the NPCs that work in the store: inside its boundary, with a dialogue that has a line for
+	//! `key`. Found by component, never by name.
+	static void StaffFor(notnull LF_StoreComponent store, string key, notnull array<IEntity> outStaff)
+	{
+		outStaff.Clear();
+		if (!GetGame() || !GetGame().GetWorld())
+			return;
+
+		s_aStaff = {};
+		s_pStaffStore = store;
+		GetGame().GetWorld().QueryEntitiesBySphere(store.GetOwner().GetOrigin(), STAFF_SEARCH, CollectStaff, null, EQueryEntitiesFlags.ALL);
+		foreach (EntityID id : s_aStaff)
+		{
+			IEntity npc = GetGame().GetWorld().FindEntityByID(id);
+			LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
+			if (config && LF_DialogueFlow.SpokenFor(config, key) != key)
+				outStaff.Insert(npc);
+		}
+
+		s_aStaff = null;
+		s_pStaffStore = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectStaff(IEntity entity)
+	{
+		// A town NPC is an LF_NpcBaseEntity (a GenericEntity), so it is known by its dialogue, not its class.
+		if (!entity || !LF_Component<LF_DialogueComponent>.Find(entity))
+			return true;
+
+		if (s_pStaffStore && s_pStaffStore.Contains(entity.GetOrigin()))
+			s_aStaff.Insert(entity.GetID());
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: every member of staff says its line for `key` to whoever is near.
+	//! \return How many spoke.
+	static int StaffReact(LF_StoreComponent store, string key)
+	{
+		if (!Replication.IsServer() || !store)
+			return 0;
+
+		array<IEntity> staff = {};
+		StaffFor(store, key, staff);
+		foreach (IEntity npc : staff)
+			LF_Dialogue.Announce(npc, key);
+
+		return staff.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -2,10 +2,9 @@
 # .githooks/pre-commit - runs the repo validator on staged changes.
 # Enabled via: git config core.hooksPath .githooks
 ROOT="$(git rev-parse --show-toplevel)"
-DRIVERS="$ROOT/tools/merge/drivers.gitconfig"
-if [ -f "$DRIVERS" ]; then
-  if ! git config --local --get-all include.path 2>/dev/null | grep -F -x "$DRIVERS" >/dev/null 2>&1; then
-    git config --local --add include.path "$DRIVERS"
-  fi
+# Keep exactly one shared include.path for the merge drivers (the main checkout's file). Never add
+# a per-worktree path: worktrees share .git/config. Never fails the commit.
+if [ -f "$ROOT/tools/merge/register-drivers.mjs" ]; then
+  node "$ROOT/tools/merge/register-drivers.mjs" || true
 fi
 exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/tools/validation/validate-repo.ps1" -Staged
