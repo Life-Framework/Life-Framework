@@ -106,3 +106,41 @@ on-duty staff may read (`LF_ServiceBoard.MayRead`). Anything drawn on a prop is
 sent to every client that has the board streamed in, and a client-side filter
 does not keep it from a modified client, so the calls stay on the per-read card.
 `docs/decisions.md`, 2026-11-13.
+
+## The case board
+
+The police case board (#148, `Prefabs/Investigation/LF_CaseBoard.et`, in the station porch) is the
+same render target with another layout of paper: up to three case columns, each a sheet for the
+suspect (the wanted poster layout: CASE n, the portrait once identified, the offence, the place and
+the time) and up to four index cards under it (the same layout with the photo parts hidden). A red
+string runs from each card's pin to the suspect sheet's pin: `LF_CaseBoardString.layout` is two pin
+heads and a chain of 64 beads, 6 units square, laid along the line at most 5 units apart, so it reads
+as one thread and needs no turned widget.
+
+The spike (#148) tried the turned line first. An `ImageWidget` turned with `SetRotation` in the
+render target is shrunk to fit its own unturned box: sized as a long thin slot (the gap between the
+pins by 5 units) it drew a 1 cm dash at the midpoint; setting the image's own size
+(`ImageWidget.SetSize`, as the vanilla map's drawing line does) or the vanilla line texture with
+`SizeToContent` drew nothing better. The beads cost 64 small images a string (12 strings at most
+on a face), drawn only while the face is live. A `CanvasWidget` `LineDrawCommand` is the
+untried alternative if a face ever needs a smoother thread.
+
+A new list builds the face again rather than redrawing it in place. On the session client (0.7 GB
+of RAM free with two full-profile clients and a server) a frozen face that was redrawn kept its old
+frame through the live window and both settle refreshes; a freshly built face draws its first frame
+every time. A change is a pin, a crime or an identification, so the rebuild is rare. The frozen
+frame still has the cork at a low mip on such a busy client (the wanted board's face shares it).
+
+![The officer's case board: one case, two cards, two strings](../../website/public/docs-images/148/case-board-close-after.png)
+
+| Piece | Where | Does |
+|---|---|---|
+| `LF_CaseBoard` | `Feature/Investigation/LF_CaseBoard.c` | Server: builds the list from the crime reports and the pinned locker rows, coalesced like the posters, and sends it to on-duty officers only (`LF_SendCaseBoard`, an owner RPC on each officer's controller) |
+| `LF_CaseBoardView` | `Feature/Investigation/LF_CaseBoardFace.c` | Client: the list this officer holds; once a second a duty check (coming on duty asks for the list, going off duty drops it and releases the faces) and the distance gate |
+| `LF_CaseBoardFace` | same file | Client: `LF_WantedPosterFace` with case columns, cards and strings; the same live window, freeze and settle refreshes |
+| `LF_CaseBoardComponent` | same file, on `LF_CaseBoard.et` | The prop: holds no case data; draws the face within 15 m for an on-duty officer |
+
+An entry is `C;report;offence;place;time;name;look;identified` for a case, followed by
+`E;report;kind;note` for each of its cards. The name and the look are sent only once the suspect is
+identified. Why the list does not ride the prop: `docs/decisions.md` 2026-11-13 "#148".
+

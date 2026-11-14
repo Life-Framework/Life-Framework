@@ -31,6 +31,9 @@ class LF_EvidenceConfig
 	[Attribute("900", UIWidgets.Auto, "Untouched evidence is removed after this many seconds")]
 	int m_iExpirySeconds;
 
+	[Attribute("", UIWidgets.Auto, "Offences (crime catalog ids, the offence keys of LF_CrimeCatalog.conf) that leave a footprint card where a suspect on foot stood. Empty uses the robberies and break-ins")]
+	ref array<string> m_aFootprintOffences;
+
 	protected static ref LF_EvidenceConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -110,6 +113,17 @@ class LF_EvidenceConfig
 			return DEFAULT_MAX_EVIDENCE;
 
 		return config.m_iMaxEvidence;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a report of this offence leaves a footprint card (LF_ScenePieces.OnReport).
+	static bool LeavesFootprint(string offence)
+	{
+		LF_EvidenceConfig config = Get();
+		if (config && config.m_aFootprintOffences && !config.m_aFootprintOffences.IsEmpty())
+			return config.m_aFootprintOffences.Contains(offence);
+
+		return offence == LF_WantedReports.OFFENCE_ROBBERY || offence == LF_WantedReports.OFFENCE_HOSPITAL || offence == LF_WantedReports.OFFENCE_BREAK_IN || offence == LF_WantedReports.OFFENCE_ARMORY || offence == LF_WantedReports.OFFENCE_CASH_VAN;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -32,5 +32,7 @@
     "addons/LifeFramework/UI/Layouts/Signs/LF_SignPaintFace.layout",
     "addons/LifeFramework/UI/Layouts/WidgetLibrary/ThinSliderWidget.layout"
   ],
-  "exceptions": {}
+  "exceptions": {
+    "addons/LifeFramework/UI/Layouts/Investigation/LF_CaseBoardString.layout": "A face part, not a screen: the red string and its two pins drawn into the case board render target (LF_CaseBoardFace, #148)."
+  }
 }
