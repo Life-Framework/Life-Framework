@@ -1,3 +1,4 @@
+// inputs: tools/merge/**, tools/validation/string-merge-selftest.mjs
 // Two PRs that add strings merge on plain git, the way GitHub merges them: no merge drivers.
 //
 // GitHub cannot run tools/merge/*. When every tool appended keys before the closing braces, two
