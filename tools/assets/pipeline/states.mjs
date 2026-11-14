@@ -309,7 +309,9 @@ export function shotList(spec) {
 // clients: agent-box/proofs/asset-states-proof.mjs gives the item, holds it, drops it and opens the
 // preview sheet; the PNGs land in tmp/assets/<slug>/states/. Each step is a repo command that blocks
 // with its own budget.
-export function shootStates(root, spec, dir) {
+// local: --local pins the session to this PC; without it the session goes to whichever pool machine
+// has the lane and the RAM, and session.mjs relays the proof there and copies the pictures home.
+export function shootStates(root, spec, dir, { local = false } = {}) {
   const meta = `${prefabPath(root, spec)}.meta`;
   const guid = existsSync(meta) ? /Name "\{([0-9A-F]{16})\}/.exec(readFileSync(meta, "utf8"))?.[1] : null;
   if (!guid) { console.log(`FAIL  no GUID in ${meta}`); return 1; }
@@ -318,12 +320,13 @@ export function shootStates(root, spec, dir) {
   const out = join(dir, "states");
   const session = join(root, "agent-box", "session.mjs");
   const node = (args) => spawnSync(process.execPath, [session, ...args], { cwd: root, stdio: "inherit", windowsHide: true }).status;
-  if (node(["up", "--clients", "2", "--profile", "full", "--wait"]) !== 0) { console.log("FAIL  session up"); return 1; }
+  const pin = local ? ["--local"] : [];
+  if (node(["up", "--clients", "2", "--profile", "full", "--wait", ...(local ? ["--machine", "local"] : [])]) !== 0) { console.log("FAIL  session up"); return 1; }
   let code = 1;
   try {
-    code = node(["asset-states-proof", `{${guid}}${rel}`, shots.join(","), out]);
+    code = node(["asset-states-proof", `{${guid}}${rel}`, shots.join(","), out, ...pin]);
   } finally {
-    node(["down"]);
+    node(["down", ...(local ? ["--machine", "local"] : [])]);
   }
   console.log(code === 0 ? `states: pictures in ${out}; read every one` : "FAIL  asset-states-proof");
   return code;
