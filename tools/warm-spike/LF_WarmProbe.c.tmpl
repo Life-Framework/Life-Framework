@@ -1,0 +1,28 @@
+// LF_WarmProbe.c - warm-runner spike (2026-11-14). Not shipped. __TOKEN__ is replaced per round.
+string LF_WarmProbeToken()
+{
+	return "__TOKEN__";
+}
+
+modded class LF_TestRunnerComponent
+{
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		Print("[LFWARM] play token=__TOKEN__");
+		FileHandle f = FileIO.OpenFile("$profile:lf-warm/play-token.txt", FileMode.WRITE);
+		if (f)
+		{
+			f.Write("__TOKEN__");
+			f.Close();
+		}
+
+		if (FileIO.FileExists("$profile:lf-warm/run-suite.txt"))
+			GetGame().GetCallqueue().CallLater(Run, 3000, false);
+	}
+
+	override protected void Close()
+	{
+		Print("[LFWARM] suite done; close suppressed in the warm probe");
+	}
+}
