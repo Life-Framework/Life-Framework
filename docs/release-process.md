@@ -20,6 +20,8 @@ run from tooling. It is maintainer-only, by hand in Workbench (#370).
 | `tools\cli release <x.y.z> --confirm [--push]` | Never | Yes |
 | `tools\cli playtest release` | Never | Yes |
 | Workshop upload of core and pack | Never. **Not yet: maintainer-only.** | Yes, by hand (#370) |
+| `tools\cli example-zip` (draft zip) | Yes | Yes |
+| Set the confirmed Workshop ids in `tools/release/example-zip.json`, then the `--final` zip | Never | Yes (after #370) |
 | Host `preflight` and `restore` after a game update | Never | Yes (the server owner too) |
 
 ## Branches
@@ -97,6 +99,36 @@ the core and the pack comes after the whole pack move, batches 1 to 4 (decided
 old single-item build, so the header move strands nobody. The older
 2026-11-12 entry in [decisions.md](decisions.md) is superseded by this one.
 Until batch 4 lands, a release is tagged and promoted, but not uploaded.
+
+## The example server download
+
+Each release ships `LifeFramework-ExampleServer.zip` beside the Workshop items (#296): the folder
+[`server/example/`](../server/example/README.md) a host copies to run the core and the 1989 Everon pack
+on their own server.
+
+```
+tools\cli example-zip            # a draft: LifeFramework-ExampleServer-DRAFT.zip in tmp/release/
+tools\cli example-zip --final    # the release zip; refuses while a Workshop id is a placeholder
+tools\cli example-zip --out <dir>
+```
+
+The zip holds `server.json`, `config.json`, `start.cmd`, `start.sh` and `README.md`, nothing else (a draft
+adds `DRAFT.txt`). `start.sh` keeps its executable bit. The command checks the template first
+(`server-template check`), writes the Workshop ids into `server.json`, then reads the finished zip back: all five
+files present, the core listed first, `config.json` free of `config-check` errors. `--final` also fails on any
+`PLACEHOLDER` left in any file.
+
+**Where the ids come from.** One file, `tools/release/example-zip.json`, holds the mod id and name of the core and
+of the pack. An id is the addon's `.gproj` GUID, and `validate` checks that a real id matches its addon. The pack
+id is a `PLACEHOLDER-...` value until the maintainer's first Workshop upload confirms it (#370); the core id is
+the published M1 item. After that upload, replace the placeholder with the confirmed id and run
+`example-zip --final`.
+
+**Attaching it.** `.github/workflows/example-server-release.yml` runs on a pushed `v<x.y.z>` tag (the tag
+`release --confirm --push` makes) or by hand with a tag. It runs the selftest, builds with `--final` and uploads the
+zip to that tag's release, creating a draft release when none exists. While a placeholder remains the workflow
+fails and attaches nothing, so no release carries a zip a server cannot start. The workflow is not run yet:
+it first runs on the tag of the first real release. The selftest is `tools/validation/example-zip-selftest.mjs`.
 
 ## Playtest builds
 
@@ -207,6 +239,8 @@ config migrations yet; `schemaVersion` is 1 (#302 to #304 add them).
 - [ ] Save version changes are listed; a preflight is named for owners if the
       game build moved.
 - [ ] Workshop upload: not yet, maintainer-only (after D3 batch 4).
+- [ ] Example server zip: the ids in `tools/release/example-zip.json` are the confirmed Workshop ids and
+      `tools\cli example-zip --final` builds (the workflow does it on the pushed tag).
 - [ ] Playtest zip, if one is cut: `playtest release` ran, the workflow finished,
       and `FALLBACK_RELEASE` is updated.
 

@@ -97,6 +97,22 @@ function New-ConfContent {
 
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 $failed = $false
+
+# Every .st is kept sorted by Id (tools/merge/sort-string-table.mjs), so the confs, which follow
+# .st order, are sorted too. Two PRs that add strings then insert at different lines and plain git
+# (GitHub, which runs none of our merge drivers) merges them without a conflict.
+$sorter = Join-Path $root "tools\merge\sort-string-table.mjs"
+$stFiles = @($tables | ForEach-Object { Join-Path $_.Dir ($_.Prefix + ".st") })
+$sortMode = "--check"
+if ($Write) { $sortMode = "--write" }
+& node $sorter $sortMode @stFiles
+if ($LASTEXITCODE -ne 0) {
+  if ($Write) {
+    Write-Host "regen-localization: FAILED - a .st does not parse whole; fix it before regenerating"
+    exit 1
+  }
+  $failed = $true
+}
 $stIdSet = @{}
 $totalKeys = 0
 

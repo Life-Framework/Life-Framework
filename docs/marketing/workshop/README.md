@@ -20,7 +20,8 @@ The click-by-click steps are in [`docs/playtest/workshop-publish.md`](../../play
 
 The Workshop build is APL because the Workshop Terms of Use require an APL-family licence
 (decision D2, 2026-11-12). The source on GitHub stays MIT. The description's "Licence and credits"
-section says both; check it says so before each publish.
+section says both; check it says so before each publish. Pack authors get the same facts, with the
+attribution rules, in [pack-licence.md](../../architecture/pack-licence.md).
 
 The Workshop build is APL because the Workshop Terms of Use require an APL-family licence
 (decision D2). The source on GitHub stays MIT. The description's "Licence and credits" section

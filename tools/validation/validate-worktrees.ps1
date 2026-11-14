@@ -40,6 +40,9 @@ foreach ($p in $state.worktrees.PSObject.Properties) {
   $slug = $p.Name
   $w = $p.Value
   $registered[$slug] = $true
+  # A `wt new` in flight (its checkout runs outside the lock); warm-pool trees
+  # live in $state.warm and are never checked here.
+  if ($w.status -eq 'creating') { continue }
 
   if (-not (Test-Path -LiteralPath $w.path)) {
     $errors += "worktree '$slug' registered at missing path $($w.path) (prune it: cli wt prune $slug)"
