@@ -32,7 +32,7 @@ class LF_ChainStationAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		if (!m_Station)
+		if (!m_Station || !LF_Systems.IsEnabled(LF_ChainStationComponent.SYSTEM))
 			return false;
 
 		int percent = m_Station.GetPercent();

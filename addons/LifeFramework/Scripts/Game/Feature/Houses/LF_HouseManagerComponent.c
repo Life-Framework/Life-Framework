@@ -66,18 +66,27 @@ class LF_HouseManagerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void LockAllDoors()
 	{
+		if (LF_Systems.Refuses(LF_LockComponent.SYSTEM, "lock all doors"))
+			return;
+
 		SetHouseLocked(true);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void UnlockAllDoors()
 	{
+		if (LF_Systems.Refuses(LF_LockComponent.SYSTEM, "unlock all doors"))
+			return;
+
 		SetHouseLocked(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void ToggleHouseLocked()
 	{
+		if (LF_Systems.Refuses(LF_LockComponent.SYSTEM, "toggle house lock"))
+			return;
+
 		SetHouseLocked(!m_bHouseLocked);
 	}
 

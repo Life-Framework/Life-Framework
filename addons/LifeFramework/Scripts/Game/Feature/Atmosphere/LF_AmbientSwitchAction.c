@@ -15,7 +15,7 @@ class LF_AmbientSwitchAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return m_Switch != null;
+		return m_Switch != null && LF_Systems.IsEnabled(LF_Atmosphere.SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -42,6 +42,9 @@ class LF_AmbientSwitchAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_Atmosphere.SYSTEM, "radio switch"))
 			return;
 
 		if (!m_Switch)

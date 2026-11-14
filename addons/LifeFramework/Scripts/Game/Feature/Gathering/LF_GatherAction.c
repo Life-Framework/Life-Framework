@@ -1,5 +1,8 @@
 class LF_GatherAction : ScriptedUserAction
 {
+	//! The system a server switches this action off with (#1075).
+	static const string SYSTEM = "Gathering";
+
 	[Attribute("", UIWidgets.EditBox, "Chain node id. When set, tool, yield, and cooldown come from ResourceChains.conf", category: "General")]
 	protected string m_sNodeId;
 
@@ -35,6 +38,8 @@ class LF_GatherAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!pOwnerEntity || !LF_NetworkUtils.ShouldApplyAction(pOwnerEntity)) return;
+		if (LF_Systems.Refuses(SYSTEM, "gather " + m_GatherItemPrefab))
+			return;
 		if (!LF_NetworkUtils.IsOwner(pOwnerEntity))
 			LF_Debug.Warn("Gathering", string.Format("gather applied without replication owner on %1", pOwnerEntity.GetName()));
 		if (!ApplyNodeFromCatalog())
@@ -85,6 +90,13 @@ class LF_GatherAction : ScriptedUserAction
 		{
 			m_NextRestock = pOwnerEntity.GetWorld().GetTimestamp().PlusMilliseconds(m_GatherTimeout);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A server with Gathering off offers nothing on the resource (#1075).
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled(SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
