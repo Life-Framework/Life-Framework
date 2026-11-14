@@ -92,6 +92,9 @@ class LF_BankVaultState : Managed
 //------------------------------------------------------------------------------------------------
 class LF_Bank
 {
+	//! LF_Places kind of a placed vault or heist target (LF_BankVaultComponent); the id is the vault id.
+	static const string PLACE_KIND = "BankVault";
+
 	static const ResourceName BAG_PREFAB = "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et";
 	static const ResourceName DOOR_PREFAB = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";
 	static const ResourceName SHELL_PREFAB = "{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et";
@@ -442,16 +445,9 @@ class LF_Bank
 	//------------------------------------------------------------------------------------------------
 	protected static vector VaultOrigin(string vaultId)
 	{
-		if (!GetGame() || !GetGame().GetWorld())
-			return vector.Zero;
-
-		IEntity entity = GetGame().GetWorld().FindEntityByName(vaultId);
-		if (!entity)
-			return vector.Zero;
-
-		vector transform[4];
-		entity.GetWorldTransform(transform);
-		return transform[3];
+		vector origin = vector.Zero;
+		LF_Places.FindOrigin(PLACE_KIND, vaultId, origin);
+		return origin;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -960,7 +956,7 @@ class LF_Bank
 		if (vault.m_sLootKind.IsEmpty())
 			return;
 
-		IEntity target = GetGame().GetWorld().FindEntityByName(vault.m_sVaultId);
+		IEntity target = LF_Places.Find(PLACE_KIND, vault.m_sVaultId);
 		int amount = 0;
 		string serials = "";
 		if (vault.m_sLootKind == LF_BankLoot.KIND_BAGS)
