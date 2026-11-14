@@ -269,6 +269,78 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `resetplayer` (#496): the server puts this player back to a plain free civilian off duty:
+	//! cuffs off, any sentence ended, duty and faction cleared, wanted and the crime stores cleared. Cash
+	//! is trimmed to `cash` when it is 0 or more (-1 leaves it). Behind the dev gate, so a production
+	//! server refuses it.
+	void LF_AskHarnessResetPlayer(int commandId, int cash)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessResetPlayer(commandId, true, cash);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessResetPlayer, commandId, cash);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessResetPlayer(int commandId, int cash)
+	{
+		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "resetplayer");
+		LF_ApplyHarnessResetPlayer(commandId, gateOpen, cash);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessResetPlayer(int commandId, bool gateOpen, int cash)
+	{
+		if (!gateOpen)
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		string uid = LF_Utils.GetPlayerUid(this);
+		int cuffs = LF_Restraint.ReleasePlayer(uid);
+		int sentence = 0;
+		if (LF_Jail.IsServing(uid))
+		{
+			LF_Jail.Advance(uid, LF_Jail.GetRemaining(uid) + 1);
+			sentence = 1;
+		}
+
+		int duty = 0;
+		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
+		LF_PlayerAccount account;
+		if (manager && !uid.IsEmpty())
+			account = manager.GetAccount(uid);
+		if (account)
+		{
+			if (account.IsOnDuty())
+			{
+				account.StopDutyClock();
+				account.SetOnDuty(false);
+				duty = 1;
+			}
+			account.SetFaction(LF_Faction.CIVILIAN);
+		}
+
+		string crime = LF_WorldReset.RunAll("harness resetplayer", true);
+		if (cash >= 0)
+		{
+			int have = LF_MoneyUtils.GetCash(this);
+			if (have > cash)
+				LF_MoneyUtils.RemoveCash(this, have - cash, "debug-reset");
+			else if (have < cash)
+				LF_MoneyUtils.AddCash(this, cash - have, "debug-reset");
+		}
+
+		LF_Debug.Info("AgentHarness", string.Format("resetplayer %1 cuffs=%2 sentence=%3 duty=%4", uid, cuffs, sentence, duty));
+		LF_HarnessReply(commandId, "ok", string.Format("cuffs=%1 sentence=%2 duty=%3 cleared %4", cuffs, sentence, duty, crime));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `scanner`: the server puts a police scanner in this character's inventory, behind the
 	//! dev gate (the fence path needs a crime record and cash; the proof is about hearing).
 	void LF_AskHarnessScanner(int commandId, string tool = "scanner")

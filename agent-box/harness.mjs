@@ -131,6 +131,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "resetcrime") {
     return `${id} resetcrime`;
   }
+  if (spec.verb === "resetplayer") {
+    return spec.cash === undefined ? `${id} resetplayer` : `${id} resetplayer ${Number(spec.cash)}`;
+  }
   if (spec.verb === "gm") {
     return spec.arg === "close" ? `${id} gm close` : `${id} gm`;
   }
@@ -1528,6 +1531,9 @@ function main(argv) {
     }
     if (cmd === "resetcrime") {
       return printResult(sendCommand({ verb: "resetcrime" }, 10000));
+    }
+    if (cmd === "resetplayer") {
+      return printResult(sendCommand(rest[0] === undefined ? { verb: "resetplayer" } : { verb: "resetplayer", cash: Number(rest[0]) }, 10000));
     }
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
