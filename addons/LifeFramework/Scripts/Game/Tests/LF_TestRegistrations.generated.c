@@ -406,6 +406,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SurvivalSync(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TestOrgSignWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);
@@ -444,6 +446,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnimTargets(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WorldReset(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WorldResetGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ZoneRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ZoneRuleSetBackcompat(), LF_TestTier.LOGIC);
 	}

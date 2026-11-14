@@ -261,27 +261,11 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		string uid = LF_Utils.GetPlayerUID(this);
-		LF_PlayerAccount account;
-		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
-		if (manager && !uid.IsEmpty())
-			account = manager.GetAccount(uid);
-
-		string cleared = "";
-		if (account)
-		{
-			// SetWantedLevel(0) also takes this player's posters down and publishes the account.
-			account.SetWantedLevel(0);
-			cleared = "wanted";
-		}
-
-		int reports = LF_WantedReports.ClearAll();
-		int dispatches = LF_Dispatch.ClearLog();
-		int tills = LF_RobAction.ResetCooldowns() + LF_Hospital.ResetTillCooldowns();
-		int vaults = LF_Bank.RestockAll();
-		int searches = LF_ChainSearch.ClearSearchCooldowns();
-		LF_HarnessReply(commandId, "ok", string.Format("cleared %1 reports=%2 dispatches=%3 tills=%4 vaults=%5 searches=%6", cleared, reports, dispatches, tills, vaults, searches));
-		LF_Debug.Info("AgentHarness", string.Format("crime state reset: reports=%1 dispatches=%2 tills=%3 vaults=%4 searches=%5", reports, dispatches, tills, vaults, searches));
+		// The same service the respawn and the menu use, limited to the crime-state steps: the wanted
+		// levels (and so the posters), reports, dispatch log, cooldowns, vaults, evidence, loose loot,
+		// spike strips and calls. A proof's reset never moves a car or regrows a rock.
+		string result = LF_WorldReset.RunAll("harness resetcrime", true);
+		LF_HarnessReply(commandId, "ok", "cleared " + result);
 	}
 
 	//------------------------------------------------------------------------------------------------

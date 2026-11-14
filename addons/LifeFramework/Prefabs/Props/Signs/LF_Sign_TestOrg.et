@@ -1,0 +1,29 @@
+GenericEntity : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "test_org"
+  }
+  ActionsManagerComponent "{3C818B6A6011C9DE}" {
+   additionalActions {
+    LF_TestOrgJoinAction "{5B7A2C4E91D0F3A1}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{5B7A2C4E91D0F3A2}" {
+      Name "#LF-TestOrgSign_Join"
+     }
+     "Sort Priority" 1
+    }
+    LF_TestOrgLeaveAction "{5B7A2C4E91D0F3A3}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{5B7A2C4E91D0F3A4}" {
+      Name "#LF-TestOrgSign_Leave"
+     }
+     "Sort Priority" 2
+    }
+   }
+  }
+ }
+}

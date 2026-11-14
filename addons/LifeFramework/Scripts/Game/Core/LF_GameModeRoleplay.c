@@ -76,6 +76,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CaseBoard.Install();
 		// Playtime per account and job, credited to online players (server only, #692).
 		LF_Playtime.Start();
+		// A playtest mission remembers where its vehicles stand, for the world reset (server only).
+		LF_WorldReset.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------

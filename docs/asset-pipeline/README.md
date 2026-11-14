@@ -53,6 +53,8 @@ Read this before any `generate`.
   (`meshy.mjs` `COST`, read from the Meshy pricing page on 2026-11-12; a task's own
   `consumed_credits` wins when it reports one).
 - Every generation's task ids and prompt (for image-to-3D: the image task, the concept number, its task id and prompt) are written to `tools/assets/<slug>/meshy.json` (committed; the asset's credit in `docs/credits.md` points at it).
+- Which Meshy model and options to ask for per kind, and how Meshy's remesh compares with our Blender
+  decimation, is measured in [meshy-endpoints.md](meshy-endpoints.md).
 - Every paid call is appended to `tmp/assets/<slug>/credits.jsonl`. `asset status` prints the sum.
 - `budget.credits` in the spec is the cap for the asset and cannot be set above 300. `generate`
   refuses to start an attempt that would cross it. When that happens, stop and report: the prompt
