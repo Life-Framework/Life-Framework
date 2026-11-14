@@ -3,7 +3,7 @@
 // each client with its own -profile, joined over 127.0.0.1:2001.
 //
 //   node agent-box/session.mjs up --clients 2     boot the server, launch the clients
-//   node agent-box/session.mjs up --clients 2 --mission playtest   the pack header (LF_Everon1989.conf), harness build
+//   node agent-box/session.mjs up --clients 2 --mission playtest   the pack header LF_PlaytestTown.conf, harness build
 //   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest mission)
 //   node agent-box/session.mjs wait [--timeout 600]   block until a starting session is ready (exit 0), or say why not
 //   node agent-box/session.mjs down               close every process the session started
@@ -18,8 +18,8 @@
 //
 // The server runs the bare DebugWorld (no mission header, no test define), so
 // the world's game mode keeps dev tools open and the harness RPCs pass
-// LF_DevGate. The playtest mission (the pack's LF_Everon1989.conf, or the core's LF_PlaytestTown.conf
-// without the pack) closes that gate.
+// LF_DevGate. The playtest mission (the pack's LF_PlaytestTown.conf, the developer header that keeps the playtest helpers on;
+// the flagship LF_Everon1989.conf closes them) closes that gate.
 // `up --mission playtest` runs that mission the way `tools\cli host start` does,
 // with -scrDefine LF_HARNESS on the server and every client: the harness
 // (stand, pose, use) passes its own gate in that build only, the debug menu
@@ -44,7 +44,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { addonsArgs, launchAddons, launchAddonsFor, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
+import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
 export { applyClientSettings, resolveProfile };
@@ -482,7 +482,7 @@ export function selftestSession() {
   if (s.includes("-loadSessionSave")) failures.push("a fresh session loads a save");
   const ps = serverArgs({ addonsDir: "A", profile: "SP", mission: "playtest" });
   const pc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "playtest" });
-  if (ps[1] !== PACK_MISSION) failures.push("--mission playtest does not run the pack's mission header");
+  if (ps[1] !== CORE_PLAYTEST_MISSION) failures.push("--mission playtest does not run the playtest header (LF_PlaytestTown; the flagship closes the playtest helpers)");
   for (const args of [s, ps, pc, a1]) if (args[args.indexOf("-addons") + 1] !== "LifeFramework,LF_Everon1989") failures.push(`a session launch loads ${args[args.indexOf("-addons") + 1]}, not the core and the pack`);
   const defs = (args) => args.filter((x, i) => args[i - 1] === "-scrDefine").sort().join(",");
   if (defs(ps) !== [HARNESS_DEFINE, SESSION_DEFINE].sort().join(",")) failures.push(`playtest server defines are ${defs(ps)}`);

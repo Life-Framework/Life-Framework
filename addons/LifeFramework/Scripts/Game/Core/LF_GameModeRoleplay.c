@@ -38,7 +38,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	//------------------------------------------------------------------------------------------------
 	bool IsConvoyNearDrop()
 	{
-		return m_bConvoyNearDrop;
+		return LF_MissionHeader.PlaytestHelper(m_bConvoyNearDrop);
 	}
 
 	//------------------------------------------------------------------------------------------------

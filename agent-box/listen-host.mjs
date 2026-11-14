@@ -24,7 +24,7 @@ import { quizAnswers } from "./session.mjs";
 import { readdirSync, statSync, mkdirSync, existsSync, readFileSync, rmSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { addonsArgs, launchAddonsIn, playtestMission } from "../tools/lib/addons.mjs";
+import { addonsArgs, flagshipMission, launchAddonsIn } from "../tools/lib/addons.mjs";
 import { spawnSync } from "node:child_process";
 import { freemem } from "node:os";
 
@@ -54,7 +54,7 @@ if (!shared && /"ArmaReforger(Steam|Server|ServerDiag)?\.exe"/i.test(running)) {
 mkdirSync(profile, { recursive: true });
 // #322: the pack loads (and its header boots) when that addons folder holds it.
 const addons = launchAddonsIn(addonsDir);
-const args = ["-addonsDir", addonsDir, ...addonsArgs(addons), "-server", playtestMission(addons), "-addr", "127.0.0.1:2302",
+const args = ["-addonsDir", addonsDir, ...addonsArgs(addons), "-server", flagshipMission(addons), "-addr", "127.0.0.1:2302",
   "-profile", profile, "-window", "-screenWidth", "640", "-screenHeight", "360", "-maxFPS", "20",
   "-noSound", "-noFocus", "-forceUpdate", "-disableCrashReporter", "-scrDefine", "LF_HARNESS"];
 // Over ssh (a pool box) there is no desktop: the client goes through an interactive scheduled task.
