@@ -18,7 +18,7 @@ class LF_Test_CarryMeshes : LF_Test
 	{
 		ExpectMesh(ctx, LF_CivilianJob.PARCEL_PREFAB, "the courier parcel");
 		ExpectMesh(ctx, LF_CivilianJob.FUEL_PREFAB, "the fuel can");
-		ExpectMesh(ctx, LF_Bank.BAG_PREFAB, "the bank bag");
+		ExpectMesh(ctx, LF_Bank.BagPrefab(), "the bank bag");
 
 		IEntity placed = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BANK_BAG);
 		ctx.True(placed != null, "Annex_Bank_Bag is placed");

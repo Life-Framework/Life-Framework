@@ -317,6 +317,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceStationWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceItemState(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);

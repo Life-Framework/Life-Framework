@@ -1,22 +1,30 @@
 class LF_MoneyUtils
 {
-	static const ResourceName PREFAB_CASH = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";
+	//! The prefab slot (#964) of the cash item: Configs/PrefabSlots/LF_PrefabSlots.conf, a pack swaps the look.
+	static const string SLOT_CASH = "cash";
 	//! The ledger reason of a cash change whose caller named none.
 	static const string REASON_CASH = "cash";
+
+	//------------------------------------------------------------------------------------------------
+	//! The cash item prefab (slot "cash"), or empty when no usable prefab resolves (logged).
+	static ResourceName CashPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_CASH);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Get the total amount of cash the target has across all storages
 	//! \return the total cash, or -1 when the target has no resolvable storage
 	static int GetCash(InventoryStorageManagerComponent target)
 	{
-		return LF_InventoryUtils.GetAmount(target, PREFAB_CASH);
+		return LF_InventoryUtils.GetAmount(target, CashPrefab());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! \ref GetCash(InventoryStorageManagerComponent)
 	static int GetCash(IEntity target)
 	{
-		return LF_InventoryUtils.GetAmount(target, PREFAB_CASH);
+		return LF_InventoryUtils.GetAmount(target, CashPrefab());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -27,7 +35,7 @@ class LF_MoneyUtils
 	//! \return the amount of cash actually added, or 0 on faulty operations
 	static int AddCash(InventoryStorageManagerComponent target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
 	{
-		int added = LF_InventoryUtils.AddAmount(target, PREFAB_CASH, amount);
+		int added = LF_InventoryUtils.AddAmount(target, CashPrefab(), amount);
 		if (target)
 			PublishMoved(target.GetOwner(), added, true, reason, counterpartyUid);
 
@@ -38,7 +46,7 @@ class LF_MoneyUtils
 	//! \ref AddCash(InventoryStorageManagerComponent, int, string, string)
 	static int AddCash(IEntity target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
 	{
-		int added = LF_InventoryUtils.AddAmount(target, PREFAB_CASH, amount);
+		int added = LF_InventoryUtils.AddAmount(target, CashPrefab(), amount);
 		PublishMoved(target, added, true, reason, counterpartyUid);
 		return added;
 	}
@@ -52,7 +60,7 @@ class LF_MoneyUtils
 	//! A partial removal returns the removed part, never the full request.
 	static int RemoveCash(InventoryStorageManagerComponent target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
 	{
-		int removed = LF_InventoryUtils.RemoveAmount(target, PREFAB_CASH, amount);
+		int removed = LF_InventoryUtils.RemoveAmount(target, CashPrefab(), amount);
 		if (target)
 			PublishMoved(target.GetOwner(), removed, false, reason, counterpartyUid);
 
@@ -63,7 +71,7 @@ class LF_MoneyUtils
 	//! \ref RemoveCash(InventoryStorageManagerComponent, int, string, string)
 	static int RemoveCash(IEntity target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
 	{
-		int removed = LF_InventoryUtils.RemoveAmount(target, PREFAB_CASH, amount);
+		int removed = LF_InventoryUtils.RemoveAmount(target, CashPrefab(), amount);
 		PublishMoved(target, removed, false, reason, counterpartyUid);
 		return removed;
 	}
