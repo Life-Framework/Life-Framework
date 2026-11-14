@@ -11,7 +11,7 @@
   },
   "size_m": {
     "length": 0.18,
-    "height": 0.0075,
+    "height": 0.0006,
     "width": 0.058
   },
   "budget": {
@@ -53,7 +53,12 @@
       "fov": 20
     },
     "ground": {
-      "up": "Up"
+      "up": "Up",
+      "offset": [
+        0,
+        0.006,
+        0
+      ]
     },
     "hand": {
       "pose": "fist",

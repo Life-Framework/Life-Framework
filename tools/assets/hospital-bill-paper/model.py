@@ -87,7 +87,7 @@ maps = P.compose(surface, ink, crease=(f1[0] + f2[0], f1[1] + f2[1]))
 P.write_maps(raw, maps)
 for f in ("_print.png", "_stamp.png"):
     os.remove(os.path.join(raw, f))
-me = P.sheet(0.148, 0.21, 0.0012, bow_x=0.001, bow_y=0.0022)
+me = P.sheet(0.148, 0.21, 0.0008)
 ob = P.export_glb(me, "HospitalBillSheet", raw, os.path.join(raw, "tex_base_color.png"))
 P.review(os.path.join(raw, "review.png"), ob, dist=0.42)
 print("LF_ASSET_MODEL ok", len(me.polygons), "faces")
