@@ -487,7 +487,14 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
   }
   CustomStringTableItem "{51406463B7ACAB53}" {
    Id "EL-Stole_Money"
-   Target_en_us "Stole {currency:sym}
+   Target_en_us "Stole {currency:sym}%1!"
+   Target_es_es "Robó {currency:sym}%1!"
+   Target_de_de "{currency:sym}%1 gestohlen!"
+   Target_fr_fr "Volé {currency:sym}%1!"
+   Target_it_it "Rubato {currency:sym}%1!"
+   Target_pt_pt "Roubou {currency:sym}%1!"
+   Target_pt_br "Roubou {currency:sym}%1!"
+  }
   CustomStringTableItem "{769912DD3060E56A}" {
    Id "EL-Vehicle_Stolen"
    Target_en_us "Vehicle stolen!"
@@ -520,7 +527,14 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
   }
   CustomStringTableItem "{C60F134F56CDE9BE}" {
    Id "EL-Job_Earned"
-   Target_en_us "Earned {currency:sym}
+   Target_en_us "Earned {currency:sym}%1 for work!"
+   Target_es_es "Ganó {currency:sym}%1 por trabajo!"
+   Target_de_de "{currency:sym}%1 für Arbeit verdient!"
+   Target_fr_fr "Gagné {currency:sym}%1 pour le travail!"
+   Target_it_it "Guadagnato {currency:sym}%1 per lavoro!"
+   Target_pt_pt "Ganhou {currency:sym}%1 pelo trabalho!"
+   Target_pt_br "Ganhou {currency:sym}%1 pelo trabalho!"
+  }
   CustomStringTableItem "{FDB3A4352A9457A4}" {
    Id "EL-Item_Sold"
    Target_en_us "Sold item for $%1!"
@@ -3711,7 +3725,9 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9E5C42E17A717873}" {
      Id "LF-Wanted_TitlePolice"
-     Target_en_us "WANTED - {police}
+     Target_en_us "WANTED - {police} notices"
+     Comment "Title of the wanted board card an on-duty officer reads."
+    }
     CustomStringTableItem "{208346B2A0835221}" {
      Id "LF-Wanted_None"
      Target_en_us "No one is wanted right now."
@@ -4114,7 +4130,9 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4AA0194A741E081B}" {
      Id "LF-SafeZone_ShotRefused"
-     Target_en_us "The {town}
+     Target_en_us "The {town} square is a safe zone. Your shot hurt nobody."
+     Comment "Toast to a player whose shot was refused in or into the spawn safe zone. Rate-limited."
+    }
     CustomStringTableItem "{9823FC0642192065}" {
      Id "LF-Quest_Giver_Clerk"
      Target_en_us "Town clerk"
@@ -4367,7 +4385,9 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C80206F362C570EC}" {
      Id "LF-Ticket_Received"
-     Target_en_us "An officer gave you a ticket. Read it in your inventory; pay it at the {police}
+     Target_en_us "An officer gave you a ticket. Read it in your inventory; pay it at the {police} desk."
+     Comment "Toast to the person who got a ticket."
+    }
     CustomStringTableItem "{A85CDAFEB439AA39}" {
      Id "LF-Ticket_PaidToast"
      Target_en_us "Ticket paid: %1. Keep the stamped receipt."
@@ -4390,7 +4410,9 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DBEBFF247E50B272}" {
      Id "LF-Ticket_NowWanted"
-     Target_en_us "You did not pay your ticket. The {police}
+     Target_en_us "You did not pay your ticket. The {police} want you."
+     Comment "Toast at the second deadline."
+    }
     CustomStringTableItem "{5EDD1F09C108B2CB}" {
      Id "LF-Ticket_TooMany"
      Target_en_us "This person already holds %1 unpaid tickets."
@@ -4533,7 +4555,9 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7A099928BD809AE7}" {
      Id "LF-Service_Medic"
-     Target_en_us "{Medic}
+     Target_en_us "{Medic}"
+     Comment "Service name callers see for the medic service."
+    }
     CustomStringTableItem "{46622CE72B35428C}" {
      Id "LF-Service_Taxi"
      Target_en_us "Taxi"
@@ -5231,7 +5255,9 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{79B69A24A6715B00}" {
      Id "LF-Bill_Received"
-     Target_en_us "The {medic}
+     Target_en_us "The {medic} left you a treatment bill of %1. Pay it in cash at the hospital desk."
+     Comment "Toast to a revived patient. %1 is the amount."
+    }
     CustomStringTableItem "{60B397ACEEF7B02C}" {
      Id "LF-Bill_NoneOpen"
      Target_en_us "You carry no unpaid treatment bill."
@@ -7136,7 +7162,9 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{447080BA06948A97}" {
      Id "LF-IdCard_RequestBody"
-     Target_en_us "A {police}
+     Target_en_us "A {police} officer asks to see your identity card."
+     Comment "Body of the ID check sheet (#902)."
+    }
     CustomStringTableItem "{6E11F94962BCC683}" {
      Id "LF-IdCard_RequestShow"
      Target_en_us "Show my card"
@@ -8238,26 +8266,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cleanup is not available."
      Comment "Greyed-out reason and toast when cleanup is refused (#690)."
     }
-    CustomStringTableItem "{42E27FF2B0C5A49F}" {
-     Id "LF-Placement_Title"
-     Target_en_us "Placing"
-     Comment "Toast title for every placement refusal (#1026)."
-    }
-    CustomStringTableItem "{CC9466F58FD8A430}" {
-     Id "LF-Placement_NotAllowed"
-     Target_en_us "You are not allowed to place this."
-     Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
-    }
-    CustomStringTableItem "{70A8229A6F903FA6}" {
-     Id "LF-Placement_NoGround"
-     Target_en_us "There is no flat ground there."
-     Comment "Toast when a placement is refused because the ground under it is missing or rises too much (a kerb, a slope) (#1026)."
-    }
-    CustomStringTableItem "{284442A5E34D1270}" {
-     Id "LF-Placement_Moved"
-     Target_en_us "You moved. Look at the spot again and retry."
-     Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
-    }
     CustomStringTableItem "{67F7742CC0C6E47C}" {
      Id "LF-Term_Police"
      Target_en_us "police"
@@ -8333,7 +8341,27 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "$"
      Target_pt_pt "$"
      Target_pt_br "$"
-     Comment "Term "currency" (#958): the symbol that goes before an amount, {currency:sym}
-  }
+     Comment "Term "currency" (#958): the symbol that goes before an amount, {currency:sym}."
+    }
+    CustomStringTableItem "{42E27FF2B0C5A49F}" {
+     Id "LF-Placement_Title"
+     Target_en_us "Placing"
+     Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{CC9466F58FD8A430}" {
+     Id "LF-Placement_NotAllowed"
+     Target_en_us "You are not allowed to place this."
+     Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
+    }
+    CustomStringTableItem "{70A8229A6F903FA6}" {
+     Id "LF-Placement_NoGround"
+     Target_en_us "There is no flat ground there."
+     Comment "Toast when a placement is refused because the ground under it is missing or rises too much (a kerb, a slope) (#1026)."
+    }
+    CustomStringTableItem "{284442A5E34D1270}" {
+     Id "LF-Placement_Moved"
+     Target_en_us "You moved. Look at the spot again and retry."
+     Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
+    }
  }
 }
