@@ -246,7 +246,7 @@ ${workplacePath ? `- [ ] \`${workplacePath}\`: the ${job} workplace. It inherits
 
 Licence: choose your pack's own. The core's GitHub source is MIT and its Workshop build is APL; what you may copy,
 how to credit it and what to do about base-game and CC-BY assets is
-[`docs/architecture/pack-licence.md`](../../docs/architecture/pack-licence.md) (not legal advice).
+[\`docs/architecture/pack-licence.md\`](../../docs/architecture/pack-licence.md) (not legal advice).
 
 No script here: a pack that needs code asks for an extension point in the core.
 \`validate-addon-boundary\` fails on a \`.c\` file in a pack.
