@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{906ECFAB2FD9EB1A}Sounds/Dialogue/clerk/clerk_bank.wav"
+ Name "{7865940A4C544558}Sounds/Dialogue/clerk_everon/clerk_everon_bye.wav"
  Configurations {
   WAVResourceClass PC : "{F72B05D02F3F135E}Configs/System/ResourceTypes/PC/Sound.conf" {
   }

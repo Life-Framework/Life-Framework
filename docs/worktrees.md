@@ -379,6 +379,7 @@ tools\cli e2e --remote                                     # the two-boot save/r
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
 tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
+tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
 - **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
@@ -488,6 +489,19 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   (`--unmarked` also takes older folders without the marker). Both go through
   the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
   holds junctions into the server install.
+- **Remote disk GC.** Run folders (`Life-Framework-rt-<slug>[-session][-sN]`, about 1.4 GB each)
+  pile up while their worktree still exists (2026-11-14: lf-cloud hit 0 GB free and every run
+  sent there failed the disk floor). Before the pool starts a run on an ssh machine it reads the
+  box's free disk (one ssh call); under `rtGcFreeFactor` x `minFreeDiskGb` (3 x 5 = 15 GB) it
+  removes that box's idle run folders, oldest first, until it is back above that, and logs one
+  `pool: gc <machine>: removed <dir> (idle ..., freed .. GB, .. GB free)` line per folder. A folder is
+  kept when a live lock in `<box>/tmp/wt/locks` names it (`rDir`), a process's command line names
+  it, anything in it was written in the last `rtIdleMin` (60) minutes, or it is one the run is about
+  to use. Deletion is the box's own `tools/safe-rm.mjs`, then `git worktree prune`. Settings:
+  `rtIdleMin`, `rtGcFreeFactor` (`LF_POOL_RT_IDLE_MIN`, `LF_POOL_RT_GC_FREE_FACTOR`;
+  `LF_POOL_RT_GC=0` turns it off). `pool prune --idle <min>` does the same by hand on every
+  reachable ssh machine whatever the free disk. A box with nothing idle left to remove is said
+  so once and not asked again for five minutes.
 - **Cost.** A box run of the full suite takes about 22 s door to door (10 s
   suite plus ssh, checkout, CLI start, log copy), this PC about 8 s. Four
   concurrent `--tier all` runs from four worktrees (2026-11-09): 28-31 s wall,
