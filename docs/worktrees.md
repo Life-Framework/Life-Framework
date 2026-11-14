@@ -128,6 +128,38 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `tools\cli wt sync-base m3 [--source main]` opens a PR that merges `origin/main` into `m3` from a `ws/sync-m3-<stamp>` worktree (merge drivers resolve generated files; any other conflict stops with the file list). It never force-pushes; prune the sync worktree after the merge.
 - The `validate` workflow runs on every `pull_request` (no branch filter), so PRs into `m3` get it. Making `validate` a required check on `m3` is a GitHub branch-protection setting, not done by the tooling.
 
+### Gate tiers
+
+`wt gate` and `wt ship` (and the ship queue, which runs `wt ship`) pick the gate from the diff
+against the merge base with `origin/<base>`, uncommitted and untracked files included
+(`tools/lib/gate-tier.mjs`, proven by `tools/validation/gate-tier-selftest.mjs`):
+
+| Tier | When | Runs |
+|---|---|---|
+| T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
+| T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
+| T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
+
+T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
+head have the same line count, every line holding a brace is unchanged (same blocks, same
+component and widget GUIDs), and each changed line keeps its key and swaps one scalar value with no
+`{GUID}` in it. Per type: `.conf` and `.layout` any number, vector, quoted string or word
+(`Text "#Key"`, `Color 1 0.8 0.8 1`, `m_iPrice 7`); `.et` numbers and vectors only; `.st`
+only `Target_*` text and `Comment`; a language `.conf` never its `Ids` block. `ID`, `Id`,
+`Name`, `Parent` and prefab keys are identities, never values.
+
+Always T2: a `.c` file, a `.meta`, an added, deleted, renamed or untracked file under `addons/`,
+a `.layer`/`.ent`, a binary asset, a changed resource reference, a `.conf` that **adds or removes
+a key** (the key can switch on a code path its default never ran, and an equal line count is how the
+classifier knows the blocks did not move), and a `.et` string value or component change.
+
+T1 skips the build because `test --no-build` loads the addons from source; the build only
+packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
+diff is no longer data-only. Measured 2026-11-14 on a one-value `.conf` change (`m_iPrice 500 -> 505`), same worktree, warm rdb:
+T2 (`--full-gate`) 630 s (compile + build 390 s on lf-cloud, both suite passes about 2 min, config
+sessions about 2 min); T1 112 s (validate 49 s, one boot of 267 tests 57 s); T0 44 s. Both T1 runs in
+that measurement failed on the related test that asserts the changed value.
+
 ## Release gates (`stable`, `promote`)
 
 `main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `tools\cli release` use. Playtests run on `main`.
@@ -163,10 +195,9 @@ below are the old local path, still used with `--no-queue` (or `LF_SHIP_QUEUE=0`
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
    merge drivers in `tools/merge/` then resolve the generated files). A clean
    branch ships as is.
-3. Runs the gate (never incremental; see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
-   build + `test` tier=all. A branch that changes nothing under `addons/`
-   (docs, website, tools) runs plain `validate` instead and never waits for a
-   pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule). After the suite,
+3. Runs the gate for the diff's tier ("Gate tiers" below). T2 is never incremental (see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
+   build + `test` tier=all. T0 (nothing under `addons/`) runs plain `validate --all` and never waits for a
+   pool slot. T1 (values changed in place) skips the compile, build and full suite. `--full-gate` forces T2 (`wt gate` follows the same rule); the gate prints the tier and why, and ship adds it to the PR body under `## Gate`. After the suite,
    a branch that touches a `.layer`, a `Prefabs` `.et` or LF_Utils/spawn code also runs
    `audit placement --strict` (queued like `test`); anything flagged and not in the allowlist fails the
    gate, and it prints the entities with the allowlist fix hint (`docs/placement-audit.md`).
@@ -194,7 +225,8 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    to the queue (`tmp/wt/ship-queue.json` in the main checkout). It starts the worker when none runs.
 2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
    (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
-   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
+   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote --tiered` there
+   (`--full-gate` drops `--tiered`; a data-only diff gets the T1 gate, "Gate tiers" below, else the full gate):
    the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
    free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
    the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
@@ -213,11 +245,20 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
 
-**Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
-or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
-A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes
-(driver-merged docs again do not count), so PRs on disjoint files gate side by side on different
-machines and overlapping ones keep their order.
+**Parallel gates.** Up to N Workbench gates run at once, N being `"shipQueue": { "parallel": N }` in
+`pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
+limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
+`pool.machines` entry (1 when unset; lf-cloud has 2). This PC is not counted. A queued PR starts only when
+no running gate and no earlier waiting PR changes a file it changes. Driver-merged docs and any
+`docs/**/*.md` do not count (two PRs that edit `docs/worktrees.md` gate side by side; a text conflict
+shows at the merge of main, in GitHub's mergeable state, or in `prs heal`), so PRs on disjoint files
+gate side by side on different machines and overlapping ones keep their order.
+
+**Gates with no Workbench take no slot.** A PR that changes nothing under `addons/` runs `validate --all`
+only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; it counts against
+`"shipQueue": { "light": N }` instead (default 4). The entry's `tier` (0|1|2) and `builds` fields are the
+hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
+sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
 
 **Waiting.** `wt ship` waits until the gate passed or failed and prints
 `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
@@ -347,7 +388,7 @@ tools\cli test --no-build --tier all --shards auto --both  # normal + core-only 
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
-tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
+tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders of gone worktrees
 tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
@@ -361,7 +402,8 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   default `--local`.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
-  (`server`, `clients`, `workbench`). The gitignored `lf.local.json` overrides
+  (`server`, `clients`, `workbench`, `rdb`: refreshes a stale
+  `resourceDatabase.rdb` in its own runs, see "Sync"). The gitignored `lf.local.json` overrides
   per machine with a `"pool"` key (`docs/setup.md`). `slots` is 1 everywhere
   today; slot 1 is the machine's own `server-2001` lock (the one `serve`,
   `host`, and `session` take too) and slot k is `server-2001-s<k>`, so a
@@ -436,17 +478,48 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
   edits plus untracked, non-ignored files, as one snapshot commit built from a
-  copy of the index (your index, HEAD, and branch do not change). The run
-  folder `C:\LF\Life-Framework-rt-<slug>` is a linked worktree of the box's
-  clone, kept between runs. The holder reports which of the snapshot, the
+  copy of the index (your index, HEAD, and branch do not change). A test,
+  e2e or audit run uses its lane's folder `C:\LF\Life-Framework-lane-<lock>`
+  (`-lane-server-test-3`), a linked worktree of the box's clone shared by
+  every worktree; sessions, `-gate` syncs and a machine without lanes keep
+  the per-worktree `C:\LF\Life-Framework-rt-<slug>` folders. The holder reports which of the snapshot, the
   last commit this worktree sent, and `origin/main` the box has, and the git
-  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored:
-  `test` refreshes the local copy first (headless Workbench; the box has none)
-  and sends it when its SHA-1 differs from the run folder's. Measured
+  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored
+  and sent when its SHA-1 differs from the run folder's. A stale one (a
+  resource the rdb does not register) is refreshed by a headless Workbench
+  where the run lands: this PC for a run here or on a machine without the
+  `rdb` cap; a machine with the cap (lf-testbox) refreshes the run folder's
+  copy in its own `test --local`, `e2e --local` or `session up`, is not sent
+  the stale copy, and keeps the refreshed one for the next run. Before
+  2026-11-14 every run refreshed here first, behind the build lock all
+  worktrees on this PC share: runs headed for a pool machine waited up to
+  10 min behind other worktrees' refreshes. lf-cloud has no `rdb` cap: its
+  Workbench exits 0 without registering anything (`ResourceDB: could not
+  open cache file`); add the cap in its `lf.local.json` entry once a refresh
+  there registers resources. A run that gets this PC's lane with a stale rdb
+  gives the lane back, refreshes, and queues again. Measured
   2026-11-09: new run folder 5.1 s holder + 1.3 s sync, repeat 3.0 s + 0.0 s
   (no bundle, rdb unchanged); an edit sends a ~2 KiB bundle. A run folder
   whose rdb predated `LF_HideoutStash` got the fresh one by hash and passed the
   stash tests (the box's main clone rdb has no `LF_HideoutStash` entry).
+- **Lane folders (2026-11-14).** Whoever holds a lane's lock owns its folder,
+  so two runs never share one, and a worktree's first run on a lane no longer
+  creates a folder (`git worktree add` of ~5000 files: holder + prep 17-24 s).
+  Each run checks its snapshot out with `git checkout -f`, which resets every
+  tracked file and removes the ones the snapshot does not have, then drops
+  what git does not track under `addons/` (untracked and ignored: a stray
+  script, an addon `log`, `.gproj.user`), keeping each addon's
+  `resourceDatabase.rdb`, which is sent by hash. git only lists those paths;
+  each delete goes through the box clone's `safeRemoveTree`, which unlinks a
+  junction instead of following it (`tools/link-safety.mjs` `cleanRunFolder`,
+  shipped to the box with the run). `server/` (the test profile, which
+  `test-e2e.ps1` deletes and rebuilds every boot, and its `game-addons`
+  junctions) and `tmp/` stay. A clean that fails stops the run (exit 3).
+  Measured on lf-cloud: a lane's first use 19-20 s holder + prep, a reused
+  lane 2-5 s; a compile-breaking `LF_ZZStray.c` planted in a lane folder was
+  removed by the next run there (`cleaned 1 untracked path(s)`), which passed.
+  A worktree on an older branch still uses its `rt-<slug>` folders; both kinds
+  take the same lane locks.
 - **What comes back.** The run streams live. The remote `console.log` is
   copied to `server/profile/test/logs/remote-<machine>-<logdir>/`, so
   `tools\cli logs` greps it; on a failure its `SCRIPT (E)`, VME, and `Unable
@@ -456,7 +529,9 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
 - **Cleanup.** Each run folder holds `tmp/pool-owner.json` (PC, slug,
   worktree). `wt prune <slug>` removes that worktree's remote run folders;
   `pool prune` removes every folder whose worktree on this PC is gone
-  (`--unmarked` also takes older folders without the marker). Both go through
+  (`--unmarked` also takes older folders without the marker). Lane folders
+  belong to no worktree and stay; `pool prune --lanes` removes the idle ones
+  of lanes a machine no longer has (its lane count went down). All of it goes through
   the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
   holds junctions into the server install.
 - **Remote disk GC.** Run folders (`Life-Framework-rt-<slug>[-session][-sN]`, about 1.4 GB each)
@@ -1087,6 +1162,11 @@ password or repo credential.
    which does not update itself, so run `provision` again after a server update. It then clones the repo to
    `C:\LF\Life-Framework` and sends the rdb (above). `pool status` must show the same server build as this PC.
    A provision stopped part-way leaves SteamCMD running on the box; the next run waits for it.
+   It also gives `Users` modify on `C:\LF` (inherited, so new and existing files). ssh runs elevated, so the
+   clone, the run folders and the rdb `scp` sends belong to Administrators, while Workbench in the desktop session
+   runs with a standard token. A stock Server image's `C:\` gives Users no modify, so that Workbench could not save
+   `resourceDatabase.rdb` (`ResourceDB: could not open cache file`, exit 0, nothing registered). A client image
+   inherits `Authenticated Users:Modify` from `C:\` and never shows it.
 6. **Join the pool** with the gitignored `lf.local.json`. A rented box stays out of `tools/pool.json`.
    Give the same entry to both sides: this PC's `lf.local.json`, and the box's own
    `C:\LF\Life-Framework\lf.local.json` with `hostname` set to the box's hostname. On the box, the box-side
@@ -1102,6 +1182,9 @@ password or repo credential.
    Start with `"caps": ["server"]`. Add `clients` once a pinned `session up --machine lf-cloud --clients 1`
    joins. Add `workbench` once the box's Workbench has run a gate: `ci --remote lf-cloud` must print
    `Workbench compile + build on lf-cloud: exit 0`. `--wb-only` runs here and proves nothing about the box.
+   Add `rdb` once a run there with a stale rdb prints `resource database refreshed in Ns (N resources
+   registered)`; `workbench` alone does not prove it (lf-cloud's Workbench compiles but registered nothing
+   on 2026-11-14).
    `{"name": "lf-cloud", "disabled": true}` takes it out. Session lanes stop at 4 (`pool.mjs`). Test lane k
    uses port 2001+k, so more than 9 test lanes would collide with session port 2011. A box-side
    `"workbenchLimit": 2` under `pool` lets two headless Workbenches run at once there.

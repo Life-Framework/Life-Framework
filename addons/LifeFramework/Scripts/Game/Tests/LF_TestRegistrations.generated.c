@@ -70,6 +70,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChopShopPlacedCar(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopSteal(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Cleanup(), LF_TestTier.LOGIC);
@@ -316,6 +317,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacesBankBag(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesCashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesDispatch(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacesEvidenceLocker(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesOrgHideout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesRegistry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacesUnnamedDoor(), LF_TestTier.WORLD);

@@ -190,6 +190,20 @@ class LF_ChopShopRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What the yard pays for this vehicle. The vehicle prices config (#283) prices a listed vehicle;
+	//! an unlisted one keeps the yard's own value. The prefab is resolved through the container, so a
+	//! car placed in a layer (which overrides components) resolves like a spawned one.
+	static int PayoutFor(IEntity vehicle)
+	{
+		ResourceName prefab = LF_Utils.GetPrefabName(vehicle);
+		int payout = LF_VehiclePricesConfig.Lookup(LF_EVehiclePriceAction.CHOP, prefab);
+		if (payout < 0)
+			payout = Payout(LF_ChopShopConfig.ValueOf(prefab), LF_ChopShopConfig.Cap(), LF_ChopShopConfig.Percent());
+
+		return payout;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool OnCooldown(float now, float lastPayout, int cooldownSeconds)
 	{
 		if (lastPayout < 0)
@@ -414,14 +428,8 @@ class LF_ChopShopComponent : ScriptComponent
 		m_sVehicleId = vehicleId;
 		m_sPlate = LF_StolenVehicles.PlateOf(vehicle);
 		m_sOwnerUid = LF_VehicleOwnership.GetOwner(vehicleId);
-		EntityPrefabData prefabData = vehicle.GetPrefabData();
-		if (prefabData)
-			m_sPrefabName = prefabData.GetPrefabName();
-
-		// The vehicle prices config (#283) prices a listed vehicle; an unlisted one keeps the yard's own value.
-		m_iPayout = LF_VehiclePricesConfig.Lookup(LF_EVehiclePriceAction.CHOP, m_sPrefabName);
-		if (m_iPayout < 0)
-			m_iPayout = LF_ChopShopRules.Payout(LF_ChopShopConfig.ValueOf(m_sPrefabName), LF_ChopShopConfig.Cap(), LF_ChopShopConfig.Percent());
+		m_sPrefabName = LF_Utils.GetPrefabName(vehicle);
+		m_iPayout = LF_ChopShopRules.PayoutFor(vehicle);
 
 		// The car is held for the job: engine off, doors locked.
 		VehicleControllerComponent controller = LF_Component<VehicleControllerComponent>.Find(vehicle);
