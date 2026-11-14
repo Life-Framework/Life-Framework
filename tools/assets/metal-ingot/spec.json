@@ -1,0 +1,89 @@
+{
+  "slug": "metal-ingot",
+  "name": "MetalIngot",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A cast metal bar from the Everon smelter: the product of the mining chain (two nuggets make one bar in the furnace). One shape, concept 1 'Classic trapezoid' from the asset-concepts batch; iron, copper and gold are material variants of it.",
+  "prompt": "Modelled in Blender by model.py: a cast ingot with sloped sides and ends, soft cast edges and a rough top with a shallow shrinkage dip. no text, no logos.",
+  "texture_prompt": "",
+  "source": {
+    "blender": "model.py",
+    "textures": [
+      { "id": "Metal046B", "use": "iron: dark forge-scaled steel" },
+      { "id": "Rust009", "use": "iron: rust spots" },
+      { "id": "Metal047B", "use": "copper: aged copper" },
+      { "id": "Metal058C", "use": "copper: green patina in the recesses" },
+      { "id": "Metal048B", "use": "gold: cast gold, tinted deeper" }
+    ]
+  },
+  "size_m": {
+    "length": 0.16,
+    "height": 0.042,
+    "width": 0.072
+  },
+  "budget": {
+    "lod0_tris": 3000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Resources/Mining/Ingot",
+  "prefab_dir": "Prefabs/Resources/Mining",
+  "prefab": false,
+  "collider": {
+    "gamemat": "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat"
+  },
+  "materials": {
+    "default": "brushed_metal",
+    "regions": [],
+    "classes": {}
+  },
+  "variants": [
+    {
+      "name": "Iron",
+      "emat": "Assets/Resources/Mining/Data/Iron.emat",
+      "materials": {
+        "default": "forge_scale",
+        "regions": [{ "class": "brushed_metal", "metallic_above": 0.5 }],
+        "classes": {
+          "forge_scale": { "rough": [0.62, 0.9], "metal": [0, 0.15], "base_scale": 1 },
+          "brushed_metal": { "rough": [0.5, 0.75], "metal": [0.75, 0.9], "base_scale": 1 }
+        }
+      }
+    },
+    {
+      "name": "Copper",
+      "emat": "Assets/Resources/Mining/Data/Copper.emat",
+      "materials": {
+        "default": "patina",
+        "regions": [{ "class": "brushed_metal", "metallic_above": 0.5 }],
+        "classes": {
+          "patina": { "rough": [0.7, 0.9], "metal": [0, 0.05], "base_scale": 1 },
+          "brushed_metal": { "rough": [0.38, 0.62], "metal": [0.85, 0.95], "base_scale": 1 }
+        }
+      }
+    },
+    {
+      "name": "Gold",
+      "emat": "Assets/Resources/Mining/Data/Gold.emat",
+      "materials": {
+        "default": "polished_gold",
+        "regions": [],
+        "classes": {
+          "polished_gold": { "rough": [0.14, 0.34], "metal": [0.92, 1], "base_scale": 1 }
+        }
+      }
+    }
+  ]
+}

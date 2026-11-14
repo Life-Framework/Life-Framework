@@ -1,0 +1,50 @@
+MetaFileClass {
+ Name "{2C52BA1AE0266580}Assets/Resources/Mining/Ingot/MetalIngot.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{6F0C86753D074603}" {
+     SourceMaterial "MetalIngot"
+     AssignedMaterial "{29473C87C35726A4}Assets/Resources/Mining/Data/Iron.emat"
+    }
+   }
+   MeshParams {
+    MeshParam MetalIngot {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_MetalIngot {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{AE01F55B911391B6}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{225967BD116555BE}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{A6054E9CE675FFDF}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{B40ED7F80CD9BA07}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{3BF5535B3B5D00E8}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

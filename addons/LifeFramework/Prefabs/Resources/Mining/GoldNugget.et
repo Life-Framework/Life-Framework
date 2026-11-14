@@ -25,8 +25,7 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
      PreviewRenderAttributes "{59A730880E261BD6}" {
       CameraPreset Front
       CameraOrbitAngles -35 30 0
-      CameraDistanceToItem 1.35
-      CameraOffset -0.026 0 0
+      CameraDistanceToItem 0.95
       FOV 10
      }
     }
@@ -34,10 +33,10 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{67E93053E4FB78E4}Assets/Props/Debris/Concrete/FragmentConcrete_dbr_02.xob"
+   Object "{A1CA5A6BDE069736}Assets/Resources/Mining/Nugget/OreNugget.xob"
    Materials {
     MaterialAssignClass "{59A73088024D4BEA}" {
-     SourceMaterial "ConcreteFragment_dbr"
+     SourceMaterial "OreNugget"
      AssignedMaterial "{8A01BD1F06190E2A}Assets/Resources/Mining/Data/Gold_Ore.emat"
     }
    }
