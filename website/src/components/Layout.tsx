@@ -5,6 +5,7 @@ import { DISCORD_URL, REPO_URL, githubData, milestoneProgress, CURRENT_MILESTONE
 
 const NAV = [
   { to: "/playtest", label: "Playtest" },
+  { to: "/news", label: "News" },
   { to: "/roadmap", label: "Roadmap" },
   { to: "/features", label: "Features" },
   { to: "/gallery", label: "Gallery" },
@@ -182,6 +183,7 @@ function Footer() {
         { label: "Roadmap", href: "/roadmap" },
         { label: "Features", href: "/features" },
         { label: "Gallery", href: "/gallery" },
+        { label: "News", href: "/news" },
         { label: "Devlog", href: "/devlog" },
         { label: "Decisions", href: "/decisions" },
         { label: "Credits", href: "/credits" },
