@@ -31,7 +31,7 @@ const conf = `LF_TermsConfig {
 `;
 const terms = {};
 for (const [id, forms] of Object.entries(parseTermsConf(conf))) terms[id] = { forms };
-const item = (id, en, de) => `CustomStringTableItem "{0000000000000009}" {\n Id "${id}"\n Target_en_us "${en}"\n${de ? ` Target_de_de "${de}"\n` : ""}}\n`;
+const item = (id, en, de, comment) => `CustomStringTableItem "{0000000000000009}" {\n Id "${id}"\n Target_en_us "${en}"\n${de ? ` Target_de_de "${de}"\n` : ""}${comment ? ` Comment "${comment}"\n` : ""}}\n`;
 const table = (...items) => parseTable(items.join(""));
 const run = (core, baseline = {}, packs = []) => check(table(...core), packs, terms, baseline).failures;
 let failed = 0;
@@ -55,6 +55,11 @@ expect("a baseline key passes", run([item("A", "Call the police.")], { A: ["poli
 expect("a baseline key that was migrated must leave the list", run([item("A", "Call the {police}.")], { A: ["police"] }), /remove it from the baseline/);
 expect("a baseline key may not pick up another term", run([item("A", "police in town")], { A: ["police"] }), /now hard-codes town/);
 expect("the placeholder itself is not a hard-coded word", run([item("A", "The {currency} {police}")]));
+
+expect("an all-caps placeholder names the term", run([item("A", "{POLICE} TICKET")]));
+expect("an all-caps placeholder of an unknown term is caught", run([item("A", "{SHERIFF} TICKET")]), /term "sheriff"/);
+expect("a voiced line may keep the recorded word", run([item("A", "Call the police.", "", "Dialogue caption (voiced; tools/assets/dialogue/clerk)")]));
+expect("a term's own words are not hard-coded text", run([item("LF-Term_Police", "police")]));
 
 if (failed) process.exit(1);
 console.log("terms-selftest: OK");

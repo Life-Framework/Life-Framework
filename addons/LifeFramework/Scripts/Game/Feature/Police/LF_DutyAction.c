@@ -57,7 +57,7 @@ class LF_DutyAction : ScriptedUserAction
 		// Only the police role has a roster; the medic desk is open to any registered player.
 		if (GetRole() == LF_Faction.POLICE && !LF_AccountStateBits.IsOnDuty(state) && !LF_AccountStateBits.IsOnRoster(state))
 		{
-			SetCannotPerformReason("#LF-Duty_NotOnRoster");
+			SetCannotPerformReason(LF_Terms.Text("#LF-Duty_NotOnRoster"));
 			return false;
 		}
 

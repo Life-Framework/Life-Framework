@@ -13,7 +13,7 @@ class LF_OpenPoliceMenuAction : ScriptedUserAction
 		// a dedicated-server client can open it. The server re-checks on the list request.
 		if (!LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user)))
 		{
-			SetCannotPerformReason("#EL-Rank_WantedListDenied");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Rank_WantedListDenied"));
 			return false;
 		}
 		return true;

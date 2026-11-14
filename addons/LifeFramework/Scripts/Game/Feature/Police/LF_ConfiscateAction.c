@@ -20,7 +20,7 @@ class LF_ConfiscateAction : ScriptedUserAction
 	{
 		if (!LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user)))
 		{
-			SetCannotPerformReason("#EL-Confiscate_OnDutyOnly");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Confiscate_OnDutyOnly"));
 			return false;
 		}
 
