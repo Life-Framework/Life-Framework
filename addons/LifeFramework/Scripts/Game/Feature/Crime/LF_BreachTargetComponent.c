@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Marks a door, gate, or container as a breach target and registers it with LF_Breach
-//! on the server. The target id is the persistence key and the world entity name.
+//! on the server. The target id is the persistence key; LF_Breach finds the door through LF_Places
+//! under that id, so the entity needs no particular name.
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "LifeFramework/Feature/Crime", description: "Door a configured charge can open until repair.")]
 class LF_BreachTargetComponentClass : ScriptComponentClass
@@ -45,10 +46,13 @@ class LF_BreachTargetComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 
+		string targetId = GetTargetId();
+		if (!targetId.IsEmpty())
+			LF_Places.Register(LF_Breach.PLACE_KIND, targetId, owner);
+
 		if (!Replication.IsServer())
 			return;
 
-		string targetId = GetTargetId();
 		if (targetId.IsEmpty())
 		{
 			LF_Debug.Error("Breach", "target component has no id and the entity is unnamed");

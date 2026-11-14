@@ -20,6 +20,18 @@
 
 ## Core
 
+### `LF_Places` — `Scripts/Game/Core/LF_Places.c`
+- ✅ **Map independence** (2026-11-14, #961): placed components register their
+  owner under a kind and the feature's stable id (`Register`), and systems find
+  places with `Find` / `FindOrigin` / `FindAll`, never `FindEntityByName`.
+  Entries hold `EntityID`; a read drops an entry whose entity is gone. A second
+  live entity under a held id is refused with `[LFDebug:Places] register
+  refused`. Dropped at world end (`LF_StaticReset`). Migrated: `LF_Breach`
+  (lock, sync, origin, fuse), the jail cell door, `LF_Bank` vault origin and
+  heist target, `LF_Hospital` till and cabinet origin, the hideout door (no
+  longer needs an entity name). Tests `places/registry`,
+  `places/unnamed-door`.
+
 ### `LF_GameModeRoleplay` — `Scripts/Game/Core/LF_GameModeRoleplay.c`
 - ✅ Lazy-creates `LF_CharacterCreationManager`, `LF_ATMManager`,
   `LF_JobManager` on first player connect and drives character creation.

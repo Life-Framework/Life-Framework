@@ -26,10 +26,13 @@ class LF_HospitalTillComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 
+		string targetId = GetTargetId();
+		if (!targetId.IsEmpty())
+			LF_Places.Register(LF_Hospital.PLACE_KIND, targetId, owner);
+
 		if (!Replication.IsServer())
 			return;
 
-		string targetId = GetTargetId();
 		if (targetId.IsEmpty())
 		{
 			LF_Debug.Error("Hospital", "till component has no id and the entity is unnamed");
@@ -74,10 +77,13 @@ class LF_HospitalCabinetComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 
+		string targetId = GetTargetId();
+		if (!targetId.IsEmpty())
+			LF_Places.Register(LF_Hospital.PLACE_KIND, targetId, owner);
+
 		if (!Replication.IsServer())
 			return;
 
-		string targetId = GetTargetId();
 		if (targetId.IsEmpty())
 		{
 			LF_Debug.Error("Hospital", "cabinet component has no id and the entity is unnamed");
