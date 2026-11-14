@@ -16,10 +16,10 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkPack, summary } from "../pack/check.mjs";
-import { explain } from "../pack/explain.mjs";
+import { explain, main as explainMain } from "../pack/explain.mjs";
 import { SECTIONS, walk } from "../pack/layers.mjs";
 import { checkText } from "../config/check.mjs";
-import { coreKeysOf, generate, readScripts } from "../config/schema.mjs";
+import { build, coreKeysOf, generate, readScripts } from "../config/schema.mjs";
 import { loadPackSections } from "../config/pack-sections.mjs";
 
 const REAL = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -282,6 +282,11 @@ pack(two, "LF_Bbb", { gproj: "6000000000000004", man: G.man2, mis: G.misB }, man
   if (!e2.includes("= 5  <- pack LF_Shops") || !/refused: owner owner-bad.json sets 70/.test(e2)) fail(`explain: a refused owner value must leave the pack default, got ${e2}`);
   const e3 = explain(root, "shopsBad", {});
   if (e3.code !== 1 || !/ignores it/.test(e3.lines[0])) fail(`explain: a refused section must say the server ignores it, got ${e3.lines}`);
+
+  // The CLI flags (#1005): `pack explain --root <dir>` and `config-check --addons <dir>` read a pack outside the repo's addons/.
+  const viaRoot = await explainMain(["shopsGood.limit", "--root", root, "--config", join(root, "owner.json")], { root: REAL });
+  if (viaRoot !== 0) fail(`pack explain --root: the test pack must be explained from its own root, got exit ${viaRoot}`);
+  if (build(addons).schema.properties.shopsGood?.["x-pack"] !== "LF_Shops") fail("config-check --addons: build(addons) must merge the test pack's section");
 }
 
 // ---- The real flagship pack passes its own check ----

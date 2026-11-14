@@ -151,3 +151,17 @@ section; a pack that tries is ignored for that section with an `[LFDebug:Packs]`
 `tools\cli pack explain everon1989 --config config.json` lists each field with the pack default and
 your value; `pack explain everon1989.festivalDay` shows one. A value the server would refuse prints
 as `refused: owner config.json sets 9; 9 is above the maximum 7; the pack default stays`.
+
+A wrong-typed value in a pack section is an ERROR in `config-check` (`sectest.limit is not a whole
+number; keeping the shipped value`), not a warning; the server keeps the pack default.
+
+A pack kept outside `addons/` (a test pack in `tmp/`) is checked the same way with `--addons <dir>`
+(the core plus the packs under `<dir>`) and explained with `pack explain --root <dir>`:
+
+```
+tools\cli config-check path\to\config.json --addons path\to\test-root\addons
+tools\cli pack explain sectest.limit --root path\to\test-root --config path\to\config.json
+```
+
+Both are offline and need no game boot: the section is read from the pack's manifest, not the server.
+Proof: `tools/validation/pack-check-selftest.mjs`.
