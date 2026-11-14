@@ -18,6 +18,7 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
 // red-proof 2026-11-14 (pool-parallel-start), each broken alone: burstAdmit always refusing (strict FIFO) "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (1 of 14)"; without the in-flight RAM term "a burst start ignored the RAM of the starts in flight ahead of it (14 admitted, 4 fit)"; the holder gate without aheadMb "the holder's gate let a burst start overshoot the floor"; blocks() without the granted check "a ticket that already holds its lane still blocks the queue"; sharedSnapshot never reusing "six runs asked together did not share one snapshot (6 takes, 6 shas)".
 // red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
 // laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
@@ -744,7 +745,7 @@ const dir0 = () => {
     const tdir2 = mkdtempSync(join(tmpdir(), "lf-burstcfg-"));
     spawnSync("git", ["init", "-q", tdir2], { windowsHide: true });
     const hb = pool.holderConfig(tdir2, cloud, { sha: "a".repeat(40), head: "b".repeat(40) }, { purpose: "test fast", settings: bst, aheadMb: 2400, freeLocks: ["server-test-3", "server-test-5"], position: 1 });
-    check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /-s5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
+    check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /Life-Framework-lane-server-test-5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
     rmSync(tdir2, { recursive: true, force: true });
     // The holder's gate itself (PowerShell): the reserves in flight ahead and a test lock still booting.
     const ld = mkdtempSync(join(tmpdir(), "lf-burstgate-"));
@@ -990,6 +991,61 @@ const dir0 = () => {
       check(names(pool.resolveMachines(mroot, { mode: "any" })) === "local,lf-testbox" && order(400, 6000) === "lf-testbox,local", "the audit's any-choice does not pick the machine with room");
     }
     rmSync(mroot, { recursive: true, force: true });
+  }
+}
+
+// Lane run folders (run-overhead): a remote test runs in its lane's shared folder, owned through the lane
+// lock; sessions and gate syncs keep per-worktree folders; the bundle ref is unique per process; the
+// box-side checkout of a shared folder drops what the last run left under addons/ (rdb kept), through
+// the box clone's link-safe delete, and never follows a junction.
+{
+  const lroot = mkdtempSync(join(tmpdir(), "lf-lanes-"));
+  try {
+    spawnSync("git", ["init", "-q", lroot], { windowsHide: true });
+    const box = { name: "lf-x", via: "ssh", host: "lf-x", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 2, session: 1 } };
+    const lsettings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
+    const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
+    const hc = pool.holderConfig(lroot, box, snap, { purpose: "test only", settings: lsettings });
+    check(hc.slots.length === 2 && hc.slots.every((x) => x.shared && x.dir === `C:/LF/${pool.LANE_DIR_PREFIX}${x.lock}`), `remote test lanes do not run in the lane's shared folder (${JSON.stringify(hc.slots)})`);
+    check(new Set(hc.slots.map((x) => x.dir)).size === hc.slots.length, "two test lanes share one run folder");
+    const sess = pool.holderConfig(lroot, box, snap, { purpose: "session", settings: lsettings });
+    check(sess.slots.every((x) => !x.shared && /Life-Framework-rt-/.test(x.dir)), `session lanes moved into shared folders (${JSON.stringify(sess.slots)})`);
+    check(!pool.holderConfig(lroot, box, snap, { slots: 0, purpose: "gate", suffix: "-gate", settings: lsettings }).slots.length && /Life-Framework-rt-.*-gate$/.test(pool.holderConfig(lroot, box, snap, { slots: 0, purpose: "gate", suffix: "-gate", settings: lsettings }).dir), "a sync-only gate run lost its own folder");
+    check(pool.holderConfig(lroot, { ...box, lanes: undefined }, snap, { purpose: "test only", settings: lsettings }).slots.every((x) => !x.shared), "a machine without lanes got shared test folders");
+    check(tb.bundleSlug("C:/LF/Life-Framework-lane-server-test-1", 11) !== tb.bundleSlug("C:/LF/Life-Framework-lane-server-test-1", 12), "two processes bundle under one ref name");
+    check(!/clean-run-folder/.test(tb.psCheckoutOnly({ rDir: "C:/x/Life-Framework-rt-a", snap }, null)) && /clean-run-folder/.test(tb.psCheckoutOnly({ rDir: "C:/x/Life-Framework-lane-server-test-1", shared: true, snap }, null)), "only a shared folder is cleaned after the checkout");
+    // The generated box-side clean, run for real: a main clone with tools/link-safety.mjs, a linked lane worktree.
+    const main = join(lroot, "main");
+    mkdirSync(join(main, "tools"), { recursive: true });
+    mkdirSync(join(main, "addons", "A"), { recursive: true });
+    writeFileSync(join(main, "tools", "link-safety.mjs"), readFileSync(new URL("../link-safety.mjs", import.meta.url)));
+    writeFileSync(join(main, "addons", "A", "Tracked.c"), "tracked");
+    writeFileSync(join(main, ".gitignore"), "tmp/\nresourceDatabase.rdb\n");
+    const g = (...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...a], { windowsHide: true, encoding: "utf8" });
+    g("init", "-q", main);
+    g("-C", main, "add", "-A");
+    g("-C", main, "commit", "-q", "-m", "base");
+    const lane = join(lroot, "Life-Framework-lane-server-test-1");
+    g("-C", main, "worktree", "add", "-q", "--detach", lane);
+    const install = join(lroot, "steam", "core");
+    mkdirSync(install, { recursive: true });
+    writeFileSync(join(install, "core.gproj"), "sentinel");
+    writeFileSync(join(lane, "addons", "A", "Stray.c"), "another worktree's file");
+    writeFileSync(join(lane, "addons", "A", "resourceDatabase.rdb"), "rdb");
+    mkdirSync(join(lane, "addons", "A", "gen"), { recursive: true });
+    symlinkSync(install, join(lane, "addons", "A", "gen", "core"), "junction");
+    mkdirSync(join(lane, "tmp", "remote-in"), { recursive: true });
+    const ps = [`$dir = '${lane.replace(/'/g, "''")}'`, "Set-Location -LiteralPath $dir", "$in = Join-Path $dir 'tmp\\remote-in'", ...tb.psCleanShared(), "Write-Host 'clean-ok'"].join("\n");
+    const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { windowsHide: true, encoding: "utf8", timeout: 60000 });
+    const out = `${r.stdout}${r.stderr}`;
+    check(/lf-remote: cleaned 2 untracked path/.test(out) && /clean-ok/.test(out), `the box-side clean did not run (${out.trim().split(/\r?\n/).slice(-3).join(" | ")})`);
+    check(!existsSync(join(lane, "addons", "A", "Stray.c")) && !existsSync(join(lane, "addons", "A", "gen")), "the box-side clean left another worktree's files under addons/");
+    check(existsSync(join(lane, "addons", "A", "resourceDatabase.rdb")) && existsSync(join(lane, "addons", "A", "Tracked.c")), "the box-side clean took the rdb or a tracked file");
+    check(existsSync(join(install, "core.gproj")), "the box-side clean followed a junction into the install");
+  } finally {
+    const { unlinkReparsePoints } = await import("../link-safety.mjs");
+    unlinkReparsePoints(lroot);
+    rmSync(lroot, { recursive: true, force: true });
   }
 }
 

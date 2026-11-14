@@ -35,6 +35,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import * as wt from "../wt.mjs";
 import { ADDONS, CORE } from "../lib/addons.mjs";
 import { localSetting } from "../lib/local-config.mjs";
+import { cleanRunFolder } from "../link-safety.mjs";
 import { cmdRecord, cmdScreenshot, cmdStart, cmdVdd } from "./desktop.mjs";
 
 const DEFAULT_REMOTE_ROOT = "C:/LF/Life-Framework";
@@ -172,6 +173,13 @@ export function snapshotCommit(root) {
   }
 }
 
+// The name of the ref a run's bundle carries. Unique per process: lane folders
+// (Life-Framework-lane-server-test-1) have the same name on every machine and for every worktree, and
+// the ref is written in this PC's shared refs while the bundle is made.
+export function bundleSlug(rDir, pid = process.pid) {
+  return `${basename(rDir).replace(/^Life-Framework-(rt|lane)-/, "")}-p${pid}`;
+}
+
 // Bundle of the commits the box lacks: everything reachable from the snapshot
 // minus what the holder said the box has. null when the box has the snapshot.
 function makeBundle(root, slug, sha, has) {
@@ -235,7 +243,7 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
   const t0 = Date.now();
   const m = slot.machine;
   const snap = slot.snap;
-  const slug = basename(slot.rDir).replace(/^Life-Framework-rt-/, "");
+  const slug = bundleSlug(slot.rDir);
   let bundle;
   try {
     bundle = makeBundle(root, slug, snap.sha, slot.prep.has);
@@ -312,11 +320,44 @@ function psCheckout(slot, bundleName, slug) {
     "  Remove-Item -LiteralPath $bundle -Force",
     "}",
     "git checkout -q --detach -f $sha 2>&1 | Out-Null; if ($LASTEXITCODE) { Write-Host \"lf-remote: checkout $sha failed\"; exit 3 }",
+    ...(slot.shared ? psCleanShared() : []),
     "$rdbIn = Join-Path $in 'resourceDatabase.rdb'",
     "if (Test-Path -LiteralPath $rdbIn) { Move-Item -LiteralPath $rdbIn -Destination (Join-Path $dir 'addons\\LifeFramework\\resourceDatabase.rdb') -Force }",
     // Another addon's rdb travels as resourceDatabase.<name>.rdb (localRdbs).
     "foreach ($f in @(Get-ChildItem -LiteralPath $in -Filter 'resourceDatabase.*.rdb' -File -ErrorAction SilentlyContinue)) { $an = $f.Name.Substring(17, $f.Name.Length - 21); $ad = Join-Path $dir \"addons\\$an\"; if (Test-Path -LiteralPath $ad) { Move-Item -LiteralPath $f.FullName -Destination (Join-Path $ad 'resourceDatabase.rdb') -Force } }",
   ].join("\n");
+}
+
+// A shared lane folder (pool.mjs laneRunDir) after the checkout: drop what the previous run, from any
+// worktree, left under addons/ that git does not track, keeping each addon's resourceDatabase.rdb
+// (it is sent by hash, and moved in after this). cleanRunFolder runs on the box from the source this
+// PC ships (the box's clone may predate it), deleting through the box clone's safeRemoveTree, which
+// unlinks a junction instead of following it. A clean that fails stops the run (exit 3): the folder
+// would not hold exactly the snapshot.
+export function psCleanShared() {
+  const js = [
+    "const [helper, dir] = process.argv.slice(2);",
+    "const { spawnSync } = await import('node:child_process');",
+    "const { join } = await import('node:path');",
+    "const { safeRemoveTree } = await import(helper);",
+    `const cleanRunFolder = ${cleanRunFolder.toString()};`,
+    "try {",
+    "  const removed = cleanRunFolder(dir, { spawnSync, join, remove: safeRemoveTree });",
+    "  console.log(`lf-remote: cleaned ${removed.length} untracked path(s) under addons`);",
+    "} catch (e) {",
+    "  console.log(`lf-remote: clean failed: ${e.message}`);",
+    "  process.exit(1);",
+    "}",
+  ].join("\n");
+  const b64 = Buffer.from(js, "utf8").toString("base64");
+  return [
+    "$cleanJs = Join-Path $in 'lf-clean-run-folder.mjs'",
+    `[IO.File]::WriteAllText($cleanJs, [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}')))`,
+    "$mainDir = Split-Path -Parent (git rev-parse --path-format=absolute --git-common-dir)",
+    "$helper = 'file:///' + (Join-Path $mainDir 'tools\\link-safety.mjs').Replace('\\', '/')",
+    "& node $cleanJs $helper $dir",
+    "if ($LASTEXITCODE) { Write-Host 'lf-remote: the shared run folder could not be cleaned'; exit 3 }",
+  ];
 }
 
 // Files a run takes to the box and brings back (the placement audit: its input list goes up through an
@@ -340,7 +381,7 @@ export function remoteFilePlan(rDir, files = {}) {
 // { code, summary, localLog }. code 3: the box could not be prepared. files: remoteFilePlan.
 export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", writeSyncState, fetchLog = true, files }) {
   const m = slot.machine;
-  const slug = basename(slot.rDir).replace(/^Life-Framework-rt-/, "");
+  const slug = bundleSlug(slot.rDir);
   const snap = slot.snap;
   console.log(`remote: ${m.name} ${slot.rDir} @ ${snap.sha.slice(0, 10)}${snap.dirty ? ` (HEAD ${snap.head.slice(0, 10)} + ${snap.changed} uncommitted path(s))` : ""}`);
   let sync;
@@ -418,7 +459,7 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
 
 // Sync only (no slot): used by sessions, whose server takes the box's lock itself.
 export function psCheckoutOnly(slot, bundleName) {
-  return psCheckout(slot, bundleName, basename(slot.rDir).replace(/^Life-Framework-rt-/, ""));
+  return psCheckout(slot, bundleName, bundleSlug(slot.rDir));
 }
 
 // Removes run folders on a box through the junction-safe helper of the box's

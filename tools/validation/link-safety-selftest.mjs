@@ -3,6 +3,8 @@
 // red-proof: with the unlink removed from removeWorktree, git 2.47.1.windows
 // emptied the fixture install and this printed "removing the worktree followed
 // the junction and deleted the install sentinel".
+// red-proof (cleanRunFolder, 2026-11-14): with keep: [] in the lane fixture it printed
+// "cleanRunFolder deleted resourceDatabase.rdb" and "reported 4 paths, expected 3".
 import { selftestLinkSafety } from "../link-safety.mjs";
 
 const failures = selftestLinkSafety();

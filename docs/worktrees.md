@@ -250,7 +250,7 @@ tools\cli test --no-build --tier all --shards auto --both  # normal + core-only 
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
-tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
+tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders of gone worktrees
 ```
 
 - **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
@@ -333,9 +333,11 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
   edits plus untracked, non-ignored files, as one snapshot commit built from a
-  copy of the index (your index, HEAD, and branch do not change). The run
-  folder `C:\LF\Life-Framework-rt-<slug>` is a linked worktree of the box's
-  clone, kept between runs. The holder reports which of the snapshot, the
+  copy of the index (your index, HEAD, and branch do not change). A test,
+  e2e or audit run uses its lane's folder `C:\LF\Life-Framework-lane-<lock>`
+  (`-lane-server-test-3`), a linked worktree of the box's clone shared by
+  every worktree; sessions, `-gate` syncs and a machine without lanes keep
+  the per-worktree `C:\LF\Life-Framework-rt-<slug>` folders. The holder reports which of the snapshot, the
   last commit this worktree sent, and `origin/main` the box has, and the git
   bundle carries only what is missing. `resourceDatabase.rdb` is gitignored:
   `test` refreshes the local copy first (headless Workbench; the box has none)
@@ -344,6 +346,24 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   (no bundle, rdb unchanged); an edit sends a ~2 KiB bundle. A run folder
   whose rdb predated `LF_HideoutStash` got the fresh one by hash and passed the
   stash tests (the box's main clone rdb has no `LF_HideoutStash` entry).
+- **Lane folders (2026-11-14).** Whoever holds a lane's lock owns its folder,
+  so two runs never share one, and a worktree's first run on a lane no longer
+  creates a folder (`git worktree add` of ~5000 files: holder + prep 17-24 s).
+  Each run checks its snapshot out with `git checkout -f`, which resets every
+  tracked file and removes the ones the snapshot does not have, then drops
+  what git does not track under `addons/` (untracked and ignored: a stray
+  script, an addon `log`, `.gproj.user`), keeping each addon's
+  `resourceDatabase.rdb`, which is sent by hash. git only lists those paths;
+  each delete goes through the box clone's `safeRemoveTree`, which unlinks a
+  junction instead of following it (`tools/link-safety.mjs` `cleanRunFolder`,
+  shipped to the box with the run). `server/` (the test profile, which
+  `test-e2e.ps1` deletes and rebuilds every boot, and its `game-addons`
+  junctions) and `tmp/` stay. A clean that fails stops the run (exit 3).
+  Measured on lf-cloud: a lane's first use 19-20 s holder + prep, a reused
+  lane 2-5 s; a compile-breaking `LF_ZZStray.c` planted in a lane folder was
+  removed by the next run there (`cleaned 1 untracked path(s)`), which passed.
+  A worktree on an older branch still uses its `rt-<slug>` folders; both kinds
+  take the same lane locks.
 - **What comes back.** The run streams live. The remote `console.log` is
   copied to `server/profile/test/logs/remote-<machine>-<logdir>/`, so
   `tools\cli logs` greps it; on a failure its `SCRIPT (E)`, VME, and `Unable
@@ -353,7 +373,9 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
 - **Cleanup.** Each run folder holds `tmp/pool-owner.json` (PC, slug,
   worktree). `wt prune <slug>` removes that worktree's remote run folders;
   `pool prune` removes every folder whose worktree on this PC is gone
-  (`--unmarked` also takes older folders without the marker). Both go through
+  (`--unmarked` also takes older folders without the marker). Lane folders
+  belong to no worktree and stay; `pool prune --lanes` removes the idle ones
+  of lanes a machine no longer has (its lane count went down). All of it goes through
   the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
   holds junctions into the server install.
 - **Cost.** A box run of the full suite takes about 22 s door to door (10 s
