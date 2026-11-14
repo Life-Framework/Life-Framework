@@ -102,7 +102,7 @@ prints that path and how many commits old it is (counted from the stamp to `orig
 
 ## Shot rules
 
-Use `toolscli shots area <name | x,z>`. Do not hand-place cameras for these shots. One
+Use `tools\cli shots area <name | x,z>`. Do not hand-place cameras for these shots. One
 blocking call, about ten lines of output, no manual steps.
 
 ```
