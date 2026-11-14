@@ -72,6 +72,7 @@ import * as wbLock from "./lib/wb-lock.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
+import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
@@ -3029,11 +3030,12 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
-  e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids]
+  e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids] [--cash-swap]
                                 two-boot save, restart, and reload proof in this worktree;
                                 --legacy-save writes the save before #331 (version 23) in boot 1;
                                 --old-build stamps boot 1's save as game build 1.8.0.13 (#980);
-                                --content-ids runs the three-boot stable-id proof instead (#965)
+                                --content-ids runs the three-boot stable-id proof instead (#965);
+                                --cash-swap runs the two-boot cash slot swap proof (#1130)
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -3258,7 +3260,7 @@ function wtHelpFull() {
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
-  tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids]
+  tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids] [--cash-swap]
                                        two-boot save-state E2E: persistence save boot ended by the
                                        host stop file (SHUTDOWN save), then reload same profile
                                        with -loadSessionSave (latest = the shutdown save);
@@ -3268,6 +3270,8 @@ function wtHelpFull() {
                                        --content-ids: three boots of LF_Test_E2E_ContentIds: a save with
                                        a renamed and a removed item, reload with the alias (held), reload
                                        with the content back (#965)
+                                       --cash-swap: two boots of LF_Test_E2E_CashSlotSwap: cash saved under the
+                                       core prefab, reload with a pack that swapped the cash slot (#1130)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
@@ -3561,7 +3565,7 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build"), contentIds: args.includes("--content-ids") });
+  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build"), contentIds: args.includes("--content-ids"), cashSwap: args.includes("--cash-swap") });
 }
 
 // The two-boot save/restart proof in one pool slot: both boots run on the same
@@ -3586,7 +3590,7 @@ async function e2eOnce(root, opts, lastTry) {
   let extra = {};
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(opts.cashSwap ? ["--cash-swap"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
       if (!lastTry && pool.machineGone(root, slot, code)) {
         extra = { lost: true };
@@ -3594,7 +3598,9 @@ async function e2eOnce(root, opts, lastTry) {
       }
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-      code = opts.contentIds
+      code = opts.cashSwap
+        ? e2eCashSwap.runCashSwap(root, (passOpts) => runE2ePass(root, "persistence", passOpts))
+        : opts.contentIds
         ? e2eContentIds.runContentIds(root, (passOpts) => runE2ePass(root, "persistence", passOpts))
         : runE2eHere(root, opts.legacySave, opts.oldBuild);
     }
@@ -4036,7 +4042,7 @@ const cmds = {
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
-    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids") });
+    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids"), cashSwap: (flags ?? []).includes("--cash-swap") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => {

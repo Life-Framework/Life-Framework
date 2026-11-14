@@ -57,6 +57,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CaseBoard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CaseBoardPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CaseBoardWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CashSlotSwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainMoonshine(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainsConfig(), LF_TestTier.LOGIC);
@@ -151,6 +152,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_E2E_CashSlotSwap(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_ContentIds(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
