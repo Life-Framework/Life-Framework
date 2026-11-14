@@ -106,8 +106,8 @@ Use `tools\cli shots area <name | x,z>`. Do not hand-place cameras for these sho
 blocking call, about ten lines of output, no manual steps.
 
 ```
-toolscli shots area hospital [--radius 18] [--annotate] [--pick] [--detail <Entity>] [--machine any]
-toolscli shots crop wide 900,0,380,140
+tools\cli shots area hospital [--radius 18] [--annotate] [--pick] [--detail <Entity>] [--machine any]
+tools\cli shots crop wide 900,0,380,140
 ```
 
 - **`--eye-only`** skips the wide (its scoring is most of an area's minutes) and keeps the four eye-level shots and the close-ups: about 75 s an area, so every area fits one session. Pair it with `tools\cli audit placement` (`docs/placement-audit.md`), which measures the whole town in 10 s without a session.
