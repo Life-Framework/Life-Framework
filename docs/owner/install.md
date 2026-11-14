@@ -6,7 +6,9 @@ Workbench, no checkout and no script.
 The life server is two Workshop items: the **core** (`LifeFramework`, `79636E668EA37AC9`) and the
 **1989 Everon pack** (`LF_Everon1989`). The pack depends on the core, so `game.mods` lists the core
 first. The pack carries the town; the core alone boots only its DebugWorld test map. To run the core with your
-own pack, see [swap the pack out](../../server/example/README.md#swap-the-pack-out).
+own pack ([add a delivery job](add-job.md) builds one), see [swap the pack out](../../server/example/README.md#swap-the-pack-out).
+Neither item is on the Workshop until the first upload (`docs/roadmap/m3-plan.md` D3); until then a `-config` server cannot
+download them (see Problems).
 
 ## 1. Install the server
 
@@ -33,7 +35,7 @@ Open `server.json` and change the values you care about:
 | Key | Set it to |
 |---|---|
 | `game.name` | your server's name in the browser |
-| `game.passwordAdmin` | an admin password with no spaces; log in in game with `#login <password>` |
+| `game.passwordAdmin` | an admin password with no spaces; in game, log in with `#login <password>` |
 | `game.password` | a join password, or leave it empty |
 | `bindPort`, `publicPort`, `a2s.port` | other ports when 2001 and 17777 are taken (`publicPort` is `bindPort`) |
 | `game.maxPlayers` | up to 16 on the 1989 town |
@@ -45,7 +47,7 @@ Workshop items, the core first:
 ```json
 "scenarioId": "{C638C03B775C31BB}Missions/LF_Everon1989.conf",
 "mods": [
-  { "modId": "79636E668EA37AC9", "name": "Life Framework" },
+  { "modId": "79636E668EA37AC9", "name": "Life Framework (Core)" },
   { "modId": "B1E84D5687E11724", "name": "Life Framework: Everon 1989" }
 ]
 ```

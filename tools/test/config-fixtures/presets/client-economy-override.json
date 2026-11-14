@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "priceRules": {
+      "Prefabs/Items/Food/": { "op": "patch", "buyPrice": 23 }
+    }
+  },
+  "catalogue": {
+    "items": {
+      "pistol_m9": { "op": "remove" }
+    },
+    "offers": {
+      "gun_counter/pistol_m9": { "op": "remove" }
+    }
+  },
+  "vehicles": {
+    "vehicles": {
+      "54C3CC22DEBD57BE": { "op": "patch", "basePrice": 1250 }
+    }
+  }
+}

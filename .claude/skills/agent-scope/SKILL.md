@@ -7,6 +7,11 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
 
 `AGENTS.md` is the contract; this is the order to apply it in.
 
+**A background run never wakes a subagent or delegated task.** Ending your turn
+while `test`, `e2e` or `session` runs in the background ends the task
+unfinished. Run it in the foreground (timeout up to 600000 ms) or call
+`t3_background_wait` before ending the turn.
+
 1. **Worktree.** `tools\cli wt new <slug>`, then work only in
    `..\Life-Framework-ws-<slug>` on `ws/<slug>`. Never write into the main
    checkout. Scratch goes in `<worktree>\tmp\` with names unique to your task
@@ -36,8 +41,11 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`), write the PR body
    to `tmp\pr-body.md`, then
    `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body.md`. It
-   checks the tree, merges main only on conflict, runs `validate --full` +
-   build + `--tier all`, pushes, opens the PR, and queues auto-merge.
+   checks the tree, pushes, opens the PR and puts it in the ship queue, which
+   merges main once and runs `ci --remote` (`validate --full` + build +
+   `--tier all` on pool machines), then queues auto-merge. It waits until the
+   gate passed or failed (`SUMMARY ship ok|fail ... log=`); if your shell
+   times out first, `tools\cli ship-queue wait <slug>` resumes the wait.
    Ship checks the body before the gate and refuses: an `addons/` change with no
    body file, a `TODO(scaffold)` left in it, no `## Manual testing` section, a
    player-visible change with no embedded picture (`look`, `look item` or

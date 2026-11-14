@@ -34,6 +34,12 @@ ok(refsBody("Body\n", "5").startsWith("Refs #5"), "issue 5: Refs line added");
 const body = "## Summary\nA tooling change.\n\n## Manual testing\nNone: tooling only.\n";
 ok(pq.bodyProblems({ body, files: ["tools/wt.mjs"], hasBodyFile: false }).length === 0, "PR-quality gate accepts a body with no Refs line");
 
+// --- 1b. ship merge conflict message: files on one line (the compact FAIL line keeps only line 1)
+const cm = wt.mergeFailureDetail("docs/a.md\ndocs/b.md\n", "ignored");
+ok(!cm.includes("\n"), "conflict message is a single line");
+ok(/conflicts in: docs\/a\.md, docs\/b\.md/.test(cm), `conflict message lists the files, got '${cm}'`);
+ok(wt.mergeFailureDetail("", "  boom\n") === "boom", "no unmerged files: the raw git output is used");
+
 // --- 2. prune merge detection
 const dir = mkdtempSync(join(tmpdir(), "lf-wtfix-"));
 const origin = join(dir, "origin.git");

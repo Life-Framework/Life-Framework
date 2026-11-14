@@ -56,7 +56,7 @@
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
-import { hostname, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
@@ -69,6 +69,12 @@ import { trimScript } from "../lib/ws-trim.mjs";
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
 process.env.LF_POOL_POLL_MS = "100"; // read by tools/remote/pool.mjs on each poll
+// Hermetic: not this PC's hostname (tools/pool.json gives lf-testbox "hostname": "PC1", which on the laptop would make
+// that entry the local machine and drop it from the ssh list) and not its LF_TESTBOX env. A real lf.local.json is never
+// read: every root below is a fresh temp repo. The "laptop view" block below replays hostname PC1 on purpose.
+for (const k of ["LF_TESTBOX", "LF_TESTBOX_ROOT"]) delete process.env[k];
+const hostname = () => "lf-selftest-pc";
+pool.setHostnameForTest(hostname());
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
@@ -640,7 +646,20 @@ try {
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
   check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 2 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  // Laptop view: on the box itself (hostname PC1, the committed pool.json entry) the machines are lf-testbox as local and nothing
+  // else, with no TypeError ranking them; a PC (any other hostname) keeps local plus an ssh lf-testbox.
   writeFileSync(join(dir, "lf.local.json"), "{}");
+  pool.setHostnameForTest("PC1");
+  try {
+    const lapView = pool.loadMachines(dir);
+    check(lapView.length === 1 && lapView[0].name === "lf-testbox" && lapView[0].via === "local" && !lapView.some((m) => m.via === "ssh"), "on hostname PC1 the committed pool.json entry is not the only local machine");
+    const lapLocal = lapView.find((m) => m.via === "local");
+    check(pool.orderMachines(dir, [lapLocal], pool.poolSettings(dir)).length === 1 && pool.rankedMachines(dir, [lapLocal], pool.poolSettings(dir), { localFreeMb: 6000 })[0]?.name === "lf-testbox", "ranking the laptop's own local machine failed");
+    const lapPc = pool.loadMachines(dir).find((m) => m.via === "ssh");
+    check(lapPc === undefined, "the laptop kept an ssh entry for itself");
+  } finally {
+    pool.setHostnameForTest(hostname());
+  }
   check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
   check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox" && pool.sessionMachineCandidates(dir, 2).length === 2, "session candidates are not this PC first, then the laptop");
   check(pool.sessionMachineCandidates(dir, 3).map((m) => m.name).join() === "local", "a 3-client session went to the laptop past its maxClients (heat)");
@@ -873,6 +892,79 @@ const dir0 = () => {
     check(pool.machineGone(groot, { ...slot, lost: true }, 0, { probe: () => ({ reachable: true }) }) === true, "a run whose slot holder dropped kept its untrusted verdict");
     check(pool.machineGone(groot, { local: true }, 255) === false, "a local run counts as a lost machine");
     rmSync(groot, { recursive: true, force: true });
+  }
+  // 2026-11-14: lf-cloud ran 3 servers, 6 clients and 2 Workbenches with 18 GB free, one ssh probe
+  // timed out, and `pool status` said DOWN. A busy machine that answered lately stays in use as "slow".
+  {
+    const hroot = mkdtempSync(join(tmpdir(), "lf-health-"));
+    spawnSync("git", ["init", "-q", hroot], { windowsHide: true });
+    const hf = join(hroot, "tmp", "wt", "pool", "health.json");
+    const cloud = { name: "lf-cloud", via: "ssh", host: "lf-cloud", root: "C:/LF/Life-Framework" };
+    const OK = { stdout: "lf-remote: buildid 123\nlf-pool: ok\n" };
+    const MISS = { status: null, stdout: "" };
+    let t = 1_000_000;
+    const clock = () => t;
+    let calls = [];
+    let script = [];
+    const ssh = (host, ps, o) => {
+      calls.push(o.timeout);
+      const r = script.shift() ?? MISS;
+      if (r.advance) t += r.advance;
+      return r;
+    };
+    const run = () => pool.probe(hroot, cloud, { fresh: true, ssh, now: clock });
+    // pure rule
+    const j = pool.judgeHealth;
+    check(j(null, { ok: false }, t).reachable === false, "a machine that never answered was not DOWN on its first miss");
+    const answered = j(null, { ok: true, ms: 800, build: "9" }, t);
+    check(answered.reachable && !answered.slow && answered.okAt === t, "a quick answer was not plain up");
+    check(j(null, { ok: true, ms: pool.SLOW_PROBE_MS + 1 }, t).slow === true, "an answer over the slow limit was not slow");
+    const m1 = j(answered, { ok: false }, t + 20000);
+    check(m1.reachable && m1.slow && m1.fails === 1 && m1.build === "9", "one miss after a recent answer was not slow-but-usable");
+    const m3 = j(j(m1, { ok: false }, t + 60000), { ok: false }, t + 120000);
+    check(m3.fails === 3 && !m3.reachable, "three misses over more than the window were not DOWN");
+    const quick3 = j(j(j(answered, { ok: false }, t + 1000), { ok: false }, t + 2000), { ok: false }, t + 3000);
+    check(quick3.reachable, "three misses inside seconds (one status call) counted as sustained");
+    check(!j(answered, { ok: false }, t + pool.RECENT_OK_MS + 1).reachable, "a miss long after the last answer was still trusted");
+    check(!j(answered, { ok: false }, t + 1000, { hard: true }).reachable, "a hard failure was forgiven");
+    check(j(m1, { ok: true, ms: 100 }, t + 30000).fails === 0, "an answer did not reset the miss count");
+    // probe(): a miss on a machine that answered lately gets one patient retry that can succeed
+    script = [{ ...OK, advance: 500 }];
+    let h = run();
+    check(h.reachable && !h.slow && h.build === "123", "the first answer was not plain up with its build");
+    t += 30000;
+    calls = [];
+    script = [MISS, { ...OK, advance: 9000 }];
+    h = run();
+    check(calls.length === 2 && calls[1] === pool.PROBE_RETRY_TIMEOUT_MS && calls[0] === pool.PROBE_TIMEOUT_MS, `the retry did not use the longer timeout (${calls.join()})`);
+    check(h.reachable && h.slow && h.fails === 0, "a slow second answer was not reachable and slow");
+    check(pool.healthWord(h, t).startsWith("slow"), "status did not say slow for a slow answer");
+    // both probes miss: still usable, shown slow with the last answer's age
+    t += 30000;
+    script = [MISS, MISS];
+    h = run();
+    check(h.reachable && h.slow && h.fails === 1, "one failed probe round marked a busy machine DOWN");
+    check(/^slow \(last answer \d+ s ago, 1 miss\)$/.test(pool.healthWord(h, t)), `slow word: ${pool.healthWord(h, t)}`);
+    check(JSON.parse(readFileSync(hf, "utf8"))["lf-cloud"].reachable === true, "the cached health said down after one failed round");
+    // sustained: more misses over the window flip to DOWN
+    t += 50000;
+    script = [MISS, MISS];
+    h = run();
+    t += 50000;
+    script = [MISS, MISS];
+    h = run();
+    check(h.fails === 3 && !h.reachable && pool.healthWord(h, t) === "DOWN", `3 misses over 100 s were not DOWN (${pool.healthWord(h, t)}, fails ${h.fails})`);
+    // a dead, never-answering machine takes one attempt, not two
+    rmSync(hf, { force: true });
+    calls = [];
+    script = [MISS, MISS];
+    h = run();
+    check(calls.length === 1 && !h.reachable, "a machine that never answered was probed twice or not marked down");
+    // it comes back
+    script = [{ ...OK, advance: 300 }];
+    h = run();
+    check(h.reachable && !h.slow && h.fails === 0 && pool.healthWord(h, t) === "up", "a machine that answered again was not up");
+    rmSync(hroot, { recursive: true, force: true });
   }
   // The root cause of 2026-11-14: the laptop was off when two 2-client requests arrived, so they went
   // to this PC and queued there pinned for an hour while the laptop came back with free lanes. Now a
