@@ -94,6 +94,13 @@ class LF_ConfigList
 		return string.Empty;
 	}
 
+	//! Why the record at index may not be removed (a police rank a save points at by index, a zone
+	//! rule every zone names), or empty when a remove is fine.
+	string RemoveRefusal(int index)
+	{
+		return string.Empty;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! \return The index of the record with this id, or -1.
 	int IndexOf(string id)
@@ -282,6 +289,10 @@ class LF_ConfigOverlay
 
 		if (op == OP_REMOVE)
 		{
+			string kept = list.RemoveRefusal(index);
+			if (!kept.IsEmpty())
+				return Refuse(list, id, source, reader, kept);
+
 			list.RemoveAt(index);
 		}
 		else if (op == OP_PATCH)
