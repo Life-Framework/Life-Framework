@@ -2011,8 +2011,78 @@ function cmdSessionJoin(root, dir, flags) {
   if (failed !== null) return failed;
   const joined = sessionAwaitJoin(log, before + 1, marker, fail, state);
   if (joined < 0) return 1;
-  console.log(`session: client ${n} joined late (${joined} join(s) in the server log)`);
+  const st = recordIdentities(dir, state);
+  const id = st.clients.find((x) => x.n === n)?.identity;
+  console.log(`session: client ${n} joined late (${joined} join(s) in the server log)${id ? `; player ${id.playerId}, slot ${id.slot}, identity ${id.uid}` : ""}`);
   return 0;
+}
+
+// Gives each client the identity the server logged for it (LF_PlayerIdentity.SlotOf): the harness
+// then knows which account a client is, and a rejoined client can be checked against its old one.
+// Waits up to 20 s for the slot lines (they follow the join marker by a moment). Returns the state.
+function recordIdentities(dir, state) {
+  const log = session.newestLog(join(state.serverProfile, "logs"));
+  let out = { clients: state.clients ?? [], seen: state.slotSeen ?? 0 };
+  for (let i = 0; i < 10 && log; i++) {
+    out = session.assignIdentities(state.clients ?? [], session.parseSlotLines(readFileSync(log, "utf8")), state.slotSeen ?? 0);
+    if (out.clients.every((c) => c.identity)) break;
+    sleepMs(2000);
+  }
+  state.clients = out.clients;
+  state.slotSeen = out.seen;
+  session.writeSession(dir, state);
+  return state;
+}
+
+// `session identity [n]`: which account each client is.
+function cmdSessionIdentity(dir, flags) {
+  const s = session.readSession(dir);
+  if (!s || s.stoppedAt) {
+    console.log("session: no running session");
+    return 1;
+  }
+  const want = flags[0] === undefined ? null : Number(flags[0]);
+  let any = false;
+  for (const c of s.clients ?? []) {
+    if (want !== null && c.n !== want) continue;
+    any = true;
+    console.log(c.identity ? `client ${c.n}: player ${c.identity.playerId} slot ${c.identity.slot} identity ${c.identity.uid}` : `client ${c.n}: no identity recorded yet`);
+  }
+  return any ? 0 : 1;
+}
+
+// `session rejoin <n>`: closes client n's game, waits for the server to log that it let go of the
+// slot, starts the client again and prints the old and the new identity. Exit 0 only when the
+// rejoined client is the same identity (a new player id, the same account).
+function cmdSessionRejoin(root, dir, flags) {
+  const n = Number(flags[0]);
+  const s = session.readSession(dir);
+  const c = s?.clients?.find((x) => x.n === n);
+  if (!s || s.stoppedAt || !c || !host.pidAlive(s.serverPid)) {
+    console.log("usage: session rejoin <n> on a running session that has client <n>");
+    return 1;
+  }
+  if (!c.identity) recordIdentities(dir, s);
+  const before = session.readSession(dir).clients.find((x) => x.n === n)?.identity;
+  if (!before) {
+    console.log(`FAIL  client ${n} has no recorded identity (is the server build older than the session slots?)`);
+    return 1;
+  }
+  const log = session.newestLog(join(s.serverProfile, "logs"));
+  const released = session.countSlotReleases(readFileSync(log, "utf8"));
+  console.log(`session: client ${n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
+  const deadline = Date.now() + 90000;
+  while (Date.now() < deadline && session.countSlotReleases(readFileSync(log, "utf8")) <= released) sleepMs(2000);
+  if (session.countSlotReleases(readFileSync(log, "utf8")) <= released) {
+    console.log(`FAIL  the server did not log client ${n} leaving within 90 s (log ${log})`);
+    return 1;
+  }
+  const code = cmdSessionJoin(root, dir, [String(n)]);
+  if (code !== 0) return code;
+  const after = session.readSession(dir).clients.find((x) => x.n === n)?.identity;
+  const same = !!after && after.uid === before.uid;
+  console.log(`session: rejoin client ${n}: was player ${before.playerId} (${before.uid}), now player ${after?.playerId} (${after?.uid}): ${same ? "SAME identity" : "DIFFERENT identity"}`);
+  return same ? 0 : 1;
 }
 
 function cmdSessionStatus(dir) {
@@ -2054,6 +2124,8 @@ function sessionCapNote(root, settings, holdMin) {
 
 function cmdSessionUp(root, dir, flags) {
   guardHeavy(root, "session up", flags.includes("--force"));
+  // --roster / --seed fixtures are written into the server profile by sessionLaunch, right before the server boots.
+  const seeds = session.parseSeeds(flags);
   const clients = session.parseClients(flags);
   const mission = session.parseMission(flags);
   const rp = session.parseSessionProfile(flags);
@@ -2141,13 +2213,14 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, marker: /(?:registration form sent to player|spawning player) \d+/g });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
     const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
     if (joined < 0) return 1;
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
+    recordIdentities(dir, state);
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
     console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${playtestMission(launchAddons(ROOT)).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
     sessionCapNote(root, settings, hold.min);
@@ -2272,9 +2345,15 @@ function cmdSessionMeasure(root, dir, flags) {
 // Boots the server (fresh, or with -loadSessionSave), then each client in
 // order with its own profile. Returns the server console.log path, or the exit
 // code fail() returned.
-function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker }) {
+function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker, seeds = [] }) {
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
+  // The fixtures go in last, after anything that could have made or cleared the profile, and
+  // before the server reads it. The boot log line below proves it was there.
+  for (const f of session.seedProfile(paths.server, seeds)) {
+    console.log(`session: seeded ${f}`);
+    slog(`seeded ${f}`);
+  }
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
@@ -2521,7 +2600,7 @@ function cmdSessionRestart(root, dir, flags) {
   }
 }
 
-const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait [--timeout s] | join <n> | restart | down | status";
+const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
 
 function cmdSession(args) {
   const list = args ?? [];
@@ -2548,6 +2627,8 @@ function cmdSession(args) {
     }
   }
   if (list[0] === "join") return cmdSessionJoin(ROOT, dir, list.slice(1));
+  if (list[0] === "identity") return cmdSessionIdentity(dir, list.slice(1));
+  if (list[0] === "rejoin") return cmdSessionRejoin(ROOT, dir, list.slice(1));
   if (list[0] === "measure") return cmdSessionMeasure(ROOT, dir, list.slice(1));
   if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);

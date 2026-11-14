@@ -2,7 +2,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
  ID "9FF2685A41D86574"
  components {
   LF_DialogueComponent "{866AB7833997DAAC}" {
-   m_sDialogue "{6E980D0B378BB71E}Configs/Dialogue/LF_Dialogue_FuelClerk.conf"
+   m_sDialogueId "fuel_clerk"
   }
   ActionsManagerComponent "{5A4B13A9811FB113}" {
    ActionContexts + {

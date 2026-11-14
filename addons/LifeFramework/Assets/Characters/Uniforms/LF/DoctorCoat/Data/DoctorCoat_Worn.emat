@@ -1,0 +1,4 @@
+MatPBRMulti : "{99EBF808CF181832}Assets/Characters/Uniforms/Jacket_Suit_01/Data/Jacket_Suit_01_Grey.emat" {
+ BCR_1 "{1008BA497ABACA3E}Assets/Characters/Uniforms/LF/DoctorCoat/Data/DoctorCoat_Worn_BCR.edds"
+ DirtBCRMap "{C688DAE5E78FAFB5}Assets/Characters/Uniforms/LF/DoctorCoat/Data/DoctorCoat_Worn_DirtBCR.edds"
+}

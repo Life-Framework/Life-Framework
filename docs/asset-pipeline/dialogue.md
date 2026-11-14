@@ -74,7 +74,8 @@ Run it in a worktree. Speech is generated here and committed. The game never cal
    model). `Allows` answers a condition. `Run` does the work on the server and must check
    everything itself; it may add string keys to `spoken` for the NPC to say. Reuse the feature's
    existing server entry point, as `QuestConverse` reuses `RequestConverse`.
-4. **Put `LF_DialogueComponent` on the NPC prefab** with `m_sDialogue` set to the generated conf,
+4. **Put `LF_DialogueComponent` on the NPC prefab** with `m_sDialogueId` set to the npc id (add the id and
+   the generated conf to `Configs/Dialogue/LF_DialogueIndex.conf`; `m_sDialogue` with a path still works),
    and make the NPC's talk action call `LF_DialogueScene.Begin(npc)` on the client when
    `LF_DialogueComponent.ConfigOf(npc)` is not null (`LF_QuestAction.PerformAction` is the model;
    the action must be local-effect-only). Keep the old path as the fallback.
@@ -86,6 +87,61 @@ Run it in a worktree. Speech is generated here and committed. The game never cal
    it. An agent cannot hear: list the wav paths in the PR for the maintainer.
 7. **Classify.** The dialogue file, conf and sounds of a town NPC are pack content: add the rows
    to `docs/architecture/core-pack-inventory.md`. Credit the voice in `docs/credits.md`.
+
+## Hooks a dialogue can name
+
+A reply's `condition` or `action` is a class `LF_DialogueHook_<Name>`. The ones the core ships (a pack's
+dialogue or patch can only name these; `validate` and the runtime refuse any other name):
+
+| Name | File |
+|---|---|
+| `QuestConverse`, `QuestTurnedIn`, `QuestNotTurnedIn` | `Feature/Quests/LF_QuestDialogue.c` |
+| `IdCardMissing`, `IdCardReplace` | `Feature/Identity/LF_IdCardClerk.c` |
+| `RobArmed`, `RobReady`, `RobBlocked`, `RobStart`, `RobRefused` | `Feature/Crime/LF_RobDialogue.c` |
+
+## Naming a dialogue by id
+
+The NPC prefab's `LF_DialogueComponent` sets `m_sDialogueId` (`clerk`), not a file path. The core index
+`Configs/Dialogue/LF_DialogueIndex.conf` maps each id to its `.conf`; a new NPC gets an entry there. A pack
+overlay of the index (class `LF_DialogueIndexConfig`, listed in the mission header like any overlay) adds an
+id, replaces the file an id points at, or removes it (`docs/config/override-model.md` "By id, text only,
+and the offline check").
+
+## Text-only lines
+
+A line with no recording (`m_sEvent` empty and `m_fSeconds` 0) is a caption that holds for reading time and
+plays nothing. The generated dialogues voice every line; text-only lines come from a pack patch (below).
+
+## Patching a core dialogue from a pack
+
+A pack that rewords the core clerk, adds a reply or drops a node does not copy the dialogue. Write
+`tools/assets/dialogue/<id>/dialogue.json` with `"patches": "<core npc>"` and the pack as `addon`:
+
+```json
+{ "id": "clerk_everon", "name": "ClerkEveron", "patches": "clerk", "addon": "LF_Everon1989",
+  "lines": { "greet": { "text": "Good day. This is the town clerk's desk. What can I do for you?" } },
+  "nodes": [ { "id": "work", "op": "remove" } ],
+  "replies": {} }
+```
+
+```
+tools\cli asset dialogue clerk_everon --dry-run     check the patch against the core dialogue
+tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Dialogue_ClerkEveron.conf and the strings
+```
+
+- A line is a `patch` when the core has its id and an `add` when it does not (`"op": "remove"` removes). A
+  node takes `"op"` the same way and a node with `options` replaces its reply list (a reply has no id).
+- Every patched line is text only: no ElevenLabs call, no budget, no wav. The core's recording keeps playing
+  for the lines the patch does not touch; a reworded line shows its new caption over the old voice, so reword
+  only where that reads right, or write a full dialogue (with `--addon`, its own voice) and `replace` the id in
+  the dialogue registry.
+- The tool refuses a patch of a line or node the core lacks, an add of one it has, a reply to an unknown
+  node, a removed node a core node still leads to, a patch in the core addon, and a patch with a voice or
+  budget. The captions go into the pack's string table.
+- List the written `.conf` in the pack's mission header `m_aLF_ConfigOverlays`. `tools\cli validate`
+  (`validate-dialogue-patch.mjs`) reads it against the core dialogue, and `dialogue-pipeline-selftest.mjs`
+  checks the file still matches the json.
+- The Everon pack's clerk is the worked example (`tools/assets/dialogue/clerk_everon/`).
 
 ## Voices
 

@@ -8368,5 +8368,25 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logout in custody"
      Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
+    CustomStringTableItem "{F06569B011E7028F}" {
+     Id "LF-Police_Shirt_Name"
+     Target_en_us "Officer's shirt"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{EC25FEE290BAEB26}" {
+     Id "LF-Police_Trousers_Name"
+     Target_en_us "Officer's trousers"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{C0906C82C890BD00}" {
+     Id "LF-Police_Cap_Name"
+     Target_en_us "Officer's cap"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{7E260D671F665668}" {
+     Id "LF-Doctor_Coat_Name"
+     Target_en_us "Doctor's white coat"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
  }
 }
