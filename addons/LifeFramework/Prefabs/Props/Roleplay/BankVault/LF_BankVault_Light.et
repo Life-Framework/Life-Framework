@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "5C2A9E41B7D03F16"
+ {
+  $grp LightEntity {
+   LightAmbient {
+    ID "5C2A9E41B7D03F21"
+    coords 0 -0.15 0
+    Color 1 0.9 0.75 1
+    LV 0.4
+    ClipEV -10
+    Radius 5
+    NearPlane 0.3
+    DistanceAttenuation 0.8
+   }
+   LightUp {
+    ID "5C2A9E41B7D03F22"
+    coords 0 -0.15 0
+    angles 90 0 0
+    Color 1 0.9 0.75 1
+    LV 2
+    ClipEV -10
+    Type Spot
+    Radius 6
+    NearPlane 0.3
+    SpotAngle 140
+    LensFlareType Disabled
+   }
+  }
+ }
+}

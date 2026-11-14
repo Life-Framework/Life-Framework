@@ -1,65 +1,16 @@
-GenericEntity Roadmap_Bank_Vault : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
- components {
-  MeshObject "{309366462BDAFB24}" {
-   Object "{ED2F500AB16EFD41}Assets/Structures/BuildingsParts/Doors/Door_Metal/Door_Metal_01_LEFT_EXT_COV_B.xob"
-  }
-  LF_LockComponent "{5AC29970429B33BB}" {
-   m_bDebugLocked 1
-  }
-  ActionsManagerComponent "{F32B667C3C823800}" {
-   ActionContexts {
-    UserActionContext "{50888D37F529F720}" {
-     Position PointInfo "{50888D37F0EB77E0}" {
-      Offset 0.8441 1.1849 -0.0102
-     }
-     Radius 0.6
-     Height 2.3596
-    }
-   }
-   additionalActions {
-    LF_BankRobAction "{7C31A9E04B18D6A1}" {
-     ParentContextList {
-      "default"
-     }
-    }
-    LF_BreachRepairAction "{7C31A9E04B18D6A2}" {
-     ParentContextList {
-      "default"
-     }
-    }
-   }
-  }
-  LF_BreachTargetComponent "{7C31A9E04B18D6A3}" {
-   m_sTargetId "Roadmap_Bank_Vault"
-   m_fFuseSeconds 0
-  }
-  LF_BankVaultComponent "{7C31A9E04B18D6A4}" {
-   m_sVaultId "Roadmap_Bank_Vault"
-   m_sBagEntity "Roadmap_Bank_Bag"
-   m_fJamChance 0
-   m_iBagCount 1
-   m_iCashPerBag 500
-   m_fCooldownSeconds 60
-   m_iMinPoliceOnDuty 0
-   m_fFuseSeconds 0
-  }
- }
- coords 193.09 0.18 265
- angleY 270
-}
 GenericEntity Roadmap_Bank_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
  components {
   LF_AlarmMountComponent "{E6EBA17EFBFBA4A4}" {
    m_vOffset 0 0.167 0.065
   }
  }
- coords 193.005 2.8 265.47
+ coords 192.625 3.435 262
  angleY 90
 }
 GenericEntity Roadmap_Bank_Bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
  Flags 0x403 0
- coords 193.42 0.03 266.4
- angleY 90
+ coords 194.302 0.497 261.587
+ angleY 0
  {
   GenericEntity Roadmap_Bank_Bag_Cash : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
    coords 0 0.15 0
@@ -67,6 +18,15 @@ GenericEntity Roadmap_Bank_Bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_Mo
  }
 }
 GenericEntity Roadmap_Bank_RobKit : "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et" {
- coords 193.5 0 262.3
- angleY 90
+ coords 196.7 0 258.501
+ angleY 180
+}
+GenericEntity Roadmap_Bank_Vault : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
+ components {
+  LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+   m_sBagEntity "Roadmap_Bank_Bag"
+  }
+ }
+ coords 194.3 0.007 259.6
+ angleY 180
 }

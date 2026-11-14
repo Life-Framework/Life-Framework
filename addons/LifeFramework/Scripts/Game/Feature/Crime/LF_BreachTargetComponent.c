@@ -19,12 +19,22 @@ class LF_BreachTargetComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Owning organization id. Empty means only police can repair.")]
 	protected string m_sOwnerOrganization;
 
+	[Attribute("", UIWidgets.EditBox, desc: "Child entity (by name or prefab file name) that swings open when the target opens, such as the round vault door. Empty: no visual swing.")]
+	protected string m_sSwingChild;
+
+	[Attribute("100", UIWidgets.EditBox, desc: "Degrees the swing child turns about its own Y axis when open.")]
+	protected float m_fSwingYaw;
+
 	protected bool m_bFusePending;
+
+	protected IEntity m_SwingFound;
+	protected bool m_bSwingKnown;
+	protected float m_fSwingClosedYaw;
 
 	//! Replicated copy of the LF_Breach target flags (the table is server-only). Written by
 	//! LF_Breach on the server, read by the breach actions on a client. Late joiners get them
 	//! with the door snapshot.
-	[RplProp()]
+	[RplProp(onRplName: "OnRplOpenChanged")]
 	protected bool m_bRplOpen;
 
 	[RplProp()]
@@ -78,7 +88,108 @@ class LF_BreachTargetComponent : ScriptComponent
 
 		m_bRplOpen = isOpen;
 		m_bRplArmed = isArmed;
+		ApplySwing(isOpen);
 		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the open flag arrived (or changed). Turns the swing child to match.
+	protected void OnRplOpenChanged()
+	{
+		ApplySwing(m_bRplOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first child, at any depth, whose name, prefab file or mesh file contains m_sSwingChild.
+	protected IEntity FindSwingChild(IEntity parent)
+	{
+		IEntity child = parent.GetChildren();
+		while (child)
+		{
+			bool match = child.GetName() == m_sSwingChild;
+			if (!match && child.GetPrefabData())
+				match = child.GetPrefabData().GetPrefabName().Contains(m_sSwingChild);
+
+			if (!match && child.GetVObject())
+				match = child.GetVObject().GetResourceName().Contains(m_sSwingChild);
+
+			if (match)
+				return child;
+
+			IEntity deeper = FindSwingChild(child);
+			if (deeper)
+				return deeper;
+
+			child = child.GetSibling();
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool OnQuerySwing(IEntity entity)
+	{
+		if (entity == GetOwner())
+			return true;
+
+		if (entity.GetVObject() && entity.GetVObject().GetResourceName().Contains(m_sSwingChild))
+		{
+			m_SwingFound = entity;
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Turns the swing child to its open or closed yaw. A missing child is logged once per call and
+	//! the lock still works: the door only loses its motion.
+	protected void ApplySwing(bool isOpen)
+	{
+		if (m_sSwingChild.IsEmpty() || !GetOwner())
+			return;
+
+		IEntity child = FindSwingChild(GetOwner());
+		if (!child && GetOwner().GetWorld())
+		{
+			// A prefab's nested entities are not always hierarchy children: look for the door
+			// mesh within a few metres instead.
+			m_SwingFound = null;
+			GetOwner().GetWorld().QueryEntitiesBySphere(GetOwner().GetOrigin(), 4, OnQuerySwing);
+			child = m_SwingFound;
+			m_SwingFound = null;
+		}
+
+		if (!child)
+		{
+			int count = 0;
+			IEntity any = GetOwner().GetChildren();
+			while (any)
+			{
+				count++;
+				any = any.GetSibling();
+			}
+
+			LF_Debug.Warn("Breach", string.Format("swing child %1 not found under %2 (%3 children)", m_sSwingChild, GetTargetId(), count));
+			return;
+		}
+
+		vector angles = child.GetAngles();
+		if (!m_bSwingKnown)
+		{
+			// The child starts at its prefab yaw, which is the closed one, even when the first
+			// call is a saved open vault.
+			m_fSwingClosedYaw = angles[1];
+			m_bSwingKnown = true;
+		}
+
+		float yaw = m_fSwingClosedYaw;
+		if (isOpen)
+			yaw = m_fSwingClosedYaw + m_fSwingYaw;
+
+		angles[1] = yaw;
+		child.SetAngles(angles);
+		LF_Debug.Log("Breach", string.Format("swing %1 open=%2 yaw=%3", GetTargetId(), isOpen, yaw));
 	}
 
 	//------------------------------------------------------------------------------------------------

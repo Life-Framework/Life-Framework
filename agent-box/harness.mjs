@@ -1079,7 +1079,7 @@ function selftest() {
   const placed = loadPlaced(ROOT).filter((site) => site.name.startsWith("Roadmap_"));
   if (!placed.some((site) => site.name === "Roadmap_Breach_Charge")) throw new Error("charge is part of the walk");
   const cash = placed.find((site) => site.name === "Roadmap_Bank_Bag_Cash");
-  if (!cash || cash.x !== 193.42 || cash.z !== 266.4) throw new Error("bag cash world position (Roadmap_Bank_Bag plus its child offset)");
+  if (!cash || cash.x !== 194.302 || cash.z !== 261.587) throw new Error("bag cash world position (Roadmap_Bank_Bag plus its child offset)");
   if (roadmapSites(ROOT).length < 12) throw new Error("roadmap walk is short");
   const page = renderRoadmapReport({
     wide: { src: "shots/roadmap-row.png", mesh: "ok" },
