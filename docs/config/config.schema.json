@@ -254,17 +254,6 @@
       "additionalProperties": false,
       "x-class": "LF_PhotoIdCardConfig"
     },
-    "terms": {
-      "type": "object",
-      "description": "Rename the framework's terms (#958). Each key is a term id (police, medic, town, currency; the terms command lists them). The value is plain text (the singular and plural, every language), an object of forms, or an object keyed by language code.",
-      "additionalProperties": {
-        "oneOf": [
-          { "type": "string" },
-          { "type": "object", "additionalProperties": { "oneOf": [ { "type": "string" }, { "type": "object", "additionalProperties": { "type": "string" } } ] } }
-        ]
-      },
-      "x-class": "LF_Terms"
-    },
     "jobs": {
       "type": "object",
       "description": "Job pay, job XP and job levels.",
