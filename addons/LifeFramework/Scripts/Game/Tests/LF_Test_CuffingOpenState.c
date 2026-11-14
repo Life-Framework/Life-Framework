@@ -40,7 +40,7 @@ class LF_Test_CuffingOpenState : LF_Test
 	//! The model that shows on the wrist carries the same two hinged strands as the item in hand.
 	protected void RunWorn(LF_TestContext ctx)
 	{
-		Resource res = Resource.Load(LF_Restraint.WORN_PREFAB);
+		Resource res = Resource.Load(LF_Restraint.WornPrefab());
 		if (!res || !res.IsValid())
 		{
 			ctx.Fail("the worn handcuffs prefab does not resolve");

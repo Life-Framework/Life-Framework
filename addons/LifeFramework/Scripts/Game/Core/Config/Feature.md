@@ -363,6 +363,34 @@ schema, `/config` form and reference page list them. A `config.json` that names 
 - `tools\cli config-check` refuses an id the catalog does not list; it cannot see LOCKED, NOT_YET or
   dependency refusals, which the server logs at boot.
 
+## Prefab slots (#964)
+
+A system that spawns or hands out an item asks for the prefab by slot id, so a pack changes the
+look without child prefabs of core items or script of its own.
+
+- `Configs/PrefabSlots/LF_PrefabSlots.conf` (`LF_PrefabSlotsConfig`) is one list of
+  `LF_PrefabSlot { m_sSlot, m_Prefab, m_aRequires }`. `m_aRequires` names the component classes the
+  system needs on the prefab (a subclass counts).
+- A pack lists an `LF_PrefabSlotsConfig` `.conf` in its header's overlay list and patches a slot by
+  id (`m_sOp "patch"`, `m_sSlot`, `m_Prefab`). Only `m_Prefab` is read from a pack; the requirements
+  are always the core file's, so a pack cannot loosen them.
+- `LF_PrefabSlots.Get(slot)` resolves every slot once per world, on first use. A pack prefab that
+  does not load or lacks a required component logs `LF_Debug.Error` with the reason and the slot
+  keeps the core default. A pack that removes a slot is refused the same way. A slot with no usable
+  prefab, or an id the core file does not list, logs one error and returns empty: that feature stops,
+  the rest run.
+- No owner (`config.json`) layer and no stream: client and server read the same mission header, so
+  they resolve the same prefab (the HUD counts cash by the slot's prefab on the client). A pack
+  change takes a restart.
+- Cash is saved in inventories by prefab. A server that swaps the `cash` slot after its first save
+  leaves the old stacks uncounted; pick the cash look before a server goes live.
+- A system declares its slot as `static const string SLOT... = "<id>"` beside a `...Prefab()`
+  accessor that calls `LF_PrefabSlots.Get`. `validate-prefab-slots` fails a slot GUID that does not
+  resolve and a script slot id the core file does not list.
+- Slots: `cash` (`LF_MoneyUtils.CashPrefab`), `money_bag` (`LF_Bank.BagPrefab`), `id_card`
+  (`LF_IdCard.Prefab`), `handcuffs_worn` (`LF_Restraint.WornPrefab`), `evidence_marker`
+  (`LF_Evidence.MarkerPrefab`). Test `prefabs/slots` (`LF_Test_PrefabSlots`).
+
 ## Files
 
 - `LF_ConfigService.c`: `LF_ConfigService`, `LF_ConfigPackSource`,

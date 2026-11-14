@@ -16,7 +16,7 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		LF_Contraband.Reset();
 
 		ctx.True(LF_Contraband.IsContraband(LF_Contraband.ITEM), "the configured prefab is contraband");
-		ctx.False(LF_Contraband.IsContraband(LF_MoneyUtils.PREFAB_CASH), "cash is not contraband");
+		ctx.False(LF_Contraband.IsContraband(LF_MoneyUtils.CashPrefab()), "cash is not contraband");
 		ctx.False(LF_Contraband.IsContraband("{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et"), "rowan berries are food again, not contraband");
 
 		vector drop = "131.5 0 284";
