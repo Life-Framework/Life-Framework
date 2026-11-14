@@ -229,13 +229,13 @@ function normalize(m) {
     host: via === "ssh" ? String(m.host || m.name) : null,
     root: via === "ssh" ? String(m.root || "C:/LF/Life-Framework").replace(/\\/g, "/").replace(/\/$/, "") : null,
     slots: Math.max(1, Number(m.slots) || 1),
-    // lanes: { test: N, session: 1 } gives tests their own servers on ports
-    // 2002.. beside the session server on 2001. Without it the machine keeps
-    // one shared lane (slots).
+    // lanes: { test: N, session: K } gives tests their own servers beside the session servers
+    // (ports in pool-queue.mjs, "Lane ports"). Without it the machine keeps one shared lane (slots).
     // Scales the seeded run budgets for a slower machine (the laptop).
     hostname: m.hostname ? String(m.hostname) : null,
     budgetMultiplier: Number(m.budgetMultiplier) > 0 ? Number(m.budgetMultiplier) : 1,
-    lanes: m.lanes && typeof m.lanes === "object" ? { test: Math.max(1, Number(m.lanes.test) || 1), session: Math.max(1, Math.min(4, Number(m.lanes.session) || 1)) } : null,
+    lanes: laneSetting(m),
+    laneNotes: laneNotes(m),
     caps: Array.isArray(m.caps) ? m.caps.map(String) : ["server"],
     // Heat: a folder of CSV logs with a thrm_c column (the laptop's thermal logger). While its newest
     // reading is fresh and at or above thermalHoldC, no new job starts there.
@@ -245,6 +245,30 @@ function normalize(m) {
     thermalHoldC: Number(m.thermalHoldC) > 0 ? Number(m.thermalHoldC) : 90,
     disabled: !!m.disabled,
   };
+}
+
+const isObj = (v) => !!v && typeof v === "object";
+
+// The lane counts a machine runs: lanesV2 when set, else lanes. No ceiling but the port range
+// (q.MAX_TEST_LANES / q.MAX_SESSION_LANES); the RAM gate and thermal hold decide what starts.
+// lanesV2 exists for older pool code (before 2026-11-14), which reads only "lanes", caps its session
+// lanes at 4 and puts a 10th test lane on 2011, the second session lane's port: keep "lanes" at
+// most 9 test + 4 session and put the full count in "lanesV2".
+export function laneSetting(m) {
+  const src = isObj(m.lanesV2) ? m.lanesV2 : isObj(m.lanes) ? m.lanes : null;
+  if (!src) return null;
+  const n = (v, cap) => Math.max(1, Math.min(cap, Math.floor(Number(v)) || 1));
+  return { test: n(src.test, q.MAX_TEST_LANES), session: n(src.session, q.MAX_SESSION_LANES) };
+}
+
+// Warnings about a machine's lane setting, printed by pool status.
+export function laneNotes(m) {
+  const out = [];
+  if (isObj(m.lanes) && Number(m.lanes.test) > q.LEGACY_TEST_LANES) out.push(`lanes.test ${m.lanes.test} > ${q.LEGACY_TEST_LANES}: pool code older than 2026-11-14 puts test lane 10 on session port 2011; set lanes.test to ${q.LEGACY_TEST_LANES} or less and the full count in lanesV2`);
+  const src = isObj(m.lanesV2) ? m.lanesV2 : isObj(m.lanes) ? m.lanes : null;
+  if (src && Number(src.test) > q.MAX_TEST_LANES) out.push(`test lanes ${src.test} cut to ${q.MAX_TEST_LANES} (the lane port range)`);
+  if (src && Number(src.session) > q.MAX_SESSION_LANES) out.push(`session lanes ${src.session} cut to ${q.MAX_SESSION_LANES} (the lane port range)`);
+  return out;
 }
 
 // Committed registry, then lf.local.json "pool": { "machines": [ { "name", ... } ] }
@@ -2142,7 +2166,8 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const h = probe(root, m, { fresh: true });
     const where = m.via === "local" ? `this PC (${hostname()})` : `ssh ${m.host}`;
     const build = h.build ? `build ${h.build}${hereBuild && h.build !== hereBuild ? " (DIFFERS)" : ""}` : "";
-    const lanes = m.lanes ? `up to ${m.lanes.test} test + ${m.lanes.session} session lane(s), as RAM allows` : `${m.slots} shared slot(s)`;
+    const lanes = m.lanes ? `up to ${m.lanes.test} test + ${m.lanes.session} session lane(s) (port range allows ${q.MAX_TEST_LANES} + ${q.MAX_SESSION_LANES}), as RAM allows` : `${m.slots} shared slot(s)`;
+    for (const n of m.laneNotes ?? []) console.log(`WARN  ${m.name}: ${n}`);
     const st = h.reachable && m.via !== "local" ? remoteState(m) : null;
     const heat = st && Number.isFinite(st.thermalC) ? `  ${st.thermalC} °C (holds new jobs at ${m.thermalHoldC})` : m.thermalLog && st ? "  temperature unknown (thermal log stale)" : "";
     const ram = m.via === "local" ? ramText(root) : st && Number.isFinite(st.freeMb) ? `RAM ${(st.freeMb / 1024).toFixed(1)}/${(st.totalMb / 1024).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${heat}` : "";
@@ -2308,7 +2333,7 @@ export function cmdPoolPrune(root, flags = []) {
     }
     const list = tb.sshPs(m.host, [
       `$main = ${tb.psQuote(m.root)}`,
-      "$busy = @(Get-ChildItem -LiteralPath (Join-Path $main 'tmp\\wt\\locks') -Filter 'server-2001*.lock' -ErrorAction SilentlyContinue | ForEach-Object { try { $i = Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json; if ($i.rDir -and (Get-Process -Id $i.pid -ErrorAction SilentlyContinue)) { $i.rDir } } catch {} })",
+      "$busy = @(Get-ChildItem -LiteralPath (Join-Path $main 'tmp\\wt\\locks') -Filter 'server-*.lock' -ErrorAction SilentlyContinue | ForEach-Object { try { $i = Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json; if ($i.rDir -and (Get-Process -Id $i.pid -ErrorAction SilentlyContinue)) { $i.rDir } } catch {} })",
       "git -C $main worktree list --porcelain | Where-Object { $_ -like 'worktree *' } | ForEach-Object { $d = $_.Substring(9); if ((Split-Path -Leaf $d) -like 'Life-Framework-rt-*') { $o = Join-Path $d 'tmp\\pool-owner.json'; $own = ''; if (Test-Path -LiteralPath $o) { $own = (Get-Content -Raw -LiteralPath $o).Trim() }; $b = [bool]($busy | Where-Object { $_.Replace('\\','/').TrimEnd('/') -ieq $d.Replace('\\','/').TrimEnd('/') }); Write-Host \"lf-pool: dir $b $d|$own\" } }",
     ].join("\n"), { timeout: 60000 });
     const victims = [];

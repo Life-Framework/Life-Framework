@@ -16,6 +16,9 @@
 //      and the heat headroom; a machine down at the start is used when it comes back; live RAM per
 //      machine (never over-committed); backfill until a RAM head starves, then it drains; remote tests
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
+// red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
+// laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
+// "lane ports collide: 2011 session 2 / test 10".
 // red-proof 2026-11-14 (pool-ram-select), each rule broken alone: with the rank sort disabled "a starved local was still tried before a roomy remote (local,lf-testbox)"; with the old first-server rule "the first test server on a starved machine (0.4 GB free) was admitted"; without the budgetMultiplier weight "a local machine with ample RAM lost to the slower laptop"; without the pinned hint "pool status does not say the other machine has room"; with rewriteTicket writing a dropped ticket "a replaced request came back when its waiter rewrote the ticket (one worktree queued twice)"; with pool.json sessionIdleMaxMin 30 "a session idle 6 min with nobody waiting was kept (limit 5)"; with acquireSlot in cmdCi "a lane is taken outside the suite run in: cmdCi"; with --local in auditTestArgs "the placement audit pins its test run to this PC"; without the cache "the remote RAM read was not cached for its ttl (3 reads for 3 decisions over 9 s)"; with pinWarning off "no queue-time warning for a pin onto a starved machine (null)"; without the upload step "a remote audit run does not carry its input and output".
 // red-proof 2026-11-14 (pool-throughput), each rule broken alone: with the old early return
 // (machines.length < 2) in chooseSessionMachine "a 2-client request that started while the laptop was
@@ -140,6 +143,56 @@ try {
   check(q.lanesFor(lanes2, "session").map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001,server-2011:2011", "two session lanes are not server-2001:2001 and server-2011:2011");
   check(q.portForLock("server-2011") === 2011 && q.sessionA2sPort(2001) === null && q.sessionA2sPort(2011) === 17877, "session lane 2 port / A2S port");
   check(!q.lanesFor(lanes2, "test").some((l) => l.port === 2011) && q.allLaneLocks(lanes2).length === 4, "a test lane shares a port with a session lane");
+  // Lane ports (pool-queue.mjs "Lane ports"): no lane ceiling in code but the port range, every port
+  // distinct, today's lanes unchanged, and older code that sees only a lock name gets the same port.
+  {
+    const big = { name: "big", via: "ssh", slots: 1, lanes: pool.laneSetting({ lanes: { test: 9, session: 4 }, lanesV2: { test: q.MAX_TEST_LANES, session: q.MAX_SESSION_LANES } }) };
+    check(q.MAX_TEST_LANES >= 32 && q.MAX_SESSION_LANES >= 16, `the lane port range is too small (${q.MAX_TEST_LANES} test, ${q.MAX_SESSION_LANES} session)`);
+    check(pool.laneSetting({ lanes: { test: 2, session: 8 } })?.session === 8, `session lanes are capped below the port range (asked 8, got ${pool.laneSetting({ lanes: { test: 2, session: 8 } })?.session})`);
+    check(pool.laneSetting({ lanes: { test: 40, session: 1 } })?.test === 40, "test lanes are capped below the port range");
+    check(pool.laneSetting({ lanes: { test: 9, session: 4 }, lanesV2: { test: 12, session: 6 } }).test === 12, "lanesV2 does not win over lanes");
+    check(pool.laneSetting({ lanes: { test: 999, session: 999 } }).test === q.MAX_TEST_LANES, "a count past the port range is not cut to it");
+    check(pool.laneNotes({ lanes: { test: 12, session: 4 } }).some((n) => /older than/.test(n)) && !pool.laneNotes({ lanes: { test: 9, session: 4 }, lanesV2: { test: 12, session: 6 } }).length, "pool status does not warn about lanes.test > 9 (older code puts test lane 10 on 2011)");
+    const ses = q.lanesFor(big, "session");
+    const tst = q.lanesFor(big, "test");
+    check(ses.length === q.MAX_SESSION_LANES && tst.length === q.MAX_TEST_LANES, `lanesFor does not give every configured lane (${ses.length} session, ${tst.length} test)`);
+    check(ses.slice(0, 4).map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001,server-2011:2011,server-2021:2021,server-2031:2031", "session lanes 1-4 changed name or port");
+    check(tst.slice(0, 9).map((l) => `${l.lock}:${l.port}`).join() === Array.from({ length: 9 }, (_, i) => `server-test-${i + 1}:${2002 + i}`).join(), "test lanes 1-9 changed name or port");
+    // Pool code of before 2026-11-14 (a remote run of an older snapshot) reads the port from the lock name only.
+    const oldPortForLock = (n) => (/^server-test-(\d+)$/.test(n) ? 2001 + Number(/\d+$/.exec(n)[0]) : /^server-(\d+)$/.test(n) ? Number(/\d+$/.exec(n)[0]) : 2001);
+    const wrongOld = [...ses, ...tst].filter((l) => oldPortForLock(l.lock) !== l.port || q.portForLock(l.lock) !== l.port);
+    check(!wrongOld.length, `a lane lock names another port than the lane listens on (${wrongOld.map((l) => `${l.lock}:${l.port}`).join()})`);
+    const owners = new Map();
+    const dupes = [];
+    const claim = (port, who) => {
+      if (port === null || port === undefined) return;
+      if (owners.has(port)) dupes.push(`${port} ${owners.get(port)} / ${who}`);
+      else owners.set(port, who);
+    };
+    for (const l of ses) {
+      claim(l.port, `session ${l.index}`);
+      claim(q.sessionA2sPort(l.port), `session ${l.index} A2S`);
+    }
+    for (const l of tst) {
+      claim(l.port, `test ${l.index}`);
+      if (l.index > q.LEGACY_TEST_LANES) claim(l.port + 1, `test ${l.index} A2S reserve`);
+    }
+    claim(17777, "the engine default A2S (session lane 1, remote test runs)");
+    check(new Set([...ses, ...tst].map((l) => l.lock)).size === ses.length + tst.length, "two lanes share a lock name");
+    // Worktree ports (wt.mjs allocatePorts): 2001 + 10 i and 17777 + 10 i for indices 0..2000. -server ignores
+    // -bindPort, so the game ports are never bound; lanes 1-4 of before sit on worktree 0-3's game port and lanes
+    // 2-4's A2S on worktree 10/20/30's (both as before). A block lane may meet none of them.
+    const known = new Set([2001, 2011, 2021, 2031, 17877, 17977, 18077]);
+    for (let i = 0; i <= 2000; i++) {
+      for (const p of [2001 + 10 * i, 17777 + 10 * i]) {
+        if (known.has(p) || p === 17777) continue;
+        claim(p, `worktree ${i}`);
+      }
+    }
+    check(!dupes.length, `lane ports collide: ${dupes.slice(0, 4).join("; ")}`);
+    // Ports other tools bind on 127.0.0.1 (agent-box/listen-host.mjs) stay outside the lane blocks.
+    check(![...ses, ...tst].some((l) => l.port >= 2302 && l.port <= 2306), "a lane sits on 2302-2306 (listen-host and the Reforger default range)");
+  }
   const ses = { sessionReserveServerMb: 800, sessionReserveClientMb: 1200 };
   check(q.sessionReserveMb(ses, 1) === 2000 && q.sessionReserveMb(ses, 2) === 3200, "session reserve per client count");
   // The working-set trim touches only live pids a session recorded.

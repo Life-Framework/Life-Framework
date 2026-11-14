@@ -46,13 +46,16 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { addonsArgs, launchAddons, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
+import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
 export { applyClientSettings, resolveProfile };
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 // The bare world: the pack world (DebugWorld plus the village, #323 batch 1) when the pack is here.
 export const SERVER_WORLD = townWorld();
-export const MAX_CLIENTS = 3;
+// Game clients one session may launch: a sanity bound only. What a machine runs is decided by its
+// maxClients (tools/pool.json, heat) and the RAM gate, which reserves memory per client.
+export const MAX_CLIENTS = 16;
 // LF_SESSION_WINDOW=1280x720 sets the window when no --res is given.
 export function parseWindow(text) {
   const m = /^(\d{3,4})x(\d{3,4})$/.exec(String(text || ""));
@@ -110,7 +113,7 @@ export function defineArgs(mission = "debug") {
 // One dir per checkout (named after the checkout folder) holds its session.json,
 // client profiles, and server saves. A shared dir let one worktree's `up`
 // overwrite another's record, profiles, and save between its runs. The server
-// port is still one per machine (the server-2001 lock); liveSessionsElsewhere
+// port is one per session lane (tools/lib/pool-queue.mjs "Lane ports"); liveSessionsElsewhere
 // finds clients another checkout left running.
 // The dir logic lives in tools/lib/session-lease.mjs: the pool reads a holder's
 // session dir and lease from there without importing this file.
@@ -204,7 +207,7 @@ export function sessionForBox(box, root, dir = sessionDir()) {
 // port. Local only: clients of a lane-2 session join 127.0.0.1:<port>.
 export function laneArgs(port) {
   if (!port || port === 2001) return [];
-  return ["-addr", `127.0.0.1:${port}`, "-a2sPort", String(17777 + (port - 2001) * 10)];
+  return ["-addr", `127.0.0.1:${port}`, "-a2sPort", String(sessionA2sPort(port))];
 }
 
 // rp: the resolved session profile (session-profile.mjs); absent means full.
@@ -234,10 +237,12 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   return args;
 }
 
-// Small windows in a row along the top of the screen, so the user's desk
+// Small windows in rows of three along the top of the screen, so the user's desk
 // stays usable. -screenWidth/-screenHeight/-posX/-posY need -window.
 export function windowFor(n, res = WINDOW) {
-  return { x: (n - 1) * (res.width + WINDOW.gap), y: 0, width: res.width, height: res.height };
+  const col = (n - 1) % 3;
+  const row = Math.floor((n - 1) / 3);
+  return { x: col * (res.width + WINDOW.gap), y: row * (res.height + WINDOW.gap), width: res.width, height: res.height };
 }
 
 export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false, rp = resolveProfile("full"), addons = launchAddons() }) {
@@ -511,8 +516,8 @@ export function selftestSession() {
   const st = parseState("faction=police duty=1 wanted=0 cash=250 bank=1000 job=none org=none");
   if (st.faction !== "police" || st.cash !== "250" || st.org !== "none") failures.push("parseState lost a field");
   try {
-    parseClients(["--clients", "9"]);
-    failures.push("--clients 9 was accepted");
+    parseClients(["--clients", String(MAX_CLIENTS + 1)]);
+    failures.push(`--clients ${MAX_CLIENTS + 1} was accepted`);
   } catch {}
   if (parseClients([]) !== 1) failures.push("default client count is not 1");
   const civ0 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none toast=none";
