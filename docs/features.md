@@ -350,6 +350,7 @@
   logs an error, and the server boots on shipped values. Schema is still v1, so none ship
   yet; the v0 to v1 step is a test fixture. Tests `config/migration-chain`,
   `config/migration-file`.
+- ✅ (2026-11-14, #970) Live reload: `reload <what>` (harness verb; `LF_ContentReload`) makes the server read content again in a running session and stream it to the clients. `config` is `/configreload`; `dialogue` reads `$profile:LifeFramework/dev/dialogue.json` (`{"captions": {"#key": "text"}}`) as caption overrides (`LF_DialogueOverrides`) that the conversation scene shows for the caption, the replies and the speaker (text only: the voice and the node structure need the pipeline and a restart). The `dialogue` file is read only where dev tools are open (a dev world or a harness build), never for an administrator alone on a live server. A reloader is the class `LF_ContentReloader_<Name>` (no list; the terms layer, #958, adds its own). The overrides ride the config stream as a `devDialogue` section written only while there are some, so a payload without them is unchanged. Test `reload/dialogue-file`. Proof `agent-box/proofs/live-reload-proof.mjs` (`up --clients 1`). `docs/worktrees.md` "Live reload". Merged, in-dev.
 - ✅ (2026-11-12, #285) Config stream: the server serialises the effective
   client-relevant values (the `shops` section: defaults, every rule in walk
   order, extra prefabs) with a format version and a hash. Clients get them on
@@ -621,7 +622,8 @@
   save-cache scan, load/re-apply paths, wipe. Every path passes
   `PassesSaveGates()` (manager present, saving allowed, persistence system
   active) and logs `LF_Debug` under `Persistence`.
-- ✅ A continued save that never reaches the store read (written before the 2026-11-09 EL_ to LF_ rename, pre-release save reset) logs one `LF_Debug.Warn` "save predates the LF_ rename; starting fresh" at `ACTIVE` and runs fresh, no partial load (verified 2026-11-09 with an old save on the test server; docs/persistence.md "Save reset").
+- ✅ A continued save that never reaches the store read (written before the 2026-11-09 EL_ to LF_ rename, pre-release save reset) logs one `LF_Debug.Warn` "save predates the LF_ rename; starting fresh" at `ACTIVE` and runs fresh, no partial load (verified 2026-11-09 with an old save on the test server; docs/persistence.md "Save reset"). Since #980 the line is an `LF_Debug.Error` "continued save never reached the LF store" (a game update that drops saves looks the same) and autosave pauses so the save on disk is kept.
+- 🟡 Game updates never cost a save (#980): each save carries a build stamp (`buildstamp` payload, save version 32, `LF_SaveStamp`; the engine's `meta-info.json` `m_sGameVersion` too). A load from another build warns with both builds; a load that loses a payload logs `save load damaged` and pauses autosave. `tools\cli host start` refuses a save from another build until `tools\cli host preflight` passes: back up, boot the save on the installed build, check `save loaded:`, stop, and restore the backup on any failure (`host restore` by hand). Proof: `persist/save-build-stamp`, `tools\cli e2e --old-build`, a live preflight on a faked 1.8.0.13 save. Ops: `docs/ops/game-updates.md`.
 - ✅ Shutdown save is engine-owned: the engine requests the SHUTDOWN save point
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual
