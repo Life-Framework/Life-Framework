@@ -195,8 +195,9 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
 2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
    (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
    confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
-   the Workbench compile and build on whichever pool machine has the `workbench` cap and room
-   (`tools/lib/wb-gate.mjs`), the suite, core-only run and placement audit on pool test lanes. A branch
+   the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
+   free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
+   the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
    that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
    build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
    so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
@@ -360,6 +361,7 @@ tools\cli e2e --remote                                     # the two-boot save/r
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
 tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
+tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
 - **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
@@ -469,6 +471,19 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   (`--unmarked` also takes older folders without the marker). Both go through
   the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
   holds junctions into the server install.
+- **Remote disk GC.** Run folders (`Life-Framework-rt-<slug>[-session][-sN]`, about 1.4 GB each)
+  pile up while their worktree still exists (2026-11-14: lf-cloud hit 0 GB free and every run
+  sent there failed the disk floor). Before the pool starts a run on an ssh machine it reads the
+  box's free disk (one ssh call); under `rtGcFreeFactor` x `minFreeDiskGb` (3 x 5 = 15 GB) it
+  removes that box's idle run folders, oldest first, until it is back above that, and logs one
+  `pool: gc <machine>: removed <dir> (idle ..., freed .. GB, .. GB free)` line per folder. A folder is
+  kept when a live lock in `<box>/tmp/wt/locks` names it (`rDir`), a process's command line names
+  it, anything in it was written in the last `rtIdleMin` (60) minutes, or it is one the run is about
+  to use. Deletion is the box's own `tools/safe-rm.mjs`, then `git worktree prune`. Settings:
+  `rtIdleMin`, `rtGcFreeFactor` (`LF_POOL_RT_IDLE_MIN`, `LF_POOL_RT_GC_FREE_FACTOR`;
+  `LF_POOL_RT_GC=0` turns it off). `pool prune --idle <min>` does the same by hand on every
+  reachable ssh machine whatever the free disk. A box with nothing idle left to remove is said
+  so once and not asked again for five minutes.
 - **Cost.** A box run of the full suite takes about 22 s door to door (10 s
   suite plus ssh, checkout, CLI start, log copy), this PC about 8 s. Four
   concurrent `--tier all` runs from four worktrees (2026-11-09): 28-31 s wall,
@@ -521,13 +536,35 @@ queues FIFO (tickets in `tmp/wt/wb-queue`) and prints one
 parallel ships ran seven compiles and builds on this 15.6 GB PC at once.
 
 `ci` (so `wt gate` and `wt ship`) runs the cheap validate checks here and the
-Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`):
-this PC while its Workbench limit has room, else a pool machine with the
-`workbench` cap, a free Workbench slot and 3.5 GB free, else this PC (it
-queues). The remote run is `ci --wb-only --local` in a
+Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`).
+Every machine with the `workbench` cap (this PC, and each pool machine that
+answers ssh) is ranked like the pool ranks machines for tests: live free RAM
+less a Workbench reserve (2.25 GB), weighted by speed (`budgetMultiplier`).
+A machine whose headroom after the reserve is under the floor (`minFreeMb`,
+so about 3.7 GB free in all) is never chosen while another has room: on
+2026-11-14 this PC, at 1.5 GB free, started a Workbench that died after 6 s
+three gates in a row while `lf-cloud` had 18 GB free. The first ranked
+machine with RAM and a free Workbench slot runs the steps; if every roomy
+machine's Workbench limit is full, they queue on the best of those. If no
+machine has the RAM, the gate prints why (each machine's free RAM) and
+re-checks every 30 s for up to an hour (`LF_WB_RAM_WAIT_S`), then fails as a
+pool failure, which the ship queue requeues. A pool machine that does not
+answer, or answers and exits 3, leaves the choice to the rest (this PC when
+nothing else answers).
+
+A Workbench compile that ends within a minute with `NO VERDICT` on a machine
+under the reserve is an environment failure, not a compile failure: it
+prints `ENV  ... GB free`, skips the build, exits 4, and the gate retries the
+steps once on the best other machine. A second early death fails the gate as
+a pool failure.
+
+The remote run is `ci --wb-only --local` in a
 `Life-Framework-rt-<slug>-gate` run folder, synced like a remote test
-(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and this PC runs the steps. `ci --local` keeps everything here;
-`ci --remote [name]` sends the Workbench steps out even when this PC is free.
+(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and the gate chooses again. `ci --local` keeps everything here;
+`ci --remote` uses pool machines only; `ci --remote <name>` / `--machine <name>`
+pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
+`--remote [name]` and `--machine <name>` through to that `ci` (the ship queue
+gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
 

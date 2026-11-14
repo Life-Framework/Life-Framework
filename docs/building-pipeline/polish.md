@@ -52,6 +52,15 @@ For those:
   `prefab` is the vanilla prefab's file name; every child of the building or furniture prefab with
   that name moves by `move` (metres, prefab space: -Z is the street front). A name the export did
   not place fails the export. Do not nudge door sets or windows: their hole in the wall stays put.
+- **Props ArchBuilder never places** (stock on the stockroom shelves, boxes, a punch clock, files on a desk) go in
+  `spec.polish.props`, appended to the furniture prefab on every export:
+  ```json
+  "polish": { "props": [ { "prefab": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et", "at": [-3.6, 0.1, 6.05], "why": "..." } ] }
+  ```
+  `at` is building space like a nudge, `yaw` optional; the prefab is named with its `{GUID}` (`toolscli call
+  asset_search` finds the path, the game's resource database the GUID) and the prefab stage checks it. Floor is
+  y 0.1. Heights on shelves come from the model: `tools/buildings/pipeline/fixtures.json` for the shop fixtures; a
+  `look item` picture for the rest, then the game picture.
 - **Plan decisions** (which rooms, where doors go) are ArchBuilder settings, or a small change to
   ArchBuilder itself, listed in [README.md "Changes to ArchBuilder"](README.md#changes-to-archbuilder).
 
@@ -106,6 +115,8 @@ Things that went wrong on a real building. Check each against the pictures; none
 | **Interior too bright.** Walls and ceiling read white, and from outside the shop glass reads milky because the hall behind it glows. | `inside`, `b_ref` | See "Interior brightness". |
 | **Blank walls, missing doors.** A shop's stockroom with no delivery door, a side with nothing on it. | `back`, `left`, `right` | Supermarket: still open (no ArchBuilder setting adds a back door). |
 | **Rooftop clutter.** Units and ladders above the parapet read from the street. | `front`, `street` | They are `detail`: settings or ArchBuilder, not the scene. |
+| **A flimsy canopy.** A thin plate over the door on two thin posts reads as a petrol station, not a shop. | `street`, `front` | Supermarket: `canopy='SHOPFRONT'` in ArchBuilder, a slab along the whole glazed front with a painted fascia. |
+| **Public fittings in staff rooms.** A row of WC cubicles, living-room shelves in a stockroom. | `plan`, in game | Staff back rooms (behind the `@` hub) get one toilet and stock shelving (README "Changes to ArchBuilder"); the stock itself is `polish.props`. |
 
 ### Interior brightness
 

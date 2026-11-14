@@ -102,7 +102,7 @@ the exact log line, line and column. Stages are a list in `tools/config/harness.
 
 A fixture's `.expect.json` may carry `"client": [ read, ... ]`. Each read names a value a player sees and
 what it must be: `shopPrice` (the shop's list, searched for an item, shows `expect`, for a config price or a
-renamed currency term) or `actionShown` (an action is offered or hidden, for a switched-off system), `shopPrice` with `"gone": true` (an item an owner or pack removed is not listed) and `lotPrice` (the car lot's price sheet shows `expect`). Run it with `node agent-box/session.mjs config-harness-proof` (a proof verb, not `harness.mjs`).
+renamed currency term) or `actionShown` (an action is offered or hidden, for a switched-off system), `shopPrice` with `"gone": true` (an item an owner or pack removed is not listed) and `lotPrice` (the car lot's price sheet shows `expect`) or `uiText` (the sheet an action opens shows `expect` and not `absent`, for a renamed term: `client-term-sheriff-gang`, `client-term-language-match`, `client-term-language-other`). Run it with `node agent-box/session.mjs config-harness-proof` (a proof verb, not `harness.mjs`).
 `tools/test/config-fixtures/presets/client-shop-price`, `client-term-currency` and `client-system-off` are the
 three, `empty` is the shipped baseline for both kinds of read.
 

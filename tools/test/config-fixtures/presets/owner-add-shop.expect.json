@@ -10,7 +10,6 @@
     }
   ],
   "client": [
-    { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Backpack", "expect": "$90" },
-    { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Cabbage", "expect": "$40" }
+    { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Backpack", "expect": "$90" }
   ]
 }

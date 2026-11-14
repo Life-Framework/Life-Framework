@@ -10,6 +10,10 @@
 //   elevenlabs.call without scrub()             -> FAIL key: an error never carries the key
 //   upsertStrings appending without the lookup  -> FAIL strings: a second run adds nothing
 //   envelope without the loudness scale         -> FAIL envelope: loud speech opens the mouth fully
+// red-proof (2026-11-14, the clerk voice split, #323), each restored after its FAIL was seen:
+//   confText writing events for a text_only spec    -> FAIL text only: the conf has no event, no length, no audio project
+//   voiceStage skipped for a voiced patch           -> FAIL voiced patch: every line has its wav in the pack
+//   patchConfText without the voiced rows           -> FAIL voiced patch: the conf sets the audio project and each recording
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -230,6 +234,16 @@ export async function main() {
         }
         const pst = new Map(dlg.parseStrings(readFileSync(patchTool.patchStringFile(ROOT, s), "utf8")));
         for (const e of patchTool.patchStringEntries(s)) ok(pst.get(e.id) === e.text.replace(/"/g, '\\"'), `${id}: string ${e.id} does not match dialogue.json (${pfix})`);
+        if (s.voice) {
+          // A pack that owns the voice (#323): every kept line has its recording in the pack, inside the budget.
+          const pprov = dlg.loadProvenance(ROOT, id);
+          const pstale = dlg.staleLines(ROOT, s, pprov);
+          ok(pstale.length === 0, `${id}: these lines were reworded or are missing their recording in addons/${s.addon}: ${pstale.join(", ")} (${pfix})`);
+          const ptotal = Object.values(pprov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
+          ok(ptotal <= s.budget_chars, `${id}: ${ptotal} characters spent, over its budget of ${s.budget_chars}`);
+          const core = patchTool.loadCoreSpec(ROOT, s);
+          ok(core.text_only, `${id}: it voices '${s.patches}', whose core dialogue must be text only (the core ships no recordings of a pack's voice)`);
+        }
         continue;
       }
       const prov = dlg.loadProvenance(ROOT, id);
@@ -244,7 +258,8 @@ export async function main() {
       }
       for (const e of dlg.stringEntries(s)) ok(real.get(e.id) === e.text.replace(/"/g, '\\"'), `${id}: string ${e.id} does not match dialogue.json (${fix})`);
       const total = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
-      ok(total <= s.budget_chars, `${id}: ${total} characters spent, over its budget of ${s.budget_chars}`);
+      if (s.text_only) ok(!existsSync(join(ROOT, ADDON, dlg.soundDir(s))), `${id}: a text_only dialogue ships no ${dlg.soundDir(s)} folder (its recordings belong to the pack that voices it)`);
+      else ok(total <= s.budget_chars, `${id}: ${total} characters spent, over its budget of ${s.budget_chars}`);
     }
   }
 
@@ -257,12 +272,80 @@ export async function main() {
     ok(has({ ...base, lines: { ghost: { op: "patch", text: "Hi." } } }, /patch names a line the core dialogue lacks/), "patch: a patch of a line the core lacks is refused");
     ok(has({ ...base, lines: { greet: { op: "add", text: "Hi there." } } }, /add names a line the core dialogue already has/), "patch: an add of a core line is refused");
     ok(has({ ...base, addon: "LifeFramework", lines: { greet: { text: "Morning." } } }, /lives in a pack/), "patch: a patch in the core is refused");
-    ok(has({ ...base, voice: { id: "v" }, lines: { greet: { text: "Morning." } } }, /text only/), "patch: a voice on a patch is refused");
+    ok(has({ ...base, budget_chars: 100, lines: { greet: { text: "Morning." } } }, /budget_chars without a voice/), "patch: a budget with no voice is refused");
+    ok(has({ ...base, voice: { id: "v" }, lines: { greet: { text: "Morning." } } }, /budget_chars must be 1 to/), "patch: a voice needs a budget");
+    ok(patchTool.patchProblems({ ...base, voice: { id: "v" }, budget_chars: 100, lines: { greet: { text: "Morning." } } }, core).length === 0, "patch: a voiced patch of a core line is sound");
+    ok(has({ ...base, lines: { greet: { text: "Morning.", say: "[warmly] Morning." } } }, /say needs a voice/), "patch: a say with no voice on the patch is refused");
     ok(has({ ...base, nodes: [{ id: "bye", op: "remove" }] }, /still leads to 'bye', which this patch removes/), "patch: removing a node a core node leads to is refused");
     ok(has({ ...base, nodes: [{ id: "menu", options: [{ text: "x", next: "nowhere" }] }], replies: { x: "X" } }, /unknown node 'nowhere'/), "patch: a reply to an unknown node is refused");
     const text = patchTool.patchConfText({ ...base, lines: { greet: { text: "Morning." }, extra: { text: "More." } } }, core);
     ok(/m_sId "npc"/.test(text) && /m_sOp "patch"\s+m_sId "greet"/.test(text) && /m_sOp "add"\s+m_sId "extra"/.test(text), "patch: the conf carries the core id and a verb per line");
     ok(!/m_sEvent|m_fSeconds/.test(text), "patch: a text-only line has no event and no length");
+  }
+
+  // A text-only core dialogue and a pack's voiced patch of it (#323): no recordings in the core, the recordings in the pack.
+  {
+    const root = mkdtempSync(join(tmpdir(), "lf-dialogue-selftest-voice-"));
+    const keyFile = join(root, "key");
+    writeFileSync(keyFile, "sk_selftest_0123456789\n");
+    const oldKeyFile = process.env.LF_ELEVENLABS_KEY_FILE;
+    process.env.LF_ELEVENLABS_KEY_FILE = keyFile;
+    const put = (rel, text) => { mkdirSync(dirname(join(root, rel)), { recursive: true }); writeFileSync(join(root, rel), text); };
+    const core = { ...spec(), text_only: true };
+    delete core.voice;
+    delete core.budget_chars;
+    const patch = () => ({ id: "baker_pack", name: "BakerPack", patches: "baker", addon: "LF_Everon1989", voice: { id: "voice1", name: "Test", model: "eleven_multilingual_v2" }, budget_chars: 400, lines: { greet: { text: "Morning, friend. Fresh bread today." }, bye: { text: "Good day to you." } } });
+    put("tools/assets/dialogue/baker/dialogue.json", JSON.stringify(core));
+    put("tools/assets/dialogue/baker_pack/dialogue.json", JSON.stringify(patch()));
+    put(`${ADDON}/Language/everonlife_localization.st`, ST);
+    put("addons/LF_Everon1989/LF_Everon1989.gproj", "GameProject {}\n");
+    put("addons/LF_Everon1989/Language/lf_everon1989_localization.st", ST);
+    const calls = [];
+    const fetchImpl = async (url, init) => {
+      const json = (o) => ({ ok: true, json: async () => o, headers: new Map() });
+      if (url.endsWith("/v1/user/subscription")) return json({ tier: "starter", character_count: 100, character_limit: 40000 });
+      if (url.endsWith("/v1/voices")) return json({ voices: [{ voice_id: "voice1" }] });
+      if (url.includes("/v1/text-to-speech/voice1")) {
+        const text = JSON.parse(init.body).text;
+        calls.push(text);
+        return { ok: true, arrayBuffer: async () => Buffer.alloc(2000, 7), headers: new Map([["request-id", "req" + calls.length], ["character-cost", String(text.length)]]) };
+      }
+      throw new Error(`selftest: unexpected call ${url}`);
+    };
+    const convert = (ff, src, dst) => { mkdirSync(dirname(dst), { recursive: true }); writeFileSync(dst, wav([[0.2, 0.3]])); };
+    try {
+      ok(dlg.specProblems(core, strings).length === 0, `text only: a text_only dialogue passes (${dlg.specProblems(core, strings)[0]})`);
+      ok(dlg.specProblems({ ...core, voice: spec().voice }, strings).some((x) => /text_only dialogue has no voice/.test(x)), "text only: a voice on a text_only dialogue is refused");
+      const out = await dlg.run(root, "baker", { fetchImpl, convert, log: () => {} });
+      const conf = readFileSync(join(root, ADDON, "Configs/Dialogue/LF_Dialogue_Baker.conf"), "utf8");
+      ok(calls.length === 0 && out.chars === 0, `text only: a text-only dialogue buys nothing (calls ${calls.length})`);
+      ok(!/m_sEvent|m_fSeconds|m_sMouth|m_sSoundProject/.test(conf) && /m_sTextKey "#LF-Dialogue_Baker_Greet"/.test(conf), "text only: the conf has no event, no length, no audio project");
+      ok(!existsSync(join(root, ADDON, "Sounds/Dialogue/baker")), "text only: no sound folder is written");
+      ok(dlg.staleLines(root, dlg.loadSpec(root, "baker"), dlg.loadProvenance(root, "baker")).length === 0, "text only: no line is ever stale");
+
+      const voiced = await dlg.run(root, "baker_pack", { fetchImpl, convert, log: () => {} });
+      const pack = join(root, "addons/LF_Everon1989");
+      ok(calls.length === 2 && voiced.chars === patch().lines.greet.text.length + patch().lines.bye.text.length, `voiced patch: the pack's two lines are bought once (calls ${calls.length})`);
+      ok(["greet", "bye"].every((l) => existsSync(join(pack, `Sounds/Dialogue/baker_pack/baker_pack_${l}.wav`)) && existsSync(join(pack, `Sounds/Dialogue/baker_pack/baker_pack_${l}.wav.meta`))), "voiced patch: every line has its wav in the pack");
+      ok(!existsSync(join(root, ADDON, "Sounds")), "voiced patch: nothing is written into the core");
+      ok(existsSync(join(pack, "Sounds/Dialogue/baker_pack/Dialogue_baker_pack.acp.meta")) && existsSync(join(pack, "Configs/Dialogue/LF_Dialogue_BakerPack.conf.meta")), "voiced patch: the audio project and the patch conf have metas in the pack");
+      const pconf = readFileSync(join(pack, "Configs/Dialogue/LF_Dialogue_BakerPack.conf"), "utf8");
+      ok(/m_sId "baker"/.test(pconf) && /m_sSoundProject "\{[0-9A-F]{16}\}Sounds\/Dialogue\/baker_pack\/Dialogue_baker_pack\.acp"/.test(pconf) && /m_sEvent "SOUND_DLG_BAKER_PACK_GREET"/.test(pconf) && /m_fSeconds 0\.2/.test(pconf), "voiced patch: the conf sets the audio project and each recording");
+      ok(!/Everon|LF_Everon1989/.test(readFileSync(join(root, ADDON, "Configs/Dialogue/LF_Dialogue_Baker.conf"), "utf8")), "voiced patch: the core conf never names the pack");
+      ok(dlg.parseStrings(readFileSync(join(pack, "Language/lf_everon1989_localization.st"), "utf8")).get("LF-Dialogue_BakerPack_Greet") === "Morning, friend. Fresh bread today.", "voiced patch: the pack's caption is in the pack's table");
+      ok(patchTool.patchProblems(dlg.loadSpec(root, "baker_pack"), patchTool.loadCoreSpec(root, dlg.loadSpec(root, "baker_pack")), dlg.parseStrings(ST)).length === 0, "voiced patch: the spec passes against its core");
+
+      calls.length = 0;
+      await dlg.run(root, "baker_pack", { fetchImpl, convert, log: () => {} });
+      ok(calls.length === 0, `voiced patch: a second run buys nothing (calls ${calls.length})`);
+      const files = patchTool.patchExpectedFiles(root, dlg.loadSpec(root, "baker_pack"));
+      ok(Object.entries(files).every(([rel, text]) => readFileSync(join(pack, rel), "utf8") === text), "voiced patch: the written files are the expected ones (no churn)");
+      let message = "";
+      try { await dlg.run(root, "baker_pack", { fetchImpl, convert, log: () => {}, force: "ghost" }); } catch (e) { message = e.message; }
+      ok(/no such line/.test(message), "voiced patch: forcing a line the patch does not have is refused");
+    } finally {
+      if (oldKeyFile === undefined) delete process.env.LF_ELEVENLABS_KEY_FILE; else process.env.LF_ELEVENLABS_KEY_FILE = oldKeyFile;
+    }
   }
 
   if (failed) {

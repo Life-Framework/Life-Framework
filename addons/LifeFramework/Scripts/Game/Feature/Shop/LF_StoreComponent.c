@@ -67,6 +67,12 @@ class LF_StoreComponent : ScriptComponent
 	protected static const float STRAY_RADIUS = 0.15;
 	//! Seconds after a fill or a load when the shelf looks once more for copies the engine restored late.
 	protected static const int LATE_RECONCILE_MS = 4000;
+	//! The spawn trace runs from this far above a shelf point to SNAP_BELOW under it. Under the 0.36 m
+	//! between two boards of a vanilla gondola (tools/buildings/pipeline/fixtures.json).
+	static const float SNAP_ABOVE = 0.15;
+	static const float SNAP_BELOW = 0.5;
+	//! Loose items or shoppers the spawn trace looks past before it gives up.
+	protected static const int SNAP_TRIES = 4;
 	protected static ref array<EntityID> s_aStrays;
 	protected static ResourceName s_StrayPrefab;
 	protected static vector s_vStrayPoint;
@@ -367,22 +373,48 @@ class LF_StoreComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A shelf point is a hint: a short trace straight down finds the top of this entity (the counter
-	//! or shelf the goods stand on) so the item rests on it whatever height the point was written at.
-	//! Falls back to the point itself when the trace hits something else or nothing.
 	protected vector SnapToSurface(vector point)
 	{
-		TraceParam trace = new TraceParam();
-		trace.Start = point + "0 0.5 0";
-		trace.End = point - "0 0.5 0";
-		trace.Flags = TraceFlags.ENTS;
-		trace.LayerMask = -1;
-		trace.Include = GetOwner();
-		float fraction = GetGame().GetWorld().TraceMove(trace, null);
-		if (fraction >= 1 || trace.TraceEnt != GetOwner())
-			return point;
+		return SnapToSurfaceAt(point);
+	}
 
-		return trace.Start + (trace.End - trace.Start) * fraction;
+	//------------------------------------------------------------------------------------------------
+	//! A shelf point is a hint: a short trace straight down finds what the goods stand on (the counter,
+	//! a gondola board, a cooler deck) so the item rests on it whatever height the point was written
+	//! at. Any static surface counts: a building store's fixtures come from its furniture prefab, and
+	//! prefab children are not runtime child entities of the building, so "the store or its children"
+	//! cannot be named (probed on the supermarket, #1143). Loose items and characters are passed
+	//! through, so a copy never stacks on another or on a shopper. The trace starts just above the
+	//! point: on a gondola it finds the board under the point, not the one above it. Falls back to the
+	//! point itself when nothing is under it.
+	static vector SnapToSurfaceAt(vector point)
+	{
+		array<IEntity> skip = {};
+		for (int attempt = 0; attempt < SNAP_TRIES; attempt++)
+		{
+			TraceParam trace = new TraceParam();
+			trace.Start = point + Vector(0, SNAP_ABOVE, 0);
+			trace.End = point - Vector(0, SNAP_BELOW, 0);
+			trace.Flags = TraceFlags.ENTS | TraceFlags.WORLD;
+			trace.LayerMask = -1;
+			if (!skip.IsEmpty())
+				trace.ExcludeArray = skip;
+
+			float fraction = GetGame().GetWorld().TraceMove(trace, null);
+			if (fraction >= 1)
+				return point;
+
+			IEntity hit = trace.TraceEnt;
+			if (hit && (ChimeraCharacter.Cast(hit) || hit.FindComponent(InventoryItemComponent)))
+			{
+				skip.Insert(hit);
+				continue;
+			}
+
+			return trace.Start + (trace.End - trace.Start) * fraction;
+		}
+
+		return point;
 	}
 
 	//------------------------------------------------------------------------------------------------
