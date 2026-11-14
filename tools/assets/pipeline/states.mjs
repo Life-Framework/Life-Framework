@@ -318,7 +318,7 @@ export function shootStates(root, spec, dir) {
   const out = join(dir, "states");
   const session = join(root, "agent-box", "session.mjs");
   const node = (args) => spawnSync(process.execPath, [session, ...args], { cwd: root, stdio: "inherit", windowsHide: true }).status;
-  if (node(["up", "--clients", "2", "--profile", "full"]) !== 0) { console.log("FAIL  session up"); return 1; }
+  if (node(["up", "--clients", "2", "--profile", "full", "--wait"]) !== 0) { console.log("FAIL  session up"); return 1; }
   let code = 1;
   try {
     code = node(["asset-states-proof", `{${guid}}${rel}`, shots.join(","), out]);

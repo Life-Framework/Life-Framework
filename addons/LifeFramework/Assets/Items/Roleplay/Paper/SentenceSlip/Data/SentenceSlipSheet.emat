@@ -1,0 +1,5 @@
+MatPBRBasic {
+ Color 0.6 0.6 0.6 1
+ BCRMap "{D0B6C19BABD0DC2C}Assets/Items/Roleplay/Paper/SentenceSlip/Data/SentenceSlipSheet_BCR.edds"
+ NMOMap "{C26DA8315559C0BE}Assets/Items/Roleplay/Paper/SentenceSlip/Data/SentenceSlipSheet_NMO.edds"
+}

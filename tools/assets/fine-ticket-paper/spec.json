@@ -1,0 +1,69 @@
+{
+  "slug": "fine-ticket-paper",
+  "name": "FineTicketSheet",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A police penalty notice, 1989 Everon: one green ink on cream stock, header band, form fields, a tear-off payment stub and a round office stamp.",
+  "prompt": "Modelled and painted in Blender by model.py: a printed paper item with its layout drawn by script. no text, no logos from the real world.",
+  "texture_prompt": "",
+  "source": {
+    "blender": "model.py"
+  },
+  "size_m": {
+    "length": 0.21,
+    "height": 0.0045,
+    "width": 0.148
+  },
+  "budget": {
+    "lod0_tris": 328,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 2048,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ],
+    "stretch": true,
+    "bake": false
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Roleplay/Paper/FineTicket",
+  "prefab_dir": "Prefabs/Items/Roleplay/Paper/FineTicket",
+  "prefab": false,
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "states": {
+    "prefab": "Prefabs/Items/Roleplay/FineTicket.et",
+    "inventory": {
+      "angles": [
+        -80,
+        0,
+        180
+      ],
+      "distance": 0.8,
+      "fov": 20
+    },
+    "ground": {
+      "up": "Up"
+    },
+    "hand": {
+      "pose": "fist",
+      "grip": [
+        0,
+        0,
+        -0.095
+      ],
+      "up": "+z",
+      "out": "+y"
+    }
+  }
+}
