@@ -1,7 +1,7 @@
 GenericEntity NPCStation {
  coords 30 0 76
  {
-  LF_NpcBaseEntity NPC_TestDebug : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity NPC_TestDebug : "{216B50107167553C}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_1.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

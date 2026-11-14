@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{58EBA09850E100DB}Prefabs/Characters/Npcs/Outfits/LF_Npc_Miner_2.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

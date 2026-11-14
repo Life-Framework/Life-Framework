@@ -57,12 +57,13 @@ class LF_DialogueComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The playable config of an NPC, or null.
+	//! The playable config of an NPC, or null. An authored dialogue on the NPC wins; otherwise the
+	//! conversation of its role (LF_Roles) is offered.
 	static LF_DialogueConfig ConfigOf(IEntity npc)
 	{
 		LF_DialogueComponent component = LF_Component<LF_DialogueComponent>.Find(npc);
 		if (!component)
-			return null;
+			return LF_Roles.DialogueOf(npc);
 
 		return component.GetConfig();
 	}

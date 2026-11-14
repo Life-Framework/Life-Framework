@@ -133,7 +133,7 @@ GenericEntity CrimeScene {
    Flags 0x403 0
     coords 12 0 0
   }
-  LF_NpcBaseEntity WantedPoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity WantedPoliceNpc : "{B491683D0860BE58}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_3.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -161,7 +161,7 @@ LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et"
   m_vSize 13 1 3.5
 }
 
-LF_NpcBaseEntity FenceNpc : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et" {
+LF_NpcBaseEntity FenceNpc : "{C6EF5A8FFED301BB}Prefabs/Characters/Npcs/Outfits/LF_Npc_Fence_1.et" {
  coords 186 0 311
  angleY 180
 }

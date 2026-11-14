@@ -44,7 +44,7 @@ GenericEntity SandBuilderStand {
     coords -2.6 0 0.7
    }
   }
-  LF_NpcBaseEntity SandBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity SandBuilderNpc : "{A100E6FE9EA9A248}Prefabs/Characters/Npcs/Outfits/LF_Npc_Miner_1.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

@@ -8396,6 +8396,456 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sure? Resets for everyone"
      Comment "Travel globe reset row after the first press."
     }
+    CustomStringTableItem "{9FEC139F83A79626}" {
+     Id "LF-NpcTalk_Action"
+     Target_en_us "Talk"
+     Comment "F-key action on an NPC that talks (tools/assets/outfits/roles.json)."
+    }
+    CustomStringTableItem "{ED882293148BD52A}" {
+     Id "LF-NpcTalk_AskWhat"
+     Target_en_us "What do you do here?"
+     Comment "NPC role talk: reply asking what the NPC does."
+    }
+    CustomStringTableItem "{CC94A46527A7AC23}" {
+     Id "LF-NpcTalk_AskWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "NPC role talk: reply asking for directions."
+    }
+    CustomStringTableItem "{AA90EE0838BF9F1B}" {
+     Id "LF-NpcTalk_AskRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "NPC role talk: reply asking for a rumour."
+    }
+    CustomStringTableItem "{8B3B9E5F68DEE66C}" {
+     Id "LF-NpcTalk_More"
+     Target_en_us "One more thing."
+     Comment "NPC role talk: reply to ask something else."
+    }
+    CustomStringTableItem "{2458F9FE031B5D45}" {
+     Id "LF-NpcTalk_Bye"
+     Target_en_us "Goodbye."
+     Comment "NPC role talk: goodbye reply."
+    }
+    CustomStringTableItem "{F3F6D2AFCE92D2D0}" {
+     Id "LF-NpcRole_teller_Name"
+     Target_en_us "Bank teller"
+     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{1428CD8599FA8A99}" {
+     Id "LF-NpcRole_teller_Greet"
+     Target_en_us "Good day. Welcome to the bank. How can I help?"
+     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{9455B6D150E0DCFF}" {
+     Id "LF-NpcRole_teller_What"
+     Target_en_us "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals."
+     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{F73D61D21FC86CE9}" {
+     Id "LF-NpcRole_teller_Where"
+     Target_en_us "The post office is right beside us. The town board on the square lists the rest, and the police station is a short walk up the street."
+     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{00471DBB1C9CD1F1}" {
+     Id "LF-NpcRole_teller_Rumour"
+     Target_en_us "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business."
+     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{B177445AD966E34E}" {
+     Id "LF-NpcRole_teller_Bye"
+     Target_en_us "Good day. Mind your money."
+     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{85F76A512682F9A4}" {
+     Id "LF-NpcRole_store_clerk_Name"
+     Target_en_us "Store clerk"
+     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{E166A5A4DF548C9A}" {
+     Id "LF-NpcRole_store_clerk_Greet"
+     Target_en_us "Morning. Looking for something in particular?"
+     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{CC45BA0D974D99A0}" {
+     Id "LF-NpcRole_store_clerk_What"
+     Target_en_us "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in town does."
+     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{F504491DC9865F5A}" {
+     Id "LF-NpcRole_store_clerk_Where"
+     Target_en_us "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side."
+     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{9B5EE0182A575409}" {
+     Id "LF-NpcRole_store_clerk_Rumour"
+     Target_en_us "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either."
+     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{7FB5E557B32CDAA8}" {
+     Id "LF-NpcRole_store_clerk_Bye"
+     Target_en_us "Take care out there."
+     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{8896995BA2A9AC45}" {
+     Id "LF-NpcRole_fuel_clerk_Name"
+     Target_en_us "Fuel station clerk"
+     Comment "NPC role talk (fuel_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{D97E1AEE5D387257}" {
+     Id "LF-NpcRole_fuel_clerk_Greet"
+     Target_en_us "Evening. Pumps are on, pay at the window."
+     Comment "NPC role talk (fuel_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{EFE074D249DB2D1B}" {
+     Id "LF-NpcRole_fuel_clerk_What"
+     Target_en_us "Petrol and diesel, and a little to eat. Bring a jerrycan if you broke down on the road. I will fill it."
+     Comment "NPC role talk (fuel_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{E4438AEB25D58C09}" {
+     Id "LF-NpcRole_fuel_clerk_Where"
+     Target_en_us "The town is back west along the road. Keep to the tarmac. The shortcuts across the fields eat tyres."
+     Comment "NPC role talk (fuel_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{0F282F3EF676C104}" {
+     Id "LF-NpcRole_fuel_clerk_Rumour"
+     Target_en_us "A grey van has been parking behind the pumps after closing. Nobody I know owns one."
+     Comment "NPC role talk (fuel_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{E40E9FCDE18063FD}" {
+     Id "LF-NpcRole_fuel_clerk_Bye"
+     Target_en_us "Safe driving."
+     Comment "NPC role talk (fuel_clerk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{01F9E92E5799351C}" {
+     Id "LF-NpcRole_police_Name"
+     Target_en_us "Police officer"
+     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{A046683357332A30}" {
+     Id "LF-NpcRole_police_Greet"
+     Target_en_us "Officer on duty. Keep your hands where I can see them, and we will get along."
+     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{07A956FA5D2485F7}" {
+     Id "LF-NpcRole_police_What"
+     Target_en_us "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again."
+     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{62757641F715D6E6}" {
+     Id "LF-NpcRole_police_Where"
+     Target_en_us "The station is the building behind me. The town board on the square lists everything else."
+     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{49A24B144B6B7371}" {
+     Id "LF-NpcRole_police_Rumour"
+     Target_en_us "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces."
+     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{83E5CC4E5D51B782}" {
+     Id "LF-NpcRole_police_Bye"
+     Target_en_us "Stay out of trouble."
+     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{BD15D2974F55B43B}" {
+     Id "LF-NpcRole_medic_Name"
+     Target_en_us "Doctor"
+     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{B7490A2D5A53DF2D}" {
+     Id "LF-NpcRole_medic_Greet"
+     Target_en_us "Come in. Are you hurt?"
+     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{887D2F527EDAA1C9}" {
+     Id "LF-NpcRole_medic_What"
+     Target_en_us "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse."
+     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{E27C1F1314F8CDF5}" {
+     Id "LF-NpcRole_medic_Where"
+     Target_en_us "If you need a bandage and I am not here, the general store keeps dressings by the counter."
+     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{30E2FD4036299CEF}" {
+     Id "LF-NpcRole_medic_Rumour"
+     Target_en_us "A lot of cuts from the sawmill this month. The men will not wear gloves."
+     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{A64A2A62793D9F93}" {
+     Id "LF-NpcRole_medic_Bye"
+     Target_en_us "Look after yourself."
+     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{60C4E4355479468B}" {
+     Id "LF-NpcRole_farmer_Name"
+     Target_en_us "Farmer"
+     Comment "NPC role talk (farmer), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{4B47713A4CD9AE59}" {
+     Id "LF-NpcRole_farmer_Greet"
+     Target_en_us "Afternoon. Mind the beds, I just planted."
+     Comment "NPC role talk (farmer), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{D56BCCA730C6896B}" {
+     Id "LF-NpcRole_farmer_What"
+     Target_en_us "Cabbages, mostly. Plant them, water them, pull them. They sell at the market square when they are ready."
+     Comment "NPC role talk (farmer), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{1430364B918FE31C}" {
+     Id "LF-NpcRole_farmer_Where"
+     Target_en_us "The market square is down the main street. The traders there pay fair for a good cabbage."
+     Comment "NPC role talk (farmer), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{6D8C2DC519E0E77B}" {
+     Id "LF-NpcRole_farmer_Rumour"
+     Target_en_us "Somebody has been pulling cabbages at night. I have started to sleep with the window open."
+     Comment "NPC role talk (farmer), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{B687CB4145329863}" {
+     Id "LF-NpcRole_farmer_Bye"
+     Target_en_us "Good luck."
+     Comment "NPC role talk (farmer), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{29B29833F5734928}" {
+     Id "LF-NpcRole_miner_Name"
+     Target_en_us "Quarry worker"
+     Comment "NPC role talk (miner), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{A80544DD70ECF0F2}" {
+     Id "LF-NpcRole_miner_Greet"
+     Target_en_us "Watch your step, the ground is loose."
+     Comment "NPC role talk (miner), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{574CF6DE255947F6}" {
+     Id "LF-NpcRole_miner_What"
+     Target_en_us "I work the pit. Stone, gravel, sand, cement. Somebody always needs a load, and the pay is steady."
+     Comment "NPC role talk (miner), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{17E06A6C1E585D6E}" {
+     Id "LF-NpcRole_miner_Where"
+     Target_en_us "The builders on the road buy what we dig. Bring a full load, not half."
+     Comment "NPC role talk (miner), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{ED66BAC270FEB1FA}" {
+     Id "LF-NpcRole_miner_Rumour"
+     Target_en_us "They say the old vein is not played out. Somebody has been digging after dark."
+     Comment "NPC role talk (miner), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{3D5F374C14CE715C}" {
+     Id "LF-NpcRole_miner_Bye"
+     Target_en_us "Mind the dust."
+     Comment "NPC role talk (miner), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{B3FE08971BF2884E}" {
+     Id "LF-NpcRole_logger_Name"
+     Target_en_us "Lumberjack"
+     Comment "NPC role talk (logger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{A933FD945540B9CA}" {
+     Id "LF-NpcRole_logger_Greet"
+     Target_en_us "Stand back from the trees, friend."
+     Comment "NPC role talk (logger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{6BC073B95CBE6EA6}" {
+     Id "LF-NpcRole_logger_What"
+     Target_en_us "I fell and cut. The sawmill takes whatever I bring, and firewood sells well before winter."
+     Comment "NPC role talk (logger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{0B503EBDBB0CA03E}" {
+     Id "LF-NpcRole_logger_Where"
+     Target_en_us "The sawmill is where the road meets the woods. Follow the sound of the saws."
+     Comment "NPC role talk (logger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{58613C194CF6CFD9}" {
+     Id "LF-NpcRole_logger_Rumour"
+     Target_en_us "Somebody left a cut pile at the roadside and nobody has claimed it. I did not take it, whatever they say."
+     Comment "NPC role talk (logger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{3AEC9098FBC89EDC}" {
+     Id "LF-NpcRole_logger_Bye"
+     Target_en_us "Watch the branches."
+     Comment "NPC role talk (logger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{AC2EACA2486B5505}" {
+     Id "LF-NpcRole_trader_Name"
+     Target_en_us "Market trader"
+     Comment "NPC role talk (trader), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{43050BA6C01F059E}" {
+     Id "LF-NpcRole_trader_Greet"
+     Target_en_us "Fresh today. Have a look."
+     Comment "NPC role talk (trader), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{5A90080D4C8E4513}" {
+     Id "LF-NpcRole_trader_What"
+     Target_en_us "I buy and sell at the stall. Bring me what you grow or make and I will give you a fair price."
+     Comment "NPC role talk (trader), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{655793D24F3EAED3}" {
+     Id "LF-NpcRole_trader_Where"
+     Target_en_us "The farm is out past the greenhouse. For anything else, the town board on the square will tell you."
+     Comment "NPC role talk (trader), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{EBF9DA4890A4D8CD}" {
+     Id "LF-NpcRole_trader_Rumour"
+     Target_en_us "The price of apples went up this week. Somebody is hoarding them, I think."
+     Comment "NPC role talk (trader), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{0956000C64F43D0E}" {
+     Id "LF-NpcRole_trader_Bye"
+     Target_en_us "Come back when you have more."
+     Comment "NPC role talk (trader), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{53BFD39FAA73A5B0}" {
+     Id "LF-NpcRole_mechanic_Name"
+     Target_en_us "Mechanic"
+     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{4FC1E66A54CD5A66}" {
+     Id "LF-NpcRole_mechanic_Greet"
+     Target_en_us "Mind the oil. What is wrong with it?"
+     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{4E54D980F3E779E4}" {
+     Id "LF-NpcRole_mechanic_What"
+     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
+     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{19D46DA161EE5EB6}" {
+     Id "LF-NpcRole_mechanic_Where"
+     Target_en_us "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far."
+     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{3D7008D6A13D7B0D}" {
+     Id "LF-NpcRole_mechanic_Rumour"
+     Target_en_us "Somebody keeps asking me how to start a car without the key. I tell them to buy the key."
+     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{33B9466C347C4FE8}" {
+     Id "LF-NpcRole_mechanic_Bye"
+     Target_en_us "Drive safe."
+     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{D2DA65531A3EFDB1}" {
+     Id "LF-NpcRole_office_Name"
+     Target_en_us "Official"
+     Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{04D367ED1588D453}" {
+     Id "LF-NpcRole_office_Greet"
+     Target_en_us "Good day. The office is open. What do you need?"
+     Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{3501F8BF50C8989E}" {
+     Id "LF-NpcRole_office_What"
+     Target_en_us "I handle the paperwork here. Forms, records, keys and permits. Everything has a stamp, and nothing is quick."
+     Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{1ADD957AEEDCC448}" {
+     Id "LF-NpcRole_office_Where"
+     Target_en_us "The town board on the square lists every office and who is hiring. The post office is next to the bank."
+     Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{8CFD9631DE74BF7E}" {
+     Id "LF-NpcRole_office_Rumour"
+     Target_en_us "More people arrive every week with no papers. The registry cannot keep up."
+     Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{BEB8C35CCD13DF8D}" {
+     Id "LF-NpcRole_office_Bye"
+     Target_en_us "Good day to you."
+     Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{7612765CE4B23970}" {
+     Id "LF-NpcRole_ranger_Name"
+     Target_en_us "Ranger"
+     Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{8730D7B08E4856F6}" {
+     Id "LF-NpcRole_ranger_Greet"
+     Target_en_us "Quiet out here. Good. Keep it that way."
+     Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{A1118D74AAFF5068}" {
+     Id "LF-NpcRole_ranger_What"
+     Target_en_us "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast on Everon."
+     Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{92AF2B723370C179}" {
+     Id "LF-NpcRole_ranger_Where"
+     Target_en_us "Walk the road, not the woods, until you know them. The coast is east and the farms are north."
+     Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{F170997FA8278696}" {
+     Id "LF-NpcRole_ranger_Rumour"
+     Target_en_us "Somebody has been leaving fires burning in the forest. It will not end well."
+     Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{168CC753E6805BE1}" {
+     Id "LF-NpcRole_ranger_Bye"
+     Target_en_us "Walk safe."
+     Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{7DDE7D6CEDCBC982}" {
+     Id "LF-NpcRole_fence_Name"
+     Target_en_us "Fence"
+     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{0B506A4143FB4C98}" {
+     Id "LF-NpcRole_fence_Greet"
+     Target_en_us "You did not see me. Now, what are you after?"
+     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{BD9E1AD26E9C116D}" {
+     Id "LF-NpcRole_fence_What"
+     Target_en_us "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool."
+     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{083AD49A99ED768C}" {
+     Id "LF-NpcRole_fence_Where"
+     Target_en_us "Ask nobody about me. Keep to the back streets."
+     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{B9DD707B081D614A}" {
+     Id "LF-NpcRole_fence_Rumour"
+     Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police."
+     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{37198FB9F87D5EA3}" {
+     Id "LF-NpcRole_fence_Bye"
+     Target_en_us "We never spoke."
+     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{0093D099EE56193C}" {
+     Id "LF-NpcRole_townsfolk_Name"
+     Target_en_us "Resident"
+     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{71D2F38275FD0E1F}" {
+     Id "LF-NpcRole_townsfolk_Greet"
+     Target_en_us "Hello. New in town?"
+     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{9E04F675DD356F60}" {
+     Id "LF-NpcRole_townsfolk_What"
+     Target_en_us "I live here. I get by, as everyone does. The work is simple and the people are decent."
+     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{276C699503CB062D}" {
+     Id "LF-NpcRole_townsfolk_Where"
+     Target_en_us "The town board on the square shows everything. The post office hires couriers, and the bank is beside it."
+     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{3A755020504E7116}" {
+     Id "LF-NpcRole_townsfolk_Rumour"
+     Target_en_us "People say the police are watching the main street. Burglars are about. Keep your doors locked."
+     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
+    }
+    CustomStringTableItem "{8A817B1EEF80D979}" {
+     Id "LF-NpcRole_townsfolk_Bye"
+     Target_en_us "Take care."
+     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
+    }
   }
  }
 }

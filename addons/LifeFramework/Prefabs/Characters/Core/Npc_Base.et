@@ -115,6 +115,8 @@ LF_NpcBaseEntity {
   }
   LF_NpcLoadoutStorageComponent "{85254DBF43DC115D}" {
   }
+  LF_NpcRoleComponent "{7A31C05E94D2B861}" {
+  }
   InventoryStorageManagerComponent "{8FD3FD566831DF7C}" {
   }
   ActionsManagerComponent "{5A4B13A9811FB113}" {
@@ -128,6 +130,14 @@ LF_NpcBaseEntity {
     }
    }
    additionalActions {
+    LF_RolesAction "{51E8A2C9D40B7F36}" {
+     ParentContextList {
+      "Witness"
+     }
+     UIInfo UIInfo "{E7A40B91C6D3285F}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
     LF_WitnessAskAction "{4687DB648CD2AAA5}" {
      ParentContextList {
       "Witness"

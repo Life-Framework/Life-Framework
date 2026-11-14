@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C1796558A389EF20}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_3_Civilian.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

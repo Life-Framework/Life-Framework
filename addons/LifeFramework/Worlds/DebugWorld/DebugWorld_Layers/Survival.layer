@@ -40,7 +40,7 @@ GenericEntity SurvivalStation {
    Flags 0x403 0
     coords 0 0 0.7
   }
-  LF_NpcBaseEntity SurvivalNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity SurvivalNpc : "{ABB85760F64CEAB0}Prefabs/Characters/Npcs/Outfits/LF_Npc_Ranger_1.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

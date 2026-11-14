@@ -171,7 +171,7 @@ GenericEntity AppleTrader {
     coords 9.5 1.027 -0.067
    }
   }
-  LF_NpcBaseEntity AppleNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity AppleNpc : "{979138C2A03EF6CB}Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_3.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

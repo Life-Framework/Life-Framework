@@ -249,6 +249,13 @@ class LF_DialogueFlow
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A spoken entry that is a bare caption key (shown with no voice), not the id of a voiced line.
+	static bool IsRaw(string entry)
+	{
+		return entry.Length() > 1 && entry.Substring(0, 1) == RAW_PREFIX;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Everything wrong with a config, one line each. An empty list means it can be played.
 	static void Problems(LF_DialogueConfig config, notnull array<string> problems)
 	{
@@ -284,7 +291,7 @@ class LF_DialogueFlow
 			if (!node)
 				continue;
 
-			if (!node.m_sLine.IsEmpty() && !FindLine(config, node.m_sLine))
+			if (!node.m_sLine.IsEmpty() && !IsRaw(node.m_sLine) && !FindLine(config, node.m_sLine))
 				problems.Insert(string.Format("node %1 says unknown line '%2'", node.m_sId, node.m_sLine));
 
 			int count = 0;
