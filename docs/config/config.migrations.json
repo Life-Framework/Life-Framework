@@ -1,0 +1,4 @@
+{
+  "_comment": "Human-facing record of the shipped config migrations (#303), read by tools\\cli config-check (#304). One entry per step registered in LF_ConfigMigrator.BuildShipped, in version order; config-check-selftest keeps the two in step. Schema 1 has none.",
+  "migrations": []
+}
