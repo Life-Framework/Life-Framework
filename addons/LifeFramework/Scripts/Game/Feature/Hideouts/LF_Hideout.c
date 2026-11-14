@@ -42,7 +42,10 @@ class LF_Hideout
 	//! LF_Places kind of a hideout's door (LF_HideoutDoorComponent); the id is the hideout id.
 	static const string PLACE_KIND_DOOR = "HideoutDoor";
 
-	static const string HIDEOUT_ID = "Roadmap_Hideout";
+	//! LF_Places kind and id of the door of the hideout organizations lease at the desk and
+	//! contraband starts from (the door's "organization hideout" attribute, #1055).
+	static const string PLACE_KIND_ORG_HIDEOUT = "OrgHideout";
+	static const string PLACE_ID_ORG_HIDEOUT = "primary";
 
 	protected static ref map<string, ref LF_HideoutState> s_mHideouts;
 	protected static string s_sLastRefusal;
@@ -117,6 +120,22 @@ class LF_Hideout
 			return "";
 
 		return character.GetId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Id of the placed organization hideout, the key its state is saved under; "" when the map
+	//! places none (a lease then refuses and contraband reports no owner).
+	static string OrgHideoutId()
+	{
+		IEntity door = LF_Places.Find(PLACE_KIND_ORG_HIDEOUT, PLACE_ID_ORG_HIDEOUT);
+		if (!door)
+			return "";
+
+		LF_HideoutDoorComponent component = LF_Component<LF_HideoutDoorComponent>.Find(door);
+		if (!component)
+			return "";
+
+		return component.GetHideoutIdAttribute();
 	}
 
 	//------------------------------------------------------------------------------------------------
