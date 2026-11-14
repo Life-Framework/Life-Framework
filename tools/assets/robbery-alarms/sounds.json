@@ -99,6 +99,46 @@
         4
       ],
       "reason": "One held horn tone again. Take 1 has the lowest seam (0.8%) and even harmonic lines, so take 4 chops it into 330 ms on, 330 ms off: seven separate honks, an armoured van's horn alarm, a slower honk cadence than the fuel station pulses and a harder note than the store buzz; seam 0.0%."
+    },
+    {
+      "id": "armory",
+      "event": "SOUND_LF_ALARM_ARMORY_LP",
+      "project": "Armory",
+      "bus": "sfx",
+      "range": "far170",
+      "volume_db": -8,
+      "loop": true,
+      "prompt": "A 1980s military armoury klaxon: a deep, harsh, rasping mechanical horn blaring one long low blast, then a short silence, repeating evenly at constant level, like a naval or base alert horn. Recorded outdoors from a few metres, dry, no voice, no music, no bell, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "variations": 2,
+      "derive": {
+        "from_take": 1,
+        "as_take": 3,
+        "on_ms": 900,
+        "off_ms": 450
+      },
+      "pick": [
+        3
+      ],
+      "reason": "Review pictures (nobody can listen): take 3 is take 1 chopped 900 ms on, 450 ms off; dense low harmonic stack, two even blasts with a dip, a low klaxon horn, clearly lower and longer than the van's 330 ms honks; seam 0.0%."
+    },
+    {
+      "id": "hospital",
+      "event": "SOUND_LF_ALARM_HOSPITAL_LP",
+      "project": "Hospital",
+      "bus": "sfx",
+      "range": "voice70",
+      "volume_db": -10,
+      "loop": true,
+      "prompt": "A 1980s hospital emergency alarm: a two-tone electronic chime alarm from a wall speaker, alternating a high note and a lower note about once a second at constant level, clinical and urgent, not a bell. Recorded indoors, dry, no voice, no music, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "variations": 2,
+      "pick": [
+        2
+      ],
+      "reason": "Review pictures: take 2 has an even level left to right and a repeating two-pitch falling-and-rising tonal pattern about once a second (a chime alert, not a bell or a siren sweep); seam 3.7% against 12.1% for take 1."
     }
   ],
   "generations": [
@@ -281,6 +321,66 @@
       "channels": 2,
       "bytes": 960000,
       "credits_estimate": 200
+    },
+    {
+      "id": "armory",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s military armoury klaxon: a deep, harsh, rasping mechanical horn blaring one long low blast, then a short silence, repeating evenly at constant level, like a naval or base alert horn. Recorded outdoors from a few metres, dry, no voice, no music, no bell, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "armory",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s military armoury klaxon: a deep, harsh, rasping mechanical horn blaring one long low blast, then a short silence, repeating evenly at constant level, like a naval or base alert horn. Recorded outdoors from a few metres, dry, no voice, no music, no bell, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "hospital",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s hospital emergency alarm: a two-tone electronic chime alarm from a wall speaker, alternating a high note and a lower note about once a second at constant level, clinical and urgent, not a bell. Recorded indoors, dry, no voice, no music, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "hospital",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s hospital emergency alarm: a two-tone electronic chime alarm from a wall speaker, alternating a high note and a lower note about once a second at constant level, clinical and urgent, not a bell. Recorded indoors, dry, no voice, no music, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
     }
   ],
   "runs": [
@@ -292,6 +392,15 @@
       "credits_before": 7225,
       "credits_after": 7725,
       "credits": 500
+    },
+    {
+      "date": "2026-11-14",
+      "generations": 4,
+      "seconds": 20,
+      "plan": "starter",
+      "credits_before": 7886,
+      "credits_after": 7886,
+      "credits": 0
     }
   ],
   "wired": {
@@ -329,6 +438,24 @@
       ],
       "samples": [
         "{17E677589DD8C62C}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_VAN_LP_01.wav"
+      ]
+    },
+    "Armory": {
+      "project": "{6B8330B213274B9C}Sounds/Alarm/Robbery/Alarm_Robbery_Armory.acp",
+      "events": [
+        "SOUND_LF_ALARM_ARMORY_LP"
+      ],
+      "samples": [
+        "{125AAB82B4B57685}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_ARMORY_LP_01.wav"
+      ]
+    },
+    "Hospital": {
+      "project": "{6D1F2CD75E33E49E}Sounds/Alarm/Robbery/Alarm_Robbery_Hospital.acp",
+      "events": [
+        "SOUND_LF_ALARM_HOSPITAL_LP"
+      ],
+      "samples": [
+        "{6C7B7325C24242B2}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_HOSPITAL_LP_01.wav"
       ]
     }
   },
