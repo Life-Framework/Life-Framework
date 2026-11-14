@@ -8,7 +8,7 @@
 //   Feature/<Area>/LF_<Name>Action.c    world, item: the F-key action
 //   Feature/<Area>/LF_<Name>Sheet.c     ui: a paper sheet built from UI kit parts
 //   Feature/<Area>/Feature.md           created, or a section appended
-//   Tests/LF_Test_<Name>.c              LOGIC, green, red-proof PENDING (validate-tests refuses it)
+//   Tests/LF_Test_<Name>.c              LOGIC, green, RedProof() hook in place, red-proof PENDING (validate-tests refuses it)
 //   Tests/LF_Test_<Name>World.c         world, ui, item: WORLD, fails until written
 //   agent-box/proofs/<name>-proof.mjs   world, ui, item: the session proof and its shots
 //   Language/everonlife_localization.st rows appended (then regen-localization)
@@ -237,7 +237,7 @@ ${RULE}
 }
 
 function logicTest(id) {
-  return `// red-proof: PENDING ${MARK}: break one assertion below, run \`tools\\cli test --no-build --only LF_Test_${id.name}\`, paste the observed [LFTEST] FAIL line here, restore it.
+  return `// red-proof: PENDING ${MARK}: run \`tools\\cli test --no-build --red LF_Test_${id.name}\` (batch every new test of the change into one --red run), paste the observed [LFTEST] RED-OK line here. The RedProof() hook below skips the act; no hand edit, no restore.
 // tier: LOGIC
 //! ${id.title}${id.ref}: the rule, with no world.
 class LF_Test_${id.name} : LF_Test
@@ -253,7 +253,13 @@ class LF_Test_${id.name} : LF_Test
 
 		ctx.False(${id.cls}.Use(false), "no character is refused");
 		ctx.True(${id.cls}.GetUses() == 0, "a refused use changes nothing");
-		ctx.True(${id.cls}.Use(true), "a character is allowed");
+		// Red-proof hook: with --red the act is skipped, so the next two assertions must fail.
+		// Keep the hook on the act that the assertions below depend on.
+		bool allowed = false;
+		if (!RedProof())
+			allowed = ${id.cls}.Use(true);
+
+		ctx.True(allowed, "a character is allowed");
 		ctx.True(${id.cls}.GetUses() == 1, "an allowed use is counted once");
 
 		${id.cls}.ResetStatics();
@@ -264,7 +270,7 @@ class LF_Test_${id.name} : LF_Test
 }
 
 function worldTest(id) {
-  return `// red-proof: PENDING ${MARK}: this test fails as generated. Record the observed [LFTEST] FAIL line of the real assertion here once it is written.
+  return `// red-proof: PENDING ${MARK}: this test fails as generated. Once the real assertion is written, add the RedProof() hook (skip the act: if (!RedProof()) ...), list this test in the change's one --red run and record the observed [LFTEST] RED-OK line here.
 // tier: WORLD
 //! ${id.title}${id.ref}: the placed thing exists and offers what a player expects.
 class LF_Test_${id.name}World : LF_Test
@@ -429,7 +435,7 @@ function checklist(id, slug) {
     add("Place", "Pick the prop from `docs/style-guide.md` (period, material, where it belongs: boards on walls, desks indoors or under a roof).", "`tools\\cli place on|against|ground ...`; never typed coordinates.", "`tools\\cli audit placement --area <area> --strict` is clean.");
   }
   add("Build", `Fill \`${id.cls}.c\`${id.kind === "ui" ? ` and \`${id.cls}Sheet.c\` (UI kit parts only)` : ""}; every refusal logs through \`LF_Debug\`.`, "Strings are keys in the string table (rows already appended; `tools\\cli regen-localization` after editing).", "`tools\\cli validate` after each step.");
-  add("Test (red first, observed)", `\`tools\\cli test --no-build --only LF_Test_${id.name}\`: break one assertion, copy the FAIL line into \`// red-proof:\`, restore.`, id.visible ? `Write \`LF_Test_${id.name}World\`; same red-proof loop.` : "Add a WORLD test only if a prefab or the world is involved.", "`tools\\cli test --no-build --tier all` once, at the end.");
+  add("Test (red first, observed)", `\`tools\\cli test --no-build --only LF_Test_${id.name}\` until green, then ONE \`tools\\cli test --no-build --red LF_Test_${id.name}[,...]\` for every new test of the change: the \`RedProof()\` hook (in the scaffold) must make each one FAIL. Copy the RED-OK line into \`// red-proof:\`. A bug fix needs no extra run: its fail-then-pass on the unfixed and fixed code is the proof.`, id.visible ? `Write \`LF_Test_${id.name}World\`; give it the same \`RedProof()\` hook and list it in the same \`--red\` run.` : "Add a WORLD test only if a prefab or the world is involved.", "`tools\\cli test --no-build --tier all` once, at the end.");
   if (id.visible) {
     add("Look after", "`tools\\cli look <area>` again; open the close-up of the new thing. Walk the polish checklist (`.claude/skills/polish/SKILL.md`).", `\`tools\\cli evidence ${id.issue ?? id.kebab} after <area>\`.`, id.kind === "ui" || id.kind === "item" ? "One `--profile full` session for what Workbench cannot show (the sheet, the held item, the inventory icon and preview): run the proof, keep its shots, `session down`." : "A session only if a second player, motion or UI is part of the claim.");
   }

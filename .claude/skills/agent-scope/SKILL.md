@@ -16,8 +16,10 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
 3. **Scaffold, then red first.** A feature starts with
    `tools\cli feature new <Area> <Name> --kind logic|world|ui|item --issue <n>` and follows
    `tmp/feature-<name>.md` (the **life-mode** feature playbook); anything a player sees follows
-   **polish**. Write the `LF_Test` (see **el-tdd**), break it once, and record
-   the observed failure line in `// red-proof:`. Loop with
+   **polish**. Write the `LF_Test` (see **el-tdd**) and record the observed red in
+   `// red-proof:`: for a bug fix, the run that fails on the unfixed code and passes on the
+   fixed code; for new tests, one batched `tools\cli test --no-build --red <LF_Test_A,LF_Test_B>`
+   (the `RedProof()` hook; every listed test must fail). Loop with
    `tools\cli test --no-build --only <LF_Test_Class>` (~10 s); run
    `tools\cli validate` as often as you like (it skips the Workbench compile; a
    compile error fails `test`). Run `--tier all` once, at the end.

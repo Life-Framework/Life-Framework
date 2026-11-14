@@ -202,6 +202,7 @@ anywhere.
 ```sh
 tools\cli test --no-build --tier all                      # first free slot anywhere (--any, the default)
 tools\cli test --no-build --only LF_Test_Money --local     # this PC only
+tools\cli test --no-build --red LF_Test_A,LF_Test_B        # batched red proof: one boot, every listed test must FAIL
 tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
 tools\cli test --no-build --tier all --core-only           # the core alone, pack hidden (#326); any machine
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
