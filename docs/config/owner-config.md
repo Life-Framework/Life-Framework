@@ -126,3 +126,24 @@ refused verb and a second pack on one id print under the entry. A field no layer
 default. Offline; exit 1 when the key names nothing. Lists today: `catalogue.items`,
 `catalogue.offers`, `crime.crimes`, `shops.priceRules`. The website config check (#281) does not
 have this view yet.
+
+## Settings a pack adds
+
+A content pack can add its own sections to your `config.json` for settings the core sections do not
+cover (#553). The pack declares them; you set them like any other section. They are named from the
+pack: `LF_Everon1989` adds `everon1989` (or `everon1989Chains` and so on).
+
+```json
+{ "everon1989": { "festivalDay": 5, "chainsEnabled": false } }
+```
+
+Everything above applies the same way: a value of the wrong type or outside its range is refused and
+the pack's default stays, an unknown key in the section is warned and ignored, and `config-check`
+names the field. `docs/config/config.schema.json`, `config-check`, the website generator and the
+reference page list a pack section after the core ones, marked "Pack <addon>: ...". Without that pack
+installed, the key is an unknown top-level key and is ignored. A pack section can never replace a core
+section; a pack that tries is ignored for that section with an `[LFDebug:Packs]` error.
+
+`tools\cli pack explain everon1989 --config config.json` lists each field with the pack default and
+your value; `pack explain everon1989.festivalDay` shows one. A value the server would refuse prints
+as `refused: owner config.json sets 9; 9 is above the maximum 7; the pack default stays`.

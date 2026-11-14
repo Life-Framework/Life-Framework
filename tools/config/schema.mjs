@@ -10,11 +10,14 @@
 // JSON keys are the member name without its Hungarian prefix, lower camel case
 // (`m_iDefaultBuyPrice` is `defaultBuyPrice`; Core/Config/Feature.md).
 // A list of config objects is a record object keyed by the record's stable key.
+// Packs add sections (#553): each pack's manifest .conf lists namespaced sections (tools/config/pack-sections.mjs),
+// merged after the core ones with an `x-pack` mark. A name that clashes with a core section is ignored.
 // tools/config/schema-overrides.json holds what no attribute can say: which
 // record fields form the key, and the example records.
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadPackSections, sectionSchema } from "./pack-sections.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const REPO = join(here, "..", "..");
@@ -203,8 +206,19 @@ export function schemaVersion(serviceText) {
   return Number(m[1]);
 }
 
-/** { schema, example } from the script files, the service text and the overrides object. */
-export function generate(files, serviceText, overrides) {
+/** The top-level keys the core owns: schemaVersion and each config class's section. */
+export function coreKeysOf(files) {
+  const keys = new Set(["schemaVersion"]);
+  for (const c of parseClasses(files).values()) if (c.configRoot && c.section) keys.add(c.section);
+  return keys;
+}
+
+/**
+ * { schema, example } from the script files, the service text and the overrides object. `packs` is
+ * loadPackSections' result: each valid pack section is added to the schema (not to the example,
+ * which is what the service writes). A refused one is left out, as the server ignores it.
+ */
+export function generate(files, serviceText, overrides, packs = []) {
   const classes = parseClasses(files);
   const sections = [...classes.values()].filter((c) => c.configRoot && c.section)
     .sort((a, b) => a.section.localeCompare(b.section));
@@ -232,6 +246,9 @@ export function generate(files, serviceText, overrides) {
       properties: sp, additionalProperties: false, "x-class": c.name,
     };
     example[c.section] = ex;
+  }
+  for (const pk of packs) {
+    for (const s of pk.sections) if (!s.problem) props[s.name] = sectionSchema(pk.pack, s);
   }
   const schema = {
     $schema: "https://json-schema.org/draft/2020-12/schema",
@@ -284,7 +301,8 @@ export function runtimeExample(serviceText) {
 
 export function build() {
   const overrides = JSON.parse(readFileSync(OVERRIDES, "utf8"));
-  return generate(readScripts(), readFileSync(SERVICE, "utf8"), overrides);
+  const files = readScripts();
+  return generate(files, readFileSync(SERVICE, "utf8"), overrides, loadPackSections(join(REPO, "addons"), coreKeysOf(files)));
 }
 
 if (process.argv[1] && /[\\/]schema\.mjs$/.test(process.argv[1])) {
