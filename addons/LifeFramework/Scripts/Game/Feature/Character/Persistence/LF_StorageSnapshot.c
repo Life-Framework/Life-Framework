@@ -103,7 +103,8 @@ class LF_StorageSnapshotRecord : Managed
 //! a record nothing matches is spawned and inserted. Applying twice leaves the same tree
 //! (idempotent), and a prefab's default contents (a jacket's default pocket item, a weapon's
 //! default magazine) never come back on top of what the player actually had. A record whose
-//! prefab does not load logs LF_Debug.Error and is skipped with its children.
+//! prefab does not load is skipped with its children and logged once (LF_SaveIds.NoteMissing);
+//! the snapshot holds it through later captures (Set, CarryHeld) until the content returns.
 //!
 //! DEATH. "Death drops what you carry": the body keeps the items, the account does not. The
 //! carried snapshot is dropped at death and a dead character is never captured, so the restart
@@ -159,7 +160,152 @@ class LF_StorageSnapshot
 			return;
 		}
 
-		Snapshots().Set(MakeKey(record.m_sOwnerKey, record.m_sSlot), record);
+		string key = MakeKey(record.m_sOwnerKey, record.m_sSlot);
+		LF_StorageSnapshotRecord previous = Snapshots().Get(key);
+		if (previous && previous != record)
+		{
+			int held = CarryHeld(previous, record);
+			if (held > 0)
+				LF_SaveIds.NoteHeld(key, string.Format("%1/%2 holds %3 item(s) whose content is missing (#965)", record.m_sOwnerKey, record.m_sSlot, held));
+		}
+
+		Snapshots().Set(key, record);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Missing content is held, never dropped (#965). An item whose prefab does not load never
+	//! spawned, so a fresh capture cannot see it; this copies it (and what was inside it) from the
+	//! snapshot being replaced into the new one. It goes back into the container it was in when the
+	//! new capture still has that container (matched by the chain of prefabs above it), otherwise
+	//! onto the root. Ammo and serial ride along.
+	//! \return Number of items carried over.
+	static int CarryHeld(notnull LF_StorageSnapshotRecord previous, notnull LF_StorageSnapshotRecord next)
+	{
+		if (!previous.m_aItems || previous.m_aItems.IsEmpty())
+			return 0;
+
+		if (!next.m_aItems)
+			next.m_aItems = {};
+
+		int count = previous.m_aItems.Count();
+		array<bool> held = {};
+		held.Resize(count);
+		bool any;
+		for (int index = 0; index < count; index++)
+		{
+			LF_StorageItemRecord item = previous.m_aItems[index];
+			if (!item)
+				continue;
+
+			bool parentHeld = item.m_iParent >= 0 && item.m_iParent < index && held[item.m_iParent];
+			held[index] = parentHeld || !LF_SaveIds.PrefabLoads(item.m_sPrefab);
+			if (held[index])
+				any = true;
+		}
+
+		if (!any)
+			return 0;
+
+		// Only a fresh capture lacks them: one built from records (a load, a stored slot) names its
+		// held items already, and carrying would copy them twice.
+		foreach (LF_StorageItemRecord nextItem : next.m_aItems)
+		{
+			if (nextItem && !nextItem.m_sPrefab.IsEmpty() && !LF_SaveIds.PrefabLoads(nextItem.m_sPrefab))
+				return 0;
+		}
+
+		// Prefab chains of both trees, to find a held item's container in the new capture.
+		array<string> previousChains = {};
+		BuildChains(previous.m_aItems, previousChains);
+		array<string> nextChains = {};
+		BuildChains(next.m_aItems, nextChains);
+		array<bool> taken = {};
+		taken.Resize(nextChains.Count());
+		// Previous container index -> its match in the new capture, so held siblings stay together.
+		map<int, int> containers = new map<int, int>();
+
+		array<int> moved = {};
+		moved.Resize(count);
+		int carried;
+		for (int heldIndex = 0; heldIndex < count; heldIndex++)
+		{
+			moved[heldIndex] = -1;
+			if (!held[heldIndex])
+				continue;
+
+			LF_StorageItemRecord source = previous.m_aItems[heldIndex];
+			LF_StorageItemRecord copy = LF_StorageItemRecord.Create(source.m_sPrefab, source.m_iQuantity, -1, source.m_iStorage, source.m_iSlot);
+			copy.m_iAmmo = source.m_iAmmo;
+			copy.m_sSerial = source.m_sSerial;
+			int parent = source.m_iParent;
+			if (parent >= 0 && parent < heldIndex && held[parent])
+			{
+				copy.m_iParent = moved[parent];
+			}
+			else if (parent >= 0 && parent < count)
+			{
+				int container;
+				if (!containers.Find(parent, container))
+				{
+					container = FindChain(nextChains, taken, previousChains[parent]);
+					containers.Set(parent, container);
+				}
+
+				copy.m_iParent = container;
+			}
+
+			moved[heldIndex] = next.m_aItems.Count();
+			next.m_aItems.Insert(copy);
+			carried++;
+		}
+
+		return carried;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each item's chain of prefab GUIDs from the root ("/A/B"), parallel to the list.
+	protected static void BuildChains(array<ref LF_StorageItemRecord> items, notnull array<string> chains)
+	{
+		chains.Clear();
+		if (!items)
+			return;
+
+		for (int index = 0; index < items.Count(); index++)
+		{
+			LF_StorageItemRecord item = items[index];
+			string parentChain;
+			if (item && item.m_iParent >= 0 && item.m_iParent < index)
+				parentChain = chains[item.m_iParent];
+
+			string prefab;
+			if (item)
+				prefab = LF_Utils.PrefabGuid(item.m_sPrefab);
+
+			chains.Insert(parentChain + "/" + prefab);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The first item of the chain, preferring one no held item went into yet; -1 for none.
+	protected static int FindChain(array<string> chains, array<bool> taken, string chain)
+	{
+		int fallback = -1;
+		for (int index = 0; index < chains.Count(); index++)
+		{
+			if (chains[index] != chain)
+				continue;
+
+			if (!taken[index])
+			{
+				taken[index] = true;
+				return index;
+			}
+
+			if (fallback == -1)
+				fallback = index;
+		}
+
+		return fallback;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -727,7 +873,9 @@ class LF_StorageSnapshot
 		Resource resource = Resource.Load(item.m_sPrefab);
 		if (item.m_sPrefab.IsEmpty() || !resource || !resource.IsValid())
 		{
-			LF_Debug.Error(FEATURE, string.Format("restore skipped missing prefab '%1' (and anything inside it)", item.m_sPrefab));
+			// Held, not dropped (#965): the record stays in the snapshot (Set carries it over) and the
+			// item comes back once its content or an alias for it does. Logged once per id.
+			LF_SaveIds.NoteMissing(LF_SaveIds.KIND_PREFAB, item.m_sPrefab, " (restore skipped it and anything inside it)");
 			return null;
 		}
 
