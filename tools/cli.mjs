@@ -1168,10 +1168,77 @@ function cmdPack(root = ROOT, opts = {}) {
 const RDB_REFRESH_TYPICAL_S = 15;
 function ensureResourceDatabase(root) {
   wt.copyResourceDatabase(root);
+  refreshOnPool(root);
   // The core always; another addon once it declares a resource (tools/lib/addons.mjs rdbAddons).
   let worst = 0;
   for (const name of rdbAddons(root)) worst = Math.max(worst, ensureAddonResourceDatabase(root, name));
   return worst;
+}
+
+// A stale rdb is refreshed by a headless Workbench: ~10 min per addon, one at a time behind the hub
+// build lock on this PC, so agents queued behind it all day (2026-11-14: a session waited 20 min, ship
+// proofs 30-50 min). When this PC's Workbench slot is busy, the refresh runs on a pool machine with a
+// free Workbench slot instead (tools/lib/wb-gate.mjs chooseRefresh): the run folder gets this worktree's
+// snapshot, `rdb --local` refreshes there, and pullRemoteRdb copies the rdb home. Any failure leaves the
+// rdb stale and the local refresh below takes over. LF_RDB_REFRESH_WHERE=local|pool|auto (default auto);
+// `pool` always tries a pool machine first. Sync callers cannot await syncAndRun, so `rdb --pool-run`
+// does it in a child process.
+function buildLockHeld(root) {
+  try {
+    wt.acquireLock(root, "build", { waitMs: 0 });
+  } catch {
+    return true;
+  }
+  wt.releaseLock(root, "build");
+  return false;
+}
+
+function refreshOnPool(root, force = false) {
+  const mode = force ? "pool" : (process.env.LF_RDB_REFRESH_WHERE || "auto").toLowerCase();
+  if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0" || process.env.LF_RDB_POOL === "0" || mode === "local") return;
+  const stale = rdbAddons(root).filter((name) => rdbFreshness(addonDir(root, name)).missing.length > 0);
+  if (!stale.length) return;
+  const limit = wbLock.wbLimit(root);
+  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, buildLocked: buildLockHeld(root), freeMb: Math.round(os.freemem() / 1048576) };
+  let remotes = [];
+  if (mode === "pool" || local.buildLocked || local.freeMb < wbGate.GATE_NEED_MB || local.busy + local.queued >= limit) {
+    remotes = pool.loadMachines(root)
+      .filter((m) => m.via === "ssh" && (m.caps ?? []).includes("workbench"))
+      .map((m) => ({ name: m.name, caps: m.caps, m, state: wbGate.remoteWbState(m) }));
+  }
+  const c = wbGate.chooseRefresh({ local, remotes, mode: mode === "pool" ? "pool" : "auto" });
+  console.log(`rdb: ${stale.length} addon(s) stale (${stale.join(", ")}); refresh on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
+  if (c.where === "local") return;
+  const t0 = Date.now();
+  const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "rdb", "--pool-run", c.where], { cwd: root, stdio: "inherit", windowsHide: true, timeout: 2100000, env: { ...process.env, LF_RDB_POOL: "0" } });
+  const left = stale.filter((name) => rdbFreshness(addonDir(root, name)).missing.length > 0);
+  const secs = Math.round((Date.now() - t0) / 1000);
+  if (!left.length) console.log(`rdb: refreshed on ${c.where} in ${secs} s (${stale.length} addon(s), no wait for this PC's Workbench)`);
+  else console.log(`rdb: ${c.where} left ${left.join(", ")} stale after ${secs} s (exit ${r.status ?? r.error?.code ?? "?"}); refreshing here`);
+}
+
+// `rdb --pool-run <machine>`: the async half of refreshOnPool, run in a child process.
+async function cmdRdbPoolRun(root, machine) {
+  const m = pool.loadMachines(root).find((x) => x.name === machine && x.via === "ssh");
+  if (!m) {
+    console.log(`FAIL  rdb: no ssh pool machine '${machine}'`);
+    return 1;
+  }
+  const t0 = Date.now();
+  const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["rdb", "--local"], suffix: "-rdb", purpose: "rdb refresh" });
+  console.log(`rdb: ${m.name} finished the refresh run (exit ${r.code}) in ${Math.round((Date.now() - t0) / 1000)} s`);
+  if (r.rDir) pullRemoteRdb(root, m, r.rDir, "rdb");
+  return r.code === 0 ? 0 : 1;
+}
+
+function cmdRdb(root, flags) {
+  const i = flags.indexOf("--pool-run");
+  if (i >= 0) return cmdRdbPoolRun(root, flags[i + 1]);
+  if (flags.includes("--local")) process.env.LF_RDB_POOL = "0";
+  // `--wait` is the default (the local refresh queues for the slot and the build lock); `--budget <s>` bounds that queue.
+  const b = flags.indexOf("--budget");
+  if (b >= 0 && Number(flags[b + 1]) > 0) process.env.LF_RDB_WAIT_S = String(Number(flags[b + 1]));
+  return ensureResourceDatabase(root);
 }
 
 function ensureAddonResourceDatabase(root, name) {
@@ -1192,8 +1259,14 @@ function ensureAddonResourceDatabase(root, name) {
   }
   console.log(`resource database stale${tag}: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
   let locked = false;
+  let wbSlot = null;
+  const queuedAt = Date.now();
   try {
-    wt.acquireLock(root, "build", { waitMs: 900000 });
+    // One of this machine's Workbench slots, so a pool machine running this refresh shows busy to the
+    // next chooseRefresh/chooseGate (tools/lib/wb-lock.mjs); the order matches cmdBuild (slot, then lock).
+    const waitMs = Number(process.env.LF_RDB_WAIT_S || 900) * 1000;
+    wbSlot = wbLock.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs });
+    wt.acquireLock(root, "build", { waitMs });
     locked = true;
     const started = Date.now();
     const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
@@ -1212,16 +1285,22 @@ function ensureAddonResourceDatabase(root, name) {
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
-      console.log(`resource database${tag} refreshed in ${secs}s (${after.total} resources registered)`);
+      console.log(`resource database${tag} refreshed on ${os.hostname()} in ${secs}s, ${started - queuedAt > 1000 ? `${Math.round((started - queuedAt) / 1000)}s queued first, ` : ""}(${after.total} resources registered)`);
       return 0;
     }
     console.log(`WARN  resource database still stale${tag} after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${after.missing.length} unregistered: ${describeMissing(after.missing)}`);
     return 1;
   } catch (e) {
     console.log(`WARN  resource database refresh failed: ${e.message}`);
+    // The wait for this PC's Workbench slot or build lock ran out: last resort is a pool machine.
+    if (/is held|no free Workbench slot/.test(e.message) && process.env.LF_RDB_POOL !== "0" && process.env.LF_RDB_REFRESH_WHERE !== "local" && !wt.isMainCheckout(root)) {
+      refreshOnPool(root, true);
+      if (rdbFreshness(addon).missing.length === 0) return 0;
+    }
     return 1;
   } finally {
     if (locked) wt.releaseLock(root, "build");
+    wbSlot?.release();
   }
 }
 
@@ -3245,7 +3324,7 @@ function workbenchGate(root, opts = {}) {
 // stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
 // headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
 // registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
-function pullRemoteRdb(root, m, rDir) {
+function pullRemoteRdb(root, m, rDir, tag = "ci") {
   for (const name of rdbAddons(root)) {
     const addon = addonDir(root, name);
     const local = join(addon, "resourceDatabase.rdb");
@@ -3254,17 +3333,17 @@ function pullRemoteRdb(root, m, rDir) {
     const got = `${local}.remote`;
     const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
     if (down.status !== 0 || !existsSync(got)) {
-      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      console.log(`${tag}: could not fetch ${name}'s resource database from ${m.name}; it is refreshed here`);
       continue;
     }
     const keep = `${local}.local`;
     if (existsSync(local)) copyFileSync(local, keep);
     copyFileSync(got, local);
     const after = rdbFreshness(addon);
-    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    if (after.missing.length < before.missing.length) console.log(`${tag}: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
     else if (existsSync(keep)) {
       copyFileSync(keep, local);
-      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+      console.log(`${tag}: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
     }
     rmSync(got, { force: true });
     rmSync(keep, { force: true });
@@ -4627,7 +4706,7 @@ const cmds = {
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
-  rdb: () => ensureResourceDatabase(ROOT),
+  rdb: () => cmdRdb(ROOT, rest),
   "ui-image": () => cmdUiImage(rest),
   help: () => cmdHelp(),
 };

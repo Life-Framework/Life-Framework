@@ -212,6 +212,19 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
 
+**Stale rdb refresh on the pool.** Any command that boots from a worktree (`test`, `session up`, `e2e`,
+`rdb`) first checks that `resourceDatabase.rdb` registers every `.meta`. A fresh worktree's copy of main's
+rdb usually does not, and registering takes a headless Workbench (~10 min per addon, one at a time behind
+the hub `build` lock). `refreshOnPool` (`tools/cli.mjs`, decision `chooseRefresh` in `tools/lib/wb-gate.mjs`)
+asks first: if this PC's Workbench slot is busy, queued for, the `build` lock is held, or free RAM is under what a Workbench needs (3500 MB), and a pool machine
+with the `workbench` cap has a free slot and the RAM, the refresh runs there. The run folder gets the
+snapshot, `rdb --local` refreshes in it (taking one of that machine's Workbench slots, so the next caller sees it
+busy), and `pullRemoteRdb` (the #1227 copy-back) copies the rdb home. No machine with room, or any failure,
+and the local refresh runs as before. It logs `rdb: ... refresh on <where>: <why>` and, when done,
+`rdb: refreshed on <machine> in N s` or `resource database refreshed on <host> in N s`. `LF_RDB_REFRESH_WHERE=local`
+never goes remote, `=pool` tries a pool machine first even when this PC is free; `LF_RDB_REFRESH=0` still
+turns the refresh off. `tools/validation/rdb-refresh-where-selftest.mjs` proves the decision.
+
 **Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
 or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
 A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes

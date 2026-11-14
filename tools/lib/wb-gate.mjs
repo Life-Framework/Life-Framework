@@ -28,6 +28,21 @@ export function chooseGate({ local, remotes = [], mode = "any", machine = null, 
   return { where: "local", why: `this PC is busy and no pool machine has room; queuing here` };
 }
 
+// Where a stale resourceDatabase.rdb is refreshed (a headless Workbench, ~10 min per addon behind
+// the build lock on this PC, one worktree at a time). Same rule as chooseGate, plus one local
+// signal: the hub `build` lock held by a live process (a refresh, a build, an asset import) counts as
+// a busy PC, because the local refresh would queue behind it. `mode`: "auto" (default; remote only
+// when this PC is busy), "local", or "pool" (a pool machine whenever one answers; falls back to local).
+// Pure; tools/validation/rdb-refresh-where-selftest.mjs proves it.
+export function chooseRefresh({ local, remotes = [], mode = "auto", machine = null, needMb = GATE_NEED_MB }) {
+  if (mode === "local") return { where: "local", why: "LF_RDB_REFRESH_WHERE=local" };
+  // This PC counts as busy when its build lock is held or it is short of RAM for a Workbench
+  // (local.freeMb, when given): a headless Workbench dies or times out there.
+  const ramShort = local.freeMb != null && local.freeMb < needMb;
+  const busyLocal = local.buildLocked || ramShort ? { ...local, busy: local.limit, queued: 0 } : local;
+  return chooseGate({ local: busyLocal, remotes, mode: mode === "pool" ? "remote" : "any", machine, needMb });
+}
+
 // One ssh round trip: the box's live Workbench locks and free RAM. null when it does not answer.
 export function remoteWbState(m) {
   const ps = [
