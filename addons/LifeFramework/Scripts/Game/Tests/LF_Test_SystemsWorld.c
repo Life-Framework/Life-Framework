@@ -31,6 +31,7 @@ class LF_Test_SystemsWorld : LF_Test
 {
 	static const ResourceName PAGER = "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et";
 	static const ResourceName WEAPON = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
+	static const ResourceName TILL = "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et";
 
 	override string GetName()
 	{
@@ -66,6 +67,42 @@ class LF_Test_SystemsWorld : LF_Test
 		}
 
 		return shown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected LF_RobAction FindRob(IEntity entity)
+	{
+		if (!entity)
+			return null;
+
+		BaseActionsManagerComponent manager = BaseActionsManagerComponent.Cast(entity.FindComponent(BaseActionsManagerComponent));
+		if (!manager)
+			return null;
+
+		array<BaseUserAction> actions = {};
+		manager.GetActionsList(actions);
+		foreach (BaseUserAction action : actions)
+		{
+			LF_RobAction rob = LF_RobAction.Cast(action);
+			if (rob)
+				return rob;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gives the user the police kit's direct items through the real loadout path. eturn Pagers after.
+	protected int GiveDirectPager(IEntity user)
+	{
+		LF_SpawnLogic spawnLogic = LF_SpawnLogic.GetInstance();
+		InventoryStorageManagerComponent storage = InventoryStorageManagerComponent.Cast(user.FindComponent(InventoryStorageManagerComponent));
+		if (!spawnLogic || !storage)
+			return -1;
+
+		array<ResourceName> kit = {PAGER};
+		spawnLogic.SpawnDirectCharacterItems(storage, kit);
+		return LF_InventoryUtils.GetAmount(user, PAGER);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -114,6 +151,18 @@ class LF_Test_SystemsWorld : LF_Test
 
 		ctx.Equal(0, ShownActions(pager, user, LF_ReadPagerAction), "a pager already carried offers no read action");
 		ctx.False(LF_Systems.IsItemAllowed(PAGER), "the police loadout leaves the pager out");
+		int pagersBefore = LF_InventoryUtils.GetAmount(user, PAGER);
+		ctx.Equal(pagersBefore, GiveDirectPager(user), "the loadout spawn gives no pager while Pager is off");
+
+		// A till hold that began before the switch pays nothing when it ends.
+		IEntity tillEntity = LF_Utils.SpawnEntityPrefab(TILL, "74 1 74");
+		LF_RobAction till = FindRob(tillEntity);
+		ctx.True(till != null, "the attended till carries LF_RobAction");
+		if (till)
+		{
+			ctx.Equal(0, till.PayHeld(user), "a held robbery that ends after Robbery went off pays nothing");
+			ctx.EqualStr(LF_RobAction.REFUSED_OFF, LF_RobAction.GetLastRefusal(), "and is refused because Robbery is off");
+		}
 
 		// On again: everything comes back.
 		Owner("{\"Farming\":{\"enabled\":true},\"Robbery\":{\"enabled\":true},\"Pager\":{\"enabled\":true}}");
@@ -121,6 +170,8 @@ class LF_Test_SystemsWorld : LF_Test
 		ctx.True(plot.ServerPlant(user) != LF_EFarmPlot.SYSTEM_OFF, "and planting is no longer refused for the switch");
 		ctx.Equal(1, ShownActions(pager, user, LF_ReadPagerAction), "and the pager reads again");
 		ctx.True(LF_Systems.IsItemAllowed(PAGER), "and the loadout gives it");
+		ctx.Equal(pagersBefore + 1, GiveDirectPager(user), "the loadout spawn gives the pager again");
+		SCR_EntityHelper.DeleteEntityAndChildren(tillEntity);
 
 		// A pack overlay turns the pager off; the owner turns it back on over the pack.
 		LF_ConfigService.Reset();
@@ -134,16 +185,16 @@ class LF_Test_SystemsWorld : LF_Test
 		LF_Systems.Reload();
 		ctx.True(LF_Systems.IsEnabled(LF_Pager.SYSTEM), "the owner's value wins over the pack's");
 
-		// The config stream: the server's answer reaches a client that has no owner file.
+		// The config stream: the server's answer, taken the way a client takes it (OnArrived, as the join
+		// snapshot and the change RPC do), wins over this machine's own owner layer, which is gone.
 		Owner("{\"Robbery\":{\"enabled\":false}}");
 		string payload = LF_ConfigStream.BuildPayload(null, true, null, null, null, null, true);
 		ctx.True(payload.Contains("\"Robbery\":{\"enabled\":false}"), "the stream carries Robbery off");
-		LF_ConfigService.Reset();
-		LF_ConfigStream.Reset();
-		ctx.Equal(LF_EConfigStreamStatus.APPLIED, LF_ConfigStream.Receive(LF_ConfigStream.FORMAT_VERSION, payload.Hash(), payload), "the client accepts the stream");
-		LF_Systems.Reload();
-		ctx.False(LF_Systems.IsEnabled(LF_RobAction.SYSTEM), "the client has Robbery off from the stream");
-		ctx.True(LF_Systems.IsEnabled(LF_Pager.SYSTEM), "and the pager on");
+		Owner(string.Empty);
+		ctx.True(LF_Systems.IsEnabled(LF_RobAction.SYSTEM), "without the owner layer this machine has Robbery on");
+		ctx.Equal(LF_EConfigStreamStatus.APPLIED, LF_ConfigStream.OnArrived(LF_ConfigStream.FORMAT_VERSION, payload.Hash(), payload), "the stream is accepted");
+		ctx.False(LF_Systems.IsEnabled(LF_RobAction.SYSTEM), "the stream's arrival turns Robbery off here");
+		ctx.True(LF_Systems.IsEnabled(LF_Pager.SYSTEM), "and leaves the pager on");
 
 		LF_TestCharacterFixture.Delete(user);
 		SCR_EntityHelper.DeleteEntityAndChildren(pager);

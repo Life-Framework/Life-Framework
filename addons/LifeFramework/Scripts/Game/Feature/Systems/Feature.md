@@ -25,7 +25,10 @@ just before a reload) is refused with a log line and, where the player sees a re
   (`m_aRequires`) and the items only it uses (`m_aItems`). `validate-systems-list` fails a folder
   with no entry, an unknown parent or requirement, script naming an unknown id, and a
   `SWITCHABLE` system no script checks.
-  - `SWITCHABLE`: its entry points check the switch. Today: `Farming`, `Robbery`, `Pager`.
+  - `SWITCHABLE`: its entry points check the switch. Today: `Farming` (plot actions, plant,
+    harvest, the growth clock), `Robbery` (the till, weapon and vehicle robbery actions, the till
+    hold and its dialogue line, a hold's payout), `Pager` (paging, the read action, loadout items).
+    Bank vault and heist robbery are not part of `Robbery` yet (they belong to `Crime`, `NOT_YET`).
   - `NOT_YET`: not gated yet; a config that turns it off is refused with a logged reason and it
     stays on. Follow-ups move them to `SWITCHABLE` one by one.
   - `LOCKED`: framework plumbing (Account, Character, Interaction, UIKit, ...); always on.
@@ -41,7 +44,7 @@ just before a reload) is refused with a log line and, where the player sees a re
   server (<reason>)`), `LF_Systems.IsItemAllowed(prefab)` (the loadout).
 - **Logging:** each system that is off logs one `LF_Debug.Info` line under its own id when the
   switch resolves (boot, `/configreload`, a client's stream), plus one summary under `Systems`.
-- **Run-time switch-off (#1047):** `LF_Systems.SwitchOff(id, reason)` turns a non-LOCKED system off
+- **Run-time switch-off (#1047):** `LF_Systems.SwitchOff(id, reason)` (server only) turns a non-LOCKED system off
   until the world ends (a map with no place for it). It logs `[LFDebug:<id>] <reason>: off` once,
   survives a config reload, and goes out in the config stream.
 - **Saved data:** never touched. Load and save run as before while a system is off, so turning it

@@ -280,6 +280,13 @@ class LF_RobAction : ScriptedUserAction
 	//! \return Cash paid (0 when the inventory could not take it; logged).
 	int PayHeld(IEntity user)
 	{
+		// Robbery turned off while the hold ran (#960): the till stays shut.
+		if (LF_Systems.Refuses(SYSTEM, "held till robbery payout"))
+		{
+			s_sLastRefusal = REFUSED_OFF;
+			return 0;
+		}
+
 		int paid = PayCash(user, ResolvePayout(m_iMoneyAmount, m_iMinPayout, m_iMaxPayout, -1));
 		NotePaid(LF_Utils.GetPlayerUid(user), paid);
 		return paid;

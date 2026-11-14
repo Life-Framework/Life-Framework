@@ -685,7 +685,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! than into a specific loadout slot. Items that fail to insert are deleted by the fail-safe.
 	//! \param storageManager Storage manager of the character to give the items to.
 	//! \param directItems Prefabs to spawn and insert.
-	protected void SpawnDirectCharacterItems(InventoryStorageManagerComponent storageManager, array<ResourceName> directItems)
+	//! Public for the systems test (#960): a loadout leaves out the items of a system that is off.
+	void SpawnDirectCharacterItems(InventoryStorageManagerComponent storageManager, array<ResourceName> directItems)
 	{
 		if (!storageManager || !directItems)
 			return;

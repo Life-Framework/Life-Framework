@@ -654,6 +654,13 @@ class LF_Systems
 	//! \return True when the system is now off.
 	static bool SwitchOff(string id, string reason)
 	{
+		// A client takes the server's answer from the stream; a client-side off would never clear.
+		if (!Replication.IsServer())
+		{
+			LF_Debug.Error(FEATURE, string.Format("%1 asked to switch off on a client (%2); only the server decides", id, reason));
+			return false;
+		}
+
 		EnsureResolved();
 		LF_SystemDef def;
 		if (s_Catalog)

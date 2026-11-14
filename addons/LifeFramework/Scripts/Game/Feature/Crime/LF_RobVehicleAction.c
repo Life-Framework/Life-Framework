@@ -49,6 +49,14 @@ class LF_RobVehicleAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		// A prompt shown just before Robbery was turned off (#960): no cooldown, and the right words.
+		if (!LF_Systems.IsEnabled(LF_RobAction.SYSTEM))
+		{
+			if (Replication.IsServer() && LF_Systems.Refuses(LF_RobAction.SYSTEM, "vehicle robbery"))
+				LF_Utils.NotifyEntity(pUserEntity, "#LF-Systems_Off", "#EL-Robbery_Failed", 3.0);
+			return;
+		}
+
 		// Recorded on both sides so the performing client's CanBePerformed also sees the cooldown.
 		m_fLastRobTime = GetGame().GetWorld().GetWorldTime();
 
