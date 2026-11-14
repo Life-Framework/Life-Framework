@@ -38,6 +38,10 @@ just before a reload) is refused with a log line and, where the player sees a re
     or granted; held licences are still read), `Whitelist` (nothing is restricted and the join gate is
     open; the list file is untouched), `Organizations` (the desk, the ledger requests, invite and rank
     roles; needs Banking). Banking cannot go off while ATM or Organizations are on: switch them too.
+  - Services (#1076): `Comms`, `Chat`, `Medic`, `Police`, `Crime`, `Investigation`, `Vehicles`, `VehicleLock`,
+    `LicensePlate`, `SirenLights`, `Quests`. Each hides its prompts, refuses its server entry points and
+    keeps its saved data; Vehicles also leaves parked vehicles and garage records alone. Police needs
+    Crime and Investigation needs Police.
   - `NOT_YET`: not gated yet; a config that turns it off is refused with a logged reason and it
     stays on. Follow-ups move them to `SWITCHABLE` one by one.
   - `LOCKED`: framework plumbing (Account, Character, Interaction, UIKit, ...); always on.
@@ -70,5 +74,6 @@ just before a reload) is refused with a log line and, where the player sees a re
 - `systems/economy-gates` (WORLD): the vault, ATM, counter, trader, depot and org desk with each economy system off and on; a drill mid-way; XP, licences, the whitelist and the payout.
 - `systems/world-gates` (WORLD): the shipped catalog; the DebugWorld farm plot, robbery seams and a
   pager with the systems off and on; a pack overlay under the owner; the stream to a client.
+- `systems/services` (WORLD): one entry point per service system, off and on, and what it saved stays.
 - `systems/keep-data` (PERSISTENCE): a crop saved and loaded while Farming is off; across a restart
   with `tools\cli wt e2e` (the save boot writes a config.json with Farming off).

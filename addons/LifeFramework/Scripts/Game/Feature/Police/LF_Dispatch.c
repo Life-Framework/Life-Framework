@@ -60,6 +60,9 @@ class LF_Dispatch
 	//! \return The dispatch record, or null when the crime report was refused (no player uid).
 	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false, string alarmKind = "")
 	{
+		if (LF_Systems.Refuses("Police", "dispatch report"))
+			return null;
+
 		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence);
 		if (!report)
 		{

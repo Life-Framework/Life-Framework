@@ -9,6 +9,9 @@ class LF_ConfiscateAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		return LF_PlayerInteraction.Offers(LF_EPlayerAction.SEARCH, LF_PlayerInteraction.IsOnDutyPolice(user)) && LF_PlayerInteraction.CanOffer(user, GetOwner());
 	}
 
@@ -33,6 +36,9 @@ class LF_ConfiscateAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_ConfiscateAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

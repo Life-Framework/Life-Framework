@@ -9,6 +9,12 @@
 //------------------------------------------------------------------------------------------------
 class LF_VehicleLockAction : ScriptedUserAction
 {
+	//! The VehicleLock system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("VehicleLock");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -31,6 +37,9 @@ class LF_VehicleLockAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("VehicleLock", "LF_VehicleLockAction"))
+			return;
+
 		if (!pOwnerEntity || !pUserEntity || !Replication.IsServer())
 			return;
 

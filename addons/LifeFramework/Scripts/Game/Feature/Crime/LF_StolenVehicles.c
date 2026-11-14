@@ -417,6 +417,9 @@ class LF_ReportStolenAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(GetOwner());
 		return vehicleLock && vehicleLock.IsStolen() && vehicleLock.UserHasValidKey(user);
 	}
@@ -424,6 +427,9 @@ class LF_ReportStolenAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_ReportStolenAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -445,12 +451,18 @@ class LF_CheckPlateAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_CheckPlateAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -472,6 +484,9 @@ class LF_RecoverVehicleAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(GetOwner());
 		return vehicleLock && vehicleLock.IsStolen() && LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
@@ -479,6 +494,9 @@ class LF_RecoverVehicleAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_RecoverVehicleAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
