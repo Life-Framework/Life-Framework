@@ -1,18 +1,26 @@
-// LF_UITheme.c — the one 1989 sheet: type, padding, and colors.
+// LF_UITheme.c — the one sheet: type, padding, and colours, read from the theme config.
 //
-// Paper and dull metal, carbon ink, a brass rule. No neon. Part layouts are
-// structure and vanilla widget parents. LF_UIScreen paints every part from
-// these values when it assembles a screen.
+// The 1989 look is paper and dull metal, carbon ink, a brass rule. No neon. The values live in
+// Configs/UI/LF_UITheme.conf (LF_UIThemeConfig, #966) and a pack overlay can change them by theme id,
+// so a modern pack restyles every sheet without touching a layout. This class is the one reader:
+// a feature never reads the config, never sets a colour, a font or a size (validate-ui-kit).
+// BuiltIn() holds the same 1989 values in code, so a theme file that does not load leaves every
+// sheet looking as it always did; LF_Test_UIThemePack proves the core file equals it.
+//
+// Part layouts are structure and vanilla widget parents. LF_UIScreen paints every part from these
+// values when it assembles a screen.
 //
 // The edit-box well is the exception the vanilla component reads at creation:
 // LF_UIEditBox.layout m_BackgroundDefault is FIELD_WELL (214, 200, 170), written there in
-// linear space (0.672 0.578 0.402) because the component animates the raw value.
-// The sheet is solid ImageWidgets (no texture): a PanelWidget draws the engine's
-// default-style panel image tinted by its colour, which reads as see-through.
+// linear space (0.672 0.578 0.402) because the component animates the raw value. It is a layout
+// value, not a theme token: a pack with a different paper recolours the well in its own layout skin.
+// The sheet is solid ImageWidgets (no texture unless the theme names one): a PanelWidget draws the
+// engine's default-style panel image tinted by its colour, which reads as see-through.
 // Blur strength (0.4) is authored on the full-screen blur widget in LF_UIFrame.layout;
 // its colour multiplies the world behind the sheet, so it is the dim.
 class LF_UITheme
 {
+	//! The built-in print face; the theme's m_Font is empty only when the config does not load.
 	static const ResourceName FONT = "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt";
 
 	static const string FRAME_LAYOUT = "{26EFA919E73EA3B1}UI/Layouts/UIKit/LF_UIFrame.layout";
@@ -31,98 +39,226 @@ class LF_UITheme
 	static const string IMAGE_LAYOUT = "{E958415CA199CA4F}UI/Layouts/UIKit/LF_UIImage.layout";
 	static const string PORTRAIT_LAYOUT = "{16D71EF292B6A54C}UI/Layouts/UIKit/LF_UIPortrait.layout";
 
-	static const int FONT_TITLE = 28;
-	static const int FONT_BODY = 18;
-	static const int FONT_BUTTON = 20;
-	static const int FONT_FIELD = 18;
-	//! The printed name above a blank on a form.
-	static const int FONT_CAPTION = 16;
-	//! A printed notice's section label (small, upper case, in the accent colour).
-	static const int FONT_HEADING = 15;
 	//! The regular face a notice's body is set in, so the bold section labels stand out.
 	static const ResourceName FONT_REGULAR = "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt";
+
+	//! Vanilla mono face (a debug layout in the base game uses it). No font is imported.
+	static const ResourceName FONT_MONO = "{0E041C5B1F27DCEA}ui/fonts/robotomono_msdf_28.fnt";
 
 	static const float PAD_LEFT = 28;
 	static const float PAD_TOP = 10;
 	static const float PAD_RIGHT = 28;
 	static const float PAD_BOTTOM = 10;
 
-	// Blued steel rim.
-	static const int METAL_R = 62;
-	static const int METAL_G = 64;
-	static const int METAL_B = 58;
-	static const int METAL_A = 255;
+	//------------------------------------------------------------------------------------------------
+	//! The 1989 theme with this id, in code: the fallback when the config does not load, a field a
+	//! pack removes, and the reference LF_Test_UIThemePack checks the core file against.
+	static LF_UIThemeRecord BuiltIn(string id)
+	{
+		LF_UIThemeRecord record = new LF_UIThemeRecord();
+		record.m_sThemeId = id;
+		if (id == "id-card")
+		{
+			// A laminated identity card: pale registry paper with a faint green cast, a slate-blue rim
+			// and state-blue labels (the civil registry's ink).
+			record.m_sMetal = "#34465C";
+			record.m_sPaper = "#E4E9DA";
+			record.m_sRow = "#C4CCBE";
+			record.m_sRule = "#284276";
+			record.m_sButtonFocus = "#284276";
+			record.m_sAccent = "#284276";
+			return record;
+		}
 
-	// Warm off-white form paper. Opaque: nothing behind the sheet shows through.
-	static const int PAPER_R = 238;
-	static const int PAPER_G = 230;
-	static const int PAPER_B = 212;
-	static const int PAPER_A = 255;
+		if (id == "terminal")
+		{
+			// Green phosphor on a black tube in a beige-grey 1989 cash machine bezel. Focus is amber.
+			record.m_sMetal = "#969284";
+			record.m_sPaper = "#060E08";
+			record.m_sInk = "#60EC78";
+			record.m_sRule = "#226E34";
+			record.m_sRow = "#0E2212";
+			record.m_sButtonText = "#60EC78";
+			record.m_sButtonFocus = "#FFB000";
+			record.m_Font = FONT_MONO;
+			return record;
+		}
 
-	// Carbon ink.
-	static const int INK_R = 28;
-	static const int INK_G = 26;
-	static const int INK_B = 22;
-	static const int INK_A = 255;
+		if (id == "price-list")
+		{
+			// The shop's typed price list: the paper sheet in a mono face.
+			record.m_Font = FONT_MONO;
+			return record;
+		}
 
-	// Dull brass rule. Not a highlight.
-	static const int RULE_R = 122;
-	static const int RULE_G = 102;
-	static const int RULE_B = 64;
-	static const int RULE_A = 255;
-
-	// The world behind the sheet, dimmed to about a third and softly blurred.
-	static const int BLUR_R = 168;
-	static const int BLUR_G = 164;
-	static const int BLUR_B = 156;
-	static const int BLUR_A = 255;
-
-	// Roster strip, a step darker than the sheet.
-	static const int ROW_R = 220;
-	static const int ROW_G = 208;
-	static const int ROW_B = 182;
-	static const int ROW_A = 255;
-
-	// Blank on the form, a step darker than the sheet. LF_UIEditBox.layout writes it in linear
-	// space as 0.672 0.578 0.402 1 (focused and typing: 198, 182, 148 = 0.565 0.468 0.296).
-	static const int FIELD_WELL_R = 214;
-	static const int FIELD_WELL_G = 200;
-	static const int FIELD_WELL_B = 170;
-	static const int FIELD_WELL_A = 255;
+		// "paper": the base every theme inherits from. Blued steel rim, warm opaque form paper,
+		// carbon ink, a dull brass rule (not a highlight), the world behind dimmed to about a third,
+		// a roster strip a step darker than the sheet.
+		record.m_sThemeId = LF_UIThemeConfig.BASE_ID;
+		record.m_sMetal = "#3E403A";
+		record.m_sPaper = "#EEE6D4";
+		record.m_sInk = "#1C1A16";
+		record.m_sRule = "#7A6640";
+		record.m_sBlur = "#A8A49C";
+		record.m_sRow = "#DCD0B6";
+		record.m_sButtonText = "#1C1A16";
+		record.m_sButtonFocus = "#96281E";
+		record.m_Font = FONT;
+		record.m_FontRegular = FONT_REGULAR;
+		record.m_iTitleSize = 28;
+		record.m_iBodySize = 18;
+		record.m_iButtonSize = 20;
+		record.m_iFieldSize = 18;
+		// The printed name above a blank on a form.
+		record.m_iCaptionSize = 16;
+		// A printed notice's section label (small, upper case, in the accent colour).
+		record.m_iHeadingSize = 15;
+		return record;
+	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The base theme: the config's "paper" record with its empty fields filled from the built-in.
+	static LF_UIThemeRecord Base()
+	{
+		LF_UIThemeRecord builtIn = BuiltIn(LF_UIThemeConfig.BASE_ID);
+		LF_UIThemeConfig config = LF_UIThemeConfig.Get();
+		if (!config)
+			return builtIn;
+
+		LF_UIThemeRecord paper = config.Find(LF_UIThemeConfig.BASE_ID);
+		if (!paper)
+			return builtIn;
+
+		return paper.Inherit(builtIn);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The theme with this id, every empty field filled from the base theme. An id the config does
+	//! not list (a pack removed it) uses the built-in theme of that id.
+	static LF_UIThemeRecord Get(string id)
+	{
+		LF_UIThemeRecord base = Base();
+		if (id == LF_UIThemeConfig.BASE_ID)
+			return base;
+
+		LF_UIThemeRecord record;
+		LF_UIThemeConfig config = LF_UIThemeConfig.Get();
+		if (config)
+			record = config.Find(id);
+		if (!record)
+			record = BuiltIn(id);
+
+		return record.Inherit(base);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the cached theme config so the next sheet is painted from the core file layered with
+	//! the packs again (tests, and a server /configreload).
+	static void Reload()
+	{
+		LF_UIThemeConfig.Reload();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The colour of a theme's hex string; a malformed one (logged when the config loads) takes the
+	//! built-in paper theme's colour for the same token, so a typo in a pack never paints a sheet black.
+	//! \param hex The theme's value, already inherited (never empty).
+	//! \param builtIn The built-in paper theme's hex for the same token.
+	static Color Token(string hex, string builtIn)
+	{
+		Color color = LF_UIThemeRecord.ParseColor(hex, null);
+		if (color)
+			return color;
+
+		return LF_UIThemeRecord.ParseColor(builtIn, Color.FromSRGBA(0, 0, 0, 255));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The base theme's colours: rim, sheet face, text, rule, backdrop tint and list row strip.
 	static Color Metal()
 	{
-		return Color.FromSRGBA(METAL_R, METAL_G, METAL_B, METAL_A);
+		return Token(Base().m_sMetal, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sMetal);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static Color Paper()
 	{
-		return Color.FromSRGBA(PAPER_R, PAPER_G, PAPER_B, PAPER_A);
+		return Token(Base().m_sPaper, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sPaper);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static Color Ink()
 	{
-		return Color.FromSRGBA(INK_R, INK_G, INK_B, INK_A);
+		return Token(Base().m_sInk, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sInk);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static Color Rule()
 	{
-		return Color.FromSRGBA(RULE_R, RULE_G, RULE_B, RULE_A);
+		return Token(Base().m_sRule, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sRule);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static Color Blur()
 	{
-		return Color.FromSRGBA(BLUR_R, BLUR_G, BLUR_B, BLUR_A);
+		return Token(Base().m_sBlur, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sBlur);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static Color Row()
 	{
-		return Color.FromSRGBA(ROW_R, ROW_G, ROW_B, ROW_A);
+		return Token(Base().m_sRow, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sRow);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The type sizes of the base theme, in reference pixels.
+	static int TitleSize()
+	{
+		return Base().m_iTitleSize;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int BodySize()
+	{
+		return Base().m_iBodySize;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ButtonSize()
+	{
+		return Base().m_iButtonSize;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int FieldSize()
+	{
+		return Base().m_iFieldSize;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The printed name above a blank on a form.
+	static int CaptionSize()
+	{
+		return Base().m_iCaptionSize;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A printed notice's section label.
+	static int HeadingSize()
+	{
+		return Base().m_iHeadingSize;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The print face and the regular face of the base theme.
+	static ResourceName Font()
+	{
+		return Base().m_Font;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static ResourceName FontRegular()
+	{
+		return Base().m_FontRegular;
 	}
 }
