@@ -17,7 +17,7 @@
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full|--all]           Run the checks in tools/validation/ whose inputs changed since their last green run (--all: every check; --full: every check plus the Workbench compile)
-//   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
+//   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld (TestLogic for a LOGIC-only selection, tools/lib/test-world.mjs) and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
 //   test --no-build --red <tests>     Batched red proof: ONE boot, each test's RedProof() hook on; passes only if every test FAILS, names any that still pass
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
@@ -3129,6 +3129,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 build + boot server + parse LFTEST results (worktree only).
                                 --core-only boots with -addons LifeFramework only (the pack folder is not
                                 on -addonsDir) and skips tests whose NeedsPack() names a reason.
+                                A LOGIC-only selection (--tier fast, or --only/--red naming only LOGIC tests)
+                                boots the minimal Worlds/TestLogic; --world overrides (docs/worktrees.md "Test world").
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
                                 The test pool runs it on the first free slot of any machine

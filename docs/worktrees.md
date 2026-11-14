@@ -315,7 +315,8 @@ check, so a gate right after a green `--tier all` reuses it.
 - **The key**: git tree hashes of `addons/`, `tools/test/` and
   `tools/lib/addons.mjs` from a throwaway copy of the index with every untracked
   non-ignored file added; the hash of each `addons/*/resourceDatabase.rdb`; the
-  tier, the resolved `--only` list (order kept), `--world`, `--core-only`; the
+  tier, the resolved `--only` list (order kept), `--world` (the routed one too,
+  "Test world" below), `--core-only`; the
   launch addon list; this PC's server build id (the pool sends a run only to a
   machine with that build). The machine is not in it: a gate already accepts a
   pass from any pool machine, and `LF_Test_PerfBudget` is calibrated per
@@ -329,6 +330,31 @@ check, so a gate right after a green `--tier all` reuses it.
   caller owns the cache.
 - `runs.jsonl` rows of a cacheable run carry `cacheKey` (16 hex), so the hit rate
   can be counted later.
+
+### Test world (LOGIC runs)
+
+A run whose every selected test is LOGIC boots the minimal world
+`Worlds/TestLogic/TestLogic.ent` instead of DebugWorld (`tools/lib/test-world.mjs`):
+a world entity, the time manager, `GameMode_Roleplay_Debug`, the destruction
+manager and an `LF_TestRunner` flagged `m_bLogicWorld`. No terrain, village,
+annex, zones or spawn points, so the engine skips the entity load and preload a
+LOGIC test never reads (about 2.4 s on lf-cloud, 1.5 s on the laptop).
+
+- **Routed to TestLogic**: `--tier fast` (fast runs LOGIC only), and `--only` or
+  `--red` when every name resolves to a LOGIC test (class name or `GetName()`,
+  read from the `// tier:` lines). `test` prints `test: world
+  Worlds/TestLogic/TestLogic.ent (<reason>)`.
+- **DebugWorld as before**: `--tier all`, `--tier persistence`, an `--only` list
+  with any WORLD, PERSISTENCE or unknown name, `e2e`, `ci`, `wt gate`.
+- **Override**: `--world <path>` always wins (`--world
+  Worlds/DebugWorld/DebugWorld.ent` for the old behaviour); `LF_TEST_LOGIC_WORLD=0`
+  turns the routing off.
+- **Mis-tiered tests fail loudly.** In TestLogic a WORLD or PERSISTENCE test fails
+  as `FAIL <name> (wrong world)`; a failing LOGIC test prints `hint: <name> ran in
+  the minimal LOGIC world ...; if it needs world content, its tier is WORLD`. A
+  LOGIC test that asserts nothing there already fails (`no assertions executed`).
+- **Pass cache**: the chosen world is the key's `--world`, so a TestLogic pass is
+  never reused for a DebugWorld request.
 
 ### Workbench limit and the remote gate
 
