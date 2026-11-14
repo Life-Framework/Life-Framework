@@ -5,14 +5,17 @@
 // templateLaunch() reads server.json into the -server / -addons a boot needs (the session's
 // `--mission template` uses it, so the proof boots what the file says). The engine half is
 // `tools\cli server-template check --engine`, which has the dedicated server read server.json itself.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkText } from "../config/check.mjs";
-import { ADDONS, PACK_MISSION } from "../lib/addons.mjs";
+import { ADDONS, CORE } from "../lib/addons.mjs";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const TEMPLATE_DIR = join(REPO, "server", "example");
+// A variant is the same server.json with only game.mods and game.scenarioId swapped (#297): the core
+// alone, or the core and another pack. Fixtures for the harness; the owner swaps the same two entries.
+export const VARIANT_DIR = join(REPO, "tools", "server-template", "variants");
 export const FILES = ["server.json", "config.json", "start.cmd", "start.sh", "README.md"];
 
 const read = (root, f) => readFileSync(join(root, "server", "example", f), "utf8");
@@ -26,15 +29,75 @@ function jsonOf(text, label, out) {
   }
 }
 
-// The scenario and the addon names server.json asks for, in its order. Throws when it names an addon the repo has not got.
-export function templateLaunch(root = REPO) {
-  const sj = JSON.parse(read(root, "server.json"));
+// "template" boots server/example; "template-<variant>" boots tools/server-template/variants/<variant>/server.json.
+export const isTemplateMission = (m) => m === "template" || /^template-[a-z0-9-]+$/.test(m ?? "");
+export const templateVariant = (m) => (m === "template" ? "" : String(m).replace(/^template-/, ""));
+export function variants(root = REPO) {
+  const dir = join(root, "tools", "server-template", "variants");
+  return existsSync(dir) ? readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory() && existsSync(join(dir, e.name, "server.json"))).map((e) => e.name) : [];
+}
+const jsonPath = (root, variant) => (variant ? join(root, "tools", "server-template", "variants", variant, "server.json") : join(root, "server", "example", "server.json"));
+
+// The addon a modId names: a repo addon with that project GUID (the core, the flagship, any `pack new` scaffold).
+export function addonByGuid(root, guid) {
+  const known = ADDONS.find((x) => x.guid === guid);
+  if (known) return known;
+  const dir = join(root, "addons");
+  if (!existsSync(dir)) return null;
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const gp = join(dir, e.name, `${e.name}.gproj`);
+    if (e.isDirectory() && existsSync(gp) && readFileSync(gp, "utf8").includes(`GUID "${guid}"`)) return { name: e.name, guid };
+  }
+  return null;
+}
+
+// The scenario and the addon names a server.json asks for, in its order. Throws when it names an addon the repo has not got.
+export function templateLaunch(root = REPO, variant = "") {
+  const sj = JSON.parse(readFileSync(jsonPath(root, variant), "utf8"));
   const addons = sj.game.mods.map((m) => {
-    const a = ADDONS.find((x) => x.guid === m.modId);
-    if (!a) throw new Error(`server/example/server.json lists mod ${m.modId}, which is not a Life Framework addon`);
+    const a = addonByGuid(root, m.modId);
+    if (!a) throw new Error(`${variant ? `variant ${variant}` : "server/example"} server.json lists mod ${m.modId}, which is not an addon in this checkout`);
     return a.name;
   });
   return { scenario: sj.game.scenarioId, addons };
+}
+
+// What any pack swap must keep true: the core first, every other mod an addon of this checkout (when
+// it is there), and the scenario a header inside one of the listed addons. Pack-agnostic.
+function launchProblems(root, sj, label, out) {
+  const g = sj.game ?? {};
+  const mods = g.mods ?? [];
+  const core = ADDONS[0];
+  if (mods[0]?.modId !== core.guid) out.push(`${label} game.mods must start with the core (${core.guid}); it lists ${mods.map((m) => m.modId).join(",")}`);
+  if (new Set(mods.map((m) => m.modId)).size !== mods.length) out.push(`${label} game.mods lists a mod twice`);
+  const m = /^\{([0-9A-F]{16})\}(Missions\/[^/]+\.conf)$/.exec(g.scenarioId ?? "");
+  if (!m) {
+    out.push(`${label} game.scenarioId ${g.scenarioId} is not {GUID}Missions/<name>.conf`);
+    return;
+  }
+  const names = [];
+  for (const mod of mods) {
+    const a = addonByGuid(root, mod.modId);
+    if (a) names.push(a.name);
+    else if (existsSync(join(root, "addons"))) out.push(`${label} game.mods lists ${mod.modId}, which no addon in this checkout carries`);
+  }
+  for (const a of ADDONS) {
+    const gp = join(root, "addons", a.name, `${a.name}.gproj`);
+    if (mods.some((x) => x.modId === a.guid) && existsSync(gp) && !readFileSync(gp, "utf8").includes(`GUID "${a.guid}"`)) out.push(`${a.name}.gproj does not carry the GUID ${a.guid} the template names`);
+  }
+  const meta = names.map((n) => join(root, "addons", n, `${m[2]}.meta`)).find((f) => existsSync(f));
+  if (!meta) out.push(`${label} game.scenarioId ${g.scenarioId} is in none of the listed addons (${names.join(",")})`);
+  else if (!readFileSync(meta, "utf8").includes(`{${m[1]}}`)) out.push(`${label} game.scenarioId GUID ${m[1]} does not match ${m[2]}.meta`);
+}
+
+// A variant differs from server.json in game.mods and game.scenarioId only: same ports, engine settings, name.
+function variantProblems(root, variant, base, out) {
+  const label = `variant ${variant}`;
+  const sj = jsonOf(readFileSync(jsonPath(root, variant), "utf8"), `${label} server.json`, out);
+  if (!sj || !base) return;
+  const strip = (x) => JSON.stringify({ ...x, game: { ...x.game, mods: undefined, scenarioId: undefined } });
+  if (strip(sj) !== strip(base)) out.push(`${label} server.json differs from server/example/server.json in more than game.mods and game.scenarioId`);
+  launchProblems(root, sj, `${label} server.json`, out);
 }
 
 const isPort = (n) => Number.isInteger(n) && n >= 1 && n <= 65535;
@@ -55,14 +118,9 @@ export function templateProblems(root = REPO) {
     if (sj.bindPort === sj.a2s?.port) out.push("server.json bindPort and a2s.port are the same");
     if (!g.name) out.push("server.json game.name is empty");
     if (!g.passwordAdmin || /\s/.test(g.passwordAdmin)) out.push("server.json game.passwordAdmin must be one word (CHANGE-ME until the host sets it)");
-    if (g.scenarioId !== PACK_MISSION) out.push(`server.json game.scenarioId is ${g.scenarioId}, the flagship template boots ${PACK_MISSION}`);
-    const ids = (g.mods ?? []).map((m) => m.modId);
-    if (ids.join() !== ADDONS.map((a) => a.guid).join()) out.push(`server.json game.mods lists ${ids.join(",")}; the template boots the core then the pack (${ADDONS.map((a) => a.guid).join(",")})`);
-    for (const a of ADDONS) {
-      const gp = join(root, "addons", a.name, `${a.name}.gproj`);
-      if (existsSync(gp) && !readFileSync(gp, "utf8").includes(`GUID "${a.guid}"`)) out.push(`${a.name}.gproj does not carry the GUID ${a.guid} the template names`);
-    }
+    launchProblems(root, sj, "server.json", out);
   }
+  for (const v of variants(root)) variantProblems(root, v, sj, out);
 
   const cfgText = read(root, "config.json");
   const preset = join(root, "tools", "test", "config-fixtures", "presets", "flagship-1989.json");
