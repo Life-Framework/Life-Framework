@@ -67,6 +67,7 @@ try {
     check(/^\/\/ tier: LOGIC$/m.test(t), "the logic test has no // tier: LOGIC line");
     check(/^\/\/ red-proof: PENDING/m.test(t), "the red-proof slot is not PENDING, so validate-tests would accept an unobserved proof");
     check(t.includes('return "police/radar-gun";'), "the test name is not <area>/<kebab>");
+    check(/if \(!RedProof\(\)\)/.test(t) && /--red LF_Test_RadarGun/.test(t), "the logic test lacks the RedProof() hook or the --red red-proof instruction, so a new test would need a hand-made red proof");
   }
   for (const f of [`${game}/Feature/Police/LF_RadarGun.c`, `${game}/Feature/Police/LF_RadarGunAction.c`, `${game}/Tests/LF_Test_RadarGun.c`]) {
     if (!existsSync(join(root, f))) continue;

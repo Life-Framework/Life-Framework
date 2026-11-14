@@ -10,6 +10,7 @@ class LF_TestManager
 	protected static ref LF_TestManager s_Instance;
 	protected ref array<ref LF_Test> m_aTests = {};
 	protected ref array<string> m_aOnly = {};
+	protected bool m_bRed;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_TestManager GetInstance()
@@ -40,6 +41,15 @@ class LF_TestManager
 			if (!name.IsEmpty() && m_aOnly.Find(name) == -1)
 				m_aOnly.Insert(name);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Batched red proof (`tools\cli test --red`, LF_TEST_RED): the --only tests run with their
+	//! red-proof hook on (LF_Test.RedProof()), the run reports tier=red, and a test PASSES the
+	//! proof only by FAILING. A test that still passes is hollow and is counted as failed.
+	void SetRed(bool on)
+	{
+		m_bRed = on;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -93,7 +103,10 @@ class LF_TestManager
 
 		bool filtered = m_aOnly.Count() > 0;
 		array<string> matched = {};
-		if (filtered)
+		bool red = m_bRed && filtered;
+		if (red)
+			tierName = "red";
+		else if (filtered)
 			tierName = "only";
 
 		int failures = 0;
@@ -138,7 +151,34 @@ class LF_TestManager
 			PrintFormat("[LFTEST] START %1", name);
 
 			LF_TestContext ctx = new LF_TestContext();
+			test.SetRedProof(red);
 			test.Run(ctx);
+			test.SetRedProof(false);
+
+			if (red)
+			{
+				// passed = failed as the proof wants; failed = still passes (hollow) or asserts nothing.
+				if (ctx.FailureCount() > 0)
+				{
+					passed++;
+					PrintFormat("[LFTEST] RED-OK %1 (fails with the hook on, %2 assertions)", name, ctx.AssertionCount());
+					string redBody = "";
+					foreach (string redFailure : ctx.GetFailures())
+					{
+						PrintFormat("[LFTEST]   red: %1", redFailure);
+						redBody += string.Format("%1\n", EscapeXml(redFailure));
+					}
+					cases += string.Format("<testcase name=\"%1\" time=\"0\"><system-out>red proof ok: fails with the hook on\n%2</system-out></testcase>\n", name, redBody);
+				}
+				else
+				{
+					failures++;
+					PrintFormat("[LFTEST] FAIL %1 (HOLLOW: still passes with the red-proof hook on, %2 assertions; no RedProof() hook, or the hook does not break what the assertions check)", name, ctx.AssertionCount());
+					cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"hollow: passes under red proof\"/></testcase>\n", name);
+				}
+
+				continue;
+			}
 
 			if (ctx.FailureCount() > 0)
 			{

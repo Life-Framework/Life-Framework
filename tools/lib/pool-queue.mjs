@@ -79,15 +79,53 @@ export const SESSION_PORT = 2001;
 // Session lane k listens on 2001 + 10 (k - 1), lock server-<port>; test lanes use 2002.. beside them.
 export const SESSION_LANE_STEP = 10;
 
+// Lane ports. The only ceiling on lanes in code is the port range below; the machine's lanes
+// setting, the live RAM gate, the thermal hold and maxClients decide what runs (docs/worktrees.md
+// "Lanes"). The first lanes keep the names and ports pool code of before 2026-11-14 uses (it runs
+// beside this code on older branches and shares the lock dirs): session lanes 1-4 on 2001, 2011,
+// 2021, 2031 and test lanes 1-9 (server-test-<k>) on 2002-2010. Later lanes sit in blocks no older
+// code uses, one lane per 5 ports, each lock named server-<port> so older code that only sees the
+// lock name (portForLock, a remote run of an older snapshot) still binds the right port. Every
+// lane port ends in 3 or 8: never a worktree game port (2001 + 10 i, ends in 1), never an A2S port
+// (17777 + 10 i, ends in 7), and below 17777. A block session lane's A2S port is its game port + 1
+// (ends in 4 or 9; the block reserves it for test lanes too). Test runs keep passing the worktree's
+// A2S port. Pool selftest "Lane ports" enumerates all of them.
+export const LEGACY_TEST_LANES = 9;
+export const LEGACY_SESSION_LANES = 4;
+export const MAX_TEST_LANES = 64;
+export const MAX_SESSION_LANES = 32;
+export const TEST_BLOCK_PORT = 2403; // test lanes 10..64: 2403..2678
+export const SESSION_BLOCK_PORT = 2803; // session lanes 5..32: 2803..2938
+const BLOCK_STEP = 5;
+
+export function laneCap(kind) {
+  return kind === "session" ? MAX_SESSION_LANES : MAX_TEST_LANES;
+}
+
 export function sessionLane(i) {
+  if (i > LEGACY_SESSION_LANES) {
+    const port = SESSION_BLOCK_PORT + BLOCK_STEP * (i - LEGACY_SESSION_LANES - 1);
+    return { lock: `server-${port}`, index: i, port };
+  }
   const port = SESSION_PORT + SESSION_LANE_STEP * (i - 1);
   return { lock: i === 1 ? slotLockName(1) : `server-${port}`, index: i, port };
 }
 
+export function testLane(i) {
+  if (i > LEGACY_TEST_LANES) {
+    const port = TEST_BLOCK_PORT + BLOCK_STEP * (i - LEGACY_TEST_LANES - 1);
+    return { lock: `server-${port}`, index: i, port };
+  }
+  return { lock: `server-test-${i}`, index: i, port: SESSION_PORT + i };
+}
+
 // The A2S query port of a session lane's server: the engine default for lane 1 (null, no flag),
-// 17777 + 10 x the port offset beside it.
+// 17777 + 10 x the port offset for lanes 2-4 (as before), the game port + 1 for a block lane.
+// (Observed 2026-11-14 on lf-cloud: a -server boot without -config binds only its game port.)
 export function sessionA2sPort(port) {
-  return port === SESSION_PORT ? null : 17777 + (port - SESSION_PORT) * 10;
+  if (port === SESSION_PORT) return null;
+  if (port >= TEST_BLOCK_PORT) return port + 1;
+  return 17777 + (port - SESSION_PORT) * 10;
 }
 
 // Memory (MB) a session of n clients adds, from the reserve settings; profile is the session's
@@ -106,8 +144,8 @@ export function laneKind(purpose) {
 // [{ lock, index, port }] for the lane kind.
 export function lanesFor(m, kind) {
   if (!m.lanes) return Array.from({ length: m.slots }, (_, i) => ({ lock: slotLockName(i + 1), index: i + 1, port: SESSION_PORT }));
-  if (kind === "session") return Array.from({ length: m.lanes.session ?? 1 }, (_, i) => sessionLane(i + 1));
-  return Array.from({ length: m.lanes.test }, (_, i) => ({ lock: `server-test-${i + 1}`, index: i + 1, port: SESSION_PORT + 1 + i }));
+  if (kind === "session") return Array.from({ length: Math.min(MAX_SESSION_LANES, m.lanes.session ?? 1) }, (_, i) => sessionLane(i + 1));
+  return Array.from({ length: Math.min(MAX_TEST_LANES, m.lanes.test) }, (_, i) => testLane(i + 1));
 }
 
 export function allLaneLocks(m) {

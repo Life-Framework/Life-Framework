@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5A3D7E19C2B40F86}Configs/Rules/LF_Quiz.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

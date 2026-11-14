@@ -18,6 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full|--all]           Run the checks in tools/validation/ whose inputs changed since their last green run (--all: every check; --full: every check plus the Workbench compile)
 //   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
+//   test --no-build --red <tests>     Batched red proof: ONE boot, each test's RedProof() hook on; passes only if every test FAILS, names any that still pass
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template|template-core-only]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
@@ -26,6 +27,7 @@
 //   audit placement [--top N] [--area a] [--layer L]  Ranked placement audit of every DebugWorld layer entity, on the test server (agent-box/place-audit.mjs)
 //   place on|against|ground|arrange|bounds|probe|verify  Place a world prop from real bounds and probe rays, then audit it (tools/place/place.mjs)
 //   look <area|x,z|all> [--edit] [--close N]   Area pictures from a hidden Workbench, no session (tools/visual/look.mjs, docs/visual-testing.md)
+//   look serve [--status|--stop]               One shared look Workbench every look uses while it is up (tools/visual/look-serve.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -2015,7 +2017,7 @@ function cmdSessionJoin(root, dir, flags) {
     return 1;
   }
   const log = session.newestLog(join(s.serverProfile, "logs"));
-  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  const marker = /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
   const before = (readFileSync(log, "utf8").match(marker) ?? []).length;
   const state = { ...s, clients: (s.clients ?? []).filter((x) => x.n !== n) };
   sessionLog = join(dir, "up.log");
@@ -2229,11 +2231,11 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player) \d+/g });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
-    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
+    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g, fail, state);
     if (joined < 0) return 1;
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     recordIdentities(dir, state);
@@ -2299,7 +2301,7 @@ function cmdSessionMeasure(root, dir, flags) {
     session.writeSession(dir, { ...state, stoppedAt: new Date().toISOString() });
     sleepMs(4000);
   };
-  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  const marker = /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
   try {
     for (const v of variants) {
       for (const n of v.only === null ? counts : [v.only]) {
@@ -2529,7 +2531,7 @@ function cmdSessionWait(dir, flags) {
         return 1;
       }
       if (log && s.expectClients !== undefined && (s.clients ?? []).length >= s.expectClients) {
-        const marker = s.restartedAt ? /flow start for player \d+/g : /(?:registration form sent to player|spawning player) \d+/g;
+        const marker = s.restartedAt ? /flow start for player \d+/g : /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g;
         const v = sessionVerdict(s, log, marker);
         if (v.fail) {
           console.log(`FAIL  ${v.fail}`);
@@ -2667,13 +2669,21 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     return 2;
   }
   let only = [];
-  if (opts.only !== undefined) {
-    only = resolveOnlyNames(root, opts.only);
+  // --red <tests> is --only plus the red-proof hooks switched on (LF_TEST_RED): one boot, every test must FAIL.
+  if (opts.red !== undefined && opts.only !== undefined) {
+    console.log("test: pass --red <tests> or --only <tests>, not both");
+    return 2;
+  }
+  const red = opts.red !== undefined;
+  const onlyFlag = red ? "--red" : "--only";
+  const onlySpec = red ? opts.red : opts.only;
+  if (onlySpec !== undefined) {
+    only = resolveOnlyNames(root, onlySpec);
     if (only.length === 0) {
-      console.log("usage: tools\\cli test --no-build --only <LF_Test_Class|test-name|LF_Test_File>[,...]");
+      console.log("usage: tools\\cli test --no-build " + onlyFlag + " <LF_Test_Class|test-name|LF_Test_File>[,...]");
       return 2;
     }
-    console.log(`test: --only ${only.join(",")}`);
+    console.log("test: " + onlyFlag + " " + only.join(","));
   }
   guardHeavy(root, "test", opts.force);
   if (!noBuild) {
@@ -2689,12 +2699,12 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // A pool machine that disappears mid-run (the laptop shuts down) is a normal case: it is marked
   // down and the run queues again for another machine (pool.machineGone).
   for (let attempt = 1; ; attempt++) {
-    const r = await testOnce(root, { purpose, tier, only, opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS });
+    const r = await testOnce(root, { purpose, tier, only, red, opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS });
     if (!r.requeue) return r.code;
   }
 }
 
-async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
+async function testOnce(root, { purpose, tier, only, red, opts, lastTry }) {
   let slot;
   try {
     slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget });
@@ -2706,7 +2716,7 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   let extra = {};
   try {
     if (!slot.local) {
-      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? [red ? "--red" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
       // The placement audit (agent-box/place-audit.mjs) hands its input list in through
       // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
       const auditIn = process.env.LF_PLACE_AUDIT_IN;
@@ -2723,7 +2733,7 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-    code = runLocalTest(root, tier, only, opts.world, opts.coreOnly);
+    code = runLocalTest(root, tier, only, opts.world, opts.coreOnly, red);
     const stamp = newestStamp(root, before);
     if (stamp) extra = { passed: stamp.passed, total: stamp.total };
     return { code };
@@ -2759,7 +2769,7 @@ function poolMode(root, opts) {
 // world: another world or mission header to boot instead of DebugWorld (Worlds/CoreOnEveron/CoreOnEveron.ent
 // boots the core alone on vanilla Everon, #1047). Its layers must place an LF_TestRunner.
 // coreOnly: the core alone, the pack hidden (#326, test-e2e.ps1 -CoreOnly).
-function runLocalTest(root, tier, only, world, coreOnly) {
+function runLocalTest(root, tier, only, world, coreOnly, red = false) {
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [LFTEST] SUMMARY, self-terminates.
@@ -2781,6 +2791,7 @@ function runLocalTest(root, tier, only, world, coreOnly) {
       ...(laneListenAddr() ? ["-ListenAddr", laneListenAddr()] : []),
       ...budgetArgs(),
       ...(only.length ? ["-Only", only.join(",")] : []),
+      ...(red ? ["-Red"] : []),
       ...(world ? ["-Mission", world] : []),
       ...(coreOnly ? ["-CoreOnly"] : []),
     ], { cwd: root, env: toolEnv() });
@@ -3095,10 +3106,13 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | item <prefab|slug> [--states ground,inventory] | selftest
+  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
-                                (about 20 s; docs/visual-testing.md)
+                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md)
+  look serve [--status | --stop [--remove]]
+                                one Workbench for every worktree's looks, on the Life-Framework-look-viewer checkout;
+                                each look is served from a snapshot of the caller's worktree, stops after 10 min idle
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
   perf [--log <file>] [test flags]   run the 128-character cost benchmark (LF_Test_PerfBudget), print the report vs Configs/Perf/LF_PerfBudget.conf; exit 1 over budget
@@ -4121,7 +4135,8 @@ const cmds = {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
+    const red = list.includes("--red") ? (argValue(list, "--red") ?? "") : undefined;
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, red, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),

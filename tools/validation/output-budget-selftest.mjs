@@ -6,7 +6,8 @@
 //
 // red-proof: with MAX_FAILURE_LINES set to 1000 in quiet-run.mjs, "a 300-failure transcript stays
 // inside its budget" failed; with LF_VERBOSE=1 forced into the child environment, "validate stays
-// inside 14 lines" and "help stays inside 12 lines" failed. Both restored.
+// inside 14 lines" and "help stays inside 12 lines" failed. Both restored. With the RED-OK/RED PROOF OK
+// alternatives removed from KEEP_RE in quiet-run.mjs, "a passing --red run keeps its RED-OK lines" failed; restored.
 import { readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -39,6 +40,9 @@ check(timeout.some((l) => l.includes("TIMEOUT after 300s")), "a timeout is shown
 const skipped = sum("validate", 0, [...Array.from({ length: 20 }, (_, i) => `PASS  validate/c${i}.mjs (0.1 s)`), "SKIP  validate/validate-scripts.ps1 (LF_VALIDATE_SKIP)", "validate: 20 check(s), 0 failed (3 s)"]);
 check(skipped.some((l) => l.includes("validate-scripts.ps1")), "a skipped check is named in the summary");
 check(skipped.some((l) => l.startsWith("validate: 20 check(s)")), "validate's own verdict line is kept");
+
+const redPass = sum("test", 0, [...Array.from({ length: 30 }, (_, i) => `noise ${i}`), "test-e2e: red proof (every listed test must go red with its RedProof() hook on)", "  RED-OK zz/a (fails with the hook on, 2 assertions)", "  red: the act produced five (expected 5, got 0)", "test-e2e: RED PROOF OK (all 1 listed test(s) fail with the hook on)"]);
+check(redPass.some((l) => l.includes("RED-OK zz/a")) && redPass.some((l) => l.includes("RED PROOF OK")) && redPass[0].includes("failures=0"), "a passing --red run keeps its RED-OK lines and verdict, and counts no failure");
 
 const warned = sum("session-up", 0, [...Array.from({ length: 20 }, (_, i) => `session: queued ${i}`), "pool: the session of x is past its 20 min cap with 3 waiting; warned, it closes in 5 min", "session: ready in 25.7 s; 1 client(s) joined"]);
 check(warned.some((l) => l.includes("past its 20 min cap")), "a pool warning that changes a decision is shown");

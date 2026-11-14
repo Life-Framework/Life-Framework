@@ -28,7 +28,7 @@ test constraints. This skill adds the authoring workflow:
   `LF_Debug.Error` and degrades only that feature.
 - For RPC, replication, or persistence, validate server authority, JIP and
   restart behavior, and serializer registration.
-- For logic, add an `LF_Test` with `// tier:` and `// red-proof:` and run
+- For logic, add an `LF_Test` with `// tier:`, `// red-proof:` and the `RedProof()` hook (AGENTS.md "Tests") and run
   `tools\cli regen-tests`; never edit the generated registration.
 - Match the local `//---` / `//!` comment style, skip narrating comments, then
   run `tools\cli validate`.

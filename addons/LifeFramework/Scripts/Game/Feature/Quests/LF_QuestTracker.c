@@ -167,7 +167,8 @@ class LF_QuestTracker
 	//! \return true when this call added the turned-in state.
 	bool RestoreTurnedIn(string questId)
 	{
-		if (questId.IsEmpty() || m_mStates.Contains(questId))
+		// An account flag (LF_Progression.NoteFlag) shares the turn-in list; it is not a quest.
+		if (questId.IsEmpty() || questId.StartsWith(LF_Progression.FLAG_PREFIX) || m_mStates.Contains(questId))
 			return false;
 
 		LF_QuestState state = new LF_QuestState();
