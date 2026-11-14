@@ -664,36 +664,6 @@ SCR_DestructibleEntity Market_Stall_North_1 : "{D8B83A318AE3611E}Prefabs/Props/C
 SCR_DestructibleEntity Market_Stall_North_2 : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
  coords 211.359 -0.003 240.267
 }
-SCR_DestructibleEntity Market_Shade_1W : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 195.859 -0.001 233.466
-}
-SCR_DestructibleEntity Market_Shade_1E : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 198.859 -0.001 233.466
-}
-SCR_DestructibleEntity Market_Shade_2W : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 204.859 -0.001 233.466
-}
-SCR_DestructibleEntity Market_Shade_2E : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 207.859 -0.001 233.466
-}
-SCR_DestructibleEntity Market_Shade_3W : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 213.859 -0.001 233.466
-}
-SCR_DestructibleEntity Market_Shade_3E : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 216.859 -0.001 233.466
-}
-SCR_DestructibleEntity Market_Shade_4W : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 199.859 -0.001 240.266
-}
-SCR_DestructibleEntity Market_Shade_4E : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 202.859 -0.001 240.266
-}
-SCR_DestructibleEntity Market_Shade_5W : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 209.859 -0.001 240.266
-}
-SCR_DestructibleEntity Market_Shade_5E : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 212.859 -0.001 240.266
-}
 GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
  coords 201.169 1.027 240.611
 }
@@ -742,4 +712,259 @@ GenericEntity Market_Sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/P
 GenericEntity Bank_Bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
  coords 184.001 0.002 254.957
  angleY 180
+}
+GenericEntity Market_Tarp_Veg {
+ components {
+  MeshObject "{52AE82368499B365}" {
+   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+   Materials {
+    MaterialAssignClass "{599EE14E7A2CA415}" {
+     SourceMaterial "Flag_1_2"
+     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+    }
+   }
+  }
+ }
+ coords 199.509 2.54 233.117
+ angleY 90
+ angleZ 98
+ scale 2
+}
+StaticModelEntity Market_Post_Veg_B1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 195.609 1.46 232.217
+}
+StaticModelEntity Market_Post_Veg_F1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 195.609 1.314 234.017
+ scale 0.9
+}
+StaticModelEntity Market_Post_Veg_B2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 199.209 1.46 232.217
+}
+StaticModelEntity Market_Post_Veg_F2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 199.209 1.314 234.017
+ scale 0.9
+}
+GenericEntity Market_Tarp_Fruit {
+ components {
+  MeshObject "{52AE82368499B365}" {
+   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+   Materials {
+    MaterialAssignClass "{599EE14E7A2CA415}" {
+     SourceMaterial "Flag_1_2"
+     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+    }
+   }
+  }
+ }
+ coords 208.509 2.54 233.117
+ angleY 90
+ angleZ 98
+ scale 2
+}
+StaticModelEntity Market_Post_Fruit_B1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 204.609 1.46 232.217
+}
+StaticModelEntity Market_Post_Fruit_F1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 204.609 1.314 234.017
+ scale 0.9
+}
+StaticModelEntity Market_Post_Fruit_B2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 208.209 1.46 232.217
+}
+StaticModelEntity Market_Post_Fruit_F2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 208.209 1.314 234.017
+ scale 0.9
+}
+GenericEntity Market_Tarp_Juice {
+ components {
+  MeshObject "{52AE82368499B365}" {
+   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+   Materials {
+    MaterialAssignClass "{599EE14E7A2CA415}" {
+     SourceMaterial "Flag_1_2"
+     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+    }
+   }
+  }
+ }
+ coords 217.509 2.54 233.117
+ angleY 90
+ angleZ 98
+ scale 2
+}
+StaticModelEntity Market_Post_Juice_B1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 213.609 1.46 232.217
+}
+StaticModelEntity Market_Post_Juice_F1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 213.609 1.314 234.017
+ scale 0.9
+}
+StaticModelEntity Market_Post_Juice_B2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 217.209 1.46 232.217
+}
+StaticModelEntity Market_Post_Juice_F2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 217.209 1.314 234.017
+ scale 0.9
+}
+GenericEntity Market_Tarp_North1 {
+ components {
+  MeshObject "{52AE82368499B365}" {
+   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+   Materials {
+    MaterialAssignClass "{599EE14E7A2CA415}" {
+     SourceMaterial "Flag_1_2"
+     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+    }
+   }
+  }
+ }
+ coords 203.509 2.54 240.617
+ angleY 90
+ angleZ 82
+ scale 2
+}
+StaticModelEntity Market_Post_North1_B1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 199.609 1.46 241.517
+}
+StaticModelEntity Market_Post_North1_F1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 199.609 1.314 239.717
+ scale 0.9
+}
+StaticModelEntity Market_Post_North1_B2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 203.209 1.46 241.517
+}
+StaticModelEntity Market_Post_North1_F2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 203.209 1.314 239.717
+ scale 0.9
+}
+GenericEntity Market_Tarp_North2 {
+ components {
+  MeshObject "{52AE82368499B365}" {
+   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+   Materials {
+    MaterialAssignClass "{599EE14E7A2CA415}" {
+     SourceMaterial "Flag_1_2"
+     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+    }
+   }
+  }
+ }
+ coords 213.509 2.54 240.617
+ angleY 90
+ angleZ 82
+ scale 2
+}
+StaticModelEntity Market_Post_North2_B1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 209.609 1.46 241.517
+}
+StaticModelEntity Market_Post_North2_F1 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 209.609 1.314 239.717
+ scale 0.9
+}
+StaticModelEntity Market_Post_North2_B2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 213.209 1.46 241.517
+}
+StaticModelEntity Market_Post_North2_F2 {
+ components {
+  MeshObject "{56DE7C8DCD0F4E0A}" {
+   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+  }
+ }
+ coords 213.209 1.314 239.717
+ scale 0.9
 }

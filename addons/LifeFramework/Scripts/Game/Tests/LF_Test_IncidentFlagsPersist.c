@@ -45,7 +45,7 @@ class LF_Test_IncidentFlagsPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(31, version, "the save is written at version 31 (incidentflags is payload 17)");
+		ctx.Equal(32, version, "the save is written at version 32 (incidentflags is payload 17)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "incidentflags");
 		ctx.True(LF_IncidentFlags.IsFlagged(record.m_iNumber), "the flag is back");
 		ctx.Equal(1, LF_IncidentFlags.Count(), "no extra rows after the load");

@@ -6,7 +6,8 @@
 //!   downed=D life=L bleed=S the own body's replicated downed flag, life state and bleed-out seconds left (-1 not downed)
 //!   veh=<prefab>:d=M:eng=E:lock=L:ign=I:stolen=S  one entry per vehicle within the radius, nearest first, joined by "|"
 //!   door=<prefab>:d=M:locked=L                    one entry per LF_LockComponent door within the radius, nearest first
-//!   npc=<name>:d=M:stun=S:up=Y                  one entry per town NPC within the radius: its replicated stun flag and how upright it stands (1 standing, 0 lying)
+//!   breach=<id>:open=O:yaw=Y                     one entry per breach target within the radius: the replicated open flag and the yaw its swing child stands at here
+//!   npc=<name>:d=M:stun=S:up=Y:wear=A+B          one entry per town NPC within the radius: its replicated stun flag, how upright it stands (1 standing, 0 lying) and the clothing in its loadout slots
 //!   bags=N                                        loose LF_MoneyBag entities within the radius
 //!   chop=P                                        the chop shop's replicated percent, -2 with no yard in range
 //!   toast=last toast shown, dispatches=N and lastdispatch=radio calls this client heard
@@ -26,6 +27,10 @@ class LF_HarnessSeen
 	protected static ref array<string> s_aDoorText = {};
 	protected static ref array<float> s_aNpcDist = {};
 	protected static ref array<string> s_aNpcText = {};
+	protected static ref array<float> s_aBreachDist = {};
+	protected static ref array<string> s_aBreachText = {};
+	protected static ref array<EntityID> s_aBreaches = {};
+	protected static ref array<float> s_aBreachAt = {};
 	protected static int s_iBags;
 	protected static int s_iChop;
 
@@ -82,6 +87,34 @@ class LF_HarnessSeen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The clothing this machine has in an NPC's loadout slots, as the item prefab file names joined
+	//! by "+", or "none". Two clients that draw the same outfit read the same text.
+	protected static string Wear(IEntity npc)
+	{
+		EquipedLoadoutStorageComponent storage = EquipedLoadoutStorageComponent.Cast(npc.FindComponent(EquipedLoadoutStorageComponent));
+		if (!storage)
+			return "none";
+
+		string wear;
+		for (int slot = 0; slot < storage.GetSlotsCount(); slot++)
+		{
+			IEntity item = storage.Get(slot);
+			if (!item)
+				continue;
+
+			if (!wear.IsEmpty())
+				wear += "+";
+
+			wear += Short(LF_Utils.GetPrefabName(item));
+		}
+
+		if (wear.IsEmpty())
+			return "none";
+
+		return wear;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool CollectEntity(IEntity entity)
 	{
 		if (!entity || entity.GetID() == s_SelfId)
@@ -100,7 +133,16 @@ class LF_HarnessSeen
 
 			float npcAt = vector.Distance(s_vOrigin, entity.GetOrigin());
 			float up = Math.Round(entity.GetTransformAxis(1)[1] * 100) / 100;
-			InsertSorted(s_aNpcDist, s_aNpcText, npcAt, string.Format("%1:d=%2:stun=%3:up=%4", entity.GetName(), Math.Round(npcAt * 10) / 10, stun, up));
+			InsertSorted(s_aNpcDist, s_aNpcText, npcAt, string.Format("%1:d=%2:stun=%3:up=%4:wear=%5", entity.GetName(), Math.Round(npcAt * 10) / 10, stun, up, Wear(entity)));
+		}
+
+		LF_BreachTargetComponent breach = LF_Component<LF_BreachTargetComponent>.Find(entity);
+		if (breach)
+		{
+			float breachAt = vector.Distance(s_vOrigin, entity.GetOrigin());
+			// Described after the query: DescribeSwing runs its own sphere query.
+			s_aBreaches.Insert(entity.GetID());
+			s_aBreachAt.Insert(breachAt);
 		}
 
 		LF_ChopShopComponent shop = LF_Component<LF_ChopShopComponent>.Find(entity);
@@ -181,15 +223,27 @@ class LF_HarnessSeen
 		s_aDoorText.Clear();
 		s_aNpcDist.Clear();
 		s_aNpcText.Clear();
+		s_aBreachDist.Clear();
+		s_aBreachText.Clear();
+		s_aBreaches.Clear();
+		s_aBreachAt.Clear();
 		s_iBags = 0;
 		s_iChop = -2;
 		GetGame().GetWorld().QueryEntitiesBySphere(s_vOrigin, radius, CollectEntity, null, EQueryEntitiesFlags.ALL);
+		for (int i = 0; i < s_aBreaches.Count(); i++)
+		{
+			LF_BreachTargetComponent target = LF_Component<LF_BreachTargetComponent>.Find(GetGame().GetWorld().FindEntityByID(s_aBreaches[i]));
+			if (target)
+				InsertSorted(s_aBreachDist, s_aBreachText, s_aBreachAt[i], string.Format("%1:%2", target.GetTargetId(), target.DescribeSwing()));
+		}
+
+		s_aBreaches.Clear();
 
 		string toast = SCR_PlayerController.LF_GetLastToast();
 		toast.Replace(" ", "_");
 		string dispatch = SCR_PlayerController.LF_GetLastDispatch();
 		dispatch.Replace(" ", "_");
 		string seen = string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
-		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " npc=" + Join(s_aNpcText);
+		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " breach=" + Join(s_aBreachText) + " npc=" + Join(s_aNpcText);
 	}
 }

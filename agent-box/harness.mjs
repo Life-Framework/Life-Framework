@@ -9,6 +9,7 @@
 // menu action through InputManager.SetActionValue. `open DebugMenu` toggles the
 // same menu the debug key opens.
 
+import "../tools/lib/quiet-gate.mjs";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -133,7 +134,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "spikeseen" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "sound") {
@@ -165,6 +166,11 @@ export function buildLine(id, spec) {
     // emote open|close|seen|<radial command>: the emote radial (LF_EmoteHarness, #982).
     return `${id} emote ${token(spec.arg, "emote")}`;
   }
+  if (spec.verb === "reload") {
+    // reload [config|dialogue|config,dialogue]: the server reads the owner config and the dev caption file again (#970).
+    if (spec.what !== undefined && !/^[a-z]+(,[a-z]+)*$/.test(spec.what)) throw new Error(`reload what must be names joined by commas (config,dialogue): ${spec.what}`);
+    return spec.what ? `${id} reload ${spec.what}` : `${id} reload`;
+  }
   if (spec.verb === "dialogue") {
     return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
   }
@@ -194,6 +200,13 @@ export function buildLine(id, spec) {
     if (!Number.isInteger(target) || target <= 0) throw new Error(`cpr needs a positive player id: ${spec.playerId}`);
     if (spec.mode !== "start" && spec.mode !== "stop") throw new Error(`cpr mode must be start or stop: ${spec.mode}`);
     return `${id} cpr ${target} ${spec.mode}`;
+  }
+  if (spec.verb === "cuffing") {
+    const target = Number(spec.playerId);
+    if (!Number.isInteger(target) || target <= 0) throw new Error(`cuffing needs a positive player id: ${spec.playerId}`);
+    if (spec.kind !== "cuff" && spec.kind !== "release") throw new Error(`cuffing kind must be cuff or release: ${spec.kind}`);
+    if (!["start", "cancel", "pin", "finish"].includes(spec.mode)) throw new Error(`cuffing mode must be start, cancel, pin or finish: ${spec.mode}`);
+    return `${id} cuffing ${target} ${spec.kind} ${spec.mode}`;
   }
   if (spec.verb === "ui") {
     if (spec.mode === "text") return `${id} ui text`;
@@ -575,7 +588,7 @@ export function runScriptPillar(shouldRun) {
       text: "refusing script pillar on the main checkout. Use a worktree: tools\\cli wt new <feature>\n",
     };
   }
-  const res = spawnSync("node", ["tools/cli.mjs", "test", "--tier", "fast"], { windowsHide: true, cwd: ROOT, encoding: "utf8" });
+  const res = spawnSync("node", ["tools/cli.mjs", "test", "--tier", "fast", "--verbose"], { windowsHide: true, cwd: ROOT, encoding: "utf8" });
   return { code: res.status ?? 1, text: `${res.stdout || ""}${res.stderr || ""}` };
 }
 
@@ -1407,6 +1420,8 @@ function usage() {
   node agent-box/harness.mjs type <FieldName> <Text>
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
+  node agent-box/harness.mjs reload [config|dialogue|config,dialogue]
+  node agent-box/harness.mjs dialogue [caption <#key>|shown]
   node agent-box/harness.mjs input <MenuAction>
   node agent-box/harness.mjs open DebugMenu
   node agent-box/harness.mjs kit
@@ -1515,7 +1530,7 @@ function main(argv) {
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "spikeseen" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {
@@ -1545,6 +1560,9 @@ function main(argv) {
     }
     if (cmd === "cpr") {
       return printResult(sendCommand({ verb: "cpr", playerId: rest[0], mode: rest[1] }, 10000));
+    }
+    if (cmd === "cuffing") {
+      return printResult(sendCommand({ verb: "cuffing", playerId: rest[0], kind: rest[1], mode: rest[2] }, 10000));
     }
     if (cmd === "ui") {
       if (rest[0] !== "text" && rest[0] !== "--text") return printResult(sendCommand({ verb: "ui" }));
@@ -1579,6 +1597,14 @@ function main(argv) {
     }
     if (cmd === "use") {
       return printResult(sendCommand({ verb: "use", className: rest[0], entityName: rest[1] }));
+    }
+    if (cmd === "reload") {
+      // reload [config|dialogue|config,dialogue]: the server reads config.json and the dev caption file again (#970).
+      return printResult(sendCommand({ verb: "reload", what: rest[0] }, 10000));
+    }
+    if (cmd === "dialogue") {
+      // dialogue [caption <#key> | shown | pick <row> | skip | ...]: the conversation scene on this client.
+      return printResult(sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 10000));
     }
     if (cmd === "input") {
       return printResult(sendCommand({ verb: "input", action: rest[0], value: rest[1] }));

@@ -8,12 +8,28 @@ export const PLAYTEST_DOWNLOAD_URL = `https://github.com/${REPO}/releases/latest
 
 const CACHE_KEY = "lf-playtest-release";
 
+// Shown only when the build could not read GitHub and the browser has not either (offline, rate
+// limited). Update it when you cut a new playtest; the live lookup below replaces it as soon as it
+// answers, so an old value here never wins over the real latest release.
+export const FALLBACK_RELEASE: PlaytestRelease = {
+  tag: "playtest-m2-6",
+  name: "Playtest M2, build 6",
+  publishedAt: "2026-11-14T07:51:16Z",
+  size: 424522916,
+};
+
+// "Playtest M2, build 6" -> "Build 6"; any other name is shown as it is.
+export const buildLabel = (rel: PlaytestRelease) => {
+  const m = /build\s+(\d+)/i.exec(rel.name) || /-(\d+)$/.exec(rel.tag);
+  return m ? `Build ${m[1]}` : rel.name;
+};
+
 export const formatSize = (bytes: number) => `${Math.round(bytes / 1048576)} MB`;
 
 // The release written at build time, then the live one from the GitHub API once the page runs,
 // so a release published after the last site build still shows its own version and size.
 export function usePlaytestRelease(): PlaytestRelease | null {
-  const [rel, setRel] = useState<PlaytestRelease | null>(githubData.playtestRelease ?? null);
+  const [rel, setRel] = useState<PlaytestRelease | null>(githubData.playtestRelease ?? FALLBACK_RELEASE);
   useEffect(() => {
     let cancelled = false;
     try {

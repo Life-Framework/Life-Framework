@@ -1,0 +1,44 @@
+{
+  "roadmap": "",
+  "texture_prompt": "",
+  "parts": [],
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ],
+    "stretch": true
+  },
+  "prefab": false,
+  "slug": "post-parcel",
+  "name": "PostParcel",
+  "kind": "gadget",
+  "concept": "The post parcel of the delivery job: a flat brown-paper packet tied with string, of the kind the 1989 post office took across the counter. A courier picks it up in both hands, carries it to the addressee, and it can lie on the ground or a shelf.",
+  "prompt": "A post parcel of the 1980s: a flat rectangular package wrapped in plain brown kraft paper with crisp folded corners, tied round both ways with thin string in a cross and a knot on top, a blank rectangular white address label on the top face and a small red wax seal on the string. no text, no logos.",
+  "meshy": {
+    "ai_model": "latest",
+    "target_polycount": 4000,
+    "remesh": false
+  },
+  "size_m": {
+    "length": 0.38,
+    "height": 0.14,
+    "width": 0.26
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 1024,
+    "credits": 70
+  },
+  "asset_dir": "Assets/Items/Roleplay/PostParcel",
+  "prefab_dir": "Prefabs/Items/Roleplay/PostParcel",
+  "materials": {
+    "default": "fabric",
+    "regions": []
+  }
+}

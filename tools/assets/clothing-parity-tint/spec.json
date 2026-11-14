@@ -1,0 +1,25 @@
+{
+  "slug": "clothing-parity-tint",
+  "name": "ParityTintJacket",
+  "kind": "clothing",
+  "route": "a",
+  "roadmap": "",
+  "concept": "The pipeline's second parity fixture: the vanilla grey suit jacket with its cloth tinted navy through new textures on the vanilla UV layout (worn, worn blood layer, and ground model). Shirt and tie stay as they are. Its pictures must differ from vanilla on the jacket and nowhere else. Not a garment for the game: the derived textures are Bohemia's art and are never committed (docs/asset-pipeline/clothing.md \"Licensing\").",
+  "base": "{E652D625A46A00FC}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Grey_V1.et",
+  "slot": "Jacket",
+  "hide": null,
+  "materials": [
+    { "use": "worn", "maps": {
+      "BCR_1": { "tint": { "rgb": [0.12, 0.15, 0.3], "strength": 1, "mask": { "lum": [0.12, 0.55], "sat": [0.08, 0.45] } } },
+      "DirtBCRMap": { "tint": { "rgb": [0.12, 0.15, 0.3], "strength": 1, "mask": { "lum": [0.12, 0.55], "sat": [0.08, 0.45] } } }
+    } },
+    { "use": "item", "maps": {
+      "BCRMap": { "tint": { "rgb": [0.12, 0.15, 0.3], "strength": 1, "mask": { "lum": [0.12, 0.55], "sat": [0.08, 0.45] } } }
+    } }
+  ],
+  "budget": { "texture_px": 2048 },
+  "asset_dir": "Assets/Characters/Uniforms/LF/ParityTintJacket",
+  "prefab_dir": "Prefabs/Characters/Uniforms/LF",
+  "prefab": { "name_key": null, "description_key": null },
+  "verify": { "expect": "changed" }
+}

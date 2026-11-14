@@ -240,6 +240,16 @@ The owner layer is server-only; the server prices every buy and sell with it.
 
 On a listen host the host is the server and prices with the owner values directly.
 
+## Live reload (#970)
+
+`LF_ContentReload.c`. `reload <what>` (harness verb; `LF_ContentReload.ServerRun`) runs one reloader per name, then
+publishes the config stream once. A reloader is the class `LF_ContentReloader_<Name>`, found by name (no list):
+`Config` (`config.json` read again, features re-applied) and `Dialogue` (`LF_DialogueOverrides`, the dev caption
+file, dev tools only). `NeedsDevTools` keeps a developer's file from being read on a live server; the pure
+`LF_ContentReload.Permits` is the decision. The `devDialogue` stream section is written only while overrides exist,
+so a payload without them is unchanged. Terms (#958) add `LF_ContentReloader_Terms` in their own file.
+Test `reload/dialogue-file`; proof `agent-box/proofs/live-reload-proof.mjs`; usage `docs/worktrees.md` "Live reload".
+
 ## Jobs section (#749, D8)
 
 `LF_JobsConfig` (`Configs/Jobs/LF_Jobs.conf`) is the `jobs` section: duty pay, the

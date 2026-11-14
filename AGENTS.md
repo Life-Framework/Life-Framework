@@ -14,8 +14,11 @@ and Sonnet (`lf-builder`) does a scoped issue. Opus (`lf-hard`) takes design,
 replication and persistence, and anything Sonnet failed twice. The free
 DeepSeek model in opencode takes background docs, website work and issue
 grooming. A subagent does the work itself and starts no helper agents unless
-its brief says to. It reads files in pieces and stops after two environment
-failures instead of grinding.
+its brief says to (`lf-scout` for a search is the exception). It reads files
+in pieces and stops after two environment failures instead of grinding. Each
+agent type has a tool-call budget; past it the agent writes
+`tmp/handoff-<slug>.md` and ends with a `RESUME` line. A town-wide job is one
+agent per area. `tools\cli usage` shows where the tokens went.
 
 ## Repo map
 
@@ -62,6 +65,9 @@ failures instead of grinding.
    `addons/LF_Everon1989/`; `validate-addon-boundary` enforces it. Until the
    M3 move loads the pack, a pack resource still lands in the core and gets a
    row in `docs/architecture/core-pack-inventory.md`.
+   **Map independence:** core script never holds world coordinates, map,
+   entity or layer names; a system finds its places by component through
+   `LF_Places` (core-vs-pack.md "Map independence"). Tests keep annex names.
 10. **Shared registries are per-feature files; never append to a central list.**
     A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
     `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both); a
@@ -93,6 +99,8 @@ failures instead of grinding.
 | `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge. Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
+
+**Compact output.** Heavy commands (`validate`, `test`, `session up`, `look`, `wt gate|ship`, `asset run`, `harness.mjs flow`, proof verbs) print one `SUMMARY <cmd> ok|fail ... log=<path>` line and only the failing items with file:line; the full transcript is the log file in `tmp/logs/`. Never pipe them through `tail`/`Select-Object`. `--verbose` prints everything (`docs/agent-budget.md` "Compact command output").
 
 **Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. A session idle 15 min while others wait is closed; any harness command keeps it, `session.mjs lease [min]` holds it. A session older than 20 min while another session request queues gets a one-line warning on its next harness or session command and is closed 5 min later (`session up --hold <min>`, at most 45, for a known-long job). Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
 
@@ -262,6 +270,6 @@ observe, whether a restart is needed.
 ## CI
 
 GitHub Actions `validate` runs `tools\cli validate` on every PR and is a
-required check on `main`. CI sets `LF_VALIDATE_SKIP=validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs`
+required check on `main`. CI sets `LF_VALIDATE_SKIP=validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs,validate-modded-container-props.mjs`
 because the runner has no Reforger install or MCP build. Script compilation
 and the in-game suite stay local (`tools\cli test --no-build` in a worktree).
