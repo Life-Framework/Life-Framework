@@ -226,6 +226,14 @@ class LF_ConfigService
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The owner file's path (or the test's source name), for log lines; empty without one.
+	static string GetOwnerSource()
+	{
+		EnsureLoaded();
+		return s_sOwnerSource;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return True when an owner file is loaded and parsed.
 	static bool HasOwnerLayer()
 	{

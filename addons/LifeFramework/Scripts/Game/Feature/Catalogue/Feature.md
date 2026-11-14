@@ -23,8 +23,10 @@ point; the slip is where the gate's answer is printed.
   draws the price list from the same catalogue, which the config stream brings up to the server's values.
 - **Data:** `Configs/Catalogue/LF_ItemCatalogue.conf` (`LF_ItemCatalogueConfig`), each pack overlay of
   that class, the owner's `catalogue` section, then on a client the stream. Records merge by id
-  (`items` by item id, `offers` by `outlet/item`): an existing id changes only the fields a layer
-  writes, a new id is added, `removed: true` takes a record out. Nothing is persisted.
+  (`items` by item id, `offers` by `outlet/item`) through the shared override model
+  (`docs/config/override-model.md`, #962): add, replace, patch or remove; with no verb an existing id
+  changes only the fields a layer writes and a new id is added. `removed: true` hides a record and a
+  later layer can set it back. Nothing is persisted.
 - **Item:** id, prefab, category (`weapon`, `ammo`, `clothing`, `equipment`, `tool`), price, sell price,
   legality (`legal`, `licensed`, `restricted`, `illegal`), the licence that makes carrying it lawful,
   and the clothing flags `concealsFace` and `concealsBuild`.
