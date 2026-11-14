@@ -14,19 +14,19 @@ class LF_ShopLimitsConfig
 	static const int DEFAULT_BACK_ROOM_SHUT_MS = 600000;
 
 	[Attribute("3.5", UIWidgets.Auto, "Metres a payer may stand from the till when the server takes the money", params: "1 30")]
-	float m_fTillReach = 3.5;
+	float m_fTillReach;
 
 	[Attribute("30", UIWidgets.Auto, "Metres a player may be from a shop before the server rejects a buy or sell", params: "3 200")]
-	float m_fShopDistance = 30;
+	float m_fShopDistance;
 
 	[Attribute("99", UIWidgets.Auto, "Most units in one buy or sell order. Every unit is spawned or deleted, so keep it modest", params: "1 999")]
-	int m_iOrderMaxQuantity = 99;
+	int m_iOrderMaxQuantity;
 
 	[Attribute("4", UIWidgets.Auto, "Metres an officer may stand from a back room to raid it", params: "1 30")]
-	float m_fBackRoomReach = 4;
+	float m_fBackRoomReach;
 
 	[Attribute("600000", UIWidgets.Auto, "Milliseconds a raided back room stays shut", params: "0 86400000")]
-	int m_iBackRoomShutMs = 600000;
+	int m_iBackRoomShutMs;
 
 	protected static ref LF_ShopLimitsConfig s_Config;
 	protected static bool s_bLoadAttempted;

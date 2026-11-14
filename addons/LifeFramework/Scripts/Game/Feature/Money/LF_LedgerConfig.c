@@ -18,10 +18,10 @@ class LF_LedgerConfig
 	int m_iMaxAgeDays;
 
 	[Attribute("1000000", UIWidgets.Auto, "Largest single ATM deposit or withdrawal the server accepts. Also guards balances against oversized payloads", params: "1 100000000")]
-	int m_iAtmMaxTransaction = 1000000;
+	int m_iAtmMaxTransaction;
 
 	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from an ATM when the server takes a deposit or withdrawal", params: "1 30")]
-	float m_fAtmRange = 5;
+	float m_fAtmRange;
 
 	protected static ref LF_LedgerConfig s_Config;
 	protected static bool s_bLoadAttempted;
