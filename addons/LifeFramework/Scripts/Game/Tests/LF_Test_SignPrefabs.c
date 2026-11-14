@@ -17,7 +17,6 @@ class LF_Test_SignPrefabs : LF_Test
 			"{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et",
 			"{70924D289627911B}Prefabs/Props/Signs/LF_Sign_Notice.et",
 			"{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et",
-			"{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et",
 			"{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et",
 			"{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et",
 			"{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et",

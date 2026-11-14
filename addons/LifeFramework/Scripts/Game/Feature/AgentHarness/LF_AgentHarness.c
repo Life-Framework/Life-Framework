@@ -1011,6 +1011,9 @@ class LF_AgentCommand
 	//! the harness must not drive the character by injecting WASD.
 	static bool IsMenuAction(string actionName)
 	{
+		// The clip stamp key (#1173): the proof presses the real binding.
+		if (actionName == "LF_ClipStamp")
+			return true;
 		if (actionName == "MenuBack")
 			return true;
 		if (actionName == "MenuUp")

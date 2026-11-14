@@ -2,9 +2,13 @@
 
 A clip is a video of what happened on screen. Staff use clips with reports and appeals. The server keeps its own incident log, so a clip backs up your report. It does not replace `/report`.
 
-## The game has no on-screen clock
+## The on-screen clip stamp
 
-The game does not show an in-game time or a server stamp on screen yet. Write the time down before you start recording, and use the real time with your time zone. The in-game clock is game time, not real time, and the incident log uses real time. A follow-up issue will add an on-screen stamp.
+The game can print a small stamp in the top left corner: the server name, the last six characters of your character id and the real server date and time in UTC, for example `EVERON-1 / A1B2C3 / 2026-11-14 21:40:07 UTC`. It uses the same clock the incident log uses, so staff can match your clip to an incident row. It is not the in-game clock.
+
+- It starts off. Press **F9** (keyboard) or tap **RB + View** together (gamepad; holding them opens the emote wheel) to show or hide it. The key is listed under Controls as "Show clip stamp".
+- Turn it on before you start recording, so the stamp is in the whole clip.
+- A server owner can turn the stamp off for the whole server (`m_bClipStampAllowed` in `Configs/Moderation/LF_Incident.conf`, or the incident section of `config.json`). Then the key shows a short message and nothing appears; write the time down instead, as below.
 
 ## Before you record
 
@@ -16,9 +20,9 @@ The game does not show an in-game time or a server stamp on screen yet. Write th
 
 Write these in one short message with the clip:
 
-- The server name.
+- The server name (the stamp shows it).
 - Your character name and the names of the other players involved.
-- The real time the event started, with your time zone, for example `14 Nov 21:40 CET`.
+- The real time the event started. If the stamp was on, read it off the clip. If not, write the time with your time zone, for example `14 Nov 21:40 CET`.
 - What happened, in order, in one or two lines.
 - The incident number, if you have one.
 

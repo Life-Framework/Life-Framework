@@ -2234,6 +2234,16 @@
   as Workbench Publish bundles it. Proven from the packed addon in a clean profile: Scenarios
   lists it, Play loads the town, form R-89 signs, top-up and test cars apply. Asserted in
   `host/playtest-mission`. Publish steps: `docs/playtest/workshop-publish.md`.
+- ✅ **Batch 1 of the pack move (#323, 2026-11-14).** `LF_PlaytestTown.conf`, its preview and
+  `EveronLifeGameMode.conf` live in `addons/LF_Everon1989/Missions/` with their GUIDs; both playtest
+  headers load the pack world `Worlds/Everon1989Town/Everon1989Town.ent`, a SubScene of the core
+  DebugWorld that holds `Village_Buildings`, `Village_Dressing`, `Village_Roads` and
+  `Village_Signs` (the mining sign). `MainWorld/`, the title poster mesh and `EL_MiningSign.et` moved
+  too. `host/playtest-mission` and `harness/dev-gate-dedicated` read the core fixture
+  `Missions/LF_HostedTest.conf`; `validate-pack-missions` holds the Workshop header checks. A bare
+  `session up`, `look`, `place` and `audit placement` use the pack world when the pack is in the
+  checkout; `tools\cli test` still boots the core DebugWorld. `e2e --pre-move <ref> --mission playtest`
+  reloads a save made before the move.
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
@@ -2268,7 +2278,7 @@
   fuel station, org registry, and the hideout down a side alley; the contraband
   barn is out of town on the east track. The farm, quarry, builders' yard and
   forest edge are on the outskirts. `Village_Roads`, `Village_Buildings` and
-  `Village_Dressing` hold the roads (road generator splines saved as
+  `Village_Dressing` (in the pack world `LF_Everon1989/Worlds/Everon1989Town` since #323 batch 1) hold the roads (road generator splines saved as
   `RoadEntity`), vanilla buildings, walls, lamps and trees; `Annex.layer` is
   the net fence of the test annex at x 20..112, z 20..112, which holds the test
   runner, the PR fixtures, and the legacy debug stations (with their
@@ -2880,6 +2890,7 @@
 
 ### Session fixtures and rejoin identity (2026-11-14)
 - ✅ Harness sessions: `session up --roster 2,3` and `--seed <file>` write the police roster or any `LifeFramework/` file into the server profile just before the server boots, on the machine that runs it (a roster written on this PC never reached a pool machine); `session roster` on a live session reloads it through `LF_HostStop` (`$profile:lf-reload-roster`). A harness client is keyed by a session slot (`LF_PlayerIdentity.SlotOf`, only for connected players), so `session rejoin <n>` brings a client back as the same account under a new player id; `session identity` and `session.mjs rejoin-proof`. Test `session/slots` (LOGIC). No save change.
+- ✅ **Across-the-road check proven on real roads** (#1129, 2026-11-14; test `placement/across-road`). `Worlds/CoreOnEveron` now has an `SCR_AIWorld` (`SCR_AIWorld_Eden.et`), so its AI road network is live. `LF_Test_PlacementRoad` runs there on four real Everon roads: a spike strip straight across (and 10 degrees off) is accepted, 30 degrees off and along the road are refused. Run: `tools\cli test --no-build --only LF_Test_PlacementRoad --world Worlds/CoreOnEveron/CoreOnEveron.ent`.
 - ✅ (2026-11-14, #299) The config harness has a boot stage: a fixture whose sidecar says `"boot": true` (with a `bootLog` of `has` / `absent` server-log text) gets its own fresh server-only session on whichever pool machine has room, instead of the shared server's `configreload`, for values a reload cannot apply (the autosave timer, boot-time switches, pack overlays). `tools\cli config-harness --stage boot [--only <name>]` boots (`session up --clients 0 --seed`), reads the log with `config-boot-proof` where the server runs, and stops it. Fixtures `presets/boot-autosave-interval` (a 45 s autosave timer and ATM off, both read at boot) and `broken/boot-bad-interval` (a bad field logs, the default 600 s runs). Not in `wt gate`: two boots cost about 85 s of pool time; run it when a boot-read setting changes. Proof `config-harness-selftest.mjs` covers the judging. Merged, in-dev.
 
 ### Pack config sections (#553, 2026-11-14)
@@ -2888,3 +2899,7 @@
 
 ### Aimed placement (#1028, 2026-11-14)
 - ✅ An officer's folded spike strip has a "Place where I aim" action: the ghost then follows where the camera aims (at most 4 m from their feet), turns with `[` and `]` (15 degrees, 1 with Shift held; gamepad: left trigger, right shoulder, hold left stick), is blue when the spot is valid and red with the reason in a hint when not, places on Enter (right trigger) and cancels on Backspace (B). Across a road the heading snaps straight across with 10 degrees of turn either side. The server still checks every placement (`LF_PlacementService.Confirm`): the strip lies where the ghost was on both clients. Leaving (death, down, a vehicle, the item gone) hides the ghost. FLOOR and WALL still refuse (the buildings, #1033). Proof: `placement/aim` (LOGIC), `placement-aim-proof` (two clients). Merged, in-dev.
+
+### `LF_ClipStamp` — `Feature/Moderation/LF_ClipStamp.c` (#1173, 2026-11-14)
+- ✅ A player can show a small on-screen clip stamp (F9, or a quick tap of RB + View on gamepad; off by default): server name, last six characters of their character id and the real server time in UTC, the clock `LF_IncidentLog` stamps, so a clip can be matched to an incident row. The server answers one RPC with its clock; the client counts seconds itself (no per-frame replication). The owner can disable it (`m_bClipStampAllowed`) and set the name (`m_sClipStampServerName`) in `LF_Incident.conf`. Tests: `moderation/clip-stamp` (LOGIC). Merged, in-dev.
+- ✅ (2026-11-14, #301) The config harness runs where it should: the static part (parse + validate over every fixture, `validate-config-harness`) in every `validate`, `wt gate` and `ci`; the game-session parts (client stage, boot stage once #299 lands) in `ci`/`wt gate`/`wt ship` only when the change touches `tools/config/`, a config fixture, the schema, a `.conf` or config code in `addons/`; and all of it, sessions included, as a gate of `tools\cli release` (`config-gate --full`). A planted broken preset fails `validate`. Proof `config-gate-selftest.mjs`. Merged, in-dev.

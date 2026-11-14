@@ -10,3 +10,6 @@ GenericEntity LF_TestRunner {
  }
  coords 4471.854 21.689 10530.136
 }
+
+SCR_AIWorld AIWorld_CoreOnEveron : "Prefabs/AI/SCR_AIWorld_Eden.et" {
+}

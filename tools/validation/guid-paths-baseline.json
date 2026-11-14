@@ -1,10 +1,3 @@
 {
- "entries": [
-  {
-   "file": "LifeFramework/Scripts/Game/Feature/AgentHarness/LF_ParkBrakeHarness.c",
-   "rule": "no-guid",
-   "token": "Prefabs/Structures/BuildingParts/Entry/ConcreteSlope_02_MediumVehicle.et",
-   "issue": "#1149"
-  }
- ]
+ "entries": []
 }
