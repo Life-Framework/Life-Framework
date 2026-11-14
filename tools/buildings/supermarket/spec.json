@@ -1,7 +1,7 @@
 {
   "slug": "supermarket",
   "name": "Supermarket",
-  "concept": "The small-town self-service grocery of 1989 Everon: the one-storey supermarket that replaced the counter shop in the late 1970s and 80s (a French 'supérette' or a Czech 'samoobsluha'). One rendered hall about 18 by 14 m, a flat roof, plate-glass shop front with a glass entrance and a canopy on the street side, blind side and back walls so shelving can stand against them, and a stockroom behind the sales floor with the office and staff WC off it, one service door onto the hall. ArchBuilder's SUPERMARKET archetype is that building: one tall storey, flat metal roof, panoramic front glazing on the front only, a vanilla GroceryStore fascia sign. Its default size (30 to 46 m wide, a 5.75 m storey with Reforger proportions) is a modern out-of-town store, so the spec shrinks it to a village-centre plot with a 3.8 m storey (parapet top 4.9 m; Everon's vanilla grocery ShopModern_E_01 is 5.8 m, docs/building-pipeline/polish.md) and gives it a cream render, which reads as 1980s rather than the profile's metal panels. (Plain white plaster renders near-white in game: the base game's plaster texture is meant to be tinted, and only the coloured stucco materials carry a tint.) Built with Reforger proportions and vanilla doors and windows. ArchBuilder furnishes it as a supermarket and the export swaps every piece for a vanilla prop: gondolas, wall shelves, coolers, checkouts with tills, ceiling lamps and the GroceryStore fascia. The shelves arrive empty; our shop fills them (docs/architecture/building-pipeline-spike.md \"Supermarket next steps\").",
+  "concept": "The small-town self-service grocery of 1989 Everon: the one-storey supermarket that replaced the counter shop in the late 1970s and 80s (a French 'supérette' or a Czech 'samoobsluha'). One rendered hall about 18 by 14 m, a flat roof, plate-glass shop front with a glass entrance and a canopy slab along it with a painted fascia (no posts), blind side and back walls so shelving can stand against them, and a stockroom behind the sales floor (steel shelving, goods on pallets) with the office and a one-toilet staff WC off it, one service door onto the hall. ArchBuilder's SUPERMARKET archetype is that building: one tall storey, flat metal roof, panoramic front glazing on the front only, a vanilla GroceryStore fascia sign. Its default size (30 to 46 m wide, a 5.75 m storey with Reforger proportions) is a modern out-of-town store, so the spec shrinks it to a village-centre plot with a 3.8 m storey (parapet top 4.9 m; Everon's vanilla grocery ShopModern_E_01 is 5.8 m, docs/building-pipeline/polish.md) and gives it a cream render, which reads as 1980s rather than the profile's metal panels. (Plain white plaster renders near-white in game: the base game's plaster texture is meant to be tinted, and only the coloured stucco materials carry a tint.) Built with Reforger proportions and vanilla doors and windows. ArchBuilder furnishes it as a supermarket and the export swaps every piece for a vanilla prop: gondolas, wall shelves, coolers, checkouts with tills, ceiling lamps and the GroceryStore fascia. The `store` block makes it our physical store (docs/building-pipeline/README.md \"Store\").",
   "red_line": "pack",
   "archbuilder": {
     "archetype": "SUPERMARKET",
@@ -26,8 +26,46 @@
     "edits": [
       "lining (WallFinish): the sales hall cream paint below 1.5 m is AB_Tiles_Wall, a tiled dado (polish-dado.py)"
     ],
-    "entities": [
-      { "prefab": "SignCommercial_01_GroceryStore", "move": [-5.1, 0, 0], "why": "over the left shop window: above the door the 3.45 m canopy hides it from the street" }
+    "entities": [],
+    "props": [
+      { "prefab": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et", "at": [-3.6, 0.1, 6.05], "why": "stockroom: deliveries against the back wall" },
+      { "prefab": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et", "at": [-2.75, 0.1, 6.1], "yaw": 90, "why": "stockroom: deliveries against the back wall" },
+      { "prefab": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et", "at": [0.9, 0.1, 6.05], "yaw": 90, "why": "stockroom: a wooden shipping crate" },
+      { "prefab": "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et", "at": [2.6, 0.1, 6.15], "why": "stockroom: loose cartons" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [2.62, 0.51, 6.13], "yaw": 8, "why": "stockroom: a carton on a carton" },
+      { "prefab": "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et", "at": [3.2, 0.1, 6.1], "yaw": 90, "why": "stockroom: loose cartons" },
+      { "prefab": "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et", "at": [4.65, 0.1, 6.2], "why": "stockroom: the cleaner's bucket in the corner" },
+      { "prefab": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et", "at": [-3.27, 0.267, 3.115], "why": "stockroom: goods on the pallet (pallet floor 0.146)" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [1.92, 0.267, 3.115], "why": "stockroom: goods on the pallet" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [2.38, 0.267, 3.115], "why": "stockroom: goods on the pallet" },
+      { "prefab": "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et", "at": [-1.9, 0.19, 2.69], "yaw": 90, "why": "stockroom rack by the service door: bottom board (0.09)" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [-1.95, 0.66, 2.7], "yaw": 90, "why": "stockroom rack by the service door: board 0.56" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [-1.35, 1.08, 2.7], "yaw": 90, "why": "stockroom rack by the service door: board 0.98" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [3.45, 0.66, 2.7], "yaw": 90, "why": "stockroom rack by the WC: board 0.56" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [4.05, 1.08, 2.7], "yaw": 90, "why": "stockroom rack by the WC: board 0.98" },
+      { "prefab": "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et", "at": [3.6, 1.56, 2.69], "yaw": 90, "why": "stockroom rack by the WC: board 1.46" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [-4.84, 0.66, 5.1], "why": "stockroom rack on the office wall: board 0.56" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [-4.84, 1.08, 5.8], "why": "stockroom rack on the office wall: board 0.98" },
+      { "prefab": "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et", "at": [-4.84, 0.19, 5.75], "why": "stockroom rack on the office wall: bottom board" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [5.51, 0.66, 5.8], "why": "stockroom rack on the WC wall: board 0.56" },
+      { "prefab": "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [5.51, 1.56, 5.1], "why": "stockroom rack on the WC wall: board 1.46" },
+      { "prefab": "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et", "at": [1.55, 0.35, 2.45], "why": "stockroom: the staff punch clock beside the service door" },
+      { "prefab": "{BD65F1D86388640D}Prefabs/Props/Civilian/FireExtinguisher_01.et", "at": [-0.75, 0.101, 2.55], "why": "stockroom: a fire extinguisher by the service door" },
+      { "prefab": "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et", "at": [-8.27, 0.1, 3.9], "yaw": 90, "why": "office: a steel filing cabinet on the side wall" },
+      { "prefab": "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et", "at": [-5.6, 1.003, 4.55], "yaw": -80, "why": "office: files on the desk (desk top 1.003)" },
+      { "prefab": "{10D896F6F525B210}Prefabs/Props/Commercial/ShoppingBasket_01_pile.et", "at": [1.9, 0.1, -6.15], "why": "hall: a pile of shopping baskets inside the entrance" }
+    ]
+  },
+  "store": {
+    "prefab": "Supermarket_Store",
+    "key": "everon_supermarket",
+    "boundary": { "center": [0, 0, 0], "half": [8.6, 0, 6.6] },
+    "restock_seconds": 120,
+    "till": "CashierShop_01",
+    "lines": [
+      { "item": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "fixture": "ShelfShop_01", "pick": [4, 5], "boards": [2], "per_board": 3, "max": 12, "restock": 4 },
+      { "item": "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et", "fixture": "ShelfShop_01", "pick": [8, 9], "boards": [1], "per_board": 3, "max": 10, "restock": 3 },
+      { "item": "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et", "fixture": "CoolingBoxShop_01", "pick": [0], "boards": [0], "per_board": 4, "max": 12, "restock": 4 }
     ]
   },
   "addon": "LF_Everon1989",

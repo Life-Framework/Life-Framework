@@ -598,7 +598,7 @@ modded class SCR_ChimeraCharacter
 
 		if (tool == "shelf")
 		{
-			// A shopper taking the first shelf item in reach of the physical store (#202), through the
+			// A shopper taking the shelf item nearest them in the physical store (#202, #1143), through the
 			// same inventory insert a pickup uses. The server tags it unpaid on its next look.
 			LF_HarnessReply(commandId, "ok", LF_Stores.HarnessTakeFromShelf(this));
 			return;

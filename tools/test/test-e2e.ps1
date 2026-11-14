@@ -1,7 +1,7 @@
 # tools/test/test-e2e.ps1 - fast server e2e: boot DebugWorld, run the LFTEST suite, report.
 #
 # Booting the Reforger dedicated server takes ~20-30s before scripts run, so this
-# waits up to a hard 90s cap but polls every 2s and kills the server as soon as
+# waits up to a hard 90s cap but polls every 250 ms and kills the server as soon as
 # the LFTEST SUMMARY marker appears (or the cap hits). Exit codes:
 #   0 = SUITE PASSED (SUMMARY present, failed=0)
 #   1 = SUITE FAILED (SUMMARY present, failed>0) or server crashed with errors
@@ -50,7 +50,7 @@ param(
   # Run budget (seconds), counted from the server's ready line; the pool passes the learned one. Boot has its own, shorter budget.
   [int]$TimeoutSeconds = 90,
   [int]$BootTimeoutSeconds = 30,
-  [int]$PollMs = 2000,
+  [int]$PollMs = 250,
   [string]$Tier = "all",
   [int]$BindPort = 2001,
   [int]$A2sPort = 17777,
@@ -374,16 +374,17 @@ function Write-SuiteLines([string]$dir) {
   foreach ($h in ($hits | Select-Object -First 40)) { Write-Host "  $($h.Line.Trim())" }
 }
 
-function Read-Crash([string]$dir) {
+# Crash check for the poll loop: crash.log, plus the crash lines among the console lines this
+# poll added (each console line is looked at once, not 4 times a second).
+function Read-CrashFresh([string]$dir, [string]$fresh) {
   if (-not $dir) { return @() }
   $out = @()
   $cl = Join-Path $dir "crash.log"
   if (Test-Path $cl) {
     $out += Get-Content $cl -ErrorAction SilentlyContinue
   }
-  $c = Join-Path $dir "console.log"
-  if (Test-Path $c) {
-    $out += @(Get-Content $c -ErrorAction SilentlyContinue | Where-Object { $_ -match 'Virtual Machine Exception|NULL pointer|Exception|VME|\( E \)' })
+  if ($fresh) {
+    $out += @($fresh -split "`n" | ForEach-Object { $_.TrimEnd("`r") } | Where-Object { $_ -match 'Virtual Machine Exception|NULL pointer|Exception|VME|\( E \)' })
   }
   return $out
 }
@@ -404,6 +405,42 @@ function Get-HungLines([string]$dir) {
   return @($pick | Select-Object -First 5 | ForEach-Object { $t = $_.Trim(); if ($t.Length -gt 200) { $t.Substring(0, 200) } else { $t } })
 }
 
+# The poll is 250 ms, so it reads console.log incrementally: only the bytes added since the last
+# poll are decoded (a full-suite log is megabytes; re-reading it 4 times a second would cost more
+# than the poll saves). $tail.Text is the whole log so far; $fresh is what this poll added, cut at
+# the last newline so a half-written line is matched once, when it is complete.
+$tail = @{ Path = $null; Offset = [long]0; Decoder = $null; Text = (New-Object System.Text.StringBuilder); Done = 0 }
+function Update-ConsoleTail([string]$dir) {
+  $c = $null
+  if ($dir) { $c = Join-Path $dir "console.log" }
+  if ($c -ne $tail.Path) {
+    $tail.Path = $c; $tail.Offset = [long]0; $tail.Done = 0
+    $tail.Decoder = [System.Text.Encoding]::UTF8.GetDecoder()
+    [void]$tail.Text.Clear()
+  }
+  if (-not $c -or -not (Test-Path -LiteralPath $c)) { return "" }
+  try {
+    $fs = [System.IO.File]::Open($c, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite -bor [System.IO.FileShare]::Delete)
+    try {
+      if ($fs.Length -gt $tail.Offset) {
+        [void]$fs.Seek($tail.Offset, [System.IO.SeekOrigin]::Begin)
+        $buf = New-Object byte[] ([int]($fs.Length - $tail.Offset))
+        $n = $fs.Read($buf, 0, $buf.Length)
+        $tail.Offset += $n
+        $chars = New-Object char[] ($tail.Decoder.GetCharCount($buf, 0, $n))
+        $m = $tail.Decoder.GetChars($buf, 0, $n, $chars, 0)
+        [void]$tail.Text.Append($chars, 0, $m)
+      }
+    } finally { $fs.Dispose() }
+  } catch { return "" }
+  $all = $tail.Text.ToString()
+  $end = $all.LastIndexOf("`n") + 1
+  if ($end -le $tail.Done) { return "" }
+  $fresh = $all.Substring($tail.Done, $end - $tail.Done)
+  $tail.Done = $end
+  return $fresh
+}
+
 $ready = $false
 $readySw = $null
 $timedOut = $null
@@ -411,10 +448,11 @@ while ($true) {
   Start-Sleep -Milliseconds $PollMs
 
   $logDir = Get-LogDir
-  $console = Read-Console $logDir.FullName
+  $fresh = Update-ConsoleTail $logDir.FullName
+  $console = $tail.Text.ToString()
 
   try {
-    $text = ConvertTo-ConsoleText $console
+    $text = $fresh
     $summaryMatch = [regex]::Match($text, '\[LFTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)')
     if ($summaryMatch.Success) {
       $at = $summaryMatch.Index
@@ -446,19 +484,19 @@ while ($true) {
 
   # A compile failure does not stop the server; it runs on without the
   # addon's scripts and never prints a SUMMARY. Fail now with the errors.
-  if ($console -match 'Can''t compile') {
+  if ($fresh -match 'Can''t compile') {
     $crashLines = @($console -split "`n" | Where-Object { $_ -match 'SCRIPT\s+\(E\)|Can''t compile' } | Select-Object -First 12)
     $compileFailed = $true
     break
   }
 
-  $crashes = Read-Crash $logDir.FullName
+  $crashes = Read-CrashFresh $logDir.FullName $fresh
   if ($crashes.Count -gt 0) {
     $crashLines = $crashes | Select-Object -First 12
     break
   }
 
-  if (-not $ready -and ($console -match 'Starting RPL server, listening')) {
+  if (-not $ready -and ($fresh -match 'Starting RPL server, listening')) {
     $ready = $true
     $readySw = [Diagnostics.Stopwatch]::StartNew()
   }

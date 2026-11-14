@@ -4,6 +4,6 @@ export const help = "workshop boot-check <coreId> <packId> [--host lf-cloud] [--
 export async function main(args, ctx) {
   const [sub, ...rest] = args;
   if (sub === "boot-check") return (await import("../release/boot-check.mjs")).main(rest, ctx);
-  console.log("usage: tools\cli workshop boot-check <coreId> <packId> [flags]");
+  console.log("usage: tools\\cli workshop boot-check <coreId> <packId> [flags]");
   return sub ? 2 : 0;
 }

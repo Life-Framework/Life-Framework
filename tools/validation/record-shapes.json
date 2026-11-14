@@ -1,5 +1,5 @@
 {
-  "saveVersion": 32,
+  "saveVersion": 33,
   "launched": false,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -34,7 +34,8 @@
     "wantedlooks": "LF_WantedLookRow",
     "idcards": "LF_PhotoIdRow",
     "caseboard": "LF_CaseBoardRow",
-    "buildstamp": "LF_SaveStampRecord"
+    "buildstamp": "LF_SaveStampRecord",
+    "vehiclestate": "LF_VehicleStateRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -430,6 +431,17 @@
         "int m_iVersion",
         "string m_sGameBuild",
         "int m_iSaveVersion"
+      ]
+    },
+    "LF_VehicleStateRow": {
+      "since": 33,
+      "fields": [
+        "int m_iVersion",
+        "string m_sVehicleId",
+        "int m_iTowState",
+        "int m_iTowedAt",
+        "int m_iInspectedAt",
+        "int m_iCompartment"
       ]
     }
   }

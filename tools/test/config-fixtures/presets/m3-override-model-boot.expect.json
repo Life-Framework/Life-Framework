@@ -1,0 +1,22 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "warn",
+      "line": 3,
+      "col": 129,
+      "msg": "vehicles.vehicles.AAAABBBBCCCCDDDD: no shipped record has this key; it adds a new record. A typo would sit unused"
+    }
+  ],
+  "boot": true,
+  "bootLog": {
+    "has": [
+      "vehicles.vehicles.AAAABBBBCCCCDDDD: patch names an id no lower layer has",
+      "crime.crimes.test-missing: patch names an id no lower layer has",
+      "police.ranks.patrol: a shipped rank cannot be removed",
+      "police.ranks.ghost: patch names an id no lower layer has",
+      "catalogue: owner config read 1 fields, rejected 0"
+    ]
+  }
+}
