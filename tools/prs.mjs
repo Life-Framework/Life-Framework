@@ -17,7 +17,7 @@
 // (not a directory or git-metadata touch, #698) belongs to a live agent and is never touched.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join, normalize, resolve } from "node:path";
@@ -26,6 +26,8 @@ import { removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 import { mergeStringTables } from "./merge/union-string-table.mjs";
 import { mergeLines } from "./merge/merge-markdown.mjs";
 import { mergeLintBaselines } from "./merge/union-lint-baseline.mjs";
+import { safetyCheck } from "./prs-safety.mjs";
+import { cmdSchedule } from "./prs-schedule.mjs";
 
 export const LIVE_MS = 15 * 60 * 1000;
 export const STUCK_MS = 10 * 60 * 1000;
@@ -129,9 +131,30 @@ function resolveByStages(wtPath, path, kind) {
 
 // Production regeneration: the worktree's own CLI, so its generator version is used.
 export function regenerateWithCli(wtPath, kind) {
-  const cmd = kind === "regen-tests" ? "regen-tests" : "regen-localization";
-  const res = wt.run(process.execPath, [join(wtPath, "tools", "cli.mjs"), cmd], { cwd: wtPath });
-  return { ok: res.status === 0, error: (res.stdout + res.stderr).trim() };
+  const cli = join(wtPath, "tools", "cli.mjs");
+  const cmds = kind === "regen-tests" ? ["regen-tests"] : kind === "credits" ? ["credits", "regen-localization"] : ["regen-localization"];
+  for (const cmd of cmds) {
+    const res = wt.run(process.execPath, [cli, cmd], { cwd: wtPath });
+    if (res.status !== 0) return { ok: false, error: (res.stdout + res.stderr).trim() };
+  }
+  return { ok: true, error: "" };
+}
+
+// docs/credits.md feeds the credits rows in the string table and LF_CreditsData.c. When both sides
+// changed it, re-derive them after the merge. Returns an error string or null.
+function regenCredits(wtPath, pre, base, regenerate) {
+  const mb = wt.git(wtPath, ["merge-base", pre, base]).stdout.trim();
+  if (!mb) return null;
+  const changed = (a, b) => wt.git(wtPath, ["diff", "--name-only", a, b, "--", "docs/credits.md"]).stdout.trim() !== "";
+  if (!changed(mb, pre) || !changed(mb, base)) return { ran: false };
+  const r = regenerate(wtPath, "credits");
+  if (!r.ok) return { ran: true, error: `credits regeneration failed: ${r.error}` };
+  if (wt.git(wtPath, ["status", "--porcelain"]).stdout.trim()) {
+    wt.git(wtPath, ["add", "-A"]);
+    const c = wt.git(wtPath, ["commit", "--amend", "--no-edit"]);
+    if (c.status !== 0) return { ran: true, error: `credits regen commit failed: ${(c.stderr || c.stdout).trim()}` };
+  }
+  return { ran: true };
 }
 
 // Merge drivers for a heal, independent of the worktree being healed. A worktree
@@ -176,16 +199,33 @@ export function driverGitArgs() {
 
 // Merge `base` into the branch checked out at wtPath. Never leaves a half merge:
 // a result is "up-to-date", "merged" (clean), "healed" (generated conflicts
-// resolved and committed), or "needs-human" (merge aborted, HEAD unchanged).
+// resolved and committed), "needs-human" (merge aborted, HEAD unchanged), or "refused"
+// (the merge was made but failed prs-safety.mjs; reset to the old HEAD).
 export function healMerge(wtPath, { base = "origin/main", regenerate = regenerateWithCli } = {}) {
   const pre = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
   if (wt.git(wtPath, ["status", "--porcelain"]).stdout.trim()) {
     return { status: "needs-human", reason: "uncommitted changes in the worktree", conflicted: [], pre };
   }
+  // After the merge commit exists: credits regen, then the safety check. A failure undoes the merge.
+  const verify = (result) => {
+    if (result.head === pre) return result;
+    const cr = regenCredits(wtPath, pre, base, regenerate);
+    const problems = [];
+    if (cr?.error) problems.push(cr.error);
+    else {
+      const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
+      result.head = head;
+      const sc = safetyCheck(wtPath, { pre, base, credits: !!cr?.ran });
+      problems.push(...sc.problems);
+    }
+    if (!problems.length) return result;
+    wt.git(wtPath, ["reset", "--hard", pre]);
+    return { status: "refused", reason: `safety check failed, merge undone: ${problems.join(" | ")}`, conflicted: [], problems, pre };
+  };
   const merge = wt.git(wtPath, [...driverGitArgs(), "merge", "--no-ff", "--no-edit", base]);
   if (merge.status === 0) {
     const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
-    return { status: head === pre ? "up-to-date" : "merged", conflicted: [], resolved: [], pre, head };
+    return verify({ status: head === pre ? "up-to-date" : "merged", conflicted: [], resolved: [], pre, head });
   }
   const conflicted = unmergedPaths(wtPath);
   const abort = (reason, paths) => {
@@ -215,7 +255,7 @@ export function healMerge(wtPath, { base = "origin/main", regenerate = regenerat
   const commit = wt.git(wtPath, ["commit", "--no-edit"]);
   if (commit.status !== 0) return abort(`merge commit failed: ${(commit.stderr || commit.stdout).trim()}`, conflicted);
   const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
-  return { status: "healed", conflicted: [], resolved: conflicted, pre, head };
+  return verify({ status: "healed", conflicted: [], resolved: conflicted, pre, head });
 }
 
 // Files git would conflict on, without touching any checkout (dry run).
@@ -336,7 +376,7 @@ export function prsStatus(root) {
   return 0;
 }
 
-function gateIn(wtPath, log, base = "origin/main") {
+function gateIn(wtPath, log, base = "origin/main", validateOnly = false) {
   const tier = touchesScripts(wtPath, base) ? "all" : "fast";
   const cli = join(wtPath, "tools", "cli.mjs");
   const step = (args) => {
@@ -345,6 +385,8 @@ function gateIn(wtPath, log, base = "origin/main") {
     return r.status ?? 1;
   };
   if (step(["validate"]) !== 0) return { ok: false, what: "validate" };
+  // Watch mode: the PR's own `validate` check and the auto-merge queue run the rest.
+  if (validateOnly) return { ok: true, tier: "validate" };
   if (step(["test", "--no-build", "--tier", tier, "--wait"]) !== 0) return { ok: false, what: `test --tier ${tier}` };
   return { ok: true, tier };
 }
@@ -377,7 +419,7 @@ function alignWithPr(wtPath, pr) {
   return `worktree HEAD ${local.slice(0, 7)} has commits the PR (${pr.headRefOid.slice(0, 7)}) does not; the agent has unpushed work`;
 }
 
-function healOne(root, pr, { dryRun, log }) {
+function healOne(root, pr, { dryRun, log, validateOnly = false }) {
   const d = describeWorktree(root, pr.headRefName, Date.now());
   if (d.live) return { kind: "live", msg: `worktree ${d.label}: an agent is working; not touched` };
   const baseRef = "origin/" + (pr.baseRefName || "main");
@@ -406,10 +448,10 @@ function healOne(root, pr, { dryRun, log }) {
       log(`    no worktree for ${pr.headRefName}; using temp ${dir}`);
     }
     const m = healMerge(dir, { base: baseRef });
-    if (m.status === "needs-human") return { kind: "attention", msg: `needs a human/agent: ${m.reason}${m.conflicted.length ? ` (${m.conflicted.join(", ")})` : ""}; merge aborted, PR untouched`, paths: m.conflicted };
+    if (m.status === "needs-human" || m.status === "refused") return { kind: "attention", msg: `needs a human/agent: ${m.reason}${m.conflicted.length ? ` (${m.conflicted.join(", ")})` : ""}; ${m.status === "refused" ? "nothing pushed" : "merge aborted"}, PR untouched`, paths: m.conflicted, refused: m.status === "refused" };
     if (m.status === "up-to-date") log(`    already contains ${baseRef}`);
     else log(`    merged ${baseRef}${m.resolved?.length ? `, resolved ${m.resolved.join(", ")}` : ""}`);
-    const g = gateIn(dir, log, baseRef);
+    const g = gateIn(dir, log, baseRef, validateOnly);
     if (!g.ok) {
       if (!temp && m.status !== "up-to-date") wt.git(dir, ["reset", "--keep", m.pre]); // drop only our merge commit
       return { kind: "attention", msg: `gate failed (${g.what}) after merging ${baseRef}; not pushed, worktree reset to ${m.pre.slice(0, 7)}` };
@@ -438,65 +480,129 @@ function mergeStuck(root, pr, { dryRun }) {
   return { kind: "merged", msg: "merged with gh pr merge --merge" };
 }
 
+// A PR comment naming the files, once per (PR head, main head): a watch pass repeats every 10 min.
+function commentAttention(root, pr, r, log) {
+  const mainHead = wt.git(root, ["rev-parse", "--short=9", `origin/${pr.baseRefName || "main"}`]).stdout.trim();
+  const marker = `<!-- lf-prs-heal ${pr.headRefOid.slice(0, 9)} ${mainHead} -->`;
+  const seen = gh(root, ["pr", "view", String(pr.number), "--json", "comments"]);
+  if (seen.status === 0 && (JSON.parse(seen.stdout || "{}").comments ?? []).some((c) => String(c.body).includes(marker))) return;
+  const files = (r.paths ?? []).map((p) => `- \`${p}\``).join("\n");
+  const base = pr.baseRefName || "main";
+  const body = [
+    marker,
+    `**PR keeper:** this PR conflicts with \`${base}\` and could not be healed automatically: ${r.msg.replace(/\n/g, " ")}`,
+    files ? `\nFiles:\n${files}` : "",
+    `\nNothing was pushed. Merge \`origin/${base}\` in the PR's worktree and resolve these by hand.`,
+  ].join("\n");
+  const c = gh(root, ["pr", "comment", String(pr.number), "--body", body]);
+  log(`    ${c.status === 0 ? "commented on" : "could not comment on"} #${pr.number}`);
+}
+
+// One pass over the open ws/* PRs. `conflictsOnly` (watch mode) touches only CONFLICTING (DIRTY) PRs.
+export function healPass(root, { dryRun = false, only = [], conflictsOnly = false, validateOnly = false, comment = false, log = (s) => console.log(s) } = {}) {
+  wt.git(root, ["fetch", "origin", "--prune", "--quiet"]);
+  let prs = listWsPrs(root);
+  if (only.length) prs = prs.filter((p) => only.includes(p.number));
+  const now = Date.now();
+  const results = [];
+  for (const pr of prs) {
+    refreshUnknown(root, pr);
+    const c = checksOf(pr);
+    const tag = `#${pr.number} ${pr.headRefName} [${pr.mergeStateStatus}]`;
+    let r;
+    const dirty = pr.mergeStateStatus === "DIRTY" || pr.mergeable === "CONFLICTING";
+    if (pr.isDraft) r = { kind: "skip", msg: "draft" };
+    else if (conflictsOnly && !dirty) continue;
+    else if (dirty || pr.mergeStateStatus === "BEHIND") {
+      log(`${tag}: ${dryRun ? "checking" : "healing"}`);
+      r = healOne(root, pr, { dryRun, log, validateOnly });
+      if (comment && !dryRun && r.kind === "attention" && r.paths?.length) {
+        try { commentAttention(root, pr, r, log); } catch (e) { log(`    comment failed: ${e.message}`); }
+      }
+    } else if (["CLEAN", "UNKNOWN", "HAS_HOOKS", "UNSTABLE"].includes(pr.mergeStateStatus) && pr.autoMergeRequest && c.green) {
+      const since = Math.max(Date.parse(pr.autoMergeRequest.enabledAt ?? "") || 0, c.last);
+      if (now - since >= STUCK_MS) r = mergeStuck(root, pr, { dryRun });
+      else r = { kind: "ok", msg: `green, auto-merge on; waiting (${age(now - since)} < 10m)` };
+    } else if (c.failing) r = { kind: "attention", msg: `checks failing (${c.label})` };
+    else if (!pr.autoMergeRequest) r = { kind: "ok", msg: "auto-merge off (left for review)" };
+    else r = { kind: "ok", msg: `waiting: checks ${c.label}` };
+    results.push({ pr, tag, ...r });
+  }
+  return results;
+}
+
+// Watch mode runs headless under Task Scheduler, so everything it prints also goes to a log file.
+function teeToLog(root) {
+  const file = join(wt.mainRootOf(root), "tmp", "logs", "prs-heal-watch.log");
+  mkdirSync(dirname(file), { recursive: true });
+  const orig = console.log.bind(console);
+  console.log = (...a) => {
+    const line = a.join(" ");
+    orig(line);
+    try { appendFileSync(file, `${new Date().toISOString()} ${line}\n`); } catch {}
+  };
+}
+
+function sleepMs(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
 export function prsHeal(root, args) {
   const dryRun = args.includes("--dry-run");
+  const watch = args.includes("--watch");
+  const once = args.includes("--once");
+  const num = (flag, dflt) => {
+    const i = args.indexOf(flag);
+    const n = i >= 0 ? parseInt(args[i + 1], 10) : NaN;
+    return Number.isFinite(n) && n > 0 ? n : dflt;
+  };
+  const interval = num("--interval", 10); // minutes
+  const maxRuns = once ? 1 : num("--max-runs", 144); // 144 x 10 min = 24 h: the loop is bounded
   const only = args.filter((a) => /^#?\d+$/.test(a)).map((a) => parseInt(a.replace("#", ""), 10));
-  const log = (s) => console.log(s);
-  let lock = null;
-  if (!dryRun) {
+  if (watch) teeToLog(root);
+  const log = (s) => console.log(watch ? `${new Date().toISOString().slice(11, 19)} ${s}` : s);
+  let code = 0;
+  for (let run = 1; run <= (watch ? maxRuns : 1); run++) {
+    let lock = null;
+    if (!dryRun) {
+      try {
+        lock = wt.acquireLock(root, "prs-heal");
+      } catch (e) {
+        console.log(`FAIL  ${e.message}`);
+        if (!watch) return 1;
+        code = 1;
+        if (run < maxRuns) sleepMs(interval * 60000);
+        continue;
+      }
+    }
     try {
-      lock = wt.acquireLock(root, "prs-heal");
+      const results = healPass(root, { dryRun, only, conflictsOnly: watch, validateOnly: watch, comment: watch, log });
+      console.log("");
+      console.log(`prs heal${dryRun ? " --dry-run" : ""}${watch ? " --watch" : ""}: ${results.length} ws/* PR(s)`);
+      for (const r of results) console.log(`  ${r.kind.toUpperCase().padEnd(9)} ${r.tag}: ${r.msg}`);
+      const attention = results.filter((r) => r.kind === "attention");
+      code = attention.length ? 1 : 0;
+      console.log(attention.length ? `prs: ${attention.length} PR(s) need a human or their agent` : "prs: nothing needs attention");
     } catch (e) {
       console.log(`FAIL  ${e.message}`);
-      return 1;
+      code = 1;
+    } finally {
+      if (lock) wt.releaseLock(root, "prs-heal");
     }
+    if (watch && run < maxRuns) sleepMs(interval * 60000);
   }
-  try {
-    wt.git(root, ["fetch", "origin", "--prune", "--quiet"]);
-    let prs = listWsPrs(root);
-    if (only.length) prs = prs.filter((p) => only.includes(p.number));
-    const now = Date.now();
-    const results = [];
-    for (const pr of prs) {
-      refreshUnknown(root, pr);
-      const c = checksOf(pr);
-      const tag = `#${pr.number} ${pr.headRefName} [${pr.mergeStateStatus}]`;
-      let r;
-      if (pr.isDraft) r = { kind: "skip", msg: "draft" };
-      else if (pr.mergeStateStatus === "DIRTY" || pr.mergeStateStatus === "BEHIND") {
-        console.log(`${tag}: ${dryRun ? "checking" : "healing"}`);
-        r = healOne(root, pr, { dryRun, log });
-      } else if (["CLEAN", "UNKNOWN", "HAS_HOOKS", "UNSTABLE"].includes(pr.mergeStateStatus) && pr.autoMergeRequest && c.green) {
-        const since = Math.max(Date.parse(pr.autoMergeRequest.enabledAt ?? "") || 0, c.last);
-        if (now - since >= STUCK_MS) r = mergeStuck(root, pr, { dryRun });
-        else r = { kind: "ok", msg: `green, auto-merge on; waiting (${age(now - since)} < 10m)` };
-      } else if (c.failing) r = { kind: "attention", msg: `checks failing (${c.label})` };
-      else if (!pr.autoMergeRequest) r = { kind: "ok", msg: "auto-merge off (left for review)" };
-      else r = { kind: "ok", msg: `waiting: checks ${c.label}` };
-      results.push({ pr, tag, ...r });
-    }
-    console.log("");
-    console.log(`prs heal${dryRun ? " --dry-run" : ""}: ${results.length} ws/* PR(s)`);
-    for (const r of results) console.log(`  ${r.kind.toUpperCase().padEnd(9)} ${r.tag}: ${r.msg}`);
-    const attention = results.filter((r) => r.kind === "attention");
-    if (attention.length) {
-      console.log(`prs: ${attention.length} PR(s) need a human or their agent`);
-      return 1;
-    }
-    console.log("prs: nothing needs attention");
-    return 0;
-  } catch (e) {
-    console.log(`FAIL  ${e.message}`);
-    return 1;
-  } finally {
-    if (lock) wt.releaseLock(root, "prs-heal");
-  }
+  return code;
 }
 
 export function prsHelp() {
   console.log(`PR keeper (open PRs from ws/* branches)
 
   tools\\cli prs status                 number, state, auto-merge, checks, age, worktree LIVE/idle
+  tools\\cli prs heal --watch [--once] [--interval 10] [--max-runs 144]
+      every <interval> min, CONFLICTING PRs only: merge origin/main with the drivers, regenerate, validate,
+      safety check (string keys, features.md and debug-log-triage.md rows), push. A real conflict or a refused
+      merge is skipped with a log line and one PR comment naming the files. Also appends to tmp/logs/prs-heal-watch.log.
+  tools\\cli prs schedule print|install|status|remove   the Windows Task Scheduler entry for the above
   tools\\cli prs heal [--dry-run] [<n>...]
       DIRTY/BEHIND and idle 15 min -> merge origin/main; resolve conflicts only in generated or
       driver-merged files; gate (validate + test --no-build, fast or all if scripts changed);
@@ -511,6 +617,7 @@ export function cmdPrs(root, args) {
   const [sub, ...rest] = args;
   if (sub === "status") return prsStatus(root);
   if (sub === "heal") return prsHeal(root, rest);
+  if (sub === "schedule") return cmdSchedule(root, rest);
   prsHelp();
   return sub && sub !== "help" ? 1 : 0;
 }

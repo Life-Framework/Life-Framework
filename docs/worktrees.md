@@ -182,6 +182,47 @@ merges real branches and compares the result byte for byte (#1154, #1161).
   open 10 minutes after auto-merge was queued or the last check finished**:
   `gh pr merge <n> --merge`.
 
+**Safety check (every heal, before any push).** GitHub cannot run our merge
+drivers, so a merge made here is checked from git objects
+(`tools/prs-safety.mjs`): for every tracked `*.st` the merged key set must equal
+main's keys plus the branch's own additions minus its own removals (a count
+mismatch names the missing or extra keys), and every line of `docs/features.md`
+and `docs/debug-log-triage.md` that main has must still be there. A failure
+undoes the merge (`reset --hard` to the old head), pushes nothing, and reports
+the PR (`refused`). When both sides changed `docs/credits.md`, `tools\cli
+credits` and `regen-localization` run after the merge so the credits rows and
+`LF_CreditsData.c` agree with it (the `LF-Credits_*` keys are then exempt from
+the key check).
+
+#### Self-healing mode: `prs heal --watch`
+
+```sh
+tools\cli prs heal --watch [--once] [--interval 10] [--max-runs 144]
+tools\cli prs schedule print|install|status|remove
+```
+
+Every `--interval` minutes (default 10, at most `--max-runs` passes, default
+144 = 24 h) it lists open `ws/*` PRs that GitHub reports `CONFLICTING` and, for
+each one whose worktree is not LIVE, merges `origin/main` in the PR's own idle
+worktree or a temporary `Life-Framework-heal-<n>` one, regenerates the
+generated files, runs `validate` only (the PR's own `validate` check and
+auto-merge cover the rest), runs the safety check, pushes without force, and
+re-queues auto-merge. Anything else (a real content conflict, a refused merge,
+a failed validate, unpushed agent work) is skipped: one log line, and one PR
+comment naming the files (once per PR head and main head, so a repeat pass does
+not spam). Output also appends to `tmp/logs/prs-heal-watch.log` in the main
+checkout. `--once` is one pass; the scheduler uses it.
+
+`prs schedule install` registers one Task Scheduler entry, `LF-PRs-Heal`:
+`conhost.exe --headless node tools\cli.mjs prs heal --watch --once` from the
+main checkout every 10 minutes as the current user (it needs that user's `gh`
+login), hidden, never overlapping itself, 45 min limit. `print` shows exactly
+what it would register and changes nothing; `status` and `remove` do what they
+say. Nothing registers it until someone runs `install`.
+`tools/validation/prs-heal-safety-selftest.mjs` proves it on throwaway repos: a
+generated-only conflict heals with exact keys and rows, a real conflict is
+skipped untouched, a lost key or a lost features row is refused and undone.
+
 It prints one line per PR and exits 1 when any PR needs a human or its agent.
 Agents run `prs status` after their PR is up; the maintainer or lead runs
 `prs heal`. One heal runs at a time (hub lock `prs-heal`).
