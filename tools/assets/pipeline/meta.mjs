@@ -86,22 +86,27 @@ export function xobMetaIds(text, used) {
 // Workbench drops what it could not import (an invalid collider's GeometryParam, for one).
 // Returns the {GUID}path strings. `model` names a second model (a deployable's folded state) that
 // shares `name`'s textures and material; it defaults to `name`.
-export function writeAssetMetas(addonDir, { assetDir, name, model = name, collider, flags, used = usedGuids(addonDir) }) {
+export function writeAssetMetas(addonDir, { assetDir, name, model = name, collider, flags, defaultEmat, used = usedGuids(addonDir) }) {
   const data = `${assetDir}/Data`;
   const out = {};
   const put = (rel, text) => writeFileSync(join(addonDir, rel), text);
   const guidFor = (rel) => readGuid(join(addonDir, rel + ".meta")) || freshGuid(used);
-  for (const [suffix, conf] of [["BCR", "TextureColorMap.conf"], ["NMO", "TextureNType.conf"]]) {
-    const res = `${data}/${name}_${suffix}.edds`;
-    const guid = guidFor(res);
-    if (!existsSync(join(addonDir, res + ".meta"))) put(res + ".meta", textureMeta(res, conf, guid));
-    out[suffix.toLowerCase()] = `{${guid}}${res}`;
+  if (defaultEmat) {
+    // A spec with variants has no base set: the model's own material is the first variant's.
+    out.emat = defaultEmat;
+  } else {
+    for (const [suffix, conf] of [["BCR", "TextureColorMap.conf"], ["NMO", "TextureNType.conf"]]) {
+      const res = `${data}/${name}_${suffix}.edds`;
+      const guid = guidFor(res);
+      if (!existsSync(join(addonDir, res + ".meta"))) put(res + ".meta", textureMeta(res, conf, guid));
+      out[suffix.toLowerCase()] = `{${guid}}${res}`;
+    }
+    const ematRes = `${data}/${name}.emat`;
+    const ematGuid = guidFor(ematRes);
+    if (!existsSync(join(addonDir, ematRes))) put(ematRes, ematText(out));
+    if (!existsSync(join(addonDir, ematRes + ".meta"))) put(ematRes + ".meta", ematMeta(ematRes, ematGuid));
+    out.emat = `{${ematGuid}}${ematRes}`;
   }
-  const ematRes = `${data}/${name}.emat`;
-  const ematGuid = guidFor(ematRes);
-  if (!existsSync(join(addonDir, ematRes))) put(ematRes, ematText(out));
-  if (!existsSync(join(addonDir, ematRes + ".meta"))) put(ematRes + ".meta", ematMeta(ematRes, ematGuid));
-  out.emat = `{${ematGuid}}${ematRes}`;
   const xobRes = `${assetDir}/${model}.xob`;
   const xobGuid = guidFor(xobRes);
   const metaFile = join(addonDir, xobRes + ".meta");
@@ -109,4 +114,37 @@ export function writeAssetMetas(addonDir, { assetDir, name, model = name, collid
   put(xobRes + ".meta", xobMeta(xobRes, xobGuid, { materials: [{ source: name, emat: out.emat }], colliders: [collider], ids, flags }));
   out.xob = `{${xobGuid}}${xobRes}`;
   return out;
+}
+
+// An emat for a variant: the plain two-map material, or the spec's template with $BCR and $NMO in it
+// (a two-layer rock material that keeps the vanilla mask and macro maps, say).
+export function variantEmatText({ bcr, nmo }, template) {
+  if (!template) return ematText({ bcr, nmo });
+  if (!template.includes("$BCR")) throw new Error("an emat template must reference $BCR");
+  return template.replaceAll("$BCR", bcr).replaceAll("$NMO", nmo);
+}
+
+// Every text file the variants need (docs/asset-pipeline/README.md "Variants"): <Name>_<Variant>_BCR
+// and _NMO texture metas under <assetDir>/Data, and one emat per variant. A variant that names an
+// existing emat (v.emat) keeps that file's GUID, so prefabs that reference it need no edit; its text
+// is the import's output and is rewritten every run. Returns [{ name, bcr, nmo, emat }] as {GUID}path.
+export function writeVariantMetas(addonDir, { assetDir, name, variants, templates = {}, used = usedGuids(addonDir) }) {
+  const data = `${assetDir}/Data`;
+  const put = (rel, text) => writeFileSync(join(addonDir, rel), text);
+  const guidFor = (rel) => readGuid(join(addonDir, rel + ".meta")) || freshGuid(used);
+  return variants.map((v) => {
+    const out = { name: v.name };
+    for (const [suffix, conf] of [["BCR", "TextureColorMap.conf"], ["NMO", "TextureNType.conf"]]) {
+      const res = `${data}/${name}_${v.name}_${suffix}.edds`;
+      const guid = guidFor(res);
+      if (!existsSync(join(addonDir, res + ".meta"))) put(res + ".meta", textureMeta(res, conf, guid));
+      out[suffix.toLowerCase()] = `{${guid}}${res}`;
+    }
+    const ematRes = v.emat || `${data}/${name}_${v.name}.emat`;
+    const ematGuid = guidFor(ematRes);
+    put(ematRes, variantEmatText(out, templates[v.name]));
+    if (!existsSync(join(addonDir, ematRes + ".meta"))) put(ematRes + ".meta", ematMeta(ematRes, ematGuid));
+    out.emat = `{${ematGuid}}${ematRes}`;
+    return out;
+  });
 }

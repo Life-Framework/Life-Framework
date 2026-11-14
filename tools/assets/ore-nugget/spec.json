@@ -1,0 +1,88 @@
+{
+  "slug": "ore-nugget",
+  "name": "OreNugget",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A lump of ore broken off a quarry rock with a pickaxe: what a node gives (Configs/Resources/ResourceChains.conf) and what the furnace takes. One shape; iron, copper and gold are material variants that read apart at a glance.",
+  "prompt": "Modelled in Blender by model.py: a fist-sized rock lump with flat fracture faces and a rough skin. no text, no logos.",
+  "texture_prompt": "",
+  "source": {
+    "blender": "model.py",
+    "textures": [
+      { "id": "Rock035", "use": "dark host rock for iron and copper ore" },
+      { "id": "Rust009", "use": "iron: limonite rust; gold: iron staining on the quartz" },
+      { "id": "Metal058C", "use": "copper: malachite green" },
+      { "id": "Metal047B", "use": "copper: native copper specks" },
+      { "id": "Rock058", "use": "gold: grain in the quartz" },
+      { "id": "Metal048B", "use": "gold: the flecks" }
+    ]
+  },
+  "size_m": {
+    "length": 0.09,
+    "height": 0.055,
+    "width": 0.07
+  },
+  "budget": {
+    "lod0_tris": 1400,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Resources/Mining/Nugget",
+  "prefab_dir": "Prefabs/Resources/Mining",
+  "prefab": false,
+  "collider": {
+    "gamemat": "{D745FD8FC67DB26A}Common/Materials/Game/stone.gamemat"
+  },
+  "materials": {
+    "default": "stone",
+    "regions": [],
+    "classes": {}
+  },
+  "variants": [
+    {
+      "name": "Iron",
+      "emat": "Assets/Resources/Mining/Data/Iron_Ore.emat",
+      "materials": {
+        "default": "stone",
+        "regions": [],
+        "classes": { "stone": { "rough": [0.72, 0.95], "metal": [0, 0], "base_scale": 1 } }
+      }
+    },
+    {
+      "name": "Copper",
+      "emat": "Assets/Resources/Mining/Data/Copper_Ore.emat",
+      "materials": {
+        "default": "stone",
+        "regions": [{ "class": "native_metal", "metallic_above": 0.5 }],
+        "classes": {
+          "stone": { "rough": [0.6, 0.92], "metal": [0, 0], "base_scale": 1 },
+          "native_metal": { "rough": [0.35, 0.5], "metal": [0.9, 1], "base_scale": 1 }
+        }
+      }
+    },
+    {
+      "name": "Gold",
+      "emat": "Assets/Resources/Mining/Data/Gold_Ore.emat",
+      "materials": {
+        "default": "quartz",
+        "regions": [{ "class": "native_metal", "metallic_above": 0.5 }],
+        "classes": {
+          "quartz": { "rough": [0.38, 0.75], "metal": [0, 0], "base_scale": 1 },
+          "native_metal": { "rough": [0.2, 0.38], "metal": [0.95, 1], "base_scale": 1 }
+        }
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSyn
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { KINDS } from "./kinds.mjs";
-import { writeAssetMetas } from "./meta.mjs";
+import { writeAssetMetas, writeVariantMetas } from "./meta.mjs";
 import { checkModel, parse } from "./xob.mjs";
 import { withAnim } from "./anim.mjs";
 
@@ -51,27 +51,52 @@ function newestLog(profile) {
   return "";
 }
 
+// The variant texture sets (docs/asset-pipeline/README.md "Variants"): copy the packed maps, write the
+// texture metas and one emat per variant. Returns the refs and the .tif paths to rebuild.
+export function placeVariants({ root, spec, clean, addon }) {
+  const variants = spec.variants || [];
+  if (!variants.length) return { refs: [], tifs: [] };
+  const tifs = [];
+  for (const v of variants) {
+    for (const s of ["BCR", "NMO"]) {
+      const file = join(addon, spec.asset_dir, "Data", `${spec.name}_${v.name}_${s}.tif`);
+      copyFileSync(join(clean, `${spec.name}_${v.name}_${s}.tif`), file);
+      tifs.push(file);
+    }
+  }
+  const templates = {};
+  for (const v of variants) {
+    if (v.emat_template) templates[v.name] = readFileSync(join(root, "tools", "assets", spec.slug, v.emat_template), "utf8");
+  }
+  const refs = writeVariantMetas(addon, { assetDir: spec.asset_dir, name: spec.name, variants, templates });
+  return { refs, tifs };
+}
+
 export async function importAsset(ctx) {
   const { root, spec, dir } = ctx;
   if (!ctx.workbench) throw new Error("the import stage needs the Workbench launcher; run it through tools\\cli asset");
   const { kind } = withAnim(KINDS[spec.kind], spec); // the anim block adds bones, sockets and the skinning flags
   const clean = join(dir, "clean");
-  const report = JSON.parse(readFileSync(join(clean, "report.json"), "utf8"));
   const addon = join(root, "addons", "LifeFramework");
   const assetAbs = join(addon, spec.asset_dir);
   mkdirSync(join(assetAbs, "Data"), { recursive: true });
+  const placed = placeVariants({ root, spec, clean, addon });
+  const textureOnly = kind.fit === "none";
+  const report = textureOnly ? null : JSON.parse(readFileSync(join(clean, "report.json"), "utf8"));
 
   const fbx = join(assetAbs, `${spec.name}.fbx`);
-  const tifs = ["BCR", "NMO"].map((s) => join(assetAbs, "Data", `${spec.name}_${s}.tif`));
-  copyFileSync(join(clean, `${spec.name}.fbx`), fbx);
-  ["BCR", "NMO"].forEach((s, i) => copyFileSync(join(clean, `${spec.name}_${s}.tif`), tifs[i]));
+  // With variants the model's own material is the first variant's, so there is no base set.
+  const tifs = placed.tifs.length ? [...placed.tifs] : ["BCR", "NMO"].map((s) => join(assetAbs, "Data", `${spec.name}_${s}.tif`));
+  if (!textureOnly) copyFileSync(join(clean, `${spec.name}.fbx`), fbx);
+  if (!placed.tifs.length) ["BCR", "NMO"].forEach((s, i) => copyFileSync(join(clean, `${spec.name}_${s}.tif`), tifs[i]));
 
+  const gamemat = spec.collider?.gamemat || kind.collider?.gamemat;
   const writeMetas = () => writeAssetMetas(addon, {
     assetDir: spec.asset_dir, name: spec.name,
-    collider: { name: report.collider.name, layerPreset: kind.collider.layerPreset, gamemat: kind.collider.gamemat },
-    flags: kind.metaFlags,
+    collider: { name: report.collider.name, layerPreset: kind.collider.layerPreset, gamemat },
+    flags: kind.metaFlags, defaultEmat: placed.refs[0]?.emat,
   });
-  let refs = writeMetas();
+  let refs = textureOnly ? {} : writeMetas();
 
   const pluginDir = join(addon, "Scripts", "WorkbenchGame", "ResourceManager");
   mkdirSync(pluginDir, { recursive: true });
@@ -93,6 +118,18 @@ export async function importAsset(ctx) {
   };
   let log = tifs.map(rebuild).join("\n");
   const problems = [];
+  if (textureOnly) {
+    problems.push(...logProblems(log, spec.name));
+    outputs.slice(1).forEach((f, i) => {
+      if (!existsSync(f)) problems.push(`Workbench produced no ${f}`);
+      else if (statSync(f).mtimeMs <= before[i + 1]) problems.push(`${f} was not rebuilt`);
+    });
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    for (const p of problems) console.log(`FAIL  ${p}`);
+    console.log(`import: ${secs}s in Workbench; ${placed.refs.map((r) => r.emat).join(", ")}`);
+    if (problems.length) throw new Error(`${problems.length} import check(s) failed`);
+    return { variants: placed.refs, workbenchSecs: Number(secs) };
+  }
   // The model gets a second try. Workbench sometimes starts its own reimport of a changed .fbx
   // beside the plugin's; the two collide, the log says "1 Materials deleted", Workbench hangs at
   // exit and the .xob comes out with no material and no collider (seen 2026-11-12, 1 run in 8).
@@ -123,8 +160,8 @@ export async function importAsset(ctx) {
     const vBefore = existsSync(vxob) ? statSync(vxob).mtimeMs : 0;
     const vMetas = () => writeAssetMetas(addon, {
       assetDir: spec.asset_dir, name: spec.name, model: v.name,
-      collider: { name: v.collider.name, layerPreset: kind.collider.layerPreset, gamemat: kind.collider.gamemat },
-      flags: kind.metaFlags,
+      collider: { name: v.collider.name, layerPreset: kind.collider.layerPreset, gamemat },
+      flags: kind.metaFlags, defaultEmat: placed.refs[0]?.emat,
     });
     let vRefs = vMetas();
     let vProblems = [];
@@ -146,5 +183,5 @@ export async function importAsset(ctx) {
   for (const p of problems) console.log(`FAIL  ${p}`);
   console.log(`import: ${secs}s in Workbench; ${refs.xob}`);
   if (problems.length) throw new Error(`${problems.length} import check(s) failed`);
-  return { ...refs, variants, workbenchSecs: Number(secs) };
+  return { ...refs, variants, materials: placed.refs, workbenchSecs: Number(secs) };
 }

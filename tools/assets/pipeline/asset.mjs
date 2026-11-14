@@ -15,7 +15,7 @@ import * as meshy from "./meshy.mjs";
 import { KINDS } from "./kinds.mjs";
 import * as concepts from "./concepts.mjs";
 import { pickedImage } from "./concepts.mjs";
-import { materialProblems, resolveMaterials } from "./materials.mjs";
+import { materialProblems, resolveMaterials, variantPlans } from "./materials.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
 import { animProblems, hasAnim, withAnim } from "./anim.mjs";
 
@@ -38,18 +38,35 @@ export function specProblems(spec) {
   if (!/^[A-Z][A-Za-z0-9]*$/.test(spec.name || "")) out.push("name must be PascalCase letters and digits (it becomes file and material names)");
   const kind = KINDS[spec.kind];
   if (!kind) out.push(`kind must be one of ${Object.keys(KINDS).join(", ")}`);
+  const blender = !!spec.source?.blender; // modelled or painted by our own script: no Meshy call, no credits
+  const textureOnly = kind?.fit === "none";
   if (!spec.prompt) out.push("prompt is empty");
   else if (spec.prompt.length > 800) out.push(`prompt is ${spec.prompt.length} characters; Meshy allows 800`);
   if ((spec.texture_prompt || "").length > 800) out.push("texture_prompt is over 800 characters");
   const s = spec.size_m || {};
-  for (const k of ["length", "height", "width"]) {
-    if (!(s[k] > 0.005 && s[k] < 20)) out.push(`size_m.${k} must be a size in metres`);
-  }
   const b = spec.budget || {};
-  if (!(b.lod0_tris >= 100 && b.lod0_tris <= 60000)) out.push("budget.lod0_tris must be 100 to 60000");
-  if (kind && b.lod0_tris > kind.maxTris) out.push(`budget.lod0_tris ${b.lod0_tris} is over the ${spec.kind} cap of ${kind.maxTris}`);
+  if (!textureOnly) {
+    for (const k of ["length", "height", "width"]) {
+      if (!(s[k] > 0.005 && s[k] < 20)) out.push(`size_m.${k} must be a size in metres`);
+    }
+    if (!(b.lod0_tris >= 100 && b.lod0_tris <= 60000)) out.push("budget.lod0_tris must be 100 to 60000");
+    if (kind && b.lod0_tris > kind.maxTris) out.push(`budget.lod0_tris ${b.lod0_tris} is over the ${spec.kind} cap of ${kind.maxTris}`);
+  }
   if (![256, 512, 1024, 2048].includes(b.texture_px)) out.push("budget.texture_px must be 256, 512, 1024 or 2048");
-  if (!(b.credits > 0 && b.credits <= 300)) out.push("budget.credits must be 1 to 300 (the per-asset cap)");
+  if (!(b.credits >= (blender ? 0 : 1) && b.credits <= 300)) out.push(`budget.credits must be ${blender ? 0 : 1} to 300 (the per-asset cap)`);
+  if (textureOnly && !blender) out.push("a material asset is painted by a Blender script: set source.blender");
+  if (blender && !/^[\w-]+\.py$/.test(spec.source.blender)) out.push("source.blender names a .py file beside the spec");
+  for (const t of spec.source?.textures || []) {
+    if (!/^[A-Za-z]+\d+[A-Z]?$/.test(t.id || "")) out.push(`source.textures: ${JSON.stringify(t.id)} is not an ambientCG asset id (Metal046B)`);
+  }
+  const vnames = new Set();
+  for (const v of spec.variants || []) {
+    if (!/^[A-Z][A-Za-z0-9]*$/.test(v.name || "")) out.push(`variant ${v.name || "?"}: name must be PascalCase`);
+    if (vnames.has(v.name)) out.push(`variant ${v.name} is listed twice`);
+    vnames.add(v.name);
+    if (v.emat !== undefined && !/^Assets\/.+\.emat$/.test(v.emat)) out.push(`variant ${v.name}: emat must be an Assets/... .emat path`);
+  }
+  if (textureOnly && !vnames.size) out.push("a material asset needs at least one variant");
   if (spec.prompt && !/no text/i.test(spec.prompt)) out.push('prompt should say "no text, no logos" (generated lettering is garbled)');
   for (const p of spec.parts || []) {
     if (!p.name || !p.bone || !Array.isArray(p.box) || p.box.length !== 6) out.push(`part ${p.name || "?"} needs name, bone and box [x0,y0,z0,x1,y1,z1]`);
@@ -75,7 +92,7 @@ function writeState(dir, state) {
 async function stageSpec(ctx) {
   const problems = specProblems(ctx.spec);
   if (problems.length) throw new Error("spec problems:\n  " + problems.join("\n  "));
-  const est = meshy.estimate(ctx.spec);
+  const est = ctx.spec.source?.blender ? 0 : meshy.estimate(ctx.spec);
   if (est > ctx.spec.budget.credits) throw new Error(`one attempt costs about ${est} credits, over the spec's budget of ${ctx.spec.budget.credits}`);
   console.log(`concept ok: ${ctx.spec.name} (${ctx.spec.kind}), ${ctx.spec.prompt.length}-char prompt, about ${est} credits per attempt`);
   return { estimate: est };
@@ -102,8 +119,51 @@ export function recordProvenance(root, spec, ids, now = new Date()) {
   writeFileSync(file, JSON.stringify(rec, null, 2) + "\n");
 }
 
+// ambientCG serves every asset as CC0 1.0 (https://docs.ambientcg.com/license/). The zip also holds a
+// .blend and USD files; only the JPG maps are unpacked, and nothing from the zip is opened in Blender.
+export const ambientCgUrl = (id) => `https://ambientcg.com/get?file=${id}_1K-JPG.zip`;
+
+async function fetchTextures(spec, src) {
+  const got = [];
+  for (const t of spec.source.textures || []) {
+    const dest = join(src, t.id);
+    if (existsSync(dest) && readdirSync(dest).some((f) => f.endsWith("_Color.jpg"))) { got.push(t.id); continue; }
+    mkdirSync(dest, { recursive: true });
+    const res = await fetch(ambientCgUrl(t.id), { signal: AbortSignal.timeout(120000) });
+    if (!res.ok) throw new Error(`ambientCG ${t.id}: HTTP ${res.status}`);
+    const zip = join(src, `${t.id}.zip`);
+    writeFileSync(zip, Buffer.from(await res.arrayBuffer()));
+    // Windows' own tar (bsdtar) reads zip; Git's GNU tar does not.
+    const tar = existsSync("C:/Windows/System32/tar.exe") ? "C:/Windows/System32/tar.exe" : "tar";
+    const x = spawnSync(tar, ["-xf", zip, "-C", dest, "*.jpg"], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+    if (x.status !== 0) throw new Error(`unpacking ${zip}: ${(x.stderr || x.error?.message || "").trim()}`);
+    got.push(t.id);
+  }
+  return got;
+}
+
+// A model or texture set made by our own bpy script (spec.source.blender): no Meshy call, no credits.
+async function generateInBlender(ctx) {
+  const { root, spec, dir } = ctx;
+  const raw = join(dir, "raw");
+  const src = join(dir, "src");
+  mkdirSync(raw, { recursive: true });
+  const textures = await fetchTextures(spec, src);
+  const job = join(dir, "model-job.json");
+  writeFileSync(job, JSON.stringify({ spec, raw, src, px: spec.budget.texture_px, variants: variantPlans(spec) }, null, 1));
+  runBlender(join(root, "tools", "assets", spec.slug, spec.source.blender), [job], { log: join(dir, "model.log") });
+  const textureOnly = KINDS[spec.kind].fit === "none";
+  if (!textureOnly && !existsSync(join(raw, "model.glb"))) throw new Error(`${spec.source.blender} wrote no ${join(raw, "model.glb")}`);
+  for (const v of spec.variants || []) {
+    if (!existsSync(join(raw, v.name, "tex_base_color.png"))) throw new Error(`${spec.source.blender} wrote no maps for variant ${v.name}`);
+  }
+  console.log(`generated in Blender from ${textures.length} CC0 set(s), 0 credits; review ${join(raw, "review_*.png")}`);
+  return { blender: spec.source.blender, textures, credits: 0 };
+}
+
 async function stageGenerate(ctx) {
   const { spec, dir, state } = ctx;
+  if (spec.source?.blender) return generateInBlender(ctx);
   const ledger = join(dir, "credits.jsonl");
   const g = state.generate || (state.generate = {});
   const raw = join(dir, "raw");
@@ -195,22 +255,34 @@ export function runBlender(script, args, { timeoutMs = 600000, log } = {}) {
 
 async function stageClean(ctx) {
   const { spec, dir } = ctx;
-  const glb = join(dir, "raw", "model.glb");
-  if (!existsSync(glb)) throw new Error(`no ${glb}; run the generate stage first (or drop a GLB there)`);
   const out = join(dir, "clean");
   mkdirSync(out, { recursive: true });
+  const variants = variantPlans(spec);
+  const blenderDir = join(dirname(fileURLToPath(import.meta.url)), "blender");
+  const packVariants = () => {
+    if (!variants.length) return {};
+    const vjob = join(out, "variants-job.json");
+    writeFileSync(vjob, JSON.stringify({ name: spec.name, raw: join(dir, "raw"), out, px: spec.budget.texture_px, variants }, null, 1));
+    runBlender(join(blenderDir, "variants.py"), [vjob], { log: join(out, "variants.log") });
+    const v = JSON.parse(readFileSync(join(out, "variants.json"), "utf8"));
+    for (const [n, st] of Object.entries(v)) console.log(`  variant ${n}: rough ${st.mean_roughness.toFixed(2)}, metal ${st.mean_metallic.toFixed(2)}, base ${st.mean_base.map((x) => x.toFixed(2)).join(" ")}`);
+    return v;
+  };
+  if (KINDS[spec.kind].fit === "none") return { variants: packVariants() };
+  const glb = join(dir, "raw", "model.glb");
+  if (!existsSync(glb)) throw new Error(`no ${glb}; run the generate stage first (or drop a GLB there)`);
   const job = join(out, "job.json");
   // The anim block adds a skeleton (a bone per moving part, the sockets) and the parts to split off.
   const { kind, parts } = withAnim(KINDS[spec.kind], spec);
   writeFileSync(job, JSON.stringify({ spec: { ...spec, parts }, kind, materials: resolveMaterials(spec), glb, raw: join(dir, "raw"), out }, null, 1));
-  runBlender(join(dirname(fileURLToPath(import.meta.url)), "blender", "clean.py"), [job], { log: join(out, "blender.log") });
+  runBlender(join(blenderDir, "clean.py"), [job], { log: join(out, "blender.log") });
   const report = JSON.parse(readFileSync(join(out, "report.json"), "utf8"));
   const { checkReport } = await import("./checks.mjs");
   const problems = checkReport(spec, kind, report);
   for (const p of problems) console.log(`FAIL  ${p}`);
   console.log(`clean: LODs ${report.lods.map((l) => l.tris).join("/")} tris, size ${report.size.map((v) => v.toFixed(3)).join(" x ")} m, ${report.sockets.length} sockets, review ${join(out, "review")}`);
   if (problems.length) throw new Error(`${problems.length} check(s) failed; fix the spec (fit, parts, budget) and rerun --only clean`);
-  return { lods: report.lods, size: report.size };
+  return { lods: report.lods, size: report.size, variants: packVariants() };
 }
 
 async function stageImport(ctx) {
@@ -219,6 +291,11 @@ async function stageImport(ctx) {
 }
 
 async function stagePrefab(ctx) {
+  // An asset that replaces the mesh or material of prefabs that already exist (the mining ingots).
+  if (ctx.spec.prefab === false || KINDS[ctx.spec.kind].fit === "none") {
+    console.log("prefab: skipped; the spec says prefab false (existing prefabs reference the import)");
+    return { skipped: true };
+  }
   const { writePrefabs } = await import("./prefab.mjs");
   return writePrefabs(ctx);
 }

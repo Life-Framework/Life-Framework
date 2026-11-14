@@ -12,6 +12,8 @@
 // red-proof: 2026-11-12, one line broken per move bug (#833 follow-up), each restored after its FAIL was seen:
 //   setTransform ignoring `scale`       -> FAIL edit: --scale on a move writes the scale line
 //   excludeOf returning item.name only  -> FAIL exclude: an unnamed moved entity is excluded by prefab and spot
+//   onGround raising a tree by its roots (2026-11-14, #924) -> FAIL ground: a tree's pivot stands on the ground, its roots below
+//   judge resting a tree on its bounds base (2026-11-14, #924) -> FAIL judge: a tree whose roots go 0.51 m below the ground
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { obbPenetration } from "../../agent-box/place-audit.mjs";
 import { PlaceError, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
@@ -122,6 +124,8 @@ const flatFloor = Array.from({ length: 31 }, (_, k) => ({ dist: k * 0.2, y: 0 })
   const tree = { bounds: { min: [-0.3, -0.1, -0.3], max: [0.3, 5, 0.3] }, scale: 1 };
   const g = onGround({ samples: [{ y: 2.5 }, { y: 2.5 }, { y: 2.52 }, { y: 2.49 }, { y: 2.5 }], prop: tree });
   ok(near(g.y, 2.6), "ground: the mesh base, not the pivot, stands on the ground");
+  const rowan = { name: "Market_Tree_1", prefab: "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et", bounds: { min: [-2, -0.394, -2.4], max: [2.3, 6, 2] }, scale: 1.3 };
+  ok(near(onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }], prop: rowan }).y, 0), "ground: a tree's pivot stands on the ground, its roots below (#924)");
   refuses(() => onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0.4 }, { y: 0 }, { y: 0.4 }], prop: tree }), /not level/, "ground: a kerb under the footprint is refused");
 }
 
@@ -233,6 +237,9 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   ok(judge([t], recs, `0 ${row({ gap: 0.2 })}`)[0].problems.some((p) => /floating|above/.test(p)), "judge: a base 0.2 m above its support fails");
   ok(judge([t], recs, `0 ${row({ gap: 0.08 })}`)[0].problems.some((p) => /0.08 m above/.test(p)), "judge: 8 cm of air fails the tool though the audit's own limit is 15 cm");
   ok(judge([t], recs, `0 ${row({ over: 2 })}`)[0].problems.some((p) => /hang off/.test(p)), "judge: corners off the edge fail");
+  const tree = { name: "Market_Tree_1", prefab: "Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et", x: 5, y: 1, z: 5, yaw: 0, hung: false };
+  const treeRecs = [{ ...recs[0], name: "Market_Tree_1", prefab: tree.prefab }];
+  ok(!judge([tree], treeRecs, `0 ${row({ gap: -0.51, on: "terrain" }).replace("h=0.3,0.3,0.3", "h=2.2,3.2,2.2")}`)[0].problems.length, "judge: a tree whose roots go 0.51 m below the ground, its pivot on it, passes (#924)");
   ok(judge([t], recs, `0 ${row({ a0: "0,0,-1", a2: "1,0,0" })}`)[0].problems.some((p) => /facing/.test(p)), "judge: a yaw the engine read differently fails");
   ok(judge([t], recs, "0 missing=1")[0].problems.some((p) => /not in the world/.test(p)), "judge: a prefab that did not load fails");
   ok(judge([{ ...t, hung: true }], recs, `0 ${row({ gap: 1.4, backed: 0 })}`)[0].problems.some((p) => /hangs in the air|floating/.test(p)), "judge: a hung thing with nothing behind it fails");

@@ -73,4 +73,19 @@ export const KINDS = {
     requiredSockets: [],
     requiredBones: [],
   },
+  // Texture sets with no model: tiling materials for meshes that already exist (the ore veins on the
+  // vanilla quarry rock, tools/assets/ore-veins). Every map is a spec variant; no clean, no .xob,
+  // no prefab. Proven with the ore veins (2026-11-14).
+  material: {
+    proven: true,
+    assetRoot: "Assets/Materials",
+    prefabRoot: "Prefabs",
+    defaultSize: { length: 1, height: 1, width: 1 },
+    defaultTris: 100,
+    maxTris: 100,
+    fit: "none",
+    collider: null,
+    requiredSockets: [],
+    requiredBones: [],
+  },
 };

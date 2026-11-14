@@ -9,9 +9,12 @@
 #
 # Space: Enfusion is x right, y up, z forward. Blender is X right, Y forward, Z up, and the default
 # FBX export (forward -Z, up Y) lands Blender (X, Y, Z) on Enfusion (x, z, y). e2b/b2e do that swap.
-import bpy, bmesh, sys, json, os, math, struct
+import bpy, bmesh, sys, json, os, math
 import numpy as np
 from mathutils import Vector, Matrix
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from tiff import write_tiff
 
 job = json.load(open(sys.argv[sys.argv.index("--") + 1]))
 spec, kind, out = job["spec"], job["kind"], job["out"]
@@ -218,32 +221,6 @@ def pixels(img, px, fallback):
     return arr.reshape(px, px, 4)[::-1]  # Blender rows run bottom-up; TIFF runs top-down
 
 
-def write_tiff(path, rgba):
-    # Baseline uncompressed 8-bit RGBA TIFF with unassociated alpha: what Workbench imports.
-    h, w, _ = rgba.shape
-    data = rgba.tobytes()
-    tags = [(256, 4, 1, w), (257, 4, 1, h), (258, 3, 4, None), (259, 3, 1, 1), (262, 3, 1, 2), (273, 4, 1, None),
-            (277, 3, 1, 4), (278, 4, 1, h), (279, 4, 1, len(data)), (284, 3, 1, 1), (338, 3, 1, 2)]
-    ifd_at = 8
-    bits_at = ifd_at + 2 + len(tags) * 12 + 4
-    data_at = bits_at + 8
-    with open(path, "wb") as f:
-        f.write(struct.pack("<2sHI", b"II", 42, ifd_at))
-        f.write(struct.pack("<H", len(tags)))
-        for tag, typ, count, value in tags:
-            if tag == 258:
-                value = bits_at
-            if tag == 273:
-                value = data_at
-            if typ == 3 and count == 1:
-                f.write(struct.pack("<HHIHH", tag, typ, count, value, 0))
-            else:
-                f.write(struct.pack("<HHII", tag, typ, count, value))
-        f.write(struct.pack("<I", 0))
-        f.write(struct.pack("<4H", 8, 8, 8, 8))
-        f.write(data)
-
-
 px = spec["budget"]["texture_px"]
 maps = {k: find_map(k) for k in ("base_color", "roughness", "metallic", "normal")}
 report["textures"] = {"px": px, "found": [k for k, v in maps.items() if v is not None]}
@@ -283,7 +260,6 @@ def height_mask(above_m):
 
 # Material classes (tools/assets/pipeline/materials.mjs): Meshy's roughness and metallic remapped per
 # declared region, so nothing reaches the game as polished chrome.
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import materials
 plan = job["materials"]
 masks = materials.region_masks(plan, metal[:, :, 0], height_mask)

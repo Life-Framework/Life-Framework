@@ -1,0 +1,49 @@
+{
+  "slug": "ore-veins",
+  "name": "OreVein",
+  "kind": "material",
+  "roadmap": "",
+  "concept": "The quarry rocks that give ore (Prefabs/Resources/Mining/IronOre.et, CopperOre.et, GoldOre.et) all wore the same vanilla granite. Each now shows the ore it gives: red-brown hematite veins and iron staining, green malachite veins with azurite pockets, or white quartz reefs with gold flecks, on the same grey host rock.",
+  "prompt": "Painted in Blender by paint.py: tiling granite-like rock with ore veins, one variant per ore. no text, no logos.",
+  "texture_prompt": "",
+  "source": {
+    "blender": "paint.py",
+    "textures": [
+      { "id": "Rock058", "use": "the grey host rock of every variant" },
+      { "id": "Rust009", "use": "iron staining; the halo around the gold reefs" },
+      { "id": "Metal058C", "use": "copper: malachite" },
+      { "id": "Metal048B", "use": "gold: the flecks in the quartz" }
+    ]
+  },
+  "size_m": { "length": 1, "height": 1, "width": 1 },
+  "budget": { "lod0_tris": 100, "lod_ratios": [], "texture_px": 1024, "credits": 0 },
+  "fit": { "offset": [0, 0, 0] },
+  "parts": [],
+  "asset_dir": "Assets/Resources/Mining/OreVein",
+  "prefab_dir": "Prefabs/Resources/Mining",
+  "materials": { "default": "stone", "regions": [], "classes": {} },
+  "variants": [
+    {
+      "name": "Iron",
+      "emat_template": "rock-node.emat.txt",
+      "materials": { "default": "stone", "regions": [], "classes": { "stone": { "rough": [0.7, 0.95], "metal": [0, 0], "base_scale": 1 } } }
+    },
+    {
+      "name": "Copper",
+      "emat_template": "rock-node.emat.txt",
+      "materials": { "default": "stone", "regions": [], "classes": { "stone": { "rough": [0.6, 0.95], "metal": [0, 0], "base_scale": 1 } } }
+    },
+    {
+      "name": "Gold",
+      "emat_template": "rock-node.emat.txt",
+      "materials": {
+        "default": "stone",
+        "regions": [{ "class": "native_metal", "metallic_above": 0.5 }],
+        "classes": {
+          "stone": { "rough": [0.5, 0.95], "metal": [0, 0], "base_scale": 1 },
+          "native_metal": { "rough": [0.2, 0.38], "metal": [0.95, 1], "base_scale": 1 }
+        }
+      }
+    }
+  ]
+}
