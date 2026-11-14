@@ -1,8 +1,8 @@
-// Offline proof of the Workbench limit (tools/lib/wb-lock.mjs) and the remote gate choice
-// (tools/lib/wb-gate.mjs): the limit setting, the FIFO rule, a real second process queuing behind a
-// held lock and taking it when the holder dies, and where `ci` runs its Workbench steps.
+// Offline proof of the Workbench limit (tools/lib/wb-lock.mjs): the limit setting, the FIFO rule and
+// a real second process queuing behind a held lock and taking it when the holder dies. Where `ci`
+// runs its Workbench steps is proved by tools/validation/wb-gate-selftest.mjs.
 // red-proof: 2026-11-14, mayTake returning ok for any ticket while a lock was free failed
-// "FIFO: the second ticket waits"; chooseGate preferring local while busy failed "busy PC goes remote".
+// "FIFO: the second ticket waits".
 
 import { spawn, spawnSync } from "node:child_process";
 import { mkdtempSync, writeFileSync } from "node:fs";
@@ -10,7 +10,6 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import * as wb from "../lib/wb-lock.mjs";
-import { chooseGate, parseWbState } from "../lib/wb-gate.mjs";
 
 const failures = [];
 const check = (name, ok) => {
@@ -31,21 +30,7 @@ check("FIFO: the second ticket waits", !wb.mayTake(t, "b", 1).ok && wb.mayTake(t
 check("FIFO: two free locks take two tickets", wb.mayTake(t, "b", 2).ok && !wb.mayTake(t, "c", 2).ok);
 check("FIFO: nothing free, nobody takes", !wb.mayTake(t, "a", 0).ok);
 
-// 3. gate choice
-const box = (freeMb, wbAlive = 0) => ({ name: "lf-testbox", caps: ["server", "workbench"], state: { freeMb, wbAlive, wbLimit: 1 } });
-check("free PC stays local", chooseGate({ local: { busy: 0, queued: 0, limit: 1 }, remotes: [box(6000)] }).where === "local");
-check("busy PC goes remote", chooseGate({ local: { busy: 1, queued: 0, limit: 1 }, remotes: [box(6000)] }).where === "lf-testbox");
-check("queued PC goes remote", chooseGate({ local: { busy: 0, queued: 1, limit: 1 }, remotes: [box(6000)] }).where === "lf-testbox");
-check("box short of RAM: queue here", chooseGate({ local: { busy: 1, queued: 0, limit: 1 }, remotes: [box(1000)] }).where === "local");
-check("box Workbench busy: queue here", chooseGate({ local: { busy: 1, queued: 0, limit: 1 }, remotes: [box(9000, 1)] }).where === "local");
-check("box down: queue here", chooseGate({ local: { busy: 1, queued: 0, limit: 1 }, remotes: [{ name: "lf-testbox", caps: ["workbench"], state: null }] }).where === "local");
-check("no workbench cap: queue here", chooseGate({ local: { busy: 1, queued: 0, limit: 1 }, remotes: [{ ...box(9000), caps: ["server"] }] }).where === "local");
-check("--local forces local", chooseGate({ mode: "local", local: { busy: 1, queued: 3, limit: 1 }, remotes: [box(9000)] }).where === "local");
-check("--remote goes remote while the PC is free", chooseGate({ mode: "remote", local: { busy: 0, queued: 0, limit: 1 }, remotes: [box(9000)] }).where === "lf-testbox");
-check("--remote with the box down falls back", chooseGate({ mode: "remote", local: { busy: 0, queued: 0, limit: 1 }, remotes: [{ ...box(0), state: null }] }).where === "local");
-check("parse box state", JSON.stringify(parseWbState("x\nlf-wb: 1 6123\n", undefined)) === JSON.stringify({ wbAlive: 1, freeMb: 6123, wbLimit: 1 }));
-
-// 4. real locks: a child holds the only lock; this process queues, and takes it when the child dies
+// 3. real locks: a child holds the only lock; this process queues, and takes it when the child dies
 const dir = mkdtempSync(join(tmpdir(), "lf-wb-lock-"));
 spawnSync("git", ["init", "-q", dir], { windowsHide: true });
 writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { workbenchLimit: 1 } }));
@@ -67,4 +52,4 @@ if (failures.length) {
   console.log(`wb-lock-selftest: FAILED\n  ${failures.join("\n  ")}`);
   process.exit(1);
 }
-console.log("wb-lock-selftest: OK (limit, FIFO, a real queued handover, gate choice)");
+console.log("wb-lock-selftest: OK (limit, FIFO, a real queued handover)");
