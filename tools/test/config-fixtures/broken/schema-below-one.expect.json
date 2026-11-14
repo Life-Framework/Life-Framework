@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 20,
+      "msg": "config.json: schemaVersion 0 is below 1; reading it as version 1"
+    }
+  ]
+}

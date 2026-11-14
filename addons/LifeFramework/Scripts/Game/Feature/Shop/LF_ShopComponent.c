@@ -158,6 +158,10 @@ class LF_ShopComponent : ScriptComponent
 
 		if (!m_sOutletId.IsEmpty())
 		{
+			// An outlet is the catalogue's counter: with Catalogue off it shows nothing (#1074).
+			if (!LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM))
+				return result;
+
 			LF_ItemCatalogueConfig catalogue = LF_ItemCatalogueConfig.Get();
 			array<LF_OutletOffer> offers = {};
 			LF_ItemCatalogue.Offers(catalogue, m_sOutletId, offers);
@@ -358,6 +362,9 @@ class LF_ShopComponent : ScriptComponent
 		if (!Replication.IsServer() || !buyer)
 			return LF_EShopRefusal.NO_SHOP;
 
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "buy at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
+
 		if (quantity <= 0)
 			return LF_EShopRefusal.BAD_QUANTITY;
 
@@ -459,6 +466,9 @@ class LF_ShopComponent : ScriptComponent
 		if (!Replication.IsServer() || !seller)
 			return LF_EShopRefusal.NO_SHOP;
 
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "sell at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
+
 		if (quantity <= 0)
 			return LF_EShopRefusal.BAD_QUANTITY;
 
@@ -523,6 +533,9 @@ class LF_ShopComponent : ScriptComponent
 		missing = string.Empty;
 		if (m_sOutletId.IsEmpty())
 			return LF_EShopRefusal.NONE;
+
+		if (LF_Systems.Refuses(LF_ItemCatalogue.SYSTEM, "outlet trade at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
 
 		LF_CatalogueItem entry;
 		LF_OutletOffer offer = LF_ItemCatalogue.OfferFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, prefab, entry);

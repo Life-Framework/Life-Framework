@@ -23,6 +23,9 @@ class LF_JobWorker : Managed
 //------------------------------------------------------------------------------------------------
 class LF_CivilianJob
 {
+	//! The system id the Jobs switch answers to (#1074).
+	static const string SYSTEM = "Jobs";
+
 	static const int PAY_PARCEL = 40;
 	static const int PAY_FUEL = 60;
 	static const int PAY_TAXI = 80;
@@ -571,6 +574,9 @@ class LF_CivilianJob
 	static void HandCash(IEntity user, int amount)
 	{
 		if (!user || amount <= 0)
+			return;
+
+		if (LF_Systems.Refuses(SYSTEM, "run payout"))
 			return;
 
 		int given = LF_MoneyUtils.GiveCash(user, amount, "job-pay");

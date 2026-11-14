@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 20,
+      "msg": "config.json is written for schemaVersion 9 but this build reads up to 1; update the server. Fields this build knows still apply, anything else is ignored with a warning"
+    }
+  ]
+}

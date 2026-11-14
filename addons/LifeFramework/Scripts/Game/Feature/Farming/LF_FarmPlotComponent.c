@@ -8,7 +8,8 @@ enum LF_EFarmPlot
 	NOT_RIPE,
 	NO_SEEDS,
 	TOO_FAR,
-	GRANT_FAILED
+	GRANT_FAILED,
+	SYSTEM_OFF	//!< The Farming system is off on this server (#960).
 }
 
 //------------------------------------------------------------------------------------------------
@@ -95,6 +96,7 @@ class LF_FarmPlotRules
 			case LF_EFarmPlot.NO_SEEDS: return "#LF-Farm_NeedSeeds";
 			case LF_EFarmPlot.TOO_FAR: return "#LF-Farm_TooFar";
 			case LF_EFarmPlot.GRANT_FAILED: return "#LF-Farm_PocketsFull";
+			case LF_EFarmPlot.SYSTEM_OFF: return "#LF-Systems_Off";
 		}
 
 		return "";
@@ -293,6 +295,9 @@ class LF_FarmPlotComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return LF_EFarmPlot.NO_PLOT;
 
+		if (LF_Systems.Refuses(LF_FarmPlots.SYSTEM, "planting at " + GetPlotKey()))
+			return LF_EFarmPlot.SYSTEM_OFF;
+
 		LF_EFarmPlot reach = CheckReach(user);
 		if (reach != LF_EFarmPlot.OK)
 			return reach;
@@ -323,6 +328,9 @@ class LF_FarmPlotComponent : ScriptComponent
 	{
 		if (!Replication.IsServer())
 			return LF_EFarmPlot.NO_PLOT;
+
+		if (LF_Systems.Refuses(LF_FarmPlots.SYSTEM, "harvesting at " + GetPlotKey()))
+			return LF_EFarmPlot.SYSTEM_OFF;
 
 		LF_EFarmPlot reach = CheckReach(user);
 		if (reach != LF_EFarmPlot.OK)

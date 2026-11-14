@@ -332,6 +332,19 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   card held up to someone stays on their screen; the server sends it with the card). Server only;
   `/configreload` drops the cached instance (`LF_ConfigStream.ApplyToFeatures`).
 
+## Systems section (#960)
+
+- `systems` (`LF_SystemsConfig`, `Feature/Systems/LF_Systems.c`): `switches` keyed by system id, each
+  with `enabled`. The ids and what may be switched are in `Configs/Systems/LF_SystemCatalog.conf`
+  (core, not an owner section); a pack ships an `LF_SystemsConfig` `.conf` in its header's overlay
+  list. The decision (refusals, dependencies) is `LF_Systems.Decide`; design and rules in
+  `Feature/Systems/Feature.md`.
+- Streamed: `BuildPayload(..., systems = true)` writes every system's effective on or off (run-time
+  offs, parents and requirements resolved), so a client hides the same actions. `ApplyToFeatures`
+  calls `LF_Systems.Reload()`.
+- `tools\cli config-check` refuses an id the catalog does not list; it cannot see LOCKED, NOT_YET or
+  dependency refusals, which the server logs at boot.
+
 ## Files
 
 - `LF_ConfigService.c`: `LF_ConfigService`, `LF_ConfigPackSource`,

@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 53,
+      "msg": "shops.defaultBuyPrice is not a whole number; keeping the shipped value"
+    }
+  ]
+}

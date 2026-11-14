@@ -158,6 +158,9 @@ class LF_RobHoldRules
 		if (refusal == LF_RobHold.REFUSED_WEAPON)
 			return "#LF-RobHold_Refused_Weapon";
 
+		if (refusal == LF_RobAction.REFUSED_OFF)
+			return "#LF-Systems_Off";
+
 		return "#LF-RobHold_Refused_NoTill";
 	}
 }
@@ -253,6 +256,9 @@ class LF_RobHold
 	//! Server: why `player` cannot rob the till of `npc` now, or empty. Reads only, logs nothing.
 	static string Refusal(IEntity player, IEntity npc)
 	{
+		if (!LF_Systems.IsEnabled(LF_RobAction.SYSTEM))
+			return LF_RobAction.REFUSED_OFF;
+
 		if (!LF_HoldUp.IsArmed(player))
 			return REFUSED_WEAPON;
 
