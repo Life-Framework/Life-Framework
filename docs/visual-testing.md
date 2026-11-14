@@ -147,6 +147,13 @@ seconds and asks the pool to trim idle sessions first; under that it fails at on
 (`--force` skips the check). The run is killed at its budget (90 s plus about 1 s per shot) and
 says `TIMEOUT`. It refuses the main checkout.
 
+A run never hands back fallback pictures (#1147): the plugin opens the requested world or errors
+(`world_not_opened`, `world_mismatch`), the Node side re-checks the world path from `status.txt`, and 3 or more
+byte-identical frames fail the run. A Workbench that came up on its default scene (an empty world with a green
+vegetable crate, seen under memory pressure and after `--force`) now prints `FAIL  look: the requested world did
+not load ...` and keeps no pictures. The asset verify/states clothing shots use the same check. `look <area> --world
+<path>` overrides the world, which is how to force the failure.
+
 ### What it does not show
 
 - **UI.** A Workbench play capture is the 3D view only.
