@@ -274,11 +274,14 @@ class LF_SpawnHubMenu
 	static const string PART_LIST = "HubList";
 	static const string PART_CLOSE = "CloseButton";
 	static const string ROW_PREFIX = "HubGo_";
+	static const string ROW_RESET = "HubResetWorld";
+	static const int CONFIRM_MS = 5000; // lf-fixed: how long the second press counts as the confirm
 	static const float CLOSE_RANGE = 4.0;
 
 	protected static ref LF_SpawnHubMenu s_Menu;
 
 	protected ref LF_UIScreen m_Screen;
+	protected int m_iResetArmedAt = -1;
 
 	//------------------------------------------------------------------------------------------------
 	static array<ref LF_UIPart> BuildParts()
@@ -287,6 +290,8 @@ class LF_SpawnHubMenu
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, "#LF-SpawnHub_Title"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_HINT, "#LF-SpawnHub_Hint"));
 		parts.Insert(LF_UIPart.CreateList(PART_LIST));
+		// Resets the whole world for everyone, so it asks twice (the dev gate decides on the server).
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, ROW_RESET, "#LF-SpawnHub_ResetWorld"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, PART_CLOSE, "#LF-SpawnHub_Close"));
 		return parts;
 	}
@@ -345,6 +350,12 @@ class LF_SpawnHubMenu
 	//------------------------------------------------------------------------------------------------
 	protected void OnButton(string name)
 	{
+		if (name == ROW_RESET)
+		{
+			OnResetPressed();
+			return;
+		}
+
 		if (!name.StartsWith(ROW_PREFIX))
 			return;
 
@@ -357,6 +368,30 @@ class LF_SpawnHubMenu
 		}
 
 		character.LF_AskSpawnHubTravel(id);
+		Hide();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! First press asks "sure?"; a second press within CONFIRM_MS resets the world for everyone.
+	protected void OnResetPressed()
+	{
+		int now = GetGame().GetWorld().GetWorldTime();
+		bool armed = m_iResetArmedAt >= 0 && now - m_iResetArmedAt <= CONFIRM_MS;
+		if (!armed)
+		{
+			m_iResetArmedAt = now;
+			m_Screen.SetButtonText(ROW_RESET, "#LF-SpawnHub_ResetSure");
+			return;
+		}
+
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			LF_Debug.Error(LF_SpawnHub.FEATURE, "world reset not asked: no local character");
+			return;
+		}
+
+		character.LF_AskWorldReset("globe");
 		Hide();
 	}
 

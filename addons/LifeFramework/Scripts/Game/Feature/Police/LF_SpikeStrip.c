@@ -217,6 +217,13 @@ class LF_SpikeStrips
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: removes every deployed strip (the world reset).
+	static int DeleteAll()
+	{
+		return LF_SpikeStripComponent.DeleteAll();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		LF_SpikeStripComponent.ResetAll();
@@ -691,6 +698,30 @@ class LF_SpikeStripComponent : ScriptComponent
 	static void ResetAll()
 	{
 		s_aAll = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: picks every strip an officer deployed off the road (the world reset); a placed one stays.
+	//! eturn How many strips were removed.
+	static int DeleteAll()
+	{
+		if (!s_aAll)
+			return 0;
+
+		array<IEntity> owners = {};
+		foreach (LF_SpikeStripComponent strip : s_aAll)
+		{
+			// Only strips an officer laid (they expire); the one placed in the town stays.
+			if (strip && strip.m_bExpires && strip.GetOwner())
+				owners.Insert(strip.GetOwner());
+		}
+
+		foreach (IEntity owner : owners)
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(owner);
+		}
+
+		return owners.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------

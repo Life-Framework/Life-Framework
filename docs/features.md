@@ -1112,7 +1112,7 @@
   (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
   `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
   in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
-  hands were empty on a client). Test: `items/carry-meshes`. Fuel cargo is
+  hands were empty on a client). Test: `items/carry-meshes`. A hand-carried item stays in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop and `LF_HandInventoryStorageComponent` takes it back to the hands when the engine lowers it (sprint), so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920). A parcel that lands on the ground glows (`LF_ParcelComponent` light, every machine), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
@@ -2622,6 +2622,12 @@
 - Not verified by automation: how the voice sounds and its level in the mix; number keys and a
   real pad. Findings and limits: `docs/architecture/npc-dialogue.md`.
 
+### `LF_CaseBoard` — `Feature/Investigation/LF_CaseBoard.c` (#148, 2026-11-13)
+- ✅ A cork board in the police station porch shows on-duty officers the open cases: the crime, the place, the time, the suspect's portrait once identified, the pinned evidence cards and a red string from each card to the suspect. Officers pin (carried bags are logged at the locker first) and unpin at the board. Civilians see plain cork: the list goes to on-duty officers only, by an owner RPC. Pins and times survive a restart (`caseboard` payload, save version 31). Tests: `investigation/case-board` (LOGIC), `investigation/case-board-world` (WORLD), `investigation/case-board-persist` (PERSISTENCE); session proof `case-board-proof`.
+
+### `LF_ScenePieces` — `Feature/Investigation/LF_ScenePieces.c` (#148, 2026-11-13)
+- ✅ Crimes leave physical evidence on the ground, placed with the placement probe: a footprint card behind a robber on foot, casings spread around a shooter, a witness statement at the feet of a witness an officer asked. Every piece is police-only (not an inventory item; only "Bag as evidence"), capped and expiring with the scene evidence, and bags with a note that becomes its card on the case board. Tests: `investigation/scene-pieces` (LOGIC), `investigation/scene-pieces-world` (WORLD); session proof `case-board-proof`.
+
 ### `LF_PhotoIdCard` — `Feature/Identity/LF_PhotoIdCard.c` (#902, 2026-11-13)
 - ✅ The identity card is a photo card: Inspect it in the inventory and a laminated card sheet
   opens (UI kit `PORTRAIT` part): the holder's head and shoulders drawn client-side from their
@@ -2642,3 +2648,16 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+- ✅ (2026-11-14, #921) The player HUD root layout (`UI/Layouts/HUD/HUDLayouts/EL_HUDManagerRoot.layout`) has the vanilla `Slot_Vehicle`, `Slot_WeaponInfo` and `Slot_AvailableActions` slots again, so the vehicle dashboard indicators (lights, high beams) draw bottom-left instead of mid-screen. `validate-hud-root-slots` keeps them there. Harness `input` accepts `VehicleLightsToggle` and `CarLightsHiBeamToggle`; proof verb `vehicle-hud-proof`.
+- ✅ **Cash is always the money mesh** (#932). `MoneyStack.et` no longer swaps to a backpack mesh at 1000 and 10000; the playtest top-up carries 20000, so every cash item in the inventory showed as a field pack. `LF_Test_QuantityOperations` pins it. No save change.
+
+### `LF_TestOrgSign` — `Feature/Organizations/LF_TestOrgSign.c` (#934, 2026-11-14)
+- ✅ **Playtest org sign and a door that explains itself.** A chalkboard beside the registry desk (`Sign_TestOrg`) offers *Join test organisation* and *Leave organisation* so one tester can try the hideout door, stash, ranks and treasury alone. Server side only (`LF_TestOrgSign`): the game mode must have the playtest hub on and `LF_DevGate` must pass, and the body must stand within 5 m. The first one in founds "Test Organisation" as founder and takes the hideout lease; later ones join at the entry rank with no invite; Leave works for a founder too and keeps the organisation on the register. The hideout door now reads *Open* for a member and *Members only (<org>)* for everyone else, with a reason under it ("Only members of <org> can open this door."; an unowned yard says to found an organisation and take the lease); the owner's name is an `RplProp` on `LF_HideoutDoorComponent`. Tests `organizations/test-org-sign` (LOGIC), `organizations/test-org-sign-world` (WORLD); session proof `test-org-sign-proof`. ⚠️ Follow-ups: the owner name is written when the lease or the lock is pushed; if the register loads after the hideouts on a restart the prompt shows plain *Members only* until the next push (not checked across a real restart).
+
+## World reset (debug and playtest, #937)
+- ✅ A service puts the playtest world back as a tester found it (`Core/LF_WorldReset.c`). It owns no list: a feature writes `Feature/<Area>/LF_<Area>WorldReset.c` with a step class and a `modded class LF_WorldResetRegistry` that adds it, and Enforce Script stacks the layers. Steps today: `crime` (wanted levels of every account, till, hospital till and vault cooldowns and stock, search cooldowns), `loot` (loose money bags, drills, keycards, charges), `police` (wanted reports, dispatch log, poster board), `spikes` (deployed strips), `evidence` (scenes, casings, markers, loose bags, locker log), `calls` (service board, finished calls, call-back book; a live call stays), `vehicles` (every vehicle present at game start returns to its spot; the cash van keeps its route), `farm` (plots emptied), `ore` (rocks regrown).
+- ✅ Triggers, all server side and only when `LF_SpawnHub.IsEnabled()` (the debug game mode prefab, so never a real server) and the dev gate is open (`LF_DevGate`, or an `LF_HARNESS` build): a death-screen respawn resets the world when that player is alone on the server; the debug menu's and the travel globe's *Reset world* button resets it for everyone after a second press within 5 s.
+- ✅ The harness `resetcrime` runs the crime-state steps of the same service, so a proof's reset never moves a car or regrows a rock.
+- Not covered: items players hold or carry, containers' contents, persisted vehicles bought after start, dropped ore pieces, hospital cabinet stock. Vehicle damage and fuel are not restored, only position.
+- Tests: `worldreset/gate` (LOGIC), `worldreset/service` (WORLD). Logs `[LFDebug:WorldReset]`.
+- ✅ (2026-11-14, #919) The placement audit also measures the stock a physical store spawns on its shelves (`LF_PlacementAudit.StockRows`) and holds two props standing on the same surface to a 0.02 m overlap limit (0.08 m elsewhere). The general store counter is re-placed: radio left, register right, goods in rows between. Red-proof: `place-audit.mjs selftest` (two cups on one counter).
