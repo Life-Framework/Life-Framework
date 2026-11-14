@@ -1112,7 +1112,7 @@
   (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
   `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
   in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
-  hands were empty on a client). Test: `items/carry-meshes`. A hand-carried item stays in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop and `LF_HandInventoryStorageComponent` takes it back to the hands when the engine lowers it (sprint), so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920). A parcel that lands on the ground glows (`LF_ParcelComponent` light, every machine), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`. Fuel cargo is
+  hands were empty on a client). Test: `items/carry-meshes`. A hand-carried item stays in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop and `LF_HandInventoryStorageComponent` takes it back to the hands when the engine lowers it (sprint), so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920). A parcel that lands on the ground gets a small faint warm marker light at its foot (`LF_ParcelComponent`, every machine; visible at night, barely by day), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does

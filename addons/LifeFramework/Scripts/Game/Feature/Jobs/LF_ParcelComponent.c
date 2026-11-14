@@ -108,7 +108,7 @@ class LF_ParcelComponent : ScriptComponent
 		if (m_Marker || !GetGame().GetWorld() || System.IsConsoleApp())
 			return;
 
-		m_Marker = LightEntity.CreateLight(LightType.POINT, 0, 3.5, Color.FromVector("1 0.75 0.2"), 6, "0 0.6 0");
+		m_Marker = LightEntity.CreateLight(LightType.POINT, 0, 2.2, Color.FromVector("1 0.7 0.25"), 3, "0 0.25 0");
 		if (!m_Marker)
 		{
 			LF_Debug.Error("Jobs", "parcel marker light was not created");
