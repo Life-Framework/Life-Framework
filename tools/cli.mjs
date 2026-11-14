@@ -81,6 +81,7 @@ import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
+import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -1164,8 +1165,16 @@ function cmdPack(root = ROOT, opts = {}) {
 // inventory operations that never complete). When stale, a headless Workbench
 // opens the project, which registers the new metas and rewrites the file.
 // The main checkout's rdb is the human's editor copy: only warn there.
-// LF_RDB_REFRESH=0 turns the refresh off (warn only).
+// LF_RDB_REFRESH=0 turns the refresh off (warn only). LF_RDB_CHECKED=1 (set for shard children) means the
+// parent run already refreshed or tried to, so the child never waits on the build lock a second time.
+// The wait for the hub `build` lock is LF_RDB_WAIT_S (900 s) for the whole process, every addon together,
+// and prints the holder (tools/lib/lock-wait.mjs).
 const RDB_REFRESH_TYPICAL_S = 15;
+let rdbLockBudget = null;
+function rdbBudget() {
+  if (!rdbLockBudget) rdbLockBudget = new Budget(Number(process.env.LF_RDB_WAIT_S || 900) * 1000);
+  return rdbLockBudget;
+}
 function ensureResourceDatabase(root) {
   wt.copyResourceDatabase(root);
   // The core always; another addon once it declares a resource (tools/lib/addons.mjs rdbAddons).
@@ -1180,6 +1189,10 @@ function ensureAddonResourceDatabase(root, name) {
   const before = rdbFreshness(addon);
   if (before.missing.length === 0) return 0;
   const what = `${before.missing.length} unregistered resource(s): ${describeMissing(before.missing)}`;
+  if (process.env.LF_RDB_CHECKED === "1") {
+    console.log(`WARN  resource database stale${tag}: ${what}; the parent run already tried the refresh, not waiting on the build lock again`);
+    return 1;
+  }
   if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0") {
     console.log(`WARN  resource database stale${tag}: ${what}`);
     console.log("      open Workbench on this checkout once (it rewrites resourceDatabase.rdb), or run from a worktree");
@@ -1193,7 +1206,13 @@ function ensureAddonResourceDatabase(root, name) {
   console.log(`resource database stale${tag}: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
   let locked = false;
   try {
-    wt.acquireLock(root, "build", { waitMs: 900000 });
+    const lockFile = join(wt.ensureHub(root), "locks", "build.lock");
+    waitForLock({
+      what: `the build lock for the rdb refresh${tag}`,
+      budget: rdbBudget(),
+      holder: () => describeHolder(lockFile),
+      acquire: (waitMs) => wt.acquireLock(root, "build", { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
+    });
     locked = true;
     const started = Date.now();
     const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
@@ -2957,13 +2976,34 @@ function runShardChild(root, job) {
   const logPath = join(logDir, name);
   const args = [process.argv[1], "test", "--no-build", "--tier", "all", ...(job.full ? [] : ["--only-classes", job.classes.join(",")]), ...(job.pass.coreOnly ? ["--core-only"] : []), ...shardPassThrough(job.pass.opts)];
   const t0 = Date.now();
+  const label = `${job.pass.name} ${job.index}/${job.count}`;
+  // The parent's ensureResourceDatabase already refreshed the rdb or tried to: a child never waits on the
+  // build lock again (LF_RDB_CHECKED), nor sends the refresh to the pool (LF_RDB_REFRESH=0).
+  const env = { ...toolEnv(), LF_QUIET_CHILD: "1", LF_SHARD_GROUP: root, LF_RDB_CHECKED: "1", LF_RDB_REFRESH: "0" };
+  const beatMs = Number(process.env.LF_SHARD_HEARTBEAT_S || 120) * 1000;
+  const limitMs = Number(process.env.LF_SHARD_TIMEOUT_S || 2700) * 1000;
   return new Promise((resolveP) => {
-    const child = spawn(process.execPath, args, { cwd: root, windowsHide: true, env: { ...toolEnv(), LF_QUIET_CHILD: "1", LF_SHARD_GROUP: root }, stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(process.execPath, args, { cwd: root, windowsHide: true, env, stdio: ["ignore", "pipe", "pipe"] });
     let text = "";
+    const lastLine = () => text.trimEnd().split(/\r?\n/).pop()?.slice(0, 200) || "(no output yet)";
+    // Every wait says what it waits on: the slice's own last line while it runs, and a hard stop at the budget.
+    const beat = setInterval(() => console.log(`shards: ${label} still running after ${Math.round((Date.now() - t0) / 1000)} s: ${lastLine()}`), beatMs);
+    const stop = setTimeout(() => {
+      text += `\nFAIL  shard ${label} timed out after ${Math.round(limitMs / 1000)} s (LF_SHARD_TIMEOUT_S); last line: ${lastLine()}\n`;
+      console.log(`shards: ${label} timed out after ${Math.round(limitMs / 1000)} s; stopping it (last line: ${lastLine()})`);
+      if (process.platform === "win32") spawnSync("taskkill", ["/T", "/F", "/PID", String(child.pid)], { windowsHide: true, timeout: 30000 });
+      else child.kill("SIGKILL");
+    }, limitMs);
     child.stdout.on("data", (c) => (text += c.toString("utf8")));
     child.stderr.on("data", (c) => (text += c.toString("utf8")));
-    child.on("error", (e) => resolveP({ code: 3, text: `FAIL  could not start a shard: ${e.message}`, seconds: 0 }));
+    child.on("error", (e) => {
+      clearInterval(beat);
+      clearTimeout(stop);
+      resolveP({ code: 3, text: `FAIL  could not start a shard: ${e.message}`, seconds: 0 });
+    });
     child.on("close", (code) => {
+      clearInterval(beat);
+      clearTimeout(stop);
       try {
         writeFileSync(logPath, text);
       } catch {}
