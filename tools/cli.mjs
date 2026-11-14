@@ -4017,7 +4017,8 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
   const qq = q.readQueue(ROOT);
   const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
   const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
-  console.log(`SUMMARY ship queued ${slug} PR #${pr.number} position ${pos} (${gating} gating) worker ${w.started ? "started" : "running"} log=${log}`);
+  const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
+  console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
   console.log(`PR: ${pr.url}`);
   const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
   if (!wait) {
