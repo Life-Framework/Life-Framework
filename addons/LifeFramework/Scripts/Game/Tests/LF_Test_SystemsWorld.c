@@ -2,6 +2,10 @@
 // with `bool m_bEnabled = true;` on LF_SystemSwitch the member initializer beat the overlay's `m_bEnabled 0`
 // and systems/world-gates failed `- the pack overlay turns the pager off` and `- and the log names the pack: `.
 // The initializer is gone (the attribute default is the only default); green.
+// #1073 vault and heist block, observed 2026-11-14 with the BankAction offer gate, the LF_Bank.Rob refusal and the SpawnWave gate each removed:
+// `- with Robbery off the vault offers nothing (expected 0, got 1)`, `- the cash van box offers nothing (expected 0, got 1)`,
+// `- but a heist that ends after Robbery went off spills no bags (expected 0, got 2)`, `- and keeps its stock (expected 3, got 2)`
+// and `- a heist robbery is refused while Robbery is off`. Restored; green.
 //------------------------------------------------------------------------------------------------
 //! A stand-in pack source: one LF_SystemsConfig overlay that turns the Pager off.
 class LF_Test_SystemsPackStub : LF_ConfigPackSource
@@ -31,6 +35,9 @@ class LF_Test_SystemsWorld : LF_Test
 {
 	static const ResourceName PAGER = "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et";
 	static const ResourceName WEAPON = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
+	static const ResourceName BANK_VAULT = "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et";
+	static const ResourceName CASH_VAN_BOX = "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et";
+	static const ResourceName ARMORY_STORE = "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et";
 	static const ResourceName TILL = "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et";
 
 	override string GetName()
@@ -106,6 +113,52 @@ class LF_Test_SystemsWorld : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The bank vault and the heist targets (cash van box, armory store) obey Robbery (#1073): the
+	//! action hides, a heist drill that ends after the switch went off spills nothing and keeps its stock.
+	protected void RunVaults(LF_TestContext ctx, IEntity user)
+	{
+		Owner(string.Empty);
+		IEntity bankVault = LF_Utils.SpawnEntityPrefab(BANK_VAULT, user.GetOrigin());
+		IEntity cashVan = LF_Utils.SpawnEntityPrefab(CASH_VAN_BOX, user.GetOrigin());
+		IEntity armoryStore = LF_Utils.SpawnEntityPrefab(ARMORY_STORE, user.GetOrigin());
+		ctx.True(bankVault != null && cashVan != null && armoryStore != null, "the vault, the cash van box and the armory store spawn");
+		if (bankVault && cashVan && armoryStore)
+		{
+			ctx.True(ShownActions(bankVault, user, LF_BankRobAction) > 0, "with Robbery on the vault offers its robbery");
+			ctx.True(ShownActions(cashVan, user, LF_HeistRobAction) > 0, "and the cash van box offers its break-in");
+			ctx.True(ShownActions(armoryStore, user, LF_HeistRobAction) > 0, "and the armory store offers its breach");
+
+			Owner("{\"Robbery\":{\"enabled\":false}}");
+			ctx.Equal(0, ShownActions(bankVault, user, LF_BankRobAction), "with Robbery off the vault offers nothing");
+			ctx.Equal(0, ShownActions(cashVan, user, LF_HeistRobAction), "the cash van box offers nothing");
+			ctx.Equal(0, ShownActions(armoryStore, user, LF_HeistRobAction), "and the armory store offers nothing");
+
+			Owner(string.Empty);
+			ctx.True(ShownActions(cashVan, user, LF_HeistRobAction) > 0, "on again the cash van box offers its break-in");
+		}
+
+		SCR_EntityHelper.DeleteEntityAndChildren(bankVault);
+		SCR_EntityHelper.DeleteEntityAndChildren(cashVan);
+		SCR_EntityHelper.DeleteEntityAndChildren(armoryStore);
+
+		// A heist whose fuse runs out after Robbery went off pays no haul and keeps its stock.
+		string heistId = "systems-world-heist";
+		LF_Bank.Configure(heistId, 2, 400, 60, 0, 5);
+		LF_Bank.ConfigureHeist(heistId, LF_BankLoot.KIND_BAGS, "", "", false, 3, 0);
+		ctx.True(LF_Bank.Rob(heistId, "systems-world-robber"), "a heist with a fuse arms");
+		Owner("{\"Robbery\":{\"enabled\":false}}");
+		ctx.True(LF_Bank.Advance(heistId, 5), "the fuse still runs out");
+		ctx.Equal(0, LF_Bank.GetLooseBagCount(heistId), "but a heist that ends after Robbery went off spills no bags");
+		ctx.Equal(3, LF_Bank.GetStock(heistId), "and keeps its stock");
+		string refusedId = "systems-world-heist-refused";
+		LF_Bank.Configure(refusedId, 2, 400, 60, 0, 5);
+		LF_Bank.ConfigureHeist(refusedId, LF_BankLoot.KIND_BAGS, "", "", false, 3, 0);
+		ctx.False(LF_Bank.Rob(refusedId, "systems-world-robber-b"), "a heist robbery is refused while Robbery is off");
+		ctx.Equal(3, LF_Bank.GetStock(refusedId), "and keeps its stock");
+		Owner(string.Empty);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
 		// The shipped catalog with no layer: the three switchable systems are on.
@@ -172,6 +225,8 @@ class LF_Test_SystemsWorld : LF_Test
 		ctx.True(LF_Systems.IsItemAllowed(PAGER), "and the loadout gives it");
 		ctx.Equal(pagersBefore + 1, GiveDirectPager(user), "the loadout spawn gives the pager again");
 		SCR_EntityHelper.DeleteEntityAndChildren(tillEntity);
+
+		RunVaults(ctx, user);
 
 		// A pack overlay turns the pager off; the owner turns it back on over the pack.
 		LF_ConfigService.Reset();
