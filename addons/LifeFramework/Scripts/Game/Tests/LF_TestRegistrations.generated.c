@@ -328,6 +328,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplication(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceApplicationStaff(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
@@ -467,6 +468,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StolenVehicleLookPlacedCar(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StorePersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_StoreRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StoreShelf(), LF_TestTier.WORLD);
