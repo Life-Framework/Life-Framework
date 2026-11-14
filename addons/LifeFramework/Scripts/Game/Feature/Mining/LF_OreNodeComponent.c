@@ -42,6 +42,9 @@ class LF_OreNodeComponent : ScriptComponent
 {
 	static const string FEATURE = "Mining";
 
+	//! The system a server switches ore rocks off with (#1075).
+	static const string SYSTEM = "Mining";
+
 	[Attribute("iron", UIWidgets.EditBox, "Node id in Configs/Resources/ResourceChains.conf: ore item, items per piece, pieces before the rock is spent, grow-back cooldown", category: "Ore")]
 	protected string m_sNodeId;
 
@@ -128,6 +131,10 @@ class LF_OreNodeComponent : ScriptComponent
 		if (!IsAuthority())
 			return 0;
 
+		// Mining off: the rock takes no hit, drops nothing and keeps its pieces (#1075).
+		if (LF_Systems.Refuses(SYSTEM, "ore hit on " + m_sNodeId))
+			return 0;
+
 		if (m_bDepleted)
 		{
 			LF_Debug.Info(FEATURE, string.Format("hit on spent %1 rock ignored", m_sNodeId));
@@ -200,6 +207,17 @@ class LF_OreNodeComponent : ScriptComponent
 			return;
 
 		GetGame().GetCallqueue().Remove(Regrow);
+
+		// Mining off: a spent rock stays spent and the grow-back waits; the clock is not lost,
+		// it asks again a respawn period later (#1075).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+		{
+			if (m_bDepleted)
+				GetGame().GetCallqueue().CallLater(Regrow, Math.Max(m_fRespawnSeconds, 1) * 1000, false);
+
+			return;
+		}
+
 		LF_OreYield.Refill(m_State);
 		if (!m_bDepleted)
 			return;
