@@ -7,7 +7,8 @@
 # ArchBuilder is not installed, enabled or licensed (the stage then skips, it does not fail).
 #
 # It uses only the add-on's public surface: its operators (ab.generate_building, ab.landmark,
-# ab.rf_export), its property groups (scene.ab_gen, object.ab_bld, scene.ab_rf_*) and license.is_full.
+# ab.rf_export), its property groups (scene.ab_gen, object.ab_bld, scene.ab_rf_*) and license.is_full,
+# plus a read-only look at the report its reforger.export.run returns (export() below).
 # None of the add-on's own code is copied here. Findings: docs/architecture/building-pipeline-spike.md.
 import bpy
 import json
@@ -203,17 +204,101 @@ def export():
     sc.ab_rf_probes = e.get("probes", "ONE")
     sc.ab_rf_invert = bool(e.get("invert_swing", False))
     select_only(a)
+    # The operator reports only a one-line summary; the export's own report (warnings, vanilla
+    # props placed per kind, furniture records it found no place or prefab for) is the return value
+    # of the add-on's reforger.export.run, which the operator calls by module attribute. Keep a copy
+    # of it so the pipeline can fail on anything the export skipped instead of shipping a bare shell.
+    pkg = next(m for m in bpy.context.preferences.addons.keys() if m.split(".")[-1] == "arch_builder")
+    import importlib
+    try:
+        exp = importlib.import_module(pkg + ".reforger.export")  # the operator imports it lazily; same module object
+    except ImportError:
+        exp = None
+    if exp is None or not hasattr(exp, "run"):
+        raise RuntimeError("%s.reforger.export.run not found: this ArchBuilder version is not the one the "
+                           "pipeline knows (docs/building-pipeline/README.md)" % pkg)
+    reports = []
+    inner = exp.run
+
+    def keep(*args, **kw):
+        r = inner(*args, **kw)
+        reports.append(r)
+        return r
+    exp.run = keep
     t = time.time()
     print("LF_BUILDING export start")
-    res = bpy.ops.ab.rf_export()
+    try:
+        res = bpy.ops.ab.rf_export()
+    finally:
+        exp.run = inner
     print("LF_BUILDING export end")
     if "FINISHED" not in res:
         raise RuntimeError("ab.rf_export returned %s" % (res,))
-    done({"secs": round(time.time() - t, 2), "staging": job["staging"]})
+    r = reports[-1] if reports else None
+    keys = ("warnings", "props", "props_vanilla", "props_mesh", "probes", "vanilla_windows", "vanilla_doors",
+            "vanilla_glass", "doors", "materials", "colliders", "lods", "faces", "prefab", "base_prefab")
+    done({"secs": round(time.time() - t, 2), "staging": job["staging"],
+          "report": {k: r.get(k) for k in keys} if r else None})
+
+
+# ------------------------------------------------------------------------------ materials
+# What the game material needs to look like Blender: for every material on the building, the colour
+# ArchBuilder shows for it in Blender (its viewport colour) and how much of its area faces the
+# outside; and the linear mean albedo of each base-game texture handed in as a .dds
+# (job["textures"]: {name: path}). tools/buildings/pipeline/materials.mjs turns them into Color.
+# Outside is measured, not read from ArchBuilder's part names: one "walls" part holds both faces of
+# an outer wall, the beige render and the interior plaster. A face is outside when a ray from it
+# along its normal leaves the building.
+def materials():
+    archbuilder()
+    a = anchor()
+    dg = bpy.context.evaluated_depsgraph_get()
+    sc = bpy.context.scene
+    mats = {}
+    for o in a.children_recursive:
+        if o.type != "MESH" or o.get("ab_cutter") or o.hide_render:
+            continue
+        ev = o.evaluated_get(dg)
+        me = ev.to_mesh()
+        mw = o.matrix_world
+        nm = mw.to_3x3().inverted().transposed()
+        for poly in me.polygons:
+            if poly.material_index >= len(o.material_slots):
+                continue
+            m = o.material_slots[poly.material_index].material
+            if m is None or not m.name.startswith("AB_"):
+                continue
+            e = mats.setdefault(m.name, {"colour": [round(c, 4) for c in m.diffuse_color[:3]], "area": 0.0, "outside": 0.0})
+            n = (nm @ poly.normal).normalized()
+            c = mw @ poly.center
+            area = poly.area
+            e["area"] += area
+            # the centre and points part-way to each corner: one big face (a flat roof) can have
+            # its centre under a rooftop unit and still be mostly open sky
+            pts = [c] + [c + (mw @ me.vertices[v].co - c) * f for v in poly.vertices for f in (0.4, 0.8)]
+            free = sum(1 for q in pts if not sc.ray_cast(dg, q + n * 0.03, n, distance=200.0)[0])
+            e["outside"] += area * free / len(pts)
+        ev.to_mesh_clear()
+    for e in mats.values():
+        e["outside_share"] = round(e["outside"] / e["area"], 3) if e["area"] else 0.0
+        e["area"] = round(e["area"], 2)
+        e["outside"] = round(e["outside"], 2)
+
+    def lin(c):
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    means = {}
+    for name, path in job.get("textures", {}).items():
+        im = bpy.data.images.load(path, check_existing=False)
+        im.colorspace_settings.name = "sRGB"
+        px = im.pixels[:]
+        n = len(px) // 4
+        means[name] = [round(sum(lin(px[i * 4 + c]) for i in range(n)) / n, 4) for c in range(3)]
+        bpy.data.images.remove(im)
+    done({"materials": mats, "means": means})
 
 
 try:
-    {"generate": generate, "review": review, "export": export}[mode]()
+    {"generate": generate, "review": review, "export": export, "materials": materials}[mode]()
 except SystemExit:
     raise
 except Exception:

@@ -106,9 +106,10 @@ export function buildLine(id, spec) {
     return `${id} interact ${spec.step}`;
   }
   if (spec.verb === "stand") {
-    // Optional side (e default, w, n, s; a trailing 2 stands 2 m out, not 1.2): stand on that side of the entity, facing it.
+    // Optional side (e default, w, n, s; trailing whole metres 1 to 30 stand that far out, not 1.2, e.g.
+    // s9 for a building's street side): stand on that side of the entity, facing it.
     if (spec.side) {
-      if (!["e", "w", "n", "s", "e2", "w2", "n2", "s2"].includes(spec.side)) throw new Error(`bad stand side ${spec.side}`);
+      if (!/^[ewns]([1-9]|[12][0-9]|30)?$/.test(spec.side)) throw new Error(`bad stand side ${spec.side}`);
       return `${id} stand ${token(spec.entityName, "entity")} ${spec.side}`;
     }
     return `${id} stand ${token(spec.entityName, "entity")}`;
