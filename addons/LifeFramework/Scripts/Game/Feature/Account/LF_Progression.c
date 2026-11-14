@@ -24,6 +24,9 @@
 //------------------------------------------------------------------------------------------------
 class LF_Progression
 {
+	//! Prefix of an account flag stored among the turn-ins (NoteFlag).
+	static const string FLAG_PREFIX = "flag:";
+
 	protected static ref map<string, ref LF_ProgressionRecord> s_mRecords;
 
 	//------------------------------------------------------------------------------------------------
@@ -89,6 +92,35 @@ class LF_Progression
 			return false;
 
 		return record.m_aTurnedInQuests.Find(questId) >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An account flag (the rules quiz pass, #915): a "flag:<name>" entry in the turn-in list, so it
+	//! rides the existing progression payload with no new saved field. LF_QuestTracker.RestoreTurnedIn
+	//! leaves a flag out of a character's quest log.
+	static void NoteFlag(string playerUid, string flag)
+	{
+		if (playerUid.IsEmpty() || flag.IsEmpty())
+		{
+			LF_Debug.Warn("Progression", string.Format("flag not remembered: player '%1' flag '%2'", playerUid, flag));
+			return;
+		}
+
+		NoteTurnedIn(playerUid, FLAG_PREFIX + flag);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool HasFlag(string playerUid, string flag)
+	{
+		return HasTurnedIn(playerUid, FLAG_PREFIX + flag);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ClearFlag(string playerUid, string flag)
+	{
+		LF_ProgressionRecord record = Get(playerUid);
+		if (record)
+			record.m_aTurnedInQuests.RemoveItem(FLAG_PREFIX + flag);
 	}
 
 	//------------------------------------------------------------------------------------------------

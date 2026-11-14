@@ -847,6 +847,32 @@
       "additionalProperties": false,
       "x-class": "LF_PoliceConfig"
     },
+    "rulesQuiz": {
+      "type": "object",
+      "description": "The rules orientation quiz switches (#915): Configs/Rules/LF_Quiz.conf, then each pack overlay of this class, then the owner's `rulesQuiz` section.",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "repeatOnConnect": {
+          "type": "boolean"
+        },
+        "passPercent": {
+          "type": "integer",
+          "default": 80,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "maxAttempts": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 0,
+          "maximum": 20
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_QuizConfig"
+    },
     "shops": {
       "type": "object",
       "description": "Price table for the shop system.",

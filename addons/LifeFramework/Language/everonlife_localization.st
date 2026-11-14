@@ -8453,6 +8453,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logout in custody"
      Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
+    CustomStringTableItem "{1682AE4AD3653A8D}" {
+     Id "LF-Quiz_Title"
+     Target_en_us "RULES ORIENTATION"
+     Comment "Printed heading of the rules quiz sheet (#915)."
+    }
+    CustomStringTableItem "{DD98664E993E37C4}" {
+     Id "LF-Quiz_Progress"
+     Target_en_us "Question %1 of %2"
+     Comment "Heading above each rules quiz question; %1 = number, %2 = how many (#915)."
+    }
+    CustomStringTableItem "{F9D7252954C6A302}" {
+     Id "LF-Quiz_Attempts"
+     Target_en_us "Wrong attempts left before you are asked to leave: %1"
+     Comment "Line under a rules quiz question; %1 = attempts left (#915)."
+    }
+    CustomStringTableItem "{5E293950BE2CDF2B}" {
+     Id "LF-Quiz_Checking"
+     Target_en_us "The clerk is checking your answers."
+     Comment "Shown while the server scores the rules quiz (#915)."
+    }
+    CustomStringTableItem "{4F36E5ABF037B2D0}" {
+     Id "LF-Quiz_Passed"
+     Target_en_us "You answered %1 of %2 correctly. Thank you. Please go on to registration."
+     Comment "Rules quiz pass page; %1 = right, %2 = questions (#915)."
+    }
+    CustomStringTableItem "{8D0E5B1548ABDA78}" {
+     Id "LF-Quiz_Failed"
+     Target_en_us "You answered %1 of %2 correctly. %3 are needed. Read the rules below and try again."
+     Comment "Rules quiz fail page; %1 = right, %2 = questions, %3 = needed (#915)."
+    }
+    CustomStringTableItem "{17745EEB536A35A9}" {
+     Id "LF-Quiz_Rules"
+     Target_en_us "THE RULES YOU MISSED"
+     Comment "Heading over the explanations on the rules quiz fail page (#915)."
+    }
+    CustomStringTableItem "{6463B2A22B72FF57}" {
+     Id "LF-Quiz_Retry"
+     Target_en_us "Try again"
+     Comment "Button on the rules quiz fail page (#915)."
+    }
+    CustomStringTableItem "{BBC2C86D1E6F9C34}" {
+     Id "LF-Quiz_Continue"
+     Target_en_us "Continue to registration"
+     Comment "Button on the rules quiz pass page (#915)."
+    }
+    CustomStringTableItem "{0D01FDAE07097973}" {
+     Id "LF-Quiz_NoAttempts"
+     Target_en_us "That was your last attempt. Read the server rules and join again."
+     Comment "Rules quiz fail page when the attempts are used up and the player is about to be removed (#915)."
+    }
   }
  }
 }

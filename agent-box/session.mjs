@@ -663,7 +663,31 @@ export function judgeProof(before1, after1, after2) {
 
 // A new account sees the registration form (R-89); fill and sign it.
 export const ARRIVAL_NAMES = { 1: ["Ada", "Robber"], 2: ["Bob", "Officer"], 3: ["Cy", "Walker"] };
+// The rules orientation quiz (#915) stands before the registration form on a pack world: the right
+// option of each question, in order, read from the pack's question file.
+export function quizAnswers() {
+  const file = join(dirname(fileURLToPath(import.meta.url)), "..", "addons", "LF_Everon1989", "Configs", "Rules", "LF_Quiz_Everon.conf");
+  if (!existsSync(file)) return [];
+  return [...readFileSync(file, "utf8").matchAll(/m_iCorrect\s+(\d+)/g)].map((m) => Number(m[1]));
+}
+
+// Answers the quiz right when it is on screen, then continues to registration, so every proof that
+// starts with `arrive` keeps working. \return true when a quiz was on screen.
+export function passQuiz(on, n, wait) {
+  const ui = on(n, { verb: "ui" });
+  if (ui.status !== "ok" || !ui.detail.includes("QuizOption0Button")) return false;
+  for (const answer of quizAnswers()) {
+    on(n, { verb: "click", widget: `QuizOption${answer}Button` });
+    wait(500);
+  }
+  wait(2500);
+  on(n, { verb: "click", widget: "QuizContinueButton" });
+  wait(2500);
+  return true;
+}
+
 export function arrive(on, n, wait) {
+  passQuiz(on, n, wait);
   const ui = on(n, { verb: "ui" });
   if (ui.status !== "ok" || !ui.detail.includes("SignButton")) return;
   const [first, last] = ARRIVAL_NAMES[n] ?? ["Pat", "Player"];

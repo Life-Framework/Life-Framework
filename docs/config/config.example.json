@@ -133,6 +133,10 @@
     "compliantSeconds": 60,
     "spikeStripLifetimeSeconds": 600
   },
+  "rulesQuiz": {
+    "passPercent": 80,
+    "maxAttempts": 3
+  },
   "shops": {
     "defaultBuyPrice": 50,
     "defaultSellPrice": 25,
