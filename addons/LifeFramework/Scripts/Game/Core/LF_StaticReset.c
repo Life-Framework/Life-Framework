@@ -24,6 +24,7 @@ class LF_StaticReset
 		LF_JailWork.ResetStatics();
 		LF_JailEscort.ResetStatics();
 		LF_Restraint.ResetStatics();
+		LF_Cuffing.ResetStatics();
 		LF_JailCellComponent.ResetStatics();
 		LF_JailArrestableComponent.ResetStatics();
 		LF_Contraband.Reset();
