@@ -21,7 +21,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const LAYERS = join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
+import { worldLayerDirs } from "../lib/addons.mjs";
+const LAYER_DIRS = worldLayerDirs(root);
 export const KNOWN = {
   "RG_Road_Cobblestone_01.et": "56F07CB2CD0F496C",
   "RG_Road_Dirt_01.et": "523EAA80CAA6C6B5",
@@ -61,7 +62,7 @@ export function problems(rows) {
 
 function main() {
   const rows = [];
-  for (const f of readdirSync(LAYERS).filter((n) => n.endsWith(".layer"))) rows.push(...roadIds(f, readFileSync(join(LAYERS, f), "utf8")));
+  for (const d of LAYER_DIRS) for (const f of readdirSync(d).filter((n) => n.endsWith(".layer"))) rows.push(...roadIds(f, readFileSync(join(d, f), "utf8")));
   const bad = problems(rows);
   for (const p of bad) console.log(`FAIL ${p}`);
   if (bad.length) {

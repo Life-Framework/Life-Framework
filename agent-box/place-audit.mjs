@@ -18,6 +18,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadWorld } from "./layers.mjs";
+import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -476,7 +477,7 @@ export function inputText(records, extra = []) {
 // other test run (the machine with the RAM headroom takes it; `tools\cli test` ships the input list up
 // and brings out.txt back); only an interactive caller that wants the quick local loop pins it (local).
 export function auditTestArgs({ local = false } = {}) {
-  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", ...(local ? ["--local"] : []), "--verbose"];
+  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", townWorld(), ...(local ? ["--local"] : []), "--verbose"];
 }
 
 // One boot of the dedicated test server: LF_Test_PlacementAuditTown measures `records` and traces the
@@ -530,7 +531,7 @@ async function placement(argv) {
   const { flags } = parseArgs(argv);
   const areas = readJson(AREAS_FILE, { areas: [] }).areas;
   const allow = readJson(ALLOW_FILE, { allow: [] }).allow ?? [];
-  const roads = parseRoads(readFileSync(join(LAYERS_DIR, "Village_Roads.layer"), "utf8"));
+  const roads = parseRoads(readFileSync(layerFile(ROOT, "Village_Roads.layer"), "utf8"));
   let records = auditRecords({ layers: flags.layer ? String(flags.layer).split(",") : null, area: flags.area, areas, annex: !!flags.annex });
   const outDir = resolve(flags.out ?? join(ROOT, "tmp", "place-audit"));
   mkdirSync(outDir, { recursive: true });
@@ -598,9 +599,9 @@ function worldSelftest(fail) {
   else {
     const addon = join(ROOT, "addons", "LifeFramework");
     const unlisted = new Set();
-    for (const f of readdirSync(LAYERS_DIR).filter((n) => n.endsWith(".layer"))) {
-      for (const m of readFileSync(join(LAYERS_DIR, f), "utf8").matchAll(/"{[0-9A-Fa-f]{16}}([^"]+.et)"/g)) {
-        if (!existsSync(join(addon, m[1])) && !list.prefabs[m[1]] && !(list.unmeasured ?? []).includes(m[1])) unlisted.add(m[1]);
+    for (const f of worldLayerDirs(ROOT).flatMap((d) => readdirSync(d).filter((n) => n.endsWith(".layer")).map((n) => join(d, n)))) {
+      for (const m of readFileSync(f, "utf8").matchAll(/"{[0-9A-Fa-f]{16}}([^"]+.et)"/g)) {
+        if (!existsSync(join(addon, m[1])) && !existsSync(join(ROOT, "addons", "LF_Everon1989", m[1])) && !list.prefabs[m[1]] && !(list.unmeasured ?? []).includes(m[1])) unlisted.add(m[1]);
       }
     }
     if (unlisted.size) fail(`vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`);

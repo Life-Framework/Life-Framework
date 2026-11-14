@@ -5,6 +5,22 @@
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { worldLayerDirs } from "../tools/lib/addons.mjs";
+
+// A repo resource path in the core or, failing that, the pack; null when neither holds it.
+function addonFile(root, rel) {
+  for (const addon of ["LifeFramework", "LF_Everon1989"]) {
+    const full = join(root, "addons", addon, rel);
+    if (existsSync(full)) return full;
+  }
+  return null;
+}
+
+// Every .layer of the town: [{ dir, file }] over the core DebugWorld folder and the pack world's.
+function layerFiles(root, layersDir) {
+  const dirs = layersDir ? [layersDir] : worldLayerDirs(root);
+  return dirs.flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith(".layer")).map((file) => ({ dir, file })));
+}
 
 const STRUCTURAL = new Set([
   "components",
@@ -57,8 +73,8 @@ function prefabActions(root, prefabPath, seen = new Set()) {
   seen.add(prefabPath);
   const rel = prefabPath.replaceAll("\\", "/");
   if (rel.includes("..")) return [];
-  const full = join(root, "addons", "LifeFramework", rel);
-  if (!existsSync(full)) return [];
+  const full = addonFile(root, rel);
+  if (!full) return [];
   const text = readFileSync(full, "utf8");
   const actions = [];
   for (const raw of text.split(/\r?\n/)) {
@@ -76,8 +92,8 @@ function prefabSignId(root, prefabPath, seen = new Set()) {
   seen.add(prefabPath);
   const rel = prefabPath.replaceAll("\\", "/");
   if (rel.includes("..")) return "";
-  const full = join(root, "addons", "LifeFramework", rel);
-  if (!existsSync(full)) return "";
+  const full = addonFile(root, rel);
+  if (!full) return "";
   const text = readFileSync(full, "utf8");
   const own = text.match(/^\s*m_sSignId\s+"([^"]*)"/m);
   if (own) return own[1];
@@ -234,10 +250,8 @@ export function parsePlaced(text, layerFile, root) {
 }
 
 export function loadPads(root) {
-  const dir = join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
   const pads = [];
-  for (const file of readdirSync(dir)) {
-    if (!file.endsWith(".layer")) continue;
+  for (const { dir, file } of layerFiles(root)) {
     const text = readFileSync(join(dir, file), "utf8");
     pads.push(...parseLayer(text, file, root));
   }
@@ -246,10 +260,8 @@ export function loadPads(root) {
 }
 
 export function loadPlaced(root) {
-  const dir = join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
   const placed = [];
-  for (const file of readdirSync(dir)) {
-    if (!file.endsWith(".layer")) continue;
+  for (const { dir, file } of layerFiles(root)) {
     const text = readFileSync(join(dir, file), "utf8");
     placed.push(...parsePlaced(text, file, root));
   }
@@ -260,10 +272,8 @@ export function loadPlaced(root) {
 // Every placed entity, named or not. The town manifest resolves sites and
 // signs against this, so positions live only in the layers.
 export function loadWorld(root, layersDir) {
-  const dir = layersDir ?? join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
   const entities = [];
-  for (const file of readdirSync(dir)) {
-    if (!file.endsWith(".layer")) continue;
+  for (const { dir, file } of layerFiles(root, layersDir)) {
     const text = readFileSync(join(dir, file), "utf8");
     const walked = walkLayer(text, file, root);
     entities.push(...walked.placed, ...walked.anonymous);
