@@ -1,5 +1,6 @@
 # Merge drivers selected by .gitattributes.
-# Register once per clone (the pre-commit hook does this):
+# Registered once per repo by the pre-commit hook (tools/merge/register-drivers.mjs), as the
+# main checkout's copy. Never add a per-worktree path: worktrees share .git/config. By hand:
 #   git config --local --add include.path <repo>/tools/merge/drivers.gitconfig
 # The driver commands run with the worktree as the current directory, so a
 # plain `node tools/merge/<driver>` runs the copy on the branch being merged

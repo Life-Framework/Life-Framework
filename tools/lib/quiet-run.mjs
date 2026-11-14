@@ -22,6 +22,7 @@ import { spawn } from "node:child_process";
 import { closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { wantsHelp } from "./help-guard.mjs";
 
 export const PASSTHROUGH = 10; // a successful run this short prints verbatim
 export const MAX_FAILURE_LINES = 30;
@@ -191,6 +192,8 @@ export async function gate() {
     return;
   }
   if (process.env.LF_QUIET_CHILD) return;
+  // A request for usage prints its text as it is: a summary line over it would hide the flags (help-guard.mjs).
+  if (wantsHelp(args)) return;
   const label = policy(script, args);
   if (!label) return;
   const root = repoRoot(script);

@@ -18,7 +18,7 @@ and the manual steps.
 
   | Release | Upgrade page |
   |---|---|
-  | (none yet) | The first M3 release creates `0.1.0.md` |
+  | 0.1.0 | [0.1.0.md](0.1.0.md), the first release (no earlier release to upgrade from) |
 
 ## Where each fact comes from
 
@@ -44,6 +44,9 @@ offline: it only calls `git show` on the two refs. Start every release page from
 ```
 tools\cli upgrade-page v0.1.0 v0.2.0 --version 0.2.0 --out docs/upgrades/0.2.0.md
 ```
+
+0.1.0 had no earlier tag, so its page was written by hand from the same sources, with the
+generator run from the first commit that had the config schema as a cross-check.
 
 It fills these sections from the two refs:
 

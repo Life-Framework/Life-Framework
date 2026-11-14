@@ -6,7 +6,9 @@
 //! refused and logged, and no client field is trusted: the target uid is validated, and the sender is
 //! resolved by the caller from the player controller, never read from a payload.
 //! Roster file: $profile:LifeFramework/staff.txt, one account uid per line, `#` starts a comment.
-//! It is read on every call, so an edit takes effect without a restart.
+//! A line may carry an optional level after the uid (`<uid> moderator|operator|administrator`) and a
+//! trailing `# display name`; the level is for tools\cli staff roster check|admins (#1320), a listed
+//! uid is staff whatever the level. It is read on every call, so an edit takes effect without a restart.
 //------------------------------------------------------------------------------------------------
 class LF_PoliceApplicationStaff : LF_PoliceApplications
 {
@@ -32,6 +34,34 @@ class LF_PoliceApplicationStaff : LF_PoliceApplications
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One roster line: `<uid> [level] [# comment]`. False for a blank or comment-only line.
+	static bool ParseRosterLine(string line, out string uid, out string level)
+	{
+		uid = "";
+		level = "";
+		int hash = line.IndexOf("#");
+		if (hash >= 0)
+			line = line.Substring(0, hash);
+
+		line = line.Trim();
+		if (line.IsEmpty())
+			return false;
+
+		int cut = line.Length();
+		int space = line.IndexOf(" ");
+		if (space >= 0 && space < cut)
+			cut = space;
+
+		int tab = line.IndexOf("\t");
+		if (tab >= 0 && tab < cut)
+			cut = tab;
+
+		uid = line.Substring(0, cut);
+		level = line.Substring(cut, line.Length() - cut).Trim();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Every account uid on the staff roster file. A missing file is an empty roster.
 	static void ReadRoster(out array<string> uids)
 	{
@@ -50,11 +80,10 @@ class LF_PoliceApplicationStaff : LF_PoliceApplications
 		string line;
 		while (handle.ReadLine(line) >= 0)
 		{
-			line = line.Trim();
-			if (line.IsEmpty() || line.Get(0) == "#")
-				continue;
-
-			uids.Insert(line);
+			string uid;
+			string level;
+			if (ParseRosterLine(line, uid, level))
+				uids.Insert(uid);
 		}
 		handle.Close();
 	}

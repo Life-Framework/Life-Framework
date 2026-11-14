@@ -94,7 +94,11 @@ type; no per-map scripting. See `docs/design.md` §4.
   Follow-ups: the market and the car lot on the same pattern (design note on #479), receipt text.
   A building store (#1143): the building pipeline writes a prefab over a generated building with these
   components and one till context per register (`tools/buildings/pipeline/store-slots.mjs`, docs/building-pipeline/README.md "Store");
-  the pack supermarket `everon_supermarket` is the first. Shelf goods spawn on any static surface under the
+  the pack supermarket `everon_supermarket` is the first. Staff: any NPC with a dialogue standing inside a store's
+  boundary says its `#LF-Store_ClerkThief` line when a shopper walks out unpaid (`LF_Stores.StaffReact`; the core
+  `LF_Shopkeeper.et` with the text-only `shopkeeper` dialogue is the one to place). Staff are searched within 15 m of
+  the store's origin (`STAFF_SEARCH`); a bigger store needs the radius from its boundary. A shop refuses to buy an item
+  the seller carries while a store holds a copy of it apart (`LF_Stores.CarriesHeldApart`). Shelf goods spawn on any static surface under the
   slot (`SnapToSurfaceAt`), since a building's fixtures are not runtime children of the store entity.
 - `LF_ShopPriceResolver` / `LF_ShopPricesConfig` / `LF_ShopRules` / `LF_ShopItem`
   — price resolution and rules scaffolding.

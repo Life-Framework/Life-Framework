@@ -223,9 +223,18 @@ class LF_DutyLocker
 		LF_PlayerCharacter identity = account.GetActiveCharacter();
 		LF_ServiceRadio.TuneForAccount(account, officer);
 		LF_StorageSnapshot.CaptureCarried(identity.GetId(), officer);
+		RepairCard(identity, officer);
 
-		// A restored card carries its number and is printed from the registry; a blank card with no
-		// number (saved before #902) is printed as the officer's own.
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (accounts)
+			accounts.SaveAndReleaseAccount(account);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A restored card carries its number and is printed from the registry; a blank card with no
+	//! number (saved before #902) is printed as the officer's own.
+	protected static void RepairCard(LF_PlayerCharacter identity, IEntity officer)
+	{
 		LF_IdCard.RepairCarried(officer);
 		array<LF_IdCardComponent> cards = {};
 		LF_IdCard.FindCarried(officer, cards);
@@ -233,10 +242,40 @@ class LF_DutyLocker
 		LF_IdCard.HolderIds(cards, holders);
 		if (holders.Find(string.Empty) >= 0)
 			LF_IdCard.Grant(officer, identity.GetId(), identity.GetFirstName(), identity.GetLastName(), identity.GetAge());
+	}
 
-		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-		if (accounts)
-			accounts.SaveAndReleaseAccount(account);
+	//------------------------------------------------------------------------------------------------
+	//! Server, dev reset (harness `resetplayer`): empties the body, clothes included, and issues the
+	//! civilian kit, the same two steps a clock-in makes. The carried snapshot is refreshed so a save
+	//! does not hand the old items back, and the ID card is reprinted.
+	//! \return How many items the body held before.
+	static int ResetToCivilianKit(LF_PlayerAccount account, IEntity character)
+	{
+		if (!character)
+			return 0;
+
+		int held = 0;
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		if (manager)
+		{
+			array<IEntity> items = {};
+			manager.GetItems(items);
+			held = items.Count();
+		}
+
+		DressInKit(character, LF_Faction.CIVILIAN);
+		LF_PlayerCharacter identity;
+		if (account)
+			identity = account.GetActiveCharacter();
+
+		if (identity)
+		{
+			LF_StorageSnapshot.CaptureCarried(identity.GetId(), character);
+			RepairCard(identity, character);
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("inventory reset: %1 item(s) removed, civilian kit issued", held));
+		return held;
 	}
 
 	//------------------------------------------------------------------------------------------------
