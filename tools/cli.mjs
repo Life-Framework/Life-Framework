@@ -2741,7 +2741,11 @@ function ciWorkbenchInSession(root) {
   const r = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, "tools", "remote", "desktop", "run-interactive.ps1"),
     "-Exe", "powershell.exe", "-WorkDir", root, "-WaitSec", "2400", "-Arguments", `-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "${ps1}"`], { cwd: root });
   process.stdout.write(r.stdout + r.stderr);
-  if (existsSync(log)) process.stdout.write(readFileSync(log, "utf8"));
+  if (existsSync(log)) {
+    // Windows PowerShell's *> writes UTF-16 LE with a BOM.
+    const buf = readFileSync(log);
+    process.stdout.write(buf[0] === 0xff && buf[1] === 0xfe ? buf.subarray(2).toString("utf16le") : buf.toString("utf8"));
+  }
   const code = existsSync(codeFile) ? Number(readFileSync(codeFile, "utf8").trim()) : NaN;
   if (!Number.isInteger(code)) {
     console.log("FAIL  the desktop-session run left no exit code (is a user signed in on this machine?)");
