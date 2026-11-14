@@ -8250,7 +8250,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sputnik T601"
      Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
     }
-  }
   CustomStringTableItem "{FCEA5FDC41E5650D}" {
    Id "LF-Sign_Generic_Title"
    Target_en_us "Notice"
