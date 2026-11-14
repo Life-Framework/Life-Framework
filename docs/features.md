@@ -2641,3 +2641,6 @@
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.
+
+### `LF_AmbulanceSiren` — `Feature/SirenLights/LF_AmbulanceSiren.c` (#923, 2026-11-13)
+- The ambulance has a siren: an on-duty medic driving it picks "Siren: on" in the light controls and hears a two-tone hi-lo with the light bar. Tests: `sirenlights/ambulance-siren` (LOGIC), `sirenlights/ambulance-siren-world` (WORLD); session proof `ambulance-siren-proof`.

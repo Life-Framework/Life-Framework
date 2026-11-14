@@ -1,0 +1,187 @@
+{
+  "slug": "ambulance-siren",
+  "name": "AmbulanceSiren",
+  "kind": "gadget",
+  "project_dir": "Sounds/Siren/Ambulance",
+  "project_prefix": "Siren_Ambulance",
+  "output_format": "pcm_48000",
+  "budget": {
+    "generations": 7
+  },
+  "sounds": [
+    {
+      "id": "hilo",
+      "event": "SOUND_LF_SIREN_AMBULANCE_LP",
+      "project": "Hilo",
+      "bus": "sfx",
+      "range": "far170",
+      "volume_db": -10,
+      "loop": true,
+      "prompt": "European ambulance siren going nee-naw, nee-naw, nee-naw: two alternating pure horn notes, a high note then a lower note, switching every half second, like a 1980s German or Czech ambulance. Steady level, recorded outside, no voice, no music, no traffic, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.5,
+      "variations": 6,
+      "compose": {
+        "from_take": 2,
+        "as_take": 7,
+        "repeat": 5,
+        "steps": [
+          {
+            "ratio": 0.7,
+            "ms": 500,
+            "fromMs": 1000
+          },
+          {
+            "ratio": 0.53,
+            "ms": 500,
+            "fromMs": 2000
+          }
+        ]
+      },
+      "pick": [
+        7
+      ],
+      "reason": "Six takes of two prompts (a 'hi-lo, a fourth apart' wording, then 'nee-naw'), none alternated: a pitch track per 0.25 s window of each take read one steady note (about 830 to 980 Hz, an occasional octave flip), takes 1, 3 and 5 with dropouts or a wobbling level. Take 2 is the steadiest horn (even level, one clean 830 Hz stack), so take 7 is built from it (compose in sounds.json, alternateSteps in sound.mjs): 0.5 s at 0.70x (about 580 Hz) then 0.5 s at 0.53x (about 440 Hz), repeated five times, the 1 s two-tone cycle of a 1980s European ambulance horn. The spectrogram shows ten even notes with an octave-clean step, the pitch track reads 580/440 Hz throughout, and the loop seam is 0.0%. The pitch is exact, the horn timbre is the generator's."
+    }
+  ],
+  "generations": [
+    {
+      "id": "hilo",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Two-tone hi-lo siren of a 1980s European ambulance: an electric horn alternating between a high pure tone and a lower pure tone a fourth below, each held about half a second, repeating evenly nee-naw nee-naw at a constant level. Recorded outdoors from a few metres, dry, no voice, no music, no traffic, no engine, no wail sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "hilo",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Two-tone hi-lo siren of a 1980s European ambulance: an electric horn alternating between a high pure tone and a lower pure tone a fourth below, each held about half a second, repeating evenly nee-naw nee-naw at a constant level. Recorded outdoors from a few metres, dry, no voice, no music, no traffic, no engine, no wail sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "hilo",
+      "take": 3,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Two-tone hi-lo siren of a 1980s European ambulance: an electric horn alternating between a high pure tone and a lower pure tone a fourth below, each held about half a second, repeating evenly nee-naw nee-naw at a constant level. Recorded outdoors from a few metres, dry, no voice, no music, no traffic, no engine, no wail sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "hilo",
+      "take": 4,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "European ambulance siren going nee-naw, nee-naw, nee-naw: two alternating pure horn notes, a high note then a lower note, switching every half second, like a 1980s German or Czech ambulance. Steady level, recorded outside, no voice, no music, no traffic, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.5,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "hilo",
+      "take": 5,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "European ambulance siren going nee-naw, nee-naw, nee-naw: two alternating pure horn notes, a high note then a lower note, switching every half second, like a 1980s German or Czech ambulance. Steady level, recorded outside, no voice, no music, no traffic, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.5,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "hilo",
+      "take": 6,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "European ambulance siren going nee-naw, nee-naw, nee-naw: two alternating pure horn notes, a high note then a lower note, switching every half second, like a 1980s German or Czech ambulance. Steady level, recorded outside, no voice, no music, no traffic, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.5,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    }
+  ],
+  "account": {
+    "date": "2026-11-13",
+    "plan": "starter",
+    "used": 7225,
+    "limit": 40000,
+    "used_before_first_run": 6925,
+    "note": "used - used_before_first_run is this asset's cost only if nothing else spent credits on the account in between"
+  },
+  "runs": [
+    {
+      "date": "2026-11-13",
+      "generations": 3,
+      "seconds": 15,
+      "plan": "starter",
+      "credits_before": 6925,
+      "credits_after": 7075,
+      "credits": 150
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 1,
+      "seconds": 5,
+      "plan": "starter",
+      "credits_before": 7075,
+      "credits_after": 7075,
+      "credits": 0
+    },
+    {
+      "date": "2026-11-13",
+      "generations": 2,
+      "seconds": 10,
+      "plan": "starter",
+      "credits_before": 7075,
+      "credits_after": 7075,
+      "credits": 0
+    }
+  ],
+  "wired": {
+    "Hilo": {
+      "project": "{504037CAE978B960}Sounds/Siren/Ambulance/Siren_Ambulance_Hilo.acp",
+      "events": [
+        "SOUND_LF_SIREN_AMBULANCE_LP"
+      ],
+      "samples": [
+        "{04574530C262DF0A}Sounds/Siren/Ambulance/Samples/Siren_Ambulance_LF_SIREN_AMBULANCE_LP_01.wav"
+      ]
+    }
+  }
+}
