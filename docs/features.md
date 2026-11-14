@@ -772,7 +772,7 @@
   (Edith) whose chest context carries `LF_ATMAction` labelled "Talk to the teller", so deposit and
   withdraw use the same terminal, server seams, range check (`LF_ActionSite` finds the teller as the
   counter), ledger reasons (`atm-deposit`, `atm-withdraw`), quest signal and ATM code. The playtest town
-  places her behind the west bank counter (176.3, 259.5, centred on the counter); the ATM entity `ATM_Debug` stays, hidden
+  puts her inside the bank (#931): in the lobby of the municipal-office building behind its vanilla post-office counter at (175.4, 0.2, 264.4), the customer side at the lobby floor; the two atmosphere counters keep only their sound emitters in the lobby and the TELLER plate hangs on the wall behind her. The ATM entity `ATM_Debug` stays, hidden
   (no mesh, inside the bank), for tests and flows. Test `atm/bank-teller`; demo
   `session.mjs bank-teller-proof`.
 - ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
@@ -958,6 +958,7 @@
   rocks show their ore as veins on the granite (`Assets/Resources/Mining/OreVein/`). Made in Blender
   from CC0 textures by `tools\cli asset` (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`);
   prefab and emat GUIDs are unchanged, so mining, smelting and selling are untouched.
+  Follow-up: the gold nugget and gold rock now read as dull ochre-yellow ore with gold flecks (they were white quartz and previewed pinkish-white); the copper nugget stays dark rock with malachite green. Close-up of each rock: `tools\cli look 182,175 --radius 8`.
 - ⚠️ The pickaxe uses the pistol rig and is gripped at the handle end;
   `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
   needs a re-exported mesh with the pivot up the handle.
@@ -2685,3 +2686,6 @@
 - ✅ Town NPCs are dressed per role and can be talked to. A role (teller, clerk, store and fuel clerk, police, medic, farmer, quarry worker, lumberjack, market trader, mechanic, official, ranger, fence, townsfolk) picks vanilla 1989-era clothing: one outfit prefab per variant (`Prefabs/Characters/Npcs/Outfits/LF_Npc_<Role>_<n>.et`, each carrying `LF_NpcRoleComponent`), 2 to 3 variants where a crowd gathers, chosen by `hash(entity name) % variants` so an NPC always wears the same. Source: `tools/assets/outfits/roles.json`; `tools\cli outfits generate` writes the prefabs, `LF_RolesTable.generated.c`, the strings and the layer references.
 - ✅ **Talk** on any role NPC (`LF_RolesAction` on `Npc_Base.et`): the existing dialogue scene with a role tree built in script (`LF_Roles.BuildDialogue`): a greeting, then what I do, directions, a rumour, goodbye. Lines are bare caption keys (`LF_DialogueFlow.IsRaw`), no voice. An NPC with an authored `LF_DialogueComponent` (the town and fuel station clerks) keeps it. Replies do not open the bank or a shop yet. Talk has its own `RoleTalk` context (about 2.25 m) apart from the 1 m witness question; the police officer wears a dark suit jacket and peaked cap (or a dark-blue sweater), not a soldier uniform; a doctor, mechanic and store clerk stand at the hospital, car lot and general store counter.
 - Tests: `npc/roles` (LOGIC), `npc/roles-world` (WORLD); session proof `roles-proof`.
+
+### Robbery alarms by type — `LF_Dispatch`, `LF_PoliceConfig` (#740, 2026-11-14)
+- ✅ Each robbery sounds its own alarm instead of the one police siren: the bank vault a loud bell (heard about 170 m), the fuel station till a shrill pulsing intruder alarm (70 m), the general store till a slow flat buzzer (60 m), the cash van a honking horn (70 m); the police armory takes the bank bell, and a robbery with no kind (the hospital till, shoplifting) keeps the siren. Which alarm is data: `m_aAlarmKinds` in `LF_Police.conf` (`LF_AlarmKind`: id, normal and loud prefab, offences that use it); the robbed thing names its kind (`LF_RobAction.m_sAlarmKind`, default `store`, `fuel` on the fuel tills; `LF_BankVaultComponent.m_sAlarmKind`, `bank` on `LF_BankVault.et`), else the offence's kind decides (cash van, armory), else the plain siren (`LF_PoliceConfig.AlarmPrefabFor`, passed as `alarmKind` through `LF_Dispatch.Report`). Nobody on duty sounds the kind's loud twin (brighter, faster light; the 60 s duration). The sounds are ElevenLabs takes in `Sounds/Alarm/Robbery/`, recorded in `tools/assets/robbery-alarms/sounds.json`. The police and ambulance sirens are unchanged. A server can change or add kinds in its owner config (`police.alarmKinds`, keyed by kind id). Tests: `police/robbery-alarms` (LOGIC), `police/robbery-alarms-shipped` (WORLD); session proof `robbery-alarm-proof` (log lines; ears for the sound).

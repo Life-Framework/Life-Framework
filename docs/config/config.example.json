@@ -82,6 +82,7 @@
         "fineCap": 1500
       }
     },
+    "alarmKinds": {},
     "catchInActRadius": 10,
     "placeRadius": 80,
     "boardReadDistance": 4,

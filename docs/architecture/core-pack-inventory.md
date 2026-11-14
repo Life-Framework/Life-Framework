@@ -268,6 +268,7 @@ its save.
 | `Sounds/Atmosphere/` | pack | The Everon town's two radio tracks and fifteen background loops (`docs/architecture/atmosphere.md`); the emitter scripts and `Prefabs/Atmosphere/` that play them are core |
 | `Sounds/Weapons/Handguns/Taser/` | split | Sounds of the stun weapon (shot, handling, stun buzz): they follow the taser, example in core, police-issue item in pack |
 | `Assets/Items/Roleplay/Drill/`, `Anims/LF/Drill/`, `Anims/Workspaces/Work/LF_DrillPush.*`, `Particles/LF/Drill_fx_bit.ptc`, `Sounds/Items/Drill/` | core | The vault drill and its scene (#340): model, push clips, sparks, motor and grinding loops. They follow `Prefabs/Items/Fence/LF_Drill.et`, the robbery's tool; the component that plays them (`Feature/AssetAnim/`) is core |
+| `Sounds/Alarm/Robbery/`, `Prefabs/Police/LF_SiteAlarm_{Bank,Fuel,Store,Van}*.et` | core | The site alarm of each robbery type (#740): bank bell, fuel station intruder alarm, store buzzer, van horn, each with a loud twin. They play through `LF_SiteAlarmComponent` and are picked by the `m_aAlarmKinds` rows of `LF_Police.conf`; the kinds' ids and offences are data, so a pack changes which robbery sounds which alarm without code |
 | `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |

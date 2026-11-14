@@ -106,3 +106,10 @@ is the entry point.
 - **Owner and side:** `LF_NpcStun` decides on the server; the shot is read from the shooter's `OnProjectileShot` (a dart finds no hit zone on a town NPC); `LF_NpcBaseEntity` replicates the flag and rest pose and each peer lays the body down.
 - **Data:** string key `LF-Police_NpcStunned`; stun time and reach are the weapon's (`LF_StunWeaponComponent`); nothing persists (a restart stands the NPC up).
 - **Proof:** `police/npc-stun` (LOGIC), `police/npc-stun-world` (WORLD), `node agent-box/session.mjs npc-stun-proof`.
+
+## Robbery alarms (#740)
+
+- **Player sees:** the alarm at a robbery has its own sound: a bell at the bank vault, an intruder alarm at the fuel till, a small buzzer at a store till, a horn at the cash van. The siren stays for crimes with no kind.
+- **Owner and side:** `LF_Dispatch.StartAlarm` decides on the server; the alarm prefab replicates and each client plays its sound (`LF_SiteAlarmComponent`).
+- **Data:** `m_aAlarmKinds` in `Configs/Police/LF_Police.conf` (`LF_AlarmKind`), the `m_sAlarmKind` attribute on `LF_RobAction` and `LF_BankVaultComponent`, the prefabs `Prefabs/Police/LF_SiteAlarm_<Kind>[Loud].et`, the sounds `Sounds/Alarm/Robbery/`. Nothing is persisted.
+- **Proof:** `police/robbery-alarms` (LOGIC), `police/robbery-alarms-shipped` (WORLD), `robbery-alarm-proof`.

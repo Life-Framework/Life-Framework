@@ -344,6 +344,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Roadmap_Vehicles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_VehiclesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_VehiclesPersistence(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_RobberyAlarms(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RobberyAlarmsShipped(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobHold(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobReward(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobWeaponVehicle(), LF_TestTier.WORLD);

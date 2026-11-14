@@ -90,6 +90,9 @@ class LF_PoliceConfig
 	[Attribute("", UIWidgets.Object, "The rank ladder, lowest first. A rank is its index here and a saved index never changes meaning: append, never reorder. Index 0 is patrol and 1 is senior")]
 	ref array<ref LF_PoliceRank> m_aRanks;
 
+	[Attribute("", UIWidgets.Object, "The site alarms by robbery type: each kind names the alarm prefab that sounds at the site (a bank bell, a till buzzer), a loud twin for when nobody is on duty, and the offences that use it when the robbed thing names no kind itself. A site with no kind keeps the plain siren above. Shipped values only; the owner config does not override kinds")]
+	ref array<ref LF_AlarmKind> m_aAlarmKinds;
+
 	[Attribute("10", UIWidgets.Auto, "An on-duty officer this close (metres) when a crime is committed catches the suspect in the act: the report is identified at once", params: "0 200")]
 	float m_fCatchInActRadius;
 
@@ -229,7 +232,7 @@ class LF_PoliceConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds"};
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
@@ -300,6 +303,73 @@ class LF_PoliceConfig
 
 		if (count >= 0)
 			reader.EndRecords();
+
+		ApplyAlarmKinds(reader);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `alarmKinds` is keyed by kind id: an id the shipped list has changes that kind field by field, a new id adds a kind.
+	protected void ApplyAlarmKinds(notnull LF_ConfigReader reader)
+	{
+		if (!m_aAlarmKinds)
+			m_aAlarmKinds = new array<ref LF_AlarmKind>();
+
+		int count = reader.BeginRecords("alarmKinds");
+		for (int i = 0; i < count; i++)
+		{
+			string key = reader.GetRecordKey(i);
+			if (!reader.BeginRecord(key))
+				continue;
+
+			if (key.IsEmpty())
+			{
+				reader.RejectRecord("the key is empty; it is the alarm kind id");
+				reader.EndRecord();
+				continue;
+			}
+
+			LF_AlarmKind kind = FindAlarmKind(key);
+			if (!kind)
+			{
+				kind = new LF_AlarmKind();
+				kind.m_sId = key;
+				kind.m_aOffences = new array<string>();
+				m_aAlarmKinds.Insert(kind);
+			}
+
+			array<string> recordKeys = {"prefab", "loudPrefab", "offences"};
+			reader.WarnUnknownKeys(recordKeys);
+			reader.ReadResource("prefab", kind.m_sPrefab);
+			reader.ReadResource("loudPrefab", kind.m_sLoudPrefab);
+			array<string> offences = {};
+			if (reader.ReadStrings("offences", offences))
+			{
+				kind.m_aOffences = new array<string>();
+				foreach (string offence : offences)
+					kind.m_aOffences.Insert(offence);
+			}
+
+			reader.EndRecord();
+		}
+
+		if (count >= 0)
+			reader.EndRecords();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alarm kind with this id, or null.
+	LF_AlarmKind FindAlarmKind(string id)
+	{
+		if (!m_aAlarmKinds)
+			return null;
+
+		foreach (LF_AlarmKind kind : m_aAlarmKinds)
+		{
+			if (kind && kind.m_sId == id)
+				return kind;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -582,6 +652,66 @@ class LF_PoliceConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The kind a site alarm is: the kind the robbed thing names, else the kind that lists the offence, else
+	//! empty (the plain siren).
+	string ResolveAlarmKind(string alarmKind, string offence)
+	{
+		if (!alarmKind.IsEmpty() || !m_aAlarmKinds)
+			return alarmKind;
+
+		foreach (LF_AlarmKind kind : m_aAlarmKinds)
+		{
+			if (kind && !offence.IsEmpty() && kind.m_aOffences && kind.m_aOffences.Find(offence) >= 0)
+				return kind.m_sId;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alarm prefab of a kind, or empty when no kind has that id (or it names no prefab for the level).
+	ResourceName KindPrefab(string alarmKind, bool loud)
+	{
+		if (alarmKind.IsEmpty() || !m_aAlarmKinds)
+			return ResourceName.Empty;
+
+		foreach (LF_AlarmKind kind : m_aAlarmKinds)
+		{
+			if (!kind || kind.m_sId != alarmKind)
+				continue;
+
+			if (loud && !kind.m_sLoudPrefab.IsEmpty())
+				return kind.m_sLoudPrefab;
+
+			return kind.m_sPrefab;
+		}
+
+		return ResourceName.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alarm prefab for a site: its kind's (named by the robbed thing or by the offence), else the plain
+	//! siren of the level. Logs a kind that names no prefab and falls back.
+	static ResourceName AlarmPrefabFor(string alarmKind, string offence, bool loud)
+	{
+		LF_PoliceConfig config = Get();
+		if (config)
+		{
+			string resolved = config.ResolveAlarmKind(alarmKind, offence);
+			if (!resolved.IsEmpty())
+			{
+				ResourceName prefab = config.KindPrefab(resolved, loud);
+				if (!prefab.IsEmpty())
+					return prefab;
+
+				LF_Debug.Error("Dispatch", string.Format("alarm kind '%1' has no prefab; the plain siren sounds", resolved));
+			}
+		}
+
+		return AlarmPrefab(loud);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static ResourceName RadioSoundProject()
 	{
 		LF_PoliceConfig config = Get();
@@ -658,6 +788,25 @@ class LF_PoliceConfig
 		return config.m_fTicketLateMultiplier;
 	}
 
+}
+
+//------------------------------------------------------------------------------------------------
+//! One kind of site alarm: a robbery type's own sound (the bank's bell, the till buzzer). The prefab is
+//! an LF_SiteAlarm variant whose sound project, event and hear range are its own.
+[BaseContainerProps()]
+class LF_AlarmKind
+{
+	[Attribute("", UIWidgets.EditBox, "Stable id of the kind; what a robbed thing's alarm kind names")]
+	string m_sId;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Alarm spawned at the site when officers are on duty", "et")]
+	ResourceName m_sPrefab;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Alarm spawned when nobody is on duty. Empty uses the normal prefab", "et")]
+	ResourceName m_sLoudPrefab;
+
+	[Attribute("", UIWidgets.Object, "Offence keys (localization keys) that use this kind when the robbed thing names none")]
+	ref array<string> m_aOffences;
 }
 
 //------------------------------------------------------------------------------------------------

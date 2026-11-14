@@ -18,7 +18,7 @@ how that works, which places have it, which do not yet, and what it cost. Spiked
 | 8 | Police duty desk | Radio static with garbled chatter, a typewriter | Always | `Prefabs/Police/LF_PoliceDutyDesk.et` |
 | 9 | Chop shop | A compressor cycling, a ratchet, tools | Always | `Prefabs/Crime/LF_ChopBench.et` |
 | 10 | Spawn square | The fountain, a far murmur of people, pigeons | 06:00 to 22:00 | The fountain in `Village_Dressing.layer` |
-| 11 | Bank | A quiet murmur at the east counter; a clock tick with a till drawer at the west counter | Always | `Bank_Counter_East`, `Bank_Counter_West` in `ATM.layer` |
+| 11 | Bank | A quiet murmur and a clock tick with a till drawer, both emitted from the bank lobby (two invisible emitter entities) | Always | `Bank_Counter_East`, `Bank_Counter_West` in `ATM.layer` |
 | 12 | Hospital | Equipment hum at the beds; a quiet ward at the duty desk | Always | `Prefabs/Medic/LF_HospitalBed.et` (group, one voice for three beds), `Prefabs/Medic/LF_MedicDutyDesk.et` |
 | 13 | Payphones | A faint line hum | While the receiver is up (the line is BUSY: dialling, ringing out or talking) | `Prefabs/Comms/LF_Payphone.et`, `LF_AmbientConditionPhoneLine` |
 | 14 | Fuel station | A pump motor and the gurgle of fuel | For 4 s after each fuelling step | `Fuel_PumpHum` (`Prefabs/Atmosphere/LF_FuelPumpHum.et`), pulsed by `LF_AmbientFuelPump` |
