@@ -1,4 +1,5 @@
 // Proves the test pool's reclaim and re-plan rules without booting a game or
+// inputs: tools/**, agent-box/**, .githooks/**
 // an ssh session (tools/remote/pool.mjs, docs/worktrees.md "Test pool"):
 //   1. a remote slot whose owner pid on this PC is dead is reclaimed;
 //   2. a waiting ticket re-reads lf.local.json, so a re-enabled machine counts;
@@ -40,6 +41,7 @@ import { trimScript } from "../lib/ws-trim.mjs";
 
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
+process.env.LF_POOL_POLL_MS = "100"; // read by tools/remote/pool.mjs on each poll
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);

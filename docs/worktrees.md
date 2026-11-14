@@ -104,7 +104,7 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
    merge drivers in `tools/merge/` then resolve the generated files). A clean
    branch ships as is.
-3. Runs the gate: `validate --full` (with the Workbench compile) + headless
+3. Runs the gate (never incremental; see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
    build + `test` tier=all. A branch that changes nothing under `addons/`
    (docs, website, tools) runs plain `validate` instead and never waits for a
    pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule). After the suite,
@@ -736,3 +736,19 @@ to prune and about any registry inconsistency.
 - `.githooks/pre-commit` → `validate-repo.ps1` — blocks `main` commits from
   linked worktrees.
 - `AGENTS.md` (Worktrees section) — the agent-facing rules, including the junction-safe removal rule.
+
+## Incremental validate
+
+Plain `tools\cli validate` (and `dev`) runs a check only when something it reads changed since its last green run in
+this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
+`wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
+
+- A check declares its inputs in a header line in its first 30 lines: `// inputs: addons/**/*.layer, docs/features.md`
+  (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
+  and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
+  git state: the worktree registry, `origin/main`); `inputs: ttl=300` trusts a green run for 300 s. No header means always.
+- State is `tmp/validate-state.json`: a fingerprint (path, size, mtime of every matching file from
+  `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
+  skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.

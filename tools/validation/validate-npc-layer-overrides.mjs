@@ -1,4 +1,5 @@
 // tools/validation/validate-npc-layer-overrides.mjs
+// inputs: addons/**
 //
 // Npc_Base.et replicates with "Rpl State Override" Runtime (#150): the server
 // streams each placed NPC to clients, and a client builds it from the prefab,

@@ -1,4 +1,5 @@
 # tools/validation/validate-docs-sync.ps1 - keep docs/features.md current with feature code.
+# inputs: always
 #
 # docs/features.md is the contract doc every agent reads to know what a system
 # does. When a change touches feature/core scripts but not that file, the doc

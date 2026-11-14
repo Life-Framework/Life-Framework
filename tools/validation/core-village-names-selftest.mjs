@@ -1,4 +1,5 @@
 // tools/validation/core-village-names-selftest.mjs
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 //
 // Proves validate-core-village-names fails a core script that quotes a village
 // entity (top-level in a layer, or inside a $grp), lets a baselined pair pass,

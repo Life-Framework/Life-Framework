@@ -1,4 +1,5 @@
 // tools/validation/validate-crafting-assets.mjs
+// inputs: addons/**
 //
 // The crafting foundation README names the ported stations and materials and lists
 // their prefab paths. Every listed path must exist with a .meta next to it, and the

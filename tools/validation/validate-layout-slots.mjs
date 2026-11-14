@@ -1,4 +1,5 @@
 // A point-anchored FrameWidgetSlot stores its rectangle twice: Position/Size and
+// inputs: addons/**
 // Offset*. The engine reads the Offset* pair, so they must agree:
 //   OffsetRight = -(OffsetLeft + SizeX), OffsetBottom = -(OffsetTop + SizeY).
 // EL_NotificationToast.layout had OffsetBottom -92 with OffsetTop 140, a height
