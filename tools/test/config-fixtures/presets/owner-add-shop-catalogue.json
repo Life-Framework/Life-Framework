@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "catalogue": {
+    "items": {
+      "pistol_m9": { "price": 650, "sellPrice": 300 }
+    },
+    "offers": {
+      "gun_counter/pistol_m9": { "licence": "FIREARM_PERMIT" }
+    }
+  }
+}
