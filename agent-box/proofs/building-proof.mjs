@@ -4,7 +4,7 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 // Run it on a full-quality session: a building's check is how its materials, glass and doors look,
 // which the lowspec profile's lowest textures would hide.
 //   node agent-box/session.mjs up --profile full
-//   node agent-box/session.mjs building-proof [--entity Annex_Supermarket] [--side s9] [--shot]
+//   node agent-box/session.mjs building-proof [--entity Village_Supermarket] [--side s9] [--shot]
 //   node agent-box/session.mjs down
 // 1. Standing on the building's street side, outside (s9: 9 m south of its centre; its front faces
 //    -z; a bare "s" is 1.2 m from the centre, which is inside a building), the F key offers the door.
@@ -20,7 +20,7 @@ function flag(args, name, fallback) {
 async function runBuildingProof(args = []) {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
-  const entity = flag(args, "--entity", "Annex_Supermarket");
+  const entity = flag(args, "--entity", "Village_Supermarket");
   const side = flag(args, "--side", "s9");
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
@@ -64,4 +64,4 @@ async function runBuildingProof(args = []) {
   return 0;
 }
 
-export default { name: "building-proof", usage: "building-proof [--entity Annex_Supermarket] [--side s9] [--shot]", run: (ctx) => runBuildingProof(ctx.args) };
+export default { name: "building-proof", usage: "building-proof [--entity Village_Supermarket] [--side s9] [--shot]", run: (ctx) => runBuildingProof(ctx.args) };
