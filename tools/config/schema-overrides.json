@@ -61,6 +61,12 @@
         "m_sLicence"
       ],
       "key": "The key is a licence name as LF_ELicenseType spells it (POLICE_ACCESS, MINER_GOLD, ...). A name that is not a licence is refused. The job level a licence needs is jobs.licenceGates."
+    },
+    "LF_AlarmKind": {
+      "keyFields": [
+        "m_sId"
+      ],
+      "key": "The key is the alarm kind id (bank, fuel, store, van), the id a robbed thing's alarm kind names. An id no shipped kind has adds one, which must set prefab; an existing id changes only the fields given. offences replaces the kind's offence list."
     }
   },
   "examples": {

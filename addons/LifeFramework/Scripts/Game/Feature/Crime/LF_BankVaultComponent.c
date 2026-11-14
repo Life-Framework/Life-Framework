@@ -34,6 +34,9 @@ class LF_BankVaultComponent : ScriptComponent
 	[Attribute("drill,charge", UIWidgets.EditBox, desc: "Fence tools that open this vault, any one of: drill, charge. Empty needs none.")]
 	protected string m_sRequiredTools;
 
+	[Attribute("", UIWidgets.EditBox, desc: "Alarm kind of this vault's alarm (an LF_AlarmKind id in LF_Police.conf: bank). Empty uses the kind of the reported offence, else the plain siren.")]
+	protected string m_sAlarmKind;
+
 	[Attribute("0.15", UIWidgets.Auto, desc: "Chance 0..1 that the drill jams and stays in the wall.")]
 	protected float m_fJamChance;
 
@@ -60,6 +63,7 @@ class LF_BankVaultComponent : ScriptComponent
 
 		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds, m_sBagEntity);
 		LF_Bank.ConfigureTools(vaultId, m_sRequiredTools, m_fJamChance);
+		LF_Bank.ConfigureAlarmKind(vaultId, m_sAlarmKind);
 		ConfigureHeist(vaultId);
 	}
 
