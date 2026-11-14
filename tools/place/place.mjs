@@ -786,7 +786,8 @@ export function parseRays(outText) {
 function serverRun(rayLines = []) {
   mkdirSync(TMP, { recursive: true });
   const records = auditRecords({ annex: true });
-  const run = measureTown(records, { outDir: TMP, extra: rayLines });
+  // The interactive placement loop stays on this PC (a probe is seconds; a remote run adds a sync).
+  const run = measureTown(records, { outDir: TMP, extra: rayLines, local: true });
   if (run.outText == null) throw new PlaceError("the test server wrote no measurements (lines above). Run it from a worktree; `tools\\cli test --no-build --only LF_Test_PlacementAuditTown` shows why");
   const { rays, doors } = parseRays(run.outText);
   if (doors.length) writeFileSync(join(TMP, "doors.json"), JSON.stringify({ at: new Date().toISOString(), doors }));

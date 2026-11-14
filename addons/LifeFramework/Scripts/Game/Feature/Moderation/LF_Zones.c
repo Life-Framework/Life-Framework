@@ -38,7 +38,7 @@ enum LF_ZoneShape
 //! flags behaves as before. Only blocksPlayerDamage and suppressesWanted have consumers today;
 //! the rest are read by the crime features as they adopt them (RuleSetAt is the one answer).
 [BaseContainerProps()]
-class LF_ZoneRuleSet
+class LF_ZoneRuleSet : LF_ConfigRecord
 {
 	[Attribute("0", UIWidgets.ComboBox, "Rule this entry configures. Values are stable ids", "", ParamEnumArray.FromEnum(LF_ZoneRule))]
 	LF_ZoneRule m_eRule;
@@ -160,9 +160,24 @@ class LF_ZoneConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "zones" section over this instance, which holds the core `.conf`.
+	//! Merges the layers over this instance, which holds the core `.conf`: each pack overlay of this
+	//! class in load order (its `m_aRuleSets`, LF_ConfigOverlay, #1108), then the owner's "zones" section.
 	void ApplyLayers()
 	{
+		if (!m_aRuleSets)
+			m_aRuleSets = new array<ref LF_ZoneRuleSet>();
+
+		LF_ZoneRuleSetList list = new LF_ZoneRuleSetList(this);
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_ZoneConfig, SECTION, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = LF_ConfigOverlay.ApplyContainerList(list, resource.GetResource().ToBaseContainer(), "m_aRuleSets", names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("zones: pack overlay %1 changed %2 rule sets", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (!reader)
 			return;
@@ -173,8 +188,9 @@ class LF_ZoneConfig
 
 	//------------------------------------------------------------------------------------------------
 	//! Applies the owner's "zones" section: the two legacy flags, then `ruleSets`, an object keyed by
-	//! the rule name (NORMAL, SAFE, LAWLESS). A record changes that rule's entry field by field; a
-	//! rule with no entry gets one built from what the legacy flags say, then the owner's fields.
+	//! the rule name (NORMAL, SAFE, LAWLESS), each record with an optional "op". A record changes that
+	//! rule's entry field by field; a rule with no entry gets one built from what the legacy flags say,
+	//! then the owner's fields. A remove is refused: every zone names a rule.
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
@@ -183,45 +199,10 @@ class LF_ZoneConfig
 		reader.ReadBool("safeBlocksPlayerDamage", m_bSafeBlocksPlayerDamage);
 		reader.ReadBool("lawlessSuppressesWanted", m_bLawlessSuppressesWanted);
 
-		int count = reader.BeginRecords("ruleSets");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
+		if (!m_aRuleSets)
+			m_aRuleSets = new array<ref LF_ZoneRuleSet>();
 
-			LF_ZoneRule rule = typename.StringToEnum(LF_ZoneRule, key);
-			if (typename.EnumToString(LF_ZoneRule, rule) != key)
-			{
-				reader.RejectRecord("the key is not a rule name (NORMAL, SAFE or LAWLESS)");
-				reader.EndRecord();
-				continue;
-			}
-
-			LF_ZoneRuleSet entry = FindRuleSet(rule);
-			if (!entry)
-			{
-				if (!m_aRuleSets)
-					m_aRuleSets = new array<ref LF_ZoneRuleSet>();
-
-				entry = Resolve(this, rule);
-				m_aRuleSets.Insert(entry);
-			}
-
-			array<string> recordKeys = {"blocksPlayerDamage", "suppressesWanted", "allowsRobbery", "allowsVehicleTheft", "allowsWeaponDraw", "fineMultiplier", "copsEnter"};
-			reader.WarnUnknownKeys(recordKeys);
-			reader.ReadBool("blocksPlayerDamage", entry.m_bBlocksPlayerDamage);
-			reader.ReadBool("suppressesWanted", entry.m_bSuppressesWanted);
-			reader.ReadBool("allowsRobbery", entry.m_bAllowsRobbery);
-			reader.ReadBool("allowsVehicleTheft", entry.m_bAllowsVehicleTheft);
-			reader.ReadBool("allowsWeaponDraw", entry.m_bAllowsWeaponDraw);
-			reader.ReadFloat("fineMultiplier", entry.m_fFineMultiplier, FINE_MULTIPLIER_MIN, FINE_MULTIPLIER_MAX);
-			reader.ReadBool("copsEnter", entry.m_bCopsEnter);
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
+		LF_ConfigOverlay.ApplyRecords(reader, "ruleSets", new LF_ZoneRuleSetList(this), LF_ConfigService.GetOwnerSource());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -254,6 +235,14 @@ class LF_ZoneConfig
 			}
 		}
 
+		return LegacyFor(config, rule);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: a fresh rule set built from the attribute defaults and the two legacy flags, the answer
+	//! for a rule the table has no entry for. A new or replaced entry starts here (LF_ZoneRuleSetList).
+	static LF_ZoneRuleSet LegacyFor(LF_ZoneConfig config, LF_ZoneRule rule)
+	{
 		LF_ZoneRuleSet legacy = LF_ZoneRuleSet.CreateDefault(rule);
 		if (rule == LF_ZoneRule.SAFE)
 		{
@@ -273,6 +262,122 @@ class LF_ZoneConfig
 	static LF_ZoneRuleSet RuleSetFor(LF_ZoneRule rule)
 	{
 		return Resolve(Get(), rule);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The zone `ruleSets` list for the shared merge (LF_ConfigOverlay), keyed by the rule name
+//! (NORMAL, SAFE, LAWLESS). The rules are the LF_ZoneRule enum, so none is added beyond those and
+//! none is removed: every zone names one.
+class LF_ZoneRuleSetList : LF_ConfigList
+{
+	protected LF_ZoneConfig m_Config;
+
+	void LF_ZoneRuleSetList(LF_ZoneConfig config)
+	{
+		m_Config = config;
+		if (!m_Config.m_aRuleSets)
+			m_Config.m_aRuleSets = new array<ref LF_ZoneRuleSet>();
+	}
+
+	override string GetName()
+	{
+		return "zones.ruleSets";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aRuleSets.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aRuleSets[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return typename.EnumToString(LF_ZoneRule, LF_ZoneRuleSet.Cast(record).m_eRule);
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		int rule;
+		container.Get("m_eRule", rule);
+		return typename.EnumToString(LF_ZoneRule, rule);
+	}
+
+	override string CanonicalId(string key)
+	{
+		LF_ZoneRule rule = typename.StringToEnum(LF_ZoneRule, key);
+		if (typename.EnumToString(LF_ZoneRule, rule) == key)
+			return key;
+
+		return string.Empty;
+	}
+
+	override string IdHint()
+	{
+		return "a rule name (NORMAL, SAFE or LAWLESS)";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_ZoneConfig.LegacyFor(m_Config, typename.StringToEnum(LF_ZoneRule, id));
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_ZoneRuleSet entry = LF_ZoneRuleSet.Cast(record);
+		if (index < m_Config.m_aRuleSets.Count())
+			m_Config.m_aRuleSets.Set(index, entry);
+		else
+			m_Config.m_aRuleSets.Insert(entry);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aRuleSets.RemoveOrdered(index);
+	}
+
+	override string RemoveRefusal(int index)
+	{
+		return "a zone rule set cannot be removed: every zone names a rule, so patch or replace it";
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_ZoneRuleSet entry = LF_ZoneRuleSet.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_bBlocksPlayerDamage") && container.Get("m_bBlocksPlayerDamage", entry.m_bBlocksPlayerDamage))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bSuppressesWanted") && container.Get("m_bSuppressesWanted", entry.m_bSuppressesWanted))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bAllowsRobbery") && container.Get("m_bAllowsRobbery", entry.m_bAllowsRobbery))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bAllowsVehicleTheft") && container.Get("m_bAllowsVehicleTheft", entry.m_bAllowsVehicleTheft))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bAllowsWeaponDraw") && container.Get("m_bAllowsWeaponDraw", entry.m_bAllowsWeaponDraw))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fFineMultiplier") && container.Get("m_fFineMultiplier", entry.m_fFineMultiplier))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bCopsEnter") && container.Get("m_bCopsEnter", entry.m_bCopsEnter))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_ZoneRuleSet entry = LF_ZoneRuleSet.Cast(record);
+		array<string> recordKeys = {"op", "blocksPlayerDamage", "suppressesWanted", "allowsRobbery", "allowsVehicleTheft", "allowsWeaponDraw", "fineMultiplier", "copsEnter"};
+		reader.WarnUnknownKeys(recordKeys);
+		reader.ReadBool("blocksPlayerDamage", entry.m_bBlocksPlayerDamage);
+		reader.ReadBool("suppressesWanted", entry.m_bSuppressesWanted);
+		reader.ReadBool("allowsRobbery", entry.m_bAllowsRobbery);
+		reader.ReadBool("allowsVehicleTheft", entry.m_bAllowsVehicleTheft);
+		reader.ReadBool("allowsWeaponDraw", entry.m_bAllowsWeaponDraw);
+		reader.ReadFloat("fineMultiplier", entry.m_fFineMultiplier, LF_ZoneConfig.FINE_MULTIPLIER_MIN, LF_ZoneConfig.FINE_MULTIPLIER_MAX);
+		reader.ReadBool("copsEnter", entry.m_bCopsEnter);
 	}
 }
 

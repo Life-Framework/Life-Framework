@@ -203,6 +203,6 @@ class LF_NotificationToastUI : ScriptedWidgetComponent
 				return Color.FromSRGBA(92, 70, 110, 255); // violet copy ink
 		}
 
-		return Color.FromSRGBA(122, 102, 64, 255); // brass, as LF_UITheme.Rule
+		return LF_UITheme.Rule(); // brass in the 1989 theme
 	}
 }

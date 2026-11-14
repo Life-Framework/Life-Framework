@@ -280,7 +280,7 @@ class LF_ServiceBoard
 		string name = service;
 		LF_ServiceDef def = LF_ServiceCalls.Find(LF_ServiceCallsConfig.Services(), service);
 		if (def)
-			name = WidgetManager.Translate(def.m_sName);
+			name = LF_Terms.Text(def.m_sName);
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", WidgetManager.Translate("#LF-Dispatch_ServiceTitle", name)));
 		if (!open)

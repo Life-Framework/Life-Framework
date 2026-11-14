@@ -35,8 +35,8 @@ class LF_Test_MoneyStackPrefab : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
-		Resource prefab = Resource.Load(LF_MoneyUtils.PREFAB_CASH);
-		ctx.True(prefab != null && prefab.IsValid(), "MoneyStack prefab loads and is valid: " + LF_MoneyUtils.PREFAB_CASH);
+		Resource prefab = Resource.Load(LF_MoneyUtils.CashPrefab());
+		ctx.True(prefab != null && prefab.IsValid(), "MoneyStack prefab loads and is valid: " + LF_MoneyUtils.CashPrefab());
 	}
 }
 

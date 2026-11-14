@@ -124,7 +124,7 @@ class LF_Test_Roadmap_OrganizationsWorld : LF_Test
 		Resource deskPrefab = Resource.Load("{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et");
 		ctx.True(deskPrefab != null && deskPrefab.IsValid(), "Desk_01_short.et loads");
 
-		Resource cash = Resource.Load(LF_MoneyUtils.PREFAB_CASH);
+		Resource cash = Resource.Load(LF_MoneyUtils.CashPrefab());
 		ctx.True(cash != null && cash.IsValid(), "MoneyStack loads");
 
 		Resource frame = Resource.Load(LF_UITheme.FRAME_LAYOUT);

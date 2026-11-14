@@ -141,9 +141,9 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 		ctx.True(door.IsValid(), "EL_Door_Base.et loads");
 		Resource shell = Resource.Load(LF_Bank.SHELL_PREFAB);
 		ctx.True(shell.IsValid(), "EL_Bank.et loads");
-		Resource bagPrefab = Resource.Load(LF_Bank.BAG_PREFAB);
+		Resource bagPrefab = Resource.Load(LF_Bank.BagPrefab());
 		ctx.True(bagPrefab.IsValid(), "the money bag prefab loads");
-		Resource money = Resource.Load(LF_MoneyUtils.PREFAB_CASH);
+		Resource money = Resource.Load(LF_MoneyUtils.CashPrefab());
 		ctx.True(money.IsValid(), "MoneyStack.et loads");
 		Resource crate = Resource.Load(LF_Bank.CRATE_MESH);
 		ctx.True(crate.IsValid(), "Crate_01.xob loads");

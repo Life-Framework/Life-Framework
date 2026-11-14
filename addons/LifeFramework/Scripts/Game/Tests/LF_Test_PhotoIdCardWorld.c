@@ -77,7 +77,7 @@ class LF_Test_PhotoIdCardWorld : LF_Test
 	//! A card restored after a restart: the prefab with its number and nothing printed.
 	protected void CheckReprint(LF_TestContext ctx)
 	{
-		IEntity item = LF_Utils.SpawnEntityPrefab(LF_IdCard.PREFAB, "0 0 0");
+		IEntity item = LF_Utils.SpawnEntityPrefab(LF_IdCard.Prefab(), "0 0 0");
 		ctx.NotNull(item, "the card prefab spawns");
 		if (!item)
 			return;
@@ -134,7 +134,7 @@ class LF_Test_PhotoIdCardWorld : LF_Test
 		array<ref LF_PhotoIdRow> rows = LF_PhotoIdCard.ExportAll();
 		string stolenNumber = LF_PhotoIdCard.Current(HOLDER).m_sNumber;
 		LF_PhotoIdCard.ResetStatics();
-		IEntity item = LF_Utils.SpawnEntityPrefab(LF_IdCard.PREFAB, thief.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(LF_IdCard.Prefab(), thief.GetOrigin());
 		InventoryStorageManagerComponent storage = LF_Component<InventoryStorageManagerComponent>.Find(thief);
 		ctx.NotNull(item, "the stolen card spawns");
 		ctx.NotNull(storage, "the thief has an inventory");

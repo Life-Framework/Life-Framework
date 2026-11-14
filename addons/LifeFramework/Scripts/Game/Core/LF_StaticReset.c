@@ -15,6 +15,7 @@ class LF_StaticReset
 	static void ResetAll()
 	{
 		LF_Places.ResetStatics();
+		LF_PrefabSlots.ResetStatics();
 		LF_Breach.ResetStatics();
 		LF_PlayerIdentity.ResetStatics();
 		LF_Lockpick.ResetStatics();
