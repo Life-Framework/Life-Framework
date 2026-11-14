@@ -235,12 +235,12 @@ def nickel(g):
     fine = g.noise(260, detail=3)
     streak = g.ramp(g.noise(70, detail=5, w=2.0), 0.55, 0.7)
     scratch = g.img("Metal038", "Color", data=False)
-    base = g.mix((0.045, 0.047, 0.052), (0.085, 0.088, 0.094), g.ramp(scratch, 0.2, 0.5))     # blued-nickel grey, scratches pick out lighter
-    base = g.mix(base, (0.2, 0.205, 0.215), g.math("MULTIPLY", wear, 0.6))                # bright worn edges, still steel not chrome
+    base = g.mix((0.028, 0.029, 0.031), (0.055, 0.056, 0.059), g.ramp(scratch, 0.2, 0.5))     # gunmetal like the base-game M9: darker and near neutral, scratches pick out lighter
+    base = g.mix(base, (0.11, 0.112, 0.116), g.math("MULTIPLY", wear, 0.6))                # bright worn edges, still steel not chrome
     base = g.mix(base, (0.012, 0.012, 0.014), g.math("MULTIPLY", g.ramp(crev, 0.25, 0.65), 0.85))   # dark in the recesses
     base = g.mix(base, (0.04, 0.04, 0.043), g.math("MULTIPLY", streak, 0.4))                # hand-worn dull patches
-    rough = g.math("ADD", 0.5, g.math("ADD", g.math("MULTIPLY", g.img("Metal038", "Roughness"), 0.45), g.math("ADD", g.math("MULTIPLY", streak, 0.18), g.math("MULTIPLY", crev, 0.2))), clamp=True)
-    metal = g.math("SUBTRACT", 0.96, g.math("MULTIPLY", g.ramp(crev, 0.5, 0.9), 0.15))
+    rough = g.math("ADD", 0.6, g.math("ADD", g.math("MULTIPLY", g.img("Metal038", "Roughness"), 0.45), g.math("ADD", g.math("MULTIPLY", streak, 0.18), g.math("MULTIPLY", crev, 0.2))), clamp=True)
+    metal = g.math("SUBTRACT", 0.82, g.math("MULTIPLY", g.ramp(crev, 0.5, 0.9), 0.15))
     height = g.math("ADD", g.math("MULTIPLY", g.img("Metal038", "Displacement"), 0.5), g.math("MULTIPLY", fine, 0.15))
     return {"base": base, "rough": rough, "metal": metal, "height": height, "bump_strength": 0.5, "bump_distance": 0.0006,
             "ao": g.math("ADD", 0.35, g.math("MULTIPLY", ao, 0.65))}
