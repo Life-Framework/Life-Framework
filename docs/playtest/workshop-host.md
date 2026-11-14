@@ -1,7 +1,9 @@
 # Host the playtest town on a dedicated server
 
-For community hosts running the Workshop item **Life Framework** (mod ID `79636E668EA37AC9`).
-The server downloads the mod from the Workshop; players get it on join.
+For community hosts running the two Workshop items **Life Framework (Core)** (mod ID
+`79636E668EA37AC9`) and **Life Framework: Everon 1989** (mod ID `B1E84D5687E11724`). The pack needs the
+core, and the scenario lives in the pack, so `game.mods` lists both. The server downloads the mods from
+the Workshop; players get them on join.
 
 Playing alone without the Workshop? The zip on the website (see [`docs/playtest.md`](../playtest.md))
 has a launcher that starts the same town. This guide is for servers.

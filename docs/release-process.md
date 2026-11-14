@@ -19,7 +19,8 @@ run from tooling. It is maintainer-only, by hand in Workbench (#370).
 | `tools\cli release <x.y.z>` dry run | Yes | Yes |
 | `tools\cli release <x.y.z> --confirm [--push]` | Never | Yes |
 | `tools\cli playtest release` | Never | Yes |
-| Workshop upload of core and pack | Never. **Not yet: maintainer-only.** | Yes, by hand (#370) |
+| Workshop upload of core and pack | Never. **Not yet: maintainer-only.** | Yes, by hand (#370), following [release-first-upload.md](release-first-upload.md) |
+| `toolscli workshop boot-check <coreId> <packId>` (clean server from Workshop ids, #371) | Yes, once the ids are real | Yes |
 | `tools\cli example-zip` (draft zip) | Yes | Yes |
 | Set the confirmed Workshop ids in `tools/release/example-zip.json`, then the `--final` zip | Never | Yes (after #370) |
 | Host `preflight` and `restore` after a game update | Never | Yes (the server owner too) |
@@ -46,6 +47,25 @@ An issue moves through these labels. Only a human sets `verified`.
 
 `promote --confirm` sets `verified` and closes the issues the promoted PRs
 reference. Reports say "merged, in-dev", never "done".
+
+## Names and versions
+
+Two Workshop items (decision 2026-11-09, #367 and #375):
+
+| Item | Project Name and `.gproj` TITLE | Addon ID | Mod ID |
+|---|---|---|---|
+| Core | `Life Framework (Core)` | `LifeFramework` | `79636E668EA37AC9` |
+| Flagship pack | `Life Framework: Everon 1989` | `LF_Everon1989` | `B1E84D5687E11724` |
+
+- Versions are semver, `x.y.z`. While both items are 0.x, `tools\cli release <version>` stamps one
+  number into both `.gproj` files and both kit READMEs, so they publish together.
+- The pack's kit README states the core version it needs in its `Requires` row.
+- A schema or save-format bump is a major version. A change that keeps saves and configs readable
+  is a minor or patch.
+- Every Workshop publish takes a higher number than the last, even for a text-only change.
+- Brand and copy for each page come from [branding/core.md](branding/core.md) and
+  [branding/everon-1989.md](branding/everon-1989.md). `validate-release-ready` checks the TITLEs
+  against the kit Project Names, that each page names the other, and that the kit files exist.
 
 ## Cut a release
 
@@ -87,7 +107,8 @@ reference. Reports say "merged, in-dev", never "done".
    target that is not a descendant of `stable`, and it never forces.
 6. **Upload the Workshop items. Not yet: maintainer-only.** The Workshop
    upload is by hand in Workbench from the tagged commit. The click path is in
-   [playtest/workshop-publish.md](playtest/workshop-publish.md). The version
+   [playtest/workshop-publish.md](playtest/workshop-publish.md); the whole first upload, both addons and
+   the boot check, is [release-first-upload.md](release-first-upload.md). The version
    scheme and names are settled in #367. Every publish takes a higher version
    number, even for a text-only change.
 

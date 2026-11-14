@@ -1,4 +1,4 @@
-// Per-proof reset (#496). A proof leaves duty, wanted, faction and a downed or dead body behind;
+﻿// Per-proof reset (#496). A proof leaves duty, wanted, faction and a downed or dead body behind;
 // the next proof in the same session then fails from the first step (a clock-in toggles off,
 // a revive finds a healthy patient). `resetClients` brings every client back to a plain living
 // civilian off duty. session.mjs runs it before every proof verb (skip with --no-reset) and
@@ -17,6 +17,7 @@ export function planReset(st) {
   // vault cooldowns and this client's dispatch count (#867). The debug menu refuses a non-admin.
   if (Number(st.wanted || 0) > 0 || Number(st.dispatch || 0) > 0) steps.push("crime");
   if (st.faction && st.faction !== "CIVILIAN" && st.faction !== "none") steps.push("faction");
+  if (st.cuffed === "1" || Number(st.jail || 0) > 0) steps.push("player");
   return steps;
 }
 
@@ -27,6 +28,8 @@ export function selftestReset() {
   if (!eq(planReset({ life: "INCAPACITATED", downed: "1", duty: "0", wanted: "0", faction: "CIVILIAN" }), ["revive"])) f.push("downed body not revived");
   if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "1", wanted: "3", faction: "POLICE" }), ["clockout", "crime", "faction"])) f.push("duty, wanted and faction not all planned");
   if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "0", wanted: "0", dispatch: "2", faction: "CIVILIAN" }), ["crime"])) f.push("leftover dispatch count not planned");
+  if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "0", wanted: "0", faction: "CIVILIAN", cuffed: "1", jail: "0" }), ["player"])) f.push("cuffed client not planned");
+  if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "0", wanted: "0", faction: "CIVILIAN", cuffed: "0", jail: "40" }), ["player"])) f.push("jailed client not planned");
   f.push(...selftestDowner());
   return f;
 }
@@ -46,7 +49,7 @@ function selftestDowner() {
       st[1].wanted = "3";
     }
     if (spec.verb === "open" && spec.mode === "show") menuFor = n;
-    if (spec.verb === "resetcrime") {
+    if (spec.verb === "resetcrime" || spec.verb === "resetplayer") {
       st[n].wanted = "0";
       st[n].dispatch = "0";
       return { status: "ok", detail: "cleared wanted reports=0 dispatches=0 tills=1 vaults=0" };
@@ -79,9 +82,23 @@ export function resetClient(on, wait, n, phase = "all") {
   // The server-side stores (till, vault and search cooldowns) are not on the state line, and one
   // client's call clears them for the whole session, so client 1 always asks (#867).
   if (phase === "rest" && n === 1 && !steps.includes("crime")) steps.push("crime");
+  // `resetplayer` (a dev-gated harness verb, #496) does duty, faction, cuffs, any sentence and the crime
+  // state in one server-side call; the desk walk and the debug menu below are the fallback when it is
+  // refused (a build without the verb, or a closed dev gate).
+  let serverSide = false;
+  if (phase === "rest") {
+    const r = on(n, { verb: "resetplayer" }, 10000);
+    if (r.status === "ok") {
+      serverSide = true;
+      notes.push(`player reset server side (${r.detail})`);
+    } else {
+      notes.push(`resetplayer refused: ${r.status} ${r.detail}`);
+    }
+  }
   for (const step of steps) {
     if (phase === "body" && step !== "revive") continue;
     if (phase === "rest" && step === "revive") continue;
+    if (serverSide && step !== "revive") continue;
     if (step === "revive") {
       for (let i = 0; i < 12; i++) {
         st = read();
@@ -106,6 +123,8 @@ export function resetClient(on, wait, n, phase = "all") {
     } else if (step === "crime") {
       const r = on(n, { verb: "resetcrime" }, 10000);
       notes.push(r.status === "ok" ? `crime state cleared (${r.detail})` : `crime state not reset: ${r.status} ${r.detail}`);
+    } else if (step === "player") {
+      notes.push("cuffs or sentence left and resetplayer refused: not cleared");
     } else if (step === "faction") {
       // The debug menu is the only way to leave a faction; the playtest mission closes it. The
       // server refuses it for a non-admin, so the "still dirty" check below is the truth.

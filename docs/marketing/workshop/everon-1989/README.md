@@ -8,6 +8,11 @@ core kit ([`../README.md`](../README.md)) and is checked by `tools/validation/va
 | Project Name (30 max) | `Life Framework: Everon 1989` |
 | Mod ID (the `.gproj` GUID, also the Workshop item ID) | `B1E84D5687E11724` |
 | Requires | Life Framework (Core), `79636E668EA37AC9`, version 0.1.0 or later |
+| Scenario ID | `{1054CC8646357708}Missions/LF_PlaytestTown.conf` (name in the list: Life Framework: Playtest Town) |
+| Screenshots | the nine village shots in [`../screenshots/`](../screenshots/), 1280x720, each under 600 KB |
+| Change Notes | the pack 0.1.0 block in [`../changelog.md`](../changelog.md) |
+| Tags | `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989` |
+| Category | Game Mode (and Scenario if the dialog offers it) |
 | Preview Image | [`preview.jpg`](preview.jpg): a DRAFT PLACEHOLDER, replaced before publish (spec below) |
 | Summary (1024 max) | [`summary.txt`](summary.txt) |
 | Description (5000 max) | [`description.bbcode`](description.bbcode) |
@@ -15,11 +20,11 @@ core kit ([`../README.md`](../README.md)) and is checked by `tools/validation/va
 | Licence | Arma Public License (APL) |
 
 The Workshop build is APL because the Workshop Terms of Use require an APL-family licence
-(decision D2). The source on GitHub stays MIT. The pack publishes in the same release as move
-batch 1 (decision D3).
+(decision D2). The source on GitHub stays MIT. The pack publishes after the whole pack move,
+batches 1 to 4, in the same release as the core (decision D3).
 
-The version is semver, set by the pack. Its description names the core range it needs. A pack release
-that needs a newer core raises the "Requires" line.
+The version is semver; see "Version scheme" in [`../README.md`](../README.md). The description names
+the core version it needs, and a pack release that needs a newer core raises the "Requires" row.
 
 ## Preview image spec
 
@@ -37,6 +42,9 @@ The current `preview.jpg` is a flat placeholder so the kit is complete; it is no
 ## Open items
 
 - Final preview image and gallery screenshots.
-- The narrative premise and period art direction (#375) are not written; the description does not
-  claim one.
-- Tags, category and change notes, once the pack loads and has content to describe.
+- Maintainer sign-off on the premise and voice in [`docs/branding/everon-1989.md`](../../../branding/everon-1989.md)
+  and on the description copy built from it.
+- The scenario still lists as "Life Framework: Playtest Town". The in-game briefing (#374) is where
+  that name changes to the brief's voice.
+- `discord-announcement.md` and `website-news.md` in the parent folder still announce the single
+  playtest item; rewrite them for the two items at the first publish.

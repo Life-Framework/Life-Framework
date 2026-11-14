@@ -2772,7 +2772,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     const r = await runShardedTests(root, specs, opts);
     if (r !== null) return r;
   }
-  const purpose = only.length ? "test only" : `test ${tier}`;
+  const purpose = pool.testPurpose({ tier, only, coreOnly: opts.coreOnly });
   // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
   // key) and before the pool is asked for a slot. Only a pass is stored or reused.
   const cache = passCacheCheck(root, { tier, only, opts: { ...opts, red } });
@@ -2895,7 +2895,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
     code = runLocalTest(root, tier, only, opts.world, opts.coreOnly, red);
     // test-e2e.ps1 stamps summaries.jsonl lazily (at the next boot), so read this run's printed SUMMARY.
-    const sum = lastLocalSummary ?? newestStamp(root, before);
+    const sum = lastLocalSummary ?? newestStamp(root, before, opts.coreOnly);
     if (sum) extra = { passed: sum.passed, total: sum.total };
     if (sum) recordTestTimes(root, sum.consoleLog, tier, only, opts);
     return { code, machine: slot.machine?.name, passed: sum?.passed, total: sum?.total, failed: sum?.failed };
@@ -2908,12 +2908,14 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
 }
 
 // The summary this run stamped (tools/test/test-e2e.ps1 appends one line).
-function newestStamp(root, since) {
+function newestStamp(root, since, coreOnly = false) {
   const f = join(root, "tmp", "test-results", "summaries.jsonl");
   try {
     if (statSync(f).mtimeMs < since) return null;
     const lines = readFileSync(f, "utf8").trim().split(/\r?\n/);
-    return JSON.parse(lines[lines.length - 1]);
+    const rec = JSON.parse(lines[lines.length - 1]);
+    // Never take another run's line (the stamp is lazy): a core-only run's tier ends in "-core", a full run's does not.
+    return /-core$/.test(String(rec.tier ?? "")) === !!coreOnly ? rec : null;
   } catch {
     return null;
   }
@@ -3131,6 +3133,8 @@ async function cmdCi(root = ROOT, opts = {}) {
       const cg = await import("./commands/config-gate.mjs");
       return (await import("./lib/config-gate.mjs")).runConfigGate(changedFiles(root), { static: () => cg.runStatic(root), sessions: () => cg.runSessions(root) });
     }],
+    // A save made before the pack move (#327, D7 (a)) must still load: two boots, only when persistence code, a mission header or the pack boundary changed.
+    ["pre-move save", async () => (await import("./lib/pre-move-gate.mjs")).runPreMoveGate(changedFiles(root), (o) => runE2e(root, { ...opts, ...e2eMoveFlags(root, ["--pre-move", o.preMove, "--mission", o.mission]) }))],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -3269,12 +3273,43 @@ function workbenchGate(root, opts = {}) {
   const t0 = Date.now();
   return pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" }).then((r) => {
     console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+    if (r.code === 0 && r.rDir) pullRemoteRdb(root, m, r.rDir);
     if (r.code === 3) {
       console.log(`ci: ${m.name} could not take the Workbench steps; running them here`);
       return ciWorkbench(root, opts);
     }
     return r.code === 0 ? 0 : 1;
   });
+}
+
+// After a remote Workbench build the run folder's resource database is current. A local one that is
+// stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
+// headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
+// registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
+function pullRemoteRdb(root, m, rDir) {
+  for (const name of rdbAddons(root)) {
+    const addon = addonDir(root, name);
+    const local = join(addon, "resourceDatabase.rdb");
+    const before = rdbFreshness(addon);
+    if (before.missing.length === 0) continue;
+    const got = `${local}.remote`;
+    const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
+    if (down.status !== 0 || !existsSync(got)) {
+      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      continue;
+    }
+    const keep = `${local}.local`;
+    if (existsSync(local)) copyFileSync(local, keep);
+    copyFileSync(got, local);
+    const after = rdbFreshness(addon);
+    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    else if (existsSync(keep)) {
+      copyFileSync(keep, local);
+      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+    }
+    rmSync(got, { force: true });
+    rmSync(keep, { force: true });
+  }
 }
 
 // The placement audit takes a test lane through the pool like `test` (any machine by default). On a
@@ -3662,8 +3697,10 @@ function wtHelpFull() {
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
   tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
-                                       clean-tree check -> merge origin/<base> only if it conflicts ->
-                                       gate -> push -> PR (or reuse the open one) -> gh auto-merge
+                                       clean-tree and PR-body checks -> push -> PR (auto-merge off) -> ship queue:
+                                       merge origin/<base> once, ci --remote on a pool machine, push, auto-merge
+                                       (docs/worktrees.md "Ship queue"); waits until gated unless --no-wait
+                                       (a terminal defaults to --no-wait); --no-queue gates here the old way
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
   tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
@@ -3931,7 +3968,19 @@ function runE2ePass(root, tier, opts = {}) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
-  ensureResourceDatabase(root);
+  let rdbStale = ensureResourceDatabase(root);
+  // The pre-move save gate (#327) boots an older tree whose resources the copied rdb never registered.
+  // A server on a still-stale rdb dies with an opaque "Unable to initialize the game", so retry the
+  // refresh once and then fail with the real cause (2026-11-14: lf-cloud's Workbench exited 0 without
+  // writing the rdb while other gates ran Workbenches; this PC held the build lock).
+  if (rdbStale && opts.requireFreshRdb) {
+    console.log("e2e: resource database still stale after the refresh; retrying the refresh once");
+    rdbStale = ensureResourceDatabase(root);
+    if (rdbStale) {
+      console.log("FAIL  e2e: the resource database is still stale after two refreshes, so the server cannot load the pre-move tree. This is the machine (Workbench could not register the resources), not the saved build; rerun when its Workbench is free (tools\cli pool status).");
+      return 1;
+    }
+  }
   const ports = wt.portsForRoot(root);
   const psArgs = [
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -4090,16 +4139,16 @@ function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
     return r.status;
   };
   try {
-    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back);
+    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, Boolean(opts.preMove));
   } finally {
     back();
   }
 }
 
-function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back) {
+function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, preMove = false) {
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacySave ? ", legacy save format" : ""}${oldBuild ? ", stamped as game build 1.8.0.13" : ""}) in ${e.path}`);
   const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
-  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines });
+  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines, requireFreshRdb: preMove });
   if (pass1 === 0) {
     const log = e2eShutdown.newestTestConsole(e.path);
     const check = e2eShutdown.checkShutdownSave(log ? readFileSync(log, "utf8") : "");
@@ -4131,9 +4180,9 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
     }
     console.log(`e2e: old build: backed up the save before the reload boot -> ${backup} (${host.findSavePoints(backup).length} save point(s))`);
   }
-  const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : ""].filter(Boolean).join(",");
+  const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : "", preMove ? "LF_E2E_PRE_MOVE" : ""].filter(Boolean).join(",");
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
-  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines });
+  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove });
   const log2 = e2eShutdown.newestTestConsole(e.path);
   for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
   console.log(`e2e: profile ${profile}`);
@@ -4294,6 +4343,72 @@ async function wtSyncBaseCmd(args) {
   }
 }
 
+// `wt ship` through the ship queue. Returns at once with a status line (--no-wait), or blocks until the
+// gate passed or failed (--wait; the default when stdout is not a terminal, so an agent's report holds).
+async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const q = await import("./ship-queue.mjs");
+  const sql = await import("./lib/ship-queue.mjs");
+  const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
+  let body = customBody ?? [
+    `Automated ship from worktree \`${slug}\`.`,
+    "",
+    "Gated by the ship queue: origin/" + base + " merged in, then the gate for the diff's tier (see ## Gate) on pool machines.",
+    "",
+    "## Commits",
+    ...subjects.map((s) => `- ${s}`),
+  ].join("\n");
+  body = refsBody(body, closes);
+  {
+    // The tier as the branch stands now; the queue's `ci --tiered` decides again after main is merged in.
+    const tl = gateTier.tierLine(gateTierOf(wtRoot, flags.includes("--full-gate")));
+    console.log(`=== ship: ${tl} ===`);
+    body = `${body}\n\n## Gate\n\n${tl} (the queue re-checks it after merging origin/${base})`;
+  }
+  let pr = wt.findOpenPrGh(wtRoot, e.branch);
+  // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
+  if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
+  console.log("=== ship: push (auto-merge waits for the ship queue's gate) ===");
+  const push = wt.git(wtRoot, ["push", "-u", "origin", e.branch]);
+  if (push.status !== 0) {
+    console.log(`FAIL  push: ${push.stderr || push.stdout}`);
+    return 1;
+  }
+  try {
+    if (!pr) pr = wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base });
+  } catch (err) {
+    console.log(`FAIL  PR creation: ${err.message}`);
+    return 1;
+  }
+  const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
+  const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15);
+  const log = join(wt.mainRootOf(ROOT), "tmp", "logs", `ship-${slug}-${stamp}.log`);
+  mkdirSync(dirname(log), { recursive: true });
+  let entry;
+  try {
+    entry = q.withQueue(ROOT, (qq) => sql.enqueue(qq, { slug, branch: e.branch, base, wtPath: wtRoot, pr: pr.number, prUrl: pr.url, head, files, log, fullGate: flags.includes("--full-gate") }));
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+  const w = await q.ensureWorker(ROOT);
+  const qq = q.readQueue(ROOT);
+  const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
+  const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
+  const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
+  console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
+  console.log(`PR: ${pr.url}`);
+  const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
+  if (!wait) {
+    console.log(`ship: queued. 'tools\\cli ship-queue wait ${slug}' blocks until it is gated; 'tools\\cli pool status' shows the queue.`);
+    return 0;
+  }
+  const code = await q.waitFor(ROOT, slug);
+  if (code === 0) console.log(`ship: gated and auto-merge queued; merged, in-dev once GitHub merges it. Prune after merge: 'cli wt prune ${slug}'`);
+  console.log(`PR ${pr.url}, head ${wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim()}`);
+  return code;
+}
+
 async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
@@ -4368,6 +4483,11 @@ async function wtShipCmd(args) {
     }
     if (customBody !== null) customBody = withReview(customBody, reviewText);
   }
+  // The ship queue (tools/ship-queue.mjs, docs/worktrees.md "Ship queue"): push, open the PR with
+  // auto-merge off, enqueue; the queue worker merges main once, gates on the pool, pushes, queues
+  // auto-merge. --no-queue (or LF_SHIP_QUEUE=0) is the old local gate below.
+  const useQueue = !flags.includes("--no-queue") && process.env.LF_SHIP_QUEUE !== "0" && !skipGate && !prOnly && wt.ghAvailable();
+  if (useQueue) return shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {

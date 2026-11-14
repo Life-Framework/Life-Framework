@@ -5,7 +5,7 @@
 // LifeFramework) fails with `dependency '79636E668EA37AC9' can't be added`. One
 // flag with comma-separated folders works. Every launcher builds its flag here.
 
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -16,6 +16,14 @@ export const ADDONS = [
   { name: "LifeFramework", guid: "79636E668EA37AC9" },
   { name: "LF_Everon1989", guid: "B1E84D5687E11724" },
 ];
+// A pack an author scaffolded with `pack new` (addons/LF_<Name>/LF_<Name>.gproj) is a repo addon too: the
+// asset stages take it by `--addon`, and a launch loads it beside the core. Its GUID is the one in its .gproj.
+for (const e of readdirSync(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "addons"), { withFileTypes: true })) {
+  if (!e.isDirectory() || !/^LF_[A-Za-z0-9]+$/.test(e.name) || ADDONS.some((a) => a.name === e.name)) continue;
+  const gproj = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "addons", e.name, e.name + ".gproj");
+  const guid = existsSync(gproj) && /GUID "([0-9A-F]{16})"/.exec(readFileSync(gproj, "utf8"))?.[1];
+  if (guid) ADDONS.push({ name: e.name, guid });
+}
 export const CORE = ADDONS[0].name;
 export const PACK = ADDONS[1].name;
 
