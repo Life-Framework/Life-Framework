@@ -198,6 +198,10 @@ export function checkOwner(root, schema, source, shipped = {}) {
         add("error", p, `${dotted(path)}.${p.key}: the key is neither a prefab-path substring, prefab:<GUID> nor type:<flags>,mode:<mode>; record skipped`, [...path, p.key]);
         continue;
       }
+      if (dotted(path) === "systems.switches" && have && have.size && !have.has(key.norm)) {
+        add("error", p, `${where}: the key is not a system id (Configs/Systems/LF_SystemCatalog.conf lists them); record skipped`, [...path, p.key]);
+        continue;
+      }
       if (have && have.size && !have.has(key.norm)) {
         add("warn", p, `${where}: no shipped record has this key; it adds a new record. A typo would sit unused`);
       }

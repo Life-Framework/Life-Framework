@@ -205,6 +205,26 @@ const SYSTEMS: System[] = [
         head: "Spawn square",
         text: "The payphone moved off the tree to the edge of the square. The clerk has a desk and chair, and a handcart stands by the benches on the north side.",
       },
+      {
+        head: "Market square",
+        text: "Five stalls stand on cobbled ground under red cloth canopies on wooden posts, with chalk price boards, sacks, a handcart and a delivery van. The juicer sits on one table.",
+      },
+      {
+        head: "Bank vault",
+        text: "The strong room sits against the bank's east wall. Its front matches the bank's light plaster, with a corrugated hood and a caged lamp over the door.",
+      },
+      {
+        head: "Ore rocks",
+        text: "Iron, copper and gold rocks read as stone, with the ore only in the cracks and thin veins.",
+      },
+      {
+        head: "Paperwork",
+        text: "The fine ticket, receipt, hospital bill, sentence slip and R-89 ID card are printed 1989 forms.",
+      },
+      {
+        head: "Object models",
+        text: "The cement bag, police scanner, post parcel, moonshine still, smelter furnace and dispatch console now have period models.",
+      },
     ],
   },
 ];

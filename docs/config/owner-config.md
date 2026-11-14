@@ -57,3 +57,10 @@ a prefab-path substring, `prefab:<GUID>` or `type:<flags>,mode:<mode>`) and wher
 
 `docs/config/config.example.json` is a file that passes clean. Proof of the rules:
 `node tools/validation/config-check-selftest.mjs`.
+
+## Fixture harness
+
+`tools\cli config-harness --stage validate` runs `config-check` over `tools/test/config-fixtures/`
+(`presets/` pass clean, `broken/` has one file per reject class), each with a `.expect.json` holding
+the exact log line, line and column. Stages are a list in `tools/config/harness.mjs`; the server-boot
+(#299) and client (#300) stages plug in there. Proof: `node tools/validation/config-harness-selftest.mjs`.

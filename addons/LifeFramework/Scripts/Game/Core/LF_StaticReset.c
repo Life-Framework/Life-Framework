@@ -107,6 +107,7 @@ class LF_StaticReset
 		LF_Roles.ResetStatics();
 		LF_DownedPatient.ResetStatics();
 		LF_PlacementGhost.ResetStatics();
+		LF_Systems.ResetStatics();
 		LF_ItemCatalogue.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
