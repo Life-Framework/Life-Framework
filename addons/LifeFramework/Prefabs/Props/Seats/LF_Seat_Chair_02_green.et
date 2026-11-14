@@ -16,7 +16,7 @@ GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_gre
      ParentContextList {
       "LF_Seat1"
      }
-     m_vSeatOffset 0 0 0.3
+     m_vSeatOffset 0 0 0.62
      m_SitAnimation SCR_LoiterCustomAnimData "{B6D266B995C1892C}" {
       m_iCommandValue 7
      }

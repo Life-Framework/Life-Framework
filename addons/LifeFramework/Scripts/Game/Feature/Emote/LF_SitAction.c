@@ -8,13 +8,13 @@
 
 class LF_SitAction : SCR_LoiterUserAction
 {
-	[Attribute("0 0 0.3", UIWidgets.Coords, "Where the sitter stands before the pose plays, in the seat's local space", params: "inf inf 0 purpose=coords space=entity")]
+	[Attribute("0 0 0.62", UIWidgets.Coords, "Where the sitter stands before the pose plays, in the seat's local space. The body stays here (no root motion) so its capsule stays clear of the seat; the pose puts the hips about 0.45 m behind it, on the seat", params: "inf inf 0 purpose=coords space=entity")]
 	protected vector m_vSeatOffset;
 
-	[Attribute("0", UIWidgets.Slider, "Which way the sitter faces, in degrees about the seat's up axis (0 faces the seat's +z)", "-180 180 1")]
+	[Attribute("180", UIWidgets.Slider, "Turn of the target transform about the seat's up axis, in degrees. The base game chair pose plays facing away from the target's +z, so 180 seats a body facing the seat's +z (the front of the base game benches and chairs)", "-180 180 1")]
 	protected float m_fSeatYaw;
 
-	[Attribute("1", UIWidgets.CheckBox, "Let the sit animation move the body (the base game chair emote does)")]
+	[Attribute("0", UIWidgets.CheckBox, "Let the sit animation move the body. Off for a seat: root motion walks the capsule into the seat and the body climbs onto it")]
 	protected bool m_bRootMotion;
 
 	[Attribute(desc: "The sit pose. The base game chair sit is command value 7; leave the item preset NONE so no prop chair spawns")]

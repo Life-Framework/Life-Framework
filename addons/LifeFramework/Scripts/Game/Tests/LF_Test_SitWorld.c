@@ -3,6 +3,8 @@
 // from it (0 not in [0.05, 1.2])` and `- ... two places do not overlap`. Restored; green.
 // Disabling the index guard in the modded SCR_CommandingManagerComponent.FindCommandNameFromIndex stopped the run with
 // `Virtual Machine Exception Reason: Index out of bounds.` at `a command index past the list is refused`. Restored; green.
+// Before the modded command classes repeated [BaseContainerProps()], every `- radial entry CMD_Salute is a base game
+// command` (and the other nine) failed. Fixed; green.
 // tier: WORLD
 //! emote/sit-world (#982): every LF seat prefab offers one Sit per place with the chair pose, each
 //! place in its own spot; the game mode carries the base game commanding manager, and every entry of
@@ -82,6 +84,7 @@ class LF_Test_SitWorld : LF_Test
 			return;
 
 		// A client sends the command index (RPC_RequestExecuteCommand); a bad one is refused, not read.
+		ctx.True(commanding.FindCommandIndex("CMD_Salute") >= 0, "the game mode knows the emote commands");
 		ctx.EqualStr(string.Empty, commanding.FindCommandNameFromIndex(9999), "a command index past the list is refused");
 		ctx.EqualStr(string.Empty, commanding.FindCommandNameFromIndex(-1), "a negative command index is refused");
 
@@ -105,14 +108,6 @@ class LF_Test_SitWorld : LF_Test
 		array<string> names = {};
 		CollectCommands(menu.GetRootCategory(), names);
 		ctx.True(names.Count() >= 8, "the radial offers gestures and held emotes");
-
-		// The emote command classes are client scripts (the dedicated server build lacks them), so the
-		// lookup below only runs where a radial can open. On the test server: the list is not loaded.
-		if (System.IsConsoleApp())
-		{
-			ctx.True(names.Count() > 0 && commanding.FindCommand(names[0]) == null, "a dedicated server does not load the client-only emote commands");
-			return;
-		}
 
 		foreach (string name : names)
 		{

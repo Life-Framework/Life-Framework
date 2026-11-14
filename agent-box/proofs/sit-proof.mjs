@@ -2,15 +2,18 @@ import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { ROOT, arrive, clientBox, sessionDir } from "../session.mjs";
 
-// Emote radial and sitting (#982) on a running two-client session:
-//   node agent-box/session.mjs up --profile full --clients 2
-//   node agent-box/session.mjs sit-proof            (adds a late joiner, client 3, unless --no-late)
+// Emote radial and sitting (#982), driven the way a player does it:
+//   node agent-box/session.mjs up --profile full --clients 1
+//   node agent-box/session.mjs sit-proof        (client 2 joins late, during the proof)
 //   node agent-box/session.mjs down
-// Client 1 opens the emote radial (picture), salutes and smokes; client 2 must see the gesture and the
-// held loiter on ITS copy of the world (`emote seen`) and pictures the smoke. Client 1 then sits on the
-// market bench with the F key; client 2 sees the sit loiter (CUSTOM, 7) and pictures it; a late joiner
-// sees it from the join data; client 1 stands up and the others see it end.
+// (on a pool machine: `session.mjs run agent-box/session.mjs sit-proof`)
+// Client 1 sits on the market bench through the engine perform path (the F key's). Client 2 then
+// joins late and must see the sit from the join data alone (JIP) and pictures it. Client 1 stands up
+// and client 2 sees it end. Client 1 opens the emote radial (picture), salutes and smokes; client 2 sees
+// the gesture and the held loiter on ITS copy of the world (`emote seen`) and pictures the smoke.
+// With a session started with --clients 2 the late join is skipped and client 2 watches live.
 const BENCH = "Market_Bench_W";
+const BENCH_AT = [193.243, 0.0, 238.501];
 const SIT_ACTION = "LF_SitAction";
 const CUSTOM_LOITER = 7;
 
@@ -63,24 +66,66 @@ async function runSitProof() {
     on(n, { verb: "camera", args: "hud on" });
     return r;
   };
-  // A camera 3 m in front of and above a body, from the side the body faces (dir: unit xz).
-  const frontOf = (at, dir, back = 3, lift = 1.5) => [at[0] + dir[0] * back, at[1] + lift, at[2] + dir[1] * back];
+  const unit = (v) => {
+    const len = Math.hypot(v[0], v[1]) || 1;
+    return [v[0] / len, v[1] / len];
+  };
+  const frontOf = (at, d, back, lift) => [at[0] + d[0] * back, at[1] + lift, at[2] + d[1] * back];
 
-  for (const n of [1, 2]) arrive(on, n, wait);
-  wait(6000);
+  arrive(on, 1, wait);
+  const twoAtStart = on(2, { verb: "state" }, 5000).status === "ok";
+  if (twoAtStart) arrive(on, 2, wait);
+  wait(5000);
 
-  // 1. The radial, opened the way holding F1 does.
+  // 1. Sit on the market bench.
+  on(1, { verb: "stand", entityName: BENCH });
+  wait(3000);
+  const look = on(1, { verb: "look" });
+  if (!look.detail.includes(SIT_ACTION)) fails.push(`the F key does not offer ${SIT_ACTION} at ${BENCH}: ${look.detail.slice(0, 200)}`);
+  must(on(1, { verb: "emote", arg: "sit" }, 10000), "sit down");
+  wait(4000);
+
+  // 2. Client 2 sees it: live, or from the join data when it joins late.
+  if (!twoAtStart) {
+    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "2"], { windowsHide: true, stdio: "inherit" });
+    if (joined.status !== 0) {
+      fails.push("client 2 did not join late");
+      for (const f of fails) console.log(`FAIL  ${f}`);
+      console.log("sit-proof: FAIL");
+      return 1;
+    }
+    arrive(on, 2, wait);
+    wait(4000);
+  }
+  const label = twoAtStart ? "client 2 sees player 1 sitting (CUSTOM loiter)" : "client 2, joined late, sees player 1 sitting (CUSTOM loiter)";
+  const seated = sees(2, label, (p) => p.loiter === CUSTOM_LOITER, 20000);
+  if (seated) {
+    const gap = Math.hypot(seated.at[0] - BENCH_AT[0], seated.at[2] - BENCH_AT[2]);
+    if (!(gap < 1.2)) fails.push(`the sitter is ${gap.toFixed(2)} m from the bench, expected on it`);
+    on(2, { verb: "stand", entityName: "Market_Bench_E", side: "w2" });
+    wait(3000);
+    const d = unit([seated.at[0] - BENCH_AT[0], seated.at[2] - BENCH_AT[2]]);
+    shot(2, "sit_bench_seen_client2", frontOf(seated.at, d, 2.8, 1.2), [seated.at[0], seated.at[1] + 0.7, seated.at[2]]);
+    const side = [-d[1], d[0]];
+    shot(2, "sit_bench_side_client2", [seated.at[0] + side[0] * 2.4 + d[0] * 1.2, seated.at[1] + 1.1, seated.at[2] + side[1] * 2.4 + d[1] * 1.2], [seated.at[0], seated.at[1] + 0.6, seated.at[2]]);
+  }
+
+  // 3. Stand up: the same action again.
+  must(on(1, { verb: "emote", arg: "sit" }, 10000), "stand up");
+  sees(2, "client 2 sees player 1 stand up", (p) => p.loiter < 0, 12000);
+
+  // 4. The radial, opened the way holding F1 does.
   on(1, { verb: "stand", entityName: "Market_Bench_E", side: "e2" });
   on(2, { verb: "stand", entityName: "Market_Bench_E", side: "w2" });
   wait(3000);
-  const open = must(on(1, { verb: "emote", arg: "open" }), "open the emote radial");
-  if (!/open=1|open=true/.test(open.detail)) fails.push(`the radial did not open: ${open.detail}`);
+  must(on(1, { verb: "emote", arg: "open" }), "open the emote radial");
   wait(1500);
   must(on(1, { verb: "capture", mode: "ui", name: "emote_radial_open_client1" }, 25000), "picture the radial");
-  on(1, { verb: "emote", arg: "close" });
+  const closed = on(1, { verb: "emote", arg: "close" });
+  if (!/wasOpen=(1|true)/.test(closed.detail)) fails.push(`the radial was not open: ${closed.detail}`);
   wait(1000);
 
-  // 2. A gesture and a held emote, seen from client 2.
+  // 5. A gesture and a held emote, seen from client 2.
   must(on(1, { verb: "emote", arg: "CMD_Salute" }), "salute");
   sees(2, "client 2 sees player 1 salute", (p) => p.gesture);
   wait(3000);
@@ -88,48 +133,16 @@ async function runSitProof() {
   const smoking = sees(2, "client 2 sees player 1 smoke (held loiter)", (p) => p.loiter > 0, 10000);
   if (smoking) {
     wait(3500);
-    const me = parseSeen(on(1, { verb: "emote", arg: "seen" }).detail, 2);
-    const toward = me ? [me.at[0] - smoking.at[0], me.at[2] - smoking.at[2]] : [1, 0];
-    const len = Math.hypot(toward[0], toward[1]) || 1;
-    shot(2, "emote_smoke_seen_client2", frontOf(smoking.at, [toward[0] / len, toward[1] / len], 2.6, 1.1), [smoking.at[0], smoking.at[1] + 1.2, smoking.at[2]]);
+    // From the open east side of the square (the other bench stands to the west).
+    const d = [1, 0];
+    shot(2, "emote_smoke_seen_client2", frontOf(smoking.at, d, 2.6, 1.1), [smoking.at[0], smoking.at[1] + 1.2, smoking.at[2]]);
   }
   on(1, { verb: "emote", arg: "Emote_Smoke" });
   sees(2, "client 2 sees the smoke end", (p) => p.loiter < 0, 12000);
 
-  // 3. Sit on the market bench with the F key, seen from client 2 and a late joiner.
-  on(1, { verb: "stand", entityName: BENCH });
-  wait(3000);
-  const look = on(1, { verb: "look" });
-  if (!look.detail.includes(SIT_ACTION)) fails.push(`the F key does not offer ${SIT_ACTION} at ${BENCH}: ${look.detail.slice(0, 200)}`);
-  must(on(1, { verb: "use", className: SIT_ACTION, entityName: BENCH }, 10000), "sit down");
-  const seated = sees(2, "client 2 sees player 1 sitting (CUSTOM loiter)", (p) => p.loiter === CUSTOM_LOITER, 12000);
-  const benchAt = [193.243, 0.0, 238.501];
-  if (seated) {
-    const gap = Math.hypot(seated.at[0] - benchAt[0], seated.at[2] - benchAt[2]);
-    if (!(gap < 1.2)) fails.push(`the sitter is ${gap.toFixed(2)} m from the bench, expected on it`);
-    wait(3000);
-    const out = [seated.at[0] - benchAt[0], seated.at[2] - benchAt[2]];
-    const len = Math.hypot(out[0], out[1]) || 1;
-    shot(2, "sit_bench_seen_client2", frontOf(seated.at, [out[0] / len, out[1] / len], 3, 1.3), [seated.at[0], seated.at[1] + 0.7, seated.at[2]]);
-  }
-
-  if (!process.argv.includes("--no-late")) {
-    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
-    if (joined.status !== 0) fails.push("client 3 did not join late");
-    else {
-      arrive(on, 3, wait);
-      wait(4000);
-      sees(3, "the late joiner sees player 1 sitting", (p) => p.loiter === CUSTOM_LOITER, 20000);
-    }
-  }
-
-  // 4. Stand up: the same key again.
-  must(on(1, { verb: "use", className: SIT_ACTION, entityName: BENCH }, 10000), "stand up");
-  sees(2, "client 2 sees player 1 stand up", (p) => p.loiter < 0, 12000);
-
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "sit-proof: FAIL" : "sit-proof: OK (radial, salute and smoke seen, sit seen live and by a late joiner, stand up)");
+  console.log(fails.length ? "sit-proof: FAIL" : `sit-proof: OK (sit seen ${twoAtStart ? "live" : "by a late joiner"}, stand up, radial, salute and smoke seen from client 2)`);
   return fails.length ? 1 : 0;
 }
 
-export default { name: "sit-proof", usage: "sit-proof [--no-late]   (up --profile full --clients 2)", run: () => runSitProof() };
+export default { name: "sit-proof", usage: "sit-proof   (up --profile full --clients 1; client 2 joins late)", run: () => runSitProof() };

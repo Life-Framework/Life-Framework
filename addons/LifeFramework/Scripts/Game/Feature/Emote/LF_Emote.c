@@ -39,7 +39,9 @@ class LF_Emote
 }
 
 //------------------------------------------------------------------------------------------------
-//! One-shot gestures (salute, point, halt, come here).
+//! One-shot gestures (salute, point, halt, come here). A modded config class repeats the base
+//! game container attributes: without them the class drops out of configs ("Unknown class").
+[BaseContainerProps(), SCR_BaseGroupCommandTitleField("m_sCommandName")]
 modded class SCR_EmoteBaseCommand
 {
 	//------------------------------------------------------------------------------------------------
@@ -74,6 +76,7 @@ modded class SCR_EmoteBaseCommand
 //------------------------------------------------------------------------------------------------
 //! Held emotes (sit on the ground, lean, smoke, cheer). StartLoiter checks CanBePerformed again after
 //! the hands are emptied, so a body cuffed meanwhile does not start one.
+[BaseContainerProps(), SCR_BaseGroupCommandTitleField("m_sCommandName")]
 modded class SCR_ContinuousLoiterCommand
 {
 	//------------------------------------------------------------------------------------------------
@@ -141,25 +144,10 @@ modded class SCR_PlayerControllerCommandingComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! The emote commands (SCR_EmoteBaseCommand, SCR_ContinuousLoiterCommand) are client scripts: the
-//! dedicated server build does not compile them and logs "Unknown class" for every entry it is asked
-//! to load. The radial only runs on a client, so a dedicated server skips the command list.
+//! LF adds the commanding manager to the game mode, which opens the base game RPC_RequestExecuteCommand
+//! to every client. The base game reads the client-sent index unchecked.
 modded class SCR_CommandingManagerComponent
 {
-	//------------------------------------------------------------------------------------------------
-	override void InitiateCommandMaps()
-	{
-		if (System.IsConsoleApp())
-		{
-			// An empty list, not none: a client's RPC_RequestExecuteCommand reads it by index.
-			m_aCommands = {};
-			LF_Debug.Info(LF_Emote.FEATURE, "emote commands are not loaded on a dedicated server; the radial runs on clients");
-			return;
-		}
-
-		super.InitiateCommandMaps();
-	}
-
 	//------------------------------------------------------------------------------------------------
 	//! The index comes from a client (RPC_RequestExecuteCommand); the base game reads it unchecked.
 	override string FindCommandNameFromIndex(int commandIndex)

@@ -11,7 +11,9 @@ Everyone near them, late joiners included, sees the same thing.
 In-world first: a seat is the object. Walk up to a chair or bench and the F key offers *Sit*
 (one per place on a bench); while seated the same key reads *Stand up*. Jump, sprint or raising a
 weapon also stands up (base game loiter). The emote radial is the base game's radial (hold F1, or
-hold right shoulder + view on a gamepad); nothing LF-drawn opens.
+hold right shoulder + view on a gamepad); nothing LF-drawn opens. The debug menu's gamepad key
+(`LF_OpenDebugMenu`, right shoulder) fires on a tap (`InputFilterClick`), the base game pattern for a
+button that is also a combo modifier, so holding the shoulder for the radial does not open it.
 
 ## Emote radial (#982)
 
@@ -25,9 +27,9 @@ hold right shoulder + view on a gamepad); nothing LF-drawn opens.
   (`StartLoitering`), and the base game replicates both.
 - **LF changes to the base game** (`LF_Emote.c`): `ExecuteCommand` runs a local-only, non-group command
   without the AI group the base game requires (roleplay has no groups manager); `SCR_EmoteBaseCommand`
-  and `SCR_ContinuousLoiterCommand` refuse a restrained or stunned body; a dedicated server skips
-  loading the command list, because the dedicated server build lacks those client classes and would
-  log `Unknown class 'SCR_EmoteBaseCommand'` for every entry.
+  and `SCR_ContinuousLoiterCommand` refuse a restrained or stunned body (the modded classes repeat the
+  base game `[BaseContainerProps()]`, or they drop out of configs as `Unknown class`); the client-sent
+  command index is bounds-checked (`FindCommandNameFromIndex`).
 - **Data:** the menu and command list are data; nothing persists.
 - **Proof:** `emote/sit` (LOGIC), `emote/sit-world` (WORLD), `node agent-box/session.mjs sit-proof`.
 

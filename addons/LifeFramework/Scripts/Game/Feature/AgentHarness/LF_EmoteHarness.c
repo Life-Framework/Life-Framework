@@ -6,6 +6,9 @@
 //!   emote close     (client) closes it
 //!   emote <command> (client) runs one radial entry (CMD_Salute, Emote_SitGround, ...) through the base
 //!                   game PrepareExecuteCommand, as a click on that entry does
+//!   emote sit       (client) performs the nearest Sit within 3 m, or this body's Stand up, through the
+//!                   character's ActionsPerformerComponent (the call the F key ends in), so the base game
+//!                   perform, the server's seat data and the broadcast all run
 //!   emote seen      (client) what this machine shows of every other player: gesture, loiter and type
 //! Everything after is the real path: the base game gesture or loiter and its replication.
 //------------------------------------------------------------------------------------------------
@@ -16,6 +19,9 @@ class LF_EmoteHarness
 	{
 		if (arg == "seen")
 			return Seen();
+
+		if (arg == "sit")
+			return Sit();
 
 		SCR_PlayerControllerCommandingComponent commanding = SCR_PlayerControllerCommandingComponent.GetLocalPlayerControllerCommandingComponent();
 		if (!commanding)
@@ -33,6 +39,62 @@ class LF_EmoteHarness
 
 		commanding.PrepareExecuteCommand(arg);
 		return "ok ran " + arg;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string Sit()
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+			return "error no_character";
+
+		ActionsPerformerComponent performer = ActionsPerformerComponent.Cast(character.FindComponent(ActionsPerformerComponent));
+		if (!performer)
+			return "error no_actions_performer";
+
+		LF_EmoteHarnessQuery query = new LF_EmoteHarnessQuery();
+		GetGame().GetWorld().QueryEntitiesBySphere(character.GetOrigin(), 3, query.Add, null, EQueryEntitiesFlags.ALL);
+		LF_SitAction best;
+		float bestDistance = 3;
+		foreach (IEntity seat : query.m_aFound)
+		{
+			BaseActionsManagerComponent manager = BaseActionsManagerComponent.Cast(seat.FindComponent(BaseActionsManagerComponent));
+			if (!manager)
+				continue;
+
+			array<BaseUserAction> actions = {};
+			manager.GetActionsList(actions);
+			foreach (BaseUserAction action : actions)
+			{
+				LF_SitAction sit = LF_SitAction.Cast(action);
+				if (!sit || !sit.CanBePerformedScript(character))
+					continue;
+
+				if (sit.IsOccupiedBy(character))
+					return Perform(performer, sit);
+
+				vector at[4];
+				sit.LF_GetSeatTransform(at);
+				float distance = vector.Distance(at[3], character.GetOrigin());
+				if (distance < bestDistance)
+				{
+					best = sit;
+					bestDistance = distance;
+				}
+			}
+		}
+
+		if (!best)
+			return "error no_free_seat_within_3m";
+
+		return Perform(performer, best);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string Perform(ActionsPerformerComponent performer, LF_SitAction sit)
+	{
+		performer.PerformAction(sit);
+		return string.Format("ok performed on %1", sit.GetOwner().GetName());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -67,6 +129,19 @@ class LF_EmoteHarness
 }
 
 //------------------------------------------------------------------------------------------------
+class LF_EmoteHarnessQuery
+{
+	ref array<IEntity> m_aFound = {};
+
+	//------------------------------------------------------------------------------------------------
+	bool Add(IEntity entity)
+	{
+		m_aFound.Insert(entity);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 modded class SCR_PlayerControllerCommandingComponent
 {
 	//------------------------------------------------------------------------------------------------
@@ -91,9 +166,10 @@ modded class SCR_PlayerControllerCommandingComponent
 	//------------------------------------------------------------------------------------------------
 	string LF_HarnessCloseMenu()
 	{
-		if (m_RadialMenuController && m_RadialMenuController.IsMenuOpen())
+		bool wasOpen = m_RadialMenuController && m_RadialMenuController.IsMenuOpen();
+		if (wasOpen)
 			m_RadialMenuController.CloseMenu();
 
-		return "ok closed";
+		return string.Format("ok closed wasOpen=%1", wasOpen);
 	}
 }
