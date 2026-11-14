@@ -97,3 +97,6 @@ lf.local.json
 
 # Film post-production inputs: licensed music is fetched, never committed (docs/credits.md).
 video/music/*.mp3
+
+# Example server template runtime files
+server/example/profile/
