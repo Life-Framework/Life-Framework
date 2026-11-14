@@ -44,8 +44,8 @@ copy `profile/` away first (a save written by an older build; `docs/ops/game-upd
 - Boot proof from a checkout: `tools\cli session up --mission template` starts a dedicated server on this folder's
   scenario and mods (with `config.json` in its profile) and joins a client. The engine refuses `-config` together with
   `-addons`, so a checkout boots the same files with `-server` and `-addons`; only a published mod loads through `-config`.
-- Not in this folder yet: the release download (#296). It needs the Workshop ids above to be live and a zip built from this
-  folder (`server.json` ids, scenario ids stay in step through `validate`).
+- The release download (#296): `tools\cli example-zip` packs this folder into `LifeFramework-ExampleServer.zip` with the Workshop ids from
+  `tools/release/example-zip.json`; `--final` refuses a placeholder id. Steps: `docs/release-process.md` "The example server download".
 
 ## Swap the pack out
 
