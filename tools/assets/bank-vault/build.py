@@ -88,9 +88,17 @@ def normal_from_height(h, strength):
 TEX = {}  # material name -> {"base_png": path, "px": px, "tile_m": metres per texture repeat}
 
 
+def to_linear(c):
+    # Workbench's colour map import (TextureColorMap.conf: ColorSpace ToSRGB) treats the TIFF as linear
+    # and encodes it to sRGB, so an sRGB-authored colour came out about twice as light in game (the
+    # first look of the annex vault, 2026-11-14). Base colours here are authored in sRGB: decode them.
+    c = np.clip(c, 0, 1)
+    return np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
+
+
 def save_material(name, base, rough, metal, normal, tile_m):
     px = base.shape[0]
-    bcr = np.dstack([base[:, :, :3], rough])
+    bcr = np.dstack([to_linear(base[:, :, :3]), rough])
     nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal, np.ones((px, px))])
     write_tiff(os.path.join(out, "tex", name + "_BCR.tif"), (np.clip(bcr, 0, 1) * 255 + 0.5).astype(np.uint8))
     write_tiff(os.path.join(out, "tex", name + "_NMO.tif"), (np.clip(nmo, 0, 1) * 255 + 0.5).astype(np.uint8))
@@ -590,9 +598,9 @@ for i in range(segs):
     a0, a1 = 2 * math.pi * i / segs, 2 * math.pi * (i + 1) / segs
     p = lambda r, a, z: B(math.cos(a) * r, cyc + math.sin(a) * r, z)
     door.face([p(pl["radius"], a0, back_z), p(door_r, a0, back_z), p(door_r, a1, back_z), p(pl["radius"], a1, back_z)], "BankVault_Paint", B(0, 0, -1))
-door.cylinder((0, cyc, back_z - pl["depth"]), "z", pl["radius"], pl["depth"] + 0.01, "BankVault_Steel", segs=48, cap_mat="BankVault_Steel")
+door.cylinder((0, cyc, back_z - pl["depth"]), "z", pl["radius"], pl["depth"] + 0.01, "BankVault_Steel", segs=48, cap_mat="BankVault_Paint")
 door_simple = Part("door_simple")
-door_simple.cylinder((0, cyc, back_z - pl["depth"]), "z", pl["radius"], pl["depth"] + 0.01, "BankVault_Steel", segs=24, cap_mat="BankVault_Steel")
+door_simple.cylinder((0, cyc, back_z - pl["depth"]), "z", pl["radius"], pl["depth"] + 0.01, "BankVault_Steel", segs=24, cap_mat="BankVault_Paint")
 for i in range(12):
     a = 2 * math.pi * i / 12
     if math.sin(a) < -0.6:
