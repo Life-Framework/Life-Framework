@@ -563,10 +563,10 @@ export async function main(flags, { workbench } = {}) {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
     const slug = rest.find((f) => !f.startsWith("--") && f !== addonFlag(rest));
-    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots] [--addon <name>]"); return 2; }
+    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots [--local]] [--addon <name>]"); return 2; }
     const spec = loadSpec(root, slug, addonFlag(rest));
     stageStates({ root, spec }, { fix: rest.includes("--fix") });
-    return rest.includes("--shots") ? shootStates(root, spec, cacheDir(root, slug)) : 0;
+    return rest.includes("--shots") ? shootStates(root, spec, cacheDir(root, slug), { local: rest.includes("--local") }) : 0;
   }
   if (sub === "kit") {
     const wt = await import("../../wt.mjs");

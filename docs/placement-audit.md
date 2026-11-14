@@ -71,6 +71,29 @@ overlap and clip checks by design. Look at the `look` close-up for those. A prop
 exempt for that kind: `Roadmap_Fuel_Counter` matched "Map" (a hung map) and was never checked for floating or sinking until
 #936's follow-up anchored `Map` to a word start; keep kind regexes anchored.
 
+## World checks
+
+Two checks read the layer entries alone (`agent-box/place-budget.mjs`, no measurement) and print under the
+`world:` line of the report; `--strict` fails on them too.
+
+| Finding | Rule |
+|---|---|
+| duplicate | the same prefab (or mesh) within 5 cm on every axis and 5 deg of yaw of another entry: the second costs frames and z-fights. The report names both entities and their layers |
+| budget | entities per 50 m world cell over 150 (`BUDGET` in the file). The busiest shipped cell is the market with 85. The finding names the cell and its three most common prefabs; the report always prints the busiest cell |
+
+A layer's property blocks (`m_PrefabsToSpawn`) are not entities and are not counted. Allowlist a duplicate with
+`kind: "duplicate"` (matches either entity) and a cell with `kind: "budget"`, `match: "cell:<i>,<j>"`.
+Floating and buried props are the measured `floating` and `sunk` rows above (the Floaters Finder idea: a trace down from the
+bounds base). `audit selftest` runs the fixture layer `agent-box/fixtures/place-budget/Fixture.layer`: a twin crate, a barrel in
+the air and five cups in a cell limited to five; each must be named.
+
+## Prefab bounds list
+
+`tools/place/prefab-bounds.json` holds the mesh bounds, scale and rigid-body flag of every vanilla prefab the layers use.
+`tools\cli place measure` writes it (offline, from the .xob headers) and `prefabInfo` reads it before measuring, so
+`place` does not re-open the pak. Re-run it after a layer starts using a new vanilla prefab; `audit selftest` fails when one is
+missing. Addon prefabs are never listed and are measured live.
+
 ## Expected sizes
 
 `scale` only catches a number on the entity; "absurdly sized" also means a 1.4 m money bag or a sack pile

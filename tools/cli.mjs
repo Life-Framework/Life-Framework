@@ -1997,9 +1997,14 @@ function cmdSessionUp(root, dir, flags) {
     if (flags.includes("--wait")) console.log(`session: the session lane is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
     lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
-    if (e.refusal) console.log(`FAIL  ${e.message}`);
+    if (e.refusal) {
+      console.log(`FAIL  ${e.message}`);
+      return 1;
+    }
+    // LANE_BUSY: the router (agent-box/session.mjs) queues the request again for any machine.
+    if (process.env.LF_SESSION_ROUTED === "1" && !flags.includes("--wait")) console.log(`session: no lane here after all (${e.message})`);
     else console.log(`FAIL  the session lane is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
-    return 1;
+    return pool.LANE_BUSY_CODE;
   }
   const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
   const lanePort = lane?.port ?? 2001;
@@ -2420,6 +2425,12 @@ function cmdSession(args) {
     console.log(SESSION_USAGE);
     return 0;
   }
+  // `toolscli session up` goes through the router (agent-box/session.mjs), which picks the machine:
+  // this PC or a pool machine with a lane and the RAM. The router's own local leg sets LF_SESSION_ROUTED.
+  if (list[0] === "up" && process.env.LF_SESSION_ROUTED !== "1") {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), "up", ...list.slice(1)], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
@@ -2466,12 +2477,21 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // A remote run ships this worktree's rdb, so refresh it before the choice.
   ensureResourceDatabase(root);
   const purpose = only.length ? "test only" : `test ${tier}`;
+  // A pool machine that disappears mid-run (the laptop shuts down) is a normal case: it is marked
+  // down and the run queues again for another machine (pool.machineGone).
+  for (let attempt = 1; ; attempt++) {
+    const r = await testOnce(root, { purpose, tier, only, opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS });
+    if (!r.requeue) return r.code;
+  }
+}
+
+async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   let slot;
   try {
     slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget });
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
-    return 3;
+    return { code: 3 };
   }
   let code = 3;
   let extra = {};
@@ -2482,14 +2502,18 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
-      return code;
+      if (!lastTry && pool.machineGone(root, slot, code)) {
+        extra.lost = true;
+        return { code, requeue: true };
+      }
+      return { code };
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
     code = runLocalTest(root, tier, only);
     const stamp = newestStamp(root, before);
     if (stamp) extra = { passed: stamp.passed, total: stamp.total };
-    return code;
+    return { code };
   } finally {
     slot.release();
     if (!slot.inherited) pool.recordRun(root, slot, { purpose, code, extra });
@@ -3168,26 +3192,38 @@ async function wtE2eCmd(args) {
 // machine, back to back, with nothing else on that slot in between.
 async function runE2e(root, opts = {}) {
   ensureResourceDatabase(root);
+  for (let attempt = 1; ; attempt++) {
+    const r = await e2eOnce(root, opts, attempt >= pool.FAILOVER_ATTEMPTS);
+    if (!r.requeue) return r.code;
+  }
+}
+
+async function e2eOnce(root, opts, lastTry) {
   let slot;
   try {
     slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose: "e2e", priority: opts.priority, budget: opts.budget });
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
-    return 3;
+    return { code: 3 };
   }
   let code = 3;
+  let extra = {};
   try {
     if (!slot.local) {
       const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
+      if (!lastTry && pool.machineGone(root, slot, code)) {
+        extra = { lost: true };
+        return { code, requeue: true };
+      }
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
       code = runE2eHere(root, opts.legacySave, opts.oldBuild);
     }
-    return code;
+    return { code };
   } finally {
     slot.release();
-    if (!slot.inherited) pool.recordRun(root, slot, { purpose: "e2e", code });
+    if (!slot.inherited) pool.recordRun(root, slot, { purpose: "e2e", code, extra });
   }
 }
 
