@@ -49,6 +49,12 @@
   police inventory carried; the civilian inventory waits at the desk (M1-11).
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
+- ✅ **Base-game managers on a vanilla map (#1104).** The prefab carries
+  `LF_EntityCatalogManagerComponent` (`Core/LF_EntityCatalogManagerComponent.c`), the vanilla
+  entity catalog manager without its demand for a vanilla faction manager, so vanilla Everon's
+  resupply stations find their catalogs. It no longer brings its own `MPDestructionManager`:
+  vanilla Eden places one, and `DebugWorld`'s `Gamemode.layer` places its own. Core alone on
+  `CoreOnEveron` boots with neither base-game error.
 - ✅ **DebugWorld weather is pinned Clear (#602).** `GameMode_Roleplay_Debug.et`
   carries the base-game `SCR_TimeAndWeatherHandlerComponent` with one predefined
   start (Clear, 09:36 game time) and no random changes, so the server calls
