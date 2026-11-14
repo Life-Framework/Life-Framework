@@ -1,14 +1,17 @@
+// red-proof: observed 2026-11-14 (#323 clerk voice split): gave the core LF_Dialogue_Clerk.conf an m_sSoundProject with `tools/cli test --no-build --only LF_Test_DialogueClerk`; got `- the core clerk names no audio project: it ships no voice`. Restored; green.
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueClerk`: switched off
 // the story-line capture in LF_QuestTrackerComponent.Notify; got `[LFTEST] FAIL dialogue/clerk`,
 // `- the clerk speaks the hand-in and the next errand (expected 'register;board', got '')`. Restored; green.
 // tier: WORLD
 //! The town clerk's conversation (Configs/Dialogue/LF_Dialogue_Clerk.conf on QuestGiver_Clerk.et):
-//! the generated config loads and is playable, every hook it names exists, and its "talk" reply
-//! runs the same server talk as before (LF_QuestTrackerComponent.RequestConverse) with the
-//! clerk's story lines spoken instead of shown as slips.
+//! the core ships it neutral and text only (no recordings, no audio project; a pack voices it, see
+//! LF_Test_ClerkEveronVoice), the generated config loads and is playable, every hook it names exists,
+//! and its "talk" reply runs the same server talk as before (LF_QuestTrackerComponent.RequestConverse)
+//! with the clerk's story lines spoken instead of shown as slips. It needs no voice and no pack.
 class LF_Test_DialogueClerk : LF_Test
 {
 	static const ResourceName CLERK = "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et";
+	static const ResourceName CLERK_CONF = "{65C163E3C4868E76}Configs/Dialogue/LF_Dialogue_Clerk.conf";
 
 	override string GetName()
 	{
@@ -17,6 +20,23 @@ class LF_Test_DialogueClerk : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
+		// The core file as it ships: neutral, text only, no voice.
+		LF_DialogueConfig shipped = LF_DialogueConfig.Load(CLERK_CONF);
+		ctx.True(shipped != null, "the core clerk dialogue loads");
+		if (shipped)
+		{
+			ctx.True(shipped.m_sSoundProject.IsEmpty(), "the core clerk names no audio project: it ships no voice");
+			foreach (LF_DialogueLine line : shipped.m_aLines)
+			{
+				ctx.True(line.IsTextOnly(), "core line " + line.m_sId + " is text only (no event, no length)");
+				ctx.True(WidgetManager.Translate(line.m_sTextKey).IndexOf("Everon") == -1, "core line " + line.m_sId + " names no place");
+			}
+
+			array<string> problems = {};
+			LF_DialogueFlow.Problems(shipped, problems);
+			ctx.Equal(0, problems.Count(), "the text-only core clerk is playable");
+		}
+
 		// The test's own clerk, a step from where the town's clerk is registered as the giver
 		// (the quest talk checks the player stands at the registered one, as LF_Test_ArrivalChain does).
 		IEntity clerk = LF_Utils.SpawnEntityPrefab(CLERK, "135 0 242.5");
@@ -32,12 +52,12 @@ class LF_Test_DialogueClerk : LF_Test
 		}
 
 		ctx.EqualStr("clerk", config.m_sId, "it is the clerk's dialogue");
-		Resource project = Resource.Load(config.m_sSoundProject);
-		ctx.True(project && project.IsValid(), "its audio project resolves");
 		foreach (LF_DialogueLine line : config.m_aLines)
 		{
-			ctx.True(line.m_fSeconds > 0.5 && line.m_sMouth.Length() >= Math.Floor(line.m_fSeconds / LF_DialogueFlow.MOUTH_STEP) - 1, "line " + line.m_sId + " has a recording and a mouth envelope as long as it");
 			ctx.True(WidgetManager.Translate(line.m_sTextKey) != line.m_sTextKey, "line " + line.m_sId + " has its caption in the string table");
+			// A pack that voices the clerk gives each line a recording as long as its mouth envelope; text only has neither.
+			if (!line.IsTextOnly())
+				ctx.True(line.m_fSeconds > 0.5 && line.m_sMouth.Length() >= Math.Floor(line.m_fSeconds / LF_DialogueFlow.MOUTH_STEP) - 1, "line " + line.m_sId + " has a mouth envelope as long as its recording");
 		}
 
 		foreach (LF_DialogueNode node : config.m_aNodes)
@@ -63,7 +83,7 @@ class LF_Test_DialogueClerk : LF_Test
 		foreach (LF_DialogueMouthBone bone : rig)
 			ctx.True(skeleton && skeleton.GetBoneIndex(bone.m_sBone) != -1, "the clerk's skeleton has the mouth bone " + bone.m_sBone);
 
-		// Every story line the clerk can hand back in the arrival chain has a voiced line.
+		// Every story line the clerk can hand back in the arrival chain has a line of its own (voiced where a pack voices it).
 		array<string> story = {"#LF-Quest_ArrivalRegister_TurnIn", "#LF-Quest_ArrivalBoard_Desc", "#LF-Quest_ArrivalWork_Desc", "#LF-Quest_ArrivalBank_Desc", "#LF-Quest_ArrivalDone_TurnIn", "#LF-Quest_Clerk_Idle"};
 		foreach (string key : story)
 			ctx.True(LF_DialogueFlow.FindLine(config, LF_DialogueFlow.SpokenFor(config, key)) != null, "the clerk speaks " + key);

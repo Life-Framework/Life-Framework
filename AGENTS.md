@@ -90,6 +90,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | Command | Does |
 |---|---|
 | `tools\cli status` | Toolchain and MCP state |
+| `tools\cli lead [--prs N]` / `lead prune-safe [--dry-run]` | The lead's one-screen dispatch view in about 10 s: M2 and M3 issues by state, open PRs (conflicting first, with a generated-only hint), worktrees (active, idle, merged-prunable by GitHub PR, orphans, disk), pool machines and queue, accounts and slices when those commands exist. `prune-safe` prunes only worktrees whose PR is MERGED, clean, idle and unlocked, never forced (`docs/worktrees.md` "Lead view") |
 | `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports; claims a ready warm checkout (about 2 s) when the pool has one (`wt warm`, `docs/worktrees.md` "Fast `wt new`") |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
@@ -170,7 +171,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
 - **Pass cache.** `test` (and the suite inside `ci`, `wt gate`, `wt ship`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
-- Wait with one blocking call: run `test`, `e2e`, `session up` or `session wait` in the foreground with a timeout up to 600000 ms; never `sleep`/`until` loops, Monitor, ScheduleWakeup or status polls (`docs/agent-budget.md`).
+- Wait with one blocking call: run `test`, `e2e`, `session up` or `session wait` in the foreground with a timeout up to 600000 ms; never `sleep`/`until` loops, Monitor, ScheduleWakeup or status polls (`docs/agent-budget.md`). A subagent or delegated task is never woken by a background run, so ending its turn while one runs ends the task unfinished; run in the foreground (timeout up to 600000 ms) or call `t3_background_wait` before ending the turn.
 - A rule that keeps getting broken becomes a check: `tools\cli validate` runs every script in `tools/validation/`.
 
 ## Logging and fail-safe

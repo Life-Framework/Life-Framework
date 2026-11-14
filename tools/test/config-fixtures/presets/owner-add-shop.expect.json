@@ -1,0 +1,15 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "warn",
+      "line": 7,
+      "col": 7,
+      "msg": "shops.priceRules.Prefabs/Items/Equipment/Backpacks/: no shipped record has this key; it adds a new record. A typo would sit unused"
+    }
+  ],
+  "client": [
+    { "kind": "shopPrice", "shop": "Shop_GeneralStore_Debug", "item": "Backpack", "expect": "$90" }
+  ]
+}

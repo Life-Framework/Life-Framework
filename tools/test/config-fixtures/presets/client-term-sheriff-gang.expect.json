@@ -1,0 +1,10 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "client": [
+    {"kind":"uiText","entity":"Roadmap_Org_Desk","class":"LF_OrganizationDeskAction","expect":"Register a new Gang here"},
+    {"kind":"uiText","entity":"Roadmap_Org_Desk","class":"LF_OrganizationDeskAction","expect":"£"},
+    {"kind":"uiText","entity":"Roadmap_Police_Desk","class":"LF_PoliceApplyAction","expect":"Application to the Everon Sheriff","close":"PolAppClose","absent":"police"}
+  ]
+}
