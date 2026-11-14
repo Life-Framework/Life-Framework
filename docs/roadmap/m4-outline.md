@@ -94,7 +94,8 @@ generator's server bundle (#381, M3) removes the hand-edited `server.json`.
 - A launch trailer and session clips from the filming harness.
 - A Workshop page for the flagship and a server-browser listing with a clear
   name and description.
-- The site's servers page lists the flagship's status and next session.
+- The site's servers page lists the flagship's next session time (no live
+  status; see the decisions of 2026-11-14 below).
 - A "run your own" funnel: every flagship surface links back to the framework,
   its install guide, and the generator (M3).
 
@@ -102,7 +103,8 @@ generator's server bundle (#381, M3) removes the hand-edited `server.json`.
 
 1. #317 Launch trailer from the filming harness (flagship)
 2. #318 Flagship Workshop page and server-browser listing (flagship)
-3. #319 Servers page shows the flagship's status and next session (flagship)
+3. #319 Servers page shows the flagship's next session time (flagship; no live
+   status, decision 2026-11-14)
 4. #320 Run-your-own links from every flagship surface (flagship)
 
 
@@ -111,17 +113,38 @@ generator's server bundle (#381, M3) removes the hand-edited `server.json`.
 - Day and night cycle: accelerated by default, real-time option (#129). It is
   a server setting the flagship needs live.
 - [Police missions](scopes/later/police-missions.md): these need a live police
-  roster to be worth building.
+  roster to be worth building. Decision 2026-11-14: they come after the alpha
+  opens, not before.
 
 ## Launch decisions (maintainer, 2026-11-09)
 
 - **Invite-only alpha, then open.** The opening gate is several sessions at the
   player target, no save loss, no blocking regression, and trial moderators in
   place (#555).
-- **Wipes follow each milestone during M4,** announced a session ahead and
-  backed up first, until a declared persistent launch date (#556).
+- **Wipes follow each milestone during M4,** backed up first, until a declared
+  persistent launch date (#556). Timing and notice are superseded by the
+  2026-11-14 decisions below.
 - **Trial moderators** come from the playtesters, on probation (#313).
-- **Sessions run ad hoc,** announced on Discord. Open: the notice period.
+- **Sessions run ad hoc,** announced on Discord.
+
+## Launch decisions (maintainer, 2026-11-14)
+
+The table, and what each answer did to the slices, is in
+[the slice plan](m4-slice-plan.md#decisions-2026-11-14). In short:
+
+- The alpha gate is a server password only, no account allowlist. Wipes happen
+  any time during the alpha with 24 hours' notice on Discord; progress is kept
+  from the public launch.
+- The rules quiz is a subset of the published rules, written separately.
+- Discord account linking (#805), police missions (#234, until after the alpha
+  opens) and the town-grid redo (#603) are not in M4.
+- The website shows the next session time only: no live player count, no
+  status endpoint.
+- The flagship's live `config.json` is in this repo under `server/flagship/`.
+  The in-game day is 2 real hours (12x). The server is named
+  "Life Framework | Everon 1989 (Alpha)".
+- Only the maintainer is an administrator at opening; the staff tools ship with
+  a roster file to fill in later.
 
 ## Not in M4
 

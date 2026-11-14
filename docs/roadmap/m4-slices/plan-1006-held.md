@@ -1,30 +1,30 @@
-# Held slices for #1006: each waits on a maintainer answer (docs/roadmap/m4-slice-plan.md, Open questions).
-# Create with: toolscli slice new 1006 --plan docs/roadmap/m4-slices/plan-1006-held.md
-# Cross-plan dependencies the tool cannot express: S15 needs S4 merged; O17 needs O16 and O9 merged. Create them after those merge.
+# The nine slices held on a maintainer answer (docs/roadmap/m4-slice-plan.md, "Decisions (2026-11-14)").
+# The answers are in. Each held slice is now one of: created, dropped, or deferred past the alpha opening.
+# Nothing in this file is created by `slice new`: the dropped cards sit before the first `# Slice` heading, which the plan parser skips,
+# and the deferred cards below are created later, under the chapter that follows the opening, with
+#   tools\cli slice new <chapter> --plan docs/roadmap/m4-slices/plan-1006-held.md
 
-# Slice O17: Config-only hotfix path in the runbook
-## Card
-- type: docs
-- tier: T0
-- model: sonnet
-- machines: none
-- budget: 30 min / 45 calls
-- owns: `docs/ops/hotfix.md`
-- depends: none
-- acceptance: proof validate (docs links) and the checklist in Acceptance
-- risk: none
-- release-blocker: no
+## Disposition
 
-## Capability
-A page for a live config fix: edit `config.json`, `config-check`, backup, warned restart, verify with `server-doctor`; and when a fix needs a script change instead (PR and pack release).
+| Slice | Was held on | Decision (2026-11-14) | Now |
+|---|---|---|---|
+| O17 Config-only hotfix page | Q4: where the live `config.json` lives | In this repo under `server/`, so changes go through PRs | **Created**: card O17 in [`plan-1006-decisions.md`](plan-1006-decisions.md), with the slices the answer needs (C1, C2) |
+| S13 Account link code | Q5: Discord account linking (#805) in M4? | Not in M4 | **Dropped** |
+| S14 `/link` command | Q5 | Not in M4 | **Dropped** |
+| S15 Notify the bot | Q5 | Not in M4 | **Dropped** |
+| S16 Bot links the member | Q5 | Not in M4 | **Dropped** |
+| M1 Police calls board | Q10: police missions (#234) before or after opening | After the alpha opens | **Deferred**: not an opening-day slice; created for the chapter after opening |
+| M2 Fine call, paid once | Q10 | After the alpha opens | **Deferred** |
+| M3 Rank filter | Q10 | After the alpha opens | **Deferred** |
+| M4 Station board placement | Q10 | After the alpha opens | **Deferred** |
 
-## Acceptance
-The page's commands exist; it says where the flagship's `config.json` lives (from the answer to Q4); `validate` passes. Manual (#310): a price fix goes live in one warned restart.
+## Dropped: #805 Discord account linking (S13 to S16)
 
-## Notes
-Hold until Q4 (where the flagship config lives) is answered.
+Reason: the maintainer decided Discord account linking is not in M4 (2026-11-14). #805 stays open in its own milestone and
+the four cards stay here as the starting point if it comes back. Nothing in the created cards depends on them. Dropping them also
+removes the only slice that would have posted a second webhook (`linkWebhookUrl`). If #805 returns, S15 needs S4 (#1283) merged first.
 
-# Slice S13: An account link code: short, random, bound to one account, expires in ten minutes
+### S13: An account link code: short, random, bound to one account, expires in ten minutes
 ## Card
 - type: system
 - tier: T2
@@ -44,9 +44,9 @@ The server issues a six-character code for an account uid, keeps only its hash w
 LF_Test_AccountLinkCode: issue, verify ok once, verify again fails, expired code fails (fake clock). Red first.
 
 ## Notes
-#805 is optional: hold S13 to S16 until Q5. Core stays neutral (no Discord words).
+Dropped: #805 is not in M4 (decision 2026-11-14). Core stays neutral (no Discord words).
 
-# Slice S14: /link shows a player their code privately
+### S14: /link shows a player their code privately
 ## Card
 - type: capability
 - tier: T2
@@ -65,7 +65,7 @@ A player types `/link` and gets the code in a private toast, rate-limited.
 ## Acceptance
 LF_Test_AccountLinkCommand runs the command for a player and expects one issued code and a rate-limit refusal on the second call within a minute. Red first. The test file `Tests/LF_Test_AccountLinkCommand.c` is owned too.
 
-# Slice S15: The server tells the bot a link code was issued
+### S15: The server tells the bot a link code was issued
 ## Card
 - type: system
 - tier: T2
@@ -84,7 +84,7 @@ On issue, the server posts `{uid, codeHash, expires}` to a separate `linkWebhook
 ## Acceptance
 LF_Test_AccountLinkNotify captures the payload and expects the hash, never the plain code. Red first.
 
-# Slice S16: The Discord bot links a member who pastes a valid code
+### S16: The Discord bot links a member who pastes a valid code
 ## Card
 - type: tooling
 - tier: T0
@@ -102,6 +102,12 @@ The bot keeps the posted hashes, and when a member pastes a code that hashes to 
 
 ## Acceptance
 The test feeds a notify payload and a paste and expects one stored link; an expired or wrong code links nothing. Red first.
+
+## Deferred: police missions (#234), M1 to M4
+
+Reason: the maintainer decided police missions come after the alpha opens (2026-11-14). The calls board needs a live roster of
+officers, and the opening is about sessions, restarts and staff, not new gameplay. The cards are unchanged below and are created under the chapter
+after the opening. No opening-day card depends on them.
 
 # Slice M1: On-duty police see a calls board; off-duty use is refused and logged
 ## Card
@@ -123,7 +129,8 @@ A calls board component lists open police calls to on-duty officers; an off-duty
 LF_Test_PoliceCallBoardDuty: off-duty refused and logged, on-duty sees the list. Red first.
 
 ## Notes
-Scope card `docs/roadmap/scopes/later/police-missions.md`. Build on `Feature/Quests` tasks and `Feature/Police/LF_Dispatch.c` (read-only). Hold for Q10.
+Scope card `docs/roadmap/scopes/later/police-missions.md`. Build on `Feature/Quests` tasks and `Feature/Police/LF_Dispatch.c` (read-only). Deferred: after the alpha opens (decision 2026-11-14). The calls board needs a live roster of officers.
+
 
 # Slice M2: One call: fine a wanted player at the marker; completion pays the officer once
 ## Card
@@ -147,6 +154,7 @@ LF_Test_PoliceMissionFinePaysOnce completes the call twice and expects one payme
 ## Notes
 Fines stay on `LF_PoliceUtils` and MoneyStack (scope card). Independent reviewer before merge.
 
+
 # Slice M3: Higher ranks see calls lower ranks do not
 ## Card
 - type: system
@@ -165,6 +173,7 @@ Each call names a minimum rank from the rank config; the board filters by the of
 
 ## Acceptance
 LF_Test_PoliceMissionRank: a cadet does not see a sergeant call, a sergeant sees both. Red first.
+
 
 # Slice M4: Place the calls board in the flagship station
 ## Card

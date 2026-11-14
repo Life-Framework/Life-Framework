@@ -65,6 +65,16 @@ export function coreRange(coreDir) {
 }
 
 const WORKPLACE = "Prefabs/Jobs/LF_Workplace.et";
+const DEBUG_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+const SYSTEMS = "Configs/Systems/LifeFrameworkSystems.conf";
+
+// `{GUID}path` of a core resource from its .meta, or null (a test tree without it).
+function coreResource(coreDir, path) {
+  const meta = join(coreDir, `${path}.meta`);
+  if (!existsSync(meta)) return null;
+  const guid = readFileSync(meta, "utf8").match(/Name\s+"\{([0-9A-F]{16})\}/)?.[1];
+  return guid ? `{${guid}}${path}` : null;
+}
 
 // The core workplace prefab's GUID (its .meta) and the GUID of its LF_WorkplaceComponent, which a
 // derived prefab must reuse to override the component.
@@ -141,6 +151,8 @@ export function scaffoldPack(addonsDir, name, opts = {}) {
 
   const manifestGuid = guid();
   const overlayGuid = guid();
+  const world = coreResource(coreDir, DEBUG_WORLD);
+  const systems = coreResource(coreDir, SYSTEMS);
   const missionGuid = guid();
   const stGuid = guid();
   const langs = LANGS.map((code) => ({ code, def: guid(), res: guid() }));
@@ -185,8 +197,10 @@ ${otherConfigs}
   put("Configs/ShopPrices.conf", "LF_ShopPricesConfig {\n}\n");
   put("Configs/ShopPrices.conf.meta", confMeta(overlayGuid, "Configs/ShopPrices.conf"));
 
+  // World and SystemsConfig are the core's (DebugWorld, the same systems file as the test mission), so
+  // `session up --pack` boots this header on the core world with the overlays below applied.
   put(`Missions/${id}.conf`, `LF_MissionHeader {
- m_sName "Life Framework: ${name}"
+${world ? ` World "${world}"\n` : ""}${systems ? ` SystemsConfig "${systems}"\n` : ""} m_sName "Life Framework: ${name}"
  m_sAuthor ""
  m_sDescription ""
  m_sGameMode "Roleplay"
@@ -235,14 +249,17 @@ including, ${range.below}. Raise \`m_sCoreBelow\` once you have tested the pack 
 ## Fill in
 
 - [ ] \`${id}.gproj\`: the title.
-- [ ] \`Missions/${id}.conf\`: \`World\`, the description, author, icon and loading screen.
+- [ ] \`Missions/${id}.conf\`: \`World\` (the core DebugWorld, so the pack boots in a test session; point it at your own world later), the description, author, icon and loading screen.
 - [ ] \`Configs/ShopPrices.conf\`: the price rules and defaults, or delete it and its line in the mission header.
 - [ ] More overlays in \`Configs/\`, one per core config class, each listed in \`m_aLF_ConfigOverlays\`. Only classes in
   [\`public-surface.md\`](../../docs/architecture/public-surface.md) are allowed.
 - [ ] \`Language/${prefix}_localization.st\`: the place names, sign titles and flavour copy, as \`${id}-<Thing>\` keys.
 - [ ] \`Worlds/\`, \`Prefabs/\`, \`Assets/\`, \`UI/\`: the setting itself. Prefabs inherit core prefabs.
 ${workplacePath ? `- [ ] \`${workplacePath}\`: the ${job} workplace. It inherits the core workplace (punch clock, place registration, optional NPC slot). Place it, name it in the world, and set the NPC prefab if it has a clerk.
-` : ""}- [ ] Open the project in Workbench once, so it registers the resources.
+` : ""}- [ ] Try it: \`tools\\cli session up --pack ${id}\` (in a worktree) boots the core and this pack on DebugWorld with the
+  header's overlays applied; then \`node agent-box/harness.mjs\` reads the client. See
+  [\`docs/owner/pack-session.md\`](../../docs/owner/pack-session.md).
+- [ ] Open the project in Workbench once, so it registers the resources.
 
 Licence: choose your pack's own. The core's GitHub source is MIT and its Workshop build is APL; what you may copy,
 how to credit it and what to do about base-game and CC-BY assets is
@@ -277,5 +294,6 @@ export async function main(args, ctx) {
   }
   console.log(`pack new: wrote ${r.files.length} files under addons/${r.id}/`);
   console.log(`next: fill in addons/${r.id}/README.md, then \`tools\\cli validate\``);
+  console.log(`boot it: tools\\cli session up --pack ${r.id}   (docs/owner/pack-session.md)`);
   return 0;
 }
