@@ -213,6 +213,9 @@ export async function main() {
     const base = join(ROOT, "tools", "assets", "dialogue");
     const st = readFileSync(join(ROOT, ADDON, "Language", "everonlife_localization.st"), "utf8");
     const real = dlg.parseStrings(st);
+    // The pack's table overrides the core's neutral rows (#325).
+    const packSt = dlg.packStringFile(ROOT);
+    if (packSt) for (const [k, v] of dlg.parseStrings(readFileSync(packSt, "utf8"))) real.set(k, v);
     for (const id of existsSync(base) ? readdirSync(base).filter((d) => existsSync(dlg.specFile(ROOT, d))) : []) {
       const s = dlg.loadSpec(ROOT, id);
       const prov = dlg.loadProvenance(ROOT, id);

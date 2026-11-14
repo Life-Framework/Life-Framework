@@ -36,6 +36,7 @@ Life Framework stands on other people's work. Full list, with licences and links
 | [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) | Code used with its owner's permission, relicensed MIT for Life Framework | APL-SA upstream |
 | [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) by LNGCGenetic | Police, jail, garage and vehicle code | MIT |
 | Bohemia Interactive | Base-game assets and the Arma Reforger engine | Arma Public License |
+| [ArchBuilder](https://arribas22.github.io/archbuilder/) by Arribas | Ideas and code the building pipeline is built around; it drives your own licensed copy | GPL-3.0-or-later, sold with a personal key |
 | Kevin MacLeod ([incompetech.com](https://incompetech.com)) | Trailer music | CC BY 4.0 |
 | [Piper](https://github.com/rhasspy/piper) and LJ Speech | Trailer voice-over | MIT; public domain |
 | [Contributors](https://github.com/Life-Framework/Life-Framework/graphs/contributors) | Everyone who has committed | n/a |
