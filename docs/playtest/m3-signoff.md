@@ -155,8 +155,8 @@ After ticking: `tools\cli playtest verdicts docs/playtest/m3-signoff.md` prints 
   - (+8 more steps: PR #873, PR #1222, or `--steps`)
 - [ ] #369 M3-Release: tools\cli release stamps versions, gates, and tags (~2 min)   fail [ ]
   - Open question: .gproj has no version field today. The tool adds Version "x.y.z" after TITLE. Before the first real release, confirm Workbench loads a .gproj with that line (stamp one by hand, open the project). If not...
-  - Maintainer only, at release time: tools\cli release 0.2.0 (dry run), then --confirm, then git push origin refs/tags/v0.2.0 or --push.
-  - covered: `release-cli-selftest` (stamp, gates, tag) and a `tools\cli release 0.2.0` dry run on main ([#850](https://github.com/Life-Framework/Life-Framework/pull/850), [#1226](https://github.com/Life-Framework/Life-Framework/pull/1226)). Left: the `.gproj` Version question and the real `--confirm` and tag push.
+  - Maintainer only, at release time: tools\cli release 0.1.0 (dry run), then --confirm, then git push origin refs/tags/v0.1.0 or --push.
+  - covered: `release-cli-selftest` (stamp, gates, tag) and a `tools\cli release 0.1.0` dry run on main ([#850](https://github.com/Life-Framework/Life-Framework/pull/850), [#1226](https://github.com/Life-Framework/Life-Framework/pull/1226)). Left: the `.gproj` Version question and the real `--confirm` and tag push.
 - [ ] #289 M3-Generator: Generator presets: flagship 1989, small server, hardcore economy (~2 min) [LOOK] [chapter #225 #1004]   fail [ ]
   - do: Open /config, click each preset (flagship 1989, small server, hardcore economy): the form and JSON pane fill. Set the admin password, download both files.
   - already proven: the three presets are real fixtures that pass `config-check` and the harness ([#1116](https://github.com/Life-Framework/Life-Framework/pull/1116)); the dedicated boot on the downloaded files needs the Workshop ids: see the blocked block (#370).
