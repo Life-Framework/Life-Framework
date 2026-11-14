@@ -27,9 +27,20 @@ class LF_BreachTargetComponent : ScriptComponent
 
 	protected bool m_bFusePending;
 
+	//! A live open or repair turns the door over this long (a heavy vault door, not a snap). A load or a late
+	//! join inside SWING_SETTLE_MS of the component's start snaps it, so a saved open vault is simply open.
+	static const float SWING_SECONDS = 3.0; // lf-fixed: animation timing, not a balance value
+	protected static const float SWING_SETTLE_MS = 2000; // lf-fixed: load and late-join window
+	protected static const int SWING_STEP_MS = 16; // lf-fixed: one frame at 60 fps
+
 	protected IEntity m_SwingFound;
 	protected bool m_bSwingKnown;
 	protected float m_fSwingClosedYaw;
+	protected float m_fStartMs = -1;
+	protected EntityID m_SwingId = EntityID.INVALID;
+	protected float m_fSwingFrom;
+	protected float m_fSwingTo;
+	protected float m_fSwingStartMs;
 
 	//! Replicated copy of the LF_Breach target flags (the table is server-only). Written by
 	//! LF_Breach on the server, read by the breach actions on a client. Late joiners get them
@@ -44,6 +55,9 @@ class LF_BreachTargetComponent : ScriptComponent
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);
+
+		if (owner.GetWorld())
+			m_fStartMs = owner.GetWorld().GetWorldTime();
 
 		if (!Replication.IsServer())
 			return;
@@ -187,9 +201,95 @@ class LF_BreachTargetComponent : ScriptComponent
 		if (isOpen)
 			yaw = m_fSwingClosedYaw + m_fSwingYaw;
 
-		angles[1] = yaw;
+		StopSwingStep();
+		float now = WorldMs();
+		bool settled = m_fStartMs >= 0 && now - m_fStartMs >= SWING_SETTLE_MS;
+		float turn = SwingTurn(angles[1], yaw);
+		if (!settled || Math.AbsFloat(turn) < 0.5 || !GetGame() || !GetGame().GetCallqueue())
+		{
+			angles[1] = yaw;
+			child.SetAngles(angles);
+			LF_Debug.Log("Breach", string.Format("swing %1 open=%2 yaw=%3", GetTargetId(), isOpen, yaw));
+			return;
+		}
+
+		m_SwingId = child.GetID();
+		m_fSwingFrom = yaw - turn;
+		m_fSwingTo = yaw;
+		m_fSwingStartMs = now;
+		GetGame().GetCallqueue().CallLater(StepSwing, SWING_STEP_MS, true);
+		LF_Debug.Log("Breach", string.Format("swing %1 open=%2 turning %3 -> %4 over %5 s", GetTargetId(), isOpen, m_fSwingFrom, yaw, SWING_SECONDS));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The share of a swing done at u (0..1 of SWING_SECONDS): eased at both ends, as a heavy door
+	//! starts slowly and settles. Clamped outside 0..1.
+	static float SwingEase(float u)
+	{
+		if (u <= 0)
+			return 0;
+
+		if (u >= 1)
+			return 1;
+
+		return u * u * (3 - 2 * u);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The shortest turn in degrees from yaw `from` to yaw `to`, in -180..180: the engine may hand back a
+	//! yaw wrapped into another turn, and the door must not spin the long way round.
+	static float SwingTurn(float from, float to)
+	{
+		float turn = to - from;
+		while (turn > 180)
+			turn -= 360;
+
+		while (turn < -180)
+			turn += 360;
+
+		return turn;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float WorldMs()
+	{
+		if (GetOwner() && GetOwner().GetWorld())
+			return GetOwner().GetWorld().GetWorldTime();
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One frame of a live swing; the door ends exactly on its target yaw.
+	protected void StepSwing()
+	{
+		IEntity child;
+		if (GetOwner() && GetOwner().GetWorld())
+			child = GetOwner().GetWorld().FindEntityByID(m_SwingId);
+
+		if (!child)
+		{
+			StopSwingStep();
+			return;
+		}
+
+		float u = (WorldMs() - m_fSwingStartMs) / (SWING_SECONDS * 1000);
+		vector angles = child.GetAngles();
+		angles[1] = m_fSwingFrom + (m_fSwingTo - m_fSwingFrom) * SwingEase(u);
 		child.SetAngles(angles);
-		LF_Debug.Log("Breach", string.Format("swing %1 open=%2 yaw=%3", GetTargetId(), isOpen, yaw));
+		if (u >= 1)
+		{
+			StopSwingStep();
+			LF_Debug.Log("Breach", string.Format("swing %1 settled at yaw=%2", GetTargetId(), m_fSwingTo));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StopSwingStep()
+	{
+		m_SwingId = EntityID.INVALID;
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(StepSwing);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -267,6 +367,7 @@ class LF_BreachTargetComponent : ScriptComponent
 	//! Door deleted before its fuse fired: drop the timer and the charge so the target is not armed forever.
 	override void OnDelete(IEntity owner)
 	{
+		StopSwingStep();
 		if (m_bFusePending)
 		{
 			m_bFusePending = false;

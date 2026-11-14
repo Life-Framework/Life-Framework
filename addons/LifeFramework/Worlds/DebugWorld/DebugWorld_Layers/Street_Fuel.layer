@@ -28,3 +28,12 @@ LF_NpcBaseEntity Roadmap_Civilian_2 : "{61550FC3CB30580E}Prefabs/Characters/Npcs
 GenericEntity Fuel_PumpHum : "{D88D0B05DF83772F}Prefabs/Atmosphere/LF_FuelPumpHum.et" {
  coords 273.2 0 235.3
 }
+GenericEntity Roadmap_Fuel_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{9FD97EBE3C58BF61}" {
+   m_vOffset 0 0.167 0.065
+  }
+ }
+ coords 282.1 2.367 236.911
+ angleY 180
+}

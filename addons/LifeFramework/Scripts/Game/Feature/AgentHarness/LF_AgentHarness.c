@@ -212,9 +212,9 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "heldxf")
 			return true;
-		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop")
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemwear" || cmd.Verb == "itemstrip")
 		{
-			// itemgive|itemdrop <{GUID}prefab>: the asset states proof (LF_AssetStatesHarness).
+			// itemgive|itemdrop|itemwear|itemstrip <{GUID}prefab> (itemwear list): LF_AssetStatesHarness.
 			if (parts.Count() < 3)
 			{
 				cmd.Error = "need_prefab";
@@ -1315,7 +1315,7 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", heldText);
 			return;
 		}
-		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop")
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemwear" || cmd.Verb == "itemstrip")
 		{
 			SCR_ChimeraCharacter itemCharacter = LF_Utils.GetLocalCharacter();
 			if (!itemCharacter)

@@ -105,8 +105,9 @@ export async function main() {
     ok(conf.includes('m_sAction "ShopOpen"') && conf.includes('m_sForKey "#LF-Test_Sold"') && conf.includes('m_sEvent "SOUND_DLG_BAKER_GREET"') && conf.includes('m_sMouth "0590"'), "conf: actions, answered keys, events and envelopes are written");
     const acp = dlg.acpText(s, rows);
     ok((acp.match(/SoundClass \{/g) || []).length === 3 && (acp.match(/BankLocalClass \{/g) || []).length === 3 && acp.includes('name "SOUND_DLG_BAKER_BYE"'), "acp: one sound event and one sample bank per line");
-    const ids = [...acp.matchAll(/^\s+id (\d+)$/gm)].map((m) => m[1]);
-    ok(new Set(ids.filter((i) => Number(i) > 1023)).size === 4 + 9, `acp: every node id is its own (got ${new Set(ids.filter((i) => Number(i) > 1023)).size})`);
+    const ids = [...acp.matchAll(/(?:SoundClass|ShaderClass|BankLocalClass) \{\n\s+id (\d+)$/gm)].map((m) => m[1]);
+    ok(ids.length === 9 && new Set(ids).size === 9, `acp: every sound, shader and bank node id is its own (got ${new Set(ids).size} of ${ids.length})`);
+    ok(!acp.includes("function Silence"), "acp: no line is wired to a silence generator (the first writer's projects played nothing, #740)");
   }
 
   // ---- cache, budget and the key: a fake service that counts what it is asked for --------------

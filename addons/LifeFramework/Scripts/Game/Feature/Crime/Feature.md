@@ -63,7 +63,8 @@ isn't today — see current state).
   `LF_Hospital` all call `LF_Breach.Arm(targetId, playerUid)`. Wanted and the
   police notify live inside `Arm`, so a refreshed action offer cannot fire them.
 - Cash till: `Roadmap_Fuel_Till` in `Street_Fuel.layer` (on `Roadmap_Fuel_Counter` at the kiosk service window, about 283.6, 237.65, standing on the kiosk floor (0.345 m) with its back edge 2.5 cm inside the window wall; the kiosk interior is closed, #729) is
-  `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et` (parent
+  `{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et`, a meshless child of
+  `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et` (the kiosk's own baked register 3 m back is the one players see) (parent
   `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`) and carries
   `LF_RobAction` as an additional action.
 - The haul is MoneyStack cash

@@ -1,0 +1,34 @@
+{
+  "about": "The cut of the robbery alarms video. Times are seconds in each take's muxed mp4 (takes/<take>.mp4). The four robbery angles are one robbery shot four times; they share the SIDE take's audio (master), placed by the same clock: voice anchor = the clerk's first word, alarm anchor = the intruder alarm's first frame, measured per take with tmp levels (README.md, 'Re-cutting'). gainDb lifts a quiet bed before the loudness pass.",
+  "fps": 30,
+  "size": [1920, 1080],
+  "loudnessLufs": -14,
+  "truePeakDb": -1.5,
+  "maxBytes": 9800000,
+  "anchors": {
+    "voice": { "WINDOW": 2.63, "INSIDE": 3.0, "SIDE": 3.0, "BEACON": 2.88 },
+    "alarm": { "WINDOW": 15.63, "INSIDE": 15.38, "SIDE": 15.25, "BEACON": 15.13 }
+  },
+  "segments": [
+    { "name": "establishing", "take": "EST_2", "from": 2.3, "to": 6.8, "audio": { "take": "EST_2", "from": 2.3 }, "fadeIn": 0.7 },
+    { "name": "at the window, pistol up", "take": "WINDOW", "anchor": "voice", "rel": [-0.73, 1.97], "audio": { "take": "SIDE", "anchor": "voice" } },
+    { "name": "panic line from inside", "take": "INSIDE", "anchor": "voice", "rel": [1.97, 6.6], "audio": { "take": "SIDE", "anchor": "voice" } },
+    { "name": "please don't shoot me", "take": "SIDE", "anchor": "voice", "rel": [6.6, 10.1], "audio": { "take": "SIDE", "anchor": "voice" } },
+    { "name": "intruder alarm, beacon", "take": "BEACON", "anchor": "alarm", "rel": [-0.25, 3.45], "audio": { "take": "SIDE", "anchor": "alarm" } },
+    { "name": "robber under the flashing light", "take": "SIDE", "anchor": "alarm", "rel": [4.45, 7.15], "audio": { "take": "SIDE", "anchor": "alarm", "rel": 3.45 } },
+    { "name": "bank vault, the bell", "take": "BANK", "from": 2.3, "to": 7.3, "audio": { "take": "BANK", "from": 2.3 } },
+    { "name": "police car, lights and siren", "take": "POLICE", "from": 7.5, "to": 13.8, "audio": { "take": "POLICE", "from": 7.5, "gainDb": 8 }, "fadeOut": 0.9, "audioTail": 3.8 }
+  ],
+  "black": 0.6,
+  "endCard": {
+    "seconds": 3.2,
+    "fadeIn": 0.45,
+    "fadeOut": 0.6,
+    "mark": "website/public/brand/mark-512.png",
+    "lines": [
+      { "text": "LIFE FRAMEWORK", "font": "C:/Windows/Fonts/seguisb.ttf", "size": 78 },
+      { "text": "Playtest build 6", "font": "C:/Windows/Fonts/segoeuisl.ttf", "size": 40 },
+      { "text": "life-framework.org", "font": "C:/Windows/Fonts/segoeuisl.ttf", "size": 34, "color": "0x7FB2DA" }
+    ]
+  }
+}

@@ -6,6 +6,9 @@
 //! writes back on reset, so repeated takes never drift the clock.
 class LF_FilmSceneEnv : Managed
 {
+	//! The police UAZ that drives up the main street with its lights on (robbery alarms video, #740).
+	static const string ROBBERY_POLICE = "robbery-police";
+
 	float Hour = -1;           // local clock hour (sun time); < 0 leaves the clock alone
 	string Weather;            // weather state name; empty leaves the weather alone
 	int AutoAdvance = -1;      // -1 leave, 0 freeze the day, 1 let it run
@@ -16,7 +19,7 @@ class LF_FilmSceneEnv : Managed
 	static LF_FilmSceneEnv ForScene(string scene)
 	{
 		LF_FilmSceneEnv env = new LF_FilmSceneEnv();
-		if (scene == "street")
+		if (scene == "street" || scene == ROBBERY_POLICE)
 		{
 			env.Hour = 16;
 			env.Weather = "Clear";

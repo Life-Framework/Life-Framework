@@ -443,6 +443,13 @@ class LF_FilmClean
 			s_bWasVisible = hud.IsVisible();
 			hud.SetVisible(false);
 		}
+		// The key hints bottom left ("TAB Quick slots") are their own info display and outlive the HUD switch.
+		SCR_AvailableActionsDisplay actions = ActionHints();
+		if (actions)
+		{
+			actions.SetEnabled(false);
+			actions.Show(false);
+		}
 		SCR_HintManagerComponent.HideHint();
 		s_bHidden = true;
 		GetGame().GetCallqueue().CallLater(KeepHintsDown, HINT_MS, true);
@@ -458,6 +465,9 @@ class LF_FilmClean
 		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
 		if (hud && s_bWasVisible)
 			hud.SetVisible(true);
+		SCR_AvailableActionsDisplay actions = ActionHints();
+		if (actions)
+			actions.SetEnabled(true);
 		s_bHidden = false;
 		LF_Debug.Info(FEATURE, "clean frame: HUD back");
 	}
@@ -466,6 +476,19 @@ class LF_FilmClean
 	protected static void KeepHintsDown()
 	{
 		SCR_HintManagerComponent.HideHint();
+		SCR_AvailableActionsDisplay actions = ActionHints();
+		if (actions)
+			actions.Show(false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static SCR_AvailableActionsDisplay ActionHints()
+	{
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (!hud)
+			return null;
+
+		return SCR_AvailableActionsDisplay.Cast(hud.FindInfoDisplay(SCR_AvailableActionsDisplay));
 	}
 };
 

@@ -33,6 +33,12 @@ class LF_AssetStatesHarness
 
 		if (parts[0] == "itemdrop")
 			return Drop(character, prefab);
+		if (parts[0] == "itemwear" && parts[1] == "list")
+			return Worn(character);
+		if (parts[0] == "itemwear")
+			return Wear(character, prefab);
+		if (parts[0] == "itemstrip")
+			return Strip(character, prefab);
 
 		return "error unknown_item_verb";
 	}
@@ -40,7 +46,7 @@ class LF_AssetStatesHarness
 	//------------------------------------------------------------------------------------------------
 	static bool IsItemVerb(string tool)
 	{
-		return tool.StartsWith("itemgive ") || tool.StartsWith("itemdrop ");
+		return tool.StartsWith("itemgive ") || tool.StartsWith("itemdrop ") || tool.StartsWith("itemwear ") || tool.StartsWith("itemstrip ");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -105,6 +111,93 @@ class LF_AssetStatesHarness
 			return "error no_room";
 
 		return "ok given " + prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Dress the character in a clothing prefab (a film actor's costume): the slot of the item's loadout
+	//! area takes it, and whatever that slot held is deleted.
+	protected static string Wear(IEntity character, ResourceName prefab)
+	{
+		Resource resource = Resource.Load(prefab);
+		if (!resource.IsValid())
+		{
+			LF_Debug.Error(FEATURE, "itemwear: no prefab " + prefab);
+			return "error no_prefab";
+		}
+
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		EquipedLoadoutStorageComponent storage = EquipedLoadoutStorageComponent.Cast(character.FindComponent(EquipedLoadoutStorageComponent));
+		if (!manager || !storage)
+			return "error no_inventory";
+
+		IEntity item = LF_Utils.SpawnEntityPrefab(prefab, character.GetOrigin() + "0 2 0");
+		if (!item)
+			return "error spawn_failed";
+
+		BaseLoadoutClothComponent cloth = BaseLoadoutClothComponent.Cast(item.FindComponent(BaseLoadoutClothComponent));
+		if (!cloth || !cloth.GetAreaType())
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(item);
+			LF_Debug.Error(FEATURE, "itemwear: not clothing " + prefab);
+			return "error not_clothing";
+		}
+
+		array<ref LoadoutSlotInfo> slots = {};
+		storage.GetSlotsFromArea(cloth.GetAreaType().Type(), slots);
+		foreach (LoadoutSlotInfo slot : slots)
+		{
+			IEntity old = slot.GetAttachedEntity();
+			if (old)
+				manager.TryDeleteItem(old);
+
+			if (manager.TryInsertItemInStorage(item, storage, slot.GetID()))
+			{
+				LF_Debug.Info(FEATURE, string.Format("itemwear %1 in slot %2 (replaced %3)", prefab, slot.GetID(), old != null));
+				return string.Format("ok worn %1 slot=%2", prefab, slot.GetID());
+			}
+		}
+
+		SCR_EntityHelper.DeleteEntityAndChildren(item);
+		LF_Debug.Warn(FEATURE, "itemwear: no slot took " + prefab);
+		return "error no_slot";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What each loadout slot holds: "slot=prefab-file" pairs.
+	protected static string Worn(IEntity character)
+	{
+		EquipedLoadoutStorageComponent storage = EquipedLoadoutStorageComponent.Cast(character.FindComponent(EquipedLoadoutStorageComponent));
+		if (!storage)
+			return "error no_inventory";
+
+		string text = "ok";
+		for (int i = 0; i < storage.GetSlotsCount(); i++)
+		{
+			InventoryStorageSlot slot = storage.GetSlot(i);
+			if (slot && slot.GetAttachedEntity())
+				text += string.Format(" %1=%2", i, FilePath.StripPath(LF_Utils.GetPrefabName(slot.GetAttachedEntity())));
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Delete a carried or worn item of a prefab (a film actor's backpack).
+	protected static string Strip(IEntity character, ResourceName prefab)
+	{
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		if (!manager)
+			return "error no_inventory";
+
+		array<IEntity> items = LF_InventoryUtils.FindItemsByPrefab(manager, prefab);
+		if (items.IsEmpty())
+			return "error not_carried";
+
+		if (!manager.TryDeleteItem(items[0]))
+			return "error delete_refused";
+
+		LF_Debug.Info(FEATURE, "itemstrip " + prefab);
+		return "ok stripped " + prefab;
 	}
 
 	//------------------------------------------------------------------------------------------------

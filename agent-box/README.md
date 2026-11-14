@@ -228,7 +228,10 @@ the game profile). Hooks:
   over one that only contains it. Replies `held <name>` or `not_carried`.
 - `itemgive <{GUID}path>` and `itemdrop <{GUID}path>` (server, dev gate) put one item of a prefab in
   the character's inventory, or drop the carried one the way the inventory screen does (it rests by
-  its RestingUP; the reply has its position and angles). `heldxf` (client) reports where the held
+  its RestingUP; the reply has its position and angles). `itemwear <{GUID}path>` (server, dev gate)
+  dresses the character in a clothing prefab, deleting what its loadout slot held; `itemwear list`
+  prints each slot's prefab; `itemstrip <{GUID}path>` deletes a carried or worn item (a film
+  actor's costume). `heldxf` (client) reports where the held
   gadget sits in the character's frame: its origin and axes, and the `LeftHandProp` bone's, which is
   how the hand poses in `tools/assets/pipeline/states.mjs` were measured. Proof:
   `session.mjs asset-states-proof <{GUID}path>[,...] [hand,ground,inventory] [out dir]` (one

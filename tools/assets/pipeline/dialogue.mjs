@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import * as eleven from "./elevenlabs.mjs";
 import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { acpText as soundAcpText } from "./sound.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const ADDON = "addons/LifeFramework";
@@ -243,29 +244,13 @@ export function simpleMeta(res, guid, cls) {
   return `MetaFileClass {\n Name "{${guid}}${res}"\n Configurations {\n  ${cls} PC {\n  }\n${rows} }\n}\n`;
 }
 
-// The audio project: one event per line, each a bank with one sample through its own shader, all
-// sharing one distance curve and one spatialiser, into the SFX input of the game's final mix.
-// The node layout (ids are index * 1024 + a type code; the connection ids and ports) was read
-// from Sounds/Siren/Vehicles_Siren.acp, the working project in this addon.
+// The audio project: one event per line, each a bank with its one recording, written by the sound
+// pipeline's project writer (sound.mjs acpText) into the SFX bus. The first writer here copied the node
+// layout of Sounds/Siren/Vehicles_Siren.acp by hand; the game accepted the events (valid handles) but
+// played nothing, so no clerk line was ever heard (found filming the robbery alarms video, #740).
+export const VOICE_RANGE = "reload60";
 export function acpText(spec, lines) {
-  const id = (n, type) => n * 1024 + type;
-  const MIXER = id(1, 11), AMP = id(2, 19), SPATIAL = id(3, 28), SILENCE = id(4, 5);
-  const link = (target, port = 65) => `      ConnectionClass connection {\n       id ${target}\n       port ${port}\n      }\n`;
-  const conns = (connId, links) => `    ConnectionsClass connections {\n     id ${connId}\n     links {\n${links}     }\n    }\n`;
-  const iop = (port, connId, links) => `    IOPConnectionClass iopConnection {\n     port ${port}\n     conn {\n      ConnectionsClass connections {\n       id ${connId}\n       links {\n${links.replace(/^/gm, "  ")}       }\n      }\n     }\n    }\n`;
-  let sounds = "", shaders = "", banks = "";
-  lines.forEach((l, i) => {
-    const n = 10 + i * 3;
-    const sound = id(n, 9), shader = id(n + 1, 18), bank = id(n + 2, 4);
-    l.soundId = sound;
-    sounds += `  SoundClass {\n   id ${sound}\n   name "${l.event}"\n   tl 300 ${i * 120}\n   conns {\n${conns(14, link(shader))}   }\n   outState ${MIXER}\n   outStatePort 17415\n  }\n`;
-    shaders += `  ShaderClass {\n   id ${shader}\n   name "Shader ${l.id}"\n   tl 0 ${i * 120}\n   conns {\n${conns(0, link(bank))}${conns(1, link(SILENCE))}   }\n   iops {\n${iop(1, 15, link(AMP))}${iop(0, 24, link(SPATIAL))}   }\n   ITD 0\n  }\n`;
-    banks += `  BankLocalClass {\n   id ${bank}\n   name "${l.id}"\n   tl -300 ${i * 120}\n   Volume 0\n   Samples {\n    AudioBankSampleClass "Sample(1)" {\n     Filename "${l.wav}"\n    }\n   }\n  }\n`;
-  });
-  const mixerLinks = lines.map((l) => link(l.soundId).replace(/^/gm, "  ")).join("");
-  const mix = "{B764D803219C775E}Sounds/FinalMix.afm";
-  const amp = "{BA1F5E72DA797274}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-30LUFS_to_-25LUFS.conf";
-  return `AudioClass {\n sounds {\n${sounds} }\n generators {\n  GeneratorClass {\n   id ${SILENCE}\n   name "Silence"\n   tl -300 -200\n   function Silence\n  }\n }\n mixers {\n  MixerClass {\n   id ${MIXER}\n   name "OutputState"\n   tl 700 0\n   res "${mix}"\n   iops {\n    IOPConnectionClass iopConnection {\n     port 17415\n     conn {\n      ConnectionsClass connections {\n       id 5\n       links {\n${mixerLinks}       }\n      }\n     }\n    }\n   }\n   path "${mix}"\n   inputs {\n    "ANM_Footsteps" "ANM_Voice" "WPN_Handling" "WPN_Shots" "WPN_Explosions" "WNP_BulletHits" "CHAR" "ENV_Ambients_2D" "VEH_Animations" "Impacts" "Dialogue" "Music" "ENV_Doors" "UI" "VEH_Engine" "VEH_Tires" "VON" "SFX" "SFX_Reverb" "VON_Reverb" "Dialogue_Reverb" "Impacts_EXT" "ENV_Ambients_3D" "WPN_SonicCracks" "CHAR_Gear" "PA"\n   }\n  }\n }\n shaders {\n${shaders} }\n amplitudes {\n  AmplitudeClass : "${amp}" {\n   id ${AMP}\n   tl -300 -400\n   parent "${amp}"\n   outerRange ${spec.audible_m || 25}\n  }\n }\n banks_local {\n${banks} }\n spatialities {\n  SpatialityClass {\n   id ${SPATIAL}\n   tl -300 -300\n   spatialFactor 1\n  }\n }\n version 1\n}\n`;
+  return soundAcpText(lines.map((l) => ({ event: l.event, bus: "sfx", range: spec.voice_range || VOICE_RANGE, volume_db: 0, loop: false, pitch_variance: 0, samples: [l.wav] })));
 }
 
 // The dialogue config the game reads (class LF_DialogueConfig, Feature/Dialogue/LF_DialogueConfig.c).
