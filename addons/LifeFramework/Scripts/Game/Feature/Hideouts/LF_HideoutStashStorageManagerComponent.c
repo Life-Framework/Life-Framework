@@ -13,7 +13,7 @@ class LF_HideoutStashStorageManagerComponentClass : ScriptedInventoryStorageMana
 //------------------------------------------------------------------------------------------------
 class LF_HideoutStashStorageManagerComponent : ScriptedInventoryStorageManagerComponent
 {
-	[Attribute("Roadmap_Hideout", UIWidgets.EditBox, desc: "Hideout id. Members of the organization that owns it use the stash.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Hideout id (the layer sets it; empty falls back to LF_Hideout.HIDEOUT_ID). Members of the organization that owns it use the stash.")]
 	protected string m_sHideoutId;
 
 	//------------------------------------------------------------------------------------------------

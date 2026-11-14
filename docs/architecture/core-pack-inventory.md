@@ -47,7 +47,9 @@ and the DebugWorld village, which the tests depend on.
    placed box, and the harness finds the stash and garage through components.
    `validate-core-village-names` keeps that list empty. Hideout ids
    (`Roadmap_Hideout`) are ids, not entity names, and still default in the
-   core; the hideout batch moves them.
+   core; the hideout batch moves them. `validate-map-independence` (#1046) now holds the
+   rest of the map knowledge in core Scripts (find-by-name, world coordinates, place names)
+   to a shrink-only baseline; the harness folder is exempt as dev tooling.
 2. **Every config loads one hard-coded core path.** `LF_JobsConfig`,
    `LF_PoliceConfig`, `LF_SignCatalog`, `LF_GarageConfig`, `LF_SurvivalConfig`,
    `LF_RespawnConfig`, and `LF_ResourceChainCatalog` each hold a

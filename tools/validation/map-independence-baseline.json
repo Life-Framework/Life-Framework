@@ -1,0 +1,52 @@
+{
+ "entries": [
+  {
+   "file": "Feature/Comms/LF_DebugDispatch.c",
+   "rule": "find-by-name",
+   "token": "m_sPlaceEntity",
+   "issue": "#1045"
+  },
+  {
+   "file": "Feature/Crime/LF_Bank.c",
+   "rule": "find-by-name",
+   "token": "bagEntity",
+   "issue": "#1045"
+  },
+  {
+   "file": "Feature/Crime/LF_Bank.c",
+   "rule": "find-by-name",
+   "token": "bag.GetName() + \"_Cash\"",
+   "issue": "#1045"
+  },
+  {
+   "file": "Feature/Crime/LF_CashVanRoute.c",
+   "rule": "find-by-name",
+   "token": "m_sVanEntity",
+   "issue": "#1045"
+  },
+  {
+   "file": "Feature/Crime/LF_CashVanRoute.c",
+   "rule": "find-by-name",
+   "token": "stops[next]",
+   "issue": "#1045"
+  },
+  {
+   "file": "Feature/DebugWorld/LF_DebugWorldCollisionRepairComponent.c",
+   "rule": "world-coords",
+   "token": "256 0 256",
+   "issue": "#1055"
+  },
+  {
+   "file": "Feature/Film/LF_FilmActor.c",
+   "rule": "world-coords",
+   "token": "180 0 244",
+   "issue": "#1055"
+  },
+  {
+   "file": "Feature/Hideouts/LF_Hideout.c",
+   "rule": "place-name",
+   "token": "Roadmap_Hideout",
+   "issue": "#1055"
+  }
+ ]
+}
