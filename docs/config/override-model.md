@@ -100,6 +100,9 @@ LF_ItemCatalogueConfig {
 | `zones` | `ruleSets` | rule name `NORMAL`, `SAFE` or `LAWLESS`. A remove is refused (every zone names a rule); a new or replaced entry starts from the legacy flags |
 | `licences` | `rules` | licence name (`POLICE_ACCESS`). The ids are the catalog's: add of an existing one, a name the catalog lacks and every remove are refused; replace turns both flags off unless the layer gives them |
 | `systems` (catalog) | `LF_SystemDef` list | system id (`Pager`). Pack overlays only. A framework (`LOCKED`) system and one another system names as parent or requirement cannot be removed |
+| `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |
+| `jobs` | `xpAwards` | action id (`gather`). A new or replaced award needs a `job` |
+| `jobs` | `licenceGates` | licence name (`MINER_GOLD`, an `LF_ELicenseType` name). A new or replaced gate needs a `job` and a `minLevel`; removing a gate gives the licence its shipped gate back |
 | `shops` | `priceRules` | `prefab:<GUID>`, a prefab-path substring, or `type:<flags>,mode:<mode>` (`type:64` is `type:64,mode:2`). Two core rules can share a key; a layer addresses the last one, the one that wins the walk |
 
 The catalogue's `removed: true` is a field, not a verb: it hides an entry and a later layer can set
@@ -119,4 +122,7 @@ logged like any refusal and the entry stays.
    `LF_ConfigOverlay.ApplyRecords(reader, "field", list, source)`.
 4. `node tools/config/schema.mjs --write`: the schema gains `op` on the section's records.
 
-Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`), `LF_Test_ConfigListsOverlay` (`config/lists-overlay`: remove and a refused patch per list).
+Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`); police, organizations, zones, licences and
+systems: `LF_Test_ConfigListsOverlay` (`config/lists-overlay`, remove and a refused patch per list); jobs: `LF_Test_JobsOverrideModel`
+(`config/jobs-override-model`, owner verbs per list) and `LF_Test_JobsPackOverlay`
+(`config/jobs-pack-overlay`, a pack `.conf` over the shipped `LF_Jobs.conf`).

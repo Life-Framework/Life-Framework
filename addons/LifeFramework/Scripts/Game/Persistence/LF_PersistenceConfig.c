@@ -18,10 +18,10 @@ class LF_PersistenceConfig
 	static const float INTERVAL_MAX = 86400;	// lf-fixed: the schema limit, one day
 
 	[Attribute("1", UIWidgets.CheckBox, "Save the campaign periodically while it runs. Off leaves saving to the save points and the shutdown save")]
-	bool m_bEnableAutosave = true;
+	bool m_bEnableAutosave;
 
 	[Attribute("600", UIWidgets.Auto, "Seconds between autosaves", params: "30 86400")]
-	float m_fAutosaveInterval = 600;
+	float m_fAutosaveInterval;
 
 	//------------------------------------------------------------------------------------------------
 	//! The autosave settings after the owner's layer: starts from the component's own values.

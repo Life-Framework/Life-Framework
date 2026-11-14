@@ -65,13 +65,13 @@ class LF_IncidentConfig
 	float m_fAimCheckSeconds;
 
 	[Attribute("400", UIWidgets.Auto, "Metres around a game master that the incident panel searches for incidents", params: "10 5000")]
-	float m_fGmRadius = 400;
+	float m_fGmRadius;
 
 	[Attribute("3600", UIWidgets.Auto, "Seconds back from now the game master incident panel looks", params: "60 604800")]
-	int m_iGmWindowSeconds = 3600;
+	int m_iGmWindowSeconds;
 
 	[Attribute("8", UIWidgets.Auto, "Seconds between two 'your shot did nothing' notes to the same shooter in a safe zone", params: "0 300")]
-	float m_fZoneNoticeSeconds = 8;
+	float m_fZoneNoticeSeconds;
 
 	[Attribute("1", UIWidgets.CheckBox, "1 = aim alone counts; 0 = the aim line must also reach the player unobstructed")]
 	bool m_bAimAloneCounts;

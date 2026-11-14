@@ -32,31 +32,31 @@ class LF_OrgConfig
 	static const float DEFAULT_DESK_RANGE = 5;
 
 	[Attribute("250", UIWidgets.Auto, "Carried cash the founder hands over at the registry desk to found an organization", params: "0 10000000")]
-	int m_iFoundingFee = 250;
+	int m_iFoundingFee;
 
 	[Attribute("3", UIWidgets.Auto, "Shortest organization name, in characters", params: "1 64")]
-	int m_iNameMin = 3;
+	int m_iNameMin;
 
 	[Attribute("32", UIWidgets.Auto, "Longest organization name, in characters", params: "1 64")]
-	int m_iNameMax = 32;
+	int m_iNameMax;
 
 	[Attribute("120000", UIWidgets.Auto, "Milliseconds an invitation stands before the invitee has to be asked again", params: "5000 3600000")]
-	int m_iOfferMs = 120000;
+	int m_iOfferMs;
 
 	[Attribute("1000000", UIWidgets.Auto, "Largest single cash move into or out of an organization fund", params: "1 100000000")]
-	int m_iMaxCashMove = 1000000;
+	int m_iMaxCashMove;
 
 	[Attribute("500", UIWidgets.Auto, "Fund price of the extra storage upgrade", params: "0 10000000")]
-	int m_iPriceExtraStorage = 500;
+	int m_iPriceExtraStorage;
 
 	[Attribute("250", UIWidgets.Auto, "Fund price of the processing slot upgrade", params: "0 10000000")]
-	int m_iPriceProcessingSlot = 250;
+	int m_iPriceProcessingSlot;
 
 	[Attribute("750", UIWidgets.Auto, "Fund price of the parked vehicle upgrade", params: "0 10000000")]
-	int m_iPriceParkedVehicle = 750;
+	int m_iPriceParkedVehicle;
 
 	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from an organization desk when the server moves fund cash", params: "1 30")]
-	float m_fDeskRange = 5;
+	float m_fDeskRange;
 
 	[Attribute("", UIWidgets.Object, "Rights of the default ranks a new organization starts with, one entry per rank id (founder, officer, member). A rank with no entry keeps its shipped rights. Applies to organizations founded after the change; a saved organization keeps its own ranks")]
 	ref array<ref LF_OrgRankDefault> m_aRankDefaults;
