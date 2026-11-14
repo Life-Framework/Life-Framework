@@ -230,7 +230,7 @@ its save.
 | Path | Class | Reason |
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
-| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The flagship playtest header; its world is now the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
+| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The legacy playtest header, hidden from the scenario list since #374 (`LF_Everon1989.conf` is the listed flagship; this id still boots for existing servers and saves); its world is the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
 | `LF_PlaytestTown_Preview.{edds,jpg}` | pack, moved (batch 1) | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack, moved (batch 1) | The MainWorld header |
 | `LF_HostedTest.conf` | core | Test fixture (#323 batch 1): a hosted header on DebugWorld with dev tools closed, read by `host/playtest-mission` and `harness/dev-gate-dedicated` |
