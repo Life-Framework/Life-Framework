@@ -1,4 +1,5 @@
 # tools/validation/validate-debugworld-layer-order.ps1
+# inputs: addons/**, docs/features.md
 # The generic world entity must be declared in default.layer. Gameplay props in
 # layers loaded before it never get a physics body, so their meshes render while
 # the player walks straight through. See docs/features.md -> DebugWorld coverage.

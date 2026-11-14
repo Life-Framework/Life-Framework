@@ -1,4 +1,5 @@
 # tools/validation/validate-scripts.ps1 - Layer 1: headless EnforceScript compile check.
+# inputs: always
 #
 # Runs Workbench's ScriptEditor -validate against the LifeFramework gproj. That
 # is a real engine compile of the Game module for every platform config

@@ -1,4 +1,5 @@
 // Proves the test pool's reclaim and re-plan rules without booting a game or
+// inputs: tools/**, agent-box/**, .githooks/**
 // an ssh session (tools/remote/pool.mjs, docs/worktrees.md "Test pool"):
 //   1. a remote slot whose owner pid on this PC is dead is reclaimed;
 //   2. a waiting ticket re-reads lf.local.json, so a re-enabled machine counts;
@@ -40,6 +41,7 @@ import { trimScript } from "../lib/ws-trim.mjs";
 
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
+process.env.LF_POOL_POLL_MS = "100"; // read by tools/remote/pool.mjs on each poll
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
@@ -452,6 +454,8 @@ try {
       const alive = (pid) => pid === 777;
       const plan = gc.planSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
       check(plan.remove.map((r) => r.name).sort().join() === "wt-linked,wt-old,wt-stopped", "gc plan removes the wrong folders: " + plan.remove.map((r) => r.name).sort().join());
+      const orph = gc.planSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")], orphan: (n) => n === "wt-new" || n === "wt-live" || n === "wt-film-take" });
+      check(orph.remove.some((r) => r.name === "wt-new") && !orph.remove.some((r) => r.name === "wt-live" || r.name === "wt-film-take"), "gc orphan rule must remove a recent folder whose worktree is gone, never a live or film one");
       check(plan.keep.find((k) => k.name === "wt-live")?.why === "in use" && plan.keep.find((k) => k.name === "wt-film-take")?.why === "film" && plan.keep.find((k) => k.name === "wt-new")?.why === "recent", "gc kept reasons are wrong");
       const run = gc.runSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
       check(run.removed.length === 3 && !existsSync(join(base, "wt-old")) && existsSync(join(base, "wt-live")) && existsSync(join(base, "wt-film-take")) && existsSync(join(base, "wt-mine")) && existsSync(join(base, "wt-new")), "gc run did not remove exactly the old idle folders");

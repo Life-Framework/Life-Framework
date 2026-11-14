@@ -1,4 +1,5 @@
 // Runs the agent-box selftests that need no game: the harness command lines and
+// inputs: tools/**, agent-box/**, .githooks/**
 // screen-text parsing, the session addressing (a command never reaches another
 // checkout's session), the journey judges and report, the placement audit's checks, and the `look` plan, status and flags.
 // red-proof: with session.mjs sessionAddress ignoring the recorded root this

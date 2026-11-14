@@ -1,4 +1,6 @@
 // tools/validation/validate-map-independence.mjs
+// inputs: always
+// (always: it compares its baseline with origin/main's, so repo files are not its only input)
 //
 // Core Scripts must not know where anything stands on Everon. The map moves to the
 // LF_Everon1989 pack (docs/architecture/core-vs-pack.md "Map independence"; AGENTS.md

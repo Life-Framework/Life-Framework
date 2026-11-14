@@ -1,4 +1,5 @@
 // Proves `prs heal`'s merge logic on a throwaway repo with a bare origin.
+// inputs: tools/**, agent-box/**, .githooks/**
 // Never touches this repo, its worktrees, or GitHub.
 //
 //   ws/registry-only  both sides added a test, so only the generated registry

@@ -1,4 +1,5 @@
 // tools/validation/validate-annex-fixtures.mjs
+// inputs: addons/**, docs/architecture/**
 //
 // A test must not depend on the DebugWorld village. The village (Street_*,
 // Signs, the chain layers, Roadmap_* entities) moves to the pack in M3 (#323);
