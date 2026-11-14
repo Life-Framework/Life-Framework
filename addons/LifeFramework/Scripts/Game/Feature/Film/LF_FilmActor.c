@@ -531,6 +531,8 @@ class LF_FilmActor : Managed
 class LF_FilmDirector
 {
 	protected static const string FEATURE = "FilmActor";
+	//! LF_Places kind of the till the "street" scene walks to (an LF_PlaceComponent on the store till).
+	protected static const string PLACE_KIND_TILL = "FilmTill";
 	protected static const ResourceName CHARACTER = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 	protected static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
 	protected static const float TICK_MS = 100;
@@ -661,10 +663,10 @@ class LF_FilmDirector
 	//! parked at the west end of the main street (z 250) and drives east past the store.
 	protected static bool BuildStreet()
 	{
-		IEntity till = LF_ActionSite.FindNear(Vector(180, 0, 244), 80, "LF_StoreTillAction");
+		IEntity till = LF_Places.Find(PLACE_KIND_TILL, "street");
 		if (!till)
 		{
-			LF_Debug.Error(FEATURE, "scene street: no store till within 80 m of 180 244");
+			LF_Debug.Error(FEATURE, "scene street: no film till placed (LF_PlaceComponent kind FilmTill, id street)");
 			return false;
 		}
 

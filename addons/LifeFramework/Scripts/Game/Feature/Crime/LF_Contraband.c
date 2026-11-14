@@ -247,7 +247,7 @@ class LF_Contraband
 		if (!org)
 			return "#LF-Contraband_JoinOrg";
 
-		string ownerId = LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID);
+		string ownerId = LF_Hideout.GetOwner(LF_Hideout.OrgHideoutId());
 		if (ownerId.IsEmpty() || org.GetId() != ownerId)
 			return "#LF-Contraband_NotHideoutOwner";
 
@@ -515,7 +515,7 @@ class LF_Contraband
 	//------------------------------------------------------------------------------------------------
 	protected static bool IsMember(string characterId)
 	{
-		string ownerId = LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID);
+		string ownerId = LF_Hideout.GetOwner(LF_Hideout.OrgHideoutId());
 		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (ownerId.IsEmpty() || !org)
 			return false;

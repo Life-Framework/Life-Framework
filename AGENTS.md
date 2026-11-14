@@ -268,6 +268,6 @@ observe, whether a restart is needed.
 ## CI
 
 GitHub Actions `validate` runs `tools\cli validate` on every PR and is a
-required check on `main`. CI sets `LF_VALIDATE_SKIP=validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs`
+required check on `main`. CI sets `LF_VALIDATE_SKIP=validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs,validate-modded-container-props.mjs`
 because the runner has no Reforger install or MCP build. Script compilation
 and the in-game suite stay local (`tools\cli test --no-build` in a worktree).
