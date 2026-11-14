@@ -2565,7 +2565,11 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   try {
     if (!slot.local) {
       const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
-      const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState });
+      // The placement audit (agent-box/place-audit.mjs) hands its input list in through
+      // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
+      const auditIn = process.env.LF_PLACE_AUDIT_IN;
+      const files = auditIn && existsSync(auditIn) ? { env: { LF_PLACE_AUDIT_IN: auditIn }, down: [{ from: "server/profile/test/profile/place-audit/out.txt", to: join(root, "server", "profile", "test", "profile", "place-audit", "out.txt") }] } : undefined;
+      const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState, files });
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
