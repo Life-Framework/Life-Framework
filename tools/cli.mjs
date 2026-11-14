@@ -71,6 +71,7 @@ import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
 import * as testCache from "./lib/test-cache.mjs";
+import * as testWorld from "./lib/test-world.mjs";
 import * as wbLock from "./lib/wb-lock.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
@@ -2687,6 +2688,11 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     console.log("test: " + onlyFlag + " " + only.join(","));
   }
   guardHeavy(root, "test", opts.force);
+  // A LOGIC-only selection boots the minimal world (tools/lib/test-world.mjs). It is decided here,
+  // before the pass cache key, so a TestLogic pass is never reused for a DebugWorld request.
+  const picked = testWorld.pickWorld({ tier, only, world: opts.world, tiers: testWorld.testTiers(root) });
+  if (picked.world && !opts.world) console.log(`test: world ${picked.world} (${picked.reason}; --world Worlds/DebugWorld/DebugWorld.ent overrides)`);
+  opts = { ...opts, world: picked.world };
   if (!noBuild) {
     const b = await cmdBuild(root, { wait: opts.wait });
     if (b !== 0) return b;
