@@ -6,6 +6,7 @@ class LF_ClipStampHud
 	static const int TICK_MS = 250; // lf-fixed: UI refresh, the text changes once a second
 	static const float TAG_WIDTH = 380; // lf-fixed: tag size in pixels at the 1920x1080 reference
 	static const float TAG_HEIGHT = 34; // lf-fixed: tag size in pixels at the 1920x1080 reference
+	static const float RIM = 3; // lf-fixed: metal rim around the tag, pixels
 	static const float TAG_MARGIN = 16; // lf-fixed: gap to the screen corner
 	static const float OPACITY = 0.82; // lf-fixed: unobtrusive over footage
 
@@ -80,6 +81,10 @@ class LF_ClipStampHud
 		FrameSlot.SetSize(sheet, TAG_WIDTH, TAG_HEIGHT);
 		Paint("Metal", LF_UITheme.Metal());
 		Paint("Paper", LF_UITheme.Paper());
+		// The frame's rim is 12 px for a full sheet; on a one-line tag it would swallow the paper.
+		Widget paper = s_wRoot.FindAnyWidget("Paper");
+		if (paper)
+			FrameSlot.SetOffsets(paper, RIM, RIM, RIM, RIM);
 
 		s_wText = TextWidget.Cast(workspace.CreateWidgets(LF_UITheme.LINE_LAYOUT, sheet));
 		if (!s_wText)
@@ -91,7 +96,7 @@ class LF_ClipStampHud
 
 		FrameSlot.SetAnchorMin(s_wText, 0, 0);
 		FrameSlot.SetAnchorMax(s_wText, 1, 1);
-		FrameSlot.SetOffsets(s_wText, 14, 7, 14, 4);
+		FrameSlot.SetOffsets(s_wText, 10, 6, 10, 3);
 		s_wText.SetExactFontSize(LF_UITheme.CaptionSize());
 		s_wText.SetColor(LF_UITheme.Ink());
 		s_wRoot.SetOpacity(OPACITY);
