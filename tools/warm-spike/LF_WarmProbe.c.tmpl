@@ -17,7 +17,7 @@ modded class LF_TestRunnerComponent
 			f.Close();
 		}
 
-		if (!FileIO.FileExists("$profile:lf-warm/run-suite.txt"))
+		if (SCR_Global.IsEditMode(owner) || !FileIO.FileExists("$profile:lf-warm/run-suite.txt"))
 			return;
 
 		string mode;
