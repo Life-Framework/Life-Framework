@@ -5,7 +5,7 @@ class LF_DemoConfig
 	[Attribute("30", UIWidgets.Slider, desc: "Cooldown in seconds", params: "5 600 1")]
 	int m_iCooldownSec;
 
-	[Attribute("0.5", UIWidgets.Auto, desc: "Success chance")]
+	[Attribute("0.5", UIWidgets.Auto, "Success chance")]
 	float m_fChance;
 
 	[Attribute("true", UIWidgets.CheckBox, desc: "Feature on")]
