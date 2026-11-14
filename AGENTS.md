@@ -93,6 +93,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci`, `wt gate`, `wt ship` and CI run every check plus the compile |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `LF_Test` suite; exit code is pass/fail; a compile error fails it |
 | `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the red-proof loop); prints `SUMMARY tier=only` |
+| `tools\cli test ... --no-cache` | Force a run: a pass on byte-identical inputs is otherwise reused (`test: CACHED pass ...`, about 1 s); `LF_TEST_CACHE=0` turns the cache off |
 | `tools\cli test` / `e2e` / `pool status` | In-game runs take the first free slot on any pool machine (this PC, `lf-testbox`; `tools/pool.json`) and queue FIFO when all are busy, trying the machine with the most RAM headroom first; `--local` / `--remote [name]` pin it (don't); remote runs carry uncommitted state and the rdb (`docs/worktrees.md` "Test pool") |
 | `tools\cli dev --tier fast` | validate + test without a build, then dump `[LFDebug:*]` lines |
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
@@ -156,6 +157,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - Red-proof loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s), then `--tier all` once at the end.
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
+- **Pass cache.** `test` (and the suite inside `ci`, `wt gate`, `wt ship`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
 - Wait with one blocking call: run `test`, `e2e`, `session up` or `session wait` in the foreground with a timeout up to 600000 ms; never `sleep`/`until` loops, Monitor, ScheduleWakeup or status polls (`docs/agent-budget.md`).
 - A rule that keeps getting broken becomes a check: `tools\cli validate` runs every script in `tools/validation/`.
 

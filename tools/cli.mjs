@@ -68,6 +68,7 @@ import { interactiveNeeded, interactiveSpawnDetached, winQuote } from "./lib/int
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
+import * as testCache from "./lib/test-cache.mjs";
 import * as wbLock from "./lib/wb-lock.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
@@ -2686,15 +2687,69 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // A remote run ships this worktree's rdb, so refresh it before the choice.
   ensureResourceDatabase(root);
   const purpose = only.length ? "test only" : `test ${tier}`;
+  // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
+  // key) and before the pool is asked for a slot. Only a pass is stored or reused.
+  const cache = passCacheCheck(root, { tier, only, opts });
+  if (cache?.hit) return 0;
   // A pool machine that disappears mid-run (the laptop shuts down) is a normal case: it is marked
   // down and the run queues again for another machine (pool.machineGone).
   for (let attempt = 1; ; attempt++) {
-    const r = await testOnce(root, { purpose, tier, only, opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS });
-    if (!r.requeue) return r.code;
+    const r = await testOnce(root, { purpose, tier, only, opts, lastTry: attempt >= pool.FAILOVER_ATTEMPTS, cacheKey: cache?.key });
+    if (r.requeue) continue;
+    if (cache?.key && r.code === 0) passCacheStore(root, cache, { tier, only, opts, run: r });
+    return r.code;
   }
 }
 
-async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
+// { hit, key, inputs } for a run that may use the cache, null when it may not or the key fails.
+function passCacheCheck(root, { tier, only, opts }) {
+  // --red (red-proof runs) is read from argv so it holds whatever parses the flag.
+  const skip = testCache.skipReason({ tier, opts: { ...opts, red: opts.red || process.argv.includes("--red") } });
+  if (skip) {
+    if (!opts.noCache && process.env.LF_TEST_CACHE !== "0") console.log(`test: pass cache off (${skip})`);
+    return null;
+  }
+  let inputs;
+  try {
+    inputs = testCache.keyInputs(root, { tier, only, world: opts.world, coreOnly: opts.coreOnly, build: testbox.serverBuildId(testbox.localServerDir(root)), addons: launchAddons(root) });
+  } catch (e) {
+    console.log(`test: pass cache off (key failed: ${e.message})`);
+    return null;
+  }
+  const key = testCache.cacheKey(inputs);
+  const mainRoot = wt.mainRootOf(root);
+  const rec = testCache.lookup(mainRoot, key);
+  if (!rec) return { hit: false, key, inputs, mainRoot };
+  console.log(testCache.reuseLine(rec));
+  try {
+    const dir = join(root, "tmp", "test-results");
+    mkdirSync(dir, { recursive: true });
+    const sha = wt.git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha)) + "\n", "utf8");
+  } catch {}
+  return { hit: true, key, inputs, mainRoot };
+}
+
+function passCacheStore(root, cache, { tier, only, opts, run }) {
+  const stampTier = only.length ? "only" : opts.coreOnly ? `${tier}-core` : tier;
+  const rec = {
+    at: new Date().toISOString(),
+    code: 0,
+    failed: 0,
+    passed: run.passed,
+    total: run.total,
+    tier,
+    stampTier,
+    only,
+    machine: run.machine ?? null,
+    worktree: pool.slugFor(root),
+    consoleLog: run.consoleLog ?? "",
+    inputs: cache.inputs,
+  };
+  if (testCache.store(cache.mainRoot, cache.key, rec)) console.log(`test: pass cached (key ${cache.key.slice(0, 12)}); an identical run reuses it`);
+}
+
+async function testOnce(root, { purpose, tier, only, opts, lastTry, cacheKey }) {
   let slot;
   try {
     slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget });
@@ -2706,7 +2761,8 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   let extra = {};
   try {
     if (!slot.local) {
-      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      // --no-cache: the box runs what it was sent; this side owns the cache.
+      const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
       // The placement audit (agent-box/place-audit.mjs) hands its input list in through
       // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
       const auditIn = process.env.LF_PLACE_AUDIT_IN;
@@ -2719,16 +2775,18 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
         extra.lost = true;
         return { code, requeue: true };
       }
-      return { code };
+      return { code, machine: slot.machine?.name, passed: r.summary?.passed, total: r.summary?.total, failed: r.summary?.failed, consoleLog: r.summary?.consoleLog };
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
     code = runLocalTest(root, tier, only, opts.world, opts.coreOnly);
-    const stamp = newestStamp(root, before);
-    if (stamp) extra = { passed: stamp.passed, total: stamp.total };
-    return { code };
+    // test-e2e.ps1 stamps summaries.jsonl lazily (at the next boot), so read this run's printed SUMMARY.
+    const sum = lastLocalSummary ?? newestStamp(root, before);
+    if (sum) extra = { passed: sum.passed, total: sum.total };
+    return { code, machine: slot.machine?.name, passed: sum?.passed, total: sum?.total, failed: sum?.failed };
   } finally {
     slot.release();
+    if (cacheKey) extra.cacheKey = cacheKey.slice(0, 16);
     if (!slot.inherited) pool.recordRun(root, slot, { purpose, code, extra });
   }
 }
@@ -2785,9 +2843,12 @@ function runLocalTest(root, tier, only, world, coreOnly) {
       ...(coreOnly ? ["-CoreOnly"] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
+    const m = /test-e2e: SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(res.stdout);
+    lastLocalSummary = m ? { tier: m[1], passed: +m[2], failed: +m[3], total: +m[4] } : null;
     return res.status;
   });
 }
+let lastLocalSummary = null;
 
 async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // Fast dev loop: skip the headless Workbench build (the dedicated server
@@ -2799,7 +2860,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   if (v !== 0) return v;
   console.log("\n=== dev: test (no build) ===");
   process.env.LF_TEST_DEBUG_LINES = "1"; // dev is the verb that dumps the feature lines
-  return cmdTest(true, tier, root, opts);
+  return cmdTest(true, tier, root, { ...opts, dev: true }); // dev: no pass cache, it wants this run's lines
 }
 
 async function cmdCi(root = ROOT, opts = {}) {
@@ -3048,7 +3109,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --core-only boots with -addons LifeFramework only (the pack folder is not
                                 on -addonsDir) and skips tests whose NeedsPack() names a reason.
@@ -3056,7 +3117,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
-                                Remote runs carry uncommitted state too (docs/worktrees.md)
+                                Remote runs carry uncommitted state too (docs/worktrees.md).
+                                A pass on byte-identical inputs is reused, not rerun (pass cache,
+                                tmp/test-cache in the main checkout); --no-cache or LF_TEST_CACHE=0 runs it
   e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids] [--cash-swap] [--pre-move <ref>] [--mission playtest]
                                 two-boot save, restart, and reload proof in this worktree;
                                 --legacy-save writes the save before #331 (version 23) in boot 1;
@@ -4121,10 +4184,10 @@ const cmds = {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), noCache: list.includes("--no-cache"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), noCache: (flags ?? []).includes("--no-cache"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids"), cashSwap: (flags ?? []).includes("--cash-swap"), ...e2eMoveFlags(ROOT, flags ?? []) });

@@ -300,6 +300,35 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
   local only until it merges main.
 
+### Pass cache
+
+A suite that passed on byte-identical inputs is not booted again. Before it asks
+the pool for a slot, `test` hashes its inputs (`tools/lib/test-cache.mjs`) and
+looks the key up in `<main>/tmp/test-cache/<key>.json`, shared by every worktree.
+On a hit it prints `test: CACHED pass, same inputs as the run at <when> on
+<machine> in <worktree> (<passed>/<total> passed ...)`, appends that summary to
+`tmp/test-results/summaries.jsonl` with `"cached": true`, and exits 0 in about a
+second. `wt gate` and `wt ship` run `ci`, whose suite steps go through the same
+check, so a gate right after a green `--tier all` reuses it.
+
+- **The key**: git tree hashes of `addons/`, `tools/test/` and
+  `tools/lib/addons.mjs` from a throwaway copy of the index with every untracked
+  non-ignored file added; the hash of each `addons/*/resourceDatabase.rdb`; the
+  tier, the resolved `--only` list (order kept), `--world`, `--core-only`; the
+  launch addon list; this PC's server build id (the pool sends a run only to a
+  machine with that build). The machine is not in it: a gate already accepts a
+  pass from any pool machine, and `LF_Test_PerfBudget` is calibrated per
+  machine. Docs and the rest of `tools/` are not in it.
+- **What is stored**: passes only (exit 0, `failed=0`), written to a temp file
+  and renamed. A failure, a timeout or a no-verdict run is never stored; a
+  corrupt or unreadable file is a miss.
+- **Never cached**: `--no-cache`, `LF_TEST_CACHE=0`, `--tier persistence`,
+  red-proof runs (`--red`), `dev` (it prints that run's debug lines), `e2e`, and
+  the placement audit's test run. A remote leg runs with `--no-cache`; the
+  caller owns the cache.
+- `runs.jsonl` rows of a cacheable run carry `cacheKey` (16 hex), so the hit rate
+  can be counted later.
+
 ### Workbench limit and the remote gate
 
 Every heavy headless Workbench step on a machine (the `validate-scripts.ps1`
