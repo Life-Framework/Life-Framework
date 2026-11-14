@@ -3,6 +3,12 @@ GenericEntity {
  components {
   MeshObject "{DD0E2B54323CE3C1}" {
    Object "{83B6BB3E913646CD}Assets/Props/Roleplay/BankVault/VaultRoom.xob"
+   Materials {
+    MaterialAssignClass "{7B1E4C0A9D2F5302}" {
+     SourceMaterial "BankVault_Concrete"
+     AssignedMaterial "{C81F6A28358CA979}Assets/Props/Industrial/ConcretePanel_01/Data/ConcretePanel_01_clean.emat"
+    }
+   }
   }
   RigidBody "{8979F4D1AD761EC7}" {
    ModelGeometry 1

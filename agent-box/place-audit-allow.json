@@ -35,6 +35,24 @@
       "match": "^(Farm_StandCabbage|Cabbage_0)",
       "kind": "odd-scale",
       "why": "Vanilla has no cabbage-head mesh, only the whole-plant CabbageCrop_01 (0.84 x 0.91 m at scale 1). Cabbage.et scales it to 0.5, so the plant measures 0.46 m, inside the cabbage 0.15-0.6 m range. A larger scale would put a 0.9 m plant on a stall table."
+    },
+    {
+      "match": "^Market_Shade_",
+      "why": "A market parasol is a pole beside a stall end under a 2.4 m canopy 2.8 m up; its mesh box spans the stall, the goods and the trader under it (polish-vault-market)."
+    },
+    {
+      "match": "Props/Crates/(Crate_01_green|BoxWooden_01)\\.et",
+      "kind": "overlaps",
+      "why": "Goods on the north market stalls stand under a parasol whose mesh box spans them (polish-vault-market)."
+    },
+    {
+      "match": "^(AppleTradeContainer|FarmerDisplayCrate|Market_PalletBox|Market_Stall_)",
+      "kind": "overlaps",
+      "why": "Stall goods and the pallet box sit under a market parasol whose mesh box spans them (polish-vault-market)."
+    },
+    {
+      "match": "^Roadmap_Bank_Vault(Hood|Light)?[ ]",
+      "why": "The door hood and the bulkhead light are fixed to the vault front: their backs stand in the concrete face, as wall-mounted fittings do (polish-vault-market)."
     }
   ]
 }
