@@ -208,6 +208,10 @@ class LF_ConfigService
 	//! The core's own top-level keys. A pack section may never take one of these names.
 	static bool IsCoreTopLevelKey(string key)
 	{
+		// Its own test: one more `||` in the chain below is "Formula too complex" to the compiler.
+		if (key == LF_QuizConfig.SECTION)
+			return true;
+
 		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_ItemCatalogueConfig.SECTION || key == LF_SystemsConfig.SECTION || key == LF_CleanupConfig.SECTION || key == LF_DisconnectConfig.SECTION || key == LF_Terms.SECTION;
 	}
 

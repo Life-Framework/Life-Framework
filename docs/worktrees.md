@@ -182,6 +182,47 @@ merges real branches and compares the result byte for byte (#1154, #1161).
   open 10 minutes after auto-merge was queued or the last check finished**:
   `gh pr merge <n> --merge`.
 
+**Safety check (every heal, before any push).** GitHub cannot run our merge
+drivers, so a merge made here is checked from git objects
+(`tools/prs-safety.mjs`): for every tracked `*.st` the merged key set must equal
+main's keys plus the branch's own additions minus its own removals (a count
+mismatch names the missing or extra keys), and every line of `docs/features.md`
+and `docs/debug-log-triage.md` that main has must still be there. A failure
+undoes the merge (`reset --hard` to the old head), pushes nothing, and reports
+the PR (`refused`). When both sides changed `docs/credits.md`, `tools\cli
+credits` and `regen-localization` run after the merge so the credits rows and
+`LF_CreditsData.c` agree with it (the `LF-Credits_*` keys are then exempt from
+the key check).
+
+#### Self-healing mode: `prs heal --watch`
+
+```sh
+tools\cli prs heal --watch [--once] [--interval 10] [--max-runs 144]
+tools\cli prs schedule print|install|status|remove
+```
+
+Every `--interval` minutes (default 10, at most `--max-runs` passes, default
+144 = 24 h) it lists open `ws/*` PRs that GitHub reports `CONFLICTING` and, for
+each one whose worktree is not LIVE, merges `origin/main` in the PR's own idle
+worktree or a temporary `Life-Framework-heal-<n>` one, regenerates the
+generated files, runs `validate` only (the PR's own `validate` check and
+auto-merge cover the rest), runs the safety check, pushes without force, and
+re-queues auto-merge. Anything else (a real content conflict, a refused merge,
+a failed validate, unpushed agent work) is skipped: one log line, and one PR
+comment naming the files (once per PR head and main head, so a repeat pass does
+not spam). Output also appends to `tmp/logs/prs-heal-watch.log` in the main
+checkout. `--once` is one pass; the scheduler uses it.
+
+`prs schedule install` registers one Task Scheduler entry, `LF-PRs-Heal`:
+`conhost.exe --headless node tools\cli.mjs prs heal --watch --once` from the
+main checkout every 10 minutes as the current user (it needs that user's `gh`
+login), hidden, never overlapping itself, 45 min limit. `print` shows exactly
+what it would register and changes nothing; `status` and `remove` do what they
+say. Nothing registers it until someone runs `install`.
+`tools/validation/prs-heal-safety-selftest.mjs` proves it on throwaway repos: a
+generated-only conflict heals with exact keys and rows, a real conflict is
+skipped untouched, a lost key or a lost features row is refused and undone.
+
 It prints one line per PR and exits 1 when any PR needs a human or its agent.
 Agents run `prs status` after their PR is up; the maintainer or lead runs
 `prs heal`. One heal runs at a time (hub lock `prs-heal`).
@@ -302,6 +343,35 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
 - **Limits.** A plain `build` and `validate --full` stay on this PC. A pre-pool
   branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
   local only until it merges main.
+
+### Pass cache
+
+A suite that passed on byte-identical inputs is not booted again. Before it asks
+the pool for a slot, `test` hashes its inputs (`tools/lib/test-cache.mjs`) and
+looks the key up in `<main>/tmp/test-cache/<key>.json`, shared by every worktree.
+On a hit it prints `test: CACHED pass, same inputs as the run at <when> on
+<machine> in <worktree> (<passed>/<total> passed ...)`, appends that summary to
+`tmp/test-results/summaries.jsonl` with `"cached": true`, and exits 0 in about a
+second. `wt gate` and `wt ship` run `ci`, whose suite steps go through the same
+check, so a gate right after a green `--tier all` reuses it.
+
+- **The key**: git tree hashes of `addons/`, `tools/test/` and
+  `tools/lib/addons.mjs` from a throwaway copy of the index with every untracked
+  non-ignored file added; the hash of each `addons/*/resourceDatabase.rdb`; the
+  tier, the resolved `--only` list (order kept), `--world`, `--core-only`; the
+  launch addon list; this PC's server build id (the pool sends a run only to a
+  machine with that build). The machine is not in it: a gate already accepts a
+  pass from any pool machine, and `LF_Test_PerfBudget` is calibrated per
+  machine. Docs and the rest of `tools/` are not in it.
+- **What is stored**: passes only (exit 0, `failed=0`), written to a temp file
+  and renamed. A failure, a timeout or a no-verdict run is never stored; a
+  corrupt or unreadable file is a miss.
+- **Never cached**: `--no-cache`, `LF_TEST_CACHE=0`, `--tier persistence`,
+  red-proof runs (`--red`), `dev` (it prints that run's debug lines), `e2e`, and
+  the placement audit's test run. A remote leg runs with `--no-cache`; the
+  caller owns the cache.
+- `runs.jsonl` rows of a cacheable run carry `cacheKey` (16 hex), so the hit rate
+  can be counted later.
 
 ### Workbench limit and the remote gate
 

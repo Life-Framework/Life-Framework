@@ -348,6 +348,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuestSignal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestTracker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Quiz(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
@@ -447,6 +449,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignNext(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignPrice(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SignsOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Siren(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SirenDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);

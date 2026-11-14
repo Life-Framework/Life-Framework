@@ -328,3 +328,16 @@ SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFenc
 SCR_DestructibleBuildingEntity Village_Supermarket : "{BD5FE43FC26CAF21}Prefabs/Buildings/Supermarket/Supermarket.et" {
  coords 76 0.1 96.45
 }
+GenericEntity Roadmap_Bank_Vault : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
+ components {
+  LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+  }
+ }
+ coords 194.3 0.007 259.6
+ angleY 180
+}
+GenericEntity Roadmap_Bank_VaultHood : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
+ coords 194.4 2.9 259.944
+ angleY 180
+ scale 1.2
+}

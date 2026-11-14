@@ -97,7 +97,7 @@ for (const text of [fx("good.json"), fs.readFileSync(new URL("../../docs/config/
 
   const data = {
     template: JSON.parse(fs.readFileSync(new URL("../../docs/playtest/server-config.example.json", import.meta.url), "utf8")),
-    core: { id: /GUID "(\w+)"/.exec(fs.readFileSync(new URL("../../addons/LifeFramework/LifeFramework.gproj", import.meta.url), "utf8"))[1], name: "Life Framework", scenario: "{1054CC8646357708}Missions/LF_PlaytestTown.conf" },
+    core: { id: /GUID "(\w+)"/.exec(fs.readFileSync(new URL("../../addons/LifeFramework/LifeFramework.gproj", import.meta.url), "utf8"))[1], name: "Life Framework", scenario: "{5A1E5A1E5A1E0002}Missions/EL_DebugTest.conf" },
     pack: { id: /GUID "(\w+)"/.exec(fs.readFileSync(new URL("../../addons/LF_Everon1989/LF_Everon1989.gproj", import.meta.url), "utf8"))[1], name: "Life Framework: Everon 1989", scenario: "{C638C03B775C31BB}Missions/LF_Everon1989.conf" },
   };
   const o = defaultServerOpts(data);

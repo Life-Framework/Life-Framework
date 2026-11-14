@@ -136,6 +136,10 @@
     "applyRejectCooldownHours": 72,
     "trialHours": 168
   },
+  "rulesQuiz": {
+    "passPercent": 80,
+    "maxAttempts": 3
+  },
   "shops": {
     "defaultBuyPrice": 50,
     "defaultSellPrice": 25,
