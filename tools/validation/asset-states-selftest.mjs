@@ -1,5 +1,5 @@
 // Proves the asset states stage offline (tools/assets/pipeline/states.mjs, docs/asset-pipeline/states.md)
-// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
+// inputs: tools/**, agent-box/**, .githooks/**
 // and the concept rubric's implementability half (concepts.mjs): the hand-pose maths against what the
 // engine was measured to do, the spec checks, the prefab writer, that every committed spec with states
 // matches its prefab, and that a concept set with states is picked on looks and build together.

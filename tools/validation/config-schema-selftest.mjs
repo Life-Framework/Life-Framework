@@ -1,5 +1,5 @@
 // Proves the config schema generator parses attributes and that validate-config-schema
-// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
+// inputs: tools/**, agent-box/**, .githooks/**
 // goes red on a stale schema or a bad example. Fixture: fixtures/config-schema/Demo/*.c.
 //
 // red-proof: with the range parse in attrInfo nulled the run printed "FAIL cooldown:

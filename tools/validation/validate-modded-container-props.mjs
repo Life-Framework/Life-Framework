@@ -1,5 +1,5 @@
 // A `modded class` of a base-game config class repeats the base's container attribute.
-// inputs: addons/**, tools/mcp-call.mjs
+// inputs: addons/**/Scripts/**, tools/mcp-call.mjs
 //
 // Enfusion reads `[BaseContainerProps()]` / `[BaseContainerCustomTitle...]` from the class a config
 // entry names. A modded copy that drops the attribute replaces the base class without it, so every

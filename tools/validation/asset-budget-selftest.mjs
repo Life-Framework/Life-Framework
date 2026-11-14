@@ -1,5 +1,5 @@
 // Proves the per-kind triangle budgets (tools/assets/pipeline/budgets.mjs) offline: no Blender, no
-// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
+// inputs: tools/**, agent-box/**, .githooks/**
 // Workbench. The numbers are checked against the vanilla range the table cites, and the three
 // committed pipeline specs must pass the budget they are measured by.
 // red-proof: 2026-11-14, one line broken, restored after its FAIL was seen:
