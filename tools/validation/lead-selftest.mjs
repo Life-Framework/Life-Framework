@@ -7,13 +7,18 @@
 //   4. issues split into code / working / in-dev / playtest / human by label (human beats playtest beats in-dev),
 //      and M2.5 is not M2;
 //   5. PRs sort CONFLICTING first, and the conflict hint says generated-only versus needs-human;
-//   6. `pool status` text parses to machines, lanes, RAM, temperature and queue.
+//   6. the pool section keeps every machine: a fake slow machine (kept answering after its stage-one report, or
+//      never) is cut at its own timeout and shows "slow" or "DOWN" with what it had, the rest print in full, the
+//      overall budget line prints when it cuts someone, and a machine under its RAM floor draws a warning;
+//   7. the ship queue line counts gating and queued entries and names the oldest wait.
 // inputs: tools/**
 // red-proof: 2026-11-14, with mergedVerdict changed to call any merged PR on the branch name a hit (the tip
 // comparison removed) the checks "commits after the merged PR keep it" and "the reason is given" failed; restored.
+// 2026-11-15, with gatherPool's per-machine timer removed (a slow machine waited for, as the old single
+// `pool status` call did) the slow-machine checks failed (the section budget cut it at 2 s instead, the "machine" cut and its 0.2 s note failed); restored.
 import {
   classifyWorktree, conflictHint, issueState, mergedVerdict, milestoneCounts, milestoneKey, milestoneLine,
-  parsePoolStatus, poolLine, prLine, sortPrs, unregisteredDirs, worktreeSummary, IDLE_MS,
+  gatherPool, poolLine, poolLines, prLine, shipQueueLine, sortPrs, timeoutHealth, unregisteredDirs, worktreeSummary, IDLE_MS,
 } from "../lib/lead.mjs";
 
 const failures = [];
@@ -88,24 +93,61 @@ eq(conflictHint(null).startsWith("conflicts: ?"), true, "unknown branch");
 const line = prLine(pr(7, { mergeStateStatus: "DIRTY", mergeable: "CONFLICTING", statusCheckRollup: [{ __typename: "CheckRun", status: "COMPLETED", conclusion: "FAILURE" }] }), NOW, "generated-only (1): prs heal fixes it");
 eq(/^#7 p7 +CONFLICT +FAIL 1\/1 +2h +generated-only/.test(line), true, "PR line");
 
-// 6. pool status text, as printed by `tools\cli pool status`
-const text = [
-  "local  this PC (Gaming-Box)  up  build 26257316  RAM 2.2/15.6 GB free (floor 1.5)  up to 2 test + 2 session lane(s) (port range allows 64 + 32), as RAM allows  (3 lane(s) free or stale)",
-  "    test     server-test-1   e2e-pre-move     e2e        age  27m  idle    -  run 1621s of 90s budget",
-  "lf-testbox  ssh lf-testbox  slow (answered 9 s ago)  build 26257316  RAM 4.1/15.2 GB free (floor 1.5)  38.1 \u00b0C (holds new jobs at 90)  up to 5 test + 2 session lane(s) (port range allows 64 + 32), as RAM allows  (7 lane(s) free or stale)",
-  "lf-cloud  ssh lf-cloud  DOWN",
-  "workbench (this PC): 0/1 busy",
-  "queue: 3 waiting (high > normal > low)",
-].join("\n");
-const pool = parsePoolStatus(text);
-eq(pool.queue, 3, "queue length");
-eq(pool.machines.map((m) => [m.name, m.health, m.freeGb, m.totalGb, m.tempC, m.lanes, m.busy]), [
-  ["local", "up", 2.2, 15.6, null, 4, 1],
-  ["lf-testbox", "slow", 4.1, 15.2, 38.1, 7, 0],
-  ["lf-cloud", "DOWN", null, null, null, null, 0],
-], "machines");
-eq(poolLine(pool.machines[0]), "local       RAM 2.2/15.6 GB free  lanes 1/4 busy", "pool line");
-eq(poolLine(pool.machines[2]).includes("DOWN"), true, "a down machine says so");
+// 6. the pool section: parallel probes, a per-machine timeout, partial rows, a section budget, a RAM warning
+const snap = (name, o) => ({ name, health: "up", freeGb: 8, totalGb: 15.6, floorGb: 1.5, tempC: null, lanes: 4, busy: 1, ...o });
+const sleep = (ms, signal) => new Promise((res) => { const t = setTimeout(res, ms); signal?.addEventListener("abort", () => { clearTimeout(t); res(null); }); });
+const fakes = {
+  fast: async (m, { report }) => { report(snap(m.name, { freeGb: null })); return snap(m.name); },
+  // answers the health probe, then the RAM and lane read hangs (lf-cloud on a bad day)
+  slow: async (m, { report, signal }) => { report(snap(m.name, { freeGb: null, totalGb: null })); await sleep(4000, signal); return snap(m.name); },
+  silent: async (m, { signal }) => { await sleep(4000, signal); return snap(m.name); },
+  boom: async () => { throw new Error(["spawn failed", "second line"].join(String.fromCharCode(10))); },
+};
+const machines = ["fast", "slow", "silent", "boom"].map((name) => ({ name }));
+const t0 = Date.now();
+const g = await gatherPool({ machines, probe: (m, o) => fakes[m.name](m, o), machineMs: 200, budgetMs: 2000, fallback: (m) => (m.name === "silent" ? "DOWN" : "slow") });
+const took = Date.now() - t0;
+eq(g.snaps.map((m) => m.name), ["fast", "slow", "silent", "boom"], "every machine keeps a row, in pool order");
+eq(g.snaps[0].health, "up", "the fast machine is up");
+eq(g.snaps[0].freeGb, 8, "the fast machine has its full snapshot");
+eq([g.snaps[1].health, g.snaps[1].cut, g.snaps[1].note], ["slow", "machine", "no RAM or lane answer in 0.2 s"], "a machine that stops after its health probe is slow, not dropped");
+eq([g.snaps[2].health, g.snaps[2].cut, g.snaps[2].note], ["DOWN", "machine", "no answer in 0.2 s"], "a machine that never answers takes the fallback verdict");
+eq([g.snaps[3].health, g.snaps[3].note], ["slow", "probe failed: spawn failed"], "a probe that throws is one row, first line only");
+eq(took < 1500, true, "the section took the slow machine's timeout, not its 4 s");
+eq(g.exceeded, false, "no machine was cut by the section budget");
+const lines = poolLines({ snaps: g.snaps, queue: 2, exceeded: g.exceeded, budgetMs: 2000, elapsedMs: g.elapsedMs });
+eq(lines[0], "POOL queue 2 waiting", "queue count heads the section");
+eq(lines.length, 5, "a header and one row per machine, no warning");
+eq(lines[2].includes("** slow: no RAM or lane answer in 0.2 s **"), true, "the slow row says why");
+eq(lines[3].includes("** DOWN: no answer in 0.2 s **"), true, "the dead row says why");
+eq(lines[2].includes("RAM ?  lanes ?/4 busy"), true, "a cut machine does not claim a lane count it never read");
+
+const b2 = await gatherPool({ machines: machines.slice(0, 3), probe: (m, o) => fakes[m.name](m, o), machineMs: 5000, budgetMs: 150, fallback: () => "slow" });
+eq(b2.exceeded, true, "the section budget cut a machine that was inside its own limit");
+eq(b2.snaps.map((m) => m.cut ?? null), [null, "budget", "budget"], "only the silent ones were cut by the budget");
+const bl = poolLines({ snaps: b2.snaps, queue: 0, exceeded: true, budgetMs: 150, elapsedMs: b2.elapsedMs });
+eq(bl.at(-1).startsWith("  pool budget 0.2 s exceeded after 0.") && bl.at(-1).endsWith("s: partial rows for slow (slow), silent (slow)"), true, "the budget line is printed and names who was cut");
+
+const low = poolLines({ snaps: [snap("local", { freeGb: 0.5 }), snap("lf-testbox", { freeGb: 4.5 })], queue: 0 });
+eq(low.filter((l) => l.includes("WARN RAM")), ["  WARN RAM: local has 0.5 GB free, under its 1.5 GB floor (it takes no new job until RAM frees)"], "only the machine under its floor is warned about");
+eq(poolLines({ snaps: [snap("local", { freeGb: 1.5 })], queue: 0 }).some((l) => l.includes("WARN")), false, "exactly at the floor is not under it");
+eq(poolLines({ snaps: [snap("local", { freeGb: null, floorGb: null })], queue: 0 }).some((l) => l.includes("WARN")), false, "unknown RAM is not a warning");
+eq(poolLine(snap("local")), "local       RAM 8/15.6 GB free  lanes 1/4 busy", "pool line");
+eq(timeoutHealth({ okAt: 1000 }, 1000 + 4 * MIN, 5 * MIN), "slow", "answered 4 min ago: slow");
+eq(timeoutHealth({ okAt: 1000 }, 1000 + 6 * MIN, 5 * MIN), "DOWN", "answered 6 min ago: down");
+eq(timeoutHealth(null, 1000, 5 * MIN), "DOWN", "never answered: down");
+
+// 7. ship queue line
+const iso = (minAgo) => new Date(NOW - minAgo * MIN).toISOString();
+const sq = { entries: [
+  { slug: "tier-perf", pr: 1311, state: "gating", enqueuedAt: iso(40), startedAt: iso(20) },
+  { slug: "b-late", pr: 1320, state: "queued", enqueuedAt: iso(3) },
+  { slug: "a-early", pr: 1299, state: "queued", enqueuedAt: iso(14) },
+  { slug: "old", pr: 1, state: "passed", enqueuedAt: iso(500), endedAt: iso(400) },
+] };
+eq(shipQueueLine(sq, NOW), "SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (a-early #1299)", "gating, queued and the oldest wait");
+eq(shipQueueLine({ entries: [] }, NOW), "SHIP QUEUE 0 gating, 0 queued", "an empty queue");
+eq(shipQueueLine({ entries: [{ slug: "x", state: "merging", enqueuedAt: iso(9) }] }, NOW), "SHIP QUEUE 1 gating, 0 queued", "a gating entry alone has no wait");
 
 if (failures.length) {
   for (const f of failures) console.log(`FAIL lead: ${f}`);

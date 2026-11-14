@@ -2769,6 +2769,48 @@ export async function cmdPoolPruneIdle(root, flags = []) {
   return fail;
 }
 
+// One machine as `tools\cli lead` shows it: health, live RAM against the floor, busy lanes. It does what the
+// machine's block of `pool status` reads, minus the idle-session reaping and the lane rows. `lead` runs one
+// of these per machine in its own process, in parallel, and kills a slow one, so report(snap) is called after
+// the health probe and again with the whole snapshot: a caller that cuts the run short keeps what it had.
+export function poolSnapshot(root, m, report = () => {}) {
+  const settings = poolSettings(root);
+  const rows = m.lanes ? [...lanesFor(m, "session"), ...lanesFor(m, "test")] : lanesFor(m, "test");
+  const gb = (mb) => Math.round((mb / 1024) * 10) / 10;
+  const snap = { name: m.name, health: "?", freeGb: null, totalGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
+  const h = probe(root, m, { fresh: true });
+  snap.health = healthWord(h).replace(/\s*\(.*\)$/, "");
+  report({ ...snap });
+  if (!h.reachable) return snap;
+  if (m.via === "local") {
+    snap.freeGb = gb(Math.round(freemem() / 1048576));
+    snap.totalGb = gb(Math.round(totalmem() / 1048576));
+    snap.busy = rows.filter((l) => {
+      const info = readJson(localLockFile(root, l.lock), null);
+      return info && pidAlive(info.pid);
+    }).length;
+  } else {
+    const st = remoteState(m);
+    if (st) {
+      if (Number.isFinite(st.freeMb)) {
+        snap.freeGb = gb(st.freeMb);
+        snap.totalGb = gb(st.totalMb);
+      }
+      if (Number.isFinite(st.thermalC)) snap.tempC = st.thermalC;
+      snap.busy = rows.filter((l) => st.locks[l.lock]?.alive).length;
+    } else {
+      snap.health = "slow";
+      snap.note = "reachable, but the RAM and lane read failed";
+    }
+  }
+  return snap;
+}
+
+// The last health record `probe` stored for a machine (okAt, fails, ...), or null.
+export function lastHealth(root, name) {
+  return readJson(healthFile(root), {})[name] ?? null;
+}
+
 export function cmdPool(root, args = []) {
   const [sub, ...rest] = args;
   if (sub === "status" || !sub) return cmdPoolStatus(root, rest.includes("--verbose") || process.env.LF_OUTPUT === "full");
