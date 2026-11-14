@@ -15,6 +15,14 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7B5C21D0A9E34F10}" {
+      CameraPreset Front
+      CameraOrbitAngles -80 0 90
+      CameraDistanceToItem 0.32
+      FOV 20
+     }
+    }
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
      Name "#LF-IdCard_ItemName"
      Description "#LF-IdCard_ItemDesc"
@@ -23,28 +31,28 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
      Weight 0.2
      SizeSetupStrategy Volume
      ItemVolume 113
-     RestingUP Forward
+     RestingUP Up
      RestingAdditiveRotationLS 0 0 0
      RestingAdditiveOffsetLS 0 0 -0.008
     }
     ItemAnimationAttributes ItemAnimationAttributes "{6BD27321C1406B52}" {
      AnimationAttachments {
       AnimationAttachmentInfo "{9BC36903877C246B}" {
-       AnimGraph "{883777E45A6C4DA1}Assets/Items/Medicine/Workspaces/Gauze_01.agr"
-       AnimInstance "{79BD98038DD60F88}Assets/Items/Medicine/Workspaces/Gauze_01_player.asi"
+       AnimGraph "{82906ACD75DF8523}Assets/Items/Equipment/workspaces/Flashlight_MX991.agr"
+       AnimInstance "{903E4A0B96B34B8F}Assets/Items/Equipment/workspaces/MX991_player.asi"
        BindingName "Gadget"
       }
      }
-     HandAdditiveRotation -65 -60 -60
-     HandAdditiveTranslation -0.07 0.03 -0.01
+     HandAdditiveRotation 90 -141.98 0
+     HandAdditiveTranslation 0 0.075 0
     }
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
+   Object "{64924D5744FF964C}Assets/Items/Roleplay/Paper/IdCardPhoto/IdCardPhoto.xob"
   }
   SCR_GadgetComponent "{9A7553FE5FE4D3D0}" {
-   m_eAnimVariable LF_ITEM
+   m_eAnimVariable MX991
   }
  }
 }

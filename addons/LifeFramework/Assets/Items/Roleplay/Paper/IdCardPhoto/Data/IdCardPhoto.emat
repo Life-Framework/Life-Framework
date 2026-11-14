@@ -1,0 +1,5 @@
+MatPBRBasic {
+ Color 0.6 0.6 0.6 1
+ BCRMap "{9D05D8548414D369}Assets/Items/Roleplay/Paper/IdCardPhoto/Data/IdCardPhoto_BCR.edds"
+ NMOMap "{70BC5D78F0F1F55B}Assets/Items/Roleplay/Paper/IdCardPhoto/Data/IdCardPhoto_NMO.edds"
+}

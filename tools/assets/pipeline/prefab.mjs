@@ -5,7 +5,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { freshGuid, readGuid } from "./meta.mjs";
+import { addonPath, guidsInUse } from "./addon.mjs";
 
 const PLATFORMS = ["PC", "XBOX_ONE", "XBOX_SERIES", "PS4", "HEADLESS"];
 
@@ -161,13 +162,13 @@ export async function writePrefabs(ctx) {
   if (!w?.name_key || !w?.description_key || !w?.magazine_name_key || !w?.magazine_description_key) {
     throw new Error("spec.weapon needs name_key, description_key, magazine_name_key and magazine_description_key (string table keys, with the #)");
   }
-  const addon = join(root, "addons", "LifeFramework");
+  const addon = addonPath(root, spec); // the spec's addon (#971), the core by default
   const report = JSON.parse(readFileSync(join(dir, "clean", "report.json"), "utf8"));
   const xobRes = `${spec.asset_dir}/${spec.name}.xob`;
   const xobGuid = readGuid(join(addon, xobRes + ".meta"));
   if (!xobGuid || !existsSync(join(addon, xobRes))) throw new Error(`no imported model at ${xobRes}; run the import stage first`);
 
-  const used = usedGuids(addon);
+  const used = guidsInUse(root);
   const files = {
     ammo: `${spec.prefab_dir}/Ammo_${spec.name}.et`,
     conf: `Configs/Weapons/Ammo/LF_Ammo_${spec.name}.conf`,

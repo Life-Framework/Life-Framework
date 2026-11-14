@@ -387,6 +387,14 @@ class LF_PersistenceManagerComponent : ScriptComponent
 			return;
 		}
 
+		// #980: the load lost data, or a continued save never reached the store. An autosave now
+		// would overwrite the AUTO save point with what is left; the operator restores a backup.
+		if (LF_PersistenceComponentSerializer.IsLoadDamaged())
+		{
+			LF_Debug.Error("Persistence", "autosave tick skipped: the save load was damaged, autosave stays paused until the server restarts on a good save (docs/ops/game-updates.md)");
+			return;
+		}
+
 		SaveGameManager manager = GetGame().GetSaveGameManager();
 		if (!manager || manager.IsBusy())
 		{
@@ -823,10 +831,26 @@ class LF_PersistenceManagerComponent : ScriptComponent
 			m_bSaveCacheSeeded = true;
 
 			// The store deserializes before ACTIVE. A continued save that never reached it was
-			// written before the pre-release LF_ rename: its component keys do not match, nothing of
-			// ours loads, and the world starts fresh. Say so once instead of failing silently.
+			// written before the pre-release LF_ rename (its component keys do not match), or a game
+			// update made the engine drop it (1.7.0.41 did, #980): nothing of ours loads and the world
+			// starts fresh. Say so once, and pause autosave so the save on disk is not overwritten.
 			if (!LF_PersistenceComponentSerializer.WasStoreLoaded())
-				LF_Debug.Warn("Persistence", "save predates the LF_ rename; starting fresh");
+			{
+				LF_PersistenceComponentSerializer.MarkStoreMissing();
+				LF_Debug.Error("Persistence", string.Format("continued save never reached the LF store (game build %1): the save predates the LF_ rename or the engine dropped it; starting fresh with autosave paused, the save on disk is kept (docs/ops/game-updates.md)", LF_SaveStamp.CurrentGameBuild()));
+			}
+
+			// #980: the boot load lost data. Every save from here (autosave, manual, and the engine's
+			// own shutdown save) would become the latest save point with what is left, so saving is
+			// turned off for this session; the operator restores a backup.
+			if (LF_PersistenceComponentSerializer.IsLoadDamaged())
+			{
+				SaveGameManager saves = GetGame().GetSaveGameManager();
+				if (saves)
+					saves.SetSavingAllowed(false);
+
+				LF_Debug.Error("Persistence", "saving disabled for this session: the boot load was damaged, so no save point overwrites the save on disk (tools/cli host restore, docs/ops/game-updates.md)");
+			}
 		}
 	}
 

@@ -1,0 +1,15 @@
+{
+  "slug": "dispatch-console",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "meshy-6-lite",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d968-f321-7392-b051-8505218037eb",
+      "concept": 3,
+      "conceptTaskId": "01a1d95c-3238-725c-ab3b-9b48909563ef",
+      "conceptPrompt": "A 1989 police radio dispatch desk set for a small-town station in Eastern Europe: a low wide console that sits on a desk, with a sloping button panel, a speaker, a handset in a cradle and a stubby desk microphone. Cream plastic cabinet with brown side panels, a sloping panel of piano-style channel keys and indicator lamps, a speaker grille, a handset on the right, a desk microphone. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

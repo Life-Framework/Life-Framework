@@ -10,7 +10,7 @@ class LF_HideoutMachineComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_HideoutMachineComponent : ScriptComponent
 {
-	[Attribute("Roadmap_Hideout", UIWidgets.EditBox, desc: "Hideout id this machine belongs to.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Hideout id (the layer sets it) this machine belongs to.")]
 	protected string m_sHideoutId;
 
 	//------------------------------------------------------------------------------------------------

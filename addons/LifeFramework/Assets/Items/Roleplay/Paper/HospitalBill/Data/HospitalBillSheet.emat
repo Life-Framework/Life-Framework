@@ -1,0 +1,5 @@
+MatPBRBasic {
+ Color 0.6 0.6 0.6 1
+ BCRMap "{9A4E40493E593C25}Assets/Items/Roleplay/Paper/HospitalBill/Data/HospitalBillSheet_BCR.edds"
+ NMOMap "{0DEC625A43CD5D7D}Assets/Items/Roleplay/Paper/HospitalBill/Data/HospitalBillSheet_NMO.edds"
+}

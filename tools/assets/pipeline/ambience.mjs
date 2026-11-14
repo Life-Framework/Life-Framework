@@ -22,7 +22,8 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import * as eleven from "./elevenlabs.mjs";
 import { acpMeta, acpProblems, encodeWav, ffmpegExe, loopSeam, normalisePeak, trimSilence, wavInfo, wavMeta } from "./sound.mjs";
-import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { freshGuid, readGuid } from "./meta.mjs";
+import { addonFlag, addonOf, addonPath, addonProblems, assertBoundary, guidsInUse, withAddon } from "./addon.mjs";
 
 export const EVENT = "SOUND_LF_AMBIENT_LP";
 export const PROJECT_DIR = "Sounds/Atmosphere";
@@ -417,14 +418,18 @@ export function stepProcess(root) {
   if (bad) throw new Error(`${bad} problem(s) in the processed takes`);
 }
 
-export function stepWire(root) {
+// The addon is the record's `addon` field, or `--addon` (#971); the core by default.
+export function stepWire(root, override) {
   const rec = readRec(root);
+  const target = withAddon(rec, override);
+  const targetProblems = addonProblems(root, target);
+  if (targetProblems.length) throw new Error("addon problems:\n  " + targetProblems.join("\n  "));
   const problems = specProblems(rec);
   if (problems.length) throw new Error("ambience.json problems:\n  " + problems.join("\n  "));
   const unpicked = rec.sounds.filter((s) => !s.pick).map((s) => s.id);
   if (unpicked.length) throw new Error(`no pick for: ${unpicked.join(", ")}. Read the review pictures, then set "pick" and "reason".`);
-  const addon = join(root, "addons", "LifeFramework");
-  const used = usedGuids(addon);
+  const addon = addonPath(root, target);
+  const used = guidsInUse(root);
   const place = (rel, text) => {
     const file = join(addon, rel);
     const guid = readGuid(file + ".meta") || freshGuid(used);
@@ -457,7 +462,8 @@ export function stepWire(root) {
     console.log(`  ${s.id.padEnd(12)} ${ref}  ${s.inner_m}-${s.outer_m} m  ${s.volume_db} dB`);
   }
   writeRec(root, rec);
-  console.log(`wire: ${rec.sounds.length} project(s) under addons/LifeFramework/${PROJECT_DIR}`);
+  assertBoundary(root, target);
+  console.log(`wire: ${rec.sounds.length} project(s) under addons/${addonOf(target)}/${PROJECT_DIR}`);
   return rec;
 }
 
@@ -476,7 +482,7 @@ export async function main(root, flags) {
   const value = (name) => { const i = flags.indexOf(name); return i >= 0 ? flags[i + 1] : undefined; };
   const only = value("--only");
   if (flags.includes("--help") || (only && !["generate", "process", "wire"].includes(only))) {
-    console.log("usage: tools\\cli asset ambience [--status | --only generate|process|wire] [--again <sound id>]\nspec: tools/assets/atmosphere/ambience.json   doc: docs/architecture/atmosphere.md");
+    console.log("usage: tools\\cli asset ambience [--status | --only generate|process|wire] [--again <sound id>] [--addon <name>]\nspec: tools/assets/atmosphere/ambience.json   doc: docs/architecture/atmosphere.md");
     return 2;
   }
   if (flags.includes("--status")) return cmdStatus(root);
@@ -484,7 +490,7 @@ export async function main(root, flags) {
   if (wt.isMainCheckout(root)) { console.log("FAIL  asset ambience runs only in a worktree"); return 1; }
   if (!only || only === "generate") { console.log("--- ambience: generate"); await stepGenerate(root, { again: value("--again") }); }
   if (!only || only === "process") { console.log("--- ambience: process"); stepProcess(root); }
-  if (only === "wire" || (!only && readRec(root).sounds.every((s) => s.pick))) { console.log("--- ambience: wire"); stepWire(root); }
+  if (only === "wire" || (!only && readRec(root).sounds.every((s) => s.pick))) { console.log("--- ambience: wire"); stepWire(root, addonFlag(flags)); }
   return 0;
 }
 
