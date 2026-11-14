@@ -2848,10 +2848,12 @@ async function ciWorkbench(root, opts = {}) {
 function ciWorkbenchInSession(root) {
   const dir = join(root, "tmp", "wb-session");
   mkdirSync(dir, { recursive: true });
-  const [log, codeFile, ps1] = ["ci.log", "ci.code", "ci.ps1"].map((n) => join(dir, n));
-  for (const f of [log, codeFile]) rmSync(f, { force: true });
+  const [log, codeFile, ps1, pidFile] = ["ci.log", "ci.code", "ci.ps1", "ci.pid"].map((n) => join(dir, n));
+  for (const f of [log, codeFile, pidFile]) rmSync(f, { force: true });
   const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
+  const t0 = Date.now();
   writeFileSync(ps1, [
+    `Set-Content -LiteralPath ${q(pidFile)} -Value $PID`,
     "$env:LF_WB_INTERACTIVE = '1'",
     `Set-Location -LiteralPath ${q(root)}`,
     `& ${q(process.execPath)} tools\\cli.mjs ci --wb-only --local *> ${q(log)}`,
@@ -2861,6 +2863,17 @@ function ciWorkbenchInSession(root) {
   const r = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, "tools", "remote", "desktop", "run-interactive.ps1"),
     "-Exe", "powershell.exe", "-WorkDir", root, "-WaitSec", "2400", "-Arguments", `-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "${ps1}"`], { cwd: root });
   process.stdout.write(r.stdout + r.stderr);
+  // The wait follows the scheduled task. On lf-cloud (2026-11-14) the task was deleted while its run went on
+  // (and passed): the wait ended at 218 s with no exit code and the gate re-ran here. Without a code yet,
+  // wait on the desktop PowerShell itself for the rest of the 2400 s budget.
+  if (!existsSync(codeFile) && existsSync(pidFile)) {
+    const pid = Number(readFileSync(pidFile, "utf8").trim());
+    const left = Math.max(0, 2400 - Math.round((Date.now() - t0) / 1000));
+    if (Number.isInteger(pid) && pid > 0 && left > 0) {
+      console.log(`ci: the desktop task ended its wait early; waiting on its PowerShell (pid ${pid}, up to ${left} s)`);
+      sh(PWSH, ["-NoProfile", "-Command", `Wait-Process -Id ${pid} -Timeout ${left} -ErrorAction SilentlyContinue`], { cwd: root });
+    }
+  }
   if (existsSync(log)) {
     // Windows PowerShell's *> writes UTF-16 LE with a BOM.
     const buf = readFileSync(log);

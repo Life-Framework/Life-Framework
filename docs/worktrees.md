@@ -761,6 +761,70 @@ tools\cli testbox vdd                        # (re)install the virtual display d
   loopback alone measured -30.9 dB mean. Not yet measured: a capture with the
   lid closed, on the virtual display.
 
+### A rented box
+
+A rented Windows box joins the pool with one script on the box and one command here. `lf-cloud` (AirGPU,
+Windows Server 2025, 8 vCPU, 31.6 GB RAM, Tesla T4, billed by the hour, never idle-stopped) joined this way on
+2026-11-14. Treat a rented box as untrusted: it gets a public key and an anonymous HTTPS clone, never a token,
+password or repo credential.
+
+1. **Tailscale key.** In the Tailscale admin console, make a one-off auth key with a tag (for example
+   `tag:pool`). A tagged key joins the box without anyone signing in to Tailscale on it.
+2. **On the box**, in PowerShell run as administrator:
+
+   ```powershell
+   irm https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/tools/remote/setup-cloud-box.ps1 | iex
+   ```
+
+   It asks for the auth key and then does the rest: power never sleeps, OpenSSH with key login only and port 22
+   open to Tailscale addresses only, Tailscale, Git, Node 22 and Steam. Steam opens with the Arma Reforger and Tools
+   installs queued. The one manual step is the Steam sign-in.
+3. **Steam window.** On a cloud GPU box Steam's window stays blank unless its web views run without the GPU.
+   The setup script starts it with `-cef-disable-gpu -cef-disable-gpu-compositing`; restart it the same way.
+4. **ssh.** Add a `Host lf-cloud` entry to `~/.ssh/config` on this PC (the box's Tailscale address, user, key).
+   The address stays out of the repo.
+5. **Provision** from the main checkout: `tools\cli testbox provision --host lf-cloud`. It uses a complete
+   dedicated server (app 1874900) in the box's Steam library; Steam keeps that copy on the current build, as on
+   this PC. Without one it installs the server through SteamCMD anonymously into `C:\LF\ArmaReforgerServer`,
+   which does not update itself, so run `provision` again after a server update. It then clones the repo to
+   `C:\LF\Life-Framework` and sends the rdb (above). `pool status` must show the same server build as this PC.
+   A provision stopped part-way leaves SteamCMD running on the box; the next run waits for it.
+6. **Join the pool** with the gitignored `lf.local.json`. A rented box stays out of `tools/pool.json`.
+   Give the same entry to both sides: this PC's `lf.local.json`, and the box's own
+   `C:\LF\Life-Framework\lf.local.json` with `hostname` set to the box's hostname. On the box, the box-side
+   copy makes the entry the local machine, so `session up` uses its own lanes there and not `tools/pool.json`'s
+   `local` lanes. `provision` keeps that key.
+
+   ```json
+   "pool": { "machines": [ { "name": "lf-cloud", "via": "ssh", "host": "lf-cloud", "root": "C:/LF/Life-Framework",
+     "hostname": "airgpu", "slots": 1, "lanes": { "test": 8, "session": 4 },
+     "caps": ["server", "clients", "workbench"], "budgetMultiplier": 2 } ] }
+   ```
+
+   Start with `"caps": ["server"]`. Add `clients` once a pinned `session up --machine lf-cloud --clients 1`
+   joins. Add `workbench` once the box's Workbench has run a gate: `ci --remote lf-cloud` must print
+   `Workbench compile + build on lf-cloud: exit 0`. `--wb-only` runs here and proves nothing about the box.
+   `{"name": "lf-cloud", "disabled": true}` takes it out. Session lanes stop at 4 (`pool.mjs`). Test lane k
+   uses port 2001+k, so more than 9 test lanes would collide with session port 2011. A box-side
+   `"workbenchLimit": 2` under `pool` lets two headless Workbenches run at once there.
+
+**Measured on lf-cloud, 2026-11-14.** Its free RAM was 25 GB with Steam running; a server is about 0.7 GB and a
+client about 1 GB. The box runs about 2x slower per thread than this PC (the perf test's calibration loop took 33 ms
+against the 16 ms reference). It starts with generous lanes (8 test, 4 session) and loses some only on real
+timeouts, or when runs under load take more than about 2x a single run. With several suites running together,
+`LF_Test_PerfBudget` `money-event-at-cap-us` once came in just over its load-scaled budget (333 against 300 µs). A
+lone `test all` took about 50 s there; under load it took 50 to 99 s. This PC's median is 18 s and the laptop's
+42 s, so lf-cloud's `budgetMultiplier` is 2. A server-only session was ready in 21 s. A 1-client session joined in
+40 s (101 s on the first client launch). The Workbench compile took 94 s.
+On the first gate that went there, the wait for the box's one Workbench slot (505 s, behind another gate) was most
+of the time.
+
+**Shared Steam account.** A Steam account runs one game at a time, so two machines signed in to the same account
+cannot both run game clients. `lf-cloud` and `lf-testbox` share an account. The machine with clients keeps the
+`clients` cap. The other machine gets a `caps` override in this PC's `lf.local.json` without it, for example
+`{"name": "lf-testbox", "caps": ["server", "workbench"]}`, and keeps taking tests and server-only sessions. Steam
+also pauses its downloads while a client runs, so a box still downloading Tools gets no further during sessions.
+
 ## Live reload (#970)
 
 Scripts and the string table are compiled in and cannot be read again in a running game, and the engine

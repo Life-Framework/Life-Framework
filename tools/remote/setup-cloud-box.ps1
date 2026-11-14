@@ -197,7 +197,9 @@ if (-not $SkipSteam) {
     }
     if (-not (Test-Path $steamExe)) { throw "steam.exe is missing after the install" }
     # Opens Steam and queues both installs; they start once someone has signed in.
-    Start-Process $steamExe
+    # On a cloud GPU box (AirGPU, Tesla T4) Steam's web views draw nothing unless
+    # their GPU path is off: without these two flags the window stays blank.
+    Start-Process $steamExe -ArgumentList "-cef-disable-gpu", "-cef-disable-gpu-compositing"
     Start-Sleep -Seconds 5
     Start-Process "steam://install/1874880"   # Arma Reforger
     Start-Process "steam://install/1874910"   # Arma Reforger Tools
