@@ -1,0 +1,209 @@
+{
+  "_doc": "Source of the NPC roles: outfits (vanilla clothing prefabs; GUIDs read from vanilla prefabs that reference them), the talk text, and which placed NPC has which role. `tools\\cli outfits generate` writes the outfit prefabs, the role table script, the strings and the layer prefab references from this file. Edit here, never the generated files. Era: Everon 1989.",
+  "bases": {
+    "default": "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et",
+    "civilian": "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et",
+    "teller": "{8F3DB2237B844542}Prefabs/Characters/Npcs/LF_BankTeller.et",
+    "fence": "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et",
+    "clerk": "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et",
+    "fuel": "{9FF2685A41D86574}Prefabs/Characters/Npcs/LF_FuelClerk.et"
+  },
+  "clothes": {
+    "suit_grey": { "Jacket": "{E652D625A46A00FC}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Grey_V1.et", "Pants": "{401072A652DD9849}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_grey_V1.et" },
+    "suit_brown": { "Jacket": "{52AB6EC3FE535303}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Brown_V1.et", "Pants": "{E65D5C9848AC18E9}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_brown_V1.et" },
+    "suit_black": { "Jacket": "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et", "Pants": "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et" },
+    "m88": { "Jacket": "{E44990162EBC47B7}Prefabs/Characters/Uniforms/Jacket_M88_base.et", "Pants": "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et" },
+    "shirt_v2": { "Jacket": "{86E0117B630414B5}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et" },
+    "shirt_v3": { "Jacket": "{637C5D826FE183DE}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V3.et" },
+    "shirt_v5": { "Jacket": "{BBD4344316689D82}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V5.et" },
+    "shirt_v6": { "Jacket": "{D78000A3AAAC12AC}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V6.et" },
+    "shirt_v1_dirty": { "Jacket": "{BE1CB68B053279DC}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V1_Dirty.et" },
+    "shirt_v4_dirty": { "Jacket": "{7F0CD5E5DF17FF15}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V4_Dirty.et" },
+    "shirt_v5_dirty": { "Jacket": "{810C95A02A459359}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V5_Dirty.et" },
+    "turtle_beige": { "Jacket": "{50F8B1F928F93ABD}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_beige.et" },
+    "turtle_blue": { "Jacket": "{6A3F994EFFE22995}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_DarkBlue.et" },
+    "turtle_grey": { "Jacket": "{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et" },
+    "denim_brown": { "Jacket": "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et" },
+    "denim_stripped_dirty": { "Jacket": "{23A15812C40D34C2}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_strippedShirt_dirty.et" },
+    "rain_green": { "Jacket": "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et" },
+    "trousers_brown": { "Pants": "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et" },
+    "trousers_grey": { "Pants": "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et" },
+    "trousers_grey_dirty": { "Pants": "{537FD11C135757AC}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey_Dirty.et" },
+    "fisherman_green": { "Pants": "{0B1F0174869E0351}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et" },
+    "boots_us": { "Boots": "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et" },
+    "boots_soviet_dirty": { "Boots": "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et" },
+    "cap_flat_grey": { "Hat": "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et" },
+    "cap_flat_light": { "Hat": "{6FEB0D9130EC400E}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_lightgrey.et" },
+    "cap_flat_blue_dirty": { "Hat": "{E97A86BB050ED6D1}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue_Dirty.et" },
+    "cap_trucker_everon": { "Hat": "{6D08415FD18F2775}Prefabs/Characters/HeadGear/Hat_TruckerCap_01/Hat_TruckerCap_01_everon.et" },
+    "cap_trucker_sawmill": { "Hat": "{554D761A11D3D7EC}Prefabs/Characters/HeadGear/Hat_TruckerCap_01/Hat_TruckerCap_01_sawmillregina.et" },
+    "cap_peaked": { "Hat": "{3523CB7D5961246B}Prefabs/Characters/HeadGear/Hat_PeakedCap_USSR_01/Hat_PeakedCap_USSR_01.et" },
+    "beret_black": { "Hat": "{200D967D2612147C}Prefabs/Characters/HeadGear/Hat_RadiovkaBeret_01/Hat_RadiovkaBeret_01_black.et" },
+    "hard_yellow": { "Hat": "{8F5261C6B57B95C8}Prefabs/Characters/HeadGear/Hat_Hard_01/Hat_Hard_01_yellow.et" },
+    "hard_white": { "Hat": "{DF26044449C06EAB}Prefabs/Characters/HeadGear/Hat_Hard_01/Hat_Hard_01_white.et" },
+    "hard_blue": { "Hat": "{024D6092DA006DD1}Prefabs/Characters/HeadGear/Hat_Hard_01/Hat_Hard_01_blue.et" },
+    "knit_black": { "Hat": "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et" },
+    "knit_brown": { "Hat": "{B9687B8829272E14}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_brown.et" },
+    "knit_red": { "Hat": "{D8D9EE7F3966589E}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et" },
+    "boonie_olive": { "Hat": "{8D75122D5BF561FB}Prefabs/Characters/HeadGear/Hat_Boonie_US_01/Hat_Boonie_US_olive.et" }
+  },
+  "common": {
+    "action": "Talk",
+    "ask_what": "What do you do here?",
+    "ask_where": "Can you point me somewhere?",
+    "ask_rumour": "Heard anything lately?",
+    "more": "One more thing.",
+    "bye": "Goodbye."
+  },
+  "roles": [
+    {
+      "id": "teller", "name": "Bank teller", "base": "teller",
+      "outfits": [["suit_grey", "boots_us"], ["suit_brown", "boots_us"]],
+      "greet": "Good day. Welcome to the bank. How can I help?",
+      "what": "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals.",
+      "where": "The post office is right beside us. The town board on the square lists the rest, and the police station is a short walk up the street.",
+      "rumour": "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business.",
+      "bye": "Good day. Mind your money."
+    },
+    {
+      "id": "clerk", "name": "Town clerk", "base": "clerk", "own_dialogue": true,
+      "outfits": [["suit_brown", "boots_us"]]
+    },
+    {
+      "id": "store_clerk", "name": "Store clerk", "base": "default",
+      "outfits": [["shirt_v3", "trousers_grey", "boots_us"], ["turtle_blue", "trousers_brown", "boots_us"]],
+      "greet": "Morning. Looking for something in particular?",
+      "what": "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in town does.",
+      "where": "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side.",
+      "rumour": "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either.",
+      "bye": "Take care out there."
+    },
+    {
+      "id": "fuel_clerk", "name": "Fuel station clerk", "base": "fuel", "own_dialogue": true,
+      "outfits": [["shirt_v2", "trousers_grey_dirty", "boots_soviet_dirty", "cap_trucker_everon"], ["shirt_v4_dirty", "trousers_brown", "boots_soviet_dirty", "cap_trucker_sawmill"]]
+    },
+    {
+      "id": "police", "name": "Police officer", "base": "default",
+      "outfits": [["m88", "boots_us", "cap_peaked"], ["m88", "boots_us", "beret_black"]],
+      "greet": "Officer on duty. Keep your hands where I can see them, and we will get along.",
+      "what": "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again.",
+      "where": "The station is the building behind me. The town board on the square lists everything else.",
+      "rumour": "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces.",
+      "bye": "Stay out of trouble."
+    },
+    {
+      "id": "medic", "name": "Doctor", "base": "default",
+      "outfits": [["suit_grey", "boots_us"], ["turtle_beige", "trousers_grey", "boots_us"]],
+      "greet": "Come in. Are you hurt?",
+      "what": "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse.",
+      "where": "If you need a bandage and I am not here, the general store keeps dressings by the counter.",
+      "rumour": "A lot of cuts from the sawmill this month. The men will not wear gloves.",
+      "bye": "Look after yourself."
+    },
+    {
+      "id": "farmer", "name": "Farmer", "base": "default",
+      "outfits": [["denim_brown", "trousers_brown", "boots_soviet_dirty", "cap_flat_grey"], ["shirt_v4_dirty", "trousers_grey_dirty", "boots_soviet_dirty", "knit_brown"]],
+      "greet": "Afternoon. Mind the beds, I just planted.",
+      "what": "Cabbages, mostly. Plant them, water them, pull them. They sell at the market square when they are ready.",
+      "where": "The market square is down the main street. The traders there pay fair for a good cabbage.",
+      "rumour": "Somebody has been pulling cabbages at night. I have started to sleep with the window open.",
+      "bye": "Good luck."
+    },
+    {
+      "id": "miner", "name": "Quarry worker", "base": "default",
+      "outfits": [["shirt_v1_dirty", "trousers_grey_dirty", "boots_soviet_dirty", "hard_yellow"], ["shirt_v5_dirty", "trousers_grey_dirty", "boots_soviet_dirty", "hard_white"], ["shirt_v4_dirty", "trousers_brown", "boots_soviet_dirty", "hard_blue"]],
+      "greet": "Watch your step, the ground is loose.",
+      "what": "I work the pit. Stone, gravel, sand, cement. Somebody always needs a load, and the pay is steady.",
+      "where": "The builders on the road buy what we dig. Bring a full load, not half.",
+      "rumour": "They say the old vein is not played out. Somebody has been digging after dark.",
+      "bye": "Mind the dust."
+    },
+    {
+      "id": "logger", "name": "Lumberjack", "base": "default",
+      "outfits": [["denim_stripped_dirty", "trousers_brown", "boots_soviet_dirty", "knit_red"], ["shirt_v4_dirty", "trousers_grey_dirty", "boots_soviet_dirty", "knit_black"]],
+      "greet": "Stand back from the trees, friend.",
+      "what": "I fell and cut. The sawmill takes whatever I bring, and firewood sells well before winter.",
+      "where": "The sawmill is where the road meets the woods. Follow the sound of the saws.",
+      "rumour": "Somebody left a cut pile at the roadside and nobody has claimed it. I did not take it, whatever they say.",
+      "bye": "Watch the branches."
+    },
+    {
+      "id": "trader", "name": "Market trader", "base": "default",
+      "outfits": [["shirt_v5", "trousers_brown", "boots_us", "cap_flat_light"], ["shirt_v6", "trousers_grey", "boots_us"], ["denim_brown", "trousers_grey", "boots_us", "knit_black"]],
+      "greet": "Fresh today. Have a look.",
+      "what": "I buy and sell at the stall. Bring me what you grow or make and I will give you a fair price.",
+      "where": "The farm is out past the greenhouse. For anything else, the town board on the square will tell you.",
+      "rumour": "The price of apples went up this week. Somebody is hoarding them, I think.",
+      "bye": "Come back when you have more."
+    },
+    {
+      "id": "mechanic", "name": "Mechanic", "base": "default",
+      "outfits": [["shirt_v4_dirty", "trousers_grey_dirty", "boots_soviet_dirty", "cap_trucker_everon"], ["shirt_v1_dirty", "trousers_brown", "boots_soviet_dirty", "cap_flat_blue_dirty"]],
+      "greet": "Mind the oil. What is wrong with it?",
+      "what": "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery.",
+      "where": "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far.",
+      "rumour": "Somebody keeps asking me how to start a car without the key. I tell them to buy the key.",
+      "bye": "Drive safe."
+    },
+    {
+      "id": "office", "name": "Official", "base": "default",
+      "outfits": [["suit_black", "boots_us"], ["suit_brown", "boots_us"], ["turtle_grey", "trousers_brown", "boots_us"]],
+      "greet": "Good day. The office is open. What do you need?",
+      "what": "I handle the paperwork here. Forms, records, keys and permits. Everything has a stamp, and nothing is quick.",
+      "where": "The town board on the square lists every office and who is hiring. The post office is next to the bank.",
+      "rumour": "More people arrive every week with no papers. The registry cannot keep up.",
+      "bye": "Good day to you."
+    },
+    {
+      "id": "ranger", "name": "Ranger", "base": "default",
+      "outfits": [["rain_green", "fisherman_green", "boots_soviet_dirty", "boonie_olive"]],
+      "greet": "Quiet out here. Good. Keep it that way.",
+      "what": "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast on Everon.",
+      "where": "Walk the road, not the woods, until you know them. The coast is east and the farms are north.",
+      "rumour": "Somebody has been leaving fires burning in the forest. It will not end well.",
+      "bye": "Walk safe."
+    },
+    {
+      "id": "fence", "name": "Fence", "base": "fence",
+      "outfits": [["suit_black", "boots_soviet_dirty", "knit_black"]],
+      "greet": "You did not see me. Now, what are you after?",
+      "what": "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool.",
+      "where": "Ask nobody about me. Keep to the back streets.",
+      "rumour": "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police.",
+      "bye": "We never spoke."
+    },
+    {
+      "id": "townsfolk", "name": "Resident", "base": "default", "also": ["civilian"],
+      "outfits": [["shirt_v2", "trousers_brown", "boots_us"], ["turtle_grey", "trousers_grey", "boots_us"], ["denim_brown", "trousers_grey", "boots_us", "knit_black"]],
+      "greet": "Hello. New in town?",
+      "what": "I live here. I get by, as everyone does. The work is simple and the people are decent.",
+      "where": "The town board on the square shows everything. The post office hires couriers, and the bank is beside it.",
+      "rumour": "People say the police are watching the main street. Burglars are about. Keep your doors locked.",
+      "bye": "Take care."
+    }
+  ],
+  "assign": {
+    "Bank_Teller": "teller",
+    "Quest_Clerk": "clerk",
+    "Roadmap_Fuel_Clerk": "fuel_clerk",
+    "PoliceNpc": "police",
+    "FarmerNpc": "farmer",
+    "MinerNpc": "miner",
+    "CementBuilderNpc": "miner",
+    "GravelBuilderNpc": "miner",
+    "SandBuilderNpc": "miner",
+    "LumberjackNpc": "logger",
+    "AppleNpc": "trader",
+    "TraderChainNpc": "trader",
+    "FenceNpc": "fence",
+    "RealtorNpc": "office",
+    "JobsNpc": "office",
+    "WhitelistNpc": "office",
+    "WeatherNpc": "office",
+    "SurvivalNpc": "ranger",
+    "WantedPoliceNpc": "townsfolk",
+    "NPC_TestDebug": "townsfolk",
+    "Roadmap_Civilian_1": "townsfolk",
+    "Roadmap_Civilian_2": "townsfolk"
+  }
+}

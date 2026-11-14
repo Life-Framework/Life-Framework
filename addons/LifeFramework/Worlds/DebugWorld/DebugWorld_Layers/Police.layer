@@ -38,7 +38,7 @@ GenericEntity PoliceStation {
      coords 0 0 1.4
    }
   }
-  LF_NpcBaseEntity PoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity PoliceNpc : "{284C8FEA46778B5E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_2.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

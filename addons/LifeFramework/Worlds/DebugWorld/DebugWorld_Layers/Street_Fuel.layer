@@ -12,16 +12,16 @@ SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefab
  angleY 90
 }
 
-LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{9FF2685A41D86574}Prefabs/Characters/Npcs/LF_FuelClerk.et" {
+LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et" {
  coords 283.6 0.245 238.2
  angleY 180
 }
 
-LF_NpcBaseEntity Roadmap_Civilian_1 : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+LF_NpcBaseEntity Roadmap_Civilian_1 : "{A4E499440B4DBBEF}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_1_Civilian.et" {
  coords 258.5 0 243.5
  angleY 90
 }
-LF_NpcBaseEntity Roadmap_Civilian_2 : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+LF_NpcBaseEntity Roadmap_Civilian_2 : "{61550FC3CB30580E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et" {
  coords 266 0 244.5
  angleY 200
 }

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C923B573678EE7BB}Prefabs/Characters/Npcs/Outfits/LF_Npc_Farmer_2.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

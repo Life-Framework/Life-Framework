@@ -348,6 +348,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobWeaponVehicle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Robustness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobustnessWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Roles(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelection(), LF_TestTier.LOGIC);

@@ -1,7 +1,7 @@
 LF_NpcBaseEntity PoliceDutyNPC {
  coords 215.359 0 233.467
  {
-  LF_NpcBaseEntity TraderChainNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity TraderChainNpc : "{BA9D931A066C1997}Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_1.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

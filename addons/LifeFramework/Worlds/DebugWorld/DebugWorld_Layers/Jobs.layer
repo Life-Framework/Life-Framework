@@ -93,7 +93,7 @@ GenericEntity JobCenter {
     coords -2.6 0 0.7
    }
   }
-  LF_NpcBaseEntity JobsNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity JobsNpc : "{B56AEE932B667E9C}Prefabs/Characters/Npcs/Outfits/LF_Npc_Office_1.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

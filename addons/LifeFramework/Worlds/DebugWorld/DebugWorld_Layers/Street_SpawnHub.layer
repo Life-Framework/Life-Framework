@@ -71,7 +71,7 @@ GenericEntity SpawnHubStation {
      coords 0 0 0.7
    }
   }
-  LF_NpcBaseEntity WeatherNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity WeatherNpc : "{F1903A1C3E20A040}Prefabs/Characters/Npcs/Outfits/LF_Npc_Office_2.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

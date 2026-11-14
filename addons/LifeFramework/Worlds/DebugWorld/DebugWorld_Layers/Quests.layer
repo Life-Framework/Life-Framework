@@ -1,4 +1,4 @@
-LF_NpcBaseEntity Quest_Clerk : "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et" {
+LF_NpcBaseEntity Quest_Clerk : "{446165FE77D592AC}Prefabs/Characters/Npcs/Outfits/LF_Npc_Clerk_1.et" {
  coords 134 0 243.5
  angleY 270
 }

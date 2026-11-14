@@ -31,7 +31,7 @@ coords -0.29 1.027 -0.478
     }
    }
   }
-  LF_NpcBaseEntity FarmerNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity FarmerNpc : "{5A67A05A4C46E724}Prefabs/Characters/Npcs/Outfits/LF_Npc_Farmer_1.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

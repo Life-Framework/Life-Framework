@@ -100,6 +100,7 @@ class LF_StaticReset
 		LF_DrillScene.ResetStatics();
 		LF_NpcStun.ResetStatics();
 		LF_WorldReset.ResetStatics();
+		LF_Roles.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));
