@@ -29,7 +29,7 @@
     {
       "match": "Bank_Teller",
       "kind": "floating",
-      "why": "The teller stands on the bank wall plinth (y 0.16) behind the counter; the terrain probe misses the plinth. Seen in the Bank_Teller close-up, #679."
+      "why": "The teller stands inside the bank on its floor (y 0.2) behind the vanilla post-office counter; the terrain probe misses the building floor (#931)."
     },
     {
       "match": "^(Farm_StandCabbage|Cabbage_0)",

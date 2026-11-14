@@ -32,7 +32,7 @@ GenericEntity Sign_Atm : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et
    m_vTextColor 0.1 0.3 0.15
   }
  }
- coords 177.7 2.434 259.716
+ coords 175.4 2.438 265.916
  angleY 180
  scale 0.7
 }

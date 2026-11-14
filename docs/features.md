@@ -772,7 +772,7 @@
   (Edith) whose chest context carries `LF_ATMAction` labelled "Talk to the teller", so deposit and
   withdraw use the same terminal, server seams, range check (`LF_ActionSite` finds the teller as the
   counter), ledger reasons (`atm-deposit`, `atm-withdraw`), quest signal and ATM code. The playtest town
-  places her behind the west bank counter (176.3, 259.5, centred on the counter); the ATM entity `ATM_Debug` stays, hidden
+  puts her inside the bank (#931): in the lobby of the municipal-office building behind its vanilla post-office counter at (175.4, 0.2, 264.4), the customer side at the lobby floor; the two atmosphere counters keep only their sound emitters in the lobby and the TELLER plate hangs on the wall behind her. The ATM entity `ATM_Debug` stays, hidden
   (no mesh, inside the bank), for tests and flows. Test `atm/bank-teller`; demo
   `session.mjs bank-teller-proof`.
 - ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
