@@ -12,8 +12,8 @@
 //! (#313, #1320). The verb must be
 //! one of the two below and the target uid is validated by LF_PoliceApplicationStaff.
 //!
-//! Row (pipe separated): uid|name|why|availability|waitedSeconds. Free text has the separator and a
-//! leading # (a localization key) taken out, so a form field cannot forge a row or a string.
+//! Row (pipe separated): uid|name|why|availability|waitedSeconds. Free text has the separator, line
+//! breaks, % (a format argument) and a leading # (a localization key) taken out, so a form field cannot forge a row or a string.
 //------------------------------------------------------------------------------------------------
 class LF_PoliceApplicationGm : LF_PoliceApplicationStaff
 {
@@ -141,13 +141,16 @@ class LF_PoliceApplicationGm : LF_PoliceApplicationStaff
 			return "#LF-PoliceAppGm_NeedAdministrator";
 		}
 
-		string name;
-		if (IsValidUid(targetUid))
+		if (!IsValidUid(targetUid))
 		{
-			LF_PoliceApplication open = LF_PoliceApplications.FindOpen(targetUid);
-			if (open)
-				name = Clean(open.m_sName);
+			LF_Debug.Warn(FEATURE, string.Format("decision by %1 refused: the target uid is not valid", callerUid));
+			return "#LF-PoliceAppGm_BadRequest";
 		}
+
+		string name;
+		LF_PoliceApplication open = LF_PoliceApplications.FindOpen(targetUid);
+		if (open)
+			name = Clean(open.m_sName);
 
 		string refusal;
 		if (verb == VERB_APPROVE)
@@ -171,6 +174,9 @@ class LF_PoliceApplicationGm : LF_PoliceApplicationStaff
 			LF_Debug.Warn(FEATURE, string.Format("dropped a request from player %1: asked again within %2 ms", playerId, MIN_ASK_INTERVAL_MS));
 			return false;
 		}
+
+		if (s_mLastAskMs.Count() > 256)
+			s_mLastAskMs.Clear();
 
 		s_mLastAskMs.Set(playerId, nowMs);
 		return true;
@@ -199,17 +205,28 @@ class LF_PoliceApplicationGm : LF_PoliceApplicationStaff
 
 		int playerId = controller.GetPlayerId();
 		if (!TakeAskSlot(playerId, System.GetTickCount()))
+		{
+			// A dropped decision still answers (no rows, no roster read), so the sheet never waits forever.
+			controller.LF_DeliverPoliceAppGm(new array<string>(), "#LF-PoliceAppGm_Busy", "");
 			return;
+		}
 
 		string name;
 		string refusal = AnswerDecision(LF_Utils.GetPlayerUID(playerId), AdminChatChannel.IsAdminPlayer(playerId), verb, targetUid, System.GetUnixTime(), name);
-		string result = refusal;
-		if (refusal.IsEmpty() && verb == VERB_APPROVE)
-			result = "#LF-PoliceAppGm_Approved";
-		else if (refusal.IsEmpty())
-			result = "#LF-PoliceAppGm_Rejected";
+		Reply(controller, ResultFor(verb, refusal), name);
+	}
 
-		Reply(controller, result, name);
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the answer line key for a decision: the refusal, or Approved / Rejected.
+	static string ResultFor(int verb, string refusal)
+	{
+		if (!refusal.IsEmpty())
+			return refusal;
+
+		if (verb == VERB_APPROVE)
+			return "#LF-PoliceAppGm_Approved";
+
+		return "#LF-PoliceAppGm_Rejected";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -236,6 +253,7 @@ class LF_PoliceApplicationGm : LF_PoliceApplicationStaff
 	static string Clean(string text)
 	{
 		text.Replace(SEP, " ");
+		text.Replace("%", " ");
 		text.Replace("\n", " ");
 		text = text.Trim();
 		while (!text.IsEmpty() && text.Get(0) == "#")

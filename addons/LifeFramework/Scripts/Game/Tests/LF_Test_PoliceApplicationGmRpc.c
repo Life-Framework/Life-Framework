@@ -74,7 +74,7 @@ class LF_Test_PoliceApplicationGmRpc : LF_Test
 
 		LF_PoliceApplication forged = new LF_PoliceApplication();
 		forged.m_sUid = "test-gm-forged";
-		forged.m_sName = "Eve|x|y";
+		forged.m_sName = "Eve|x|y %2";
 		forged.m_sWhy = "#LF-PoliceApp_Approved";
 		forged.m_sAvailability = "Any";
 		forged.m_iTime = now - 7200;
@@ -84,11 +84,13 @@ class LF_Test_PoliceApplicationGmRpc : LF_Test
 		LF_PoliceApplicationGm.BuildRows(forgedList, now)[0].Split(LF_PoliceApplicationGm.SEP, parts, false);
 		ctx.Equal(5, parts.Count(), "a name with the separator does not add a field");
 		ctx.EqualStr("LF-PoliceApp_Approved", parts[2], "a leading # is taken off free text");
+		ctx.Equal(-1, parts[1].IndexOf("%"), "a format argument is taken out of free text");
 		ctx.EqualStr("7200", parts[4], "the row carries the seconds waited");
 
 		// Bad payloads from staff.
 		ctx.EqualStr("#LF-PoliceAppGm_BadRequest", LF_PoliceApplicationGm.AnswerDecision(staff, false, 7, ann, now, name), "an unknown verb is refused");
-		ctx.EqualStr("#LF-PoliceApp_Error_NoAccount", LF_PoliceApplicationGm.AnswerDecision(staff, false, LF_PoliceApplicationGm.VERB_APPROVE, "a|b", now, name), "a malformed target is refused");
+		ctx.EqualStr("#LF-PoliceAppGm_BadRequest", LF_PoliceApplicationGm.AnswerDecision(staff, false, LF_PoliceApplicationGm.VERB_APPROVE, "a|b", now, name), "a malformed target is refused");
+		ctx.EqualStr("#LF-PoliceApp_NoneOpen", LF_PoliceApplicationGm.AnswerDecision(staff, false, LF_PoliceApplicationGm.VERB_APPROVE, "test-gm-nobody", now, name), "a target with nothing open is refused");
 		ctx.True(LF_PoliceApplications.HasOpen(ann), "bad payloads changed nothing");
 
 		// Staff approve (the roster file) and reject (the engine administrator flag).
@@ -103,6 +105,11 @@ class LF_Test_PoliceApplicationGmRpc : LF_Test
 		ctx.Equal(now, LF_PoliceApplications.LastRejectedAt(bo), "the reject starts bo's cooldown");
 		ctx.Equal(0, LF_PoliceApplicationGm.AnswerList(staff, false, now, refusal).Count(), "nothing is open after both decisions");
 
+		// The answer line of a decision.
+		ctx.EqualStr("#LF-PoliceAppGm_Approved", LF_PoliceApplicationGm.ResultFor(LF_PoliceApplicationGm.VERB_APPROVE, ""), "an approve answers Approved");
+		ctx.EqualStr("#LF-PoliceAppGm_Rejected", LF_PoliceApplicationGm.ResultFor(LF_PoliceApplicationGm.VERB_REJECT, ""), "a reject answers Rejected");
+		ctx.EqualStr("#LF-PoliceAppGm_NeedAdministrator", LF_PoliceApplicationGm.ResultFor(LF_PoliceApplicationGm.VERB_APPROVE, "#LF-PoliceAppGm_NeedAdministrator"), "a refusal answers the refusal");
+
 		// The ask throttle: a second ask inside the interval is dropped, a later one is taken.
 		ctx.True(LF_PoliceApplicationGm.TakeAskSlot(-4242, 1000), "a first ask is taken");
 		ctx.False(LF_PoliceApplicationGm.TakeAskSlot(-4242, 1100), "an ask 100 ms later is dropped");
@@ -114,5 +121,6 @@ class LF_Test_PoliceApplicationGmRpc : LF_Test
 		LF_PoliceApplications.SetSavePath("");
 		LF_PoliceApplicationStaff.SetStaffPath("");
 		LF_WhitelistManager.SetSavePath("");
+		LF_WhitelistManager.Reset();
 	}
 }

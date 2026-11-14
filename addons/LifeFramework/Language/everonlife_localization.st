@@ -6842,6 +6842,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Request refused."
      Comment "Applications sheet status when the server refused a malformed request."
     }
+    CustomStringTableItem "{1EA5C56CC7684B12}" {
+     Id "LF-PoliceAppGm_Busy"
+     Target_en_us "Too fast. Press again in a moment."
+     Comment "Applications sheet status when the server dropped a request sent too quickly (#1288)."
+    }
     CustomStringTableItem "{58CA4203A5B3554F}" {
      Id "LF-PoliceAppGm_Close"
      Target_en_us "Close"

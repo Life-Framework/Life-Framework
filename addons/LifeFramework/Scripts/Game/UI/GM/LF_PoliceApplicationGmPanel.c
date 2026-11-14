@@ -63,7 +63,6 @@ class LF_PoliceApplicationGmPanel
 			s_Panel = new LF_PoliceApplicationGmPanel();
 			s_Panel.m_Screen = screen;
 			screen.GetOnButton().Insert(s_Panel.OnButton);
-			screen.CloseOnDeath();
 			LF_Debug.Info(LF_PoliceApplicationGm.FEATURE, "panel open");
 		}
 
@@ -96,6 +95,13 @@ class LF_PoliceApplicationGmPanel
 	//------------------------------------------------------------------------------------------------
 	protected void Show(array<string> rows, string result, string resultArg)
 	{
+		// The server was asked too fast: it sent only the line; the list on the sheet still stands.
+		if (result == "#LF-PoliceAppGm_Busy")
+		{
+			m_Screen.SetLine(PART_STATUS, result);
+			return;
+		}
+
 		m_aUids.Clear();
 		m_aNames.Clear();
 		m_aRows.Clear();
