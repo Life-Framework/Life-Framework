@@ -323,3 +323,6 @@ it needs loader rewrites. They resolve, and the loader needs no rewrite:
 the batch's base, then pass 2 after the move with both addons (`e2e` split in
 two, about 20 s a boot). Batch 0 must add the split to `cli e2e`, the pack to
 the rdb and pack tooling, and the GUID compare.
+
+**Guard (2026-11-14):** alidate-prefab-compare flags a new GetPrefabName() or *Prefab* variable compare by path (mark a meant one // lf-path-ok: <why>); the sweep also moved LF_BankRobKit and LF_AssetStatesHarness to SamePrefab. WORLD test prefab/guid-compare pins a right GUID under a wrong path.
+
