@@ -16,6 +16,7 @@ export const FRAME = "Single object, orthographic-style three-quarter product sh
 export const RUBRIC = [
   { key: "silhouette", what: "a clear, readable silhouette (the object reads at a glance)" },
   { key: "era", what: "fits the period (late 1980s, no modern industrial design)" },
+  { key: "era_current", what: "era-current: what a 1989 local would use or buy new, not antique or rustic (a 0 is never picked)" },
   { key: "scale_grip", what: "plausible scale and grip (a hand could hold it where the grip is)" },
   { key: "background", what: "a clean plain background, one object, nothing cropped" },
   { key: "no_text", what: "no text, lettering, logo or watermark" },
@@ -63,6 +64,18 @@ export const referenceUri = (root, rec) =>
 export function conceptRequest(model, prompt, refUri) {
   if (!refUri) return { call: "text-to-image", path: "/openapi/v1/text-to-image", body: { ai_model: model, prompt, aspect_ratio: "1:1" } };
   return { call: "image-to-image", path: "/openapi/v1/image-to-image", body: { ai_model: model, prompt, reference_image_urls: [refUri], aspect_ratio: "1:1" } };
+}
+
+// The realism gate (docs/asset-pipeline/concepts.md): before any picture is paid for, concepts.json
+// answers how the thing was actually done or bought in a 1989 Eastern-bloc island town, and why a
+// local would see it as current rather than antique. The 2026-11-13 juicer sheet drew ten hand-cranked
+// wooden presses because nobody asked.
+export function realismProblems(rec) {
+  const r = rec.realism || {};
+  const out = [];
+  if (!r.how || r.how.trim().length < 20) out.push('realism.how is missing: how would this actually be done or bought in a 1989 Eastern-bloc island town?');
+  if (!r.current || r.current.trim().length < 20) out.push('realism.current is missing: why would a 1989 local recognise it as current, not antique?');
+  return out;
 }
 
 // ---- contact sheet ----------------------------------------------------------------------------
@@ -130,7 +143,8 @@ export function pickConcept(rec, n, { by = "human", why = "", now = new Date() }
 
 export function pickByRubric(rec, now = new Date()) {
   if (!scored(rec)) throw new Error(`--pick needs all ${rec.variants.length} concepts scored first: tools\\cli asset score <slug> <n> <${RUBRIC.map((r) => r.key).join(",")}>`);
-  const best = ranking(rec)[0];
+  const best = ranking(rec).find((r) => rec.variants[r.n - 1].scores.era_current !== 0);
+  if (!best) throw new Error("--pick: every concept scores 0 on era_current; rewrite the subject and variants against the realism gate");
   const v = rec.variants[best.n - 1];
   const weak = RUBRIC.filter((r) => v.scores[r.key] < MAX_SCORE).map((r) => r.key);
   const why = `highest rubric total ${best.total}/${maxTotal()}${weak.length ? `; weaker on ${weak.join(", ")}` : "; full marks"}${v.note ? `; ${v.note}` : ""}`;
@@ -172,6 +186,10 @@ export async function stageConcept(ctx, { writeState, resolveFfmpeg }) {
   const prompts = buildPrompts(rec.subject, rec.variants);
   const todo = prompts.filter((p) => !existsSync(join(folder, `${pad(p.n)}.png`)));
   const need = todo.filter((p) => !st[p.n]?.taskId).length * imageCost(model);
+  if (todo.length) {
+    const gate = realismProblems(rec);
+    if (gate.length) throw new Error("concepts.json fails the realism gate (docs/asset-pipeline/concepts.md):\n  " + gate.join("\n  "));
+  }
   const before = meshy.spent(ledger);
   if (before + need > spec.budget.credits) throw new Error(`concepts need about ${need} credits and ${before} are spent; the cap is ${spec.budget.credits}. Stop and report.`);
   if (todo.length) console.log(`Meshy balance ${await meshy.balance()} credits; ${todo.length} concept image(s) to make at ${imageCost(model)} each (${model}${refUri ? `, image-to-image from ${rec.reference.file}` : ""})`);

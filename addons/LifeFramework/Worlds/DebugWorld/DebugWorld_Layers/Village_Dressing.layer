@@ -65,24 +65,6 @@ SCR_DestructibleEntity : "{B16FF595DD1EE501}Prefabs/Props/Services/Post/PostOffi
  coords 150.5 0 256.2
  angleY 180
 }
-SCR_DestructibleEntity : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 192.5 0 237.4
-}
-SCR_DestructibleEntity : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 201.5 0 237.4
-}
-SCR_DestructibleEntity : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 208.5 0 237.4
-}
-SCR_DestructibleEntity : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
- coords 215.5 0 237.4
-}
-SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
- coords 201.5 0 238.3
-}
-SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
- coords 208.5 0 238.3
-}
 GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
  coords 146 0 255.4
 }
@@ -372,22 +354,6 @@ SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots
 SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
  coords 191.6 0 257.2
 }
-GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 189.6 0 236.6
-}
-GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 190.3 0 236.7
-}
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 199.2 0 237.2
-}
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 199.2 0.28 237.2
-}
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 213.9 0 237.2
- angleY 20
-}
 GenericEntity : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
  coords 224 0 238.2
  angleY 80
@@ -620,4 +586,75 @@ GenericEntity Pub_Terrace_Table : "{7FFE600A194D73B1}Prefabs/Props/Furniture/Tab
 }
 GenericEntity Pub_Terrace_Radio : "{C6AF6D2D6EA3CBF9}Prefabs/Atmosphere/LF_Radio_Pub.et" {
  coords 122.002 0.903 287.074
+}
+SCR_DestructibleEntity Market_Stall_Veg : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+ coords 197.359 -0.003 233.467
+}
+SCR_DestructibleEntity Market_Stall_Fruit : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+ coords 206.359 -0.003 233.467
+}
+SCR_DestructibleEntity Market_Stall_Juice : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+ coords 215.359 -0.003 233.467
+}
+Tree Market_Tree_1 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 193.2 0 229.093
+ angleY 73
+ scale 1.3
+}
+Tree Market_Tree_2 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 202.339 0 228.694
+ angleY 146
+ scale 1.3
+}
+Tree Market_Tree_3 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 210.998 0 228.445
+ angleY -141
+ scale 1.3
+}
+Tree Market_Tree_4 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 219.66 0 228.698
+ angleY -68
+ scale 1.3
+}
+GenericEntity Market_Bench_W : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+ coords 193.243 0.002 238.501
+ angleY 90
+}
+GenericEntity Market_Bin : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ coords 217.62 0 240.911
+ angleY -90
+}
+GenericEntity Market_Box_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 195.297 0 232.603
+ angleY 8
+}
+GenericEntity Market_PalletBox : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 218.103 0.021 232.401
+ angleY 90
+}
+GenericEntity Market_Bench_E : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+ coords 217.557 0.002 238.499
+ angleY -90
+}
+GenericEntity Market_Box_3 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 208.952 0 232.503
+ angleY 90
+}
+GenericEntity Market_Box_4 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 209.602 0 232.503
+ angleY 90
+}
+GenericEntity Market_Box_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 195.347 0 233.102
+ angleY -4
+}
+Tree Market_Tree_5 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 189.646 0 242.478
+ angleY -55
+ scale 1.3
+}
+Tree Market_Tree_6 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 219.809 0 242.799
+ angleY 6
+ scale 1.3
 }

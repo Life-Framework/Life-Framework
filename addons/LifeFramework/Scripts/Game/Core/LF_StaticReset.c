@@ -93,6 +93,7 @@ class LF_StaticReset
 		LF_PhotoIdCard.ResetStatics();
 		LF_IdCardView.ResetStatics();
 		LF_IdCheck.ResetStatics();
+		LF_NpcStun.ResetStatics();
 		LF_WorldReset.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;

@@ -934,8 +934,8 @@ function selftest() {
   // docs/roadmap/m1-25-village.md).
   if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
   const apple = findPad(list, "AppleTradeContainer");
-  // AppleTrader 197 0 240.6 plus the container's -2.6 0.9 0.7.
-  if (!apple || apple.x !== 194.4 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
+  // AppleTrader 206.359 0 233.467 (the fruit stall, #924) plus the container's -0.29 1.027 -0.478.
+  if (!apple || Math.abs(apple.x - 206.069) > 0.001 || Math.abs(apple.z - 232.989) > 0.001) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
   const police = findPad(list, "Roadmap_Police_Desk");
   if (!police || police.x !== 232.9 || police.z !== 239.6 || !police.actions.includes("LF_DutyAction")) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
   const pile = findPad(list, "CementPile_Debug");

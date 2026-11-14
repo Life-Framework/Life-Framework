@@ -61,7 +61,7 @@ looked at yet.
 | Medicine cabinet | `Roadmap_Hospital_Cabinet` | placeholder | vanilla `CupboardOld_01_medium` wooden cupboard | white medical cabinet | Hospital, area 7 | low |
 | Stretcher | none | missing | no base-game stretcher found | stretcher by the ambulance | Hospital, area 7 | low |
 | Store counter | `Shop_GeneralStore_Debug` | placeholder | vanilla `CounterShop_01` (a yellow market cart) | a shop counter with a till | General store, area 3 | low |
-| Market stall | umbrella stands plus `TableRecreation_01` | placeholder | vanilla `MarketStand_01_Umbrella` over recreation tables | a market stall with a awning | General store and market, area 3 | low |
+| Market stall | `Market_Stall_Veg/Fruit/Juice` (`Village_Dressing.layer`) | final | vanilla `MarketStand_01` under rowan trees on the cobbled market square (#924) | (a market stall) | Market, area 3 | none |
 | Site alarm beacon | `LF_SiteAlarm.et` | final | vanilla `HazardBeacon_01` at 0.4 (0.21 m), no collision, while the alarm runs; on an alarm mount (bank bell box, cash van roof) or the surface under the site | (a small rotating beacon) | Alarm at store, bank, till, area 3 | none |
 | Bank alarm bell box | `Roadmap_Bank_AlarmBox` (layer, `Street_Bank.layer`) | final | vanilla `ElectricityBox_small_01` on the bank's east wall above the vault door, carries `LF_AlarmMountComponent` | (a wall alarm box) | Bank vault, area 2 | none |
 | Hideout machine | `Roadmap_Hideout_Machine` | placeholder | vanilla `CoffeeGrinderShop_01` | contraband press | Hideout, area 13 | medium |
@@ -70,7 +70,7 @@ looked at yet.
 | Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01` (under the pergola), `Crate_01`, `BoxWooden_01`, `WoodenPalletBox_01`, `Pallet_01_Pile`, `Cart_01`, `Jerrycan_01`, `CardboardBox_03`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
 | Lock-up garage door | `Roadmap_Lockpick_Door` (`EL_Door_Base.et`) | placeholder | plain wooden house door in a brick wall line | roll-up or double-leaf garage door | Lock-up #411 | low |
-| Apple juicer | `AppleJuicer.et` (`AppleProcessor`) | placeholder | vanilla `CoffeeGrinderShop_01` on a `TableRecreation_01` press table in the orchard | a hand fruit press | Farm and trader chains, area 12 | low |
+| Apple juicer | `AppleJuicer.et` (`AppleProcessor`) | placeholder | vanilla `CoffeeGrinderShop_01` on the juice stall of the market square (#924) | a 1989 electric commercial juicer: concept 7 "Tall stall machine" is picked (`tools/assets/apple-juicer`), image-to-3D waits for the per-kind poly budget | Market, area 3 | low |
 | Farm field: beds, greenhouse, crops | `VegetableBed_01_big/small`, `Greenhouse_01`, `CabbageCrop.et` | final | vanilla farm structures and the mod crop prefab | (same) | Farm, area 12 | none |
 | Farm yard props | `Cart_01`, `Wheelbarrow_01`, `Bucket_01`, `Crate_01_*`, `HayBale_01_square_big/small`, `WoodenFence_01_4m`, `TableRecreation_01` | final | vanilla props (no 1989-specific farm crate exists; Crate_01 stands in for a produce crate) | (same) | Farm, area 12 | none |
 | Quarry lane barrier | `WoodenFence_01_4m` rails + `ConeTraffic_01` | placeholder | two fence rails each side of a 6 m gap | red-white boom barrier on a post | Quarry polish, area 11 | low |
