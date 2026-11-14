@@ -33,7 +33,7 @@ commands below work because tags sit on release commits.
 | Config problems | `tools\cli config-check <config.json>` on the owner's file, after the change. |
 | Save version changes | `git diff <prev> <new> -- docs/persistence.md`. Look for new "save version N" items and the "Save reset" section. The build stamp (save version 32) is the reference point. |
 | Game build | `docs/ops/game-updates.md` changelog table: the game build the release was tested on. |
-| Migrations | `docs/config/owner-config.md` and `docs/persistence.md`. Config migrations (#302 to #304) do not exist yet, so this section says "none" until they land. |
+| Migrations | `tools\cli config-check <old-config.json> --no-loops` prints the `Migrations:` lines (steps in order, fields renamed, dropped or defaulted; from `docs/config/config.migrations.json`). Paste them. At schema 1 none ship, so the section says "none". |
 
 No tool writes the page for you yet. A generator that prints the config and
 save-version diff for a tag is not built. Until then, fill the template by

@@ -38,13 +38,29 @@ copy `profile/` away first (a save written by an older build; `docs/ops/game-upd
 
 ## For maintainers
 
-- `tools\cli server-template check` is the static check (also in `validate`): server.json names the core then the pack
-  and boots the pack scenario, config.json is the flagship preset and passes `config-check`, the start scripts and this README
+- `tools\cli server-template check` is the static check (also in `validate`): server.json names the core first, then any pack its scenario lives in
+  and the scenario is a header inside a listed addon, config.json is the flagship preset and passes `config-check`, the start scripts and this README
   say what a host needs. `--engine` lets the real dedicated server read `server.json` and prints its schema verdict.
 - Boot proof from a checkout: `tools\cli session up --mission template` starts a dedicated server on this folder's
   scenario and mods (with `config.json` in its profile) and joins a client. The engine refuses `-config` together with
   `-addons`, so a checkout boots the same files with `-server` and `-addons`; only a published mod loads through `-config`.
-- Not in this folder yet: the release download (#296) and swapping the pack out (#297). The download needs the
-  Workshop ids above to be live and a zip built from this folder (`server.json` ids, scenario ids stay in step through
-  `validate`). Swapping the pack means replacing the second `mods` entry and `scenarioId` with the other pack's ids;
-  `templateProblems` pins the flagship today.
+- Not in this folder yet: the release download (#296). It needs the Workshop ids above to be live and a zip built from this
+  folder (`server.json` ids, scenario ids stay in step through `validate`).
+
+## Swap the pack out
+
+The template boots the core with any pack, or with none. Change two things in `server.json` and nothing else:
+
+1. `game.mods`: keep the core (`79636E668EA37AC9`, always first), replace the second entry with your pack's Workshop id
+   (its `.gproj` GUID), or delete it to run the core alone.
+2. `game.scenarioId`: the mission header of that pack, `{GUID}Missions/<Name>.conf` (`tools\cli pack new <Name>` writes one,
+   `Missions/LF_<Name>.conf`). The core alone boots its own header, `{5A1E5A1E5A1E0002}Missions/EL_DebugTest.conf` (DebugWorld; the playtest town is the pack's since #323).
+
+`config.json`, ports, name and the start scripts stay as they are. A pack's own values go in its config overlay; the owner
+`config.json` keeps winning over both (`tools\cli pack explain <key>`).
+
+`tools\cli server-template check` checks the folder for any such swap (the core first, every mod an addon that exists, the scenario
+a header inside one of the listed addons). `tools/server-template/variants/core-only/server.json` is the core-only swap kept as a
+fixture; `session up --mission template-core-only` boots it on a dedicated server and joins a client (`--mission template` boots this
+folder as shipped). To prove your own pack the same way, add `tools/server-template/variants/<name>/server.json` with the two
+entries changed and use `--mission template-<name>`.

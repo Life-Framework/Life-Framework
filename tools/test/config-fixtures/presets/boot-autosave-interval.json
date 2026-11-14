@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "persistence": { "autosaveInterval": 45 },
+  "systems": { "switches": { "ATM": { "enabled": false } } }
+}

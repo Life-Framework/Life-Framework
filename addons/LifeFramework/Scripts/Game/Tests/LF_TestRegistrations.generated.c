@@ -74,6 +74,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Cleanup(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CleanupPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CleanupSweep(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ClipStamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigConstantsBatch1(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigJsonProbe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigListsOverlay(), LF_TestTier.LOGIC);
@@ -88,6 +89,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigOwnerFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigPackHeader(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ConfigPackSection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSchemaVersion(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigSectionsA(), LF_TestTier.LOGIC);
@@ -289,6 +291,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PersistSwitches(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PersistSwitchesRestart(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PhoneCallBackBook(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhoneCallBackWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneCallWorld(), LF_TestTier.WORLD);

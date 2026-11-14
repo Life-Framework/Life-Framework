@@ -409,7 +409,7 @@ class LF_RobAction : ScriptedUserAction
 		int policeOnDuty = LF_AccountReplication.GetPoliceOnDutyCount();
 		if (policeOnDuty < m_iMinPoliceOnDuty)
 		{
-			SetCannotPerformReason("#EL-Rob_NeedPolice");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Rob_NeedPolice"));
 			return false;
 		}
 

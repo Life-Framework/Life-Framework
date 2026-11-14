@@ -42,7 +42,8 @@ export function parseTable(stText) {
     const id = /^\s*Id\s+"([^"]+)"/.exec(line);
     if (id) { item = { id: id[1], texts: {} }; items.push(item); continue; }
     const target = /^\s*Target_([a-z_]+)\s+"((?:[^"\\]|\\.)*)"/.exec(line);
-    if (target && item) item.texts[target[1]] = target[2];
+    if (target && item) { item.texts[target[1]] = target[2]; continue; }
+    if (item && /^\s*Comment\s+".*\(voiced/.test(line)) item.voiced = true;
   }
   return items;
 }
@@ -86,7 +87,7 @@ export function placeholderProblems(items, terms) {
   for (const item of items) {
     for (const [lang, text] of Object.entries(item.texts)) {
       for (const m of text.matchAll(PLACEHOLDER)) {
-        const id = m[1][0].toLowerCase() + m[1].slice(1);
+        const id = termId(m[1]);
         const form = m[2] === "pl" ? "plural" : m[2] || "singular";
         const term = terms[id];
         if (!term) out.push({ key: item.id, lang, text, problem: `names term "${id}", which no terms file defines` });
@@ -97,12 +98,19 @@ export function placeholderProblems(items, terms) {
   return out;
 }
 
+// The id a placeholder name stands for: {Police} and {POLICE} (all caps, upper-cases the words) name "police".
+export function termId(name) {
+  if (name.length > 1 && name === name.toUpperCase() && /[A-Z]/.test(name)) return name.toLowerCase();
+  return name[0].toLowerCase() + name.slice(1);
+}
+
 // { key: [term, ...] } for core keys whose English text hard-codes a listed term's word.
+// Exempt: the term words themselves (LF-Term_*) and voiced lines, whose caption must match the recording.
 export function hardCoded(items) {
   const hits = {};
   for (const item of items) {
     const en = item.texts.en_us;
-    if (!en) continue;
+    if (!en || item.voiced || item.id.startsWith("LF-Term_")) continue;
     const plain = en.replace(PLACEHOLDER, "");
     const found = Object.entries(TERM_WORDS).filter(([, re]) => re.test(plain)).map(([t]) => t);
     if (found.length) hits[item.id] = found;
