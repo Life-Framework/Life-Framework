@@ -15,7 +15,7 @@ class LF_JobSignUpAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return LF_CivilianJob.IsDeliveryJob(m_eJob);
+		return LF_Systems.IsEnabled(LF_CivilianJob.SYSTEM) && LF_CivilianJob.IsDeliveryJob(m_eJob);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -57,6 +57,9 @@ class LF_JobSignUpAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "job sign up"))
 			return;
 
 		string uid = LF_Utils.GetPlayerUid(pUserEntity);
@@ -117,7 +120,7 @@ class LF_JobStartRunAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return LF_CivilianJob.IsDeliveryJob(m_eJob);
+		return LF_Systems.IsEnabled(LF_CivilianJob.SYSTEM) && LF_CivilianJob.IsDeliveryJob(m_eJob);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -170,6 +173,9 @@ class LF_JobStartRunAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "job start run"))
+			return;
+
 		string uid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (uid.IsEmpty())
 		{
@@ -212,7 +218,7 @@ class LF_JobDropoffAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return true;
+		return LF_Systems.IsEnabled(LF_CivilianJob.SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -229,6 +235,9 @@ class LF_JobDropoffAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "job drop off"))
 			return;
 
 		string uid = LF_Utils.GetPlayerUid(pUserEntity);
@@ -277,7 +286,7 @@ class LF_JobAbandonAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return true;
+		return LF_Systems.IsEnabled(LF_CivilianJob.SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -294,6 +303,9 @@ class LF_JobAbandonAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_CivilianJob.SYSTEM, "job abandon"))
 			return;
 
 		string uid = LF_Utils.GetPlayerUid(pUserEntity);

@@ -619,7 +619,7 @@ Not yet exercised end to end.
    session, not over ssh):
 
    ```bat
-   "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger\ArmaReforgerSteamDiag.exe" -client Gaming-Box -addonsDir C:\LF\Life-Framework-rt-<slug>\addons -addons LifeFramework -profile C:\LF\client2 -window -screenWidth 1280 -screenHeight 720 -scrDefine LF_SESSION_IDENTITY -noBackend -disableCrashReporter
+   "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger\ArmaReforgerSteamDiag.exe" -client Gaming-Box -addonsDir C:\LF\Life-Framework-rt-<slug>\addons -addons LifeFramework,LF_Everon1989 -profile C:\LF\client2 -window -screenWidth 1280 -screenHeight 720 -scrDefine LF_SESSION_IDENTITY -noBackend -disableCrashReporter
    ```
 
    Use `192.168.1.130` if `Gaming-Box` does not resolve. For `--mission
