@@ -128,6 +128,8 @@ const lintRound = mergeLintBaselines(lintText, lintText, lintText);
 if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.json does not round-trip");
 
 const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
+const packLocPlan = regenPlan("addons/LF_Everon1989/Language/lf_everon1989_localization.en_us.conf");
+if (!packLocPlan || packLocPlan.kind !== "localization") fail("a pack language conf should resolve by regen-localization -Write");
 const testPlan = regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c");
 if (!locPlan || !locPlan.script.endsWith("regen-localization.ps1") || !locPlan.args.includes("-Write")) {
   fail("language confs should resolve by regen-localization -Write");
@@ -141,6 +143,8 @@ const driverConfig = readFileSync(join(ROOT, "tools", "merge", "drivers.gitconfi
 for (const [path, driver] of [
   ["addons/LifeFramework/Language/everonlife_localization.st", "lf-string-table"],
   ["addons/LifeFramework/Language/everonlife_localization.*.conf", "lf-regen-localization"],
+  ["addons/LF_Everon1989/Language/lf_everon1989_localization.st", "lf-string-table"],
+  ["addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf", "lf-regen-localization"],
   ["addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c", "lf-regen-tests"],
   ["docs/features.md", "lf-markdown"],
   ["docs/debug-log-triage.md", "lf-markdown"],

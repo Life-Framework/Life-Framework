@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Telephone tuning (#147): how long a call rings, how far the receiver cord reaches, how long a
-//! call may last, and the ring. Loaded from Configs/Comms/LF_Phone.conf. The field initializers
-//! match the shipped .conf, so a missing file degrades to the same values.
+//! call may last, and the ring. Loaded from Configs/Comms/LF_Phone.conf. The members carry no initializers (#1077); CreateDefault
+//! builds the shipped values, so a missing file degrades to the same values.
 //! Comms has no owner config.json section (tools/config/inventory.mjs leaves the area unrouted and
 //! decision D8 names none for it), so these are .conf values today.
 [BaseContainerProps(configRoot: true)]
@@ -21,34 +21,54 @@ class LF_PhoneConfig
 	static const int DEFAULT_VOICE_TRANSPORT = 0;
 
 	[Attribute("30", UIWidgets.Auto, "Seconds a call rings at the far end before it counts as missed", params: "5 300")]
-	int m_iRingSeconds = DEFAULT_RING_SECONDS;
+	int m_iRingSeconds;
 
 	[Attribute("4", UIWidgets.Auto, "Seconds between two rings of a ringing telephone, on every machine that hears it", params: "1 30")]
-	int m_iRingPulseSeconds = DEFAULT_RING_PULSE_SECONDS;
+	int m_iRingPulseSeconds;
 
 	[Attribute("6", UIWidgets.Auto, "Metres a talker may stand from the telephone. Further away, or downed, dead or gone, ends the call", params: "1 30")]
-	float m_fCordMeters = DEFAULT_CORD_METERS;
+	float m_fCordMeters;
 
 	[Attribute("600", UIWidgets.Auto, "Seconds a connected call may last before the exchange cuts it", params: "30 3600")]
-	int m_iMaxCallSeconds = DEFAULT_MAX_CALL_SECONDS;
+	int m_iMaxCallSeconds;
 
 	[Attribute("{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp", UIWidgets.ResourceNamePicker, "Sound project of the ring a ringing telephone plays", "acp")]
-	ResourceName m_sRingSoundProject = DEFAULT_RING_SOUND_PROJECT;
+	ResourceName m_sRingSoundProject;
 
 	[Attribute("SOUND_RADIO_SIGNAL_2", UIWidgets.EditBox, "Sound event of the ring")]
-	string m_sRingSoundEvent = DEFAULT_RING_SOUND_EVENT;
+	string m_sRingSoundEvent;
 
 	[Attribute("120", UIWidgets.Auto, "Seconds a caller whose call rang out, or found nobody on duty, may leave a call-back request at that telephone", params: "10 900")]
-	int m_iCallBackOfferSeconds = DEFAULT_CALL_BACK_OFFER_SECONDS;
+	int m_iCallBackOfferSeconds;
 
 	[Attribute("120", UIWidgets.Auto, "Longest typed message on a call-back request, in characters. 0 allows no message, only the request", params: "0 200")]
-	int m_iMessageMaxChars = DEFAULT_MESSAGE_MAX_CHARS;
+	int m_iMessageMaxChars;
 
 	[Attribute("20", UIWidgets.Auto, "Most call-back requests waiting at once, all services together; the oldest goes first. They expire with the dispatch board (m_iBoardExpirySeconds)", params: "1 100")]
-	int m_iMaxCallBacks = DEFAULT_MAX_CALL_BACKS;
+	int m_iMaxCallBacks;
 
 	[Attribute("0", UIWidgets.Auto, "Where a call's two radios live (LF_EPhoneVoiceTransport): 0 the line at each telephone, 1 a handset item in each talker's inventory for the call", params: "0 1")]
-	int m_iVoiceTransport = DEFAULT_VOICE_TRANSPORT;
+	int m_iVoiceTransport;
+
+	//------------------------------------------------------------------------------------------------
+	//! A config with the attribute defaults, built in script (the fallback when the `.conf` does not resolve, tests).
+	//! The members carry no initializers: an initializer beats a `.conf` value of 0, so a pack overlay that
+	//! turned a field off would read as on (#1077).
+	static LF_PhoneConfig CreateDefault()
+	{
+		LF_PhoneConfig config = new LF_PhoneConfig();
+		config.m_iRingSeconds = DEFAULT_RING_SECONDS;
+		config.m_iRingPulseSeconds = DEFAULT_RING_PULSE_SECONDS;
+		config.m_fCordMeters = DEFAULT_CORD_METERS;
+		config.m_iMaxCallSeconds = DEFAULT_MAX_CALL_SECONDS;
+		config.m_sRingSoundProject = DEFAULT_RING_SOUND_PROJECT;
+		config.m_sRingSoundEvent = DEFAULT_RING_SOUND_EVENT;
+		config.m_iCallBackOfferSeconds = DEFAULT_CALL_BACK_OFFER_SECONDS;
+		config.m_iMessageMaxChars = DEFAULT_MESSAGE_MAX_CHARS;
+		config.m_iMaxCallBacks = DEFAULT_MAX_CALL_BACKS;
+		config.m_iVoiceTransport = DEFAULT_VOICE_TRANSPORT;
+		return config;
+	}
 
 	protected static ref LF_PhoneConfig s_Config;
 
@@ -72,7 +92,7 @@ class LF_PhoneConfig
 		if (!s_Config)
 		{
 			LF_Debug.Error("Phone", string.Format("phone config does not resolve, using defaults: %1", CONFIG_PATH));
-			s_Config = new LF_PhoneConfig();
+			s_Config = LF_PhoneConfig.CreateDefault();
 		}
 
 		return s_Config;

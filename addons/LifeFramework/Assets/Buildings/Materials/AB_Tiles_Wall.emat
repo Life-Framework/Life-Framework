@@ -1,0 +1,8 @@
+MatPBRBasic {
+ Color 1 1 1 1
+ BCRMap "{F0CE747F215DF3EB}Assets/_SharedData/Tiles/ST_Tiles_Mosaic_1m_02_BCR.edds"
+ GlobalMapsUVTransform MatUVTransform "{EB8301E863F141DF}" {
+  TilingU 1
+  TilingV 1
+ }
+}

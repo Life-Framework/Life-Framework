@@ -160,7 +160,7 @@ class LF_JobsConfig
 	float m_fPoliceDutyPayPerSecond;
 
 	[Attribute("0.4", UIWidgets.Auto, "Medic duty pay in cash per second on duty, paid at the hospital desk on going off duty. 0 disables duty pay", params: "0 100")]
-	float m_fMedicDutyPayPerSecond = 0.4;
+	float m_fMedicDutyPayPerSecond;
 
 	[Attribute("500", UIWidgets.Auto, "Unemployment benefit: a bank balance strictly below this may collect", params: "0 1000000")]
 	int m_iBenefitBalanceThreshold;

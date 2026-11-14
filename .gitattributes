@@ -6,6 +6,7 @@
 *.bat text eol=crlf
 # Workbench writes the language confs with CRLF; keep their bytes as generated.
 addons/LifeFramework/Language/*.conf -text
+addons/LF_Everon1989/Language/*.conf -text
 
 # Reforger / Enfusion binary assets - force Git to treat them as binary
 *.anm -text
@@ -28,6 +29,8 @@ addons/LifeFramework/Language/*.conf -text
 # Rebase additions of keys, tests, feature rows, and triage rows. Drivers live in tools/merge/.
 addons/LifeFramework/Language/everonlife_localization.st merge=lf-string-table
 addons/LifeFramework/Language/everonlife_localization.*.conf merge=lf-regen-localization
+addons/LF_Everon1989/Language/lf_everon1989_localization.st merge=lf-string-table
+addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf merge=lf-regen-localization
 addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c merge=lf-regen-tests
 docs/features.md merge=lf-markdown
 docs/debug-log-triage.md merge=lf-markdown

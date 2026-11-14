@@ -137,19 +137,22 @@ export function resolveSite(site, world) {
 
 // Localization table: key -> en_us text.
 export function loadStrings(root) {
-  const file = join(root, "addons", "LifeFramework", "Language", "everonlife_localization.st");
   const strings = new Map();
-  if (!existsSync(file)) return strings;
-  let id = "";
-  for (const raw of readFileSync(file, "utf8").split(/\r?\n/)) {
-    const line = raw.trim();
-    const key = line.match(/^Id\s+"((?:[^"\\]|\\.)*)"$/);
-    if (key) {
-      id = key[1];
-      continue;
+  // The core's table first, then each pack's: a pack key overrides the core's neutral text (#325).
+  for (const [addon, name] of [["LifeFramework", "everonlife_localization.st"], ["LF_Everon1989", "lf_everon1989_localization.st"]]) {
+    const file = join(root, "addons", addon, "Language", name);
+    if (!existsSync(file)) continue;
+    let id = "";
+    for (const raw of readFileSync(file, "utf8").split(/\r?\n/)) {
+      const line = raw.trim();
+      const key = line.match(/^Id\s+"((?:[^"\\]|\\.)*)"$/);
+      if (key) {
+        id = key[1];
+        continue;
+      }
+      const text = line.match(/^Target_en_us\s+"((?:[^"\\]|\\.)*)"$/);
+      if (text && id) strings.set(id, text[1]);
     }
-    const text = line.match(/^Target_en_us\s+"((?:[^"\\]|\\.)*)"$/);
-    if (text && id) strings.set(id, text[1]);
   }
   return strings;
 }
