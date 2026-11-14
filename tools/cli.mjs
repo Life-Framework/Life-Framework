@@ -1820,8 +1820,9 @@ function cmdPlaytest(args) {
   if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
   if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
   if (sub === "server") return cmdPlaytestServer(list.slice(1));
+  if (sub === "checklist" || sub === "verdicts") return import("./commands/playtest-checklist.mjs").then((m) => m.main(list, { root: ROOT }));
   if (sub === "release") return cmdPlaytestRelease(ROOT, list.slice(1), { ensureRdb: ensureResourceDatabase, isMain: wt.isMainCheckout(ROOT) });
-  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]");
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]|checklist [--all]|verdicts <file>");
   return 1;
 }
 
