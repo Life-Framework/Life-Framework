@@ -102,8 +102,10 @@ class LF_Test_SystemsKeepData : LF_Test
 		ctx.False(plot.IsEmpty(), "the crop loads while Farming is off");
 		ctx.EqualFloat(40, plot.GetGrownSeconds(), 0.001, "with its 40 seconds");
 
-		// On again: the same crop, growing.
-		Owner(string.Empty);
+		// On again: the same crop, growing. An owner layer with no switches, not string.Empty: in the
+		// e2e save boot persistence/switches has already written the owner file (Farming off), and an
+		// empty layer would read it back (#689).
+		Owner("{\"schemaVersion\":1}");
 		ctx.True(LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM), "Farming is on again");
 		ctx.EqualFloat(40, plot.GetGrownSeconds(), 0.001, "turning it on finds the crop as it was");
 		ctx.True(LF_FarmPlots.AdvanceAll(5) >= 1, "and it grows again (other planted plots grow with it)");
