@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "terms": {
+    "currency": { "sym": "£" }
+  },
+  "shops": {
+    "priceRules": {
+      "Prefabs/Items/Drinks/": { "buyPrice": 17 }
+    }
+  }
+}

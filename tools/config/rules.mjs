@@ -230,6 +230,7 @@ export function checkOwner(root, schema, source, shipped = {}) {
     } else scalar(sch, n, path);
   };
 
+  const FREEFORM = new Set(["terms"]);
   const top = schema.properties ?? {};
   const max = top.schemaVersion?.maximum ?? 1;
   for (const p of root.props) {
@@ -239,6 +240,11 @@ export function checkOwner(root, schema, source, shipped = {}) {
       else if (v.value < 1) add("error", v, `${source}: schemaVersion ${v.value} is below 1; reading it as version 1`, [p.key]);
       else if (v.value > max) add("error", v, `${source} is written for schemaVersion ${v.value} but this build reads up to ${max}; update the server. Fields this build knows still apply, anything else is ignored with a warning`, [p.key]);
       else if (v.value < max) add("warn", v, `${source} is written for schemaVersion ${v.value}, older than this build's ${max}; read as-is (migrations are #303)`, [p.key]);
+      continue;
+    }
+    // Read by hand, not by a config class (LF_TermBook.ApplyOwner): an object, whose words the game checks.
+    if (FREEFORM.has(p.key)) {
+      if (p.val.t !== "obj") add("error", p.val, `${source}: section ${p.key} is not an object; the section uses the shipped defaults`, [p.key]);
       continue;
     }
     const sec = top[p.key];

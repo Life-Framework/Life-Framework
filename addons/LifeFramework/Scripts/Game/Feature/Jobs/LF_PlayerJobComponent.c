@@ -144,7 +144,7 @@ class LF_PlayerJobComponent : ScriptComponent
 			if (!licenseManager || !licenseManager.HasLicense(LF_ELicenseType.POLICE_ACCESS))
 			{
 				SCR_HintManagerComponent.ShowCustomHint(
-					WidgetManager.Translate("#LF-Job_NeedPoliceBadge"),
+					LF_Terms.Text("#LF-Job_NeedPoliceBadge"),
 					WidgetManager.Translate("#LF-Job_AccessDenied"),
 					5.0
 				);
@@ -256,7 +256,7 @@ class LF_PlayerJobComponent : ScriptComponent
 		else if (jobType == LF_EJobType.POLICE)
 		{
 			message = WidgetManager.Translate("#LF-Job_OnDutyPolice", jobName);
-			title = WidgetManager.Translate("#LF-Job_OnDutyPolice_Title");
+			title = LF_Terms.Text("#LF-Job_OnDutyPolice_Title");
 		}
 		else if (jobType == LF_EJobType.MEDIC)
 		{

@@ -285,7 +285,7 @@ class LF_GarageLedger
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LedgerEmpty", "#LF-Garage_LedgerEmpty"));
 
 		if (anyImpounded)
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LedgerFee", WidgetManager.Translate("#LF-Garage_LedgerFee", fee.ToString())));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LedgerFee", LF_Terms.Text("#LF-Garage_LedgerFee", fee.ToString())));
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "LedgerCloseButton", "#LF-Garage_LedgerClose"));
 		return parts;
