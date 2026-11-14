@@ -246,12 +246,14 @@ tools\cli test --no-build --only LF_Test_Money --local     # this PC only
 tools\cli test --no-build --red LF_Test_A,LF_Test_B        # batched red proof: one boot, every listed test must FAIL
 tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
 tools\cli test --no-build --tier all --core-only           # the core alone, pack hidden (#326); any machine
+tools\cli test --no-build --tier all --shards auto --both  # normal + core-only passes at the same time (what ci and wt gate run)
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
 tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
 ```
 
+- **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
 - **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
   waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer
