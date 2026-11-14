@@ -1,0 +1,8 @@
+MatPBRBasic {
+ BCRMap "{029A84113517FD09}Assets/_SharedData/Concrete/ST_Concrete_Clean_01_BCR.edds"
+ NMOMap "{3A423F83EC60AF97}Assets/_SharedData/Concrete/ST_Concrete_Clean_01_NMO.edds"
+ GlobalMapsUVTransform MatUVTransform "{82DD45D65FECA21A}" {
+  TilingU 0.3333
+  TilingV 0.3333
+ }
+}
