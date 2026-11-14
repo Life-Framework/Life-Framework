@@ -1,4 +1,44 @@
 //------------------------------------------------------------------------------------------------
+//! Why a vehicle is held (#752a, "vehiclestate" payload). The restart impound is not a tow:
+//! a car left on the street at a restart stays NONE and is derived as impounded (IsImpounded).
+enum LF_EVehicleTowState
+{
+	NONE = 0,
+	TOWED = 1,
+	POLICE_IMPOUND = 2
+}
+
+//------------------------------------------------------------------------------------------------
+//! The saved vehicle state that does not fit the positional "vehicles" record (#752a,
+//! docs/architecture/record-shape-vehicle.md). One row per record whose state is not the default,
+//! keyed by vehicle id. A later field is a new payload, never a new member here.
+//------------------------------------------------------------------------------------------------
+class LF_VehicleStateRow
+{
+	static const int VERSION = 1;
+
+	int m_iVersion;
+	string m_sVehicleId;
+	int m_iTowState;
+	int m_iTowedAt;
+	int m_iInspectedAt;
+	int m_iCompartment;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_VehicleStateRow Create(string vehicleId, int towState, int towedAt, int inspectedAt, int compartment)
+	{
+		LF_VehicleStateRow row();
+		row.m_iVersion = VERSION;
+		row.m_sVehicleId = vehicleId;
+		row.m_iTowState = towState;
+		row.m_iTowedAt = towedAt;
+		row.m_iInspectedAt = inspectedAt;
+		row.m_iCompartment = compartment;
+		return row;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! One owned vehicle. The stable id is the lock identifier and the key id.
 //! A restart does not keep the entity. Apply restores this record, and the spawn
 //! point places the prefab the way a character is placed at a spawn point.
@@ -17,6 +57,21 @@ class LF_VehicleRecord : Managed
 	string m_sNameKey;
 	bool m_bLocked;
 	bool m_bStored;
+
+	// Vehicle state (#752a). Not part of the positional "vehicles" payload: it travels in the
+	// "vehiclestate" payload (LF_VehicleStateRow), so the record's saved layout never moves.
+	//! LF_EVehicleTowState.
+	[NonSerialized()]
+	int m_iTowState;
+	//! Unix seconds the tow state was set, 0 = never.
+	[NonSerialized()]
+	int m_iTowedAt;
+	//! Unix seconds of the last inspection, 0 = never.
+	[NonSerialized()]
+	int m_iInspectedAt;
+	//! Fitted hidden compartment size, 0 = none, up to LF_VehicleOwnership.COMPARTMENT_MAX.
+	[NonSerialized()]
+	int m_iCompartment;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_VehicleRecord Create(string vehicleId, string ownerUid, string keyId, string prefab, string spawnPrefab, string shopId, string plate, string nameKey, bool locked, bool stored)
@@ -41,7 +96,7 @@ class LF_VehicleRecord : Managed
 		if (!source)
 			return null;
 
-		return Create(
+		LF_VehicleRecord copy = Create(
 			source.m_sVehicleId,
 			source.m_sOwnerUid,
 			source.m_sKeyId,
@@ -53,6 +108,33 @@ class LF_VehicleRecord : Managed
 			source.m_bLocked,
 			source.m_bStored
 		);
+		copy.CopyStateFrom(source);
+		return copy;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CopyStateFrom(notnull LF_VehicleRecord source)
+	{
+		m_iTowState = source.m_iTowState;
+		m_iTowedAt = source.m_iTowedAt;
+		m_iInspectedAt = source.m_iInspectedAt;
+		m_iCompartment = source.m_iCompartment;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stock car: never towed, never inspected, no compartment. Writes no state row.
+	bool HasDefaultState()
+	{
+		return m_iTowState == LF_EVehicleTowState.NONE && m_iTowedAt == 0 && m_iInspectedAt == 0 && m_iCompartment == 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ResetState()
+	{
+		m_iTowState = LF_EVehicleTowState.NONE;
+		m_iTowedAt = 0;
+		m_iInspectedAt = 0;
+		m_iCompartment = 0;
 	}
 }
 
@@ -77,6 +159,9 @@ class LF_VehicleSession : Managed
 //------------------------------------------------------------------------------------------------
 class LF_VehicleOwnership
 {
+	//! The largest hidden compartment size (#752a, maintainer default on #752: a level 0-3).
+	static const int COMPARTMENT_MAX = 3; // lf-fixed: the saved range of the compartment level (#752); a pack sells sizes within it
+
 	protected static ref map<string, ref LF_VehicleRecord> s_mRecords;
 	protected static ref map<string, ref LF_VehicleSession> s_mSessions;
 	protected static ref array<string> s_aOrder;
@@ -265,6 +350,121 @@ class LF_VehicleOwnership
 			if (vehicle)
 				SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The "vehiclestate" payload (#752a): one row per record whose state is not the default, in
+	//! purchase order. A stock car writes no row.
+	static array<ref LF_VehicleStateRow> ExportState()
+	{
+		array<ref LF_VehicleStateRow> rows = new array<ref LF_VehicleStateRow>();
+		foreach (string vehicleId : Order())
+		{
+			LF_VehicleRecord record = Records().Get(vehicleId);
+			if (!record || record.HasDefaultState())
+				continue;
+
+			rows.Insert(LF_VehicleStateRow.Create(vehicleId, record.m_iTowState, record.m_iTowedAt, record.m_iInspectedAt, record.m_iCompartment));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces the state of every live record: each starts at the default, then each row is written
+	//! onto its record. Runs after "vehicles" in the same load. A row for a vehicle that is not loaded
+	//! is skipped; a bad value is corrected and logged; one bad row never stops the others. Idempotent.
+	//! \return The number of rows applied.
+	static int ApplyState(array<ref LF_VehicleStateRow> rows)
+	{
+		foreach (string vehicleId : Order())
+		{
+			LF_VehicleRecord record = Records().Get(vehicleId);
+			if (record)
+				record.ResetState();
+		}
+
+		if (!rows)
+			return 0;
+
+		int applied = 0;
+		foreach (LF_VehicleStateRow row : rows)
+		{
+			if (!row || row.m_sVehicleId.IsEmpty())
+				continue;
+
+			LF_VehicleRecord live = Records().Get(row.m_sVehicleId);
+			if (!live)
+			{
+				LF_Debug.Warn("Vehicle", string.Format("state row for unknown vehicle %1 skipped", row.m_sVehicleId));
+				continue;
+			}
+
+			WriteState(live, row.m_iTowState, row.m_iTowedAt, row.m_iInspectedAt, row.m_iCompartment);
+			applied++;
+		}
+
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets one vehicle's saved state (server). The writers are #774 (tow), #778 (inspection,
+	//! compartment) and #859 (police impound); bad values are corrected as on load.
+	//! \return False when the vehicle is not owned.
+	static bool SetState(string vehicleId, int towState, int towedAt, int inspectedAt, int compartment)
+	{
+		LF_VehicleRecord live = Records().Get(vehicleId);
+		if (!live)
+		{
+			LF_Debug.Warn("Vehicle", string.Format("set state rejected: unknown vehicle %1", vehicleId));
+			return false;
+		}
+
+		WriteState(live, towState, towedAt, inspectedAt, compartment);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The vehicle's state as a row (a copy), or null when it is not owned.
+	static LF_VehicleStateRow StateOf(string vehicleId)
+	{
+		LF_VehicleRecord live = Records().Get(vehicleId);
+		if (!live)
+			return null;
+
+		return LF_VehicleStateRow.Create(vehicleId, live.m_iTowState, live.m_iTowedAt, live.m_iInspectedAt, live.m_iCompartment);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void WriteState(notnull LF_VehicleRecord live, int towState, int towedAt, int inspectedAt, int compartment)
+	{
+		string vehicleId = live.m_sVehicleId;
+		if (towState < LF_EVehicleTowState.NONE || towState > LF_EVehicleTowState.POLICE_IMPOUND)
+		{
+			LF_Debug.Error("Vehicle", string.Format("vehicle %1: unknown tow state %2 reads as none", vehicleId, towState));
+			towState = LF_EVehicleTowState.NONE;
+		}
+
+		if (towedAt < 0)
+		{
+			LF_Debug.Error("Vehicle", string.Format("vehicle %1: negative towed-at %2 reads as never", vehicleId, towedAt));
+			towedAt = 0;
+		}
+
+		if (inspectedAt < 0)
+		{
+			LF_Debug.Error("Vehicle", string.Format("vehicle %1: negative inspected-at %2 reads as never", vehicleId, inspectedAt));
+			inspectedAt = 0;
+		}
+
+		int fitted = Math.ClampInt(compartment, 0, COMPARTMENT_MAX);
+		if (fitted != compartment)
+			LF_Debug.Error("Vehicle", string.Format("vehicle %1: compartment level %2 clamped to %3", vehicleId, compartment, fitted));
+
+		live.m_iTowState = towState;
+		live.m_iTowedAt = towedAt;
+		live.m_iInspectedAt = inspectedAt;
+		live.m_iCompartment = fitted;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -991,6 +1191,7 @@ class LF_VehicleOwnership
 		live.m_sNameKey = record.m_sNameKey;
 		live.m_bLocked = record.m_bLocked;
 		live.m_bStored = record.m_bStored;
+		live.CopyStateFrom(record);
 	}
 
 	//------------------------------------------------------------------------------------------------
