@@ -203,6 +203,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessPerf(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessProbe(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HarnessResetInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessScreenText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessSessionScope(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessStandClear(), LF_TestTier.WORLD);
@@ -281,6 +282,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_NpcStunWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcWearsClothes(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcWitness(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OpsEventsContract(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.WORLD);
@@ -294,7 +296,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParkBrakeWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERF);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PersistSwitches(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PersistSwitchesRestart(), LF_TestTier.PERSISTENCE);
