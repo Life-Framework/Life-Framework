@@ -8250,7 +8250,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sputnik T601"
      Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
     }
-  }
   CustomStringTableItem "{FCEA5FDC41E5650D}" {
    Id "LF-Sign_Generic_Title"
    Target_en_us "Notice"
@@ -8363,11 +8362,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You moved. Look at the spot again and retry."
      Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
     }
-    CustomStringTableItem "{46261105E82813B6}" {
-     Id "LF-IncidentGm_Kind_logout"
-     Target_en_us "Logout in custody"
-     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
-    }
     CustomStringTableItem "{F06569B011E7028F}" {
      Id "LF-Police_Shirt_Name"
      Target_en_us "Officer's shirt"
@@ -8453,6 +8447,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_pt "trabalhos"
      Target_pt_br "trabalhos"
      Comment "Term job, plural form: {job:pl}."
+    }
+    CustomStringTableItem "{46261105E82813B6}" {
+     Id "LF-IncidentGm_Kind_logout"
+     Target_en_us "Logout in custody"
+     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
     CustomStringTableItem "{803147BD364F1908}" {
      Id "LF-Credits_Title"
@@ -9019,5 +9018,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+  }
  }
 }

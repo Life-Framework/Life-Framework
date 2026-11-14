@@ -146,7 +146,9 @@ export function stBlock(list) {
 export function patchSt(st, list) {
   const items = /\n    CustomStringTableItem "\{[0-9A-F]{16}\}" \{\n     Id "LF-Credits_[^"]*"\n(?:     [^\n]*\n)*?    \}/g;
   const stripped = st.replace(items, "");
-  const end = stripped.lastIndexOf("\n }\n}");
+  // Rows go inside the last group, before its closing brace, so the table round-trips through the merge driver.
+  let end = stripped.lastIndexOf("\n  }\n }\n}");
+  if (end === -1) end = stripped.lastIndexOf("\n }\n}");
   if (end === -1) throw new Error(`${ST}: closing braces not found`);
   return `${stripped.slice(0, end)}\n${stBlock(list)}${stripped.slice(end)}`;
 }
