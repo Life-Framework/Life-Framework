@@ -2898,6 +2898,8 @@ async function cmdCi(root = ROOT, opts = {}) {
       const cg = await import("./commands/config-gate.mjs");
       return (await import("./lib/config-gate.mjs")).runConfigGate(changedFiles(root), { static: () => cg.runStatic(root), sessions: () => cg.runSessions(root) });
     }],
+    // A save made before the pack move (#327, D7 (a)) must still load: two boots, only when persistence code, a mission header or the pack boundary changed.
+    ["pre-move save", async () => (await import("./lib/pre-move-gate.mjs")).runPreMoveGate(changedFiles(root), (o) => runE2e(root, { ...opts, ...e2eMoveFlags(root, ["--pre-move", o.preMove, "--mission", o.mission]) }))],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
