@@ -1,4 +1,4 @@
-// red-proof: pending
+// red-proof: the cooldown wait is zeroed in RefuseSubmitGated: '[LFTEST] FAIL police/application-cooldown-gate', restored (2026-11-14)
 // tier: LOGIC
 class LF_Test_PoliceApplyCooldownGate : LF_Test
 {

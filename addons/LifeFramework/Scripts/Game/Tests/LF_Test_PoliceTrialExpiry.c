@@ -1,4 +1,4 @@
-// red-proof: pending
+// red-proof: TrialExpired returns false: '[LFTEST] FAIL police/trial-expiry', restored (2026-11-14)
 // tier: LOGIC
 class LF_Test_PoliceTrialExpiry : LF_Test
 {
