@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "defaultBuyPrice": 40,
+    "defaultSellPrice": 20,
+    "priceRules": {
+      "Prefabs/Items/Equipment/Backpacks/": { "buyPrice": 90, "sellPrice": 45 }
+    }
+  }
+}
