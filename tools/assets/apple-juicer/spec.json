@@ -1,0 +1,37 @@
+{
+  "slug": "apple-juicer",
+  "name": "AppleJuicer",
+  "kind": "deployable",
+  "roadmap": "#924",
+  "concept": "The juice stall at the Everon market (#924): a trader presses the village apples into juice with a mains-powered electric juicer bought new from the state department store, the way a 1989 kiosk or a home kitchen did. It stands on the stall counter beside the crates of apples and is the prop the Press Apples action belongs to.",
+  "prompt": "Late-1980s electric countertop fruit juicer for a village market stall: a squat motor base, a round clear juice bowl with a steel sieve basket, a feed chute on the lid and a spout at the front. no text, no logos.",
+  "texture_prompt": "",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 20000
+  },
+  "size_m": {
+    "length": 0.4,
+    "height": 0.45,
+    "width": 0.35
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.5,
+      0.2
+    ],
+    "texture_px": 1024,
+    "credits": 120
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Props/Roleplay/AppleJuicer",
+  "prefab_dir": "Prefabs/Props/Roleplay/AppleJuicer"
+}

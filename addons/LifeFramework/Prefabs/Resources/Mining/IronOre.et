@@ -4,5 +4,13 @@ GenericEntity : "{F36375B16DB07ABD}Prefabs/Resources/Mining/MinableOre.et" {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
    m_sNodeId "iron"
   }
+  MeshObject "{59F0709385A10D16}" {
+   Materials {
+    MaterialAssignClass "{D1181D22455478EF}" {
+     SourceMaterial "Common/Materials/Physics/stone"
+     AssignedMaterial "{7AFC1E860A8EE25C}Assets/Resources/Mining/OreVein/Data/OreVein_Iron.emat"
+    }
+   }
+  }
  }
 }

@@ -1,0 +1,178 @@
+{
+  "slug": "apple-juicer",
+  "realism": {
+    "how": "An electric centrifugal juicer, mains powered, bought new at the state department store or the household-goods shop (Czechoslovak and East German factories made them in plastic and enamel). A kiosk or market stall that sells juice by the glass used a stainless commercial centrifuge or a glass-cone juice dispenser like the state groceries had.",
+    "current": "Every 1989 kitchen and juice kiosk had an electric one; a hand-cranked wooden press was what a grandmother kept in the barn for the autumn cider. A local would read the electric machine as normal, the press as antique."
+  },
+  "subject": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out.",
+  "variants": [
+    {
+      "label": "Cream countertop",
+      "detail": "Cream-white moulded plastic, a squat round motor base with a rotary switch, a clear plastic lid with a tall feed chute and a pusher, a short spout at the front",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. Cream-white moulded plastic, a squat round motor base with a rotary switch, a clear plastic lid with a tall feed chute and a pusher, a short spout at the front. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f1a9-73aa-a675-87441df0ff84",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "clean cream appliance; clear lid and chute are see-through for image-to-3D"
+    },
+    {
+      "label": "Orange 80s plastic",
+      "detail": "Orange and white rounded 1980s plastic body, a clear dome lid with a feed tube, a chrome spout, a pulp container clipped to the back",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. Orange and white rounded 1980s plastic body, a clear dome lid with a feed tube, a chrome spout, a pulp container clipped to the back. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f266-7135-8cc7-146f8a60a5ab",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "strong 80s colour; a lot of clear plastic"
+    },
+    {
+      "label": "Stainless commercial",
+      "detail": "Brushed stainless steel commercial centrifugal juicer, a heavy cylindrical motor housing, a wide steel feed chute on top, a long spout over a drip tray, a big black toggle switch",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. Brushed stainless steel commercial centrifugal juicer, a heavy cylindrical motor housing, a wide steel feed chute on top, a long spout over a drip tray, a big black toggle switch. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f315-74cb-8cb3-014be691947d",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "reads as a kiosk machine, dull steel; the loose drip tray is a second object"
+    },
+    {
+      "label": "Glass cone dispenser",
+      "detail": "A state-grocery juice counter machine: three tall upside-down glass cone tanks of juice on a white enamel steel stand, a small brass tap under each cone, a drip tray",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. A state-grocery juice counter machine: three tall upside-down glass cone tanks of juice on a white enamel steel stand, a small brass tap under each cone, a drip tray. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f3c7-74c3-93e7-edcdf5b17b35",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 1,
+        "background": 0,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "the state-grocery cone dispenser is very 1989, but two objects and glass"
+    },
+    {
+      "label": "Green enamel base",
+      "detail": "Pale green enamelled steel motor base like a 1980s food mixer, a steel bowl with a sieve basket, a black bakelite lid with a feed chute",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. Pale green enamelled steel motor base like a 1980s food mixer, a steel bowl with a sieve basket, a black bakelite lid with a feed chute. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f47c-77dc-a685-cc8e033c8858",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "green enamel base, steel bowl, bakelite lid: Eastern-bloc and fully opaque"
+    },
+    {
+      "label": "Brown and beige",
+      "detail": "Square brown and beige plastic body with ribbed sides, a translucent smoked lid, a large push button on the front, a spout over a short tray",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. Square brown and beige plastic body with ribbed sides, a translucent smoked lid, a large push button on the front, a spout over a short tray. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f52f-7276-a144-cfe0f322f272",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "boxy brown and beige home appliance, solid form; reads kitchen more than stall"
+    },
+    {
+      "label": "Tall stall machine",
+      "detail": "A tall white enamel commercial juicer, the motor in the lower block, a steel bowl and a pulp drawer above it, a steel feed hopper with a wooden pusher",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. A tall white enamel commercial juicer, the motor in the lower block, a steel bowl and a pulp drawer above it, a steel feed hopper with a wooden pusher. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f5fb-73e9-92ae-6cf759d6f1e6",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "commercial stall machine with a feed hopper and wooden pusher: apples go in at the top; opaque"
+    },
+    {
+      "label": "Compact red",
+      "detail": "A small red plastic juicer with a clear round bowl, a side pulp bin, a two-position slide switch on the base",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. A small red plastic juicer with a clear round bowl, a side pulp bin, a two-position slide switch on the base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f6a8-748d-954f-ef0fdb4730a7",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "small and toy-like at stall scale; clear bowl"
+    },
+    {
+      "label": "White with glass jug",
+      "detail": "A white plastic juicer with a built-in ribbed glass jug standing under the spout at the front, a clear lid and feed chute",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. A white plastic juicer with a built-in ribbed glass jug standing under the spout at the front, a clear lid and feed chute. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f769-70a1-8413-458ecff9392b",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "the glass jug is a second, transparent object"
+    },
+    {
+      "label": "Kiosk juicer and tank",
+      "detail": "A grey hammer-paint commercial juicer bolted beside a small stainless steel serving tank with a tap, both on one steel base plate",
+      "prompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. A grey hammer-paint commercial juicer bolted beside a small stainless steel serving tank with a tap, both on one steel base plate. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d732-f820-7760-8c05-99597d173a56",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "era_current": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "reads as a 1950s cream separator more than a 1989 juicer; thin pipe"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 7,
+    "label": "Tall stall machine",
+    "by": "human",
+    "why": "maintainer's pick (via coordinator, 2026-11-14): commercial stall machine, opaque, the hopper shows where apples go",
+    "at": "2026-11-13"
+  }
+}

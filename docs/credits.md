@@ -31,7 +31,7 @@ name of the person who ran the agent.
 
 - The source in this repository is MIT (`LICENSE`). Contributions are licensed under MIT (`CONTRIBUTING.md`).
 - The build published on the Arma Reforger Workshop is licensed under the Arma Public License (APL), because the Workshop Terms of Use require an APL-family licence for uploaded content.
-- Third-party code keeps its own licence and notice (`THIRD_PARTY.md`). Third-party assets are listed in `assets-source/LICENSES.md`; none are used yet.
+- Third-party code keeps its own licence and notice (`THIRD_PARTY.md`). Third-party assets are listed in `assets-source/LICENSES.md`: so far only the CC0 texture sets under "Textures (CC0)".
 
 ## Tools
 
@@ -46,7 +46,27 @@ name of the person who ran the agent.
 |---|---|---|---|---|
 | Taser model (`Assets/Weapons/Handguns/Taser/Taser.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/taser/meshy.json` (generation ids), `tools/assets/taser/spec.json` (prompt) |
 | Handcuffs model (`Assets/Items/Roleplay/Handcuffs/Handcuffs.xob`) | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/handcuffs/meshy.json` (generation ids), `tools/assets/handcuffs/spec.json` (prompt) |
+| Vault drill model (`Assets/Items/Roleplay/Drill/Drill.xob`), from a generated concept picture (concept 1 of `tools/assets/drill/concepts.json`) | Meshy text-to-image, then Meshy image-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; generated 2026-11-13, under the sign-off of 2026-11-13 for generated models (#664, `docs/decisions.md`) | `tools/assets/drill/meshy.json` (generation ids, the concept's prompt), `tools/assets/drill/spec.json` |
+| Bank vault door and frame detail (`Assets/Props/Roleplay/BankVault/VaultDoor.xob`, the frame ring of `VaultFront.xob`): Meshy image-to-3D of a concept picture, itself made by Meshy image-to-image from the vault-door concept 1 | Meshy image-to-image and image-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/vault-front/meshy.json` (generation ids), `tools/assets/vault-front/concepts.json` (prompts, reference, pick) |
 | Spike strip model (`Assets/Props/Roleplay/SpikeStrip/SpikeStrip.xob`, `SpikeStrip_Folded.xob`): one generated link, repeated and stacked by the clean stage | Meshy text-to-3D, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; signed off 2026-11-13 (#664) | `tools/assets/spike-strip/meshy.json` (generation ids), `tools/assets/spike-strip/spec.json` (prompt) |
+
+## Textures (CC0)
+
+Downloaded by `tools\cli asset` (the generate stage of a Blender-made asset) and baked into our own maps; the source
+files are not in the repository. ambientCG releases every asset under CC0 1.0 (https://docs.ambientcg.com/license/,
+https://creativecommons.org/publicdomain/zero/1.0/): no attribution required, credited here anyway.
+
+| Set | Author | Source | Licence | Used in |
+|---|---|---|---|---|
+| Metal 046 B | ambientCG | https://ambientcg.com/view?id=Metal046B | CC0 1.0 | Iron ingot: dark forge-scaled steel (`Assets/Resources/Mining/Ingot/Data/MetalIngot_Iron_*`) |
+| Metal 047 B | ambientCG | https://ambientcg.com/view?id=Metal047B | CC0 1.0 | Copper ingot; native copper specks in copper ore |
+| Metal 048 B | ambientCG | https://ambientcg.com/view?id=Metal048B | CC0 1.0 | Gold ingot; gold flecks in gold ore and in the gold quartz veins |
+| Metal 058 C | ambientCG | https://ambientcg.com/view?id=Metal058C | CC0 1.0 | Copper ingot patina; malachite in copper ore and the copper veins |
+| Rust 009 | ambientCG | https://ambientcg.com/view?id=Rust009 | CC0 1.0 | Iron ingot rust spots; iron ore; iron staining on the ore rocks |
+| Rock 035 | ambientCG | https://ambientcg.com/view?id=Rock035 | CC0 1.0 | Host rock of the iron and copper nuggets; grain in the gold quartz |
+| Rock 058 | ambientCG | https://ambientcg.com/view?id=Rock058 | CC0 1.0 | Host rock of the ore veins on the quarry rocks (`Assets/Resources/Mining/OreVein/`) |
+
+Which set feeds which map is in each asset's spec (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`, `source.textures`).
 
 ## Generated sound effects (ElevenLabs)
 
@@ -55,6 +75,7 @@ name of the person who ran the agent.
 | Taser sounds: shot, dry fire, cartridge out and in, stun buzz (`Sounds/Weapons/Handguns/Taser/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-13 on the maintainer's Starter plan, a paid plan with a commercial licence. The output may be used in the project and in published builds as part of the mod; it may not be distributed as stand-alone audio files or a sample pack (`docs/decisions.md`, 2026-11-13) | `tools/assets/taser/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
 
 ## Generated audio
+| Vault drill sounds: motor loop, grinding loop (`Sounds/Items/Drill/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above | `tools/assets/drill/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
 
 Music and ambience generated with ElevenLabs.
 

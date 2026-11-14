@@ -1,0 +1,18 @@
+MatPBR2Layers : "{E9C191F08ACE8804}Assets/Rocks/Granite/Data/GraniteStone_01.emat" {
+ Color 1 1 1 1
+ RoughnessScale 1
+ BCRMap "$BCR"
+ NMOMap "$NMO"
+ GlobalMapsUVTransform MatUVTransform "{56147A5D7D54B576}" {
+  TilingU 2
+  TilingV 2
+ }
+ Color2 0.9 0.9 0.9 1
+ BCRMap2 "$BCR"
+ BCRMap2UVTransform MatUVTransform "{56147A5D623C5C07}" {
+  TilingU 3
+  TilingV 3
+ }
+ NMOMap2 "$NMO"
+ RoughnessScale2 1
+}

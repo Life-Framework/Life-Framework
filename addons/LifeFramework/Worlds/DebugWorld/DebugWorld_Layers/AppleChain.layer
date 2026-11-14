@@ -1,5 +1,5 @@
 GenericEntity AppleTrader {
- coords 197 0 240.6
+ coords 206.359 0 233.467
  {
   $grp GenericEntity {
    AppleTradeContainer {
@@ -70,32 +70,32 @@ GenericEntity AppleTrader {
      }
     }
     Flags 0x403 0
-    coords -2.6 0.9 0.7
+    coords -0.29 1.027 -0.478
    }
    AppleTraderTestItems {
      coords 0 0.9 0.7
     {
      $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
       Apple_5A0E821DC5FD6433 {
-       coords -0.137 -0.036 -0.08
+       coords -0.499 0.125 -0.191
       }
       Apple_5A0E821DC5FD1C61 {
-       coords -0.074 -0.043 0.152
+       coords -0.386 0.125 -0.191
       }
       Apple_5A0E821DC5FD1115 {
-       coords 0.168 -0.036 0.057
+       coords -0.274 0.125 -0.191
       }
       Apple_5A0E821DC5FD1220 {
-       coords -0.002 -0.036 0.074
+       coords -0.161 0.125 -0.191
       }
       Apple_5A0E821DC5FD1706 {
-       coords -0.165 -0.036 0.08
+       coords -0.049 0.125 -0.191
       }
       Apple_5A0E821DC5FD082C {
-       coords -0.052 -0.036 -0.034
+       coords 0.064 0.125 -0.191
       }
       Apple_5A0E821DC5FD0D6E {
-       coords 0.1 -0.036 -0.035
+       coords 0.176 0.125 -0.191
       }
      }
     }
@@ -168,21 +168,9 @@ GenericEntity AppleTrader {
      }
     }
     Flags 0x403 0
-    coords -4.1 0.9 0.7
+    coords 9.5 1.027 -0.067
    }
   }
-   SCR_DestructibleEntity TableRecreation_01_1 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-    Flags 0x403 0
-     coords 0 0 0.7
-   }
-   SCR_DestructibleEntity TableRecreation_01_2 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-    Flags 0x403 0
-    coords -2.6 0 0.7
-   }
-   SCR_DestructibleEntity TableRecreation_01_3 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-    Flags 0x403 0
-    coords -4.1 0 0.7
-   }
   LF_NpcBaseEntity AppleNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
@@ -192,7 +180,7 @@ GenericEntity AppleTrader {
      }
     }
    }
-   coords 0 0 -1.1
+   coords 0.141 -0.005 -1.498
   }
  }
 }
@@ -208,6 +196,6 @@ Tree AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domest
  coords 130 0 310
 }
 GenericEntity AppleProcessor : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
- coords 141 0.9 311
- angleY 140
+ coords 214.933 1.024 233.42
+ angleY -90
 }

@@ -40,6 +40,8 @@ class LF_StaticReset
 		LF_Dialogue.ResetStatics();
 		LF_DialogueVoice.ResetStatics();
 		LF_DialogueScene.ResetStatics();
+		LF_RobHold.ResetStatics();
+		LF_RobHoldHud.ResetStatics();
 		LF_DialogueCamera.ResetStatics();
 		LF_EventBus.ResetStatics();
 		LF_ChainCatalog.ResetStatics();
@@ -93,6 +95,10 @@ class LF_StaticReset
 		LF_PhotoIdCard.ResetStatics();
 		LF_IdCardView.ResetStatics();
 		LF_IdCheck.ResetStatics();
+		LF_AssetAnim.ResetStatics();
+		LF_AssetAnimComponent.ResetStatics();
+		LF_DrillScene.ResetStatics();
+		LF_NpcStun.ResetStatics();
 		LF_WorldReset.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;

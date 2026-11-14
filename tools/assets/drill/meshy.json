@@ -1,0 +1,17 @@
+{
+  "slug": "drill",
+  "generations": [
+    {
+      "date": "2026-11-13",
+      "tool": "Meshy image-to-3D",
+      "model": "latest",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d6d5-f58e-738c-a08d-86eb25c35315",
+      "concept": 1,
+      "conceptTaskId": "01a1d6cb-8112-7235-bf30-9c735a593c0a",
+      "conceptPrompt": "Portable heavy-duty safe-cracking drill, late 1980s Eastern-bloc workshop tool: a chunky motor housing, a long steel drill bit pointing forward, and a side handle or clamp frame to hold it against a safe door. Pistol-grip hand drill, dark olive green enamel housing, long exposed bit, a loop side handle, black rubber grip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "accepted": true,
+      "note": "Accepted 2026-11-14: reads as the picked concept (olive pistol-grip drill, long bit, clamp frame). The cable ends in the air."
+    }
+  ]
+}

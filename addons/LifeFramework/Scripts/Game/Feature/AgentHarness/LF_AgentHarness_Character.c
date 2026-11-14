@@ -350,6 +350,22 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "animhold" || tool == "animoff")
+		{
+			// The asset animation proof's stand-ins (LF_AssetAnimHarness, #340).
+			string held;
+			if (tool == "animhold")
+				held = LF_AssetAnimHarness.Hold(this);
+			else
+				held = LF_AssetAnimHarness.Off();
+
+			if (held.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", held.Substring(3, held.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", held);
+			return;
+		}
+
 		if (tool == "spikedrop" || tool == "spikecar" || tool == "spikecheck")
 		{
 			// The spike strip proof's stand-ins (LF_SpikeStripHarness, #646).
@@ -433,6 +449,20 @@ modded class SCR_ChimeraCharacter
 			LF_Utils.SpawnEntityPrefab("{3735389521255DBE}Prefabs/Items/HouseKeyItem.et", ahead - xform[0] * 0.1);
 			LF_Utils.SpawnEntityPrefab("{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et", ahead + xform[0] * 0.1);
 			LF_HarnessReply(commandId, "ok", string.Format("keys house=%1 vehicle=%2", houseKeys, carKeys));
+			return;
+		}
+
+		if (tool == "pistol")
+		{
+			// A sidearm in a weapon slot, so a proof can draw it (`hold weapon`) for a robbery (#936).
+			IEntity pistol = LF_Utils.SpawnEntityPrefab("{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et", GetOrigin());
+			InventoryStorageManagerComponent manager = InventoryStorageManagerComponent.Cast(FindComponent(InventoryStorageManagerComponent));
+			EquipedWeaponStorageComponent weaponSlots = EquipedWeaponStorageComponent.Cast(FindComponent(EquipedWeaponStorageComponent));
+			bool slotted = pistol && manager && weaponSlots && manager.TryInsertItemInStorage(pistol, weaponSlots, -1);
+			if (!slotted && pistol)
+				SCR_EntityHelper.DeleteEntityAndChildren(pistol);
+
+			LF_HarnessReply(commandId, "ok", string.Format("pistol added=%1", slotted));
 			return;
 		}
 
@@ -619,6 +649,17 @@ modded class SCR_ChimeraCharacter
 		if (!target)
 		{
 			LF_HarnessReply(commandId, "error", "no_target");
+			return;
+		}
+
+		// A stun weapon in hand: the shot is a dart (LF_NpcStun), not a lethal hit.
+		if (LF_Stun.HeldStunWeapon(this))
+		{
+			int stunned = 0;
+			if (LF_NpcStun.HarnessShot(this, target))
+				stunned = 1;
+
+			LF_HarnessReply(commandId, "ok", string.Format("shotnpc dart=1 stunned=%1", stunned));
 			return;
 		}
 

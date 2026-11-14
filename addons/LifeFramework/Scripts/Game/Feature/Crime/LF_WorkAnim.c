@@ -172,6 +172,9 @@ class LF_WorkAnim
 		s_iStops++;
 		LF_Debug.Info(FEATURE, "work animation stopped: " + reason);
 		Broadcast(worker, session.m_eKind, false);
+		// The drill in their hands stops with them (#340).
+		if (session.m_eKind == LF_EWorkAnimKind.DRILL)
+			LF_DrillScene.End(session.m_Worker, reason);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -187,6 +190,7 @@ class LF_WorkAnim
 				s_aSessions.Remove(i);
 				s_iStops++;
 				LF_Debug.Info(FEATURE, "work animation stopped: worker gone");
+				LF_DrillScene.End(session.m_Worker, "worker gone");
 				continue;
 			}
 
@@ -227,15 +231,16 @@ class LF_WorkAnim
 
 //------------------------------------------------------------------------------------------------
 //! The working pose on the character (#513). Like the CPR (LF_ReviveAnimPlayer), the clips run as a
-//! custom loiter on our own attachment graph (Anims/Workspaces/Work/LF_WorkPick.agr and LF_WorkDrill.agr: base-game
-//! repair and demolition work clips) because the player has no CharacterAnimGraphComponent. StartLoitering
+//! custom loiter on our own attachment graph because the player has no CharacterAnimGraphComponent:
+//! Anims/Workspaces/Work/LF_WorkPick.agr (base-game repair clips) and LF_DrillPush.agr (our own push
+//! clips, written by tools\cli asset anim drill from tools/assets/drill/clips, #340). StartLoitering
 //! runs on the worker's owner; the base game sends it to every other machine.
 class LF_WorkAnimPlayer
 {
 	static const ResourceName PICK_GRAPH = "{602B8C98F90DC596}Anims/Workspaces/Work/LF_WorkPick.agr";
 	static const ResourceName PICK_GRAPH_INSTANCE = "{B2DDAE6C2907A8B9}Anims/Workspaces/Work/LF_WorkPick.asi";
-	static const ResourceName DRILL_GRAPH = "{94DB5A5051B77D67}Anims/Workspaces/Work/LF_WorkDrill.agr";
-	static const ResourceName DRILL_GRAPH_INSTANCE = "{F5F6D8DB80E8A58F}Anims/Workspaces/Work/LF_WorkDrill.asi";
+	static const ResourceName DRILL_GRAPH = "{778C05FA492D603F}Anims/Workspaces/Work/LF_DrillPush.agr";
+	static const ResourceName DRILL_GRAPH_INSTANCE = "{8F503FB24B4F0D5D}Anims/Workspaces/Work/LF_DrillPush.asi";
 	static const string CONTROL_VARIABLE = "Gestures";
 	//! How long a machine waits before it checks what it shows.
 	static const int CHECK_MS = 1500;

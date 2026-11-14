@@ -1,0 +1,37 @@
+GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ ID "9D3A51E060EFE982"
+ components {
+  ActionsManagerComponent "{37D145E9C956A759}" {
+   ActionContexts {
+    UserActionContext "{AA35E5CFB17A4451}" {
+     ContextName "default"
+     Position PointInfo "{1D366F48D620FAE5}" {
+      Offset -0.0559 0.5 -0.2756
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_RobAction "{C8BC12EF44616958}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C41A67FD0EE2C26C}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+     m_bDialogueOnly 1
+     m_fHoldSeconds 30
+     m_fHoldRadius 6
+     m_fPoliceRadius 30
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+}

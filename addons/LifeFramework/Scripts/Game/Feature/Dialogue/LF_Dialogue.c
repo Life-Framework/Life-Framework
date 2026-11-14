@@ -61,6 +61,12 @@ class LF_Dialogue
 		int playerId = controller.GetPlayerId();
 		IEntity player = controller.GetControlledEntity();
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
+		if (LF_NpcStun.BlocksTalk(npc))
+		{
+			LF_Debug.Info(FEATURE, string.Format("start refused for player %1: the NPC is stunned", playerId));
+			return false;
+		}
+
 		if (!config || !InReach(player, npc))
 		{
 			LF_Debug.Warn(FEATURE, string.Format("start refused for player %1: no playable dialogue on that NPC, or not within %2 m", playerId, REACH));
@@ -93,9 +99,9 @@ class LF_Dialogue
 		IEntity player = controller.GetControlledEntity();
 		IEntity npc = GetGame().GetWorld().FindEntityByID(session.m_NpcId);
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
-		if (!config || !InReach(player, npc))
+		if (!config || !InReach(player, npc) || LF_NpcStun.BlocksTalk(npc))
 		{
-			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2: the NPC is gone or out of reach; conversation ended", index, playerId));
+			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2: the NPC is gone, out of reach or stunned; conversation ended", index, playerId));
 			End(controller, true);
 			return false;
 		}
@@ -172,6 +178,33 @@ class LF_Dialogue
 
 		if (tellClient)
 			controller.LF_DialogueClose();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the NPC says the line voiced for `key` (its `for_key`) to everyone within its hear
+	//! range, outside any conversation: another feature's moment, such as a robbery's begging
+	//! (LF_RobHold). A key with no voiced line is logged and not sent.
+	static void Announce(IEntity npc, string key)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
+		if (!config)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("'%1' not said: the NPC has no playable dialogue", key));
+			return;
+		}
+
+		string line = LF_DialogueFlow.SpokenFor(config, key);
+		if (line == key)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("'%1' not said: '%2' has no line voiced for that key", key, config.m_sId));
+			return;
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("'%1' says '%2' to whoever is near", config.m_sId, line));
+		Overhear(0, npc, config, line);
 	}
 
 	//------------------------------------------------------------------------------------------------

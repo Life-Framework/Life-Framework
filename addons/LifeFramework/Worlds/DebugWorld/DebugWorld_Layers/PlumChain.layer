@@ -1,5 +1,5 @@
 GenericEntity PlumTrader {
- coords 205.5 0 240.6
+ coords 206.359 0 233.467
  {
   $grp GenericEntity {
    PlumTradeContainer {
@@ -69,7 +69,7 @@ GenericEntity PlumTrader {
       Enabled 1
      }
     }
-coords -2.6 0.9 0.7
+coords 0.57 1.027 -0.478
      Flags 1027
    }
    PlumTraderTestItems {
@@ -77,51 +77,32 @@ coords -2.6 0.9 0.7
     {
      $grp GenericEntity : "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et" {
       Plum_5A4C5C558992D31E {
-       coords -0.115 0 -0.073
+       coords 0.269 0.124 -0.174
       }
       Plum_5A4C5C558992D5AA {
-       coords -0.029 0 -0.073
+       coords 0.344 0.124 -0.174
       }
       Plum_5A4C5C558992D56B {
-       coords 0.046 0 -0.073
+       coords 0.42 0.124 -0.174
       }
       Plum_5A4C5C558992D539 {
-       coords 0.126 0 -0.073
+       coords 0.496 0.124 -0.174
       }
       Plum_5A4C5C558992D515 {
-       coords -0.029 0 0.012
+       coords 0.571 0.124 -0.174
       }
       Plum_5A4C5C558992D4E0 {
-       coords 0.046 0 0.012
+       coords 0.647 0.124 -0.174
       }
       Plum_5A4C5C558992D4BB {
-       coords 0.126 0 0.012
+       coords 0.722 0.124 -0.174
       }
       Plum_5A4C5C558992D495 {
-       coords -0.115 0 0.012
+       coords 0.798 0.124 -0.174
       }
      }
     }
    }
-  }
-   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-    {
-     coords 0 0 0.7
-    }
-    {
-     coords -2.6 0 0.7
-   }
-  }
-  LF_NpcBaseEntity PlumNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
-   components {
-    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-     Identity Identity "{5A4B0B84AF44A913}" {
-      Name "Plum"
-      Surname "Trader"
-     }
-    }
-   }
-   coords 0 0 -1.1
   }
 
  }
