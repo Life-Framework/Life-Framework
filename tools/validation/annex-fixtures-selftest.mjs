@@ -1,4 +1,5 @@
 // tools/validation/annex-fixtures-selftest.mjs
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 //
 // Proves validate-annex-fixtures lets a baselined village reference pass, fails
 // a new one (new file, or a new name in a baselined file), ignores annex names,

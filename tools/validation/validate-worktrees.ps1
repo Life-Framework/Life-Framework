@@ -1,4 +1,5 @@
 # tools/validation/validate-worktrees.ps1 - parallel-worktree registry consistency.
+# inputs: ttl=300
 #
 # Run by `tools\cli validate` from any checkout. Checks the worktree hub
 # (<main-checkout>/tmp/wt/, resolved via git-common-dir so it works from a

@@ -44,6 +44,14 @@ in-world document; a license is another document you carry.
   purchase + persistence. ✅ purchase ordering, whitelist mapping, and
   persistence-list deduplication are guarded. Remaining localization work.
 
+- The component is on the player body (`Prefabs/Characters/Core/Character_Roleplay.et`) since #988.
+  Before that no prefab carried it, so no player held a licence and every licence check refused
+  (`catalogue/gun-counter` caught it). A new body gets the initial licences, then its saved ones
+  (`LF_Progression.ApplyToCharacter`).
+- `FIREARM_PERMIT` (#988): a civilian permit an outlet's gate asks for (the gun counter's M9), and
+  the licence that makes carrying a `licensed` catalogue item lawful. No desk sells it yet;
+  `/licence <NAME>` grants one in dev worlds and to administrators (`LF_LicenceGrantCommand.c`).
+
 ## Dependencies
 
 - `Account` / `Whitelist` (eligibility), `Level` (level gates), `Money`

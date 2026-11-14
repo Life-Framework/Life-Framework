@@ -57,9 +57,9 @@ class LF_Test_VehiclePriceModel : LF_Test
 		if (!shipped)
 			return;
 
-		array<ResourceName> lot = {LF_VehicleCatalog.S105, LF_VehicleCatalog.UAZ469, LF_VehicleCatalog.S1203, LF_VehicleCatalog.UAZ452, LF_VehicleCatalog.M923};
-		array<ResourceName> spawn = {LF_VehicleCatalog.S105_LOCKED, LF_VehicleCatalog.UAZ469_LOCKED, LF_VehicleCatalog.S1203_LOCKED, LF_VehicleCatalog.UAZ452_LOCKED, LF_VehicleCatalog.M923_LOCKED};
-		array<int> lotPrice = {1000, 2500, 4000, 3500, 8000}; // the Street_Vehicles.layer offers
+		array<ResourceName> lot = {LF_VehicleCatalog.S105, LF_VehicleCatalog.UAZ469, LF_VehicleCatalog.S1203, LF_VehicleCatalog.UAZ452, LF_VehicleCatalog.M923, LF_VehicleCatalog.DANA2101, LF_VehicleCatalog.SPUTNIK_T601};
+		array<ResourceName> spawn = {LF_VehicleCatalog.S105_LOCKED, LF_VehicleCatalog.UAZ469_LOCKED, LF_VehicleCatalog.S1203_LOCKED, LF_VehicleCatalog.UAZ452_LOCKED, LF_VehicleCatalog.M923_LOCKED, LF_VehicleCatalog.DANA2101_LOCKED, LF_VehicleCatalog.SPUTNIK_T601_LOCKED};
+		array<int> lotPrice = {1000, 2500, 4000, 3500, 8000, 1800, 700}; // the Street_Vehicles.layer offers
 		for (int i = 0; i < lot.Count(); i++)
 		{
 			string tag = lot[i];

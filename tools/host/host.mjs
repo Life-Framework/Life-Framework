@@ -1,13 +1,14 @@
-// Playtest host helpers for `tools\cli host start|stop|status|backup`.
+// Playtest host helpers for `tools\cli host start|stop|status|backup|preflight|restore`.
 //
 // The host profile lives outside every worktree (default
 // %LOCALAPPDATA%\LifeFramework\host, override LF_HOST_DIR), so pruning a
 // worktree or wiping a test profile never touches the playtest saves. The
 // profile holds no junctions: the game-addons junction stays under the
 // worktree's server/profile/serve, created by the CLI's own helper.
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { networkInterfaces, tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
 
 export const PLAYTEST_MISSION = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
@@ -82,6 +83,13 @@ export function saveRoot(profile) {
   return i >= 0 ? join(profile, ...rel.slice(0, i + 1)) : first.dir;
 }
 
+// A folder path that does not exist yet: base, else base-2, base-3, ...
+export function freshDir(base) {
+  let dest = base;
+  for (let n = 2; existsSync(dest); n++) dest = `${base}-${n}`;
+  return dest;
+}
+
 export function stamp(d = new Date()) {
   const p = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}-${p(d.getSeconds())}`;
@@ -91,12 +99,114 @@ export function stamp(d = new Date()) {
 // path, or null when there is nothing to back up yet.
 export function backupSaves(dir, reason, now = new Date()) {
   const { profile, backups } = hostPaths(dir);
+  return backupSaveRoot(profile, backups, reason, now);
+}
+
+// The same copy for any profile (the e2e test profile included).
+export function backupSaveRoot(profile, backups, reason, now = new Date()) {
   const src = saveRoot(profile);
   if (!src) return null;
-  const dest = join(backups, `${stamp(now)}-${reason}`);
+  const dest = freshDir(join(backups, `${stamp(now)}-${reason.replace(/[^A-Za-z0-9._-]/g, "_")}`));
   mkdirSync(backups, { recursive: true });
   cpSync(src, dest, { recursive: true, verbatimSymlinks: true });
   return dest;
+}
+
+// ---------------------------------------------------------------- game updates (#980)
+// A Steam update can change how the engine reads a save (1.7.0.41 dropped
+// every save). The engine stamps each save point's meta-info.json with the
+// build that wrote it (m_sGameVersion); the mod stamps its own payload too
+// (LF_SaveStamp). Before the first boot on a new build the owner runs
+// `host preflight`: back up, load the save on the new build, check the load
+// line, stop (shutdown save), and restore the backup when anything failed.
+
+// The engine's meta-info.json of a save point, or null.
+export function readSaveMeta(savePointDir) {
+  try {
+    return JSON.parse(readFileSync(join(savePointDir, "meta-info.json"), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+// The game build that wrote the newest save point, or null (no save, or a
+// meta-info without the field).
+export function newestSaveBuild(profile) {
+  const first = findSavePoints(profile)[0];
+  if (!first) return null;
+  const meta = readSaveMeta(first.dir);
+  return meta && typeof meta.m_sGameVersion === "string" && meta.m_sGameVersion ? meta.m_sGameVersion : null;
+}
+
+// Rewrites the newest save point's engine stamp (the e2e old-build proof).
+export function stampNewestSave(profile, build) {
+  const first = findSavePoints(profile)[0];
+  if (!first) return null;
+  const file = join(first.dir, "meta-info.json");
+  const meta = JSON.parse(readFileSync(file, "utf8"));
+  meta.m_sGameVersion = build;
+  writeFileSync(file, JSON.stringify(meta, null, 4));
+  return first.dir;
+}
+
+// The installed game build: the file version of the server exe, which is
+// the string the engine writes as m_sGameVersion (1.9.0.37 for both).
+export function exeBuild(exe) {
+  if (!exe || !existsSync(exe)) return null;
+  const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", `(Get-Item -LiteralPath '${exe.replace(/'/g, "''")}').VersionInfo.FileVersion`], { encoding: "utf8", timeout: 20000, windowsHide: true });
+  const v = (r.stdout || "").trim();
+  return /^\d+(\.\d+){1,3}$/.test(v) ? v : null;
+}
+
+// Whether a boot needs the preflight first: a save exists and its build is
+// known and differs from the installed one.
+export function buildGate({ saveBuild, gameBuild }) {
+  if (!saveBuild || !gameBuild) return { changed: false, reason: saveBuild ? "installed game build unknown" : "save build unknown" };
+  if (saveBuild === gameBuild) return { changed: false, reason: `save and game are both ${gameBuild}` };
+  return { changed: true, reason: `the save was written by game build ${saveBuild}, the installed game is ${gameBuild}` };
+}
+
+// Judges a preflight boot's console.log: the store loaded ("save loaded:",
+// LF_PersistenceComponentSerializer.ReportLoad) with nothing damaged, no
+// script error, and the shutdown save was written.
+export function preflightVerdict(text) {
+  const lines = String(text ?? "").split(/\r?\n/);
+  const find = (re) => lines.find((l) => re.test(l));
+  const damaged = find(/\[LFDebug:Persistence\].*(save load damaged|continued save never reached)/);
+  if (damaged) return { ok: false, reason: damaged.trim() };
+  const scriptError = find(/SCRIPT\s+\(E\)|Virtual Machine Exception|\bVME\b/);
+  if (scriptError) return { ok: false, reason: `script error: ${scriptError.trim()}` };
+  const loaded = find(/\[LFDebug:Persistence\] save loaded:/);
+  if (!loaded) return { ok: false, reason: "no '[LFDebug:Persistence] save loaded:' line: the engine did not load the save into the LF store" };
+  if (!find(/\[LFDebug:Persistence\] save completed \(SHUTDOWN\)/)) return { ok: false, reason: "no shutdown save after the load", loaded: loaded.trim() };
+  return { ok: true, reason: loaded.trim() };
+}
+
+// The newest backup folder, or the one named.
+export function pickBackup(dir, name) {
+  const { backups } = hostPaths(dir);
+  if (!existsSync(backups)) return null;
+  const all = readdirSync(backups).filter((n) => statSync(join(backups, n)).isDirectory()).sort();
+  if (name) return all.includes(name) ? join(backups, name) : null;
+  return all.length ? join(backups, all[all.length - 1]) : null;
+}
+
+// Puts a backup back as the host's save folder. The current save folder is
+// moved into backups/<stamp>-replaced-by-restore, never deleted.
+export function restoreBackup(dir, backup, now = new Date()) {
+  const { profile, backups } = hostPaths(dir);
+  if (!backup || !existsSync(backup)) throw new Error(`backup not found: ${backup}`);
+  if (!findSavePoints(backup).length) throw new Error(`backup holds no save point: ${backup}`);
+  const target = saveRoot(profile) ?? join(profile, "profile", ".save");
+  let kept = null;
+  if (existsSync(target)) {
+    kept = freshDir(join(backups, `${stamp(now)}-replaced-by-restore`));
+    mkdirSync(backups, { recursive: true });
+    renameSync(target, kept);
+  }
+  mkdirSync(dirname(target), { recursive: true });
+  cpSync(backup, target, { recursive: true, verbatimSymlinks: true });
+  return { target, kept };
 }
 
 export function readHostState(dir) {
@@ -182,8 +292,31 @@ export function selftestHost() {
     const dest = backupSaves(fixture, "stop", new Date(2026, 10, 8, 9, 5, 7));
     if (!dest || !dest.endsWith("2026-11-08_09-05-07-stop")) failures.push(`backup path is ${dest}`);
     else if (!existsSync(join(dest, "u", "game", "M", "playthrough000", "savepoint000", "meta-info.json"))) failures.push("backup did not copy the save point");
+
+    // #980: the engine stamp, the build gate, a restore that keeps what it replaces.
+    writeFileSync(join(sp, "meta-info.json"), JSON.stringify({ m_sGameVersion: "1.8.0.13" }));
+    if (newestSaveBuild(join(fixture, "profile")) !== "1.8.0.13") failures.push("newestSaveBuild does not read m_sGameVersion");
+    stampNewestSave(join(fixture, "profile"), "1.7.0.41");
+    if (newestSaveBuild(join(fixture, "profile")) !== "1.7.0.41") failures.push("stampNewestSave did not rewrite m_sGameVersion");
+    if (!buildGate({ saveBuild: "1.8.0.13", gameBuild: "1.9.0.37" }).changed) failures.push("a save from another build does not need the preflight");
+    if (buildGate({ saveBuild: "1.9.0.37", gameBuild: "1.9.0.37" }).changed) failures.push("a save from this build needs the preflight");
+    if (buildGate({ saveBuild: null, gameBuild: "1.9.0.37" }).changed) failures.push("an unknown save build needs the preflight");
+    const old = backupSaves(fixture, "build-1.7.0.41-to-1.9.0.37", new Date(2026, 10, 8, 9, 6, 0));
+    writeFileSync(join(sp, "meta-info.json"), JSON.stringify({ m_sGameVersion: "bad" }));
+    const r = restoreBackup(fixture, pickBackup(fixture, "2026-11-08_09-06-00-build-1.7.0.41-to-1.9.0.37"), new Date(2026, 10, 8, 9, 7, 0));
+    if (newestSaveBuild(join(fixture, "profile")) !== "1.7.0.41") failures.push(`restore did not put the backup back (${old} -> ${r.target})`);
+    if (!r.kept || readSaveMeta(join(r.kept, "u", "game", "M", "playthrough000", "savepoint000"))?.m_sGameVersion !== "bad") failures.push("restore did not keep the save it replaced");
+    if (!pickBackup(fixture)?.endsWith("replaced-by-restore")) failures.push("pickBackup does not return the newest backup");
+    const twin = backupSaves(fixture, "stop", new Date(2026, 10, 8, 9, 5, 7));
+    if (!twin || !twin.endsWith("2026-11-08_09-05-07-stop-2")) failures.push(`a second backup in the same second did not get its own folder (${twin})`);
   } finally {
     safeRemoveTree(fixture);
   }
+  const good = "[LFDebug:Persistence] save loaded: version 32, game build 1.8.0.13, running 1.9.0.37\n[LFDebug:Persistence] save completed (SHUTDOWN)\n";
+  if (!preflightVerdict(good).ok) failures.push("preflight rejects a clean load and shutdown save");
+  if (preflightVerdict("[LFDebug:Persistence] save completed (SHUTDOWN)\n").ok) failures.push("preflight passes with no load line");
+  if (preflightVerdict(good + "[LFDebug:Persistence] save load damaged: 3 payload(s)\n").ok) failures.push("preflight passes a damaged load");
+  if (preflightVerdict(good + "SCRIPT    (E): boom\n").ok) failures.push("preflight passes a script error");
+  if (preflightVerdict("[LFDebug:Persistence] save loaded: version 32\n").ok) failures.push("preflight passes with no shutdown save");
   return failures;
 }

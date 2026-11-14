@@ -39,20 +39,20 @@ class LF_Test_TestOrgSign : LF_Test
 			return;
 
 		ctx.True(LF_OrganizationManager.FindByName("  test ORGANISATION ") == org, "it is found by name, case and spaces aside");
-		ctx.True(LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID) == LF_EOrgLease.FREE, "the yard is free before the lease");
-		ctx.True(LF_OrgHideoutLease.Lease(first, LF_Hideout.HIDEOUT_ID), "the founder takes the yard");
-		ctx.EqualStr(org.GetId(), LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID), "the test organisation owns the yard");
+		ctx.True(LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId()) == LF_EOrgLease.FREE, "the yard is free before the lease");
+		ctx.True(LF_OrgHideoutLease.Lease(first, LF_Hideout.OrgHideoutId()), "the founder takes the yard");
+		ctx.EqualStr(org.GetId(), LF_Hideout.GetOwner(LF_Hideout.OrgHideoutId()), "the test organisation owns the yard");
 
 		ctx.True(LF_OrganizationManager.JoinDirect(org.GetId(), second, org.EntryRankId()), "a second tester joins with no invite");
 		ctx.False(LF_OrganizationManager.JoinDirect(org.GetId(), second, org.EntryRankId()), "joining twice is refused");
 		ctx.True(org.IsMember(second), "the second tester is a member");
-		ctx.True(LF_Hideout.AllowsUnlock(second, LF_Hideout.HIDEOUT_ID, false), "a member opens the hideout door");
-		ctx.True(LF_Hideout.AllowsUnlock(first, LF_Hideout.HIDEOUT_ID, false), "the founder opens the hideout door");
+		ctx.True(LF_Hideout.AllowsUnlock(second, LF_Hideout.OrgHideoutId(), false), "a member opens the hideout door");
+		ctx.True(LF_Hideout.AllowsUnlock(first, LF_Hideout.OrgHideoutId(), false), "the founder opens the hideout door");
 
 		ctx.False(LF_OrganizationManager.Leave(first), "the normal leave keeps the founder in");
 		ctx.True(LF_OrganizationManager.LeaveDirect(first), "the sign takes the founder out");
 		ctx.False(LF_OrganizationManager.GetByCharacter(first) != null, "the founder belongs to nothing now");
-		ctx.False(LF_Hideout.AllowsUnlock(first, LF_Hideout.HIDEOUT_ID, false), "a leaver is shut out of the door");
+		ctx.False(LF_Hideout.AllowsUnlock(first, LF_Hideout.OrgHideoutId(), false), "a leaver is shut out of the door");
 		ctx.False(LF_OrganizationManager.LeaveDirect(first), "leaving twice is refused");
 		ctx.True(LF_OrganizationManager.JoinDirect(org.GetId(), first, LF_TestOrgRules.RankFor(false, org.EntryRankId())), "the leaver can join again");
 

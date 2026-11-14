@@ -218,6 +218,11 @@ the game profile). Hooks:
 - `shoot <playerId>` (dev gate) deals one lethal KINETIC hit from the local character to that
   player through `HandleDamage`, the path a bullet takes, so the safe zone and the murder hook
   see it. Replies `shot player=N refused=R alive=A downed=D` (a lethal hit downs a player, #255).
+- `reload [config|dialogue|config,dialogue]` (dev gate; no name means both) asks the server to read the owner `config.json`
+  and the dev caption file `$profile:LifeFramework/dev/dialogue.json` again and stream them (#970). Replies at once with
+  `reload asked: <what>`; the server's log has `[LFDebug:Config] reload ...`. `dialogue caption <#key>` (client) reports
+  `caption=<text> overrides=N`: what this client shows for the key; `dialogue shown` reports the last caption the scene put on screen. Proof: `session.mjs live-reload-proof`
+  (`up --clients 1`); `docs/worktrees.md` "Live reload".
 - `peers` (read-only, runs on the client) lists every player body this client has streamed in as
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
   life state as THIS client sees them, so a late joiner's view of a downed player is readable.

@@ -5,6 +5,8 @@
 class LF_FarmPlots
 {
 	static const string FEATURE = "Farming";
+	//! The system id (LF_Systems, #960). Off: plots offer nothing, refuse, and stop growing; saved crops stay.
+	static const string SYSTEM = "Farming";
 	static const int TICK_MS = 1000;
 
 	protected static ref map<string, ref LF_FarmPlotRow> s_mPending;
@@ -124,11 +126,29 @@ class LF_FarmPlots
 
 		float seconds = (nowMs - s_fLastTickMs) / 1000;
 		s_fLastTickMs = nowMs;
+		AdvanceAll(seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: every planted plot grows by seconds. While the Farming system is off nothing grows,
+	//! so a crop comes back exactly as it was when the system is turned on again (#960).
+	//! eturn How many plots grew.
+	static int AdvanceAll(float seconds)
+	{
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return 0;
+
+		int grew;
 		foreach (string key, LF_FarmPlotComponent plot : LF_FarmPlotComponent.Live())
 		{
-			if (plot)
-				plot.ServerAdvance(seconds);
+			if (!plot || plot.IsEmpty())
+				continue;
+
+			plot.ServerAdvance(seconds);
+			grew++;
 		}
+
+		return grew;
 	}
 
 	//------------------------------------------------------------------------------------------------

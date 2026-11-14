@@ -92,8 +92,11 @@ class LF_HideoutDoorComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_HideoutDoorComponent : ScriptComponent
 {
-	[Attribute("Roadmap_Hideout", UIWidgets.EditBox, desc: "Hideout id. The owning organization id is written onto the lock.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Hideout id (the layer sets it; empty uses the entity name). The owning organization id is written onto the lock.")]
 	protected string m_sHideoutId;
+
+	[Attribute("0", UIWidgets.CheckBox, desc: "The hideout organizations lease at the desk and contraband starts from. One per map.")]
+	protected bool m_bOrganizationHideout;
 
 	//! Name of the owning organization: written by the server (LF_Hideout.PushLock), read by clients.
 	[RplProp()]
@@ -104,6 +107,14 @@ class LF_HideoutDoorComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 		LF_Hideout.BindDoor(GetHideoutId(), owner);
+		if (m_bOrganizationHideout)
+			LF_Places.Register(LF_Hideout.PLACE_KIND_ORG_HIDEOUT, LF_Hideout.PLACE_ID_ORG_HIDEOUT, owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetHideoutIdAttribute()
+	{
+		return GetHideoutId();
 	}
 
 	//------------------------------------------------------------------------------------------------

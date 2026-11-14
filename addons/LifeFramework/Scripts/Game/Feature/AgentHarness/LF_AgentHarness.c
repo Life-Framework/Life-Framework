@@ -42,7 +42,7 @@ class LF_AgentCommand
 		if (verb == "scanner" || verb == "drill" || verb == "keycard" || verb == "charge" || verb == "apples" || verb == "nuggets" || verb == "crate" || verb == "parceldrop" || verb == "pistol" || verb == "moonshine" || verb == "stash" || verb == "park")
 			return true;
 
-		if (verb == "shelf" || verb == "keys" || verb == "spikedrop" || verb == "spikecar" || verb == "spikecheck")
+		if (verb == "shelf" || verb == "keys" || verb == "spikedrop" || verb == "spikecar" || verb == "spikecheck" || verb == "slopecar" || verb == "slopecheck" || verb == "slopedrive")
 			return true;
 
 		return false;
@@ -177,6 +177,12 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload" || cmd.Verb == "robhold")
 			return true;
+		if (cmd.Verb == "reload")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "dialogue")
 		{
 			if (parts.Count() > 2)
@@ -199,6 +205,18 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 			return true;
+		if (cmd.Verb == "emote")
+		{
+			// emote open|close|seen|<command>: the emote radial (LF_EmoteHarness, #982).
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_emote";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "animseen" || cmd.Verb == "animhold" || cmd.Verb == "animoff")
 			return true;
 		if (cmd.Verb == "engine")
@@ -260,6 +278,8 @@ class LF_AgentCommand
 			return ParseShoot(parts, cmd);
 		if (cmd.Verb == "cpr")
 			return ParseCpr(parts, cmd);
+		if (cmd.Verb == "cuffing")
+			return ParseCuffing(parts, cmd);
 		if (cmd.Verb == "siren")
 			return ParseSiren(parts, cmd);
 		if (cmd.Verb == "shootnpc")
@@ -624,6 +644,24 @@ class LF_AgentCommand
 
 		cmd.Arg1 = parts[2];
 		cmd.Arg2 = parts[3];
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `cuffing <playerId> <cuff|release> <start|cancel|pin|finish>`: report the Cuff or Uncuff hold the way
+	//! the action does (LF_Cuffing). `pin` starts a hold that does not time out (a picture takes longer than
+	//! the hold), `finish` ends it as a held key would, without waiting.
+	protected static bool ParseCuffing(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 5 || parts[2].ToInt() <= 0 || (parts[3] != "cuff" && parts[3] != "release") || (parts[4] != "start" && parts[4] != "cancel" && parts[4] != "pin" && parts[4] != "finish"))
+		{
+			cmd.Error = "need_player_id_cuff_or_release_and_start_cancel_pin_or_finish";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		cmd.Arg2 = parts[3];
+		cmd.Arg3 = parts[4];
 		return true;
 	}
 
@@ -1283,6 +1321,11 @@ class LF_AgentHarness
 			DoConfigReload(cmd);
 			return;
 		}
+		if (cmd.Verb == "reload")
+		{
+			DoContentReload(cmd);
+			return;
+		}
 		if (LF_AgentCommand.IsCharacterVerb(cmd.Verb))
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
@@ -1328,6 +1371,15 @@ class LF_AgentHarness
 		{
 			// What this client shows of the nearest animated asset (LF_AssetAnimHarness, #340).
 			WriteResult(cmd.Id, "ok", LF_AssetAnimHarness.Seen());
+			return;
+		}
+		if (cmd.Verb == "emote")
+		{
+			string emoted = LF_EmoteHarness.Run(cmd.Arg1);
+			if (emoted.StartsWith("ok"))
+				WriteResult(cmd.Id, "ok", emoted);
+			else
+				WriteResult(cmd.Id, "error", emoted);
 			return;
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
@@ -1395,6 +1447,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "cpr")
 		{
 			DoCpr(cmd);
+			return;
+		}
+		if (cmd.Verb == "cuffing")
+		{
+			DoCuffing(cmd);
 			return;
 		}
 		if (cmd.Verb == "siren")
@@ -1827,6 +1884,36 @@ class LF_AgentHarness
 
 		controller.LF_AskReviveAnim(LF_NetworkUtils.GetRplId(patient), cmd.Arg2 == "start");
 		WriteResult(cmd.Id, "ok", "cpr " + cmd.Arg2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `cuffing <playerId> <cuff|release> <start|cancel|pin|finish>`: what OnActionStart,
+	//! OnActionCanceled and the end of the hold of the Cuff and Uncuff actions send, so the server's
+	//! hold can be driven (and photographed open) without a held key.
+	protected static void DoCuffing(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		IEntity target = GetGame().GetPlayerManager().GetPlayerControlledEntity(cmd.Arg1.ToInt());
+		if (!controller || !target)
+		{
+			WriteResult(cmd.Id, "error", "no_such_player");
+			return;
+		}
+
+		LF_ECuffingKind kind = LF_ECuffingKind.CUFF;
+		if (cmd.Arg2 == "release")
+			kind = LF_ECuffingKind.RELEASE;
+
+		LF_ECuffingPhase phase = LF_ECuffingPhase.START;
+		if (cmd.Arg3 == "cancel")
+			phase = LF_ECuffingPhase.CANCEL;
+		else if (cmd.Arg3 == "pin")
+			phase = LF_ECuffingPhase.PIN;
+		else if (cmd.Arg3 == "finish")
+			phase = LF_ECuffingPhase.FINISH;
+
+		controller.LF_AskCuffing(LF_NetworkUtils.GetRplId(target), kind, phase);
+		WriteResult(cmd.Id, "ok", "cuffing " + cmd.Arg2 + " " + cmd.Arg3);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2276,6 +2363,25 @@ class LF_AgentHarness
 
 		controller.LF_AskConfigReload();
 		WriteResult(cmd.Id, "ok", "config reload asked");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The dev reload (#970): asks the server to read config and the dev dialogue captions again.
+	protected static void DoContentReload(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+		{
+			WriteResult(cmd.Id, "error", "no_controller");
+			return;
+		}
+
+		string what = cmd.Arg1;
+		if (what.IsEmpty())
+			what = "config,dialogue";
+
+		controller.LF_AskContentReload(what);
+		WriteResult(cmd.Id, "ok", "reload asked: " + what);
 	}
 
 	//------------------------------------------------------------------------------------------------

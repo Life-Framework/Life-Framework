@@ -1,12 +1,33 @@
 GenericEntity Roadmap_Cash_Stop_Bank {
+ components {
+  LF_PlaceComponent "{91C0D6BFC640A38B}" {
+   m_sKind "CashVanStop"
+   m_sId "Roadmap_Cash"
+   m_iOrder 0
+  }
+ }
  coords 196 0 252.4
  angleY 270
 }
 GenericEntity Roadmap_Cash_Stop_Store {
+ components {
+  LF_PlaceComponent "{85776919541A93FB}" {
+   m_sKind "CashVanStop"
+   m_sId "Roadmap_Cash"
+   m_iOrder 1
+  }
+ }
  coords 162 0 248.3
  angleY 90
 }
 GenericEntity Roadmap_Cash_Stop_Fuel {
+ components {
+  LF_PlaceComponent "{EDADE8FEE73AE2F7}" {
+   m_sKind "CashVanStop"
+   m_sId "Roadmap_Cash"
+   m_iOrder 2
+  }
+ }
  coords 255 0 248.3
  angleY 90
 }
@@ -14,6 +35,10 @@ GenericEntity Roadmap_Cash_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S12
  components {
   LF_AlarmMountComponent "{E7C1AAFA98829903}" {
    m_vOffset 0 1.885 -0.6
+  }
+  LF_PlaceComponent "{157AB94078341C0C}" {
+   m_sKind "CashVan"
+   m_sId "Roadmap_Cash"
   }
  }
  coords 196 0 252.4
@@ -30,8 +55,7 @@ GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_Cash
    m_vOffset 0 1 0
   }
   LF_CashVanRouteComponent "{AD90CF30B9D9615D}" {
-   m_sStops "Roadmap_Cash_Stop_Bank,Roadmap_Cash_Stop_Store,Roadmap_Cash_Stop_Fuel"
-   m_sVanEntity "Roadmap_Cash_Van"
+   m_sRouteId "Roadmap_Cash"
   }
  }
  coords 197.4 0 253.75

@@ -38,7 +38,7 @@ class LF_Test_Roadmap_Bank : LF_Test
 		officer.SetFaction(LF_Faction.POLICE);
 		ctx.False(LF_Bank.CivilianAllowed(officer), "police fail the civilian gate");
 
-		LF_Bank.Configure(vaultId, 2, 400, 60, 0, 0, "");
+		LF_Bank.Configure(vaultId, 2, 400, 60, 0, 0);
 		ctx.Equal(2, LF_Bank.GetConfiguredBagCount(vaultId), "configured bag count is 2");
 		ctx.Equal(400, LF_Bank.GetCashPerBag(vaultId), "configured cash per bag is 400");
 
@@ -102,18 +102,18 @@ class LF_Test_Roadmap_Bank : LF_Test
 		ctx.Equal(0, bank.GetBalance(), "the refill does not pay the bank");
 		ctx.Equal(2, account.GetWantedLevel(), "the second heist raises wanted once more");
 
-		LF_Bank.Configure(officerVault, 1, 100, 60, 0, 0, "");
+		LF_Bank.Configure(officerVault, 1, 100, 60, 0, 0);
 		ctx.False(LF_Bank.Rob(officerVault, officerUid), "a police robber is refused");
 		ctx.Equal(0, LF_Bank.GetSpawnedBagCount(officerVault), "a refused officer spawns nothing");
 		ctx.Equal(0, officer.GetWantedLevel(), "a refused officer does not take the wanted bump");
 
-		LF_Bank.Configure(shortVault, 1, 100, 60, 2, 0, "");
+		LF_Bank.Configure(shortVault, 1, 100, 60, 2, 0);
 		ctx.False(LF_Bank.Rob(shortVault, shortUid), "minimum police gate refuses");
 		ctx.Equal(0, LF_Bank.GetSpawnedBagCount(shortVault), "a short police count spawns nothing");
 		LF_PlayerAccount shortAccount = LF_PlayerAccountManager.GetOrCreate(shortUid);
 		ctx.Equal(0, shortAccount.GetWantedLevel(), "a short police count does not raise wanted");
 
-		LF_Bank.Configure(fuseVault, 2, 400, 60, 0, 5, "");
+		LF_Bank.Configure(fuseVault, 2, 400, 60, 0, 5);
 		ctx.True(LF_Bank.Rob(fuseVault, fuseUid), "positive fuse robbery arms");
 		ctx.Equal(0, LF_Bank.GetSpawnedBagCount(fuseVault), "bags wait until the vault opens");
 		ctx.True(LF_Breach.IsLocked(fuseVault), "the vault stays locked during the fuse");

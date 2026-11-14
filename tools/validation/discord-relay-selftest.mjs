@@ -1,4 +1,5 @@
 // Proves the Discord welcome relay's event filter (tools/discord-mcp/relay-filter.mjs, #696).
+// inputs: tools/**, agent-box/**, .githooks/**
 // Run it with `tools\cli discord selftest`. It forwards only:
 //   1. a human joining the guild;
 //   2. a human's message in #welcome;

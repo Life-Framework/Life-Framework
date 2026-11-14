@@ -23,6 +23,7 @@ import { fileURLToPath } from "node:url";
 import { buildSheet } from "./concepts.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
 import { searchAll } from "./sources.mjs";
+import * as server from "./assetserver.mjs";
 import { creditPath } from "./addon.mjs";
 
 export const API = "https://api.polyhaven.com";
@@ -33,10 +34,14 @@ const CACHE_HOURS = 24;
 
 export const isPolyHaven = (spec) => spec?.source?.provider === "polyhaven";
 export const isVanilla = (spec) => spec?.source?.provider === "vanilla";
+// A free model fetched through 3d-asset-server ("download") or one the human bought and dropped in
+// tmp/assets/<slug>/purchased/ ("purchased"): both end as a folder with a model in it (stageIncoming).
+export const isIncoming = (spec) => ["download", "purchased"].includes(spec?.source?.provider);
 // Stages a found model makes pointless: a library model needs no concept, generation or remesh; a vanilla
 // model is already compiled in the engine, so it needs no clean or import either.
 export function skipsStage(spec, stage) {
   if (isPolyHaven(spec)) return ["concept", "generate", "remesh"].includes(stage) ? "source is Poly Haven" : null;
+  if (isIncoming(spec)) return ["concept", "generate", "remesh"].includes(stage) ? `source is ${spec.source.provider === "purchased" ? "a purchased model" : "a downloaded library model"}` : null;
   if (isVanilla(spec)) return ["concept", "generate", "remesh", "clean", "import"].includes(stage) ? "source is a vanilla base-game model" : null;
   return null;
 }
@@ -57,7 +62,14 @@ export function sourceProblems(spec) {
   if (s.provider === "vanilla") {
     if (!/^Assets\/.+\.xob$/.test(s.path || "")) out.push("source.path is the vanilla model, Assets/Props/.../Name.xob (asset_search finds it)");
     if (!/^(Prefabs|PrefabLibrary)\/.+\.et$/.test(s.prefab || "") && s.prefab !== undefined) out.push("source.prefab, when set, is the vanilla prefab to inherit (Prefabs/.../Name.et)");
-  } else if (s.provider !== "polyhaven") out.push(`source.provider ${JSON.stringify(s.provider)} is not "polyhaven" or "vanilla" (Smithsonian and Sketchfab are listed by the search but fetched by hand: docs/asset-pipeline/sources.md)`);
+  } else if (s.provider === "download") {
+    if (!/^[a-z0-9]+:.+/.test(s.id || "")) out.push('source.id for a download is the asset-server id, "<provider>:<id>" (asset source search lists it)');
+  } else if (s.provider === "purchased") {
+    if (!/^https:\/\//.test(s.url || "")) out.push("source.url is the store page the model was bought on (https://...)");
+    const g = server.licenceGate({ name: s.licence || "" }, { provider: "cgtrader" });
+    if (g.verdict === "refuse" || g.verdict === "review" && !s.licence_checked) out.push(`source.licence ${JSON.stringify(s.licence || "")}: ${g.why}${g.verdict === "review" ? " (set source.licence_checked: true once a human has read the terms)" : ""}`);
+    if (g.verdict === "paid" && s.risk_accepted !== true) out.push(`source.risk_accepted: true is the human's yes to this: ${server.PAID_CAVEAT}`);
+  } else if (s.provider !== "polyhaven") out.push(`source.provider ${JSON.stringify(s.provider)} is not "polyhaven", "vanilla", "download" or "purchased" (docs/asset-pipeline/sources.md)`);
   else {
     if (!/^[A-Za-z0-9_]+$/.test(s.id || "")) out.push("source.id is a Poly Haven asset id such as cement_bag");
     if (s.resolution !== undefined && !RESOLUTIONS.includes(s.resolution)) out.push(`source.resolution must be one of ${RESOLUTIONS.join(", ")}`);
@@ -151,6 +163,7 @@ export function specQuery(spec) {
 export const specSize = (spec) => (spec.size_m ? Math.max(spec.size_m.length || 0, spec.size_m.height || 0, spec.size_m.width || 0) || undefined : undefined);
 
 export function describe(c, n) {
+  if (c.source === "asset-server") return `${String(n).padStart(2)}  ${String(c.id).slice(0, 60).padEnd(60)} fit ${String(c.score).padStart(3)}  ${String(c.price).padEnd(8)} ${c.licence} (${c.gate.verdict})  ${(c.formats || []).join("/")}${c.tris ? `  ${c.tris} tris` : ""}  ${c.url}`;
   if (c.source && c.source !== "polyhaven") return `${String(n).padStart(2)}  ${String(c.id).slice(0, 44).padEnd(44)} ${c.licence}${c.credit ? " (credit needed)" : ""}  ${c.url || ""}${c.note ? `  [${c.note}]` : ""}`;
   return `${String(n).padStart(2)}  ${c.id.padEnd(28)} ${String(c.tris).padStart(7)} tris  ${c.dims_cm.join("x")} cm${c.scale ? `  size_m ${c.scale}x` : ""}  [${c.hit.join(", ")}]  ${assetUrl(c.id)}`;
 }
@@ -210,6 +223,18 @@ export function pickCandidate(root, slug, which, resolution = "2k") {
     return 0;
   }
   const hit = list.find((c) => String(c.n) === String(which) || c.id === which);
+  if (hit?.source === "asset-server") {
+    if (!hit.direct || !["ok", "credit"].includes(hit.gate?.verdict)) {
+      console.log(`${slug}: ${hit.name} is not a free direct download (${hit.price}, licence ${hit.licence}, gate ${hit.gate?.verdict}). Nothing written: the pipeline never buys.`);
+      console.log(`  open ${hit.url}, read the licence, buy it yourself, unzip into ${purchasedDir(root, slug)}, then set in the spec:`);
+      console.log(`  "source": { "provider": "purchased", "url": "${hit.url}", "licence": "${hit.licence}", "author": ${JSON.stringify(hit.author || "")}${hit.gate?.verdict === "paid" ? ', "risk_accepted": true' : ""} }`);
+      if (hit.gate?.caveat) console.log(`  risk_accepted is your yes to: ${hit.gate.caveat}`);
+      return 0;
+    }
+    writeSpecSource(root, slug, { provider: "download", id: hit.id });
+    console.log(`${slug}: source is now the free download ${hit.id} (${hit.licence}); next: tools\\cli asset run ${slug}`);
+    return 0;
+  }
   const id = hit?.id || (/^[A-Za-z][A-Za-z0-9_]+$/.test(String(which)) ? String(which) : null);
   if (!id) throw new Error(`no Poly Haven candidate ${which} for ${slug}; run: tools\\cli asset source search ${slug}`);
   writeSpecSource(root, slug, { provider: "polyhaven", id, resolution });
@@ -250,11 +275,11 @@ export function creditRow(spec, rec) {
 
 const CREDITS_HEADING = "## Poly Haven models";
 // Adds the asset's row to docs/credits.md under CREDITS_HEADING, once. Returns true when it wrote.
-export function appendCredit(file, row, url) {
+export function appendCredit(file, row, url, heading = CREDITS_HEADING) {
   const text = readFileSync(file, "utf8");
   if (text.includes(url)) return false;
-  const at = text.indexOf(CREDITS_HEADING);
-  if (at < 0) throw new Error(`${file} has no "${CREDITS_HEADING}" section`);
+  const at = text.indexOf(heading);
+  if (at < 0) throw new Error(`${file} has no "${heading}" section`);
   const lines = text.split("\n");
   let i = text.slice(0, at).split("\n").length; // the line after the heading
   while (i < lines.length && !lines[i].startsWith("|")) i++;
@@ -278,7 +303,8 @@ export async function stageSource(ctx, { runBlender, blenderDir }) {
     console.log(`source: vanilla ${spec.source.path}; no import. Point the prefab at it (or inherit ${spec.source.prefab || "its vanilla prefab"}) and add the LF components.`);
     return { vanilla: spec.source.path, credits: 0 };
   }
-  if (!isPolyHaven(spec)) return { skipped: "the spec has no Poly Haven or vanilla source" };
+  if (isIncoming(spec)) return stageIncoming(ctx, { runBlender, blenderDir });
+  if (!isPolyHaven(spec)) return { skipped: "the spec has no Poly Haven, vanilla, download or purchased source" };
   const { id } = spec.source;
   const resolution = spec.source.resolution || "2k";
   const info = await api(root, `/info/${id}`);
@@ -329,6 +355,63 @@ export async function stageSource(ctx, { runBlender, blenderDir }) {
   return { id, resolution, tris: prep.tris, size_m: prep.size_m, credits: 0 };
 }
 
+
+// ---------------------------------------------------------------- a downloaded or bought model
+export const INCOMING_HEADING = "## Library and purchased models";
+export const downloadDir = (root, slug) => join(assetCache(root, slug), "download");
+export const purchasedDir = (root, slug) => join(assetCache(root, slug), "purchased");
+
+// "download": a free model 3d-asset-server can fetch directly (CC0 or CC-BY, gated again here) goes to
+// tmp/assets/<slug>/download/. "purchased": the human bought it and unzipped it into tmp/assets/<slug>/purchased/;
+// this stage never buys or logs in. Either way the folder's model goes through blender/incoming_prep.py into raw/,
+// and the clean stage carries on as for a Poly Haven model. The raw files stay under gitignored tmp/.
+async function stageIncoming(ctx, { runBlender, blenderDir }) {
+  const { root, spec, dir } = ctx;
+  const s = spec.source;
+  let folder, rec;
+  if (s.provider === "download") {
+    const lib = await server.loadLib(root);
+    const svc = new lib.AssetService({ providers: lib.allProviders.filter((p) => !server.SKIP_PROVIDERS.has(p.id)) });
+    const detail = await svc.getAsset(s.id);
+    if (!detail) throw new Error(`${s.id}: the source no longer lists it`);
+    const gate = server.licenceGate(detail.license, { price: detail.price, provider: detail.provider });
+    if (!["ok", "credit"].includes(gate.verdict) && !(gate.verdict === "review" && s.licence_checked)) throw new Error(`${s.id}: licence ${gate.licence} is ${gate.verdict} (${gate.why}); not downloaded. Paid models are bought by a human (purchased/)`);
+    if (detail.price && detail.price.free === false) throw new Error(`${s.id} is paid: the pipeline never buys. Buy it, unzip into ${purchasedDir(root, spec.slug)} and use source.provider "purchased"`);
+    const files = lib.selectFiles(detail, { format: s.format });
+    if (!files.length || files.some((f) => f.requiresAuth)) throw new Error(`${s.id}: no direct file (login needed or none listed); fetch it by hand into ${downloadDir(root, spec.slug)}`);
+    folder = downloadDir(root, spec.slug);
+    const got = await lib.downloadFiles(svc.http, files, folder, { extract: true, maxBytes: MAX_DOWNLOAD_BYTES });
+    console.log(`source: ${detail.title} (${s.id}), ${got.files.length} file(s), ${(got.bytes / 1048576).toFixed(1)} MB, ${gate.licence}`);
+    rec = { slug: spec.slug, provider: detail.provider, id: s.id, name: detail.title, url: detail.url, licence: gate.licence, gate: gate.verdict, authors: detail.author || "", author: detail.author || "" };
+  } else {
+    folder = purchasedDir(root, spec.slug);
+    if (!existsSync(folder)) throw new Error(`awaiting the purchase: buy the model yourself at ${s.url}, unzip it into ${folder}, then run: tools\\cli asset run ${spec.slug}`);
+    const gate = server.licenceGate({ name: s.licence }, { provider: "cgtrader" });
+    rec = { slug: spec.slug, provider: "purchased", id: s.url, name: spec.name, url: s.url, licence: s.licence, gate: gate.verdict, authors: s.author || "", author: s.author || "", risk_accepted: s.risk_accepted === true };
+  }
+  const model = server.findModel(folder);
+  if (!model) throw new Error(`no .glb, .gltf, .fbx, .obj or .blend found under ${folder}`);
+  const raw = join(dir, "raw");
+  mkdirSync(raw, { recursive: true });
+  const job = join(dir, "incoming-job.json");
+  writeFileSync(job, JSON.stringify({ model, raw }, null, 1));
+  runBlender(join(blenderDir, "incoming_prep.py"), [job], { log: join(dir, "incoming-prep.log") });
+  const prep = JSON.parse(readFileSync(join(raw, "prep.json"), "utf8"));
+  if (prep.materials > 1) console.log(`source: note ${prep.materials} materials; the clean stage packs the first base colour map only`);
+  const retex = join(root, "tools", "assets", spec.slug, "base_color.png");
+  if (existsSync(retex)) { copyFileSync(retex, join(raw, "tex_base_color.png")); console.log(`source: base colour replaced by tools/assets/${spec.slug}/base_color.png`); }
+  rec.fetched = new Date().toISOString().slice(0, 10);
+  rec.polycount = prep.tris;
+  rec.dimensions_cm = prep.size_m.map((v) => +(v * 100).toFixed(1));
+  rec.maps = prep.maps;
+  writeFileSync(sourceFile(root, spec.slug), JSON.stringify(rec, null, 2) + "\n");
+  const credits = join(root, "docs", "credits.md");
+  const model_path = creditPath(spec, `${spec.asset_dir}/${spec.name}.xob`);
+  const wrote = existsSync(credits) && appendCredit(credits, `| ${rec.name} (\`${model_path}\`) | ${rec.author || "unknown"} | ${rec.url} | ${rec.licence} | \`tools/assets/${spec.slug}/source.json\` |`, rec.url, INCOMING_HEADING);
+  console.log(`source: ${s.provider} ${model.replace(/\\/g, "/").split("/tmp/assets/")[1] || model}: ${prep.tris} triangles, ${prep.size_m.map((v) => v.toFixed(3)).join(" x ")} m native${wrote ? "; row added to docs/credits.md" : ""}`);
+  return { id: rec.id, tris: prep.tris, size_m: prep.size_m, credits: 0 };
+}
+
 // ---------------------------------------------------------------- search command and stage
 export async function runSearch(root, label, folder, { terms, size, limit = 8, query }) {
   const q = query || ladderQuery({ search: label });
@@ -339,7 +422,7 @@ export async function runSearch(root, label, folder, { terms, size, limit = 8, q
   if (!(lib.vanilla || []).length) console.log("     none");
   const catalogue = await api(root, "/assets?t=models");
   const ph = searchCatalogue(catalogue, terms, { size, limit }).map((c) => ({ ...c, source: "polyhaven" }));
-  const others = [...(lib.smithsonian || []), ...(lib.sketchfab || [])];
+  const others = [...(lib.smithsonian || []), ...(lib.sketchfab || []), ...(lib.assetserver || [])];
   const shown = await fetchThumbs(folder, [...ph, ...others].filter((c) => c.thumb || c.thumbnail), 1);
   console.log("-- rung 2: open-source libraries (CC0, or CC-BY with its credit; thumbnails on the sheet)");
   for (const c of shown) console.log("  " + describe(c, c.n));
@@ -347,6 +430,7 @@ export async function runSearch(root, label, folder, { terms, size, limit = 8, q
   if ((lib.ambientcg || []).length) {
     console.log("-- textures (ambientCG, CC0): " + lib.ambientcg.map((c) => c.id).join(", "));
   }
+  if (lib.assetserver_links?.length) console.log("-- paid markets (a human opens the link, reads the licence and buys; the pipeline never does): " + lib.assetserver_links.map((l) => `${l.provider} ${l.url}`).join("  "));
   console.log("-- rung 3: generate (concept sheet, then Meshy) when nothing above fits");
   const ff = resolveFfmpeg();
   if (ff && shown.length) {
@@ -376,6 +460,13 @@ export async function main(root, args) {
       mkdirSync(dir, { recursive: true });
       writeFileSync(candidatesFile(root, spec.slug), JSON.stringify(shown, null, 2) + "\n");
       if (shown.length) console.log(`pick with: tools\\cli asset source pick ${spec.slug} <n>`);
+      if (server.installed(root)) {
+        const as = shown.filter((c) => c.source === "asset-server");
+        const links = [server.linkEntry("cgtrader", "CGTrader", server.cgtraderSearchUrl(spec.name))];
+        const f = join(dir, "shortlist.md");
+        writeFileSync(f, server.shortlistMarkdown(spec.slug, spec, as, links, { query: spec.search || spec.name }));
+        console.log(`shortlist ${f}`);
+      }
       return 0;
     }
     const text = free.join(" ");

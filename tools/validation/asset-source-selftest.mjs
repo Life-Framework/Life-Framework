@@ -1,4 +1,5 @@
 // Proves the source ladder (tools/assets/pipeline/source.mjs, sources.mjs, docs/asset-pipeline/sources.md)
+// inputs: tools/**, agent-box/**, .githooks/**
 // offline: no network, no Blender, no Workbench, no Meshy.
 // red-proof: 2026-11-14, three lines broken, each FAIL seen, all restored:
 //   licenceVerdict accepting by-nc                 -> FAIL source: NC, ND, SA and unlabelled licences are refused

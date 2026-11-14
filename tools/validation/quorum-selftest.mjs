@@ -1,4 +1,5 @@
 // Proves the quorum rule of `promote --confirm` (#575) in a scratch repo with a fake GitHub:
+// inputs: tools/**, agent-box/**, .githooks/**
 //   1. with the rule off, promote works as before (no confirmations file needed);
 //   2. with the rule on, too few roster confirmations refuse and leave stable where it was;
 //   3. confirmations from people not on the roster, and a repeat from one tester, do not count;
