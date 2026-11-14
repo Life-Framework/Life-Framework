@@ -123,9 +123,28 @@ Vanilla is the best hit for rows 7, 18 and 21; Poly Haven for 1, 13 and 23; the 
 Rows already generated (1, 2, 3, 5, 6, 8, 9, 10, 22) are not redone. Check every "good" visually before wiring it: the
 `RadioStation_R123M_01` swap for row 21 was tried in the dispatch console and rejected on sight.
 
+## Rows tried in batch 2 (2026-11-14), judged in a `look`
+
+| Row | Tried | Result |
+|---|---|---|
+| 1 Drill | nothing | Already the generated `Drill.xob` (`LF_Drill.et`); the table's "good" was for a hand drill we already have |
+| 7 Strongbox | `Safe_01` | Not needed: `LF_CashVanBox.et` already carries the generated `CashStrongbox.xob` (f9e9c57a), better than a vanilla safe |
+| 13 Scanner | Poly Haven `vintage_radio_transceiver` | Rejected. Two texture sets (the stage refuses it); with the accessories set cut away the body is an olive military tank radio with heat-sink fins and no control panel: the same "army radio" read the audit complains about |
+| 18 Furnace | `StoveIndustrial_01`, `Stove_01`, `OvenIndustrial_01`, Poly Haven `barrel_stove` | Rejected. All three vanilla stoves are white domestic kitchen ranges or a chest of drawers; `barrel_stove` imported cleanly (9,216 tris) but is a plain rusted oil drum with no door or chimney. The vanilla boiler stays |
+| 21 Dispatch console | `SwitchboardPhone_01` | Rejected. A 2 m blue wall cabinet; at the 0.5 scale limit it still towers over the desk |
+| 23 Cement bag | Poly Haven `cement_bag` | Done, then retextured (below) |
+
 ## The proof: cement bag (row 23)
 
 `tools/assets/cement-bag/spec.json` runs `source` (Poly Haven `cement_bag`, 2k), `clean` (844 / 506 / 252 triangles, 0.70 x 0.18 x 0.46 m,
 one 1024 px atlas), `import` (Workbench, checks green) with no prompt and no credit spent. `Prefabs/Items/Resources/CementBag.et` keeps
 its GUID and every component; only the `MeshObject` changed, from the vanilla sandbag. The two bags on the cement stand
 (`CementChain.layer`) were re-seated for the new size. Where to see it: [playtest.md](../playtest.md), "Cement bag".
+
+### Retexturing a library model for the period
+
+Poly Haven's bag carried a modern red "CEMENT / HIGH STRENGTH / CEM 42.5 R" print, a company logo and a barcode. A library model is checked
+for era like any other: `tools/assets/<slug>/base_color.png`, when it sits beside the spec, replaces `raw/tex_base_color.png` right after
+the source stage, and the clean stage packs it. The cement bag's is made by `tools/assets/cement-bag/make-label.ps1` (kraft paper, one dark
+ink, stencil Cyrillic "ЦЕМЕНТ / ПОРТЛАНДЦЕМЕНТ М-400 / 50 кг / ГОСТ 10178-85", the Soviet cement standard; no logo, no icons, no barcode). Rerun
+the script, then `toolscli asset run cement-bag --force`.
