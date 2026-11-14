@@ -3,7 +3,7 @@
 // at build time; the addon ids come from the two .gproj files. Plain functions: scripts/configgen-selftest.mjs runs them.
 
 export type ServerData = {
-  template: Record<string, any>;
+  template: { bindPort?: number; a2s?: { port?: number }; game?: { maxPlayers?: number } } & Record<string, unknown>;
   core: { id: string; name: string; scenario: string };
   pack: { id: string; name: string; scenario: string };
 };
@@ -39,7 +39,7 @@ export function serverProblems(o: ServerOpts): { level: "error" | "warn"; msg: s
 export const modsOf = (d: ServerData, o: ServerOpts) => (o.scenario === "pack" ? [d.core, d.pack] : [d.core]).map((m) => ({ modId: m.id, name: m.name }));
 
 export function serverJson(d: ServerData, o: ServerOpts): string {
-  const t = JSON.parse(JSON.stringify(d.template));
+  const t = JSON.parse(JSON.stringify(d.template)) as { [k: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
   t.bindPort = o.port;
   t.publicPort = o.port;
   t.a2s = { ...t.a2s, port: o.a2sPort };
