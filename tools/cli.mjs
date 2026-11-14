@@ -2807,6 +2807,11 @@ async function cmdCi(root = ROOT, opts = {}) {
     // After the suite: a branch that moved or added world props must pass the placement audit. It
     // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
     ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    // The config harness (#301): static always (a second, ~1 s), the game-session parts only when config code, a .conf, the schema or a config fixture changed.
+    ["config harness", async () => {
+      const cg = await import("./commands/config-gate.mjs");
+      return (await import("./lib/config-gate.mjs")).runConfigGate(changedFiles(root), { static: () => cg.runStatic(root), sessions: () => cg.runSessions(root) });
+    }],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {

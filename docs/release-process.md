@@ -70,6 +70,7 @@ reference. Reports say "merged, in-dev", never "done".
    - stamps the version in `addons/LifeFramework/LifeFramework.gproj`,
      `addons/LF_Everon1989/LF_Everon1989.gproj`, and both Workshop kit READMEs;
    - runs the gates: `validate --full`, `release-ready --strict`, the full suite,
+     the config harness with its game sessions (`config-gate --full`),
      `audit placement --strict`, and a `pack` of each addon;
    - writes `tmp/release/notes-0.2.0.md` from the PR titles merged since the
      previous `v*` tag;
