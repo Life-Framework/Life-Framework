@@ -4,7 +4,7 @@
 // between rounds, asks the plugin to reload the game scripts, and checks which code runs.
 // Every wait is bounded. Results: tmp/warm-spike/results.jsonl.
 
-import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -77,6 +77,72 @@ function play(ms) {
   return { ...r, playToken: readToken() };
 }
 
+function wbMem() {
+  const r = spawnSync("powershell", ["-NoProfile", "-Command", `$p = Get-Process -Id ${wbPid} -ErrorAction SilentlyContinue; if ($p) { '{0} {1}' -f [int]($p.WorkingSet64/1MB), [int]($p.PrivateMemorySize64/1MB) }`], { encoding: "utf8", timeout: 20000 });
+  const [ws, priv] = (r.stdout || "").trim().split(" ").map(Number);
+  return { wsMB: ws, privMB: priv };
+}
+
+function wbLogText() {
+  const dir = join(PROFILE, "logs");
+  const d = readdirSync(dir).filter((n) => n.startsWith("logs_")).sort().pop();
+  return d ? readFileSync(join(dir, d, "console.log"), "utf8") : "";
+}
+
+function suiteLines(fromLen) {
+  const t = wbLogText().slice(fromLen);
+  const sum = [...t.matchAll(/\[LFTEST\] SUMMARY[^\r\n]*/g)].map((m) => m[0]);
+  const fails = [...t.matchAll(/\[LFTEST\] FAIL[^\r\n]*/g)].map((m) => m[0]).slice(0, 12);
+  const errs = [...t.matchAll(/SCRIPT\s+\(E\)[^\r\n]*/g)].map((m) => m[0]);
+  const compileErr = errs.filter((e) => /compile|Unknown|undefined|LF_WarmProbe|Broken/i.test(e)).slice(0, 6);
+  return { summary: sum, fails, compileErr, vme: errs.filter((e) => /Virtual Machine Exception/.test(e)).length };
+}
+
+const SMOKE = join(ROOT, "addons", "LifeFramework", "Scripts", "Game", "Tests", "LF_EngineSmokeTests.c");
+
+function reloadRound(tok, broken, label) {
+  if (tok) writeProbe(tok, broken);
+  sleep(1000);
+  const before = wbLogText().length;
+  const rr = send("reload", "Build|Reload Scripts", 600);
+  log({ step: "reload", label, token: tok, broken: !!broken, ...rr, ...wbMem(), ...suiteLines(before) });
+  return rr;
+}
+
+function suiteRun(label, ms = 120000) {
+  writeFileSync(join(RAW, "run-suite.txt"), "1");
+  const before = wbLogText().length;
+  const r = play(ms);
+  rmSync(join(RAW, "run-suite.txt"), { force: true });
+  log({ step: "suite", label, ...r, ...wbMem(), ...suiteLines(before) });
+  return r;
+}
+
+async function h2() {
+  if (!reloadRound("T1", true, "real compile error").ok) return;
+  let r = play(8000);
+  log({ step: "play", label: "after compile error", expect: "T0 or none", ...r });
+  if (!r.ok) return;
+  if (!reloadRound("T2", false, "fixed").ok) return;
+  r = play(8000);
+  log({ step: "play", label: "after fix", expect: "T2", ...r });
+  if (!r.ok) return;
+  if (!suiteRun("suite clean").ok) return;
+  const orig = readFileSync(SMOKE, "utf8");
+  try {
+    writeFileSync(SMOKE, orig.replace('ctx.Equal(5, Math.AbsInt(-5), "Math.AbsInt");', 'ctx.Equal(4, Math.AbsInt(-5), "Math.AbsInt");'));
+    if (!reloadRound(null, false, "smoke test broken").ok) return;
+    if (!suiteRun("suite red").ok) return;
+  } finally {
+    writeFileSync(SMOKE, orig);
+  }
+  if (!reloadRound(null, false, "smoke test restored").ok) return;
+  if (!suiteRun("suite green again").ok) return;
+  for (let i = 1; i <= 3; i++) if (!reloadRound("M" + i, false, "memory " + i).ok) return;
+  r = send("quit", "", 60);
+  log({ step: "quit", ...r });
+}
+
 async function main() {
   const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
   const lock = await acquireWorkbench(ROOT, { purpose: "warm-runner-spike", waitMs: 900000 });
@@ -90,6 +156,7 @@ async function main() {
     const tLaunch = Date.now();
     wbPid = il.interactiveNeeded() ? il.interactiveSpawnDetached(EXE, args, { cwd: TOOLS, marker: PROFILE }) : null;
     log({ step: "launch", pid: wbPid });
+    try { writeFileSync("C:/LF/desktop/lfwarm-ignorer.pid", String(wbPid)); } catch {}
     while (!existsSync(join(RAW, "alive.txt")) && Date.now() - tLaunch < 300000) sleep(500);
     log({ step: "plugin-alive", sinceLaunchS: ((Date.now() - tLaunch) / 1000).toFixed(1) });
     let r = send("open", WORLD, 300);
@@ -99,9 +166,13 @@ async function main() {
     r = play(8000);
     log({ step: "play", expect: "T0", ...r, sinceLaunchS: ((Date.now() - tLaunch) / 1000).toFixed(1) });
 
+    if (scenario === "h2") {
+      await h2();
+      return;
+    }
     const menus = (process.env.LF_WARM_MENU || "Build|Reload Scripts;&Build|&Reload Scripts;Build|Validate and Reload Scripts;Script|Reload Scripts").split(";");
     let menu = null;
-    const rounds = [["T1"], ["T2"], ["T3", true], ["T4"], ["T5"]];
+    const rounds = [["T1"], ["T2"], ["T3", "lenient"], ["T4"], ["T5"]];
     for (const [tok, broken] of rounds) {
       writeProbe(tok, !!broken);
       sleep(1000);
