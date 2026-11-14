@@ -8343,5 +8343,25 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "$"
      Comment "Term "currency" (#958): the symbol that goes before an amount, {currency:sym}."
     }
+    CustomStringTableItem "{42E27FF2B0C5A49F}" {
+     Id "LF-Placement_Title"
+     Target_en_us "Placing"
+     Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{CC9466F58FD8A430}" {
+     Id "LF-Placement_NotAllowed"
+     Target_en_us "You are not allowed to place this."
+     Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
+    }
+    CustomStringTableItem "{70A8229A6F903FA6}" {
+     Id "LF-Placement_NoGround"
+     Target_en_us "There is no flat ground there."
+     Comment "Toast when a placement is refused because the ground under it is missing or rises too much (a kerb, a slope) (#1026)."
+    }
+    CustomStringTableItem "{284442A5E34D1270}" {
+     Id "LF-Placement_Moved"
+     Target_en_us "You moved. Look at the spot again and retry."
+     Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
+    }
  }
 }

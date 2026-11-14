@@ -203,7 +203,7 @@ class LF_AgentCommand
 
 			return true;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 			return true;
 		if (cmd.Verb == "emote")
 		{
@@ -1394,13 +1394,17 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", emoted);
 			return;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 		{
 			string seen;
 			if (cmd.Verb == "spikeverge")
 				seen = LF_SpikeStripHarness.Verge();
 			else if (cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 				seen = LF_SpikeStripHarness.Preview(cmd.Verb == "spikepreview");
+			else if (cmd.Verb == "spikeplace")
+				seen = LF_SpikeStripHarness.Place();
+			else if (cmd.Verb == "spikewhere")
+				seen = LF_SpikeStripHarness.Where();
 			else
 				seen = LF_SpikeStripHarness.Seen();
 			if (seen.StartsWith("ok "))
