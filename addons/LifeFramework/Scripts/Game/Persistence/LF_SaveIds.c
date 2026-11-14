@@ -177,6 +177,48 @@ class LF_SaveIds
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The prefabs whose saved id the table leads to `target` (through any chain), as "{GUID}"
+	//! names. A system that counts one kind of item (cash, #1130) counts these too: an older save
+	//! may still hold them. Empty when no alias leads there.
+	static void PrefabSourcesOf(string target, notnull array<ResourceName> sources)
+	{
+		EnsureLoaded();
+		if (target.IsEmpty() || s_mAliases.IsEmpty())
+			return;
+
+		string prefix = KIND_PREFAB + ":";
+		foreach (string key, string to : s_mAliases)
+		{
+			if (!key.StartsWith(prefix))
+				continue;
+
+			string guid = key.Substring(prefix.Length(), key.Length() - prefix.Length());
+			string name = "{" + guid + "}";
+			if (LF_Utils.SamePrefab(name, target) || !LF_Utils.SamePrefab(ResolvePrefabId(name), target))
+				continue;
+
+			sources.Insert(name);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alias target of a prefab id, without the loads check or the logging of ResolvePrefab.
+	protected static string ResolvePrefabId(string prefab)
+	{
+		string current = prefab;
+		for (int hop = 0; hop < MAX_HOPS; hop++)
+		{
+			string next;
+			if (!s_mAliases.Find(Key(KIND_PREFAB, current), next))
+				return current;
+
+			current = next;
+		}
+
+		return prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Whether the prefab loads now. Cached per GUID for the session.
 	static bool PrefabLoads(string prefab)
 	{
