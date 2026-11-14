@@ -2226,6 +2226,16 @@
   as Workbench Publish bundles it. Proven from the packed addon in a clean profile: Scenarios
   lists it, Play loads the town, form R-89 signs, top-up and test cars apply. Asserted in
   `host/playtest-mission`. Publish steps: `docs/playtest/workshop-publish.md`.
+- ✅ **Batch 1 of the pack move (#323, 2026-11-14).** `LF_PlaytestTown.conf`, its preview and
+  `EveronLifeGameMode.conf` live in `addons/LF_Everon1989/Missions/` with their GUIDs; both playtest
+  headers load the pack world `Worlds/Everon1989Town/Everon1989Town.ent`, a SubScene of the core
+  DebugWorld that holds `Village_Buildings`, `Village_Dressing`, `Village_Roads` and
+  `Village_Signs` (the mining sign). `MainWorld/`, the title poster mesh and `EL_MiningSign.et` moved
+  too. `host/playtest-mission` and `harness/dev-gate-dedicated` read the core fixture
+  `Missions/LF_HostedTest.conf`; `validate-pack-missions` holds the Workshop header checks. A bare
+  `session up`, `look`, `place` and `audit placement` use the pack world when the pack is in the
+  checkout; `tools\cli test` still boots the core DebugWorld. `e2e --pre-move <ref> --mission playtest`
+  reloads a save made before the move.
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
@@ -2260,7 +2270,7 @@
   fuel station, org registry, and the hideout down a side alley; the contraband
   barn is out of town on the east track. The farm, quarry, builders' yard and
   forest edge are on the outskirts. `Village_Roads`, `Village_Buildings` and
-  `Village_Dressing` hold the roads (road generator splines saved as
+  `Village_Dressing` (in the pack world `LF_Everon1989/Worlds/Everon1989Town` since #323 batch 1) hold the roads (road generator splines saved as
   `RoadEntity`), vanilla buildings, walls, lamps and trees; `Annex.layer` is
   the net fence of the test annex at x 20..112, z 20..112, which holds the test
   runner, the PR fixtures, and the legacy debug stations (with their
