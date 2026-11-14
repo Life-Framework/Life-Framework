@@ -111,7 +111,7 @@ class LF_PoliceConfig
 	[Attribute("8", UIWidgets.Auto, "Most posters the wanted board shows, newest first", params: "1 20")]
 	int m_iBoardMaxPosters;
 
-	[Attribute("30", UIWidgets.Auto, "Seconds the site alarm sounds when at least one officer is on duty (M1-20)", params: "1 600")]
+	[Attribute("30", UIWidgets.Auto, "Seconds the site alarm sounds when at least one officer is on duty", params: "1 600")]
 	float m_fAlarmSeconds;
 
 	[Attribute("60", UIWidgets.Auto, "Seconds the site alarm sounds when nobody is on duty: the louder, longer alarm", params: "1 600")]
@@ -144,7 +144,7 @@ class LF_PoliceConfig
 	[Attribute("1", UIWidgets.Auto, "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder")]
 	bool m_bOfficerKillOfWantedExempt;
 
-	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again (#472). 0 disables", params: "0 3600")]
+	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again. 0 disables", params: "0 3600")]
 	int m_iSearchCooldownSeconds;
 
 	[Attribute("3", UIWidgets.Auto, "Unpaid tickets one holder may carry; a further ticket is refused", params: "1 20")]
@@ -164,16 +164,16 @@ class LF_PoliceConfig
 	[Attribute("60", UIWidgets.Auto, "Seconds after a hold-up during which the held-up player, holding no weapon, may be handcuffed by an on-duty officer. A downed player may always be. 0 allows downed players only", params: "0 600")]
 	int m_iCompliantSeconds;
 
-	[Attribute("600", UIWidgets.Auto, "Seconds a deployed spike strip stays before it goes away by itself (#646). An officer can pick it up sooner", params: "30 7200")]
+	[Attribute("600", UIWidgets.Auto, "Seconds a deployed spike strip stays before it goes away by itself. An officer can pick it up sooner", params: "30 7200")]
 	int m_iSpikeStripLifetimeSeconds;
 
-	[Attribute("50", UIWidgets.Auto, "Hours of play (all jobs together) an account needs before it may apply to the police (#803). 0 turns the gate off", params: "0 100000")]
+	[Attribute("50", UIWidgets.Auto, "Hours of play (all jobs together) an account needs before it may apply to the police. 0 turns the gate off", params: "0 100000")]
 	int m_iApplyMinPlaytimeHours;
 
-	[Attribute("72", UIWidgets.Auto, "Hours an applicant waits to apply again after a rejection (#803). 0 turns the cooldown off", params: "0 100000")]
+	[Attribute("72", UIWidgets.Auto, "Hours an applicant waits to apply again after a rejection. 0 turns the cooldown off", params: "0 100000")]
 	int m_iApplyRejectCooldownHours;
 
-	[Attribute("168", UIWidgets.Auto, "Hours a new officer is on trial after an approval. The roster entry ends when the trial does unless the officer was promoted first (#803). 0 means no trial", params: "0 100000")]
+	[Attribute("168", UIWidgets.Auto, "Hours a new officer is on trial after an approval. The roster entry ends when the trial does unless the officer was promoted first. 0 means no trial", params: "0 100000")]
 	int m_iTrialHours;
 
 	//! How many rungs the core file ships; a remove of one of them is refused (a saved rank is its
