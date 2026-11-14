@@ -18,7 +18,7 @@ class LF_Test_SurvivalLight : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		LF_SurvivalConfig flagship = new LF_SurvivalConfig();
+		LF_SurvivalConfig flagship = LF_SurvivalConfig.CreateDefault();
 		float cap = flagship.m_fHealthCapScaled;
 		float drain = flagship.m_fHealthDrainScaledPerSecond;
 
@@ -62,7 +62,7 @@ class LF_Test_SurvivalLight : LF_Test
 		ctx.True(Math.AbsFloat(tired.GetStaminaDrainMultiplier(flagship) - 1) < 0.001, string.Format("eating and drinking lift the stamina penalty (got %1)", tired.GetStaminaDrainMultiplier(flagship)));
 
 		// Config overrides apply: drain rates, cap, stamina multiplier, low threshold.
-		LF_SurvivalConfig custom = new LF_SurvivalConfig();
+		LF_SurvivalConfig custom = LF_SurvivalConfig.CreateDefault();
 		custom.m_fHungerDrainPerSecond = 1;
 		custom.m_fThirstDrainPerSecond = 2;
 		custom.m_fHealthCapScaled = 0.5;

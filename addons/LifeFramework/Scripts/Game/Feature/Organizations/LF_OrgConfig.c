@@ -32,31 +32,31 @@ class LF_OrgConfig
 	static const float DEFAULT_DESK_RANGE = 5;
 
 	[Attribute("250", UIWidgets.Auto, "Carried cash the founder hands over at the registry desk to found an organization", params: "0 10000000")]
-	int m_iFoundingFee = 250;
+	int m_iFoundingFee;
 
 	[Attribute("3", UIWidgets.Auto, "Shortest organization name, in characters", params: "1 64")]
-	int m_iNameMin = 3;
+	int m_iNameMin;
 
 	[Attribute("32", UIWidgets.Auto, "Longest organization name, in characters", params: "1 64")]
-	int m_iNameMax = 32;
+	int m_iNameMax;
 
 	[Attribute("120000", UIWidgets.Auto, "Milliseconds an invitation stands before the invitee has to be asked again", params: "5000 3600000")]
-	int m_iOfferMs = 120000;
+	int m_iOfferMs;
 
 	[Attribute("1000000", UIWidgets.Auto, "Largest single cash move into or out of an organization fund", params: "1 100000000")]
-	int m_iMaxCashMove = 1000000;
+	int m_iMaxCashMove;
 
 	[Attribute("500", UIWidgets.Auto, "Fund price of the extra storage upgrade", params: "0 10000000")]
-	int m_iPriceExtraStorage = 500;
+	int m_iPriceExtraStorage;
 
 	[Attribute("250", UIWidgets.Auto, "Fund price of the processing slot upgrade", params: "0 10000000")]
-	int m_iPriceProcessingSlot = 250;
+	int m_iPriceProcessingSlot;
 
 	[Attribute("750", UIWidgets.Auto, "Fund price of the parked vehicle upgrade", params: "0 10000000")]
-	int m_iPriceParkedVehicle = 750;
+	int m_iPriceParkedVehicle;
 
 	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from an organization desk when the server moves fund cash", params: "1 30")]
-	float m_fDeskRange = 5;
+	float m_fDeskRange;
 
 	[Attribute("", UIWidgets.Object, "Rights of the default ranks a new organization starts with, one entry per rank id (founder, officer, member). A rank with no entry keeps its shipped rights. Applies to organizations founded after the change; a saved organization keeps its own ranks")]
 	ref array<ref LF_OrgRankDefault> m_aRankDefaults;
@@ -105,10 +105,25 @@ class LF_OrgConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "organizations" section over this instance, which holds the core `.conf`,
-	//! then (on a client) the server's streamed values over that.
+	//! Merges the layers over this instance, which holds the core `.conf`: each pack overlay of this
+	//! class in load order (its `m_aRankDefaults`, LF_ConfigOverlay, #1108), then the owner's
+	//! "organizations" section, then (on a client) the server's streamed values over that.
 	void ApplyLayers()
 	{
+		if (!m_aRankDefaults)
+			m_aRankDefaults = new array<ref LF_OrgRankDefault>();
+
+		LF_OrgRankDefaultList list = new LF_OrgRankDefaultList(this);
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_OrgConfig, SECTION, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = LF_ConfigOverlay.ApplyContainerList(list, resource.GetResource().ToBaseContainer(), "m_aRankDefaults", names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("organizations: pack overlay %1 changed %2 rank defaults", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (reader)
 		{
@@ -127,8 +142,9 @@ class LF_OrgConfig
 
 	//------------------------------------------------------------------------------------------------
 	//! Applies the owner's "organizations" section field by field; a key left out keeps the shipped
-	//! value. `rankDefaults` is keyed by default rank id (founder, officer, member) and sets that
-	//! rung's rights for organizations founded afterwards (#857).
+	//! value. `rankDefaults` is keyed by default rank id (founder, officer, member), each record with an
+	//! optional "op" (add, replace, patch, remove), and sets that rung's rights for organizations
+	//! founded afterwards (#857). A remove drops the entry, so the rung is back to its shipped rights.
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
@@ -156,45 +172,7 @@ class LF_OrgConfig
 		if (!m_aRankDefaults)
 			m_aRankDefaults = new array<ref LF_OrgRankDefault>();
 
-		int count = reader.BeginRecords("rankDefaults");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
-
-			array<string> ladder = {};
-			LF_OrganizationConfig.DefaultLadder(ladder);
-			if (!ladder.Contains(key))
-			{
-				reader.RejectRecord("the key is not a default rank (founder, officer or member)");
-				reader.EndRecord();
-				continue;
-			}
-
-			LF_OrgRankDefault entry = FindRankDefault(key);
-			if (!entry)
-			{
-				entry = LF_OrgRankDefault.FromRights(key, LF_OrganizationConfig.ShippedRights(key));
-				m_aRankDefaults.Insert(entry);
-			}
-
-			array<string> recordKeys = {"withdraw", "invite", "kick", "buyUpgrade", "manageRanks", "declareWar", "useStash", "manageTerritory", "spendFund"};
-			reader.WarnUnknownKeys(recordKeys);
-			reader.ReadBool("withdraw", entry.m_bWithdraw);
-			reader.ReadBool("invite", entry.m_bInvite);
-			reader.ReadBool("kick", entry.m_bKick);
-			reader.ReadBool("buyUpgrade", entry.m_bBuyUpgrade);
-			reader.ReadBool("manageRanks", entry.m_bManageRanks);
-			reader.ReadBool("declareWar", entry.m_bDeclareWar);
-			reader.ReadBool("useStash", entry.m_bUseStash);
-			reader.ReadBool("manageTerritory", entry.m_bManageTerritory);
-			reader.ReadBool("spendFund", entry.m_bSpendFund);
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
+		LF_ConfigOverlay.ApplyRecords(reader, "rankDefaults", new LF_OrgRankDefaultList(this), LF_ConfigService.GetOwnerSource());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -344,7 +322,7 @@ class LF_OrgConfig
 //! One default rank's rights as the owner config states them (#857): a bool per permission. The
 //! saved form stays the rights mask (LF_OrgRights), so no save format changes.
 [BaseContainerProps()]
-class LF_OrgRankDefault
+class LF_OrgRankDefault : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "The default rank id: founder, officer or member")]
 	string m_sRank;
@@ -424,5 +402,131 @@ class LF_OrgRankDefault
 		if (m_bSpendFund)
 			rights = rights | LF_OrgRights.Bit(LF_EOrganizationPermission.SPEND_FUND);
 		return rights;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The organizations `rankDefaults` list for the shared merge (LF_ConfigOverlay), keyed by default
+//! rank id (founder, officer, member). A rank with no entry keeps its shipped rights, so a remove
+//! puts a rank back to them. A new or replaced entry starts from the shipped rights.
+class LF_OrgRankDefaultList : LF_ConfigList
+{
+	protected LF_OrgConfig m_Config;
+
+	void LF_OrgRankDefaultList(LF_OrgConfig config)
+	{
+		m_Config = config;
+		if (!m_Config.m_aRankDefaults)
+			m_Config.m_aRankDefaults = new array<ref LF_OrgRankDefault>();
+	}
+
+	override string GetName()
+	{
+		return "organizations.rankDefaults";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aRankDefaults.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aRankDefaults[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_OrgRankDefault.Cast(record).m_sRank;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sRank", id);
+		return id;
+	}
+
+	override string CanonicalId(string key)
+	{
+		array<string> ladder = {};
+		LF_OrganizationConfig.DefaultLadder(ladder);
+		if (ladder.Contains(key))
+			return key;
+
+		return string.Empty;
+	}
+
+	override string IdHint()
+	{
+		return "a default rank (founder, officer or member)";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_OrgRankDefault.FromRights(id, LF_OrganizationConfig.ShippedRights(id));
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_OrgRankDefault entry = LF_OrgRankDefault.Cast(record);
+		if (index < m_Config.m_aRankDefaults.Count())
+			m_Config.m_aRankDefaults.Set(index, entry);
+		else
+			m_Config.m_aRankDefaults.Insert(entry);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aRankDefaults.RemoveOrdered(index);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		if (CanonicalId(LF_OrgRankDefault.Cast(record).m_sRank).IsEmpty())
+			return "the id is not a default rank (founder, officer or member)";
+
+		return string.Empty;
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_OrgRankDefault entry = LF_OrgRankDefault.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_bWithdraw") && container.Get("m_bWithdraw", entry.m_bWithdraw))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bInvite") && container.Get("m_bInvite", entry.m_bInvite))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bKick") && container.Get("m_bKick", entry.m_bKick))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bBuyUpgrade") && container.Get("m_bBuyUpgrade", entry.m_bBuyUpgrade))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bManageRanks") && container.Get("m_bManageRanks", entry.m_bManageRanks))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bDeclareWar") && container.Get("m_bDeclareWar", entry.m_bDeclareWar))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bUseStash") && container.Get("m_bUseStash", entry.m_bUseStash))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bManageTerritory") && container.Get("m_bManageTerritory", entry.m_bManageTerritory))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bSpendFund") && container.Get("m_bSpendFund", entry.m_bSpendFund))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_OrgRankDefault entry = LF_OrgRankDefault.Cast(record);
+		array<string> recordKeys = {"op", "withdraw", "invite", "kick", "buyUpgrade", "manageRanks", "declareWar", "useStash", "manageTerritory", "spendFund"};
+		reader.WarnUnknownKeys(recordKeys);
+		reader.ReadBool("withdraw", entry.m_bWithdraw);
+		reader.ReadBool("invite", entry.m_bInvite);
+		reader.ReadBool("kick", entry.m_bKick);
+		reader.ReadBool("buyUpgrade", entry.m_bBuyUpgrade);
+		reader.ReadBool("manageRanks", entry.m_bManageRanks);
+		reader.ReadBool("declareWar", entry.m_bDeclareWar);
+		reader.ReadBool("useStash", entry.m_bUseStash);
+		reader.ReadBool("manageTerritory", entry.m_bManageTerritory);
+		reader.ReadBool("spendFund", entry.m_bSpendFund);
 	}
 }

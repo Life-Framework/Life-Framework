@@ -416,7 +416,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (!activeCharacter)
 			return ResourceName.Empty;
 
-		return activeCharacter.GetPrefab();
+		// A body whose content a pack removed still spawns, from a default body (#965).
+		return LF_SaveIds.SpawnablePrefab(activeCharacter.GetPrefab(), m_aDefaultCharacterPrefabs);
 	}
 
 	//------------------------------------------------------------------------------------------------
