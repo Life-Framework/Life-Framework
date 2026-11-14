@@ -221,7 +221,7 @@ the game profile). Hooks:
 - `reload [config|dialogue|config,dialogue]` (dev gate; no name means both) asks the server to read the owner `config.json`
   and the dev caption file `$profile:LifeFramework/dev/dialogue.json` again and stream them (#970). Replies at once with
   `reload asked: <what>`; the server's log has `[LFDebug:Config] reload ...`. `dialogue caption <#key>` (client) reports
-  `caption=<text> overrides=N`: what this client shows for the key; `dialogue shown` reports the last caption the scene put on screen. Proof: `session.mjs live-reload-proof`
+  `caption=<text> overrides=N`: what this client shows for the key; `dialogue shown` reports the last caption the scene put on screen. Proof: `session.mjs live-reload-proof`. `session.mjs config-harness-proof` (`up --clients 1`) is the config harness's client stage (#300): each fixture in `tools/test/config-fixtures` with a `client` block is served as the owner config and client 1 reads a shop price or whether an action is offered (`docs/config/owner-config.md`)
   (`up --clients 1`); `docs/worktrees.md` "Live reload".
 - `peers` (read-only, runs on the client) lists every player body this client has streamed in as
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
