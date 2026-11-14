@@ -16,19 +16,32 @@ const fails = [];
 const check = (ok, msg) => { if (!ok) fails.push(msg); };
 
 // Every LF_AmbientEmitterComponent block in a prefab or layer text: its project and radius.
-export function emittersIn(text) {
+// A slot ("m_sSoundSlot", Configs/SoundSlots/LF_SoundSlots.conf) stands for its project: `slots` maps
+// slot id -> project path. An explicit m_sSoundProject wins, as it does in the component.
+export function emittersIn(text, slots = {}) {
   const out = [];
   for (const m of text.matchAll(/LF_AmbientEmitterComponent "\{[0-9A-F]{16}\}" \{([\s\S]*?)\n\s*\}/g)) {
     const project = /m_sSoundProject "\{[0-9A-F]{16}\}([^"]+)"/.exec(m[1]);
+    const slot = /m_sSoundSlot "([^"]+)"/.exec(m[1]);
     const radius = /m_fRadius ([\d.]+)/.exec(m[1]);
-    if (project) out.push({ project: project[1], radius: radius ? Number(radius[1]) : 20 });
+    const path = project ? project[1] : slot ? slots[slot[1]] : undefined;
+    if (slot && !project && !path) out.push({ project: "", radius: 0, missingSlot: slot[1] });
+    else if (path) out.push({ project: path, radius: radius ? Number(radius[1]) : 20 });
   }
   return out;
 }
 
-export function radiusProblems(file, text, rec) {
+// slot id -> project path, from the core slots file.
+export function slotProjects(text) {
+  const out = {};
+  for (const m of text.matchAll(/m_sSlot "([^"]+)"\s+m_Project "\{[0-9A-F]{16}\}([^"]+)"/g)) out[m[1]] = m[2];
+  return out;
+}
+
+export function radiusProblems(file, text, rec, slots = {}) {
   const out = [];
-  for (const e of emittersIn(text)) {
+  for (const e of emittersIn(text, slots)) {
+    if (e.missingSlot) { out.push(`${file}: emitter asks for sound slot '${e.missingSlot}', which LF_SoundSlots.conf does not give a project`); continue; }
     const s = rec.sounds.find((x) => projectPath(x) === e.project);
     if (!s) continue; // a vanilla or hand-made project: its range is not ours to know
     const name = e.project.split("/").pop();
@@ -56,6 +69,14 @@ const block = (r) => `  LF_AmbientEmitterComponent "{0123456789ABCDEF}" {\n   m_
 check(radiusProblems("x.et", block(13), fake).length === 0, "a radius just inside the range was refused");
 check(radiusProblems("x.et", block(40), fake).length === 1, "a radius outside the range passed");
 check(radiusProblems("x.et", block(3), fake).length === 1, "a radius far inside the range passed");
+const slotBlock = (r, id) => `  LF_AmbientEmitterComponent "{0123456789ABCDEF}" {
+   m_sSoundSlot "${id}"
+   m_fRadius ${r}
+  }`;
+const fakeSlots = { atmo_a: "Sounds/Atmosphere/Atmosphere_A.acp" };
+check(radiusProblems("x.et", slotBlock(13, "atmo_a"), fake, fakeSlots).length === 0, "a slot emitter just inside the range was refused");
+check(radiusProblems("x.et", slotBlock(40, "atmo_a"), fake, fakeSlots).length === 1, "a slot emitter outside the range passed");
+check(radiusProblems("x.et", slotBlock(13, "atmo_none"), fake, fakeSlots).length === 1, "a slot the core file lacks passed");
 const smooth = new Int16Array(4800).map((_, i) => Math.round(8000 * Math.sin((i / 4800) * 2 * Math.PI * 10)));
 const click = smooth.slice(0, 4680); // cut a quarter period from the end: the wrap jumps from the crest to zero
 check(wrapRatio(smooth) < 1.5, `a whole number of periods reads as a click (${wrapRatio(smooth).toFixed(2)})`);
@@ -78,12 +99,13 @@ for (const s of rec.sounds) {
   const info = { ...wavInfo(bytes), wrap: wrapRatio(new Int16Array(bytes.buffer, bytes.byteOffset + 44, (bytes.length - 44) >> 1)) };
   for (const p of loopProblems(info, s)) fails.push(`${samplePath(s)}: ${p}`);
 }
+const slots = slotProjects(readFileSync(join(ADDON, "Configs", "SoundSlots", "LF_SoundSlots.conf"), "utf8"));
 let emitters = 0;
 for (const f of walk(join(ADDON, "Prefabs")).concat(walk(join(ADDON, "Worlds")))) {
   const text = readFileSync(f, "utf8");
   if (!text.includes("LF_AmbientEmitterComponent")) continue;
-  emitters += emittersIn(text).length;
-  fails.push(...radiusProblems(f.slice(ADDON.length + 1).split("\\").join("/"), text, rec));
+  emitters += emittersIn(text, slots).length;
+  fails.push(...radiusProblems(f.slice(ADDON.length + 1).split("\\").join("/"), text, rec, slots));
 }
 
 if (fails.length) {

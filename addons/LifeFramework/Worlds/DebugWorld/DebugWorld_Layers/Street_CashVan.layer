@@ -50,7 +50,7 @@ GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_Cash
    m_fJamChance 0
   }
   LF_AmbientEmitterComponent "{AA240474E04B9ABB}" {
-   m_sSoundProject "{676F8D61F536FDD2}Sounds/Atmosphere/Atmosphere_VanIdle.acp"
+   m_sSoundSlot "atmo_van_idle"
    m_fRadius 23
    m_vOffset 0 1 0
   }

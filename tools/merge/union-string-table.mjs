@@ -88,6 +88,8 @@ export function mergeStringTables(baseText, oursText, theirsText) {
       ids.push(item.id);
     }
   }
+  // Canonical order (sort-string-table.mjs): the merged table lands sorted by Id like both sides.
+  ids.sort((a, b) => (a === b ? 0 : a < b ? -1 : 1));
   const chosen = [];
   for (const id of ids) {
     // The whole block: a side that only edited a Comment keeps its edit.

@@ -1,0 +1,53 @@
+# The example server download (#296): pack server/example into LifeFramework-ExampleServer.zip
+# (tools/release/example-zip.mjs) and attach it to the release of a v* tag.
+#
+# The build runs with --final, so it fails while tools/release/example-zip.json still holds a
+# PLACEHOLDER Workshop id (they wait on the first Workshop upload, #370). A failed run attaches
+# nothing; set the ids, then run it again from the Actions tab with the tag.
+# `tools\cli release <x.y.z> --confirm --push` pushes the tag. Playtest tags (playtest-*) are not
+# this workflow's; see playtest-release.yml.
+name: example-server-release
+
+on:
+  push:
+    tags: ["v[0-9]*.[0-9]*.[0-9]*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The v<x.y.z> tag whose release gets LifeFramework-ExampleServer.zip"
+        required: true
+
+concurrency:
+  group: example-server-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  example-zip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+    steps:
+      - name: check the tag
+        run: |
+          if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then echo "::error::bad tag '$TAG'"; exit 1; fi
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: selftest
+        run: node tools/validation/example-zip-selftest.mjs
+      - name: build (refuses a placeholder Workshop id)
+        run: node tools/cli.mjs example-zip --final --out dist
+      - name: attach to the release
+        run: |
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
+            || gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --title "Life Framework ${TAG#v}" --generate-notes
+          gh release upload "$TAG" dist/LifeFramework-ExampleServer.zip --repo "$GITHUB_REPOSITORY" --clobber
+          echo "attached LifeFramework-ExampleServer.zip to $TAG"
