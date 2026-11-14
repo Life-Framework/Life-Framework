@@ -7,7 +7,8 @@
 
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { addonResources } from "./rdb-fresh.mjs";
 
 // Core first: it is the one that always participates.
@@ -16,6 +17,35 @@ export const ADDONS = [
   { name: "LF_Everon1989", guid: "B1E84D5687E11724" },
 ];
 export const CORE = ADDONS[0].name;
+export const PACK = ADDONS[1].name;
+
+// The playtest mission headers. The core's stays for the suite and for a save made on it;
+// the pack's is what `host`, `playtest` and `session --mission playtest` boot (#322).
+export const CORE_PLAYTEST_MISSION = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
+export const PACK_MISSION = "{C638C03B775C31BB}Missions/LF_Everon1989.conf";
+
+const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+// The addons every launch loads (#322): the core, plus each other addon whose project file is
+// in `addonsDir`. Order matters to nobody but the reader: the core comes first.
+export function launchAddonsIn(addonsDir) {
+  return ADDONS.filter((a, i) => i === 0 || existsSync(join(addonsDir, a.name, `${a.name}.gproj`))).map((a) => a.name);
+}
+
+export function launchAddons(root = REPO) {
+  return launchAddonsIn(join(root, "addons"));
+}
+
+// ["-addons", "LifeFramework,LF_Everon1989"]: the one place a launch names its addons.
+// `addons` is a list from launchAddons(); omitted, it is this checkout's.
+export function addonsArgs(addons = launchAddons()) {
+  return ["-addons", addons.join(",")];
+}
+
+// The header a playtest boots: the pack's when the pack is loaded, else the core's.
+export function playtestMission(addons = launchAddons()) {
+  return addons.includes(PACK) ? PACK_MISSION : CORE_PLAYTEST_MISSION;
+}
 
 // ["-addonsDir", "a,b"]: one flag, comma-separated, empty entries dropped.
 export function addonsDirArgs(dirs) {
@@ -100,8 +130,23 @@ export function selftestAddons() {
     writeFileSync(join(addonDir(tmp, "LF_Everon1989"), "x.et.meta"), 'MetaFileClass {\n Name "{0123456789ABCDEF}x.et"\n}\n');
     const both = rdbAddons(tmp).join(",");
     if (both !== "LifeFramework,LF_Everon1989") f.push(`a pack with a resource left the rdb list: ${both}`);
+    // launchAddons (#322): the core alone without the pack's project file, both with it.
+    if (launchAddons(tmp).join(",") !== "LifeFramework,LF_Everon1989") f.push(`a checkout with the pack launches ${launchAddons(tmp).join(",")}`);
+    rmSync(gprojOf(tmp, PACK));
+    if (launchAddons(tmp).join(",") !== CORE) f.push(`a checkout without the pack launches ${launchAddons(tmp).join(",")}`);
   } finally {
     try { rmSync(tmp, { recursive: true, force: true }); } catch {}
   }
+  const both = addonsArgs(["LifeFramework", "LF_Everon1989"]);
+  if (both.length !== 2 || both[0] !== "-addons" || both[1] !== "LifeFramework,LF_Everon1989") f.push(`addonsArgs is not one comma-separated flag: ${JSON.stringify(both)}`);
+  if (playtestMission([CORE]) !== CORE_PLAYTEST_MISSION) f.push("a core-only launch picks the pack's mission header");
+  if (playtestMission([CORE, PACK]) !== PACK_MISSION) f.push("a launch with the pack does not pick the pack's mission header");
+  if (!existsSync(join(REPO, "addons", PACK, PACK_MISSION.replace(/^\{[0-9A-F]{16}\}/, "")))) f.push(`the pack's mission header ${PACK_MISSION} is not in addons/${PACK}`);
   return f;
+}
+
+// `node tools/lib/addons.mjs launch [root]` prints the comma-separated -addons list
+// (tools/test/test-e2e.ps1 asks here so the PowerShell harness has no second copy of the rule).
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url && process.argv[2] === "launch") {
+  console.log(launchAddons(process.argv[3] ? resolve(process.argv[3]) : REPO).join(","));
 }

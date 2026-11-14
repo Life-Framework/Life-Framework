@@ -13,6 +13,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { portsForRoot } from "../wt.mjs";
+import { addonsArgs, launchAddons } from "../lib/addons.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const FIXTURES = join(ROOT, "tools", "dedicated", "fixtures");
@@ -63,13 +64,13 @@ export function worktreePorts(root = ROOT) {
 
 // The real run passes these flags. In -server mode the engine ignores
 // -bindPort and listens on 2001; a2s still uses -a2sPort.
-export function serverLaunchArgs({ gamePort, a2sPort, load = false }) {
+export function serverLaunchArgs({ gamePort, a2sPort, load = false, addons = launchAddons(ROOT) }) {
   if (!Number.isInteger(gamePort) || !Number.isInteger(a2sPort)) {
     throw new Error("the worktree game port and a2s port are required");
   }
   const args = [
     "-server", "Worlds/DebugWorld/DebugWorld.ent",
-    "-addons", "LifeFramework",
+    ...addonsArgs(addons),
     "-maxFPS", "30",
     "-logLevel", "normal",
     "-disableCrashReporter",
@@ -207,6 +208,8 @@ function selftest() {
   if (sample.includes("-config")) throw new Error("the launch must not take bindPort from test-server.json");
   if (flagValue(sample, "-bindPort") !== "2031") throw new Error(`-bindPort ${flagValue(sample, "-bindPort")}`);
   if (flagValue(sample, "-a2sPort") !== "17807") throw new Error(`-a2sPort ${flagValue(sample, "-a2sPort")}`);
+  if (flagValue(sample, "-addons") !== launchAddons(ROOT).join(",")) throw new Error(`-addons ${flagValue(sample, "-addons")} is not this checkout's list`);
+  if (flagValue(serverLaunchArgs({ gamePort: 2031, a2sPort: 17807, addons: ["LifeFramework"] }), "-addons") !== "LifeFramework") throw new Error("a core-only list is not passed through");
   if (flagValue(sample, "-bindPort") === String(jsonPort)) throw new Error("worktree -bindPort collapsed to 2001");
 
   const reload = serverLaunchArgs({ gamePort: 2031, a2sPort: 17807, load: true });
