@@ -1,5 +1,5 @@
 // Server cost benchmark report (#335). `tools\cli perf` runs LF_Test_PerfBudget (128 synthetic
-// characters through the real managers, bus and serializer), reads its `[LFDebug:Perf] BENCH`
+// characters through the real managers, bus and serializer; `test --tier perf`, the PERF tier), reads its `[LFDebug:Perf] BENCH`
 // lines from the newest test log, prints a table against the budget in
 // addons/LifeFramework/Configs/Perf/LF_PerfBudget.conf, and writes tmp/perf/report.{md,json}.
 // The exit code is the test's: a cost over its budget fails the run.
@@ -75,7 +75,7 @@ export function runPerf(root, flags = []) {
   let code = 0;
   let logPath = logIdx >= 0 ? flags[logIdx + 1] : null;
   if (!logPath) {
-    const res = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PerfBudget", ...flags], { cwd: root, stdio: "inherit" });
+    const res = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "test", "--no-build", "--tier", "perf", ...flags], { cwd: root, stdio: "inherit" });
     code = res.status ?? 1;
     logPath = newestLog(root);
   }

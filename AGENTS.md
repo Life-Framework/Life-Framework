@@ -157,7 +157,9 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - One file per test: `Scripts/Game/Tests/LF_Test_*.c` extending `LF_Test`, with
   `// tier: LOGIC|WORLD|PERSISTENCE` above the class and a `// red-proof:` line.
 - Tiers are setup cost, not subject: `LOGIC` is pure script (`--tier fast`);
-  `WORLD` loads a resource or touches the world; `PERSISTENCE` is a save round trip.
+  `WORLD` loads a resource or touches the world; `PERSISTENCE` is a save round trip;
+  `PERF` is a timing gate (`perf/budget-128`): not in `fast` or `all`, so no gate flakes on it; run it
+  with `tools\cli test --no-build --tier perf` (alone, more repeats, idle-CPU wait, never cached or sharded).
 - Prove red once, cheaply (each run is a server boot). A bug fix: the run where the new
   test fails on the unfixed code and then passes on the fixed code IS the red proof;
   record it in `// red-proof:`, no extra break-and-restore run. New tests with no failing
