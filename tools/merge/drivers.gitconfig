@@ -33,3 +33,7 @@
 [merge "lf-json-keys"]
 	name = JSON union by key, conflict only on a key both sides changed
 	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs merge-json-keys.mjs %O %A %B %P; else node tools/merge/merge-json-keys.mjs %O %A %B %P; fi"
+
+[merge "lf-regen-config-schema"]
+	name = Regenerate the owner config schema and example from the merged config classes
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs regen-config-schema.mjs %O %A %B %P; else node tools/merge/regen-config-schema.mjs %O %A %B %P; fi"
