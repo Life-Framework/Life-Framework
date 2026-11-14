@@ -42,7 +42,7 @@
       "keyFields": [
         "m_sId"
       ],
-      "key": "The key is the rank id (patrol, senior). An id the ladder has changes that rank only in the fields given; an id it lacks appends a rung at the end, because a saved rank is its index and never moves. A rank written in the stream leaves out kit."
+      "key": "The key is the rank id (patrol, senior). An id the ladder has changes that rank only in the fields given; an id it lacks appends a rung at the end, because a saved rank is its index and never moves. A remove is refused on a shipped rank and on any rank that is not the last. A rank written in the stream leaves out kit."
     },
     "LF_ZoneRuleSet": {
       "keyFields": [

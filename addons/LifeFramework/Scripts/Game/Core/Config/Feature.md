@@ -26,8 +26,11 @@ a new key is appended, so it wins the rule walk.
 each record has an id and each layer adds, replaces, patches or removes it by id (`"op"` in JSON,
 `m_sOp` in a pack `.conf`, from `LF_ConfigRecord`). An id a verb needs that no lower layer has is
 refused with the source and id; two packs on one id warn and the later wins. On it today: `shops`
-(`priceRules`), `catalogue` (`items`, `offers`) and `crime` (`crimes`; it now reads pack overlays
-too). Verbs, examples and how to move a section: `docs/config/override-model.md`.
+(`priceRules`), `catalogue` (`items`, `offers`), `crime` (`crimes`; it now reads pack overlays
+too), and (#1108) `police` (`ranks`), `organizations` (`rankDefaults`), `zones` (`ruleSets`), `licences`
+(`rules`) and the system catalog (`LF_SystemDef`, pack overlays only). A list says what may not be
+removed with `LF_ConfigList.RemoveRefusal` (a shipped police rank, a zone rule set, a licence, a
+framework system). Verbs, examples and how to move a section: `docs/config/override-model.md`.
 
 The service is generic. A feature loads its core instance, then calls its own
 apply step (shops: `LF_ShopPricesConfig.ApplyLayers`), which asks the service
@@ -299,17 +302,21 @@ Each is a config class with a `SECTION`, an `ApplyOwner` with a handled-key list
 (`params` on the attribute, the same numbers as constants), and `ApplyLayers`, so the generated
 schema, `/config` form and reference page list them. A `config.json` that names none of them changes nothing.
 
-- `zones` (`LF_ZoneConfig`): `ruleSets` keyed by rule name (`NORMAL`, `SAFE`, `LAWLESS`), plus
+- `zones` (`LF_ZoneConfig`): `ruleSets` keyed by rule name (`NORMAL`, `SAFE`, `LAWLESS`; the override
+  model, pack overlays too; a remove is refused, every zone names a rule), plus
   `safeBlocksPlayerDamage` and `lawlessSuppressesWanted` (read for a rule with no table entry; the
   shipped table has all three). Server only: the damage hook and the crime features read it on the
   server and the HUD reads the rule, not its rule set.
 - `police` (`LF_PoliceConfig`): every tunable, and `ranks` keyed by rank id. An id the ladder has
   changes only the fields given; an id it lacks appends a rung (a saved rank is its index, so a
-  rung never moves). Prefab and sound names go through `ReadResource`: a name that does not load is
+  rung never moves). The override model (#1108) adds `replace` and `remove`: a remove is refused on a
+  shipped rung and on any rung that is not the last, so no saved index moves; a pack overlay's
+  `m_aRanks` layers first. A client drops a rung the server's stream no longer lists. Prefab and sound names go through `ReadResource`: a name that does not load is
   refused and the shipped one stays. Streamed to clients (arrest reach, desk range, ladder, ...);
   the alarm prefabs and each rank's kit stay on the server.
 - `organizations` (`LF_OrgConfig`): the tunables, and `rankDefaults` keyed by `founder`, `officer`
-  or `member`: a bool per permission, starting from the shipped rights
+  or `member` (override model: a `remove` drops the entry, so the rank is back to its shipped rights;
+  pack overlays too): a bool per permission, starting from the shipped rights
   (`LF_OrganizationConfig.ShippedRights`). `LF_OrganizationConfig.DefaultRights` returns the
   configured mask, so a new organization gets it; a saved organization keeps its ranks. A
   `nameMin` above `nameMax` is refused (no name would be valid). The tunables are streamed; the
@@ -320,7 +327,10 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   (`/configreload` does not move the timer). There is no retention setting: an autosave overwrites
   the one AUTO slot of the playthrough.
 - `licences` (`LF_LicencesConfig`, no `.conf`): `rules` keyed by licence name with
-  `isInitialLicense` and `requiresWhitelist`, layered over the catalog the licence manager builds.
+  `isInitialLicense` and `requiresWhitelist`, layered over the catalog the licence manager builds
+  (override model, #1108: pack overlays of `LF_LicencesConfig` first; the ids are the catalog's, so
+  an `add` of one it has, a licence it lacks and every `remove` are refused; `replace` turns both flags off
+  unless the layer gives them).
   `GiveInitialLicenses` reads the initial flags, in `LF_LicenseBits.Order`. The level a licence
   needs stays `jobs.licenceGates`. Server only; a character spawned after the change picks it up.
 - Tests: `LF_Test_ConfigSectionsA`, `LF_Test_ConfigSectionsB`, `LF_Test_ConfigSectionsBackcompat`.
