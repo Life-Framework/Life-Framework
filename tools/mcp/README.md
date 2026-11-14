@@ -44,6 +44,7 @@ Recorded here so a fresh checkout can reproduce the exact builds used.
 | ------ | ------ |
 | enfusion-mcp-bk | `0acfa88` |
 | enfusion-workbench-mcp | `1329715` |
+| 3d-asset-server | `454fa39` (`tools\cli asset-search install`; Apache-2.0, third-party: read the diff before bumping `PIN` in `tools/assets/pipeline/assetserver.mjs`) |
 
 `tools\cli mcp update` moves these forward; re-run `tools\cli status` and update
 this table when you bump them.

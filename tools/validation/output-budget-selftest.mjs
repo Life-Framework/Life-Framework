@@ -1,4 +1,5 @@
 // Output budget: the heavy commands print one compact summary by default (tools/lib/quiet-run.mjs).
+// inputs: tools/**, agent-box/**, .githooks/**
 // This runs the quick commands (help, wt help, pool status, validate with every check but one
 // skipped) and feeds large transcripts through the summariser, and fails when the default
 // output goes over its line budget or a failure, a skip or a timeout is hidden.
@@ -82,11 +83,11 @@ check(full.lines.length > 60, `help --verbose still prints the full usage (got $
 // validate with every check but one skipped: the wrapper's output, not the checks', is under test.
 const keep = "validate-no-bom.mjs";
 const skipAll = readdirSync(join(ROOT, "tools", "validation")).filter((f) => /\.(mjs|ps1)$/.test(f) && f !== keep);
-const v = run(["validate"], { LF_VALIDATE_SKIP: skipAll.join(",") });
+const v = run(["validate"], { LF_VALIDATE_SKIP: skipAll.join(","), LF_VALIDATE_ALL: "1" });
 check(v.lines.length <= 14 + 1, `validate stays inside 14 lines (got ${v.lines.length})`);
 check(v.lines[0]?.startsWith("SUMMARY validate "), `validate starts with a SUMMARY line (got '${v.lines[0]}')`);
 check(v.lines.some((l) => /^skipped \d+ check/.test(l)), "validate names the checks it skipped");
-const vv = run(["validate", "--verbose"], { LF_VALIDATE_SKIP: skipAll.join(",") });
+const vv = run(["validate", "--verbose"], { LF_VALIDATE_SKIP: skipAll.join(","), LF_VALIDATE_ALL: "1" });
 check(vv.lines.length > v.lines.length && vv.lines.some((l) => l.startsWith("PASS")), "validate --verbose restores the per-check lines");
 
 if (failures.length) {

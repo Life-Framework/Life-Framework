@@ -1,4 +1,5 @@
 // Proves the gadget kind of tools\cli asset offline (tools/assets/pipeline/prefab-gadget.mjs and the
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // gadget rules in checks.mjs): the scaffold text, the prefab stage's dispatch to it, the size check,
 // and the handcuffs this kind shipped with their generation record (#664). No Meshy, no Blender, no Workbench.
 // red-proof: 2026-11-13, one line broken per block, each restored after its FAIL was seen:

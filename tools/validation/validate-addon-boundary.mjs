@@ -1,4 +1,5 @@
 // tools/validation/validate-addon-boundary.mjs
+// inputs: addons/**, docs/architecture/**
 //
 // The core (addons/LifeFramework) never references the flagship pack
 // (addons/LF_Everon1989); the pack depends on the core, not the other way.

@@ -1,4 +1,5 @@
 // Selftest for validate-item-catalogue.mjs (#988): a fixture catalogue with one planted defect per
+// inputs: tools/**, agent-box/**, .githooks/**
 // check must fail each, and a clean one must pass.
 import { checkCatalogues, parseCatalogue } from "./validate-item-catalogue.mjs";
 

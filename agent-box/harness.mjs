@@ -162,6 +162,10 @@ export function buildLine(id, spec) {
   if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload" || spec.verb === "robhold") {
     return `${id} ${spec.verb}`;
   }
+  if (spec.verb === "emote") {
+    // emote open|close|seen|<radial command>: the emote radial (LF_EmoteHarness, #982).
+    return `${id} emote ${token(spec.arg, "emote")}`;
+  }
   if (spec.verb === "reload") {
     // reload [config|dialogue|config,dialogue]: the server reads the owner config and the dev caption file again (#970).
     if (spec.what !== undefined && !/^[a-z]+(,[a-z]+)*$/.test(spec.what)) throw new Error(`reload what must be names joined by commas (config,dialogue): ${spec.what}`);

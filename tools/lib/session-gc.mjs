@@ -40,8 +40,9 @@ export function sessionInUse(dir, alive) {
 }
 
 // [{ name, dir, ageH, bytes? }] to remove, and [{ name, why }] kept.
-// opts: now, keepHours, alive(pid), skip (dirs to leave alone, e.g. this checkout's own).
-export function planSessionGc(base, { now = Date.now(), keepHours = 24, alive = () => false, skip = [] } = {}) {
+// opts: now, keepHours, alive(pid), skip (dirs to leave alone, e.g. this checkout's own),
+// orphan(name) true when the checkout the folder is named for no longer exists (removed at any age).
+export function planSessionGc(base, { now = Date.now(), keepHours = 24, alive = () => false, skip = [], orphan = () => false } = {}) {
   const remove = [];
   const keep = [];
   let names = [];
@@ -57,6 +58,7 @@ export function planSessionGc(base, { now = Date.now(), keepHours = 24, alive = 
     if (skipSet.has(resolve(dir).toLowerCase())) keep.push({ name, why: "this checkout's own" });
     else if (FILM_NAME.test(name)) keep.push({ name, why: "film" });
     else if (sessionInUse(dir, alive)) keep.push({ name, why: "in use" });
+    else if (orphan(name)) remove.push({ name, dir, ageH, why: "worktree gone" });
     else if (ageH < keepHours) keep.push({ name, why: "recent" });
     else remove.push({ name, dir, ageH });
   }

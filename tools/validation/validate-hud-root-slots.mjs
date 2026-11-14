@@ -1,4 +1,5 @@
 // tools/validation/validate-hud-root-slots.mjs
+// inputs: addons/**
 //
 // The HUD root layout the player controller loads (EL_HUDManagerRoot.layout) replaces the vanilla
 // HUDManager_Root.layout. Vanilla HUD pieces attach to named slots in it: the vehicle's dashboard

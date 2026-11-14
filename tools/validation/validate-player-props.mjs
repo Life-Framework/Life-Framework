@@ -1,4 +1,5 @@
 // tools/validation/validate-player-props.mjs
+// inputs: addons/**, docs/**
 //
 // No new debug-looking thing in a place players walk through. A test fixture or a debug
 // tool placed in the village (a `*_Debug` entity, a prefab from a `/Debug/` folder) is what a

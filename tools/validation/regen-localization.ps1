@@ -1,4 +1,5 @@
 # tools/validation/regen-localization.ps1 - keep the runtime string tables in sync with the .st source.
+# inputs: addons/**
 #
 # Language/everonlife_localization.st is the source of truth for every UI string.
 # The per-language runtime tables (everonlife_localization.<lang>.conf) are compiled

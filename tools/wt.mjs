@@ -64,10 +64,17 @@ function sleep(ms) {
 
 // ---------------------------------------------------------------- git geometry
 
+// A checkout's common dir never moves while a process runs, and the pool queue asks for it on every
+// poll (hundreds of git spawns in one wait), so a success is cached per root; a failure is not.
+const commonDirs = new Map();
 export function gitCommonDir(root) {
+  const hit = commonDirs.get(root);
+  if (hit) return hit;
   const res = git(root, ["rev-parse", "--git-common-dir"]);
   if (res.status !== 0) throw new Error(`not a git checkout: ${root}`);
-  return resolve(root, res.stdout.trim());
+  const dir = resolve(root, res.stdout.trim());
+  commonDirs.set(root, dir);
+  return dir;
 }
 
 // True for the checkout that owns the .git dir (the world-editor copy).
