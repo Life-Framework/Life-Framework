@@ -182,6 +182,47 @@ merges real branches and compares the result byte for byte (#1154, #1161).
   open 10 minutes after auto-merge was queued or the last check finished**:
   `gh pr merge <n> --merge`.
 
+**Safety check (every heal, before any push).** GitHub cannot run our merge
+drivers, so a merge made here is checked from git objects
+(`tools/prs-safety.mjs`): for every tracked `*.st` the merged key set must equal
+main's keys plus the branch's own additions minus its own removals (a count
+mismatch names the missing or extra keys), and every line of `docs/features.md`
+and `docs/debug-log-triage.md` that main has must still be there. A failure
+undoes the merge (`reset --hard` to the old head), pushes nothing, and reports
+the PR (`refused`). When both sides changed `docs/credits.md`, `tools\cli
+credits` and `regen-localization` run after the merge so the credits rows and
+`LF_CreditsData.c` agree with it (the `LF-Credits_*` keys are then exempt from
+the key check).
+
+#### Self-healing mode: `prs heal --watch`
+
+```sh
+tools\cli prs heal --watch [--once] [--interval 10] [--max-runs 144]
+tools\cli prs schedule print|install|status|remove
+```
+
+Every `--interval` minutes (default 10, at most `--max-runs` passes, default
+144 = 24 h) it lists open `ws/*` PRs that GitHub reports `CONFLICTING` and, for
+each one whose worktree is not LIVE, merges `origin/main` in the PR's own idle
+worktree or a temporary `Life-Framework-heal-<n>` one, regenerates the
+generated files, runs `validate` only (the PR's own `validate` check and
+auto-merge cover the rest), runs the safety check, pushes without force, and
+re-queues auto-merge. Anything else (a real content conflict, a refused merge,
+a failed validate, unpushed agent work) is skipped: one log line, and one PR
+comment naming the files (once per PR head and main head, so a repeat pass does
+not spam). Output also appends to `tmp/logs/prs-heal-watch.log` in the main
+checkout. `--once` is one pass; the scheduler uses it.
+
+`prs schedule install` registers one Task Scheduler entry, `LF-PRs-Heal`:
+`conhost.exe --headless node tools\cli.mjs prs heal --watch --once` from the
+main checkout every 10 minutes as the current user (it needs that user's `gh`
+login), hidden, never overlapping itself, 45 min limit. `print` shows exactly
+what it would register and changes nothing; `status` and `remove` do what they
+say. Nothing registers it until someone runs `install`.
+`tools/validation/prs-heal-safety-selftest.mjs` proves it on throwaway repos: a
+generated-only conflict heals with exact keys and rows, a real conflict is
+skipped untouched, a lost key or a lost features row is refused and undone.
+
 It prints one line per PR and exits 1 when any PR needs a human or its agent.
 Agents run `prs status` after their PR is up; the maintainer or lead runs
 `prs heal`. One heal runs at a time (hub lock `prs-heal`).
@@ -226,10 +267,32 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   machine that can run more servers at once (a network namespace or VM per
   slot) only raises the number.
 - **Queue.** Tickets live in `<main>/tmp/wt/pool/queue/` (time, pid, slug,
-  machines wanted). A ticket may try a machine only when no older live ticket
-  wants it; tickets of dead processes are deleted. A local lock whose owner is
+  machines wanted). A ticket served before another (priority, then arrival)
+  wants the machine first; tickets of dead processes are deleted. A local lock whose owner is
   dead is taken over after any `ArmaReforgerServer` still running from that
   owner's `server/profile` is stopped.
+- **Burst starts (#1195).** Runs that fit start together. A ticket may start
+  beside the tickets ahead of it on a machine when that machine has a free lane
+  of its kind for each of them and one more for itself, none of them waits on
+  RAM, and live free RAM, less what still boots there, covers all their
+  reserves and its own above `minFreeMb`. The reserves of the starts still in
+  flight ahead (`testReserveMb`, 800, per test; a session's reserve) go into
+  this start's RAM gate, here or in the box's holder, and a test lane locked
+  less than `testBootS` (60) seconds ago counts with `testReserveMb` too, so a
+  burst cannot overshoot the floor. A ticket whose holder has taken its lock is
+  marked `granted` and no longer holds anyone back while its run folder is
+  prepared. Unknown lanes or RAM (an unreadable machine) fall back to one start
+  at a time. Each start still takes its lock with an atomic create (the
+  holder's `CreateNew`, this PC's `openSync "wx"`, unchanged since the pool
+  began), so starts in flight together, and pool code on older branches that
+  still starts one at a time, can race for a lane but never share one; a burst
+  start tries the k-th free lane first so they rarely race. Runs asked together
+  from one worktree share one snapshot (taken under `tmp/remote/snapshot.lock`,
+  reused for 10 s at the same HEAD and index). Measured 2026-11-14, 14
+  `test --tier fast --machine lf-cloud` at once (16 lanes): before, one start
+  every ~3 s (holder ssh, gate and lock 2-3 s, then a 1 s poll; a new run folder
+  held the queue head 22 s), peak 7, starts spread over 83 s; after, peak 14,
+  spread 3.4 s.
 - **Remote slots.** A holder (one ssh session running PowerShell on the
   remote) creates the remote `server-2001` lock with its own pid, prepares the
   run folder, and watches its ancestor processes. When the run ends, or this
@@ -470,7 +533,9 @@ it, picks a lane and a budget, and prints one line per outcome.
   their reserve too, since free RAM does not show them yet. Every start, the first server on a
   machine included, must leave `minFreeMb` (1500) free after its reserve (2026-11-14: the floor
   gated only a second server, so this PC at 0.4 GB free kept taking its first test and session
-  runs, which then timed out while the laptop idled). A test reserves nothing beyond that floor.
+  runs, which then timed out while the laptop idled). A test reserves nothing beyond that floor
+  for itself, but tests still booting (locked under `testBootS`, 60 s) and starts in flight
+  ahead of it count with `testReserveMb` (800) each ("Burst starts").
   A job that does not fit waits with one line ("free RAM 2.2 GB minus 1.4 GB for the session
   would be under 1.5 GB"). Lane counts in `tools/pool.json` are ceilings (ports, heat); the
   gate decides how many run, so a RAM change (the laptop lost 32 GB on 2026-11-14) needs no config

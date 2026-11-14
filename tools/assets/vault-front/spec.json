@@ -32,6 +32,7 @@
     ]
   },
   "parts": [],
+  "addon": "LF_Everon1989",
   "asset_dir": "Assets/Props/Roleplay/BankVault/Front",
   "prefab_dir": "Prefabs/Props/Roleplay/BankVault",
   "build": "meshy-6 image-to-3D for the door, frame ring and hinge barrels; wall block, tunnel and collar in Blender; LOD0 kept dense"

@@ -32,6 +32,12 @@ Discord server through the **Life Framework** bot. Node.js 22+; no `npm install`
 - Moderation: timeout, kick, ban, unban, audit log.
 - Server: info, settings, invites, scheduled events, channel webhooks.
 
+The live listener (the Gateway websocket) starts on the first
+`get_new_events` or `wait_for_events` call, so it buffers events from then on.
+Every Claude Code agent starts its own copy of this server; connecting each one
+at startup opened one Discord session per agent and cost about 35 MB more per
+copy. Set `DISCORD_GATEWAY=eager` to connect at startup.
+
 Optional: `EVENT_WEBHOOK_URL` POSTs each event as JSON; `EVENT_LOG_FILE`
 appends each event as a JSON line.
 
