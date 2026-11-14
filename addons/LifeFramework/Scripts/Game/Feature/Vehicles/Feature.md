@@ -15,3 +15,7 @@ In-world: the lot desk, the garage shell and the impound yard are the objects th
 - **Gotcha:** `CarControllerComponent.SetPersistentHandBrake(false)` on an empty car does not release the simulation's brake input; only a pilot's controller feeds it. Do not read `GetPersistentHandBrake` as proof an empty car is held.
 - **Data:** none.
 - **Proof:** `vehicles/park-brake-world` (WORLD) guards the prefab default for every vehicle prefab we spawn; `node agent-box/session.mjs park-brake-proof` (`up --profile full`) is the slope measurement.
+
+## Saved vehicle state (#752a)
+
+Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at and inspected-at stamps (unix seconds, 0 = never) and a hidden compartment size (0-3, `LF_VehicleOwnership.COMPARTMENT_MAX`). They are `[NonSerialized()]` on `LF_VehicleRecord` and saved in the `vehiclestate` payload (save version 33), so the `vehicles` record layout never moves. `SetState` and `StateOf` are the server seam; no player action writes them yet (#774 towing, #778/#779 inspection and compartments, #859 the cache). The restart impound is still derived and stays `NONE`. Spec: `docs/architecture/record-shape-vehicle.md`.

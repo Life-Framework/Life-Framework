@@ -674,10 +674,10 @@ class LF_PlacementService
 		array<IEntity> entities = {surface, surface.GetRootParent()};
 		foreach (IEntity entity : entities)
 		{
-			if (!entity || !entity.GetPrefabData())
+			if (!entity)
 				continue;
 
-			if (LF_Utils.SamePrefab(entity.GetPrefabData().GetPrefabName(), prefab))
+			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), prefab))
 				return LF_PlacementRules.Describe(entity);
 		}
 

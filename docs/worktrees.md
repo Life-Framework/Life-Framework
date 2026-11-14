@@ -245,6 +245,26 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
 
+**Stale rdb refresh when this PC is busy (the fallback).** A stale `resourceDatabase.rdb` is registered by a
+headless Workbench: ~15 s per addon, but it queued 10-50 min behind the hub `build` lock and this PC's one
+Workbench slot. The rule, in order (see "Sync" in "Test pool"): a run headed for a pool machine with the `rdb`
+cap refreshes in that machine's own run folder and never here; everything else refreshes on this PC, and
+this fallback (`refreshOnPool` in `tools/cli.mjs`, `chooseRefresh` in `tools/lib/wb-gate.mjs`, built on
+`chooseGate`) covers it: a local run (`build`, `serve`, `session up`, `rdb`, a gate), a run headed for a
+machine without the `rdb` cap (lf-cloud) or pinned to this PC, and a lane given back to refresh. When this
+PC's Workbench slot is busy or queued for, its `build` lock is held, or its free RAM is under a Workbench's
+need (`WB_RESERVE_MB` plus `minFreeMb`), and a machine with the `rdb` and `workbench` caps has a free
+Workbench slot AND the RAM, the refresh runs there: the run folder gets the snapshot, `rdb --local`
+refreshes in it (taking one of that machine's Workbench slots, so the next caller sees it busy), and
+`pullRemoteRdb` (the #1227 copy-back) copies the rdb home. No such machine (never one `chooseGate` would only
+queue on), or any failure, and the local refresh runs, queuing for the slot and the build lock; `rdb
+--budget <s>` (`LF_RDB_WAIT_S`, default 900 s, spent once per process across addons and the Workbench slot, it prints the holder: `tools/lib/lock-wait.mjs`) bounds that wait, and when it runs out the
+refresh tries an `rdb`-cap machine once more. It never routes from inside a pool run folder
+(`tmp/pool-owner.json`). It logs `rdb: ... refresh on <where>: <why>` and `rdb: refreshed on <machine> in N s`
+or `resource database refreshed on <host> in N s`. `LF_RDB_REFRESH_WHERE=local` never goes remote, `=pool`
+tries a machine first even when this PC is free; `LF_RDB_REFRESH=0` turns the refresh off.
+`tools/validation/rdb-refresh-where-selftest.mjs` proves the decision.
+
 **Parallel gates.** Up to N Workbench gates run at once, N being `"shipQueue": { "parallel": N }` in
 `pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
 limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
@@ -393,6 +413,7 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
 ```
 
 - **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
+- **Nothing in a gate waits silently.** The rdb refresh before the suite waits for the hub `build` lock through `tools/lib/lock-wait.mjs`: it prints the holder (`waiting on the build lock ...: held by pid N (rdb refresh in <worktree>), held N s; budget ...`), repeats every 30 s, and gives up at `LF_RDB_WAIT_S` (900 s) for the whole process, every addon together; a later addon fails at once instead of waiting again. Shard children run with `LF_RDB_CHECKED=1`, so the slices never refresh or wait a second time (before, the gate and each slice each waited 15 min per addon, silently: 25+ min with no output). While slices run, the parent prints `shards: <pass> i/n still running after N s: <last line>` every `LF_SHARD_HEARTBEAT_S` (120 s) and stops a slice after `LF_SHARD_TIMEOUT_S` (2700 s). `lock-wait-selftest` proves it.
 - **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
   waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer

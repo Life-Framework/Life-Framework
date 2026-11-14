@@ -72,6 +72,10 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string ID_HOLDER = "e2e-card-holder";
 	//! The time on the robbery's case (#148, "caseboard" payload, save version 31).
 	static const string CASE_TIME = "14:05";
+	//! The garaged car's state (#752a, "vehiclestate" payload, save version 33).
+	static const int VEHICLE_TOWED_AT = 1800000000;
+	static const int VEHICLE_INSPECTED_AT = 1800000600;
+	static const int VEHICLE_COMPARTMENT = 1;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -196,6 +200,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_VehicleOwnership.Register(GARAGED_ID, GARAGE_OWNER_UID, GARAGED_ID, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE GA 1601", "#EL-Vehicle_S105", true);
 		LF_VehicleOwnership.Register(STREET_ID, GARAGE_OWNER_UID, STREET_ID, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE ST 1602", "#EL-Vehicle_S105", true);
 		ctx.True(LF_VehicleOwnership.Store(GARAGED_ID, GARAGE_OWNER_UID), "e2e car garaged before the save");
+		ctx.True(LF_VehicleOwnership.SetState(GARAGED_ID, LF_EVehicleTowState.TOWED, VEHICLE_TOWED_AT, VEHICLE_INSPECTED_AT, VEHICLE_COMPARTMENT), "e2e garaged car takes a tow, an inspection and a compartment");
 
 		// Both duty inventories ride the carried payload (police_duty, civilian worn) and the
 		// magazine rounds the itemstate payload (save version 9): clock in, pick up 2 apples,
@@ -674,7 +679,10 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #else
 		ctx.EqualStr(GetGame().GetBuildVersion(), LF_SaveStamp.BootLoadedBuild(), "e2e the save names the game build that wrote it");
 #endif
-		ctx.Equal(32, LF_SaveStamp.BootSaveVersion(), "e2e the save names its save version");
+#ifndef LF_E2E_PRE_MOVE
+		// --pre-move: the ref build writes its own save version.
+		ctx.Equal(33, LF_SaveStamp.BootSaveVersion(), "e2e the save names its save version");
+#endif
 #endif
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
 		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
@@ -746,6 +754,29 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.True(LF_VehicleOwnership.IsStored(GARAGED_ID), "e2e garaged car is still in the garage after the restart");
 		ctx.False(LF_VehicleOwnership.IsImpounded(GARAGED_ID), "e2e garaged car is not impounded");
 		ctx.True(LF_VehicleOwnership.IsImpounded(STREET_ID), "e2e street car is at the impound lot after the restart");
+		LF_VehicleStateRow garagedState = LF_VehicleOwnership.StateOf(GARAGED_ID);
+		ctx.NotNull(garagedState, "e2e garaged car has a state after the restart");
+		if (garagedState)
+		{
+#ifdef LF_E2E_LEGACY_SAVE
+			ctx.Equal(LF_EVehicleTowState.NONE, garagedState.m_iTowState, "e2e the version 23 save loads the car untowed");
+			ctx.Equal(0, garagedState.m_iInspectedAt, "e2e the version 23 save loads the car uninspected");
+			ctx.Equal(0, garagedState.m_iCompartment, "e2e the version 23 save loads the car with no compartment");
+#else
+#ifdef LF_E2E_PRE_MOVE
+			// --pre-move: the ref build predates #752a, wrote no state rows and set none.
+			ctx.Equal(LF_EVehicleTowState.NONE, garagedState.m_iTowState, "e2e the ref build's save loads the car untowed");
+			ctx.Equal(0, garagedState.m_iInspectedAt, "e2e the ref build's save loads the car uninspected");
+			ctx.Equal(0, garagedState.m_iCompartment, "e2e the ref build's save loads the car with no compartment");
+#else
+			ctx.Equal(LF_EVehicleTowState.TOWED, garagedState.m_iTowState, "e2e the garaged car keeps its tow state after the restart");
+			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_TOWED_AT, garagedState.m_iTowedAt, "e2e the garaged car keeps its towed-at after the restart");
+			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_INSPECTED_AT, garagedState.m_iInspectedAt, "e2e the garaged car keeps its inspection after the restart");
+			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_COMPARTMENT, garagedState.m_iCompartment, "e2e the garaged car keeps its compartment after the restart");
+#endif
+#endif
+			LF_Debug.Info("Vehicle", string.Format("e2e restart: %1 tow %2 towed-at %3 inspected-at %4 compartment %5", GARAGED_ID, garagedState.m_iTowState, garagedState.m_iTowedAt, garagedState.m_iInspectedAt, garagedState.m_iCompartment));
+		}
 		ctx.True(LF_VehicleOwnership.GetVehicle(STREET_ID) == null, "e2e street car was not spawned on the street");
 		IEntity payer = LF_TestCharacterFixture.Spawn(ctx);
 		if (payer)
