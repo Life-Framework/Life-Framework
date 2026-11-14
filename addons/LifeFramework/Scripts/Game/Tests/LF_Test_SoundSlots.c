@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-14 with `toolscli test --no-build --only LF_Test_SoundSlots`: making LF_SoundSlots.Resolve keep the core default instead of the pack project failed `- pack: the store radio is filled with a project that loads (expected '{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp', got '')`. Restored; green.
+// red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_SoundSlots`: making LF_SoundSlots.Resolve keep the core default instead of the pack project failed `- pack: the store radio is filled with a project that loads (expected '{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp', got '')`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! A stand-in pack source that overlays the sound slots core file with a test fixture.
