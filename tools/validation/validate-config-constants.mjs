@@ -1,4 +1,5 @@
 // Rejects new hard-coded tunables in Feature/ (#277). A numeric constant whose
+// inputs: addons/**, docs/config-inventory.md, tools/config/**
 // name is a time, range, price, cap or rate belongs on a config class
 // (tools/config/inventory.mjs holds the rules and docs/config-inventory.md the table).
 //

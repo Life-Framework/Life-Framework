@@ -8,7 +8,8 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ematMeta, ematText, freshGuid, readGuid, textureMeta, usedGuids, xobMeta, xobMetaIds } from "./meta.mjs";
+import { ematMeta, ematText, freshGuid, readGuid, textureMeta, xobMeta, xobMetaIds } from "./meta.mjs";
+import { addonFlag, addonOf, addonPath, addonProblems, assertBoundary, guidsInUse, pluginDir, withAddon } from "./addon.mjs";
 import { logProblems, runLog } from "./import.mjs";
 import { parse, worldPositions } from "./xob.mjs";
 
@@ -38,9 +39,9 @@ export function kitModelMeta(text, used, { res, guid, materials, colliders, flag
 }
 
 function writeMetas(root, kit, report) {
-  const addon = join(root, "addons", "LifeFramework");
+  const addon = addonPath(root, kit); // the kit's addon (#971), the core by default
   const data = `${kit.asset_dir}/Data`;
-  const used = usedGuids(addon);
+  const used = guidsInUse(root);
   const put = (rel, text) => writeFileSync(join(addon, rel), text);
   const guidFor = (rel) => readGuid(join(addon, rel + ".meta")) || freshGuid(used);
   const emats = {};
@@ -91,7 +92,7 @@ function build(root, kit, out, { runBlender }) {
 
 function importKit(root, kit, out, report, { workbench }) {
   if (!workbench) throw new Error("the import needs the Workbench launcher; run it through tools\\cli asset kit");
-  const addon = join(root, "addons", "LifeFramework");
+  const addon = addonPath(root, kit);
   const abs = join(addon, kit.asset_dir);
   mkdirSync(join(abs, "Data"), { recursive: true });
   const sources = [];
@@ -108,14 +109,14 @@ function importKit(root, kit, out, report, { workbench }) {
     return { name, fbx: dst, xob: join(abs, `${name}.xob`) };
   });
   let refs = writeMetas(root, kit, report);
-  const plugin = join(addon, "Scripts", "WorkbenchGame", "ResourceManager");
+  const plugin = pluginDir(root); // always the core's copy; a pack project loads it as a dependency
   mkdirSync(plugin, { recursive: true });
   copyFileSync(join(HERE, "wb", `${PLUGIN}.c`), join(plugin, `${PLUGIN}.c`));
   const logFile = join(out, "import-workbench.log");
   const timeoutMs = Number(process.env.LF_ASSET_IMPORT_TIMEOUT_S || 120) * 1000;
   // One Workbench run per source: with -exitAfterInit only the first of a batch is built (import.mjs).
   const rebuild = (source) => {
-    const { profile } = workbench(root, PLUGIN, [`-lfAsset0=${source}`], { timeoutMs, logFile });
+    const { profile } = workbench(root, PLUGIN, [`-lfAsset0=${source}`], { timeoutMs, logFile, addon: addonOf(kit) });
     const logs = join(profile, "logs");
     const dirs = readdirSync(logs).map((d) => join(logs, d)).filter((d) => statSync(d).isDirectory()).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
     const one = dirs.length ? runLog(dirs[0]) : "";
@@ -165,21 +166,23 @@ export function checkKitModel(model, info, emats) {
 }
 
 export async function main(root, args, { workbench, runBlender }) {
-  const slug = args.find((a) => !a.startsWith("--"));
+  const addonArg = addonFlag(args);
+  const slug = args.find((a) => !a.startsWith("--") && a !== addonArg);
   const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
   const file = slug && join(root, "tools", "assets", slug, "kit.json");
   if (!file || !existsSync(file)) {
-    console.log("usage: tools\\cli asset kit <slug> [--only build|import]   (needs tools/assets/<slug>/kit.json)");
+    console.log("usage: tools\\cli asset kit <slug> [--only build|import] [--addon <name>]   (needs tools/assets/<slug>/kit.json)");
     return 2;
   }
-  const kit = JSON.parse(readFileSync(file, "utf8"));
-  const bad = kitProblems(kit);
+  const kit = withAddon(JSON.parse(readFileSync(file, "utf8")), addonArg);
+  const bad = [...kitProblems(kit), ...addonProblems(root, kit)];
   if (bad.length) { for (const p of bad) console.log(`FAIL  ${p}`); return 1; }
   const out = join(root, "tmp", "assets", slug, "kit");
   const report = only === "import" ? JSON.parse(readFileSync(join(out, "report.json"), "utf8")) : build(root, kit, out, { runBlender });
   if (only === "build") return 0;
   const { problems, refs } = importKit(root, kit, out, report, { workbench });
   for (const p of problems) console.log(`FAIL  ${p}`);
+  assertBoundary(root, kit);
   for (const [name, ref] of Object.entries(refs.xobs)) console.log(`  ${name} ${ref}`);
   return problems.length ? 1 : 0;
 }

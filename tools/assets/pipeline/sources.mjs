@@ -13,6 +13,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
+import * as server from "./assetserver.mjs";
 
 export const USER_AGENT = "LifeFrameworkAssetPipeline/1.0 (+https://life-framework.org)";
 
@@ -107,13 +108,28 @@ export const ambientcg = {
   },
 };
 
-export const ADAPTERS = [vanilla, smithsonian, sketchfab, ambientcg];
+// ---------------------------------------------------------------- rung 2 and 2b: 3d-asset-server (assetserver.mjs)
+// Free models it can download directly, and paid or blocked ones (CGTrader, Fab, TurboSquid) as shortlist entries with
+// their link. Every result goes through the licence gate and is scored against the query; Editorial and non-commercial
+// never appear. Skipped (with a reason) when the server is not installed: tools\cli asset-search install.
+export const assetserver = {
+  rung: 2, name: "assetserver",
+  async search(root, query, { limit = 8, service } = {}) {
+    if (!service && !server.installed(root)) throw new Error("3d-asset-server not installed (tools\\cli asset-search install)");
+    const found = await server.search(root, { query: query.words.slice(0, 5).join(" "), limit, service });
+    const ranked = server.rank(found.candidates, { name: query.words.join(" ") }).filter((c) => c.gate.verdict !== "review" || c.score >= 20).slice(0, limit);
+    ranked.links = found.links;
+    return ranked;
+  },
+};
+
+export const ADAPTERS = [vanilla, smithsonian, sketchfab, ambientcg, assetserver];
 
 // Run every adapter; one that fails (no network, a changed API) reports and does not stop the others.
 export async function searchAll(root, query, opts = {}, adapters = ADAPTERS) {
   const out = {};
   for (const a of adapters) {
-    try { out[a.name] = await a.search(root, query, opts); } catch (e) { out[a.name] = []; console.log(`  ${a.name}: skipped (${e.message})`); }
+    try { out[a.name] = await a.search(root, query, opts); if (out[a.name].links) out[a.name + "_links"] = out[a.name].links; } catch (e) { out[a.name] = []; console.log(`  ${a.name}: skipped (${e.message})`); }
   }
   return out;
 }

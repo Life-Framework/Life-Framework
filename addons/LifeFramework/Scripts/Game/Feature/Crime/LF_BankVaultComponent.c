@@ -13,9 +13,6 @@ class LF_BankVaultComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Stable vault id. Empty uses the entity name.")]
 	protected string m_sVaultId;
 
-	[Attribute("", UIWidgets.EditBox, desc: "World entity name of the hand-carry bag.")]
-	protected string m_sBagEntity;
-
 	[Attribute("1", UIWidgets.Auto, desc: "Bags spawned when the vault opens.")]
 	protected int m_iBagCount;
 
@@ -45,10 +42,18 @@ class LF_BankVaultComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 
+		string vaultId = GetVaultId();
+		if (!vaultId.IsEmpty())
+		{
+			LF_Places.Register(LF_Bank.PLACE_KIND, vaultId, owner);
+			// LF_Bank.Configure makes the vault a breach target under the same id, and LF_Breach finds
+			// its lock there. A vault prefab that also carries LF_BreachTargetComponent registers the same entity.
+			LF_Places.Register(LF_Breach.PLACE_KIND, vaultId, owner);
+		}
+
 		if (!Replication.IsServer())
 			return;
 
-		string vaultId = GetVaultId();
 		if (vaultId.IsEmpty())
 		{
 			LF_Debug.Error("Bank", "vault component has no id and the entity is unnamed");
@@ -61,7 +66,7 @@ class LF_BankVaultComponent : ScriptComponent
 			return;
 		}
 
-		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds, m_sBagEntity);
+		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds);
 		LF_Bank.ConfigureTools(vaultId, m_sRequiredTools, m_fJamChance);
 		LF_Bank.ConfigureAlarmKind(vaultId, m_sAlarmKind);
 		ConfigureHeist(vaultId);

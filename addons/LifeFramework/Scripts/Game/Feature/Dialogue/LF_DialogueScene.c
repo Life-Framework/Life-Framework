@@ -18,6 +18,8 @@ class LF_DialogueScene
 	protected static Widget s_wRoot;
 	protected static EntityID s_NpcId = EntityID.INVALID;
 	protected static ref LF_DialogueConfig s_Config;
+	//! The last caption this scene put on screen (the harness reads it; the scene widgets are not in `ui text`).
+	protected static string s_sLastCaption;
 	protected static string s_sNode;
 	protected static int s_iMask;
 	protected static ref array<string> s_aQueue;
@@ -37,6 +39,7 @@ class LF_DialogueScene
 		s_wRoot = null;
 		s_NpcId = EntityID.INVALID;
 		s_Config = null;
+		s_sLastCaption = string.Empty;
 		s_aQueue = null;
 		s_aRows = null;
 		s_bChoosing = false;
@@ -113,6 +116,12 @@ class LF_DialogueScene
 		if (verb == "pick")
 			return "picked=" + PickRow(value.ToInt());
 
+		if (verb == "shown")
+			return "shown=" + s_sLastCaption;
+
+		if (verb == "caption")
+			return "caption=" + LF_DialogueOverrides.Text(value) + " overrides=" + LF_DialogueOverrides.Count();
+
 		if (verb == "skip")
 		{
 			SkipLine();
@@ -170,7 +179,7 @@ class LF_DialogueScene
 		s_bChoosing = false;
 		s_bWaiting = false;
 		s_iGuardUntilMs = System.GetTickCount() + INPUT_GUARD_MS;
-		SetText("Speaker", config.m_sSpeakerKey);
+		SetText("Speaker", LF_DialogueOverrides.Text(config.m_sSpeakerKey));
 		SetText("Caption", "");
 		SetText("Hint", "");
 		ShowRows();
@@ -232,7 +241,8 @@ class LF_DialogueScene
 			if (line)
 				caption = line.m_sTextKey;
 
-			SetText("Caption", caption);
+			s_sLastCaption = LF_DialogueOverrides.Text(caption);
+			SetText("Caption", s_sLastCaption);
 			SetText("Hint", "#LF-Dialogue_HintLine");
 			float hold = LF_DialogueVoice.Say(npc, s_Config, entry);
 			s_iLineEndMs = System.GetTickCount() + hold * 1000 + LINE_TAIL_MS;
@@ -302,7 +312,7 @@ class LF_DialogueScene
 			if (!used)
 				continue;
 
-			target.SetTextFormat("%1.  %2", (row + 1).ToString(), node.m_aOptions[s_aRows[row]].m_sTextKey);
+			target.SetTextFormat("%1.  %2", (row + 1).ToString(), LF_DialogueOverrides.Text(node.m_aOptions[s_aRows[row]].m_sTextKey));
 			if (row == s_iFocus)
 				target.SetColor(Color.FromRGBA(240, 205, 130, 255));
 			else

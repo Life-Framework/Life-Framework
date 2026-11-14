@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{10C780A683386FED}Assets/Props/Roleplay/DispatchConsole/Data/DispatchConsole_BCR.edds"
+ NMOMap "{3B2DC4682BD4DC4C}Assets/Props/Roleplay/DispatchConsole/Data/DispatchConsole_NMO.edds"
+}

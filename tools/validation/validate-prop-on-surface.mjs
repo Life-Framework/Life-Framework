@@ -1,4 +1,5 @@
 // tools/validation/validate-prop-on-surface.mjs
+// inputs: addons/**, tools/actions/**
 //
 // A prop resting on a counter, desk, table or bench must lie on its top face: the
 // footprint (offline .xob bounds, rotated by yaw) may not hang more than 0.1 m past

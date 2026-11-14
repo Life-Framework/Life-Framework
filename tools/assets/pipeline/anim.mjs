@@ -12,7 +12,8 @@
 // half is Scripts/Game/Feature/AssetAnim/. Playbook: docs/asset-pipeline/animation.md.
 import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { freshGuid, readGuid } from "./meta.mjs";
+import { addonOf, addonPath, guidsInUse, pluginDir } from "./addon.mjs";
 import * as pose from "./pose.mjs";
 import { ptcMeta, sparksProblems, sparksPtc } from "./vfx.mjs";
 
@@ -489,8 +490,8 @@ export async function stageAnim(ctx, { fix = false, preview = true } = {}) {
   const have = new Set(names.filter((n) => existsSync(join(clipsDir(root, spec.slug), `${n}.json`))));
   const problems = animProblems(spec, have);
   if (problems.length) throw new Error("anim problems:\n  " + problems.join("\n  "));
-  const addon = join(root, "addons", "LifeFramework");
-  const used = usedGuids(addon);
+  const addon = addonPath(root, spec); // the spec's addon (#971), the core by default
+  const used = guidsInUse(root);
   const out = join(dir, "anim");
   mkdirSync(out, { recursive: true });
   const result = { clips: {}, workspace: null };
@@ -619,12 +620,12 @@ function previewJob(sk, clip, built, ctx, out) {
 function compileClip(ctx, txa) {
   const anm = txa.replace(/\.txa$/, ".anm");
   const before = existsSync(anm) ? statSync(anm).mtimeMs : 0;
-  const pluginDir = join(ctx.root, "addons", "LifeFramework", "Scripts", "WorkbenchGame", "ResourceManager");
-  mkdirSync(pluginDir, { recursive: true });
+  const plugins = pluginDir(ctx.root); // always the core's copy; a pack project loads it as a dependency
+  mkdirSync(plugins, { recursive: true });
   const plugin = "LF_AssetImportPlugin";
-  writeFileSync(join(pluginDir, `${plugin}.c`), readFileSync(new URL(`./wb/${plugin}.c`, import.meta.url), "utf8"));
+  writeFileSync(join(plugins, `${plugin}.c`), readFileSync(new URL(`./wb/${plugin}.c`, import.meta.url), "utf8"));
   const timeoutMs = Number(process.env.LF_ASSET_IMPORT_TIMEOUT_S || 90) * 1000;
-  ctx.workbench(ctx.root, plugin, [`-lfAsset0=${txa}`], { timeoutMs, logFile: join(ctx.dir, "anim", "workbench.log") });
+  ctx.workbench(ctx.root, plugin, [`-lfAsset0=${txa}`], { timeoutMs, logFile: join(ctx.dir, "anim", "workbench.log"), addon: addonOf(ctx.spec) });
   if (!existsSync(anm) || statSync(anm).mtimeMs <= before) throw new Error(`Workbench did not compile ${anm} (log: ${join(ctx.dir, "anim", "workbench.log")})`);
   console.log(`anim: compiled ${anm} (${statSync(anm).size} bytes)`);
 }

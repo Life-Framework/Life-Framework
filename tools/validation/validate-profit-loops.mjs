@@ -1,4 +1,5 @@
 // Fails when any price loop lets a player make money for nothing (#686): a shop item that
+// inputs: addons/**, tools/economy/**
 // buys for less than it sells, a machine or chain whose bought inputs cost less than its outputs
 // sell for, a car bought then sold back or chopped for more. Logic: tools/economy/profit-loops.mjs.
 //

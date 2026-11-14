@@ -53,7 +53,7 @@ class LF_Test_WorkAnimTargets : LF_Test
 
 		// The cash van box: a drill opens it and the robber works the lock.
 		string vanId = "work-anim-van-box";
-		LF_Bank.Configure(vanId, 3, 400, 0, 0, 0, "");
+		LF_Bank.Configure(vanId, 3, 400, 0, 0, 0);
 		LF_Bank.ConfigureTools(vanId, "drill,charge", 0);
 		LF_Bank.ConfigureHeist(vanId, LF_BankLoot.KIND_BAGS, "", LF_WantedReports.OFFENCE_CASH_VAN, false, -1, 0);
 		ctx.Equal(1, LF_InventoryUtils.AddAmount(worker, LF_Bank.DRILL_PREFAB, 1), "the worker carries a drill");

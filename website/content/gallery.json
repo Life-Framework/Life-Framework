@@ -7,6 +7,13 @@
     "418/m2_418_still_smoke_officer_client3_1"
   ],
   "featured": [
+    { "id": "bank-vault-interior/vault-open-after", "caption": "The bank vault with its round door swung open." },
+    { "id": "polish-vault-market/bank-roadmap-bank-vault-after", "caption": "The bank vault door, closed." },
+    { "id": "polish-vault-market/market-ob180-after", "caption": "The rebuilt market on the square, seen from above." },
+    { "id": "924/juicer-closeup-after", "caption": "The juicer on a market table." },
+    { "id": "npc-outfits/talk-after", "caption": "The farmer, dressed for the job, ready to talk." },
+    { "id": "925/cash-van-box-after", "caption": "The strongbox beside the cash van, with an evidence marker on the grass." },
+    { "id": "ore-rocks-natural/gold-after", "caption": "An ore rock at the quarry with a gold vein." },
     { "id": "area-1-spawn-square/wide-after", "caption": "The spawn square: cobbles, the welcome sign and the payphone, with the village street beyond." },
     { "id": "area-3-store/counter", "caption": "The general store with its sign, shop window and counter out front." },
     { "id": "area-5-fuel-station/wide", "caption": "The fuel station on the main street: canopy, kiosk and till." },

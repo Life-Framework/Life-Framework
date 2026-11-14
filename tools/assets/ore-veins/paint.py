@@ -25,56 +25,68 @@ texbake.cycles(4)
 
 
 def host(g):
-    """Grey granite-like host rock, the same under every ore so only the veins tell them apart."""
+    """Dark, slightly warm grey granite, the same under every ore so only the veins tell them apart.
+    Rock058's colour is blue-grey and busy; it is desaturated and darkened so the ore is the only colour."""
     uv = g.uv_tiles(2)
-    col = g.scale_color(g.img("Rock058", "Color", data=False, vec=uv), (1.2, 1.17, 1.1))
+    col = g.scale_color(g.img("Rock058", "Color", data=False, vec=uv), (0.62, 0.6, 0.57))
     return col, g.img("Rock058", "Roughness", vec=uv), g.img("Rock058", "Displacement", vec=uv), uv
+
+
+def crack(g, height):
+    """1 in the low parts of the rock's own relief (its crevices), 0 on the faces."""
+    return g.math("SUBTRACT", 1.0, g.ramp(height, 0.3, 0.55))
 
 
 def veins(g, scale, width, w0, distortion=0.6):
     v, w = g.torus(1.0)
     n = g.noise(scale, detail=6, rough=0.6, vec=v, w=g.math("ADD", w, w0), distortion=distortion)
-    return g.ridge(n, width), g.ridge(n, width * 4.0), v, w
+    return g.ridge(n, width), g.ridge(n, width * 5.0), v, w
 
 
 def iron(g):
     col, rough, height, uv = host(g)
-    core, halo, v, w = veins(g, 0.8, 0.012, 0.0)
-    patch = g.ramp(g.noise(1.6, detail=4, vec=v, w=g.math("ADD", w, 5.0)), 0.55, 0.68)
+    core, halo, v, w = veins(g, 0.8, 0.007, 0.0)
+    cr = crack(g, height)
     rust = g.img("Rust009", "Color", data=False, vec=uv)
-    stain = g.math("MAXIMUM", g.math("MULTIPLY", halo, 0.4), g.math("MULTIPLY", patch, 0.55))
-    base = g.mix(col, g.scale_color(rust, (0.9, 0.7, 0.55)), stain)  # iron staining around the veins
-    base = g.mix(base, g.mix((0.16, 0.06, 0.04), rust, 0.35), core)  # dark red hematite in the veins
+    # Rust runs down from the cracks: a streak mask stretched on one axis would need the object axes,
+    # so the stain is the crack mask softened by a large, low-contrast noise.
+    patch = g.ramp(g.noise(1.4, detail=4, vec=v, w=g.math("ADD", w, 5.0)), 0.45, 0.8)
+    stain = g.math("MULTIPLY", g.math("MAXIMUM", g.math("MULTIPLY", halo, 0.5), cr), g.math("ADD", g.math("MULTIPLY", patch, 0.6), 0.25))
+    base = g.mix(col, g.scale_color(rust, (0.75, 0.45, 0.3)), g.math("MULTIPLY", stain, 0.95))  # rusty red-brown staining
+    base = g.mix(base, (0.1, 0.045, 0.03), g.math("MULTIPLY", core, 0.8))  # dark hematite seams
     rough = g.mix(rough, g.img("Rust009", "Roughness", vec=uv), stain, kind="FLOAT")
-    height = g.math("SUBTRACT", height, g.math("MULTIPLY", core, 0.15))
-    return {"base": base, "rough": rough, "metal": 0.0, "height": height, "bump_strength": 0.8, "bump_distance": 0.01}
+    height = g.math("SUBTRACT", height, g.math("MULTIPLY", core, 0.1))
+    return {"base": base, "rough": rough, "metal": 0.0, "height": height, "bump_strength": 0.9, "bump_distance": 0.01}
 
 
 def copper(g):
     col, rough, height, uv = host(g)
-    core, halo, v, w = veins(g, 0.75, 0.013, 13.0)
+    core, halo, v, w = veins(g, 0.75, 0.007, 13.0)
+    cr = crack(g, height)
     green = g.img("Metal058C", "Color", data=False, vec=g.uv_tiles(3))
-    blob = g.ramp(g.noise(2.2, detail=4, vec=v, w=g.math("ADD", w, 21.0)), 0.6, 0.7)
-    base = g.mix(col, g.scale_color(green, (0.55, 0.85, 0.7)), g.math("MULTIPLY", halo, 0.45))  # green staining
-    base = g.mix(base, g.scale_color(green, (0.25, 0.75, 0.42)), g.math("MAXIMUM", core, blob))  # malachite
-    azurite = g.math("MULTIPLY", blob, g.ramp(g.noise(6, vec=v, w=g.math("ADD", w, 30.0)), 0.6, 0.7))
-    base = g.mix(base, (0.04, 0.12, 0.42), azurite)  # azurite blue in the richest pockets
-    rough = g.mix(rough, 0.6, core, kind="FLOAT")
-    height = g.math("ADD", height, g.math("MULTIPLY", g.math("MAXIMUM", core, blob), 0.1))
-    return {"base": base, "rough": rough, "metal": 0.0, "height": height, "bump_strength": 0.8, "bump_distance": 0.01}
+    # Malachite sits in the crevices, thickest where a vein runs through one.
+    crust = g.math("MAXIMUM", g.math("MULTIPLY", cr, g.math("MAXIMUM", halo, 0.25)), core)
+    crust = g.math("MULTIPLY", crust, g.ramp(g.noise(2.4, detail=4, vec=v, w=g.math("ADD", w, 21.0)), 0.3, 0.6))
+    base = g.mix(col, g.scale_color(green, (0.36, 0.5, 0.42)), g.math("MULTIPLY", crust, 0.8))  # muted malachite crust
+    azurite = g.math("MULTIPLY", core, g.ramp(g.noise(7, vec=v, w=g.math("ADD", w, 30.0)), 0.62, 0.75))
+    base = g.mix(base, (0.1, 0.2, 0.34), azurite)  # a few azurite specks in the seams
+    rough = g.mix(rough, 0.7, crust, kind="FLOAT")
+    height = g.math("ADD", height, g.math("MULTIPLY", crust, 0.05))
+    return {"base": base, "rough": rough, "metal": 0.0, "height": height, "bump_strength": 0.9, "bump_distance": 0.01}
 
 
 def gold(g):
     col, rough, height, uv = host(g)
-    core, halo, v, w = veins(g, 0.6, 0.018, 41.0, distortion=0.5)
-    quartz = g.mix((0.8, 0.66, 0.34), (0.55, 0.47, 0.28), g.ramp(g.noise(9, vec=v, w=g.math("ADD", w, 3.0)), 0.4, 0.7))
-    base = g.mix(col, g.scale_color(g.img("Rust009", "Color", data=False, vec=uv), (0.9, 0.75, 0.6)), g.math("MULTIPLY", halo, 0.18))
-    base = g.mix(base, quartz, core)  # ochre quartz reefs
-    fleck = g.math("MULTIPLY", g.math("LESS_THAN", g.voronoi(14, vec=v, w=g.math("ADD", w, 7.0), randomness=0.9), 0.26), core)
-    base = g.mix(base, g.scale_color(g.img("Metal048B", "Color", data=False, vec=uv), (1.0, 0.72, 0.2)), fleck)
-    rough = g.mix(g.mix(rough, 0.45, core, kind="FLOAT"), 0.3, fleck, kind="FLOAT")
-    height = g.math("ADD", height, g.math("MULTIPLY", core, 0.2))
-    return {"base": base, "rough": rough, "metal": fleck, "height": height, "bump_strength": 0.8, "bump_distance": 0.01}
+    core, halo, v, w = veins(g, 0.6, 0.0045, 41.0, distortion=0.5)
+    # Thin quartz veins, pale cream with a faint warm tint; a few yellow glints inside them.
+    quartz = g.mix((0.7, 0.62, 0.45), (0.5, 0.42, 0.28), g.ramp(g.noise(9, vec=v, w=g.math("ADD", w, 3.0)), 0.4, 0.7))
+    base = g.mix(col, quartz, g.math("MULTIPLY", halo, 0.12))  # faint bleaching beside the vein
+    base = g.mix(base, quartz, core)
+    fleck = g.math("MULTIPLY", g.math("LESS_THAN", g.voronoi(16, vec=v, w=g.math("ADD", w, 7.0), randomness=0.9), 0.42), g.math("MAXIMUM", core, g.math("MULTIPLY", halo, 0.5)))
+    base = g.mix(base, g.scale_color(g.img("Metal048B", "Color", data=False, vec=uv), (1.0, 0.72, 0.16)), fleck)
+    rough = g.mix(g.mix(rough, 0.5, core, kind="FLOAT"), 0.3, fleck, kind="FLOAT")
+    height = g.math("ADD", height, g.math("MULTIPLY", core, 0.12))
+    return {"base": base, "rough": rough, "metal": fleck, "height": height, "bump_strength": 0.9, "bump_distance": 0.01}
 
 
 RECIPES = {"Iron": iron, "Copper": copper, "Gold": gold}

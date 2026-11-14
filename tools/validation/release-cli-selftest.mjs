@@ -1,4 +1,5 @@
 // tools/validation/release-cli-selftest.mjs
+// inputs: tools/**, agent-box/**, .githooks/**
 //
 // Proves `tools\cli release` (tools/release/release.mjs) offline: a scratch git repo
 // with a bare "origin" and stubbed gates. Covers the dry run changing nothing, each

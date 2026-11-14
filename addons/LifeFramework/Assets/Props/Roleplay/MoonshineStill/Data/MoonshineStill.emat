@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{9A38A42F4ED848A1}Assets/Props/Roleplay/MoonshineStill/Data/MoonshineStill_BCR.edds"
+ NMOMap "{25825FF0FFCADBC1}Assets/Props/Roleplay/MoonshineStill/Data/MoonshineStill_NMO.edds"
+}

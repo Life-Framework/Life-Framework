@@ -1,0 +1,22 @@
+schema_version = "1.0.0"
+
+id = "lf_bridge"
+version = "0.1.0"
+name = "Life Framework Bridge"
+tagline = "Lets the Life Framework agent CLI drive this Blender"
+maintainer = "Life Framework"
+type = "add-on"
+
+website = "https://life-framework.org"
+
+blender_version_min = "4.2.0"
+
+license = [
+  "SPDX:MIT",
+]
+
+# Tested on 5.3. Runs headless-safe: it does not listen in a --background Blender unless LF_BRIDGE_FORCE=1.
+
+[permissions]
+network = "Listens on 127.0.0.1 only; requests need a token"
+files = "Token file in ~/.life-framework; writes requested PNGs"

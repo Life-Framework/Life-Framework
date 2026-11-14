@@ -77,6 +77,13 @@ class LF_Test_SpikeStrip : LF_Test
 
 		ctx.Equal(before + 1, LF_SpikeStrips.Count(), "the deployed strip registers");
 		ctx.True(GetGame().GetWorld().FindEntityByID(itemId) == null, "the folded item is used up");
+
+		// The placement clearance check (#928): a second strip on the same spot is refused, the
+		// first one lies in its clearance box.
+		IEntity second = LF_Utils.SpawnEntityPrefab(ITEM, officer.GetOrigin() + "0.5 0 0");
+		ctx.True(LF_SpikeStrips.Deploy(officer, second) == null, "a second strip on the same spot is refused");
+		ctx.True(LF_SpikeStrips.LastRefusal().IndexOf("in the way") != -1, "the refusal says something is in the way: " + LF_SpikeStrips.LastRefusal());
+		LF_TestCharacterFixture.Delete(second);
 		vector transform[4];
 		strip.GetWorldTransform(transform);
 		vector origin = transform[3];

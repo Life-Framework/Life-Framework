@@ -33,14 +33,19 @@ class LF_HideoutState : Managed
 {
 	string m_sHideoutId;
 	string m_sOrganizationId;
-	string m_sDoorName;
 	bool m_bLocked;
 }
 
 //------------------------------------------------------------------------------------------------
 class LF_Hideout
 {
-	static const string HIDEOUT_ID = "Roadmap_Hideout";
+	//! LF_Places kind of a hideout's door (LF_HideoutDoorComponent); the id is the hideout id.
+	static const string PLACE_KIND_DOOR = "HideoutDoor";
+
+	//! LF_Places kind and id of the door of the hideout organizations lease at the desk and
+	//! contraband starts from (the door's "organization hideout" attribute, #1055).
+	static const string PLACE_KIND_ORG_HIDEOUT = "OrgHideout";
+	static const string PLACE_ID_ORG_HIDEOUT = "primary";
 
 	protected static ref map<string, ref LF_HideoutState> s_mHideouts;
 	protected static string s_sLastRefusal;
@@ -118,6 +123,22 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Id of the placed organization hideout, the key its state is saved under; "" when the map
+	//! places none (a lease then refuses and contraband reports no owner).
+	static string OrgHideoutId()
+	{
+		IEntity door = LF_Places.Find(PLACE_KIND_ORG_HIDEOUT, PLACE_ID_ORG_HIDEOUT);
+		if (!door)
+			return "";
+
+		LF_HideoutDoorComponent component = LF_Component<LF_HideoutDoorComponent>.Find(door);
+		if (!component)
+			return "";
+
+		return component.GetHideoutIdAttribute();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void BindDoor(string hideoutId, IEntity door)
 	{
 		if (!Replication.IsServer())
@@ -129,31 +150,30 @@ class LF_Hideout
 			return;
 		}
 
-		string doorName = door.GetName();
-		if (doorName.IsEmpty())
-		{
-			Refuse("door bind refused: entity has no name");
-			return;
-		}
-
 		LF_LockComponent lock = LF_Component<LF_LockComponent>.Find(door);
 		if (!lock)
 		{
-			Refuse(string.Format("door %1 has no LF_LockComponent", doorName));
+			Refuse(string.Format("door of hideout %1 has no LF_LockComponent", hideoutId));
+			return;
+		}
+
+		// The door is found again by component under the hideout id, never by its entity name.
+		if (!LF_Places.Register(PLACE_KIND_DOOR, hideoutId, door))
+		{
+			Refuse(string.Format("door bind refused: hideout %1 already has a door", hideoutId));
 			return;
 		}
 
 		LF_HideoutState state = Ensure(hideoutId);
-		state.m_sDoorName = doorName;
 		if (!state.m_sOrganizationId.IsEmpty())
 		{
 			PushLock(state);
-			LF_Debug.Log("Hideout", string.Format("door bound %1 hideout=%2 owner=%3", doorName, hideoutId, state.m_sOrganizationId));
+			LF_Debug.Log("Hideout", string.Format("door bound hideout=%1 owner=%2", hideoutId, state.m_sOrganizationId));
 			return;
 		}
 
 		state.m_bLocked = lock.IsLocked();
-		LF_Debug.Log("Hideout", string.Format("door bound %1 hideout=%2", doorName, hideoutId));
+		LF_Debug.Log("Hideout", string.Format("door bound hideout=%1", hideoutId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -386,13 +406,11 @@ class LF_Hideout
 	//------------------------------------------------------------------------------------------------
 	protected static void PushLock(LF_HideoutState state)
 	{
-		if (!state || state.m_sDoorName.IsEmpty())
+		if (!state)
 			return;
 
-		if (!GetGame() || !GetGame().GetWorld())
-			return;
-
-		IEntity door = GetGame().GetWorld().FindEntityByName(state.m_sDoorName);
+		// The door is placed by LF_HideoutDoorComponent under the hideout id; none placed yet is a no-op.
+		IEntity door = LF_Places.Find(PLACE_KIND_DOOR, state.m_sHideoutId);
 		if (!door)
 			return;
 

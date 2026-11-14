@@ -218,6 +218,32 @@ class LF_AssetAnimComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! This machine only: switch a client-local copy (a model spawned with SpawnEntityPrefabLocal, such as
+	//! the handcuffs on a wrist: no RplComponent, nothing to replicate) on or off. `snap` puts every
+	//! hinge or slide at its end at once instead of moving there over its seconds.
+	void ShowLocal(bool active, bool snap)
+	{
+		m_bActive = active;
+		if (snap)
+		{
+			foreach (LF_AssetAnimBone bone : m_aBones)
+			{
+				if (bone.m_eMotion == LF_EAssetAnimMotion.SPIN)
+					continue;
+
+				if (active)
+					bone.m_fProgress = 1;
+				else
+					bone.m_fProgress = 0;
+			}
+		}
+
+		Apply();
+		// Apply returns before it starts the frames when nothing about "shown" changed.
+		SetEventMask(GetOwner(), EntityEvent.FRAME);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: hold the asset still at a world position and yaw/pitch/roll, physics asleep (a tool held
 	//! against a wall). Release() lets it go where it is.
 	bool Pose(vector position, vector angles)

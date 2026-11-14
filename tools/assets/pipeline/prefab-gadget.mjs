@@ -9,7 +9,8 @@
 // The repo's other held items (LF_Lockpick.et, LF_Scanner.et) use the same graph and m_eAnimVariable.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { freshGuid, readGuid } from "./meta.mjs";
+import { addonPath, guidsInUse } from "./addon.mjs";
 import { resourceMeta } from "./prefab.mjs";
 
 // Vanilla resources (game 1.9; read with game_read 2026-11-13).
@@ -98,7 +99,7 @@ export async function writePrefabs(ctx) {
   const { root, spec, dir } = ctx;
   const g = spec.gadget;
   if (!g?.name_key || !g?.description_key) throw new Error("spec.gadget needs name_key and description_key (string table keys, with the #)");
-  const addon = join(root, "addons", "LifeFramework");
+  const addon = addonPath(root, spec); // the spec's addon (#971), the core by default
   const report = JSON.parse(readFileSync(join(dir, "clean", "report.json"), "utf8"));
   const xobRes = `${spec.asset_dir}/${spec.name}.xob`;
   const xobGuid = readGuid(join(addon, xobRes + ".meta"));
@@ -106,7 +107,7 @@ export async function writePrefabs(ctx) {
 
   const rel = `${spec.prefab_dir}/${spec.name}.et`;
   const abs = join(addon, rel);
-  const used = usedGuids(addon);
+  const used = guidsInUse(root);
   const guid = readGuid(abs + ".meta") || freshGuid(used);
   const written = [];
   if (!existsSync(abs)) {

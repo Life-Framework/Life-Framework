@@ -104,7 +104,7 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
    merge drivers in `tools/merge/` then resolve the generated files). A clean
    branch ships as is.
-3. Runs the gate: `validate --full` (with the Workbench compile) + headless
+3. Runs the gate (never incremental; see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
    build + `test` tier=all. A branch that changes nothing under `addons/`
    (docs, website, tools) runs plain `validate` instead and never waits for a
    pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule). After the suite,
@@ -317,20 +317,31 @@ it, picks a lane and a budget, and prints one line per outcome.
   still queued drops the earlier queue entry (the older process exits with "a newer session request
   replaced this one") and keeps the first request's age. `pool status` marks any leftover
   duplicate.
-- **Second session RAM gate.** A session starting beside another live session also
-  needs its own reserve: free RAM minus `sessionReserveServerMb` (600) minus
-  `sessionReserveClientMb` (850) per client, minus the same for any session still booting,
-  must stay at least `minFreeMb`; otherwise it waits with one line ("free RAM 2.2 GB minus
-  1.4 GB for the session would be under 1.5 GB"). Measured 2026-11-10 on this 15.6 GB PC
-  (free RAM, from `tmp/ram-<slug>.log` samples): server plus one client 1.3 GB, the second
-  client +0.8 GB (working sets: server 0.7 GB, each client 1.0 to 1.25 GB). With ~3.8 GB free
-  and nothing running, two 1-client sessions leave about 1.2 GB: under the 1.5 GB floor, so
-  the gate admits the second only while other programs leave more room.
-- **RAM gate.** A second concurrent server starts only while free RAM is at
-  least `minFreeMb` (1500). This PC has 15.6 GB; a server is about 0.7 GB, a
-  client 0.7 to 1.5 GB, so with a two-client session up the gate, not the lane
-  count, limits tests. The run prints `pool: waiting for RAM (...)` and starts
-  by itself when memory frees.
+- **RAM gate (every machine, read live).** A job starts on a machine only when that machine's
+  free RAM, read at that moment (`freemem` here, one ssh read on a pool machine, the same check in
+  the box's slot holder), covers it. A session reserves its server (`sessionReserveServerMb`, 600)
+  plus `sessionReserveClientMb` (850; lowspec 800) per client; sessions still booting count with
+  their reserve too, since free RAM does not show them yet. With nothing else running on the machine
+  the job only has to fit (free >= reserve), so a machine is never over-committed and an idle one
+  always takes a job that fits; beside other servers it must also leave `minFreeMb` (1500). A test
+  reserves nothing beyond that floor. It waits with one line ("free RAM 2.2 GB minus 1.4 GB for the
+  session would be under 1.5 GB"). Lane counts in `tools/pool.json` are ceilings (ports, heat); the
+  gate decides how many run, so a RAM change (the laptop lost 32 GB on 2026-11-14) needs no config
+  edit. Measured 2026-11-10 on this 15.6 GB PC: server plus one client 1.3 GB, the second client
+  +0.8 GB; with ~3.8 GB free and nothing running a 2-client full session (2.3 GB) fits, a second
+  one does not.
+- **Backfill without starvation.** A job that tried and cannot start for RAM or a lane is passed
+  by the jobs behind it that can start now (a lowspec 1-client session goes while a full 2-client
+  one waits for RAM). Once the waiting job has waited `starveMin` (20) minutes it holds its place:
+  a RAM-stuck one drains its machine (no new job of either lane kind starts there, since tests eat
+  the same RAM) until it fits, as long as draining can help it (its need fits in free RAM plus what
+  the pool's running jobs there hold). A job that could not fit even on an empty machine never
+  blocks anyone.
+- **Status.** `pool status` prints each machine's live free RAM (and the laptop's temperature),
+  and per waiting job where it may run, the reason (`ram 2-client full: needs 3.8 GB free, local
+  has 1.1, lf-testbox has 2.8`, `lane`, `behind N`, `starved, so it holds its place`) and an
+  estimated start: the (ahead+1)-th projected lane release on its machines, a session at the median
+  hold of the last 50 (never past its hold cap plus grace), a test at its median run plus boot.
 - **Priority.** `--priority high|normal|low` on `test`, `e2e`, `dev`, `ci`,
   `session up`, `wt gate`, `wt ship`; `LF_PRIORITY` or `wt new <slug> --priority
   low` sets a worktree's default (recorded in its `tmp/wt.json`). Within a lane
@@ -366,6 +377,12 @@ it, picks a lane and a budget, and prints one line per outcome.
   at 40, first in line there since it arrived first) is not restarted by every
   retry. `session up --wait` queues up to 90 min (it was 30, which ended before
   a low job reached high). The resource-database refresh runs before the queue.
+- **Idle sessions without a waiter, and on the laptop.** A session idle `sessionIdleMaxMin` (30) minutes is
+  closed even with nobody waiting (it holds RAM and two client windows), on the next `pool status` or queue
+  poll. A pool machine's sessions are judged from this PC too (one ssh read of their lease and the clients'
+  command/result mtimes, at most once a minute): idle `sessionIdleMin` while a request here waits for that
+  machine, or `sessionIdleMaxMin` regardless; the session is closed there with its own `session.mjs down`
+  and `reaped.json` says why. An explicit lease still protects a session.
 - **Session lease.** Every `session.mjs` verb and every harness command
   to a session client stamps `lease.json` in the session dir; `node
   agent-box/session.mjs lease [min]` holds the session for that long. A session
@@ -397,21 +414,40 @@ it, picks a lane and a budget, and prints one line per outcome.
 
 ### The laptop's lanes (lf-testbox)
 
-`lf-testbox` (ASUS ROG Zephyrus G15: Ryzen 9 6900HS 8c/16t, RTX 3070 Ti, 47 GB RAM, ssh as `lf-testbox`, hostname `PC1`)
-has 3 session lanes (`server-2001`, `-2011`, `-2021`) and 3 test lanes (`server-test-1..3`), configured in
-`tools/pool.json`. Measured 2026-11-10: server 0.7 GB working set, one client 0.6 to 1.0 GB, a server plus one client
-takes 1.2 GB of free RAM, a test server about 0.7 GB; 33 GB free with a maintainer Workbench (1.7 GB) and Steam up. Three
-sessions plus three tests are about 8 GB, leaving room for one Workbench (the `workbench` cap) above the 1.5 GB floor.
-A session boots there in 18 s (36 s door to door with the sync); a full suite is 10 s (44 s door to door).
-The `hostname` key makes the entry the local machine when the CLI runs on the laptop, so the remote `session up` uses
-the laptop's lanes and RAM gate, not this PC's. Sleep, hibernate and the monitor timeout on AC are 0 (`powercfg`; the
-laptop went offline once from sleeping). A stale lock is cleared by any pinned run (`test --machine lf-testbox`).
+`lf-testbox` (ASUS ROG Zephyrus G15: Ryzen 9 6900HS 8c/16t, RTX 3070 Ti, ssh as `lf-testbox`, hostname `PC1`) has
+15.6 GB of RAM since 2026-11-14 (it had 47 GB; a stick was removed). With nothing of the pool running it had 3.8 to
+4.2 GB free that day (the user's desktop apps, Steam, a Workbench). It also powered itself off several times: ASUS
+thermal protection, 0 to 5 minutes after bursts of pool load, at 93 °C with 2 servers and 4 clients (the CPU limit is
+about 95 °C; CPU boost is now off). It now stands outside (53 to 60 °C idle), so `tools/pool.json` gives it 2 session
+lanes (`server-2001`, `-2011`) of at most 2 clients each (`maxClients`) and 3 test lanes (`server-test-1..3`), as
+its RAM allows. Remote tests now try
+every test lane (they used only `server-test-1`: 54 of 54 runs). Its slot holder applies the RAM gate on the laptop's
+own free RAM before it takes a lock, and holds new jobs while the newest reading of its thermal logger
+(`thermalLog`, `C:\LF\thermal-log\*.csv`, column `thrm_c`, written in the last 2 minutes) is at or over
+`thermalHoldC` (90). A session boots there in 18 s (36 s door to door with the sync); a full suite is 10 s (44 s door
+to door). The `hostname` key makes the entry the local machine when the CLI runs on the laptop, so the remote
+`session up` uses the laptop's lanes and RAM gate, not this PC's. A stale lock is cleared by any pinned run
+(`test --machine lf-testbox`).
 
-**Sessions pick the machine.** `session up` without `--machine` (same as `--machine any`) considers every machine that can
-run it, this PC first on a tie. With `--wait` the request holds one queue ticket that wants all of them and starts on the
-first lane that frees; without it, it takes a free lane on either. `--machine local` keeps it here. The remote session's
-clients start on the laptop's desktop (`harness.mjs` and `shots area` relay to it; `session pull` copies images back).
-Filming there is #482 (the client window sits behind the Steam store window; the audio endpoint is muted).
+**Sessions pick the machine.** `session up` (`tools\cli session up` goes through the same router) without
+`--machine` considers every machine that can run it, any client count and profile, this PC first on a tie. With
+`--wait` the request holds one queue ticket that wants all of them and starts on the first machine with a free lane
+and the RAM (and, on the laptop, below its heat hold). A machine that is down when the request arrives stays in it and
+is probed again every 10 s while it waits (2026-11-14: two 2-client requests arrived while the laptop was off, went to
+this PC and queued there pinned for 58 and 11 minutes while the laptop came back with free lanes). The chosen machine's
+own `up` runs without `--wait`: a lost race there exits 75 (`LANE_BUSY_CODE`) and the request queues again for
+any machine, keeping its age. `--machine local` (or `--machine <name>`) pins it. The remote session's clients start
+on the laptop's desktop. Everything that drives them follows the session there: `harness.mjs`, `session.mjs
+state`, `reset`, `join`, `roster`, `film` and every proof verb run in the run folder over ssh (`--local` keeps
+one on this PC), and a path of this worktree among a proof's arguments (an out dir) is mapped into the run folder
+and copied home afterwards. `asset states <slug> --shots` follows the session the same way; `--local` pins it here.
+`session pull` copies other evidence back. Filming there is #482.
+
+**A machine that goes away.** A remote test or e2e run whose slot holder drops, or whose ssh fails while the machine
+stops answering, is not a verdict: the machine is marked down for the health window and the run queues again
+(`pool: lf-testbox went away during the run ...; queuing the run again`, up to 3 tries). A session `up` whose
+machine goes away queues again for any machine; `session down` with an unreachable machine clears the record, and the
+next `up` forgets a record whose machine does not answer.
 
 ### Session profiles (lowspec and full)
 
@@ -518,19 +554,14 @@ when the server log shows the extra join. `downed-proof` uses it for client 3.
 
 ### Sessions on a pool machine
 
-`node agent-box/session.mjs up --machine <name|any|local> --clients N`.
-Game clients need a desktop session. Over ssh there is none: on 2026-11-09
-the box showed the logon screen (`LogonUI` in session 1, no `explorer`) and
-ssh commands run in session 0, so a remote machine runs **server-only**
-sessions (`--clients 0`). Its server is started through WMI
-(`Win32_Process.Create`) because ssh kills every child of the session when
-the connection closes (a detached spawn was gone seconds later). The machine
-is remembered in `<worktree>/tmp/session-remote.json`, so `down`, `status`,
-and `restart` from that worktree go there. `--machine any` picks the first
-machine with a free slot that can run the requested clients (clients: this
-PC only). `journey` drives clients, so it runs on this PC; it refuses
-`--machine lf-testbox` and a recorded remote session. Clients on this PC can
-join a box server over the LAN (manual steps below).
+`node agent-box/session.mjs up --machine <name|any|local> --clients N`. A machine with the `clients` cap keeps a
+user signed in; its `up` starts each client on that desktop through an interactive scheduled task
+(`tools/lib/interactive-launch.mjs`), and its server through WMI (`Win32_Process.Create`), because ssh kills every
+child of the session when the connection closes. Without the cap a remote machine runs server-only sessions
+(`--clients 0`). The machine is remembered in `<worktree>/tmp/session-remote.json`, so `down`, `status`, `state`,
+`restart`, the harness and the proof verbs from that worktree go there (above). `journey` drives clients in-process,
+so it runs on this PC; it refuses `--machine lf-testbox` and a recorded remote session. Clients on this PC can join a
+box server over the LAN (manual steps below).
 
 ### Box setup
 
@@ -663,6 +694,37 @@ tools\cli testbox vdd                        # (re)install the virtual display d
   loopback alone measured -30.9 dB mean. Not yet measured: a capture with the
   lid closed, on the virtual display.
 
+## Live reload (#970)
+
+Scripts and the string table are compiled in and cannot be read again in a running game, and the engine
+caches a `.conf` once loaded (`Resource.Load` "gets it from cache"). What can change without a restart is
+text read from the profile. `reload <what>` (harness verb; the server decides) re-reads it and sends it to
+every client through the config stream:
+
+| What | Reads | Shows |
+|---|---|---|
+| `config` | `$profile:LifeFramework/config.json` (what `/configreload` does) | shop prices, vehicle prices, police, organizations, ... |
+| `dialogue` | `$profile:LifeFramework/dev/dialogue.json`: `{"captions": {"#LF-Dialogue_Clerk_Greet": "new text"}}` | the NPC's caption, the replies and the speaker name in the next scene |
+
+```
+node agent-box/harness.mjs --client 1 reload                  config and dialogue
+node agent-box/harness.mjs --client 1 reload dialogue         one of them (a comma list is fine)
+node agent-box/harness.mjs --client 1 dialogue caption '#LF-Dialogue_Clerk_Greet'
+                                                              what this client would show, and the override count
+node agent-box/session.mjs live-reload-proof                  the proof (up --clients 1)
+```
+
+- Gate: `config` needs the dev gate (`LF_DevGate.CheckPlayerRequest`: dev tools or an administrator; a harness build opens it). `dialogue`
+  also needs dev tools open in the game mode (`LF_ContentReload.DevToolsOpen`: a dev world or a harness
+  build); an administrator alone does not read it, so a live server never reads a developer's file.
+- Dialogue: the text is a caption only. The voice is the recording and does not change; node structure,
+  replies and hooks live in the `.conf` and need a restart. The overrides live in memory: a restart, or a
+  reload with no file, drops them. A client that joins later gets them through the join snapshot.
+- The log names what changed: `[LFDebug:Dialogue] reload: <key> changed [old] -> [new]`, then
+  `[LFDebug:Config] reload dialogue by player N: 1 added, 0 changed, 0 removed, 1 override(s) now`.
+- Terms (#958) are not built yet. They plug in with one file: `class LF_ContentReloader_Terms :
+  LF_ContentReloader` (`Core/Config/LF_ContentReload.c`), found by name, no list to append to.
+
 ## Scratch files
 
 Each worktree has a gitignored `tmp/` (created by `wt new`, also home of the
@@ -705,3 +767,19 @@ to prune and about any registry inconsistency.
 - `.githooks/pre-commit` → `validate-repo.ps1` — blocks `main` commits from
   linked worktrees.
 - `AGENTS.md` (Worktrees section) — the agent-facing rules, including the junction-safe removal rule.
+
+## Incremental validate
+
+Plain `tools\cli validate` (and `dev`) runs a check only when something it reads changed since its last green run in
+this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
+`wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
+
+- A check declares its inputs in a header line in its first 30 lines: `// inputs: addons/**/*.layer, docs/features.md`
+  (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
+  and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
+  git state: the worktree registry, `origin/main`); `inputs: ttl=300` trusts a green run for 300 s. No header means always.
+- State is `tmp/validate-state.json`: a fingerprint (path, size, mtime of every matching file from
+  `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
+  skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.

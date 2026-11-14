@@ -1,4 +1,5 @@
 // Proves the deterministic parts of the asset pipeline's sound stage (tools/assets/pipeline/sound.mjs,
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // docs/asset-pipeline/sounds.md) offline: no ElevenLabs call, no ffmpeg, no game. The network is a
 // fake fetch. It also checks what the stage shipped: every committed sample is the format the engine
 // plays, and every committed sound project is what the generator writes from sounds.json today.

@@ -22,5 +22,8 @@ SCR_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
     }
    }
   }
+  SCR_PlayerControllerCommandingComponent "{5A7CC0F22BDDB868}" {
+   m_sCommandingConfigActionPair "{19D56867FAFF944C}Configs/Emote/LF_EmoteMenuActions.conf"
+  }
  }
 }

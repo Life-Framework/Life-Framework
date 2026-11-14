@@ -660,6 +660,19 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.EqualStr(LF_Test_E2E_SaveStateWrite.CASE_TIME, LF_CaseBoard.TimeOf(robberyReport), "e2e the case keeps the time of the crime after the restart");
 #endif
 		LF_Debug.Info(LF_CaseBoard.FEATURE, string.Format("e2e restart: case #%1 time '%2' pinned %3", robberyReport, LF_CaseBoard.TimeOf(robberyReport), LF_CaseBoard.PinnedCount(robberyReport)));
+		// #980: the build stamp the restart loaded. --old-build writes it as an older game build.
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.EqualStr(LF_SaveStamp.UNKNOWN_BUILD, LF_SaveStamp.BootLoadedBuild(), "e2e the version 23 save has no build stamp");
+#else
+#ifdef LF_E2E_EXPECT_OLD_BUILD
+		ctx.EqualStr(LF_SaveStamp.FAKE_OLD_BUILD, LF_SaveStamp.BootLoadedBuild(), "e2e the restart loaded the save the older game build wrote");
+#else
+		ctx.EqualStr(GetGame().GetBuildVersion(), LF_SaveStamp.BootLoadedBuild(), "e2e the save names the game build that wrote it");
+#endif
+		ctx.Equal(32, LF_SaveStamp.BootSaveVersion(), "e2e the save names its save version");
+#endif
+		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
+		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");

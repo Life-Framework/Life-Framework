@@ -126,7 +126,7 @@ modded class SCR_ChimeraCharacter
 		if (!LF_RefuseAwayFromOrganizationDesk("lease", 0))
 		{
 			string characterId = LF_OrganizationPlayer.CharacterId(this);
-			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Lease(characterId, LF_Hideout.HIDEOUT_ID))
+			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Lease(characterId, LF_Hideout.OrgHideoutId()))
 				notice = "#LF-Org_Leased";
 		}
 
@@ -206,7 +206,7 @@ modded class SCR_ChimeraCharacter
 			fund = org.GetFund();
 			rights = LF_OrgRules.RightsOf(org, characterId);
 			processing = org.HasProcessingSlot();
-			lease = LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID);
+			lease = LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId());
 			members = LF_OrganizationPlayer.MemberLines(org);
 			rank = org.GetRankName(characterId);
 		}

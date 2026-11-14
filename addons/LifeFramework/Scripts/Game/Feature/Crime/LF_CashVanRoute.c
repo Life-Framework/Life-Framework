@@ -2,10 +2,41 @@
 //! The cash van route (#274). The van parks at a stop, waits, and when no player is near moves to
 //! the next stop and is stocked afresh. Base-game AI driving is not reliable enough to carry a
 //! robbery, so the van is parked on a schedule: it is moved between stop markers, not driven. The
-//! stops are world entities named in m_sStops.
+//! van and its stops are LF_Places entries under the route id (LF_PlaceComponent), found by
+//! component and never by entity name (#1045).
 //------------------------------------------------------------------------------------------------
 class LF_CashVanRoute
 {
+	//! LF_Places kind of a route's van; the id is the route id.
+	static const string PLACE_KIND_VAN = "CashVan";
+	//! LF_Places kind of a route's stops; the id is the route id and the order (LF_Places.OrderedId).
+	static const string PLACE_KIND_STOP = "CashVanStop";
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The van of a route, or null when none is placed.
+	static IEntity FindVan(string routeId)
+	{
+		return LF_Places.Find(PLACE_KIND_VAN, routeId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stops of a route in order, from stop 0 to the first gap. \return how many were added.
+	static int FindStops(string routeId, notnull array<IEntity> into)
+	{
+		int added = 0;
+		for (int order = 0; order <= added; order++)
+		{
+			IEntity stop = LF_Places.Find(PLACE_KIND_STOP, LF_Places.OrderedId(routeId, order));
+			if (!stop)
+				break;
+
+			into.Insert(stop);
+			added++;
+		}
+
+		return added;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Index of the stop after current, wrapping. A route of fewer than two stops stays put.
 	static int NextStop(int current, int stopCount)
@@ -59,8 +90,8 @@ class LF_CashVanRouteComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_CashVanRouteComponent : ScriptComponent
 {
-	[Attribute("", UIWidgets.EditBox, desc: "World entity names of the stops, comma separated, in route order. The van starts at the first.")]
-	protected string m_sStops;
+	[Attribute("", UIWidgets.EditBox, desc: "Route id: the id of the van and of the stops (LF_PlaceComponent kinds CashVan and CashVanStop, stops ordered from 0). The van starts at the first. Empty uses the entity name.")]
+	protected string m_sRouteId;
 
 	[Attribute("300", UIWidgets.Auto, desc: "Seconds the van waits at a stop before it may move on.")]
 	protected float m_fDwellSeconds;
@@ -68,14 +99,18 @@ class LF_CashVanRouteComponent : ScriptComponent
 	[Attribute("40", UIWidgets.Auto, desc: "The van does not move while a player is this close, in metres.")]
 	protected float m_fClearMetres;
 
-	[Attribute("", UIWidgets.EditBox, desc: "World entity name of the van; set on the placed box (the pack names its van). The box is its own entity, not a child: a replicated child under a replicated vehicle makes the client item table disagree with the server.")]
-	protected string m_sVanEntity;
-
 	//------------------------------------------------------------------------------------------------
-	//! World entity name of the van this box drives.
-	string GetVanEntityName()
+	//! Id of the route this box drives. The box is its own entity, not a child of the van: a
+	//! replicated child under a replicated vehicle makes the client item table disagree with the server.
+	string GetRouteId()
 	{
-		return m_sVanEntity;
+		if (!m_sRouteId.IsEmpty())
+			return m_sRouteId;
+
+		if (GetOwner())
+			return GetOwner().GetName();
+
+		return "";
 	}
 
 	[Attribute("1.35 0 -1.4", UIWidgets.Coords, desc: "Where the box stands, in the van's local space: on the ground at the kerb-side door. It used to hang off the rear step over the road.")]
@@ -99,7 +134,7 @@ class LF_CashVanRouteComponent : ScriptComponent
 
 		int delayMs = m_fDwellSeconds * 1000;
 		GetGame().GetCallqueue().CallLater(Step, delayMs, true);
-		LF_Debug.Log("Bank", string.Format("cash van route %1 stops=[%2] dwell=%3", owner.GetName(), m_sStops, m_fDwellSeconds));
+		LF_Debug.Log("Bank", string.Format("cash van route %1 dwell=%2", GetRouteId(), m_fDwellSeconds));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -119,15 +154,16 @@ class LF_CashVanRouteComponent : ScriptComponent
 		if (!door)
 			return;
 
-		IEntity van = GetGame().GetWorld().FindEntityByName(m_sVanEntity);
+		string routeId = GetRouteId();
+		IEntity van = LF_CashVanRoute.FindVan(routeId);
 		if (!van)
 		{
-			LF_Debug.Error("Bank", string.Format("cash van route: van %1 is not in the world", m_sVanEntity));
+			LF_Debug.Error("Bank", string.Format("cash van route: van %1 is not placed", routeId));
 			return;
 		}
 
-		array<string> stops = {};
-		m_sStops.Split(",", stops, true);
+		array<IEntity> stops = {};
+		LF_CashVanRoute.FindStops(routeId, stops);
 		if (stops.Count() < 2)
 			return;
 
@@ -139,12 +175,7 @@ class LF_CashVanRouteComponent : ScriptComponent
 		}
 
 		int next = LF_CashVanRoute.NextStop(m_iStop, stops.Count());
-		IEntity stop = GetGame().GetWorld().FindEntityByName(stops[next]);
-		if (!stop)
-		{
-			LF_Debug.Error("Bank", string.Format("cash van route: stop %1 is not in the world", stops[next]));
-			return;
-		}
+		IEntity stop = stops[next];
 
 		vector transform[4];
 		stop.GetWorldTransform(transform);
@@ -164,6 +195,6 @@ class LF_CashVanRouteComponent : ScriptComponent
 		if (vault)
 			LF_Bank.Restock(vault.GetVaultId());
 
-		LF_Debug.Info("Bank", string.Format("cash van moved to %1 and restocked", stops[next]));
+		LF_Debug.Info("Bank", string.Format("cash van moved to stop %1 of %2 and restocked", next, routeId));
 	}
 }

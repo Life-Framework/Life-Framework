@@ -8,6 +8,25 @@ class LF_DebugDispatch
 {
 	static const string FEATURE = "DebugDispatch";
 
+	//! LF_Places kind of a place a test call comes from (LF_PlaceComponent); the id is the place id.
+	static const string PLACE_KIND = "DispatchSource";
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a test call comes from: the placed DispatchSource placeId, else fallback (the console).
+	//! An id that is set but not placed warns and falls back; an empty id is the console by design.
+	static vector PlacePosition(string placeId, vector fallback)
+	{
+		if (placeId.IsEmpty())
+			return fallback;
+
+		vector origin;
+		if (LF_Places.FindOrigin(PLACE_KIND, placeId, origin))
+			return origin;
+
+		LF_Debug.Warn(FEATURE, string.Format("dispatch place '%1' is not placed: calling from the console", placeId));
+		return fallback;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Server: is the test call switched on in this game mode?
 	static bool Enabled()
@@ -58,7 +77,7 @@ class LF_DebugDispatch
 
 //------------------------------------------------------------------------------------------------
 //! "Test police call" / "Test medic call" on the dispatch console. The client only asks; the
-//! server re-checks the debug gate and places the call from m_sPlaceEntity (a named world entity,
+//! server re-checks the debug gate and places the call from m_sPlaceId (a placed DispatchSource,
 //! so the call has a place worth driving to) or, when that is empty or missing, from the console.
 class LF_DebugDispatchAction : ScriptedUserAction
 {
@@ -68,8 +87,8 @@ class LF_DebugDispatchAction : ScriptedUserAction
 	[Attribute("", UIWidgets.EditBox, "What happened: a localization key sent to the service as the summary")]
 	protected string m_sSummary;
 
-	[Attribute("", UIWidgets.EditBox, "Name of the world entity the call comes from; empty uses the console's own position")]
-	protected string m_sPlaceEntity;
+	[Attribute("", UIWidgets.EditBox, "Id of the placed DispatchSource (LF_PlaceComponent) the call comes from; empty uses the console's own position")]
+	protected string m_sPlaceId;
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
@@ -84,14 +103,7 @@ class LF_DebugDispatchAction : ScriptedUserAction
 			return;
 
 		vector position = pOwnerEntity.GetOrigin();
-		if (!m_sPlaceEntity.IsEmpty() && GetGame().GetWorld())
-		{
-			IEntity place = GetGame().GetWorld().FindEntityByName(m_sPlaceEntity);
-			if (place)
-				position = place.GetOrigin();
-			else
-				LF_Debug.Warn(LF_DebugDispatch.FEATURE, string.Format("place entity '%1' is not in the world: calling from the console", m_sPlaceEntity));
-		}
+		position = LF_DebugDispatch.PlacePosition(m_sPlaceId, position);
 
 		string refusal = LF_DebugDispatch.Fire(LF_DebugDispatch.Enabled(), LF_Utils.GetPlayerUid(pUserEntity), m_sService, m_sSummary, position);
 		if (!refusal.IsEmpty())
