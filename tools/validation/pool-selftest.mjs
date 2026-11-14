@@ -18,7 +18,8 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 // red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
 // laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
-// "lane ports collide: 2011 session 2 / test 10".
+// "lane ports collide: 2011 session 2 / test 10"; with the escape-less /sfrees*$/ of main back "pool status does not fold free and
+// stale lanes (one row per lane on a big machine)".
 // red-proof 2026-11-14 (pool-ram-select), each rule broken alone: with the rank sort disabled "a starved local was still tried before a roomy remote (local,lf-testbox)"; with the old first-server rule "the first test server on a starved machine (0.4 GB free) was admitted"; without the budgetMultiplier weight "a local machine with ample RAM lost to the slower laptop"; without the pinned hint "pool status does not say the other machine has room"; with rewriteTicket writing a dropped ticket "a replaced request came back when its waiter rewrote the ticket (one worktree queued twice)"; with pool.json sessionIdleMaxMin 30 "a session idle 6 min with nobody waiting was kept (limit 5)"; with acquireSlot in cmdCi "a lane is taken outside the suite run in: cmdCi"; with --local in auditTestArgs "the placement audit pins its test run to this PC"; without the cache "the remote RAM read was not cached for its ttl (3 reads for 3 decisions over 9 s)"; with pinWarning off "no queue-time warning for a pin onto a starved machine (null)"; without the upload step "a remote audit run does not carry its input and output".
 // red-proof 2026-11-14 (pool-throughput), each rule broken alone: with the old early return
 // (machines.length < 2) in chooseSessionMachine "a 2-client request that started while the laptop was
@@ -191,6 +192,7 @@ try {
     }
     check(!dupes.length, `lane ports collide: ${dupes.slice(0, 4).join("; ")}`);
     // Ports other tools bind on 127.0.0.1 (agent-box/listen-host.mjs) stay outside the lane blocks.
+    check(pool.isIdleLaneRow("    test     server-2403     free") && pool.isIdleLaneRow("    test     server-test-1   stale (pid 1 gone; the next acquirer reclaims it)") && !pool.isIdleLaneRow("    session  server-2001     wt-a session    age 3m"), "pool status does not fold free and stale lanes (one row per lane on a big machine)");
     check(![...ses, ...tst].some((l) => l.port >= 2302 && l.port <= 2306), "a lane sits on 2302-2306 (listen-host and the Reforger default range)");
   }
   const ses = { sessionReserveServerMb: 800, sessionReserveClientMb: 1200 };

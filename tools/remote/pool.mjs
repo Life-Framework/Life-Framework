@@ -2088,6 +2088,12 @@ function holdNote(dir, info, lease, tickets, lane, settings, now) {
 
 // One line per lane: holder, purpose, age, idle (sessions: time since the last
 // harness command), and the lease note.
+// A free or stale lane row: default pool status folds these into a count on the machine line
+// (a 16-lane machine would otherwise print a row per free lane).
+export function isIdleLaneRow(r) {
+  return /\sfree\s*$/.test(r) || /\sstale\s/.test(r);
+}
+
 function laneRow(root, kind, lane, info, tickets, settings, now) {
   const head = `    ${kind.padEnd(8)} ${lane.lock.padEnd(15)}`;
   if (info === undefined) return `${head} unknown`;
@@ -2200,7 +2206,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
       if (m.via !== "local" && info?.origin && remoteOwnerGone(info)) row += `; STALE: owner pid ${info.originPid} gone here`;
       laneRows.push(row);
     }
-    const idle = laneRows.filter((r) => /sfrees*$/.test(r) || /sstales/.test(r));
+    const idle = laneRows.filter(isIdleLaneRow);
     const shown = verbose ? laneRows : laneRows.filter((r) => !idle.includes(r));
     console.log(verbose || !idle.length ? head : `${head}  (${idle.length} lane(s) free or stale)`);
     for (const r of shown) console.log(r);
