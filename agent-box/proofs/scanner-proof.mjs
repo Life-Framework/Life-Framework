@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { ROB_TARGET, arrive, clientBox, sessionDir, newestLog, sessionPaths, sessionUid } from "../session.mjs";
 
 // #564: the proof needs client 2 on the police roster, which the server reads on first use. A run
-// without `session.mjs roster 2` before `up` (the `session measure` variants) used to clock client 2
+// without `up --roster 2` (the `session measure` variants) used to clock client 2
 // in as a civilian and fail on a radio that was never on 41000. Say so up front instead.
 // Client n's newest console log as text ("" when none).
 export function clientLog(dir, n) {
@@ -16,8 +16,8 @@ export function rosterHas(dir, playerId) {
   return existsSync(f) && readFileSync(f, "utf8").includes(sessionUid(playerId));
 }
 
-// M2 #253 on a running `up --clients 2` session with client 2 on the roster (`session.mjs roster 2`
-// before up): client 2 clocks in (its radio reads the police frequency); client 1, a civilian, is
+// M2 #253 on a running `up --clients 2` session started with `--roster 2` (client 2 on the police
+// roster): client 2 clocks in (its radio reads the police frequency); client 1, a civilian, is
 // handed a scanner (dev gate; the fence path is covered by tests) and robs the till; the dispatch
 // reaches the officer's radio chirp and the civilian's scanner. The server log carries
 // `[ELDebug:Scanner] ... heard on a scanner` for client 1; shots of both clients.
@@ -34,7 +34,7 @@ async function runScannerProof() {
   const fails = [];
   const mark = clientLog(dir, 1).length;
   if (!rosterHas(dir, 2)) {
-    console.log("scanner proof: FAIL  client 2 is not on the police roster; run `session.mjs down`, `session.mjs roster 2`, then `up --clients 2` again");
+    console.log("scanner proof: FAIL  client 2 is not on the police roster; run `session.mjs down`, then `session.mjs up --clients 2 --roster 2 --wait` again");
     return 1;
   }
   for (const n of [1, 2]) arrive(on, n, wait);
