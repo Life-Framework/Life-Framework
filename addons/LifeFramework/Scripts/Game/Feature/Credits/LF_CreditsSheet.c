@@ -18,6 +18,7 @@ class LF_CreditsSheet
 
 	protected ref array<string> m_aHeads = {};
 	protected ref array<string> m_aBodies = {};
+	protected LF_UIScreen m_Subscribed;
 
 	//------------------------------------------------------------------------------------------------
 	//! Splits the generated rows into one page per heading: the heading text and the body markup.
@@ -125,6 +126,7 @@ class LF_CreditsSheet
 		}
 
 		screen.GetOnButton().Insert(OnButton);
+		m_Subscribed = screen;
 		screen.CloseOnDeath();
 		screen.CloseWhenUncontrolled();
 		s_Screen = screen;
@@ -196,5 +198,12 @@ class LF_CreditsSheet
 
 		s_Screen.Close();
 		s_Screen = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ~LF_CreditsSheet()
+	{
+		if (m_Subscribed)
+			m_Subscribed.GetOnButton().Remove(OnButton);
 	}
 }
