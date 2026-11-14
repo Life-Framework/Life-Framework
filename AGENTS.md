@@ -75,10 +75,13 @@ agent per area. `tools\cli usage` shows where the tokens went.
     `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both); a
     new CLI command is `tools/commands/<name>.mjs`.
 11. **What a player sees is looked at before it ships.** `tools\cli look <area>`
-    before and after, the `polish` checklist against the pictures, and the pair
-    embedded in the PR (`docs/style-guide.md`). A screen is built from UI kit
-    parts; nothing debug-looking goes in a village layer (`validate-ui-kit`,
-    `validate-player-props`).
+    (`look item <prefab>`, or `wb_preview` for one resource) before and after, the
+    `polish` checklist against the pictures, and the pair embedded in the PR
+    (`tools\cli evidence`; `docs/style-guide.md`). **PR pictures come from `look`, not a
+    session.** A session is only for what Workbench play cannot capture: HUD and other UI
+    widgets, a second player or late joiner, motion, animation, sound, filming. A screen
+    is built from UI kit parts; nothing debug-looking goes in a village layer
+    (`validate-ui-kit`, `validate-player-props`).
 
 ## Commands
 
@@ -107,7 +110,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 
 **Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. **Never pin** (`--local`, `--machine`): the pool sends a run to the machine with the most RAM headroom (this PC's RAM is often short), a pin prints a warning when another machine has room, and `ci`, `wt gate` and `wt ship` (suite and placement audit) never pin. Sessions flow like a river, a lane is held only while it is used: idle 3 min while a job waits, or 5 min with nobody waiting, closes a session; any harness command resets the clock, `session.mjs lease [min]` holds it. A session older than 10 min while another session request queues gets a one-line warning on its next harness or session command and is closed 2 min later (`session up --hold <min>`, at most 20, for a known-long job). A gate holds a test lane only for the suite run, never during `validate --full` or the build. Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
 
-**Session profiles.** `session up` defaults to `--profile lowspec` (640x360, lowest textures; the pool reserves less RAM for it and trims idle sessions before it refuses one), which is right for any proof that reads logs and harness results. Shots, `shots area`, filming, `journey` and any proof whose images go in a PR use `--profile full` (`docs/worktrees.md` "Session profiles").
+**Session profiles.** `session up` defaults to `--profile lowspec` (640x360, lowest textures; the pool reserves less RAM for it and trims idle sessions before it refuses one), which is right for any proof that reads logs and harness results. Shots, `shots area`, filming, `journey` and a session proof whose images go in a PR (UI, motion, a second player) use `--profile full` (`docs/worktrees.md` "Session profiles").
 
 **Sessions are shared: prepare every edit before `session up`, do the proof and the shots in one session, and `session down` straight after.** `session up` prints how many session requests are queued behind you; it boots one client unless you pass `--clients 2`.
 
@@ -264,7 +267,7 @@ what the human's promotion checklist shows. `docs/worktrees.md` "Release gates".
 1. `tools\cli validate`: cheap, run it constantly. `validate --full` (adds the Workbench compile for every platform) runs in `wt gate`/`wt ship`.
 2. The `LF_Test` suite in your worktree: `--only` or `--tier fast` while iterating, `--tier all` once before calling work done.
 3. Drive the real path: DebugWorld play mode or `node agent-box/harness.mjs flow <name>`.
-   For how a place looks, `tools\cli look <area>` first (pictures in about 25 s, no session); a session only for UI, motion, a second player or PR pictures (`docs/visual-testing.md`).
+   For how a place looks, `tools\cli look <area>` first (pictures in about 25 s, no session); a session only for UI, motion, a second player, sound or filming; PR pictures come from `look` too (`docs/visual-testing.md`).
 4. Read the specific log line (`SCRIPT (E)`, `VME:`, `Unable to find`), never an error count.
 
 Proof classes that survive the ladder: restart (a real save, restart, load),

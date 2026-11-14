@@ -18,7 +18,17 @@ after the context passed 150k.
 | `lf-hard` | 80 tool calls (about 150k context) | 149 / 288 |
 | Lead thread | about 200k context: a new thread from a handoff | |
 
-**Handoff.** At the budget, at the next checkpoint (tests green or a commit,
+**Ship is inside the budget, not after it.** On 2026-11-14 several agents (#691, the role
+uniforms, among them) hit their limit with the work finished and unshipped, and each needed a fresh
+agent to reload everything just to run `wt ship`. So the ship is reserved: when you judge you are
+near the limit (about 60 of 80 tool calls, or when a remaining step would not fit with the ship
+behind it) and the work passes its tests, **ship what you have**. Commit, write the body, run `wt ship`.
+List the checks you did not get to under `## Manual testing`, or open follow-up issues for them, and
+stop polishing. A merged, in-dev PR with a short manual list beats a clean branch nobody shipped. Hand
+off (below) only when the work does not pass its tests yet. This adds no step: it is the existing ship,
+done on time.
+
+**Handoff.** At the budget, when the work is not yet shippable, at the next checkpoint (tests green or a commit,
 no session up), the agent:
 
 1. commits work in progress to its `ws/<slug>` branch;
@@ -29,7 +39,20 @@ no session up), the agent:
 
 The lead starts a fresh agent of the same type with `Resume <slug>: read
 <file> and continue from the next step.` Resumes in the logs cost a median
-0.4M tokens. If `wt ship` is the only step left, finish instead.
+0.4M tokens. If `wt ship` is the only step left, finish instead; if you were already out of
+budget and the lead starts a fresh agent for just that, use the short brief below.
+
+**Ship-only brief.** A fresh agent that only ships needs five lines, not the history. It does not
+re-read the issue, re-run the checks listed as passed, or polish.
+
+```
+Ship <slug>: worktree ..\Life-Framework-ws-<slug>, branch ws/<slug>, issue #<n>.
+Body file: tmp\pr-body-<slug>.md (edit it if a line is wrong; do not rewrite it).
+Already passed: <checks, e.g. validate, test --only LF_Test_X, look pictures kept with evidence, interrogate file ticked>.
+Not done: <checks left; they go under ## Manual testing or become follow-up issues>.
+Run: tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body-<slug>.md
+Fix only what ship's body check or the gate reports. End with the five-line report.
+```
 
 **Final report: five lines.**
 
@@ -146,8 +169,9 @@ items fighting shared machines, and up to eight agents ran at once.
      `session status` / `pool status` polls, or reads of a background job's
      progress file to wait. Each poll is a turn that pays for the whole
      context and learns nothing.
-9. **Prepare before a session.** Make every edit before `session up`; the
-   session's turns are the most expensive ones in a run.
+9. **Prepare before a session, and book one only when nothing else shows it.** Make every edit before
+   `session up`; the session's turns are the most expensive ones in a run, and session lanes had
+   the longest waits on 2026-11-14 (p90 about 6 min, worst 61 min). PR pictures come from `look`.
 10. **Read the summary, not the transcript.** Heavy commands print one `SUMMARY` line and only the failing items; the full output is the `log=` file ("Compact command output" below).
 
 ## Compact command output
@@ -214,7 +238,7 @@ thread uses.
 
 ## Docs and screenshots
 
-The builder takes the screenshots during its proof session. The free DeepSeek model writes up the player docs, the website and the closed issue for each feature once it merges, and a weekly sweep catches anything missed. See `docs/agent-docs-sweep.md`.
+The builder takes PR screenshots with `look`, `look item` or `wb_preview` and keeps them with `tools\cli evidence`; a session shot only for what Workbench play cannot capture (UI, a second player, motion, sound). The free DeepSeek model writes up the player docs, the website and the closed issue for each feature once it merges, and a weekly sweep catches anything missed. See `docs/agent-docs-sweep.md`.
 
 ## Nothing waits forever
 
