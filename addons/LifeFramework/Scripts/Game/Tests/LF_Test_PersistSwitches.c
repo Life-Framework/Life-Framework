@@ -1,4 +1,4 @@
-// red-proof: StripPrefabFrom without the parent remap failed "the apple in the pouch follows the pouch to its new place (expected 2, got 5)"
+// red-proof: StripPrefabFrom without the parent remap failed "the apple in the pouch follows the pouch to its new place (expected 2, got 4)"
 // tier: LOGIC
 //! Persistence switches (#689): the owner's `persistence.keep*` keys, and what each switch resets
 //! in the stores a load just filled (LF_PersistenceKeep.ApplyAfterLoad). Cash, carried gear, jail
@@ -81,7 +81,7 @@ class LF_Test_PersistSwitches : LF_Test
 		carried.m_aItems.Insert(LF_StorageItemRecord.Create(APPLE, 2, 0, 0, 1));
 		carried.m_aItems.Insert(LF_StorageItemRecord.Create(cash, 20, -1, 1, 2));
 		carried.m_aItems.Insert(LF_StorageItemRecord.Create(POUCH, 1, 0, 0, 2));
-		carried.m_aItems.Insert(LF_StorageItemRecord.Create(APPLE, 1, 5, 0, 0));
+		carried.m_aItems.Insert(LF_StorageItemRecord.Create(APPLE, 1, 4, 0, 0));
 		LF_StorageSnapshot.Set(carried);
 
 		LF_StorageSnapshotRecord duty = LF_StorageSnapshotRecord.Create(OWNER_A, DUTY_SLOT);

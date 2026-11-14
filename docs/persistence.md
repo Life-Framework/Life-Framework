@@ -308,6 +308,34 @@ feature's live state untouched.
 `host stop` closes the server through `$profile:lf-host-stop` so the engine
 writes the SHUTDOWN save (see `docs/playtest.md`).
 
+## Owner persistence switches (#689)
+
+`config.json` `persistence.keepCash`, `keepCarriedGear`, `keepSurvival`, `keepWanted`, `keepJail`
+and `keepLicences` (all on by default; owner page `docs/owner/persistence-switches.md`) choose
+which fields survive a restart. They do not change what is written: every payload is still saved
+and read, so the format and the save version are unchanged and any save, old or new, loads under
+any combination. After the last payload is read, `DeserializeStore` calls
+`LF_PersistenceKeep.ApplyAfterLoad` (before `LF_WantedReports.PruneCleared`, so a cleared warrant's
+posters go too), which resets each switched-off field in the live stores:
+
+| Switch off | Reset |
+|---|---|
+| `keepCarriedGear` | `LF_StorageSnapshot.ClearSlot(carried)`: every carried snapshot; the body gets the starting loadout |
+| `keepCash` (gear on) | `LF_StorageSnapshot.StripPrefab(carried, cash slot)`: cash stacks that hold nothing; later items' parent indexes are remapped |
+| `keepSurvival` | `LF_PersistenceComponent.ClearSurvivalStats()`: hunger and thirst start full |
+| `keepWanted` | `LF_PlayerAccountManager.ClearAllCharactersWanted()`: every character of every account, republished |
+| `keepJail` | `LF_Jail.ApplyAll([])`: every sentence, the #691 logout sentences included |
+| `keepLicences` | `LF_Progression.ClearAllLicences()`: earned licences; starter ones come back at spawn |
+
+The reset is idempotent (a second load of the same save resets the same fields to the same
+defaults) and the switches are read at each load (`LF_PersistenceConfig.ResolveKeep`), so a change
+applies at the next restart. A field turned off and on again before a save comes back; the first
+save after an off-load writes the default. Each reset logs `[LFDebug:Persistence] keep<Field> off:
+N ...`. Vehicles, the bank, organizations and the rest always persist; position, vehicle fuel,
+damage and trunk are not saved, so they have no switch. Tests `persistence/switch-config` (LOGIC)
+and `persistence/switches` (PERSISTENCE: every switch off twice, on again, a version 23 save; and
+across the `wt e2e` restart, keepLicences off from the owner file).
+
 ## Gates, logging, fail-safes
 
 - Every save path passes `PassesSaveGates()`: save manager present, saving

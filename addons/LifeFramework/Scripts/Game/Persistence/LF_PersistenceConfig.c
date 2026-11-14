@@ -33,7 +33,7 @@ class LF_PersistenceConfig
 	[Attribute("1", UIWidgets.CheckBox, "Carried gear survives a restart. Off: a character respawns with the starting loadout, cash on hand included")]
 	bool m_bKeepCarriedGear;
 
-	[Attribute("1", UIWidgets.CheckBox, "Hunger, thirst and health survive a restart. Off: they start full")]
+	[Attribute("1", UIWidgets.CheckBox, "Hunger and thirst survive a restart. Off: both start full")]
 	bool m_bKeepSurvival;
 
 	[Attribute("1", UIWidgets.CheckBox, "Wanted levels survive a restart. Off: every warrant is cleared and its poster comes down")]

@@ -10,7 +10,7 @@
 //! idempotent: a second pass over the same save resets the same fields to the same defaults.
 //!
 //! FIELDS. keepCash (cash stacks in the carried snapshots), keepCarriedGear (every carried
-//! snapshot, cash included), keepSurvival (hunger, thirst, health), keepWanted (every character's
+//! snapshot, cash included), keepSurvival (hunger, thirst), keepWanted (every character's
 //! wanted level; the posters are pruned after, LF_WantedReports.PruneCleared), keepJail (serving
 //! sentences), keepLicences (earned licences; the body keeps its starter ones). Fields the save does
 //! not hold today (position, vehicle fuel, damage and trunk, house contents) have no switch.
@@ -49,7 +49,7 @@ class LF_PersistenceKeep
 		else if (!keep.m_bKeepSurvival)
 		{
 			persistence.ClearSurvivalStats();
-			LF_Debug.Info(FEATURE, "keepSurvival off: hunger, thirst and health start full");
+			LF_Debug.Info(FEATURE, "keepSurvival off: hunger and thirst start full");
 			reset++;
 		}
 
