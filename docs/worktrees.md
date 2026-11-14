@@ -262,7 +262,8 @@ tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders 
   default `--local`.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
-  (`server`, `clients`, `workbench`). The gitignored `lf.local.json` overrides
+  (`server`, `clients`, `workbench`, `rdb`: refreshes a stale
+  `resourceDatabase.rdb` in its own runs, see "Sync"). The gitignored `lf.local.json` overrides
   per machine with a `"pool"` key (`docs/setup.md`). `slots` is 1 everywhere
   today; slot 1 is the machine's own `server-2001` lock (the one `serve`,
   `host`, and `session` take too) and slot k is `server-2001-s<k>`, so a
@@ -339,9 +340,20 @@ tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders 
   every worktree; sessions, `-gate` syncs and a machine without lanes keep
   the per-worktree `C:\LF\Life-Framework-rt-<slug>` folders. The holder reports which of the snapshot, the
   last commit this worktree sent, and `origin/main` the box has, and the git
-  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored:
-  `test` refreshes the local copy first (headless Workbench; the box has none)
-  and sends it when its SHA-1 differs from the run folder's. Measured
+  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored
+  and sent when its SHA-1 differs from the run folder's. A stale one (a
+  resource the rdb does not register) is refreshed by a headless Workbench
+  where the run lands: this PC for a run here or on a machine without the
+  `rdb` cap; a machine with the cap (lf-testbox) refreshes the run folder's
+  copy in its own `test --local`, `e2e --local` or `session up`, is not sent
+  the stale copy, and keeps the refreshed one for the next run. Before
+  2026-11-14 every run refreshed here first, behind the build lock all
+  worktrees on this PC share: runs headed for a pool machine waited up to
+  10 min behind other worktrees' refreshes. lf-cloud has no `rdb` cap: its
+  Workbench exits 0 without registering anything (`ResourceDB: could not
+  open cache file`); add the cap in its `lf.local.json` entry once a refresh
+  there registers resources. A run that gets this PC's lane with a stale rdb
+  gives the lane back, refreshes, and queues again. Measured
   2026-11-09: new run folder 5.1 s holder + 1.3 s sync, repeat 3.0 s + 0.0 s
   (no bundle, rdb unchanged); an edit sends a ~2 KiB bundle. A run folder
   whose rdb predated `LF_HideoutStash` got the fresh one by hash and passed the
@@ -986,6 +998,9 @@ password or repo credential.
    Start with `"caps": ["server"]`. Add `clients` once a pinned `session up --machine lf-cloud --clients 1`
    joins. Add `workbench` once the box's Workbench has run a gate: `ci --remote lf-cloud` must print
    `Workbench compile + build on lf-cloud: exit 0`. `--wb-only` runs here and proves nothing about the box.
+   Add `rdb` once a run there with a stale rdb prints `resource database refreshed in Ns (N resources
+   registered)`; `workbench` alone does not prove it (lf-cloud's Workbench compiles but registered nothing
+   on 2026-11-14).
    `{"name": "lf-cloud", "disabled": true}` takes it out. Session lanes stop at 4 (`pool.mjs`). Test lane k
    uses port 2001+k, so more than 9 test lanes would collide with session port 2011. A box-side
    `"workbenchLimit": 2` under `pool` lets two headless Workbenches run at once there.

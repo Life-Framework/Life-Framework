@@ -36,6 +36,7 @@ import * as wt from "../wt.mjs";
 import { ADDONS, CORE } from "../lib/addons.mjs";
 import { localSetting } from "../lib/local-config.mjs";
 import { cleanRunFolder } from "../link-safety.mjs";
+import { rdbFreshness } from "../lib/rdb-fresh.mjs";
 import { cmdRecord, cmdScreenshot, cmdStart, cmdVdd } from "./desktop.mjs";
 
 const DEFAULT_REMOTE_ROOT = "C:/LF/Life-Framework";
@@ -251,8 +252,7 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
     console.log(`FAIL  bundle: ${e.message}`);
     return { ok: false };
   }
-  const rdbs = localRdbs(root);
-  const toSend = rdbs.filter((r) => r.hash !== slot.prep.rdbs?.[r.name]);
+  const { rdbs, toSend, stale } = rdbPlan(root, m, slot.prep.rdbs);
   const sendRdb = toSend.length > 0;
   const send = [bundle, ...toSend.map((r) => stageRdb(root, r))].filter(Boolean);
   const rdbHash = Object.fromEntries(rdbs.map((r) => [r.name, r.hash]));
@@ -271,11 +271,45 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
   const what = [
     slot.prep.fresh ? "new run folder" : "reused run folder",
     bundle ? `bundle ${(bundleBytes / 1024).toFixed(1)} KiB` : "no bundle (box has the snapshot)",
+    stale.size ? `stale rdb kept here (${[...stale].join(", ")}; the box refreshes its own)` : null,
     sendRdb ? toSend.map((r) => `rdb${r.name === CORE ? "" : ` ${r.name}`} ${(statSync(r.path).size / 1048576).toFixed(1)} MiB`).join(", ") : rdbs.length ? "rdb unchanged" : "no local rdb",
     slot.prep.fetched ? "box fetched origin" : null,
   ].filter(Boolean).join(", ");
   console.log(`pool: sync to ${m.name}: ${what} (${(ms / 1000).toFixed(1)} s)`);
   return { ok: true, sentBundle: !!bundle, bundleBytes, sentRdb: !!sendRdb, ms, bundleName: bundle ? basename(bundle) : null };
+}
+
+// A pool machine with the cap "rdb" refreshes a stale rdb in its own run: the remote `test --local` /
+// `e2e --local` / `session up` runs ensureResourceDatabase in the run folder (desktop-session
+// Workbench, #1158). "workbench" alone is not enough: on 2026-11-14 lf-cloud's Workbench exited 0
+// without registering anything (`ResourceDB: could not open cache file`, RESOURCES (E) for vanilla
+// UI textures), while lf-testbox registered a stale pack's 58 resources in 18 s. Give the cap only
+// to a machine where a refresh was seen to work.
+export function refreshesRdb(m) {
+  return !!m && m.via !== "local" && (m.caps ?? []).includes("rdb");
+}
+
+// The addons whose local resourceDatabase.rdb misses a resource of the worktree (tools/lib/rdb-fresh.mjs).
+export function staleRdbAddons(root) {
+  return ADDONS.map(({ name }) => name).filter((name) => {
+    const dir = join(root, "addons", name);
+    if (!existsSync(dir)) return false;
+    try {
+      return rdbFreshness(dir).missing.length > 0;
+    } catch {
+      return false;
+    }
+  });
+}
+
+// Which local rdbs a sync sends: those whose hash the run folder does not have, except a stale one
+// to a machine that refreshes its own (refreshesRdb). That run refreshes the folder's copy, which then
+// stays; sending ours would undo it and cost a refresh on every run. { rdbs, toSend, stale: Set }.
+export function rdbPlan(root, m, folderHashes = {}) {
+  const stale = refreshesRdb(m) ? new Set(staleRdbAddons(root)) : new Set();
+  const rdbs = localRdbs(root).filter((r) => !stale.has(r.name));
+  const toSend = rdbs.filter((r) => r.hash !== folderHashes?.[r.name]);
+  return { rdbs, toSend, stale };
 }
 
 // Every addon's local resourceDatabase.rdb: { name, path, hash, wire } (wire is the file name it

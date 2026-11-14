@@ -18,6 +18,7 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
 // red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
 // red-proof 2026-11-14 (pool-parallel-start), each broken alone: burstAdmit always refusing (strict FIFO) "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (1 of 14)"; without the in-flight RAM term "a burst start ignored the RAM of the starts in flight ahead of it (14 admitted, 4 fit)"; the holder gate without aheadMb "the holder's gate let a burst start overshoot the floor"; blocks() without the granted check "a ticket that already holds its lane still blocks the queue"; sharedSnapshot never reusing "six runs asked together did not share one snapshot (6 takes, 6 shas)".
 // red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
@@ -1046,6 +1047,35 @@ const dir0 = () => {
     const { unlinkReparsePoints } = await import("../link-safety.mjs");
     unlinkReparsePoints(lroot);
     rmSync(lroot, { recursive: true, force: true });
+  }
+}
+
+// The rdb of a remote run (run-overhead item 4): a pool machine with Workbench refreshes a stale one in
+// its own run, so this PC neither starts its Workbench for it nor sends it the stale copy; a fresh rdb
+// is still sent by hash, and a machine without Workbench still gets this PC's.
+{
+  const rr = mkdtempSync(join(tmpdir(), "lf-rdbplan-"));
+  try {
+    const core = join(rr, "addons", "LifeFramework");
+    mkdirSync(core, { recursive: true });
+    writeFileSync(join(core, "Thing.et"), "");
+    writeFileSync(join(core, "Thing.et.meta"), 'MetaFileClass {\n Name "{0123456789ABCDEF}Thing.et"\n}\n');
+    writeFileSync(join(core, "resourceDatabase.rdb"), "no entries");
+    const wb = { name: "lf-x", via: "ssh", caps: ["server", "workbench", "rdb"] };
+    const noWb = { name: "lf-y", via: "ssh", caps: ["server", "workbench"] };
+    check(tb.refreshesRdb(wb) && !tb.refreshesRdb(noWb) && !tb.refreshesRdb({ name: "local", via: "local", caps: ["workbench", "rdb"] }), "refreshesRdb: only a pool machine with the rdb cap refreshes its own rdb");
+    check(tb.staleRdbAddons(rr).join() === "LifeFramework", `a stale rdb is not seen as stale (${tb.staleRdbAddons(rr).join()})`);
+    const p1 = tb.rdbPlan(rr, wb, {});
+    check(p1.toSend.length === 0 && p1.stale.has("LifeFramework"), "a stale rdb is sent to a machine that refreshes its own");
+    check(tb.rdbPlan(rr, noWb, {}).toSend.length === 1, "a machine without the rdb cap is not sent this PC's rdb");
+    const name = Buffer.from("thing.et", "utf8");
+    const guid = Buffer.from("0123456789ABCDEF", "hex").reverse();
+    writeFileSync(join(core, "resourceDatabase.rdb"), Buffer.concat([name, guid]));
+    const p2 = tb.rdbPlan(rr, wb, {});
+    check(!tb.staleRdbAddons(rr).length && p2.toSend.length === 1, "a fresh rdb is not sent to a machine that refreshes its own");
+    check(tb.rdbPlan(rr, wb, { LifeFramework: p2.toSend[0]?.hash }).toSend.length === 0, "an rdb the run folder already has is sent again");
+  } finally {
+    rmSync(rr, { recursive: true, force: true });
   }
 }
 
