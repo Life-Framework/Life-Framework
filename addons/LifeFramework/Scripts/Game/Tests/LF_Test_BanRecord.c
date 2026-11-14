@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_BanRecord`: with the separator cleaning and the V1 check removed from LF_BanRecord, it failed `the file reads back the two rows and skips the legacy and broken ones (expected 2, got 1)`; restored.
+// red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_BanRecord`: with the separator cleaning and the V1 check removed from LF_BanRecord, it failed `the file reads back the two rows and skips the legacy and broken ones (expected 2, got 1)`; restored. Review fixes, observed 2026-11-14 with the success check in LF_BanRecord.Complete and the torn-line guard in Append disabled: `the failed ban left no row (expected 0, got 2)` and `the row after a torn line reads back (expected 1, got 0)`; restored.
 // tier: PERSISTENCE
 //! moderation/ban-record (#1285): a ban and an unban each append one versioned row to the ban
 //! record file; reading the file back returns both with reason, staff uid and the target's recent
@@ -55,6 +55,42 @@ class LF_Test_BanRecord : LF_Test
 		}
 
 		ctx.Equal(0, LF_BanRecord.ReadFor("someone-else").Count(), "another account has no rows");
+
+		// M1: a ban is recorded only when the backend's final answer is OK on a create or remove.
+		string failed = "test-ban-failed";
+		ScrServerCmdResult pendingResult = new ScrServerCmdResult("", EServerCmdResultType.PENDING);
+		array<string> createArgv = {"ban", "create", failed, "600"};
+		LF_BanPending pending = LF_BanRecord.Prepare(createArgv, staff, pendingResult);
+		ctx.True(pending != null, "a sent #ban create is held until the backend answers");
+		if (pending)
+		{
+			ctx.EqualStr(LF_BanRecord.NO_REASON, pending.m_sReason, "an empty reason is stored as vanilla sends it");
+			ctx.False(LF_BanRecord.Complete(pending, SCR_EBanSubcommandArg.EBSA_CREATE, EServerCmdResultType.ERR, now), "a ban the backend refused writes nothing");
+			ctx.False(LF_BanRecord.Complete(pending, SCR_EBanSubcommandArg.EBSA_LIST_FILTERED, EServerCmdResultType.OK, now), "a multiple-match list writes nothing");
+			ctx.Equal(0, LF_BanRecord.ReadFor(failed).Count(), "the failed ban left no row");
+			ctx.True(LF_BanRecord.Complete(pending, SCR_EBanSubcommandArg.EBSA_CREATE, EServerCmdResultType.OK, now), "a confirmed ban writes its row");
+			ctx.Equal(1, LF_BanRecord.ReadFor(failed).Count(), "the confirmed ban is on file");
+		}
+		ScrServerCmdResult errResult = new ScrServerCmdResult("Player not found", EServerCmdResultType.ERR);
+		ctx.True(LF_BanRecord.Prepare(createArgv, staff, errResult) == null, "a refused command is not held");
+
+		// L2: #ban remove keeps a digits-only id as typed (vanilla sends it to the backend as an identity).
+		array<string> removeArgv = {"ban", "remove", "12345"};
+		LF_BanPending unban = LF_BanRecord.Prepare(removeArgv, staff, pendingResult);
+		if (unban)
+			ctx.EqualStr("12345", unban.m_sTargetUid, "a digits-only unban id stays as typed");
+		else
+			ctx.True(false, "a sent #ban remove is held");
+
+		// L1: a crash-torn last line does not swallow the next row.
+		FileHandle torn = FileIO.OpenFile(PATH, FileMode.APPEND);
+		if (torn)
+		{
+			torn.Write("V1|BAN|torn-row");
+			torn.Close();
+		}
+		ctx.True(LF_BanRecord.Record(LF_BanRecord.ACTION_BAN, "test-ban-after-torn", staff, "after a torn row", 60, now), "a row after a torn line is written");
+		ctx.Equal(1, LF_BanRecord.ReadFor("test-ban-after-torn").Count(), "the row after a torn line reads back");
 		ctx.True(LF_BanRecord.Describe(target, rows).Contains("appeal accepted"), "the admin listing shows the rows");
 
 		FileIO.DeleteFile(PATH);

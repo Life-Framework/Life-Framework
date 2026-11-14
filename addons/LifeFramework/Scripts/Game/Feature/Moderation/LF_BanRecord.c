@@ -20,6 +20,18 @@ class LF_BanRow : Managed
 	string m_sReason;
 }
 
+//! A ban or unban sent to the backend and not answered yet (held on the BanCommand).
+class LF_BanPending : Managed
+{
+	string m_sAction;
+	string m_sTargetUid;
+	string m_sStaffUid;
+	int m_iDuration;
+	string m_sReason;
+	//! The target's incidents when the command was sent (before its own admin incident).
+	ref array<int> m_aIncidentIds = {};
+}
+
 class LF_BanRecord
 {
 	static const string FEATURE = "BanRecord";
@@ -29,6 +41,8 @@ class LF_BanRecord
 	static const string ACTION_UNBAN = "UNBAN";
 	//! The staff uid of a ban sent over RCON (no player behind it).
 	static const string STAFF_RCON = "rcon";
+	//! What vanilla sends the backend for a ban with no reason.
+	static const string NO_REASON = "No reason provided";
 	//! How many of the target's incidents a row names (the newest). How far back is the incident
 	//! log's own retention (LF_IncidentConfig).
 	static const int INCIDENT_MAX = 10; // lf-fixed: bounds one text row, not a gameplay rule
@@ -163,6 +177,40 @@ class LF_BanRecord
 		if (action == ACTION_BAN)
 			row.m_aIncidentIds = RecentIncidentIds(targetUid);
 
+		return Append(row);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure on the file: true when it has content whose last byte is not a line break (a row torn by
+	//! a crash). The next append starts with a line break so it does not glue onto that row.
+	static bool EndsMidLine(string path)
+	{
+		if (!FileIO.FileExists(path))
+			return false;
+
+		FileHandle handle = FileIO.OpenFile(path, FileMode.READ);
+		if (!handle)
+			return false;
+
+		int length = handle.GetLength();
+		int last = 10;
+		if (length > 0)
+		{
+			handle.Seek(length - 1);
+			last = 0;
+			handle.Read(last, 1);
+		}
+		handle.Close();
+		return last != 10;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: appends one row on a line of its own.
+	protected static bool Append(notnull LF_BanRow row)
+	{
+		if (!Replication.IsServer())
+			return false;
+
 		string path = GetPath();
 		string parent = FilePath.StripFileName(path);
 		if (!parent.IsEmpty())
@@ -171,6 +219,7 @@ class LF_BanRecord
 		FileMode mode = FileMode.APPEND;
 		if (!FileIO.FileExists(path))
 			mode = FileMode.WRITE;
+		bool torn = EndsMidLine(path);
 
 		FileHandle handle = FileIO.OpenFile(path, mode);
 		if (!handle)
@@ -180,6 +229,11 @@ class LF_BanRecord
 		}
 
 		string line = FormatRow(row);
+		if (torn)
+		{
+			handle.Write("\n");
+			LF_Debug.Warn(FEATURE, "the ban record ended mid-line (a torn row); the new row starts on its own line");
+		}
 		handle.WriteLine(line);
 		handle.Close();
 		LF_Debug.Info(FEATURE, "recorded " + line);
@@ -279,36 +333,88 @@ class LF_BanRecord
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a vanilla #ban the server accepted (result PENDING). argv is the command after vanilla
-	//! parsed it: [ban, create|remove, id, duration, reason...]. Help, list and refused commands write
-	//! nothing. Call it before the command's admin incident so the ban's own row is not among its ids.
-	static void RecordCommand(array<string> argv, string staffUid, ScrServerCmdResult result)
+	//! Server: a vanilla #ban the server sent to the backend (result PENDING). argv is the command
+	//! after vanilla parsed it: [ban, create|remove, id, duration, reason...]. The target uid is
+	//! resolved now, because a successful ban kicks the player before the result is known.
+	//! \return What Complete needs once the backend answers, or null when nothing will be recorded
+	//! (help, list, a refused command).
+	static LF_BanPending Prepare(array<string> argv, string staffUid, ScrServerCmdResult result)
 	{
 		if (!argv || argv.Count() < 3 || !result || result.m_eResultType != EServerCmdResultType.PENDING)
-			return;
+			return null;
 
-		string action;
+		LF_BanPending pending = new LF_BanPending();
+		pending.m_sStaffUid = staffUid;
 		if (argv[1] == "create")
-			action = ACTION_BAN;
-		else if (argv[1] == "remove")
-			action = ACTION_UNBAN;
-		else
-			return;
-
-		int duration = 0;
-		string reason = "";
-		if (action == ACTION_BAN && argv.Count() > 3)
 		{
-			duration = argv[3].ToInt();
+			pending.m_sAction = ACTION_BAN;
+			pending.m_sTargetUid = TargetUidOf(argv[2]);
+			pending.m_aIncidentIds = RecentIncidentIds(pending.m_sTargetUid);
+			if (argv.Count() > 3)
+				pending.m_iDuration = argv[3].ToInt();
 			for (int i = 4; i < argv.Count(); i++)
 			{
-				if (!reason.IsEmpty())
-					reason = reason + " ";
-				reason = reason + argv[i];
+				if (!pending.m_sReason.IsEmpty())
+					pending.m_sReason = pending.m_sReason + " ";
+				pending.m_sReason = pending.m_sReason + argv[i];
 			}
+			if (pending.m_sReason.IsEmpty())
+				pending.m_sReason = NO_REASON;
+		}
+		else if (argv[1] == "remove")
+		{
+			// Vanilla sends a remove id as typed: an identity, or a name it matches on the backend.
+			pending.m_sAction = ACTION_UNBAN;
+			pending.m_sTargetUid = argv[2];
+		}
+		else
+		{
+			return null;
 		}
 
-		Record(action, TargetUidOf(argv[2]), staffUid, reason, duration, System.GetUnixTime());
+		return pending;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: does the backend's final answer mean the ban or unban happened? Only OK on a create or
+	//! remove does; an error, a timeout or a multiple-match list (EBSA_LIST_FILTERED) does not.
+	static bool Succeeded(SCR_EBanSubcommandArg subcommand, EServerCmdResultType resultType)
+	{
+		if (resultType != EServerCmdResultType.OK)
+			return false;
+
+		return subcommand == SCR_EBanSubcommandArg.EBSA_CREATE || subcommand == SCR_EBanSubcommandArg.EBSA_REMOVE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the backend answered a prepared ban or unban. Writes the row only when it succeeded.
+	//! \return True when a row was written.
+	static bool Complete(LF_BanPending pending, SCR_EBanSubcommandArg subcommand, EServerCmdResultType resultType, int now)
+	{
+		if (!pending)
+			return false;
+
+		if (!Succeeded(subcommand, resultType))
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1 of %2 by %3 not recorded: the backend answered %4 (%5)", pending.m_sAction, pending.m_sTargetUid, pending.m_sStaffUid, SCR_Enum.GetEnumName(EServerCmdResultType, resultType), SCR_Enum.GetEnumName(SCR_EBanSubcommandArg, subcommand)));
+			return false;
+		}
+
+		if (pending.m_sTargetUid.IsEmpty())
+		{
+			LF_Debug.Warn(FEATURE, string.Format("%1 by %2 not recorded: no target", pending.m_sAction, pending.m_sStaffUid));
+			return false;
+		}
+
+		LF_BanRow row = new LF_BanRow();
+		row.m_sAction = pending.m_sAction;
+		row.m_sTargetUid = pending.m_sTargetUid;
+		row.m_iTime = now;
+		row.m_sStaffUid = pending.m_sStaffUid;
+		row.m_iDuration = pending.m_iDuration;
+		row.m_sReason = pending.m_sReason;
+		row.m_aIncidentIds = pending.m_aIncidentIds;
+		return Append(row);
 	}
 }
 

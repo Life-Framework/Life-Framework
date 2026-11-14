@@ -20,6 +20,6 @@ Players `/report` their recent incidents; flags (`LF_IncidentFlags`, saved as `i
 ## Ban record (#1285)
 
 - **Staff sees:** `#banrecord <uid or player id>` answers with every ban and unban of that account: unix time, action, staff uid, duration, the incident numbers named at the time, the reason.
-- **Owner and side:** server only. `LF_BanRecord.RecordCommand` runs after vanilla `BanCommand` accepts a `create` or `remove` (result PENDING), from chat (staff = the admin's account uid) or RCON (staff = `rcon`). Enforcement stays vanilla.
+- **Owner and side:** server only. `LF_BanRecord.Prepare` holds a `create` or `remove` when vanilla `BanCommand` sends it (result PENDING; the target uid and incident ids are taken then, before the kick); `BanCommand.OnUpdate` calls `Complete`, which writes the row only when the final answer is OK. A failed ban, a timeout or a multiple-match list writes nothing. An empty reason is stored as vanilla's `No reason provided`; a `remove` id is kept as typed. Each append starts on a new line even after a torn row. Rows come from chat (staff = the admin's account uid) or RCON (staff = `rcon`). Enforcement stays vanilla.
 - **Data:** `$profile:LifeFramework/ban_record.txt`, append-only, one `V1|...` row each, outside the save. A new layout adds `V2` beside `V1`; unknown rows are skipped with a warning.
 - **Proof:** `moderation/ban-record` (PERSISTENCE: two rows written, file read back, legacy and broken lines skipped).
