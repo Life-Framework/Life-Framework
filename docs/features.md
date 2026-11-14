@@ -709,6 +709,15 @@
   with characters are both kept). A signed form with no account opens one, and with
   no identity it comes back with the reason (`persist/late-identity`,
   `node agent-box/listen-host.mjs`).
+- ✅ **Flagship in the scenario list, playable as a local game** (#374, merged, in-dev): the pack's
+  `LF_Everon1989.conf` is the one listed Everon scenario ("Life Framework: Everon 1989", 16 players,
+  one preview picture); the older `LF_PlaytestTown.conf` stays bootable by id for existing servers and
+  saves but is hidden from the list (`m_bShowInScenarioMenu 0`), so the flagship is not offered twice.
+  Its details text (`LF-Mission_Everon1989_Details`, pack table) is the first-run guide and says a
+  local game is a preview. `validate-pack-missions` fails two listed headers on one world and a
+  `m_sDetails` key that is no string-table row. `listen-host.mjs` boots the flagship as a listen host,
+  passes the rules quiz and signs the form; proven on lf-cloud 2026-11-14 (identity arrived 3.6 s late,
+  character spawned).
 - ✅ **One-command playtest** (`tools\cli playtest [stop|status|shortcut]`,
   `Play Life Framework.cmd`, `tools/host/playtest.mjs`): fast-forwards the detached
   checkout `..\Life-Framework-playtest` to `origin/main` (only while no host runs),

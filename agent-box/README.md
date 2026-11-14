@@ -586,13 +586,16 @@ relaunch. Last full run (2026-10-10): 36 probes, `stand_fail=0`,
 `session up` servers run `-noBackend`, so a player's identity never changes during a
 session. A real listen host (the launcher's "Play on my own", hosting from the game menu)
 gets the platform identity about a second after the join, and playtest build 4 broke
-there. `node agent-box/listen-host.mjs [--addons <dir>] [--profile <dir>] [--sign-after <s>]`
-boots the game the way the launcher's solo mode does (Steam signed in, hidden desktop,
-640x360, fresh profile), signs form R-89 through the file channel after the delay
+there. `node agent-box/listen-host.mjs [--addons <dir>] [--profile <dir>] [--sign-after <s>] [--shared]`
+boots the flagship scenario (`LF_Everon1989.conf`) the way the launcher's solo mode does (Steam signed in, hidden desktop,
+640x360, fresh profile), answers the rules quiz one click at a time, signs form R-89 through the file channel after the delay
 (the harness writes to `<profile>/profile/agent-box`), prints the identity, account and
 spawn lines, and exits 0 when the character spawned. Point `--addons` at an unzipped
 playtest build to test a release. It runs outside the pool's lanes and refuses while any
-Arma Reforger process runs. A joiner cannot be added on one PC: a second client is the
+Arma Reforger process runs; `--shared` (a big pool box) checks for 4 GB of free RAM instead.
+Over ssh the client starts through an interactive scheduled task (`tools/lib/interactive-launch.mjs`). To run it on a pool box:
+`syncAndRun(root, machine, { script: "agent-box/listen-host.mjs", args: ["--shared"], suffix: "-listen" })` from `tools/remote/pool.mjs`
+after `tools\cli rdb` has built the pack's `resourceDatabase.rdb` (a run folder without it dies at "Unable to initialize Enfusion"). A joiner cannot be added on one PC: a second client is the
 same Steam account, so the same identity; a friend joining stays a manual step.
 
 ## Multi-client session (dedicated server)
