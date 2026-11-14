@@ -45,7 +45,7 @@ export function specProblems(spec) {
   if (!/^[A-Z][A-Za-z0-9]*$/.test(spec.name || "")) out.push("name must be PascalCase letters and digits (it becomes file and material names)");
   const kind = KINDS[spec.kind];
   if (!kind) out.push(`kind must be one of ${Object.keys(KINDS).join(", ")}`);
-  const lib = source.isPolyHaven(spec) || source.isVanilla(spec); // a found model: no prompt, no Meshy call, no credits (source.mjs)
+  const lib = source.isPolyHaven(spec) || source.isVanilla(spec) || source.isIncoming(spec); // a found model: no prompt, no Meshy call, no credits (source.mjs)
   const blender = !!spec.source?.blender; // modelled or painted by our own script: no Meshy call, no credits
   const textureOnly = kind?.fit === "none";
   if (!spec.prompt && !lib) out.push("prompt is empty");
