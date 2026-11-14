@@ -30,6 +30,11 @@
 # -Addons <a,b> is the -addons list. Omitted, tools/lib/addons.mjs decides: the core, plus
 # LF_Everon1989 when its project is in the checkout (#322). Pass LifeFramework for a core-only run.
 #
+# -CoreOnly is Test 1 of the red line (#326): the core alone. -addons is LifeFramework, the pack folder
+# is not in -addonsDir at all (the core folder is reached through a junction in the generated
+# game-addons), and LF_CORE_ONLY is defined so a test that needs pack content skips with its reason.
+# Its stamp (tmp/test-results/summaries.jsonl) is tier "<tier>-core", so a core-only run never stands in for the normal one.
+#
 # -Only <a,b> runs just those tests (class names or GetName() strings): it
 # writes $profile:LF_TestOnly.txt and defines LF_TEST_ONLY; the suite then
 # reports tier=only, so suite-stamp never mistakes it for a full tier run.
@@ -54,7 +59,8 @@ param(
   [int]$GracefulCloseSeconds = 30,
   [string]$ExtraDefine,
   [string]$Only,
-  [string]$Addons
+  [string]$Addons,
+  [switch]$CoreOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -72,6 +78,7 @@ if (-not (Test-Path (Join-Path $root "addons\LifeFramework\LifeFramework.gproj")
 # resourceDatabase.rdb is gitignored; cli test/dev/serve copy it from the main
 # checkout. Without it world tests fail as "wrong GUID", "invalid prefab" or
 # GetCash returning 0, so a world tier stops here with that named cause.
+if ($CoreOnly) { $Addons = "LifeFramework" }
 if (-not $Addons) { $Addons = (& node (Join-Path $root "tools\lib\addons.mjs") launch $root | Select-Object -Last 1) }
 if (-not $Addons) { Write-Host "ERROR tools/lib/addons.mjs gave no -addons list"; exit 2 }
 $Addons = "$Addons".Trim()
@@ -121,7 +128,10 @@ function Save-SuiteStamp([string]$ProfileDir, [string]$RepoRoot) {
   New-Item -ItemType Directory -Force -Path $outDir | Out-Null
   $outFile = Join-Path $outDir "summaries.jsonl"
   $jsonPath = $consoleLog.Replace('\', '\\').Replace('"', '\"')
-  $line = '{"sha":"' + $sha + '","tier":"' + $match.Groups[1].Value + '","passed":' + $match.Groups[2].Value + ',"failed":' + $match.Groups[3].Value + ',"total":' + $match.Groups[4].Value + ',"consoleLog":"' + $jsonPath + '"}'
+  $stampTier = $match.Groups[1].Value
+  # The summary belongs to the previous run, so the marker that run left decides its mode.
+  if (Test-Path -LiteralPath (Join-Path $ProfileDir "lf-core-only.marker")) { $stampTier = $stampTier + "-core" }
+  $line = '{"sha":"' + $sha + '","tier":"' + $stampTier + '","passed":' + $match.Groups[2].Value + ',"failed":' + $match.Groups[3].Value + ',"total":' + $match.Groups[4].Value + ',"consoleLog":"' + $jsonPath + '"}'
   $utf8 = New-Object System.Text.UTF8Encoding $false
   [System.IO.File]::AppendAllText($outFile, $line + "`n", $utf8)
 }
@@ -140,6 +150,7 @@ if (-not $KeepProfile) {
   }
 }
 New-Item -ItemType Directory -Force -Path $profile | Out-Null
+if ($CoreOnly) { Set-Content -LiteralPath (Join-Path $profile "lf-core-only.marker") -Value "core only (#326)" }
 
 # Dedicated-server FileIO only reads $profile. Mirror the crafting prefabs so
 # the LOGIC asset test can read the README and check prefab files without
@@ -222,6 +233,13 @@ GameProject {
 }
 
 $addonsDir = (Join-Path $root "addons") + "," + $gameAddons
+if ($CoreOnly) {
+  # Only the core and the base game are visible: the pack folder is not on the search path.
+  cmd /c mklink /J "$gameAddons\LifeFramework" (Join-Path $root "addons\LifeFramework") 2>&1 | Out-Null
+  $addonsDir = $gameAddons
+  $args_note = "core only: -addons LifeFramework, LF_Everon1989 hidden from -addonsDir"
+  Write-Host "test-e2e: $args_note"
+}
 $serverTarget = "Worlds/DebugWorld/DebugWorld.ent"
 if ($Mission) { $serverTarget = $Mission }
 $args = @(
@@ -243,6 +261,7 @@ $args = @(
 # session server. tools/remote/pool.mjs lanes.
 if ($ListenAddr) { $args += @("-addr", $ListenAddr) }
 
+if ($CoreOnly) { $args += @("-scrDefine", "LF_CORE_ONLY") }
 if ($Tier -eq "fast") {
   $args += @("-scrDefine", "LF_TEST_TIER_FAST")
 } elseif ($Tier -eq "persistence") {
@@ -500,6 +519,12 @@ if ($lastSummary) {
   $console = Read-Console $lastSummary.LogDir
   $fails = @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\]   - ' })
   foreach ($f in $fails) { Write-Host "  $f" }
+  # A core-only run names every test it skipped for the pack, with the reason (#326).
+  $packSkips = @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\] SKIP .*needs the pack' })
+  if ($packSkips.Count -gt 0) {
+    Write-Host "test-e2e: skipped $($packSkips.Count) test(s) that need the pack:"
+    foreach ($k in $packSkips) { Write-Host "  $($k -replace '.*\[LFTEST\] SKIP ', '')" }
+  }
 
   $debugLines = @($console -split "`n" | Where-Object { $_ -match '\[LFDebug:' })
   if ($debugLines.Count -gt 0) {
