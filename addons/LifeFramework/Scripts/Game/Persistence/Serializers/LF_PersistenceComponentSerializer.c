@@ -342,6 +342,10 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			ReadPersistencePayload(persistence, context, order.Get(index));
 		}
 
+		// The owner's persistence switches (#689): each switched-off field is reset to its default
+		// now that every payload is read. Before the poster prune, so a cleared warrant's posters go.
+		// RED LF_PersistenceKeep.ApplyAfterLoad(persistence, LF_PersistenceConfig.ResolveKeep());
+
 		// After every payload: a wanted report is kept only while the character it names is wanted,
 		// and the "characters" payload restores those levels after "wanted" loads (#331).
 		if (version > order.Find("wanted"))

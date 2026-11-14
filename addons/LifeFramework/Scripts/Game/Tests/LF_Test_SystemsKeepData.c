@@ -16,7 +16,6 @@ class LF_Test_SystemsKeepData : LF_Test
 {
 	static const string E2E_PLOT = "e2e-systems-farm";
 	static const int E2E_SECONDS = 45;
-	static const string E2E_OWNER = "{\"schemaVersion\":1,\"systems\":{\"switches\":{\"Farming\":{\"enabled\":false}}}}";
 
 	override string GetName()
 	{
@@ -117,14 +116,8 @@ class LF_Test_SystemsKeepData : LF_Test
 	//! The e2e save boot: Farming off from a real owner file, and a crop for the save.
 	protected void SeedSaveBoot(LF_TestContext ctx)
 	{
-		ctx.False(FileIO.FileExists(LF_ConfigService.OWNER_PATH), "the save boot's fresh profile has no owner config");
-		FileHandle handle = FileIO.OpenFile(LF_ConfigService.OWNER_PATH, FileMode.WRITE);
-		ctx.True(handle != null, "the save boot writes an owner config.json with Farming off");
-		if (!handle)
-			return;
-
-		handle.WriteLine(E2E_OWNER);
-		handle.Close();
+		// The one e2e owner file, shared with persistence/switches (#689), which may have written it.
+		ctx.True(LF_Test_PersistSwitchesRestart.WriteE2EOwner(), "the save boot writes an owner config.json with Farming off");
 		LF_ConfigService.Reset();
 		LF_Systems.Reload();
 		ctx.False(LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM), "the owner file turns Farming off before the shutdown save");
