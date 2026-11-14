@@ -959,6 +959,7 @@
   from CC0 textures by `tools\cli asset` (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`);
   prefab and emat GUIDs are unchanged, so mining, smelting and selling are untouched.
   Follow-up: the gold nugget and gold rock now read as dull ochre-yellow ore with gold flecks (they were white quartz and previewed pinkish-white); the copper nugget stays dark rock with malachite green. Close-up of each rock: `tools\cli look 182,175 --radius 8`.
+  Natural pass (2026-11-14): the camo-paint look is gone. The host is darkened, desaturated Rock 058, and the ore sits only in the rock's own crevices and thin veins: rust-brown staining on dark rock (iron), a muted green malachite crust with a few azurite specks (copper), thin cream quartz veins with yellow glints (gold).
 - ⚠️ The pickaxe uses the pistol rig and is gripped at the handle end;
   `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
   needs a re-exported mesh with the pivot up the handle.
