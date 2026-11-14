@@ -17,8 +17,8 @@ needs the core item to exist. Nothing is uploaded before the whole pack move lan
 [`release-process.md`](../release-process.md)); `tools\cli release <version>` stamps one version into
 both addons.
 
-The pack's scenario **Life Framework: Playtest Town**
-(`{1054CC8646357708}Missions/LF_PlaytestTown.conf`) is the Everon 1989 village with the playtest
+The pack's scenario **Life Framework: Everon 1989**
+(`{C638C03B775C31BB}Missions/LF_Everon1989.conf`) is the Everon 1989 village with the playtest
 settings on: cash and bank top-up, two test cars per new character, the first player on an empty
 police roster, saves across restarts, and the debug menu closed to everyone but admins. The
 spawn hub (#607) lands in DebugWorld, so it ships in the first publish after it merges.
@@ -91,7 +91,7 @@ after publish.
 1. Start Arma Reforger normally. **Workshop**, search `Life Framework: Everon 1989` (or open the
    Unlisted link from the page above), **Subscribe**, wait for the download. The core item arrives
    with it.
-2. **Scenarios**: `Life Framework: Playtest Town` is listed with 16 players, the preview image,
+2. **Scenarios**: `Life Framework: Everon 1989` is listed with 16 players, the preview image,
    and the description. Select it and press **Play**.
 3. The loading screen shows the town picture and the playtest text. In town, form R-89 opens;
    sign it. You stand on the square with the "New in town" note, cash in hand.
@@ -101,7 +101,7 @@ after publish.
    browser.
 
 If step 2 shows the scenario name as `#LF-...` or no picture, the header's text did not reach
-the backend: fix `Missions/LF_PlaytestTown.conf`, raise the version, and publish again.
+the backend: fix `Missions/LF_Everon1989.conf`, raise the version, and publish again.
 
 ## After publishing
 

@@ -2,8 +2,9 @@
 
 Status on 2026-11-14: M3 is built and merged to `main`. It is **not verified and not published**.
 The playtest pass is in [playtest/m3-signoff.md](../playtest/m3-signoff.md), the Workshop upload is
-still the maintainer's ([release-first-upload.md](../release-first-upload.md)), and the first
-version number is chosen at the cut (the Workshop kit changelog is written as `0.1.0`).
+still the maintainer's ([release-first-upload.md](../release-first-upload.md)). The first version is
+**0.1.0** for both items, and the scenario is `LF_Everon1989`
+(`{C638C03B775C31BB}Missions/LF_Everon1989.conf`).
 
 M3 turns the town into something other people can run. You get two Workshop items, one config file,
 and a server folder you can start. You do not need Workbench or a checkout.
@@ -30,7 +31,7 @@ that file. [Owner config check](../config/owner-config.md) · [config reference]
 
 **An example server.** [`server/example/`](../../server/example/README.md) is `server.json`, `config.json` and `start.cmd` / `start.sh`. Set a name and an admin password, run the start script, and the core and the 1989 pack boot as a dedicated server. A zip of it is built by `tools\cli example-zip`; the zip stays a draft until the Workshop ids are real. Delete the pack from `game.mods` to run the core alone, or swap in your own ([swap the pack out](../../server/example/README.md#swap-the-pack-out)).
 
-**An upgrade path.** The owner file carries a `schemaVersion`. At boot the server copies your file to `config.json.bak-v<N>-<time>`, runs any migrations, and refuses a file written for a newer version. `config-check` prints which migrations would run. Each release gets an [upgrade page](../upgrades/README.md). Saves carry a version, and record shapes are append-only from here ([persistence.md](../persistence.md)).
+**An upgrade path.** The owner file carries a `schemaVersion`. At boot the server copies your file to `config.json.bak-v<N>-<time>`, runs any migrations, and refuses a file written for a newer version. `config-check` prints which migrations would run. Each release gets an [upgrade page](../upgrades/README.md); the first is [0.1.0](../upgrades/0.1.0.md). Saves carry a version, and record shapes are append-only from here ([persistence.md](../persistence.md)).
 
 **Packs.** Anyone can add a pack beside the flagship without touching the core.
 
@@ -50,7 +51,6 @@ Smaller changes owners will notice: world cleanup of abandoned vehicles, dropped
 
 - Solo play from the scenario list with a first-run guide (#374) has no PR yet.
 - The two sidecar save payloads for vehicle state and held ground (#1216, #1217) have no PR yet, and the record-shape freeze (#1218) is set at the persistent launch. The shapes are specified in [record-shape-audit.md](../architecture/record-shape-audit.md).
-- A real upgrade page: `docs/upgrades/` has the template and the generator but no release page yet.
 
 ## Needs the maintainer
 
@@ -61,10 +61,10 @@ Nothing below can be done by an agent.
 | **#370** First Workshop upload of core and pack | Publish the core, then the pack, from Workbench with your Bohemia account. Steps: [release-first-upload.md](../release-first-upload.md). Record both page URLs and fix the ids in `docs/setup.md` and `tools/release/example-zip.json`. Labels: `needs-human`, `needs-playtest`. |
 | **#371** A clean server boots from the Workshop items alone | After #370, run `tools\cli workshop boot-check 79636E668EA37AC9 B1E84D5687E11724` and record the passing line. If the client-join stage fails on a ready server, join by hand and keep the server log. Labels: `needs-human`, `needs-playtest`. |
 | Sign-off playtest | [playtest/m3-signoff.md](../playtest/m3-signoff.md), then `tools\cli playtest verdicts` and your own `gh` run; `promote` only after. |
-| Version and the `.gproj` Version field (#369) | Pick the first version. `.gproj` has no version field today and `release` adds one; open the project in Workbench once with the stamped line before the real release. |
+| The `.gproj` Version field (#369) | The version is `0.1.0`. `.gproj` has no version field today. `tools\cli release 0.1.0 --confirm` adds `Version "0.1.0"` after `TITLE` itself, so there is nothing to stamp by hand. Check once that Workbench opens a `.gproj` with that line before the real release. |
 | Branding and art (#375) | Sign off the premise and voice rules in [branding](../branding/core.md), and replace the two placeholder `preview.jpg` files. |
 | Docs acceptance (#290, #292, #293, #1004) | Someone who did not write the install guide and walkthroughs follows them on lf-testbox from a fresh server, after #370. |
-| `docs/upgrades/<version>.md` | Fill the first upgrade page from `tools\cli upgrade-page` before promoting ([upgrades README](../upgrades/README.md): no page, not ready). |
+| Upgrade page | [upgrades/0.1.0.md](../upgrades/0.1.0.md) is written. Read it once before promoting. |
 
 `needs-human` is on ten open issues. Only #370 and #371 are M3. The other eight belong to later work:
 #404 and #405 (Dev-Gates: first promotion and the M2 audit tag), #567 (M2.5: outsider playtest access),
