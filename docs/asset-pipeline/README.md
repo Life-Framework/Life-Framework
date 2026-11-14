@@ -20,6 +20,9 @@ tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
 ```
 
+Buildings are not made here: they come from [ArchBuilder](https://arribas22.github.io/archbuilder/) through
+`tools\cli building` ([docs/building-pipeline/README.md](../building-pipeline/README.md)).
+
 Voiced NPC conversations are a separate stage with its own data file: `tools\cli asset dialogue <npc>`,
 [dialogue.md](dialogue.md).
 

@@ -11,6 +11,7 @@ person's role is added when the maintainer confirms it.
 | [Everon Life RPG Framework](https://github.com/EveronLife/EveronLife) | Arkensor and its contributors | MIT | Life Framework is a fork and continuation of it. The upstream `EL_` class prefix became `LF_` on 2026-11-09; the credit stays. | `README.md`, `docs/ecosystem.md` |
 | [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) | Aaron Static, the maintainer of Overthrow | Arma Public License Share Alike upstream; used with the owner's permission and relicensed MIT for Life Framework only | Money, resource and shop data code; the persistence lessons in `AGENTS.md`. Each derived file names its source in a header. | `THIRD_PARTY.md`, `docs/overthrow-survey.md` |
 | [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) | LNGCGenetic | MIT | Police, jail, garage and vehicle code. Each ported file keeps its notice. | `THIRD_PARTY.md`, `docs/ecosystem.md` |
+| [ArchBuilder](https://arribas22.github.io/archbuilder/) | Arribas | GPL-3.0-or-later add-on, sold with a personal key ([ko-fi.com/arribas](https://ko-fi.com/arribas)) | Ideas and code the building pipeline is built around. The pipeline drives the user's own installed copy; the repo contains none of its source. | `docs/building-pipeline/README.md`, `docs/architecture/building-pipeline-spike.md` |
 | Bohemia Interactive | Bohemia Interactive | Arma Public License (the Workshop build); game assets belong to Bohemia Interactive | Base-game assets, and the Arma Reforger engine. Life Framework is not affiliated with Bohemia Interactive. | `README.md`, `assets-source/LICENSES.md` |
 
 Code ported from MIT forks of Everon Life, each with a `// Ported from` line in the file:
@@ -39,6 +40,8 @@ name of the person who ran the agent.
 - The clothing pipeline (`docs/asset-pipeline/clothing.md`) runs Bohemia Interactive's Enfusion Blender Tools (GPL-3.0) from the local
   Arma Reforger Tools install, and downloads the character templates of the [Arma Reforger Samples](https://github.com/BohemiaInteractive/Arma-Reforger-Samples)
   (Arma Public License) at run time. Neither is committed; a garment built from a Samples mesh credits Bohemia Interactive here.
+- [ArchBuilder](https://arribas22.github.io/archbuilder/) by Arribas, a Blender add-on, generates the buildings (`tools\cli building`,
+  `docs/building-pipeline/README.md`). Each user runs their own licensed copy; none of its source, keys or buyer details are in the repo.
 - [Piper](https://github.com/rhasspy/piper) makes the trailer voice-over (see Voice-over below).
 - The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (`website/README.md`).
 - Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (`docs/community/support.md`).

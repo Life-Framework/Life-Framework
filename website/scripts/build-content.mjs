@@ -138,6 +138,7 @@ addRepoDoc("docs/worktrees.md", { slug: "worktrees", group: "Engineering referen
 addRepoDoc("docs/dedicated-session.md", { slug: "dedicated-session", group: "Engineering reference", order: 4 });
 addRepoDoc("docs/debug-log-triage.md", { slug: "debug-log-triage", group: "Engineering reference", order: 5 });
 addRepoDoc("docs/street-manifest.md", { slug: "street-manifest", group: "Engineering reference", order: 6 });
+addRepoDoc("docs/building-pipeline/README.md", { slug: "building-pipeline", group: "Engineering reference", order: 7, title: "Make a building" });
 
 addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Research & community", order: 0 });
 addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Research & community", order: 1 });

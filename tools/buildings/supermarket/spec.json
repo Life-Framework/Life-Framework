@@ -1,0 +1,24 @@
+{
+  "slug": "supermarket",
+  "name": "Supermarket",
+  "concept": "The small-town self-service grocery of 1989 Everon: the one-storey supermarket that replaced the counter shop in the late 1970s and 80s (a French 'supérette' or a Czech 'samoobsluha'). One rendered hall about 18 by 14 m, a flat roof, plate-glass shop front with a glass entrance and a canopy on the street side, blind side and back walls so shelving can stand against them, and a stockroom, office and WC behind the sales floor. ArchBuilder's SUPERMARKET archetype is that building: one tall storey (5 m), flat metal roof, panoramic front glazing on the front only, a vanilla GroceryStore fascia sign. Its default size (30 to 46 m wide) is a modern out-of-town store, so the spec shrinks it to a village-centre plot and gives it a cream render, which reads as 1980s rather than the profile's metal panels. (Plain white plaster renders near-white in game: the base game's plaster texture is meant to be tinted, and only the coloured stucco materials carry a tint.) Built with Reforger proportions and vanilla doors and windows. The shelves stay out for now: our shop feature fills them in a follow-up (docs/architecture/building-pipeline-spike.md \"Supermarket next steps\").",
+  "red_line": "pack",
+  "archbuilder": {
+    "archetype": "SUPERMARKET",
+    "region": "AUTO",
+    "footprint": "RECTANGLE",
+    "storeys": 1,
+    "seed": 1989,
+    "width": 18.0,
+    "depth": 14.0,
+    "wall_mat": "AB_Stucco_Beige",
+    "roof_style": "FLAT",
+    "do_interior": true,
+    "do_furniture": false,
+    "plot_fence": "NONE"
+  },
+  "export": { "furniture": false, "lamps": true, "vanilla_props": true, "lods": true, "probes": "ONE", "bsp": false },
+  "budget": { "tris": 60000, "footprint_m": [19, 15], "height_m": 9, "min_doors": 1 },
+  "asset_dir": "Assets/Buildings/Supermarket",
+  "prefab_dir": "Prefabs/Buildings/Supermarket"
+}

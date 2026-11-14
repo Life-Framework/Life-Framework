@@ -1692,3 +1692,6 @@ GenericEntity Annex_Convoy_Drop_Near {
  coords 63 0 70
  Flags 0x403 0
 }
+SCR_DestructibleBuildingEntity Annex_Supermarket : "{BD5FE43FC26CAF21}Prefabs/Buildings/Supermarket/Supermarket.et" {
+ coords 76 0.1 96.45
+}
