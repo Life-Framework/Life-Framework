@@ -12,7 +12,7 @@
     "password": "",
     "passwordAdmin": "CHANGE-ME",
     "admins": [],
-    "scenarioId": "{1054CC8646357708}Missions/LF_PlaytestTown.conf",
+    "scenarioId": "{5A1E5A1E5A1E0002}Missions/EL_DebugTest.conf",
     "maxPlayers": 16,
     "visible": true,
     "crossPlatform": false,

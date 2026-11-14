@@ -19,12 +19,40 @@ export const ADDONS = [
 export const CORE = ADDONS[0].name;
 export const PACK = ADDONS[1].name;
 
-// The playtest mission headers. The core's stays for the suite and for a save made on it;
-// the pack's is what `host`, `playtest` and `session --mission playtest` boot (#322).
+// The playtest mission headers, both in the pack since #323 batch 1 (GUIDs unchanged). The old one
+// keeps a save made on it; the pack's own is what `host`, `playtest` and `session --mission playtest`
+// boot (#322). Both load the pack world below.
 export const CORE_PLAYTEST_MISSION = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
 export const PACK_MISSION = "{C638C03B775C31BB}Missions/LF_Everon1989.conf";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+// The core test world, and the pack world that is a SubScene of it and holds the village layers
+// (#323 batch 1, pack-move-spike.md section 1). Tests boot the core world; a bare session, `look`
+// and the layer tooling use the pack world when the pack is in the checkout.
+export const CORE_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+export const PACK_WORLD = "Worlds/Everon1989Town/Everon1989Town.ent";
+
+// The world a bare (headerless) session or a Workbench look opens: the pack's when it is loaded.
+export function townWorld(addons = launchAddons()) {
+  return addons.includes(PACK) ? PACK_WORLD : CORE_WORLD;
+}
+
+// Every layer folder of the town, core first: DebugWorld's, then the pack world's when present.
+// Layer file names are unique across the two, so tools key layers by file name as before.
+export function worldLayerDirs(root = REPO) {
+  const dirs = [join(root, "addons", CORE, "Worlds", "DebugWorld", "DebugWorld_Layers")];
+  const pack = join(root, "addons", PACK, "Worlds", "Everon1989Town", "Everon1989Town_Layers");
+  if (existsSync(pack)) dirs.push(pack);
+  return dirs;
+}
+
+// The folder that holds one layer file, or the core folder when no folder has it yet.
+export function layerFile(root, name) {
+  const dirs = worldLayerDirs(root);
+  const hit = dirs.find((d) => existsSync(join(d, name)));
+  return join(hit ?? dirs[0], name);
+}
 
 // The addons every launch loads (#322): the core, plus each other addon whose project file is
 // in `addonsDir`. Order matters to nobody but the reader: the core comes first.

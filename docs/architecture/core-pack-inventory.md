@@ -2,7 +2,10 @@
 
 Every folder and file group in `addons/LifeFramework/`, classified with the red
 line in [`core-vs-pack.md`](core-vs-pack.md). Taken on 2026-11-08 from `main`
-at `b0f5b8e`. **Nothing has moved.** The move is an M3 freeze under epic #223,
+at `b0f5b8e`. **Batch 1 moved (#323, 2026-11-14):** the rows marked *moved* below now live in
+`addons/LF_Everon1989/` at the same relative path and GUID, except the village layers, which sit in
+the pack world `Worlds/Everon1989Town/Everon1989Town_Layers/` (a SubScene of the core DebugWorld,
+`pack-move-spike.md` section 1). The move is an M3 freeze under epic #223,
 after the maintainer signs off on M1: load the pack (#322), move in batches
 (#323), split the string table (#325), prove the core boots alone (#326), and
 load a pre-move save (#327).
@@ -157,7 +160,7 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/LF_Sign*.et` (10) | core | Generic boards and faces |
 | `Props/Signs/LF_BoardFace.et` | core | The 16:9 render-target face a board draws on (wanted posters, #758) |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
-| `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
+| `Props/Signs/EL_MiningSign.et` | pack, moved (batch 1) | Soviet undermined-area warning sign; its placement left the core `MiningChain.layer` for the pack layer `Village_Signs` |
 | `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
 | `Props/Roleplay/BankVault/` | pack | The 1989 bank vault kit: the round door in its frame and wall, the steel room, the deposit box wall, the cash trolley, and the assembled vault closed and open. The assembled vault carries the rob, breach and swing components and is the town bank vault (#925); `LF_BankVault_Light` is its two ceiling lights (each with a vanilla caged bulkhead fixture); `LF_BankVault_SmallRoof` is the door hood (the vanilla `SmallRoof_01` mesh); the vault room and front use a vanilla concrete material in place of the dark generated one. The gameplay components (`LF_BankVaultComponent`, `LF_BreachTargetComponent`) are core |
 | `Assets/Props/Roleplay/BankVault/` | pack | Meshes and materials of the vault kit (door generated with Meshy, `docs/credits.md`; the rest built by `tools/assets/bank-vault/build.py`) |
@@ -226,10 +229,11 @@ its save.
 | Path | Class | Reason |
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
-| `LF_PlaytestTown.conf` | pack | The flagship playtest header |
-| `LF_PlaytestTown_Preview.{edds,jpg}` | pack | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
-| `EveronLifeGameMode.conf` | pack | The MainWorld header |
-| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The pack's own playtest header (2026-11-14, #322): a copy of `LF_PlaytestTown.conf` that `host`, `playtest` and `session --mission playtest` boot with both addons. It still points at the core's DebugWorld and preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
+| `LF_PlaytestTown.conf` | pack, moved (batch 1) | The flagship playtest header; its world is now the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
+| `LF_PlaytestTown_Preview.{edds,jpg}` | pack, moved (batch 1) | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
+| `EveronLifeGameMode.conf` | pack, moved (batch 1) | The MainWorld header |
+| `LF_HostedTest.conf` | core | Test fixture (#323 batch 1): a hosted header on DebugWorld with dev tools closed, read by `host/playtest-mission` and `harness/dev-gate-dedicated` |
+| `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The pack's own playtest header (2026-11-14, #322): a copy of `LF_PlaytestTown.conf` that `host`, `playtest` and `session --mission playtest` boot with both addons. Since batch 1 it loads the pack world `Everon1989Town.ent` and uses the moved preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 
 ## Worlds
@@ -240,12 +244,12 @@ its save.
 | Annex layers: `Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat` | core | Every top-level entity sits inside the annex fence |
 | `Factions`, `Shops` | core | Empty layers |
 | `Quests` | split | One giver in the annex, the clerk on the square |
-| `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack | Vanilla buildings, props, and roads; no test names them |
+| `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack, moved (batch 1) | Vanilla buildings, props, and roads; no test names them. Now in the pack world `Everon1989Town` (SubScene of DebugWorld), with `Village_Signs` |
 | `Street_*` (13, with `Street_SpawnHub`) | split | Village sites that hold test-named fixtures |
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
-| `MainWorld/` | pack | The Everon town, St Philippe apple farm |
+| `MainWorld/` | pack, moved (batch 1) | The Everon town, St Philippe apple farm |
 
 ## Assets
 
@@ -257,7 +261,7 @@ its save.
 | `Items/` | core | Cash, ID card, food, roleplay meshes |
 | `Props/CementMound/`, `Props/Military/Sandbags/` | core | Chain item textures |
 | `Props/GreenScreen/` | core | Filming tooling |
-| `Props/TitlePoster/` | pack | Everon title poster |
+| `Props/TitlePoster/` | split, mesh moved (batch 1) | The poster mesh (`titleposter.{fbx,txo,xob}`) moved; `Data/` (the Everon title texture and `.emat`) stays in the core because the core `Signs/LF_BoardFace.xob` bakes that material. A neutral board material frees it |
 | `Resources/` | core | Ore and wood meshes |
 | `Signs/` | core | Sign face material; `LF_BoardFace.xob`, a copy of the title poster's 16:9 quad with its own GUID (the title poster itself is pack) |
 | `Tools/` | core | Axe, pickaxe |

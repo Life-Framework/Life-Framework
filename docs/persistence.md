@@ -357,6 +357,8 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   disconnect, and applied on spawn in place of the starter kit. Apply reconciles
   against what the entity already has, so it is idempotent. Death clears it.
 - A field added to a persisted record class breaks every older positional save.
+  The M3 record reshapes follow this as sidecar payloads: `docs/architecture/record-shape-vehicle.md`
+  (#752a) and `docs/architecture/record-shape-held-ground.md` (#751).
   Per-item state (`LF_StorageItemRecord.m_iAmmo`) is `[NonSerialized()]` and
   travels in its own payload instead; `police/item-state` proves the carried
   record format did not change.

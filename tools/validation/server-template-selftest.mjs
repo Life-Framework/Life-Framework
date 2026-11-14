@@ -37,12 +37,12 @@ mutate("start.sh", (t) => t.replace("-config", "-conf"), /start\.sh does not sta
 mutate("README.md", (t) => t.replace(/LF_REFORGER_SERVER/g, "X"), /README\.md does not mention/);
 // #297: the swap. The shipped core-only variant is clean and differs only in mods and scenarioId.
 const co = templateLaunch(undefined, "core-only");
-expect(co.addons.join() === "LifeFramework" && /LF_PlaytestTown\.conf$/.test(co.scenario), `core-only launch ${co.addons} ${co.scenario}`);
+expect(co.addons.join() === "LifeFramework" && /EL_DebugTest\.conf$/.test(co.scenario), `core-only launch ${co.addons} ${co.scenario}`);
 const variantMutate = (fn, want) => {
   const root = copy();
   cpSync("tools/server-template/variants", join(root, "tools", "server-template", "variants"), { recursive: true });
   for (const a of ["LifeFramework", "LF_Everon1989"]) { mkdirSync(join(root, "addons", a), { recursive: true }); cpSync(join("addons", a, `${a}.gproj`), join(root, "addons", a, `${a}.gproj`)); }
-  cpSync("addons/LifeFramework/Missions/LF_PlaytestTown.conf.meta", join(root, "addons", "LifeFramework", "Missions", "LF_PlaytestTown.conf.meta"), { recursive: true });
+  cpSync("addons/LifeFramework/Missions/EL_DebugTest.conf.meta", join(root, "addons", "LifeFramework", "Missions", "EL_DebugTest.conf.meta"), { recursive: true });
   cpSync("addons/LF_Everon1989/Missions", join(root, "addons", "LF_Everon1989", "Missions"), { recursive: true });
   const p = join(root, "tools", "server-template", "variants", "core-only", "server.json");
   writeFileSync(p, fn(readFileSync(p, "utf8")));
@@ -53,7 +53,7 @@ const variantMutate = (fn, want) => {
 };
 variantMutate((t) => t, null);
 variantMutate((t) => t.replace('"maxPlayers": 16', '"maxPlayers": 32'), /more than game\.mods and game\.scenarioId/);
-variantMutate((t) => t.replace('{1054CC8646357708}', '{0000000000000000}'), /does not match/);
+variantMutate((t) => t.replace('{5A1E5A1E5A1E0002}', '{0000000000000000}'), /does not match/);
 variantMutate((t) => t.replace('"modId": "79636E668EA37AC9"', '"modId": "B1E84D5687E11724"'), /must start with the core/);
 // A `pack new` scaffold swaps in by those two entries alone.
 {
