@@ -1,0 +1,15 @@
+{
+  "slug": "evidence-marker",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "meshy-6-lite",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d8ed-7a86-703e-a4b5-2ed3665259d4",
+      "concept": 3,
+      "conceptTaskId": "01a1d6cf-c84d-7669-8ee6-00dcc7054c31",
+      "conceptPrompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Cream coloured paper tent, a black hand-stamped number 12, a crease down the middle. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

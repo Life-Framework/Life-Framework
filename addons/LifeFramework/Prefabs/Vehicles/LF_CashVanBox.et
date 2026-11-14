@@ -2,7 +2,7 @@ GenericEntity {
  ID "A908E60A6B28E16B"
  components {
   MeshObject "{DD1430401517CCCD}" {
-   Object "{98CD0A123E772237}Assets/Props/Furniture/Chest_01/Chest_01.xob"
+   Object "{68BDC4DAC1963093}Assets/Props/Roleplay/CashStrongbox/CashStrongbox.xob"
   }
   LF_LockComponent "{9AC0E5A619840D55}" {
    m_bDebugLocked 1

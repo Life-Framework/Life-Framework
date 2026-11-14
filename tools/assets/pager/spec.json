@@ -1,0 +1,61 @@
+{
+  "slug": "pager",
+  "name": "Pager",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "",
+  "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. no text, no logos.",
+  "texture_prompt": "",
+  "meshy": {
+    "ai_model": "latest",
+    "target_polycount": 4000,
+    "remesh": false
+  },
+  "size_m": {
+    "length": 0.06,
+    "height": 0.08,
+    "width": 0.028
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 1024,
+    "credits": 300
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ],
+    "stretch": true
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Roleplay/Pager",
+  "prefab_dir": "Prefabs/Items/Roleplay/Pager",
+  "materials": {
+    "default": "plastic",
+    "regions": [
+      {
+        "class": "clip_metal",
+        "metallic_above": 0.5
+      }
+    ],
+    "classes": {
+      "clip_metal": {
+        "rough": [
+          0.35,
+          0.55
+        ],
+        "metal": [
+          0.7,
+          0.9
+        ],
+        "base_scale": 0.8
+      }
+    }
+  }
+}
