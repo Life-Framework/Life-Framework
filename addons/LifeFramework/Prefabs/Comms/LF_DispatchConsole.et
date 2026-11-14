@@ -5,7 +5,7 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
    ID "20E01FCD02C02308"
    components {
     MeshObject "{91D35EB6206030B1}" {
-     Object "{77C9FCF3FB1246E9}Assets/Items/Equipment/Radios/Radio_R107M/Radio_R107M_01_item.xob"
+     Object "{CBEE0DF9F07866DC}Assets/Props/Roleplay/DispatchConsole/DispatchConsole.xob"
     }
     ActionsManagerComponent "{F0BE841E7B09C8AF}" {
      ActionContexts {

@@ -1,0 +1,50 @@
+MetaFileClass {
+ Name "{BD52B5629131E24E}Assets/Props/Roleplay/MoonshineStill/MoonshineStill.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{F91E3C4BB2D37FB4}" {
+     SourceMaterial "MoonshineStill"
+     AssignedMaterial "{6812AFE6A9AE6EAD}Assets/Props/Roleplay/MoonshineStill/Data/MoonshineStill.emat"
+    }
+   }
+   MeshParams {
+    MeshParam MoonshineStill {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_MoonshineStill {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{BB783331026A5CD1}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{9F6A7B4D127DA238}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{0E424C5C6F9A16F9}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{AA5D920CB39A0165}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{5B29EED5C0CD1EF7}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}
