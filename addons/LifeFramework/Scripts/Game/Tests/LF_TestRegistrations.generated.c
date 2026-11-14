@@ -30,6 +30,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AssetAnim(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AssetStatesHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AtmosphereMix(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BackRoomDoor(), LF_TestTier.LOGIC);
