@@ -99,3 +99,10 @@ is the entry point.
 ## Jail work (#127)
 
 `LF_JailWork.c`: job spots in the cell (`LF_JailWorkAction`) take seconds off a serving prisoner's sentence through `LF_Jail.Credit`; the server owns the rules (serving, not busy, per-job cooldown). Pure rules in `LF_JailWorkRules`; test `jail/work`. No persistence change.
+
+## Npc stun (#922)
+
+- **Player sees:** shooting a town NPC with the taser (or any weapon carrying `LF_StunWeaponComponent`) drops it onto its back for the weapon's stun time; the shooter gets an "<name> is stunned" toast; the NPC offers no talk, shop or question action meanwhile; then it stands up where it fell.
+- **Owner and side:** `LF_NpcStun` decides on the server; the shot is read from the shooter's `OnProjectileShot` (a dart finds no hit zone on a town NPC); `LF_NpcBaseEntity` replicates the flag and rest pose and each peer lays the body down.
+- **Data:** string key `LF-Police_NpcStunned`; stun time and reach are the weapon's (`LF_StunWeaponComponent`); nothing persists (a restart stands the NPC up).
+- **Proof:** `police/npc-stun` (LOGIC), `police/npc-stun-world` (WORLD), `node agent-box/session.mjs npc-stun-proof`.

@@ -43,3 +43,10 @@ for the vehicle's `m_eService` (police or medic); anyone else is refused and log
 
 - `Police` (authorized users), `VehicleLock` (vehicle ownership), `Jobs`
   (emergency job gating).
+
+## Ambulance siren (#923)
+
+- **Player sees:** An on-duty medic in the ambulance driver seat gets "Siren: on" / "Siren: off" with the other light controls (F menu). On, the light bar runs and a 1980s European two-tone hi-lo plays from the vehicle; the police wail stays silent on it.
+- **Owner and side:** `LF_AmbulanceSiren` decides on the server.
+- **Data:** `m_sLoopProject`/`m_sLoopEvent` on the prefab manager (Sounds/Siren/Ambulance/, built by `tools/assets/ambulance-siren/sounds.json`); strings `LF-Siren_AmbulanceOn` / `LF-Siren_AmbulanceOff`. Nothing persists.
+- **Proof:** `sirenlights/ambulance-siren` (LOGIC), `sirenlights/ambulance-siren-world` (WORLD), `node agent-box/session.mjs ambulance-siren-proof`.

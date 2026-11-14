@@ -1,0 +1,28 @@
+GenericEntity : "{4E0A07E8E86EA538}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Front.et" {
+ ID "4FBD4DC370293128"
+ {
+  GenericEntity VaultDoor : "{7C7B004BBFE9D599}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Door.et" {
+   ID "3DBB96A171EFB36F"
+   coords 1.271 1.35 0.1624
+  }
+  GenericEntity VaultRoom : "{7EDF6DC122D6CE41}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Room.et" {
+   ID "97B3BC59D2C9C6DB"
+   coords 0 0 0
+  }
+  GenericEntity DepositWallLeft : "{5793F82B50123A5E}Prefabs/Props/Roleplay/BankVault/LF_BankVault_DepositWall.et" {
+   ID "B90E4FC98C14BA57"
+   coords -1.5 0.47 -2.1
+   angleY 90
+  }
+  GenericEntity DepositWallRight : "{5793F82B50123A5E}Prefabs/Props/Roleplay/BankVault/LF_BankVault_DepositWall.et" {
+   ID "9EE2C47C02BEC2F3"
+   coords 1.5 0.47 -2.1
+   angleY -90
+  }
+  GenericEntity CashTrolley : "{3C103D64C3AF2262}Prefabs/Props/Roleplay/BankVault/LF_BankVault_CashTrolley.et" {
+   ID "F2260BCCF455EB5F"
+   coords 0 0.47 -2.95
+   angleY 180
+  }
+ }
+}

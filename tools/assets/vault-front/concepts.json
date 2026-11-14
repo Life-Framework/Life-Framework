@@ -1,0 +1,168 @@
+{
+  "slug": "vault-front",
+  "reference": {
+    "file": "tools/assets/vault-front/reference-door01.jpg",
+    "why": "the maintainer's pick for the door: vault-door concept 1, Round, grey wheel (ws/asset-concepts-batch1)"
+  },
+  "subject": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall.",
+  "variants": [
+    {
+      "label": "Plain concrete block",
+      "detail": "Closed door, the frame flush in a plain square block of grey concrete wall, a painted grey-green frame ring",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, the frame flush in a plain square block of grey concrete wall, a painted grey-green frame ring. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-7666-70ff-954f-d0b8a47397fe",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "door matches the reference exactly; clean concrete block; frame and collar read"
+    },
+    {
+      "label": "Steel-clad wall",
+      "detail": "Closed door, the wall block clad in riveted grey-green steel plates, a stepped square steel collar around the round frame",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, the wall block clad in riveted grey-green steel plates, a stepped square steel collar around the round frame. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-7863-779c-96cf-7bb3e18b4520",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "riveted steel cladding, stepped square collar; busier but on style"
+    },
+    {
+      "label": "Ajar, bolts showing",
+      "detail": "Door swung open about 30 degrees on its hinges, showing its very thick edge with a ring of round locking bolts and the round tunnel through the wall",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Door swung open about 30 degrees on its hinges, showing its very thick edge with a ring of round locking bolts and the round tunnel through the wall. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-7a4c-71bc-94f5-af19a9b4f996",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "ajar shows bolts and tunnel, but an angled door is hard to split after image-to-3D"
+    },
+    {
+      "label": "Wide open, deep collar",
+      "detail": "Door swung fully open to the left, showing the deep steel-lined round tunnel through the thick wall and the stepped collar inside it",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Door swung fully open to the left, showing the deep steel-lined round tunnel through the thick wall and the stepped collar inside it. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-7c11-771e-a121-86940efb3634",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "best view of the tunnel depth; open door and hollow are poor image-to-3D input"
+    },
+    {
+      "label": "Octagonal collar",
+      "detail": "Closed door, an octagonal bolted steel collar plate around the round frame on a painted wall block, a small combination dial beside the wheel",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, an octagonal bolted steel collar plate around the round frame on a painted wall block, a small combination dial beside the wheel. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-7ddc-7405-9b13-802e8f72f678",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "octagon collar and dial; white wall less 1989 vault; slight crop at top"
+    },
+    {
+      "label": "Raised threshold",
+      "detail": "Closed door, the round opening sitting on a raised steel threshold step with a short tread plate in front of it",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, the round opening sitting on a raised steel threshold step with a short tread plate in front of it. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-7fa0-760c-bb20-575e981a5a33",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "tread step at the threshold adds a believable floor join"
+    },
+    {
+      "label": "Pilasters and lintel",
+      "detail": "Closed door, flanked by two square steel-clad pilasters under a heavy steel lintel beam, like a bank basement",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, flanked by two square steel-clad pilasters under a heavy steel lintel beam, like a bank basement. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-815e-7195-b657-c189c261497a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "pilasters and lintel; thin I-beam flanges, lintel wider than the block"
+    },
+    {
+      "label": "Recessed in brick",
+      "detail": "Closed door, the steel frame and collar standing proud of a thick wall block of painted cream brick",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, the steel frame and collar standing proud of a thick wall block of painted cream brick. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-8328-731c-888e-b937b2a2a7d8",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "cream brick reads more office than strong room"
+    },
+    {
+      "label": "Hazard-striped frame",
+      "detail": "Closed door, worn yellow and black hazard stripes painted on the frame face and threshold, a small time-lock box above the wheel",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, worn yellow and black hazard stripes painted on the frame face and threshold, a small time-lock box above the wheel. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-84e5-73c1-be8a-06baee8986fe",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 2
+      },
+      "note": "hazard stripes and time-lock box; stripes read as markings"
+    },
+    {
+      "label": "Heavy round collar",
+      "detail": "Closed door, a very deep stepped round steel collar like a ship bulkhead projecting from a dark grey wall block, big bolt heads around it",
+      "prompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, a very deep stepped round steel collar like a ship bulkhead projecting from a dark grey wall block, big bolt heads around it. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6db-8697-7074-a31d-e2b3364b2aa6",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "deep bulkhead collar; door changed (hinge arm half hidden), dark wall"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 1,
+    "label": "Plain concrete block",
+    "by": "human",
+    "why": "maintainer pick (coordinator 2026-11-14)",
+    "at": "2026-11-13"
+  }
+}

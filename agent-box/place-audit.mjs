@@ -7,6 +7,7 @@
 //   audit placement [--top 40] [--area <name>] [--layer A.layer,B.layer] [--annex] [--from <out.txt>] [--out dir] [--strict]
 //   audit selftest
 //
+// red-proof: 2026-11-14, LIMITS.sharedOverlap set to 0.08 printed "place-audit selftest: FAILED cups on one counter"; restored, OK.
 // In-game (LF_PlacementAudit.c): floating / sunk (a trace down from the bounds base), corners hanging
 // off a surface edge, clips through walls and other surfaces, tilt, scale, reach, oriented boxes, doors.
 // Here: overlaps between oriented boxes, props in a door's swing, props on a carriageway, absurd scale,
@@ -27,7 +28,7 @@ export const PROFILE_DIR = join(ROOT, "server", "profile", "test", "profile", "p
 export const TOWN = { x: 220, z: 260, r: 320 }; // door query circle: the whole town and its outskirts
 
 // Thresholds (metres, degrees). The physical ones match LF_PlacementAudit (GAP, TILT, SCALE_MIN/MAX).
-export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, door: 0.1, doorClear: 1.0, doorWalk: 3, walk: 1.5, signWalk: 3, scaleMin: 0.5, scaleMax: 2, oddLow: 0.75, oddHigh: 1.6, roadMargin: 0.3, roadMaxWidth: 15 };
+export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, sharedOverlap: 0.02, door: 0.1, doorClear: 1.0, doorWalk: 3, walk: 1.5, signWalk: 3, scaleMin: 0.5, scaleMax: 2, oddLow: 0.75, oddHigh: 1.6, roadMargin: 0.3, roadMaxWidth: 15 };
 
 // Layers that hold no props: world settings, managers, factions, the roads themselves (checked as paths).
 const SKIP_LAYERS = new Set(["default.layer", "Gamemode.layer", "Factions.layer", "Village_Roads.layer", "Roadmap.layer"]);
@@ -270,6 +271,11 @@ export function singleProblems(e, m) {
   return out;
 }
 
+// Both rest (within the float tolerance) on the same named prop, not the ground.
+function sharedSurface(a, b) {
+  return !!a.on && a.on === b.on && a.on !== "terrain" && a.on !== "none" && Math.abs(a.gap) <= LIMITS.gap && Math.abs(b.gap) <= LIMITS.gap;
+}
+
 // Pairs: oriented boxes that interpenetrate beyond LIMITS.overlap. Skips vegetation (canopies have no
 // collision), buildings (the ray clip check sees their walls), a layer parent and its child, and an item
 // that sits inside an open holder (a shelf, a stand, a table group).
@@ -285,10 +291,13 @@ export function overlapProblems(list) {
       if (B.e.parent && B.e.parent === A.e.name) continue;
       if (isKind(A.e, "chain") && isKind(B.e, "chain")) continue;
       const depth = obbPenetration(A.m.box, B.m.box);
-      if (depth <= LIMITS.overlap) continue;
+      // Two props standing on the same table or counter are neighbours, not one inside the other: any
+      // push-through counts (a till and a bottle on one counter overlapped by 0.05 m and passed the 0.08 m limit).
+      const sameSurface = sharedSurface(A.m, B.m);
+      if (depth <= (sameSurface ? LIMITS.sharedOverlap : LIMITS.overlap)) continue;
       const [small, big] = volume(A.m) <= volume(B.m) ? [A, B] : [B, A];
       // Contents: something much smaller sitting inside a shelf, a stand, a crate (apples in the press crate).
-      if (isKind(big.e, "holder") && volume(small.m) < volume(big.m) * 0.5 && insideFraction(small.m.box, big.m.box) > 0.6) continue;
+      if (!sameSurface && isKind(big.e, "holder") && volume(small.m) < volume(big.m) * 0.5 && insideFraction(small.m.box, big.m.box) > 0.6) continue;
       // Resting on it: the surface found under the small one is the big one (a jerrycan on a workbench whose
       // back panel rises above the top), or the small one's bottom is at the big one's top.
       if (small.m.gap <= LIMITS.gap && small.m.gap >= -LIMITS.gap && (small.m.on === big.m.found || small.m.on === label(big.e))) continue;
@@ -395,6 +404,15 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
       continue;
     }
     const sp = line.indexOf(" ");
+    if (line.startsWith("shelf ")) {
+      // A display copy a store spawned at load (no layer entry): measured like a placed prop.
+      const sp2 = line.indexOf(" ", 6);
+      const tag = line.slice(6, sp2);
+      const m = parseRow(line.slice(sp2 + 1));
+      if (m.missing) continue;
+      list.push({ idx: `shelf:${tag}`, e: { name: `Stock_${tag.replace(/[/@]/g, "_")}`, prefab: tag.split("/")[1].split("@")[0], layer: "(store stock)", x: m.box.c[0], y: m.box.c[1], z: m.box.c[2], actions: [], found: m.found }, m });
+      continue;
+    }
     const idx = Number(line.slice(0, sp));
     const e = records[idx];
     if (!e) continue;
@@ -582,6 +600,10 @@ function selftest() {
     { name: "BigBag", layer: "T.layer", x: 60, y: 0, z: 0, prefab: "Prefabs/Items/Roleplay/LF_MoneyBag.et" },
     { name: "GoodBag", layer: "T.layer", x: 62, y: 0, z: 0, prefab: "Prefabs/Items/Roleplay/LF_MoneyBag.et" },
     { name: "Mystery", layer: "T.layer", x: 64, y: 0, z: 0, prefab: "Prefabs/Props/Mystery_01.et" },
+    { name: "CupA", layer: "T.layer", x: 70, y: 1, z: 0, prefab: "Prefabs/Props/Cup_01.et" },
+    { name: "CupB", layer: "T.layer", x: 70.26, y: 1, z: 0, prefab: "Prefabs/Props/Cup_01.et" },
+    { name: "CupC", layer: "T.layer", x: 70.6, y: 1, z: 5, prefab: "Prefabs/Props/Cup_01.et" },
+    { name: "CupD", layer: "T.layer", x: 70.86, y: 1, z: 5, prefab: "Prefabs/Props/Cup_01.et" },
   ];
   const out = [
     `0 ${row({ c: [0, 1.3, 0], gap: 1, pgap: 1 })}`,
@@ -597,6 +619,12 @@ function selftest() {
     `10 ${row({ c: [60, 0.7, 0], h: [0.4, 0.7, 0.4] })}`,
     `11 ${row({ c: [62, 0.275, 0], h: [0.15, 0.275, 0.1] })}`,
     `12 ${row({ c: [64, 5, 0], h: [5, 5, 5] })}`,
+    // Two cups on one counter, 0.26 m apart with 0.15 m half widths: 0.04 m deep, under the 0.08 m limit.
+    `13 ${row({ c: [70, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Counter_01" })}`,
+    `14 ${row({ c: [70.26, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Counter_01" })}`,
+    // The same overlap on two different surfaces is a coincidence of two props, kept at the 0.08 m limit.
+    `15 ${row({ c: [70.6, 1.15, 5], h: [0.15, 0.15, 0.15], on: "Counter_01" })}`,
+    `16 ${row({ c: [70.86, 1.15, 5], h: [0.15, 0.15, 0.15], on: "Shelf_01" })}`,
     "door name=Door_01 root=House_01 rp=30,0,-5 c=30,1,0 h=0.5,1,0.03 a0=1,0,0 a1=0,1,0 a2=0,0,1",
   ].join("\n");
   const res = analyse(recs, out, { roads: [{ name: "Lane", pts: [[0, 20], [30, 20]], width: 4 }] });
@@ -605,6 +633,11 @@ function selftest() {
   if (kinds("GroundCrate").length) fail(`grounded crate flagged: ${kinds("GroundCrate")}`);
   if (!kinds("EdgeCrate").includes("overhang") || kinds("EdgeCrate").includes("floating")) fail(`edge crate: ${kinds("EdgeCrate")}`);
   if (!kinds("CrateA").includes("overlaps") || !kinds("CrateB").includes("overlaps")) fail("crates inside each other");
+  if (!kinds("CupA").includes("overlaps") || !kinds("CupB").includes("overlaps")) fail(`cups on one counter: ${kinds("CupA")}`);
+  if (kinds("CupC").includes("overlaps") || kinds("CupD").includes("overlaps")) fail("cups on two surfaces held to the 0.08 m limit");
+  const stock = analyse(recs, `${out}
+shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Counter_01", found: "WaterBottle" })}`, {});
+  if (!stock.ranked.some((r) => r.layer === "(store stock)" && r.problems.some((p) => p.kind === "overlaps"))) fail("a store stock row is measured and paired with the placed props");
   if (!kinds("DoorBarrel").includes("blocks-door")) fail(`door barrel: ${kinds("DoorBarrel")}`);
   if (!kinds("RoadBench").includes("in-road")) fail(`road bench: ${kinds("RoadBench")}`);
   if (kinds("Sign_Hung").length) fail(`hung sign flagged: ${kinds("Sign_Hung")}`);

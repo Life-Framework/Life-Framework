@@ -24,7 +24,8 @@ export async function main() {
   };
   const spec = (slug) => JSON.parse(readFileSync(join(ROOT, "tools", "assets", slug, "spec.json"), "utf8"));
 
-  for (const kind of Object.keys(KINDS)) {
+  // A kind with no mesh (material: fit "none") has no triangle budget.
+  for (const kind of Object.keys(KINDS).filter((k) => KINDS[k].fit !== "none")) {
     const b = budgetFor(kind);
     ok(b.min <= b.lod0 && b.lod0 <= b.max, `budget: ${kind} has floor <= default <= cap`);
     ok(KINDS[kind].defaultTris === b.lod0 && KINDS[kind].maxTris === b.max, `budget: kinds.mjs takes ${kind}'s default and cap from budgets.mjs`);
@@ -42,6 +43,8 @@ export async function main() {
   ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod_ratios: [0.5, 0.6] } }).some((p) => /shrink/.test(p)), "budget: LOD ratios that grow are refused");
   ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod_ratios: [0.9, 0.5] } }).some((p) => /almost all/.test(p)), "budget: a LOD1 that keeps 90 % of LOD0 is refused");
   ok(checkBudget({ ...cuffs, budget: { ...cuffs.budget, lod_ratios: [0.5, 0.25, 0.01] } }).some((p) => /under 0.03/.test(p)), "budget: a last LOD under 3 % is refused");
+
+  ok(checkBudget({ ...cuffs, source: { blender: "model.py" }, budget: { ...cuffs.budget, lod0_tris: 1400 } }).length === 0, "budget: a model our Blender script builds is not held to the floor");
 
   for (const slug of ["taser", "handcuffs", "spike-strip"]) {
     const s = spec(slug);

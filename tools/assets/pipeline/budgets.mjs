@@ -43,7 +43,9 @@ export function budgetFor(kindName) {
 export function checkBudget(spec, sourceTris) {
   const out = [];
   const b = BUDGETS[spec.kind];
-  if (!b) return out;
+  // A model our own Blender script builds (source.blender) has exactly the triangles it needs:
+  // nothing is collapsed, so the floor and the step rules do not apply.
+  if (!b || spec.source?.blender) return out;
   const s = spec.budget || {};
   if (s.lod0_tris < b.min) out.push(`budget.lod0_tris ${s.lod0_tris} is under the ${spec.kind} floor of ${b.min} (vanilla items of this kind are at ${b.lod0}); it will look faceted`);
   if (s.lod0_tris > b.max) out.push(`budget.lod0_tris ${s.lod0_tris} is over the ${spec.kind} cap of ${b.max}`);

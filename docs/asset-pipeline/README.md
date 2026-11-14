@@ -54,6 +54,8 @@ Read this before any `generate`.
   (`meshy.mjs` `COST`, read from the Meshy pricing page on 2026-11-12; a task's own
   `consumed_credits` wins when it reports one).
 - Every generation's task ids and prompt (for image-to-3D: the image task, the concept number, its task id and prompt) are written to `tools/assets/<slug>/meshy.json` (committed; the asset's credit in `docs/credits.md` points at it).
+- Which Meshy model and options to ask for per kind, and how Meshy's remesh compares with our Blender
+  decimation, is measured in [meshy-endpoints.md](meshy-endpoints.md).
 - Every paid call is appended to `tmp/assets/<slug>/credits.jsonl`. `asset status` prints the sum.
 - `budget.credits` in the spec is the cap for the asset and cannot be set above 300. `generate`
   refuses to start an attempt that would cross it. When that happens, stop and report: the prompt
@@ -104,7 +106,8 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
 - `budget` comes from `tools/assets/pipeline/budgets.mjs`: per kind a LOD0 default, a floor (under it the model looks
   faceted next to vanilla) and a cap, measured from vanilla `.xob` files (weapon 12,000, gadget 8,000, deployable
   14,000 for the whole thing). Each `lod_ratios` step keeps at least half of the LOD before it; a bigger step
-  collapses UVs. The spec stage refuses a budget that breaks these.
+  collapses UVs. The spec stage refuses a budget that breaks these, except for a model our own Blender script
+  builds (`source.blender`), which collapses nothing.
 - `meshy.remesh: false` keeps the raw generation as the source of LOD0. Use it when the remesh comes back worse
   than the raw mesh: on the spike strip it puffed the flat rubber links into pillows with ragged edges.
 - `fit.bake: false` turns off the high-to-low normal bake the clean stage runs when it collapses a raw mesh. On the
@@ -147,8 +150,9 @@ and only what Meshy's own metallic map marks above 0.5 stays metal.
 }
 ```
 
-- Built-in classes: `plastic` (rough 0.75 to 0.85, metal 0 to 0.03), `rubber`, `metal`, `fabric`
-  (`materials.mjs`). `classes` overrides or adds one.
+- Built-in classes: `plastic` (rough 0.75 to 0.85, metal 0 to 0.03), `rubber`, `metal`, `fabric`,
+  `brushed_metal` (rough 0.4 to 0.65, metal 0.85 to 0.95: a worked casting, not a mirror) and `stone`
+  (rough 0.78 to 0.95, never metal) (`materials.mjs`). `classes` overrides or adds one.
 - `rough` and `metal` are `[lo, hi]`: Meshy's value 0..1 maps linearly onto it, so `[0.8, 0.8]` pins it.
   Colour is `base_scale` (darken, keep the hue) or `base_lum` (grey from the original luminance, scuffs kept).
 - A region picks pixels by `metallic_above` (Meshy's metallic map) or `above_height_m` (faces whose centre
@@ -156,6 +160,40 @@ and only what Meshy's own metallic map marks above 0.5 stays metal.
 - Edit the spec and rerun `asset run <slug> --from clean`; the raw maps stay Meshy's. The handcuffs and
   the spike strip are the worked examples. Selftest: `tools\cli asset selftest`
   (`validation/asset-materials-selftest.mjs`).
+
+## Modelled in Blender
+
+Simple shapes (a bar, a lump of rock) do not need a generator. With `"source": { "blender": "model.py",
+"textures": [{ "id": "Metal046B", "use": "..." }] }` the `generate` stage spends no credits: it downloads
+each named [ambientCG](https://ambientcg.com) set (all CC0 1.0; only the JPG maps are unpacked) into
+`tmp/assets/<slug>/src/` and runs `tools/assets/<slug>/model.py` headless. The script builds the mesh,
+bakes its maps from node recipes over those sets and procedural masks
+(`tools/assets/pipeline/blender/texbake.py`), and writes the same `raw/model.glb` and `raw/tex_*.png` a
+Meshy run leaves, so `clean` and `import` work unchanged. `budget.credits` may be 0. It also renders
+`raw/review_<Variant>.png` on the maps after the material step: read those before `clean`. Worked
+examples: `tools/assets/metal-ingot` and `tools/assets/ore-nugget`. Every set used gets a row in
+`docs/credits.md`.
+
+## Variants
+
+One model, several materials: `"variants": [{ "name": "Copper", "emat": "Assets/.../Copper.emat",
+"materials": { ... } }]`. The model script writes `raw/<Variant>/tex_*.png`; `clean` packs each set through
+that variant's material classes into `<Name>_<Variant>_BCR.tif` and `_NMO.tif`; `import` rebuilds them
+and writes one emat per variant. A variant that names an existing emat keeps its GUID, so the prefabs
+that reference it need no edit; the emat's text is the import's output and is rewritten each run. The
+model's own material is the first variant's; the other prefabs assign theirs with a
+`MaterialAssignClass` on the model's material name. `emat_template` (a file beside the spec, with
+`$BCR` and `$NMO` in it) replaces the plain two-map emat, for one that inherits a vanilla material.
+`"prefab": false` skips the scaffold when the prefabs already exist.
+
+## Material assets
+
+Kind `material` is a texture set with no model: tiling maps for a mesh that already exists. It needs
+`source.blender` and at least one variant; `clean` runs only the material step and `import` only the
+textures and emats. `tools/assets/ore-veins` paints rock-with-ore tiles for the vanilla quarry boulder
+and lays them on with an emat that inherits `GraniteStone_01.emat`, so the boulder keeps its mask and
+macro maps. A texture that must tile samples its CC0 sets at whole-number UV scales and its noise on a
+torus (`Graph.torus`), so the tile has no seam.
 
 ## What the tool does not do
 
@@ -168,6 +206,29 @@ and only what Meshy's own metallic map marks above 0.5 stays metal.
 - It does not rewrite a prefab that exists. After the scaffold the prefabs are ordinary files.
 - It does not classify the asset core or pack. Do that by the red line
   (`docs/architecture/core-vs-pack.md`) and add the inventory rows.
+
+## Kits
+
+`tools\cli asset kit <slug> [--only build|import]` is for a set of models that share materials and are
+mostly plain geometry: a room, a wall with a tunnel, furniture made of boxes. A generated wall is
+solid behind its door and a grid of small doors comes out of image-to-3D as mush, so a kit is built by
+its own headless Blender script (`tools/assets/<slug>/kit.json` names it) and only the detail that
+needs it is generated, through the usual `concept` and `generate` stages of its own slug.
+
+- `build` runs the script. It writes one `.fbx` per model (LODs, `UBX_` box colliders, bones), the
+  shared materials as `_BCR`/`_NMO` TIFFs, review renders and `report.json` into
+  `tmp/assets/<slug>/kit/`.
+- `import` copies them into `asset_dir`, writes every texture, `.emat` and `.xob.meta` (one
+  `MaterialAssign` per material, one `GeometryParam` per collider with the layer preset and game
+  material from `kit.json`), rebuilds each source in a hidden Workbench and checks every `.xob` for
+  its materials, colliders and bones.
+- Prefabs and placement are written by hand, as after the `prefab` stage.
+
+The first kit is the bank vault (`tools/assets/bank-vault/`): the round door #1 generated with Meshy
+image-to-3D (`tools/assets/vault-front`) and split from its frame by radius and depth, on a `door`
+bone at the hinge pivot; the wall block with a round tunnel, the collar, the step, the steel room,
+the deposit box wall and the cash trolley are geometry, with procedural tiling materials (concrete,
+painted steel in the door's own colour, brushed steel panels, banknote bricks).
 
 ## Music and background loops
 

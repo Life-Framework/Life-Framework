@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{504037CAE978B960}Sounds/Siren/Ambulance/Siren_Ambulance_Hilo.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

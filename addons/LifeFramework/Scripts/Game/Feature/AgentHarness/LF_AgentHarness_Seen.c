@@ -6,6 +6,7 @@
 //!   downed=D life=L bleed=S the own body's replicated downed flag, life state and bleed-out seconds left (-1 not downed)
 //!   veh=<prefab>:d=M:eng=E:lock=L:ign=I:stolen=S  one entry per vehicle within the radius, nearest first, joined by "|"
 //!   door=<prefab>:d=M:locked=L                    one entry per LF_LockComponent door within the radius, nearest first
+//!   npc=<name>:d=M:stun=S:up=Y                  one entry per town NPC within the radius: its replicated stun flag and how upright it stands (1 standing, 0 lying)
 //!   bags=N                                        loose LF_MoneyBag entities within the radius
 //!   chop=P                                        the chop shop's replicated percent, -2 with no yard in range
 //!   toast=last toast shown, dispatches=N and lastdispatch=radio calls this client heard
@@ -23,6 +24,8 @@ class LF_HarnessSeen
 	protected static ref array<string> s_aVehicleText = {};
 	protected static ref array<float> s_aDoorDist = {};
 	protected static ref array<string> s_aDoorText = {};
+	protected static ref array<float> s_aNpcDist = {};
+	protected static ref array<string> s_aNpcText = {};
 	protected static int s_iBags;
 	protected static int s_iChop;
 
@@ -87,6 +90,18 @@ class LF_HarnessSeen
 		string prefab = LF_Utils.GetPrefabName(entity);
 		if (prefab.Contains("LF_MoneyBag"))
 			s_iBags++;
+
+		LF_NpcBaseEntity npc = LF_NpcBaseEntity.Cast(entity);
+		if (npc)
+		{
+			int stun = 0;
+			if (npc.LF_IsStunned())
+				stun = 1;
+
+			float npcAt = vector.Distance(s_vOrigin, entity.GetOrigin());
+			float up = Math.Round(entity.GetTransformAxis(1)[1] * 100) / 100;
+			InsertSorted(s_aNpcDist, s_aNpcText, npcAt, string.Format("%1:d=%2:stun=%3:up=%4", entity.GetName(), Math.Round(npcAt * 10) / 10, stun, up));
+		}
 
 		LF_ChopShopComponent shop = LF_Component<LF_ChopShopComponent>.Find(entity);
 		if (shop)
@@ -164,6 +179,8 @@ class LF_HarnessSeen
 		s_aVehicleText.Clear();
 		s_aDoorDist.Clear();
 		s_aDoorText.Clear();
+		s_aNpcDist.Clear();
+		s_aNpcText.Clear();
 		s_iBags = 0;
 		s_iChop = -2;
 		GetGame().GetWorld().QueryEntitiesBySphere(s_vOrigin, radius, CollectEntity, null, EQueryEntitiesFlags.ALL);
@@ -172,6 +189,7 @@ class LF_HarnessSeen
 		toast.Replace(" ", "_");
 		string dispatch = SCR_PlayerController.LF_GetLastDispatch();
 		dispatch.Replace(" ", "_");
-		return string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
+		string seen = string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
+		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " npc=" + Join(s_aNpcText);
 	}
 }

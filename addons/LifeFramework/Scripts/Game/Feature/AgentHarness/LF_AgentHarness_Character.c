@@ -261,27 +261,11 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		string uid = LF_Utils.GetPlayerUID(this);
-		LF_PlayerAccount account;
-		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
-		if (manager && !uid.IsEmpty())
-			account = manager.GetAccount(uid);
-
-		string cleared = "";
-		if (account)
-		{
-			// SetWantedLevel(0) also takes this player's posters down and publishes the account.
-			account.SetWantedLevel(0);
-			cleared = "wanted";
-		}
-
-		int reports = LF_WantedReports.ClearAll();
-		int dispatches = LF_Dispatch.ClearLog();
-		int tills = LF_RobAction.ResetCooldowns() + LF_Hospital.ResetTillCooldowns();
-		int vaults = LF_Bank.RestockAll();
-		int searches = LF_ChainSearch.ClearSearchCooldowns();
-		LF_HarnessReply(commandId, "ok", string.Format("cleared %1 reports=%2 dispatches=%3 tills=%4 vaults=%5 searches=%6", cleared, reports, dispatches, tills, vaults, searches));
-		LF_Debug.Info("AgentHarness", string.Format("crime state reset: reports=%1 dispatches=%2 tills=%3 vaults=%4 searches=%5", reports, dispatches, tills, vaults, searches));
+		// The same service the respawn and the menu use, limited to the crime-state steps: the wanted
+		// levels (and so the posters), reports, dispatch log, cooldowns, vaults, evidence, loose loot,
+		// spike strips and calls. A proof's reset never moves a car or regrows a rock.
+		string result = LF_WorldReset.RunAll("harness resetcrime", true);
+		LF_HarnessReply(commandId, "ok", "cleared " + result);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -460,6 +444,24 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "parceldrop")
+		{
+			// The carried courier parcel leaves the hands on purpose: the marker and the toast follow (#920).
+			InventoryStorageManagerComponent parcelStorage = LF_InventoryUtils.GetResponsibleStorageManager(this);
+			array<IEntity> parcels;
+			if (parcelStorage)
+				parcels = LF_InventoryUtils.FindItemsByPrefab(parcelStorage, LF_CivilianJob.PARCEL_PREFAB);
+			if (!parcels || parcels.IsEmpty())
+			{
+				LF_HarnessReply(commandId, "error", "no parcel carried");
+				return;
+			}
+
+			bool dropped = LF_InventoryUtils.DropItem(this, parcels[0]);
+			LF_HarnessReply(commandId, "ok", string.Format("parcel dropped=%1 at=%2", dropped, GetOrigin().ToString(false)));
+			return;
+		}
+
 		if (tool == "crate")
 		{
 			// Chain goods (#419): one contraband crate, what the moonshine still makes.
@@ -617,6 +619,17 @@ modded class SCR_ChimeraCharacter
 		if (!target)
 		{
 			LF_HarnessReply(commandId, "error", "no_target");
+			return;
+		}
+
+		// A stun weapon in hand: the shot is a dart (LF_NpcStun), not a lethal hit.
+		if (LF_Stun.HeldStunWeapon(this))
+		{
+			int stunned = 0;
+			if (LF_NpcStun.HarnessShot(this, target))
+				stunned = 1;
+
+			LF_HarnessReply(commandId, "ok", string.Format("shotnpc dart=1 stunned=%1", stunned));
 			return;
 		}
 

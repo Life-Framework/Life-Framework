@@ -94,3 +94,7 @@ GenericEntity Roadmap_Police_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Rolep
  coords 234 0.002 245.4
  angleY 90
 }
+GenericEntity Roadmap_Police_CaseBoard : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
+ coords 234.726 1 239.19
+ angleY -90
+}
