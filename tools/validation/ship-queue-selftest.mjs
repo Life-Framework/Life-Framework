@@ -17,7 +17,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { writeFileSync } from "node:fs";
 import * as sq from "../lib/ship-queue.mjs";
-import { gateSlots, gateLimits } from "../ship-queue.mjs";
+import { gateSlots, gateLimits, ensureWorker, workerRunningText } from "../ship-queue.mjs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as pool from "../remote/pool.mjs";
 
 let failed = 0;
@@ -174,6 +176,39 @@ try {
   check(sq.entryFor(back, "a")?.state === "merging", "entryFor finds the live entry for a slug");
 } finally {
   rmSync(dir, { recursive: true, force: true });
+}
+
+// 7. `wt ship` ended with "FAIL quiet-launch failed: ... exited within 3s with code 0" when a worker already held the
+// lock: the new worker returns 0 at once (runWorker) and quiet-launch calls a fast exit a failed launch. A live worker is
+// found before any spawn, and a fast exit 0 from a spawn that lost the lock race is "already running", not a failure.
+// red-proof 2026-11-14 (worker-fast-exit): with the catch in ensureWorker rethrowing, "a worker that lost the lock race
+// is already running, not a failed launch" never ran: the selftest died with "quiet-launch failed: ... exited within 3s with code 0"; with the alive() pre-check removed,
+// "a live worker is not spawned again" failed (spawned: 1).
+{
+  const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const noSleep = () => Promise.resolve();
+  let spawned = 0;
+  const live = await ensureWorker(repo, { alive: () => 4242, spawn: () => { spawned++; return 1; }, sleep: noSleep });
+  check(spawned === 0 && live.pid === 4242 && live.already && live.message === "worker already running (pid 4242)", `a live worker is not spawned again (spawned: ${spawned}, ${live.message})`);
+
+  const fastExit = () => { throw new Error("quiet-launch failed: quiet-launch: node.exe exited within 3s with code 0 (0x0)"); };
+  let holder = null;
+  const raced = await ensureWorker(repo, { alive: () => holder, spawn: () => { holder = 777; return fastExit(); }, sleep: noSleep });
+  check(raced.already && !raced.started && raced.pid === 777 && raced.message === "worker already running (pid 777)", `a worker that lost the lock race is already running, not a failed launch (${JSON.stringify(raced)})`);
+
+  const unknown = await ensureWorker(repo, { alive: () => null, spawn: fastExit, sleep: noSleep });
+  check(unknown.already && unknown.pid === null && unknown.message === workerRunningText(null), "a fast exit 0 with no holder visible yet is still not a failure");
+
+  let threw = "";
+  try {
+    await ensureWorker(repo, { alive: () => null, spawn: () => { throw new Error("quiet-launch failed: quiet-launch: node.exe exited within 3s with code 1 (0x1)"); }, sleep: noSleep });
+  } catch (e) {
+    threw = String(e.message);
+  }
+  check(/code 1/.test(threw), "a fast exit with a non-zero code is still a failed launch");
+
+  const started = await ensureWorker(repo, { alive: () => null, spawn: () => 9001, sleep: noSleep });
+  check(started.started && started.pid === 9001 && !started.already, "no worker and a clean spawn: started");
 }
 
 console.log(failed ? `ship-queue-selftest: ${failed} FAILED` : "ship-queue-selftest: all passed");

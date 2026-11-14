@@ -405,6 +405,12 @@ export function selftestSession() {
     if (pinned.relay || pinned.rest.includes("--local")) failures.push("--local did not keep a proof on this PC");
     if (sessionRelay("asset-states-proof", [], null, true).relay) failures.push("a proof relayed with no remote session");
     if (sessionRelay("up", [], ptr, false).relay || sessionRelay("selftest", [], ptr, false).relay) failures.push("a non-session command was relayed");
+    // red-proof 2026-11-14: with cliSessionForwards always false, "tools\cli session down ignored the recorded remote session" failed.
+    if (!cliSessionForwards("down", [], ptr, {})) failures.push("tools\\cli session down ignored the recorded remote session");
+    if (!cliSessionForwards("status", [], ptr, {})) failures.push("tools\\cli session status ignored the recorded remote session");
+    if (cliSessionForwards("down", [], null, {})) failures.push("session down forwarded with no remote session recorded");
+    if (cliSessionForwards("down", [], ptr, { LF_SESSION_ROUTED: "1" })) failures.push("the router's local leg forwarded to itself again");
+    if (cliSessionForwards("up", [], ptr, {}) || cliSessionForwards("join", [], ptr, {})) failures.push("a command that is not routed was forwarded");
     const root = join(tmpdir(), "lf-wt");
     const m = remoteArgs(["{AB}P/x.et", "hand,ground", join(root, "tmp", "assets", "l", "states"), join(tmpdir(), "elsewhere")], root, ptr.dir);
     if (m.args[2] !== `${ptr.dir}/tmp/assets/l/states` || m.args[0] !== "{AB}P/x.et" || m.args[3] !== join(tmpdir(), "elsewhere")) failures.push(`remoteArgs mapped the wrong args: ${JSON.stringify(m.args)}`);
@@ -1287,6 +1293,16 @@ export function sessionRelay(cmd, rest, ptr, isProof) {
   if (!cmd || !(SESSION_BOUND.has(cmd) || isProof)) return { relay: false, rest };
   if (rest.includes("--local")) return { relay: false, rest: rest.filter((a) => a !== "--local") };
   return { relay: !!ptr, rest };
+}
+
+// Pure: whether `tools\cli session <sub>` must go through this file instead of acting on this PC's
+// session dir. A remote session is recorded only here (tmp/session-remote.json); without the
+// forward `session down` read the local dir, said "none recorded" and left the server running on the
+// pool machine (2026-11-14, lf-cloud). `--machine local` still reaches the local session; the router
+// sets LF_SESSION_ROUTED for its own local leg, which must not forward again.
+export function cliSessionForwards(sub, rest, ptr, env = process.env) {
+  if (!ptr || env.LF_SESSION_ROUTED === "1") return false;
+  return ["down", "status", "restart", "wait"].includes(sub);
 }
 
 async function relayToSession(cmd, rest, ptr) {

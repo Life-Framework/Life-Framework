@@ -84,14 +84,42 @@ export function workerLog(root) {
   return join(wt.mainRootOf(root), "tmp", "logs", "ship-queue-worker.log");
 }
 
+// quiet-launch reports a process that ends within 3 s as a failed launch. For the worker, exit 0 in
+// that window is the normal "another worker holds the lock" answer (runWorker returns 0).
+export const FAST_EXIT_OK = /exited within \d+s with code 0/;
+
 // Start the worker when none runs. It runs this file's own copy (the checkout `wt ship` was called from).
-export async function ensureWorker(root) {
-  const pid = workerAlive(root);
-  if (pid) return { pid, started: false };
-  mkdirSync(dirname(workerLog(root)), { recursive: true });
-  const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
-  const child = quietSpawnDetached(process.execPath, [SELF, "worker", wt.mainRootOf(root)], { cwd: dirname(dirname(SELF)), env: process.env });
-  return { pid: child, started: true };
+// A worker that was already up, or that won the lock a moment before this one, is a success:
+// { pid, started: false, already: true }, and the caller prints "worker already running (pid N)".
+// opts.alive / opts.spawn / opts.sleep are for the selftest.
+export async function ensureWorker(root, opts = {}) {
+  const alive = opts.alive ?? (() => workerAlive(root));
+  const pid = alive();
+  if (pid) return { pid, started: false, already: true, message: workerRunningText(pid) };
+  if (!opts.spawn) mkdirSync(dirname(workerLog(root)), { recursive: true });
+  let spawnDetached = opts.spawn;
+  if (!spawnDetached) {
+    const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
+    spawnDetached = quietSpawnDetached;
+  }
+  try {
+    const child = spawnDetached(process.execPath, [SELF, "worker", wt.mainRootOf(root)], { cwd: dirname(dirname(SELF)), env: process.env });
+    return { pid: child, started: true, already: false };
+  } catch (e) {
+    if (!FAST_EXIT_OK.test(String(e?.message ?? e))) throw e;
+    // The new worker saw the lock taken and left: wait for the lock file to show its holder.
+    const sleep = opts.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
+    let holder = alive();
+    for (let i = 0; i < 5 && !holder; i++) {
+      await sleep(400);
+      holder = alive();
+    }
+    return { pid: holder ?? null, started: false, already: true, message: workerRunningText(holder) };
+  }
+}
+
+export function workerRunningText(pid) {
+  return pid ? `worker already running (pid ${pid})` : "worker already running";
 }
 
 function wlog(root, s) {
