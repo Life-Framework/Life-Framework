@@ -47,6 +47,25 @@ An issue moves through these labels. Only a human sets `verified`.
 `promote --confirm` sets `verified` and closes the issues the promoted PRs
 reference. Reports say "merged, in-dev", never "done".
 
+## Names and versions
+
+Two Workshop items (decision 2026-11-09, #367 and #375):
+
+| Item | Project Name and `.gproj` TITLE | Addon ID | Mod ID |
+|---|---|---|---|
+| Core | `Life Framework (Core)` | `LifeFramework` | `79636E668EA37AC9` |
+| Flagship pack | `Life Framework: Everon 1989` | `LF_Everon1989` | `B1E84D5687E11724` |
+
+- Versions are semver, `x.y.z`. While both items are 0.x, `tools\cli release <version>` stamps one
+  number into both `.gproj` files and both kit READMEs, so they publish together.
+- The pack's kit README states the core version it needs in its `Requires` row.
+- A schema or save-format bump is a major version. A change that keeps saves and configs readable
+  is a minor or patch.
+- Every Workshop publish takes a higher number than the last, even for a text-only change.
+- Brand and copy for each page come from [branding/core.md](branding/core.md) and
+  [branding/everon-1989.md](branding/everon-1989.md). `validate-release-ready` checks the TITLEs
+  against the kit Project Names, that each page names the other, and that the kit files exist.
+
 ## Cut a release
 
 1. **List what is waiting.** `tools\cli promote` lists the PRs merged to `main`

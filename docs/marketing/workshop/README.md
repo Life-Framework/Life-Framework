@@ -1,31 +1,44 @@
-# Workshop kit: Life Framework playtest town
+# Workshop kit: Life Framework (Core)
 
 Everything the Workbench **Publish Project** dialog asks for, ready to paste or pick.
 The click-by-click steps are in [`docs/playtest/workshop-publish.md`](../../playtest/workshop-publish.md).
 
 | Field | Value or file |
 |---|---|
-| Project Name (30 max) | `Life Framework` |
+| Project Name (30 max) | `Life Framework (Core)` |
 | Mod ID (the `.gproj` GUID, also the Workshop item ID) | `79636E668EA37AC9` |
-| Scenario ID | `{1054CC8646357708}Missions/LF_PlaytestTown.conf` |
-| Preview Image | [`preview.jpg`](preview.jpg), 1920x1080, 478 KB |
-| Screenshots | the nine files in [`screenshots/`](screenshots/), 1280x720, each under 600 KB |
+| Scenario ID | none: the core has no playable scenario; the flagship scenario ships in the pack |
+| Preview Image | [`preview.jpg`](preview.jpg), 1920x1080, 478 KB. A PLACEHOLDER: it shows the village, and the core brief wants neutral art |
+| Screenshots | none until neutral art exists; the nine village shots in [`screenshots/`](screenshots/) belong on the pack page |
 | Summary (1024 max) | [`summary.txt`](summary.txt) |
 | Description (5000 max) | [`description.bbcode`](description.bbcode) |
-| Change Notes | the 0.1.0 block in [`changelog.md`](changelog.md) |
+| Change Notes | the core 0.1.0 block in [`changelog.md`](changelog.md) |
 | Version | `0.1.0` |
-| Tags | `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989` |
+| Tags | `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Framework` |
 | Licence | Arma Public License (APL) |
-| Category | Game Mode (and Scenario if the dialog offers it) |
+| Category | Game Mode |
 
 The Workshop build is APL because the Workshop Terms of Use require an APL-family licence
 (decision D2, 2026-11-12). The source on GitHub stays MIT. The description's "Licence and credits"
 section says both; check it says so before each publish. Pack authors get the same facts, with the
 attribution rules, in [pack-licence.md](../../architecture/pack-licence.md).
 
-The Workshop build is APL because the Workshop Terms of Use require an APL-family licence
-(decision D2). The source on GitHub stays MIT. The description's "Licence and credits" section
-says both; check it still does before each publish.
+## Two items, two brands
+
+The core page is neutral and technical and sends players to the pack ("Looking to play?").
+The pack page, [`everon-1989/`](everon-1989/README.md), carries the 1989 setting. The briefs are
+[`docs/branding/core.md`](../../branding/core.md) and
+[`docs/branding/everon-1989.md`](../../branding/everon-1989.md). `validate-release-ready` checks that
+each page names the other, that the Project Name equals the `.gproj` TITLE, and that both briefs
+exist.
+
+## Version scheme
+
+Semver, `x.y.z`. `tools\cli release <version>` stamps the same number into both `.gproj` files and
+both kit READMEs, so the core and the pack publish together at one version while both are 0.x. The
+pack's `Requires` row names the core version it needs, and `validate-release-ready` fails when it
+is missing. A save-format or config-schema bump is a major version (decision 2026-11-09). Every
+Workshop publish takes a higher number than the last, even for a text-only change.
 
 After publish:
 

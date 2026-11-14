@@ -34,11 +34,12 @@ Leave `game.scenarioId` and `game.mods` alone for this first boot:
 ```json
 "scenarioId": "{1054CC8646357708}Missions/LF_PlaytestTown.conf",
 "mods": [
-  { "modId": "79636E668EA37AC9", "name": "Life Framework" }
+  { "modId": "79636E668EA37AC9", "name": "Life Framework (Core)" },
+  { "modId": "B1E84D5687E11724", "name": "Life Framework: Everon 1989" }
 ]
 ```
 
-The server downloads that mod from the Workshop on first boot. Players get it on join; they do not
+The server downloads both mods from the Workshop on first boot. Players get it on join; they do not
 install anything.
 
 ## 3. Open the ports
