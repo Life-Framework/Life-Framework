@@ -32,6 +32,7 @@
     ]
   },
   "parts": [],
+  "addon": "LF_Everon1989",
   "asset_dir": "Assets/Props/Roleplay/BankVault/Cash",
   "prefab_dir": "Prefabs/Props/Roleplay/BankVault",
   "build": "Blender geometry from the picked concept, no 3D credits (coordinator, option c)"

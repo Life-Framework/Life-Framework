@@ -18,7 +18,7 @@ class LF_Test_SignImage : LF_Test
 			ctx.True(none.GetKind() != LF_EUIPartKind.IMAGE, "a sign with no image has no picture part");
 
 		LF_SignDef pictured = LF_Test_SignCatalog.MakeSign("hospital", "Hospital", "Medics heal you.", "", "", "");
-		pictured.m_sImage = "{443758FF56C25F58}Assets/UI/Illustrations/medic_flow.imageset";
+		pictured.m_sImage = "{F02831E43418249A}Assets/UI/Illustrations/LF_IdStamp.imageset";
 		array<ref LF_UIPart> parts = LF_SignCatalog.BuildParts(pictured);
 		ctx.Equal(plainParts.Count() + 1, parts.Count(), "an image adds one part");
 		if (parts.Count() < 3)
