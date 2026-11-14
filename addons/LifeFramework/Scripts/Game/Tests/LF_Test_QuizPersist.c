@@ -24,6 +24,16 @@ class LF_Test_QuizPersist : LF_Test
 		if (!persistence)
 			return;
 
+		// Reloading "progression" rebuilds job XP from the legacy single-level fields, which would drop the
+		// farmer and miner rows E2E_SaveState wrote before this test; keep and put back what was there.
+		LF_TestLegacySnapshot kept = LF_TestLegacySnapshot.Take();
+		RunQuiz(ctx, persistence);
+		kept.Restore();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunQuiz(LF_TestContext ctx, LF_PersistenceComponent persistence)
+	{
 		LF_Progression.Forget(PASSED);
 		LF_Progression.Forget(FRESH);
 		LF_Quiz.ResetStatics();
