@@ -26,6 +26,9 @@ class LF_MiningArea : GenericEntity
 	[Attribute("", UIWidgets.Object, desc: "Prefab List", category: "Mining Area")]
 	ref array<ref LF_WeightedSpawn> m_PrefabsToSpawn;
 
+	//! The system a server switches ore spawning off with (#1075). Owned by Mining: an area only places rocks.
+	static const string SYSTEM = "Mining";
+
 	protected WorldTimestamp m_NextRespawn;
 	private const int MIN_TO_MS = 60000;
 
@@ -97,6 +100,9 @@ class LF_MiningArea : GenericEntity
 		if (amount <= 0)
 			return;
 
+		if (LF_Systems.Refuses(SYSTEM, "ore spawn"))
+			return;
+
 		int totalWeight = GetTotalWeight(m_PrefabsToSpawn);
 		if (totalWeight <= 0)
 		{
@@ -141,6 +147,10 @@ class LF_MiningArea : GenericEntity
 	override void EOnFrame(IEntity owner, float timeSlice)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		// Mining off: no ore is placed or replaced. Rocks already standing stay as they are (#1075).
+		if (!LF_Systems.IsEnabled(SYSTEM))
 			return;
 
 		WorldTimestamp now = GetWorld().GetTimestamp();

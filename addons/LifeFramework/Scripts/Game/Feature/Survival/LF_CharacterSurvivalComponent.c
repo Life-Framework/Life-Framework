@@ -12,6 +12,9 @@ class LF_CharacterSurvivalComponentClass : ScriptComponentClass
 //! RplProps, bumped only when one of them changes, for the stamina penalty and the HUD gauges.
 class LF_CharacterSurvivalComponent : ScriptComponent
 {
+	//! The system a server switches hunger and thirst off with (#1075). The stats stay saved, frozen.
+	static const string SYSTEM = "Survival";
+
 	[RplProp(condition: RplCondition.OwnerOnly)]
 	protected int m_iReplicatedHunger = 100;
 
@@ -69,13 +72,21 @@ class LF_CharacterSurvivalComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server tick: applies the elapsed time (clamped against hitches) and syncs the owner.
-	protected void Tick()
+	void Tick()
 	{
 		if (!m_SurvivalStats)
 			return;
 
-		LF_SurvivalConfig config = LF_SurvivalConfig.Get();
 		float nowMs = GetGame().GetWorld().GetWorldTime();
+
+		// Survival off: the clock moves on but the stats do not, so they come back as they were saved (#1075).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+		{
+			m_fLastTickTimeMs = nowMs;
+			return;
+		}
+
+		LF_SurvivalConfig config = LF_SurvivalConfig.Get();
 		float deltaSeconds = ClampTickDelta((nowMs - m_fLastTickTimeMs) / 1000, config.m_fMaxTickDeltaSeconds);
 		m_fLastTickTimeMs = nowMs;
 
@@ -97,7 +108,7 @@ class LF_CharacterSurvivalComponent : ScriptComponent
 	//! can drive it without waiting on the tick.
 	void ApplyNeedsToHealth(float deltaSeconds)
 	{
-		if (!m_SurvivalStats || !Replication.IsServer())
+		if (!m_SurvivalStats || !Replication.IsServer() || !LF_Systems.IsEnabled(SYSTEM))
 			return;
 
 		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(GetOwner().FindComponent(SCR_CharacterDamageManagerComponent));
@@ -203,7 +214,7 @@ class LF_CharacterSurvivalComponent : ScriptComponent
 	//! Owner and server: the stamina drain multiplier low needs impose (1 when needs are met).
 	float GetStaminaDrainMultiplier()
 	{
-		if (!m_bReplicatedNeedsLow)
+		if (!m_bReplicatedNeedsLow || !LF_Systems.IsEnabled(SYSTEM))
 			return 1;
 
 		return Math.Max(LF_SurvivalConfig.Get().m_fStaminaDrainMultiplier, 1);

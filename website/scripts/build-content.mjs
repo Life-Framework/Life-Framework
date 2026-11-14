@@ -644,7 +644,35 @@ fs.writeFileSync(path.join(dataDir, "gallery.json"), JSON.stringify(gallery));
 console.log(`[content] gallery: ${gallery.count} pictures`);
 
 // The config page renders its form from this file, so it cannot drift from the schema.
-fs.copyFileSync(path.join(repo, "docs", "config", "config.schema.json"), path.join(dataDir, "config-schema.json"));
+// It also carries the presets (the real files tools\cli config-harness checks, #289) and what the
+// server bundle needs (#381): the base game's server.json shape and the two addon ids, read from the repo.
+const presetDir = path.join(repo, "tools", "test", "config-fixtures", "presets");
+const presetNotes = {
+  "flagship-1989": ["Flagship 1989", "What the 1989 Everon server runs: the shipped economy, written out so you can see every value you can change."],
+  "small-server": ["Small server", "For a handful of friends: faster autosave, a better police wage and benefit, more open tickets."],
+  "hardcore-economy": ["Hardcore economy", "Scarce money: dear shops with a poor buyback, no benefit to speak of, dearer cars, a steeper ticket penalty."],
+};
+// The folder also holds plain harness fixtures (empty, shop-prices); only the named presets are offered.
+const presets = Object.entries(presetNotes).map(([id, [title, blurb]]) => ({
+  id,
+  title,
+  blurb,
+  config: JSON.parse(fs.readFileSync(path.join(presetDir, `${id}.json`), "utf8")),
+}));
+const gproj = (dir) => {
+  const t = fs.readFileSync(path.join(repo, "addons", dir, `${dir}.gproj`), "utf8");
+  return { id: /GUID "([0-9A-F]{16})"/.exec(t)[1], name: /TITLE "([^"]+)"/.exec(t)?.[1] ?? dir };
+};
+const scenario = (dir, file) => /Name "(\{[0-9A-F]{16}\}Missions\/[^"]+)"/.exec(fs.readFileSync(path.join(repo, "addons", dir, "Missions", `${file}.meta`), "utf8"))[1];
+const serverData = {
+  template: JSON.parse(fs.readFileSync(path.join(repo, "docs", "playtest", "server-config.example.json"), "utf8")),
+  core: { ...gproj("LifeFramework"), scenario: scenario("LifeFramework", "LF_PlaytestTown.conf") },
+  pack: { ...gproj("LF_Everon1989"), scenario: scenario("LF_Everon1989", "LF_Everon1989.conf") },
+};
+fs.writeFileSync(
+  path.join(dataDir, "config-schema.json"),
+  JSON.stringify({ schema: JSON.parse(fs.readFileSync(path.join(repo, "docs", "config", "config.schema.json"), "utf8")), presets, server: serverData }),
+);
 
 // The reference page (/config/reference) lists every field from the same schema, plus the example
 // file for its snippets, so neither can drift from the docs.

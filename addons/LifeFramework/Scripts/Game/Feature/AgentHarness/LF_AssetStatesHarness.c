@@ -151,7 +151,7 @@ class LF_AssetStatesHarness
 	//------------------------------------------------------------------------------------------------
 	protected static bool FindLying(IEntity entity)
 	{
-		if (!entity || LF_Utils.GetPrefabName(entity) != s_SwitchPrefab)
+		if (!entity || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), s_SwitchPrefab))
 			return true;
 
 		s_SwitchTarget = entity;

@@ -20,6 +20,10 @@ class LF_WorldReset_Ore : LF_WorldResetStep
 
 	override int Run()
 	{
+		// Mining off: no rock grows back; a rock already spent keeps its state (#1075).
+		if (!LF_Systems.IsEnabled(LF_OreNodeComponent.SYSTEM))
+			return 0;
+
 		int regrown = 0;
 		array<IEntity> all = LF_WorldResetScan.All();
 		foreach (IEntity entity : all)

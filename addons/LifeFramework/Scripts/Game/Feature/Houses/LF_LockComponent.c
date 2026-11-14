@@ -28,6 +28,9 @@ class LF_LockComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_LockComponent : ScriptComponent
 {
+	//! The system a server switches house locks off with (#1075). Saved lock state is kept.
+	static const string SYSTEM = "Houses";
+
 	[Attribute("", desc: "Editor binding: house identifier this door belongs to. Leave empty to sync from the house manager.")]
 	protected string m_sDebugIdentifier;
 

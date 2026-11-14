@@ -2550,6 +2550,7 @@ class LF_AgentHarness
 		IEntity held;
 		foreach (IEntity item : items)
 		{
+			// lf-path-ok: harness substring filter typed by the tester
 			if (!item || !item.FindComponent(SCR_GadgetComponent) || !LF_Utils.GetPrefabName(item).Contains(cmd.Arg1))
 				continue;
 

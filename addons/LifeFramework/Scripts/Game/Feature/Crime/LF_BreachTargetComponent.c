@@ -126,6 +126,7 @@ class LF_BreachTargetComponent : ScriptComponent
 		{
 			bool match = child.GetName() == m_sSwingChild;
 			if (!match && child.GetPrefabData())
+				// lf-path-ok: swing child is a name fragment of a placed child, not a saved prefab
 				match = child.GetPrefabData().GetPrefabName().Contains(m_sSwingChild);
 
 			if (!match && child.GetVObject())

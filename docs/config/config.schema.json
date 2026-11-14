@@ -121,6 +121,59 @@
       "additionalProperties": false,
       "x-class": "LF_ItemCatalogueConfig"
     },
+    "cleanup": {
+      "type": "object",
+      "description": "The cleanup config: Configs/World/LF_CleanupConfig.conf with the owner's cleanup section over it.",
+      "properties": {
+        "sweepIntervalSeconds": {
+          "type": "integer",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "rules": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the kind: item, vehicle or body. A kind the shipped config has not listed adds a rule.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "maxAgeSeconds": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 604800
+              },
+              "minPlayerDistance": {
+                "type": "integer",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 100000
+              },
+              "maxHealthPercent": {
+                "type": "integer",
+                "default": 100,
+                "minimum": 0,
+                "maximum": 100
+              },
+              "exemptPrefabs": {
+                "type": "array",
+                "description": "",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_CleanupConfig"
+    },
     "crime": {
       "type": "object",
       "description": "The crime catalog config: Configs/Crime/LF_CrimeCatalog.conf, with the owner's `crime` section layered over it.",

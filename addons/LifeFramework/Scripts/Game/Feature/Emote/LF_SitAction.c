@@ -37,10 +37,24 @@ class LF_SitAction : SCR_LoiterUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A server with Emote off offers no seat (#1075).
+	override bool CanBeShownScript(IEntity user)
+	{
+		if (!LF_Systems.IsEnabled(LF_Emote.SYSTEM))
+			return false;
+
+		return super.CanBeShownScript(user);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
+		// Standing up always works, even if Emote went off while someone sat.
 		if (IsOccupiedBy(user))
 			return true;
+
+		if (!LF_Systems.IsEnabled(LF_Emote.SYSTEM))
+			return false;
 
 		LF_ESitRefusal refusal = LF_Sit.DecideFor(user, IsTakenByOther(user));
 		if (refusal != LF_ESitRefusal.NONE)

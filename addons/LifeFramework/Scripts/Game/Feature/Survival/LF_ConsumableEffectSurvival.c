@@ -38,9 +38,11 @@ class LF_ConsumableEffectSurvival : SCR_ConsumableEffectBase
 		LF_CharacterSurvivalComponent survivalComp = LF_CharacterSurvivalComponent.Cast(target.FindComponent(LF_CharacterSurvivalComponent));
 		if (survivalComp)
 		{
-			if (m_fHungerRestore > 0)
+			// Survival off: food and drink restore nothing; the saved stats stay as they are (#1075).
+			bool needsOn = LF_Systems.IsEnabled(LF_CharacterSurvivalComponent.SYSTEM);
+			if (needsOn && m_fHungerRestore > 0)
 				survivalComp.Eat(m_fHungerRestore);
-			if (m_fThirstRestore > 0)
+			if (needsOn && m_fThirstRestore > 0)
 				survivalComp.Drink(m_fThirstRestore);
 			if (m_fHealthRestore > 0)
 				survivalComp.Heal(m_fHealthRestore);

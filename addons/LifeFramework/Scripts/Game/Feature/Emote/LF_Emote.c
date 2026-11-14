@@ -9,6 +9,9 @@ class LF_Emote
 {
 	static const string FEATURE = "Emote";
 
+	//! The system a server switches the emote radial and sitting off with (#1075).
+	static const string SYSTEM = "Emote";
+
 	//------------------------------------------------------------------------------------------------
 	//! The rule, with no world.
 	static bool Allowed(bool restrained, bool stunned)
@@ -47,6 +50,12 @@ modded class SCR_EmoteBaseCommand
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformed(notnull SCR_ChimeraCharacter user)
 	{
+		if (!LF_Systems.IsEnabled(LF_Emote.SYSTEM))
+		{
+			SetCannotPerformReason("#LF-Systems_Off");
+			return false;
+		}
+
 		if (!LF_Emote.AllowedFor(user))
 		{
 			SetCannotPerformReason("#LF-Emote_Restrained");
@@ -59,6 +68,12 @@ modded class SCR_EmoteBaseCommand
 	//------------------------------------------------------------------------------------------------
 	override bool Execute(IEntity cursorTarget, IEntity groupEnt, vector targetPosition, int playerID, bool isClient)
 	{
+		if (!LF_Systems.IsEnabled(LF_Emote.SYSTEM))
+		{
+			LF_Debug.Info(LF_Emote.FEATURE, string.Format("emote %1 refused: Emote is off on this server", GetCommandName()));
+			return false;
+		}
+
 		if (SCR_PlayerController.GetLocalPlayerId() == playerID)
 		{
 			IEntity character = SCR_PlayerController.GetLocalControlledEntity();
@@ -82,6 +97,12 @@ modded class SCR_ContinuousLoiterCommand
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformed(notnull SCR_ChimeraCharacter user)
 	{
+		if (!LF_Systems.IsEnabled(LF_Emote.SYSTEM))
+		{
+			SetCannotPerformReason("#LF-Systems_Off");
+			return false;
+		}
+
 		if (!LF_Emote.AllowedFor(user))
 		{
 			SetCannotPerformReason("#LF-Emote_Restrained");
@@ -135,6 +156,9 @@ modded class SCR_PlayerControllerCommandingComponent
 			m_SelectedEntity = character;
 			targetPosition = character.GetOrigin();
 		}
+
+		if (!LF_Systems.IsEnabled(LF_Emote.SYSTEM))
+			return;
 
 		DeleteShownCommand();
 		command.VisualizeCommand(targetPosition);
