@@ -56,7 +56,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
-import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
+import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -2326,7 +2326,14 @@ function cmdSessionUp(root, dir, flags) {
   // --roster / --seed fixtures are written into the server profile by sessionLaunch, right before the server boots.
   const seeds = session.parseSeeds(flags);
   const clients = session.parseClients(flags);
-  const mission = session.parseMission(flags);
+  // --pack <LF_Name>: boot that pack (addons/<name>, header Missions/<name>.conf) on the core instead of the flagship.
+  const packArg = parsePackFlag(flags, root);
+  if (packArg?.error) {
+    console.log(`FAIL  ${packArg.error}`);
+    return 1;
+  }
+  // A pack session runs the harness build (LF_HARNESS) like the playtest mission, so proofs can read the client.
+  const mission = packArg ? "playtest" : session.parseMission(flags);
   const rp = session.parseSessionProfile(flags);
   const res = session.sessionRes(flags, rp);
   const visible = flags.includes("--visible");
@@ -2397,7 +2404,7 @@ function cmdSessionUp(root, dir, flags) {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, pack: packArg?.name, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
     // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
     holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
   if (hold.note) console.log(hold.note);
@@ -2421,7 +2428,7 @@ function cmdSessionUp(root, dir, flags) {
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     recordIdentities(dir, state);
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
-    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${playtestMission(launchAddons(ROOT)).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${(packArg?.header ?? playtestMission(launchAddons(ROOT))).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
     sessionCapNote(root, settings, hold.min);
     console.log(`session: full log ${sessionLog}`);
     return 0;
@@ -2560,7 +2567,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     copyFileSync(join(root, "server", "example", "config.json"), join(owner, "config.json"));
     slog(`template: config.json copied to ${owner}`);
   }
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddonsFor(root, state.pack), header: state.pack ? parsePackFlag(["--pack", state.pack], root)?.header : "" });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
@@ -2626,7 +2633,7 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
   session.applyClientSettings(c.profile, rp);
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddons(root) });
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddonsFor(root, state.pack) });
   slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
