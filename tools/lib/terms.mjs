@@ -109,6 +109,9 @@ export function termId(name) {
 export function hardCoded(items) {
   const hits = {};
   for (const item of items) {
+    // The credits name real people, projects and assets as written in docs/credits.md; they are proper
+    // names, not game terms (#481).
+    if (item.id.startsWith("LF-Credits_")) continue;
     const en = item.texts.en_us;
     if (!en || item.voiced || item.id.startsWith("LF-Term_")) continue;
     const plain = en.replace(PLACEHOLDER, "");

@@ -125,13 +125,17 @@ export function bodyProblems({ body, files, exists = () => true, reviewText = nu
     if (!images.length && !waiver) {
       problems.push(
         `a player can see this change (${visible.slice(0, 3).join(", ")}${visible.length > 3 ? `, +${visible.length - 3} more` : ""}) but the PR body embeds no picture. ` +
-          "Take `tools\\cli look <area>` before and after, keep them with `tools\\cli evidence <issue> before|after <area>`, and paste the table it prints. " +
+          "Take `tools\\cli look <area>` (or `look item <prefab>`, or `wb_preview`) before and after, keep them with `tools\\cli evidence <issue> before|after <area|png>`, and paste the table it prints. No game session is needed for a world, prop, sign, item or prefab. " +
           'If there is truly nothing to see, write a line "No screenshots: <reason>"',
       );
     }
     for (const img of images) {
       const p = repoPathOf(img.url);
-      if (p && !exists(p)) problems.push(`the PR body embeds ${p}, which is not in this branch. Commit the picture (tools\\cli evidence writes it to website/public/docs-images/)`);
+      if (p && /^tmp\//.test(p.replace(/\\/g, "/"))) {
+        // `look` writes tmp/look/<area>/*.png and `wb_preview` a temp PNG; tmp/ is gitignored, so the image would be
+        // broken in the PR even though the file exists here. `evidence` copies it to docs-images/, which is committed.
+        problems.push(`the PR body embeds ${p}, which is under tmp/ (gitignored, never pushed). Keep the picture with \`tools\\cli evidence <issue> before|after <area|png>\` and paste the table it prints`);
+      } else if (p && !exists(p)) problems.push(`the PR body embeds ${p}, which is not in this branch. Commit the picture (tools\\cli evidence writes it to website/public/docs-images/)`);
     }
   }
   const review = reviewState(reviewText);

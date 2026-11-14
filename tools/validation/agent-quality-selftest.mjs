@@ -113,6 +113,10 @@ check(problems({ body: GOOD.replace(IMG, ""), files: script }).length === 0, "a 
 check(problems({ body: GOOD.replace(IMG, "No screenshots: the prefab only gains a server-side component, nothing renders."), files: layer }).length === 0, "a written waiver was refused");
 check(problems({ body: GOOD.replace(IMG, "No screenshots: n/a"), files: layer }).length === 1, "a waiver with no reason was accepted");
 check(problems({ body: GOOD, files: layer, exists: () => false }).some((p) => p.includes("not in this branch")), "a picture that is not committed was accepted");
+// A look picture is accepted once `evidence` has copied it into docs-images/; the raw tmp/look path never is.
+check(problems({ body: GOOD.replace(IMG, "![bank](tmp/look/bank/contact.jpg)"), files: layer }).some((p) => p.includes("under tmp/")), "a tmp/look picture, which is never pushed, was accepted");
+check(problems({ body: GOOD.replace(IMG, "![bank](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/tmp/look/bank/wide.png)"), files: layer }).some((p) => p.includes("under tmp/")), "a raw URL into tmp/ was accepted");
+check(problems({ body: GOOD.replace(IMG, "![bank](website/public/docs-images/481/bank-after.png)"), files: layer }).length === 0, "an evidence picture embedded by repo path was refused");
 check(problems({ body: GOOD.replace("## Manual testing", "## Notes"), files: script }).some((p) => p.includes("Manual testing")), "an addons change with no Manual testing section was accepted");
 check(problems({ body: `${GOOD}\n${pq.MARK}: fill in`, files: script }).some((p) => p.includes("placeholder")), "a body with a scaffold placeholder was accepted");
 check(problems({ body: "", files: script, hasBodyFile: false }).some((p) => p.includes("--body-file")), "an addons change with the automatic body was accepted");

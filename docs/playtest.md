@@ -143,6 +143,7 @@ log that back them stay on the server and invisible.
   sliver of health and keep what they carry, and the bleed-out stops. A civilian
   does not get the entry. *Revive* is now a 4-second hold: the medic does CPR for
   everyone to see, and it stops if you let go or walk away (demo: `node agent-box/session.mjs revive-anim-proof`, #512).
+- **Credits (#481).** Type `/credits` in chat: a paper sheet shows who Life Framework is built on, one section a page (the same rows as `docs/credits.md` and the website `/credits` page). Next and Previous turn the page; Close or Back shuts it. Demo: `node agent-box/session.mjs credits-proof`.
 - **Report to staff.** After something happens to you, type `/report` in chat.
   It flags the incidents from the last ten minutes that involved you, as either
   party, for admins to see in the Game Master incident view. You get a "Staff

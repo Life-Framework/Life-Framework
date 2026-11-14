@@ -8,12 +8,18 @@ tools\cli audit placement [--area a]     numbers, no pixels, test server, about 
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
+tools\cli call wb_preview '{"resource":"{GUID}path"}'   one resource in an open Workbench, about 2 s, PNG path returned
 tools\cli shots area <name>              pictures from a game client on a `--profile full` session (docs/agent-area-polish.md)
-tools\cli evidence <issue> before|after <area>   keep a look picture for the PR; `evidence <issue> table` prints the embed
+tools\cli evidence <issue> before|after <area|png>   keep a look or wb_preview picture for the PR; `evidence <issue> table` prints the embed
 ```
 
 What right looks like is `docs/style-guide.md`; the checklist to walk against the pictures is the
 `polish` skill. `wt ship` refuses a player-visible change whose PR body embeds no picture.
+
+**PR pictures come from `look`, `look item` or `wb_preview`, kept with `tools\cli evidence`.** A session is
+for what Workbench play cannot capture: HUD and other UI widgets, a second player or late joiner, motion,
+animation, sound, and filming. A session lane held for a picture is the slowest way to get it (the pool's
+session lanes had the longest waits on 2026-11-14: p90 about 6 min, worst 61 min).
 
 ## Use `look` unless you need motion, UI, input or a second player
 
@@ -26,7 +32,7 @@ Ask in this order and stop at the first yes.
 5. **Does it move, play a sound, or react to input?** A session (animation, the hold pose, a door opening, a hit, a siren).
 6. **Is it a UI sheet, HUD, or the inventory slot frame?** A session (Workbench play captures no UI).
 7. **Does a second player or a late joiner see it?** A session with `--clients 2`.
-8. **Is the picture for a PR or media?** `look` is for you while you iterate; the PR picture of a held item or a sheet comes from the session, and `tools\cli evidence` keeps a `look` pair for a world change.
+8. **Is the picture for a PR?** Same tools: `tools\cli evidence <issue> before|after <area|png>` keeps a `look`, `look item` or `wb_preview` picture, so a world, prop, sign, item, prefab, material or layer change needs no session for its PR pair. Only a picture of something steps 5 to 7 send to a session (a sheet, a held item, motion) comes from the session. Media (trailer, website gallery, graded look) is shot on a `full` session.
 
 What an agent session used to be needed for, and what does it now:
 
@@ -35,6 +41,7 @@ What an agent session used to be needed for, and what does it now:
 | A dropped item at rest | `asset states --shots` or `itemdrop` and a free camera, 2 clients | `look item` (ground) |
 | The inventory preview camera of an item | `asset states --shots`, preview sheet | `look item` (inventory): the 3D view, not the slot UI |
 | A prop, a placed object, a sign | `shots area` | `look <area>` |
+| The PR picture of a prop, sign, item, prefab, material or layer | `shots area` on a session | `look`, `look item` or `wb_preview`, kept with `evidence` |
 | The item in a hand | session, 2 clients | still a session (`asset states --shots` does hand and use) |
 | Dialogue shot, a door, a siren, a held pose | session | still a session |
 
@@ -161,7 +168,8 @@ not load ...` and keeps no pictures. The asset verify/states clothing shots use 
 - **Red fans and lines on the ground.** A Workbench debug overlay that the game client does not
   draw. Ignore them. `--edit` adds the editor's own helper shapes on top.
 - **The graded look.** Workbench uses its own graphics settings, and shots are at 14:00 unless you
-  pass `--hour`. Pictures for a PR or for media still come from `shots area` on a session.
+  pass `--hour`. Pictures for a PR come from here anyway (judge the same hour before and after); the graded
+  look for media and the website still comes from `shots area` on a session.
 - **Dynamic bodies after they settle.** Shots start about 3 s into play, so a log that tips off a
   table a minute later is not caught.
 - The wide camera is chosen by a ray to the area centre plus a fan of level rays across the lens (42

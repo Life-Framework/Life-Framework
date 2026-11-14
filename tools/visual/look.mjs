@@ -581,7 +581,7 @@ async function run(args) {
   if (perArea.length > 1) console.log(`  overview: ${join(outRoot, "overview.jpg")}`);
   for (const e of status.errors) console.log(`  plugin error: ${e}`);
   for (const w of status.warnings) console.log(`  plugin warning: ${w}`);
-  console.log("  read the contact sheet; flags are hints (docs/visual-testing.md). Pictures for a PR still come from `shots area` on a session.");
+  console.log("  read the contact sheet; flags are hints (docs/visual-testing.md). Pictures for a PR: `tools\\cli evidence <issue> before|after <area>` keeps one from here; a session (`shots area`) only for UI, motion, sound or a second player.");
   return missing || res.timedOut || status.errors.length ? 1 : 0;
 }
 
