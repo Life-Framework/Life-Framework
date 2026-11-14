@@ -403,6 +403,17 @@ class LF_Hideout
 		if (!state.m_sOrganizationId.IsEmpty())
 			lock.SetHouseIdentifier(state.m_sOrganizationId);
 
+		LF_HideoutDoorComponent doorComponent = LF_Component<LF_HideoutDoorComponent>.Find(door);
+		if (doorComponent)
+		{
+			string ownerName;
+			LF_Organization owner = LF_OrganizationManager.Get(state.m_sOrganizationId);
+			if (owner)
+				ownerName = owner.GetName();
+
+			doorComponent.SetOwnerName(ownerName);
+		}
+
 		lock.SetLocked(state.m_bLocked);
 	}
 
