@@ -52,7 +52,7 @@ export function specProblems(spec) {
   const b = spec.budget || {};
   if (!textureOnly) {
     for (const k of ["length", "height", "width"]) {
-      if (!(s[k] > 0.005 && s[k] < 20)) out.push(`size_m.${k} must be a size in metres`);
+      if (!(s[k] > 0.0005 && s[k] < 20)) out.push(`size_m.${k} must be a size in metres`);
     }
     if (!(b.lod0_tris >= 100 && b.lod0_tris <= 60000)) out.push("budget.lod0_tris must be 100 to 60000");
     if (kind) out.push(...checkBudget(spec));
