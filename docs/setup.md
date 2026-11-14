@@ -267,6 +267,19 @@ The Workbench bridge caches the editor mode per process, so a fresh process
 starts in an "unknown" mode and mode-gated tools refuse. Run `wb_state` and
 `wb_play` in one `--batch` session.
 
+Each `call` starts its own server and stops it when the call returns (about
+2.5 s and 200 MB for that time), so calls leave no process behind. A shared,
+always-on server would hold that memory permanently and mix per-process state
+(the Workbench mode cache, `--env` overrides that point at a worktree), so
+there is none.
+
+**Memory under many agents.** Claude Code starts every stdio MCP server in
+its config once per agent. Register only what most agents use; a rarely used
+server costs one Node process (at least 25 MB) per running agent. The Discord
+connector (`tools/discord-mcp`) connects to the Discord Gateway on the first
+`get_new_events` or `wait_for_events` call rather than at startup
+(`DISCORD_GATEWAY=eager` restores the old behaviour).
+
 For [opencode](https://opencode.ai) users: skills and playbooks live in
 [`.opencode/`](../.opencode/README.md). Restart opencode after changing MCP
 settings.
