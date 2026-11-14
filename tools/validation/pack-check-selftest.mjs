@@ -7,7 +7,9 @@
 // tools/pack/layers.mjs; and the real flagship pack passes its own check.
 // red-proof: with the "verb on an id no lower layer has" refusal in tools/pack/layers.mjs mergeList
 // disabled this crashed with "TypeError: Cannot set properties of undefined (setting 'present')"
-// and exited 1 (2026-11-14).
+// and exited 1 (2026-11-14). #553: before the fixture's core class sorted ahead of the stub the clash case printed
+// "FAIL pack check: a pack section named like a core section must be an error" and "FAIL schema: a refused pack
+// section must stay out"; a ShopsBad default or a wrong explain path printed one FAIL each (observed 2026-11-14).
 
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -16,6 +18,9 @@ import { fileURLToPath } from "node:url";
 import { checkPack, summary } from "../pack/check.mjs";
 import { explain } from "../pack/explain.mjs";
 import { SECTIONS, walk } from "../pack/layers.mjs";
+import { checkText } from "../config/check.mjs";
+import { coreKeysOf, generate, readScripts } from "../config/schema.mjs";
+import { loadPackSections } from "../config/pack-sections.mjs";
 
 const REAL = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -230,6 +235,53 @@ pack(two, "LF_Bbb", { gproj: "6000000000000004", man: G.man2, mis: G.misB }, man
       if (!SECTIONS[m[1]]) fail(`${f.slice(REAL.length + 1)} declares the list ${m[1]}; add its row to SECTIONS in tools/pack/layers.mjs`);
     }
   }
+}
+
+// ---- Pack config sections (#553): declared in the manifest, merged into the schema, checked, explained ----
+{
+  const root = tree();
+  rootsToClean.push(root);
+  put(root, "addons/LifeFramework/Scripts/Game/AA_ShopsConfig.c", '[BaseContainerProps(configRoot: true)]\nclass LF_ShopPricesConfig\n{\n\tstatic const string SECTION = "shops";\n}\n');
+  const field = (key, type, def, min = "", max = "") => `    LF_PackConfigField "{F${key}}" {\n     m_sKey "${key}"\n     m_sType "${type}"\n     m_sDefault "${def}"\n${min ? `     m_sMin "${min}"\n` : ""}${max ? `     m_sMax "${max}"\n` : ""}    }\n`;
+  const section = (name, ...fields) => `  LF_PackConfigSection "{S${name}}" {\n   m_sName "${name}"\n   m_aFields {\n${fields.join("")}   }\n  }\n`;
+  const text = `LF_PackManifest {\n m_sPackId "LF_Shops"\n m_sCoreMin "0.1.0"\n m_sCoreBelow "0.2.0"\n m_aConfigSections {\n${[
+    section("shops", field("limit", "int", "5")),
+    section("shopsBad", field("limit", "int", "ten")),
+    section("elsewhere", field("limit", "int", "5")),
+    section("shopsGood", field("limit", "int", "5", "1", "9"), field("open", "bool", "true")),
+  ].join("")} }\n}\n`;
+  pack(root, "LF_Shops", { gproj: "6000000000000001", man: "6000000000000002", mis: "6000000000000003", st: "6000000000000004" }, text, { files: [], refs: [] });
+  const r = checkPack(root, "LF_Shops");
+  const cfg = r.findings.filter((f) => f.area === "config");
+  const has = (id, re) => cfg.some((f) => f.id === id && re.test(f.msg));
+  if (!has("shops", /core section name/)) fail("pack check: a pack section named like a core section must be an error");
+  if (!has("shopsBad", /default ten is not a whole number/)) fail("pack check: a section default that is not its type must be an error");
+  if (!has("elsewhere", /does not start with the pack namespace/)) fail("pack check: a section outside the namespace must be an error");
+  if (cfg.some((f) => f.id === "shopsGood")) fail("pack check: a valid pack section must not be reported");
+
+  // The merged schema holds the valid section, not the refused ones; config-check names the bad field.
+  const addons = join(root, "addons");
+  const scripts = readScripts(join(addons, "LifeFramework", "Scripts", "Game"));
+  const packs = loadPackSections(addons, coreKeysOf(scripts));
+  const { schema } = generate(scripts, "static const int SCHEMA_VERSION = 1;", { records: {}, examples: {} }, packs);
+  if (!schema.properties.shopsGood || schema.properties.shopsGood["x-pack"] !== "LF_Shops") fail("schema: the valid pack section is merged with x-pack");
+  if (schema.properties.shopsGood?.properties.limit.maximum !== 9) fail("schema: a pack field keeps its range");
+  if (schema.properties.shopsBad || schema.properties.elsewhere || schema.properties.shops?.["x-pack"]) fail("schema: a refused pack section must stay out, and a clash must not replace the core section");
+  const check = (json) => checkText(json, { schema, loops: false }).problems;
+  if (check('{"shopsGood":{"limit":4,"open":false}}').length) fail("config-check: a valid pack section must pass");
+  if (!check('{"shopsGood":{"limit":40}}').some((p) => p.level === "error" && /limit/.test(p.msg))) fail("config-check: a pack field above its max must be an error naming the field");
+  if (!check('{"shopsGood":{"lmit":4}}').some((p) => /lmit/.test(p.msg))) fail("config-check: an unknown key in a pack section must be reported by name");
+  if (!check('{"shopsGood":{"open":"yes"}}').some((p) => p.level === "error" && /open/.test(p.msg))) fail("config-check: a wrong-typed pack field must be an error naming the field");
+
+  // explain: the pack default, then the owner's value, or the refusal.
+  put(root, "owner.json", '{"shopsGood":{"limit":7}}');
+  put(root, "owner-bad.json", '{"shopsGood":{"limit":70}}');
+  const e1 = explain(root, "shopsGood.limit", { config: join(root, "owner.json") }).lines.join("\n");
+  if (!e1.includes("= 7  <- owner owner.json") || !e1.includes("overridden: 5 from pack LF_Shops")) fail(`explain: the owner value must win over the pack default, got ${e1}`);
+  const e2 = explain(root, "shopsGood.limit", { config: join(root, "owner-bad.json") }).lines.join("\n");
+  if (!e2.includes("= 5  <- pack LF_Shops") || !/refused: owner owner-bad.json sets 70/.test(e2)) fail(`explain: a refused owner value must leave the pack default, got ${e2}`);
+  const e3 = explain(root, "shopsBad", {});
+  if (e3.code !== 1 || !/ignores it/.test(e3.lines[0])) fail(`explain: a refused section must say the server ignores it, got ${e3.lines}`);
 }
 
 // ---- The real flagship pack passes its own check ----
