@@ -17,11 +17,13 @@ needs the core item to exist. Nothing is uploaded before the whole pack move lan
 [`release-process.md`](../release-process.md)); `tools\cli release <version>` stamps one version into
 both addons.
 
-The pack's scenario **Life Framework: Everon 1989**
-(`{C638C03B775C31BB}Missions/LF_Everon1989.conf`) is the Everon 1989 village with the playtest
-settings on: cash and bank top-up, two test cars per new character, the first player on an empty
-police roster, saves across restarts, and the debug menu closed to everyone but admins. The
-spawn hub (#607) lands in DebugWorld, so it ships in the first publish after it merges.
+The pack's one listed scenario is **Life Framework: Everon 1989**
+(`{C638C03B775C31BB}Missions/LF_Everon1989.conf`): the village with the playtest helpers closed (no
+cash or bank top-up, no test cars, no spawn hub travel, the first player is not made police) and the
+debug menu closed to everyone but admins. The developer playtest header `LF_PlaytestTown.conf` ships
+in the same folder with `m_bShowInScenarioMenu 0`, so the in-game Scenarios list omits it; it stays
+bootable by id for `session up --mission playtest` and `host`. The Workshop item page itself cannot be
+checked before the first publish (step 2 below).
 
 The Workshop item sits beside the one-click zip, not in place of it. The zip (`tools\cli playtest
 release`, first cut as `playtest-m2-1`) stays the download button on the website and is described
@@ -92,9 +94,13 @@ after publish.
    Unlisted link from the page above), **Subscribe**, wait for the download. The core item arrives
    with it.
 2. **Scenarios**: `Life Framework: Everon 1989` is listed with 16 players, the preview image,
-   and the description. Select it and press **Play**.
-3. The loading screen shows the town picture and the playtest text. In town, form R-89 opens;
-   sign it. You stand on the square with the "New in town" note, cash in hand.
+   and the description, and `Life Framework: Playtest Town` is not. Check the Workshop item page's
+   scenario list too. If the page still shows Playtest Town, the backend ignores
+   `m_bShowInScenarioMenu`: move `LF_PlaytestTown.conf` out of the pack folder for the publish
+   (the file and its `.meta` keep the GUID) and file an issue. Select the flagship and press **Play**.
+3. The loading screen shows the town picture and the scenario text. In town, form R-89 opens;
+   sign it. You stand on the square with the "New in town" note and the starting cash only (no
+   top-up, no test cars).
 4. Back in **Scenarios**, select it and press **Host**. A friend joins from the server browser.
 5. Start a dedicated server with [`server-config.example.json`](server-config.example.json) and
    [`workshop-host.md`](workshop-host.md); it downloads the mod and a client joins from the

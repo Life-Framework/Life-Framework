@@ -719,6 +719,17 @@
   `m_sDetails` key that is no string-table row. `listen-host.mjs` boots the flagship as a listen host,
   passes the rules quiz and signs the form; proven on lf-cloud 2026-11-14 (identity arrived 3.6 s late,
   character spawned).
+- ✅ **The flagship header runs real-server values** (refs #374, #1339, merged, in-dev): the flagship was a copy of
+  the playtest header, and its world inherits DebugWorld's game mode prefab, which switches on the playtest
+  helpers (test cars, bank and cash top-up, the "Send me to jail" board, the spawn hub globe, test dispatch calls,
+  the near convoy drop). `LF_MissionHeader.m_bLF_PlaytestHelpersOff` (new, default 0) closes them all through
+  `LF_MissionHeader.PlaytestHelper`, which `LF_SpawnLogic` and `LF_GameModeRoleplay.IsConvoyNearDrop` read;
+  `LF_Everon1989.conf` sets it and no longer sets `m_bLF_FirstPlayerPolice` or `m_bLF_InstantPoliceApproval`, and its
+  details text no longer promises top-up, test cars or auto-police. `LF_PlaytestTown.conf` stays hidden
+  (`m_bShowInScenarioMenu 0`, which the Scenarios list honours) with the helpers on: `session up --mission playtest`,
+  `host` and the e2e `--mission playtest` boot it. `validate-pack-missions` fails a listed header with the helpers
+  on or a playtest-only flag set, and fails a hidden flagship. Test `host/playtest-helpers-off`. Not in the header
+  (the server config): the 2-hour day and the join password (M4 decisions).
 - ✅ **One-command playtest** (`tools\cli playtest [stop|status|shortcut]`,
   `Play Life Framework.cmd`, `tools/host/playtest.mjs`): fast-forwards the detached
   checkout `..\Life-Framework-playtest` to `origin/main` (only while no host runs),

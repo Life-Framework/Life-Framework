@@ -17,6 +17,9 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("0", desc: "A police application is approved the moment it is filed, so a solo tester can try the form (the desk). Off for real servers: an administrator approves.")]
 	bool m_bLF_InstantPoliceApproval;
 
+	[Attribute("0", desc: "Close the playtest helpers the world's game mode switches on (test cars, bank and cash top-up, the jail-me board, the spawn hub travel globe, test dispatch calls, the near convoy drop), even when the game mode opts in. On for a mission a real server runs; off for the playtest mission and DebugWorld.")]
+	bool m_bLF_PlaytestHelpersOff;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, desc: "Config overlays (.conf) this mission layers over the shipped defaults, lowest precedence first: a later file wins over an earlier one, the server owner's config.json wins over all. Each overlay is a .conf of the same class as the core file it changes and sets only the fields it names. Read by LF_MissionConfigPackSource (D4 option b, #278).", params: "conf")]
 	ref array<ResourceName> m_aLF_ConfigOverlays;
 
@@ -44,6 +47,32 @@ class LF_MissionHeader : SCR_MissionHeader
 			return false;
 
 		return gameModeOptIn;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: whether a playtest helper (LF_SpawnLogic test cars, money top-up, jail-me board, spawn hub,
+	//! test dispatch; LF_GameModeRoleplay near convoy drop) is on, given the game mode's flag and the
+	//! mission header. A header with m_bLF_PlaytestHelpersOff wins: the flagship runs the DebugWorld
+	//! game mode prefab, which has them all on.
+	//! \param gameModeFlag The helper's own flag on the game mode prefab.
+	//! \param header The mission header; null when the server was started on a bare world.
+	static bool ResolvePlaytestHelper(bool gameModeFlag, MissionHeader header)
+	{
+		LF_MissionHeader lfHeader = LF_MissionHeader.Cast(header);
+		if (lfHeader && lfHeader.m_bLF_PlaytestHelpersOff)
+			return false;
+
+		return gameModeFlag;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return the playtest-helper flag resolved against the running mission's header.
+	static bool PlaytestHelper(bool gameModeFlag)
+	{
+		if (!gameModeFlag || !GetGame())
+			return gameModeFlag;
+
+		return ResolvePlaytestHelper(gameModeFlag, GetGame().GetMissionHeader());
 	}
 }
 
