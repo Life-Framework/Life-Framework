@@ -3552,14 +3552,7 @@ function ciWorkbenchInSession(root) {
 // The live view of every machine with the workbench cap, for wbGate.chooseGate: this PC's Workbench
 // slots and free RAM, each pool machine's over one ssh round trip (null when it does not answer).
 function workbenchMachines(root, { mode, machine }) {
-  const machines = pool.loadMachines(root).filter((m) => !m.disabled && (m.caps ?? []).includes("workbench"));
-  const limit = wbLock.wbLimit(root);
-  const localM = machines.find((m) => m.via === "local");
-  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, freeMb: Math.round(os.freemem() / 1048576), multiplier: localM?.budgetMultiplier ?? 1 };
-  const remotes = mode === "local" || machine === "local" ? [] : machines
-    .filter((m) => m.via === "ssh" && (!machine || m.name === machine))
-    .map((m) => ({ name: m.name, caps: m.caps, multiplier: m.budgetMultiplier ?? 1, m, state: wbGate.remoteWbState(m) }));
-  return { local, remotes };
+  return wbGate.workbenchView(root, { mode, machine });
 }
 
 // Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine
