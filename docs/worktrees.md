@@ -244,6 +244,13 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
+   A queue write is bookkeeping and never fails a gate. On Windows the rename of `ship-queue.json.tmp`
+   throws EPERM/EBUSY/EACCES while a `ship-queue status` or `wait` has the file open, so
+   `tools/lib/atomic-file.mjs` retries it (10 tries over about 1 s); the worker's `update` then retries
+   the whole read-modify-write, and if that still fails it logs `queue write ... the gate result is kept`
+   in the worker log instead of failing the PR. A read that keeps failing throws rather than returning an
+   empty queue. The session lease, test cache, shard history, pool tickets and look-serve state use the
+   same helper. `ship-queue-eperm-selftest.mjs` holds the file open from a child process to prove it.
 
 **Stale rdb refresh when this PC is busy (the fallback).** A stale `resourceDatabase.rdb` is registered by a
 headless Workbench: ~15 s per addon, but it queued 10-50 min behind the hub `build` lock and this PC's one
@@ -1324,6 +1331,10 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
+  prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
+  validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
+  that freeze is printed once as `WARN  validate: this process was frozen N s`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
 
 ## Lead view
