@@ -194,6 +194,8 @@ export async function main() {
 
     // ---- skip: a machine without ArchBuilder (CI)
     process.env.LF_ARCHBUILDER_DIR = join(tmp, "nowhere");
+    // CI has no Blender either: point at a file that exists so the add-on check is the one that fails.
+    process.env.LF_BLENDER_ARCHBUILDER = process.execPath;
     ok(!archBuilderSetup().ok && /arribas22\.github\.io\/archbuilder/.test(archBuilderSetup().why), "skip: the missing add-on is reported with where to get it");
     const root = join(tmp, "repo");
     put(root, "tools/buildings/shop/spec.json", JSON.stringify(SPEC));
