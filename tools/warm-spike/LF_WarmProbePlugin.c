@@ -124,15 +124,15 @@ class LF_WarmProbePlugin : WorldEditorPlugin
 			int startMs = waited;
 			Sleep(arg.ToInt());
 			we.SwitchToEditMode();
-			int out;
-			while (api.IsGameMode() && out < 60000)
+			int left;
+			while (api.IsGameMode() && left < 60000)
 			{
 				Sleep(100);
-				out += 100;
+				left += 100;
 			}
 
 			Sleep(1500);
-			return "play_started_ms=" + startMs + " leave_ms=" + out;
+			return "play_started_ms=" + startMs + " leave_ms=" + left;
 		}
 
 		if (verb == "quit")
