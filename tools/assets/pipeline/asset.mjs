@@ -23,6 +23,7 @@ import { materialProblems, resolveMaterials, variantPlans } from "./materials.mj
 import { resolveFfmpeg } from "../../film/film.mjs";
 import { animProblems, hasAnim, withAnim } from "./anim.mjs";
 import { hasStates, shootStates, stageStates, statesProblems } from "./states.mjs";
+import { ADDONS, CORE, addonFlag, addonOf, addonProblems, assertBoundary, plan as addonPlan, withAddon } from "./addon.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const STAGES = ["spec", "source", "concept", "generate", "remesh", "clean", "import", "prefab", "anim", "states"];
@@ -30,10 +31,11 @@ export const STAGES = ["spec", "source", "concept", "generate", "remesh", "clean
 export const specFile = (root, slug) => join(root, "tools", "assets", slug, "spec.json");
 export const cacheDir = (root, slug) => join(root, "tmp", "assets", slug);
 
-export function loadSpec(root, slug) {
+// `addon` is the --addon override (#971); without one the spec's own `addon`, then the core.
+export function loadSpec(root, slug, addon) {
   const file = specFile(root, slug);
   if (!existsSync(file)) throw new Error(`no spec at ${file}; start with: tools\\cli asset new ${slug} --kind ... --prompt "..."`);
-  return JSON.parse(readFileSync(file, "utf8"));
+  return withAddon(JSON.parse(readFileSync(file, "utf8")), addon);
 }
 
 // Everything wrong with a spec, as a list. Empty means the spec stage passes.
@@ -83,6 +85,7 @@ export function specProblems(spec) {
   out.push(...materialProblems(spec));
   out.push(...animProblems(spec));
   out.push(...statesProblems(spec));
+  if (spec.addon !== undefined && !ADDONS.some((a) => a.name === spec.addon)) out.push(`addon must be one of ${ADDONS.map((a) => a.name).join(", ")} (the default is ${CORE})`);
   if (!/^Assets\//.test(spec.asset_dir || "")) out.push("asset_dir must start with Assets/");
   if (!/^Prefabs\//.test(spec.prefab_dir || "")) out.push("prefab_dir must start with Prefabs/");
   return out;
@@ -114,6 +117,7 @@ export function recordProvenance(root, spec, ids, now = new Date()) {
   const file = join(root, "tools", "assets", spec.slug, "meshy.json");
   const rec = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { slug: spec.slug, generations: [] };
   const row = {
+    ...(addonOf(spec) === CORE ? {} : { addon: addonOf(spec) }), // where the asset was imported (#971); the core is implied
     date: now.toISOString().slice(0, 10), tool: ids.imageTaskId ? "Meshy image-to-3D" : "Meshy text-to-3D", model: spec.meshy?.ai_model || "meshy-6-lite",
     previewId: ids.previewId, refineId: ids.refineId, prompt: spec.prompt, texturePrompt: spec.texture_prompt,
   };
@@ -386,6 +390,11 @@ async function stageSource(ctx) {
 
 const RUN = { spec: stageSpec, source: stageSource, concept: stageConcepts, generate: stageGenerate, remesh: stageRemesh, clean: stageClean, import: stageImport, prefab: stagePrefab, anim: stageAnim, states: stageStatesRun };
 
+// The stages that write into the addon (#971): a changed target invalidates them, never the
+// generator, remesh or clean results, which are the same whichever addon the asset lands in.
+// The clothing stages that write are import and prefab (clothing.mjs).
+export const ADDON_STAGES = ["import", "prefab", "anim", "states"];
+
 // The stage list and the stage table of a spec's kind: clothing has its own (clothing.mjs).
 export async function stagesFor(spec) {
   if (spec.kind !== "clothing") return { stages: STAGES, table: RUN };
@@ -393,10 +402,19 @@ export async function stagesFor(spec) {
   return { stages: c.CLOTHING_STAGES, table: c.CLOTHING_RUN };
 }
 
-export async function run(root, slug, { from, only, force, workbench, pick, fix, flags = [], to } = {}) {
-  const spec = loadSpec(root, slug);
+export async function run(root, slug, { from, only, force, workbench, pick, fix, flags = [], to, addon } = {}) {
+  const spec = loadSpec(root, slug, addon);
   const dir = cacheDir(root, slug);
   const fullState = readState(dir);
+  const target = addonOf(spec);
+  // Checked on every run, not by the spec stage: that one is cached, and the target can change after it.
+  const targetProblems = addonProblems(root, spec);
+  if (targetProblems.length) throw new Error("addon problems:\n  " + targetProblems.join("\n  "));
+  if ((fullState.addon || CORE) !== target && ADDON_STAGES.some((s) => fullState.stages[s])) {
+    console.log(`addon: ${fullState.addon || CORE} -> ${target}; the ${ADDON_STAGES.join(", ")} stages run again`);
+    for (const s of ADDON_STAGES) delete fullState.stages[s];
+  }
+  fullState.addon = target;
   let rerun = !!force;
   const { stages, table } = await stagesFor(spec);
   let list = only ? [only] : stages.slice(from ? stages.indexOf(from) : 0);
@@ -430,6 +448,7 @@ export async function run(root, slug, { from, only, force, workbench, pick, fix,
     if (stage === "generate") fullState.lastPrompt = spec.prompt;
     try {
       const result = await table[stage](ctx);
+      if (ADDON_STAGES.includes(stage)) assertBoundary(root, spec); // no stage leaves a core file naming the pack
       fullState.stages[stage] = { ok: true, at: new Date().toISOString(), secs: Math.round((Date.now() - started) / 1000), result };
       writeState(dir, fullState);
     } catch (e) {
@@ -474,14 +493,15 @@ function cmdNew(root, flags, workbench) {
   const prompt = flag(flags, "--prompt");
   const kind = KINDS[kindName];
   if (!slug || !kind || !prompt) {
-    console.log('usage: tools\\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--no-run]');
+    console.log('usage: tools\\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--addon <name>] [--no-run]');
     return 2;
   }
   const file = specFile(root, slug);
   if (existsSync(file)) throw new Error(`${file} exists; edit it and use: tools\\cli asset run ${slug}`);
   const name = flag(flags, "--name") || slug.split("-").map((p) => p[0].toUpperCase() + p.slice(1)).join("");
+  const addon = addonFlag(flags) === undefined ? {} : { addon: withAddon({}, addonFlag(flags)).addon }; // the canonical name, or an error
   const spec = {
-    slug, name, kind: kindName, roadmap: flag(flags, "--roadmap") || "",
+    slug, name, kind: kindName, ...addon, roadmap: flag(flags, "--roadmap") || "",
     concept: "", prompt, texture_prompt: "",
     meshy: { ai_model: "meshy-6-lite", target_polycount: BUDGETS[kindName] ? BUDGETS[kindName].source : 20000 },
     size_m: kind.defaultSize,
@@ -535,16 +555,16 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "anim") { // the anim stage alone: tools\cli asset anim <slug> [--fix]
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
-    const slug = rest.find((f) => !f.startsWith("--"));
-    if (!slug) { console.log("usage: tools\\cli asset anim <slug> [--fix]"); return 2; }
-    return run(root, slug, { only: "anim", fix: rest.includes("--fix"), workbench });
+    const slug = rest.find((f) => !f.startsWith("--") && f !== addonFlag(rest));
+    if (!slug) { console.log("usage: tools\\cli asset anim <slug> [--fix] [--addon <name>]"); return 2; }
+    return run(root, slug, { only: "anim", fix: rest.includes("--fix"), workbench, addon: addonFlag(rest) });
   }
   if (sub === "states") { // the states stage alone: tools\cli asset states <slug> [--fix] [--shots]
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
-    const slug = rest.find((f) => !f.startsWith("--"));
-    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots]"); return 2; }
-    const spec = loadSpec(root, slug);
+    const slug = rest.find((f) => !f.startsWith("--") && f !== addonFlag(rest));
+    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots] [--addon <name>]"); return 2; }
+    const spec = loadSpec(root, slug, addonFlag(rest));
     stageStates({ root, spec }, { fix: rest.includes("--fix") });
     return rest.includes("--shots") ? shootStates(root, spec, cacheDir(root, slug)) : 0;
   }
@@ -557,13 +577,21 @@ export async function main(flags, { workbench } = {}) {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
     if (sub === "new") return cmdNew(root, rest, workbench);
-    const slug = rest.find((f) => !f.startsWith("--") && f !== flag(rest, "--from") && f !== flag(rest, "--only") && f !== flag(rest, "--to"));
-    if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]"); return 2; }
-    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench, flags: rest, to: flag(rest, "--to") });
+    const slug = rest.find((f) => !f.startsWith("--") && f !== flag(rest, "--from") && f !== flag(rest, "--only") && f !== flag(rest, "--to") && f !== addonFlag(rest));
+    if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--addon <name>]"); return 2; }
+    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench, flags: rest, to: flag(rest, "--to"), addon: addonFlag(rest) });
+  }
+  if (sub === "plan") { // where every stage of a spec writes, nothing written: tools\cli asset plan <slug> [--addon <name>]
+    const slug = rest.find((f) => !f.startsWith("--") && f !== addonFlag(rest));
+    if (!slug) { console.log("usage: tools\\cli asset plan <slug> [--addon <name>]"); return 2; }
+    const lines = addonPlan(root, loadSpec(root, slug, addonFlag(rest)));
+    for (const l of lines) console.log(l);
+    return lines.some((l) => l.startsWith("FAIL")) ? 1 : 0;
   }
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
        tools\\cli asset new <slug> --kind clothing --base "{GUID}Prefabs/...et" --slot Jacket [--route a|b|c]     a garment (docs/asset-pipeline/clothing.md)
-       tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]     stages: ${STAGES.join(", ")}; clothing: spec, vanilla, textures, fit, import, prefab, verify [--previews] [--no-shots]
+       tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--addon <name>]     stages: ${STAGES.join(", ")}; clothing: spec, vanilla, textures, fit, import, prefab, verify [--previews] [--no-shots]
+       tools\\cli asset plan <slug> [--addon <name>]     the addon and every path the stages write, nothing written (docs/asset-pipeline/README.md "Target addon")
        tools\\cli asset status [<slug>] | doctor | selftest
        tools\\cli asset anim <slug> [--fix]     moving parts, character clips, effects (docs/asset-pipeline/animation.md)
        tools\\cli asset states <slug> [--fix] [--shots]     inventory, ground, hand and use states (docs/asset-pipeline/states.md)

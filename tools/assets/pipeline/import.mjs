@@ -7,6 +7,7 @@ import { KINDS } from "./kinds.mjs";
 import { writeAssetMetas, writeVariantMetas } from "./meta.mjs";
 import { checkModel, parse } from "./xob.mjs";
 import { withAnim } from "./anim.mjs";
+import { addonOf, addonPath, guidsInUse, pluginDir } from "./addon.mjs";
 
 const PLUGIN = "LF_AssetImportPlugin";
 
@@ -68,7 +69,7 @@ export function placeVariants({ root, spec, clean, addon }) {
   for (const v of variants) {
     if (v.emat_template) templates[v.name] = readFileSync(join(root, "tools", "assets", spec.slug, v.emat_template), "utf8");
   }
-  const refs = writeVariantMetas(addon, { assetDir: spec.asset_dir, name: spec.name, variants, templates });
+  const refs = writeVariantMetas(addon, { assetDir: spec.asset_dir, name: spec.name, variants, templates, used: guidsInUse(root) });
   return { refs, tifs };
 }
 
@@ -77,7 +78,7 @@ export async function importAsset(ctx) {
   if (!ctx.workbench) throw new Error("the import stage needs the Workbench launcher; run it through tools\\cli asset");
   const { kind } = withAnim(KINDS[spec.kind], spec); // the anim block adds bones, sockets and the skinning flags
   const clean = join(dir, "clean");
-  const addon = join(root, "addons", "LifeFramework");
+  const addon = addonPath(root, spec); // the spec's addon (#971), the core by default
   const assetAbs = join(addon, spec.asset_dir);
   mkdirSync(join(assetAbs, "Data"), { recursive: true });
   const placed = placeVariants({ root, spec, clean, addon });
@@ -94,13 +95,13 @@ export async function importAsset(ctx) {
   const writeMetas = () => writeAssetMetas(addon, {
     assetDir: spec.asset_dir, name: spec.name,
     collider: { name: report.collider.name, layerPreset: kind.collider.layerPreset, gamemat },
-    flags: kind.metaFlags, defaultEmat: placed.refs[0]?.emat,
+    flags: kind.metaFlags, defaultEmat: placed.refs[0]?.emat, used: guidsInUse(root),
   });
   let refs = textureOnly ? {} : writeMetas();
 
-  const pluginDir = join(addon, "Scripts", "WorkbenchGame", "ResourceManager");
-  mkdirSync(pluginDir, { recursive: true });
-  copyFileSync(join(dirname(fileURLToPath(import.meta.url)), "wb", `${PLUGIN}.c`), join(pluginDir, `${PLUGIN}.c`));
+  const plugins = pluginDir(root); // always the core's copy: a pack project loads it as a dependency
+  mkdirSync(plugins, { recursive: true });
+  copyFileSync(join(dirname(fileURLToPath(import.meta.url)), "wb", `${PLUGIN}.c`), join(plugins, `${PLUGIN}.c`));
 
   const xob = join(assetAbs, `${spec.name}.xob`);
   const outputs = [xob, ...tifs.map((t) => t.replace(/\.tif$/, ".edds"))];
@@ -112,7 +113,7 @@ export async function importAsset(ctx) {
   // Textures go first so the model's material finds them.
   const timeoutMs = Number(process.env.LF_ASSET_IMPORT_TIMEOUT_S || 90) * 1000;
   const rebuild = (source) => {
-    const { profile } = ctx.workbench(root, PLUGIN, [`-lfAsset0=${source}`], { timeoutMs, logFile });
+    const { profile } = ctx.workbench(root, PLUGIN, [`-lfAsset0=${source}`], { timeoutMs, logFile, addon: addonOf(spec) });
     const one = newestLog(profile);
     return /LF_ASSET_IMPORT done/.test(one) ? one : `LF_ASSET_IMPORT rebuilding\nLF_ASSET_IMPORT FAIL no done line for ${source}\n${one}`;
   };
@@ -161,7 +162,7 @@ export async function importAsset(ctx) {
     const vMetas = () => writeAssetMetas(addon, {
       assetDir: spec.asset_dir, name: spec.name, model: v.name,
       collider: { name: v.collider.name, layerPreset: kind.collider.layerPreset, gamemat },
-      flags: kind.metaFlags, defaultEmat: placed.refs[0]?.emat,
+      flags: kind.metaFlags, defaultEmat: placed.refs[0]?.emat, used: guidsInUse(root),
     });
     let vRefs = vMetas();
     let vProblems = [];

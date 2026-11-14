@@ -6,9 +6,10 @@ is the playbook for those. What the first run taught us is in
 [`docs/architecture/asset-pipeline-spike.md`](../architecture/asset-pipeline-spike.md).
 
 ```
-tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--roadmap #N] [--no-run]
+tools\cli asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name PascalName] [--roadmap #N] [--addon <name>] [--no-run]
 tools\cli asset new <slug> --kind clothing --base "{GUID}Prefabs/Characters/...et" --slot Jacket [--route a|b|c]   a garment: clothing.md
-tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
+tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick] [--addon <name>]
+tools\cli asset plan <slug> [--addon <name>]     where every stage writes, nothing written (see "Target addon")
 tools\cli asset score <slug> <n> <silhouette,era,scale_grip,background,no_text,image_to_3d> [note]
 tools\cli asset pick <slug> <n> [--why "..."]     the human's choice from the concept sheet
 tools\cli asset status [<slug>]
@@ -155,6 +156,35 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   prefab's `{GUID}path`, so the item names what it deploys into and the prop what it folds back
   into. Nothing else is written: the deploy, the pick-up and what the prop does are feature code
   (`Feature/Police/LF_SpikeStrip.c` for the strip).
+
+## Target addon
+
+Every stage that writes into an addon writes into one chosen addon: `"addon": "LF_Everon1989"` in the spec,
+or `--addon LF_Everon1989` on `asset new|run|anim|states|sound|dialogue|kit|ambience` (the flag wins). The
+default is `LifeFramework`, the core. Pack content (the red line, `docs/architecture/core-vs-pack.md`) is
+imported straight into the pack; until the pack loads, a pack asset in the core still gets its inventory row.
+
+- **Where it goes.** The model, textures, `.emat`, every `.meta`, the prefabs, clips, particles, sound
+  projects, dialogue files and string rows land under `addons/<addon>/`; `{GUID}path` references stay
+  relative to the addon, so a pack prefab may point at a core or base-game resource and the other way round
+  is refused (below). The hidden Workbench opens that addon's project, whose dependency is the core. The
+  import plugin (`LF_AssetImportPlugin.c`, gitignored) always lives in the core's `Scripts/WorkbenchGame`, so
+  a pack never declares the class twice.
+- **GUIDs.** A new resource draws its GUID against every repo addon, not only the target.
+- **The red line.** A core asset must not name the pack. `run` and the sound, dialogue, kit and ambience
+  commands refuse a core spec that holds a pack GUID, a pack-only path or `LF_Everon1989`; every stage that
+  writes ends with `validate-addon-boundary`'s own check, so a leak stops the run. A pack asset at a path the
+  core already holds (it would shadow it) is refused too.
+- **A changed target** reruns `import`, `prefab`, `anim` and `states` and keeps `generate`, `remesh` and `clean`:
+  those are the same whichever addon the asset lands in, and a Meshy attempt is never paid twice for it.
+- **Credits and inventory.** `docs/credits.md` rows name `LF_Everon1989/Assets/...` for a pack asset. A pack
+  asset needs no `core-pack-inventory.md` row (the inventory lists the core); a core asset does, and `asset plan`
+  prints it.
+- **Strings.** `asset dialogue` writes `everonlife_localization.st` of the target addon; the pack has none yet
+  (#325), so a pack dialogue stops with a message naming the file.
+- **Dry run.** `tools\cli asset plan <slug> [--addon <name>]` prints the addon, the project, each destination
+  and the boundary result, and writes nothing. Selftest: `tools/validation/asset-addon-selftest.mjs`
+  (part of `tools\cli validate`).
 
 ## Materials
 

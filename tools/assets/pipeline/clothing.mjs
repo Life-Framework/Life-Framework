@@ -16,7 +16,8 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, statS
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BODY_PARTS, SLOTS, describeGarment, eddsToDds, gameData, pathOf } from "./clothing-vanilla.mjs";
-import { ematMeta, freshGuid, readGuid, textureMeta, usedGuids, xobMeta, xobMetaIds } from "./meta.mjs";
+import { ematMeta, freshGuid, readGuid, textureMeta, xobMeta, xobMetaIds } from "./meta.mjs";
+import { addonOf as targetAddon, addonPath, guidsInUse, pluginDir as wbPluginDir } from "./addon.mjs";
 import { resourceMeta } from "./prefab.mjs";
 import { parse as parseXob } from "./xob.mjs";
 
@@ -121,7 +122,7 @@ export function newClothingSpec({ slug, name, base, slot, route = "a" }) {
 
 // ------------------------------------------------------------------ stage helpers
 
-const addonOf = (root) => join(root, "addons", "LifeFramework");
+const addonOf = (root, spec) => addonPath(root, spec); // the spec's addon (#971), the core by default
 const json = (file) => JSON.parse(readFileSync(file, "utf8"));
 const save = (file, obj) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, JSON.stringify(obj, null, 1) + "\n"); };
 const useName = (m) => `${m.use === "worn" ? "Worn" : "Item"}${m.index ? m.index : ""}`;
@@ -279,13 +280,13 @@ async function stageFit(ctx) {
 async function rebuildAll(ctx, sources, logFile) {
   const { newestLog } = await import("./import.mjs");
   const PLUGIN = "LF_AssetImportPlugin";
-  const pluginDir = join(addonOf(ctx.root), "Scripts", "WorkbenchGame", "ResourceManager");
+  const pluginDir = wbPluginDir(ctx.root); // always the core's copy; a pack project loads it as a dependency
   mkdirSync(pluginDir, { recursive: true });
   copyFileSync(join(HERE, "wb", `${PLUGIN}.c`), join(pluginDir, `${PLUGIN}.c`));
   const timeoutMs = Number(process.env.LF_ASSET_IMPORT_TIMEOUT_S || 120) * 1000;
   let log = "";
   for (const s of sources) {
-    const { profile } = ctx.workbench(ctx.root, PLUGIN, [`-lfAsset0=${s}`], { timeoutMs, logFile });
+    const { profile } = ctx.workbench(ctx.root, PLUGIN, [`-lfAsset0=${s}`], { timeoutMs, logFile, addon: targetAddon(ctx.spec) });
     const one = newestLog(profile);
     log += /LF_ASSET_IMPORT done/.test(one) ? one : `LF_ASSET_IMPORT rebuilding\nLF_ASSET_IMPORT FAIL no done line for ${s}\n${one}`;
   }
@@ -302,8 +303,8 @@ async function stageImport(ctx) {
   const { spec, dir, root } = ctx;
   if (!ctx.workbench) throw new Error("the import stage needs the Workbench launcher; run it through tools\\cli asset");
   const vanilla = vanillaRecord(dir);
-  const addon = addonOf(root);
-  const used = usedGuids(addon);
+  const addon = addonOf(root, spec);
+  const used = guidsInUse(root);
   const dataDir = join(addon, spec.asset_dir, "Data");
   mkdirSync(dataDir, { recursive: true });
   const guidFor = (rel) => readGuid(join(addon, rel + ".meta")) || freshGuid(used);
@@ -479,10 +480,10 @@ async function stagePrefab(ctx) {
   const { spec, dir, root } = ctx;
   const vanilla = vanillaRecord(dir);
   const imp = json(join(dir, "import.json"));
-  const addon = addonOf(root);
+  const addon = addonOf(root, spec);
   const res = `${spec.prefab_dir}/${spec.name}.et`;
   mkdirSync(dirname(join(addon, res)), { recursive: true });
-  const guid = readGuid(join(addon, res + ".meta")) || freshGuid(usedGuids(addon));
+  const guid = readGuid(join(addon, res + ".meta")) || freshGuid(guidsInUse(root));
   writeFileSync(join(addon, res), clothingPrefab(spec, vanilla, imp));
   if (!existsSync(join(addon, res + ".meta"))) writeFileSync(join(addon, res + ".meta"), resourceMeta(res, guid, "EntityTemplateResourceClass"));
   const ref = `{${guid}}${res}`;
@@ -529,7 +530,7 @@ async function stageVerify(ctx) {
   const { spec, dir, root } = ctx;
   const vanilla = vanillaRecord(dir);
   const { ref } = json(join(dir, "prefab.json"));
-  const data = await gameData({ root });
+  const data = await gameData({ root, addonDir: addonOf(root, spec) }); // the prefab the prefab stage wrote is in the target addon (#971)
   const ours = describeGarment(data, ref);
   save(join(dir, "ours.json"), ours);
   const problems = garmentProblems(spec, vanilla, ours);

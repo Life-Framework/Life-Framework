@@ -8,7 +8,8 @@
 // names (docs/asset-pipeline/README.md "Kinds").
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { freshGuid, readGuid } from "./meta.mjs";
+import { addonPath, guidsInUse } from "./addon.mjs";
 import { resourceMeta } from "./prefab.mjs";
 
 // RoleplayItem_Base: Item_Base with the mod's quantity and sounds (read 2026-11-13).
@@ -159,7 +160,7 @@ export async function writeDeployablePrefabs(ctx) {
   const problems = deployableProblems(spec);
   if (problems.length) throw new Error("spec problems:\n  " + problems.join("\n  "));
   const d = spec.deployable;
-  const addon = join(root, "addons", "LifeFramework");
+  const addon = addonPath(root, spec); // the spec's addon (#971), the core by default
   const report = JSON.parse(readFileSync(join(dir, "clean", "report.json"), "utf8"));
   const model = (name) => {
     const rel = `${spec.asset_dir}/${name}.xob`;
@@ -169,7 +170,7 @@ export async function writeDeployablePrefabs(ctx) {
   };
   const folded = (report.variants || []).find((v) => v.name === `${spec.name}_Folded`);
   const xob = { deployed: model(spec.name), item: model(folded ? folded.name : spec.name) };
-  const used = usedGuids(addon);
+  const used = guidsInUse(root);
   const guid = () => freshGuid(used);
   const files = { deployed: `${spec.prefab_dir}/${spec.name}.et`, item: `${spec.prefab_dir}/${spec.name}_Item.et` };
   const ref = {};
