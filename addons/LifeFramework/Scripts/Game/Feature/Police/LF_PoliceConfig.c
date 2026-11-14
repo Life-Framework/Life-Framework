@@ -55,6 +55,9 @@ class LF_PoliceConfig
 	static const int RANK_DUTY_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int RANK_DUTY_MAX = 10000000;	// lf-fixed: the schema limit, mirrors the attribute params
 
+	static const int APPLY_HOURS_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int APPLY_HOURS_MAX = 100000;	// lf-fixed: the schema limit, mirrors the attribute params
+
 	static const int DEFAULT_ARREST_MIN_RANK = 0;
 	static const int DEFAULT_ESCORT_MIN_RANK = 0;
 	static const float DEFAULT_CATCH_IN_ACT_RADIUS = 10;
@@ -80,6 +83,9 @@ class LF_PoliceConfig
 	static const float DEFAULT_APPLY_DESK_RANGE = 6;
 	static const int DEFAULT_COMPLIANT_SECONDS = 60;
 	static const int DEFAULT_SPIKE_STRIP_LIFETIME_SECONDS = 600;
+	static const int DEFAULT_APPLY_MIN_PLAYTIME_HOURS = 50;
+	static const int DEFAULT_APPLY_REJECT_COOLDOWN_HOURS = 72;
+	static const int DEFAULT_TRIAL_HOURS = 168;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)", params: "0 20")]
 	int m_iArrestMinRank;
@@ -160,6 +166,15 @@ class LF_PoliceConfig
 
 	[Attribute("600", UIWidgets.Auto, "Seconds a deployed spike strip stays before it goes away by itself (#646). An officer can pick it up sooner", params: "30 7200")]
 	int m_iSpikeStripLifetimeSeconds;
+
+	[Attribute("50", UIWidgets.Auto, "Hours of play (all jobs together) an account needs before it may apply to the police (#803). 0 turns the gate off", params: "0 100000")]
+	int m_iApplyMinPlaytimeHours;
+
+	[Attribute("72", UIWidgets.Auto, "Hours an applicant waits to apply again after a rejection (#803). 0 turns the cooldown off", params: "0 100000")]
+	int m_iApplyRejectCooldownHours;
+
+	[Attribute("168", UIWidgets.Auto, "Hours a new officer is on trial after an approval. The roster entry ends when the trial does unless the officer was promoted first (#803). 0 means no trial", params: "0 100000")]
+	int m_iTrialHours;
 
 	//! How many rungs the core file ships; a remove of one of them is refused (a saved rank is its
 	//! index). Not an attribute. -1 until the first layer pass counts them.
@@ -278,7 +293,7 @@ class LF_PoliceConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds"};
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
@@ -305,6 +320,9 @@ class LF_PoliceConfig
 		reader.ReadFloat("applyDeskRange", m_fApplyDeskRange, DESK_RANGE_MIN, DESK_RANGE_MAX);
 		reader.ReadInt("compliantSeconds", m_iCompliantSeconds, COMPLIANT_MIN, COMPLIANT_MAX);
 		reader.ReadInt("spikeStripLifetimeSeconds", m_iSpikeStripLifetimeSeconds, SPIKE_LIFETIME_MIN, SPIKE_LIFETIME_MAX);
+		reader.ReadInt("applyMinPlaytimeHours", m_iApplyMinPlaytimeHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
+		reader.ReadInt("applyRejectCooldownHours", m_iApplyRejectCooldownHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
+		reader.ReadInt("trialHours", m_iTrialHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
 
 		if (!m_aRanks)
 			m_aRanks = new array<ref LF_PoliceRank>();
@@ -426,6 +444,9 @@ class LF_PoliceConfig
 		ctx.WriteValue("applyDeskRange", m_fApplyDeskRange);
 		ctx.WriteValue("compliantSeconds", m_iCompliantSeconds);
 		ctx.WriteValue("spikeStripLifetimeSeconds", m_iSpikeStripLifetimeSeconds);
+		ctx.WriteValue("applyMinPlaytimeHours", m_iApplyMinPlaytimeHours);
+		ctx.WriteValue("applyRejectCooldownHours", m_iApplyRejectCooldownHours);
+		ctx.WriteValue("trialHours", m_iTrialHours);
 
 		ctx.StartObject("ranks");
 		if (m_aRanks)
@@ -484,6 +505,36 @@ class LF_PoliceConfig
 			return DEFAULT_JAIL_ARRIVAL_RADIUS;
 
 		return config.m_fJailArrivalRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ApplyMinPlaytimeHours()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_APPLY_MIN_PLAYTIME_HOURS;
+
+		return config.m_iApplyMinPlaytimeHours;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ApplyRejectCooldownHours()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_APPLY_REJECT_COOLDOWN_HOURS;
+
+		return config.m_iApplyRejectCooldownHours;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TrialHours()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_TRIAL_HOURS;
+
+		return config.m_iTrialHours;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -175,18 +175,31 @@ modded class SCR_PlayerController
 		}
 
 		string uid = LF_PoliceApplications.ApplicantUid(GetPlayerId());
+		int now = System.GetUnixTime();
+		LF_PoliceApplications.ExpireTrials(now);
 		bool onRoster = LF_WhitelistManager.IsWhitelistedForFaction(uid, LF_EFactionType.POLICE);
-		string refusal = LF_PoliceApplications.Submit(uid, applicant, why, availability, onRoster);
+
+		// A playtest mission approves on submit and skips the gates with it.
+		LF_MissionHeader header = LF_MissionHeader.GetCurrent();
+		bool playtest = header && header.m_bLF_InstantPoliceApproval;
+		string refusal;
+		if (playtest)
+			refusal = LF_PoliceApplications.Submit(uid, applicant, why, availability, onRoster);
+		else
+			refusal = LF_PoliceApplications.SubmitGated(uid, applicant, why, availability, onRoster, LF_Playtime.Total(uid), LF_PoliceConfig.ApplyMinPlaytimeHours(), LF_PoliceConfig.ApplyRejectCooldownHours(), now);
 		if (!refusal.IsEmpty())
 		{
-			LF_Utils.NotifyEntity(user, refusal, "#LF-PoliceApp_Status", 4.0);
+			int secondsLeft = LF_PoliceApplications.GetLastSecondsLeft();
+			if (secondsLeft > 0)
+				LF_Utils.NotifyEntity(user, refusal, "#LF-PoliceApp_Status", 6.0, LF_PoliceApplicationRules.FormatDuration(secondsLeft));
+			else
+				LF_Utils.NotifyEntity(user, refusal, "#LF-PoliceApp_Status", 4.0);
 			return;
 		}
 
 		LF_Utils.NotifyEntity(user, "#LF-PoliceApp_Receipt", "#LF-PoliceApp_Status", 5.0);
 
-		LF_MissionHeader header = LF_MissionHeader.GetCurrent();
-		if (header && header.m_bLF_InstantPoliceApproval && LF_PoliceApplications.ApproveInstant(uid))
+		if (playtest && LF_PoliceApplications.ApproveInstant(uid))
 			LF_Utils.NotifyEntity(user, "#LF-PoliceApp_Approved", "#LF-PoliceApp_Status", 5.0);
 	}
 

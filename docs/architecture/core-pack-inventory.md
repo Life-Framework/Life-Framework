@@ -5,7 +5,7 @@ line in [`core-vs-pack.md`](core-vs-pack.md). Taken on 2026-11-08 from `main`
 at `b0f5b8e`. **Batch 1 moved (#323, 2026-11-14):** the rows marked *moved* below now live in
 `addons/LF_Everon1989/` at the same relative path and GUID, except the village layers, which sit in
 the pack world `Worlds/Everon1989Town/Everon1989Town_Layers/` (a SubScene of the core DebugWorld,
-`pack-move-spike.md` section 1). The move is an M3 freeze under epic #223,
+`pack-move-spike.md` section 1). **Batch 2 moved (#323, 2026-11-14):** the supermarket prefabs and model. The other pack rows each have a core user, so they move with the batch that splits it: the bank vault kit is spawned by the core tests `LF_Test_SystemsEconomy` and `LF_Test_SystemsWorld` and placed by the core `Street_Bank.layer` (a core example vault first, with the layers); the clerk dialogue is listed by the core `LF_DialogueIndex.conf` (configs); the atmosphere sounds are placed by core layers and `LF_ChopBench.et` (layers); `medic_flow` is named by the core `LF_Signs.conf` (configs). The move is an M3 freeze under epic #223,
 after the maintainer signs off on M1: load the pack (#322), move in batches
 (#323), split the string table (#325), prove the core boots alone (#326), and
 load a pre-move save (#327).
@@ -135,7 +135,7 @@ under "Hard-coded flagship values in script".
 | Path | Class | Reason |
 | --- | --- | --- |
 | `Building/` | core | Building preview |
-| `Buildings/Supermarket/` | pack | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`): the building is this server's look. The `Annex_Supermarket` placement in the core `Annex.layer` is the pipeline's proof and must go or be replaced by a neutral building before the M3 move |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`, which now sets `"addon": "LF_Everon1989"`): the building is this server's look. Its placement left the core `Annex.layer` (`Annex_Supermarket`) for the pack layer `Village_Buildings` as `Village_Supermarket`, same coordinates; `building-proof` defaults to the new name |
 | `Characters/Core/` | core | Player and NPC bases |
 | `Characters/Presets/` (3) | core | Neutral spawn bodies the game mode lists |
 | `Characters/Npcs/Npc_Default_01.et` | split | Base of every NPC, dressed in the M88 uniform; core needs a neutral base |
@@ -255,7 +255,7 @@ its save.
 
 | Path | Class | Reason |
 | --- | --- | --- |
-| `Buildings/Supermarket/` | pack | Model and `.xob.meta` of the supermarket above |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | Model and `.xob.meta` of the supermarket above; the `.xob` keeps its core `Buildings/Materials/` assignments (a pack may reference the core) |
 | `Buildings/Materials/` | split | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building: neutral, but only pack buildings use them today; they move with the first pack building or stay as a core material set |
 | `Crafting/` | core | Station meshes |
 | `Items/` | core | Cash, ID card, food, roleplay meshes |

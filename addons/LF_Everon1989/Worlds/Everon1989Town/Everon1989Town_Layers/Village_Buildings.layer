@@ -325,3 +325,6 @@ SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFenc
  coords 256 0 279
  angleY -90
 }
+SCR_DestructibleBuildingEntity Village_Supermarket : "{BD5FE43FC26CAF21}Prefabs/Buildings/Supermarket/Supermarket.et" {
+ coords 76 0.1 96.45
+}

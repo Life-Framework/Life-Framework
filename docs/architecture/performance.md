@@ -73,8 +73,10 @@ Findings from the run:
 Extrapolates (script cost with no engine or network in it): bus fan-out, ledger and incident
 append, account and record export, store write and read of the LF payloads. They are linear in
 players or rows, and the run is already at 128 characters and the retention caps, so these
-numbers are the 128 numbers on this machine. A slower server CPU scales them; the 4 to 10x
-headroom in the budget covers laptop-class hardware, not a cheap VPS.
+numbers are the 128 numbers on this machine. The benchmark gate expresses its limits in reference ops (one turn of a small script
+loop timed in the same run), so a slower or busy machine moves the limit with it; measured idle ratios
+on this PC, lf-testbox and lf-cloud agree within about 1.5x (the at-cap money event, which moves
+memory, within 3x), and each limit sits at 2.2 to 2.7x the typical ratio.
 
 Cannot be known without a real load test:
 
