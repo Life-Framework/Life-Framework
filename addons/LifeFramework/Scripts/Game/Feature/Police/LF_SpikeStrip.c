@@ -24,8 +24,9 @@
 //
 //------------------------------------------------------------------------------------------------
 //! Police spike strip (#646). An on-duty officer deploys the folded strip (LF_SpikeStripDeployAction
-//! on Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et): the server lays SpikeStrip.et across
-//! the road in front of them, its near end LF_SpikeStrips.GAP metres ahead, on the ground. Each wheel
+//! on Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et): the placement service (#1026,
+//! LF_PlacementService.Confirm, from the item's LF_PlaceableComponent) lays SpikeStrip.et across the
+//! road in front of them, where their ghost showed it, on the ground. Each wheel
 //! of a vehicle whose path crosses the strip is punctured through the vanilla wheel damage: its
 //! SCR_WheelHitZone (on the wheel slot entity) takes damage until DESTROYED, and SCR_WheelHitZone
 //! .UpdateWheelState shrinks the radius, cuts the grip and adds drag on every machine, so the car
@@ -34,22 +35,9 @@
 //! Server only: the check, the damage, the deploy and the pick-up. Clients see the replicated
 //! entity and the replicated wheel damage.
 //------------------------------------------------------------------------------------------------
-
-//! The pure part: footprint, swept wheel paths, placement. LOGIC-tested by LF_Test_SpikeStripGeometry.
+//! The pure part: the swept wheel paths over the strip. LOGIC-tested by LF_Test_SpikeStripGeometry.
 class LF_SpikeStripGeometry
 {
-	//------------------------------------------------------------------------------------------------
-	//! Horizontal unit vector of v, or zero when v is (nearly) vertical.
-	static vector Flat(vector v)
-	{
-		vector flat = Vector(v[0], 0, v[2]);
-		float length = flat.Length();
-		if (length < 0.0001)
-			return vector.Zero;
-
-		return flat / length;
-	}
-
 	//------------------------------------------------------------------------------------------------
 	//! True when the horizontal path from `from` to `to` touches the strip's footprint: the rectangle
 	//! centred on `centre`, `halfLength` along the horizontal unit vector `axis` and `halfWidth`
@@ -102,102 +90,19 @@ class LF_SpikeStripGeometry
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Which way the strip's length runs. With no road it runs where the officer faces. With a road
-	//! it runs straight across the road (perpendicular to roadDir), on the side the officer faces.
-	static vector Axis(vector officerForward, bool hasRoad, vector roadDir)
-	{
-		vector forward = Flat(officerForward);
-		if (forward == vector.Zero)
-			forward = "0 0 1";
-
-		if (!hasRoad)
-			return forward;
-
-		vector along = Flat(roadDir);
-		if (along == vector.Zero)
-			return forward;
-
-		vector across = Vector(-along[2], 0, along[0]);
-		if (vector.Dot(across, forward) < 0)
-			across = -across;
-
-		return across;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Direction of the polyline segment nearest to pos (horizontal distance), or zero with fewer
-	//! than two points.
-	static vector NearestSegmentDirection(notnull array<vector> points, vector pos, out float distance)
-	{
-		distance = 1000000;
-		vector best = vector.Zero;
-		for (int i = 0; i + 1 < points.Count(); i++)
-		{
-			vector a = Vector(points[i][0], 0, points[i][2]);
-			vector b = Vector(points[i + 1][0], 0, points[i + 1][2]);
-			vector p = Vector(pos[0], 0, pos[2]);
-			vector ab = b - a;
-			float lengthSq = vector.Dot(ab, ab);
-			if (lengthSq < 0.0001)
-				continue;
-
-			float t = Math.Clamp(vector.Dot(p - a, ab) / lengthSq, 0, 1);
-			float d = vector.Distance(p, a + ab * t);
-			if (d < distance)
-			{
-				distance = d;
-				best = ab.Normalized();
-			}
-		}
-
-		return best;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The ground under a strip is usable when it rises or falls by at most maxStep along it: the
 	//! placement tool's ground rule (docs/placement-tool.md "ground"). A kerb or a car is not.
 	static bool GroundAcceptable(float lowest, float highest, float maxStep)
 	{
 		return highest - lowest <= maxStep;
 	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A world transform whose forward (z) runs from `start` to `end` and whose up is as close to
-	//! world up as that allows: the strip lies on a slope instead of floating over one end.
-	static void Transform(vector start, vector end, out vector transform[4])
-	{
-		vector forward = (end - start).Normalized();
-		vector right = Cross(vector.Up, forward).Normalized();
-		vector up = Cross(forward, right);
-		transform[0] = right;
-		transform[1] = up;
-		transform[2] = forward;
-		transform[3] = (start + end) * 0.5;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static vector Cross(vector a, vector b)
-	{
-		return Vector(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]);
-	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! Server rules and actions: who may deploy, where the strip goes, pick-up, the puncture.
+//! Server rules and actions: deploy (through LF_PlacementService), pick-up, the puncture.
 class LF_SpikeStrips
 {
 	static const string FEATURE = "SpikeStrip";
-	//! Metres between the officer and the near end of the strip.
-	static const float GAP = 1.0; // lf-fixed: geometry of laying the strip at one's feet, not a gameplay knob
-	//! Largest rise along the strip's footprint: the placement tool's 0.25 m ground rule.
-	static const float MAX_STEP = 0.25; // lf-fixed: the placement tool's ground rule (docs/placement-tool.md)
-	//! A road whose centre line is this close to the strip's middle turns the strip across it.
-	static const float ROAD_REACH = 12; // lf-fixed: geometry, how far a road is looked for around the officer
-	//! The clearance box over the strip: half its width across, from this far above the ground to
-	//! this height. Lifted so the road surface under it does not count; tall enough for a car's sill.
-	static const float CLEARANCE_HALF_WIDTH = 0.2; // lf-fixed: geometry of the strip's footprint
-	static const float CLEARANCE_LIFT = 0.1; // lf-fixed: geometry, so the surface the strip lies on (terrain, a road or pavement entity) does not count
-	static const float CLEARANCE_HEIGHT = 0.6; // lf-fixed: geometry, a car body or a post
 
 	protected static string s_sLastRefusal;
 
@@ -237,75 +142,20 @@ class LF_SpikeStrips
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server and client: on-duty police, from the account (server) or the replicated state (client).
-	static bool IsOnDutyOfficer(IEntity user)
-	{
-		if (!user)
-			return false;
-
-		if (Replication.IsServer())
-		{
-			LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-			string uid = LF_PoliceRanks.ResolveUid(user);
-			if (!accounts || uid.IsEmpty())
-				return false;
-
-			return LF_PoliceUtils.IsOnDutyOfficer(accounts.GetAccount(uid));
-		}
-
-		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: the officer lays the strip `item` carries in front of them. The item is used up.
+	//! Server: the officer lays the strip `item` carries where the server plans it (no proposal: a
+	//! server-side perform, the tests).
 	//! \return the deployed strip, or null with the refusal logged and toasted.
 	static IEntity Deploy(IEntity officer, IEntity item)
 	{
-		if (!Replication.IsServer())
-			return Refuse(officer, "deploy refused: not the server", "");
+		return Placed(officer, LF_PlacementService.ConfirmOwnSpot(officer, item));
+	}
 
-		if (!officer || !item)
-			return Refuse(officer, "deploy refused: no officer or no strip", "");
-
-		if (!IsOnDutyOfficer(officer))
-			return Refuse(officer, string.Format("deploy refused: %1 is not on-duty police", LF_PoliceRanks.ResolveUid(officer)), "#LF-SpikeStrip_PoliceOnly");
-
-		LF_DeployableItemComponent deployable = LF_Component<LF_DeployableItemComponent>.Find(item);
-		if (!deployable || deployable.GetDeployedPrefab().IsEmpty())
-			return Refuse(officer, "deploy refused: the item names no deployed prefab", "");
-
-		// Only a strip on the ground or in the officer's own inventory: not one in someone's car.
-		IEntity holder = LF_InventoryUtils.GetStorageHierachyRoot(item);
-		if (holder != item && holder != officer)
-			return Refuse(officer, "deploy refused: the strip is in someone else's storage", "");
-
-		if (!LF_RateLimit.AllowCharacter(officer, LF_ERequestKind.SPAWN, "spike strip deploy"))
-		{
-			s_sLastRefusal = "deploy refused: rate limit";
-			return null;
-		}
-
-		// The same plan and verdict the officer's preview ghost showed (LF_SpikeStripPreview).
-		vector transform[4];
-		LF_PlacementProbe probe = new LF_PlacementProbe();
-		LF_EPlacementVerdict verdict = Plan(officer, deployable.GetDeployedLength(), item, transform, probe);
-		if (verdict == LF_EPlacementVerdict.BLOCKED)
-			return Refuse(officer, "deploy refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_Blocked");
-
-		if (verdict != LF_EPlacementVerdict.VALID)
-			return Refuse(officer, "deploy refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-SpikeStrip_NoGround");
-
-		IEntity strip = SpawnAt(deployable.GetDeployedPrefab(), transform);
-		if (!strip)
-			return Refuse(officer, string.Format("deploy refused: spawn failed for %1", deployable.GetDeployedPrefab()), "");
-
-		LF_SpikeStripComponent component = LF_Component<LF_SpikeStripComponent>.Find(strip);
-		if (component)
-			component.SetDeployer(LF_PoliceRanks.ResolveUid(officer));
-
-		SCR_EntityHelper.DeleteEntityAndChildren(item);
-		LF_Debug.Info(FEATURE, string.Format("deployed by %1 at %2 heading %3, lasts %4 s", LF_PoliceRanks.ResolveUid(officer), transform[3], transform[2], LF_PoliceConfig.SpikeStripLifetimeSeconds()));
-		return strip;
+	//------------------------------------------------------------------------------------------------
+	//! Server: the officer lays the strip `item` carries at `proposal`, the spot their ghost showed
+	//! (LF_SpikeStripDeployAction's action data). LF_PlacementService.Confirm checks it again.
+	static IEntity DeployAt(IEntity officer, IEntity item, vector proposal[4])
+	{
+		return Placed(officer, LF_PlacementService.Confirm(officer, item, proposal));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -319,7 +169,7 @@ class LF_SpikeStrips
 			return false;
 		}
 
-		if (!IsOnDutyOfficer(officer))
+		if (!LF_PoliceUtils.IsOnDutyCharacter(officer))
 		{
 			Refuse(officer, string.Format("pick-up refused: %1 is not on-duty police", LF_PoliceRanks.ResolveUid(officer)), "#LF-SpikeStrip_PoliceOnly");
 			return false;
@@ -345,137 +195,23 @@ class LF_SpikeStrips
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server and client (the preview ghost, LF_SpikeStripPreview): measures the spot in front of
-	//! the officer into `probe`, fills `transform` with where the strip would lie, and returns the
-	//! verdict. Across a road within ROAD_REACH, else where the officer faces. `ignore` is the
-	//! folded strip itself, kept out of the ground and clearance traces.
-	static LF_EPlacementVerdict Plan(IEntity officer, float length, IEntity ignore, out vector transform[4], notnull LF_PlacementProbe probe)
+	//! The strip the service placed, with its deployer set; or null with the service's refusal kept.
+	protected static IEntity Placed(IEntity officer, IEntity strip)
 	{
-		vector officerTransform[4];
-		officer.GetWorldTransform(officerTransform);
-		vector origin = officerTransform[3];
-
-		bool hasRoad = false;
-		vector roadDir = vector.Zero;
-		ChimeraAIWorld aiWorld = ChimeraAIWorld.Cast(GetGame().GetAIWorld());
-		if (aiWorld && aiWorld.GetRoadNetworkManager())
+		if (!strip)
 		{
-			BaseRoad road;
-			float roadDistance;
-			vector ahead = origin + LF_SpikeStripGeometry.Flat(officerTransform[2]) * (GAP + length * 0.5);
-			aiWorld.GetRoadNetworkManager().GetClosestRoad(ahead, road, roadDistance);
-			if (road && roadDistance <= ROAD_REACH)
-			{
-				array<vector> points = {};
-				road.GetPoints(points);
-				float segmentDistance;
-				roadDir = LF_SpikeStripGeometry.NearestSegmentDirection(points, ahead, segmentDistance);
-				hasRoad = roadDir != vector.Zero;
-			}
-		}
-
-		vector axis = LF_SpikeStripGeometry.Axis(officerTransform[2], hasRoad, roadDir);
-		vector start = origin + axis * GAP;
-		vector end = start + axis * length;
-		start[1] = origin[1];
-		end[1] = origin[1];
-		// Until the ground is measured the strip lies level at the officer's feet, so a caller
-		// that shows the spot (the ghost) has a transform even for NO_GROUND.
-		LF_SpikeStripGeometry.Transform(start, end, transform);
-
-		float startY;
-		float endY;
-		float middleY;
-		IEntity startSurface;
-		IEntity endSurface;
-		IEntity middleSurface;
-		probe.m_bGround = GroundY(start, officer, ignore, startY, startSurface) && GroundY(end, officer, ignore, endY, endSurface) && GroundY((start + end) * 0.5, officer, ignore, middleY, middleSurface);
-		if (!probe.m_bGround)
-			return LF_PlacementRules.Judge(probe, MAX_STEP);
-
-		probe.m_fLowest = Math.Min(startY, Math.Min(endY, middleY));
-		probe.m_fHighest = Math.Max(startY, Math.Max(endY, middleY));
-		start[1] = startY;
-		end[1] = endY;
-		LF_SpikeStripGeometry.Transform(start, end, transform);
-		vector middle = transform[3];
-		middle[1] = Math.Max(middle[1], middleY);
-		transform[3] = middle;
-
-		// Clearance: a box over the strip's footprint, lifted off the ground, so a parked car,
-		// a post or a strip already lying there stops it (the vanilla item placement's space check).
-		array<IEntity> exclude = {officer};
-		if (ignore)
-			exclude.Insert(ignore);
-		vector mins = Vector(-CLEARANCE_HALF_WIDTH, CLEARANCE_LIFT, -length * 0.5);
-		vector maxs = Vector(CLEARANCE_HALF_WIDTH, CLEARANCE_HEIGHT, length * 0.5);
-		probe.m_sBlocker = LF_PlacementRules.FindBlocker(transform, mins, maxs, exclude);
-
-		// What it would lie on: not a car's roof, a dropped item, or a strip already laid there (the
-		// clearance box starts above the surface, so it cannot see a 3 cm strip underneath).
-		array<typename> notGround = {LF_SpikeStripComponent};
-		array<IEntity> surfaces = {startSurface, middleSurface, endSurface};
-		foreach (IEntity surface : surfaces)
-		{
-			if (probe.m_sBlocker.IsEmpty())
-				probe.m_sBlocker = LF_PlacementRules.SurfaceBlocker(surface, notGround);
-		}
-
-		LF_EPlacementVerdict verdict = LF_PlacementRules.Judge(probe, MAX_STEP);
-		LF_Debug.Log(FEATURE, string.Format("plan: road %1, axis %2, ground %3..%4, %5", hasRoad, axis, probe.m_fLowest, probe.m_fHighest, LF_PlacementRules.Name(verdict)));
-		return verdict;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The higher of the terrain and whatever stands on it under pos (the placement tool's rule).
-	//! `surface` is the entity that was hit when it stands above the terrain, else null.
-	protected static bool GroundY(vector pos, IEntity officer, IEntity ignore, out float y, out IEntity surface)
-	{
-		BaseWorld world = GetGame().GetWorld();
-		if (!world)
-			return false;
-
-		y = world.GetSurfaceY(pos[0], pos[2]);
-		TraceParam trace = new TraceParam();
-		trace.Start = Vector(pos[0], pos[1] + 2, pos[2]);
-		trace.End = Vector(pos[0], pos[1] - 3, pos[2]);
-		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
-		trace.LayerMask = EPhysicsLayerPresets.Projectile;
-		array<IEntity> exclude = {officer};
-		if (ignore)
-			exclude.Insert(ignore);
-		trace.ExcludeArray = exclude;
-		float fraction = world.TraceMove(trace, null);
-		surface = null;
-		if (fraction < 1)
-		{
-			float hitY = trace.Start[1] + (trace.End[1] - trace.Start[1]) * fraction;
-			if (hitY > y)
-			{
-				y = hitY;
-				surface = trace.TraceEnt;
-			}
-		}
-
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static IEntity SpawnAt(ResourceName prefab, vector transform[4])
-	{
-		Resource resource = Resource.Load(prefab);
-		if (!resource || !resource.IsValid())
-		{
-			LF_Debug.Error(FEATURE, string.Format("prefab does not resolve: %1", prefab));
+			s_sLastRefusal = "deploy " + LF_PlacementService.LastRefusal();
 			return null;
 		}
 
-		EntitySpawnParams params = new EntitySpawnParams();
-		params.TransformMode = ETransformMode.WORLD;
-		for (int i = 0; i < 4; i++)
-			params.Transform[i] = transform[i];
+		LF_SpikeStripComponent component = LF_Component<LF_SpikeStripComponent>.Find(strip);
+		if (component)
+			component.SetDeployer(LF_PoliceRanks.ResolveUid(officer));
 
-		return GetGame().SpawnEntityPrefab(resource, GetGame().GetWorld(), params);
+		vector transform[4];
+		strip.GetWorldTransform(transform);
+		LF_Debug.Info(FEATURE, string.Format("deployed by %1 at %2 heading %3, lasts %4 s", LF_PoliceRanks.ResolveUid(officer), transform[3], transform[2], LF_PoliceConfig.SpikeStripLifetimeSeconds()));
+		return strip;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -592,35 +328,6 @@ class LF_SpikeStrips
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", toastKey, 3.0, LF_ENotificationType.WARNING);
 
 		return null;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! On a carried item that deploys into a world prop (the asset pipeline's deployable kind).
-[ComponentEditorProps(category: "LifeFramework/Police", description: "Carried item that deploys into a world prop.")]
-class LF_DeployableItemComponentClass : ScriptComponentClass
-{
-}
-
-//------------------------------------------------------------------------------------------------
-class LF_DeployableItemComponent : ScriptComponent
-{
-	[Attribute("", UIWidgets.ResourceNamePicker, "Prefab laid in the world when this item is deployed", "et")]
-	protected ResourceName m_sDeployedPrefab;
-
-	[Attribute("3.5", UIWidgets.Auto, "Length in metres of the deployed prop along its forward axis")]
-	protected float m_fDeployedLength;
-
-	//------------------------------------------------------------------------------------------------
-	ResourceName GetDeployedPrefab()
-	{
-		return m_sDeployedPrefab;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	float GetDeployedLength()
-	{
-		return m_fDeployedLength;
 	}
 }
 
@@ -747,7 +454,7 @@ class LF_SpikeStripComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: picks every strip an officer deployed off the road (the world reset); a placed one stays.
-	//! eturn How many strips were removed.
+	//! \return How many strips were removed.
 	static int DeleteAll()
 	{
 		if (!s_aAll)
@@ -853,7 +560,7 @@ class LF_SpikeStripComponent : ScriptComponent
 		LF_SpikeStrips.Wheels(vehicle, wheels);
 		vector transform[4];
 		owner.GetWorldTransform(transform);
-		vector axis = LF_SpikeStripGeometry.Flat(transform[2]);
+		vector axis = LF_PlacementGeometry.Flat(transform[2]);
 		vector centre = transform[3];
 		foreach (SCR_WheelHitZone wheel : wheels)
 		{

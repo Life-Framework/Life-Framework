@@ -50,6 +50,11 @@ export function specProblems(spec) {
   if (ab.vanilla_openings === false) out.push("archbuilder.vanilla_openings must stay true (game doors and destructible windows)");
   if (ab.archetype === "HIGHRISE") out.push("HIGHRISE is not a 1989 Everon building");
   if (spec.export?.light_system) out.push("export.light_system writes an Enforce script with ArchBuilder's own class names; leave it off (AGENTS.md rule 5)");
+  // ArchBuilder records its furniture calls (shelves, counters, lamps, the fascia sign) as vanilla
+  // props only while it exports furniture: with export.furniture off it records none and the
+  // vanilla_props setting does nothing, silently (docs/architecture/building-pipeline-spike.md).
+  if (spec.export?.vanilla_props !== false && spec.export?.furniture === false) out.push("export.furniture is false, so ArchBuilder records no vanilla props at all (not even lamps or the shop sign); turn it on, or set export.vanilla_props false to say the shell is meant to be bare");
+  if (spec.export?.furniture !== false && ab.do_furniture === false && spec.export?.vanilla_props !== false) out.push("archbuilder.do_furniture is false, so the rooms get no furniture to export; turn it on (empty shelves are what our shop fills)");
   const b = spec.budget || {};
   if (!(b.tris >= 1000 && b.tris <= 400000)) out.push("budget.tris must be 1000 to 400000 (the whole building, every part)");
   if (!Array.isArray(b.footprint_m) || b.footprint_m.length !== 2 || b.footprint_m.some((v) => !(v > 2 && v < 120))) out.push("budget.footprint_m must be [width, depth] in metres");
@@ -131,13 +136,50 @@ async function stageExport(ctx) {
   const between = log.split("LF_BUILDING export start")[1]?.split("LF_BUILDING export end")[0] || "";
   const warnings = between.split(/\r?\n/).filter((l) => /^(Warning|Error):/.test(l.trim())).map((l) => l.trim());
   const info = between.split(/\r?\n/).find((l) => /^Info: .*doors .*colliders/.test(l.trim()))?.trim().replace(/ -> .*$/, "") || "";
+  // ArchBuilder's Color is its Blender colour, raw: give every material the game colour that looks
+  // like Blender (tools/buildings/pipeline/materials.mjs).
+  const { colourMaterials } = await import("./materials.mjs");
+  const colours = await colourMaterials({ staging, dir: ctx.dir, spec: ctx.spec, blend, run: ctx.runArchBuilder || runArchBuilder });
+  for (const c of colours) console.log(`        ${c.name.padEnd(20)} ${c.where.padEnd(8)} ${String(Math.round(c.outside * 100)).padStart(3)}% out  Blender ${c.blender.join(" ")} -> Color ${c.color.join(" ")}${c.mean ? ` over a ${Math.max(...c.mean).toFixed(2)} texture` : " (flat)"}${c.capped ? " (texture darker than Blender: Color capped at 1)" : ""}`);
   const base = join(staging, "Prefabs", "ArchBuilder", ctx.spec.name, `${ctx.spec.name}_Base.et`);
   if (!existsSync(base)) throw new Error(`the export wrote no ${base}`);
   const counts = countOpenings(readFileSync(base, "utf8"));
-  for (const w of warnings) console.log(`WARN  ${w}`);
   console.log(`export: ${r.secs}s; ${counts.doors} door sets, ${counts.windows} windows, ${counts.probes} probe(s); ${info.replace(/^Info: /, "")}`);
-  if (counts.doors < ctx.spec.budget.min_doors) throw new Error(`${counts.doors} door(s); the spec wants at least ${ctx.spec.budget.min_doors}`);
-  return { secs: r.secs, ...counts, warnings };
+  const furniture = join(staging, "Prefabs", "ArchBuilder", ctx.spec.name, "Furniture", `${ctx.spec.name}_furniture_01.et`);
+  const props = existsSync(furniture) ? countProps(readFileSync(furniture, "utf8")) : { total: 0, kinds: {} };
+  if (props.total) console.log(`        ${props.total} vanilla props: ${Object.entries(props.kinds).map(([k, n]) => `${n} ${k}`).join(", ")}`);
+  const problems = exportProblems(ctx.spec, r.report, warnings, props);
+  for (const p of problems) console.log(`FAIL  ${p}`);
+  if (counts.doors < ctx.spec.budget.min_doors) problems.push(`${counts.doors} door(s); the spec wants at least ${ctx.spec.budget.min_doors}`);
+  if (problems.length) throw new Error(`${problems.length} export check(s) failed: what ArchBuilder shows in Blender would not reach the game`);
+  return { secs: r.secs, ...counts, props: props.total, propKinds: props.kinds, report: r.report, colours };
+}
+
+// The vanilla props in the furniture prefab, by prefab file name: its child entities (indented),
+// not the BuildingFurniture_base.et the prefab itself inherits (column 0).
+export function countProps(furnitureText) {
+  const kinds = {};
+  let total = 0;
+  for (const m of furnitureText.matchAll(/^[ 	]+\w+ : "\{[0-9A-F]{16}\}[^"]*\/([^"/]+)\.et"/gm)) {
+    kinds[m[1]] = (kinds[m[1]] || 0) + 1;
+    total++;
+  }
+  return { total, kinds };
+}
+
+// What the export dropped or warned about. ArchBuilder reports, it does not stop: a warning (no
+// vanilla prefab for an opening, a cutaway export) and a furniture record it found no prefab or no
+// room for (props_mesh) each mean the game gets less than Blender shows. Each one fails the stage.
+export function exportProblems(spec, report, logWarnings = [], props = { total: 0 }) {
+  const out = [];
+  if (!report) return ["the export returned no report (is this the ArchBuilder version the pipeline knows?)"];
+  for (const w of [...(report.warnings || []), ...logWarnings.filter((l) => !(report.warnings || []).some((w) => l.includes(w)))]) out.push(`export warning: ${w}`);
+  const dropped = Object.entries(report.props_mesh || {}).filter(([, n]) => n > 0);
+  if (dropped.length) out.push(`furniture left out of the game (no vanilla prefab or no room for it): ${dropped.map(([k, n]) => `${n} ${k}`).join(", ")}`);
+  const e = spec.export || {};
+  if (e.vanilla_props !== false && e.furniture !== false && !props.total) out.push("the export has no vanilla props although furniture and vanilla_props are on");
+  if (e.vanilla_props !== false && e.furniture !== false && report.props !== props.total) out.push(`the export reports ${report.props} props but its furniture prefab holds ${props.total}`);
+  return out;
 }
 
 async function stageImport(ctx) {

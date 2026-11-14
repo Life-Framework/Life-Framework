@@ -195,6 +195,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessScreenText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessSessionScope(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessStandClear(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HarnessStandSide(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HaulTidy(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
@@ -297,7 +298,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Placement(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementConfirm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementRoad(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesBankBag(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesCashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesDispatch(), LF_TestTier.WORLD);
@@ -509,6 +512,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnimTargets(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Workplace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorldReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorldResetGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ZoneConfOff(), LF_TestTier.WORLD);

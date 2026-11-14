@@ -159,6 +159,27 @@ class LF_PoliceUtils
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server and client: whether `user` is on-duty police, from the account on the server and from
+	//! the replicated account state on a client (which only hides what the server would refuse).
+	static bool IsOnDutyCharacter(IEntity user)
+	{
+		if (!user)
+			return false;
+
+		if (Replication.IsServer())
+		{
+			LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+			string uid = LF_PoliceRanks.ResolveUid(user);
+			if (!accounts || uid.IsEmpty())
+				return false;
+
+			return IsOnDutyOfficer(accounts.GetAccount(uid));
+		}
+
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \param entity Player character.
 	//! \return The cached account for the character, or null.
 	static LF_PlayerAccount GetAccountForEntity(IEntity entity)

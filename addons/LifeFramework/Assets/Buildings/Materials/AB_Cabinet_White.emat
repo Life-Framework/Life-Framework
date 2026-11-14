@@ -1,9 +1,0 @@
-MatPBRBasic {
- Color 0.86 0.86 0.84 1
- BCRMap "{0236DEFDB2549ADB}Assets/_SharedData/Plastic/ST_PlasticBase_03_BCR.edds"
- NMOMap "{3AEE656F6B23C845}Assets/_SharedData/Plastic/ST_PlasticBase_03_NMO.edds"
- GlobalMapsUVTransform MatUVTransform "{3D353C408E193695}" {
-  TilingU 1
-  TilingV 1
- }
-}
