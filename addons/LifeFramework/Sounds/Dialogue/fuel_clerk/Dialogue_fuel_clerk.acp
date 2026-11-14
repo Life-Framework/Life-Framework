@@ -1,357 +1,500 @@
 AudioClass {
- sounds {
-  SoundClass {
-   id 10249
-   name "SOUND_DLG_FUEL_CLERK_GREET"
-   tl 300 0
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 11282
-       port 65
-      }
-     }
-    }
+ signals {
+  SignalClass {
+   id 65549
+   name "WPN Handling Spatiality"
+   tl 432 -1248
+   res "{1387EB9E4DBEB1F2}Sounds/_SharedData/Signals/Weapons/Spatiality/Weapons_Handling_Spatiality.sig"
+   inputsport {
+    1 3
    }
-   outState 1035
-   outStatePort 17415
+   outputsport {
+    9
+   }
+   inputvalues {
+    0 1
+   }
+   inputvaluesmin {
+    0 0
+   }
+   inputvaluesmax {
+    1 1
+   }
+   path "{1387EB9E4DBEB1F2}Sounds/_SharedData/Signals/Weapons/Spatiality/Weapons_Handling_Spatiality.sig"
   }
-  SoundClass {
-   id 13321
-   name "SOUND_DLG_FUEL_CLERK_ABOUT_WHERE"
-   tl 300 120
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 14354
-       port 65
-      }
-     }
-    }
+  SignalClass {
+   id 70669
+   name "Reverb Base"
+   tl 1088 -224
+   res "{76CBB40EF7F227B6}Sounds/_SharedData/Signals/Reverb/Reverb_Base.sig"
+   inputsport {
+    1 35 40 112 139
    }
-   outState 1035
-   outStatePort 17415
+   outputsport {
+    34 39 105 107 106 110
+   }
+   inputvalues {
+    100 0.5 0.5 16000 16000
+   }
+   inputvaluesmin {
+    0 0 0 0 0
+   }
+   inputvaluesmax {
+    100 1 1 16000 16000
+   }
+   path "{76CBB40EF7F227B6}Sounds/_SharedData/Signals/Reverb/Reverb_Base.sig"
   }
-  SoundClass {
-   id 16393
-   name "SOUND_DLG_FUEL_CLERK_CHAT_QUIET"
-   tl 300 240
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 17426
-       port 65
-      }
-     }
-    }
+  SignalClass {
+   id 72717
+   name "Occlusion Props"
+   tl 256 -1040
+   res "{A45B14CDEA2D5DCD}Sounds/_SharedData/Signals/Props/Props_Occlusion.sig"
+   inputsport {
+    1 6 7 23 52 56
    }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 19465
-   name "SOUND_DLG_FUEL_CLERK_CHAT_NEWS"
-   tl 300 360
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 20498
-       port 65
-      }
-     }
-    }
+   outputsport {
+    5 37
    }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 22537
-   name "SOUND_DLG_FUEL_CLERK_ROB_PANIC"
-   tl 300 480
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 23570
-       port 65
-      }
-     }
-    }
+   inputvalues {
+    0 0 0 0 1000 400
    }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 25609
-   name "SOUND_DLG_FUEL_CLERK_ROB_OPEN"
-   tl 300 600
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 26642
-       port 65
-      }
-     }
-    }
+   inputvaluesmin {
+    0 0 0 0 0 0
    }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 28681
-   name "SOUND_DLG_FUEL_CLERK_ROB_EMPTY"
-   tl 300 720
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 29714
-       port 65
-      }
-     }
-    }
+   inputvaluesmax {
+    1 1 1 1 10000 10000
    }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 31753
-   name "SOUND_DLG_FUEL_CLERK_ROB_OFF"
-   tl 300 840
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 32786
-       port 65
-      }
-     }
-    }
-   }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 34825
-   name "SOUND_DLG_FUEL_CLERK_BEG"
-   tl 300 960
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 35858
-       port 65
-      }
-     }
-    }
-   }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 37897
-   name "SOUND_DLG_FUEL_CLERK_STAMMER"
-   tl 300 1080
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 38930
-       port 65
-      }
-     }
-    }
-   }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 40969
-   name "SOUND_DLG_FUEL_CLERK_PAID"
-   tl 300 1200
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 42002
-       port 65
-      }
-     }
-    }
-   }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 44041
-   name "SOUND_DLG_FUEL_CLERK_POLICE"
-   tl 300 1320
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 45074
-       port 65
-      }
-     }
-    }
-   }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 47113
-   name "SOUND_DLG_FUEL_CLERK_GONE"
-   tl 300 1440
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 48146
-       port 65
-      }
-     }
-    }
-   }
-   outState 1035
-   outStatePort 17415
-  }
-  SoundClass {
-   id 50185
-   name "SOUND_DLG_FUEL_CLERK_BYE"
-   tl 300 1560
-   conns {
-    ConnectionsClass connections {
-     id 14
-     links {
-      ConnectionClass connection {
-       id 51218
-       port 65
-      }
-     }
-    }
-   }
-   outState 1035
-   outStatePort 17415
+   path "{A45B14CDEA2D5DCD}Sounds/_SharedData/Signals/Props/Props_Occlusion.sig"
   }
  }
- generators {
-  GeneratorClass {
-   id 4101
-   name "Silence"
-   tl -300 -200
-   function Silence
+ sounds {
+  SoundClass {
+   id 102409
+   name "SOUND_DLG_FUEL_CLERK_GREET"
+   version 5
+   tl 680 0
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 204818
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 103433
+   name "SOUND_DLG_FUEL_CLERK_ABOUT_WHERE"
+   version 5
+   tl 680 280
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 205842
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 104457
+   name "SOUND_DLG_FUEL_CLERK_CHAT_QUIET"
+   version 5
+   tl 680 560
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 206866
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 105481
+   name "SOUND_DLG_FUEL_CLERK_CHAT_NEWS"
+   version 5
+   tl 680 840
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 207890
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 106505
+   name "SOUND_DLG_FUEL_CLERK_ROB_PANIC"
+   version 5
+   tl 680 1120
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 208914
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 107529
+   name "SOUND_DLG_FUEL_CLERK_ROB_OPEN"
+   version 5
+   tl 680 1400
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 209938
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 108553
+   name "SOUND_DLG_FUEL_CLERK_ROB_EMPTY"
+   version 5
+   tl 680 1680
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 210962
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 109577
+   name "SOUND_DLG_FUEL_CLERK_ROB_OFF"
+   version 5
+   tl 680 1960
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 211986
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 110601
+   name "SOUND_DLG_FUEL_CLERK_BEG"
+   version 5
+   tl 680 2240
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 213010
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 111625
+   name "SOUND_DLG_FUEL_CLERK_STAMMER"
+   version 5
+   tl 680 2520
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 214034
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 112649
+   name "SOUND_DLG_FUEL_CLERK_PAID"
+   version 5
+   tl 680 2800
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 215058
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 113673
+   name "SOUND_DLG_FUEL_CLERK_POLICE"
+   version 5
+   tl 680 3080
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 216082
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 114697
+   name "SOUND_DLG_FUEL_CLERK_GONE"
+   version 5
+   tl 680 3360
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 217106
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 115721
+   name "SOUND_DLG_FUEL_CLERK_BYE"
+   version 5
+   tl 680 3640
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 218130
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
   }
  }
  mixers {
   MixerClass {
-   id 1035
+   id 35851
    name "OutputState"
-   tl 700 0
+   version 4
+   tl 1488 -288
    res "{B764D803219C775E}Sounds/FinalMix.afm"
-   iops {
-    IOPConnectionClass iopConnection {
-     port 17415
-     conn {
-      ConnectionsClass connections {
-       id 5
-       links {
-        ConnectionClass connection {
-         id 10249
-         port 65
-        }
-          ConnectionClass connection {
-         id 13321
-         port 65
-        }
-          ConnectionClass connection {
-         id 16393
-         port 65
-        }
-          ConnectionClass connection {
-         id 19465
-         port 65
-        }
-          ConnectionClass connection {
-         id 22537
-         port 65
-        }
-          ConnectionClass connection {
-         id 25609
-         port 65
-        }
-          ConnectionClass connection {
-         id 28681
-         port 65
-        }
-          ConnectionClass connection {
-         id 31753
-         port 65
-        }
-          ConnectionClass connection {
-         id 34825
-         port 65
-        }
-          ConnectionClass connection {
-         id 37897
-         port 65
-        }
-          ConnectionClass connection {
-         id 40969
-         port 65
-        }
-          ConnectionClass connection {
-         id 44041
-         port 65
-        }
-          ConnectionClass connection {
-         id 47113
-         port 65
-        }
-          ConnectionClass connection {
-         id 50185
-         port 65
-        }
-         }
+   ins {
+    ConnectionsClass connections {
+     id 79879
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 65
+      }
+      ConnectionClass connection {
+       id 103433
+       port 65
+      }
+      ConnectionClass connection {
+       id 104457
+       port 65
+      }
+      ConnectionClass connection {
+       id 105481
+       port 65
+      }
+      ConnectionClass connection {
+       id 106505
+       port 65
+      }
+      ConnectionClass connection {
+       id 107529
+       port 65
+      }
+      ConnectionClass connection {
+       id 108553
+       port 65
+      }
+      ConnectionClass connection {
+       id 109577
+       port 65
+      }
+      ConnectionClass connection {
+       id 110601
+       port 65
+      }
+      ConnectionClass connection {
+       id 111625
+       port 65
+      }
+      ConnectionClass connection {
+       id 112649
+       port 65
+      }
+      ConnectionClass connection {
+       id 113673
+       port 65
+      }
+      ConnectionClass connection {
+       id 114697
+       port 65
+      }
+      ConnectionClass connection {
+       id 115721
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 300039
+     links {
+      ConnectionClass connection {
+       id 68637
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 301063
+     links {
+      ConnectionClass connection {
+       id 69661
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 302087
+     links {
+      ConnectionClass connection {
+       id 70685
+       port 65
       }
      }
     }
    }
+   pi {
+    947945475 0
+   }
    path "{B764D803219C775E}Sounds/FinalMix.afm"
    inputs {
-    "ANM_Footsteps" "ANM_Voice" "WPN_Handling" "WPN_Shots" "WPN_Explosions" "WNP_BulletHits" "CHAR" "ENV_Ambients_2D" "VEH_Animations" "Impacts" "Dialogue" "Music" "ENV_Doors" "UI" "VEH_Engine" "VEH_Tires" "VON" "SFX" "SFX_Reverb" "VON_Reverb" "Dialogue_Reverb" "Impacts_EXT" "ENV_Ambients_3D" "WPN_SonicCracks" "CHAR_Gear" "PA"
+    "WPN_Handling" "WPN_Shots" "WPN_Explosions" "WNP_BulletHits" "CHAR" "ENV_AMB_2D" "VEH_Animations" "Impacts" "Dialog" "Music" "ENV_Doors" "VEH_Engine" "VEH_Tires" "VON" "SFX" "SFX_Reverb" "VON_Reverb" "Dialog_Reverb" "Impacts_EXT" "ENV_AMB_3D" "WPN_SonicCracks" "CHAR_Gear" "PA" "SFX_Reverb_Exterior" "UI" "ENV_AMB_3D_Reverb_Exterior" "SFX_Direct" "SFX_Reverb_Small" "SFX_Reverb_Medium" "SFX_Reverb_Large" "WPN_Shots_Player" "Dialog_Reverb_Small" "Dialog_Reverb_Medium" "Dialog_Reverb_Large" "WPN_TravelingProjectile" "Dialog_Delay_Exterior"
    }
   }
  }
  shaders {
   ShaderClass {
-   id 11282
-   name "Shader greet"
-   tl 0 0
-   conns {
+   id 204818
+   name "SOUND_DLG_FUEL_CLERK_GREET"
+   version 5
+   tl 432 0
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 12292
+       id 66588
        port 65
       }
      }
@@ -360,54 +503,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 307204
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 14354
-   name "Shader about_where"
-   tl 0 120
-   conns {
+   id 205842
+   name "SOUND_DLG_FUEL_CLERK_ABOUT_WHERE"
+   version 5
+   tl 432 280
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 15364
+       id 66588
        port 65
       }
      }
@@ -416,54 +550,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 308228
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 17426
-   name "Shader chat_quiet"
-   tl 0 240
-   conns {
+   id 206866
+   name "SOUND_DLG_FUEL_CLERK_CHAT_QUIET"
+   version 5
+   tl 432 560
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 18436
+       id 66588
        port 65
       }
      }
@@ -472,54 +597,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 309252
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 20498
-   name "Shader chat_news"
-   tl 0 360
-   conns {
+   id 207890
+   name "SOUND_DLG_FUEL_CLERK_CHAT_NEWS"
+   version 5
+   tl 432 840
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 21508
+       id 66588
        port 65
       }
      }
@@ -528,54 +644,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 310276
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 23570
-   name "Shader rob_panic"
-   tl 0 480
-   conns {
+   id 208914
+   name "SOUND_DLG_FUEL_CLERK_ROB_PANIC"
+   version 5
+   tl 432 1120
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 24580
+       id 66588
        port 65
       }
      }
@@ -584,54 +691,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 311300
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 26642
-   name "Shader rob_open"
-   tl 0 600
-   conns {
+   id 209938
+   name "SOUND_DLG_FUEL_CLERK_ROB_OPEN"
+   version 5
+   tl 432 1400
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 27652
+       id 66588
        port 65
       }
      }
@@ -640,54 +738,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 312324
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 29714
-   name "Shader rob_empty"
-   tl 0 720
-   conns {
+   id 210962
+   name "SOUND_DLG_FUEL_CLERK_ROB_EMPTY"
+   version 5
+   tl 432 1680
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 30724
+       id 66588
        port 65
       }
      }
@@ -696,54 +785,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 313348
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 32786
-   name "Shader rob_off"
-   tl 0 840
-   conns {
+   id 211986
+   name "SOUND_DLG_FUEL_CLERK_ROB_OFF"
+   version 5
+   tl 432 1960
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 33796
+       id 66588
        port 65
       }
      }
@@ -752,54 +832,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 314372
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 35858
-   name "Shader beg"
-   tl 0 960
-   conns {
+   id 213010
+   name "SOUND_DLG_FUEL_CLERK_BEG"
+   version 5
+   tl 432 2240
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 36868
+       id 66588
        port 65
       }
      }
@@ -808,54 +879,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 315396
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 38930
-   name "Shader stammer"
-   tl 0 1080
-   conns {
+   id 214034
+   name "SOUND_DLG_FUEL_CLERK_STAMMER"
+   version 5
+   tl 432 2520
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 39940
+       id 66588
        port 65
       }
      }
@@ -864,54 +926,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 316420
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 42002
-   name "Shader paid"
-   tl 0 1200
-   conns {
+   id 215058
+   name "SOUND_DLG_FUEL_CLERK_PAID"
+   version 5
+   tl 432 2800
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 43012
+       id 66588
        port 65
       }
      }
@@ -920,54 +973,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 317444
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 45074
-   name "Shader police"
-   tl 0 1320
-   conns {
+   id 216082
+   name "SOUND_DLG_FUEL_CLERK_POLICE"
+   version 5
+   tl 432 3080
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 46084
+       id 66588
        port 65
       }
      }
@@ -976,54 +1020,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 318468
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 48146
-   name "Shader gone"
-   tl 0 1440
-   conns {
+   id 217106
+   name "SOUND_DLG_FUEL_CLERK_GONE"
+   version 5
+   tl 432 3360
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 49156
+       id 66588
        port 65
       }
      }
@@ -1032,54 +1067,45 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 319492
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
   ShaderClass {
-   id 51218
-   name "Shader bye"
-   tl 0 1560
-   conns {
+   id 218130
+   name "SOUND_DLG_FUEL_CLERK_BYE"
+   version 5
+   tl 432 3640
+   ins {
     ConnectionsClass connections {
      id 0
      links {
       ConnectionClass connection {
-       id 52228
+       id 66588
        port 65
       }
      }
@@ -1088,214 +1114,533 @@ AudioClass {
      id 1
      links {
       ConnectionClass connection {
-       id 4101
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 320516
        port 65
       }
      }
     }
    }
-   iops {
-    IOPConnectionClass iopConnection {
-     port 1
-     conn {
-      ConnectionsClass connections {
-       id 15
-       links {
-        ConnectionClass connection {
-         id 2067
-         port 65
-        }
-         }
-      }
-     }
-    }
-    IOPConnectionClass iopConnection {
-     port 0
-     conn {
-      ConnectionsClass connections {
-       id 24
-       links {
-        ConnectionClass connection {
-         id 3100
-         port 65
-        }
-         }
-      }
-     }
-    }
+   pi {
+    23 0
    }
-   ITD 0
   }
  }
  amplitudes {
-  AmplitudeClass : "{BA1F5E72DA797274}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-30LUFS_to_-25LUFS.conf" {
-   id 2067
-   tl -300 -400
-   parent "{BA1F5E72DA797274}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-30LUFS_to_-25LUFS.conf"
-   outerRange 25
+  AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
+   id 51219
+   version 5
+   tl 432 -400
+   parent "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf"
+  }
+ }
+ frequency {
+  FrequencyClass : "{65257CB7AD05C1FD}Sounds/_SharedData/Configs/Frequency/Weapons/Frequency_Weapons_Handling_Rifle.conf" {
+   id 4117
+   version 5
+   tl 432 -1008
+   parent "{65257CB7AD05C1FD}Sounds/_SharedData/Configs/Frequency/Weapons/Frequency_Weapons_Handling_Rifle.conf"
+   ins {
+    ConnectionsClass connections {
+     id 4
+     links {
+      ConnectionClass connection {
+       id 72717
+       port 37
+      }
+     }
+    }
+   }
+   pi {
+    16 0
+   }
   }
  }
  banks_local {
   BankLocalClass {
-   id 12292
-   name "greet"
-   tl -300 0
+   id 307204
+   name "DLG_FUEL_CLERK_GREET"
+   version 7
+   tl 150 0
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{A4F0C0373A352AF4}Sounds/Dialogue/fuel_clerk/fuel_clerk_greet.wav"
     }
    }
   }
   BankLocalClass {
-   id 15364
-   name "about_where"
-   tl -300 120
+   id 308228
+   name "DLG_FUEL_CLERK_ABOUT_WHERE"
+   version 7
+   tl 150 280
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{DD8CB66B4E655BFC}Sounds/Dialogue/fuel_clerk/fuel_clerk_about_where.wav"
     }
    }
   }
   BankLocalClass {
-   id 18436
-   name "chat_quiet"
-   tl -300 240
+   id 309252
+   name "DLG_FUEL_CLERK_CHAT_QUIET"
+   version 7
+   tl 150 560
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{2542A43F8E6C4C53}Sounds/Dialogue/fuel_clerk/fuel_clerk_chat_quiet.wav"
     }
    }
   }
   BankLocalClass {
-   id 21508
-   name "chat_news"
-   tl -300 360
+   id 310276
+   name "DLG_FUEL_CLERK_CHAT_NEWS"
+   version 7
+   tl 150 840
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{473A739C2A3D869B}Sounds/Dialogue/fuel_clerk/fuel_clerk_chat_news.wav"
     }
    }
   }
   BankLocalClass {
-   id 24580
-   name "rob_panic"
-   tl -300 480
+   id 311300
+   name "DLG_FUEL_CLERK_ROB_PANIC"
+   version 7
+   tl 150 1120
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{146B3CC58627745F}Sounds/Dialogue/fuel_clerk/fuel_clerk_rob_panic.wav"
     }
    }
   }
   BankLocalClass {
-   id 27652
-   name "rob_open"
-   tl -300 600
+   id 312324
+   name "DLG_FUEL_CLERK_ROB_OPEN"
+   version 7
+   tl 150 1400
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{D2E6A4107CE58B7F}Sounds/Dialogue/fuel_clerk/fuel_clerk_rob_open.wav"
     }
    }
   }
   BankLocalClass {
-   id 30724
-   name "rob_empty"
-   tl -300 720
+   id 313348
+   name "DLG_FUEL_CLERK_ROB_EMPTY"
+   version 7
+   tl 150 1680
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{C6AEC3AF596759DA}Sounds/Dialogue/fuel_clerk/fuel_clerk_rob_empty.wav"
     }
    }
   }
   BankLocalClass {
-   id 33796
-   name "rob_off"
-   tl -300 840
+   id 314372
+   name "DLG_FUEL_CLERK_ROB_OFF"
+   version 7
+   tl 150 1960
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{1FCB0EC06FA0F2EF}Sounds/Dialogue/fuel_clerk/fuel_clerk_rob_off.wav"
     }
    }
   }
   BankLocalClass {
-   id 36868
-   name "beg"
-   tl -300 960
+   id 315396
+   name "DLG_FUEL_CLERK_BEG"
+   version 7
+   tl 150 2240
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{CCE5BBFC099ACC0C}Sounds/Dialogue/fuel_clerk/fuel_clerk_beg.wav"
     }
    }
   }
   BankLocalClass {
-   id 39940
-   name "stammer"
-   tl -300 1080
+   id 316420
+   name "DLG_FUEL_CLERK_STAMMER"
+   version 7
+   tl 150 2520
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{7BC505B384B736EE}Sounds/Dialogue/fuel_clerk/fuel_clerk_stammer.wav"
     }
    }
   }
   BankLocalClass {
-   id 43012
-   name "paid"
-   tl -300 1200
+   id 317444
+   name "DLG_FUEL_CLERK_PAID"
+   version 7
+   tl 150 2800
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{861D6C72AB4E9BB0}Sounds/Dialogue/fuel_clerk/fuel_clerk_paid.wav"
     }
    }
   }
   BankLocalClass {
-   id 46084
-   name "police"
-   tl -300 1320
+   id 318468
+   name "DLG_FUEL_CLERK_POLICE"
+   version 7
+   tl 150 3080
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{D6F272E8AA838657}Sounds/Dialogue/fuel_clerk/fuel_clerk_police.wav"
     }
    }
   }
   BankLocalClass {
-   id 49156
-   name "gone"
-   tl -300 1440
+   id 319492
+   name "DLG_FUEL_CLERK_GONE"
+   version 7
+   tl 150 3360
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{04836F605FF5DD6A}Sounds/Dialogue/fuel_clerk/fuel_clerk_gone.wav"
     }
    }
   }
   BankLocalClass {
-   id 52228
-   name "bye"
-   tl -300 1560
+   id 320516
+   name "DLG_FUEL_CLERK_BYE"
+   version 7
+   tl 150 3640
    Volume 0
    Samples {
-    AudioBankSampleClass "Sample(1)" {
+    AudioBankSampleClass Sample {
      Filename "{CF9FABB09B4740BF}Sounds/Dialogue/fuel_clerk/fuel_clerk_bye.wav"
     }
    }
   }
  }
  spatialities {
-  SpatialityClass {
-   id 3100
-   tl -300 -300
-   spatialFactor 1
+  SpatialityClass : "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf" {
+   id 66588
+   version 5
+   tl 432 -1152
+   parent "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf"
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 65549
+       port 9
+      }
+     }
+    }
+   }
+   pi + {
+    0
+   }
+   pu {
+    1 0
+   }
+  }
+ }
+ auxOuts {
+  AuxOutClass {
+   id 68637
+   name "AuxOut Rev Small"
+   version 5
+   tl 1088 -32
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 5
+      }
+      ConnectionClass connection {
+       id 103433
+       port 5
+      }
+      ConnectionClass connection {
+       id 104457
+       port 5
+      }
+      ConnectionClass connection {
+       id 105481
+       port 5
+      }
+      ConnectionClass connection {
+       id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
+       port 5
+      }
+      ConnectionClass connection {
+       id 109577
+       port 5
+      }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 107
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 39
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+   OSPort 300039
+  }
+  AuxOutClass {
+   id 69661
+   name "AuxOut Rev Medium"
+   version 5
+   tl 1088 80
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 5
+      }
+      ConnectionClass connection {
+       id 103433
+       port 5
+      }
+      ConnectionClass connection {
+       id 104457
+       port 5
+      }
+      ConnectionClass connection {
+       id 105481
+       port 5
+      }
+      ConnectionClass connection {
+       id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
+       port 5
+      }
+      ConnectionClass connection {
+       id 109577
+       port 5
+      }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 106
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 39
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+   OSPort 301063
+  }
+  AuxOutClass {
+   id 70685
+   name "AuxOut Rev Large"
+   version 5
+   tl 1088 192
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 5
+      }
+      ConnectionClass connection {
+       id 103433
+       port 5
+      }
+      ConnectionClass connection {
+       id 104457
+       port 5
+      }
+      ConnectionClass connection {
+       id 105481
+       port 5
+      }
+      ConnectionClass connection {
+       id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
+       port 5
+      }
+      ConnectionClass connection {
+       id 109577
+       port 5
+      }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 110
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 39
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+   OSPort 302087
   }
  }
  version 1
