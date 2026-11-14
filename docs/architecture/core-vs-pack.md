@@ -118,3 +118,13 @@ is `tools\cli asset`, which writes the `.meta` files of what it imports (a
 headless Workbench cannot register a new `.fbx`) with GUIDs unique across both
 addons, and imports a pack asset with `--addon LF_Everon1989`
 ([`asset-pipeline/README.md`](../asset-pipeline/README.md) "Target addon").
+
+## Starting a pack
+
+`tools\cli pack new <Name>` scaffolds `addons/LF_<Name>/` (#968): the `.gproj` on the base
+game and the core, the folder tree, an empty string table with its language confs, a mission
+header that names the manifest and lists one empty overlay, the manifest holding the running
+core's range, and a README of what to fill in. The `.meta` GUIDs are random and checked
+against every GUID in `addons/`, so none repeats. It refuses a name the core already uses (`Test`:
+`LF_Test` is the test base class). `validate-pack-manifest` and `validate-addon-boundary` hold every
+`LF_*` addon, so a fresh pack passes with no edits (`pack-new-selftest.mjs`).
