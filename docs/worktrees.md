@@ -155,8 +155,10 @@ classifier knows the blocks did not move), and a `.et` string value or component
 
 T1 skips the build because `test --no-build` loads the addons from source; the build only
 packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
-diff is no longer data-only. Measured on a one-value `.conf` change: see the PR that added this
-(#TIERPR).
+diff is no longer data-only. Measured 2026-11-14 on a one-value `.conf` change (`m_iPrice 500 -> 505`), same worktree, warm rdb:
+T2 (`--full-gate`) 630 s (compile + build 390 s on lf-cloud, both suite passes about 2 min, config
+sessions about 2 min); T1 112 s (validate 49 s, one boot of 267 tests 57 s); T0 44 s. Both T1 runs in
+that measurement failed on the related test that asserts the changed value.
 
 ## Release gates (`stable`, `promote`)
 
