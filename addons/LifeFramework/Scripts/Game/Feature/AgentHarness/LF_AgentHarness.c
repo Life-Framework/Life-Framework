@@ -2350,6 +2350,30 @@ class LF_AgentHarness
 			joined += string.Format(" cuffed=%1", peerCuffed);
 		}
 
+		// The playtest town's practice patient (an NPC, so not in the player list), read the same way.
+		IEntity patient = PatientNamed("Patient");
+		if (patient)
+		{
+			int patientDowned = 0;
+			if (LF_Downed.IsDowned(patient))
+				patientDowned = 1;
+
+			int patientCarrier = 0;
+			SCR_ChimeraCharacter patientBody = SCR_ChimeraCharacter.Cast(patient);
+			if (patientBody)
+				patientCarrier = patientBody.LF_GetCarrierPlayerId();
+
+			int patientSeated = 0;
+			if (SCR_CompartmentAccessComponent.GetVehicleIn(patient))
+				patientSeated = 1;
+
+			vector patientAt = patient.GetOrigin();
+			if (!joined.IsEmpty())
+				joined += " | ";
+
+			joined += string.Format("patient downed=%1 life=%2 carrier=%3 seat=%4 at=%5,%6,%7", patientDowned, LifeStateToken(patient), patientCarrier, patientSeated, Math.Round(patientAt[0] * 10) / 10, Math.Round(patientAt[1] * 10) / 10, Math.Round(patientAt[2] * 10) / 10);
+		}
+
 		if (joined.IsEmpty())
 			joined = "none";
 
@@ -3721,11 +3745,42 @@ class LF_AgentHarness
 		if (player)
 			return player;
 
+		IEntity patient = PatientNamed(entityName);
+		if (patient)
+			return patient;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return null;
 
 		return world.FindEntityByName(entityName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static IEntity s_pPatientFound;
+
+	protected static bool CollectPatient(IEntity entity)
+	{
+		if (entity && LF_DownedPatient.IsPatient(entity))
+		{
+			s_pPatientFound = entity;
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The playtest town's practice patient as the harness name `Patient`, found by its component on this
+	//! machine (a client does not know the layer name of a replicated character).
+	static IEntity PatientNamed(string entityName)
+	{
+		if (entityName != "Patient" || !GetGame().GetWorld())
+			return null;
+
+		s_pPatientFound = null;
+		GetGame().GetWorld().QueryEntitiesBySphere("268 0 255", 60, CollectPatient, null, EQueryEntitiesFlags.ALL);
+		return s_pPatientFound;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3765,6 +3820,16 @@ class LF_AgentHarness
 		{
 			if (FindOnEntity(player, className))
 				return player;
+
+			return null;
+		}
+
+		// The practice patient is a replicated character: its layer name exists on the server only.
+		IEntity patient = PatientNamed(entityName);
+		if (patient)
+		{
+			if (FindOnEntity(patient, className))
+				return patient;
 
 			return null;
 		}
