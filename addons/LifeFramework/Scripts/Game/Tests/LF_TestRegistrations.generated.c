@@ -360,6 +360,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SaveStampPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_AutosaveSelection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionBitmask(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionNewest(), LF_TestTier.LOGIC);

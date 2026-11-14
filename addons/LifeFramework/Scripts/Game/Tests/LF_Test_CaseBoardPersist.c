@@ -50,7 +50,7 @@ class LF_Test_CaseBoardPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(31, version, "the save is written at version 31 (caseboard is payload 31)");
+		ctx.Equal(32, version, "the save is written at version 32 (caseboard is payload 31)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "caseboard");
 		ctx.Equal(2, LF_CaseBoard.PinnedCount(robbery.m_iSequence), "the pinned cards are back");
 		ctx.EqualStr(time, LF_CaseBoard.TimeOf(robbery.m_iSequence), "the time of the crime is back");

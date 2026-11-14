@@ -20,9 +20,10 @@ unchanged (the ledger payload later raised it to 14).
 - A save written before the rename is not loaded: none of accounts, bank, jail, carried
   inventories, progression, stash or tickets come back.
 - A boot that continues a save (`-loadSessionSave`) and reaches `ACTIVE` without the store
-  being read logs once `[LFDebug:Persistence] save predates the LF_ rename; starting fresh`
-  (`LF_PersistenceComponentSerializer.WasStoreLoaded()`) and runs as a fresh world. No error
-  and no partial load of our data.
+  being read logs once `[LFDebug:Persistence] continued save never reached the LF store`
+  (`LF_PersistenceComponentSerializer.WasStoreLoaded()`, an `LF_Debug.Error` since #980,
+  because a game update that drops saves looks the same) and runs as a fresh world with
+  autosave paused, so the save on disk is not overwritten. No partial load of our data.
 - Operators: delete the old `.save` playthrough once so autosaves do not build on it.
   The next save is written with the new names.
 
@@ -68,6 +69,7 @@ Each of these must survive a server restart:
 20. Job XP (save version 28, payload `joblevels`, #749, decision D12): total XP per character record key and job id (`LF_JobXpRow`, `LF_JobLevels`), never replicated except the DELIVERY level the sign-up offer reads. The level is never saved: the `jobs` config's thresholds derive it, so a rebalance reaches every save. Per-job XP replaced the single player level and its skill points (`LF_PlayerLevelComponent` is gone). The `progression` record keeps its layout: its career level and XP and its single level are written as a mirror of DELIVERY and CIVILIAN in the pre-#749 curves, and `LF_Progression.ApplyAll` seeds the job store from them (`LF_JobLevels.SeedFromLegacy`) on every load; a version 28 save's `joblevels` rows, read later in the same load, replace that seed. **Migration (the choice, recorded):** a version 7-27 save keeps its progress. The single level's total XP (50 L (L-1) + XP toward the next level) goes onto CIVILIAN, because quests, fruit picking and debug grants all fed that one number and it cannot be split by job; the delivery career's total XP (500, then doubling, plus the remainder) goes onto DELIVERY. The shipped CIVILIAN and DELIVERY thresholds are those old curves, so every character keeps its level; FARMER, MINER and the other jobs start at 0. The load logs `save version N has no job xp rows: job levels migrated ...`. Rows with no character, no job or negative XP are skipped; a row for a job the config does not list is kept and reads as level 1. The cooldown and daily-cap clocks are session-only. The pre-#749 career curve is read from the jobs config at migration time (`jobXpFirstLevel` 500, `jobXpLevelGrowth` 2, the values the old career read), and the single level converts whole at any level (no level 20 clamp). Proof: `persist/job-levels` (round trip, second load, a version 27 save) and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the version 23 save migrates CIVILIAN and DELIVERY and has no FARMER or MINER XP).
 21. Wanted looks (save version 29, payload `wantedlooks`, #758): the suspect's look at the crime (`LF_WantedLookRow`: the report sequence and the look, the character prefab and loadout item GUIDs of `LF_WantedLook`), so the portraits on the wanted board's face come back after a restart. A separate payload because the `wanted` records are positional and never change; `LF_WantedReports.ApplyLooks` matches rows to the loaded reports by sequence and skips a row whose report is gone. A version 28 or older save loads its reports with no look (an empty photo frame until the next crime). Proof: `persist/wanted-looks` (round trip, second load, a version 28 save) and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the report has no look).
 22. Identity cards (save version 30, payload `idcards`, #902): every printed identity card (`LF_PhotoIdRow`: number, holder character id, first and last name, age, in-game date of issue, the holder's look at issue as `LF_WantedLook` GUIDs). The card item carries only its number in its `LF_SerialComponent`, which the `itemserials` payload and the item serializer already persist; after a load `LF_IdCard.EnsurePrinted` prints a numbered blank card from its row (at spawn and whenever the server reads a card). The newest row of a holder is their valid card, an older one is void. A version 29 or older save has no rows: its carried cards come back blank, and a resident who earned a card has one printed (with a new number and photo) at their next spawn. Proof: `persist/photo-id-cards` (round trip, second load, a version 29 save) and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the restored card keeps its number and stays blank).
+24. Build stamp (save version 32, payload `buildstamp`, #980): one `LF_SaveStampRecord` with the game build that wrote the save (`GetGame().GetBuildVersion()`) and the save version (`LF_SaveStamp`). Read last; a load from another build warns with both builds. Every store read ends with `save loaded: version N, game build X, running Y` (the host preflight waits for it), or with `save load damaged` when any payload failed to read, which pauses autosave (`IsLoadDamaged`). A version 31 or older save reads as build `unknown`. Owners run `tools\cli host preflight` after a game update (`docs/ops/game-updates.md`). Proof: `persist/save-build-stamp` (an older build's save loads whole, twice; a version 31 save; a damaged load keeps live state and pauses autosave) and `e2e/pass2-verify-load` (`tools\cli e2e --old-build`: the restart loads a save stamped 1.8.0.13 on the real build, after the build gate backed it up).
 23. Case board (save version 31, payload `caseboard`, #148): `LF_CaseBoardRow` per open report (the world clock at the crime) and per evidence card (the locker row number, the kind, the note the piece carried, the pin order). Rows of a closed report (its suspect no longer wanted) are not saved. Loaded after `wanted` and `evidencelocker`; `LF_CaseBoard.ApplyAll` replaces the store and resumes the pin order after the highest loaded pin. A version 30 or older save loads its cases with no time and nothing pinned; the evidence stays logged in the locker. Proof: `investigation/case-board-persist` (round trip, second load) and `e2e/pass2-verify-load` (a real restart).
 
 On connect the player spawns at a spawn point with the active character's
@@ -116,7 +118,7 @@ Identity:
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
   survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
-  itemstate, wanted, jobsignups, tickets, ... joblevels, wantedlooks, idcards, caseboard. The written version is that list's length (currently 31). Deserialize stops at the stored version, so an
+  itemstate, wanted, jobsignups, tickets, ... joblevels, wantedlooks, idcards, caseboard, buildstamp. The written version is that list's length (currently 32). Deserialize stops at the stored version, so an
   older save leaves later payloads untouched. A new system appends one entry at
   the end and raises the version by one. Never insert earlier or reorder.
   The override bodies live in public static `SerializeStore` /
@@ -144,6 +146,7 @@ Identity:
   | 26 | playtime per account and job (#692): account uid, job name, seconds (`LF_Playtime.ExportAll` / `ApplyAll`; export settles the online clocks) |
   | 27 | organization ranks (#750a): rights mask and ladder order per organization id and rank id (`LF_OrganizationManager.ExportRanks` / `ApplyRanks`, after `organizations`) |
   | 28 | job XP (#749): character record key, job id, total XP (`LF_JobLevels.ExportAll` / `ApplyAll`, after `progression`, which seeds it from a pre-#749 record) |
+  | 32 | build stamp (#980): game build and save version that wrote the save (`LF_SaveStamp.Export` / `Apply`), read last |
 
 - **Characters per account (#331, save version 24).** An account holds up to
   `LF_CharacterConfig.MaxPerAccount()` characters (`Configs/Account/LF_Characters.conf`,
@@ -264,6 +267,11 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
 - A rejected save request logs and fires `GetOnSaveFinished()` with `false`.
 - `OnGameEnd` raised twice (dedicated-server shutdown) is a no-op the second
   time.
+- A load that lost a payload, or a continued save that never reached the store,
+  pauses autosave for the rest of the session (`LF_PersistenceComponentSerializer.IsLoadDamaged()`)
+  and logs `LF_Debug.Error`. When it is the boot load, saving is turned off at `ACTIVE`
+  (`SaveGameManager.SetSavingAllowed(false)`), which also stops the engine's shutdown save:
+  the save on disk stays the newest save point for `host restore` (#980).
 
 ## Rules (paid for by real bugs)
 
