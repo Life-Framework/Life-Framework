@@ -259,6 +259,13 @@ when the diff touches replication, an RPC, persistence, money, inventory or
 GUIDs: findings go in `tmp/review-<slug>.md`, each ticked `fixed:` or
 `dismissed:` with a reason, and ship carries the file into the PR.
 
+A chapter or epic runs through the roadmap pipeline
+(`docs/process/roadmap-pipeline.md`): one Opus planner cuts file-disjoint
+slice cards (`docs/process/slice-card.md`, at most 45 min / 60 calls each),
+`tools\cli slice list <parent> --ready` is the dispatch queue by critical
+path, `slice brief <issue>` is the agent's brief, and `slice record` / `slice
+stats` tune model routing. A slice that runs over is split, never extended.
+
 ## What "done" means (issue states)
 
 Merging to `main` is not done. A human decides after play-testing `main`.
