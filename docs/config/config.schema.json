@@ -552,6 +552,12 @@
           "minimum": 1,
           "maximum": 30
         },
+        "heldGroundMaxPoints": {
+          "type": "integer",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 1000000
+        },
         "rankDefaults": {
           "type": "object",
           "description": "Records are an object keyed by a stable key. The key is a default rank id: founder, officer or member. The entry starts from the shipped rights, so only the permissions written change. It applies to organizations founded afterwards; a saved organization keeps its own ranks.",

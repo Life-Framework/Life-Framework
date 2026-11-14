@@ -141,7 +141,7 @@ class LF_Test_OrgRightsPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the version 27 save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(33, version, "the save is written at version 33 (orgranks is payload 27)");
+			ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written at the current version (orgranks is payload 27)");
 
 			JsonLoadContext load = new JsonLoadContext(false);
 			load.LoadFromString(saved);
@@ -200,6 +200,9 @@ class LF_TestLegacySnapshot : Managed
 	//! Vehicle state (#752a): an older save has no "vehiclestate", so loading one resets the tow,
 	//! inspection and compartment the e2e garaged car must still hold at the shutdown save.
 	protected ref array<ref LF_VehicleStateRow> m_aVehicleState;
+	//! Held ground (#751): an older save has no "heldground", so loading one leaves every site unheld,
+	//! including the site the e2e organization must still hold at the shutdown save.
+	protected ref array<ref LF_HeldGroundRow> m_aHeldGround;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_TestLegacySnapshot Take()
@@ -211,6 +214,7 @@ class LF_TestLegacySnapshot : Managed
 		snapshot.m_aWanted = LF_WantedReports.ExportAll();
 		snapshot.m_aIdCards = LF_PhotoIdCard.ExportAll();
 		snapshot.m_aVehicleState = LF_VehicleOwnership.ExportState();
+		snapshot.m_aHeldGround = LF_Hideout.ExportHeldGround();
 		return snapshot;
 	}
 
@@ -223,5 +227,6 @@ class LF_TestLegacySnapshot : Managed
 		LF_WantedReports.ApplyAll(m_aWanted);
 		LF_PhotoIdCard.ApplyAll(m_aIdCards);
 		LF_VehicleOwnership.ApplyState(m_aVehicleState);
+		LF_Hideout.ApplyHeldGround(m_aHeldGround);
 	}
 }

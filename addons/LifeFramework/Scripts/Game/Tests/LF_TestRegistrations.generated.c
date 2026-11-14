@@ -207,6 +207,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessStandClear(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessStandSide(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HaulTidy(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HeldGroundBadRow(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HeldGroundLegacy(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_HeldGroundRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
