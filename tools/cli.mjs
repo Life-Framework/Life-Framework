@@ -44,6 +44,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
+import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
 import { cmdPlaytestServer } from "./release/playtest-server.mjs";
@@ -247,8 +248,26 @@ function syncLocalPatches() {
         copied.push(`${name}: +${sub}/${rel}`);
       }
     }
+    copied.push(...registerPatchedTools(name));
   }
   return copied;
+}
+
+function registerPatchedTools(name) {
+  const toolsDir = join(PATCH_DIR, SERVERS[name].dir, "src", "tools");
+  const serverTs = join(MCP_DIR, SERVERS[name].dir, "src", "server.ts");
+  if (!existsSync(toolsDir) || !existsSync(serverTs)) return [];
+  const tools = [];
+  for (const f of readdirSync(toolsDir)) {
+    if (!f.endsWith(".ts")) continue;
+    const call = registerLine(readFileSync(join(toolsDir, f), "utf8"));
+    if (call) tools.push({ file: f, call });
+  }
+  if (!tools.length) return [];
+  const { text, added, missing } = injectRegistrations(readFileSync(serverTs, "utf8"), tools);
+  if (added.length) writeFileSync(serverTs, text);
+  for (const m of missing) console.log(`WARN  ${name}: ${m}`);
+  return added.map((fn) => `${name}: server.ts registers ${fn}`);
 }
 
 /** Recursively list files under a directory. */
@@ -449,6 +468,8 @@ function cmdInstall(name) {
       failed++;
       continue;
     }
+    // Patches go in before the build, or a patched .ts never reaches dist/.
+    syncLocalPatches();
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
@@ -488,17 +509,18 @@ function cmdUpdate(name) {
     }
     const before = (gitIn(dir, ["rev-parse", "--short", "HEAD"]).stdout || "").trim();
     const status = gitIn(dir, ["status", "--porcelain"]);
+    // The clone is dirty once patches are applied (copied files, server.ts
+    // registrations). Then skip the pull and only re-apply and rebuild.
     if (status.stdout.trim()) {
-      console.log(`SKIP  ${n}: working tree dirty (${status.stdout.trim().split(/\r?\n/)[0]}); stash or reset first`);
-      failed++;
-      continue;
-    }
-    console.log(`${n}: updating ${before} -> latest ...`);
-    const pull = gitIn(dir, ["pull", "--ff-only"]);
-    if (pull.status !== 0) {
-      console.log(`FAIL  pull ${n}: ${pull.stderr || pull.stdout}`);
-      failed++;
-      continue;
+      console.log(`${n}: working tree dirty (${status.stdout.trim().split(/\r?\n/)[0]}); not pulling, re-applying patches and rebuilding`);
+    } else {
+      console.log(`${n}: updating ${before} -> latest ...`);
+      const pull = gitIn(dir, ["pull", "--ff-only"]);
+      if (pull.status !== 0) {
+        console.log(`FAIL  pull ${n}: ${pull.stderr || pull.stdout}`);
+        failed++;
+        continue;
+      }
     }
     const after = (gitIn(dir, ["rev-parse", "--short", "HEAD"]).stdout || "").trim();
     const ci = sh(NPM, ["ci", "--no-audit", "--no-fund"], { cwd: dir });
@@ -507,6 +529,8 @@ function cmdUpdate(name) {
       failed++;
       continue;
     }
+    // Patches go in before the build, or a patched .ts never reaches dist/.
+    syncLocalPatches();
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
