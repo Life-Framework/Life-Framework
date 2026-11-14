@@ -4,6 +4,10 @@ import { blob } from "@/lib/content";
 import { useData } from "@/lib/data";
 import { checkConfig, defaultOf, exportText, fieldErrors, importConfig, isRecordSchema, type Schema } from "@/lib/configgen";
 import { parseJson } from "../../../tools/config/rules.mjs";
+import { defaultServerOpts, modIdList, serverJson, serverProblems, startupLine, type ServerData, type ServerOpts } from "@/lib/serverbundle";
+
+type Preset = { id: string; title: string; blurb: string; config: Obj };
+type PageData = { schema: Schema; presets: Preset[]; server: ServerData };
 
 type Obj = Record<string, unknown>;
 
@@ -151,7 +155,7 @@ const ConfigShell = ({ children }: { children: ReactNode }) => (
   </>
 );
 
-function Form({ schema }: { schema: Schema }) {
+function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; server: ServerData }) {
   const [value, setValue] = useState<Obj>(() => defaultOf(schema) as Obj);
   const [extras, setExtras] = useState<Obj>({});
   const [keep, setKeep] = useState<Set<string>>(new Set());
@@ -163,14 +167,19 @@ function Form({ schema }: { schema: Schema }) {
   const errors = useMemo(() => fieldErrors(problems), [problems]);
   const bad = problems.filter((p) => p.level === "error").length;
   const hasExtras = Object.keys(extras).length > 0;
+  const [opts, setOpts] = useState<ServerOpts>(() => defaultServerOpts(server));
+  const setOpt = <K extends keyof ServerOpts>(k: K, v: ServerOpts[K]) => setOpts((o) => ({ ...o, [k]: v }));
+  const serverText = useMemo(() => serverJson(server, opts), [server, opts]);
+  const serverBad = useMemo(() => serverProblems(opts), [opts]);
+  const serverErrors = serverBad.filter((p) => p.level === "error").length;
 
   // Import: the file lands in the form; what the form cannot hold is kept and written back on export.
-  const load = (text: string) => {
+  const load = (text: string, from = "the imported file") => {
     let root;
     try {
       root = parseJson(text);
     } catch {
-      const found = checkConfig(schema, text, "the imported file")[0];
+      const found = checkConfig(schema, text, from)[0];
       setImportNote(`${found.msg} (line ${found.line}, column ${found.col}). Nothing was imported.`);
       return;
     }
@@ -179,25 +188,56 @@ function Form({ schema }: { schema: Schema }) {
     setValue(got.value);
     setExtras(got.extras);
     setKeep(got.keep);
-    setImportNote("Imported. Values outside the schema are marked below; keys this build does not know are kept in the export.");
+    setImportNote(from !== "the imported file" ? `Loaded ${from}. Change anything below.` : "Imported. Values outside the schema are marked below; keys this build does not know are kept in the export.");
   };
   const onFile = async (f?: File | null) => {
     if (f) load(await f.text());
   };
 
-  const download = () => {
-    const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+  const save = (text: string, name: string) => {
+    const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
     const a = document.createElement("a");
     a.href = url;
-    a.download = "config.json";
+    a.download = name;
     a.click();
     URL.revokeObjectURL(url);
+  };
+  const download = () => save(json, "config.json");
+  const downloadBundle = () => {
+    save(json, "config.json");
+    save(serverText, "server.json");
+  };
+  const [copied, setCopied] = useState("");
+  const copy = async (what: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(what);
+    } catch {
+      setCopied("");
+    }
   };
 
   const sections = Object.entries(schema.properties ?? {}).filter(([, p]) => p.type === "object");
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_22rem] lg:items-start">
       <div className="space-y-10 min-w-0">
+        <section aria-labelledby="sec-presets" className="sheet p-4 space-y-3">
+          <h2 id="sec-presets" className="display-3">
+            Start from a preset
+          </h2>
+          <p className="muted text-[0.9375rem]">Each one is a real config.json from the repository that the config harness checks. It fills the form; change anything after.</p>
+          <ul className="grid gap-3 md:grid-cols-3">
+            {presets.map((p) => (
+              <li key={p.id} className="border-2 border-ink p-3 flex flex-col gap-2">
+                <p className="font-semibold">{p.title}</p>
+                <p className="muted text-[0.875rem] grow">{p.blurb}</p>
+                <button type="button" className="btn btn-ghost" onClick={() => load(JSON.stringify(p.config), `the ${p.title} preset`)}>
+                  Use {p.title}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
         <section aria-labelledby="sec-import" className="sheet p-4 space-y-3">
           <h2 id="sec-import" className="display-3">
             Start from your current file
@@ -228,6 +268,63 @@ function Form({ schema }: { schema: Schema }) {
             <Fields schema={s} value={value[k] as Obj} path={`.${k}`} errors={errors} onChange={(v) => setValue({ ...value, [k]: v })} />
           </section>
         ))}
+        <section aria-labelledby="sec-server">
+          <h2 id="sec-server" className="display-3 rule-top pt-3">
+            server.json
+          </h2>
+          <p className="muted mt-1">
+            The base game's dedicated-server file, with the Workshop ids of the core addon and, for the 1989 scenario, the pack. Upload it next to config.json, or drop both in your profile.
+          </p>
+          <div className="py-3 grid gap-3 md:grid-cols-2 max-w-3xl">
+            <label className="text-[0.875rem] font-semibold">
+              Server name
+              <input className={inputCls} value={opts.name} onChange={(e) => setOpt("name", e.target.value)} />
+            </label>
+            <label className="text-[0.875rem] font-semibold">
+              Scenario
+              <select className={inputCls} value={opts.scenario} onChange={(e) => setOpt("scenario", e.target.value as ServerOpts["scenario"])}>
+                <option value="pack">Everon 1989 (core + pack)</option>
+                <option value="core">Playtest town (core only)</option>
+              </select>
+            </label>
+            <label className="text-[0.875rem] font-semibold">
+              Game port
+              <input className={inputCls} type="number" value={Number.isNaN(opts.port) ? "" : opts.port} onChange={(e) => setOpt("port", e.target.value === "" ? NaN : Number(e.target.value))} />
+            </label>
+            <label className="text-[0.875rem] font-semibold">
+              Query (a2s) port
+              <input className={inputCls} type="number" value={Number.isNaN(opts.a2sPort) ? "" : opts.a2sPort} onChange={(e) => setOpt("a2sPort", e.target.value === "" ? NaN : Number(e.target.value))} />
+            </label>
+            <label className="text-[0.875rem] font-semibold">
+              Players
+              <input className={inputCls} type="number" value={Number.isNaN(opts.maxPlayers) ? "" : opts.maxPlayers} onChange={(e) => setOpt("maxPlayers", e.target.value === "" ? NaN : Number(e.target.value))} />
+            </label>
+            <label className="text-[0.875rem] font-semibold">
+              Admin password
+              <input className={inputCls} value={opts.adminPassword} onChange={(e) => setOpt("adminPassword", e.target.value)} />
+            </label>
+          </div>
+          {serverBad.length > 0 && (
+            <ul className="text-[0.8125rem] space-y-1" aria-label="What the server.json check reports">
+              {serverBad.map((p, n) => (
+                <li key={n} className={p.level === "error" ? "text-stamp" : "muted"}>
+                  <span className="font-mono font-semibold">{p.level === "error" ? "ERROR" : "WARN"}</span> {p.msg}
+                </li>
+              ))}
+            </ul>
+          )}
+          <pre className="terminal p-4 font-mono text-[0.8125rem] overflow-auto max-h-[40vh] mt-3" aria-label="Your server.json">{serverText}</pre>
+          <div className="mt-3 space-y-2 text-[0.875rem]">
+            <p>
+              <span className="font-semibold">Start line:</span> <code>{startupLine()}</code>{" "}
+              <button type="button" className="link" onClick={() => copy("line", startupLine())}>{copied === "line" ? "Copied" : "Copy"}</button>
+            </p>
+            <p>
+              <span className="font-semibold">Mod ids:</span> <code>{modIdList(server, opts)}</code>{" "}
+              <button type="button" className="link" onClick={() => copy("ids", modIdList(server, opts))}>{copied === "ids" ? "Copied" : "Copy"}</button>
+            </p>
+          </div>
+        </section>
       </div>
       <aside className="lg:sticky lg:top-24 space-y-3 min-w-0" aria-label="Your config.json">
         <p className="kicker">Your config.json</p>
@@ -251,6 +348,9 @@ function Form({ schema }: { schema: Schema }) {
           <button type="button" className="btn btn-primary" onClick={download} disabled={bad > 0}>
             Download config.json
           </button>
+          <button type="button" className="btn btn-primary" onClick={downloadBundle} disabled={bad > 0 || serverErrors > 0}>
+            Download both files
+          </button>
           <button type="button" className="btn btn-ghost" onClick={() => { setValue(defaultOf(schema) as Obj); setExtras({}); setKeep(new Set()); setImportNote(""); }}>
             Reset
           </button>
@@ -270,10 +370,10 @@ function Form({ schema }: { schema: Schema }) {
 }
 
 const Config = () => {
-  const schema = useData<Schema>("config-schema");
+  const data = useData<PageData>("config-schema");
   return (
     <ConfigShell>
-      {schema ? <Form schema={schema} /> : <p className="muted">{schema === null ? "The schema is missing from this build." : "Loading the schema."}</p>}
+      {data ? <Form schema={data.schema} presets={data.presets} server={data.server} /> : <p className="muted">{data === null ? "The schema is missing from this build." : "Loading the schema."}</p>}
     </ConfigShell>
   );
 };
