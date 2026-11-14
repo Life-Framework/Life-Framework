@@ -942,7 +942,7 @@ class LF_Jail
 		if (s_sDoorId.IsEmpty())
 			return null;
 
-		IEntity door = GetGame().GetWorld().FindEntityByName(s_sDoorId);
+		IEntity door = LF_Places.Find(LF_Breach.PLACE_KIND, s_sDoorId);
 		if (!door)
 			return null;
 

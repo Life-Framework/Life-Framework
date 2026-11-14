@@ -191,8 +191,20 @@ export const MILESTONE_PLAN: Record<string, { goal: string; plan: { label: strin
     plan: { label: "M4 outline", to: "/docs/roadmap-m4-outline" },
   },
   M5: {
-    goal: "The flagship's own story. Players are relocated from Chernobyl and start life again on Everon in 1989.",
-    plan: { label: "Ideas epic #214", to: "https://github.com/Life-Framework/Life-Framework/issues/214" },
+    goal: "The first update after launch, for the weeks when every player is new: arrival, gear that fits 1989, police tools, evenings in the village and the town paper.",
+    plan: { label: "Roadmap", to: "/docs/roadmap" },
+  },
+  M6: {
+    goal: "Making a living: prices that react to selling, job levels, route jobs, salvage and a real bank.",
+    plan: { label: "Roadmap", to: "/docs/roadmap" },
+  },
+  M7: {
+    goal: "Power and turf: declared gang wars, the convoy job, heists, dirty money, jail and detective work.",
+    plan: { label: "Roadmap", to: "/docs/roadmap" },
+  },
+  M8: {
+    goal: "Roots: homes and land, farming, garages and lockers, and neighbours who remember you.",
+    plan: { label: "Roadmap", to: "/docs/roadmap" },
   },
 };
 
@@ -209,17 +221,20 @@ export function milestoneStatus(m: Milestone): { label: string; tone: "green" | 
 // Core or Flagship. The core decides what the game can do; the flagship pack decides what our server is
 // (docs/architecture/core-vs-pack.md). A `layer:core` or `layer:flagship` label wins, then a
 // "Layer: Core/Flagship" line in the body, then the milestone: M1 to M3 build core systems
-// (M2 with flagship content on top), M4 and M5 are flagship.
+// (M2 with flagship content on top), M4 to M8 are flagship.
 export type Layer = "Core" | "Flagship";
 // The site page once the doc is on main, the file on GitHub until then.
 export const CORE_VS_PACK_URL = (docsIndex as { slug: string }[]).some((d) => d.slug === "core-vs-pack") ? "/docs/core-vs-pack" : blob("docs/architecture/core-vs-pack.md");
-const FLAGSHIP_MILESTONES = new Set(["M4", "M5"]);
+const FLAGSHIP_MILESTONES = new Set(["M4", "M5", "M6", "M7", "M8"]);
 export const MILESTONE_LAYER: Record<string, string> = {
   M1: "Core systems, placed in the test village",
   M2: "Core systems, with flagship content",
   M3: "Core",
   M4: "Flagship",
-  M5: "Flagship",
+  M5: "Core systems, with flagship content",
+  M6: "Core systems, with flagship content",
+  M7: "Core systems, with flagship content",
+  M8: "Core systems, with flagship content",
 };
 // Issue states (docs/worktrees.md "Release gates"): `verified` is done and closes the issue;
 // `in-dev` and `needs-playtest` mean merged to main but not yet signed off by a human.

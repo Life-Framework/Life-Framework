@@ -12,7 +12,7 @@ LF_NpcBaseEntity : "{9FF2685A41D86574}Prefabs/Characters/Npcs/LF_FuelClerk.et" {
     LoadoutSlotInfo Pants {
      Prefab "{537FD11C135757AC}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey_Dirty.et"
     }
-    LoadoutSlotInfo Boots {
+    SCR_FeetLoadoutSlotInfo Boots {
      Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
     }
     LoadoutSlotInfo Hat {

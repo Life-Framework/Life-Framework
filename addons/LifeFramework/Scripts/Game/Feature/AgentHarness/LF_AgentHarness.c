@@ -42,7 +42,7 @@ class LF_AgentCommand
 		if (verb == "scanner" || verb == "drill" || verb == "keycard" || verb == "charge" || verb == "apples" || verb == "nuggets" || verb == "crate" || verb == "parceldrop" || verb == "pistol" || verb == "moonshine" || verb == "stash" || verb == "park")
 			return true;
 
-		if (verb == "shelf" || verb == "keys" || verb == "spikedrop" || verb == "spikecar" || verb == "spikecheck")
+		if (verb == "shelf" || verb == "keys" || verb == "spikedrop" || verb == "spikecar" || verb == "spikecheck" || verb == "slopecar" || verb == "slopecheck" || verb == "slopedrive")
 			return true;
 
 		return false;
@@ -177,6 +177,12 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "phone" || cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report" || cmd.Verb == "configreload" || cmd.Verb == "robhold")
 			return true;
+		if (cmd.Verb == "reload")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "dialogue")
 		{
 			if (parts.Count() > 2)
@@ -197,7 +203,7 @@ class LF_AgentCommand
 
 			return true;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 			return true;
 		if (cmd.Verb == "animseen" || cmd.Verb == "animhold" || cmd.Verb == "animoff")
 			return true;
@@ -212,9 +218,9 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "heldxf")
 			return true;
-		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemwear" || cmd.Verb == "itemstrip")
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemon" || cmd.Verb == "itemoff" || cmd.Verb == "itemwear" || cmd.Verb == "itemstrip")
 		{
-			// itemgive|itemdrop|itemwear|itemstrip <{GUID}prefab> (itemwear list): LF_AssetStatesHarness.
+			// itemgive|itemdrop|itemon|itemoff|itemwear|itemstrip <{GUID}prefab> (itemwear list): LF_AssetStatesHarness.
 			if (parts.Count() < 3)
 			{
 				cmd.Error = "need_prefab";
@@ -1283,6 +1289,11 @@ class LF_AgentHarness
 			DoConfigReload(cmd);
 			return;
 		}
+		if (cmd.Verb == "reload")
+		{
+			DoContentReload(cmd);
+			return;
+		}
 		if (LF_AgentCommand.IsCharacterVerb(cmd.Verb))
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
@@ -1315,7 +1326,7 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", heldText);
 			return;
 		}
-		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemwear" || cmd.Verb == "itemstrip")
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop" || cmd.Verb == "itemon" || cmd.Verb == "itemoff" || cmd.Verb == "itemwear" || cmd.Verb == "itemstrip")
 		{
 			SCR_ChimeraCharacter itemCharacter = LF_Utils.GetLocalCharacter();
 			if (!itemCharacter)
@@ -1330,11 +1341,13 @@ class LF_AgentHarness
 			WriteResult(cmd.Id, "ok", LF_AssetAnimHarness.Seen());
 			return;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 		{
 			string seen;
 			if (cmd.Verb == "spikeverge")
 				seen = LF_SpikeStripHarness.Verge();
+			else if (cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+				seen = LF_SpikeStripHarness.Preview(cmd.Verb == "spikepreview");
 			else
 				seen = LF_SpikeStripHarness.Seen();
 			if (seen.StartsWith("ok "))
@@ -2274,6 +2287,25 @@ class LF_AgentHarness
 
 		controller.LF_AskConfigReload();
 		WriteResult(cmd.Id, "ok", "config reload asked");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The dev reload (#970): asks the server to read config and the dev dialogue captions again.
+	protected static void DoContentReload(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+		{
+			WriteResult(cmd.Id, "error", "no_controller");
+			return;
+		}
+
+		string what = cmd.Arg1;
+		if (what.IsEmpty())
+			what = "config,dialogue";
+
+		controller.LF_AskContentReload(what);
+		WriteResult(cmd.Id, "ok", "reload asked: " + what);
 	}
 
 	//------------------------------------------------------------------------------------------------

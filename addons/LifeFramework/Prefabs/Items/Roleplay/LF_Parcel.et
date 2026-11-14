@@ -41,7 +41,7 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
   LF_ParcelComponent "{4A1C9E27B05D3F20}" {
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{C23DD228F7317429}Assets/Props/Crates/CardboardBox_03.xob"
+   Object "{75704CF4EB9B297A}Assets/Items/Roleplay/PostParcel/PostParcel.xob"
   }
   RigidBody "{5A4ACBB1A0084DA1}" {
    Active Inactive

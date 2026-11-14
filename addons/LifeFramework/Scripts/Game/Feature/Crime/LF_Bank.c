@@ -62,7 +62,6 @@ class LF_BankBagState : Managed
 class LF_BankVaultState : Managed
 {
 	string m_sVaultId;
-	string m_sBagEntity;
 	int m_iBagCount;
 	int m_iCashPerBag;
 	float m_fCooldownSeconds;
@@ -92,6 +91,11 @@ class LF_BankVaultState : Managed
 //------------------------------------------------------------------------------------------------
 class LF_Bank
 {
+	//! LF_Places kind of a placed vault or heist target (LF_BankVaultComponent); the id is the vault id.
+	static const string PLACE_KIND = "BankVault";
+	//! LF_Places kind of a vault's hand-carry money bag (LF_PlaceComponent); the id is the vault id.
+	static const string BAG_PLACE_KIND = "BankBag";
+
 	static const ResourceName BAG_PREFAB = "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et";
 	static const ResourceName DOOR_PREFAB = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";
 	static const ResourceName SHELL_PREFAB = "{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et";
@@ -162,9 +166,9 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Registers a vault and its breach target. bagEntity is the world entity
-	//! filled with MoneyStack cash; empty means the bags stay in this record only.
-	static void Configure(string vaultId, int bagCount, int cashPerBag, float cooldownSeconds, int minPolice, float fuseSeconds, string bagEntity)
+	//! Registers a vault and its breach target. The vault's money bag is the LF_Places entry of kind
+	//! BAG_PLACE_KIND under the vault id; with none placed the bags stay in this record only.
+	static void Configure(string vaultId, int bagCount, int cashPerBag, float cooldownSeconds, int minPolice, float fuseSeconds)
 	{
 		if (vaultId.IsEmpty())
 		{
@@ -188,7 +192,6 @@ class LF_Bank
 		vault.m_iCashPerBag = cashPerBag;
 		vault.m_fCooldownSeconds = cooldownSeconds;
 		vault.m_iMinPolice = minPolice;
-		vault.m_sBagEntity = bagEntity;
 		LF_Breach.Configure(vaultId, fuseSeconds, "");
 		LF_Debug.Log("Bank", string.Format("configured %1 bags=%2 cash=%3 cooldown=%4 police=%5", vaultId, bagCount, cashPerBag, cooldownSeconds, minPolice));
 	}
@@ -442,16 +445,9 @@ class LF_Bank
 	//------------------------------------------------------------------------------------------------
 	protected static vector VaultOrigin(string vaultId)
 	{
-		if (!GetGame() || !GetGame().GetWorld())
-			return vector.Zero;
-
-		IEntity entity = GetGame().GetWorld().FindEntityByName(vaultId);
-		if (!entity)
-			return vector.Zero;
-
-		vector transform[4];
-		entity.GetWorldTransform(transform);
-		return transform[3];
+		vector origin = vector.Zero;
+		LF_Places.FindOrigin(PLACE_KIND, vaultId, origin);
+		return origin;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -810,8 +806,8 @@ class LF_Bank
 			}
 		}
 
-		if (!vault.m_sBagEntity.IsEmpty() && vault.m_aBags.Count() > 0)
-			FillNamedBag(vault.m_sBagEntity, vault.m_aBags[0].m_iCash);
+		if (vault.m_aBags.Count() > 0)
+			FillVaultBag(vault.m_sVaultId, vault.m_aBags[0].m_iCash);
 
 		LF_Debug.Log("Bank", string.Format("apply-save %1 bags=%2", vault.m_sVaultId, vault.m_aBags.Count()));
 		return true;
@@ -941,8 +937,7 @@ class LF_Bank
 			vault.m_aBags.Insert(bag);
 		}
 
-		if (!vault.m_sBagEntity.IsEmpty())
-			FillNamedBag(vault.m_sBagEntity, vault.m_iCashPerBag);
+		FillVaultBag(vault.m_sVaultId, vault.m_iCashPerBag);
 
 		PayHeist(vault, count);
 
@@ -960,7 +955,7 @@ class LF_Bank
 		if (vault.m_sLootKind.IsEmpty())
 			return;
 
-		IEntity target = GetGame().GetWorld().FindEntityByName(vault.m_sVaultId);
+		IEntity target = LF_Places.Find(PLACE_KIND, vault.m_sVaultId);
 		int amount = 0;
 		string serials = "";
 		if (vault.m_sLootKind == LF_BankLoot.KIND_BAGS)
@@ -989,20 +984,16 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void FillNamedBag(string bagEntity, int cash)
+	//! Fills the vault's placed money bag (LF_Places kind BAG_PLACE_KIND under the vault id). A vault
+	//! with no bag placed has none to fill and that is fine: the haul spills as loose bags.
+	static void FillVaultBag(string vaultId, int cash)
 	{
-		if (!GetGame() || !GetGame().GetWorld())
-			return;
-
-		IEntity bag = GetGame().GetWorld().FindEntityByName(bagEntity);
+		IEntity bag = LF_Places.Find(BAG_PLACE_KIND, vaultId);
 		if (!bag)
-		{
-			LF_Debug.Error("Bank", string.Format("money bag fill refused: %1 is not in the world", bagEntity));
 			return;
-		}
 
 		if (!WriteWorldBagCash(bag, cash))
-			LF_Debug.Error("Bank", string.Format("money bag fill failed for %1", bagEntity));
+			LF_Debug.Error("Bank", string.Format("money bag fill failed for %1", vaultId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1029,9 +1020,6 @@ class LF_Bank
 			LF_MoneyUtils.RemoveCash(bag, paid);
 
 		IEntity cashEntity = FindCashChild(bag);
-		if (!cashEntity && GetGame() && GetGame().GetWorld())
-			cashEntity = GetGame().GetWorld().FindEntityByName(bag.GetName() + "_Cash");
-
 		if (!cashEntity)
 		{
 			cashEntity = LF_Utils.SpawnEntityPrefab(LF_MoneyUtils.PREFAB_CASH, bag.GetOrigin());

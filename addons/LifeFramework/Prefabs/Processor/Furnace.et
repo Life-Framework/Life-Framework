@@ -2,7 +2,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
  ID "598F21A86EB5B48F"
  components {
   MeshObject "{598F21A867C4015C}" {
-   Object "{855272895A58AD4D}Assets/Structures/BuildingsParts/Heating/BoilerLarge_02/BoilerLarge_02.xob"
+   Object "{08080CFD71F775CC}Assets/Props/Roleplay/SmelterFurnace/SmelterFurnace.xob"
   }
   ActionsManagerComponent "{598F21A8710B89C1}" {
    ActionContexts {

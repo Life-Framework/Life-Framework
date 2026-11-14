@@ -46,5 +46,21 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   }
   LF_HandcuffsComponent "{F3D6B1A411654CB0}" {
   }
+  LF_AssetAnimComponent "{4DAEA1EA764CE6CD}" {
+   m_aBones {
+    LF_AssetAnimBone "{4DAEA1EA764CE6CE}" {
+     m_sBone "strand_r"
+     m_eMotion HINGE
+     m_vAngles 0 70 0
+     m_fSeconds 0.5
+    }
+    LF_AssetAnimBone "{4DAEA1EA764CE6CF}" {
+     m_sBone "strand_l"
+     m_eMotion HINGE
+     m_vAngles 0 -70 0
+     m_fSeconds 0.5
+    }
+   }
+  }
  }
 }

@@ -1,0 +1,22 @@
+{
+ "entries": [
+  {
+   "file": "Feature/DebugWorld/LF_DebugWorldCollisionRepairComponent.c",
+   "rule": "world-coords",
+   "token": "256 0 256",
+   "issue": "#1055"
+  },
+  {
+   "file": "Feature/Film/LF_FilmActor.c",
+   "rule": "world-coords",
+   "token": "180 0 244",
+   "issue": "#1055"
+  },
+  {
+   "file": "Feature/Hideouts/LF_Hideout.c",
+   "rule": "place-name",
+   "token": "Roadmap_Hideout",
+   "issue": "#1055"
+  }
+ ]
+}

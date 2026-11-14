@@ -2,6 +2,8 @@ MetaFileClass {
  Name "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
  Configurations {
   FBXResourceClass PC {
+   ExportSkinning 1
+   ExportSceneHierarchy 1
    MaterialAssigns {
     MaterialAssignClass "{4089BF380DE73033}" {
      SourceMaterial "Handcuffs"

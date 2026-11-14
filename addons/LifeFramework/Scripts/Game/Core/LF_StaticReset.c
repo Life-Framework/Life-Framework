@@ -14,6 +14,7 @@ class LF_StaticReset
 	//------------------------------------------------------------------------------------------------
 	static void ResetAll()
 	{
+		LF_Places.ResetStatics();
 		LF_Breach.ResetStatics();
 		LF_PlayerIdentity.ResetStatics();
 		LF_Lockpick.ResetStatics();
@@ -52,6 +53,7 @@ class LF_StaticReset
 		LF_BedDelivery.ResetStatics();
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
+		LF_SaveStamp.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
 		LF_Playtime.ResetStatics();
 		LF_JobLevels.ResetStatics();
@@ -88,6 +90,7 @@ class LF_StaticReset
 		LF_RateLimit.ResetStatics();
 		LF_SpikeStrips.ResetStatics();
 		LF_ConfigStream.Reset();
+		LF_DialogueOverrides.Reset();
 		LF_CaseBoard.ResetStatics();
 		LF_CaseBoardView.ResetStatics();
 		LF_CaseBoardComponent.ResetStatics();
@@ -102,6 +105,7 @@ class LF_StaticReset
 		LF_WorldReset.ResetStatics();
 		LF_Roles.ResetStatics();
 		LF_DownedPatient.ResetStatics();
+		LF_PlacementGhost.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

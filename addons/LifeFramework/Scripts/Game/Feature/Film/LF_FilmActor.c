@@ -536,6 +536,11 @@ class LF_FilmDirector
 	protected static const ResourceName POLICE_CAR = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";
 	//! The spawned police car's name, so the harness `siren` verb and a camera can find it.
 	static const string POLICE_CAR_NAME = "Film_Police_Car";
+	protected static const ref array<ResourceName> POLICE_DRIVER_CLOTHES = {
+		"{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et",
+		"{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et",
+		"{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et"
+	};
 	protected static const float TICK_MS = 100;
 	protected static const float MAX_SECONDS = 90;
 
@@ -732,6 +737,18 @@ class LF_FilmDirector
 		LF_FilmActor driver = SpawnActor("officer", OnGround(206, 252.5));
 		if (!driver)
 			return false;
+		// The bare roleplay character has no clothes, and there is no police uniform yet: a dark plain-clothes
+		// driver reads as a silhouette behind the windscreen.
+		IEntity driverBody = GetGame().GetWorld().FindEntityByID(driver.Id);
+		foreach (ResourceName piece : POLICE_DRIVER_CLOTHES)
+		{
+			if (!driverBody)
+				break;
+
+			string worn = LF_AssetStatesHarness.Wear(driverBody, piece);
+			if (!worn.StartsWith("ok"))
+				LF_Debug.Warn(FEATURE, "scene robbery-police: the driver could not wear " + piece + ": " + worn);
+		}
 		driver.AddStep("enter", 0.3, "car");
 		LF_FilmStep drive = driver.AddStep("drive", 0, "", 45, 2);
 		float x;

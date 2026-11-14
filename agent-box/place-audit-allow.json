@@ -40,6 +40,20 @@
       "match": "^(Farm_StandCabbage|Cabbage_0)",
       "kind": "odd-scale",
       "why": "Vanilla has no cabbage-head mesh, only the whole-plant CabbageCrop_01 (0.84 x 0.91 m at scale 1). Cabbage.et scales it to 0.5, so the plant measures 0.46 m, inside the cabbage 0.15-0.6 m range. A larger scale would put a 0.9 m plant on a stall table."
+    },
+    {
+      "match": "^Market_Tarp_",
+      "kind": "floating",
+      "why": "A market tarp is stretched between four poles 2.4 to 2.7 m up over its stall; nothing stands under it but the stall and its trader (market-canopies)."
+    },
+    {
+      "match": "^Market_Tarp_",
+      "kind": "odd-scale",
+      "why": "Flag_1_2 is a plain 1 x 2 m red cloth with a white hem; scaled 2x it is a 2 x 4 m tarp, the largest flat cloth in the base game (market-canopies)."
+    },
+    {
+      "match": "^Roadmap_Bank_Vault(Hood|Light)?[ ]",
+      "why": "The door hood and the bulkhead light are fixed to the vault front: their backs stand in the concrete face, as wall-mounted fittings do (polish-vault-market)."
     }
   ]
 }

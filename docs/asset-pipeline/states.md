@@ -112,13 +112,35 @@ look.
 |---|---|---|---|
 | Handcuffs | closed | the model as generated | done |
 | Handcuffs | on the wrist | a prefab: `Handcuffs_Worn.et` on the suspect's `righthandprop` (#664) | done |
-| Handcuffs | open | each cuff's single strand as a separate part on a hinge bone at its pivot, swung by the `anim` stage's `hinge` motion | planned |
+| Handcuffs | open | each cuff's strand as a separate part on a hinge bone at its pivot, swung 70 degrees by the `anim` stage's `hinge` motion while `LF_AssetAnimComponent` is active | done (2026-11-14) |
 
-The open state cannot be cut from the current mesh: Meshy fused each ring into one surface, so a
-box split would leave open ends. It needs a model whose strands are separate parts: a new concept
-round scored with the build rubric below (parts that move later must be clearly separate), or a
-Blender-modelled cuff (`source.blender`, no credits) built from a torus arc, a lock box and chain
-links, which also gives the hinge pivot exactly. No Meshy credits were spent on this spike.
+The open state could not be cut from the Meshy mesh: it fused each ring into one surface, so a box
+split would leave open ends. The handcuffs are now modelled in Blender (`tools/assets/handcuffs/model.py`,
+`source.blender`, no credits): per cuff a lock body, a fixed bow and a swinging strand with its hinge
+boss, as separate meshes, and a three-link chain. Same footprint as the old model (0.18 m long, rings
+2.9 to 3.75 cm radius, 0.034 m high). The script prints the exact pivot and face box of each strand
+(`raw/layout.json`) and `spec.anim.bones` copies them (`strand_r`, `strand_l`, a hinge about the
+model's y axis, 70 and -70 degrees, 0.5 s).
+
+How to model an asset so a part can be cut off by the stage (it takes every face whose *centre* is
+inside an axis-aligned box):
+
+- Keep the moving part's boss and curve in one box, and end it on a flat plane perpendicular to an
+  axis (the strand and the bow meet at a vertical cut, 4 mm apart), so no face of the fixed part has
+  its centre in the box. The script counts them (`foreign_faces_in_box`, must be 0).
+- Keep the fixed part's faces out of the moving part's y or x range where the two touch (the lock
+  body ends 1.4 mm short of the hinge boss).
+- Centre the model's bounding box on the origin yourself: the clean stage does too, so the pivots you
+  print are the pivots it uses. Build with the ring's axis along Blender Z (Enfusion y), the length
+  along Y.
+
+Use it: `LF_AssetAnimComponent.SetActive(true)` opens both strands (replicated; a late joiner sees
+the same), `false` closes them. `LF_HandcuffsComponent.SetOpen(bool)` wraps that (server). The harness
+verbs `itemon <prefab>` and `itemoff <prefab>` do it from a session, and `asset states <slug>
+--shots` takes the `use` pictures (in the hand to the owner and to a second player, and dropped
+beside a closed pair) when a use state is built on a bone. The cuffing flow does not open the cuffs
+yet: the item is consumed in the same step that cuffs the suspect, so showing the open phase needs a
+short cuffing action first; that action calls `SetOpen(true)`.
 
 ## Concepts for an asset with states
 

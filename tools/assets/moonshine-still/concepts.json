@@ -1,0 +1,178 @@
+{
+  "slug": "moonshine-still",
+  "image_model": "nano-banana-2-lite",
+  "realism": {
+    "how": "Illegal home distilling was common in Eastern-bloc villages: a farmer took a dairy milk can or a big pot, a few metres of copper or steel pipe and a cooling barrel, and ran it behind the barn on a brick stove. The materials are whatever the collective farm threw out.",
+    "current": "An improvised still is current for that trade: pressure-cooker or milk-can pots with copper tubing were what a 1989 distiller really used. A gleaming copper alembic would be a museum piece, so it scores low."
+  },
+  "subject": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap.",
+  "variants": [
+    {
+      "label": "Milk-can still",
+      "detail": "A dented aluminium milk can as the pot with a clamped lid, a copper pipe to a steel cooling barrel with a coil, on a low brick firebox",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A dented aluminium milk can as the pot with a clamped lid, a copper pipe to a steel cooling barrel with a coil, on a low brick firebox. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-91a2-7498-8daf-2c13c971520e",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"thin pipe over the barrel\""
+    },
+    {
+      "label": "Pot and barrel",
+      "detail": "A large enamelled steel pot with a riveted lid on a brick stove, a copper tube bending down into a wooden barrel, a small tap at the barrel base",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A large enamelled steel pot with a riveted lid on a brick stove, a copper tube bending down into a wooden barrel, a small tap at the barrel base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-9275-73d4-b1c4-3e761792fbde",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"bucket, funnel and tools clutter\""
+    },
+    {
+      "label": "Pressure-cooker still",
+      "detail": "A big stainless pressure cooker as the pot, a short copper pipe to a coil in a blue plastic barrel, a gas ring underneath on bricks",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A big stainless pressure cooker as the pot, a short copper pipe to a coil in a blue plastic barrel, a gas ring underneath on bricks. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-9348-767a-aafe-673a259226b3",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "\"hoses and gas ring, thin parts\""
+    },
+    {
+      "label": "Copper pot, brick base",
+      "detail": "A squat battered copper pot with a conical lid, a swan-neck copper pipe running to a galvanised steel cooling tank, brick firebox under the pot",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A squat battered copper pot with a conical lid, a swan-neck copper pipe running to a galvanised steel cooling tank, brick firebox under the pot. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-9418-74b4-81e4-9f1ffa4dc81c",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "era_current": 0,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"copper alembic is a museum piece\""
+    },
+    {
+      "label": "Steel drum still",
+      "detail": "A cut steel oil drum as the boiler with a welded lid and a pipe, a coil of copper tubing in a second galvanised drum, a small iron firebox",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A cut steel oil drum as the boiler with a welded lid and a pipe, a coil of copper tubing in a second galvanised drum, a small iron firebox. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-94df-7618-a976-991463a737d3",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "\"two chunky drums on bricks, one short pipe\""
+    },
+    {
+      "label": "Aluminium boiler",
+      "detail": "A tall aluminium laundry boiler with a clamped lid and a bent copper pipe to a steel bucket with a coil, resting on cinder blocks",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A tall aluminium laundry boiler with a clamped lid and a bent copper pipe to a steel bucket with a coil, resting on cinder blocks. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-95b3-7144-abe0-e372902cf2f4",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"wire clamps\""
+    },
+    {
+      "label": "Beer keg still",
+      "detail": "A stainless steel beer keg as the pot with a copper pipe welded into the top, a coil in a galvanised tank, on a ring of bricks",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A stainless steel beer keg as the pot with a copper pipe welded into the top, a coil in a galvanised tank, on a ring of bricks. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-969d-76f3-85d1-17d15b5ea4d4",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"bucket and pipes\""
+    },
+    {
+      "label": "Twin barrel still",
+      "detail": "Two steel barrels side by side, the left one with a lid and a fire door at the base, a copper pipe across to the right one with a tap",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. Two steel barrels side by side, the left one with a lid and a fire door at the base, a copper pipe across to the right one with a tap. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-9761-74a2-ab4b-e2b3c92ad411",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"three barrels and a plank base\""
+    },
+    {
+      "label": "Enamel pot, coil",
+      "detail": "A large cream enamel stockpot with a clamped lid on a camping gas stove, a copper tube coiled inside a grey plastic bin of water",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A large cream enamel stockpot with a clamped lid on a camping gas stove, a copper tube coiled inside a grey plastic bin of water. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-9825-7492-bf23-ff0cef239963",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"jar, crank and stand\""
+    },
+    {
+      "label": "Farm scrap still",
+      "detail": "A battered steel milk churn on a rough brick hearth, a copper pipe to a galvanised washtub with a coil, a rubber hose collecting the spirit",
+      "prompt": "A 1989 village moonshine still, home-made and illicit: a big pot on a brick firebox, a pipe from the lid to a coil in a cooling barrel, all assembled from farm and factory scrap. A battered steel milk churn on a rough brick hearth, a copper pipe to a galvanised washtub with a coil, a rubber hose collecting the spirit. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95b-98e7-71ee-9aff-4eb048fa1608",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 1,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"hose and bucket\""
+    }
+  ],
+  "pick": {
+    "n": 5,
+    "label": "Steel drum still",
+    "by": "rubric",
+    "why": "highest rubric total 14/14; full marks; \"two chunky drums on bricks, one short pipe\"",
+    "at": "2026-11-14"
+  }
+}
