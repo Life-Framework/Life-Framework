@@ -8388,6 +8388,72 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Doctor's white coat"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{EFA49FCF4C181DD3}" {
+     Id "LF-Term_Org"
+     Target_en_us "organization"
+     Target_de_de "Organisation"
+     Target_fr_fr "organisation"
+     Target_it_it "organizzazione"
+     Target_es_es "organización"
+     Target_pt_pt "organização"
+     Target_pt_br "organização"
+     Comment "Term "org" (#1136): a player organization as a sentence names it. Core text writes {org} or {Org}; a pack or the owner renames it (Gang, Crew)."
+    }
+    CustomStringTableItem "{857D8BAEB3AA5709}" {
+     Id "LF-Term_Org_Plural"
+     Target_en_us "organizations"
+     Target_de_de "Organisationen"
+     Target_fr_fr "organisations"
+     Target_it_it "organizzazioni"
+     Target_es_es "organizaciones"
+     Target_pt_pt "organizações"
+     Target_pt_br "organizações"
+     Comment "Term "org", plural form: {org:pl}."
+    }
+    CustomStringTableItem "{B543BF50A77A5A7C}" {
+     Id "LF-Term_Fine"
+     Target_en_us "fine"
+     Target_de_de "Bußgeld"
+     Target_fr_fr "amende"
+     Target_it_it "multa"
+     Target_es_es "multa"
+     Target_pt_pt "multa"
+     Target_pt_br "multa"
+     Comment "Term "fine" (#1136): a police fine as a sentence names it. {fine} or {Fine}."
+    }
+    CustomStringTableItem "{CA4254F348EBC44B}" {
+     Id "LF-Term_Fine_Plural"
+     Target_en_us "fines"
+     Target_de_de "Bußgelder"
+     Target_fr_fr "amendes"
+     Target_it_it "multe"
+     Target_es_es "multas"
+     Target_pt_pt "multas"
+     Target_pt_br "multas"
+     Comment "Term "fine", plural form: {fine:pl}."
+    }
+    CustomStringTableItem "{B07D4BA4D1FF679B}" {
+     Id "LF-Term_Job"
+     Target_en_us "job"
+     Target_de_de "Beruf"
+     Target_fr_fr "métier"
+     Target_it_it "lavoro"
+     Target_es_es "trabajo"
+     Target_pt_pt "trabalho"
+     Target_pt_br "trabalho"
+     Comment "Term job singular (#1136): {job}. The named forms ({job:miner}) are the jobs' own name keys."
+    }
+    CustomStringTableItem "{8BF1E0FB4113B1DE}" {
+     Id "LF-Term_Job_Plural"
+     Target_en_us "jobs"
+     Target_de_de "Berufe"
+     Target_fr_fr "métiers"
+     Target_it_it "lavori"
+     Target_es_es "trabajos"
+     Target_pt_pt "trabalhos"
+     Target_pt_br "trabalhos"
+     Comment "Term job, plural form: {job:pl}."
+    }
     CustomStringTableItem "{803147BD364F1908}" {
      Id "LF-Credits_Title"
      Target_en_us "CREDITS"
@@ -8952,72 +9018,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Credits_107"
      Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
-    }
-    CustomStringTableItem "{EFA49FCF4C181DD3}" {
-     Id "LF-Term_Org"
-     Target_en_us "organization"
-     Target_de_de "Organisation"
-     Target_fr_fr "organisation"
-     Target_it_it "organizzazione"
-     Target_es_es "organización"
-     Target_pt_pt "organização"
-     Target_pt_br "organização"
-     Comment "Term "org" (#1136): a player organization as a sentence names it. Core text writes {org} or {Org}; a pack or the owner renames it (Gang, Crew)."
-    }
-    CustomStringTableItem "{857D8BAEB3AA5709}" {
-     Id "LF-Term_Org_Plural"
-     Target_en_us "organizations"
-     Target_de_de "Organisationen"
-     Target_fr_fr "organisations"
-     Target_it_it "organizzazioni"
-     Target_es_es "organizaciones"
-     Target_pt_pt "organizações"
-     Target_pt_br "organizações"
-     Comment "Term "org", plural form: {org:pl}."
-    }
-    CustomStringTableItem "{B543BF50A77A5A7C}" {
-     Id "LF-Term_Fine"
-     Target_en_us "fine"
-     Target_de_de "Bußgeld"
-     Target_fr_fr "amende"
-     Target_it_it "multa"
-     Target_es_es "multa"
-     Target_pt_pt "multa"
-     Target_pt_br "multa"
-     Comment "Term "fine" (#1136): a police fine as a sentence names it. {fine} or {Fine}."
-    }
-    CustomStringTableItem "{CA4254F348EBC44B}" {
-     Id "LF-Term_Fine_Plural"
-     Target_en_us "fines"
-     Target_de_de "Bußgelder"
-     Target_fr_fr "amendes"
-     Target_it_it "multe"
-     Target_es_es "multas"
-     Target_pt_pt "multas"
-     Target_pt_br "multas"
-     Comment "Term "fine", plural form: {fine:pl}."
-    }
-    CustomStringTableItem "{B07D4BA4D1FF679B}" {
-     Id "LF-Term_Job"
-     Target_en_us "job"
-     Target_de_de "Beruf"
-     Target_fr_fr "métier"
-     Target_it_it "lavoro"
-     Target_es_es "trabajo"
-     Target_pt_pt "trabalho"
-     Target_pt_br "trabalho"
-     Comment "Term job singular (#1136): {job}. The named forms ({job:miner}) are the jobs' own name keys."
-    }
-    CustomStringTableItem "{8BF1E0FB4113B1DE}" {
-     Id "LF-Term_Job_Plural"
-     Target_en_us "jobs"
-     Target_de_de "Berufe"
-     Target_fr_fr "métiers"
-     Target_it_it "lavori"
-     Target_es_es "trabajos"
-     Target_pt_pt "trabalhos"
-     Target_pt_br "trabalhos"
-     Comment "Term job, plural form: {job:pl}."
     }
  }
 }
