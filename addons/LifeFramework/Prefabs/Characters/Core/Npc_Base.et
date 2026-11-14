@@ -128,11 +128,18 @@ LF_NpcBaseEntity {
      }
      Radius 1
     }
+    UserActionContext "{2E17DED6F511AAC7}" {
+     ContextName "RoleTalk"
+     Position PointInfo "{1585E9E07C8730D9}" {
+      PivotID "Spine5"
+     }
+     Radius 2.25
+    }
    }
    additionalActions {
     LF_RolesAction "{51E8A2C9D40B7F36}" {
      ParentContextList {
-      "Witness"
+      "RoleTalk"
      }
      UIInfo UIInfo "{E7A40B91C6D3285F}" {
       Name "#LF-NpcTalk_Action"
