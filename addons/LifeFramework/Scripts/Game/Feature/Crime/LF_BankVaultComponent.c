@@ -13,9 +13,6 @@ class LF_BankVaultComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Stable vault id. Empty uses the entity name.")]
 	protected string m_sVaultId;
 
-	[Attribute("", UIWidgets.EditBox, desc: "World entity name of the hand-carry bag.")]
-	protected string m_sBagEntity;
-
 	[Attribute("1", UIWidgets.Auto, desc: "Bags spawned when the vault opens.")]
 	protected int m_iBagCount;
 
@@ -69,7 +66,7 @@ class LF_BankVaultComponent : ScriptComponent
 			return;
 		}
 
-		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds, m_sBagEntity);
+		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds);
 		LF_Bank.ConfigureTools(vaultId, m_sRequiredTools, m_fJamChance);
 		LF_Bank.ConfigureAlarmKind(vaultId, m_sAlarmKind);
 		ConfigureHeist(vaultId);
