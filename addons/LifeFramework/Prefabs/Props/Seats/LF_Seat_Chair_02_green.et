@@ -1,0 +1,30 @@
+GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ ID "2657E7C306B9CBFF"
+ components {
+  ActionsManagerComponent "{683FD286F6BFDFF7}" {
+   ActionContexts {
+    UserActionContext "{D6C190A831D424CA}" {
+     ContextName "LF_Seat1"
+     Position PointInfo "{AD594F59479C0562}" {
+      Offset 0 0.5 0.15
+     }
+     Radius 0.9
+    }
+   }
+   additionalActions {
+    LF_SitAction "{E43D7636383AA486}" {
+     ParentContextList {
+      "LF_Seat1"
+     }
+     m_vSeatOffset 0 0 0.62
+     m_SitAnimation SCR_LoiterCustomAnimData "{B6D266B995C1892C}" {
+      m_iCommandValue 7
+     }
+    }
+   }
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
