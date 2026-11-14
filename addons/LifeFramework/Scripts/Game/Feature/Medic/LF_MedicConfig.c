@@ -70,6 +70,9 @@ class LF_MedicConfig
 	[Attribute("0.25", UIWidgets.Auto, "Health (fraction of max) a revived player is lifted to. The downed sliver is lost again to bleeding within seconds, which downs them a second time (#427)", params: "0.05 1")]
 	float m_fReviveHealthScaled = 0.25;
 
+	[Attribute("45", UIWidgets.Auto, "Playtest town only: seconds a treated practice patient is left alone before it is put back at its spot and downed again", params: "5 3600")]
+	float m_fPatientResetSeconds = 45;
+
 	[Attribute("{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et", UIWidgets.ResourceNamePicker, "Item the medic uses up per revive. Empty: free", "et")]
 	ResourceName m_sReviveItemPrefab;
 

@@ -277,6 +277,10 @@ class LF_Downed
 		if (s_bTestAllEligible)
 			return true;
 
+		// The playtest town's practice patient is an NPC that can be downed (LF_DownedPatient).
+		if (LF_DownedPatient.IsPatient(character))
+			return true;
+
 		PlayerManager playerManager = GetGame().GetPlayerManager();
 		if (!playerManager || !character)
 			return false;
