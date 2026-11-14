@@ -16,10 +16,10 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkPack, summary } from "../pack/check.mjs";
-import { explain } from "../pack/explain.mjs";
+import { explain, main as explainMain } from "../pack/explain.mjs";
 import { SECTIONS, walk } from "../pack/layers.mjs";
 import { checkText } from "../config/check.mjs";
-import { coreKeysOf, generate, readScripts } from "../config/schema.mjs";
+import { build, coreKeysOf, generate, readScripts } from "../config/schema.mjs";
 import { loadPackSections } from "../config/pack-sections.mjs";
 
 const REAL = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -166,7 +166,7 @@ const BAD_OVERLAY = `LF_ItemCatalogueConfig {
  }
 }
 `;
-const BAD_CRIME = `LF_CrimeCatalogConfig {\n m_aCrimes {\n  LF_CrimeEntry "{G1}" {\n   m_sOp "add"\n   m_sCrimeId "#LF-Offence_Smuggling"\n  }\n }\n}\n`;
+const BAD_CRIME = `LF_CrimeCatalogConfig {\n m_aCrimes {\n  LF_CrimeEntry "{G1}" {\n   m_sOp "add"\n   m_sCrimeId "#LF-Offence_Smuggling"\n  }\n  LF_CrimeEntry "{G2}" {\n   m_sOp "add"\n   m_sCrimeId "#E8F1F7"\n  }\n }\n}\n`;
 const UNLISTED = `LF_ShopPricesConfig {\n}\n`;
 pack(bad, "LF_Bad", { gproj: "6000000000000002", man: G.man2, mis: G.misB }, manifest("LF_Bad", "0.5.0", "0.6.0"),
   { files: [["Catalogue.conf", G.ovB, BAD_OVERLAY], ["Crime.conf", G.ovC, BAD_CRIME], ["Unlisted.conf", "6000000000000009", UNLISTED]], refs: [`{${G.ovB}}Configs/Catalogue.conf`, `{${G.ovC}}Configs/Crime.conf`, "{8888888888888888}Configs/Missing.conf"] },
@@ -190,6 +190,8 @@ const planted = [
   const lines = r.findings.map((f) => `${f.level === "error" ? "ERROR" : "WARN "} ${f.area.padEnd(8)} ${[f.file, f.id].filter(Boolean).join("  ")}: ${f.msg}`);
   for (const [name, re] of planted) if (!lines.some((l) => re.test(l))) fail(`planted error '${name}': nothing matched ${re}\n  got:\n  ${lines.join("\n  ")}`);
   if (!summary(r).errors) fail("a pack with errors summarised as clean");
+  // A #RRGGBB colour (a UI theme token, #966) is not a string key.
+  if (lines.some((l) => /string key E8F1F7/.test(l))) fail("a #RRGGBB colour was reported as a missing string key");
 }
 
 // ---- Two packs on one id: a warning naming both ----
@@ -282,6 +284,11 @@ pack(two, "LF_Bbb", { gproj: "6000000000000004", man: G.man2, mis: G.misB }, man
   if (!e2.includes("= 5  <- pack LF_Shops") || !/refused: owner owner-bad.json sets 70/.test(e2)) fail(`explain: a refused owner value must leave the pack default, got ${e2}`);
   const e3 = explain(root, "shopsBad", {});
   if (e3.code !== 1 || !/ignores it/.test(e3.lines[0])) fail(`explain: a refused section must say the server ignores it, got ${e3.lines}`);
+
+  // The CLI flags (#1005): `pack explain --root <dir>` and `config-check --addons <dir>` read a pack outside the repo's addons/.
+  const viaRoot = await explainMain(["shopsGood.limit", "--root", root, "--config", join(root, "owner.json")], { root: REAL });
+  if (viaRoot !== 0) fail(`pack explain --root: the test pack must be explained from its own root, got exit ${viaRoot}`);
+  if (build(addons).schema.properties.shopsGood?.["x-pack"] !== "LF_Shops") fail("config-check --addons: build(addons) must merge the test pack's section");
 }
 
 // ---- The real flagship pack passes its own check ----

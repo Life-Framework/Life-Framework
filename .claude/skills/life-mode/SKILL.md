@@ -19,6 +19,7 @@ Pick the matching playbook in `playbooks/` and follow its steps:
 - Live symptom with no known cause: `runtime-forensics.md`.
 - Empirical design fork: `prototype.md`.
 - Work spanning phases or stacked commits: `multi-phase-plan.md`.
+- A chapter or epic for many agents: `docs/process/roadmap-pipeline.md` (`tools\cli slice`); a slice card's own job: `tools\cli slice brief <issue>`.
 - Resuming someone else's work: `session-pickup.md`.
 
 Load an authoring skill only when editing that artifact:

@@ -49,6 +49,10 @@ const baseline = () => (existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE,
 // value a player can see and what it must be:
 //   { "kind": "shopPrice",   "shop": "Shop_GeneralStore_Debug", "item": "Water", "expect": "$17" }
 //       the shop's price list, searched for `item`, shows `expect`
+//   { "kind": "shopPrice",   "shop": "Annex_GunCounter", "item": "M9", "gone": true, "expect": "$500" }
+//       with "gone", the searched list must NOT contain `expect` (an item an owner or pack removed)
+//   { "kind": "lotPrice",    "shop": "Annex_Vehicle_Lot", "expect": "$1,250" }
+//       the car lot's price sheet (it has no search box) shows `expect`
 //   { "kind": "actionShown", "entity": "Bank_Teller", "class": "LF_ATMAction", "expect": true|false }
 //       standing at `entity`, the player is (not) offered an action of `class` within reach
 //   { "kind": "uiText", "entity": "Roadmap_Org_Desk", "class": "LF_OrganizationDeskAction", "expect": "Register a new Gang", "absent": "Bande" }
@@ -63,7 +67,8 @@ export function setBootDriver(driver) { bootDriver = driver; }
 
 /** Judges one read against what the client showed. `got` is the text (shopPrice) or a boolean (actionShown). */
 export function judgeRead(read, got) {
-  if (read.kind === "shopPrice") return String(got).includes(read.expect) ? "" : `${read.item} in ${read.shop}: expected ${read.expect}, the client showed ${JSON.stringify(String(got))}`;
+  if (read.kind === "shopPrice" && read.gone) return String(got).includes(read.expect) ? `${read.item} in ${read.shop}: expected it gone, the client still showed ${JSON.stringify(read.expect)}` : "";
+  if (read.kind === "shopPrice" || read.kind === "lotPrice") return String(got).includes(read.expect) ? "" : `${read.item ?? "price sheet"} in ${read.shop}: expected ${read.expect}, the client showed ${JSON.stringify(String(got))}`;
   if (read.kind === "uiText") {
     const text = String(got);
     if (!text.includes(read.expect)) return `${read.class} sheet: expected ${JSON.stringify(read.expect)}, the client showed ${JSON.stringify(text)}`;
