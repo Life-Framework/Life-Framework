@@ -323,8 +323,12 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
 
   if (decision.reload === "reopen") {
     // The viewer must be exactly the last snapshot before a partial checkout; anything else restarts.
-    const before = viewerAt(viewer, st.sha);
-    const co = before.ok ? checkoutViewer(root, viewer, snap.sha) : before;
+    // The world is closed first (an unload request): files changing under an open world crashed the reopen.
+    let co = viewerAt(viewer, st.sha);
+    if (co.ok) {
+      const un = await sendRequest(st, `${process.pid}-${Date.now()}-unload`, "unload", "", 60);
+      co = un.ok ? checkoutViewer(root, viewer, snap.sha) : { ok: false, why: `unload: ${un.why}` };
+    }
     if (!co.ok) decision = { reload: "restart", reason: co.why };
   }
 
