@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "systems": { "switches": {
+    "Robbery": { "enabled": false }, "Shop": { "enabled": false }, "ATM": { "enabled": false }, "Jobs": { "enabled": false }, "Organizations": { "enabled": false }, "Trader": { "enabled": false },
+    "Pager": { "enabled": false }, "Farming": { "enabled": false },
+    "Gathering": { "enabled": false }, "Mining": { "enabled": false }, "Processing": { "enabled": false }, "Resources": { "enabled": false }, "Chains": { "enabled": false }, "Hideouts": { "enabled": false }, "Houses": { "enabled": false }, "Survival": { "enabled": false }, "Toys": { "enabled": false }, "Atmosphere": { "enabled": false }, "Emote": { "enabled": false },
+    "Comms": { "enabled": false }, "Chat": { "enabled": false }, "Medic": { "enabled": false }, "Police": { "enabled": false }, "Crime": { "enabled": false }, "Investigation": { "enabled": false }, "Vehicles": { "enabled": false }, "VehicleLock": { "enabled": false }, "LicensePlate": { "enabled": false }, "SirenLights": { "enabled": false }, "Quests": { "enabled": false }
+  } }
+}

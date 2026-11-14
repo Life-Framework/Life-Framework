@@ -74,6 +74,7 @@ import * as shards from "./lib/test-shards.mjs";
 import * as testCache from "./lib/test-cache.mjs";
 import * as wbLock from "./lib/wb-lock.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
+import * as gateTier from "./lib/gate-tier.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
@@ -81,6 +82,7 @@ import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
+import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -1164,8 +1166,16 @@ function cmdPack(root = ROOT, opts = {}) {
 // inventory operations that never complete). When stale, a headless Workbench
 // opens the project, which registers the new metas and rewrites the file.
 // The main checkout's rdb is the human's editor copy: only warn there.
-// LF_RDB_REFRESH=0 turns the refresh off (warn only).
+// LF_RDB_REFRESH=0 turns the refresh off (warn only). LF_RDB_CHECKED=1 (set for shard children) means the
+// parent run already refreshed or tried to, so the child never waits on the build lock a second time.
+// The wait for the hub `build` lock is LF_RDB_WAIT_S (900 s) for the whole process, every addon together,
+// and prints the holder (tools/lib/lock-wait.mjs).
 const RDB_REFRESH_TYPICAL_S = 15;
+let rdbLockBudget = null;
+function rdbBudget() {
+  if (!rdbLockBudget) rdbLockBudget = new Budget(Number(process.env.LF_RDB_WAIT_S || 900) * 1000);
+  return rdbLockBudget;
+}
 function ensureResourceDatabase(root) {
   wt.copyResourceDatabase(root);
   refreshOnPool(root);
@@ -1295,6 +1305,10 @@ function ensureAddonResourceDatabase(root, name) {
   const before = rdbFreshness(addon);
   if (before.missing.length === 0) return 0;
   const what = `${before.missing.length} unregistered resource(s): ${describeMissing(before.missing)}`;
+  if (process.env.LF_RDB_CHECKED === "1") {
+    console.log(`WARN  resource database stale${tag}: ${what}; the parent run already tried the refresh, not waiting on the build lock again`);
+    return 1;
+  }
   if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0") {
     console.log(`WARN  resource database stale${tag}: ${what}`);
     console.log("      open Workbench on this checkout once (it rewrites resourceDatabase.rdb), or run from a worktree");
@@ -1312,18 +1326,15 @@ function ensureAddonResourceDatabase(root, name) {
   try {
     // One of this machine's Workbench slots, so a pool machine running this refresh shows busy to the
     // next chooseRefresh/chooseGate (tools/lib/wb-lock.mjs); the order matches cmdBuild (slot, then lock).
-    const waitMs = Number(process.env.LF_RDB_WAIT_S || 900) * 1000;
-    wbSlot = wbLock.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs });
-    // The build lock is not FIFO (no ticket): poll it for the whole budget and say who holds it.
-    if (buildLockHeld(root)) {
-      let who = "another process";
-      try {
-        const i = JSON.parse(readFileSync(join(wt.ensureHub(root), "locks", "build.lock"), "utf8"));
-        who = `pid ${i.pid} since ${i.at}`;
-      } catch {}
-      console.log(`rdb: waiting for the build lock (held by ${who}), up to ${Math.round(waitMs / 1000)} s (--budget <s> changes it)`);
-    }
-    wt.acquireLock(root, "build", { waitMs });
+    // Its wait is drawn from the same budget as the build lock's (rdbBudget, lock-wait.mjs).
+    wbSlot = wbLock.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
+    const lockFile = join(wt.ensureHub(root), "locks", "build.lock");
+    waitForLock({
+      what: `the build lock for the rdb refresh${tag}`,
+      budget: rdbBudget(),
+      holder: () => describeHolder(lockFile),
+      acquire: (waitMs) => wt.acquireLock(root, "build", { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
+    });
     locked = true;
     const started = Date.now();
     const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
@@ -3095,13 +3106,34 @@ function runShardChild(root, job) {
   const logPath = join(logDir, name);
   const args = [process.argv[1], "test", "--no-build", "--tier", "all", ...(job.full ? [] : ["--only-classes", job.classes.join(",")]), ...(job.pass.coreOnly ? ["--core-only"] : []), ...shardPassThrough(job.pass.opts)];
   const t0 = Date.now();
+  const label = `${job.pass.name} ${job.index}/${job.count}`;
+  // The parent's ensureResourceDatabase already refreshed the rdb or tried to: a child never waits on the
+  // build lock again (LF_RDB_CHECKED), nor sends the refresh to the pool (LF_RDB_REFRESH=0).
+  const env = { ...toolEnv(), LF_QUIET_CHILD: "1", LF_SHARD_GROUP: root, LF_RDB_CHECKED: "1", LF_RDB_REFRESH: "0" };
+  const beatMs = Number(process.env.LF_SHARD_HEARTBEAT_S || 120) * 1000;
+  const limitMs = Number(process.env.LF_SHARD_TIMEOUT_S || 2700) * 1000;
   return new Promise((resolveP) => {
-    const child = spawn(process.execPath, args, { cwd: root, windowsHide: true, env: { ...toolEnv(), LF_QUIET_CHILD: "1", LF_SHARD_GROUP: root }, stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(process.execPath, args, { cwd: root, windowsHide: true, env, stdio: ["ignore", "pipe", "pipe"] });
     let text = "";
+    const lastLine = () => text.trimEnd().split(/\r?\n/).pop()?.slice(0, 200) || "(no output yet)";
+    // Every wait says what it waits on: the slice's own last line while it runs, and a hard stop at the budget.
+    const beat = setInterval(() => console.log(`shards: ${label} still running after ${Math.round((Date.now() - t0) / 1000)} s: ${lastLine()}`), beatMs);
+    const stop = setTimeout(() => {
+      text += `\nFAIL  shard ${label} timed out after ${Math.round(limitMs / 1000)} s (LF_SHARD_TIMEOUT_S); last line: ${lastLine()}\n`;
+      console.log(`shards: ${label} timed out after ${Math.round(limitMs / 1000)} s; stopping it (last line: ${lastLine()})`);
+      if (process.platform === "win32") spawnSync("taskkill", ["/T", "/F", "/PID", String(child.pid)], { windowsHide: true, timeout: 30000 });
+      else child.kill("SIGKILL");
+    }, limitMs);
     child.stdout.on("data", (c) => (text += c.toString("utf8")));
     child.stderr.on("data", (c) => (text += c.toString("utf8")));
-    child.on("error", (e) => resolveP({ code: 3, text: `FAIL  could not start a shard: ${e.message}`, seconds: 0 }));
+    child.on("error", (e) => {
+      clearInterval(beat);
+      clearTimeout(stop);
+      resolveP({ code: 3, text: `FAIL  could not start a shard: ${e.message}`, seconds: 0 });
+    });
     child.on("close", (code) => {
+      clearInterval(beat);
+      clearTimeout(stop);
       try {
         writeFileSync(logPath, text);
       } catch {}
@@ -3233,6 +3265,12 @@ async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
   // `ci --wb-only`: just the Workbench steps, here (what a pool machine runs for a remote gate).
   if (opts.wbOnly) return ciWorkbench(root, opts);
+  // `ci --tiered` (what wt gate / wt ship pass for a data-only diff): classify again here, run T1 only when it still holds.
+  if (opts.tiered) {
+    const c = gateTierOf(root);
+    console.log(`ci: ${gateTier.tierLine(c)}`);
+    if (c.tier === 1) return ciDataOnly(root, c, opts);
+  }
   const steps = [
     // The cheap checks run here while the Workbench compile and build run wherever there is room
     // (this PC or a pool machine, tools/lib/wb-gate.mjs). The gate starts first, so its snapshot is
@@ -3274,6 +3312,40 @@ async function cmdCi(root = ROOT, opts = {}) {
     if (code !== 0) failed++;
   }
   console.log(failed === 0 ? "\nci: ALL PASSED" : `\nci: ${failed} step(s) failed`);
+  return failed === 0 ? 0 : 1;
+}
+
+// T1 (tools/lib/gate-tier.mjs): no Workbench compile or build (`test --no-build` loads the addons from
+// source), no full suite, no core-only pass, no config sessions. One boot runs every LOGIC test plus every
+// test whose source names a touched file, its GUID, its config class or a changed string key.
+async function ciDataOnly(root, c, opts = {}) {
+  const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  const tests = readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") }));
+  const tokens = [...c.ids];
+  for (const p of c.data) {
+    let text = null;
+    let meta = null;
+    try { text = readFileSync(join(root, p), "utf8"); } catch { /* no tokens from the text */ }
+    try { meta = readFileSync(join(root, `${p}.meta`), "utf8"); } catch { /* no GUID token */ }
+    tokens.push(...gateTier.fileTokens(p, text, meta));
+  }
+  const sel = gateTier.selectTests(tests, [...new Set(tokens)]);
+  const classes = [...new Set([...sel.logic, ...sel.related])];
+  const extra = sel.related.filter((x) => !sel.logic.includes(x));
+  console.log(`ci: T1 tests: ${sel.logic.length} LOGIC + ${extra.length} more that name ${tokens.length ? tokens.slice(0, 5).join(", ") : "nothing"}${extra.length ? ` (${extra.slice(0, 8).join(", ")}${extra.length > 8 ? ", ..." : ""})` : ""}`);
+  const steps = [
+    ["validate (static)", () => cmdRunArea("validate", root, {})],
+    ["config harness (static)", async () => (await import("./commands/config-gate.mjs")).runStatic(root)],
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    ["test (T1: LOGIC + related)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") })],
+  ];
+  let failed = 0;
+  for (const [name, fn] of steps) {
+    console.log(`\n=== ci: ${name} ===`);
+    const code = await Promise.resolve(fn());
+    if (code !== 0) failed++;
+  }
+  console.log(failed === 0 ? "\nci: ALL PASSED (T1)" : `\nci: ${failed} step(s) failed (T1)`);
   return failed === 0 ? 0 : 1;
 }
 
@@ -3604,7 +3676,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
-  ci [--skip-core-only] [--shards N|auto|1]  validate --full + build + test + test --core-only, both passes at once, each sharded
+  ci [--skip-core-only] [--shards N|auto|1] [--tiered]  validate --full + build + test + test --core-only, both passes at once, each sharded;
+                                --tiered runs the T1 data-only gate when the diff still is one
                                 (default auto; 1 = one after the other, whole) (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
@@ -3853,7 +3926,7 @@ function wtHelpFull() {
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
                                        grep that worktree's newest console.log (from anywhere)
-  tools\\cli wt gate <slug> [--wait]   validate --full + build + test (tier=all) in that worktree
+  tools\\cli wt gate <slug> [--wait] [--full-gate]   the gate for the diff's tier: T0 validate, T1 data-only (no compile, build or full suite), T2 full (docs/worktrees.md "Gate tiers")
   tools\\cli wt sync <slug>            merge the worktree's base (origin/main by default) into the branch
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
@@ -4411,20 +4484,32 @@ function changedFiles(wtRoot) {
   return [...out];
 }
 
-function gameChanged(wtRoot) {
-  const r = wt.git(wtRoot, ["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`]);
-  if (r.status !== 0) return true;
-  const files = r.stdout.split(/\r?\n/).filter(Boolean);
-  return files.some((f) => f.startsWith("addons/"));
+// The gate tier (tools/lib/gate-tier.mjs, docs/worktrees.md "Gate tiers"): T0 no addons/ change,
+// T1 values changed in place in data files, T2 everything else. Unreadable diff: T2.
+function gateTierOf(wtRoot, forceFull = false) {
+  if (forceFull) return gateTier.classify([], { forceFull: true });
+  const git = (args) => spawnSync("git", ["-C", wtRoot, ...args], { encoding: "utf8", windowsHide: true, maxBuffer: 256 * 1024 * 1024 });
+  const read = (p) => {
+    try { return readFileSync(join(wtRoot, p), "utf8"); } catch { return null; }
+  };
+  const files = gateTier.collectDiff({ git, read, base: wt.baseOfRoot(wtRoot) });
+  if (!files) return { tier: 2, reasons: ["could not read the diff against the base"], data: [], ids: [] };
+  return gateTier.classify(files);
 }
 
 function gateArgs(wtRoot, flags) {
-  if (flags.includes("--full-gate") || gameChanged(wtRoot)) {
-    console.log("=== gate: addons/ changed; validate --full + build + test tier=all ===");
-    return ["ci", ...flags.filter((f) => f !== "--full-gate")];
-  }
-  console.log("=== gate: no addons/ changes; validate only (pass --full-gate to force the in-game gate) ===");
-  return ["validate", "--all"];
+  const full = flags.includes("--full-gate");
+  const c = gateTierOf(wtRoot, full);
+  const line = gateTier.tierLine(c);
+  try {
+    mkdirSync(join(wtRoot, "tmp"), { recursive: true });
+    writeFileSync(join(wtRoot, "tmp", "gate-tier.txt"), `${line}\n`);
+  } catch { /* the line is printed below either way */ }
+  console.log(`=== gate: ${line} ===`);
+  const rest = flags.filter((f) => f !== "--full-gate");
+  if (c.tier === 0) return ["validate", "--all"];
+  if (c.tier === 1) return ["ci", "--tiered", ...rest];
+  return ["ci", ...rest];
 }
 
 async function wtGateCmd(args) {
@@ -4505,12 +4590,18 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
   let body = customBody ?? [
     `Automated ship from worktree \`${slug}\`.`,
     "",
-    "Gated by the ship queue: origin/" + base + " merged in, then `ci --remote` (validate --full, build, test tier=all on pool machines).",
+    "Gated by the ship queue: origin/" + base + " merged in, then the gate for the diff's tier (see ## Gate) on pool machines.",
     "",
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
   body = refsBody(body, closes);
+  {
+    // The tier as the branch stands now; the queue's `ci --tiered` decides again after main is merged in.
+    const tl = gateTier.tierLine(gateTierOf(wtRoot, flags.includes("--full-gate")));
+    console.log(`=== ship: ${tl} ===`);
+    body = `${body}\n\n## Gate\n\n${tl} (the queue re-checks it after merging origin/${base})`;
+  }
   let pr = wt.findOpenPrGh(wtRoot, e.branch);
   // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
   if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
@@ -4677,12 +4768,17 @@ async function wtShipCmd(args) {
   let body = customBody ?? [
     `Automated ship from worktree \`${slug}\`.`,
     "",
-    "Gate passed locally: `validate --full` + headless `build` + `test` (tier=all).",
+    "Gate passed locally (the tier and why are under ## Gate).",
     "",
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
   body = refsBody(body, closes);
+  {
+    const tf = join(wtRoot, "tmp", "gate-tier.txt");
+    const tl = !skipGate && existsSync(tf) ? readFileSync(tf, "utf8").trim() : "";
+    if (tl) body = `${body}\n\n## Gate\n\n${tl}`;
+  }
   let pr;
   try {
     if (wt.ghAvailable()) {
@@ -4796,7 +4892,7 @@ const cmds = {
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), only, onlyClasses, shards: shardsFlag, both: list.includes("--both"), red, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), noCache: (flags ?? []).includes("--no-cache"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), shards: (flags ?? []).includes("--shards") ? (argValue(flags ?? [], "--shards") ?? "auto") : "auto", ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), noCache: (flags ?? []).includes("--no-cache"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), tiered: (flags ?? []).includes("--tiered"), shards: (flags ?? []).includes("--shards") ? (argValue(flags ?? [], "--shards") ?? "auto") : "auto", ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids"), cashSwap: (flags ?? []).includes("--cash-swap"), ...e2eMoveFlags(ROOT, flags ?? []) });
