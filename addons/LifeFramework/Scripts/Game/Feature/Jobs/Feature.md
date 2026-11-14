@@ -54,6 +54,10 @@ that activity is what pays (gathering/processing already feed this funnel).
   `GetProcessReward` return 0 today (dead-but-safe); `GiveReward` pays cash.
 - `LF_JobConfig` — job definitions.
 
+- `LF_WorkplaceComponent` + `Prefabs/Jobs/LF_Workplace.et` (#1111) — the generic
+  workplace: job id, `LF_Places` registration (kind `Workplace`), punch-clock clock-in action and
+  an optional NPC slot. The police and medic duty desks inherit it.
+
 ## Dependencies
 
 - `Level` (XP/level perks), `License` (job access), `Money` (cash paychecks),

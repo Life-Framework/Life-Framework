@@ -11,6 +11,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { scaffoldPack } from "../pack/new.mjs";
 import { checkBoundary } from "./validate-addon-boundary.mjs";
 import { checkPackManifest } from "./validate-pack-manifest.mjs";
@@ -87,6 +88,33 @@ try {
   scaffoldPack(addons(two), "Beta");
   const errs = [...checkPackManifest(two), ...checkBoundary(addons(two))];
   if (errs.length) fail(`two packs: ${errs.join("; ")}`);
+
+  // --job writes a workplace that inherits the real core prefab and passes both validators (#1111).
+  const real = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const jobs = tree();
+  roots.push(jobs);
+  for (const f of ["Prefabs/Jobs/LF_Workplace.et", "Prefabs/Jobs/LF_Workplace.et.meta"]) {
+    put(jobs, `addons/LifeFramework/${f}`, readFileSync(join(real, "addons/LifeFramework", f), "utf8"));
+  }
+  const jr = scaffoldPack(addons(jobs), "Bakery", { job: "BAKER_HEAD" });
+  if (jr.error) fail(`--job scaffold: ${jr.error}`);
+  else {
+    const prefab = readFileSync(join(jr.dir, "Prefabs/Jobs/BakeryBakerHeadWorkplace.et"), "utf8");
+    const coreMeta = readFileSync(join(real, "addons/LifeFramework/Prefabs/Jobs/LF_Workplace.et.meta"), "utf8").match(/\{([0-9A-F]{16})\}/)?.[1];
+    const coreComp = readFileSync(join(real, "addons/LifeFramework/Prefabs/Jobs/LF_Workplace.et"), "utf8").match(/LF_WorkplaceComponent "\{([0-9A-F]{16})\}"/)?.[1];
+    if (!prefab.includes(`"{${coreMeta}}Prefabs/Jobs/LF_Workplace.et"`)) fail("workplace does not inherit the core prefab by its GUID");
+    if (!prefab.includes(`LF_WorkplaceComponent "{${coreComp}}"`) || !prefab.includes('m_sJob "BAKER_HEAD"')) fail("workplace does not override the core component with the job id");
+    const jerrs = [...checkPackManifest(jobs), ...checkBoundary(addons(jobs))];
+    if (jerrs.length) fail(`--job scaffold passes both validators: ${jerrs.join("; ")}`);
+    const jseen = new Set();
+    for (const f of jr.files.filter((p) => /\.meta$/.test(p))) {
+      const own = readFileSync(join(jr.dir, f), "utf8").match(/Name "\{([0-9A-F]{16})\}/)?.[1];
+      if (!own || jseen.has(own)) fail(`--job scaffold: missing or repeated GUID in ${f}`);
+      jseen.add(own);
+    }
+  }
+  if (!scaffoldPack(addons(tree()), "Nojob", { job: "BAKER" }).error) fail("--job without the core workplace prefab was accepted");
+  if (!scaffoldPack(addons(tree()), "Badjob", { job: "baker" }).error) fail("a lower-case --job was accepted");
 
   // A core name is refused; a core name that only starts with the pack id is not a clash.
   const names = tree();

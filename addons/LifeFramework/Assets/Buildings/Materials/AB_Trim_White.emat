@@ -1,8 +1,0 @@
-MatPBRBasic {
- BCRMap "{9C568F5695FC2681}Assets/_SharedData/Plaster/ST_Plaster_Clean_White_01_BCR.edds"
- NMOMap "{A48E34C44C8B741F}Assets/_SharedData/Plaster/ST_Plaster_Clean_White_01_NMO.edds"
- GlobalMapsUVTransform MatUVTransform "{ADC3C6011D521397}" {
-  TilingU 0.4
-  TilingV 0.4
- }
-}
