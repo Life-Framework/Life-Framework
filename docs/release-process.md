@@ -20,7 +20,7 @@ run from tooling. It is maintainer-only, by hand in Workbench (#370).
 | `tools\cli release <x.y.z> --confirm [--push]` | Never | Yes |
 | `tools\cli playtest release` | Never | Yes |
 | Workshop upload of core and pack | Never. **Not yet: maintainer-only.** | Yes, by hand (#370), following [release-first-upload.md](release-first-upload.md) |
-| `toolscli workshop boot-check <coreId> <packId>` (clean server from Workshop ids, #371) | Yes, once the ids are real | Yes |
+| `tools\cli workshop boot-check <coreId> <packId>` (clean server from Workshop ids, #371) | Yes, once the ids are real | Yes |
 | `tools\cli example-zip` (draft zip) | Yes | Yes |
 | Set the confirmed Workshop ids in `tools/release/example-zip.json`, then the `--final` zip | Never | Yes (after #370) |
 | Host `preflight` and `restore` after a game update | Never | Yes (the server owner too) |
