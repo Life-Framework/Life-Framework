@@ -19,7 +19,7 @@
 // with an access violation, so no addon file is reopened under a live Workbench. A server that is gone, hung or crashed never fails the caller: look kills
 // what is left (and its crash reporter), forgets it, and runs a fresh Workbench as before.
 
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { dirname, extname, join } from "node:path";
@@ -27,6 +27,7 @@ import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import { removeWorktree } from "../link-safety.mjs";
 import { ADDONS } from "../lib/addons.mjs";
+import { renameRetry } from "../lib/atomic-file.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PLUGIN = join(HERE, "wb", "LF_VisualShotsPlugin.c");
@@ -115,7 +116,7 @@ export function readServeState(root) {
 function writeServeState(root, st) {
   const f = stateFile(root);
   writeFileSync(f + ".tmp", JSON.stringify(st, null, 2) + "\n");
-  renameSync(f + ".tmp", f);
+  renameRetry(f + ".tmp", f);
 }
 function clearServeState(root) {
   rmSync(stateFile(root), { force: true });
@@ -289,7 +290,7 @@ async function sendRequest(st, id, reload, plan, budgetS) {
   writeFileSync(join(raw, "plan.txt"), plan);
   writeFileSync(join(raw, "go.tmp"), goText(id, reload));
   const t0 = Date.now();
-  renameSync(join(raw, "go.tmp"), join(raw, "go.txt"));
+  renameRetry(join(raw, "go.tmp"), join(raw, "go.txt"));
   const done = join(raw, "done.txt");
   while (Date.now() - t0 < budgetS * 1000) {
     await sleep(150);

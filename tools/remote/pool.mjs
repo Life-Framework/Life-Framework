@@ -23,7 +23,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { freemem, hostname as osHostname, totalmem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,6 +37,7 @@ import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
 import * as shipQueue from "../lib/ship-queue.mjs";
+import { writeFileAtomic } from "../lib/atomic-file.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -1842,8 +1843,7 @@ export function rewriteTicket(root, f, t) {
   const file = join(queueDir(root), f);
   if (!existsSync(file)) return false;
   try {
-    writeFileSync(`${file}.tmp`, JSON.stringify(t));
-    renameSync(`${file}.tmp`, file);
+    writeFileAtomic(file, JSON.stringify(t), { tmp: `${file}.tmp` });
     return true;
   } catch {
     return false;

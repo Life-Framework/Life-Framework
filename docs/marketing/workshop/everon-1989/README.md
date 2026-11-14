@@ -8,7 +8,11 @@ core kit ([`../README.md`](../README.md)) and is checked by `tools/validation/va
 | Project Name (30 max) | `Life Framework: Everon 1989` |
 | Mod ID (the `.gproj` GUID, also the Workshop item ID) | `B1E84D5687E11724` |
 | Requires | Life Framework (Core), `79636E668EA37AC9`, version 0.1.0 or later |
+<<<<<<< HEAD
 | Scenario ID | `{C638C03B775C31BB}Missions/LF_Everon1989.conf` (name in the list: Life Framework: Everon 1989; the only scenario the pack lists) |
+=======
+| Scenario ID | `{C638C03B775C31BB}Missions/LF_Everon1989.conf` (name in the list: Life Framework: Everon 1989) |
+>>>>>>> origin/main
 | Screenshots | the nine village shots in [`../screenshots/`](../screenshots/), 1280x720, each under 600 KB |
 | Change Notes | the pack 0.1.0 block in [`../changelog.md`](../changelog.md) |
 | Tags | `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989` |
@@ -44,7 +48,6 @@ The current `preview.jpg` is a flat placeholder so the kit is complete; it is no
 - Final preview image and gallery screenshots.
 - Maintainer sign-off on the premise and voice in [`docs/branding/everon-1989.md`](../../../branding/everon-1989.md)
   and on the description copy built from it.
-- The scenario still lists as "Life Framework: Playtest Town". The in-game briefing (#374) is where
-  that name changes to the brief's voice.
+- The scenario lists as "Life Framework: Everon 1989". Its in-game briefing (#374) has no PR yet.
 - `discord-announcement.md` and `website-news.md` in the parent folder still announce the single
   playtest item; rewrite them for the two items at the first publish.

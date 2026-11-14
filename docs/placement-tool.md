@@ -35,6 +35,27 @@ tools\cli place verify <entity>...          the placement audit on those entitie
 Run it from a worktree. A probe or an audit is one boot of the test server, about 11 s, queued on the
 test lane like `tools\cli test`; no session, no client.
 
+## Heights on a prop: `toolscli measure`
+
+Where goods stand on a shelf, a counter top, a cooler deck: read them from the model, not from in-game
+test reruns.
+
+```
+toolscli measure ShelfShop_01 --surfaces          a file name, a path, {GUID}path or a .xob
+toolscli measure Prefabs/Props/Commercial/CounterShop_01.et CoolingBoxShop_01 --json
+```
+
+It reads the `.xob` (addon or game pak) offline: the visual bounds from its header and the colliders
+(box, convex hull, trimesh, cylinder), and prints every face that points up, highest first, in prefab
+space (+z is the front) with its x and z extent and the collider's name. Colliders are what a trace
+and `LF_StoreComponent.SnapToSurface` hit, so `y` is where a thing stands. About 2 s cold, under 1 s
+cached (`~/.life-framework/cache/measure-<build>.json`, refreshed when an addon file changes;
+`--fresh` ignores it). Surfaces narrower than 5 cm are left out unless `--all`. It prints the
+prefab's `{GUID}path` too (from the game's editable twin, our own references, or a GUID index of the
+game files built once per game build). On 2026-11-14 it matched the in-game traces in
+`tools/buildings/pipeline/fixtures.json` within 1 mm for the ShelfShop_01 boards and the
+CounterShop_01 top, and 14 mm for the stepped CoolingBoxShop_01 deck (`measure-selftest`).
+
 ## Examples (the props re-placed in the PR that added the tool)
 
 ```
