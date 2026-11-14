@@ -7,7 +7,8 @@ class LF_BankRobAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return Vault() != null;
+		// Hidden while the Robbery system is off (#1073).
+		return Vault() != null && LF_Systems.IsEnabled(LF_RobAction.SYSTEM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -35,6 +36,13 @@ class LF_BankRobAction : ScriptedUserAction
 	{
 		if (!Replication.IsServer())
 			return;
+
+		// A prompt shown just before Robbery was turned off (#1073).
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "vault robbery"))
+		{
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Systems_Off", "#EL-Robbery_Failed", 3.0);
+			return;
+		}
 
 		LF_BankVaultComponent vault = LF_Component<LF_BankVaultComponent>.Find(pOwnerEntity);
 		if (!vault)

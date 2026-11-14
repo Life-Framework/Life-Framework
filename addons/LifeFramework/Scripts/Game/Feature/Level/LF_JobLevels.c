@@ -24,6 +24,9 @@
 class LF_JobLevels
 {
 	static const string FEATURE = "JobLevels";
+	//! The system id the Level switch answers to (#1074). Off: no XP is earned; saved XP and the levels
+	//! it gives are still read.
+	static const string SYSTEM = "Level";
 
 	static const string JOB_CIVILIAN = "CIVILIAN";
 	static const string JOB_DELIVERY = "DELIVERY";
@@ -132,6 +135,9 @@ class LF_JobLevels
 		if (Replication.IsRunning() && !Replication.IsServer())
 			return 0;
 
+		if (LF_Systems.Refuses(SYSTEM, "xp for " + job))
+			return 0;
+
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Error(FEATURE, string.Format("xp refused: empty player id (job %1, %2)", job, reason));
@@ -182,6 +188,9 @@ class LF_JobLevels
 	static int Award(string playerUid, string action, int units = 1)
 	{
 		if (Replication.IsRunning() && !Replication.IsServer())
+			return 0;
+
+		if (LF_Systems.Refuses(SYSTEM, "xp award " + action))
 			return 0;
 
 		LF_JobsConfig config = LF_JobsConfig.Get();

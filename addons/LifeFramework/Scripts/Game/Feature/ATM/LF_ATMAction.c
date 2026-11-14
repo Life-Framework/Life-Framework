@@ -3,6 +3,9 @@
 [BaseContainerProps(configRoot: true)]
 class LF_ATMAction : ScriptedUserAction
 {
+	//! The system id the ATM switch answers to (#1074); it needs Banking.
+	static const string SYSTEM = "ATM";
+
 	[Attribute("SOUND_INV_HOTKEY_SCROLL", desc: "UI sound event for a keypad key press")]
 	protected string m_sKeySound;
 
@@ -60,6 +63,10 @@ class LF_ATMAction : ScriptedUserAction
 
 		IEntity owner = GetOwner();
 		if (!owner)
+			return false;
+
+		// Hidden while ATM (or Banking, which it needs) is off (#1074).
+		if (!LF_Systems.IsEnabled(SYSTEM))
 			return false;
 
 		return vector.Distance(user.GetOrigin(), owner.GetOrigin()) <= LF_ATMTerminal.SHOW_DISTANCE;

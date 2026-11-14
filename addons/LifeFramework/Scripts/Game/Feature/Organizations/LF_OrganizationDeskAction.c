@@ -7,7 +7,7 @@ class LF_OrganizationDeskAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return user && GetOwner() && vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) <= 3.0;
+		return user && GetOwner() && LF_Systems.IsEnabled(LF_OrgRules.SYSTEM) && vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) <= 3.0;
 	}
 
 	//------------------------------------------------------------------------------------------------
