@@ -95,6 +95,7 @@ LF_ItemCatalogueConfig {
 | `catalogue` | `items` | item id (`pistol_m9`) |
 | `catalogue` | `offers` | `outlet/item` (`gun_counter/pistol_m9`) |
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
+| `ui-theme` | `themes` | theme id (`paper`, `id-card`, `terminal`, `price-list`). Pack overlays only: no owner section, a look is a pack's job (`docs/architecture/ui-theme.md`) |
 | `police` | `ranks` | rank id (`patrol`). A saved rank is its index: a remove is refused on a shipped rung and on any rung that is not the last |
 | `organizations` | `rankDefaults` | `founder`, `officer` or `member`. A remove drops the entry, so the rank keeps its shipped rights; a new or replaced entry starts from them |
 | `zones` | `ruleSets` | rule name `NORMAL`, `SAFE` or `LAWLESS`. A remove is refused (every zone names a rule); a new or replaced entry starts from the legacy flags |
