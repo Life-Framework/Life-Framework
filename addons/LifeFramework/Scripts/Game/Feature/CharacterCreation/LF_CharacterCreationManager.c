@@ -159,6 +159,30 @@ class LF_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the player read the quiz's pass page. The flow runs again from the top, so a client
+	//! that sends this without passing is asked the questions again.
+	void ContinueAfterQuiz(int playerId)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		ContinueFlow(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: sends the rules quiz to an account that has not passed it. Used by the flow and by
+	//! the two answers a client could send to get past it (register, pick a character).
+	//! \return true when the quiz was sent and the caller must stop.
+	protected bool GateQuiz(int playerId, string accountUid)
+	{
+		if (!LF_Quiz.Required(accountUid))
+			return false;
+
+		LF_QuizFlow.Offer(playerId);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void ContinueFlow(int playerId)
 	{
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
@@ -199,6 +223,11 @@ class LF_CharacterCreationManager : Managed
 		}
 
 		LF_Debug.Info("CharacterCreation", "flow start for player " + playerId);
+
+		// The rules orientation (#915) comes first, once per account: nobody registers or spawns
+		// before passing it. Its Continue button re-enters here.
+		if (GateQuiz(playerId, playerUid))
+			return;
 
 		// Nothing stands between joining and playing: no character means the registration form,
 		// then a civilian spawn.
@@ -305,6 +334,9 @@ class LF_CharacterCreationManager : Managed
 		if (!controller)
 			return;
 
+		if (GateQuiz(playerId, LF_Utils.GetAccountUID(playerId)))
+			return;
+
 		bool offered = m_PickOffered.Contains(playerId);
 		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
 		string refusal = LF_CharacterCreationRules.RefusePick(account, slot, ControlsLivingBody(controller), offered);
@@ -364,6 +396,9 @@ class LF_CharacterCreationManager : Managed
 			return;
 
 		string accountUid = LF_Utils.GetAccountUID(playerId);
+		if (GateQuiz(playerId, accountUid))
+			return;
+
 		LF_PlayerAccount account = FindAccount(accountUid);
 		if (!account)
 		{
