@@ -53,6 +53,8 @@ name of the person who ran the agent.
 | Lockpick model (`Assets/Items/Roleplay/Lockpick/Lockpick.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/lockpick/meshy.json` (generation ids), `tools/assets/lockpick/spec.json` (prompt) |
 | Evidence marker model (`Assets/Props/Roleplay/EvidenceMarker/EvidenceMarker.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/evidence-marker/meshy.json` (generation ids), `tools/assets/evidence-marker/spec.json` (prompt) |
 | Pager model (`Assets/Items/Roleplay/Pager/Pager.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan | `tools/assets/pager/meshy.json` (generation ids), `tools/assets/pager/spec.json` (prompt) |
+| Money bag model (`Assets/Items/Roleplay/MoneyBag/MoneyBag.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/money-bag/meshy.json` (generation ids), `tools/assets/money-bag/spec.json` (prompt) |
+| Apple juicer model (`Assets/Props/Roleplay/AppleJuicer/AppleJuicer.xob`) | Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy | https://www.meshy.ai | The maintainer's Meshy plan; use in the project and published builds signed off 2026-11-13 (#664, `docs/decisions.md`) | `tools/assets/apple-juicer/meshy.json` (generation ids), `tools/assets/apple-juicer/spec.json` (prompt) |
 
 ## Textures (CC0)
 

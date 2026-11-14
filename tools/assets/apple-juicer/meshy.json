@@ -1,0 +1,15 @@
+{
+  "slug": "apple-juicer",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "latest",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d8ec-39a9-74df-9e8b-d448201ffa62",
+      "concept": 7,
+      "conceptTaskId": "01a1d732-f5fb-73e9-92ae-6cf759d6f1e6",
+      "conceptPrompt": "A 1989 electric fruit juicer for a village market stall in Eastern Europe, a mains-powered appliance bought new from a state shop: a motor base, a juice bowl and a spout where the juice runs out. A tall white enamel commercial juicer, the motor in the lower block, a steel bowl and a pulp drawer above it, a steel feed hopper with a wooden pusher. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

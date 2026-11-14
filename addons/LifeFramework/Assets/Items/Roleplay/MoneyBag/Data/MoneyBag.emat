@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{1B9183F7FF62ED43}Assets/Items/Roleplay/MoneyBag/Data/MoneyBag_BCR.edds"
+ NMOMap "{72F780B69E1A81F7}Assets/Items/Roleplay/MoneyBag/Data/MoneyBag_NMO.edds"
+}

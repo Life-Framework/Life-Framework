@@ -1,0 +1,164 @@
+{
+  "slug": "money-bag",
+  "subject": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front.",
+  "variants": [
+    {
+      "label": "Beige drawstring",
+      "detail": "Pale beige heavy canvas, rounded bulging body, gathered neck with a thick brown cord drawstring, a plain rectangular black patch",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Pale beige heavy canvas, rounded bulging body, gathered neck with a thick brown cord drawstring, a plain rectangular black patch. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f092-7282-9870-f0010debfb91",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "plain beige sack, drawstring, big black patch for a stencil"
+    },
+    {
+      "label": "Grey sack, rope tie",
+      "detail": "Grey-brown coarse hessian sack, tall, rope wound around the neck, a faded band",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Grey-brown coarse hessian sack, tall, rope wound around the neck, a faded band. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f141-7056-bdef-0345d2410c42",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "tall grey hessian, rope neck"
+    },
+    {
+      "label": "Dark green duffel",
+      "detail": "Olive green canvas pouch, squat and wide, a brass-ringed neck with a cord, a small white patch",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Olive green canvas pouch, squat and wide, a brass-ringed neck with a cord, a small white patch. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f1f9-734d-89a1-70ebdc3333b3",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "squat olive duffel, trailing cord"
+    },
+    {
+      "label": "Leather-trimmed bag",
+      "detail": "Tan canvas with a brown leather base and leather neck strap with a buckle, flat-bottomed, a small brass plate",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Tan canvas with a brown leather base and leather neck strap with a buckle, flat-bottomed, a small brass plate. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f2b2-73ee-a7e6-b995e30486fb",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "leather base and buckle, strong read"
+    },
+    {
+      "label": "Zip cash satchel",
+      "detail": "Blue-grey canvas satchel with a zipper across the top, two short carry handles, a plain panel on the front",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Blue-grey canvas satchel with a zipper across the top, two short carry handles, a plain panel on the front. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f369-72cd-b6bb-6f05c8c0e07b",
+      "scores": {
+        "silhouette": 0,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "two objects in frame"
+    },
+    {
+      "label": "White cloth, red seal",
+      "detail": "Off-white cotton sack, neck closed with a red wax or lead seal and string, bulging with notes",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Off-white cotton sack, neck closed with a red wax or lead seal and string, bulging with notes. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f423-76ca-8f1f-a2797d5f5530",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "red seal and string are small; faint smudge text"
+    },
+    {
+      "label": "Black rubberised",
+      "detail": "Black rubberised fabric bag, tall rounded body, a metal drawstring clip, a white panel",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Black rubberised fabric bag, tall rounded body, a metal drawstring clip, a white panel. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f4d0-737f-a7f4-58dd489c2e61",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "modern rubberised look"
+    },
+    {
+      "label": "Striped ticking",
+      "detail": "Faded blue and cream striped ticking cloth sack, lumpy, neck tied with twine, patched corner",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Faded blue and cream striped ticking cloth sack, lumpy, neck tied with twine, patched corner. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f587-7624-8d92-910120ba7014",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "stripes will need clean texture"
+    },
+    {
+      "label": "Brown padlock sack",
+      "detail": "Brown canvas mail-style sack with a flap and a small padlock hasp on a leather strap, flat rectangular shape",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Brown canvas mail-style sack with a flap and a small padlock hasp on a leather strap, flat rectangular shape. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f63f-7056-ad87-528a00ce73e7",
+      "scores": {
+        "silhouette": 1,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "flat satchel, reads as a mail bag"
+    },
+    {
+      "label": "Yellow-brown burlap",
+      "detail": "Yellow-brown burlap sack with a folded cuff at the top, a loose drawstring, a rectangular block on the front",
+      "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. Yellow-brown burlap sack with a folded cuff at the top, a loose drawstring, a rectangular block on the front. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cb-f703-770f-b7fb-61eb9059ccbd",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 2
+      },
+      "note": "good burlap, smudged panel"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 2,
+    "label": "Grey sack, rope tie",
+    "by": "human",
+    "why": "\"grip: a tall bunched neck above the rope; the standing rule (no pick from the maintainer in 10 minutes, the recommendation is used)\"",
+    "at": "2026-11-14"
+  }
+}
