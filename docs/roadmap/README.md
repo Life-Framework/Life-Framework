@@ -28,6 +28,9 @@ Listed in the order they run (restructured 2026-11-14).
 
 Beside them runs **Development** (tooling and pipelines), which is not a release.
 
+Foundation designs that span milestones: [building-foundation.md](building-foundation.md), placing
+items and props with a preview (epic #927).
+
 Each outline is planned in full only after the milestone before it closes.
 
 ## Rules for every scope

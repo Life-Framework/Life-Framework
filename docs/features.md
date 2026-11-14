@@ -1809,7 +1809,11 @@
   On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN) lays `SpikeStrip.et`
   (3.5 m) from 1 m in front of the officer: along their facing, or straight across the nearest road
   within 12 m when the AI road network has one. Its three ground points take the higher of terrain and
-  what stands there; more than 0.25 m between them refuses (`#LF-SpikeStrip_NoGround`). The item is used up.
+  what stands there; more than 0.25 m between them refuses (`#LF-SpikeStrip_NoGround`). Something standing in
+  the footprint (a post, a car) or under it (a strip already laid, anything dynamic) refuses
+  (`#LF-Placement_Blocked`, #928). The item is used up.
+- ⚠️ Placement preview (#928 prototype, dev-tools worlds only, selecting the action is not automated): while Deploy is selected the officer sees a ghost
+  of the strip where it will lie, blue when the server would accept it and red when not (`LF_SpikeStripPreview`).
 - ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
   sample against the footprint, so a fast car cannot jump it. A crossing wheel's `SCR_WheelHitZone` (on the
   wheel slot entity) takes COLLISION damage to DESTROYED; vanilla `UpdateWheelState` then cuts the radius to
@@ -2693,3 +2697,6 @@
 
 ### Robbery alarms by type — `LF_Dispatch`, `LF_PoliceConfig` (#740, 2026-11-14)
 - ✅ Each robbery sounds its own alarm instead of the one police siren: the bank vault a loud bell (heard about 170 m), the fuel station till a shrill pulsing intruder alarm (70 m), the general store till a slow flat buzzer (60 m), the cash van a honking horn (70 m); the police armory takes the bank bell, and a robbery with no kind (the hospital till, shoplifting) keeps the siren. Which alarm is data: `m_aAlarmKinds` in `LF_Police.conf` (`LF_AlarmKind`: id, normal and loud prefab, offences that use it); the robbed thing names its kind (`LF_RobAction.m_sAlarmKind`, default `store`, `fuel` on the fuel tills; `LF_BankVaultComponent.m_sAlarmKind`, `bank` on `LF_BankVault.et`), else the offence's kind decides (cash van, armory), else the plain siren (`LF_PoliceConfig.AlarmPrefabFor`, passed as `alarmKind` through `LF_Dispatch.Report`). Nobody on duty sounds the kind's loud twin (brighter, faster light; the 60 s duration). The sounds are ElevenLabs takes in `Sounds/Alarm/Robbery/`, recorded in `tools/assets/robbery-alarms/sounds.json`. The police and ambulance sirens are unchanged. A server can change or add kinds in its owner config (`police.alarmKinds`, keyed by kind id). Tests: `police/robbery-alarms` (LOGIC), `police/robbery-alarms-shipped` (WORLD); session proof `robbery-alarm-proof` (log lines; ears for the sound).
+
+### `LF_PlacementRules`, `LF_PlacementGhost` — `Feature/Placement/LF_Placement.c` (#927, #928, 2026-11-14)
+- ⚠️ The placement foundation's first piece (design: `docs/roadmap/building-foundation.md`). A feature measures a spot into an `LF_PlacementProbe`; `LF_PlacementRules.Judge` gives `VALID`, `NO_GROUND`, `TOO_STEEP` (more than the step along the footprint) or `BLOCKED` (something in the clearance box, or a dynamic or same-kind surface underneath), with a reason for the log. `LF_PlacementGhost` shows a prefab's mesh on this machine only, in Conflict's blue `CanBuild` or red `CannotBuild` material. The spike strip is the only user so far. Tests: `placement/validity` (LOGIC); the clearance check in `police/spike-strip` (WORLD); session proof `placement-preview-proof`.
