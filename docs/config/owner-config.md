@@ -65,3 +65,23 @@ it adds a record). Proof of the rules:
 (`presets/` pass clean, `broken/` has one file per reject class), each with a `.expect.json` holding
 the exact log line, line and column. Stages are a list in `tools/config/harness.mjs`; the server-boot
 (#299) and client (#300) stages plug in there. Proof: `node tools/validation/config-harness-selftest.mjs`.
+
+## Where a value came from
+
+```
+tools\cli pack explain catalogue.items.pistol_m9 --config path\to\config.json
+catalogue.items pistol_m9: present
+  category = "weapon"  <- core
+  price = 650  <- pack LF_Everon1989 (Configs/Catalogue.conf)  (overridden: core 500)
+  sellPrice = 111  <- owner config.json  (overridden: core 250)
+  trail: core add > LF_Everon1989 patch > owner patch
+```
+
+The key is `<section>.<list>.<id>[.<field>]` (`shops.priceRules.type:64,mode:2.buyPrice`) or a plain
+section key (`shops.defaultBuyPrice`). `crime.crimes` alone lists every id a pack or your file
+changed. The layers are the core `.conf`, each pack under `addons/` in order (`--pack <addon>` for
+one), then your file (`--config`); the merge is the server's (`docs/config/override-model.md`), so a
+refused verb and a second pack on one id print under the entry. A field no layer sets is the class
+default. Offline; exit 1 when the key names nothing. Lists today: `catalogue.items`,
+`catalogue.offers`, `crime.crimes`, `shops.priceRules`. The website config check (#281) does not
+have this view yet.
