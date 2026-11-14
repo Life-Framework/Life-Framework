@@ -62,13 +62,16 @@
                 "default": ""
               },
               "concealsFace": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "concealsBuild": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "removed": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -111,7 +114,8 @@
                 "default": ""
               },
               "removed": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -138,7 +142,8 @@
             "type": "object",
             "properties": {
               "enabled": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": true
               },
               "maxAgeSeconds": {
                 "type": "integer",
@@ -243,7 +248,8 @@
           "default": "jail"
         },
         "escortedCountsAsCuffed": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "cuffedWantedAdd": {
           "type": "integer",
@@ -264,10 +270,12 @@
           "maximum": 10000000
         },
         "cuffedFineAllowsDebt": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "downedDies": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "wantedLogoutAdd": {
           "type": "integer",
@@ -276,7 +284,8 @@
           "maximum": 5
         },
         "jailClockOffline": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false,
@@ -481,10 +490,12 @@
                 ]
               },
               "isInitialLicense": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "requiresWhitelist": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -571,31 +582,40 @@
                 ]
               },
               "withdraw": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "invite": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "kick": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "buyUpgrade": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "manageRanks": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "declareWar": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "useStash": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "manageTerritory": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "spendFund": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               }
             },
             "additionalProperties": false
@@ -610,7 +630,8 @@
       "description": "The owner's `persistence` section: how the autosave runs, and which fields survive a restart (#689).",
       "properties": {
         "enableAutosave": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "autosaveInterval": {
           "type": "number",
@@ -619,22 +640,28 @@
           "maximum": 86400
         },
         "keepCash": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "keepCarriedGear": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "keepSurvival": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "keepWanted": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "keepJail": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "keepLicences": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       },
       "additionalProperties": false,
@@ -811,7 +838,8 @@
           "maximum": 10
         },
         "officerKillOfWantedExempt": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "searchCooldownSeconds": {
           "type": "integer",
@@ -888,10 +916,12 @@
       "description": "The rules orientation quiz switches (#915): Configs/Rules/LF_Quiz.conf, then each pack overlay of this class, then the owner's `rulesQuiz` section.",
       "properties": {
         "enabled": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "repeatOnConnect": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "passPercent": {
           "type": "integer",
@@ -995,7 +1025,8 @@
             "type": "object",
             "properties": {
               "enabled": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": true
               }
             },
             "additionalProperties": false
@@ -1160,19 +1191,24 @@
                 ]
               },
               "blocksPlayerDamage": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "suppressesWanted": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": false
               },
               "allowsRobbery": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": true
               },
               "allowsVehicleTheft": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": true
               },
               "allowsWeaponDraw": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": true
               },
               "fineMultiplier": {
                 "type": "number",
@@ -1181,17 +1217,20 @@
                 "maximum": 10
               },
               "copsEnter": {
-                "type": "boolean"
+                "type": "boolean",
+                "default": true
               }
             },
             "additionalProperties": false
           }
         },
         "safeBlocksPlayerDamage": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "lawlessSuppressesWanted": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false,

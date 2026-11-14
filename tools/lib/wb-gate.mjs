@@ -74,6 +74,30 @@ export function earlyDeath({ status, seconds, text, freeMb, reserveMb = WB_RESER
   return `Workbench exited after ${Math.round(seconds)} s with no verdict and ${(freeMb / 1024).toFixed(1)} GB free (needs ${((reserveMb + minFreeMb) / 1024).toFixed(1)})`;
 }
 
+// Where a stale resourceDatabase.rdb is refreshed (a headless Workbench, ~15 s per addon, but it queued
+// 10-50 min behind the hub `build` lock and this PC's one Workbench slot). Built on chooseGate's rule
+// (free Workbench slot AND RAM for a Workbench, ranked by free RAM and speed): this PC when it has a
+// free slot, no live `build` lock (local.buildLocked) and the RAM; else a pool machine that chooseGate
+// finds with a free slot and the RAM (never one it would only queue on); else this PC again, which
+// waits for its slot as before. Only a machine with the `rdb` cap (needCap) is a candidate: its refresh
+// is known to register resources (lf-cloud's Workbench exits 0 and registers none, 2026-11-14). mode
+// "auto" (default), "local", or "pool" (a pool machine first even when this PC is free). Pure;
+// tools/validation/rdb-refresh-where-selftest.mjs proves it.
+export function chooseRefresh({ local, remotes = [], mode = "auto", needCap = "rdb", reserveMb = WB_RESERVE_MB, minFreeMb = DEFAULTS.minFreeMb, roomyMb = DEFAULTS.roomyMb }) {
+  if (mode === "local") return { where: "local", why: "LF_RDB_REFRESH_WHERE=local" };
+  remotes = remotes.filter((r) => (r.caps ?? []).includes(needCap));
+  const need = reserveMb + minFreeMb;
+  const slotFree = !local.buildLocked && local.busy + local.queued < local.limit;
+  const ramOk = local.freeMb == null || local.freeMb >= need;
+  if (mode === "auto" && slotFree && ramOk) return { where: "local", why: `this PC has a free Workbench slot (${local.busy}/${local.limit} busy) and ${local.freeMb ?? "?"} MB free` };
+  const c = chooseGate({ local, remotes, mode: "remote", reserveMb, minFreeMb, roomyMb });
+  if (c.where !== "local" && c.where !== "wait" && c.where !== "none" && !c.queue) {
+    const here = local.buildLocked ? "this PC's build lock is held" : !slotFree ? `this PC is busy (${local.busy}/${local.limit}, ${local.queued} queued)` : !ramOk ? `this PC has ${local.freeMb} MB free (needs ${need})` : "asked for a pool machine";
+    return { where: c.where, why: `${here}; ${c.why}` };
+  }
+  return { where: "local", why: `no pool machine has a free Workbench slot and the RAM (${c.why}); refreshing here` };
+}
+
 // One ssh round trip: the box's live Workbench locks and free RAM. null when it does not answer.
 export function remoteWbState(m) {
   const ps = [
