@@ -20,7 +20,7 @@
 //   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
-//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
 //   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   audit placement [--top N] [--area a] [--layer L]  Ranked placement audit of every DebugWorld layer entity, on the test server (agent-box/place-audit.mjs)
@@ -2353,6 +2353,13 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   for (const f of session.seedProfile(paths.server, seeds)) {
     console.log(`session: seeded ${f}`);
     slog(`seeded ${f}`);
+  }
+  if (mission === "template") {
+    // What server/example/start.cmd does: the owner config goes to $profile:LifeFramework/config.json (#295).
+    const owner = join(paths.server, "profile", "LifeFramework");
+    mkdirSync(owner, { recursive: true });
+    copyFileSync(join(root, "server", "example", "config.json"), join(owner, "config.json"));
+    slog(`template: config.json copied to ${owner}`);
   }
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);

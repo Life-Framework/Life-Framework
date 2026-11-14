@@ -113,7 +113,11 @@ class LF_DialogueVoice
 	{
 		Stop(npc);
 		LF_DialogueLine line = LF_DialogueFlow.FindLine(config, entry);
-		float hold = LF_DialogueFlow.HoldSeconds(line, WidgetManager.Translate(entry).Length());
+		string caption = entry;
+		if (line)
+			caption = line.m_sTextKey;
+
+		float hold = LF_DialogueFlow.HoldSeconds(line, WidgetManager.Translate(caption).Length());
 		if (!npc || !config)
 			return hold;
 
@@ -123,7 +127,11 @@ class LF_DialogueVoice
 		utterance.m_fSeconds = hold;
 		utterance.m_aQueue = queue;
 		utterance.m_Config = config;
-		if (line)
+		if (line && line.IsTextOnly())
+		{
+			LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("line '%1/%2' is text only: caption, no voice", config.m_sId, line.m_sId));
+		}
+		else if (line)
 		{
 			utterance.m_sMouth = line.m_sMouth;
 			vector mat[4];

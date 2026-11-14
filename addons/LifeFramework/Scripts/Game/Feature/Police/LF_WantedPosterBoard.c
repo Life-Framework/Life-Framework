@@ -6,7 +6,14 @@
 //! frame and the target stops costing anything (docs/architecture/visual-boards-budget.md).
 class LF_WantedPosterFace : Managed
 {
-	static const ResourceName FACE_PREFAB = "{20A9CE2A32DFF4FB}Prefabs/Props/Signs/LF_BoardFace.et";
+	//! The prefab slot (#1128): The face of a wanted-poster notice board.
+	static const string SLOT_FACE = "notice_board_face";
+
+	//! The prefab (slot "notice_board_face"), or empty when no usable prefab resolves (logged).
+	static ResourceName FacePrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_FACE);
+	}
 	static const ResourceName FACE_LAYOUT = "{6A0E5C7D93B14F28}UI/Layouts/Police/LF_WantedBoardFace.layout";
 	static const ResourceName POSTER_LAYOUT = "{9F2B61D47C0E3A85}UI/Layouts/Police/LF_WantedPoster.layout";
 	static const ResourceName CORK_TEXTURE = "{95F693947BE9C0BA}Assets/_SharedData/Wood/ST_Cork_01_BCR.edds";
@@ -53,10 +60,10 @@ class LF_WantedPosterFace : Managed
 	bool Build(notnull IEntity board, vector offset, vector angles, float scale)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		Resource faceResource = Resource.Load(FACE_PREFAB);
+		Resource faceResource = Resource.Load(FacePrefab());
 		if (!workspace || !faceResource || !faceResource.IsValid())
 		{
-			LF_Debug.Error(LF_WantedPosters.FEATURE, "board face not built: no workspace or the face prefab does not load: " + FACE_PREFAB);
+			LF_Debug.Error(LF_WantedPosters.FEATURE, "board face not built: no workspace or the face prefab does not load: " + FacePrefab());
 			return false;
 		}
 

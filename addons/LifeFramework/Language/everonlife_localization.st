@@ -8449,6 +8449,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "trabalhos"
      Comment "Term job, plural form: {job:pl}."
     }
+    CustomStringTableItem "{46261105E82813B6}" {
+     Id "LF-IncidentGm_Kind_logout"
+     Target_en_us "Logout in custody"
+     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
+    }
   }
  }
 }

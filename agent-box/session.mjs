@@ -41,6 +41,7 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
+import { templateLaunch } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { addonsArgs, launchAddons, PACK_MISSION, playtestMission } from "../tools/lib/addons.mjs";
@@ -82,7 +83,9 @@ export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
-export const MISSIONS = ["debug", "playtest"];
+export const MISSIONS = ["debug", "playtest", "template"];
+// `--mission template` boots the example server folder (server/example, #295): the scenario and mods
+// server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
 
 export function parseMission(args) {
   const i = args.indexOf("--mission");
@@ -96,7 +99,7 @@ export function parseMission(args) {
 // ("remote script source code checksum does not match").
 export function defineArgs(mission = "debug") {
   const args = ["-scrDefine", SESSION_DEFINE];
-  if (mission === "playtest") args.push("-scrDefine", HARNESS_DEFINE);
+  if (mission === "playtest" || mission === "template") args.push("-scrDefine", HARNESS_DEFINE);
   return args;
 }
 
@@ -203,10 +206,13 @@ export function laneArgs(port) {
 // rp: the resolved session profile (session-profile.mjs); absent means full.
 // addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header.
 export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons() }) {
+  // The template mission boots what server/example/server.json names: its scenario and its mods. The
+  // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
+  const tpl = mission === "template" ? templateLaunch(ROOT) : null;
   const args = [
-    "-server", mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
     "-addonsDir", addonsDir,
-    ...addonsArgs(addons),
+    ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
     "-maxFPS", String(rp.server?.maxFps ?? 30),
     "-logLevel", "normal",
@@ -1181,7 +1187,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -1261,7 +1267,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|template] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {

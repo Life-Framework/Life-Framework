@@ -119,3 +119,11 @@ is the entry point.
 - **Owner and side:** `LF_Dispatch.StartAlarm` decides on the server; the alarm prefab replicates and each client plays its sound (`LF_SiteAlarmComponent`).
 - **Data:** `m_aAlarmKinds` in `Configs/Police/LF_Police.conf` (`LF_AlarmKind`), the `m_sAlarmKind` attribute on `LF_RobAction` and `LF_BankVaultComponent`, the prefabs `Prefabs/Police/LF_SiteAlarm_<Kind>[Loud].et`, the sounds `Sounds/Alarm/Robbery/`. Nothing is persisted.
 - **Proof:** `police/robbery-alarms` (LOGIC), `police/robbery-alarms-shipped` (WORLD), `robbery-alarm-proof`.
+
+## Disconnect rules (#691)
+
+- **Player sees:** logging out cuffed or escorted puts the rejoin in the cell with a sentence slip and one more wanted level (owner may choose a bank fine or nothing); logging out downed is death and a hospital wake; the warrant and the jail time stay.
+- **Owner and side:** `LF_DisconnectRules` decides on the server in `LF_GameModeRoleplay.OnPlayerDisconnected`, before the cuffs, escort and downed body are cleaned up. Pure rules in `LF_DisconnectRules.Decide`. `LF_BleedOut` asks `DownedDies`, `LF_Jail.TickOnline` asks `JailClockOffline`.
+- **Data:** owner section `disconnect` (`LF_DisconnectConfig`, shipped values in `CreateDefault`, no `.conf`); bus event `LF_OnFlaggedLogout`; incident kind `logout`; string `LF-IncidentGm_Kind_logout`. Nothing new is persisted: the sentence is the jail payload.
+- **Proof:** `disconnect/rules`, `disconnect/jail`, `disconnect/cuffed`; two-client session (client 2 cuffed, leaves, rejoins in the cell).
+

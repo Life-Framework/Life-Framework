@@ -205,7 +205,14 @@ class LF_FineTicketUIInfo : SCR_InventoryUIInfo
 //! Item helpers: find the tickets a character carries, hand one over.
 class LF_FineTicketItem
 {
-	static const ResourceName PREFAB = "{3D6B0E8A41C7F259}Prefabs/Items/Roleplay/FineTicket.et";
+	//! The prefab slot (#1128): The fine ticket an officer hands over.
+	static const string SLOT_TICKET = "fine_ticket";
+
+	//! The prefab (slot "fine_ticket"), or empty when no usable prefab resolves (logged).
+	static ResourceName Prefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_TICKET);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Every ticket in the character's inventory or hands, each counted once.
@@ -298,17 +305,17 @@ class LF_FineTicketItem
 			return null;
 		}
 
-		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(Prefab(), character.GetOrigin());
 		if (!item)
 		{
-			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: prefab did not spawn " + PREFAB);
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: prefab did not spawn " + Prefab());
 			return null;
 		}
 
 		LF_FineTicketComponent ticket = LF_FineTicketComponent.Cast(item.FindComponent(LF_FineTicketComponent));
 		if (!ticket)
 		{
-			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: " + PREFAB + " has no LF_FineTicketComponent");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: " + Prefab() + " has no LF_FineTicketComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}

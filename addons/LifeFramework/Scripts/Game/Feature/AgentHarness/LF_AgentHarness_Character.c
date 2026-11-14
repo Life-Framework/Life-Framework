@@ -509,7 +509,7 @@ modded class SCR_ChimeraCharacter
 			InventoryStorageManagerComponent parcelStorage = LF_InventoryUtils.GetResponsibleStorageManager(this);
 			array<IEntity> parcels;
 			if (parcelStorage)
-				parcels = LF_InventoryUtils.FindItemsByPrefab(parcelStorage, LF_CivilianJob.PARCEL_PREFAB);
+				parcels = LF_InventoryUtils.FindItemsByPrefab(parcelStorage, LF_CivilianJob.ParcelPrefab());
 			if (!parcels || parcels.IsEmpty())
 			{
 				LF_HarnessReply(commandId, "error", "no parcel carried");

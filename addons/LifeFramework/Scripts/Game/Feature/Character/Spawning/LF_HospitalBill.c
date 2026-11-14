@@ -117,7 +117,14 @@ class LF_HospitalBillComponent : ScriptComponent
 //! Item helpers: the bills a character carries, hand one over; the in-game date stamp.
 class LF_HospitalBill
 {
-	static const ResourceName PREFAB = "{75055A5BFE4372D5}Prefabs/Items/Roleplay/HospitalBill.et";
+	//! The prefab slot (#1128): The hospital bill a treated character carries.
+	static const string SLOT_BILL = "hospital_bill";
+
+	//! The prefab (slot "hospital_bill"), or empty when no usable prefab resolves (logged).
+	static ResourceName Prefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_BILL);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Every bill in the character's inventory or hands, each counted once.
@@ -210,17 +217,17 @@ class LF_HospitalBill
 			return null;
 		}
 
-		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(Prefab(), character.GetOrigin());
 		if (!item)
 		{
-			LF_Debug.Error(LF_TreatmentBills.FEATURE, "bill not granted: prefab did not spawn: " + PREFAB);
+			LF_Debug.Error(LF_TreatmentBills.FEATURE, "bill not granted: prefab did not spawn: " + Prefab());
 			return null;
 		}
 
 		LF_HospitalBillComponent bill = LF_HospitalBillComponent.Cast(item.FindComponent(LF_HospitalBillComponent));
 		if (!bill)
 		{
-			LF_Debug.Error(LF_TreatmentBills.FEATURE, "bill not granted: " + PREFAB + " has no LF_HospitalBillComponent");
+			LF_Debug.Error(LF_TreatmentBills.FEATURE, "bill not granted: " + Prefab() + " has no LF_HospitalBillComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}

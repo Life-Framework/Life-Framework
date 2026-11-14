@@ -731,7 +731,9 @@ questions in section 6 of `docs/roadmap/m3-plan.md`. Each answer is below.
   only. Unblocks #367 and the licence check in #368.
 - **D3 (a): the pack Workshop item is published in the same release as move
   batch 1.** The host doc and `playtest-server.json` list both addon IDs, and
-  Discord is told one session ahead.
+  Discord is told one session ahead. *Superseded 2026-11-14 by the maintainer:
+  the first Workshop publish (both items) waits until the whole move, #323
+  batches 1 to 4, is done (`docs/roadmap/m3-plan.md`).*
 - **D4 (b): the mission header lists config overlays.** `LF_MissionHeader` gets
   an array of `.conf` resources and the config service merges them field by
   field. No core path names a pack.

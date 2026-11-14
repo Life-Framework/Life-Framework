@@ -86,7 +86,7 @@ class LF_ScenePieces
 		forward.Normalize();
 		vector at = suspect.GetOrigin() - forward * FOOTPRINT_BACK;
 		float yaw = suspect.GetYawPitchRoll()[0];
-		return LF_Evidence.LeavePiece(LF_Evidence.FOOTPRINT_PREFAB, GroundSpot(at, PAPER_BASE), Vector(yaw, 0, 0), report.m_iSequence, report.m_sOffence, report.m_sPlace, LF_Evidence.KIND_FOOTPRINT, NoteFootwear(suspect), nowMs);
+		return LF_Evidence.LeavePiece(LF_Evidence.FootprintPrefab(), GroundSpot(at, PAPER_BASE), Vector(yaw, 0, 0), report.m_iSequence, report.m_sOffence, report.m_sPlace, LF_Evidence.KIND_FOOTPRINT, NoteFootwear(suspect), nowMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ class LF_ScenePieces
 		vector at = witness.GetOrigin() + forward * STATEMENT_AHEAD;
 		float yaw = witness.GetYawPitchRoll()[0];
 		string note = NoteStatement(statement.m_sClothing, statement.m_sVehicle, statement.m_sPlateFragment);
-		return LF_Evidence.LeavePiece(LF_Evidence.STATEMENT_PREFAB, GroundSpot(at, PAPER_BASE), Vector(yaw, 0, 0), scene.m_iReport, scene.m_sOffence, scene.m_sPlace, LF_Evidence.KIND_STATEMENT, note, nowMs);
+		return LF_Evidence.LeavePiece(LF_Evidence.StatementPrefab(), GroundSpot(at, PAPER_BASE), Vector(yaw, 0, 0), scene.m_iReport, scene.m_sOffence, scene.m_sPlace, LF_Evidence.KIND_STATEMENT, note, nowMs);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,9 @@
+{
+  "id": "clerk_everon",
+  "name": "ClerkEveron",
+  "patches": "clerk",
+  "addon": "LF_Everon1989",
+  "lines": {
+    "greet": { "text": "Good day. This is the town clerk's desk. What can I do for you?" }
+  }
+}

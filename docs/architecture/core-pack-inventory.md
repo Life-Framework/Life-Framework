@@ -181,6 +181,8 @@ under "Hard-coded flagship values in script".
 | `Chat/` | core | Channels |
 | `Core/EditorManagerCore.conf` | core | Engine setup |
 | `UI/LF_UITheme.conf` | split | The theme shape (`LF_UIThemeRecord`, the reader) is core; the 1989 paper, brass and phosphor values are the flagship's look, kept as the core default until the M3 move. A pack overlay patches a theme by id (#966) |
+| `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
+| `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`); a text-only line, listed in the pack's mission header |
 | `Dialogue/LF_Dialogue_Clerk.conf` | pack | The town clerk's conversation (generated from `tools/assets/dialogue/clerk/`); the scene system in `Feature/Dialogue/` is core |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |

@@ -3,6 +3,8 @@
 //
 //   asset dialogue <npc> [--dry-run] [--force <line>|all]     asset dialogue status
 //
+// A dialogue.json with "patches": "<core npc>" is a pack's text-only patch of that core dialogue (#957):
+// dialogue-patch.mjs, no ElevenLabs call, no budget.
 // The source is tools/assets/dialogue/<npc>/dialogue.json (tracked). For every line the stage
 //   1. generates speech with ElevenLabs (paid per character, capped by the spec's budget_chars),
 //   2. trims, normalises and converts it to the engine format with ffmpeg (mono 44.1 kHz 16-bit),
@@ -308,6 +310,11 @@ export function staleLines(root, spec, prov) {
 // ---------------------------------------------------------------- the stage
 export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log, addon: addonName } = {}) {
   const spec = withAddon(loadSpec(root, id), addonName);
+  if (spec.patches) {
+    // A pack's patch of a core dialogue: text only, no voice (dialogue-patch.mjs, #957).
+    const patch = await import("./dialogue-patch.mjs");
+    return patch.runPatch(root, { ...spec, addon: addonOf(spec) }, { dryRun, log });
+  }
   const addon = join(root, ADDON(spec));
   const stFile = stringTable(root, spec);
   if (!existsSync(stFile)) throw new Error(`${ADDON(spec)} has no ${stFile}; a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
@@ -422,6 +429,7 @@ function status(root) {
   if (!existsSync(base)) return 0;
   for (const id of readdirSync(base).filter((d) => existsSync(specFile(root, d)))) {
     const spec = loadSpec(root, id), prov = loadProvenance(root, id);
+    if (spec.patches) { console.log(`${id}: patch of '${spec.patches}' in ${addonOf(spec)}, text only, no characters spent`); continue; }
     const total = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
     const stale = staleLines(root, spec, prov);
     console.log(`${id}: voice ${spec.voice.name}, ${Object.keys(spec.lines).length} lines, ${total} of ${spec.budget_chars} characters spent, ${stale.length ? "stale: " + stale.join(", ") : "up to date"}`);

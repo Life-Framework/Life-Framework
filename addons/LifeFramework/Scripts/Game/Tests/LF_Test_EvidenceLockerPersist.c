@@ -48,7 +48,7 @@ class LF_Test_EvidenceLockerPersist : LF_Test
 			return;
 
 		drillSerial.SetSerial(serial);
-		IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Evidence.BAG_PREFAB, "1000 0 1000");
+		IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Evidence.BagPrefab(), "1000 0 1000");
 		LF_EvidenceBagComponent bagComponent;
 		if (bag)
 			bagComponent = LF_EvidenceBagComponent.Cast(bag.FindComponent(LF_EvidenceBagComponent));
