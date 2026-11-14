@@ -95,6 +95,9 @@ LF_ItemCatalogueConfig {
 | `catalogue` | `items` | item id (`pistol_m9`) |
 | `catalogue` | `offers` | `outlet/item` (`gun_counter/pistol_m9`) |
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
+| `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |
+| `jobs` | `xpAwards` | action id (`gather`). A new or replaced award needs a `job` |
+| `jobs` | `licenceGates` | licence name (`MINER_GOLD`, an `LF_ELicenseType` name). A new or replaced gate needs a `job` and a `minLevel`; removing a gate gives the licence its shipped gate back |
 | `prefabs` | `slots` | slot id (`cash`); packs only, no owner section. A pack patches `m_Prefab`; the required components stay the core file's (`Core/Config/Feature.md`, "Prefab slots") |
 | `shops` | `priceRules` | `prefab:<GUID>`, a prefab-path substring, or `type:<flags>,mode:<mode>` (`type:64` is `type:64,mode:2`). Two core rules can share a key; a layer addresses the last one, the one that wins the walk |
 
@@ -112,4 +115,6 @@ it back to false. `"op": "remove"` takes the entry out of the list.
    `LF_ConfigOverlay.ApplyRecords(reader, "field", list, source)`.
 4. `node tools/config/schema.mjs --write`: the schema gains `op` on the section's records.
 
-Test: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`).
+Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`); jobs: `LF_Test_JobsOverrideModel`
+(`config/jobs-override-model`, owner verbs per list) and `LF_Test_JobsPackOverlay`
+(`config/jobs-pack-overlay`, a pack `.conf` over the shipped `LF_Jobs.conf`).

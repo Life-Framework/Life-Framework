@@ -56,6 +56,7 @@ class LF_StaticReset
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
 		LF_SaveStamp.ResetStatics();
+		LF_SaveIds.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
 		LF_Playtime.ResetStatics();
 		LF_JobLevels.ResetStatics();

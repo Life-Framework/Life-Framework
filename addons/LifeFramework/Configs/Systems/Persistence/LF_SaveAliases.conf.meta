@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3622B1943ECEDE8E}Configs/Systems/Persistence/LF_SaveAliases.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
