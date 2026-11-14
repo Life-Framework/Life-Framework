@@ -4,9 +4,10 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 // Run it on a full-quality session: a building's check is how its materials, glass and doors look,
 // which the lowspec profile's lowest textures would hide.
 //   node agent-box/session.mjs up --profile full
-//   node agent-box/session.mjs building-proof [--entity Annex_Supermarket] [--side s] [--shot]
+//   node agent-box/session.mjs building-proof [--entity Annex_Supermarket] [--side s9] [--shot]
 //   node agent-box/session.mjs down
-// 1. Standing on the building's street side (s: its front faces -z), the F key offers the vanilla door.
+// 1. Standing on the building's street side, outside (s9: 9 m south of its centre; its front faces
+//    -z; a bare "s" is 1.2 m from the centre, which is inside a building), the F key offers the door.
 // 2. The server opens the door (use SCR_DoorUserAction returns ok, not cannot_perform), and closes it again.
 // 3. With --shot, the front with the door shut and open, from the client.
 const DOOR_ACTION = "SCR_DoorUserAction";
@@ -20,7 +21,7 @@ async function runBuildingProof(args = []) {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
   const entity = flag(args, "--entity", "Annex_Supermarket");
-  const side = flag(args, "--side", "s");
+  const side = flag(args, "--side", "s9");
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
@@ -63,4 +64,4 @@ async function runBuildingProof(args = []) {
   return 0;
 }
 
-export default { name: "building-proof", usage: "building-proof [--entity Annex_Supermarket] [--side s] [--shot]", run: (ctx) => runBuildingProof(ctx.args) };
+export default { name: "building-proof", usage: "building-proof [--entity Annex_Supermarket] [--side s9] [--shot]", run: (ctx) => runBuildingProof(ctx.args) };

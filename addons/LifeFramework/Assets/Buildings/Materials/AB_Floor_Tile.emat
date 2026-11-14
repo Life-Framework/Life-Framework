@@ -1,5 +1,5 @@
 MatPBRBasic {
- Color 0.8 0.78 0.74 1
+ Color 0.9347 0.9568 1 1
  BCRMap "{A83CB1EA60A20F84}Assets/_SharedData/Tiles/ST_Tiles_Granite_01_BCR.edds"
  NMOMap "{90E40A78B9D55D1A}Assets/_SharedData/Tiles/ST_Tiles_Granite_01_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{2BBA549F2678DA0A}" {

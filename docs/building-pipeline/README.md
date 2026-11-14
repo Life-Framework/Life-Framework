@@ -45,7 +45,7 @@ neither.
 | `spec` | Checks the spec: Reforger proportions, vanilla openings, budget, folders, the red line | The agent writes the spec |
 | `generate` | Headless Blender: sets `scene.ab_gen` from the spec, runs ArchBuilder's generate (or its realistic-building generator for a `landmark`), saves `building.blend` | Review |
 | `review` | Front, side, top and three-quarter renders in `review/`, and `review/stats.json`: triangles per part, storeys, footprint and height in metres. Over the spec's budget fails | The agent reads the pictures (Review below) |
-| `export` | ArchBuilder's Reforger export into a staging addon, `tmp/buildings/<slug>/export/`, with its Workbench step off. Counts the vanilla door sets and windows; fewer doors than `budget.min_doors` fails | The tool |
+| `export` | ArchBuilder's Reforger export into a staging addon, `tmp/buildings/<slug>/export/`, with its Workbench step off. Gives every `AB_*` material its game colour (Materials below). Fails on any export warning, any furniture ArchBuilder left out of the game, no vanilla props with furniture on, and fewer doors than `budget.min_doors` | The tool |
 | `import` | Refuses any file carrying the licence watermark, moves the export into the addon with new GUIDs, compiles the model in a hidden Workbench and reads the `.xob` back | The tool |
 | `prefab` | Every reference in the building's files resolves: our own by `.meta`, the base game's by path and GUID in the game's resource database. Door sets, windows, the model and its collider surfaces are there | The tool; then a placement and a look |
 
@@ -67,8 +67,8 @@ after it, and `--force` reruns from the start.
   "concept": "what the building is in 1989 Everon, and why these ArchBuilder settings",
   "red_line": "pack",
   "archbuilder": { "archetype": "SUPERMARKET", "region": "AUTO", "storeys": 1, "seed": 1989, "width": 18, "depth": 14,
-                   "wall_mat": "AB_Stucco_White", "roof_style": "FLAT", "do_interior": true, "do_furniture": false },
-  "export": { "furniture": false, "lamps": true, "vanilla_props": true, "lods": true, "probes": "ONE", "bsp": false },
+                   "wall_mat": "AB_Stucco_Beige", "roof_style": "FLAT", "do_interior": true, "do_furniture": true },
+  "export": { "furniture": true, "lamps": true, "vanilla_props": true, "lods": true, "probes": "ONE", "bsp": false },
   "budget": { "tris": 60000, "footprint_m": [19, 15], "height_m": 9, "min_doors": 1 },
   "asset_dir": "Assets/Buildings/Supermarket", "prefab_dir": "Prefabs/Buildings/Supermarket"
 }
@@ -81,6 +81,10 @@ after it, and `--force` reruns from the start.
   the windows and doors are the game's own (destructible glass, doors that open). The spec stage refuses anything else.
 - `export` maps to ArchBuilder's export settings (`scene.ab_rf_*`). `light_system` is refused: it writes an Enforce script
   with ArchBuilder's class names into the addon (AGENTS.md rule 5).
+- **Furniture, props and the shop sign need `export.furniture` on.** ArchBuilder records its furniture calls (shelves,
+  counters, lamps, switches, the fascia sign) as vanilla props only while it exports furniture; with it off it records
+  none, `vanilla_props` does nothing and the sign is a blank board. The spec stage refuses `vanilla_props` with furniture
+  off, and `do_furniture: false` with furniture on (rooms with nothing to export). A bare shell says `vanilla_props: false`.
 - The same seed and settings build the same building. A different look is a different seed.
 - `red_line` is `core` or `pack` ([core-vs-pack](../architecture/core-vs-pack.md)). A building is what this server looks
   like, so it is usually `pack`; until the pack loads it lands in the core with a row in
@@ -96,7 +100,16 @@ after it, and `--force` reruns from the start.
 | `EXPORT_INFO.txt`, `ArchBuilder_import.txt`, `addon.gproj`, its Workbench plugin | nothing: notes, its own queue, its own project and plugin |
 
 `<Name>_Base.et` is the shell: the model plus the vanilla door sets, windows and the light probe as children.
-`<Name>.et` inherits it and adds the furniture prefab when there is one. Place `<Name>.et`.
+`<Name>.et` inherits it and adds `Furniture/<Name>_furniture_01.et`: every piece of furniture, lamp, switch and the shop
+sign as a vanilla prefab child (nothing is baked into the model). Place `<Name>.et`.
+
+**Materials.** ArchBuilder writes each `AB_*.emat` as a `MatPBRBasic` over a base-game `_SharedData` texture with
+`Color` set to its Blender colour, raw. In the game that read white: `Color` multiplies a near-white texture, and a
+Blender colour is brighter than the base game's own walls (spike: "Why the walls read white"). The export stage rewrites
+each material's `Color` so it reads like Blender: the material's Blender viewport colour, scaled so ArchBuilder's white
+plaster lands on the base game's white plaster (one factor for a material that faces outside, one for inside), divided by
+the texture's linear mean, measured from the game's own `.edds`. It prints one line per material. `tools/buildings/pipeline/materials.mjs`.
+A material another building's model uses is never changed by a re-export; one only this building uses is.
 
 **GUIDs.** ArchBuilder derives its GUIDs from the path and a fixed salt, so everyone who exports a building of the same
 name gets the same GUIDs. The import gives every resource a GUID of ours: the one already in the addon's `.meta` for that
@@ -141,13 +154,15 @@ ArchBuilder's own material colours, not the game's textures: the game look is ch
 
 ## Changes to ArchBuilder
 
-None. The pipeline uses only ArchBuilder's operators, settings and licence check as an installed user would. If a change
-inside the add-on is ever needed, it is listed here in our words, so other users can make the same change or fall back.
+None. The pipeline uses ArchBuilder's operators, settings and licence check as an installed user would. It also reads,
+without changing, the report its `reforger.export.run` returns (warnings, props placed per kind, furniture left out),
+which the operator only summarises. The material fix is ours, in the export stage. If a change inside the add-on is ever
+needed, it is listed here in our words, so other users can make the same change or fall back.
 
 ## Not done yet
 
-- Shop interiors: the supermarket is exported without furniture so our shop can fill its shelves. Next steps:
-  [the spike](../architecture/building-pipeline-spike.md#supermarket-next-steps).
+- Shop interiors: the supermarket's gondolas, coolers and tills arrive empty as vanilla props; making them our store's
+  slots and tills is the next step ([the spike](../architecture/building-pipeline-spike.md#supermarket-next-steps)).
 - Several buildings in one export (ArchBuilder can export a street at once); the pipeline does one per spec.
 - A building in the pack addon (`addon: LF_Everon1989`) is wired through the same `addon` field as the asset pipeline
   but untried.

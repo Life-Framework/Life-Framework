@@ -1,4 +1,5 @@
 MatPBRBasic {
+ Color 0.2114 0.1959 0.1804 1
  BCRMap "{208181C817FCF0F2}Assets/_SharedData/Roof/ST_Roofing_Bitumen_01_BCR.edds"
  NMOMap "{18593A5ACE8BA26C}Assets/_SharedData/Roof/ST_Roofing_Bitumen_01_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{DB867E37F34BB948}" {
