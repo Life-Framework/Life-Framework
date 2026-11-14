@@ -111,7 +111,7 @@ Workbench up for the whole machine; while it is up, every `tools\cli look <area>
 sends its plan there instead and costs a few seconds.
 
 ```
-tools\cli look serve                 start it on this worktree's state (about 17 s), or say it is up
+tools\cli look serve                 start it on this worktree's state (about 17 s on a PC), or say it is up
 tools\cli look serve --status        pid, snapshot, idle time, health
 tools\cli look serve --stop          stop it; --remove also removes the viewer checkout
 tools\cli look bank --serve          use the server, starting it when none is up
@@ -129,15 +129,20 @@ the server last showed and this one decides how:
 | Change since the last request | How it is served (`served=` in the summary and `index.json`) |
 |---|---|
 | nothing (the same snapshot) | `server-same`: shot as is |
-| only modified, existing `.layer` or `.et` files under `addons/`, and any change outside `addons/` (Workbench never loads it) | `server-reopen`: the world is reopened from disk (`SetOpenedResource`), about 5 to 10 s |
-| anything else under `addons/`: a `.c`, a `.meta`, a `.conf`, a `.layout`, an asset, a string table, an added, deleted or renamed file, the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started (about 17 s plus the shots) |
+| only files outside `addons/` (tools, docs: Workbench never loads them) | `server-reopen`: the world is reopened from disk (`SetOpenedResource`) |
+| any file under `addons/` (a `.layer`, an `.et`, a `.c`, a `.meta`, an asset, an added, deleted or renamed file), or the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started |
 | no server up, or it is dead, hung or crashed | `fresh`: a Workbench of the caller's own, as before |
 
-The fast path lists only file types proven live: change the file, reopen, and read the changed value
-back from `status.txt` (a moved entity's `cam=`, a prefab's `size=`). A modified `.layer` (an entity
-moved) and a modified `.et` (`scale 3` on an existing prefab) were proven in edit and play mode on
-2026-11-14; `.conf` and `.ent` are not, so they restart. A changed script under a live Workbench
-followed by a reopen crashed it (access violation, two of two), which is why a `.c` always restarts.
+No addon file is on the fast path. A probe on 2026-11-14 reopened fine after editing a `.layer` or an
+`.et` in place, but through the viewer, where git checkout rewrites the file, reopening after a moved
+entity in a `.layer` crashed the server Workbench (access violation in `SetOpenedResource`) 4 of 4
+times, on lf-testbox and on lf-cloud. A changed script crashed it 2 of 2 in the probe. Closing the
+world first is no way round it: `WorldEditor.Close()` returns true and leaves the world open. So the
+server pays off for repeated looks at the same state (before/after pictures, other areas, `--hour`,
+`--edit`) and for changes outside `addons/`; an agent iterating on a layer gets a restart per look,
+about as long as a fresh run, with one Workbench instead of one per run. `FAST_PATH_EXT` in
+`tools/visual/look-serve.mjs` takes an extension only once it is proven through the viewer, several
+times in a row.
 `resourceDatabase.rdb` is not compared: it is Workbench's own cache of the files (`-forceUpdate`
 rebuilds it), and its bytes differ between worktrees at the same commit and size, so comparing it
 would restart every request. The viewer is seeded with the caller's copy once and keeps its own.

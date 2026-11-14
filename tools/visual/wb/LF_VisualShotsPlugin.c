@@ -42,11 +42,10 @@
 //
 // Server mode (tools\cli look serve, tools/visual/look-serve.mjs): with $profile:lf-visual/serve.txt
 // present, RunCommandline does not exit after one plan. It rewrites alive.txt every 3 s while idle;
-// for each go.txt (request id, then reload none|reopen|close|unload) it leaves play mode, reopens the world
-// from disk when asked (reopen picks up a changed .layer or .et; a changed script must never be
-// reopened under a live Workbench: it crashed 2 of 2 times), shoots plan.txt with the request id as
-// the first status line, and writes done.txt with the id. unload only closes the world (sent before a
-// checkout changes world files). stop.txt, or 10 min with no request, ends it.
+// for each go.txt (request id, then reload none|reopen) it leaves play mode, reopens the world from disk
+// when asked (only when nothing under addons/ changed: reopening after a changed script or a git-rewritten
+// .layer crashed Workbench every time), shoots plan.txt with the request id as
+// the first status line, and writes done.txt with the id. stop.txt, or 10 min with no request, ends it.
 
 [WorkbenchPluginAttribute(name: "LF Visual Shots", description: "Takes the shots of $profile:lf-visual/plan.txt (tools\\cli look)", wbModules: { "WorldEditor" }, category: "Life Framework")]
 class LF_VisualShotsPlugin : WorldEditorPlugin
@@ -163,14 +162,11 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 			// The first status line names the request, so Node never reads an older request's answer as this one's.
 			Note("ok request " + id + " reload=" + reload);
 			LeavePlay(worldEditor);
-			// unload: close the world and answer without shooting. Node sends it before a checkout writes world or
-			// prefab files: with the world open, World Editor's own reaction to the changed files raced the next
-			// SetOpenedResource and crashed it (access violation in Shoot, lf-testbox 2026-11-14).
-			if (reload == "close" || reload == "unload")
-				CloseWorld(worldEditor);
-
-			if (reload != "unload")
-				Shoot(reload == "reopen");
+			// reopen is only ever asked when no file under addons/ changed: after git rewrote a .layer under this
+			// Workbench, SetOpenedResource crashed it (access violation in Shoot, 2 of 2 on lf-testbox and 2 of 2 on
+			// lf-cloud, 2026-11-14), and WorldEditor.Close() returned true but left the world open, so closing first
+			// is no way round it. Node restarts the server for any addon change instead.
+			Shoot(reload == "reopen");
 
 			// The heartbeat first: a caller that sees done.txt finds the server healthy, not stale from the request.
 			WriteLine(DIR + "/alive.txt", System.GetTickCount().ToString());
@@ -179,20 +175,6 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		}
 
 		FileIO.DeleteFile(DIR + "/alive.txt");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void CloseWorld(notnull WorldEditor worldEditor)
-	{
-		bool closed = worldEditor.Close();
-		string opened;
-		WorldEditorAPI api = worldEditor.GetApi();
-		if (api)
-			api.GetWorldPath(opened);
-
-		m_Api = null;
-		m_World = null;
-		Note(string.Format("ok closed %1 opened=%2", closed, opened));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -13,11 +13,10 @@
 // are written) and the server shoots it. What changed between the snapshot the server last
 // showed and the requested one decides how:
 //   identical                                      shoot as is (reload none)
-//   only modified, existing .layer / .et files     reopen the world (proven live, docs/visual-testing.md);
-//   (files outside addons/ never reach Workbench: a change there alone also reopens)
-//   anything else (a .c, .meta, an added, deleted or renamed file, the plugin) a new Workbench on the snapshot
-// A script change under a live Workbench crashed it in the probe (0xC0000005, 2 of 2), so a .c
-// always restarts. A server that is gone, hung or crashed never fails the caller: look kills
+//   only files outside addons/ changed            reopen the world (Workbench never loads them)
+//   any file under addons/, or the plugin         a new Workbench on the snapshot
+// Reopening after a changed script (probe, 2 of 2) or a git-rewritten .layer (4 of 4) crashed Workbench
+// with an access violation, so no addon file is reopened under a live Workbench. A server that is gone, hung or crashed never fails the caller: look kills
 // what is left (and its crash reporter), forgets it, and runs a fresh Workbench as before.
 
 import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -32,8 +31,10 @@ import { ADDONS } from "../lib/addons.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PLUGIN = join(HERE, "wb", "LF_VisualShotsPlugin.c");
 export const VIEWER_NAME = "Life-Framework-look-viewer";
-// Only extensions proven live: change the file, reopen, read the changed value back from status.txt.
-export const FAST_PATH_EXT = [".layer", ".et"];
+// Addon files a live Workbench may be reopened on. Empty: an in-place .layer/.et edit reopened fine in the probe,
+// but a .layer rewritten by git checkout crashed the reopen 4 of 4 times (lf-testbox, lf-cloud, 2026-11-14).
+// Add an extension only after proving it live through the viewer checkout, several times in a row.
+export const FAST_PATH_EXT = [];
 export const ALIVE_STALE_MS = 15000; // the plugin rewrites alive.txt every 3 s while idle
 const BOOT_BUDGET_S = 150;
 const STOP_WAIT_MS = 15000;
@@ -71,7 +72,7 @@ export function classifyChange({ from, to, changes = [], pluginChanged = false }
     if (!FAST_PATH_EXT.includes(extname(c.path).toLowerCase())) return { reload: "restart", reason: `M ${c.path}` };
   }
   const inAddons = changes.filter((c) => c.path.startsWith("addons/")).length;
-  return { reload: "reopen", reason: inAddons ? `${inAddons} world/prefab file(s) changed` : "only files outside addons/ changed" };
+  return { reload: "reopen", reason: inAddons ? `${inAddons} addon file(s) changed` : "only files outside addons/ changed" };
 }
 
 // Why a server's answer cannot be used (null when it can): it must be this request's, complete, with the world open.
@@ -332,12 +333,8 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
 
   if (decision.reload === "reopen") {
     // The viewer must be exactly the last snapshot before a partial checkout; anything else restarts.
-    // The world is closed first (an unload request): files changing under an open world crashed the reopen.
-    let co = viewerAt(viewer, st.sha);
-    if (co.ok) {
-      const un = await sendRequest(st, `${process.pid}-${Date.now()}-unload`, "unload", "", 120);
-      co = un.ok ? checkoutViewer(root, viewer, snap.sha) : { ok: false, why: `unload: ${un.why}` };
-    }
+    const before = viewerAt(viewer, st.sha);
+    const co = before.ok ? checkoutViewer(root, viewer, snap.sha) : before;
     if (!co.ok) decision = { reload: "restart", reason: co.why };
   }
 

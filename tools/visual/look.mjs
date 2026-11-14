@@ -835,8 +835,8 @@ export async function selftest() {
   ok(serve.classifyChange({ from: null, to: "bbb" }).reload === "restart", "no server must restart");
   ok(serve.classifyChange({ from: "aaa", to: "aaa", changes: [] }).reload === "none", "an identical snapshot must shoot as is");
   ok(cls([]) === "reopen", "a different commit with the same files must still reopen, never none");
-  ok(cls([M("addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer"), M("addons/LifeFramework/Prefabs/Props/LF_Till.et")]) === "reopen", "modified .layer and .et must reopen");
-  ok(cls([M("addons/LifeFramework/Prefabs/Props/LF_Till.ET")]) === "reopen", "the extension check is case-blind");
+  ok(cls([M("addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer")]) === "restart", "a modified .layer must restart (a git-rewritten layer crashed the reopen 4 of 4)");
+  ok(cls([M("addons/LifeFramework/Prefabs/Props/LF_Till.et")]) === "restart", "a modified .et must restart (not proven through the viewer)");
   ok(cls([M("addons/LifeFramework/Scripts/Game/Feature/Shop/LF_Shop.c")]) === "restart", "a script change must restart");
   ok(cls([M("addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer"), M("addons/LifeFramework/Scripts/Game/X.c")]) === "restart", "a script change beside a layer must restart");
   for (const p of ["addons/LifeFramework/Prefabs/Props/LF_Till.et.meta", "addons/LifeFramework/Assets/x.xob", "addons/LifeFramework/Assets/x.emat", "addons/LifeFramework/Assets/x.edds", "addons/LifeFramework/UI/x.layout", "addons/LifeFramework/Language/everonlife_localization.st", "addons/LifeFramework/Configs/x.conf", "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent"])
