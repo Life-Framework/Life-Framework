@@ -1,4 +1,4 @@
-// red-proof: TODO
+// red-proof: DeserializeStore without the ApplyAfterLoad call failed "the active character's wanted level is 0 (switches off, load 1) (expected 0, got 4)" and every other switched-off field
 // tier: PERSISTENCE
 //! Persistence switches (#689) on the real save path. A character with two slots (wanted 2 and 4),
 //! survival stats, a licence, carried cash and a jail sentence is saved. Loaded with every switch

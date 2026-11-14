@@ -404,7 +404,7 @@ class LF_StorageSnapshot
 		foreach (LF_StorageItemRecord moved : kept)
 		{
 			if (moved && moved.m_iParent >= 0 && moved.m_iParent < count)
-				moved.m_iParent = moved.m_iParent; // RED
+				moved.m_iParent = newIndex[moved.m_iParent];
 		}
 
 		record.m_aItems = kept;

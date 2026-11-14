@@ -1,4 +1,4 @@
-// red-proof: TODO
+// red-proof: StripPrefabFrom without the parent remap failed "the apple in the pouch follows the pouch to its new place (expected 2, got 5)"
 // tier: LOGIC
 //! Persistence switches (#689): the owner's `persistence.keep*` keys, and what each switch resets
 //! in the stores a load just filled (LF_PersistenceKeep.ApplyAfterLoad). Cash, carried gear, jail
