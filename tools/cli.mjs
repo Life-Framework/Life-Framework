@@ -44,7 +44,7 @@ import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync,
 import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
 import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
 import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
@@ -1833,6 +1833,34 @@ function cmdHostRestore(dir, name) {
   }
 }
 
+// Host subcommands that live one file each in tools/host/commands/ (export `help` and
+// `main(args, { root, hostDir })`), the way tools/commands/ works for top-level commands.
+// Add a host subcommand there, not to cmdHost: this file is not edited for it.
+// LF_HOST_COMMANDS_DIR points at another folder (the selftest uses a temp one).
+function hostCommandsDir() {
+  return process.env.LF_HOST_COMMANDS_DIR || join(ROOT, "tools", "host", "commands");
+}
+
+function hostCommandFile(name) {
+  if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) return null;
+  const file = join(hostCommandsDir(), `${name}.mjs`);
+  return existsSync(file) ? file : null;
+}
+
+async function hostCommandsHelp() {
+  const dir = hostCommandsDir();
+  if (!existsSync(dir)) return;
+  const names = readdirSync(dir).filter((n) => /^[a-z][a-z0-9-]*\.mjs$/.test(n)).sort();
+  if (!names.length) return;
+  console.log("\nMore host commands (tools/host/commands/, one file each):");
+  for (const f of names) {
+    const mod = await import(pathToFileURL(join(dir, f)).href);
+    if (mod.help) console.log(`  ${mod.help}`);
+  }
+}
+
+const HOST_USAGE = "usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force]";
+
 function cmdHost(args) {
   const list = args ?? [];
   const sub = list[0];
@@ -1849,7 +1877,10 @@ function cmdHost(args) {
     console.log(b ? `host: backed up saves -> ${b}` : "host: no save to back up");
     return 0;
   }
-  console.log("usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force]");
+  const file = hostCommandFile(sub);
+  if (file) return import(pathToFileURL(file).href).then((m) => m.main(list.slice(1), { root: ROOT, hostDir: dir }));
+  console.log(HOST_USAGE);
+  if (sub === "help") return hostCommandsHelp().then(() => 0);
   return sub ? 1 : 0;
 }
 
