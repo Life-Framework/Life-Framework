@@ -1,6 +1,15 @@
 GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  ID "9D3A51E060EFE982"
  components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object ""
+  }
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Enabled 0
+  }
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+   Enabled 0
+  }
   ActionsManagerComponent "{37D145E9C956A759}" {
    ActionContexts {
     UserActionContext "{AA35E5CFB17A4451}" {

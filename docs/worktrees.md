@@ -753,7 +753,10 @@ instead.
 
 Merged worktrees show `merged (prune me)` in `cli wt list`. `cli wt prune
 <slug>` verifies the branch is merged and clean before removing it; `--force`
-discards unmerged work. `cli validate` warns you about worktrees that are ready
+discards unmerged work. A squash-merged PR counts as merged (a merged PR whose head SHA is the branch tip, or
+the same files as origin/main). `cli wt prune --merged` lists every worktree that is merged, clean, idle 30 min and
+holds no lock or session; `--yes` prunes them, without it a dry run. `wt ship --refs N` needs N of 1 or more; with
+no issue, leave the flag out. `cli validate` warns you about worktrees that are ready
 to prune and about any registry inconsistency.
 
 ## Under the hood (files)
