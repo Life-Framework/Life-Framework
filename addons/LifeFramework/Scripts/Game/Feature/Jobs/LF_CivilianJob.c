@@ -30,7 +30,14 @@ class LF_CivilianJob
 	static const int PAY_FUEL = 60;
 	static const int PAY_TAXI = 80;
 
-	static const ResourceName PARCEL_PREFAB = "{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et";
+	//! The prefab slot (#1128): The courier parcel.
+	static const string SLOT_PARCEL = "courier_parcel";
+
+	//! The prefab (slot "courier_parcel"), or empty when no usable prefab resolves (logged).
+	static ResourceName ParcelPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_PARCEL);
+	}
 	static const ResourceName FUEL_PREFAB = "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et";
 	static const ResourceName TAXI_PREFAB = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
 	static const ResourceName DEPOT_PREFAB = "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et";
@@ -299,7 +306,7 @@ class LF_CivilianJob
 		if (job == LF_EJobType.TAXI)
 			return TAXI_PREFAB;
 
-		return PARCEL_PREFAB;
+		return ParcelPrefab();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -56,3 +56,28 @@ class LF_OnSuspectIdentified : LF_Event
 		return e;
 	}
 }
+
+//! A player left while cuffed, escorted, downed, wanted or jailed (#691): what they were and what
+//! the disconnect rules did. The incident log records it as kind "logout".
+class LF_OnFlaggedLogout : LF_Event
+{
+	string m_sPlayerUid;
+	//! LF_DisconnectState.Describe: "cuffed,wanted2".
+	string m_sState;
+	//! LF_DisconnectDecision.Describe: "jail min=300s, wanted+1, warrant kept".
+	string m_sOutcome;
+	vector m_vPosition;
+	//! Sentence seconds or fine taken; 0 otherwise.
+	int m_iAmount;
+
+	static LF_OnFlaggedLogout Create(string playerUid, string state, string outcome, vector position, int amount)
+	{
+		LF_OnFlaggedLogout e = new LF_OnFlaggedLogout();
+		e.m_sPlayerUid = playerUid;
+		e.m_sState = state;
+		e.m_sOutcome = outcome;
+		e.m_vPosition = position;
+		e.m_iAmount = amount;
+		return e;
+	}
+}

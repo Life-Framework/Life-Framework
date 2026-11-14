@@ -1,0 +1,46 @@
+{
+  "bindAddress": "",
+  "bindPort": 2001,
+  "publicAddress": "",
+  "publicPort": 2001,
+  "a2s": {
+    "address": "0.0.0.0",
+    "port": 17777
+  },
+  "game": {
+    "name": "My Life Framework server",
+    "password": "",
+    "passwordAdmin": "CHANGE-ME",
+    "admins": [],
+    "scenarioId": "{C638C03B775C31BB}Missions/LF_Everon1989.conf",
+    "maxPlayers": 16,
+    "visible": true,
+    "crossPlatform": false,
+    "supportedPlatforms": [
+      "PLATFORM_PC"
+    ],
+    "gameProperties": {
+      "serverMaxViewDistance": 2500,
+      "serverMinGrassDistance": 50,
+      "networkViewDistance": 1500,
+      "disableThirdPerson": false,
+      "fastValidation": true,
+      "battlEye": true,
+      "VONDisableUI": false,
+      "VONDisableDirectSpeechUI": false
+    },
+    "mods": [
+      {
+        "modId": "79636E668EA37AC9",
+        "name": "Life Framework"
+      },
+      {
+        "modId": "B1E84D5687E11724",
+        "name": "Life Framework: Everon 1989"
+      }
+    ]
+  },
+  "operating": {
+    "lobbyPlayerSynchronise": true
+  }
+}

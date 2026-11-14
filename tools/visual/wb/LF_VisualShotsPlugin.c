@@ -106,6 +106,25 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Returns true when the open world path ends in the requested world's file name (the path may carry a $addon: or {GUID} prefix)
+	protected bool WorldIsOpen(string opened, string wanted)
+	{
+		if (opened.IsEmpty() || wanted.IsEmpty())
+			return false;
+
+		array<string> parts = {};
+		wanted.Split("/", parts, true);
+		if (parts.IsEmpty())
+			return false;
+
+		string file = parts[parts.Count() - 1];
+		file.ToLower();
+		string lowOpened = opened;
+		lowOpened.ToLower();
+		return lowOpened.IndexOf(file) >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return the number of failed steps (0 = every shot is on disk)
 	protected int Shoot()
 	{
@@ -156,15 +175,26 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		if (m_Api)
 			m_Api.GetWorldPath(opened);
 
-		if (opened.IsEmpty())
+		// The requested world must be the one that is open. A Workbench that came up on a default scene (the green
+		// vegetable crate in an empty world) used to be accepted here and photographed (#1147).
+		if (!WorldIsOpen(opened, world))
 		{
 			if (world.IsEmpty() || !worldEditor.SetOpenedResource(world))
 			{
-				Note("error world_not_opened " + world);
+				Note("error world_not_opened " + world + " (open: " + opened + ")");
 				return 1;
 			}
 
 			m_Api = worldEditor.GetApi();
+			opened = "";
+			if (m_Api)
+				m_Api.GetWorldPath(opened);
+
+			if (!WorldIsOpen(opened, world))
+			{
+				Note("error world_mismatch wanted=" + world + " open=" + opened + "");
+				return 1;
+			}
 		}
 
 		if (!m_Api || !m_Api.GetWorld())

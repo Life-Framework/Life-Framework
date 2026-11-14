@@ -46,7 +46,14 @@ class LF_Stores
 {
 	static const string FEATURE = "Store";
 	static const string SALE_REASON = "store-sale";
-	static const ResourceName RECEIPT_PREFAB = "{3E8A5C1D7B2F4096}Prefabs/Items/Roleplay/LF_Receipt.et";
+	//! The prefab slot (#1128): The receipt a store hands over after a sale.
+	static const string SLOT_RECEIPT = "store_receipt";
+
+	//! The prefab (slot "store_receipt"), or empty when no usable prefab resolves (logged).
+	static ResourceName ReceiptPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_RECEIPT);
+	}
 	static const int TICK_MS = 500;
 	//! A fresh shelf is filled this long after the store appears, once the world has settled.
 	static const int FILL_DELAY_MS = 2000;
@@ -558,10 +565,10 @@ class LF_Stores
 		if (!storage)
 			return;
 
-		IEntity paper = LF_Utils.SpawnEntityPrefab(RECEIPT_PREFAB, user.GetOrigin());
+		IEntity paper = LF_Utils.SpawnEntityPrefab(ReceiptPrefab(), user.GetOrigin());
 		if (!paper)
 		{
-			LF_Debug.Error(FEATURE, string.Format("receipt did not spawn: %1", RECEIPT_PREFAB));
+			LF_Debug.Error(FEATURE, string.Format("receipt did not spawn: %1", ReceiptPrefab()));
 			return;
 		}
 

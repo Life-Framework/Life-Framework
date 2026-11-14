@@ -27,7 +27,9 @@
 //! by the configured amount. Early release is refused.
 //!
 //! ONLINE TIME. The sentence counts down only while the prisoner is connected (Tick reads the
-//! connected players). An offline prisoner keeps the remaining time they had at logoff.
+//! connected players). An offline prisoner keeps the remaining time they had at logoff, unless the
+//! owner turns on disconnect.jailClockOffline (#691). Logging out cuffed starts a sentence
+//! (ImprisonOnReturn, LF_DisconnectRules).
 //!
 //! IN THE WORLD. Sentencing hands the prisoner a sentence slip (LF_JailSlip) and the slip shows
 //! the online minutes left. Release opens the cell door (the vanilla door motion and its sound),
@@ -500,6 +502,8 @@ class LF_Jail
 	static void TickOnline(float elapsedSeconds, notnull array<string> onlineUids)
 	{
 		array<string> ids = {};
+		array<string> offlineIds = {};
+		bool clockOffline = LF_DisconnectRules.JailClockOffline();
 		foreach (string playerUid, LF_JailSentence sentence : Sentences())
 		{
 			if (!sentence)
@@ -509,6 +513,13 @@ class LF_Jail
 				continue;
 
 			bool online = onlineUids.Find(playerUid) >= 0;
+			// Owner rule (#691): the clock may run while the prisoner is away; only the online one is confined.
+			if (!online && clockOffline)
+			{
+				offlineIds.Insert(playerUid);
+				continue;
+			}
+
 			if (online == sentence.m_bPaused)
 			{
 				sentence.m_bPaused = !online;
@@ -520,6 +531,12 @@ class LF_Jail
 
 			if (online)
 				ids.Insert(playerUid);
+		}
+
+		foreach (string playerUid : offlineIds)
+		{
+			if (Advance(playerUid, elapsedSeconds) <= 0)
+				LF_Debug.Info("Jail", string.Format("sentence served offline %1 (jailClockOffline)", playerUid));
 		}
 
 		foreach (string playerUid : ids)
@@ -550,6 +567,34 @@ class LF_Jail
 			if (!uid.IsEmpty())
 				outUids.Insert(uid);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Disconnect rules (#691): a player who logs out in custody gets a sentence that starts now and
+	//! is served from the rejoin. Nothing is moved and no slip is handed: the leaving body is about to
+	//! go, and OnPlayerSpawned puts the rejoined body in the cell with the slip. The sentence is the
+	//! jail payload, so it survives a restart. Refused (logged) with no cell, an empty uid, a
+	//! sentence already running, or no time.
+	static bool ImprisonOnReturn(string prisonerUid, int seconds, int wantedLevel)
+	{
+		if (prisonerUid.IsEmpty() || !s_bCellPlaced || IsServing(prisonerUid) || seconds <= 0)
+		{
+			LF_Debug.Warn("Jail", string.Format("sentence on return refused: uid=%1 cell=%2 seconds=%3", prisonerUid, s_bCellPlaced, seconds));
+			return false;
+		}
+
+		if (LF_Systems.Refuses(SYSTEM, "sentence on return of " + prisonerUid))
+			return false;
+
+		LF_JailSentence sentence = new LF_JailSentence();
+		sentence.m_sPlayerUid = prisonerUid;
+		sentence.m_fRemaining = seconds;
+		sentence.m_bServing = true;
+		sentence.m_bPaused = true;
+		Sentences().Set(prisonerUid, sentence);
+		LF_Debug.Info("Jail", string.Format("sentence started on logout %1 seconds=%2 wanted=%3: served from the rejoin", prisonerUid, seconds, wantedLevel));
+		LF_EventBus.Publish(LF_OnArrested.Create(prisonerUid, seconds, wantedLevel));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

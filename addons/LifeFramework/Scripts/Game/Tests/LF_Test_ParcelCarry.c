@@ -15,7 +15,7 @@ class LF_Test_ParcelCarry : LF_Test
 	{
 		ctx.True(LF_ParcelComponent.CarrierIsDown(null), "no carrier counts as down (nothing to keep it for)");
 
-		Resource resource = Resource.Load(LF_CivilianJob.PARCEL_PREFAB);
+		Resource resource = Resource.Load(LF_CivilianJob.ParcelPrefab());
 		ctx.True(resource.IsValid(), "the parcel prefab loads");
 		if (!resource.IsValid())
 			return;
