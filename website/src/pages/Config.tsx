@@ -2,7 +2,8 @@ import { useMemo, useState, type ReactNode } from "react";
 import { GoLink, PageHeader } from "@/components/ui";
 import { blob } from "@/lib/content";
 import { useData } from "@/lib/data";
-import { defaultOf, isRecordSchema, minimalDiff, validate, type Schema } from "@/lib/configgen";
+import { checkConfig, defaultOf, exportText, fieldErrors, importConfig, isRecordSchema, type Schema } from "@/lib/configgen";
+import { parseJson } from "../../../tools/config/rules.mjs";
 
 type Obj = Record<string, unknown>;
 
@@ -132,6 +133,10 @@ function Records({ name, schema, value, path, errors, onChange }: { name: string
   );
 }
 
+// parseJson keeps positions; the form wants plain values.
+const plainOf = (n: any): unknown =>
+  n.t === "obj" ? Object.fromEntries(n.props.map((p: any) => [p.key, plainOf(p.val)])) : n.t === "arr" ? n.items.map(plainOf) : n.value;
+
 const ConfigShell = ({ children }: { children: ReactNode }) => (
   <>
     <PageHeader kicker="For server owners" title="Build your server config">
@@ -147,10 +152,37 @@ const ConfigShell = ({ children }: { children: ReactNode }) => (
 
 function Form({ schema }: { schema: Schema }) {
   const [value, setValue] = useState<Obj>(() => defaultOf(schema) as Obj);
-  const errors = useMemo(() => validate(schema, value), [schema, value]);
-  const diff = useMemo(() => minimalDiff(schema, value), [schema, value]);
-  const json = JSON.stringify(diff, null, 2) + "\n";
-  const bad = Object.keys(errors).length;
+  const [extras, setExtras] = useState<Obj>({});
+  const [keep, setKeep] = useState<Set<string>>(new Set());
+  const [paste, setPaste] = useState("");
+  const [importNote, setImportNote] = useState("");
+  const json = useMemo(() => exportText(schema, value, extras, keep), [schema, value, extras, keep]);
+  // The very rules `tools\cli config-check` applies, run over the file this page would export.
+  const problems = useMemo(() => checkConfig(schema, json), [schema, json]);
+  const errors = useMemo(() => fieldErrors(problems), [problems]);
+  const bad = problems.filter((p) => p.level === "error").length;
+  const hasExtras = Object.keys(extras).length > 0;
+
+  // Import: the file lands in the form; what the form cannot hold is kept and written back on export.
+  const load = (text: string) => {
+    let root;
+    try {
+      root = parseJson(text);
+    } catch {
+      const found = checkConfig(schema, text, "the imported file")[0];
+      setImportNote(`${found.msg} (line ${found.line}, column ${found.col}). Nothing was imported.`);
+      return;
+    }
+    const raw = JSON.parse(JSON.stringify(plainOf(root)));
+    const got = importConfig(schema, raw);
+    setValue(got.value);
+    setExtras(got.extras);
+    setKeep(got.keep);
+    setImportNote("Imported. Values outside the schema are marked below; keys this build does not know are kept in the export.");
+  };
+  const onFile = async (f?: File | null) => {
+    if (f) load(await f.text());
+  };
 
   const download = () => {
     const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
@@ -165,6 +197,27 @@ function Form({ schema }: { schema: Schema }) {
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_22rem] lg:items-start">
       <div className="space-y-10 min-w-0">
+        <section aria-labelledby="sec-import" className="sheet p-4 space-y-3">
+          <h2 id="sec-import" className="display-3">
+            Start from your current file
+          </h2>
+          <p className="muted text-[0.9375rem]">Drop in your existing config.json or paste it. It stays in your browser.</p>
+          <input type="file" accept=".json,application/json" aria-label="Choose a config.json" onChange={(e) => onFile(e.target.files?.[0])} />
+          <textarea
+            rows={4}
+            value={paste}
+            onChange={(e) => setPaste(e.target.value)}
+            placeholder="or paste the file here"
+            aria-label="Paste a config.json"
+            className={`${inputCls} max-w-xl`}
+          />
+          <div>
+            <button type="button" className="btn btn-ghost" disabled={!paste.trim()} onClick={() => load(paste)}>
+              Import pasted file
+            </button>
+          </div>
+          {importNote && <p role="status" className="text-[0.875rem] font-semibold">{importNote}</p>}
+        </section>
         {sections.map(([k, s]) => (
           <section key={k} aria-labelledby={`sec-${k}`}>
             <h2 id={`sec-${k}`} className="display-3 rule-top pt-3">
@@ -180,14 +233,24 @@ function Form({ schema }: { schema: Schema }) {
         <pre className="terminal p-4 font-mono text-[0.8125rem] overflow-auto max-h-[60vh]">{json}</pre>
         {bad > 0 && (
           <p role="alert" className="text-stamp font-semibold text-[0.9375rem]">
-            {bad} value{bad === 1 ? "" : "s"} outside the schema. Fix {bad === 1 ? "it" : "them"} before you download.
+            {bad} error{bad === 1 ? "" : "s"}. The server would refuse {bad === 1 ? "it" : "them"}, so the download stays off until {bad === 1 ? "it is" : "they are"} fixed.
           </p>
         )}
+        {problems.length > 0 && (
+          <ul className="text-[0.8125rem] space-y-1 max-h-[30vh] overflow-auto" aria-label="What config-check reports">
+            {problems.map((p, n) => (
+              <li key={n} className={p.level === "error" ? "text-stamp" : "muted"}>
+                <span className="font-mono font-semibold">{p.level === "error" ? "ERROR" : "WARN"}</span> {p.msg}
+              </li>
+            ))}
+          </ul>
+        )}
+        {hasExtras && <p className="text-[0.8125rem] muted">Keys this page cannot edit were kept from your file and are written back on download.</p>}
         <div className="flex flex-wrap gap-3">
           <button type="button" className="btn btn-primary" onClick={download} disabled={bad > 0}>
             Download config.json
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => setValue(defaultOf(schema) as Obj)}>
+          <button type="button" className="btn btn-ghost" onClick={() => { setValue(defaultOf(schema) as Obj); setExtras({}); setKeep(new Set()); setImportNote(""); }}>
             Reset
           </button>
         </div>
