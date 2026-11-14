@@ -56,6 +56,10 @@ check(silentFail.length > 12 && silentFail.some((l) => l === "line 39"), "a fail
 const stepFail = sum("keys-proof", 1, [...Array.from({ length: 20 }, (_, i) => `client 1: s:abc step ${i} -> ok x`), "client 2: s:abc use LF_X Door -> error no_target", "keys proof: FAIL"]);
 check(stepFail.some((l) => l.includes("-> error no_target")) && stepFail.some((l) => l.includes("keys proof: FAIL")), "a failing proof step and its verdict are shown");
 
+// A gate whose suite was reused: the CACHED line survives the six-line keep cap (it was squeezed out once).
+const gateCached = sum("wt-gate", 0, ["=== ci: test ===", "test: CACHED pass, same inputs as the run at T on pc in w (5/5 passed, tier=all); key abc", ...Array.from({ length: 12 }, (_, i) => `test-e2e: SUMMARY tier=all passed=${i} failed=0 total=${i} (1 s)`)]);
+check(gateCached.some((l) => l.startsWith("test: CACHED pass")), "a reused test pass is always shown");
+
 // ---- the real quick commands
 function run(args, env = {}) {
   const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...args], {
