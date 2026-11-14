@@ -8453,6 +8453,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logout in custody"
      Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
+    CustomStringTableItem "{B56342EA30F0AFB8}" {
+     Id "LF-ClipStamp_Action"
+     Target_en_us "Show clip stamp"
+     Comment "Key binding name and toast title for the on-screen clip stamp (#1173)."
+    }
+    CustomStringTableItem "{FEE030CA6B94E0E5}" {
+     Id "LF-ClipStamp_Denied"
+     Target_en_us "This server has turned the clip stamp off."
+     Comment "Toast when a player presses the clip stamp key and the owner config turned the stamp off (#1173)."
+    }
+    CustomStringTableItem "{B1D47E2095AC63F8}" {
+     Id "LF-ClipStamp_Line"
+     Target_en_us "%1  /  %2  /  %3 UTC"
+     Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
+    }
     CustomStringTableItem "{1682AE4AD3653A8D}" {
      Id "LF-Quiz_Title"
      Target_en_us "RULES ORIENTATION"
@@ -8503,20 +8518,15 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "That was your last attempt. Read the server rules and join again."
      Comment "Rules quiz fail page when the attempts are used up and the player is about to be removed (#915)."
     }
-    CustomStringTableItem "{B56342EA30F0AFB8}" {
-     Id "LF-ClipStamp_Action"
-     Target_en_us "Show clip stamp"
-     Comment "Key binding name and toast title for the on-screen clip stamp (#1173)."
+    CustomStringTableItem "{A3D17C50B8E24F96}" {
+     Id "LF-PoliceApp_Error_Playtime"
+     Target_en_us "You need more play time before you can apply. Time left: %1."
+     Comment "Refusal: the playtime gate (#803). %1 is the play time still missing, such as 12h 30m."
     }
-    CustomStringTableItem "{FEE030CA6B94E0E5}" {
-     Id "LF-ClipStamp_Denied"
-     Target_en_us "This server has turned the clip stamp off."
-     Comment "Toast when a player presses the clip stamp key and the owner config turned the stamp off (#1173)."
-    }
-    CustomStringTableItem "{B1D47E2095AC63F8}" {
-     Id "LF-ClipStamp_Line"
-     Target_en_us "%1  /  %2  /  %3 UTC"
-     Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
+    CustomStringTableItem "{5E8B02D6C9A17F43}" {
+     Id "LF-PoliceApp_Error_Cooldown"
+     Target_en_us "Your last application was rejected. You can apply again in %1."
+     Comment "Refusal: the rejection cooldown (#803). %1 is the wait left, such as 2h 5m."
     }
   }
  }
