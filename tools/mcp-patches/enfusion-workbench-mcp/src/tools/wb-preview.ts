@@ -6,7 +6,7 @@
  * thread that writes screenshots), so the waiting happens here in Node:
  *   1. open the resource in Resource Manager and/or SetCamera in the World Editor
  *   2. wait `settleMs`
- *   3. MakeScreenshot to a unique stem under `$logs:lf-preview/`
+ *   3. MakeScreenshot to a unique stem under `$logs:`
  *   4. poll until the file exists, is non-empty and its size is stable
  *   5. BMP -> PNG, optional downscale to `maxPx`, return image block + path
  *
@@ -22,10 +22,9 @@ import type { WorkbenchClient } from "../workbench/client.js";
 import type { Config } from "../config.js";
 import { formatConnectionStatus } from "../workbench/status.js";
 import {
-  decodeBmp,
+  decodeImage,
   downscale,
   encodePng,
-  isBmp,
   isPng,
   lumaStdDev,
   waitForStableFile,
@@ -33,17 +32,17 @@ import {
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
-/** Directories where `$logs:lf-preview/` can resolve: the logs root and its newest session dirs. */
+/** Directories where `$logs:` can resolve (the engine does not create subfolders): the logs root and its newest session dirs. */
 function previewDirs(logsPath: string | undefined): string[] {
   if (!logsPath) return [];
-  const dirs = [join(logsPath, "lf-preview")];
+  const dirs = [logsPath];
   try {
     const subs = readdirSync(logsPath, { withFileTypes: true })
       .filter((e) => e.isDirectory())
       .map((e) => ({ name: e.name, mtime: statSync(join(logsPath, e.name)).mtimeMs }))
       .sort((a, b) => b.mtime - a.mtime)
       .slice(0, 3);
-    for (const s of subs) dirs.push(join(logsPath, s.name, "lf-preview"));
+    for (const s of subs) dirs.push(join(logsPath, s.name));
   } catch {
     /* logs dir not readable */
   }
@@ -144,10 +143,10 @@ export function registerWbPreview(server: McpServer, client: WorkbenchClient, co
         if (settleMs > 0) await sleep(settleMs);
 
         // Phase 2: screenshot to a unique stem.
-        const stem = `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+        const stem = `lfp${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
         const shot = await client.call<Record<string, unknown>>("EMCP_WB_Preview", {
           action: "screenshot",
-          path: `$logs:lf-preview/${stem}`,
+          path: `$logs:${stem}`,
         });
         if (shot.status !== "queued") {
           return text(
@@ -168,18 +167,18 @@ export function registerWbPreview(server: McpServer, client: WorkbenchClient, co
 
         // Convert, downscale, save.
         const raw = readFileSync(file);
+        const decoded = decodeImage(raw);
         let png: Buffer;
-        let spread: string;
-        let size: string;
-        if (isBmp(raw)) {
-          const decoded = decodeBmp(raw);
+        let spread = "n/a";
+        let size = "?";
+        if (decoded) {
           spread = lumaStdDev(decoded).toFixed(1);
           const scaled = args.maxPx ? downscale(decoded, args.maxPx) : decoded;
           size = `${scaled.width}x${scaled.height}`;
-          png = encodePng(scaled);
+          // An unscaled PNG from the engine is passed through untouched.
+          png = isPng(raw) && scaled === decoded ? raw : encodePng(scaled);
         } else if (isPng(raw)) {
           png = raw;
-          spread = "n/a";
           size = `${raw.readUInt32BE(16)}x${raw.readUInt32BE(20)}`;
         } else {
           return text(`Screenshot at ${file} is neither BMP nor PNG (${raw.length} bytes).`, true);

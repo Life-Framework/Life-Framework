@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { decodeBmp, downscale, encodePng, isPng, lumaStdDev, waitForStableFile } from "../preview-image.js";
+import { decodeBmp, decodePng, downscale, encodePng, isPng, lumaStdDev, waitForStableFile } from "../preview-image.js";
 
 /** w x h 24-bit bottom-up BMP; `paint(x, y)` returns [r, g, b] with y=0 the top row. */
 function makeBmp(w: number, h: number, paint: (x: number, y: number) => [number, number, number]): Buffer {
@@ -52,7 +52,11 @@ describe("preview-image", () => {
 
   it("encodes a PNG with a valid signature", () => {
     const img = decodeBmp(makeBmp(4, 4, () => [1, 2, 3]));
-    expect(isPng(encodePng(img))).toBe(true);
+    const png = encodePng(img);
+    expect(isPng(png)).toBe(true);
+    const back = decodePng(png);
+    expect([back.width, back.height]).toEqual([4, 4]);
+    expect([back.pixels[0], back.pixels[1], back.pixels[2]]).toEqual([1, 2, 3]);
   });
 
   it("waits for a size-stable file and gives up on a missing one", async () => {

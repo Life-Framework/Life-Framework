@@ -8,7 +8,7 @@
  */
 
 import { statSync } from "node:fs";
-import { deflateSync } from "node:zlib";
+import { deflateSync, inflateSync } from "node:zlib";
 
 export interface Rgb {
   width: number;
@@ -59,6 +59,94 @@ export function decodeBmp(buf: Buffer): Rgb {
     }
   }
   return { width, height, pixels };
+}
+
+// ── PNG decode (the engine writes PNG directly on current builds) ──────────────
+
+function paeth(left: number, up: number, upLeft: number): number {
+  const est = left + up - upLeft;
+  const dl = Math.abs(est - left);
+  const du = Math.abs(est - up);
+  const dlu = Math.abs(est - upLeft);
+  if (dl <= du && dl <= dlu) return left;
+  if (du <= dlu) return up;
+  return upLeft;
+}
+
+/** 8-bit grey / RGB / RGBA, non-interlaced PNG to RGB. Throws on anything else. */
+export function decodePng(buf: Buffer): Rgb {
+  if (!isPng(buf)) throw new Error("not a png");
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let bitDepth = 0;
+  let colorType = 0;
+  let interlace = 0;
+  const idat: Buffer[] = [];
+  while (offset + 8 <= buf.length) {
+    const length = buf.readUInt32BE(offset);
+    const type = buf.toString("ascii", offset + 4, offset + 8);
+    const start = offset + 8;
+    const end = start + length;
+    if (end + 4 > buf.length) throw new Error("truncated png");
+    const data = buf.subarray(start, end);
+    if (type === "IHDR") {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+      bitDepth = data[8];
+      colorType = data[9];
+      interlace = data[12];
+    } else if (type === "IDAT") idat.push(data);
+    else if (type === "IEND") break;
+    offset = end + 4;
+  }
+  if (width < 1 || height < 1) throw new Error("empty png");
+  if (bitDepth !== 8 || interlace !== 0) throw new Error(`unsupported png ${bitDepth}/${interlace}`);
+  const channels = colorType === 0 ? 1 : colorType === 2 ? 3 : colorType === 6 ? 4 : 0;
+  if (!channels) throw new Error(`unsupported png color ${colorType}`);
+
+  const inflated = inflateSync(Buffer.concat(idat));
+  const stride = width * channels;
+  const pixels = Buffer.alloc(width * height * 3);
+  let src = 0;
+  let previous = Buffer.alloc(stride);
+  for (let y = 0; y < height; y++) {
+    if (src >= inflated.length) throw new Error("truncated png rows");
+    const filter = inflated[src++];
+    const row = Buffer.alloc(stride);
+    for (let i = 0; i < stride; i++) {
+      const value = inflated[src++];
+      const left = i >= channels ? row[i - channels] : 0;
+      const up = previous[i];
+      const upLeft = i >= channels ? previous[i - channels] : 0;
+      if (filter === 0) row[i] = value;
+      else if (filter === 1) row[i] = (value + left) & 255;
+      else if (filter === 2) row[i] = (value + up) & 255;
+      else if (filter === 3) row[i] = (value + Math.floor((left + up) / 2)) & 255;
+      else if (filter === 4) row[i] = (value + paeth(left, up, upLeft)) & 255;
+      else throw new Error(`bad png filter ${filter}`);
+    }
+    for (let x = 0; x < width; x++) {
+      const o = (y * width + x) * 3;
+      const i = x * channels;
+      pixels[o] = row[i];
+      pixels[o + 1] = channels === 1 ? row[i] : row[i + 1];
+      pixels[o + 2] = channels === 1 ? row[i] : row[i + 2];
+    }
+    previous = row;
+  }
+  return { width, height, pixels };
+}
+
+/** Decode a BMP or PNG file buffer; null when it is neither or cannot be decoded. */
+export function decodeImage(buf: Buffer): Rgb | null {
+  try {
+    if (isBmp(buf)) return decodeBmp(buf);
+    if (isPng(buf)) return decodePng(buf);
+  } catch {
+    /* fall through */
+  }
+  return null;
 }
 
 // ── Downscale ────────────────────────────────────────────────────────────────

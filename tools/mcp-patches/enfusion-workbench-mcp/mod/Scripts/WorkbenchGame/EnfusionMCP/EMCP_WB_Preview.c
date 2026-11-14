@@ -158,7 +158,7 @@ class EMCP_WB_Preview : NetApiHandler
 		if (req.path.IsEmpty())
 		{
 			resp.status = "error";
-			resp.message = "screenshot needs path (stem, e.g. $logs:lf-preview/shot1)";
+			resp.message = "screenshot needs path (stem, e.g. $logs:lfp_shot1)";
 			return resp;
 		}
 
