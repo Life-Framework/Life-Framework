@@ -109,9 +109,12 @@ payload, no version bump (still 32). Proof: `tools\cli wt e2e <slug> --content-i
   <id> ...` once per id and keeps its saved id. A stored inventory (carried, duty locker, placed
   stash) holds such an item and everything inside it: `LF_StorageSnapshot.Set` carries it from the
   snapshot being replaced into the new capture (`CarryHeld`), back into the same container when the
-  new capture has it (matched by the chain of prefabs above it), otherwise onto the root. It comes
-  back the first load after the content or its alias returns. Death drops held items with the rest
-  of the carried snapshot. Other kinds are held by their features already: job XP and playtime rows
+  new capture has it (matched by the chain of prefabs above it), otherwise onto the root. Only a
+  fresh capture is topped up: a record that already names a missing prefab is stored as it is, so
+  nothing is held twice. It comes back the first load after the content or its alias returns. Death
+  drops held items with the rest of the carried snapshot. A character body whose prefab is missing
+  spawns from the first default body that loads (`LF_SaveIds.SpawnablePrefab`); the account keeps
+  the saved id, so the old body returns with its content. Other kinds are held by their features already: job XP and playtime rows
   for a job the config does not list are kept, and a station, plot or store row with no live
   component waits for it and is saved again.
 - **Owners.** No `config.json` section yet; aliases come from the core and pack files.
