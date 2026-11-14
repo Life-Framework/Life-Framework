@@ -410,6 +410,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ServiceRadio(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceTake(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SessionSlots(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMAmountGuard(), LF_TestTier.LOGIC);

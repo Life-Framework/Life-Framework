@@ -38,6 +38,16 @@ What an agent session used to be needed for, and what does it now:
 | The item in a hand | session, 2 clients | still a session (`asset states --shots` does hand and use) |
 | Dialogue shot, a door, a siren, a held pose | session | still a session |
 
+## Profile fixtures and rejoin (agent-box sessions)
+
+A proof that needs a police roster (or any file the server reads from `$profile:LifeFramework/`) seeds it
+in `up`: `session.mjs up --clients 2 --mission playtest --roster 2` or `--seed <file>`. The leg that boots
+the server writes the fixture just before the server starts, on the machine the session runs on; a file
+written on this PC before `up` never reaches a pool machine. `session.mjs roster <id>` on a live session
+writes the roster and the server reloads it. A client that quits and rejoins keeps its identity (a session
+slot, not the player id): `session.mjs rejoin <n>`, worked example `rejoin-proof`. Details:
+`agent-box/README.md` "Stable client identity and rejoin".
+
 ## The matrix
 
 Evidence levels: **(a)** data only (layer, prefab and config files), **(b)** a world query with no

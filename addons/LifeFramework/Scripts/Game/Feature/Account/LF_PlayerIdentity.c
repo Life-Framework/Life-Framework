@@ -23,6 +23,9 @@ class LF_PlayerIdentity
 	protected static ref map<int, int> s_mWaitingSince = new map<int, int>();
 	//! Player id -> the name stand-in handed out while a real identity could still arrive.
 	protected static ref map<int, string> s_mStandIn = new map<int, string>();
+	//! Player id -> session slot (agent-box sessions, LF_SESSION_IDENTITY): the lowest slot nobody
+	//! connected holds. A client that quits and rejoins gets a new player id and the same slot back.
+	protected static ref map<int, int> s_mSlot = new map<int, int>();
 
 	//------------------------------------------------------------------------------------------------
 	//! A platform identity that is not the player's own: empty, the NULL UUID, or a name-derived
@@ -62,7 +65,7 @@ class LF_PlayerIdentity
 		int waitedMs = nowMs - s_mWaitingSince.Get(playerId);
 		LF_EIdentityFallback fallback = LF_Utils.ChooseIdentityFallback(dedicated, sessionDefine, noBackend, waitedMs);
 		if (fallback == LF_EIdentityFallback.SESSION_SLOT)
-			return LF_Utils.BuildSessionIdentity(playerId);
+			return LF_Utils.BuildSessionIdentity(SlotOf(playerId));
 
 		if (fallback == LF_EIdentityFallback.WAIT)
 			return "";
@@ -111,11 +114,56 @@ class LF_PlayerIdentity
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A player left: their wait and stand-in end with the connection.
+	static bool HoldsSlot(int playerId)
+	{
+		return s_mSlot.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The session slot of a connected player: the one it already holds, else the lowest slot (1..)
+	//! no other connected player holds. First joiner 1, second 2; if client 2 quits and rejoins it is
+	//! slot 2 again, so the harness identity (LF_Utils.BuildSessionIdentity(slot)) is the same account.
+	static int SlotOf(int playerId)
+	{
+		int held;
+		if (s_mSlot.Find(playerId, held))
+			return held;
+
+		int slot = 1;
+		bool taken = true;
+		while (taken)
+		{
+			taken = false;
+			foreach (int other, int otherSlot : s_mSlot)
+			{
+				if (otherSlot == slot)
+				{
+					taken = true;
+					break;
+				}
+			}
+			if (taken)
+				slot++;
+		}
+
+		s_mSlot.Set(playerId, slot);
+		// The harness reads this line to learn which identity a client got (agent-box/session.mjs).
+		LF_Debug.Info("Account", string.Format("session slot %1 for player %2: %3", slot, playerId, LF_Utils.BuildSessionIdentity(slot)));
+		return slot;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player left: their wait, stand-in and session slot end with the connection.
 	static void Forget(int playerId)
 	{
 		s_mWaitingSince.Remove(playerId);
 		s_mStandIn.Remove(playerId);
+		int slot;
+		if (s_mSlot.Find(playerId, slot))
+		{
+			s_mSlot.Remove(playerId);
+			LF_Debug.Info("Account", string.Format("session slot %1 released: player %2 left", slot, playerId));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -123,5 +171,6 @@ class LF_PlayerIdentity
 	{
 		s_mWaitingSince.Clear();
 		s_mStandIn.Clear();
+		s_mSlot.Clear();
 	}
 }
