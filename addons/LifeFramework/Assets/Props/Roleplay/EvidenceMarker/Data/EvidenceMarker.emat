@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{4C673D0ED8AC20C0}Assets/Props/Roleplay/EvidenceMarker/Data/EvidenceMarker_BCR.edds"
+ NMOMap "{AC04360FC61B8217}Assets/Props/Roleplay/EvidenceMarker/Data/EvidenceMarker_NMO.edds"
+}

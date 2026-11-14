@@ -1,0 +1,164 @@
+{
+  "slug": "pager",
+  "subject": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back.",
+  "variants": [
+    {
+      "label": "Black, grey screen",
+      "detail": "Matte black rectangular body with a small grey LCD window across the top, three small buttons, a steel belt clip, rounded corners",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Matte black rectangular body with a small grey LCD window across the top, three small buttons, a steel belt clip, rounded corners. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2a7e-70a9-99d9-3cba9a6791d1",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "black pager, clip against the back"
+    },
+    {
+      "label": "Beige office plastic",
+      "detail": "Cream beige ABS body, a wide LCD window, two buttons on the side, a dark belt clip",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Cream beige ABS body, a wide LCD window, two buttons on the side, a dark belt clip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2b38-71b1-ad3c-f67aebe7b8ee",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "beige upright body, belt clip and speaker visible"
+    },
+    {
+      "label": "Dark blue slim",
+      "detail": "Dark blue slim body, a narrow LCD strip, a single round button on the side, a metal clip",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Dark blue slim body, a narrow LCD strip, a single round button on the side, a metal clip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2bf9-75a2-886a-827bfa581838",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "navy slim; clip hidden underneath"
+    },
+    {
+      "label": "Chunky grey brick",
+      "detail": "Thick grey brick body with chamfered edges, a small square LCD, a row of four tiny buttons at the bottom",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Thick grey brick body with chamfered edges, a small square LCD, a row of four tiny buttons at the bottom. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2cb6-75b1-aef8-02954e2278fa",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "LCD shows digits"
+    },
+    {
+      "label": "Black with red button",
+      "detail": "Black body, a green-tinted LCD window, a red round button on the side and a small speaker grille",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Black body, a green-tinted LCD window, a red round button on the side and a small speaker grille. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2d6a-75f7-97ea-8a19fe984516",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "black with red button"
+    },
+    {
+      "label": "Rounded white",
+      "detail": "White rounded body with a narrow LCD and a flat soft button below, a dark clip",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. White rounded body with a narrow LCD and a flat soft button below, a dark clip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2e1f-7220-b7c3-d40902bfa413",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "white and smooth, a touch modern"
+    },
+    {
+      "label": "Metallic silver",
+      "detail": "Brushed silver painted body, wide LCD window, two side buttons, rubber corner bumpers",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Brushed silver painted body, wide LCD window, two side buttons, rubber corner bumpers. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2eda-71dc-b98a-dfab07f44d42",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "silver, rubber bumpers, 90s"
+    },
+    {
+      "label": "Olive green rugged",
+      "detail": "Olive green rubberised body with a small LCD, a protective flap button, a strong steel belt clip",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Olive green rubberised body with a small LCD, a protective flap button, a strong steel belt clip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-2f93-7183-a554-93dad6ad60c9",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "rugged, military, clip front"
+    },
+    {
+      "label": "Translucent smoke",
+      "detail": "Smoke-grey translucent plastic case showing a circuit board inside, a small LCD and two buttons",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Smoke-grey translucent plastic case showing a circuit board inside, a small LCD and two buttons. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-305d-7071-8d1e-c106ec33d265",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "transparent shell, circuit board"
+    },
+    {
+      "label": "Flip cover pager",
+      "detail": "Black body with a hinged flip cover over the LCD window, a clip on the back and a small button on the side",
+      "prompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Black body with a hinged flip cover over the LCD window, a clip on the back and a small button on the side. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6d0-3111-74a4-bf38-61e83fd49b48",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "flip cover is a thin part"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 2,
+    "label": "Beige office plastic",
+    "by": "human",
+    "why": "maintainer pick 2026-11-13",
+    "at": "2026-11-13"
+  }
+}

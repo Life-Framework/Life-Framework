@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{05C65702F3F0F59A}Assets/Props/Roleplay/EvidenceMarker/Data/EvidenceMarker.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

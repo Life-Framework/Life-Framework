@@ -1,0 +1,164 @@
+{
+  "slug": "lockpick",
+  "subject": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle.",
+  "variants": [
+    {
+      "label": "Brown leather roll",
+      "detail": "Rolled brown leather pouch tied with a strap, five picks with wooden handles sticking out of the top",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Rolled brown leather pouch tied with a strap, five picks with wooden handles sticking out of the top. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-625d-77cd-9721-31a0840c3236",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "leather roll, picks poke out"
+    },
+    {
+      "label": "Black fold wallet",
+      "detail": "Black leather folding wallet half open showing a row of slim picks in slots and a tension wrench",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Black leather folding wallet half open showing a row of slim picks in slots and a tension wrench. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-6319-7188-b96f-0a92b823216b",
+      "scores": {
+        "silhouette": 1,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "flat, thin slots"
+    },
+    {
+      "label": "Single pick and wrench",
+      "detail": "Just two tools laid together: a slim steel hook pick with a black plastic handle and an L-shaped tension wrench",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Just two tools laid together: a slim steel hook pick with a black plastic handle and an L-shaped tension wrench. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-63ca-76b2-8153-005c0dac1255",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 1,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "two thin tools, tiny"
+    },
+    {
+      "label": "Tan zip pouch",
+      "detail": "Small tan canvas zip pouch, partly open, three picks and a tension wrench leaning out",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Small tan canvas zip pouch, partly open, three picks and a tension wrench leaning out. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-6482-717d-92b9-25f45c2eb0d2",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "zip pouch, pick tips thin"
+    },
+    {
+      "label": "Red plastic handles",
+      "detail": "A bundle of four picks with red plastic handles, held by a rubber band, plus a bent wrench",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. A bundle of four picks with red plastic handles, held by a rubber band, plus a bent wrench. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-653f-730f-87f8-ba82466ff7da",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "red bundle, bright"
+    },
+    {
+      "label": "Bone and brass set",
+      "detail": "Picks with brass shafts and bone handles in a small brown leather case with a snap",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Picks with brass shafts and bone handles in a small brown leather case with a snap. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-65f7-738c-b3ad-589c172ac431",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "leather case, snap, bone handles; reads best as a set"
+    },
+    {
+      "label": "Fanned pick knife",
+      "detail": "Several short steel picks hinged on a ring like a pocket knife, fanned out, a worn blue plastic grip",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Several short steel picks hinged on a ring like a pocket knife, fanned out, a worn blue plastic grip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-66b5-7359-ad70-478b3bff63bf",
+      "scores": {
+        "silhouette": 0,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "two objects, hinged picks"
+    },
+    {
+      "label": "Belt tool sheath",
+      "detail": "Narrow dark leather sheath with a belt loop and a flap, picks and wrench handles protruding",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Narrow dark leather sheath with a belt loop and a flap, picks and wrench handles protruding. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-6771-72cb-b3f8-3dc5207cc3ac",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "solid sheath, short picks"
+    },
+    {
+      "label": "Flat tin case",
+      "detail": "Flat tin case, open lid, with picks and a wrench lying inside, steel dull grey",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Flat tin case, open lid, with picks and a wrench lying inside, steel dull grey. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-6834-7252-adac-5cef10061014",
+      "scores": {
+        "silhouette": 1,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "open tin, flat thin tools"
+    },
+    {
+      "label": "Green tool roll",
+      "detail": "Olive green cloth tool roll, unrolled slightly, picks in separate sleeves, one tension tool",
+      "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. Olive green cloth tool roll, unrolled slightly, picks in separate sleeves, one tension tool. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-68ee-713f-87a3-7ea843d7729e",
+      "scores": {
+        "silhouette": 1,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "unrolled cloth, flat"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 3,
+    "label": "Single pick and wrench",
+    "by": "human",
+    "why": "maintainer pick 2026-11-13",
+    "at": "2026-11-13"
+  }
+}

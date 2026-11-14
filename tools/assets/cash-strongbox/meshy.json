@@ -1,0 +1,15 @@
+{
+  "slug": "cash-strongbox",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "meshy-6-lite",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d8eb-6b1d-7425-ad0b-baa48227d9d7",
+      "concept": 4,
+      "conceptTaskId": "01a1d6ce-de8f-70d8-8fdb-67e697d269b5",
+      "conceptPrompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Dark blue painted steel, rounded corner caps, two keyholes on the front, a rail top handle. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

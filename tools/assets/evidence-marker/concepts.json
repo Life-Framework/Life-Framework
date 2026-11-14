@@ -1,0 +1,164 @@
+{
+  "slug": "evidence-marker",
+  "subject": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base.",
+  "variants": [
+    {
+      "label": "Yellow tent, 7",
+      "detail": "Bright yellow folded card tent, a big black number 7 on both faces, white edge border",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Bright yellow folded card tent, a big black number 7 on both faces, white edge border. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-c6dc-76e2-80c1-010173f1938f",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "classic yellow tent, 7; thin card"
+    },
+    {
+      "label": "Orange tent, 3",
+      "detail": "Orange folded card tent, a bold black number 3, rounded corners, a small ruler scale printed on the front edge",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Orange folded card tent, a bold black number 3, rounded corners, a small ruler scale printed on the front edge. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-c795-75e1-8503-cd9763832ea7",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 0,
+        "image_to_3d": 1
+      },
+      "note": "checker ruler adds text-like detail"
+    },
+    {
+      "label": "Cream paper tent",
+      "detail": "Cream coloured paper tent, a black hand-stamped number 12, a crease down the middle",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Cream coloured paper tent, a black hand-stamped number 12, a crease down the middle. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-c84d-7669-8ee6-00dcc7054c31",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 0,
+        "image_to_3d": 1
+      },
+      "note": "grimy stamped number"
+    },
+    {
+      "label": "Plastic yellow tent",
+      "detail": "Moulded glossy yellow plastic tent with a raised number 5, wide stable base",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Moulded glossy yellow plastic tent with a raised number 5, wide stable base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-c90d-722f-8f67-aec58f4ca10c",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 2
+      },
+      "note": "moulded plastic, thick, stable"
+    },
+    {
+      "label": "Tall thin card",
+      "detail": "Tall narrow yellow card tent with a large black number 9 and a white ruler strip down one side",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Tall narrow yellow card tent with a large black number 9 and a white ruler strip down one side. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-c9c4-754a-bec6-ee0271ec4471",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 0,
+        "image_to_3d": 1
+      },
+      "note": "ruler strip, thin"
+    },
+    {
+      "label": "Red tent marker",
+      "detail": "Red folded card tent with a white number 4, slightly worn corners",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Red folded card tent with a white number 4, slightly worn corners. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-caa5-72cf-bb16-55b76e0bc66f",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "red is not a standard marker"
+    },
+    {
+      "label": "Green tent",
+      "detail": "Green card tent with a black number 2 on a white circle on each face",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Green card tent with a black number 2 on a white circle on each face. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-cb7d-71fc-a990-9c190de25831",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "green circle, not standard"
+    },
+    {
+      "label": "Wide low tent",
+      "detail": "Wide low yellow tent with a thick fold and a black number 8 with a black border line",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. Wide low yellow tent with a thick fold and a black number 8 with a black border line. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-cc53-709b-a7c1-ada9debdcc4d",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 2
+      },
+      "note": "thick fold with black border; strongest"
+    },
+    {
+      "label": "Fold-out card",
+      "detail": "A flat folded cardboard card in pale yellow with a black number 6 and a thin tab at the base",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. A flat folded cardboard card in pale yellow with a black number 6 and a thin tab at the base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-cd03-73ce-8e5a-f5edcd03aafa",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 1
+      },
+      "note": "pale tab, low contrast"
+    },
+    {
+      "label": "Chunky block marker",
+      "detail": "A heavy yellow block shaped as a triangular prism with a number 1 on each side, matte plastic",
+      "prompt": "Small numbered crime-scene evidence marker card: a folded card standing as a tent shape with two angled faces and a big black number on each, flat base. A heavy yellow block shaped as a triangular prism with a number 1 on each side, matte plastic. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6cf-cdbb-77c8-bc7a-0ec9b723a6e3",
+      "scores": {
+        "silhouette": 2,
+        "era": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 1,
+        "image_to_3d": 2
+      },
+      "note": "prism block, reads less like a card"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 3,
+    "label": "Cream paper tent",
+    "by": "human",
+    "why": "maintainer pick 2026-11-13",
+    "at": "2026-11-13"
+  }
+}

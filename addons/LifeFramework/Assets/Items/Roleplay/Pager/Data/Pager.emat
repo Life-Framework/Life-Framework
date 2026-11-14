@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{34CF40EED20DC5C0}Assets/Items/Roleplay/Pager/Data/Pager_BCR.edds"
+ NMOMap "{3FEB12D21F006663}Assets/Items/Roleplay/Pager/Data/Pager_NMO.edds"
+}

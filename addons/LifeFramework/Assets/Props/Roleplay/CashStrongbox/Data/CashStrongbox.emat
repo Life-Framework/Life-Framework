@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{36B53644C5D1D6D8}Assets/Props/Roleplay/CashStrongbox/Data/CashStrongbox_BCR.edds"
+ NMOMap "{AEDBCECCC6BF6CF6}Assets/Props/Roleplay/CashStrongbox/Data/CashStrongbox_NMO.edds"
+}

@@ -1,0 +1,15 @@
+{
+  "slug": "pager",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "latest",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d8ee-bd9b-762b-8002-bb5558659160",
+      "concept": 2,
+      "conceptTaskId": "01a1d6d0-2b38-71b1-ad3c-f67aebe7b8ee",
+      "conceptPrompt": "Late-1980s clip-on numeric pager: a small thick rectangular plastic box with a small rectangular LCD window at the top, a few small buttons on the side or front, and a metal belt clip at the back. Cream beige ABS body, a wide LCD window, two buttons on the side, a dark belt clip. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

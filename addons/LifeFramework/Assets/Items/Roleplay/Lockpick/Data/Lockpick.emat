@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{9396B02F011634A7}Assets/Items/Roleplay/Lockpick/Data/Lockpick_BCR.edds"
+ NMOMap "{120AED285A0BC1AF}Assets/Items/Roleplay/Lockpick/Data/Lockpick_NMO.edds"
+}

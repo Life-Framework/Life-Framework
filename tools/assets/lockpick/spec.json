@@ -1,0 +1,56 @@
+{
+  "slug": "lockpick",
+  "name": "Lockpick",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "",
+  "prompt": "Late-1980s lockpick set: a small folded leather pouch with a few thin steel picks and a bent tension wrench sticking out, or the same tools laid together as one compact bundle. no text, no logos.",
+  "texture_prompt": "",
+  "meshy": {
+    "ai_model": "latest",
+    "target_polycount": 4000,
+    "remesh": false
+  },
+  "size_m": {
+    "length": 0.15,
+    "height": 0.015,
+    "width": 0.06
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 1024,
+    "credits": 300
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ],
+    "stretch": true
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Roleplay/Lockpick",
+  "prefab_dir": "Prefabs/Items/Roleplay/Lockpick",
+  "materials": {
+    "default": "pick_steel",
+    "regions": [],
+    "classes": {
+      "pick_steel": {
+        "rough": [
+          0.35,
+          0.6
+        ],
+        "metal": [
+          0.6,
+          0.9
+        ],
+        "base_scale": 0.9
+      }
+    }
+  }
+}

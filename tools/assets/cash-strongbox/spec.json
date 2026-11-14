@@ -1,0 +1,71 @@
+{
+  "slug": "cash-strongbox",
+  "name": "CashStrongbox",
+  "kind": "deployable",
+  "roadmap": "",
+  "concept": "",
+  "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. no text, no logos.",
+  "texture_prompt": "",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 6000,
+    "remesh": false
+  },
+  "size_m": {
+    "length": 0.6,
+    "height": 0.42,
+    "width": 0.42
+  },
+  "budget": {
+    "lod0_tris": 6000,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 1024,
+    "credits": 300
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Props/Roleplay/CashStrongbox",
+  "prefab_dir": "Prefabs/Props/Roleplay/CashStrongbox",
+  "materials": {
+    "default": "painted_steel",
+    "regions": [
+      {
+        "class": "bare_steel",
+        "metallic_above": 0.6
+      }
+    ],
+    "classes": {
+      "painted_steel": {
+        "rough": [
+          0.55,
+          0.8
+        ],
+        "metal": [
+          0,
+          0.35
+        ],
+        "base_scale": 0.95
+      },
+      "bare_steel": {
+        "rough": [
+          0.4,
+          0.6
+        ],
+        "metal": [
+          0.7,
+          0.85
+        ],
+        "base_scale": 0.8
+      }
+    }
+  }
+}

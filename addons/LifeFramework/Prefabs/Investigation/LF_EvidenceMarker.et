@@ -2,7 +2,7 @@ GenericEntity : "{1DA051139753C894}Prefabs/Investigation/LF_EvidencePiece_Base.e
  ID "BD27EC65A25A5A42"
  components {
   MeshObject "{85C81781C5D78CFD}" {
-   Object "{6247891202DF528F}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_Document_03.xob"
+   Object "{778ADFDA2E9EDF06}Assets/Props/Roleplay/EvidenceMarker/EvidenceMarker.xob"
   }
  }
 }

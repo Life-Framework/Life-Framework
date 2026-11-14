@@ -1,0 +1,164 @@
+{
+  "slug": "cash-strongbox",
+  "subject": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end.",
+  "variants": [
+    {
+      "label": "Grey riveted chest",
+      "detail": "Grey painted riveted steel box, flat lid, a central round lock plate on the front, two folding end handles",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Grey painted riveted steel box, flat lid, a central round lock plate on the front, two folding end handles. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-dc63-76c1-b822-46a1aa97c4c8",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "grey riveted box, lock plate, end handles"
+    },
+    {
+      "label": "Olive green hasp",
+      "detail": "Olive green steel box, a heavy hasp with a padlock loop at the front, corner bars, a top carry handle",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Olive green steel box, a heavy hasp with a padlock loop at the front, corner bars, a top carry handle. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-dd14-726f-9bdc-450df48ef28a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "padlock hangs loose"
+    },
+    {
+      "label": "Black with brass",
+      "detail": "Black enamel steel box with a brass lock escutcheon, strap bands across the lid, side handles",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Black enamel steel box with a brass lock escutcheon, strap bands across the lid, side handles. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-ddd4-7266-a64a-5bdca85b673f",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "dark, details lost"
+    },
+    {
+      "label": "Dark blue bank box",
+      "detail": "Dark blue painted steel, rounded corner caps, two keyholes on the front, a rail top handle",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Dark blue painted steel, rounded corner caps, two keyholes on the front, a rail top handle. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-de8f-70d8-8fdb-67e697d269b5",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "top handle thin"
+    },
+    {
+      "label": "Tall narrow safe-box",
+      "detail": "Narrow tall steel box, brushed steel, a hinged top flap, a dial lock on the front",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Narrow tall steel box, brushed steel, a hinged top flap, a dial lock on the front. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-df4e-75cc-991c-17d25b9d9ed1",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "brushed steel, dial"
+    },
+    {
+      "label": "Corrugated armour box",
+      "detail": "Corrugated reinforced steel box in cream paint, thick latch bars on the front and a lifting ring on the lid",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Corrugated reinforced steel box in cream paint, thick latch bars on the front and a lifting ring on the lid. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-dffe-73d9-848d-c0b3b0ae008a",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "ring and ridges"
+    },
+    {
+      "label": "Rust red locker box",
+      "detail": "Red-oxide painted steel box, slightly dented, a hasp with a heavy padlock, two side handles",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Red-oxide painted steel box, slightly dented, a hasp with a heavy padlock, two side handles. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-e0b8-76d7-bb95-0cad9a0acc52",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "red locker, padlock"
+    },
+    {
+      "label": "Slot-lid deposit box",
+      "detail": "Grey steel box with a slotted top and a heavy front door with a lever lock, base skid rails",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Grey steel box with a slotted top and a heavy front door with a lever lock, base skid rails. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-e17c-76cd-87ba-5bbee5897f53",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "clean grey, slot lid, front door"
+    },
+    {
+      "label": "Two-tone transit box",
+      "detail": "Two-tone grey and yellow steel box with diagonal strap braces, a steel padlock bar front, side handles",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Two-tone grey and yellow steel box with diagonal strap braces, a steel padlock bar front, side handles. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-e231-726d-b68b-c00c3381eae6",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "yellow and grey bold; braces thin"
+    },
+    {
+      "label": "Vaulted lid trunk",
+      "detail": "Steel trunk with a gently curved domed lid, riveted bands, a lock and two big latches on the front",
+      "prompt": "Late-1980s Eastern-bloc cash transit strongbox: a squat heavy steel chest with flat riveted panels, a thick lid with a hasp or lock on the front, and a carry handle at each end. Steel trunk with a gently curved domed lid, riveted bands, a lock and two big latches on the front. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d6ce-e2eb-7609-99d9-2f984d7dc228",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "domed trunk reads as a treasure chest"
+    }
+  ],
+  "image_model": "nano-banana-2-1",
+  "pick": {
+    "n": 4,
+    "label": "Dark blue bank box",
+    "by": "human",
+    "why": "maintainer pick 2026-11-13",
+    "at": "2026-11-13"
+  }
+}
