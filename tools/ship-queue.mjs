@@ -11,7 +11,7 @@
 // docs/worktrees.md "Ship queue". Every wait here is bounded (job budget, worker lifetime, wait budget).
 
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -44,13 +44,50 @@ export function readQueue(root) {
 }
 
 function update(root, id, patch, note) {
-  return withQueue(root, (q) => {
+  let before = null;
+  const out = withQueue(root, (q) => {
     const e = q.entries.find((x) => x.id === id);
     if (!e) return null;
+    before = { state: e.state, machine: e.machine };
     Object.assign(e, patch);
     if (note) e.history = [...(e.history ?? []), `${now()} ${note}`].slice(-20);
     return { ...e };
   });
+  if (out) publish(root, out, { changed: !before || before.state !== out.state || before.machine !== out.machine });
+  return out;
+}
+
+// The ship status outside the queue file: <worktree>/tmp/ship-status.json (every update; what an agent or a
+// human reads beside the code), and the `ship-gate` commit status on the PR head (on a state change; what
+// GitHub shows). Neither may fail a gate: errors go to the worker log. docs/worktrees.md "Async ship".
+export function publish(root, e, { changed = true } = {}) {
+  writeStatusFile(e);
+  if (changed) postCommitStatus(root, e);
+}
+
+export function statusFilePath(wtPath) {
+  return join(wtPath, "tmp", "ship-status.json");
+}
+
+export function writeStatusFile(e) {
+  if (!e?.wtPath || !existsSync(e.wtPath)) return;
+  try {
+    mkdirSync(join(e.wtPath, "tmp"), { recursive: true });
+    const f = statusFilePath(e.wtPath);
+    writeFileSync(`${f}.tmp`, JSON.stringify({ line: sq.statusLine(e), phase: sq.phaseOf(e), updatedAt: now(), entry: e }, null, 2) + "\n", "utf8");
+    renameSync(`${f}.tmp`, f);
+  } catch {}
+}
+
+export function postCommitStatus(root, e) {
+  if (process.env.LF_SHIP_QUEUE_NO_STATUS === "1" || !e?.head || !e?.wtPath) return;
+  const gh = wt.ghBin();
+  if (!gh) return;
+  const s = sq.commitStatusFor(e);
+  const args = ["api", "-X", "POST", `repos/{owner}/{repo}/statuses/${e.head}`, "-f", `state=${s.state}`, "-f", `context=${s.context}`, "-f", `description=${s.description}`];
+  if (e.prUrl) args.push("-f", `target_url=${e.prUrl}`);
+  const r = wt.run(gh, args, { cwd: existsSync(e.wtPath) ? e.wtPath : wt.mainRootOf(root) });
+  if (r.status !== 0) wlog(root, `commit status for ${e.slug} (${e.head.slice(0, 7)}) not posted: ${(r.stderr || r.stdout || "").trim().slice(0, 200)}`);
 }
 
 // How many Workbench gates run at once, and how many validate-only gates beside them (tools/lib/ship-queue.mjs
@@ -278,33 +315,48 @@ function fail(root, entry, why) {
 
 // ---------------------------------------------------------------- wait / status / cancel
 
-// Block until the slug's entry is passed, failed or cancelled; bounded by budgetMs. Exit code 0 on passed.
-export async function waitFor(root, slug, { budgetMs = 3 * 60 * 60 * 1000, print = console.log } = {}) {
+// Block until the slug's entry is passed, failed or cancelled; bounded by budgetMs. Exit code 0 on passed,
+// 1 on failed / cancelled / not queued, 2 when the budget ran out with the gate still queued or running.
+// quiet: print only the closing SUMMARY line (`tools\cli wait ship`, which an agent runs in <10 min chunks).
+export async function waitFor(root, slug, { budgetMs = 3 * 60 * 60 * 1000, print = console.log, quiet = false, pollMs = 10000, resume = `tools\\cli ship-queue wait ${slug}`, read = () => readQueue(root), keepWorker = async () => { if (!workerAlive(root)) await ensureWorker(root); } } = {}) {
   const t0 = Date.now();
   let last = "";
   for (;;) {
-    const e = sq.entryFor(readQueue(root), slug);
+    const e = sq.entryFor(read(), slug);
     if (!e) {
-      print(`FAIL  ${slug} is not in the ship queue`);
+      print(quiet ? `SUMMARY ship fail ${slug}: not in the ship queue (run 'tools\\cli wt ship ${slug}')` : `FAIL  ${slug} is not in the ship queue`);
       return 1;
     }
     const state = `${e.state}${e.machine ? ` on ${e.machine}` : ""}${e.attempts > 1 ? ` (gate ${e.attempts})` : ""}`;
-    if (state !== last) {
-      print(`ship-queue: ${slug} ${state}`);
-      last = state;
-    }
+    if (state !== last && !quiet) print(`ship-queue: ${slug} ${state}`);
+    last = state;
     if (sq.DONE.includes(e.state)) {
       const took = e.startedAt ? ` gate ${Math.round((Date.parse(e.endedAt) - Date.parse(e.startedAt)) / 1000)} s, in queue ${Math.round((Date.parse(e.endedAt) - Date.parse(e.enqueuedAt)) / 1000)} s` : "";
       print(`SUMMARY ship ${e.state === "passed" ? "ok" : "fail"} ${slug} PR #${e.pr}${took}: ${e.why ?? e.state} log=${e.log}`);
       return e.state === "passed" ? 0 : 1;
     }
-    if (!workerAlive(root)) await ensureWorker(root);
-    if (Date.now() - t0 > budgetMs) {
-      print(`ship-queue: still ${e.state} after ${Math.round(budgetMs / 60000)} min; resume with 'tools\\cli ship-queue wait ${slug}' (log ${e.log})`);
+    await keepWorker();
+    if (Date.now() - t0 >= budgetMs) {
+      const line = sq.statusLine(e).replace(/^ship-status \S+ /, "");
+      print(quiet ? `SUMMARY ship ${sq.phaseOf(e)} ${slug} after ${Math.round((Date.now() - t0) / 1000)} s wait; ${line}; re-run '${resume}'` : `ship-queue: still ${e.state} after ${Math.round(budgetMs / 60000)} min; resume with '${resume}' (log ${e.log})`);
       return 2;
     }
-    await new Promise((r) => setTimeout(r, 10000));
+    await new Promise((r) => setTimeout(r, Math.min(pollMs, Math.max(0, budgetMs - (Date.now() - t0)) + 50)));
   }
+}
+
+// `tools\cli wt ship-status <slug>`: one line, exit 0 when passed, queued or running, 1 when failed or unknown.
+export async function shipStatus(root, slug, { print = console.log } = {}) {
+  const q = readQueue(root);
+  const e = sq.entryFor(q, slug);
+  let waitWhy = null;
+  if (e?.state === "queued") {
+    const { slots, light } = await gateLimits(root);
+    waitWhy = sq.pickRunnable(q.entries, { slots, lightSlots: light }).wait.find((w) => w.entry.id === e.id)?.why ?? null;
+    if (!workerAlive(root)) waitWhy = `${waitWhy ? `${waitWhy}; ` : ""}no worker running (the next wt ship or wait starts one)`;
+  }
+  print(sq.statusLine(e, { slug, waitWhy }));
+  return e && sq.phaseOf(e) !== "failed" ? 0 : 1;
 }
 
 export async function printStatus(root, print = console.log) {
@@ -325,8 +377,9 @@ export async function main(args, { root }) {
     const r = withQueue(root, (q) => {
       const e = q.entries.find((x) => x.slug === rest[0] && x.state === "queued");
       if (e) Object.assign(e, { state: "cancelled", endedAt: now(), why: "cancelled by hand" });
-      return e;
+      return e ? { ...e } : null;
     });
+    if (r) publish(root, r);
     console.log(r ? `ship-queue: ${rest[0]} cancelled` : `ship-queue: ${rest[0]} is not waiting in the queue (a running gate finishes)`);
     return r ? 0 : 1;
   }

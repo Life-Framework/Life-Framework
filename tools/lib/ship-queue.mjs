@@ -204,3 +204,71 @@ export function statusLines(q, { now = Date.now(), waits = null } = {}) {
   }
   return out;
 }
+
+// ---------------------------------------------------------------- async ship (wt ship returns once queued)
+
+// Does `wt ship` block until the gate ends? No by default: an agent's Bash call is capped at 10 min and a
+// gate takes 15-90, so `wt ship` returns once the PR is queued and the gate runs in the worker. `--wait`
+// (or LF_SHIP_WAIT=1) keeps the old blocking behaviour; `--async` / `--no-wait` say the default out loud.
+export function shipWaits(flags = [], env = {}) {
+  if (flags.includes("--async") || flags.includes("--no-wait")) return false;
+  if (flags.includes("--wait")) return true;
+  return env.LF_SHIP_WAIT === "1";
+}
+
+// The four words an agent reads: queued | running | passed | failed (cancelled counts as failed).
+export function phaseOf(e) {
+  if (!e) return "unknown";
+  if (RUNNING.includes(e.state)) return "running";
+  if (e.state === "cancelled") return "failed";
+  return e.state;
+}
+
+// "45 s" under two minutes, else "87 min".
+export function dur(a, b) {
+  const s = Math.max(0, Math.round((Date.parse(b) - Date.parse(a)) / 1000));
+  return s < 120 ? `${s} s` : `${Math.round(s / 60)} min`;
+}
+
+// One line for `wt ship-status` and the status file: phase, PR, where and how long, why, log.
+export function statusLine(e, { slug = e?.slug, now = new Date().toISOString(), waitWhy = null } = {}) {
+  if (!e) return `ship-status ${slug} unknown: not in the ship queue (run 'tools\\cli wt ship ${slug}')`;
+  const phase = phaseOf(e);
+  const pr = e.pr ? ` PR #${e.pr}` : "";
+  let detail;
+  if (phase === "queued") detail = `queued ${dur(e.enqueuedAt, now)}${waitWhy ? `; ${waitWhy}` : ""}`;
+  else if (phase === "running") detail = `${e.state}${e.machine ? ` on ${e.machine}` : ""} for ${dur(e.startedAt ?? e.enqueuedAt, now)}${e.attempts > 1 ? ` (gate ${e.attempts})` : ""}`;
+  else detail = `${e.startedAt && e.endedAt ? `gate ${dur(e.startedAt, e.endedAt)}, ` : ""}${e.why ?? e.state}`;
+  return `ship-status ${e.slug} ${phase}${pr}: ${detail} log=${e.log ?? "-"}`;
+}
+
+// The `ship-gate` commit status the worker posts on the PR head (GitHub caps the description at 140).
+// Not a required check: auto-merge is enabled only by the worker after a pass, so a PR cannot merge before
+// its gate; the status is what a reviewer and `gh pr checks` see. docs/worktrees.md "Async ship".
+export const STATUS_CONTEXT = "ship-gate";
+export function commitStatusFor(e) {
+  const phase = phaseOf(e);
+  const state = { queued: "pending", running: "pending", passed: "success", failed: e?.state === "cancelled" ? "error" : "failure" }[phase] ?? "pending";
+  let desc;
+  if (phase === "queued") desc = "queued for the ship gate";
+  else if (phase === "running") desc = `gate ${e.state}${e.machine ? ` on ${e.machine}` : ""}`;
+  else desc = `${phase}: ${e.why ?? e.state}`;
+  return { state, context: STATUS_CONTEXT, description: desc.replace(/\s+/g, " ").slice(0, 140) };
+}
+
+// The local preflight's conflict check: the paths `git merge-tree --write-tree --name-only HEAD <base>`
+// prints after the tree id when it exits 1. Driver-merged files (docs/features.md, the string table, the
+// registry ...) the worker's merge resolves; anything else needs the agent before the gate can run, so
+// `wt ship` stops in seconds instead of the worker failing the entry after it waited in the queue.
+export function conflictPaths(mergeTreeOut) {
+  const lines = String(mergeTreeOut).split(/\r?\n/);
+  const out = [];
+  for (const l of lines.slice(1)) {
+    if (!l.trim()) break; // a blank line ends the file list; the messages follow
+    out.push(norm(l.trim()));
+  }
+  return [...new Set(out)];
+}
+export function humanConflicts(paths) {
+  return paths.filter((p) => !driverMerged(p));
+}
