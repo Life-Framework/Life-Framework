@@ -137,8 +137,7 @@ class LF_DownedPatient
 		LF_PatientSlot slot = new LF_PatientSlot();
 		slot.m_Id = patient.GetID();
 		patient.GetWorldTransform(slot.m_aHome);
-		if (patient.GetPrefabData())
-			slot.m_sPrefab = patient.GetPrefabData().GetPrefabName();
+		slot.m_sPrefab = LF_Utils.GetPrefabName(patient);
 
 		s_aSlots.Insert(slot);
 		LF_Debug.Info(FEATURE, string.Format("practice patient at %1", slot.m_aHome[3]));

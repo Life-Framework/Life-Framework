@@ -148,8 +148,8 @@ class LF_EvidenceLocker
 			if (!piece)
 				continue;
 
-			if (row.m_sPrefab.IsEmpty() && piece.GetPrefabData())
-				row.m_sPrefab = piece.GetPrefabData().GetPrefabName();
+			if (row.m_sPrefab.IsEmpty())
+				row.m_sPrefab = LF_Utils.GetPrefabName(piece);
 
 			LF_SerialComponent serial = LF_SerialComponent.Cast(piece.FindComponent(LF_SerialComponent));
 			if (serial && !serial.GetSerial().IsEmpty())
