@@ -413,5 +413,8 @@ look without child prefabs of core items or script of its own.
   reject, no-owner), `LF_Test_ConfigOwnerFile`, `LF_Test_ConfigPackOverlay`, `LF_Test_ConfigPackHeader`,
   `LF_Test_ConfigReject` (range), `LF_Test_ConfigUnknownKeys`,
   `LF_Test_ConfigSchemaVersion`, `LF_Test_ConfigMigrationChain`, `LF_Test_ConfigMigrationFile`,
+  `LF_Test_ConfigMigrationNoPersist` (a v1 to v2 identity step through `LoadOwnerFile`; the save folder
+  `$profile:.save` and the rest of `$profile:LifeFramework` are listed before and after and must match, and only
+  `config.json` and its `.bak` exist beside the migrated file; #303),
   `LF_Test_ConfigStreamRoundTrip`, `LF_Test_ConfigStreamClientOnly`, `LF_Test_ConfigStreamReject`,
   `LF_Test_ConfigStreamVehicles`, `LF_Test_JobLevelsConfig` (jobs).

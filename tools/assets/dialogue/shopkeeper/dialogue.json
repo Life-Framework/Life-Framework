@@ -1,0 +1,65 @@
+{
+  "id": "shopkeeper",
+  "name": "Shopkeeper",
+  "speaker_key": "#LF-Shopkeeper_Name",
+  "text_only": true,
+  "hear_range_m": 16,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "pay",
+          "next": "pay"
+        },
+        {
+          "text": "stock",
+          "next": "stock"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "pay",
+      "line": "how_to_pay",
+      "options_from": "greet"
+    },
+    {
+      "id": "stock",
+      "line": "stock",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Good day. Take what you need from the shelves and pay at the till."
+    },
+    "how_to_pay": {
+      "text": "Pick the goods up yourself, then pay at any till before you leave. You get a receipt. Walk out without paying and the alarm goes off."
+    },
+    "stock": {
+      "text": "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes."
+    },
+    "thief": {
+      "for_key": "#LF-Store_ClerkThief",
+      "text": "Stop! You did not pay for that! Come back here!"
+    },
+    "bye": {
+      "text": "Good day to you."
+    }
+  },
+  "replies": {
+    "pay": "How do I pay?",
+    "stock": "What do you sell?",
+    "bye": "Goodbye."
+  }
+}
