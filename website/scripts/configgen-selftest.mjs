@@ -78,4 +78,44 @@ for (const text of [fx("good.json"), fs.readFileSync(new URL("../../docs/config/
   const { value, extras } = importConfig(schema, plain(parseJson(fx("too-new.json"))));
   assert.ok(checkConfig(schema, exportText(schema, value, extras)).some((p) => p.level === "error"), "a too-new file stays an error, export stays off");
 }
+
+// #289: the presets are the harness's own files; each loads into the form, round-trips and checks clean.
+// #381: the server.json half is the base game's shape with both addon ids and its own checks.
+{
+  const { defaultServerOpts, serverJson, serverProblems, modIdList, startupLine } = await import("../src/lib/serverbundle.ts");
+  const dir = new URL("../../tools/test/config-fixtures/presets/", import.meta.url);
+  const names = fs.readdirSync(dir).filter((f) => f.endsWith(".json") && !f.endsWith(".expect.json"));
+  for (const want of ["flagship-1989", "small-server", "hardcore-economy"]) assert.ok(names.includes(want + ".json"), `preset ${want} exists`);
+  for (const f of names) {
+    const text = fs.readFileSync(new URL(f, dir), "utf8");
+    const { value, extras, keep } = importConfig(schema, plain(parseJson(text)));
+    const out = exportText(schema, value, extras, keep);
+    assert.deepEqual(JSON.parse(out), JSON.parse(text), `${f}: loads into the form and exports unchanged`);
+    assert.deepEqual(checkConfig(schema, out).filter((p) => p.level === "error"), [], `${f}: no errors`);
+  }
+  assert.ok(importConfig(schema, JSON.parse(fs.readFileSync(new URL("hardcore-economy.json", dir), "utf8"))).value.shops.defaultBuyPrice === 80, "hardcore loads its prices into the form");
+
+  const data = {
+    template: JSON.parse(fs.readFileSync(new URL("../../docs/playtest/server-config.example.json", import.meta.url), "utf8")),
+    core: { id: /GUID "(\w+)"/.exec(fs.readFileSync(new URL("../../addons/LifeFramework/LifeFramework.gproj", import.meta.url), "utf8"))[1], name: "Life Framework", scenario: "{1054CC8646357708}Missions/LF_PlaytestTown.conf" },
+    pack: { id: /GUID "(\w+)"/.exec(fs.readFileSync(new URL("../../addons/LF_Everon1989/LF_Everon1989.gproj", import.meta.url), "utf8"))[1], name: "Life Framework: Everon 1989", scenario: "{C638C03B775C31BB}Missions/LF_Everon1989.conf" },
+  };
+  const o = defaultServerOpts(data);
+  assert.deepEqual(serverProblems({ ...o, adminPassword: "s3cret" }), [], "a filled-in bundle has no problems");
+  const sj = JSON.parse(serverJson(data, { ...o, adminPassword: "s3cret", name: "Mine", port: 2002, maxPlayers: 24 }));
+  assert.equal(sj.bindPort, 2002); assert.equal(sj.publicPort, 2002); assert.equal(sj.game.name, "Mine"); assert.equal(sj.game.maxPlayers, 24);
+  assert.deepEqual(sj.game.mods.map((m) => m.modId), [data.core.id, data.pack.id], "pack scenario lists core then pack");
+  assert.equal(sj.game.scenarioId, data.pack.scenario);
+  assert.deepEqual(Object.keys(sj), Object.keys(data.template), "same top-level shape as the base game's file");
+  assert.deepEqual(JSON.parse(serverJson(data, { ...o, scenario: "core" })).game.mods.map((m) => m.modId), [data.core.id], "core scenario lists only the core");
+  assert.equal(modIdList(data, o), `${data.core.id},${data.pack.id}`);
+  assert.ok(startupLine().includes("-config server.json"));
+  const msgs = (x) => serverProblems({ ...o, ...x }).filter((p) => p.level === "error").map((p) => p.msg).join("|");
+  assert.match(msgs({ port: 70000 }), /bindPort 70000/);
+  assert.match(msgs({ a2sPort: 2001 }), /must differ/);
+  assert.match(msgs({ maxPlayers: 0 }), /maxPlayers/);
+  assert.match(msgs({ adminPassword: "a b" }), /space/);
+  assert.match(msgs({ name: " " }), /game.name/);
+  assert.ok(serverProblems(o).some((p) => p.level === "warn"), "the placeholder password warns");
+}
 console.log("configgen-selftest: OK");

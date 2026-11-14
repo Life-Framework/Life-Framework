@@ -4,7 +4,7 @@
 //! save needs no migration. Core ships the structure and today's offences (Configs/Crime/
 //! LF_CrimeCatalog.conf); a pack or the owner's `crime` section changes the numbers.
 [BaseContainerProps()]
-class LF_CrimeEntry
+class LF_CrimeEntry : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Stable offence id, a localization key such as #LF-Offence_Robbery. Saved crime records are keyed by it, so never rename one")]
 	string m_sCrimeId;
@@ -95,22 +95,39 @@ class LF_CrimeCatalogConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "crime" section over this instance, which holds the core `.conf`.
+	//! Merges the layers over this instance, which holds the core `.conf`: each pack overlay of this
+	//! class in load order, then the owner's "crime" section (LF_ConfigOverlay, #962).
 	void ApplyLayers()
 	{
+		if (!m_aCrimes)
+			m_aCrimes = new array<ref LF_CrimeEntry>();
+
+		LF_CrimeList list = new LF_CrimeList(this);
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_CrimeCatalogConfig, SECTION, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = LF_ConfigOverlay.ApplyContainerList(list, resource.GetResource().ToBaseContainer(), "m_aCrimes", names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("crime: pack overlay %1 changed %2 entries", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (!reader)
 			return;
 
-		ApplyOwner(reader);
+		ApplyOwner(reader, LF_ConfigService.GetOwnerSource());
 		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("crime: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Applies the owner's "crime" section: `crimes` is an object keyed by the crime id. A record
-	//! changes the entry with that id field by field; an id no entry has adds one at the end.
+	//! Applies the owner's "crime" section: `crimes` is an object keyed by the crime id, each record
+	//! with an optional "op" (add, replace, patch, remove). With no op an id the catalog has changes
+	//! field by field and a new id adds an entry at the end.
 	//! \param[in] reader A reader on the section.
-	void ApplyOwner(notnull LF_ConfigReader reader)
+	//! \param[in] source The file, for log lines.
+	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
 		array<string> ownerKeys = {"crimes"};
 		reader.WarnUnknownKeys(ownerKeys);
@@ -118,39 +135,7 @@ class LF_CrimeCatalogConfig
 		if (!m_aCrimes)
 			m_aCrimes = new array<ref LF_CrimeEntry>();
 
-		int count = reader.BeginRecords("crimes");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
-
-			if (key.IsEmpty())
-			{
-				reader.RejectRecord("the key is empty; it is the crime id");
-				reader.EndRecord();
-				continue;
-			}
-
-			LF_CrimeEntry entry = Find(key);
-			if (!entry)
-			{
-				entry = LF_CrimeEntry.Make(key, 1, 0);
-				m_aCrimes.Insert(entry);
-			}
-
-			array<string> recordKeys = {"wantedAdd", "fine", "sentenceSeconds", "repeatThreshold", "repeatWantedAdd"};
-			reader.WarnUnknownKeys(recordKeys);
-			reader.ReadInt("wantedAdd", entry.m_iWantedAdd, WANTED_MIN, WANTED_MAX);
-			reader.ReadInt("fine", entry.m_iFine, FINE_MIN, FINE_MAX);
-			reader.ReadInt("sentenceSeconds", entry.m_iSentenceSeconds, SENTENCE_MIN, SENTENCE_MAX);
-			reader.ReadInt("repeatThreshold", entry.m_iRepeatThreshold, THRESHOLD_MIN, THRESHOLD_MAX);
-			reader.ReadInt("repeatWantedAdd", entry.m_iRepeatWantedAdd, WANTED_MIN, WANTED_MAX);
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
+		LF_ConfigOverlay.ApplyRecords(reader, "crimes", new LF_CrimeList(this), source);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -167,6 +152,98 @@ class LF_CrimeCatalogConfig
 		}
 
 		return null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The crime catalog's `crimes` list for the shared merge (LF_ConfigOverlay), keyed by crime id.
+class LF_CrimeList : LF_ConfigList
+{
+	protected LF_CrimeCatalogConfig m_Config;
+
+	void LF_CrimeList(LF_CrimeCatalogConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "crime.crimes";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aCrimes.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aCrimes[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_CrimeEntry.Cast(record).m_sCrimeId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sCrimeId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a crime id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_CrimeEntry.Make(id, 1, 0);
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_CrimeEntry entry = LF_CrimeEntry.Cast(record);
+		if (index < m_Config.m_aCrimes.Count())
+			m_Config.m_aCrimes.Set(index, entry);
+		else
+			m_Config.m_aCrimes.Insert(entry);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aCrimes.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_CrimeEntry entry = LF_CrimeEntry.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_iWantedAdd") && container.Get("m_iWantedAdd", entry.m_iWantedAdd))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iFine") && container.Get("m_iFine", entry.m_iFine))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iSentenceSeconds") && container.Get("m_iSentenceSeconds", entry.m_iSentenceSeconds))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iRepeatThreshold") && container.Get("m_iRepeatThreshold", entry.m_iRepeatThreshold))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iRepeatWantedAdd") && container.Get("m_iRepeatWantedAdd", entry.m_iRepeatWantedAdd))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_CrimeEntry entry = LF_CrimeEntry.Cast(record);
+		array<string> recordKeys = {"op", "wantedAdd", "fine", "sentenceSeconds", "repeatThreshold", "repeatWantedAdd"};
+		reader.WarnUnknownKeys(recordKeys);
+		reader.ReadInt("wantedAdd", entry.m_iWantedAdd, LF_CrimeCatalogConfig.WANTED_MIN, LF_CrimeCatalogConfig.WANTED_MAX);
+		reader.ReadInt("fine", entry.m_iFine, LF_CrimeCatalogConfig.FINE_MIN, LF_CrimeCatalogConfig.FINE_MAX);
+		reader.ReadInt("sentenceSeconds", entry.m_iSentenceSeconds, LF_CrimeCatalogConfig.SENTENCE_MIN, LF_CrimeCatalogConfig.SENTENCE_MAX);
+		reader.ReadInt("repeatThreshold", entry.m_iRepeatThreshold, LF_CrimeCatalogConfig.THRESHOLD_MIN, LF_CrimeCatalogConfig.THRESHOLD_MAX);
+		reader.ReadInt("repeatWantedAdd", entry.m_iRepeatWantedAdd, LF_CrimeCatalogConfig.WANTED_MIN, LF_CrimeCatalogConfig.WANTED_MAX);
 	}
 }
 

@@ -6,9 +6,9 @@
 // ("# slate=<ms>"). The beep is found in the WAV (onset), so video time T = audio time - (onset - slateMs). A slate at
 // start and one at stop give the offset at both ends, and their difference is the drift over the clip.
 //
-// Guard: a silent capture is the #482 failure (muted or wrong endpoint). `checkAudio` fails a clip whose mean volume
-// is under -60 dB or whose slate beep cannot be heard, and `endpointGuard` warns before recording when the default
-// output is muted.
+// Guard: `checkAudio` fails a clip whose mean volume is under -60 dB or whose slate beep cannot be heard. A silent
+// capture means the client has no sound or the capture is on the wrong pid; the host's mute and volume do not matter
+// (measured 2026-11-14: endpoint muted at volume 0, the client's slate beeps captured at peak -22.5 dB).
 
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
@@ -47,9 +47,9 @@ export function readWavPeaks(buf) {
 
 // First loud onset within aroundSec +/- spanSec. Level is the peak of 2 ms blocks; the threshold is 18 dB under the
 // loudest block in the search window (never under -55 dBFS). Returns seconds, or null when nothing is audible there.
-export function findOnset(peaks, aroundSec, spanSec = 1.5, rate = RATE) {
+export function findOnset(peaks, aroundSec, spanSec = 1.5, rate = RATE, beforeSec = spanSec) {
   const block = Math.round(rate * 0.002);
-  const from = Math.max(0, Math.floor((aroundSec - spanSec) * rate));
+  const from = Math.max(0, Math.floor((aroundSec - beforeSec) * rate));
   const to = Math.min(peaks.length, Math.floor((aroundSec + spanSec) * rate));
   const levels = [];
   let best = 0;
@@ -69,8 +69,9 @@ export function findOnset(peaks, aroundSec, spanSec = 1.5, rate = RATE) {
 // Offsets between the audio clock and the video clock from each slate: audio onset minus the slate's frame time.
 export function slateOffsets(peaks, slateSecs, startGapSec = 0, rate = RATE) {
   return slateSecs.map((t) => {
-    // The capture starts startGapSec before the film, so the beep is expected near startGapSec + t.
-    const onset = findOnset(peaks, startGapSec + t, 1.5, rate);
+    // The capture starts startGapSec before the film, so the beep is expected near startGapSec + t, and never
+    // before it: a search that also looks back finds an alarm already sounding (the robbery video's police take).
+    const onset = findOnset(peaks, startGapSec + t, 1.5, rate, 0.05);
     return { slate: t, onset, offset: onset === null ? null : onset - t };
   });
 }
@@ -94,8 +95,8 @@ export function psRun(args, opts = {}) {
   return spawnSync("powershell", ["-NoProfile", "-File", join(HERE, "lf-procaudio.ps1"), ...args], { windowsHide: true, encoding: "utf8", ...opts });
 }
 
-// Default output state. Process loopback is taken before the endpoint's own volume, but a muted or zero-volume
-// endpoint is exactly the #482 setup, so say so.
+// Default output state, for the log only. Process loopback is taken before the endpoint's volume and mute (measured
+// 2026-11-14), so a muted host is fine and a film tool never changes it. #482 was whole-endpoint loopback.
 export function endpointGuard() {
   const r = psRun(["--endpoint"]);
   const text = (r.stdout || "").trim();
@@ -103,8 +104,6 @@ export function endpointGuard() {
   const volume = Number((/volume=([\d.]+)/.exec(text) || [])[1] ?? NaN);
   const warnings = [];
   if (r.status !== 0) warnings.push(`cannot read the default audio endpoint: ${(r.stderr || "").trim().slice(0, 200)}`);
-  if (mute) warnings.push("the default audio output is muted (the #482 failure); unmute it or the clip may be silent");
-  if (Number.isFinite(volume) && volume < 0.02) warnings.push(`the default audio output volume is ${volume}`);
   return { text, mute, volume, warnings };
 }
 
@@ -158,7 +157,7 @@ export function muxClip({ clip, indexText, wav, out, firstFrameMs = 0, startGapS
   const vol = volumeOf(wav);
   if (!vol || vol.mean === null) return { ok: false, error: "could not measure the audio" };
   if (vol.mean < SILENT_DB && !allowSilent) {
-    return { ok: false, error: `captured audio is silent (mean_volume ${vol.mean} dB < ${SILENT_DB} dB): the client has no sound (start the session with --sound), or its output is muted (#482)`, mean: vol.mean };
+    return { ok: false, error: `captured audio is silent (mean_volume ${vol.mean} dB < ${SILENT_DB} dB): the client has no sound (start the session with --sound), or the capture is on another process's pid`, mean: vol.mean };
   }
   const peaks = readWavPeaks(readFileSync(wav));
   const slates = parseSlates(indexText).map((ms) => (ms - firstFrameMs) / 1000);
@@ -169,9 +168,8 @@ export function muxClip({ clip, indexText, wav, out, firstFrameMs = 0, startGapS
     if (!allowSilent) return { ok: false, error: "the slate beep is not in the captured audio (wrong process, no sound, or the beep is muted)", mean: vol.mean, offsets };
     warnings.push("slate beep not heard");
   }
-  // Two slates: use the mean so the error at either end is half the drift.
-  const offsetSec = heard.length ? heard.reduce((s, o) => s + o.offset, 0) / heard.length : 0;
-  const driftMs = heard.length > 1 ? (heard[heard.length - 1].offset - heard[0].offset) * 1000 : 0;
+  const { offsetSec, driftMs, masked } = chooseOffset(heard.map((o) => o.offset));
+  if (masked) warnings.push(`the slates disagree by ${driftMs.toFixed(0)} ms: the end beep was masked by game sound; placed by the start slate`);
   const videoSec = Number(clip?.summary?.seconds) || 0;
   const probeLen = spawnSync(ff.path, ["-hide_banner", "-i", clip.out], { windowsHide: true, encoding: "utf8" }).stderr || "";
   const dm = /Duration:\s*(\d+):(\d+):([\d.]+)/.exec(probeLen);
@@ -182,15 +180,40 @@ export function muxClip({ clip, indexText, wav, out, firstFrameMs = 0, startGapS
   return { ok: true, out, mean: final?.mean ?? vol.mean, max: final?.max ?? vol.max, offsets, offsetSec, driftMs, warnings };
 }
 
+// Two slates: use the mean so the error at either end is half the drift. Measured drift is jitter of +-120 ms
+// (2026-11-10); a larger gap means one beep was masked (an alarm at -25 dB hides the -22 dB end beep, the robbery
+// video), so the start slate, always played in the quiet before the action, places the audio alone.
+export const MAX_DRIFT_MS = 500;
+export function chooseOffset(offsets) {
+  if (!offsets.length) return { offsetSec: 0, driftMs: 0, masked: false };
+  const driftMs = offsets.length > 1 ? (offsets[offsets.length - 1] - offsets[0]) * 1000 : 0;
+  if (Math.abs(driftMs) > MAX_DRIFT_MS) return { offsetSec: offsets[0], driftMs, masked: true };
+  return { offsetSec: offsets.reduce((a, b) => a + b, 0) / offsets.length, driftMs, masked: false };
+}
+
 // pid of the game client n of the current session (session.json, written by `tools\cli session up`). The launcher's
 // pid can be a wrapper, so a pid that is not an ArmaReforger process falls back to the one carrying -lfSession.
 export function clientPid(sessionJson, n = 1) {
   const s = JSON.parse(readFileSync(sessionJson, "utf8"));
   const c = (s.clients || []).find((x) => x.n === n);
   if (!c) throw new Error(`session has no client ${n}`);
-  const q = spawnSync("powershell", ["-NoProfile", "-Command", `Get-CimInstance Win32_Process | Where-Object { $_.ProcessId -eq ${c.pid} -or ($_.CommandLine -like '*-lfSession ${s.id}*' -and $_.Name -like 'ArmaReforger*' -and $_.CommandLine -notlike '*-server*') } | Select-Object -ExpandProperty ProcessId`], { windowsHide: true, encoding: "utf8" });
-  const pids = (q.stdout || "").split(/\s+/).filter(Boolean).map(Number);
-  return pids.length ? pids[pids.length - 1] : c.pid;
+  const q = spawnSync("powershell", ["-NoProfile", "-Command", "Get-CimInstance Win32_Process | Where-Object { $_.Name -like 'ArmaReforger*' } | ForEach-Object { [string]$_.ProcessId + [char]9 + $_.CommandLine }"], { windowsHide: true, encoding: "utf8" });
+  const rows = (q.stdout || "").split(/\r?\n/).filter(Boolean).map((l) => {
+    const i = l.indexOf("\t");
+    return { pid: Number(l.slice(0, i)), cmd: l.slice(i + 1) };
+  });
+  return pickClientPid(rows, { pid: c.pid, sessionId: s.id, n });
+}
+
+// Every client of a session carries the same `-lfSession <id>`, so the session id alone matches all of them: the
+// old rule took the last match, which recorded client 2's ears for a client 1 take. A client is told apart by its
+// own `-profile ...\client<n>` folder; the pid the session wrote wins when it is still a live game client.
+export function pickClientPid(rows, { pid, sessionId, n }) {
+  const clients = rows.filter((r) => / -client\b/.test(r.cmd) && !/ -server\b/.test(r.cmd));
+  if (clients.some((r) => r.pid === pid)) return pid;
+  const profileOf = (cmd) => (/ -profile\s+("[^"]+"|\S+)/.exec(cmd)?.[1] ?? "").replace(/"/g, "").replace(/[\\/]+$/, "");
+  const hit = clients.find((r) => r.cmd.includes(`-lfSession ${sessionId}`) && /[\\/]client(\d+)$/i.exec(profileOf(r.cmd))?.[1] === String(n));
+  return hit ? hit.pid : pid;
 }
 
 // One filmed take with a game-audio track. send(spec, ms) talks to the client (harness sendCommand); resolveAlias
@@ -198,6 +221,7 @@ export function clientPid(sessionJson, n = 1) {
 export async function shootWithAudio({ send, resolveAlias, name, fps = 30, seconds = 120, pid, body, out, label = "film", log = console.log }) {
   const guard = endpointGuard();
   for (const w of guard.warnings) log(`audio: WARNING ${w}`);
+  log(`audio: capturing pid ${pid} (host output ${guard.mute ? "muted" : "on"}, which process loopback ignores)`);
   const wav = join(OUT_DIR, `${name}.wav`);
   // The first play of a UI sound is loaded on demand and lands about 0.5 s late (measured 2026-11-10: 0.62 s
   // first, 0.13 s second). Play one beep before the capture starts so both slates have the same latency.
@@ -252,6 +276,26 @@ export function selftestAudio() {
   const on = findOnset(peaks, 0.5, 0.4);
   if (on === null || Math.abs(on - 0.5) > 0.004) fails.push(`findOnset: ${on}`);
   if (findOnset(new Float32Array(RATE).fill(0.0001), 0.5, 0.4) !== null) fails.push("findOnset heard a beep in silence");
+  // Two clients of one session: each n resolves to its own process, never the other client's (the silent HOLD take).
+  const rows = [
+    { pid: 11, cmd: '"ArmaReforgerServer.exe" -server x -lfSession abc' },
+    { pid: 21, cmd: '"ArmaReforgerSteam.exe" -client 127.0.0.1:2011 -profile C:\\s\\client1 -window -lfSession abc' },
+    { pid: 22, cmd: '"ArmaReforgerSteam.exe" -client 127.0.0.1:2011 -profile C:\\s\\client2 -window -lfSession abc' },
+    { pid: 31, cmd: '"ArmaReforgerSteam.exe" -client 127.0.0.1 -profile C:\\o\\client1 -lfSession zzz' },
+  ];
+  if (pickClientPid(rows, { pid: 999, sessionId: "abc", n: 1 }) !== 21) fails.push(`pickClientPid n=1: ${pickClientPid(rows, { pid: 999, sessionId: "abc", n: 1 })}`);
+  if (pickClientPid(rows, { pid: 999, sessionId: "abc", n: 2 }) !== 22) fails.push("pickClientPid n=2");
+  if (pickClientPid(rows, { pid: 21, sessionId: "abc", n: 1 }) !== 21) fails.push("pickClientPid keeps a live session pid");
+  if (pickClientPid(rows, { pid: 11, sessionId: "abc", n: 1 }) !== 21) fails.push("pickClientPid took the server");
+  // A beep at 1.3 s over a bed of sound from 0 s: the onset is the beep, not the start of the bed.
+  const bed = new Float32Array(RATE * 3).fill(0.15);
+  for (let i = Math.round(RATE * 1.3); i < Math.round(RATE * 1.4); i++) bed[i] = 0.5;
+  const so = slateOffsets(bed, [1.0], 0.25)[0];
+  if (so.onset === null || Math.abs(so.onset - 1.25) > 0.06) fails.push(`slateOffsets looked back into a sound bed: ${JSON.stringify(so)}`);
+  const jitter = chooseOffset([0.5, 0.6]);
+  if (Math.abs(jitter.offsetSec - 0.55) > 1e-9 || jitter.masked) fails.push(`chooseOffset jitter: ${JSON.stringify(jitter)}`);
+  const masked = chooseOffset([0.524, -1.072]);
+  if (masked.offsetSec !== 0.524 || !masked.masked) fails.push(`chooseOffset masked end slate: ${JSON.stringify(masked)}`);
   const a = muxArgs({ video: "v.mp4", wav: "a.wav", out: "o.mp4", offsetSec: 0.25, videoSec: 5 }).join(" ");
   if (!a.includes("atrim=start=0.2500") || !a.includes("-c:v copy") || !a.includes("-t 5.000")) fails.push(`muxArgs trim: ${a}`);
   const b = muxArgs({ video: "v.mp4", wav: "a.wav", out: "o.mp4", offsetSec: -0.1, videoSec: 5 }).join(" ");

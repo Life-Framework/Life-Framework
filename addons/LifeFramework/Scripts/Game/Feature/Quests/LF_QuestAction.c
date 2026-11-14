@@ -17,6 +17,9 @@ class LF_QuestAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Quests"))
+			return false;
+
 		if (!user)
 			return false;
 
@@ -42,6 +45,9 @@ class LF_QuestAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Quests", "LF_QuestAction"))
+			return;
+
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 

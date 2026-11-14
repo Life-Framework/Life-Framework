@@ -362,9 +362,18 @@ modded class SCR_PlayerController
 //! "Read the ledger" at a garage or the impound desk.
 class LF_GarageLedgerAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_GarageLedgerAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 
@@ -412,9 +421,18 @@ class LF_ImpoundDeskComponent : ScriptComponent
 //! vehicle onto the yard pad. The server checks ownership, the impound state, and the cash.
 class LF_ImpoundCollectAction : ScriptedUserAction
 {
+	//! The Vehicles system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Vehicles");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Vehicles", "LF_ImpoundCollectAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 

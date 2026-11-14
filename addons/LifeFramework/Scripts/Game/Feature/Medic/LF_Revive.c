@@ -176,6 +176,9 @@ class LF_ReviveAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Medic"))
+			return false;
+
 		return LF_Revive.CanOffer(user, GetOwner());
 	}
 
@@ -212,6 +215,9 @@ class LF_ReviveAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Medic", "LF_ReviveAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

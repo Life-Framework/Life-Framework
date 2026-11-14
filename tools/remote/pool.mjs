@@ -653,8 +653,10 @@ try {
   }
   New-Item -ItemType Directory -Force -Path (Join-Path $dir 'tmp\remote-in') | Out-Null
   foreach ($c in @($cfg.candidates)) { if ($c) { git -C $dir cat-file -e "$c^{commit}" 2>$null; if (-not $LASTEXITCODE) { Write-Host "lf-pool: has $c" } } }
-  $rdb = Join-Path $dir 'addons\LifeFramework\resourceDatabase.rdb'
-  if (Test-Path -LiteralPath $rdb) { Write-Host "lf-pool: rdb $((Get-FileHash -Algorithm SHA1 -LiteralPath $rdb).Hash.ToLower())" }
+  foreach ($ad in @(Get-ChildItem -LiteralPath (Join-Path $dir 'addons') -Directory -ErrorAction SilentlyContinue)) {
+    $rdb = Join-Path $ad.FullName 'resourceDatabase.rdb'
+    if (Test-Path -LiteralPath $rdb) { Write-Host "lf-pool: rdb $($ad.Name) $((Get-FileHash -Algorithm SHA1 -LiteralPath $rdb).Hash.ToLower())" }
+  }
   $marker = [ordered]@{ origin = $cfg.origin; slug = $cfg.slug; worktree = $cfg.worktree; at = (Get-Date).ToUniversalTime().ToString('o') }
   [IO.File]::WriteAllText((Join-Path $dir 'tmp\pool-owner.json'), ($marker | ConvertTo-Json -Compress), $enc)
   Write-Host 'lf-pool: ready'
@@ -717,7 +719,7 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
   return new Promise((resolvePromise) => {
     const child = spawn("ssh", tb.sshPsArgs(m.host, holderScript(cfg), { connectTimeout: 4 }), { windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
     liveHolders.add(child);
-    const prep = { has: new Set(), rdb: null, fetched: false, fresh: false };
+    const prep = { has: new Set(), rdbs: {}, fetched: false, fresh: false };
     const busy = [];
     let acquired = null;
     let settled = false;
@@ -745,7 +747,7 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
       let mm;
       if ((mm = /^lf-pool: acquired (\S+) (\d+)/.exec(t))) acquired = { lockName: mm[1], index: Number(mm[2]) };
       else if ((mm = /^lf-pool: has ([0-9a-f]{40})/.exec(t))) prep.has.add(mm[1]);
-      else if ((mm = /^lf-pool: rdb ([0-9a-f]{40})/.exec(t))) prep.rdb = mm[1];
+      else if ((mm = /^lf-pool: rdb (\S+) ([0-9a-f]{40})/.exec(t))) prep.rdbs[mm[1]] = mm[2];
       else if (t === "lf-pool: fetched origin") prep.fetched = true;
       else if ((mm = /^lf-remote: buildid (\d+)/.exec(t))) prep.build = mm[1];
       else if (t === "lf-pool: new run folder") prep.fresh = true;

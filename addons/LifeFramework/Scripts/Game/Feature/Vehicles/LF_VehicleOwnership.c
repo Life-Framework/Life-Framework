@@ -403,6 +403,10 @@ class LF_VehicleOwnership
 	//! \param[out] reasonKey What the owner reads, success or refusal.
 	static bool CollectFromImpound(string vehicleId, string ownerUid, IEntity payer, int fee, string padId, out string reasonKey)
 	{
+		reasonKey = "#LF-Systems_Off";
+		if (LF_Systems.Refuses("Vehicles", "impound collect"))
+			return false;
+
 		reasonKey = "#LF-Impound_NothingHere";
 		if (!Replication.IsServer())
 		{
@@ -667,6 +671,12 @@ class LF_VehicleOwnership
 	{
 		vehicleId = "";
 		cashCharged = 0;
+		reasonKey = "#LF-Systems_Off";
+		if (LF_Systems.Refuses("Vehicles", "vehicle purchase"))
+			return false;
+
+		vehicleId = "";
+		cashCharged = 0;
 		reasonKey = "#EL-Vehicle_NotSold";
 
 		if (!Replication.IsServer())
@@ -787,6 +797,9 @@ class LF_VehicleOwnership
 	//------------------------------------------------------------------------------------------------
 	static bool GiveExtraKey(string vehicleId, string ownerUid, int price, int cashCeiling, IEntity buyer, vector origin, out int cashCharged)
 	{
+		if (LF_Systems.Refuses("Vehicles", "extra key"))
+			return false;
+
 		cashCharged = 0;
 		if (!CanIssueExtraKey(vehicleId, ownerUid))
 			return false;
@@ -822,6 +835,9 @@ class LF_VehicleOwnership
 	//------------------------------------------------------------------------------------------------
 	static bool Store(string vehicleId, string ownerUid)
 	{
+		if (LF_Systems.Refuses("Vehicles", "vehicle store"))
+			return false;
+
 		LF_VehicleRecord record = Records().Get(vehicleId);
 		if (!Owned(record, ownerUid))
 		{
@@ -883,6 +899,9 @@ class LF_VehicleOwnership
 	//! Record half of retrieve. Does not spawn. The world retrieve calls this after the spawn.
 	static bool RestoreRecord(string vehicleId, string ownerUid)
 	{
+		if (LF_Systems.Refuses("Vehicles", "vehicle retrieve"))
+			return false;
+
 		LF_VehicleRecord record = Records().Get(vehicleId);
 		if (!Owned(record, ownerUid))
 		{
@@ -1041,6 +1060,9 @@ class LF_VehicleOwnership
 	//! \return How many cars were granted.
 	static int GrantTestCars(string ownerUid, IEntity holder, notnull array<LF_VehicleOffer> offers, string shopId)
 	{
+		if (LF_Systems.Refuses("Vehicles", "test car grant"))
+			return 0;
+
 		if (ownerUid.IsEmpty() || !holder)
 		{
 			LF_Debug.Error("Vehicle", "test cars not granted: no owner or no body for the keys");

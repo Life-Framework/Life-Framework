@@ -290,6 +290,9 @@ class LF_QuestManager
 	//------------------------------------------------------------------------------------------------
 	protected bool Route(IEntity user, LF_QuestEvent ev)
 	{
+		if (LF_Systems.Refuses("Quests", "quest event"))
+			return false;
+
 		LF_QuestTrackerComponent tracker = ResolveTracker(user);
 		if (!tracker)
 			return false;

@@ -14,6 +14,13 @@ Reference:
 - [AGENTS.md](../AGENTS.md) is the engineering contract for people and agents.
 - [Agent box](../agent-box/README.md) covers rendering setup and player-equivalent checks.
 
+## For server owners
+
+- [Install a server](owner/install.md) — from a server install to a player joining, then the save across restarts.
+- [Add a delivery job](owner/add-job.md) — a depot and a drop on your own map, then the XP and levels in `config.json`.
+- [Add a shop](owner/add-shop.md) — a counter, its stock, and its prices, or a catalogue outlet.
+- [Owner config check](config/owner-config.md) — `tools\cli config-check <config.json>`: what the server would log about your config.json, before a restart.
+
 ## Direction and decisions
 
 - [Direction](direction.md) — what we are building, what playable means, and the milestones.
@@ -33,7 +40,6 @@ Reference:
 - [Performance budget](architecture/performance.md) - the 128-player cost budget, the `perf/budget-128` gate, `tools\cli perf`, measured numbers.
 - [Core vs pack](architecture/core-vs-pack.md) — what goes in the core addon and what goes in the flagship pack; [inventory](architecture/core-pack-inventory.md).
 - [Features](features.md) — implemented behavior and fragile paths.
-- [Owner config check](config/owner-config.md) — `tools\cli config-check <config.json>`: what the server would log about your config.json, before a restart.
 - [Persistence](persistence.md) — saved data, serializers, and restart rules.
 - [Foundation design](foundation-design.md) — economy, trade, processing, and ownership primitives.
 - [Worktrees](worktrees.md) — parallel changes, ports, validation, and shipping.

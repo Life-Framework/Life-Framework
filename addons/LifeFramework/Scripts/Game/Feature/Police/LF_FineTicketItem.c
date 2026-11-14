@@ -414,6 +414,9 @@ class LF_FineTicketReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		return m_Ticket && m_Ticket.IsPrinted();
 	}
 
@@ -426,6 +429,9 @@ class LF_FineTicketReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_FineTicketReadAction"))
+			return;
+
 		if (!pOwnerEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 

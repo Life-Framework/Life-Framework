@@ -12,6 +12,7 @@
 //   client carries no -scrDefine, or the script checksum differs from the host.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { addonsArgs, launchAddons } from "../lib/addons.mjs";
 
 export const CHECKOUT_NAME = "Life-Framework-playtest";
 export const JOIN_LINE = /\[LFDebug:Whitelist\] join allowed/g;
@@ -34,8 +35,8 @@ export function playerPaths(dir) {
 
 // A player's client: no -window/-noFocus (the human's own full session), no
 // -noBackend (a real Steam identity), no -scrDefine (same checksum as the host).
-export function playerClientArgs({ address = "127.0.0.1", addonsDir, profile }) {
-  return ["-client", address, "-addonsDir", addonsDir, "-addons", "LifeFramework", "-profile", profile];
+export function playerClientArgs({ address = "127.0.0.1", addonsDir, profile, addons = launchAddons() }) {
+  return ["-client", address, "-addonsDir", addonsDir, ...addonsArgs(addons), "-profile", profile];
 }
 
 export function readClientState(dir) {
@@ -63,14 +64,14 @@ export function rankLan(lan) {
 }
 
 // What a friend does to join (printed after a launch).
-export function friendLines({ lan: raw, port, commit }) {
+export function friendLines({ lan: raw, port, commit, addons = launchAddons() }) {
   const lan = rankLan(raw);
   const out = [];
   out.push("friends (optional): they need Arma Reforger and a clone of the repo at the same commit");
   out.push(`  1. git clone https://github.com/Life-Framework/Life-Framework.git && git -C Life-Framework checkout ${commit}`);
   out.push("  2. from their Arma Reforger folder:");
   const addr = lan[0] ?? "<this PC's address>";
-  out.push(`     ArmaReforgerSteam.exe -client ${addr} -addonsDir "<their clone>\\addons" -addons LifeFramework`);
+  out.push(`     ArmaReforgerSteam.exe -client ${addr} -addonsDir "<their clone>\\addons" ${addonsArgs(addons).join(" ")}`);
   for (const a of lan.slice(1)) out.push(`     (other LAN address: ${a})`);
   out.push(`  over the internet: your public IP, with UDP ${port} forwarded to this PC (docs/playtest.md)`);
   out.push("  each player needs a distinct Steam name: the name keys the character");
@@ -85,7 +86,7 @@ export function selftestPlaytest() {
   const a = playerClientArgs({ addonsDir: "A", profile: "P" });
   if (a[0] !== "-client" || a[1] !== "127.0.0.1") failures.push("client does not join 127.0.0.1");
   if (a[a.indexOf("-profile") + 1] !== "P") failures.push("client does not use the player profile");
-  if (a[a.indexOf("-addons") + 1] !== "LifeFramework") failures.push("client does not load LifeFramework");
+  if (a[a.indexOf("-addons") + 1] !== "LifeFramework,LF_Everon1989") failures.push("client does not load the core and the pack");
   for (const bad of ["-window", "-noFocus", "-noBackend", "-scrDefine", "-noSound", "-lfSession"]) {
     if (a.includes(bad)) failures.push(`player client passes ${bad}`);
   }

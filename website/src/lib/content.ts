@@ -277,7 +277,7 @@ export function splitTitle(title: string): { code: string | null; title: string 
 export const formatDate = (iso: string, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) =>
   new Date(iso.length === 10 ? `${iso}T12:00:00Z` : iso).toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
 
-export const DOC_GROUPS = ["Start here", "Direction & decisions", "Current plan", "Engineering reference", "Research & community"];
+export const DOC_GROUPS = ["Start here", "For server owners", "Direction & decisions", "Current plan", "Engineering reference", "Research & community"];
 export function groupDocs(list: DocMeta[]): [string, DocMeta[]][] {
   const groups = new Map<string, DocMeta[]>(DOC_GROUPS.map((g) => [g, []]));
   for (const d of list) {

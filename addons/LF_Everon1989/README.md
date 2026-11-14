@@ -5,9 +5,13 @@ The flagship content pack: 1989 Everon on top of the Life Framework core
 decides what this server is. The rule and its tests are in
 [`docs/architecture/core-vs-pack.md`](../../docs/architecture/core-vs-pack.md).
 
-**Status: skeleton.** Nothing loads this addon yet. `build`, `test`, `serve`,
-and `playtest` pass `-addons LifeFramework` only, and every resource still
-lives in the core. The move is an M3 freeze (epic #223).
+**Status: loaded, nearly empty.** `build`, `test`, `serve`, `host`, `playtest`,
+`dev`, `wt e2e` and both session tools load `-addons LifeFramework,LF_Everon1989`
+when this folder is in the checkout, and the core alone when it is not
+(`tools/lib/addons.mjs` `launchAddons`, #322). `validate --full` compiles this
+project too. The pack's own header, `Missions/LF_Everon1989.conf`, is what
+`tools\cli playtest` and `session up --mission playtest` boot. Every other
+resource still lives in the core; the move is #323 (epic #223).
 
 Licence: the Workshop build of this pack is under the Arma Public License (APL); the source on
 GitHub is MIT.
