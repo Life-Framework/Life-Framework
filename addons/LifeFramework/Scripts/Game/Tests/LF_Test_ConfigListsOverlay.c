@@ -25,8 +25,8 @@ class LF_Test_ConfigListsOverlay : LF_Test
 	{
 		LF_PoliceConfig config = new LF_PoliceConfig();
 		config.m_aRanks = {};
-		config.m_aRanks.Insert(LF_PoliceRank.Create("patrol", "EL-Rank_Patrol", 500, -1, 100, ResourceName.Empty));
-		config.m_aRanks.Insert(LF_PoliceRank.Create("senior", "EL-Rank_Senior", 5000, -1, 0, ResourceName.Empty));
+		config.m_aRanks.Insert(LF_PoliceRank.Create("patrol", "EL-Rank_Patrol", 500, -1, 100));
+		config.m_aRanks.Insert(LF_PoliceRank.Create("senior", "EL-Rank_Senior", 5000, -1, 0));
 		config.m_iShippedRanks = 2;
 		return config;
 	}

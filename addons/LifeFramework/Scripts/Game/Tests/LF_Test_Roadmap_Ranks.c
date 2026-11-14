@@ -17,42 +17,6 @@ class LF_Test_Roadmap_Ranks : LF_Test
 		ctx.EqualStr("EL-Rank_Patrol", LF_PoliceRanks.TitleKey(LF_PoliceRanks.PATROL), "patrol title is the patrol officer key");
 		ctx.EqualStr("EL-Rank_Senior", LF_PoliceRanks.TitleKey(LF_PoliceRanks.SENIOR), "senior title is the senior officer key");
 
-		array<ResourceName> rankList = {};
-		rankList.Insert(LF_PoliceRanks.SIDEARM);
-		rankList.Insert("{1111111111111111}Prefabs/Weapons/NotInCatalog.et");
-		array<ResourceName> catalog = {};
-		catalog.Insert(LF_PoliceRanks.SIDEARM);
-		catalog.Insert(LF_PoliceRanks.LONG_GUN);
-		array<ResourceName> intersection = {};
-		LF_PoliceRanks.Intersect(rankList, catalog, intersection);
-		ctx.Equal(1, intersection.Count(), "kit list is the intersection of rank and config");
-		if (intersection.Count() == 1)
-			ctx.True(intersection.Get(0) == LF_PoliceRanks.SIDEARM, "intersection keeps the sidearm");
-
-		array<ResourceName> patrolKit = {};
-		LF_PoliceRanks.CollectKit(LF_PoliceRanks.PATROL, patrolKit);
-		ctx.Equal(2, patrolKit.Count(), "patrol kit is the rank's prefabs only");
-		if (patrolKit.Count() == 2)
-			ctx.True(patrolKit.Get(0) == LF_PoliceRanks.SIDEARM, "patrol kit is the M9");
-		ctx.True(KitHas(patrolKit, LF_PoliceRanks.SPIKE_STRIP), "patrol kit includes the spike strip");
-		ctx.False(KitHas(patrolKit, LF_PoliceRanks.LONG_GUN), "patrol kit does not include the rifle");
-
-		array<ResourceName> seniorKit = {};
-		LF_PoliceRanks.CollectKit(LF_PoliceRanks.SENIOR, seniorKit);
-		ctx.Equal(2, seniorKit.Count(), "senior kit is the rank's prefabs only");
-		if (seniorKit.Count() == 2)
-			ctx.True(seniorKit.Get(0) == LF_PoliceRanks.LONG_GUN, "senior kit is the M16A2");
-		ctx.False(KitHas(seniorKit, LF_PoliceRanks.SIDEARM), "senior kit does not include the sidearm");
-
-		array<ResourceName> configured = {};
-		configured.Insert(LF_PoliceRanks.SIDEARM);
-		configured.Insert("{2222222222222222}Prefabs/Weapons/Missing/NotAWeapon.et");
-		array<ResourceName> kept = {};
-		int skipsBefore = LF_PoliceRanks.GetMissingPrefabSkips();
-		LF_PoliceRanks.FilterLoadable(configured, kept);
-		ctx.Equal(skipsBefore + 1, LF_PoliceRanks.GetMissingPrefabSkips(), "a missing prefab drops that line and is logged");
-		ctx.Equal(1, kept.Count(), "the loadable line remains");
-		ctx.True(LF_PoliceRanks.IsRankUsable(LF_PoliceRanks.PATROL), "a missing prefab leaves the rank usable");
 
 		LF_PlayerAccount self = Police("roadmap-ranks-self", LF_PoliceRanks.PATROL, true);
 		int selfBefore = LF_PoliceRanks.GetSelfPromotionRefusalCount();
@@ -131,21 +95,6 @@ class LF_Test_Roadmap_Ranks : LF_Test
 		account.SetOnDuty(onDuty);
 		return account;
 	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool KitHas(array<ResourceName> kit, ResourceName prefab)
-	{
-		if (!kit)
-			return false;
-
-		foreach (ResourceName candidate : kit)
-		{
-			if (candidate == prefab)
-				return true;
-		}
-
-		return false;
-	}
 }
 
 // tier: WORLD
@@ -214,7 +163,7 @@ class LF_Test_Roadmap_RanksWorld : LF_Test
 		ctx.True(drawAction.CanBePerformedScript(senior), "on-duty senior can use the armory action");
 		drawAction.PerformAction(armory, senior);
 		ctx.Equal(1, HeldCount(senior, LF_PoliceRanks.LONG_GUN), "higher rank receives Rifle_M16A2.et");
-		ctx.Equal(0, HeldCount(senior, LF_PoliceRanks.SIDEARM), "the higher rank does not receive the sidearm");
+		ctx.Equal(1, HeldCount(senior, LF_PoliceRanks.SIDEARM), "the higher rank keeps the sidearm: its offer is open to every rank");
 	}
 
 	//------------------------------------------------------------------------------------------------

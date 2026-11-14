@@ -37,19 +37,6 @@ class LF_Test_PoliceRankTable : LF_Test
 		ctx.Equal(LF_PoliceRanks.FineCap(LF_PoliceRanks.PATROL), LF_PoliceRanks.FineCap(-5), "an unknown low rank clamps to the bottom rung");
 		ctx.Equal(0, LF_PoliceRanks.DutySecondsForNext(99), "an unknown rank never promotes by time");
 
-		// Kit per rank comes from the row.
-		array<ResourceName> kit = {};
-		LF_PoliceRanks.CollectKit(LF_PoliceRanks.PATROL, kit);
-		ctx.Equal(2, kit.Count(), "patrol kit is two lines: the sidearm and the spike strip");
-		kit.Clear();
-		LF_PoliceRanks.CollectKit(LF_PoliceRanks.SENIOR, kit);
-		ctx.Equal(2, kit.Count(), "senior kit is two lines: the rifle and the spike strip");
-		if (kit.Count() == 2)
-		{
-			ctx.True(kit.Get(0) == LF_PoliceRanks.LONG_GUN, "senior draws the rifle");
-			ctx.True(kit.Get(1) == LF_PoliceRanks.SPIKE_STRIP, "senior draws the spike strip");
-		}
-
 		// Duty pay: a negative rank rate defers to the jobs rate; a rank rate overrides it.
 		LF_PlayerAccount officer = LF_PlayerAccountManager.GetOrCreate("rank-table-officer");
 		officer.SetFaction(LF_Faction.POLICE);

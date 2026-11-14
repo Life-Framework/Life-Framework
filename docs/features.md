@@ -1741,9 +1741,9 @@
   `{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et`, fines up to
   1000 (`LF_PoliceConfig.PatrolFineCap`). Senior officer draws
   `{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et` and fines up
-  to the existing 5000 cap. The resolved kit is the intersection
-  of that rank's list and the station catalog; a prefab that does not load is
-  logged and skipped, and the rank stays usable. An on-duty senior promotes a
+  to the existing 5000 cap. Since #1066 the kit is the
+  catalogue's `police_armory` issue offers the officer's rank passes, not a rank
+  list; a prefab that does not load is logged and skipped, and the rank stays usable. An on-duty senior promotes a
   lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
   is the self-promotion RPC body and always refuses. Rank does not change
   faction and does not write the police whitelist. Lower ranks still open the
@@ -2902,3 +2902,4 @@
 ### `LF_ClipStamp` — `Feature/Moderation/LF_ClipStamp.c` (#1173, 2026-11-14)
 - ✅ A player can show a small on-screen clip stamp (F9, or a quick tap of RB + View on gamepad; off by default): server name, last six characters of their character id and the real server time in UTC, the clock `LF_IncidentLog` stamps, so a clip can be matched to an incident row. The server answers one RPC with its clock; the client counts seconds itself (no per-frame replication). The owner can disable it (`m_bClipStampAllowed`) and set the name (`m_sClipStampServerName`) in `LF_Incident.conf`. Tests: `moderation/clip-stamp` (LOGIC). Merged, in-dev.
 - ✅ (2026-11-14, #301) The config harness runs where it should: the static part (parse + validate over every fixture, `validate-config-harness`) in every `validate`, `wt gate` and `ci`; the game-session parts (client stage, boot stage once #299 lands) in `ci`/`wt gate`/`wt ship` only when the change touches `tools/config/`, a config fixture, the schema, a `.conf` or config code in `addons/`; and all of it, sessions included, as a gate of `tools\cli release` (`config-gate --full`). A planted broken preset fails `validate`. Proof `config-gate-selftest.mjs`. Merged, in-dev.
+- ✅ **The police armory is a catalogue outlet** (#1066, `LF_PoliceRanks.ArmoryIssue`): the kit is the `police_armory` offers flagged `issue` (free, no price charged), each gated by job POLICE and `minRank`; the rank ladder no longer carries a kit (`LF_PoliceRank.m_aKit` and the `kit` key are retired, so there is one source). Shipped table: patrol (rank 0) draws the M9 and the spike strip; senior (rank 1) adds the M16A2 (the senior also keeps the M9, which is open to every rank). A held-back item names the rank that may draw it (`#LF-Armory_NeedsRank` toast, `[LFDebug:Ranks] armory did not issue`). Issue on duty, one draw per shift and return at clock-out are unchanged. An owner retunes it in the `catalogue` section (`offers` `police_armory/<item>`: `minRank`, `issue`, `removed`). Tests `police/armory-issue` (LOGIC), `e2e/roadmap-ranks` (WORLD: patrol is refused the rifle, senior draws it).

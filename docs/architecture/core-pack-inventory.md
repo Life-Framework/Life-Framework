@@ -316,3 +316,7 @@ set them. File and constant, then the value.
 
 Script holds no place names. Every user-facing string in `Feature/` is already a
 `#` key; the flavour sits in the string table.
+
+## Police armory table (#1066)
+
+The `police_armory` offers (M9 and spike strip at rank 0, M16A2 at rank 1) and the `spike_strip` item sit in `Configs/Catalogue/LF_ItemCatalogue.conf`. They are pack values (which kit this server's police draw by rank) kept in the core until the M3 move, so the core runs alone with a working armory. The pack overlays them by offer key.

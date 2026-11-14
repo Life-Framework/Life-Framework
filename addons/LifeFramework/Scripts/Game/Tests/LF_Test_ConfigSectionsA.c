@@ -67,7 +67,6 @@ class LF_Test_ConfigSectionsA : LF_Test
 		{
 			ctx.Equal(1500, patrol.m_iFineCap, "the owner's fine cap applies to patrol");
 			ctx.Equal(3600, patrol.m_iDutySecondsForNext, "a rank field the owner left out keeps the shipped value");
-			ctx.Equal(2, patrol.m_aKit.Count(), "the patrol kit is untouched");
 		}
 		LF_PoliceRank senior = config.FindRank("senior");
 		ctx.True(senior && senior.m_iFineCap == 5000, "a rank the owner left out is untouched");
@@ -110,8 +109,6 @@ class LF_Test_ConfigSectionsA : LF_Test
 			ctx.Equal(3, client.m_aRanks.Count(), "the client has the server's ladder");
 			LF_PoliceRank clientPatrol = client.FindRank("patrol");
 			ctx.True(clientPatrol && clientPatrol.m_iFineCap == 1500, "the owner's fine cap reaches the client");
-			if (clientPatrol)
-				ctx.Equal(2, clientPatrol.m_aKit.Count(), "the client keeps its shipped kit: the stream does not carry it");
 		}
 		ctx.False(payload.Contains("alarmPrefab"), "the stream leaves out the alarm prefabs");
 

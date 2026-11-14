@@ -82,6 +82,7 @@ is the entry point.
   cuffs on the wrist open at the start of an Uncuff), the hold cancels if either person moves out of
   reach, and the end shuts them with a click and puts them on the suspect (or takes them off). The
   server watches the pair, and accepts only an end it saw begin, after most of the duration.
+- Armory kit (#1066): the `police_armory` outlet's issue offers in the item catalogue, gated by police rank (`LF_PoliceRanks.ArmoryIssue`); a rank holds no kit list of its own.
 - Spike strip (#646): every rank's armory kit carries the folded strip. Deploy it from the
   ground in front of you (on-duty police, rate limited; placed where your ghost showed by the
   placement service, #1026, `Feature/Placement`); the server punctures each wheel whose path

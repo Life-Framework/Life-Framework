@@ -110,6 +110,9 @@
                 "type": "string",
                 "default": ""
               },
+              "issue": {
+                "type": "boolean"
+              },
               "removed": {
                 "type": "boolean"
               }
@@ -695,14 +698,6 @@
                 "default": 0,
                 "minimum": 0,
                 "maximum": 10000000
-              },
-              "kit": {
-                "type": "array",
-                "description": "",
-                "items": {
-                  "type": "string"
-                },
-                "default": []
               }
             },
             "additionalProperties": false

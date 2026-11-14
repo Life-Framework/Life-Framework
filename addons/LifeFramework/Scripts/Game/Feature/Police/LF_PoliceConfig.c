@@ -398,7 +398,7 @@ class LF_PoliceConfig
 	//------------------------------------------------------------------------------------------------
 	//! Writes the effective values a client reads into the config stream (#285), under the owner
 	//! section's own keys so the client applies them with ApplyOwner. Left out: the alarm prefabs
-	//! (the server spawns them) and each rank's kit (the armory draws on the server).
+	//! (the server spawns them) and the police_armory offers (the armory draws on the server).
 	//! \param[in] ctx A save context with this section's object open.
 	void WriteStream(notnull SCR_JsonSaveContext ctx)
 	{
@@ -577,8 +577,8 @@ class LF_PoliceConfig
 				return;
 		}
 
-		outRanks.Insert(LF_PoliceRank.Create("patrol", "EL-Rank_Patrol", LF_PoliceRanks.PATROL_FINE_CAP, -1, LF_PoliceRanks.DUTY_SECONDS, LF_PoliceRanks.SIDEARM));
-		outRanks.Insert(LF_PoliceRank.Create("senior", "EL-Rank_Senior", LF_PoliceUtils.MAX_FINE, -1, 0, LF_PoliceRanks.LONG_GUN));
+		outRanks.Insert(LF_PoliceRank.Create("patrol", "EL-Rank_Patrol", LF_PoliceRanks.PATROL_FINE_CAP, -1, LF_PoliceRanks.DUTY_SECONDS));
+		outRanks.Insert(LF_PoliceRank.Create("senior", "EL-Rank_Senior", LF_PoliceUtils.MAX_FINE, -1, 0));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -857,11 +857,8 @@ class LF_PoliceRank : LF_ConfigRecord
 	[Attribute("0", UIWidgets.Auto, "On-duty seconds that promote an officer to the next rank. 0 means no time promotion", params: "0 10000000")]
 	int m_iDutySecondsForNext;
 
-	[Attribute("", UIWidgets.ResourceNamePicker, "Kit prefabs drawn at the armory. Only prefabs in the station catalog are issued")]
-	ref array<ResourceName> m_aKit;
-
 	//------------------------------------------------------------------------------------------------
-	static LF_PoliceRank Create(string id, string titleKey, int fineCap, float payPerSecond, int dutySecondsForNext, ResourceName kitPrefab)
+	static LF_PoliceRank Create(string id, string titleKey, int fineCap, float payPerSecond, int dutySecondsForNext)
 	{
 		LF_PoliceRank rank = new LF_PoliceRank();
 		rank.m_sId = id;
@@ -869,8 +866,6 @@ class LF_PoliceRank : LF_ConfigRecord
 		rank.m_iFineCap = fineCap;
 		rank.m_fPayPerSecond = payPerSecond;
 		rank.m_iDutySecondsForNext = dutySecondsForNext;
-		rank.m_aKit = {};
-		rank.m_aKit.Insert(kitPrefab);
 		return rank;
 	}
 }
@@ -926,8 +921,7 @@ class LF_PoliceRankList : LF_ConfigList
 
 	override LF_ConfigRecord NewRecord(string id)
 	{
-		LF_PoliceRank rank = LF_PoliceRank.Create(id, id, 1000, -1, 0, ResourceName.Empty);
-		rank.m_aKit.Clear();
+		LF_PoliceRank rank = LF_PoliceRank.Create(id, id, 1000, -1, 0);
 		return rank;
 	}
 
@@ -968,17 +962,6 @@ class LF_PoliceRankList : LF_ConfigList
 			changed++;
 		if (container.IsVariableSetDirectly("m_iDutySecondsForNext") && container.Get("m_iDutySecondsForNext", rank.m_iDutySecondsForNext))
 			changed++;
-		if (container.IsVariableSetDirectly("m_aKit"))
-		{
-			array<ResourceName> kit = {};
-			if (container.Get("m_aKit", kit))
-			{
-				rank.m_aKit = {};
-				foreach (ResourceName prefab : kit)
-					rank.m_aKit.Insert(prefab);
-				changed++;
-			}
-		}
 
 		return changed;
 	}
@@ -986,18 +969,11 @@ class LF_PoliceRankList : LF_ConfigList
 	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
 	{
 		LF_PoliceRank rank = LF_PoliceRank.Cast(record);
-		array<string> recordKeys = {"op", "titleKey", "fineCap", "payPerSecond", "dutySecondsForNext", "kit"};
+		array<string> recordKeys = {"op", "titleKey", "fineCap", "payPerSecond", "dutySecondsForNext"};
 		reader.WarnUnknownKeys(recordKeys);
 		reader.ReadString("titleKey", rank.m_sTitleKey);
 		reader.ReadInt("fineCap", rank.m_iFineCap, LF_PoliceConfig.FINE_CAP_MIN, LF_PoliceConfig.FINE_CAP_MAX);
 		reader.ReadFloat("payPerSecond", rank.m_fPayPerSecond, LF_PoliceConfig.RANK_PAY_MIN, LF_PoliceConfig.RANK_PAY_MAX);
 		reader.ReadInt("dutySecondsForNext", rank.m_iDutySecondsForNext, LF_PoliceConfig.RANK_DUTY_MIN, LF_PoliceConfig.RANK_DUTY_MAX);
-		array<string> kit = {};
-		if (reader.ReadStrings("kit", kit))
-		{
-			rank.m_aKit = {};
-			foreach (string prefab : kit)
-				rank.m_aKit.Insert(prefab);
-		}
 	}
 }

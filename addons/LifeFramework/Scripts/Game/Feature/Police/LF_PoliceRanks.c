@@ -9,7 +9,9 @@
 //! RequestSelfPromotion is the RPC body and always refuses. Rank does not whitelist
 //! anyone and is not a license.
 //!
-//! A kit line whose prefab does not load is skipped and logged. The rank stays usable.
+//! The kit is the catalogue's police_armory outlet (#1066): each issue offer is gated by job POLICE
+//! and a minimum rank, a refusal names the rank that may draw it, and a line whose prefab does not
+//! load is skipped and logged. The rank stays usable.
 //------------------------------------------------------------------------------------------------
 class LF_PoliceRanks
 {
@@ -18,6 +20,8 @@ class LF_PoliceRanks
 	static const int PATROL_FINE_CAP = 1000;
 	static const int DUTY_SECONDS = 3600;
 	static const float PROMOTE_RADIUS = 5;
+	//! The catalogue outlet the station armory is (#1066): its issue offers are the kit, gated by rank.
+	static const string ARMORY_OUTLET = "police_armory";
 
 	static const ResourceName SIDEARM = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
 	static const ResourceName LONG_GUN = "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et";
@@ -255,51 +259,46 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Prefabs that are on both lists, in left-list order, without duplicates.
-	static void Intersect(notnull array<ResourceName> left, notnull array<ResourceName> right, notnull array<ResourceName> result)
+	//! The armory's issue for one officer (#1066): every live offer of the police_armory outlet that
+	//! is an issue offer, split by the offer's gate. A prefab that does not load is skipped and
+	//! logged, so one bad row never blocks the rest. The catalogue (a pack overlay or the owner's
+	//! `catalogue` section) is the one source of what each rank draws.
+	//! \param[out] kit Prefabs the officer passes the gate for.
+	//! \param[out] refusedPrefabs Issue offers the gate refused.
+	//! \param[out] refusedMissing For each refused prefab, what the officer lacks (the rank's title key).
+	static void ArmoryIssue(LF_ItemCatalogueConfig config, notnull LF_BuyerFacts buyer, notnull array<ResourceName> kit, notnull array<ResourceName> refusedPrefabs, notnull array<string> refusedMissing)
 	{
-		result.Clear();
-		foreach (ResourceName candidate : left)
+		kit.Clear();
+		refusedPrefabs.Clear();
+		refusedMissing.Clear();
+		array<LF_OutletOffer> offers = {};
+		LF_ItemCatalogue.Offers(config, ARMORY_OUTLET, offers);
+		foreach (LF_OutletOffer offer : offers)
 		{
-			if (!ContainsPrefab(right, candidate))
+			if (!offer.m_bIssue)
 				continue;
 
-			if (ContainsPrefab(result, candidate))
+			LF_CatalogueItem item = LF_ItemCatalogue.Item(config, offer.m_sItem);
+			if (!item)
 				continue;
 
-			result.Insert(candidate);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Drops prefabs that do not load. Each drop is logged. The caller keeps the rank.
-	static void FilterLoadable(notnull array<ResourceName> configured, notnull array<ResourceName> kept)
-	{
-		kept.Clear();
-		foreach (ResourceName prefab : configured)
-		{
-			if (prefab == ResourceName.Empty || !Resource.Load(prefab).IsValid())
+			string missing;
+			if (LF_ItemCatalogue.Check(offer, buyer, missing) != LF_EOutletGate.OPEN)
 			{
-				s_iMissingPrefabSkips++;
-				Note(string.Format("kit line skipped: prefab did not load %1", prefab));
+				refusedPrefabs.Insert(item.m_Prefab);
+				refusedMissing.Insert(missing);
 				continue;
 			}
 
-			kept.Insert(prefab);
-		}
-	}
+			if (item.m_Prefab.IsEmpty() || !Resource.Load(item.m_Prefab).IsValid())
+			{
+				s_iMissingPrefabSkips++;
+				Note(string.Format("armory line skipped: prefab did not load %1", item.m_Prefab));
+				continue;
+			}
 
-	//------------------------------------------------------------------------------------------------
-	//! Resolved kit: intersection of that rank's list and the station catalog, then loadable lines.
-	static void CollectKit(int rank, notnull array<ResourceName> kit)
-	{
-		array<ResourceName> rankPrefabs = {};
-		RankPrefabs(rank, rankPrefabs);
-		array<ResourceName> catalog = {};
-		Catalog(catalog);
-		array<ResourceName> allowed = {};
-		Intersect(rankPrefabs, catalog, allowed);
-		FilterLoadable(allowed, kit);
+			kit.Insert(item.m_Prefab);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -443,7 +442,22 @@ class LF_PoliceRanks
 		SettleDutyAt(account, true, NowMs());
 
 		array<ResourceName> kit = {};
-		CollectKit(account.GetPoliceRank(), kit);
+		array<ResourceName> refusedPrefabs = {};
+		array<string> refusedMissing = {};
+		if (!LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM))
+		{
+			Note("draw refused: the Catalogue system is off, so the armory has no offers");
+			return false;
+		}
+
+		ArmoryIssue(LF_ItemCatalogueConfig.Get(), LF_EntityBuyerFacts.Of(officer), kit, refusedPrefabs, refusedMissing);
+		// A refusal names the rank that may draw the item (the same line a till prints).
+		foreach (int refused, ResourceName refusedPrefab : refusedPrefabs)
+		{
+			LF_Debug.Info("Ranks", string.Format("armory did not issue %1 to %2: needs %3", refusedPrefab, uid, refusedMissing.Get(refused)));
+			NotifyOfficer(officer, "#LF-Armory_NeedsRank", refusedMissing.Get(refused));
+		}
+
 		if (kit.Count() == 0)
 		{
 			Note(string.Format("draw refused: rank %1 has no loadable kit", account.GetPoliceRank()));
@@ -558,20 +572,6 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void RankPrefabs(int rank, notnull array<ResourceName> prefabs)
-	{
-		prefabs.Clear();
-		LF_PoliceRank row = Row(rank);
-		if (!row || !row.m_aKit)
-			return;
-
-		foreach (ResourceName prefab : row.m_aKit)
-		{
-			prefabs.Insert(prefab);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The ladder row for a rank, clamped to the ladder so a rank saved under a longer ladder
 	//! reads as the top rung.
 	protected static LF_PoliceRank Row(int rank)
@@ -582,27 +582,6 @@ class LF_PoliceRanks
 			return null;
 
 		return ranks.Get(Math.ClampInt(rank, 0, ranks.Count() - 1));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static void Catalog(notnull array<ResourceName> prefabs)
-	{
-		prefabs.Clear();
-		prefabs.Insert(SIDEARM);
-		prefabs.Insert(LONG_GUN);
-		prefabs.Insert(SPIKE_STRIP);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static bool ContainsPrefab(notnull array<ResourceName> prefabs, ResourceName candidate)
-	{
-		foreach (ResourceName prefab : prefabs)
-		{
-			if (LF_Utils.SamePrefab(prefab, candidate))
-				return true;
-		}
-
-		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -669,14 +648,14 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void NotifyOfficer(IEntity officer, string messageKey)
+	protected static void NotifyOfficer(IEntity officer, string messageKey, string messageArg = "")
 	{
 		if (!officer || !GetGame() || !GetGame().GetPlayerManager())
 			return;
 
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
 		if (playerId > 0)
-			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", messageKey, 3.0, LF_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", messageKey, 3.0, LF_ENotificationType.WARNING, messageArg);
 	}
 
 	//------------------------------------------------------------------------------------------------

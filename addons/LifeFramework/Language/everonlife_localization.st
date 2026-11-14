@@ -8145,6 +8145,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Needs the rank %1."
      Comment "Order slip refusal at a gated outlet: %1 is the lowest rank title that may buy, e.g. 'Senior Officer' (#988)."
     }
+    CustomStringTableItem "{4E7A21C09D5B83F6}" {
+     Id "LF-Armory_NeedsRank"
+     Target_en_us "Not issued: needs the rank %1."
+     Comment "Toast when the police armory holds back an item for the officer's rank: %1 is the lowest rank title that may draw it, e.g. 'Senior Officer' (#1066)."
+    }
     CustomStringTableItem "{A2CCDA69FAA56F18}" {
      Id "LF-Shop_RefuseNeedsOrgRight"
      Target_en_us "Your organisation rank lacks: %1."

@@ -62,7 +62,7 @@ point; the slip is where the gate's answer is printed.
 
 - Stock and restock per offer: #1064.
 - The black market, back room, fence and the `Prefabs/Weapons/` price rule onto outlets: #1065.
-- The police armory issuing from its outlet by rank: #1066.
+- The police armory issues from its outlet by rank (#1066): an offer with `issue` is handed out free to a buyer who passes its gate; the armory draws the `police_armory` issue offers, so patrol draws the M9 and the spike strip and a senior adds the M16A2. A shop counter on an issue offer is not wired: it still charges the price.
 - Police search and seizure reading the legality flags: #1067.
 - The suspect look reading the conceal flags: #1068.
 - A licence desk for the firearm permit: #1069.

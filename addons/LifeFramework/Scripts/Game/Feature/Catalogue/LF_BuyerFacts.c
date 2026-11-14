@@ -86,7 +86,11 @@ class LF_EntityBuyerFacts : LF_BuyerFacts
 		if (!accounts)
 			return -1;
 
+		// The uid also resolves an officer bound by the harness or a test (LF_PoliceRanks.BindOfficer).
 		LF_PlayerAccount account = accounts.GetAccount(m_Buyer);
+		if (!account)
+			account = accounts.GetAccount(LF_PoliceRanks.ResolveUid(m_Buyer));
+
 		if (!account || !LF_AccountStateBits.IsOnDutyPolice(LF_AccountStateBits.FromAccount(account)))
 			return -1;
 
