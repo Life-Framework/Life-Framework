@@ -30,7 +30,7 @@ class LF_Test_PlacesDispatch : LF_Test
 		ctx.True(LF_DebugDispatch.PlacePosition(PLACE_ID, console) == console, "an id that is not placed is the console");
 
 		vector at = anchor.GetOrigin() + "0 -20 0";
-		IEntity place = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, at, "0 0 0", false);
+		IEntity place = LF_Utils.SpawnEntityPrefab(LF_Bank.BagPrefab(), at, "0 0 0", false);
 		ctx.NotNull(place, "an unnamed place spawns");
 		if (!place)
 			return;

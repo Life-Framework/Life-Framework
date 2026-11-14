@@ -60,7 +60,7 @@ class LF_Test_Handcuffs : LF_Test
 		ctx.True(LF_Utils.GetPrefabName(cuffs).Contains("Handcuffs.et"), "the consumed cuffs come back as the same prefab");
 		SCR_EntityHelper.DeleteEntityAndChildren(cuffs);
 
-		Resource worn = Resource.Load(LF_Restraint.WORN_PREFAB);
+		Resource worn = Resource.Load(LF_Restraint.WornPrefab());
 		ctx.True(worn && worn.IsValid(), "the worn handcuffs model resolves");
 	}
 

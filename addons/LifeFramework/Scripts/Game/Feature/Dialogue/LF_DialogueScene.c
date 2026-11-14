@@ -242,7 +242,7 @@ class LF_DialogueScene
 				caption = line.m_sTextKey;
 
 			s_sLastCaption = LF_DialogueOverrides.Text(caption);
-			SetText("Caption", s_sLastCaption);
+			SetText("Caption", Display(s_sLastCaption));
 			SetText("Hint", "#LF-Dialogue_HintLine");
 			float hold = LF_DialogueVoice.Say(npc, s_Config, entry);
 			s_iLineEndMs = System.GetTickCount() + hold * 1000 + LINE_TAIL_MS;
@@ -283,6 +283,17 @@ class LF_DialogueScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A caption or reply as the widget shows it: a `#key` is translated, and the terms in it (#958)
+	//! become the pack's or owner's words. An override is plain text and only gets its terms.
+	protected static string Display(string text)
+	{
+		if (text.StartsWith("#"))
+			return LF_Terms.Text(text);
+
+		return LF_Terms.Expand(text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void SetText(string widget, string text)
 	{
 		if (!s_wRoot)
@@ -312,7 +323,7 @@ class LF_DialogueScene
 			if (!used)
 				continue;
 
-			target.SetTextFormat("%1.  %2", (row + 1).ToString(), LF_DialogueOverrides.Text(node.m_aOptions[s_aRows[row]].m_sTextKey));
+			target.SetTextFormat("%1.  %2", (row + 1).ToString(), Display(LF_DialogueOverrides.Text(node.m_aOptions[s_aRows[row]].m_sTextKey)));
 			if (row == s_iFocus)
 				target.SetColor(Color.FromRGBA(240, 205, 130, 255));
 			else

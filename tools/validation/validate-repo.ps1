@@ -117,6 +117,13 @@ foreach ($f in $textRes) {
   if (-not (Test-Path -LiteralPath $path)) { continue }
   $content = Get-Content -LiteralPath $path -Raw -ErrorAction SilentlyContinue
   if (-not $content) { continue }
+  # A string table's text may hold term placeholders ({police}, #958); validate-terms checks them.
+  if ($f -match '\.st$') {
+    $content = (($content -split "`n") | Where-Object { $_ -notmatch '^\s*(Target_[a-z_]+|Comment)\s' }) -join "`n"
+  } elseif ($f -match '/Language/[^/]+\.conf$') {
+    # The runtime tables are generated from the .st: one quoted text per line.
+    $content = (($content -split "`n") | Where-Object { $_ -notmatch '^\s*"' }) -join "`n"
+  }
   foreach ($m in [regex]::Matches($content, '\{([0-9A-Za-z_]{1,40})\}')) {
     if ($m.Groups[1].Value -notmatch '^[0-9A-F]{16}$') {
       Add-Error "placeholder/invalid GUID '{$($m.Groups[1].Value)}' in $f (use a real unique 16-hex GUID)"

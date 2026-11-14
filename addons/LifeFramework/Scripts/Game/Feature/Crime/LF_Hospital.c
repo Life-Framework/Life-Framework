@@ -8,7 +8,7 @@
 //! RobTill. The cabinet alerts once inside LF_Breach.Arm. A menu refresh cannot
 //! fire either.
 //!
-//! CASH. The payout is LF_MoneyUtils.PREFAB_CASH. Nothing in this feature deposits
+//! CASH. The payout is LF_MoneyUtils.CashPrefab(). Nothing in this feature deposits
 //! to LF_BankAccount. The ATM stays the only cash-to-account boundary.
 //------------------------------------------------------------------------------------------------
 class LF_HospitalTillState : Managed
@@ -51,7 +51,7 @@ class LF_Hospital
 	//------------------------------------------------------------------------------------------------
 	static ResourceName CashPrefab()
 	{
-		return LF_MoneyUtils.PREFAB_CASH;
+		return LF_MoneyUtils.CashPrefab();
 	}
 
 	//------------------------------------------------------------------------------------------------

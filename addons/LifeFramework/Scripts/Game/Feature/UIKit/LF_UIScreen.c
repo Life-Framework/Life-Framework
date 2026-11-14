@@ -604,6 +604,7 @@ class LF_UIScreen
 	{
 		Paint("Metal", GetSkin().m_Metal);
 		Paint("Paper", GetSkin().m_Paper);
+		PaintPaperTexture();
 		Paint("Rule", GetSkin().m_Rule);
 		Paint("BackgroundBlur", GetSkin().m_Blur);
 
@@ -617,6 +618,19 @@ class LF_UIScreen
 
 		if (sheet && GetSkin().m_fHeight > 0)
 			FrameSlot.SetSizeY(sheet, GetSkin().m_fHeight);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The theme's paper texture on the sheet's face, tinted by the paper colour. A theme with none
+	//! (the 1989 paper) keeps the flat solid sheet.
+	protected void PaintPaperTexture()
+	{
+		if (GetSkin().m_PaperTexture.IsEmpty() || !m_wRoot)
+			return;
+
+		ImageWidget paper = ImageWidget.Cast(m_wRoot.FindAnyWidget("Paper"));
+		if (!paper || !paper.LoadImageTexture(0, GetSkin().m_PaperTexture))
+			LF_Debug.Error("UIKit", "paper texture does not load, the sheet stays flat: " + GetSkin().m_PaperTexture);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -703,7 +717,7 @@ class LF_UIScreen
 		if (part.GetKind() == LF_EUIPartKind.TITLE)
 		{
 			TextWidget title = TextWidget.Cast(widget);
-			ApplyInk(title, Math.Round(LF_UITheme.FONT_TITLE * GetSkin().m_fTitleScale), part.GetText());
+			ApplyInk(title, Math.Round(LF_UITheme.TitleSize() * GetSkin().m_fTitleScale), part.GetText());
 			if (title && GetSkin().m_fTitleScale > 1)
 				title.SetTextWrapping(true);
 
@@ -713,7 +727,7 @@ class LF_UIScreen
 		if (part.GetKind() == LF_EUIPartKind.HEADING)
 		{
 			TextWidget heading = TextWidget.Cast(widget);
-			ApplyInk(heading, LF_UITheme.FONT_HEADING, part.GetText());
+			ApplyInk(heading, LF_UITheme.HeadingSize(), part.GetText());
 			if (heading)
 				heading.SetColor(Accent());
 
@@ -737,7 +751,7 @@ class LF_UIScreen
 				return;
 			}
 
-			ApplyInk(rich, LF_UITheme.FONT_BODY, part.GetText());
+			ApplyInk(rich, LF_UITheme.BodySize(), part.GetText());
 			if (!GetSkin().m_BodyFont.IsEmpty())
 				rich.SetFont(GetSkin().m_BodyFont);
 
@@ -749,7 +763,7 @@ class LF_UIScreen
 		if (part.GetKind() == LF_EUIPartKind.LINE)
 		{
 			TextWidget line = TextWidget.Cast(widget);
-			ApplyInk(line, LF_UITheme.FONT_BODY, part.GetText());
+			ApplyInk(line, LF_UITheme.BodySize(), part.GetText());
 			if (line)
 				line.SetTextWrapping(true);
 			return;
@@ -758,7 +772,7 @@ class LF_UIScreen
 		if (part.GetKind() == LF_EUIPartKind.ROW)
 		{
 			PaintNamed(widget, "RowPlate", GetSkin().m_Row);
-			ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowLabel")), LF_UITheme.FONT_BODY, part.GetText());
+			ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowLabel")), LF_UITheme.BodySize(), part.GetText());
 			return;
 		}
 
@@ -793,8 +807,8 @@ class LF_UIScreen
 	protected void AddStatus(Widget widget, LF_UIPart part)
 	{
 		PaintNamed(widget, "RowPlate", GetSkin().m_Row);
-		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowLabel")), LF_UITheme.FONT_BODY, part.GetText());
-		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowStatus")), LF_UITheme.FONT_BODY, part.GetStatus());
+		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowLabel")), LF_UITheme.BodySize(), part.GetText());
+		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowStatus")), LF_UITheme.BodySize(), part.GetStatus());
 
 		Widget button = widget.FindAnyWidget("ActionButton");
 		if (!button)
@@ -815,9 +829,9 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	protected void AddQuantity(Widget widget, LF_UIPart part)
 	{
-		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("QuantityLabel")), LF_UITheme.FONT_BODY, part.GetText());
-		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("FaceKeep")), LF_UITheme.FONT_BODY, "");
-		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("FaceTake")), LF_UITheme.FONT_BODY, "");
+		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("QuantityLabel")), LF_UITheme.BodySize(), part.GetText());
+		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("FaceKeep")), LF_UITheme.BodySize(), "");
+		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("FaceTake")), LF_UITheme.BodySize(), "");
 
 		LF_UIQuantityRelay relay = LF_UIQuantityRelay.Cast(widget.FindHandler(LF_UIQuantityRelay));
 		if (relay)
@@ -845,7 +859,7 @@ class LF_UIScreen
 
 		caption.SetName(part.GetName() + "Caption");
 		AlignableSlot.SetPadding(caption, LF_UITheme.PAD_LEFT, LF_UITheme.PAD_TOP, LF_UITheme.PAD_RIGHT, 0);
-		ApplyInk(caption, LF_UITheme.FONT_CAPTION, part.GetText());
+		ApplyInk(caption, LF_UITheme.CaptionSize(), part.GetText());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -887,7 +901,7 @@ class LF_UIScreen
 		TextWidget label = button.GetTextWidget();
 		if (label)
 		{
-			label.SetExactFontSize(Math.Round(LF_UITheme.FONT_BUTTON * GetSkin().m_fTypeScale));
+			label.SetExactFontSize(Math.Round(LF_UITheme.ButtonSize() * GetSkin().m_fTypeScale));
 			label.SetFont(GetSkin().m_Font);
 		}
 
@@ -998,9 +1012,9 @@ class LF_UIScreen
 			if (!used)
 				continue;
 
-			ApplyInk(label, LF_UITheme.FONT_HEADING, labels[i]);
+			ApplyInk(label, LF_UITheme.HeadingSize(), labels[i]);
 			label.SetColor(Accent());
-			ApplyInk(value, LF_UITheme.FONT_FIELD + 2, values[i]);
+			ApplyInk(value, LF_UITheme.FieldSize() + 2, values[i]);
 			AlignableSlot.SetPadding(value, 0, 0, 0, 8);
 		}
 	}

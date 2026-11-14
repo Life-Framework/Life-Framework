@@ -192,9 +192,9 @@ class LF_BetaHud : SCR_InfoDisplay
 
 		// Init cash display and subscribe to balance changes
 		int currentCash = LF_MoneyUtils.GetCash(owner);
-		OnMoneyChange(LF_MoneyUtils.PREFAB_CASH, currentCash, currentCash);
+		OnMoneyChange(LF_MoneyUtils.CashPrefab(), currentCash, currentCash);
 		ScriptedInventoryStorageManagerComponent inventoryManager = LF_Component<ScriptedInventoryStorageManagerComponent>.Find(owner);
-		if (inventoryManager) inventoryManager.LF_GetOnAmountChanged(LF_MoneyUtils.PREFAB_CASH).Insert(OnMoneyChange);
+		if (inventoryManager) inventoryManager.LF_GetOnAmountChanged(LF_MoneyUtils.CashPrefab()).Insert(OnMoneyChange);
 	}
 
 	//---------------------------------------------------------------------

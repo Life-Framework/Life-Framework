@@ -95,6 +95,7 @@ LF_ItemCatalogueConfig {
 | `catalogue` | `items` | item id (`pistol_m9`) |
 | `catalogue` | `offers` | `outlet/item` (`gun_counter/pistol_m9`) |
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
+| `ui-theme` | `themes` | theme id (`paper`, `id-card`, `terminal`, `price-list`). Pack overlays only: no owner section, a look is a pack's job (`docs/architecture/ui-theme.md`) |
 | `police` | `ranks` | rank id (`patrol`). A saved rank is its index: a remove is refused on a shipped rung and on any rung that is not the last |
 | `organizations` | `rankDefaults` | `founder`, `officer` or `member`. A remove drops the entry, so the rank keeps its shipped rights; a new or replaced entry starts from them |
 | `zones` | `ruleSets` | rule name `NORMAL`, `SAFE` or `LAWLESS`. A remove is refused (every zone names a rule); a new or replaced entry starts from the legacy flags |
@@ -103,6 +104,7 @@ LF_ItemCatalogueConfig {
 | `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |
 | `jobs` | `xpAwards` | action id (`gather`). A new or replaced award needs a `job` |
 | `jobs` | `licenceGates` | licence name (`MINER_GOLD`, an `LF_ELicenseType` name). A new or replaced gate needs a `job` and a `minLevel`; removing a gate gives the licence its shipped gate back |
+| `prefabs` | `slots` | slot id (`cash`); packs only, no owner section. A pack patches `m_Prefab`; the required components stay the core file's (`Core/Config/Feature.md`, "Prefab slots") |
 | `shops` | `priceRules` | `prefab:<GUID>`, a prefab-path substring, or `type:<flags>,mode:<mode>` (`type:64` is `type:64,mode:2`). Two core rules can share a key; a layer addresses the last one, the one that wins the walk |
 
 The catalogue's `removed: true` is a field, not a verb: it hides an entry and a later layer can set

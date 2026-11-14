@@ -17,7 +17,7 @@
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full|--all]           Run the checks in tools/validation/ whose inputs changed since their last green run (--all: every check; --full: every check plus the Workbench compile)
-//   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
+//   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
@@ -44,6 +44,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
+import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
 import { cmdPlaytestServer } from "./release/playtest-server.mjs";
@@ -247,8 +248,26 @@ function syncLocalPatches() {
         copied.push(`${name}: +${sub}/${rel}`);
       }
     }
+    copied.push(...registerPatchedTools(name));
   }
   return copied;
+}
+
+function registerPatchedTools(name) {
+  const toolsDir = join(PATCH_DIR, SERVERS[name].dir, "src", "tools");
+  const serverTs = join(MCP_DIR, SERVERS[name].dir, "src", "server.ts");
+  if (!existsSync(toolsDir) || !existsSync(serverTs)) return [];
+  const tools = [];
+  for (const f of readdirSync(toolsDir)) {
+    if (!f.endsWith(".ts")) continue;
+    const call = registerLine(readFileSync(join(toolsDir, f), "utf8"));
+    if (call) tools.push({ file: f, call });
+  }
+  if (!tools.length) return [];
+  const { text, added, missing } = injectRegistrations(readFileSync(serverTs, "utf8"), tools);
+  if (added.length) writeFileSync(serverTs, text);
+  for (const m of missing) console.log(`WARN  ${name}: ${m}`);
+  return added.map((fn) => `${name}: server.ts registers ${fn}`);
 }
 
 /** Recursively list files under a directory. */
@@ -449,6 +468,8 @@ function cmdInstall(name) {
       failed++;
       continue;
     }
+    // Patches go in before the build, or a patched .ts never reaches dist/.
+    syncLocalPatches();
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
@@ -488,17 +509,18 @@ function cmdUpdate(name) {
     }
     const before = (gitIn(dir, ["rev-parse", "--short", "HEAD"]).stdout || "").trim();
     const status = gitIn(dir, ["status", "--porcelain"]);
+    // The clone is dirty once patches are applied (copied files, server.ts
+    // registrations). Then skip the pull and only re-apply and rebuild.
     if (status.stdout.trim()) {
-      console.log(`SKIP  ${n}: working tree dirty (${status.stdout.trim().split(/\r?\n/)[0]}); stash or reset first`);
-      failed++;
-      continue;
-    }
-    console.log(`${n}: updating ${before} -> latest ...`);
-    const pull = gitIn(dir, ["pull", "--ff-only"]);
-    if (pull.status !== 0) {
-      console.log(`FAIL  pull ${n}: ${pull.stderr || pull.stdout}`);
-      failed++;
-      continue;
+      console.log(`${n}: working tree dirty (${status.stdout.trim().split(/\r?\n/)[0]}); not pulling, re-applying patches and rebuilding`);
+    } else {
+      console.log(`${n}: updating ${before} -> latest ...`);
+      const pull = gitIn(dir, ["pull", "--ff-only"]);
+      if (pull.status !== 0) {
+        console.log(`FAIL  pull ${n}: ${pull.stderr || pull.stdout}`);
+        failed++;
+        continue;
+      }
     }
     const after = (gitIn(dir, ["rev-parse", "--short", "HEAD"]).stdout || "").trim();
     const ci = sh(NPM, ["ci", "--no-audit", "--no-fund"], { cwd: dir });
@@ -507,6 +529,8 @@ function cmdUpdate(name) {
       failed++;
       continue;
     }
+    // Patches go in before the build, or a patched .ts never reaches dist/.
+    syncLocalPatches();
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
@@ -2564,7 +2588,7 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   let extra = {};
   try {
     if (!slot.local) {
-      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
       // The placement audit (agent-box/place-audit.mjs) hands its input list in through
       // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
       const auditIn = process.env.LF_PLACE_AUDIT_IN;
@@ -2581,7 +2605,7 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-    code = runLocalTest(root, tier, only, opts.world);
+    code = runLocalTest(root, tier, only, opts.world, opts.coreOnly);
     const stamp = newestStamp(root, before);
     if (stamp) extra = { passed: stamp.passed, total: stamp.total };
     return { code };
@@ -2616,7 +2640,8 @@ function poolMode(root, opts) {
 
 // world: another world or mission header to boot instead of DebugWorld (Worlds/CoreOnEveron/CoreOnEveron.ent
 // boots the core alone on vanilla Everon, #1047). Its layers must place an LF_TestRunner.
-function runLocalTest(root, tier, only, world) {
+// coreOnly: the core alone, the pack hidden (#326, test-e2e.ps1 -CoreOnly).
+function runLocalTest(root, tier, only, world, coreOnly) {
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [LFTEST] SUMMARY, self-terminates.
@@ -2639,6 +2664,7 @@ function runLocalTest(root, tier, only, world) {
       ...budgetArgs(),
       ...(only.length ? ["-Only", only.join(",")] : []),
       ...(world ? ["-Mission", world] : []),
+      ...(coreOnly ? ["-CoreOnly"] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
@@ -2664,6 +2690,8 @@ async function cmdCi(root = ROOT, opts = {}) {
     ["validate --full", () => cmdRunArea("validate", root, { full: true })],
     ["build", () => cmdBuild(root, { wait: opts.wait })],
     ["test", () => cmdTest(true, "all", root, opts)],
+    // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
+    ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
     // After the suite: a branch that moved or added world props must pass the placement audit. It runs
     // through the same test lane as "test" (queues, never collides with a session).
     ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), async (a) => (await import("../agent-box/place-audit.mjs")).main(["placement", ...a]))],
@@ -2761,8 +2789,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
+                                --core-only boots with -addons LifeFramework only (the pack folder is not
+                                on -addonsDir) and skips tests whose NeedsPack() names a reason.
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
                                 The test pool runs it on the first free slot of any machine
@@ -2781,7 +2811,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
-  ci                            validate --full + build + test (full gate, worktree only)
+  ci [--skip-core-only]         validate --full + build + test + test --core-only (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
                                 runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
@@ -3763,16 +3793,16 @@ const cmds = {
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
-    return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), ...remoteFlags(list) });
+    return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   test: (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), ...remoteFlags(list) });
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids") });
