@@ -24,6 +24,29 @@ Exit code 1 when there is any error, 0 when there are only warnings or nothing. 
 warnings fail too, `--no-loops` skips the profit-loop check, `--json` prints the problems as JSON
 for a script, `--schema <file>` checks against another schema file.
 
+## Migrations (what an upgrade would do to your file)
+
+After the problem lines, `config-check` prints a `Migrations:` block: which config migrations the
+server would run at boot to bring your file to the schema it reads, in order, with a one-line
+description each and every field a step renames, drops or defaults (and whether your file has it).
+It says `none needed` when the file is current or has no `schemaVersion`, and a file written for a
+newer schema is refused (`refused, no migration can run`, plus the usual error). It is a dry run:
+it never writes the file. At boot the server copies the file to `config.json.bak-v<N>-<time>` first.
+
+```
+Migrations: config.json: schemaVersion 1, this build reads 3; 2 would run, in order:
+  1. v1 -> v2  shop-to-shops: Rename the shop section to shops.
+       rename shop -> shops (in your file)
+       drop legacyFlag (in your file)
+  2. v2 -> v3  add-price-floor: Give shops a default minimum price.
+       default shops.priceFloor = 1 (missing from your file; added)
+  Dry run: nothing was written. At boot the server first copies the file to config.json.bak-v1-<yyyymmdd-hhmmss UTC>, then writes the migrated file.
+```
+
+The steps are described in `docs/config/config.migrations.json` (one entry per step in
+`LF_ConfigMigrator.BuildShipped`; the selftest fails when the two differ). `--migrations <file>`
+reads another manifest. Paste the block into the release's upgrade page (`docs/upgrades/TEMPLATE.md`).
+
 ## What it reports
 
 | Problem | Level | What the server does |
@@ -34,7 +57,7 @@ for a script, `--schema <file>` checks against another schema file.
 | A number outside the allowed range (shown in the message) | error | The value is refused; the shipped one stays |
 | `schemaVersion` above what the server reads | error | Fields the server knows still apply, the rest are ignored |
 | `schemaVersion` below 1 or not a whole number | error | Read as version 1 |
-| `schemaVersion` older than the server's | warning | Read as it is |
+| `schemaVersion` older than the server's | warning | Migrated at boot; the `Migrations:` lines list the steps |
 | A key the server does not read (top level, in a section, or in a record) | warning | The key is ignored |
 | A record key no shipped record has | warning | It adds a new record; a typo would sit unused |
 | A record key the server cannot parse (an empty one, a malformed `type:` key) | error | The record is skipped |
