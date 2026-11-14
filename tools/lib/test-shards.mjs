@@ -11,7 +11,8 @@
 // 43 PERSISTENCE tests 0.1 s. So a shard saves only the test phase; running the normal and the core-only
 // pass at the same time is the bigger part of a gate.
 
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { writeFileAtomic } from "./atomic-file.mjs";
 import { dirname, join } from "node:path";
 
 export const MAX_AUTO_SHARDS = 4;
@@ -79,8 +80,7 @@ export function saveHistory(file, fresh) {
   }
   try {
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(`${file}.${process.pid}.tmp`, JSON.stringify({ times }));
-    renameSync(`${file}.${process.pid}.tmp`, file);
+    writeFileAtomic(file, JSON.stringify({ times }));
   } catch {}
   return times;
 }
