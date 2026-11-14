@@ -22,6 +22,13 @@ when the key is in the JSON. Records merge by a stable key, never by position:
 an existing key keeps its place in the list and changes only the fields given;
 a new key is appended, so it wins the rule walk.
 
+**Lists: the override model (#962).** `LF_ConfigOverlay.c` is the one merge for list sections:
+each record has an id and each layer adds, replaces, patches or removes it by id (`"op"` in JSON,
+`m_sOp` in a pack `.conf`, from `LF_ConfigRecord`). An id a verb needs that no lower layer has is
+refused with the source and id; two packs on one id warn and the later wins. On it today: `shops`
+(`priceRules`), `catalogue` (`items`, `offers`) and `crime` (`crimes`; it now reads pack overlays
+too). Verbs, examples and how to move a section: `docs/config/override-model.md`.
+
 The service is generic. A feature loads its core instance, then calls its own
 apply step (shops: `LF_ShopPricesConfig.ApplyLayers`), which asks the service
 for pack overlays and an `LF_ConfigReader` on its owner section.
@@ -257,8 +264,9 @@ item catalogue and the outlets' offers (`Feature/Catalogue/Feature.md`).
 
 - `items`, keyed by item id; `offers`, keyed by `outlet/item`. An existing key changes only the fields
   given; a new item must set a `prefab` that loads; `removed: true` takes a record out and a later layer
-  can set it back. Until the shared overlay model (#962) lands, the merge is the class's own
-  (`ApplyContainer` for packs, `ApplyOwner` for the owner and the stream).
+  can set it back; `"op": "remove"` takes it out of the list. Both lists merge through the shared
+  override model (`LF_CatalogueItemList`, `LF_OutletOfferList`; #962). A client replaces its lists with
+  the streamed ones, so an entry the server removed is gone there too.
 - `category` and `legality` are words; one the catalogue does not know is refused and the lower
   layer's word stays.
 - Streamed: `WriteStream` writes every record in the owner's shape (removed ones too), and the client
