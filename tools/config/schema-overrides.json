@@ -67,6 +67,19 @@
         "m_sId"
       ],
       "key": "The key is the alarm kind id (bank, fuel, store, van), the id a robbed thing's alarm kind names. An id no shipped kind has adds one, which must set prefab; an existing id changes only the fields given. offences replaces the kind's offence list."
+    },
+    "LF_CatalogueItem": {
+      "keyFields": [
+        "m_sId"
+      ],
+      "key": "The key is the item id (pistol_m9, raincoat_green). An id no shipped item has adds one, which must set prefab; an existing id changes only the fields given. removed: true takes the item out of every outlet; a later layer can put it back with removed: false."
+    },
+    "LF_OutletOffer": {
+      "keyFields": [
+        "m_sOutlet",
+        "m_sItem"
+      ],
+      "key": "The key is outlet/item (gun_counter/pistol_m9): the outlet id a shop counter names, a slash, and the catalogue item id. A new key adds the offer; an existing key changes only the gate fields given. removed: true takes the item off that outlet."
     }
   },
   "examples": {
@@ -157,6 +170,22 @@
       "rules": {
         "POLICE_FINE": {
           "requiresWhitelist": false
+        }
+      }
+    },
+    "catalogue": {
+      "items": {
+        "pistol_m9": {
+          "price": 650,
+          "sellPrice": 300
+        }
+      },
+      "offers": {
+        "gun_counter/pistol_m9": {
+          "licence": "FIREARM_PERMIT"
+        },
+        "clothing_rack/raincoat_green": {
+          "removed": true
         }
       }
     }

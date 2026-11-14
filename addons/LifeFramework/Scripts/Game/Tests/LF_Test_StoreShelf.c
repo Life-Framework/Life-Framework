@@ -77,7 +77,8 @@ class LF_Test_StoreShelf : LF_Test
 		// An empty line refuses.
 		store.ForceStock(APPLE, 0);
 		int charged;
-		ctx.Equal(LF_EShopRefusal.OUT_OF_STOCK, shop.Buy(APPLE, 1, buyer, charged), "an empty line is out of stock");
+		string missing;
+		ctx.Equal(LF_EShopRefusal.OUT_OF_STOCK, shop.Buy(APPLE, 1, buyer, charged, missing), "an empty line is out of stock");
 		ctx.Equal(0, store.GetShelfCount(APPLE), "an empty line has an empty shelf");
 		ctx.Equal(0, store.GetStock(APPLE), "a refused sale takes nothing from the stock");
 		store.ForceStock(APPLE, stock0 - 2);
