@@ -6,6 +6,7 @@
 *.bat text eol=crlf
 # Workbench writes the language confs with CRLF; keep their bytes as generated.
 addons/LifeFramework/Language/*.conf -text
+addons/LF_Everon1989/Language/*.conf -text
 
 # Reforger / Enfusion binary assets - force Git to treat them as binary
 *.anm -text
