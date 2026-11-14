@@ -2422,3 +2422,35 @@ export function freeSlotOn(root, m) {
   const info = locks[slotLockName(1)];
   return !info || !info.alive;
 }
+
+// Free test lanes per machine right now, for `test --shards auto`: [{ machine, local, free }].
+// A lane counts when its lock is free or dead; a remote machine also needs the RAM for that many
+// servers above the floor, and no lane is counted on one that is down or hot. Reads only.
+export function freeTestLanes(root) {
+  const out = [];
+  const settings = poolSettings(root);
+  const health = readJson(healthFile(root), {});
+  for (const m of resolveMachines(root, { mode: "any" })) {
+    const lanes = lanesFor(m, "test");
+    if (m.via === "local") {
+      const free = lanes.filter((l) => {
+        const info = readJson(localLockFile(root, l.lock), null);
+        return !info || !pidAlive(info.pid);
+      }).length;
+      out.push({ machine: m.name, local: true, free });
+      continue;
+    }
+    const h = health[m.name];
+    if (h && Date.now() - h.at < HEALTH_TTL_MS && !h.reachable) continue;
+    const st = remoteStateCached(m);
+    if (!st) continue;
+    if (m.thermalHoldC && st.thermalC != null && st.thermalC >= m.thermalHoldC) continue;
+    let free = lanes.filter((l) => {
+      const info = st.locks?.[l.lock];
+      return !info || !info.alive;
+    }).length;
+    if (st.freeMb != null) free = Math.min(free, Math.max(0, Math.floor((st.freeMb - settings.minFreeMb) / (settings.sessionReserveServerMb || 600))));
+    out.push({ machine: m.name, local: false, free });
+  }
+  return out;
+}
