@@ -80,6 +80,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
    the wanted board, arrests the robber, and the robber goes to the cell. Clock
    out at the same desk to swap back.
    Fuel station (#936): talk to the attendant behind the counter; with a weapon drawn a robbery reply appears. Stay in range for the timer to be paid. Demo: `session.mjs fuel-robbery-proof` (2 clients).
+   Fuel counter polish: the till and the attendant stand inside the kiosk behind the caged window (about 283.6, 237.4); walk up to the window from the pumps and look in, or `tools\cli look fuel-counter` for the customer's-eye picture. The counter used to sink into the floor and poke through the wall.
    Then walk to the back room (black-market stall, 307, 279) on duty and use "Search back room"; the stock goes to the evidence locker and the stall shuts for 10 min. Demo: `session.mjs backroom-police-proof` (2 clients).
    Rank ladder (#754a): `LF_Police.conf` `m_aRanks`. Promote a cop (a second officer, or 3600 s on duty) and check the fine cap on the ticket form and the armory kit change; pay at clock-out uses the rank row.
    The duty kit includes a radio tuned to the police frequency (41000 kHz; the

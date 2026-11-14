@@ -2,6 +2,11 @@
   "_note": "Placements that are meant to look this way. tools\\cli audit placement skips a problem whose kind matches and whose name or prefab matches the regex (docs/placement-audit.md). Give the reason a reviewer can check in a shot.",
   "allow": [
     {
+      "match": "^Roadmap_Bank_Bag ",
+      "kind": "floating",
+      "why": "The bag stands on the vault's own steel floor, 0.5 m above the terrain; the floor is part of the Roadmap_Bank_Vault mesh, so the trace down reads terrain (bank close-up c09, #925). It was hidden until the 'Map' in 'Roadmap_' stopped counting as a hung map."
+    },
+    {
       "match": "^(Annex_BankVault_Kit|Roadmap_Bank_Vault)",
       "kind": "clips",
       "why": "The vault door is the prefab's own child (VaultDoor) on its hinge pivot, seated in the frame ring of VaultFront by design; in the _Open vault it stands on the same hinge beside the frame (tools/assets/bank-vault, #925). The town vault swings it open with the breach state."
