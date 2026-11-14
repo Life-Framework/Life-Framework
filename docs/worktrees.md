@@ -1093,8 +1093,15 @@ instead.
 Merged worktrees show `merged (prune me)` in `cli wt list`. `cli wt prune
 <slug>` verifies the branch is merged and clean before removing it; `--force`
 discards unmerged work. A squash-merged PR counts as merged (a merged PR whose head SHA is the branch tip, or
-the same files as origin/main). `cli wt prune --merged` lists every worktree that is merged, clean, idle 30 min and
-holds no lock or session; `--yes` prunes them, without it a dry run. `wt ship --refs N` needs N of 1 or more; with
+the same files as origin/main). `cli wt prune --merged` lists every worktree whose branch has a MERGED PR, is clean, idle 30 min and
+holds no lock or session; `--yes` prunes them, without it a dry run. The merged PR comes from one batched
+`gh pr list --state merged` (newest 500, 45 s timeout), matched on `ws/<slug>` and the worktree's base, and its
+head SHA must equal the branch tip, so a branch with a commit the PR did not carry is kept. **Ancestry of
+`origin/main` never qualifies a worktree**: a brand-new worktree is an ancestor too. The dry run says why each
+one stays (`keep <slug>: no merged PR (ancestor only)`, `PR #N merged, but the branch has commits after it`,
+`uncommitted changes`, `touched N min ago`, a lock). When `gh` is missing, fails or times out, nothing is pruned
+and the command exits 1 saying so; there is no fallback to ancestry. Warm-pool trees are never listed. `wt prune <slug>`
+and `--force` keep their checks: you named the worktree on purpose. `wt ship --refs N` needs N of 1 or more; with
 no issue, leave the flag out. `cli validate` warns you about worktrees that are ready
 to prune and about any registry inconsistency.
 
