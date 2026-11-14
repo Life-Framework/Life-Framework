@@ -83,6 +83,7 @@ import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
+import { helpRequest, usageText } from "./lib/help-guard.mjs";
 import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 
@@ -2958,6 +2959,12 @@ function cmdSession(args) {
     return r.status ?? 1;
   }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  // A session that `up` put on a pool machine is recorded only by agent-box/session.mjs
+  // (tmp/session-remote.json); it routes down/status/restart/wait there (cliSessionForwards).
+  if (session.cliSessionForwards(list[0], list.slice(1), session.readRemotePointer())) {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...list], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
   if ((list[0] === "restart" || list[0] === "down") && !list.includes("--force")) {
@@ -4744,6 +4751,7 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
     return 1;
   }
   const w = await q.ensureWorker(ROOT);
+  if (w.already) console.log(`ship: ${w.message}`);
   const qq = q.readQueue(ROOT);
   const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
   const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
@@ -5138,9 +5146,32 @@ async function discoveredHelp() {
 const [a, b] = rest;
 const HEAVY = ["build", "pack", "serve", "dev", "test", "ci", "e2e"];
 
+// `<heavy command> --help` / `-h` prints that command's usage and stops (tools/lib/help-guard.mjs).
+// It is asked before any dispatch, so nothing below (lock, build, boot, pool ticket) can start.
+function printUsage(req) {
+  if (req.cmd === "session") {
+    console.log(SESSION_USAGE);
+    return 0;
+  }
+  const keep = console.log;
+  let text = "";
+  console.log = (...a) => { text += `${a.join(" ")}
+`; };
+  try {
+    (req.cmd === "wt" ? wtHelpFull : cmdHelpFull)();
+  } finally {
+    console.log = keep;
+  }
+  console.log(usageText(text, req));
+  return 0;
+}
+
 let code;
 try {
-  if (cmd === "mcp") {
+  const helpReq = helpRequest(cmd, rest);
+  if (helpReq) {
+    code = printUsage(helpReq);
+  } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {
