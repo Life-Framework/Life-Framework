@@ -97,6 +97,9 @@ LF_ItemCatalogueConfig {
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
 | `vehicles` | `vehicles` | the lot prefab's GUID, 16 hex digits, braces and case ignored (`54C3CC22DEBD57BE`). A key naming the locked child's GUID addresses the same entry. A new or replaced vehicle needs `basePrice` above 0 |
 | `dialogue` | `lines`, `nodes` | line id, node id. Pack patch only (see "Dialogue patches") |
+| `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |
+| `jobs` | `xpAwards` | action id (`gather`). A new or replaced award needs a `job` |
+| `jobs` | `licenceGates` | licence name (`MINER_GOLD`, an `LF_ELicenseType` name). A new or replaced gate needs a `job` and a `minLevel`; removing a gate gives the licence its shipped gate back |
 | `shops` | `priceRules` | `prefab:<GUID>`, a prefab-path substring, or `type:<flags>,mode:<mode>` (`type:64` is `type:64,mode:2`). Two core rules can share a key; a layer addresses the last one, the one that wins the walk |
 
 The catalogue's `removed: true` is a field, not a verb: it hides an entry and a later layer can set
@@ -150,3 +153,6 @@ Not here (still #957): naming a dialogue by id instead of a prefab path, the `as
 4. `node tools/config/schema.mjs --write`: the schema gains `op` on the section's records.
 
 Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`), `LF_Test_VehicleOverrideVerbs` (`config/vehicle-override-verbs`), `LF_Test_DialogueOverrideVerbs` (`dialogue/override-verbs`), `LF_Test_PackPatchOverlays` (`config/pack-patch-overlays`, pack `.conf` files for vehicles and the clerk).
+Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`); jobs: `LF_Test_JobsOverrideModel`
+(`config/jobs-override-model`, owner verbs per list) and `LF_Test_JobsPackOverlay`
+(`config/jobs-pack-overlay`, a pack `.conf` over the shipped `LF_Jobs.conf`).

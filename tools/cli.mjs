@@ -67,6 +67,7 @@ import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
+import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
@@ -1820,8 +1821,9 @@ function cmdPlaytest(args) {
   if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
   if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
   if (sub === "server") return cmdPlaytestServer(list.slice(1));
+  if (sub === "checklist" || sub === "verdicts") return import("./commands/playtest-checklist.mjs").then((m) => m.main(list, { root: ROOT }));
   if (sub === "release") return cmdPlaytestRelease(ROOT, list.slice(1), { ensureRdb: ensureResourceDatabase, isMain: wt.isMainCheckout(ROOT) });
-  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]");
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]|checklist [--all]|verdicts <file>");
   return 1;
 }
 
@@ -2762,10 +2764,11 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
-  e2e [--local|--remote [name]] [--legacy-save] [--old-build]
+  e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids]
                                 two-boot save, restart, and reload proof in this worktree;
                                 --legacy-save writes the save before #331 (version 23) in boot 1;
-                                --old-build stamps boot 1's save as game build 1.8.0.13 (#980)
+                                --old-build stamps boot 1's save as game build 1.8.0.13 (#980);
+                                --content-ids runs the three-boot stable-id proof instead (#965)
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -2990,13 +2993,16 @@ function wtHelpFull() {
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
-  tools\\cli wt e2e <slug> [--legacy-save] [--old-build]
+  tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids]
                                        two-boot save-state E2E: persistence save boot ended by the
                                        host stop file (SHUTDOWN save), then reload same profile
                                        with -loadSessionSave (latest = the shutdown save);
                                        --legacy-save: boot 1 writes the pre-#331 format (version 23)
                                        --old-build: boot 1 stamps game build 1.8.0.13; the build gate
                                        backs the save up and boot 2 must load it (#980)
+                                       --content-ids: three boots of LF_Test_E2E_ContentIds: a save with
+                                       a renamed and a removed item, reload with the alias (held), reload
+                                       with the content back (#965)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
@@ -3257,6 +3263,7 @@ function runE2ePass(root, tier, opts = {}) {
   if (opts.hostStop) psArgs.push("-HostStop");
   if (opts.hostStopAfter) psArgs.push("-HostStopAfter", opts.hostStopAfter);
   if (opts.extraDefine) psArgs.push("-ExtraDefine", opts.extraDefine);
+  if (opts.only) psArgs.push("-Only", opts.only);
   return withServerSlot(root, 0, () => {
     const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
@@ -3289,7 +3296,7 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build") });
+  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build"), contentIds: args.includes("--content-ids") });
 }
 
 // The two-boot save/restart proof in one pool slot: both boots run on the same
@@ -3314,7 +3321,7 @@ async function e2eOnce(root, opts, lastTry) {
   let extra = {};
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
       if (!lastTry && pool.machineGone(root, slot, code)) {
         extra = { lost: true };
@@ -3322,7 +3329,9 @@ async function e2eOnce(root, opts, lastTry) {
       }
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-      code = runE2eHere(root, opts.legacySave, opts.oldBuild);
+      code = opts.contentIds
+        ? e2eContentIds.runContentIds(root, (passOpts) => runE2ePass(root, "persistence", passOpts))
+        : runE2eHere(root, opts.legacySave, opts.oldBuild);
     }
     return { code };
   } finally {
@@ -3762,7 +3771,7 @@ const cmds = {
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
-    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build") });
+    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => {
@@ -3906,8 +3915,8 @@ try {
     code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
-  } else if (cmd === "pack" && rest[0] === "new") {
-    // `pack` builds the Workshop bundle; `pack new <Name>` scaffolds a content pack (tools/commands/pack.mjs).
+  } else if (cmd === "pack" && ["new", "check", "explain"].includes(rest[0])) {
+    // `pack` builds the Workshop bundle; `pack new|check|explain` are the content-pack tools (tools/commands/pack.mjs).
     code = await (await import("./commands/pack.mjs")).main(rest, { root: ROOT });
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "asset" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);

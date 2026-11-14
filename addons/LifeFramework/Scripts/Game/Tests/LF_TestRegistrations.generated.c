@@ -143,6 +143,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_E2E_ContentIds(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_SaveStateVerify(), LF_TestTier.PERSISTENCE);
@@ -230,6 +231,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobLevelSync(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_JobsOverrideModel(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobsPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
@@ -381,6 +384,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SaveAliases(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SaveHeldContent(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SaveStampPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_AutosaveSelection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionBitmask(), LF_TestTier.LOGIC);

@@ -96,6 +96,16 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 
 **Manual, maintainer (GitHub settings, not done by tooling):** protect `stable` (Settings, Branches): restrict pushes to the maintainer account, block force pushes and deletion, no pull-request requirement. `promote` pushes a fast-forward as the signed-in `gh`/git user.
 
+**One session, many issues (#402, #403).** The human check is the bottleneck, so a pass is planned, not improvised.
+`toolscli playtest checklist` collects the `## Manual testing` steps of the merged PRs of every open `needs-playtest` or
+`in-dev` issue, shows a repeated step once, groups the rest by place in a walking route, marks two-player, restart,
+late-joiner and dedicated-server steps, estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass box and
+a `fail [ ]` box per issue. The default is the top hour, M2 first; `--all` lists everything. The fixed smoke list
+([playtest/smoke-list.md](playtest/smoke-list.md): boot, join, save, restart, reload, late joiner) is always its first
+section, and only a regression in an already-verified feature blocks promotion. After the pass,
+`toolscli playtest verdicts <file>` reads the ticked file and prints the `gh` commands (verified or regression label, a
+comment, close on pass). It runs none of them: the maintainer or lead reviews and runs them. Agents never do.
+
 ## Auto-merge
 
 `wt ship <slug> [--refs N] [--body-file F]`:
