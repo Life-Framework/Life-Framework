@@ -203,7 +203,7 @@ class LF_AgentCommand
 
 			return true;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 			return true;
 		if (cmd.Verb == "animseen" || cmd.Verb == "animhold" || cmd.Verb == "animoff")
 			return true;
@@ -1341,11 +1341,13 @@ class LF_AgentHarness
 			WriteResult(cmd.Id, "ok", LF_AssetAnimHarness.Seen());
 			return;
 		}
-		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge")
+		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
 		{
 			string seen;
 			if (cmd.Verb == "spikeverge")
 				seen = LF_SpikeStripHarness.Verge();
+			else if (cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff")
+				seen = LF_SpikeStripHarness.Preview(cmd.Verb == "spikepreview");
 			else
 				seen = LF_SpikeStripHarness.Seen();
 			if (seen.StartsWith("ok "))

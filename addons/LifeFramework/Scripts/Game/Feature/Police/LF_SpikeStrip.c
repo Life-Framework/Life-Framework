@@ -193,6 +193,11 @@ class LF_SpikeStrips
 	static const float MAX_STEP = 0.25; // lf-fixed: the placement tool's ground rule (docs/placement-tool.md)
 	//! A road whose centre line is this close to the strip's middle turns the strip across it.
 	static const float ROAD_REACH = 12; // lf-fixed: geometry, how far a road is looked for around the officer
+	//! The clearance box over the strip: half its width across, from this far above the ground to
+	//! this height. Lifted so the road surface under it does not count; tall enough for a car's sill.
+	static const float CLEARANCE_HALF_WIDTH = 0.2; // lf-fixed: geometry of the strip's footprint
+	static const float CLEARANCE_LIFT = 0.1; // lf-fixed: geometry, so the surface the strip lies on (terrain, a road or pavement entity) does not count
+	static const float CLEARANCE_HEIGHT = 0.6; // lf-fixed: geometry, a car body or a post
 
 	protected static string s_sLastRefusal;
 
@@ -227,6 +232,7 @@ class LF_SpikeStrips
 	static void ResetStatics()
 	{
 		LF_SpikeStripComponent.ResetAll();
+		LF_SpikeStripPreview.ResetStatics();
 		s_sLastRefusal = "";
 	}
 
@@ -279,9 +285,15 @@ class LF_SpikeStrips
 			return null;
 		}
 
+		// The same plan and verdict the officer's preview ghost showed (LF_SpikeStripPreview).
 		vector transform[4];
-		if (!PlanTransform(officer, deployable.GetDeployedLength(), item, transform))
-			return Refuse(officer, s_sLastRefusal, "#LF-SpikeStrip_NoGround");
+		LF_PlacementProbe probe = new LF_PlacementProbe();
+		LF_EPlacementVerdict verdict = Plan(officer, deployable.GetDeployedLength(), item, transform, probe);
+		if (verdict == LF_EPlacementVerdict.BLOCKED)
+			return Refuse(officer, "deploy refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_Blocked");
+
+		if (verdict != LF_EPlacementVerdict.VALID)
+			return Refuse(officer, "deploy refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-SpikeStrip_NoGround");
 
 		IEntity strip = SpawnAt(deployable.GetDeployedPrefab(), transform);
 		if (!strip)
@@ -333,9 +345,11 @@ class LF_SpikeStrips
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: where the strip goes, on the ground in front of the officer. False (with
-	//! s_sLastRefusal set) when the ground is not flat enough or not there.
-	static bool PlanTransform(IEntity officer, float length, IEntity ignore, out vector transform[4])
+	//! Server and client (the preview ghost, LF_SpikeStripPreview): measures the spot in front of
+	//! the officer into `probe`, fills `transform` with where the strip would lie, and returns the
+	//! verdict. Across a road within ROAD_REACH, else where the officer faces. `ignore` is the
+	//! folded strip itself, kept out of the ground and clearance traces.
+	static LF_EPlacementVerdict Plan(IEntity officer, float length, IEntity ignore, out vector transform[4], notnull LF_PlacementProbe probe)
 	{
 		vector officerTransform[4];
 		officer.GetWorldTransform(officerTransform);
@@ -363,36 +377,59 @@ class LF_SpikeStrips
 		vector axis = LF_SpikeStripGeometry.Axis(officerTransform[2], hasRoad, roadDir);
 		vector start = origin + axis * GAP;
 		vector end = start + axis * length;
+		start[1] = origin[1];
+		end[1] = origin[1];
+		// Until the ground is measured the strip lies level at the officer's feet, so a caller
+		// that shows the spot (the ghost) has a transform even for NO_GROUND.
+		LF_SpikeStripGeometry.Transform(start, end, transform);
+
 		float startY;
 		float endY;
 		float middleY;
-		if (!GroundY(start, officer, ignore, startY) || !GroundY(end, officer, ignore, endY) || !GroundY((start + end) * 0.5, officer, ignore, middleY))
-		{
-			s_sLastRefusal = "deploy refused: no ground under the strip";
-			return false;
-		}
+		IEntity startSurface;
+		IEntity endSurface;
+		IEntity middleSurface;
+		probe.m_bGround = GroundY(start, officer, ignore, startY, startSurface) && GroundY(end, officer, ignore, endY, endSurface) && GroundY((start + end) * 0.5, officer, ignore, middleY, middleSurface);
+		if (!probe.m_bGround)
+			return LF_PlacementRules.Judge(probe, MAX_STEP);
 
-		float lowest = Math.Min(startY, Math.Min(endY, middleY));
-		float highest = Math.Max(startY, Math.Max(endY, middleY));
-		if (!LF_SpikeStripGeometry.GroundAcceptable(lowest, highest, MAX_STEP))
-		{
-			s_sLastRefusal = string.Format("deploy refused: the ground rises %1 m along the strip (most %2)", highest - lowest, MAX_STEP);
-			return false;
-		}
-
+		probe.m_fLowest = Math.Min(startY, Math.Min(endY, middleY));
+		probe.m_fHighest = Math.Max(startY, Math.Max(endY, middleY));
 		start[1] = startY;
 		end[1] = endY;
 		LF_SpikeStripGeometry.Transform(start, end, transform);
 		vector middle = transform[3];
 		middle[1] = Math.Max(middle[1], middleY);
 		transform[3] = middle;
-		LF_Debug.Log(FEATURE, string.Format("plan: road %1, axis %2, ground %3..%4", hasRoad, axis, lowest, highest));
-		return true;
+
+		// Clearance: a box over the strip's footprint, lifted off the ground, so a parked car,
+		// a post or a strip already lying there stops it (the vanilla item placement's space check).
+		array<IEntity> exclude = {officer};
+		if (ignore)
+			exclude.Insert(ignore);
+		vector mins = Vector(-CLEARANCE_HALF_WIDTH, CLEARANCE_LIFT, -length * 0.5);
+		vector maxs = Vector(CLEARANCE_HALF_WIDTH, CLEARANCE_HEIGHT, length * 0.5);
+		probe.m_sBlocker = LF_PlacementRules.FindBlocker(transform, mins, maxs, exclude);
+
+		// What it would lie on: not a car's roof, a dropped item, or a strip already laid there (the
+		// clearance box starts above the surface, so it cannot see a 3 cm strip underneath).
+		array<typename> notGround = {LF_SpikeStripComponent};
+		array<IEntity> surfaces = {startSurface, middleSurface, endSurface};
+		foreach (IEntity surface : surfaces)
+		{
+			if (probe.m_sBlocker.IsEmpty())
+				probe.m_sBlocker = LF_PlacementRules.SurfaceBlocker(surface, notGround);
+		}
+
+		LF_EPlacementVerdict verdict = LF_PlacementRules.Judge(probe, MAX_STEP);
+		LF_Debug.Log(FEATURE, string.Format("plan: road %1, axis %2, ground %3..%4, %5", hasRoad, axis, probe.m_fLowest, probe.m_fHighest, LF_PlacementRules.Name(verdict)));
+		return verdict;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The higher of the terrain and whatever stands on it under pos (the placement tool's rule).
-	protected static bool GroundY(vector pos, IEntity officer, IEntity ignore, out float y)
+	//! `surface` is the entity that was hit when it stands above the terrain, else null.
+	protected static bool GroundY(vector pos, IEntity officer, IEntity ignore, out float y, out IEntity surface)
 	{
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
@@ -409,8 +446,16 @@ class LF_SpikeStrips
 			exclude.Insert(ignore);
 		trace.ExcludeArray = exclude;
 		float fraction = world.TraceMove(trace, null);
+		surface = null;
 		if (fraction < 1)
-			y = Math.Max(y, trace.Start[1] + (trace.End[1] - trace.Start[1]) * fraction);
+		{
+			float hitY = trace.Start[1] + (trace.End[1] - trace.Start[1]) * fraction;
+			if (hitY > y)
+			{
+				y = hitY;
+				surface = trace.TraceEnt;
+			}
+		}
 
 		return true;
 	}

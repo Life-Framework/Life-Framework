@@ -1,0 +1,5 @@
+MatPBRBasic {
+ Color 0.6 0.6 0.6 1
+ BCRMap "{59FE28EF6AF4A3E8}Assets/Items/Roleplay/Paper/FineTicket/Data/FineTicketSheet_BCR.edds"
+ NMOMap "{2E0A882B8182910F}Assets/Items/Roleplay/Paper/FineTicket/Data/FineTicketSheet_NMO.edds"
+}

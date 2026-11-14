@@ -45,10 +45,18 @@ class LF_BankVaultComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 
+		string vaultId = GetVaultId();
+		if (!vaultId.IsEmpty())
+		{
+			LF_Places.Register(LF_Bank.PLACE_KIND, vaultId, owner);
+			// LF_Bank.Configure makes the vault a breach target under the same id, and LF_Breach finds
+			// its lock there. A vault prefab that also carries LF_BreachTargetComponent registers the same entity.
+			LF_Places.Register(LF_Breach.PLACE_KIND, vaultId, owner);
+		}
+
 		if (!Replication.IsServer())
 			return;
 
-		string vaultId = GetVaultId();
 		if (vaultId.IsEmpty())
 		{
 			LF_Debug.Error("Bank", "vault component has no id and the entity is unnamed");

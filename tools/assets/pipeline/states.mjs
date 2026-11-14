@@ -17,6 +17,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
+import { addonPath } from "./addon.mjs";
 
 // Vanilla hold sets a gadget can borrow whole. `grip` is the centre of the closed hand and `out` the
 // direction away from the palm, both in the LeftHandProp frame (x right, y up, z forward when the
@@ -268,7 +269,7 @@ export function applyStates(text, spec) {
   return t;
 }
 
-export const prefabPath = (root, spec) => join(root, "addons", "LifeFramework", spec.states?.prefab || `${spec.prefab_dir}/${spec.name}.et`);
+export const prefabPath = (root, spec) => join(addonPath(root, spec), spec.states?.prefab || `${spec.prefab_dir}/${spec.name}.et`);
 
 // The stage: check (and with fix, write) the prefab; list the pictures to take.
 export function stageStates(ctx, { fix = false } = {}) {
@@ -317,7 +318,7 @@ export function shootStates(root, spec, dir) {
   const out = join(dir, "states");
   const session = join(root, "agent-box", "session.mjs");
   const node = (args) => spawnSync(process.execPath, [session, ...args], { cwd: root, stdio: "inherit", windowsHide: true }).status;
-  if (node(["up", "--clients", "2", "--profile", "full"]) !== 0) { console.log("FAIL  session up"); return 1; }
+  if (node(["up", "--clients", "2", "--profile", "full", "--wait"]) !== 0) { console.log("FAIL  session up"); return 1; }
   let code = 1;
   try {
     code = node(["asset-states-proof", `{${guid}}${rel}`, shots.join(","), out]);

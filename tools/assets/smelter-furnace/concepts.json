@@ -1,0 +1,178 @@
+{
+  "slug": "smelter-furnace",
+  "image_model": "nano-banana-2-lite",
+  "realism": {
+    "how": "A small ore or scrap smelting furnace in a state-owned quarry or foundry yard: a boxy steel-cased coal or coke furnace lined with firebrick, built by the works' own fitters from welded plate and standard industrial parts, hand-fired through a front door.",
+    "current": "A 1989 foundry worker sees a welded steel-cased coke furnace with a stack as ordinary kit; a medieval clay kiln or a blacksmith's open forge would be antique, and so would a gleaming stainless oven."
+  },
+  "subject": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack.",
+  "variants": [
+    {
+      "label": "Steel box furnace",
+      "detail": "A squat riveted dark steel box on a brick plinth, a heavy arched fire door with a handle on the front, a round hatch lid on top, a short stack at the back",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A squat riveted dark steel box on a brick plinth, a heavy arched fire door with a handle on the front, a round hatch lid on top, a short stack at the back. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-432d-75d9-bf84-49b1d67bfa96",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "\"solid steel box on a brick plinth, short stack\""
+    },
+    {
+      "label": "Brick and steel",
+      "detail": "A firebrick body banded with steel straps, a hinged cast-iron fire door at the front, a charging hatch on top, a square sheet-steel chimney",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A firebrick body banded with steel straps, a hinged cast-iron fire door at the front, a charging hatch on top, a square sheet-steel chimney. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-43fd-7363-8f46-8f3e16fde95b",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"tall open square chimney\""
+    },
+    {
+      "label": "Cylinder furnace",
+      "detail": "A short upright steel cylinder with a domed top, a rectangular front fire door with a peephole, a tall thin stack, standing on a low concrete base",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A short upright steel cylinder with a domed top, a rectangular front fire door with a peephole, a tall thin stack, standing on a low concrete base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-44c0-7406-ac28-335333c12316",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"thin tall stack\""
+    },
+    {
+      "label": "Cast iron furnace",
+      "detail": "A black cast-iron furnace with a front door and a draft slide, a rim of bolts, a hatch lid on top, a stovepipe stack, on a brick base",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A black cast-iron furnace with a front door and a draft slide, a rim of bolts, a hatch lid on top, a stovepipe stack, on a brick base. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-4594-744e-9428-3c683c7c56b9",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"many straps\""
+    },
+    {
+      "label": "Rusty works furnace",
+      "detail": "Rust-brown welded plate casing with scorch marks, a heavy front door held shut with a latch bar, a charging hatch with a hinged lid, a short chimney",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. Rust-brown welded plate casing with scorch marks, a heavy front door held shut with a latch bar, a charging hatch with a hinged lid, a short chimney. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-4658-77fc-9bb6-90c40b5738e0",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 1,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 2
+      },
+      "note": "\"rusty and derelict\""
+    },
+    {
+      "label": "Grey painted furnace",
+      "detail": "Grey-green factory-painted steel casing, a riveted front door with a round viewing port, a flat lid hatch on top, a short round stack, on feet",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. Grey-green factory-painted steel casing, a riveted front door with a round viewing port, a flat lid hatch on top, a short round stack, on feet. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-471c-7761-aef7-92bc0ce4f15c",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"thin legs\""
+    },
+    {
+      "label": "Crucible furnace",
+      "detail": "A squat steel drum furnace with a lift-off domed lid on top, a small front tap hole and draft door, lined with visible firebrick, on a brick plinth",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A squat steel drum furnace with a lift-off domed lid on top, a small front tap hole and draft door, lined with visible firebrick, on a brick plinth. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-47dc-70e9-b859-b37c9fb1a338",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"two pipes on top\""
+    },
+    {
+      "label": "Brick kiln furnace",
+      "detail": "A rectangular red-brick furnace with an arched iron door at the front, an iron lid hatch on top, a short brick chimney, steel corner braces",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A rectangular red-brick furnace with an arched iron door at the front, an iron lid hatch on top, a short brick chimney, steel corner braces. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-48a2-7688-8c3e-5a39224a37a0",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"brick texture busy\""
+    },
+    {
+      "label": "Riveted boiler-style",
+      "detail": "A riveted steel horizontal casing with a heavy round front door with hinges, a hatch on top, a short stack, standing on two steel legs",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A riveted steel horizontal casing with a heavy round front door with hinges, a hatch on top, a short stack, standing on two steel legs. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-4969-727c-bb46-785b2827ede9",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 0
+      },
+      "note": "\"thin legs\""
+    },
+    {
+      "label": "Blue-grey furnace",
+      "detail": "A blue-grey sheet-steel furnace with an inspection door, a charging hatch on top, a short flue pipe, on a low welded steel frame",
+      "prompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A blue-grey sheet-steel furnace with an inspection door, a charging hatch on top, a short flue pipe, on a low welded steel frame. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark.",
+      "taskId": "01a1d95d-4a29-7320-8a96-c33f93868aa0",
+      "scores": {
+        "silhouette": 2,
+        "era": 2,
+        "era_current": 2,
+        "scale_grip": 2,
+        "background": 2,
+        "no_text": 2,
+        "image_to_3d": 1
+      },
+      "note": "\"frame feet\""
+    }
+  ],
+  "pick": {
+    "n": 1,
+    "label": "Steel box furnace",
+    "by": "rubric",
+    "why": "highest rubric total 14/14; full marks; \"solid steel box on a brick plinth, short stack\"",
+    "at": "2026-11-14"
+  }
+}

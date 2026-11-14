@@ -21,7 +21,8 @@ import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { freshGuid, readGuid, usedGuids } from "./meta.mjs";
+import { freshGuid, readGuid } from "./meta.mjs";
+import { addonFlag, addonOf, addonPath, addonProblems, assertBoundary, guidsInUse, slugTarget } from "./addon.mjs";
 
 export const BASE = "https://api.elevenlabs.io";
 export const KEY_FILE = () => process.env.LF_ELEVENLABS_KEY_FILE || join(homedir(), ".life-framework", "elevenlabs-key");
@@ -817,14 +818,17 @@ export function stepProcess(root, slug) {
   console.log('next: read the pictures (docs/asset-pipeline/sounds.md "Review"), set "pick" and "reason" per sound, then --only wire');
 }
 
-export function stepWire(root, slug) {
+// `target` is the addon to wire into: the asset spec's `addon`, or `--addon` (#971).
+export function stepWire(root, slug, target = slugTarget(root, slug)) {
   const rec = readRec(root, slug);
+  const targetProblems = addonProblems(root, target);
+  if (targetProblems.length) throw new Error("addon problems:\n  " + targetProblems.join("\n  "));
   const problems = soundProblems(rec);
   if (problems.length) throw new Error("sounds.json problems:\n  " + problems.join("\n  "));
   const unpicked = rec.sounds.filter((s) => !s.layer_only && !s.pick?.length).map((s) => s.id);
   if (unpicked.length) throw new Error(`no pick for: ${unpicked.join(", ")}. Review the takes, then set "pick" and "reason" in sounds.json.`);
-  const addon = join(root, "addons", "LifeFramework");
-  const used = usedGuids(addon);
+  const addon = addonPath(root, target);
+  const used = guidsInUse(root);
   const cache = join(soundCache(root, slug), "wav");
   const place = (rel, text) => {
     const file = join(addon, rel);
@@ -859,9 +863,12 @@ export function stepWire(root, slug) {
     rec.wired[project] = { project: ref, events: events.map((e) => e.event), samples: events.flatMap((e) => e.samples) };
     console.log(`  ${ref}: ${events.map((e) => `${e.event} x${e.samples.length}`).join(", ")}`);
   }
+  if (addonOf(target) !== "LifeFramework") rec.addon = addonOf(target);
+  else delete rec.addon;
   writeRec(root, slug, rec);
+  assertBoundary(root, target);
   const kind = SOUND_KINDS[rec.kind];
-  console.log(`wire: ${Object.keys(projects).length} project(s) under addons/LifeFramework/${rec.project_dir}`);
+  console.log(`wire: ${Object.keys(projects).length} project(s) under addons/${addonOf(target)}/${rec.project_dir}`);
   if (kind?.replaces.length) console.log(`next: in the weapon prefab, override WeaponSoundComponent "Filenames": drop ${kind.replaces.join(" and ")}, list the projects above, keep the rest (docs/asset-pipeline/sounds.md "Wiring")`);
   return rec;
 }
@@ -910,10 +917,11 @@ export async function main(root, flags) {
   const value = (name) => { const i = flags.indexOf(name); return i >= 0 ? flags[i + 1] : undefined; };
   const only = value("--only");
   const again = value("--again");
-  const slug = flags.find((f) => !f.startsWith("--") && f !== only && f !== again);
-  const known = ["--init", "--status", "--settle", "--only", "--again"];
+  const addon = addonFlag(flags);
+  const slug = flags.find((f) => !f.startsWith("--") && f !== only && f !== again && f !== addon);
+  const known = ["--init", "--status", "--settle", "--only", "--again", "--addon"];
   if (!slug || flags.some((f) => f.startsWith("--") && !known.includes(f)) || (only && !["generate", "process", "wire"].includes(only))) {
-    console.log("usage: tools\\cli asset sound <slug> [--init | --status | --settle | --only generate|process|wire] [--again <sound id>]\nplaybook: docs/asset-pipeline/sounds.md");
+    console.log("usage: tools\\cli asset sound <slug> [--init | --status | --settle | --only generate|process|wire] [--again <sound id>] [--addon <name>]\nplaybook: docs/asset-pipeline/sounds.md");
     return 2;
   }
   if (flags.includes("--status")) return cmdStatus(root, slug);
@@ -923,7 +931,7 @@ export async function main(root, flags) {
   if (flags.includes("--settle")) return cmdSettle(root, slug);
   if (!only || only === "generate") { console.log("--- sound: generate"); await stepGenerate(root, slug, { again }); }
   if (!only || only === "process") { console.log("--- sound: process"); stepProcess(root, slug); }
-  if (only === "wire" || (!only && readRec(root, slug).sounds.every((s) => s.layer_only || s.pick?.length))) { console.log("--- sound: wire"); stepWire(root, slug); }
+  if (only === "wire" || (!only && readRec(root, slug).sounds.every((s) => s.layer_only || s.pick?.length))) { console.log("--- sound: wire"); stepWire(root, slug, slugTarget(root, slug, addon)); }
   return 0;
 }
 

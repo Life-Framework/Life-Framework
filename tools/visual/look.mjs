@@ -323,7 +323,7 @@ function steamCommon() {
   return join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Steam", "steamapps", "common");
 }
 
-function workbenchExe() {
+export function workbenchExe() {
   const tools = process.env.ENFUSION_WORKBENCH_PATH || join(steamCommon(), "Arma Reforger Tools");
   return [join(tools, "Workbench", "ArmaReforgerWorkbenchSteamDiag.exe"), join(tools, "ArmaReforgerWorkbenchSteamDiag.exe")].find(existsSync) ?? null;
 }
@@ -339,10 +339,10 @@ function peakWorkingSetMb(marker) {
 }
 
 // Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
-function runWorkbench(exe, profile, budgetS, measure) {
+export function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
   const gproj = join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
   const game = process.env.ENFUSION_GAME_PATH || join(steamCommon(), "Arma Reforger");
-  const args = ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=LF_VisualShotsPlugin", "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", join(game, "addons")];
+  const args = ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=" + plugin, "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", join(game, "addons")];
   return new Promise((done) => {
     const started = Date.now();
     let peakMb = 0;
@@ -364,14 +364,14 @@ function runWorkbench(exe, profile, budgetS, measure) {
   });
 }
 
-function latestLog(profile) {
+export function latestLog(profile) {
   const logs = join(profile, "logs");
   if (!existsSync(logs)) return null;
   const dirs = readdirSync(logs).filter((d) => d.startsWith("logs_")).sort();
   return dirs.length ? join(logs, dirs[dirs.length - 1], "console.log") : null;
 }
 
-function compileErrors(logFile) {
+export function compileErrors(logFile) {
   if (!logFile || !existsSync(logFile)) return [];
   return readFileSync(logFile, "utf8").split(/\r?\n/).filter((l) => /SCRIPT\s+\(E\)|Can't compile/.test(l)).slice(0, 5);
 }

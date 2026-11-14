@@ -1,0 +1,15 @@
+{
+  "slug": "smelter-furnace",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "meshy-6-lite",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d965-3d47-7778-826f-42c7fb29f0f5",
+      "concept": 1,
+      "conceptTaskId": "01a1d95d-432d-75d9-bf84-49b1d67bfa96",
+      "conceptPrompt": "A 1989 coal-fired ore smelting furnace for a quarry works yard: a squat welded steel box lined with firebrick, a heavy front fire door, a charging hatch on top and a short chimney stack. A squat riveted dark steel box on a brick plinth, a heavy arched fire door with a handle on the front, a round hatch lid on top, a short stack at the back. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

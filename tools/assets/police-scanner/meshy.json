@@ -1,0 +1,15 @@
+{
+  "slug": "police-scanner",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "latest",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d95e-b0e5-7063-8e7b-1e00a2ade76b",
+      "concept": 7,
+      "conceptTaskId": "01a1d95a-ef48-760b-a56a-031d5e34d596",
+      "conceptPrompt": "A 1989 hand-held police scanner receiver an Eastern-bloc black-market fence would sell: an upright black plastic pocket set with a short stub antenna on top, a small LCD window and keypad on the front and a speaker grille below. Plain black rectangular body, a short antenna, a rectangular LCD strip, two chunky ribbed knobs and a row of four push buttons, a speaker grille below. Solid chunky forms, separate distinct parts, no thin floating details, a clear grip area, a flat stable side to rest on. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

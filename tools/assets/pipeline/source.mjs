@@ -23,6 +23,7 @@ import { fileURLToPath } from "node:url";
 import { buildSheet } from "./concepts.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
 import { searchAll } from "./sources.mjs";
+import { creditPath } from "./addon.mjs";
 
 export const API = "https://api.polyhaven.com";
 export const USER_AGENT = "LifeFrameworkAssetPipeline/1.0 (+https://life-framework.org)";
@@ -243,7 +244,7 @@ export function gltfProblems(gltf, id) {
 }
 
 export function creditRow(spec, rec) {
-  const model = `${spec.asset_dir}/${spec.name}.xob`;
+  const model = creditPath(spec, `${spec.asset_dir}/${spec.name}.xob`); // a pack asset's row names its addon (#971)
   return `| ${rec.name} (\`${model}\`) | ${rec.authors} | ${rec.url} | CC0 1.0 | \`tools/assets/${spec.slug}/source.json\` | `;
 }
 
