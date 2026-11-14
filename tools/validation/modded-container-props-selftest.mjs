@@ -1,4 +1,5 @@
 // Selftest for validate-modded-container-props: the missing-attribute logic on fixture text.
+// inputs: tools/**, agent-box/**, .githooks/**
 // red-proof: 2026-11-14, with the `[BaseContainerProps()]` line removed from the OK fixture this failed
 // "copy with the attribute is clean".
 import assert from "node:assert/strict";

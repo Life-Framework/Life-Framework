@@ -1,4 +1,5 @@
 // Proves tools/agents/usage.mjs on fixtures/agent-usage (a lead, an lf-builder run, an older
+// inputs: tools/**, agent-box/**, .githooks/**
 // lf-scout run):
 //   1. one API turn written as two records with the same message.id counts once, and a
 //      <synthetic> record is not a turn;

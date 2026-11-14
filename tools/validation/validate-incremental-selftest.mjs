@@ -34,13 +34,14 @@ check(!g("addons/**/*.layer", "addons/A/c.layers"), "glob must anchor at the end
 check(g("docs/features.md", "docs/features.md") && !g("docs/features.md", "docsXfeatures.md"), "dots are literal");
 check(incrementalOff({ CI: "true" }) && incrementalOff({ LF_VALIDATE_ALL: "1" }) && !incrementalOff({}), "CI and LF_VALIDATE_ALL must disable it");
 
-// Every real check states its inputs (or "always"): a new check cannot silently skip or silently run.
+// Every real check should state its inputs (or "always"). One that does not simply runs every time.
 const realDir = join(dirname(fileURLToPath(import.meta.url)));
 for (const f of readdirSync(realDir)) {
   if (!/\.(mjs|ps1)$/.test(f)) continue;
   const head = readFileSync(join(realDir, f), "utf8").split(/\r?\n/).slice(0, 30);
   if (!head.some((l) => /^\s*(?:\/\/|#)\s*inputs:\s*\S/.test(l))) {
-    failures.push(`${f} has no "inputs:" header in its first 30 lines (list globs, or "always")`);
+    // A warning, not a failure: a check added on another branch must not break this one. It runs every time until it declares.
+    console.log(`WARN ${f} has no "inputs:" header in its first 30 lines (list globs, or "always"); it runs on every validate`);
   }
 }
 

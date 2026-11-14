@@ -16,7 +16,7 @@
 //   mcp verify [name]                 Boot the server briefly to prove it starts
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
-//   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
+//   validate [--full|--all]           Run the checks in tools/validation/ whose inputs changed since their last green run (--all: every check; --full: every check plus the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
@@ -2675,7 +2675,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | selftest
+  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
                                 (about 20 s; docs/visual-testing.md)
@@ -2694,8 +2694,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   hidden [--close]              list (or close) tool processes on the private LF-Agents desktop
                                 (Workbench/server runs started there never show a window)
-  validate [--full]             run the checks in tools/validation/; --full adds the
-                                Workbench compile (validate-scripts.ps1), which ci/gate/ship run
+  validate [--full|--all]       run the checks in tools/validation/ whose declared inputs changed since their last green
+                                run in this worktree (it names how many it skipped); --all runs every check; --full also adds the
+                                Workbench compile (validate-scripts.ps1), which ci/gate/ship run, always with every check
 
 servers: ${Object.keys(SERVERS).join(", ")}
 `);
