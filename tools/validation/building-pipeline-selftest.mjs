@@ -13,15 +13,19 @@
 //   specProblems allowing vanilla props with furniture off       -> FAIL spec: vanilla props with furniture off are refused
 //   unzstd stopping after one frame (2026-11-14, polish)        -> FAIL polish: every zstd frame of a compressed .blend is read
 //   moveEntities moving every child (entities[0])               -> FAIL polish: an entity nudge moves only the named prefab
+//   toBuilding with the yaw sign flipped (2026-11-14, #1143)      -> FAIL store: yaw 90 turns a fixture's front (+Z) onto +X
+//   storePrefab without the m_aShopItems allowlist (review)    -> FAIL store: the shop sells only the store's own lines (an empty allowlist sells every priced item)
+//   addProps inserting before the children's opening brace       -> FAIL polish: a hand-placed prop lands at the end of the furniture child list
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { checkBuildingModel, metaDrift, metaMaterials, metaSurfaces, planImport, skipped, targetPath, writePlan, importBuilding } from "../buildings/pipeline/import.mjs";
-import { STAGES, badGameRefs, countOpenings, countProps, doorRows, exportProblems, moveEntities, reviewProblems, run, settingsDrift, specProblems, unzstd } from "../buildings/pipeline/building.mjs";
+import { STAGES, addProps, badGameRefs, countOpenings, countProps, doorRows, exportProblems, moveEntities, reviewProblems, run, settingsDrift, specProblems, unzstd } from "../buildings/pipeline/building.mjs";
 import { zstdCompressSync } from "node:zlib";
 import { archBuilderSetup, licenseMarks, scanForMarks } from "../buildings/pipeline/archbuilder.mjs";
 import { guidIn, rdbRecord } from "../buildings/pipeline/gamedb.mjs";
+import { FIXTURES, storePlan, storePrefab, toBuilding } from "../buildings/pipeline/store-slots.mjs";
 
 const ROOT = join(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..", "..");
 const FAKE_BUYER = "Test.Buyer@example.invalid";
@@ -250,7 +254,7 @@ export async function main() {
     ok(/FAIL  import: no ArchBuilder export/.test(out) && code === 1, "skip: import then says the export must come from the ArchBuilder machine");
     const state = JSON.parse(readFileSync(join(root, "tmp", "buildings", "shop", "state.json"), "utf8"));
     ok(state.stages.spec.ok && state.stages.generate.skipped, "skip: status records the skip, not a failure");
-    ok(STAGES.join() === "spec,generate,review,polish,export,import,prefab", "stages: the order the docs describe");
+    ok(STAGES.join() === "spec,generate,review,polish,export,import,prefab,store", "stages: the order the docs describe");
 
     // ---- polish (docs/building-pipeline/polish.md)
     const shell = (doors) => `SCR_DestructibleBuildingEntity : "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et" {\n {\n${doors.map(([x, z, yaw]) => `  GenericEntity : "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et" {\n   ID "0000000000000001"\n   coords ${x} 0.1 ${z}\n${yaw ? `   angleY ${yaw}\n` : ""}  }\n`).join("")} }\n}\n`;
@@ -260,9 +264,33 @@ export async function main() {
     const furnText = `GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {\n {\n  GenericEntity : "{1A299FE9842C8DB3}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et" {\n   ID "2CB7F53CEB3B3AC9"\n   coords -0.063 3.85 -7.025\n   angleY 180\n  }\n  GenericEntity : "{AAAAAAAAAAAAAAAA}Prefabs/Props/Commercial/ShelfShop_01.et" {\n   ID "0000000000000002"\n   coords 1 0 1\n  }\n }\n}\n`;
     const moved = moveEntities(furnText, [{ prefab: "SignCommercial_01_GroceryStore", move: [-5.1, 0.2, 0] }]);
     ok(moved.hits.SignCommercial_01_GroceryStore === 1 && moved.text.includes("coords -5.163 4.05 -7.025") && moved.text.includes("coords 1 0 1"), "polish: an entity nudge moves only the named prefab");
+    const added = addProps(furnText, [{ prefab: "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et", at: [1.5, 0.1, 6], yaw: 180 }], "shop");
+    ok(added.added === 1 && countProps(added.text).total === countProps(furnText).total + 1 && added.text.endsWith("   coords 1.5 0.1 6\n   angleY 180\n  }\n }\n}\n"), "polish: a hand-placed prop lands at the end of the furniture child list");
+    const idOf = (text) => /ID "([0-9A-F]{16})"\n   coords 1\.5/.exec(text)?.[1];
+    ok(idOf(addProps(furnText, [{ prefab: "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et", at: [1.5, 0.1, 6] }], "shop").text) === idOf(added.text), "polish: a hand-placed prop keeps its entity ID on every export");
+    let propRefused = false;
+    try { addProps(furnText, [{ prefab: "Prefabs/Props/Crates/CardboardBoxStack_01.et", at: [0, 0, 0] }]); } catch { propRefused = true; }
+    ok(propRefused, "polish: a hand-placed prop named without its {GUID} is refused");
     ok(settingsDrift({ archbuilder: { seed: 1989, width: 18, archetype: "SUPERMARKET" } }, { seed: 7, width: 18.0000001, archetype: "SUPERMARKET" }).join() === "seed 7 (spec 1989)", "polish: a polished blend made with other settings is named, setting by setting");
     const frames = Buffer.concat([zstdCompressSync(Buffer.from("BLENDER-head-")), zstdCompressSync(Buffer.from(`made for ${FAKE_BUYER}`)), Buffer.from([0x5e, 0x2a, 0x4d, 0x18, 2, 0, 0, 0, 9, 9])]);
     ok(unzstd(frames).toString() === `BLENDER-head-made for ${FAKE_BUYER}`, "polish: every zstd frame of a compressed .blend is read (a watermark past the first frame is seen)");
+
+    // ---- store (tools/buildings/pipeline/store-slots.mjs, #1143)
+    const child = (name, at, yaw) => `  GenericEntity : "{AAAAAAAAAAAAAAAA}Prefabs/Props/Commercial/${name}.et" {\n   ID "0000000000000003"\n   coords ${at.join(" ")}\n${yaw ? `   angleY ${yaw}\n` : ""}  }\n`;
+    const storeFurn = `GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {\n {\n${child("ShelfShop_01", [-2.5, 0.1, -2.8], -90)}${child("ShelfShop_01", [-2.5, 0.1, -2.8], 90)}${child("CashierShop_01", [8, 1.1, -5], -90)} }\n}\n`;
+    const front = toBuilding({ at: [1, 0, 2], yaw: 90 }, [0, 0, 0.5]);
+    ok(front.join() === "1.5,0,2", `store: yaw 90 turns a fixture's front (+Z) onto +X (${front.join()})`);
+    const storeSpec = { key: "test_store", till: "CashierShop_01", lines: [{ item: "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", fixture: "ShelfShop_01", pick: [0, 1], boards: [2], per_board: 3, max: 9 }] };
+    const sp = storePlan(storeSpec, storeFurn);
+    ok(!sp.problems.length && sp.lines[0].slots.length === 6 && sp.tills.length === 1, `store: two picked gondola sides, one board, three each: six shelf points and one till (${JSON.stringify(sp.problems)})`);
+    const xs = new Set(sp.lines[0].slots.map((s) => s[0]));
+    ok(xs.has(-2.7) && xs.has(-2.3) && sp.lines[0].slots.every((s) => Math.abs(s[1] - (0.1 + FIXTURES.ShelfShop_01.boards[2].y + 0.03)) < 1e-6), `store: both sides get points on their own front, at the board height (${[...xs].join(", ")})`);
+    ok(storePlan({ ...storeSpec, lines: [{ ...storeSpec.lines[0], pick: [5] }] }, storeFurn).problems.some((p) => /pick 5/.test(p)), "store: a pick past the fixtures the export placed is refused");
+    ok(storePlan({ ...storeSpec, lines: [{ ...storeSpec.lines[0], fixture: "Fridge_01" }] }, storeFurn).problems.some((p) => /fixtures\.json/.test(p)), "store: a fixture with no board measurements is refused");
+    const prefabA = storePrefab("shop", storeSpec, sp, "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et");
+    ok(prefabA === storePrefab("shop", storeSpec, storePlan(storeSpec, storeFurn), "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et") && /m_sSlots "-2\.7 /.test(prefabA) && (prefabA.match(/LF_StoreTillAction "/g) || []).length === 1 && prefabA.includes('m_sStoreKey "test_store"'), "store: the store prefab is the same text on every run, with the slots, the key and a till per register");
+    const allowlist = /m_aShopItems \{\n((?: {4}[^\n]*\n)+) {3}\}/.exec(prefabA)?.[1] || "";
+    ok(allowlist.includes('m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"') && (allowlist.match(/LF_ShopItem "/g) || []).length === storeSpec.lines.length, "store: the shop sells only the store's own lines (an empty allowlist sells every priced item)");
   } finally {
     for (const k of Object.keys(process.env)) if (!(k in savedEnv)) delete process.env[k];
     Object.assign(process.env, savedEnv);

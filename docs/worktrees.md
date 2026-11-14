@@ -34,7 +34,7 @@ harmless to your editor because the worktree is a separate directory.
   the server refuses it (`Wrong GUID/name`, inventory operations that never complete). When
   stale, the worktree copy is refreshed by a headless `-wbModule=ResourceManager` Workbench on
   the hidden desktop, under the `build` lock (one line: `resource database stale: N
-  unregistered resource(s) ... -> refreshing`, about 10 s). `toolscli rdb` does the same on
+  unregistered resource(s) ... -> refreshing`, about 10 s). `tools\cli rdb` does the same on
   demand, and `validate` warns. The main checkout's copy is the human's editor file: it is
   only warned about, never rewritten. `LF_RDB_REFRESH=0` turns the refresh off. Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
@@ -162,14 +162,14 @@ that measurement failed on the related test that asserts the changed value.
 
 ## Release gates (`stable`, `promote`)
 
-`main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `toolscli release` use. Playtests run on `main`.
+`main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `tools\cli release` use. Playtests run on `main`.
 
-- `toolscli promote [--to <sha>]` fetches, lists the PRs merged to `main` since `stable` (first-parent merge commits) and writes `tmp/promote/checklist-<sha>.md`: one item per PR with its issues and the manual steps from its body. It changes nothing.
-- `toolscli promote --to <sha> --confirm` fast-forwards `origin/stable` to the commit you verified (default: `origin/main`), tags it `stable-<yyyymmdd>-<sha8>`, then marks the issues those PRs ref `verified` and closes them. An issue that a later, unverified PR on `main` also refs stays open. It refuses a target that is not a descendant of `stable` and never forces.
-- `toolscli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
-- `toolscli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
-- `toolscli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
-- **`toolscli release <x.y.z>` (#369), human step.** Run from `main` or `stable` (or a detached HEAD at `origin/main` or `origin/stable`) on a clean tree. Without flags it is a dry run: it prints the plan, names every refusal (dirty tree, wrong branch, bad version, tag taken) and runs the cheap `release-ready --strict` check; nothing changes. `--confirm` stamps the version in both `.gproj` files and both Workshop kit READMEs, runs `validate --full`, `release-ready --strict`, the full suite, `audit placement --strict` and a `pack` of each addon, writes `tmp/release/notes-<x.y.z>.md` from the PRs merged since the previous `v*` tag, and tags `v<x.y.z>` on a release commit that no branch points at. A failed gate restores the files and tags nothing. `--push` also pushes that one tag; without it nothing leaves the machine. It never uploads to the Workshop (#370, by hand in Workbench). Agents run the dry run only, never `--confirm`.
+- `tools\cli promote [--to <sha>]` fetches, lists the PRs merged to `main` since `stable` (first-parent merge commits) and writes `tmp/promote/checklist-<sha>.md`: one item per PR with its issues and the manual steps from its body. It changes nothing.
+- `tools\cli promote --to <sha> --confirm` fast-forwards `origin/stable` to the commit you verified (default: `origin/main`), tags it `stable-<yyyymmdd>-<sha8>`, then marks the issues those PRs ref `verified` and closes them. An issue that a later, unverified PR on `main` also refs stays open. It refuses a target that is not a descendant of `stable` and never forces.
+- `tools\cli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
+- `tools\cli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
+- `tools\cli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
+- **`tools\cli release <x.y.z>` (#369), human step.** Run from `main` or `stable` (or a detached HEAD at `origin/main` or `origin/stable`) on a clean tree. Without flags it is a dry run: it prints the plan, names every refusal (dirty tree, wrong branch, bad version, tag taken) and runs the cheap `release-ready --strict` check; nothing changes. `--confirm` stamps the version in both `.gproj` files and both Workshop kit READMEs, runs `validate --full`, `release-ready --strict`, the full suite, `audit placement --strict` and a `pack` of each addon, writes `tmp/release/notes-<x.y.z>.md` from the PRs merged since the previous `v*` tag, and tags `v<x.y.z>` on a release commit that no branch points at. A failed gate restores the files and tags nothing. `--push` also pushes that one tag; without it nothing leaves the machine. It never uploads to the Workshop (#370, by hand in Workbench). Agents run the dry run only, never `--confirm`.
 - **Issue states.** `agent:working` (being built) to `in-dev` (merged to `main`) to `needs-playtest` (merged, and the PR has a `## Manual testing` section with real steps) to `verified`. Only `verified` closes an issue; `regression` marks a failed one. The `issue-state` workflow (`tools/issue-state.mjs`) runs when a PR merges into `main`: every issue it refs (`Refs/Closes/Fixes/Resolves #N`) gets `in-dev` or `needs-playtest` and stays open; an issue an older CLI's `Closes #N` closed is reopened, a `verified` one is left alone, and a merged `Reverts #P` PR sets `regression` on P's issues. `promote --confirm` sets `verified` and closes. The website reads `verified` (or closed) as done and `in-dev`/`needs-playtest` as "built, not verified".
 - **Quorum sign-off (#575).** `docs/playtest/quorum.json` switches a rule that is off by default: when `"enabled": true`, `promote --confirm` needs `--confirmations <file>` and moves `stable` only when every issue whose PR lists manual steps has enough distinct roster testers (`docs/playtest/testers.json`) reporting pass, and none reporting fail. Rule, roster and disputes: `docs/playtest/quorum.md`. Session logistics: `docs/playtest/session-playbook.md`. Until the maintainer approves the rule, agents still never run `promote`.
 - Risky changes ship behind a config flag that defaults off, so one unverified feature does not block the rest.
@@ -177,13 +177,13 @@ that measurement failed on the related test that asserts the changed value.
 **Manual, maintainer (GitHub settings, not done by tooling):** protect `stable` (Settings, Branches): restrict pushes to the maintainer account, block force pushes and deletion, no pull-request requirement. `promote` pushes a fast-forward as the signed-in `gh`/git user.
 
 **One session, many issues (#402, #403).** The human check is the bottleneck, so a pass is planned, not improvised.
-`toolscli playtest checklist` collects the `## Manual testing` steps of the merged PRs of every open `needs-playtest` or
+`tools\cli playtest checklist` collects the `## Manual testing` steps of the merged PRs of every open `needs-playtest` or
 `in-dev` issue, shows a repeated step once, groups the rest by place in a walking route, marks two-player, restart,
 late-joiner and dedicated-server steps, estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass box and
 a `fail [ ]` box per issue. The default is the top hour; `--all` lists everything. The hour is ranked in tiers: issues under an open M1 or M2 chapter or epic (GitHub sub-issues, two levels; `--chapters N,N` adds more) first, then big player flows named in the title (robbery, vault, clerk, cuffs and arrest, medic and downed, dispatch, pagers and payphones, evidence and witnesses, dialogue, the item catalogue and licences), then the rest, and polish, visual-only and tooling items last (`tierOf` in `tools/lib/playtest-checklist.mjs`). Chapter work takes at most 70% of the hour, and a flow that does not fit closes the door on filler below it. Issues whose steps one walk covers share one line that lists every number; its tick or fail covers all of them. The fixed smoke list
 ([playtest/smoke-list.md](playtest/smoke-list.md): boot, join, save, restart, reload, late joiner) is always its first
 section, and only a regression in an already-verified feature blocks promotion. After the pass,
-`toolscli playtest verdicts <file>` reads the ticked file and prints the `gh` commands (verified or regression label, a
+`tools\cli playtest verdicts <file>` reads the ticked file and prints the `gh` commands (verified or regression label, a
 comment, close on pass). It runs none of them: the maintainer or lead reviews and runs them. Agents never do.
 
 ## Auto-merge
@@ -227,8 +227,9 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
    confs and credits; a conflict outside those files fails the entry), then runs `ci --remote --tiered` there
    (`--full-gate` drops `--tiered`; a data-only diff gets the T1 gate, "Gate tiers" below, else the full gate):
-   the Workbench compile and build on whichever pool machine has the `workbench` cap and room
-   (`tools/lib/wb-gate.mjs`), the suite, core-only run and placement audit on pool test lanes. A branch
+   the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
+   free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
+   the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
    that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
    build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
    so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
@@ -554,13 +555,35 @@ queues FIFO (tickets in `tmp/wt/wb-queue`) and prints one
 parallel ships ran seven compiles and builds on this 15.6 GB PC at once.
 
 `ci` (so `wt gate` and `wt ship`) runs the cheap validate checks here and the
-Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`):
-this PC while its Workbench limit has room, else a pool machine with the
-`workbench` cap, a free Workbench slot and 3.5 GB free, else this PC (it
-queues). The remote run is `ci --wb-only --local` in a
+Workbench compile and build where there is room (`tools/lib/wb-gate.mjs`).
+Every machine with the `workbench` cap (this PC, and each pool machine that
+answers ssh) is ranked like the pool ranks machines for tests: live free RAM
+less a Workbench reserve (2.25 GB), weighted by speed (`budgetMultiplier`).
+A machine whose headroom after the reserve is under the floor (`minFreeMb`,
+so about 3.7 GB free in all) is never chosen while another has room: on
+2026-11-14 this PC, at 1.5 GB free, started a Workbench that died after 6 s
+three gates in a row while `lf-cloud` had 18 GB free. The first ranked
+machine with RAM and a free Workbench slot runs the steps; if every roomy
+machine's Workbench limit is full, they queue on the best of those. If no
+machine has the RAM, the gate prints why (each machine's free RAM) and
+re-checks every 30 s for up to an hour (`LF_WB_RAM_WAIT_S`), then fails as a
+pool failure, which the ship queue requeues. A pool machine that does not
+answer, or answers and exits 3, leaves the choice to the rest (this PC when
+nothing else answers).
+
+A Workbench compile that ends within a minute with `NO VERDICT` on a machine
+under the reserve is an environment failure, not a compile failure: it
+prints `ENV  ... GB free`, skips the build, exits 4, and the gate retries the
+steps once on the best other machine. A second early death fails the gate as
+a pool failure.
+
+The remote run is `ci --wb-only --local` in a
 `Life-Framework-rt-<slug>-gate` run folder, synced like a remote test
-(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and this PC runs the steps. `ci --local` keeps everything here;
-`ci --remote [name]` sends the Workbench steps out even when this PC is free.
+(uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and the gate chooses again. `ci --local` keeps everything here;
+`ci --remote` uses pool machines only; `ci --remote <name>` / `--machine <name>`
+pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
+`--remote [name]` and `--machine <name>` through to that `ci` (the ship queue
+gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
 

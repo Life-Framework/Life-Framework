@@ -129,7 +129,7 @@ Restart the server after changing the file.
 2. Open the server browser and join your server by its `game.name`.
 3. A new player first sees the rules quiz (the rules are explained on a wrong answer; `rulesQuiz.enabled` in the config turns it off), then registration form R-89. Your character is keyed to your Steam name.
 
-The first player to join an empty police roster is put on it.
+The first player to join while the police roster is empty is put on the roster, so the owner can clock in. That makes them *eligible*, not on duty: they stay a civilian until they clock in at the duty desk in the police station. The server log confirms it with `[LFDebug:Whitelist] first player <uid> put on the empty police roster`. 
 
 ## 8. Keep the save across restarts
 
@@ -156,7 +156,7 @@ first boots; the full list is in [debug log triage](../debug-log-triage.md).
 | `Wrong GUID` / `INVENTORY (W): Item ... not found in replication` | The server's mod download is incomplete; restart it and let the Workshop download finish |
 | `[LFDebug:Config] no owner config at $profile:LifeFramework/config.json` | Expected on a first boot; the server uses the shipped values |
 | `[LFDebug:Config] <path>.<key> is not <kind>` | The named field in `config.json` is the wrong type; that value falls back |
-| `[LFDebug:Whitelist] whitelist file missing, police faction closed` | Expected on a fresh server; the roster file is created on the first join |
+| `[LFDebug:Whitelist] whitelist file missing, police faction closed` | Expected on a fresh server. It is logged as an error at the first join, just before `first player ... put on the empty police roster` creates the file |
 | `[LFDebug:Whitelist] no whitelist file yet: ...` | Expected before anyone has joined |
 | `Unable to start replication` | Another server already holds the port; end `ArmaReforgerServer.exe` and start again |
 | A save from another game build | After a game update, back up and test the save before keeping it; a different build may refuse it |

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "shops": { "priceRules": { "Prefabs/Items/Drinks/": { "buyPrice": 17 } } },
+  "police": { "arrestReach": 8 },
+  "organizations": { "foundingFee": 900 },
+  "persistence": { "autosaveInterval": 60 },
+  "vehicles": { "buyPercent": 150 },
+  "systems": { "switches": { "ATM": { "enabled": false } } }
+}

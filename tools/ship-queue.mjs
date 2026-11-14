@@ -173,9 +173,12 @@ const changedFiles = (wtPath, base) => wt.git(wtPath, ["diff", "--name-only", `$
 // The gate a branch gets: `validate --all` (cheap, here) when nothing under addons/ changed; else `ci --remote`,
 // tiered unless --full-gate: ci classifies the merged diff again and runs the T1 data-only gate when it holds
 // (tools/lib/gate-tier.mjs, docs/worktrees.md "Gate tiers").
-export function gateCommand(files, fullGate = false) {
-  if (fullGate) return ["ci", "--remote"];
-  return files.some((f) => f.startsWith("addons/")) ? ["ci", "--remote", "--tiered"] : ["validate", "--all"];
+// pin: the machine flags `wt ship` was given (--remote <name> / --machine <name> / --local), in place
+// of the bare --remote. Agents do not pin; a human or the lead can.
+export function gateCommand(files, fullGate = false, pin = []) {
+  const where = pin.length ? pin : ["--remote"];
+  if (fullGate) return ["ci", ...where];
+  return files.some((f) => f.startsWith("addons/")) ? ["ci", "--tiered", ...where] : ["validate", "--all"];
 }
 
 async function runJob(root, entry) {
@@ -196,7 +199,7 @@ async function runJob(root, entry) {
     say(`merged ${baseRef}: ${m.status}${m.resolved?.length ? ` (resolved ${m.resolved.join(", ")})` : ""}`);
     const gatedBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
     const files = changedFiles(wtPath, baseRef);
-    const cmd = gateCommand(files, entry.fullGate);
+    const cmd = gateCommand(files, entry.fullGate, entry.pin ?? []);
     attempts++;
     update(root, entry.id, { state: "gating", attempts, files, gatedBase }, `gate ${attempts}: ${cmd.join(" ")} on main ${gatedBase.slice(0, 7)}`);
     const t0 = Date.now();
