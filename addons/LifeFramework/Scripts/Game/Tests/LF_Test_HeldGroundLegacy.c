@@ -38,7 +38,7 @@ class LF_Test_HeldGroundLegacy : LF_Test
 			ctx.True(LF_Hideout.Assign(SITE, holder.GetId()), "the organization leases the site");
 			ctx.True(LF_Hideout.TryUnlock(FOUNDER, SITE), "the founder opens the site");
 			// The version before "heldground" is the newest save without it.
-			CheckVersion(ctx, persistence, holder.GetId(), LF_TestSaveVersion.CURRENT - 1);
+			CheckVersion(ctx, persistence, holder.GetId(), LF_PersistenceComponentSerializer.PayloadSinceVersion("heldground") - 1);
 			CheckVersion(ctx, persistence, holder.GetId(), 23);
 		}
 

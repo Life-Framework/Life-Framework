@@ -146,7 +146,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when a save payload was read into the stores this boot.
+	//! \return True when a save payload was read into the stores this boot.
 	static bool WasStoreLoaded()
 	{
 		return s_bStoreLoaded;
@@ -163,6 +163,16 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! The only payload order. Index 0 is version 1. Written version equals this length.
 	//! Append the next system at the end; do not insert or reorder.
 	//! \param[out] order Empty array filled with the payload names in save order.
+	//! The save version a payload first appears in: its place in RegisterPersistencePayloads, from 1.
+	//! A save at a lower version never wrote it. 0 for an unknown payload.
+	static int PayloadSinceVersion(string payload)
+	{
+		array<string> order = new array<string>();
+		RegisterPersistencePayloads(order);
+		return order.Find(payload) + 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void RegisterPersistencePayloads(notnull array<string> order)
 	{
 		order.Insert("survival");

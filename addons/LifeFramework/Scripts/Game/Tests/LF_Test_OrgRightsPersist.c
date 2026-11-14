@@ -183,9 +183,10 @@ class LF_Test_OrgRightsPersist : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-//! What a test found in the stores an older-format or partial save of the live store drops, put back
-//! when it is done: the organization registry with its rank masks (#750a) and the job XP only the
-//! "joblevels" payload holds (#749; a "progression" load seeds just CIVILIAN and DELIVERY).
+//! What a test found in the stores an older-format or partial save of the live store drops, or a test
+//! resets, put back when it is done: the organization registry with its rank masks (#750a), the job
+//! XP only the "joblevels" payload holds (#749; a "progression" load seeds just CIVILIAN and
+//! DELIVERY), and the hideout leases with their held ground (#751).
 //! Persistence-tier tests reload such saves; the e2e save boot seeds both earlier in that tier.
 class LF_TestLegacySnapshot : Managed
 {
@@ -203,6 +204,9 @@ class LF_TestLegacySnapshot : Managed
 	//! Held ground (#751): an older save has no "heldground", so loading one leaves every site unheld,
 	//! including the site the e2e organization must still hold at the shutdown save.
 	protected ref array<ref LF_HeldGroundRow> m_aHeldGround;
+	//! Hideout leases and locks (#751): roadmap/hideout-save resets them after the e2e write, and the
+	//! e2e organization's lease must still be there at the shutdown save for its held ground to load.
+	protected ref array<ref LF_HideoutRecord> m_aHideouts;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_TestLegacySnapshot Take()
@@ -214,6 +218,7 @@ class LF_TestLegacySnapshot : Managed
 		snapshot.m_aWanted = LF_WantedReports.ExportAll();
 		snapshot.m_aIdCards = LF_PhotoIdCard.ExportAll();
 		snapshot.m_aVehicleState = LF_VehicleOwnership.ExportState();
+		snapshot.m_aHideouts = LF_Hideout.ExportAll();
 		snapshot.m_aHeldGround = LF_Hideout.ExportHeldGround();
 		return snapshot;
 	}
@@ -227,6 +232,9 @@ class LF_TestLegacySnapshot : Managed
 		LF_WantedReports.ApplyAll(m_aWanted);
 		LF_PhotoIdCard.ApplyAll(m_aIdCards);
 		LF_VehicleOwnership.ApplyState(m_aVehicleState);
+		// Organizations first: the held ground checks the holder against them and the lease.
+		LF_Hideout.Reset();
+		LF_Hideout.ApplyAll(m_aHideouts);
 		LF_Hideout.ApplyHeldGround(m_aHeldGround);
 	}
 }
