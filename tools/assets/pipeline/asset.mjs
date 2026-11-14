@@ -17,9 +17,10 @@ import * as concepts from "./concepts.mjs";
 import { pickedImage } from "./concepts.mjs";
 import { materialProblems, resolveMaterials, variantPlans } from "./materials.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
+import { animProblems, hasAnim, withAnim } from "./anim.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGES = ["spec", "concept", "generate", "clean", "import", "prefab"];
+export const STAGES = ["spec", "concept", "generate", "clean", "import", "prefab", "anim"];
 
 export const specFile = (root, slug) => join(root, "tools", "assets", slug, "spec.json");
 export const cacheDir = (root, slug) => join(root, "tmp", "assets", slug);
@@ -72,6 +73,7 @@ export function specProblems(spec) {
     else if (kind && !kind.skeleton?.some((n) => n.name === p.bone)) out.push(`part ${p.name}: bone ${p.bone} is not in the ${spec.kind} skeleton`);
   }
   out.push(...materialProblems(spec));
+  out.push(...animProblems(spec));
   if (!/^Assets\//.test(spec.asset_dir || "")) out.push("asset_dir must start with Assets/");
   if (!/^Prefabs\//.test(spec.prefab_dir || "")) out.push("prefab_dir must start with Prefabs/");
   return out;
@@ -270,11 +272,13 @@ async function stageClean(ctx) {
   const glb = join(dir, "raw", "model.glb");
   if (!existsSync(glb)) throw new Error(`no ${glb}; run the generate stage first (or drop a GLB there)`);
   const job = join(out, "job.json");
-  writeFileSync(job, JSON.stringify({ spec, kind: KINDS[spec.kind], materials: resolveMaterials(spec), glb, raw: join(dir, "raw"), out }, null, 1));
+  // The anim block adds a skeleton (a bone per moving part, the sockets) and the parts to split off.
+  const { kind, parts } = withAnim(KINDS[spec.kind], spec);
+  writeFileSync(job, JSON.stringify({ spec: { ...spec, parts }, kind, materials: resolveMaterials(spec), glb, raw: join(dir, "raw"), out }, null, 1));
   runBlender(join(blenderDir, "clean.py"), [job], { log: join(out, "blender.log") });
   const report = JSON.parse(readFileSync(join(out, "report.json"), "utf8"));
   const { checkReport } = await import("./checks.mjs");
-  const problems = checkReport(spec, KINDS[spec.kind], report);
+  const problems = checkReport(spec, kind, report);
   for (const p of problems) console.log(`FAIL  ${p}`);
   console.log(`clean: LODs ${report.lods.map((l) => l.tris).join("/")} tris, size ${report.size.map((v) => v.toFixed(3)).join(" x ")} m, ${report.sockets.length} sockets, review ${join(out, "review")}`);
   if (problems.length) throw new Error(`${problems.length} check(s) failed; fix the spec (fit, parts, budget) and rerun --only clean`);
@@ -296,13 +300,21 @@ async function stagePrefab(ctx) {
   return writePrefabs(ctx);
 }
 
+// Stage "anim": moving parts, the character's animation, effects and sounds (anim.mjs). An asset
+// with no anim block has nothing to do here.
+async function stageAnim(ctx) {
+  if (!hasAnim(ctx.spec)) { console.log("anim: the spec has no anim block; nothing moves"); return { skipped: true }; }
+  const { stageAnim: runAnim } = await import("./anim.mjs");
+  return runAnim({ ...ctx, blender: runBlender }, { fix: ctx.fix });
+}
+
 async function stageConcepts(ctx) {
   return concepts.stageConcept(ctx, { writeState, resolveFfmpeg });
 }
 
-const RUN = { spec: stageSpec, concept: stageConcepts, generate: stageGenerate, clean: stageClean, import: stageImport, prefab: stagePrefab };
+const RUN = { spec: stageSpec, concept: stageConcepts, generate: stageGenerate, clean: stageClean, import: stageImport, prefab: stagePrefab, anim: stageAnim };
 
-export async function run(root, slug, { from, only, force, workbench, pick } = {}) {
+export async function run(root, slug, { from, only, force, workbench, pick, fix } = {}) {
   const spec = loadSpec(root, slug);
   const dir = cacheDir(root, slug);
   const fullState = readState(dir);
@@ -317,7 +329,7 @@ export async function run(root, slug, { from, only, force, workbench, pick } = {
     }
     rerun = true; // a rerun stage invalidates every later one
     const started = Date.now();
-    const ctx = { root, slug, spec, dir, fullState, workbench, pick, state: (fullState.work ||= {}) };
+    const ctx = { root, slug, spec, dir, fullState, workbench, pick, fix, state: (fullState.work ||= {}) };
     console.log(`--- ${stage}`);
     if (stage === "generate" && force && ctx.state.generate?.refineLogged) {
       // A forced generate is a new attempt: keep the old download beside it and start new tasks.
@@ -408,6 +420,13 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "sound") return (await import("./sound.mjs")).main(root, rest); // docs/asset-pipeline/sounds.md
+  if (sub === "anim") { // the anim stage alone: tools\cli asset anim <slug> [--fix]
+    const wt = await import("../../wt.mjs");
+    if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
+    const slug = rest.find((f) => !f.startsWith("--"));
+    if (!slug) { console.log("usage: tools\\cli asset anim <slug> [--fix]"); return 2; }
+    return run(root, slug, { only: "anim", fix: rest.includes("--fix"), workbench });
+  }
   if (sub === "kit") {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
@@ -424,6 +443,7 @@ export async function main(flags, { workbench } = {}) {
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
+       tools\\cli asset anim <slug> [--fix]     moving parts, character clips, effects (docs/asset-pipeline/animation.md)
        tools\\cli asset kit <slug> [--only build|import]     several models from one Blender script (a room, a vault)
        tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
        tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)

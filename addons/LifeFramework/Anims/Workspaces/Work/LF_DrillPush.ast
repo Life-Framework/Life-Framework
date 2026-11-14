@@ -1,14 +1,14 @@
 AnimSetTemplateSource {
  Groups {
-  AnimSetTemplateSource_AnimationGroup "{F32F14259273BC43}" {
-   Name "Work"
+  AnimSetTemplateSource_AnimationGroup "{F15A588D88335066}" {
+   Name "Use"
    Animations {
     "In"
     "Loop"
     "Out"
    }
    Columns {
-    "Drill"
+    "Default"
    }
   }
  }

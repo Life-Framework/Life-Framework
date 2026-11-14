@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{049E30C2E772A11D}Anims/LF/Drill/Drill_push_in.anm"
+ Configurations {
+  TXAResourceClass PC {
+  }
+  TXAResourceClass XBOX_ONE : PC {
+  }
+  TXAResourceClass XBOX_SERIES : PC {
+  }
+  TXAResourceClass PS4 : PC {
+  }
+  TXAResourceClass HEADLESS : PC {
+  }
+  TXAResourceClass PS5 : PC {
+  }
+ }
+}

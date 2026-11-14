@@ -1,62 +1,62 @@
 AnimSrcGraphFile {
  Sheets {
-  AnimSrcGraphSheet LF_ReviveCPR {
+  AnimSrcGraphSheet LF_DrillPush {
    Nodes {
     AnimSrcNodeStateMachine MasterControl {
      EditorPos 0 -1
      states {
-      AnimSrcNodeState CPR {
+      AnimSrcNodeState Use {
        EditorPos 0 1
-       Child "CPRG"
+       Child "UseG"
        StartCondition "Gestures == 562"
        IsExit 1
       }
      }
     }
-    AnimSrcNodeGroupSelect CPRG {
+    AnimSrcNodeGroupSelect UseG {
      EditorPos 0 3
-     Child "CPRSequenceSTM"
-     Group "Work"
-     Column "Drill"
+     Child "UseSequenceSTM"
+     Group "Use"
+     Column "Default"
     }
-    AnimSrcNodeStateMachine CPRSequenceSTM {
+    AnimSrcNodeStateMachine UseSequenceSTM {
      EditorPos 0 5
      states {
       AnimSrcNodeState In {
        EditorPos -3 7
-       Child "CPRInSrc"
+       Child "UseInSrc"
        StartCondition "true"
        TimeStorage "Real Time"
       }
       AnimSrcNodeState Loop {
        EditorPos 0 8
-       Child "CPRLoopSwitch"
+       Child "UseLoopSwitch"
        StartCondition "false"
        TimeStorage "Real Time"
       }
       AnimSrcNodeState Out {
        EditorPos 3 7
-       Child "CPROutSrc"
+       Child "UseOutSrc"
        TimeStorage "Real Time"
        IsExit 1
       }
      }
      transitions {
-      AnimSrcNodeTransition "{850FFA5FB217A2AD}" {
+      AnimSrcNodeTransition "{F002ACB882579AC4}" {
        FromState "In"
        ToState "Loop"
        Duration "0.2"
        Condition "RemainingTimeLess(0.1)"
        PostEval 1
       }
-      AnimSrcNodeTransition "{69C4D9DC81B22C43}" {
+      AnimSrcNodeTransition "{F44F97ABE1E0F1C6}" {
        FromState "Loop"
        ToState "Out"
        Duration "0.5"
        Condition "Gestures == -1"
        Reentering "Blendout Only"
       }
-      AnimSrcNodeTransition "{072170230F3662BA}" {
+      AnimSrcNodeTransition "{E2050D7FA39D4787}" {
        FromState "In"
        ToState "Out"
        Duration "0.5"
@@ -67,28 +67,28 @@ AnimSrcGraphFile {
       }
      }
     }
-    AnimSrcNodeSource CPRInSrc {
+    AnimSrcNodeSource UseInSrc {
      EditorPos -3 10
-     Source "Work.In"
+     Source "Use.In"
     }
-    AnimSrcNodeSwitch CPRLoopSwitch {
+    AnimSrcNodeSwitch UseLoopSwitch {
      EditorPos 0 10
      BlendTime 0.2
      FirstProbabilities "1"
      SwitchItems {
-      AnimSrcNodeSwitchItem "{26D4F67925598C2B}" {
-       Child "CPRLoopSrc"
+      AnimSrcNodeSwitchItem "{47B45F2A32C3D08C}" {
+       Child "UseLoopSrc"
        NextProbabilities "100"
       }
      }
     }
-    AnimSrcNodeSource CPRLoopSrc {
+    AnimSrcNodeSource UseLoopSrc {
      EditorPos 0 12
-     Source "Work.Loop"
+     Source "Use.Loop"
     }
-    AnimSrcNodeSource CPROutSrc {
+    AnimSrcNodeSource UseOutSrc {
      EditorPos 3 10
-     Source "Work.Out"
+     Source "Use.Out"
     }
    }
   }

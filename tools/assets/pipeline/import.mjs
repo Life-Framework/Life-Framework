@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { KINDS } from "./kinds.mjs";
 import { writeAssetMetas, writeVariantMetas } from "./meta.mjs";
 import { checkModel, parse } from "./xob.mjs";
+import { withAnim } from "./anim.mjs";
 
 const PLUGIN = "LF_AssetImportPlugin";
 
@@ -74,7 +75,7 @@ export function placeVariants({ root, spec, clean, addon }) {
 export async function importAsset(ctx) {
   const { root, spec, dir } = ctx;
   if (!ctx.workbench) throw new Error("the import stage needs the Workbench launcher; run it through tools\\cli asset");
-  const kind = KINDS[spec.kind];
+  const { kind } = withAnim(KINDS[spec.kind], spec); // the anim block adds bones, sockets and the skinning flags
   const clean = join(dir, "clean");
   const addon = join(root, "addons", "LifeFramework");
   const assetAbs = join(addon, spec.asset_dir);

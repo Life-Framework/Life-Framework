@@ -350,6 +350,22 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "animhold" || tool == "animoff")
+		{
+			// The asset animation proof's stand-ins (LF_AssetAnimHarness, #340).
+			string held;
+			if (tool == "animhold")
+				held = LF_AssetAnimHarness.Hold(this);
+			else
+				held = LF_AssetAnimHarness.Off();
+
+			if (held.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", held.Substring(3, held.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", held);
+			return;
+		}
+
 		if (tool == "spikedrop" || tool == "spikecar" || tool == "spikecheck")
 		{
 			// The spike strip proof's stand-ins (LF_SpikeStripHarness, #646).
