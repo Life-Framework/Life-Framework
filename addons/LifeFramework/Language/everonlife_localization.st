@@ -6889,7 +6889,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1EF55798C921D26C}" {
      Id "LF-PoliceAppGm_Title"
-     Target_en_us "{police} APPLICATIONS"
+     Target_en_us "Applications to the {police}"
      Comment "Game Master applications sheet title (#1288)."
     }
     CustomStringTableItem "{7064E4B84B8AE16A}" {
