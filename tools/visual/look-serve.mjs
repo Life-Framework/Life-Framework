@@ -326,7 +326,7 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
     // The world is closed first (an unload request): files changing under an open world crashed the reopen.
     let co = viewerAt(viewer, st.sha);
     if (co.ok) {
-      const un = await sendRequest(st, `${process.pid}-${Date.now()}-unload`, "unload", "", 60);
+      const un = await sendRequest(st, `${process.pid}-${Date.now()}-unload`, "unload", "", 120);
       co = un.ok ? checkoutViewer(root, viewer, snap.sha) : { ok: false, why: `unload: ${un.why}` };
     }
     if (!co.ok) decision = { reload: "restart", reason: co.why };

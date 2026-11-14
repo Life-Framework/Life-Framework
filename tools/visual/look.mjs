@@ -7,6 +7,8 @@
 //   flags: --edit (the World Editor view instead of play mode)  --close N (close-ups per area, default 12; 0 = none)
 //          --radius m  --hour h (local solar time, default 14)  --settle ms  --out dir  --measure (peak RAM)
 //          --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
+//          --budget s (base budget before the per-shot part: 90 fresh, 150 through the server; raise it on a slow box)
+//          --serve (use the look server, starting one) --fresh (never use it); look serve [--status|--stop [--remove]]
 //
 // One hidden Workbench (LF-Agents desktop) opens DebugWorld, enters play mode with a free
 // camera, takes every shot and exits: about 10 s of start-up and 0.5 s per shot, no server,
@@ -28,6 +30,7 @@ const WORLD = "Worlds/DebugWorld/DebugWorld.ent";
 const WORKBENCH_MB = 1900; // peak working set of the run, measured 2026-11-11 (docs/visual-testing.md)
 const RAM_MARGIN_MB = 300;
 const BOOT_BUDGET_S = 90;
+const SERVE_BUDGET_S = 150;
 
 export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 
@@ -36,7 +39,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["close", "radius", "hour", "settle", "first", "out", "states", "at"]);
+  const valued = new Set(["close", "radius", "hour", "settle", "first", "out", "states", "at", "budget"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -463,7 +466,7 @@ async function freshRun(exe, profile, raw, plan, shots, opts, args, areas) {
     // Injected like the MCP handlers: Scripts/WorkbenchGame/ is git-ignored, and the copy is removed after the run.
     mkdirSync(injected, { recursive: true });
     cpSync(PLUGIN, join(injected, "LF_VisualShotsPlugin.c"));
-    const budgetS = BOOT_BUDGET_S + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+    const budgetS = num(args.flags.budget, BOOT_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
     console.log(`look: ${shots.length} shot(s) of ${areas.length} area(s), ${opts.edit ? "edit" : "play"} mode, hidden Workbench (budget ${budgetS} s)`);
     return await runWorkbench(exe, profile, budgetS, args.flags.measure === true);
   } finally {
@@ -553,7 +556,8 @@ async function run(args) {
   let profile = join(ROOT, "server", "profile", "visual");
   try {
     if (useServer) {
-      const budgetS = 60 + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+      // A request includes leaving play, maybe a reopen, and entering play again: about 10 s on a PC, a minute on lf-cloud.
+      const budgetS = num(args.flags.budget, SERVE_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
       let ramMsg = null;
       // A throw in the server path (git, file system) is one more reason to fall back, never a failed look.
       const r = await serve.serveLook(ROOT, {

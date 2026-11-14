@@ -116,6 +116,7 @@ tools\cli look serve --status        pid, snapshot, idle time, health
 tools\cli look serve --stop          stop it; --remove also removes the viewer checkout
 tools\cli look bank --serve          use the server, starting it when none is up
 tools\cli look bank --fresh          never use the server (the old path)
+tools\cli look bank --budget 240     a longer base budget (default 90 s fresh, 150 s through the server) on a slow box
 ```
 
 The server runs on its own detached checkout beside the main one, `Life-Framework-look-viewer`
