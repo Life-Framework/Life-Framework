@@ -3623,7 +3623,7 @@ function wtHelpFull() {
                                        clean-tree check -> merge origin/<base> only if it conflicts ->
                                        gate -> push -> PR (or reuse the open one) -> gh auto-merge
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
-  tools\\cli wt prune --merged [--yes]  list every merged, clean, idle (30 min), unlocked worktree; --yes prunes them
+  tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
   tools\\cli wt main                   print the main checkout path
@@ -3780,6 +3780,10 @@ function wtPruneMergedCmd(args) {
     return 1;
   }
   for (const s of plan.skip) console.log(`  keep   ${s.slug}: ${s.why}`);
+  if (plan.ghError) {
+    console.log(`WARN  cannot list merged PRs (${plan.ghError}); pruning nothing. Ancestry alone never qualifies a worktree.`);
+    return 1;
+  }
   for (const t of plan.take) console.log(`  prune  ${t.slug} (${t.via})`);
   if (!plan.take.length) {
     console.log("nothing to prune");

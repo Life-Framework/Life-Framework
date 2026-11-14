@@ -47,7 +47,7 @@ try {
   let st = wt.reconcileState(main);
   ok(Object.keys(st.worktrees).length === 0, "warm trees are not registered as agent worktrees");
   ok(Object.values(st.warm).filter((w) => w.status === "ready").length === 2, "two warm trees are ready");
-  ok(wt.pruneCandidates(main, { mergedHeads: () => [] }).take.length === 0, "prune --merged never takes a warm tree");
+  ok(wt.pruneCandidates(main, { mergedPrs: () => ({ ok: true, prs: [] }) }).take.length === 0, "prune --merged never takes a warm tree");
 
   // origin/main moves on: the claim must fast-forward, not recreate.
   g(base, ["clone", "-q", origin, other]);
