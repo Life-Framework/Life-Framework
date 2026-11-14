@@ -38,9 +38,9 @@ const lib = pathToFileURL(join(import.meta.dirname, "..", "lib", "wb-lock.mjs"))
 const holderJs = `const w = await import(${JSON.stringify(lib)}); await w.acquireWorkbench(${JSON.stringify(dir)}, { purpose: "selftest-holder", log: () => {} }); console.log("HELD"); setTimeout(() => process.exit(0), 1500);`;
 const child = spawn(process.execPath, ["--input-type=module", "-e", holderJs], { windowsHide: true, stdio: ["ignore", "pipe", "inherit"], env: { ...process.env, LF_WB_LIMIT: "" } });
 await new Promise((res) => child.stdout.on("data", (d) => String(d).includes("HELD") && res()));
+const t0 = Date.now(); // from HELD: the holder exits 1500 ms later, however long the next check takes under load
 check("held lock shows busy", wb.holders(dir, 1).filter((h) => h.alive).length === 1);
 const lines = [];
-const t0 = Date.now();
 const h = await wb.acquireWorkbench(dir, { purpose: "selftest-waiter", pollMs: 200, waitMs: 30000, log: (l) => lines.push(l) });
 check("the waiter queued with one status line", lines.filter((l) => l.startsWith("workbench: queued")).length === 1);
 check("the waiter got the lock only after the holder died", Date.now() - t0 >= 1000 && h.name === "workbench-1");
