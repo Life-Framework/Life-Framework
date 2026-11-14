@@ -5,6 +5,8 @@
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
   sessionIdleMin: 15,
+  // A session idle this long is closed even with nobody waiting (it holds RAM and client windows).
+  sessionIdleMaxMin: 30,
   promoteMin: 20, starveMin: 20,
   minFreeMb: 1500,
   // Memory a second concurrent session takes: the server, plus each game client (MB; measured
@@ -167,8 +169,9 @@ export function waitReason(t, ahead = 0, { now = Date.now(), starveMs, freeMbOf 
     const what = `ram${t.clients ? ` ${t.clients}-client` : ""}${t.profile && t.clients ? ` ${t.profile}` : ""}`;
     if (!Number.isFinite(t.needMb)) return `${what}${hold}`;
     const gb = (x) => (x / 1024).toFixed(1);
-    const have = (t.machines ?? []).map((n) => [n, freeMbOf?.(n)]).filter(([, f]) => Number.isFinite(f)).map(([n, f]) => `${n} has ${gb(f)}`);
-    return `${what}: needs ${gb(t.needMb)} GB free${have.length ? `, ${have.join(", ")}` : ""}${hold}`;
+    const busy = t.busyOn ?? [];
+    const have = (t.machines ?? []).filter((n) => !busy.includes(n)).map((n) => [n, freeMbOf?.(n)]).filter(([, f]) => Number.isFinite(f)).map(([n, f]) => `${n} has ${gb(f)}`);
+    return `${what}: needs ${gb(t.needMb)} GB free${have.length ? `, ${have.join(", ")}` : ""}${busy.length ? `; every session lane taken on ${busy.join(", ")}` : ""}${hold}`;
   }
   if (t.stuck === "lane") return `lane${hold}`;
   return ahead > 0 ? `behind ${ahead}` : "";

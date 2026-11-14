@@ -377,6 +377,12 @@ it, picks a lane and a budget, and prints one line per outcome.
   at 40, first in line there since it arrived first) is not restarted by every
   retry. `session up --wait` queues up to 90 min (it was 30, which ended before
   a low job reached high). The resource-database refresh runs before the queue.
+- **Idle sessions without a waiter, and on the laptop.** A session idle `sessionIdleMaxMin` (30) minutes is
+  closed even with nobody waiting (it holds RAM and two client windows), on the next `pool status` or queue
+  poll. A pool machine's sessions are judged from this PC too (one ssh read of their lease and the clients'
+  command/result mtimes, at most once a minute): idle `sessionIdleMin` while a request here waits for that
+  machine, or `sessionIdleMaxMin` regardless; the session is closed there with its own `session.mjs down`
+  and `reaped.json` says why. An explicit lease still protects a session.
 - **Session lease.** Every `session.mjs` verb and every harness command
   to a session client stamps `lease.json` in the session dir; `node
   agent-box/session.mjs lease [min]` holds the session for that long. A session
@@ -412,8 +418,9 @@ it, picks a lane and a budget, and prints one line per outcome.
 15.6 GB of RAM since 2026-11-14 (it had 47 GB; a stick was removed). With nothing of the pool running it had 3.8 to
 4.2 GB free that day (the user's desktop apps, Steam, a Workbench). It also powered itself off several times: ASUS
 thermal protection, 0 to 5 minutes after bursts of pool load, at 93 °C with 2 servers and 4 clients (the CPU limit is
-about 95 °C; CPU boost is now off). So `tools/pool.json` gives it 1 session lane (`server-2001`) of at most 2 clients
-(`maxClients`) and 2 test lanes (`server-test-1..2`); raise them there when it runs cooler. Remote tests now try
+about 95 °C; CPU boost is now off). It now stands outside (53 to 60 °C idle), so `tools/pool.json` gives it 2 session
+lanes (`server-2001`, `-2011`) of at most 2 clients each (`maxClients`) and 3 test lanes (`server-test-1..3`), as
+its RAM allows. Remote tests now try
 every test lane (they used only `server-test-1`: 54 of 54 runs). Its slot holder applies the RAM gate on the laptop's
 own free RAM before it takes a lock, and holds new jobs while the newest reading of its thermal logger
 (`thermalLog`, `C:\LF\thermal-log\*.csv`, column `thrm_c`, written in the last 2 minutes) is at or over

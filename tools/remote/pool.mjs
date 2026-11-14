@@ -59,6 +59,7 @@ export function poolSettings(root) {
   };
   return {
     sessionIdleMin: pick("sessionIdleMin", "LF_POOL_SESSION_IDLE_MIN"),
+    sessionIdleMaxMin: pick("sessionIdleMaxMin", "LF_POOL_SESSION_IDLE_MAX_MIN"),
     promoteMin: pick("promoteMin", "LF_POOL_PROMOTE_MIN"),
     starveMin: pick("starveMin", "LF_POOL_STARVE_MIN"),
     minFreeMb: pick("minFreeMb", "LF_POOL_MIN_FREE_MB"),
@@ -967,15 +968,20 @@ export function reapIdleSessions(root, locals, tickets, settings = poolSettings(
     const info = readJson(localLockFile(root, name), null);
     if (!info || info.purpose !== "session" || !pidAlive(info.pid)) continue;
     const queued = tickets.filter((t) => t.pid !== info.pid && waitsOn(t).some((w) => w === name || w === "ram"));
-    if (!queued.length) continue;
     const dir = opts.sessionDir ?? sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
     const lease = readLease(dir);
-    const v = q.leaseVerdict({ lastActiveAt: lastActiveMs(dir, info.at), leaseUntil: Date.parse(lease.leaseUntil), now, idleMin: settings.sessionIdleMin });
+    const lastActiveAt = lastActiveMs(dir, info.at);
+    // With nobody waiting only the long idle limit applies (a session left open holds RAM and windows).
+    if (!queued.length) {
+      const lv = q.leaseVerdict({ lastActiveAt, leaseUntil: Date.parse(lease.leaseUntil), now, idleMin: settings.sessionIdleMaxMin });
+      if (!lv.expired) continue;
+    }
+    const v = q.leaseVerdict({ lastActiveAt, leaseUntil: Date.parse(lease.leaseUntil), now, idleMin: queued.length ? settings.sessionIdleMin : settings.sessionIdleMaxMin });
     const sess = readJson(join(dir, "session.json"), null);
     let reason = "";
     let kind = "";
     if (v.expired) {
-      reason = `idle ${(v.idleMs / 60000).toFixed(1)} min (limit ${settings.sessionIdleMin}) while ${queued.length} job(s) wait`;
+      reason = queued.length ? `idle ${(v.idleMs / 60000).toFixed(1)} min (limit ${settings.sessionIdleMin}) while ${queued.length} job(s) wait` : `idle ${(v.idleMs / 60000).toFixed(1)} min (limit ${settings.sessionIdleMaxMin} with nobody waiting)`;
       kind = "idle-session";
     } else {
       const waiters = queued.filter((t) => (t.lane ?? "session") === "session" && waitsOn(t).includes(name));
@@ -999,6 +1005,79 @@ export function reapIdleSessions(root, locals, tickets, settings = poolSettings(
     out.push({ info, reason, kind });
   }
   return out;
+}
+
+// The idle rule on a pool machine, judged from this PC: one ssh read of each live session lock there
+// and its session dir's activity (lease, ready/start times, the clients' command/result mtimes, as
+// lastActiveMs reads them on this PC); a session idle past sessionIdleMin while a job here wants that
+// machine, or past sessionIdleMaxMin with nobody waiting, and not under a lease, is closed there with
+// its own `session.mjs down` (reaped.json says why). At most once a minute per machine. opts:
+// waiting (a job here wants m), now, read/close (test seams). Returns the sessions closed.
+const remoteReapAt = new Map();
+export function reapRemoteIdleSessions(root, m, settings = poolSettings(root), opts = {}) {
+  const now = opts.now ?? Date.now();
+  if (!opts.read && now - (remoteReapAt.get(m.name) ?? 0) < 60000) return [];
+  remoteReapAt.set(m.name, now);
+  const rows = (opts.read ?? readRemoteSessions)(m) ?? [];
+  const out = [];
+  for (const r of rows) {
+    const t = [r.lease?.lastCommandAt, r.readyAt, r.startedAt, r.lock?.at].map((x) => Date.parse(x)).filter(Number.isFinite);
+    for (const ms of r.mtimes ?? []) if (Number.isFinite(Number(ms))) t.push(Number(ms));
+    const lastActiveAt = t.length ? Math.max(...t) : NaN;
+    const idleMin = opts.waiting ? settings.sessionIdleMin : settings.sessionIdleMaxMin;
+    const v = q.leaseVerdict({ lastActiveAt, leaseUntil: Date.parse(r.lease?.leaseUntil), now, idleMin });
+    if (!v.expired) continue;
+    const reason = `idle ${(v.idleMs / 60000).toFixed(1)} min on ${m.name} (limit ${idleMin}${opts.waiting ? " while a job here waits for it" : " with nobody waiting"})`;
+    console.log(`pool: closing the session of ${r.lock?.slug ?? r.lock?.root ?? "?"} on ${m.name}: ${reason}`);
+    (opts.close ?? closeRemoteSession)(m, r, reason);
+    noteReclaim(root, m, { ...r.lock, name: r.name }, "idle-session", reason);
+    out.push({ name: r.name, reason });
+  }
+  return out;
+}
+
+export function readRemoteSessions(m) {
+  const names = lanesFor(m, "session").map((l) => l.lock);
+  const ps = [
+    `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
+    "$base = Join-Path $env:LOCALAPPDATA 'LifeFramework\\session'",
+    `foreach ($n in @(${names.map(tb.psQuote).join(",")})) {`,
+    "  $f = Join-Path $ld ($n + '.lock'); if (-not (Test-Path -LiteralPath $f)) { continue }",
+    "  try { $h = [IO.File]::ReadAllText($f) | ConvertFrom-Json } catch { continue }",
+    "  if ($h.purpose -ne 'session' -or -not $h.root -or -not (Get-Process -Id $h.pid -ErrorAction SilentlyContinue)) { continue }",
+    "  $dir = Join-Path $base (Split-Path -Leaf ($h.root.TrimEnd('\\','/')))",
+    "  $lease = $null; try { $lease = [IO.File]::ReadAllText((Join-Path $dir 'lease.json')) | ConvertFrom-Json } catch {}",
+    "  $sess = $null; try { $sess = [IO.File]::ReadAllText((Join-Path $dir 'session.json')) | ConvertFrom-Json } catch {}",
+    "  $mt = @(); foreach ($k in 1..3) { foreach ($x in 'command.txt','result.txt') { $p = Join-Path $dir \"client$k\\profile\\agent-box\\$x\"; if (Test-Path -LiteralPath $p) { $mt += [int64]((Get-Item -LiteralPath $p).LastWriteTimeUtc - [datetime]'1970-01-01').TotalMilliseconds } } }",
+    "  $o = [ordered]@{ name = $n; lock = $h; lease = $lease; readyAt = $sess.readyAt; startedAt = $sess.startedAt; mtimes = $mt; dir = $dir }",
+    "  Write-Host ('lf-pool: sess ' + ($o | ConvertTo-Json -Compress -Depth 4))",
+    "}",
+  ].join("\n");
+  const r = tb.sshPs(m.host, ps, { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
+  if (r.status !== 0) return null;
+  return parseRemoteSessions(r.stdout ?? "");
+}
+
+export function parseRemoteSessions(text) {
+  const out = [];
+  for (const l of String(text).split(/\r?\n/)) {
+    const mm = /^lf-pool: sess (.*)$/.exec(l.trim());
+    if (!mm) continue;
+    const o = readJsonText(mm[1]);
+    if (o?.name) out.push(o);
+  }
+  return out;
+}
+
+function closeRemoteSession(m, r, reason) {
+  const why = JSON.stringify({ at: new Date().toISOString(), why: `${reason}. Any harness command keeps an idle session; 'node agent-box/session.mjs lease [min]' holds it`, kind: "lease" });
+  const ps = [
+    `try { [IO.File]::WriteAllText((Join-Path ${tb.psQuote(r.dir)} 'reaped.json'), ${tb.psQuote(why)}) } catch {}`,
+    `Set-Location -LiteralPath ${tb.psQuote(r.lock.root)}`,
+    "& node agent-box/session.mjs down --machine local --force",
+    "exit $LASTEXITCODE",
+  ].join("\n");
+  return tb.sshPs(m.host, ps, { timeout: 180000 }).status === 0;
 }
 
 // One line in runs.jsonl per session (kind "session"), written when it ends:
@@ -1264,7 +1343,8 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
   let waitingOn = [];
   let stuck = "";
   let needMb;
-  const ticketBody = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: false, lane: "session", priority: prio, waitingOn, machines: all.map((m) => m.name), clients, profile, ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
+  let busyOn = [];
+  const ticketBody = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: false, lane: "session", priority: prio, waitingOn, machines: all.map((m) => m.name), clients, profile, ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(busyOn.length ? { busyOn } : {}) });
   const ticket = writeTicket(root, ticketBody(), since);
   collapseRetries(root, ticket, slug);
   let lastReap = 0;
@@ -1298,6 +1378,7 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
       const want = [];
       let ramShort = null;
       let laneSeen = false;
+      const busy = [];
       for (const m of machines) {
         const lanes = lanesFor(m, "session");
         let st = null;
@@ -1332,7 +1413,10 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
             }
           }
           if (blocked.ram) ramShort = ramShort ?? { needMb: blocked.needMb, why: `${m.name}: ${blocked.ram}` };
-          else laneSeen = true;
+          else {
+            laneSeen = true;
+            busy.push(m.name);
+          }
           continue;
         }
         const v = remoteSessionVerdict(m, st.state, settings, { clients, profile, now });
@@ -1347,7 +1431,16 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
           continue;
         }
         if (v.ram) ramShort = ramShort ?? { needMb: v.needMb, why: `${m.name}: ${v.ram}` };
-        else laneSeen = true;
+        else {
+          laneSeen = true;
+          busy.push(m.name);
+        }
+        // This request waits for that machine: its idle sessions are judged by the 15 min rule.
+        if (!opts.remoteState) {
+          try {
+            if (reapRemoteIdleSessions(root, m, settings, { waiting: true }).length) remoteSeen.delete(m.name);
+          } catch {}
+        }
       }
       if (waitMs <= 0 || Date.now() - started > waitMs) return null;
       if (!said) {
@@ -1357,10 +1450,11 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
       // stuck "ram" when a lane was free somewhere but the RAM was not; "lane" when every lane was taken.
       const wantStuck = ramShort ? "ram" : laneSeen ? "lane" : "";
       const wantNeed = wantStuck === "ram" ? ramShort.needMb : undefined;
-      if (want.join() !== waitingOn.join() || wantStuck !== stuck || wantNeed !== needMb) {
+      if (want.join() !== waitingOn.join() || wantStuck !== stuck || wantNeed !== needMb || busy.join() !== busyOn.join()) {
         waitingOn = want;
         stuck = wantStuck;
         needMb = wantNeed;
+        busyOn = busy;
         rewriteTicket(root, ticket, ticketBody());
       }
       await sleep(opts.pollMs ?? 1000);
@@ -1946,6 +2040,16 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
   const now = Date.now();
   const tickets = liveTickets(root);
   const runs = readRuns(root);
+  // The idle rules act on every look, not only while a job polls: a session left open past
+  // sessionIdleMaxMin (or past sessionIdleMin while a job waits for its machine) is closed first.
+  try {
+    reapIdleSessions(root, machines.filter((x) => x.via === "local"), tickets, settings);
+    for (const m of machines.filter((x) => x.via === "ssh")) {
+      if (probe(root, m).reachable) reapRemoteIdleSessions(root, m, settings, { waiting: tickets.some((t) => (t.lane ?? "session") === "session" && (t.machines ?? []).includes(m.name)) });
+    }
+  } catch (e) {
+    console.log(`WARN  pool: idle-session check failed (${String(e?.message ?? e).split("\n")[0]})`);
+  }
   // Per machine: reachable, its lane locks (alive or stale), its live free RAM.
   const seen = new Map();
   for (const m of machines) {
@@ -2014,16 +2118,13 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const prio = eff === base ? base : `${base}>${eff}`;
     const why = q.waitReason(t, pos - 1, { now, starveMs, freeMbOf });
     // Estimated start: the (ahead+1)-th projected lane release on the machines it can use. A RAM wait
-    // ends when a running job on those machines lets go, so it counts the occupied lanes of both kinds.
+    // ends when a session on those machines lets go (a test frees little and is gone in seconds).
     const releases = [];
     for (const name of t.machines ?? []) {
       const s = seen.get(name);
       if (!s) continue;
-      const kinds = t.stuck === "ram" && s.m.lanes ? ["session", "test"] : [lane];
-      for (const k of kinds) {
-        const r = laneReleases(s.m, k, s.infos, { now, runs, settings, sessionCapMin: s.capMin });
-        releases.push(...(t.stuck === "ram" ? r.filter((x) => x > now) : r));
-      }
+      const r = laneReleases(s.m, t.stuck === "ram" && s.m.lanes ? "session" : lane, s.infos, { now, runs, settings, sessionCapMin: s.capMin });
+      releases.push(...(t.stuck === "ram" ? r.filter((x) => x > now) : r));
     }
     const holdMs = q.median(runs.filter(isSession).slice(-50).map((r) => Number(r.heldS) * 1000)) || 10 * 60000;
     const eta = q.estimateStart(releases, t.stuck === "ram" ? 0 : pos - 1, lane === "session" ? holdMs : 60000);
