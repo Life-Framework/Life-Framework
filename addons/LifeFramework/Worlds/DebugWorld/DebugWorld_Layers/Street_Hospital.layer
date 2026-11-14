@@ -173,6 +173,10 @@ GenericEntity Hospital_SupplyCrate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/B
 GenericEntity Hospital_Bin : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
  coords 264.9 0 257.6
 }
+SCR_ChimeraCharacter Roadmap_Hospital_Patient : "{686A77317FE9AD1B}Prefabs/Medic/LF_DownedPatient.et" {
+ coords 268.2 0 254.596
+ angleY 180
+}
 LF_NpcBaseEntity Hospital_Doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et" {
  coords 262 -0.005 255.331
  angleY 180

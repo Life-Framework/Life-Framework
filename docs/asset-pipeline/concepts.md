@@ -73,6 +73,25 @@ concept 0 (fails), 1 (so-so) or 2 (good) in this order, with a short note:
 `era` and `era_current` differ: a 1920s cast-iron press fits "old", so it can score 2 on `era` and 0 on
 `era_current`.
 
+**An asset whose spec declares `states`** ([states.md](states.md)) is picked on what it costs to build in
+those states as well as on looks, from the same pictures (no extra image spend). Its prompts gain one
+sentence: solid chunky forms, separate distinct parts, no thin floating details, and per declared state a
+clear grip area (hand), a flat stable side to rest on (ground), the moving parts clearly separate and not
+fused (use). Six more criteria follow the seven above, so a score has 13 numbers (total out of 26):
+
+| Key | Asks |
+|---|---|
+| `mesh_clean` | a clean silhouette of solid forms that keeps its shape at the LOD0 triangle budget |
+| `parts_separate` | the parts a use state moves later (cuff rings, hinge, trigger, door) are clearly separate, not fused |
+| `hold_point` | a grippable shape with an obvious place for the hand. A 0 is never recommended when `hand` is declared |
+| `flat_base` | a flat, stable side to lie on. A 0 is never recommended when `ground` is declared |
+| `reads_small` | still reads at inventory icon size |
+| `no_floaters` | no thin floating details (straps, wires, loose chain) that remesh into blobs |
+
+Once every concept is scored, `tools\cli asset run <slug> --only concept` redraws the sheet with `L`
+(looks) and `B` (build) over each picture and `BEST` over the recommended one: the best combined score,
+not the prettiest. `--pick` takes that one.
+
 - **Default: a human picks.** Show the maintainer the sheet and the ranking, then
   `tools\cli asset pick <slug> <n> [--why "..."]`.
 - **`run --pick`** lets the agent take the highest total (ties go to the lower number); the reason is

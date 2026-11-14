@@ -303,6 +303,17 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (LF_AssetStatesHarness.IsItemVerb(tool))
+		{
+			// The asset states proof's stand-ins: give or drop one item of a prefab.
+			string itemResult = LF_AssetStatesHarness.Run(this, tool);
+			if (itemResult.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", itemResult.Substring(3, itemResult.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", itemResult);
+			return;
+		}
+
 		if (tool == "apples")
 		{
 			// Raw goods for the chain stations (#417): eight apples, two loads of the example chain.

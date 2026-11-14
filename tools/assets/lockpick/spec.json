@@ -52,5 +52,30 @@
         "base_scale": 0.9
       }
     }
+  },
+  "states": {
+    "prefab": "Prefabs/Items/Fence/LF_Lockpick.et",
+    "inventory": {
+      "angles": [
+        -60,
+        -30,
+        0
+      ],
+      "distance": 0.45,
+      "fov": 20
+    },
+    "ground": {
+      "up": "Up"
+    },
+    "hand": {
+      "pose": "fist",
+      "grip": [
+        -0.008,
+        0,
+        0
+      ],
+      "up": "+z",
+      "out": "+y"
+    }
   }
 }

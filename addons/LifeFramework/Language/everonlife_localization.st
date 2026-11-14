@@ -3866,12 +3866,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{319C15ECA15769F7}" {
      Id "LF-Sign_Hospital_What"
-     Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay|Bills are 1989 prices, cash only"
+     Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay|Bills are 1989 prices, cash only|Playtest: a practice patient lies on the grass between the bay and the till"
      Comment "Sign card for the hospital (medicine cabinet and till), What section."
     }
     CustomStringTableItem "{C04CAF44C41DD0AA}" {
      Id "LF-Sign_Hospital_How"
-     Target_en_us "*Clock in* at the duty desk to take the medic kit|A medic can *Revive* a downed patient or carry them to a bed|Pay a treatment bill at the desk|*Breach* the cabinet for dressings, morphine, saline, and tourniquets|*Rob the till* on the porch"
+     Target_en_us "*Clock in* at the duty desk to take the medic kit|A medic can *Revive* a downed patient, or *Carry* them, *Load into vehicle* in the ambulance and *Put patient in bed*|Pay a treatment bill at the desk|*Breach* the cabinet for dressings, morphine, saline, and tourniquets|*Rob the till* on the porch"
      Comment "Sign card for the hospital (medicine cabinet and till), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{F8E9B3F57A5331A5}" {

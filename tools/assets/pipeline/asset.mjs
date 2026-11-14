@@ -3,6 +3,7 @@
 //
 //   asset new <slug> --kind weapon|gadget|deployable --prompt "..." [--name N] [--no-run]
 //   asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
+//   asset states <slug> [--fix] [--shots]   the inventory, ground, hand and use states (states.md)
 //   asset status [<slug>]      asset doctor      asset selftest
 //
 // The spec is tools/assets/<slug>/spec.json (tracked). Everything a stage produces is cached in
@@ -20,9 +21,10 @@ import { pickedImage } from "./concepts.mjs";
 import { materialProblems, resolveMaterials, variantPlans } from "./materials.mjs";
 import { resolveFfmpeg } from "../../film/film.mjs";
 import { animProblems, hasAnim, withAnim } from "./anim.mjs";
+import { hasStates, shootStates, stageStates, statesProblems } from "./states.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGES = ["spec", "source", "concept", "generate", "remesh", "clean", "import", "prefab", "anim"];
+export const STAGES = ["spec", "source", "concept", "generate", "remesh", "clean", "import", "prefab", "anim", "states"];
 
 export const specFile = (root, slug) => join(root, "tools", "assets", slug, "spec.json");
 export const cacheDir = (root, slug) => join(root, "tmp", "assets", slug);
@@ -79,6 +81,7 @@ export function specProblems(spec) {
   }
   out.push(...materialProblems(spec));
   out.push(...animProblems(spec));
+  out.push(...statesProblems(spec));
   if (!/^Assets\//.test(spec.asset_dir || "")) out.push("asset_dir must start with Assets/");
   if (!/^Prefabs\//.test(spec.prefab_dir || "")) out.push("prefab_dir must start with Prefabs/");
   return out;
@@ -361,6 +364,17 @@ async function stageAnim(ctx) {
   return runAnim({ ...ctx, blender: runBlender }, { fix: ctx.fix });
 }
 
+// Stage "states": the prefab's inventory camera, rest pose, hand pose and grip from spec.states
+// (states.mjs, docs/asset-pipeline/states.md). An asset that declares none skips it.
+async function stageStatesRun(ctx) {
+  if (!hasStates(ctx.spec)) {
+    console.log("states: the spec declares none; the prefab keeps what the scaffold wrote");
+    if (ctx.spec.kind === "gadget") console.log("states: NOTE a gadget without states.hand keeps the scaffold's gauze graph, which holds it in an open hand (docs/asset-pipeline/states.md)");
+    return { skipped: true };
+  }
+  return stageStates(ctx, { fix: true });
+}
+
 async function stageConcepts(ctx) {
   return concepts.stageConcept(ctx, { writeState, resolveFfmpeg });
 }
@@ -369,7 +383,7 @@ async function stageSource(ctx) {
   return source.stageSource(ctx, { runBlender, blenderDir: join(dirname(fileURLToPath(import.meta.url)), "blender") });
 }
 
-const RUN = { spec: stageSpec, source: stageSource, concept: stageConcepts, generate: stageGenerate, remesh: stageRemesh, clean: stageClean, import: stageImport, prefab: stagePrefab, anim: stageAnim };
+const RUN = { spec: stageSpec, source: stageSource, concept: stageConcepts, generate: stageGenerate, remesh: stageRemesh, clean: stageClean, import: stageImport, prefab: stagePrefab, anim: stageAnim, states: stageStatesRun };
 
 export async function run(root, slug, { from, only, force, workbench, pick, fix } = {}) {
   const spec = loadSpec(root, slug);
@@ -492,6 +506,15 @@ export async function main(flags, { workbench } = {}) {
     if (!slug) { console.log("usage: tools\\cli asset anim <slug> [--fix]"); return 2; }
     return run(root, slug, { only: "anim", fix: rest.includes("--fix"), workbench });
   }
+  if (sub === "states") { // the states stage alone: tools\cli asset states <slug> [--fix] [--shots]
+    const wt = await import("../../wt.mjs");
+    if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
+    const slug = rest.find((f) => !f.startsWith("--"));
+    if (!slug) { console.log("usage: tools\\cli asset states <slug> [--fix] [--shots]"); return 2; }
+    const spec = loadSpec(root, slug);
+    stageStates({ root, spec }, { fix: rest.includes("--fix") });
+    return rest.includes("--shots") ? shootStates(root, spec, cacheDir(root, slug)) : 0;
+  }
   if (sub === "kit") {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
@@ -509,6 +532,7 @@ export async function main(flags, { workbench } = {}) {
        tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]     stages: ${STAGES.join(", ")}
        tools\\cli asset status [<slug>] | doctor | selftest
        tools\\cli asset anim <slug> [--fix]     moving parts, character clips, effects (docs/asset-pipeline/animation.md)
+       tools\\cli asset states <slug> [--fix] [--shots]     inventory, ground, hand and use states (docs/asset-pipeline/states.md)
        tools\\cli asset kit <slug> [--only build|import]     several models from one Blender script (a room, a vault)
        tools\\cli asset sound <slug> [--init | --status | --only generate|process|wire]
        tools\\cli asset dialogue <npc> [--dry-run] [--force <line>|all] | dialogue status     voiced NPC lines (docs/asset-pipeline/dialogue.md)
