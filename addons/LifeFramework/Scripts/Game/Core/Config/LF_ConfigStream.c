@@ -259,6 +259,9 @@ class LF_ConfigStream
 		// The vehicle prices are one cached instance; drop it so the next price read layers the stream.
 		LF_VehiclePricesConfig.Reload();
 
+		// The UI theme: the next sheet that opens is painted from the core file and the packs again.
+		LF_UIThemeConfig.Reload();
+
 		// The crime catalog is server only and cached the same way; /configreload layers it again.
 		LF_CrimeCatalogConfig.Reload();
 

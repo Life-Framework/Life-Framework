@@ -100,7 +100,7 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 `toolscli playtest checklist` collects the `## Manual testing` steps of the merged PRs of every open `needs-playtest` or
 `in-dev` issue, shows a repeated step once, groups the rest by place in a walking route, marks two-player, restart,
 late-joiner and dedicated-server steps, estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass box and
-a `fail [ ]` box per issue. The default is the top hour, M2 first; `--all` lists everything. The fixed smoke list
+a `fail [ ]` box per issue. The default is the top hour; `--all` lists everything. The hour is ranked in tiers: issues under an open M1 or M2 chapter or epic (GitHub sub-issues, two levels; `--chapters N,N` adds more) first, then big player flows named in the title (robbery, vault, clerk, cuffs and arrest, medic and downed, dispatch, pagers and payphones, evidence and witnesses, dialogue, the item catalogue and licences), then the rest, and polish, visual-only and tooling items last (`tierOf` in `tools/lib/playtest-checklist.mjs`). Chapter work takes at most 70% of the hour, and a flow that does not fit closes the door on filler below it. Issues whose steps one walk covers share one line that lists every number; its tick or fail covers all of them. The fixed smoke list
 ([playtest/smoke-list.md](playtest/smoke-list.md): boot, join, save, restart, reload, late joiner) is always its first
 section, and only a regression in an already-verified feature blocks promotion. After the pass,
 `toolscli playtest verdicts <file>` reads the ticked file and prints the `gh` commands (verified or regression label, a

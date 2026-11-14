@@ -1,17 +1,15 @@
 // LF_UISkin.c — what a sheet is made of: the face, the ink, the type.
 //
-// LF_UIScreen paints every part from one skin. Paper() is the 1989 form every
-// sheet used before skins (LF_UITheme values, unchanged). Terminal() is the
-// ATM's green phosphor screen in a dark bezel. PriceList() is a typed shop
-// list: paper, a mono face, and ink-coloured buttons.
+// LF_UIScreen paints every part from one skin. A skin is built from a theme of the theme config
+// (LF_UIThemeConfig, #966; FromTheme): Paper() is the 1989 form every sheet used before skins,
+// Terminal() is the ATM's green phosphor screen in a dark bezel, PriceList() is a typed shop
+// list (paper, a mono face), IdCard() the registry card. A pack overlay changes any of them by
+// theme id. Only the size and the shape of a sheet are set here; no colour or face is.
 //
 // A skin that recolours buttons rewrites the vanilla button's text colour
 // effects (white, orange on focus) to its own ink and focus colours.
 class LF_UISkin
 {
-	//! Vanilla mono face (a debug layout in the base game uses it). No font is imported.
-	static const ResourceName FONT_MONO = "{0E041C5B1F27DCEA}system/robotomono_msdf_28.fnt";
-
 	ref Color m_Metal;
 	ref Color m_Paper;
 	ref Color m_Ink;
@@ -25,6 +23,8 @@ class LF_UISkin
 	//! The accent as 0..255 bytes, for RichTextWidget <color rgba='r,g,b,a'> markup.
 	string m_sAccentRgba;
 	ResourceName m_Font = LF_UITheme.FONT;
+	//! Texture drawn on the sheet's face (the theme's m_PaperTexture). Empty: a flat sheet.
+	ResourceName m_PaperTexture;
 	//! Face of RICH body text. Empty: the sheet's font.
 	ResourceName m_BodyFont;
 	//! Multiplies the title size only (1 is LF_UITheme.FONT_TITLE).
@@ -41,26 +41,45 @@ class LF_UISkin
 	bool m_bBlur = true;
 
 	//------------------------------------------------------------------------------------------------
+	//! A skin made from the theme with this id (LF_UITheme.Get: empty fields inherit the paper theme).
+	//! \param id The theme id: paper, id-card, terminal or price-list.
+	static LF_UISkin FromTheme(string id)
+	{
+		LF_UIThemeRecord theme = LF_UITheme.Get(id);
+		LF_UIThemeRecord builtIn = LF_UITheme.BuiltIn(LF_UIThemeConfig.BASE_ID);
+		LF_UISkin skin = new LF_UISkin();
+		skin.m_sName = id;
+		skin.m_Metal = LF_UITheme.Token(theme.m_sMetal, builtIn.m_sMetal);
+		skin.m_Paper = LF_UITheme.Token(theme.m_sPaper, builtIn.m_sPaper);
+		skin.m_Ink = LF_UITheme.Token(theme.m_sInk, builtIn.m_sInk);
+		skin.m_Rule = LF_UITheme.Token(theme.m_sRule, builtIn.m_sRule);
+		skin.m_Blur = LF_UITheme.Token(theme.m_sBlur, builtIn.m_sBlur);
+		skin.m_Row = LF_UITheme.Token(theme.m_sRow, builtIn.m_sRow);
+		skin.m_ButtonText = LF_UITheme.Token(theme.m_sButtonText, builtIn.m_sButtonText);
+		skin.m_ButtonFocus = LF_UITheme.Token(theme.m_sButtonFocus, builtIn.m_sButtonFocus);
+		skin.m_Font = theme.m_Font;
+		skin.m_PaperTexture = theme.m_PaperTexture;
+		skin.m_bRecolorButtons = true;
+		if (!theme.m_sAccent.IsEmpty())
+		{
+			skin.m_Accent = LF_UIThemeRecord.ParseColor(theme.m_sAccent, null);
+			skin.m_sAccentRgba = LF_UIThemeRecord.ToRgba(theme.m_sAccent);
+		}
+
+		return skin;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The paper form every sheet used before skins (the "paper" theme).
 	static LF_UISkin Paper()
 	{
-		LF_UISkin skin = new LF_UISkin();
-		skin.m_sName = "paper";
-		skin.m_Metal = LF_UITheme.Metal();
-		skin.m_Paper = LF_UITheme.Paper();
-		skin.m_Ink = LF_UITheme.Ink();
-		skin.m_Rule = LF_UITheme.Rule();
-		skin.m_Blur = LF_UITheme.Blur();
-		skin.m_Row = LF_UITheme.Row();
-		skin.m_ButtonText = LF_UITheme.Ink();
-		skin.m_ButtonFocus = Color.FromSRGBA(150, 40, 30, 255);
-		skin.m_bRecolorButtons = true;
-		return skin;
+		return FromTheme(LF_UIThemeConfig.BASE_ID);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A printed notice (a sign card): the paper form, wider, a big title, a regular-weight body,
 	//! and an accent for the section labels, the rule under the title and highlighted words.
-	//! \param rim The frame colour; null keeps the blued steel.
+	//! \param rim The frame colour; null keeps the theme's rim.
 	//! \param accent Heading colour as 0..255 bytes.
 	static LF_UISkin Notice(Color rim, int accentR, int accentG, int accentB)
 	{
@@ -69,7 +88,7 @@ class LF_UISkin
 		skin.m_fWidth = 640;
 		skin.m_fHeight = 920;
 		skin.m_fTitleScale = 1.35;
-		skin.m_BodyFont = LF_UITheme.FONT_REGULAR;
+		skin.m_BodyFont = LF_UITheme.FontRegular();
 		skin.m_Accent = Color.FromSRGBA(accentR, accentG, accentB, 255);
 		skin.m_sAccentRgba = string.Format("%1,%2,%3,255", accentR, accentG, accentB);
 		skin.m_Rule = skin.m_Accent;
@@ -81,20 +100,12 @@ class LF_UISkin
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A laminated identity card: pale registry paper with a faint green cast, a slate-blue rim and
-	//! state-blue labels (the civil registry's ink).
+	//! A laminated identity card (the "id-card" theme): pale registry paper with a faint green cast,
+	//! a slate-blue rim and state-blue labels (the civil registry's ink).
 	static LF_UISkin IdCard()
 	{
-		LF_UISkin skin = Paper();
-		skin.m_sName = "id-card";
+		LF_UISkin skin = FromTheme("id-card");
 		skin.m_fWidth = 600;
-		skin.m_Paper = Color.FromSRGBA(228, 233, 218, 255);
-		skin.m_Row = Color.FromSRGBA(196, 204, 190, 255);
-		skin.m_Metal = Color.FromSRGBA(52, 70, 92, 255);
-		skin.m_Accent = Color.FromSRGBA(40, 66, 118, 255);
-		skin.m_sAccentRgba = "40,66,118,255";
-		skin.m_Rule = skin.m_Accent;
-		skin.m_ButtonFocus = skin.m_Accent;
 		// The card face: title, the registry line, the photo with its lines, a rule and one button.
 		skin.m_fHeight = 560;
 		return skin;
@@ -111,32 +122,19 @@ class LF_UISkin
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Green phosphor on a black tube in a beige-grey 1989 cash machine bezel. Focus is amber.
+	//! The "terminal" theme: green phosphor on a black tube in a beige-grey 1989 cash machine bezel.
 	static LF_UISkin Terminal()
 	{
-		LF_UISkin skin = new LF_UISkin();
-		skin.m_sName = "terminal";
-		skin.m_Metal = Color.FromSRGBA(150, 146, 132, 255);
-		skin.m_Paper = Color.FromSRGBA(6, 14, 8, 255);
-		skin.m_Ink = Color.FromSRGBA(96, 236, 120, 255);
-		skin.m_Rule = Color.FromSRGBA(34, 110, 52, 255);
-		skin.m_Blur = LF_UITheme.Blur();
-		skin.m_Row = Color.FromSRGBA(14, 34, 18, 255);
-		skin.m_ButtonText = Color.FromSRGBA(96, 236, 120, 255);
-		skin.m_ButtonFocus = Color.FromSRGBA(255, 176, 0, 255);
-		skin.m_Font = FONT_MONO;
-		skin.m_bRecolorButtons = true;
+		LF_UISkin skin = FromTheme("terminal");
 		skin.m_fWidth = 640;
 		return skin;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The shop's typed price list: the paper sheet, a mono face, carbon ink, a brass focus.
+	//! The shop's typed price list (the "price-list" theme): the paper sheet in a mono face.
 	static LF_UISkin PriceList()
 	{
-		LF_UISkin skin = Paper();
-		skin.m_sName = "price-list";
-		skin.m_Font = FONT_MONO;
+		LF_UISkin skin = FromTheme("price-list");
 		// Maintainer playtest 2026-11-08: the store list was too small to read at 1920x1080.
 		skin.m_fWidth = 900;
 		skin.m_fTypeScale = 1.35;

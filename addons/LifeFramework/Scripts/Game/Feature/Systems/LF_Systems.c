@@ -26,7 +26,7 @@ enum LF_ESystemSwitch
 //------------------------------------------------------------------------------------------------
 //! One system in the catalog.
 [BaseContainerProps()]
-class LF_SystemDef
+class LF_SystemDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "System id: a Feature/<Area> folder name, or a named part of one (Robbery in Crime)")]
 	string m_sId;
@@ -51,8 +51,10 @@ class LF_SystemDef
 }
 
 //------------------------------------------------------------------------------------------------
-//! The list of systems: what the game can switch. Core only; a pack changes on or off through
-//! LF_SystemsConfig, never this list.
+//! The list of systems: what the game can switch. The core `.conf` ships it; a pack overlay of this
+//! class adds its own systems or changes one by id (add, replace, patch, remove: LF_ConfigOverlay,
+//! #1108). The owner file does not edit it: what a system is belongs to the code that checks it, and
+//! the owner's say is on or off, through LF_SystemsConfig.
 [BaseContainerProps(configRoot: true)]
 class LF_SystemCatalog
 {
@@ -108,9 +110,171 @@ class LF_SystemCatalog
 
 		LF_SystemCatalog catalog = LF_SystemCatalog.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!catalog)
+		{
 			LF_Debug.Error(LF_Systems.FEATURE, string.Format("the system catalog has an unexpected root class, every system stays on: %1", CONFIG_PATH));
+			return null;
+		}
 
+		catalog.ApplyPackOverlays();
 		return catalog;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each pack overlay of this class over the core list, in the mission header's load order.
+	//! Overlays of other classes in the same list belong to other sections and are skipped.
+	void ApplyPackOverlays()
+	{
+		if (!m_aSystems)
+			m_aSystems = new array<ref LF_SystemDef>();
+
+		LF_SystemDefList list = new LF_SystemDefList(this);
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_SystemCatalog, "systems", resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = LF_ConfigOverlay.ApplyContainerList(list, resource.GetResource().ToBaseContainer(), "m_aSystems", names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("systems: catalog overlay %1 changed %2 systems", names[i], changed));
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The system catalog's list for the shared merge (LF_ConfigOverlay), keyed by system id. A framework
+//! system (LOCKED) cannot be removed, and neither can one another system names as its parent or as
+//! something it needs.
+class LF_SystemDefList : LF_ConfigList
+{
+	protected LF_SystemCatalog m_Catalog;
+
+	void LF_SystemDefList(LF_SystemCatalog catalog)
+	{
+		m_Catalog = catalog;
+		if (!m_Catalog.m_aSystems)
+			m_Catalog.m_aSystems = new array<ref LF_SystemDef>();
+	}
+
+	override string GetName()
+	{
+		return "systems.catalog";
+	}
+
+	override int Count()
+	{
+		return m_Catalog.m_aSystems.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Catalog.m_aSystems[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_SystemDef.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a system id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		LF_SystemDef def = new LF_SystemDef();
+		def.m_sId = id;
+		def.m_aRequires = {};
+		def.m_aItems = {};
+		def.m_aPlaces = {};
+		return def;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_SystemDef def = LF_SystemDef.Cast(record);
+		if (index < m_Catalog.m_aSystems.Count())
+			m_Catalog.m_aSystems.Set(index, def);
+		else
+			m_Catalog.m_aSystems.Insert(def);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Catalog.m_aSystems.RemoveOrdered(index);
+	}
+
+	override string RemoveRefusal(int index)
+	{
+		LF_SystemDef def = m_Catalog.m_aSystems[index];
+		if (def.m_eSwitch == LF_ESystemSwitch.LOCKED)
+			return "a framework system (LOCKED) cannot be removed";
+
+		foreach (LF_SystemDef other : m_Catalog.m_aSystems)
+		{
+			if (!other || other == def)
+				continue;
+
+			if (other.m_sParent == def.m_sId)
+				return string.Format("system %1 is part of it; remove or move that one first", other.m_sId);
+
+			if (other.m_aRequires && other.m_aRequires.Contains(def.m_sId))
+				return string.Format("system %1 needs it; change that one first", other.m_sId);
+		}
+
+		return string.Empty;
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_SystemDef def = LF_SystemDef.Cast(record);
+		int changed;
+		int switchKind;
+		if (container.IsVariableSetDirectly("m_eSwitch") && container.Get("m_eSwitch", switchKind))
+		{
+			def.m_eSwitch = switchKind;
+			changed++;
+		}
+		if (container.IsVariableSetDirectly("m_bOptIn") && container.Get("m_bOptIn", def.m_bOptIn))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sParent") && container.Get("m_sParent", def.m_sParent))
+			changed++;
+		if (container.IsVariableSetDirectly("m_aRequires"))
+		{
+			array<string> requires = {};
+			if (container.Get("m_aRequires", requires))
+			{
+				def.m_aRequires = requires;
+				changed++;
+			}
+		}
+		if (container.IsVariableSetDirectly("m_aItems"))
+		{
+			array<ResourceName> items = {};
+			if (container.Get("m_aItems", items))
+			{
+				def.m_aItems = items;
+				changed++;
+			}
+		}
+		if (container.IsVariableSetDirectly("m_aPlaces"))
+		{
+			array<string> places = {};
+			if (container.Get("m_aPlaces", places))
+			{
+				def.m_aPlaces = places;
+				changed++;
+			}
+		}
+
+		return changed;
 	}
 }
 

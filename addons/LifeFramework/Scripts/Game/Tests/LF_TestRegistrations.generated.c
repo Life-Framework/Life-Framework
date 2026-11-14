@@ -76,6 +76,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CleanupSweep(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigConstantsBatch1(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConfigJsonProbe(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigListsOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeFields(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeKeyed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigMergeReject(), LF_TestTier.LOGIC);
@@ -474,6 +475,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitClose(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UIThemePack(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDoorSwing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
