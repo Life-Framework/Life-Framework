@@ -16,6 +16,10 @@
 #      - copied: the comment names another test's GetName() (an `area/name`
 #        id defined in a different file) and none of this file's own names.
 #        FAIL: the comment records a different test's failure.
+#   5. A test with the RedProof() hook (a call outside comments) is red-proof capable: it can be
+#      proved in the batched `tools\cli test --no-build --red` run with no hand edit. Optional; old
+#      tests keep their recorded line. The one rule: a red-proof line that claims a --red run needs
+#      the hook in the same file, or the claimed run could not have gone red.
 #
 # Exit codes: 0 = contract holds, 1 = violations listed.
 
@@ -39,6 +43,7 @@ $placeholderPattern = '(?i)\b(pending|todo|tbd|fixme|not\s+(yet\s+)?(run|observe
 # Pass 1: every test file and the GetName() ids it defines.
 $files = @()
 $owner = @{}
+$hooked = 0
 Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedName } | ForEach-Object {
   $text = Get-Content $_.FullName -Raw
   $classes = @([regex]::Matches($text, 'class\s+(LF_Test_\w+)\s*:\s*LF_Test') | ForEach-Object { $_.Groups[1].Value })
@@ -46,7 +51,8 @@ Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedNam
 
   $names = @([regex]::Matches($text, $namePattern) | ForEach-Object { $_.Groups[1].Value })
   foreach ($n in $names) { $owner[$n] = $_.Name }
-  $files += [pscustomobject]@{ Name = $_.Name; Text = $text; Names = $names }
+  $code = [regex]::Replace($text, '(?m)//.*$', '')
+  $files += [pscustomobject]@{ Name = $_.Name; Text = $text; Names = $names; Hooked = [regex]::IsMatch($code, '\bRedProof\s*\(\s*\)') }
 }
 
 # Pass 2: presence, then placeholder and copied red-proofs.
@@ -80,6 +86,11 @@ foreach ($file in $files) {
     $placeholders += "$($file.Name): red-proof is a placeholder, not an observed failure"
   }
 
+  if ($file.Hooked) { $hooked++ }
+  elseif ($proof -match '--red\b|RED-OK') {
+    $violations += "$($file.Name): red-proof claims a --red run but the file has no RedProof() hook, so the run could not have gone red"
+  }
+
   $mentioned = @([regex]::Matches($proof, '\b[a-z0-9][a-z0-9-]*/[a-z0-9][a-z0-9/-]*\b') | ForEach-Object { $_.Value } | Where-Object { $owner.ContainsKey($_) })
   if ($mentioned.Count -gt 0) {
     $own = @($mentioned | Where-Object { $file.Names -contains $_ })
@@ -101,5 +112,5 @@ if ($violations.Count -gt 0) {
 
 if ($failed) { exit 1 }
 
-Write-Host "validate-tests: OK (registry in sync, red-proofs observed, 0 placeholder, 0 copied)"
+Write-Host "validate-tests: OK (registry in sync, red-proofs observed, 0 placeholder, 0 copied, $hooked red-proof capable with the RedProof() hook)"
 exit 0

@@ -62,8 +62,9 @@ ambulance bay, a filing cabinet by the evidence locker. Base-game assets only, k
    static props, no lights or particles unless the chain needs them.
 5. **Retest the area's features.** Run its `--only` tests plus `debugworld/entity-collision`,
    and that area's `session.mjs` proof verb if it has one.
-6. **After shots:** this is the builder's only session: run `shots area` once; `problems:` must be empty or each line explained. Judge the
-   look from `contact.jpg` (add `--annotate` to see entity names), then hand the area to the reviewer.
+6. **After shots:** run `tools\cli look <area>` (no session) and keep the pair with `tools\cli evidence`; `problems:` must be empty or each line explained. Judge the
+   look from `contact.jpg` (add `--annotate` to see entity names), then hand the area to the reviewer. This pass is the one place a
+   `shots area` session is expected: once, for the graded-look pictures the website uses (step 7), not for the PR pair.
 7. **Ship one PR per area:** before and after shots in the body, the final shots in
    `website/public/docs-images/area-<n>-<slug>/`, and a `docs/playtest.md` line if anything
    moved.

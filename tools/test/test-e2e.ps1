@@ -39,6 +39,11 @@
 # writes $profile:LF_TestOnly.txt and defines LF_TEST_ONLY; the suite then
 # reports tier=only, so suite-stamp never mistakes it for a full tier run.
 #
+# -Red (with -Only) is the batched red proof (tools\cli test --red): it adds the define LF_TEST_RED, so
+# each listed test runs once with its RedProof() hook on and the suite reports tier=red. A test
+# counts as passed there only by FAILING; "failed" in that SUMMARY is the hollow tests (still
+# green with the hook on), so exit 0 means every listed test went red.
+#
 # Run via: tools\cli test
 
 param(
@@ -59,6 +64,7 @@ param(
   [int]$GracefulCloseSeconds = 30,
   [string]$ExtraDefine,
   [string]$Only,
+  [switch]$Red,
   [string]$Addons,
   [switch]$CoreOnly
 )
@@ -277,6 +283,14 @@ if (-not [string]::IsNullOrEmpty($Only)) {
   $args += @("-scrDefine", "LF_TEST_ONLY")
   $expectedTier = "only"
   Write-Host "test-e2e: only $Only"
+  if ($Red) {
+    $args += @("-scrDefine", "LF_TEST_RED")
+    $expectedTier = "red"
+    Write-Host "test-e2e: red proof (every listed test must go red with its RedProof() hook on)"
+  }
+} elseif ($Red) {
+  Write-Host "test-e2e: -Red needs -Only <tests>"
+  exit 2
 }
 
 # LF_TEST_HANG=run holds the suite in the booted server (LF_TestRunnerComponent reads the file);
@@ -519,6 +533,10 @@ if ($lastSummary) {
   $console = Read-Console $lastSummary.LogDir
   $fails = @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\]   - ' })
   foreach ($f in $fails) { Write-Host "  $f" }
+  if ($lastSummary.Tier -eq "red") {
+    # The proof's evidence: each test's red verdict and the assertion it failed on.
+    foreach ($r in @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\] (RED-OK|FAIL) |\[LFTEST\]   red: ' })) { Write-Host "  $($r.Trim() -replace '^.*\[LFTEST\]\s*', '')" }
+  }
   # A core-only run names every test it skipped for the pack, with the reason (#326).
   $packSkips = @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\] SKIP .*needs the pack' })
   if ($packSkips.Count -gt 0) {
@@ -550,6 +568,11 @@ if ($lastSummary) {
     exit 1
   }
 
+  if ($lastSummary.Tier -eq "red") {
+    if ($lastSummary.Failed -eq 0) { Write-Host "test-e2e: RED PROOF OK (all $($lastSummary.Total) listed test(s) fail with the hook on)"; exit 0 }
+    Write-Host "test-e2e: RED PROOF FAILED ($($lastSummary.Failed) of $($lastSummary.Total) listed test(s) still pass with the hook on: hollow, or no RedProof() hook; named above)"
+    exit 1
+  }
   if ($lastSummary.Failed -eq 0) { Write-Host "test-e2e: OK"; exit 0 }
   Write-Host "test-e2e: FAILED ($($lastSummary.Failed) failing test(s))"
   exit 1

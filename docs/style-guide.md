@@ -103,6 +103,9 @@ sheet of paper or a terminal that belongs to the object the player walked up to.
 ## Pictures
 
 - `tools\cli look <area>` before the first edit and after the last, same area, same hour.
-- Keep both with `tools\cli evidence <issue> before|after <area>`; the PR embeds the pair.
+- Keep both with `tools\cli evidence <issue> before|after <area>`; the PR embeds the pair. These are the PR pictures:
+  `look`, `look item <prefab>` or `wb_preview` cover a prop, sign, item, prefab, material or layer, so no session is
+  booked for a picture. A session shot (`evidence <issue> after <png> --name <what>`) is for a sheet or HUD, motion,
+  sound or a second player, which Workbench play cannot capture.
 - Read the close-up of every new or moved thing, not only the wide.
 - Red fans and lines on the ground in a `look` are a Workbench overlay; players never see them.

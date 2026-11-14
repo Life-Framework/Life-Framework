@@ -6,8 +6,11 @@
 //   tools\cli look bank
 //   tools\cli evidence 481 after bank
 //   tools\cli evidence 481 after bank --shot c03         a close-up from the same look (prefix of the file name)
-//   tools\cli evidence 481 after path\to\shot.png --name sheet
+//   tools\cli evidence 481 after path\to\shot.png --name sheet     a session shot, or a wb_preview PNG
+//   tools\cli evidence 481 after item-LF_Drill --shot ground       from `look item` (tmp/look/item-LF_Drill/ground.png)
 //   tools\cli evidence 481 table                         the before | after table for the PR body
+// These are the PR pictures: `look`, `look item` and `wb_preview` need no game session. Embed the
+// table `evidence` prints, never a tmp/ path (gitignored; `wt ship` refuses it).
 //
 // Pictures land in website/public/docs-images/<key>/ as <name>-before.png / <name>-after.png, at most
 // 1280 px wide and 500 KB (docs/agent-docs-sweep.md), and are embedded by raw URL on main, which

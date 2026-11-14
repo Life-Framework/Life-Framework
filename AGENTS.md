@@ -75,10 +75,13 @@ agent per area. `tools\cli usage` shows where the tokens went.
     `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both); a
     new CLI command is `tools/commands/<name>.mjs`.
 11. **What a player sees is looked at before it ships.** `tools\cli look <area>`
-    before and after, the `polish` checklist against the pictures, and the pair
-    embedded in the PR (`docs/style-guide.md`). A screen is built from UI kit
-    parts; nothing debug-looking goes in a village layer (`validate-ui-kit`,
-    `validate-player-props`).
+    (`look item <prefab>`, or `wb_preview` for one resource) before and after, the
+    `polish` checklist against the pictures, and the pair embedded in the PR
+    (`tools\cli evidence`; `docs/style-guide.md`). **PR pictures come from `look`, not a
+    session.** A session is only for what Workbench play cannot capture: HUD and other UI
+    widgets, a second player or late joiner, motion, animation, sound, filming. A screen
+    is built from UI kit parts; nothing debug-looking goes in a village layer
+    (`validate-ui-kit`, `validate-player-props`).
 
 ## Commands
 
@@ -92,7 +95,8 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
 | `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci`, `wt gate`, `wt ship` and CI run every check plus the compile |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `LF_Test` suite; exit code is pass/fail; a compile error fails it |
-| `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the red-proof loop); prints `SUMMARY tier=only` |
+| `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the iteration loop); prints `SUMMARY tier=only` |
+| `tools\cli test --no-build --red <LF_Test_Class\|name\|LF_Test_File>[,...]` | Batched red proof: ONE boot, each test's `RedProof()` hook on; exit 0 only if every listed test FAILED, else names the hollow ones; prints `SUMMARY tier=red` |
 | `tools\cli test ... --no-cache` | Force a run: a pass on byte-identical inputs is otherwise reused (`test: CACHED pass ...`, about 1 s); `LF_TEST_CACHE=0` turns the cache off |
 | `tools\cli test` / `e2e` / `pool status` | In-game runs take the first free slot on any pool machine (this PC, `lf-testbox`; `tools/pool.json`) and queue FIFO when all are busy, trying the machine with the most RAM headroom first; `--local` / `--remote [name]` pin it (don't); remote runs carry uncommitted state and the rdb (`docs/worktrees.md` "Test pool") |
 | `tools\cli dev --tier fast` | validate + test without a build, then dump `[LFDebug:*]` lines |
@@ -108,7 +112,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 
 **Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. **Never pin** (`--local`, `--machine`): the pool sends a run to the machine with the most RAM headroom (this PC's RAM is often short), a pin prints a warning when another machine has room, and `ci`, `wt gate` and `wt ship` (suite and placement audit) never pin. Sessions flow like a river, a lane is held only while it is used: idle 3 min while a job waits, or 5 min with nobody waiting, closes a session; any harness command resets the clock, `session.mjs lease [min]` holds it. A session older than 10 min while another session request queues gets a one-line warning on its next harness or session command and is closed 2 min later (`session up --hold <min>`, at most 20, for a known-long job). A gate holds a test lane only for the suite run, never during `validate --full` or the build. Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
 
-**Session profiles.** `session up` defaults to `--profile lowspec` (640x360, lowest textures; the pool reserves less RAM for it and trims idle sessions before it refuses one), which is right for any proof that reads logs and harness results. Shots, `shots area`, filming, `journey` and any proof whose images go in a PR use `--profile full` (`docs/worktrees.md` "Session profiles").
+**Session profiles.** `session up` defaults to `--profile lowspec` (640x360, lowest textures; the pool reserves less RAM for it and trims idle sessions before it refuses one), which is right for any proof that reads logs and harness results. Shots, `shots area`, filming, `journey` and a session proof whose images go in a PR (UI, motion, a second player) use `--profile full` (`docs/worktrees.md` "Session profiles").
 
 **Sessions are shared: prepare every edit before `session up`, do the proof and the shots in one session, and `session down` straight after.** `session up` prints how many session requests are queued behind you; it boots one client unless you pass `--clients 2`.
 
@@ -152,9 +156,16 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   `// tier: LOGIC|WORLD|PERSISTENCE` above the class and a `// red-proof:` line.
 - Tiers are setup cost, not subject: `LOGIC` is pure script (`--tier fast`);
   `WORLD` loads a resource or touches the world; `PERSISTENCE` is a save round trip.
-- Prove red once: break one assertion, watch it fail, restore it, record the line.
+- Prove red once, cheaply (each run is a server boot). A bug fix: the run where the new
+  test fails on the unfixed code and then passes on the fixed code IS the red proof;
+  record it in `// red-proof:`, no extra break-and-restore run. New tests with no failing
+  state: one batched run for all of them, `tools\cli test --no-build --red <LF_Test_A,LF_Test_B>`;
+  each test's `RedProof()` hook (the scaffold writes it: `if (!RedProof()) <the act>;`) skips
+  what its assertions guard. It passes only if every listed test FAILS and names any that still
+  passed (hollow). Record the `RED-OK` line. Node selftests in `tools/` keep their own red
+  proofs; they are instant and need no game run.
 - The registry is generated by `tools\cli regen-tests`; never hand-edit it. Adding a test never touches `LF_TestManager.c`.
-- Red-proof loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s), then `--tier all` once at the end.
+- Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
 - **Pass cache.** `test` (and the suite inside `ci`, `wt gate`, `wt ship`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
@@ -266,7 +277,7 @@ what the human's promotion checklist shows. `docs/worktrees.md` "Release gates".
 1. `tools\cli validate`: cheap, run it constantly. `validate --full` (adds the Workbench compile for every platform) runs in `wt gate`/`wt ship`.
 2. The `LF_Test` suite in your worktree: `--only` or `--tier fast` while iterating, `--tier all` once before calling work done.
 3. Drive the real path: DebugWorld play mode or `node agent-box/harness.mjs flow <name>`.
-   For how a place looks, `tools\cli look <area>` first (pictures in about 25 s, no session); a session only for UI, motion, a second player or PR pictures (`docs/visual-testing.md`).
+   For how a place looks, `tools\cli look <area>` first (pictures in about 25 s, no session); a session only for UI, motion, a second player, sound or filming; PR pictures come from `look` too (`docs/visual-testing.md`).
 4. Read the specific log line (`SCRIPT (E)`, `VME:`, `Unable to find`), never an error count.
 
 Proof classes that survive the ladder: restart (a real save, restart, load),

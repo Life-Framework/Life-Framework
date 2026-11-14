@@ -202,6 +202,7 @@ anywhere.
 ```sh
 tools\cli test --no-build --tier all                      # first free slot anywhere (--any, the default)
 tools\cli test --no-build --only LF_Test_Money --local     # this PC only
+tools\cli test --no-build --red LF_Test_A,LF_Test_B        # batched red proof: one boot, every listed test must FAIL
 tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
 tools\cli test --no-build --tier all --core-only           # the core alone, pack hidden (#326); any machine
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
@@ -376,6 +377,22 @@ it, picks a lane and a budget, and prints one line per outcome.
   machine without `lanes` (the box) keeps one shared lane. Old CLIs keep using
   `server-2001` for everything, so the old lock is still honoured during the
   switch.
+- **How many lanes.** The code sets no lane count: a machine's `lanes` decides, and what starts
+  is decided live by the RAM gate, the thermal hold and `maxClients`. The one ceiling is the port
+  range, 64 test and 32 session lanes per machine (`tools/lib/pool-queue.mjs` "Lane ports";
+  `pool status` prints it beside each machine's lanes). Lanes 1-4 (session) and 1-9 (test) keep
+  the names and ports above. Later lanes have locks named after their port, in blocks nothing else
+  uses: test lanes 10+ on `server-2403`, `-2408`, ... (127.0.0.1, every 5 ports), session lanes 5+
+  on `server-2803`, `-2808`, ... (A2S on the port + 1). A lane port ends in 3 or 8, so it is never
+  a worktree game port (ends in 1) or A2S port (ends in 7); `pool-selftest` enumerates every lane and
+  2000 worktrees and fails on any shared port. Pool code before 2026-11-14 caps session lanes at 4
+  and puts a 10th test lane on 2011, the second session lane's port, and it reads only `lanes`.
+  So a machine with more than 9 test or 4 session lanes keeps `"lanes"` at most `{"test": 9,
+  "session": 4}` (what older branches use) and gives the full count in `"lanesV2"` (what this code
+  uses); `pool status` warns about `lanes.test` over 9. Every lane but session lane 1 binds
+  127.0.0.1 only, so a new lane needs no firewall rule. A `-server` boot without `-config` binds
+  only its game port (seen on lf-cloud 2026-11-14), so the A2S numbers matter only if that
+  changes.
 - **Disk hygiene (#675).** Every `session up` and local `test`/`e2e` start first removes
   session folders under `%LOCALAPPDATA%\LifeFramework\session` untouched for `sessionKeepHours`
   (24) hours, except one in use (live pids in `session.json`), this checkout's own, and any
@@ -524,7 +541,7 @@ it, picks a lane and a budget, and prints one line per outcome.
 thermal protection, 0 to 5 minutes after bursts of pool load, at 93 °C with 2 servers and 4 clients (the CPU limit is
 about 95 °C; CPU boost is now off). It now stands outside (53 to 60 °C idle), so `tools/pool.json` gives it 2 session
 lanes (`server-2001`, `-2011`) of at most 2 clients each (`maxClients`) and 3 test lanes (`server-test-1..3`), as
-its RAM allows. Remote tests now try
+its RAM allows. Those numbers are the laptop's heat and RAM, not a limit in code ("How many lanes" above). Remote tests now try
 every test lane (they used only `server-test-1`: 54 of 54 runs). Its slot holder applies the RAM gate on the laptop's
 own free RAM before it takes a lock, and holds new jobs while the newest reading of its thermal logger
 (`thermalLog`, `C:\LF\thermal-log\*.csv`, column `thrm_c`, written in the last 2 minutes) is at or over

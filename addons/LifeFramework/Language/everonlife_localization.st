@@ -8453,6 +8453,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logout in custody"
      Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
+    CustomStringTableItem "{A3D17C50B8E24F96}" {
+     Id "LF-PoliceApp_Error_Playtime"
+     Target_en_us "You need more play time before you can apply. Time left: %1."
+     Comment "Refusal: the playtime gate (#803). %1 is the play time still missing, such as 12h 30m."
+    }
+    CustomStringTableItem "{5E8B02D6C9A17F43}" {
+     Id "LF-PoliceApp_Error_Cooldown"
+     Target_en_us "Your last application was rejected. You can apply again in %1."
+     Comment "Refusal: the rejection cooldown (#803). %1 is the wait left, such as 2h 5m."
+    }
     CustomStringTableItem "{B56342EA30F0AFB8}" {
      Id "LF-ClipStamp_Action"
      Target_en_us "Show clip stamp"
@@ -8508,15 +8518,570 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Turn placement finely (hold)"
      Comment "Key binding name: hold to rotate the placement ghost in 1 degree steps (#1028)."
     }
-    CustomStringTableItem "{A3D17C50B8E24F96}" {
-     Id "LF-PoliceApp_Error_Playtime"
-     Target_en_us "You need more play time before you can apply. Time left: %1."
-     Comment "Refusal: the playtime gate (#803). %1 is the play time still missing, such as 12h 30m."
+    CustomStringTableItem "{803147BD364F1908}" {
+     Id "LF-Credits_Title"
+     Target_en_us "CREDITS"
+     Comment "Heading of the in-game credits screen (#481)."
     }
-    CustomStringTableItem "{5E8B02D6C9A17F43}" {
-     Id "LF-PoliceApp_Error_Cooldown"
-     Target_en_us "Your last application was rejected. You can apply again in %1."
-     Comment "Refusal: the rejection cooldown (#803). %1 is the wait left, such as 2h 5m."
+    CustomStringTableItem "{9582A7800A1EB28A}" {
+     Id "LF-Credits_Intro"
+     Target_en_us "Who Life Framework is built on."
+     Comment "Line under the credits title (#481)."
+    }
+    CustomStringTableItem "{4F2F9090FCEBA8F1}" {
+     Id "LF-Credits_Page"
+     Target_en_us "Page %1 of %2"
+     Comment "Page counter of the credits screen (#481)."
+    }
+    CustomStringTableItem "{79A220F1E2158419}" {
+     Id "LF-Credits_Next"
+     Target_en_us "NEXT"
+     Comment "Next-page button of the credits screen (#481)."
+    }
+    CustomStringTableItem "{28D3883FADB50BF9}" {
+     Id "LF-Credits_Prev"
+     Target_en_us "PREVIOUS"
+     Comment "Previous-page button of the credits screen (#481)."
+    }
+    CustomStringTableItem "{8B6C65DD4369872B}" {
+     Id "LF-Credits_Close"
+     Target_en_us "CLOSE"
+     Comment "Close button of the credits screen (#481)."
+    }
+    CustomStringTableItem "{E83AB3CDE17F447B}" {
+     Id "LF-Credits_1"
+     Target_en_us "PROJECTS WE BUILD ON AND BORROW FROM"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
+     Id "LF-Credits_2"
+     Target_en_us "Everon Life RPG Framework"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BB787B4246452E5C}" {
+     Id "LF-Credits_3"
+     Target_en_us "Arkensor and its contributors, MIT"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BC3386AB2D3DCC03}" {
+     Id "LF-Credits_4"
+     Target_en_us "Overthrow"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{024DCF01977FDC8E}" {
+     Id "LF-Credits_5"
+     Target_en_us "Aaron Static, the maintainer of Overthrow, Arma Public License Share Alike upstream; used with the owner's permission and relicensed MIT for Life Framework only"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{45A798B997EBD08B}" {
+     Id "LF-Credits_6"
+     Target_en_us "LNGCLifeRP_Public"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0A506CD8FC4C3064}" {
+     Id "LF-Credits_7"
+     Target_en_us "LNGCGenetic, MIT"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{2CC9132CA7FA3223}" {
+     Id "LF-Credits_8"
+     Target_en_us "ArchBuilder"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{99FF09A0FE490E2D}" {
+     Id "LF-Credits_9"
+     Target_en_us "Arribas, GPL-3.0-or-later add-on, sold with a personal key (ko-fi.com/arribas)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{6BEE352A31EEAE53}" {
+     Id "LF-Credits_10"
+     Target_en_us "Bohemia Interactive"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{857E5E05902D8F44}" {
+     Id "LF-Credits_11"
+     Target_en_us "Bohemia Interactive, Arma Public License (the Workshop build); game assets belong to Bohemia Interactive"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0A5B0A916F1F634A}" {
+     Id "LF-Credits_12"
+     Target_en_us "thebonbon/EveronLife: roleplay chat, mining, jump pad and spike strip code. The mining code was ported with the author's permission given to the maintainer."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4698D3AC325BC21D}" {
+     Id "LF-Credits_13"
+     Target_en_us "rekterakathom/EveronLife: parts of the inventory storage manager and the shop rules."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{CA6300164F63F92D}" {
+     Id "LF-Credits_14"
+     Target_en_us "Jacob-Mango/EveronLife: parts of the quantity component."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{1E61840F28B6ADBC}" {
+     Id "LF-Credits_15"
+     Target_en_us "CONTRIBUTORS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{59CAD5C15A66EDA7}" {
+     Id "LF-Credits_16"
+     Target_en_us "Everyone who has committed to the repository is on the GitHub contributors list, counted from the commit history."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AD56C627EA2AD519}" {
+     Id "LF-Credits_17"
+     Target_en_us "LICENCES"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3A24A564BBC40F8F}" {
+     Id "LF-Credits_18"
+     Target_en_us "The source in this repository is MIT (LICENSE). Contributions are licensed under MIT (CONTRIBUTING.md)."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{9B225E9F684B34BE}" {
+     Id "LF-Credits_19"
+     Target_en_us "The build published on the Arma Reforger Workshop is licensed under the Arma Public License (APL), because the Workshop Terms of Use require an APL-family licence for uploaded content."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{07EEDCD277D92D50}" {
+     Id "LF-Credits_20"
+     Target_en_us "Third-party code keeps its own licence and notice (THIRD_PARTY.md). Third-party assets are listed in assets-source/LICENSES.md: so far only the CC0 texture sets under \"Textures (CC0)\"."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{09A1E735EF193A11}" {
+     Id "LF-Credits_21"
+     Target_en_us "TOOLS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B8555A0EF2D6690B}" {
+     Id "LF-Credits_22"
+     Target_en_us "Arma Reforger Tools and the Workbench IDE by Bohemia Interactive build and test the mod."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{53B28D555A161361}" {
+     Id "LF-Credits_23"
+     Target_en_us "The clothing pipeline (docs/asset-pipeline/clothing.md) runs Bohemia Interactive's Enfusion Blender Tools (GPL-3.0) from the local Arma Reforger Tools install, and downloads the character templates..."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{43162672CA02A922}" {
+     Id "LF-Credits_24"
+     Target_en_us "ArchBuilder by Arribas, a Blender add-on, generates the buildings (tools\\cli building, docs/building-pipeline/README.md). Each user runs their own licensed copy; none of its source, keys or buyer..."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3F64A1C030B6AE18}" {
+     Id "LF-Credits_25"
+     Target_en_us "Piper makes the trailer voice-over (see Voice-over below)."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B3FFF0D2F5696CB3}" {
+     Id "LF-Credits_26"
+     Target_en_us "The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (website/README.md)."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{74FEA389AE2630A6}" {
+     Id "LF-Credits_27"
+     Target_en_us "Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (docs/community/support.md)."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4D47E82197EE184B}" {
+     Id "LF-Credits_28"
+     Target_en_us "GENERATED 3D ASSETS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{5470B26BCCCFFD50}" {
+     Id "LF-Credits_29"
+     Target_en_us "Taser model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3FB703A789E0C8B2}" {
+     Id "LF-Credits_30"
+     Target_en_us "Meshy text-to-3D, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{CDF5AA0DB3987497}" {
+     Id "LF-Credits_31"
+     Target_en_us "Handcuffs model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A138B1E6121712F3}" {
+     Id "LF-Credits_32"
+     Target_en_us "Modelled in Blender by tools/assets/handcuffs/model.py (articulated strands; the first version was generated with Meshy, see meshy.json), textures baked from procedural nodes"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{864246B648D44A9E}" {
+     Id "LF-Credits_33"
+     Target_en_us "Vault drill model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C23117FC3D0CE6E0}" {
+     Id "LF-Credits_34"
+     Target_en_us "Meshy text-to-image, then Meshy image-to-3D, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3811717078DB0F62}" {
+     Id "LF-Credits_35"
+     Target_en_us "Bank vault door and frame detail"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{12D57416F4266B17}" {
+     Id "LF-Credits_36"
+     Target_en_us "Meshy image-to-image and image-to-3D, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BFC9A25C7430FA5A}" {
+     Id "LF-Credits_37"
+     Target_en_us "Spike strip model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{6DB121D762F94EB6}" {
+     Id "LF-Credits_38"
+     Target_en_us "Meshy text-to-3D, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F29C51000776C6AB}" {
+     Id "LF-Credits_39"
+     Target_en_us "Cash strongbox model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{450CA04B3D097A32}" {
+     Id "LF-Credits_40"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AD63B637AFDC04F0}" {
+     Id "LF-Credits_41"
+     Target_en_us "Lockpick model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B770ED13520D3FD0}" {
+     Id "LF-Credits_42"
+     Target_en_us "Modelled in Blender by tools/assets/lockpick/model.py (a leather wallet, hook pick and tension wrench; the first version was generated with Meshy, see meshy.json), textures baked from procedural nodes"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BACD20FE558CCF0E}" {
+     Id "LF-Credits_43"
+     Target_en_us "Evidence marker model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{92F893564225C354}" {
+     Id "LF-Credits_44"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{086D86A2EDA2B8CF}" {
+     Id "LF-Credits_45"
+     Target_en_us "Pager model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{2979BA666C42667B}" {
+     Id "LF-Credits_46"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F035DFEB809CA450}" {
+     Id "LF-Credits_47"
+     Target_en_us "Money bag model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{067B4509CC39E039}" {
+     Id "LF-Credits_48"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D3F401496BAE82D2}" {
+     Id "LF-Credits_49"
+     Target_en_us "Apple juicer model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F730C1A960A78829}" {
+     Id "LF-Credits_50"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F30094F417F14EDD}" {
+     Id "LF-Credits_51"
+     Target_en_us "Police scanner model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BC78749D66D5773D}" {
+     Id "LF-Credits_52"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BD94432B1728051F}" {
+     Id "LF-Credits_53"
+     Target_en_us "Post parcel model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AE4C658004027BAA}" {
+     Id "LF-Credits_54"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{280AE9553E12DCF0}" {
+     Id "LF-Credits_55"
+     Target_en_us "Moonshine still model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{59A5E16ECC87C9D1}" {
+     Id "LF-Credits_56"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{127400A67F429364}" {
+     Id "LF-Credits_57"
+     Target_en_us "Smelter furnace model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{315390E10DFAFDB2}" {
+     Id "LF-Credits_58"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3A91C10B099318FB}" {
+     Id "LF-Credits_59"
+     Target_en_us "Dispatch console model"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FD7062FD324F25B7}" {
+     Id "LF-Credits_60"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{80D21A43FAC2B85A}" {
+     Id "LF-Credits_61"
+     Target_en_us "TEXTURES (CC0)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{708E4EC4AFBEC67D}" {
+     Id "LF-Credits_62"
+     Target_en_us "Metal 046 B"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3AC68A94A8103570}" {
+     Id "LF-Credits_63"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D08F14333F89DB8C}" {
+     Id "LF-Credits_64"
+     Target_en_us "Metal 047 B"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3DC31C741325E00A}" {
+     Id "LF-Credits_65"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{6973D488BECA5042}" {
+     Id "LF-Credits_66"
+     Target_en_us "Metal 048 B"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3CAE93E3CE89F176}" {
+     Id "LF-Credits_67"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{250D4D6A466ED5C6}" {
+     Id "LF-Credits_68"
+     Target_en_us "Metal 058 C"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{115DDAA18230398D}" {
+     Id "LF-Credits_69"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AF97E8FC2EF2C69E}" {
+     Id "LF-Credits_70"
+     Target_en_us "Rust 009"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C96DB5CDAEB0CD3B}" {
+     Id "LF-Credits_71"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F31FEA189E5AF4EA}" {
+     Id "LF-Credits_72"
+     Target_en_us "Rock 035"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{46595D86CD131263}" {
+     Id "LF-Credits_73"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AFAD89EA248BB053}" {
+     Id "LF-Credits_74"
+     Target_en_us "Rock 058"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FE16DFCBBA5532B4}" {
+     Id "LF-Credits_75"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4BB050278AF6FC4B}" {
+     Id "LF-Credits_76"
+     Target_en_us "Metal 038"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C3252F897790C80D}" {
+     Id "LF-Credits_77"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{50AF76D0FD61586D}" {
+     Id "LF-Credits_78"
+     Target_en_us "Leather 014"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F5CCE61786E1F741}" {
+     Id "LF-Credits_79"
+     Target_en_us "ambientCG, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{450BEEBC033F072C}" {
+     Id "LF-Credits_80"
+     Target_en_us "POLY HAVEN MODELS (CC0)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F386EBE00044EE4B}" {
+     Id "LF-Credits_81"
+     Target_en_us "Cement Bag"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{CFAB4F5659DE4528}" {
+     Id "LF-Credits_82"
+     Target_en_us "PierreB3D, CC0 1.0"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{01785E5C9E42AE6E}" {
+     Id "LF-Credits_83"
+     Target_en_us "LIBRARY AND PURCHASED MODELS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{50C157F2EB525B36}" {
+     Id "LF-Credits_84"
+     Target_en_us "Models taken from the open libraries through 3d-asset-server (CC0, CC-BY) or bought by a human on CGTrader and similar markets (Royalty Free), then run through clean and import..."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{62B659557E7B6464}" {
+     Id "LF-Credits_85"
+     Target_en_us "GENERATED SOUND EFFECTS (ELEVENLABS)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BB3735C9B27F3750}" {
+     Id "LF-Credits_86"
+     Target_en_us "Taser sounds: shot, dry fire, cartridge out and in, stun buzz"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{135C13CA084B8504}" {
+     Id "LF-Credits_87"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F7B8FCDCE0544A88}" {
+     Id "LF-Credits_88"
+     Target_en_us "GENERATED AUDIO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{7320D160EB0096E2}" {
+     Id "LF-Credits_89"
+     Target_en_us "Store radio and pub music"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AE8C2BFD5BDF0B32}" {
+     Id "LF-Credits_90"
+     Target_en_us "ElevenLabs Music (music_v1, instrumental), generated with ElevenLabs"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3D8F4A1805394D57}" {
+     Id "LF-Credits_91"
+     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{8501F8EBAEAC730A}" {
+     Id "LF-Credits_92"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D633223051CC74DB}" {
+     Id "LF-Credits_93"
+     Target_en_us "GENERATED VOICES"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{359938F793945EA0}" {
+     Id "LF-Credits_94"
+     Target_en_us "Town clerk's spoken lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{9D89028E9844FF11}" {
+     Id "LF-Credits_95"
+     Target_en_us "ElevenLabs text-to-speech, voices generated with ElevenLabs; voice \"JC\" from the voice library"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D3080A6969C70816}" {
+     Id "LF-Credits_96"
+     Target_en_us "MUSIC"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AA282A4B5F344509}" {
+     Id "LF-Credits_97"
+     Target_en_us "\"Carefree\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FA45D273D68AA84A}" {
+     Id "LF-Credits_98"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C38448870F6795CB}" {
+     Id "LF-Credits_99"
+     Target_en_us "\"Hitman\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{17725D5EE1952883}" {
+     Id "LF-Credits_100"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{27F672D865E0C90E}" {
+     Id "LF-Credits_101"
+     Target_en_us "VOICE-OVER"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{52A89444BDFCFD47}" {
+     Id "LF-Credits_102"
+     Target_en_us "Piper"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B34B54B3270EA1AB}" {
+     Id "LF-Credits_103"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{08B073F287287452}" {
+     Id "LF-Credits_104"
+     Target_en_us "Voice en_US-ljspeech-high"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{47D4FB9C4781CDA3}" {
+     Id "LF-Credits_105"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FBFB66BA23F58688}" {
+     Id "LF-Credits_106"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{53B06789666BA9A0}" {
+     Id "LF-Credits_107"
+     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
   }
  }
