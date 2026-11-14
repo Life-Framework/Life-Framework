@@ -246,7 +246,11 @@ async function startServer(root, viewer, snap, { exe, workbenchArgs, log }) {
   const t0 = Date.now();
   let pid;
   try {
-    pid = quietSpawnDetached(exe, workbenchArgs(viewer, profile), { cwd: dirname(exe) });
+    // Over ssh (a pool machine) there is no desktop to render to and ssh ends its children on disconnect:
+    // the server starts on the signed-in user's desktop through an interactive scheduled task, like a remote client.
+    const il = await import("../lib/interactive-launch.mjs");
+    if (il.interactiveNeeded()) pid = il.interactiveSpawnDetached(exe, workbenchArgs(viewer, profile), { cwd: dirname(exe), marker: profile });
+    else pid = quietSpawnDetached(exe, workbenchArgs(viewer, profile), { cwd: dirname(exe) });
   } catch (e) {
     return { ok: false, why: `start failed: ${e.message}` };
   }

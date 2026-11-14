@@ -353,8 +353,10 @@ export function workbenchArgs(root, profile, plugin = "LF_VisualShotsPlugin") {
 }
 
 // Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
-export function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
+export async function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
   const args = workbenchArgs(ROOT, profile, plugin);
+  const il = await import("../lib/interactive-launch.mjs");
+  if (il.interactiveNeeded()) return runInteractive(il, exe, args, profile, budgetS);
   return new Promise((done) => {
     const started = Date.now();
     let peakMb = 0;
@@ -374,6 +376,31 @@ export function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_Visu
     child.on("exit", (code) => finish(code ?? 1, false));
     child.on("error", () => finish(1, false));
   });
+}
+
+// Over ssh (a pool machine): Workbench on the signed-in user's desktop, which is the only place it renders.
+// The process is not our child, so its exit is watched by pid; its exit code is not known (0 when it exited).
+async function runInteractive(il, exe, args, profile, budgetS) {
+  const started = Date.now();
+  let pid;
+  try {
+    pid = il.interactiveSpawnDetached(exe, args, { cwd: dirname(exe), marker: profile });
+  } catch (e) {
+    console.log(`look: ${e.message}`);
+    return { code: 1, timedOut: false, seconds: (Date.now() - started) / 1000, peakMb: 0 };
+  }
+  const alive = () => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  while (alive() && Date.now() - started < budgetS * 1000) await new Promise((r) => setTimeout(r, 500));
+  const timedOut = alive();
+  if (timedOut) spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"], { windowsHide: true, timeout: 15000 });
+  return { code: timedOut ? 124 : 0, timedOut, seconds: (Date.now() - started) / 1000, peakMb: 0 };
 }
 
 export function latestLog(profile) {
