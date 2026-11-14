@@ -1,6 +1,6 @@
 # Robbery alarms video (#740)
 
-A 37 s clip of the per-type robbery alarms (#987) for Discord: the fuel station at golden hour, a robber at the kiosk
+A 34 s clip of the per-type robbery alarms (#987) for Discord: the fuel station at golden hour, a robber at the kiosk
 window, the clerk's voiced panic line, the intruder alarm and its wall beacon, the bank vault door swinging open to
 the bell, the patrol car pulling up with its lights on, then an end card. Game audio only: no narration, music or
 captions. Raw takes and the mp4 stay out of git (`tmp/robbery-video/`).
@@ -44,17 +44,19 @@ node agent-box/session.mjs up --clients 2 --mission playtest --profile full --re
 
 | ID | Seconds | What | Notes |
 |---|---|---|---|
-| `EST` | 8 | the station in the last sun, slow push | Shoot it twice (`take EST --as=_w`, then `take EST --as=_2`): the first pass streams the area in and stutters. |
-| `WINDOW`, `INSIDE`, `SIDE`, `BEACON` | 24 | one robbery, shot four times from four angles | The demand is picked at 12.8 s: a reply picked while the 8.2 s panic line plays is refused. |
+| `EST` | 8 | the station in the last sun, slow push | The take runs the move once unrecorded first (`warm`): a first pass streams the area in and stutters. |
+| `WINDOW`, `CLERK`, `FRONT`, `SIDE`, `BEACON` | 24 | one robbery, shot once per angle (`INSIDE` is a spare) | The demand is picked at 12.8 s: a reply picked while the 8.2 s panic line plays is refused. |
 | `BANK` | 10 | the vault door swings open (3 s ease, `LF_BreachTargetComponent`), the bank bell | |
 | `POLICE` | 14 | the patrol car (`robbery-police` film scene) pulls up head-on, lights on | The driver wears a dark plain-clothes outfit; there is no police uniform yet. |
 
 ## Re-cutting
 
-`edit.json` places the four robbery angles on one clock: `anchors.voice` is the clerk's first word and
-`anchors.alarm` the alarm's first frame in each take (video seconds). After re-shooting a robbery angle, read both
-from the take's audio (the first loud 0.125 s window after silence) and update them. Every robbery shot plays the
-SIDE take's audio, so the voice and the alarm run on without a seam across the cuts.
+`edit.json` places the robbery angles on one clock: `anchors.voice` is the clerk's first word and `anchors.alarm`
+the alarm's first moment in each take (video seconds). After re-shooting a robbery angle, run
+`node tools/film/robbery-alarms/cut.mjs --measure` and paste its output into `anchors`. Every robbery shot plays the
+SIDE take's audio, so the voice and the alarm run on without a seam across the cuts. Re-check the in and out points
+against a contact sheet of the new take (`ffmpeg -i takes/X.mp4 -vf fps=2,scale=320:-1,tile=8x8 sheet.jpg`): the
+engine capture can stall for up to a second when the PC is short of RAM, so keep a cut clear of a frozen stretch.
 
 The end slate's beep is usually masked by the alarm; `audio.mjs` then places the audio by the start slate alone
 (`chooseOffset`).

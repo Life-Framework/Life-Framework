@@ -128,4 +128,51 @@ function main() {
   if (bytes > EDIT.maxBytes) throw new Error(`the video is ${bytes} bytes, over ${EDIT.maxBytes}`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) main();
+// The robbery angles' anchors from each take's own audio (0.125 s windows, dBFS): `voice` is the first window over
+// -50 dB after 1.5 s that follows 0.25 s under -55 dB (the clerk's first word; the camera starts in silence), `alarm`
+// the first window over -50 dB at least 8 s later that follows 1 s under -50 dB (the 2 s pause before the alarm).
+// Measured against hand readings of six takes (2026-11-14): within one window.
+export function anchorsOf(db, step = 0.125) {
+  const quiet = (i, sec, floor) => {
+    const n = Math.round(sec / step);
+    return i >= n && db.slice(i - n, i).every((d) => d < floor);
+  };
+  let voice = null;
+  for (let i = Math.round(1.5 / step); i < db.length && voice === null; i++) if (db[i] > -50 && quiet(i, 0.25, -55)) voice = i * step;
+  let alarm = null;
+  if (voice !== null) for (let i = Math.round((voice + 8) / step); i < db.length && alarm === null; i++) if (db[i] > -50 && quiet(i, 1.0, -50)) alarm = i * step;
+  return { voice, alarm };
+}
+
+function levels(mp4, step = 0.125) {
+  const r = spawnSync(ff.path, ["-loglevel", "error", "-i", mp4, "-vn", "-ac", "1", "-ar", "8000", "-f", "s16le", "-"], { windowsHide: true, maxBuffer: 1 << 28 });
+  const b = r.stdout;
+  const win = Math.round(8000 * step);
+  const out = [];
+  for (let i = 0; (i + win) * 2 <= b.length; i += win) {
+    let sum = 0;
+    for (let k = 0; k < win; k++) {
+      const x = b.readInt16LE((i + k) * 2) / 32768;
+      sum += x * x;
+    }
+    out.push(10 * Math.log10(sum / win + 1e-12));
+  }
+  return out;
+}
+
+// --measure: print the anchors of every robbery take edit.json names, to paste into edit.json after a re-shoot.
+function measure() {
+  const takes = Object.keys(EDIT.anchors.voice);
+  const out = { voice: {}, alarm: {} };
+  for (const t of takes) {
+    const a = anchorsOf(levels(join(TAKES, `${t}.mp4`)));
+    out.voice[t] = a.voice;
+    out.alarm[t] = a.alarm;
+  }
+  console.log(JSON.stringify(out, null, 2));
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  if (process.argv.includes("--measure")) measure();
+  else main();
+}

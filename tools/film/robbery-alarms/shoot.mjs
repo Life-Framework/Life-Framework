@@ -106,17 +106,21 @@ export const CAMS = {
   inside: { from: [[284.65, 1.66, 239.85], [283.7, 1.45, 236.3]], to: [[284.45, 1.63, 239.6], [283.7, 1.45, 236.3]], fov: 32 },
   side: { from: [[285.8, 1.7, 234.7], [283.2, 1.65, 236.7]], to: [[285.35, 1.62, 235.15], [283.2, 1.65, 236.7]], fov: 42 },
   beacon: { from: [[279.7, 1.6, 234.3], [282.3, 2.25, 236.8]], to: [[280.05, 1.55, 234.6], [282.3, 2.25, 236.8]], fov: 30 },
-  bank: { from: [[198.3, 1.55, 255.3], [193.9, 1.3, 258.5]], to: [[197.5, 1.5, 255.9], [193.9, 1.3, 258.5]], fov: 46 },
+  clerk: { from: [[282.95, 1.63, 237.62], [283.6, 1.72, 238.9]], to: [[283.05, 1.62, 237.78], [283.6, 1.72, 238.9]], fov: 40 },
+  front: { from: [[285.8, 1.45, 235.45], [283.6, 1.5, 236.3]], to: [[285.5, 1.45, 235.75], [283.6, 1.5, 236.3]], fov: 34 },
+  bank: { from: [[191.0, 1.2, 255.6], [194.3, 1.3, 259.0]], to: [[191.4, 1.2, 256.0], [194.3, 1.3, 259.0]], fov: 40 },
   police: { from: [[263.6, 1.0, 252.75], [246, 1.2, 249.6]], to: [[263.0, 1.0, 252.9], [246, 1.2, 249.6]], fov: 28 },
 };
 
 const ROB = (cam, note) => ({ seconds: 24, cam, note, park: EARSHOT, prep: robberAtWindow, body: robbery });
 export const SHOTS = {
-  EST: { seconds: 8, cam: CAMS.est, note: "establishing, quiet: the station in the last sun",
+  EST: { seconds: 8, cam: CAMS.est, warm: true, note: "establishing, quiet: the station in the last sun",
     prep: () => { on(1, { verb: "resetcrime" }, 10000); stand(1, PARK, "e"); } },
   WINDOW: ROB(CAMS.window, "the robber at the service window, pistol in hand; push in"),
   INSIDE: ROB(CAMS.inside, "from inside past the clerk's shoulder: the panic line, then the alarm light"),
   SIDE: ROB(CAMS.side, "side close on the robber, the clerk behind the mesh, the alarm box top left"),
+  CLERK: ROB(CAMS.clerk, "inside, close on the clerk: the panic line"),
+  FRONT: ROB(CAMS.front, "the robber in profile at the window, the wall box out of frame"),
   BEACON: ROB(CAMS.beacon, "the alarm box on the kiosk wall: the beacon flashing, the intruder alarm"),
   BANK: { seconds: 10, scene: "trailer-bank", park: "Roadmap_Garage", cam: CAMS.bank, note: "the vault door swings open, the bank bell",
     prep: () => { on(1, { verb: "resetcrime" }, 10000); stand(1, "Roadmap_Bank_RobKit", "w"); on(1, { verb: "charge" }); },
@@ -142,6 +146,12 @@ async function take(id, suffix = "") {
   log(`take ${id} (${s.note})`);
   prep(s);
   on(2, { verb: "camera", args: "hud off" });
+  if (s.warm) {
+    // One unrecorded pass of the move: the first pass streams the area in and stutters (measured on EST).
+    on(2, { verb: "camera", args: camArgs(s.cam, s.seconds) });
+    wait(s.seconds * 1000 + 500);
+    on(2, { verb: "camera", args: "stop" });
+  }
   const pid = A.clientPid(join(dir, "session.json"), 2);
   const send = (spec, t) => on(2, spec, t);
   const resolveAlias = (alias) => {
