@@ -49,6 +49,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ConfigService.Boot();
 		// Which systems this server runs (#960): logs each one that is off, before anything spawns.
 		LF_Systems.Boot();
+		// World cleanup sweep (#690): abandoned items, vehicles and bodies.
+		LF_Cleanup.Start();
 		// A system whose places are not on this map switches off with one line (#1047, server only).
 		LF_Systems.CheckPlaces();
 		// The effective client-relevant values, for the config stream to joining clients (#285).

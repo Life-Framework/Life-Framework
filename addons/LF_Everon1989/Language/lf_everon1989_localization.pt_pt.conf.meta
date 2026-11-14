@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A2D396DF36338CEF}Language/lf_everon1989_localization.pt_pt.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

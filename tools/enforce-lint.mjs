@@ -28,6 +28,11 @@
 //                        return;` guard in the same method. Notify shows a hint on
 //                        the machine that runs it, which on a dedicated server is
 //                        nobody; use LF_Utils.NotifyEntity(user, ...).
+//   L9 attr-initializer  an [Attribute] member with a non-zero initializer
+//                        (`bool m_bX = true;`). A `.conf` or prefab value of 0 is not
+//                        written over the initializer, so an overlay that turns the field off
+//                        reads as on (#1077). Leave the member bare (the attribute default is
+//                        the default) and set script-built values in a CreateDefault().
 //
 // Pure Node, no game data: runs in CI. The CLI wrapper is
 // tools/validation/validate-enforce-lint.mjs; the selftest is
@@ -44,6 +49,7 @@ export const RULES = {
   L6: "resource-ref",
   L7: "null-coalescing",
   L8: "server-toast",
+  L9: "attr-initializer",
 };
 
 const DATA_EXT = /\.(et|layer|conf|layout|ent|emat|st)$/i;
@@ -303,6 +309,20 @@ export function lint({ addonDir, scriptsDir, includeData = true }) {
       const re = /\?\?/g;
       let m;
       while ((m = re.exec(code))) add("L7", src, at(m.index), "`??` does not exist in Enforce Script");
+    }
+
+    // L9
+    {
+      const re = /\[Attribute\s*\([^\]]*\]\s*((?:ref\s+)?[\w<>, ]+?\s+\w+\s*)=(\s*[^;]+);/g;
+      let m;
+      while ((m = re.exec(code))) {
+        const decl = m[1];
+        const value = m[2].trim();
+        if (/\b(?:const|static)\b/.test(decl)) continue;
+        if (/^(?:0|0\.0*|false|null|""|\{\s*\})$/.test(value)) continue;
+        const off = m.index + m[0].indexOf(decl);
+        add("L9", src, at(off), "an initializer beats a .conf/prefab value of 0; drop it and build script defaults in CreateDefault() (#1077)");
+      }
     }
 
     // L8
