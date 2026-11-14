@@ -2941,7 +2941,8 @@ function wtHelpFull() {
   tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
                                        clean-tree check -> merge origin/<base> only if it conflicts ->
                                        gate -> push -> PR (or reuse the open one) -> gh auto-merge
-  tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
+  tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
+  tools\\cli wt prune --merged [--yes]  list every merged, clean, idle (30 min), unlocked worktree; --yes prunes them
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
   tools\\cli wt main                   print the main checkout path
@@ -2950,7 +2951,7 @@ flags:
   --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
-  --refs N     start the PR body with 'Refs #N'; --closes N is the same. Merging never closes an issue:
+  --refs N     start the PR body with 'Refs #N' (N >= 1; leave it out when there is no issue); --closes N is the same. Merging never closes an issue:
                it moves to in-dev / needs-playtest and 'promote --confirm' verifies and closes it
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
   --skip-gate  / --skip-sync   skip a ship stage (debug only)
@@ -3057,7 +3058,42 @@ function wtSyncCmd(args) {
   }
 }
 
+function wtPruneMergedCmd(args) {
+  let plan;
+  try {
+    plan = wt.pruneCandidates(ROOT);
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+  for (const s of plan.skip) console.log(`  keep   ${s.slug}: ${s.why}`);
+  for (const t of plan.take) console.log(`  prune  ${t.slug} (${t.via})`);
+  if (!plan.take.length) {
+    console.log("nothing to prune");
+    return 0;
+  }
+  if (!args.includes("--yes")) {
+    console.log(`dry run: ${plan.take.length} worktree(s) qualify; re-run with --yes to prune them`);
+    return 0;
+  }
+  let failed = 0;
+  for (const t of plan.take) {
+    try {
+      const r = wt.wtPrune(ROOT, t.slug);
+      console.log(`pruned ${r.slug}: removed ${r.path} and branch ${r.branch}`);
+    } catch (e) {
+      failed++;
+      console.log(`FAIL  ${t.slug}: ${e.message}`);
+    }
+  }
+  if (!args.includes("--keep-remote")) {
+    try { pool.cmdPoolPrune(ROOT, []); } catch (e) { console.log(`WARN  pool prune: ${e.message}`); }
+  }
+  return failed ? 1 : 0;
+}
+
 function wtPruneCmd(args) {
+  if (args.includes("--merged")) return wtPruneMergedCmd(args);
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
@@ -3431,7 +3467,13 @@ async function wtShipCmd(args) {
   const prOnly = flags.includes("--pr-only");
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
-  const closes = argValue(flags, "--refs") ?? argValue(flags, "--closes");
+  let closes = null;
+  try {
+    closes = wt.parseIssueFlag(flags);
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
   const bodyFile = argValue(flags, "--body-file");
   let e;
   let base;
@@ -3454,10 +3496,6 @@ async function wtShipCmd(args) {
   const dirty = wt.git(wtRoot, ["status", "--porcelain"]).stdout.trim();
   if (dirty) {
     console.log(`FAIL  worktree ${slug} has uncommitted changes; commit before shipping`);
-    return 1;
-  }
-  if (closes && !/^\d+$/.test(closes)) {
-    console.log(`FAIL  --refs/--closes takes an issue number, got '${closes}'`);
     return 1;
   }
   let customBody = null;
