@@ -107,7 +107,9 @@ class LF_DialogueConfig
 		string id;
 		if (container.IsVariableSetDirectly("m_sId") && container.Get("m_sId", id) && id != m_sId)
 		{
-			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("%1 patches dialogue '%2', not '%3'; skipped", source, id, m_sId));
+			// Every pack dialogue overlay is offered to every dialogue (the mission header lists them by
+			// class), so one that patches another dialogue is the normal case, not a fault (#1143).
+			LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("%1 patches dialogue '%2', not '%3'; skipped", source, id, m_sId));
 			return -1;
 		}
 
