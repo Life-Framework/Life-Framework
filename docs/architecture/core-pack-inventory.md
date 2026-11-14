@@ -135,7 +135,7 @@ under "Hard-coded flagship values in script".
 | Path | Class | Reason |
 | --- | --- | --- |
 | `Building/` | core | Building preview |
-| `Buildings/Supermarket/` | pack, moved (batch 2) | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`, which now sets `"addon": "LF_Everon1989"`): the building is this server's look. Its placement left the core `Annex.layer` (`Annex_Supermarket`) for the pack layer `Village_Buildings` as `Village_Supermarket`, same coordinates; `building-proof` defaults to the new name |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`, which now sets `"addon": "LF_Everon1989"`): the building is this server's look. Its placement left the core `Annex.layer` (`Annex_Supermarket`) for the pack layer `Village_Buildings` as `Village_Supermarket`, same coordinates; `building-proof` defaults to the new name. `Supermarket_Store.et` (#1143) is the placed one: the building plus our store components, written by the pipeline's `store` stage |
 | `Characters/Core/` | core | Player and NPC bases |
 | `Characters/Presets/` (3) | core | Neutral spawn bodies the game mode lists |
 | `Characters/Npcs/Npc_Default_01.et` | split | Base of every NPC, dressed in the M88 uniform; core needs a neutral base |
@@ -255,8 +255,8 @@ its save.
 
 | Path | Class | Reason |
 | --- | --- | --- |
-| `Buildings/Supermarket/` | pack, moved (batch 2) | Model and `.xob.meta` of the supermarket above; the `.xob` keeps its core `Buildings/Materials/` assignments (a pack may reference the core) |
-| `Buildings/Materials/` | split | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building: neutral, but only pack buildings use them today; they move with the first pack building or stay as a core material set |
+| `Buildings/Supermarket/` | pack, moved (batch 2) | Model and `.xob.meta` of the supermarket above |
+| `Buildings/Materials/` | pack, moved (#1143) | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building. Only pack buildings use them, so they moved with the first one (same GUIDs); the import writes a building's materials into its own addon |
 | `Crafting/` | core | Station meshes |
 | `Items/` | core | Cash, ID card, food, roleplay meshes |
 | `Props/CementMound/`, `Props/Military/Sandbags/` | core | Chain item textures |

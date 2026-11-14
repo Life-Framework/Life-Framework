@@ -49,7 +49,8 @@ neither.
 | `polish` | Renders what a player sees into `polish/`: a plan section, the four sides and the street corner from eye height, the hall from inside. Lists the spec's hand edits; warns when a hand-polished `polished.blend` was made with other settings than the spec. Never fails | The human or agent polishing it by hand: [polish.md](polish.md) |
 | `export` | ArchBuilder's Reforger export (its scene export of `tools/buildings/<slug>/polished.blend` when there is one) into a staging addon, `tmp/buildings/<slug>/export/`, with its Workbench step off. Gives every `AB_*` material its game colour (Materials below). Fails on any export warning, any furniture ArchBuilder left out of the game, no vanilla props with furniture on, and fewer doors than `budget.min_doors`. Applies `spec.polish.entities` and warns about three or more door sets in a row on one wall | The tool |
 | `import` | Refuses any file carrying the licence watermark, moves the export into the addon with new GUIDs, compiles the model in a hidden Workbench and reads the `.xob` back | The tool |
-| `prefab` | Every reference in the building's files resolves: our own by `.meta`, the base game's by path and GUID in the game's resource database. Door sets, windows, the model and its collider surfaces are there | The tool; then a placement and a look |
+| `prefab` | Every reference in the building's files resolves: our own by `.meta` (in the building's addon or the core), the base game's by path and GUID in the game's resource database. Door sets, windows, the model and its collider surfaces are there | The tool; then a placement and a look |
+| `store` | Only with a `store` block: writes `<prefab_dir>/<store.prefab>.et`, the building as one of our physical stores (Store below). Prints each fixture with the index `pick` uses | The tool; then a session: take, pay, walk out |
 
 A finished stage is skipped on the next `run`. `--only review` reruns one stage, `--from export` reruns it and everything
 after it, and `--force` reruns from the start.
@@ -90,7 +91,9 @@ after it, and `--force` reruns from the start.
 - The same seed and settings build the same building. A different look is a different seed.
 - `polish` (optional) is the building's hand polish: `edits`, one line per hand edit carried by
   `tools/buildings/<slug>/polished.blend`, and `entities`, nudges to the game entities the export places
-  (`{ "prefab": "SignCommercial_01_GroceryStore", "move": [x, y, z], "why": "..." }`). [polish.md](polish.md)
+  (`{ "prefab": "SignCommercial_01_GroceryStore", "move": [x, y, z], "why": "..." }`), and `props`, vanilla props placed by hand
+  that ArchBuilder never places (`{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 90, "why": "..." }`). [polish.md](polish.md)
+- `store` (optional) makes the building a store (Store below).
 - `red_line` is `core` or `pack` ([core-vs-pack](../architecture/core-vs-pack.md)). A building is what this server looks
   like, so it is usually `pack`; until the pack loads it lands in the core with a row in
   [core-pack-inventory.md](../architecture/core-pack-inventory.md).
@@ -100,7 +103,7 @@ after it, and `--force` reruns from the start.
 | ArchBuilder writes | The addon gets |
 |---|---|
 | `Assets/ArchBuilder/<Name>/<Name>.fbx`, `.xob.meta` | `asset_dir/` |
-| `Assets/ArchBuilder/Materials/AB_*.emat` | `Assets/Buildings/Materials/`, shared by every building. An export that would change one is refused |
+| `Assets/ArchBuilder/Materials/AB_*.emat` | `Assets/Buildings/Materials/` of the building's addon, shared by every building there. An export that would change one another building uses is refused |
 | `Prefabs/ArchBuilder/<Name>/<Name>.et`, `<Name>_Base.et`, `Furniture/` | `prefab_dir/` |
 | `EXPORT_INFO.txt`, `ArchBuilder_import.txt`, `addon.gproj`, its Workbench plugin | nothing: notes, its own queue, its own project and plugin |
 
@@ -173,14 +176,46 @@ a commit on its `main`) and copied to lf-testbox's copy at the same path:
   through the partitions, near the hall end. ArchBuilder's `SUPERMARKET` ground program is `office, @storage:3, wc`
   (it was `storage:2, office, wc, wc, storage:2`). A stock ArchBuilder still builds the row of doors; to make the
   same supermarket elsewhere, make the same edit to those two places.
+- **Shop front canopy, staff back rooms** (2026-11-14, #1143, `civic.py` `canopy`, `claim_extras`, `extras`, `sign`;
+  `interiors.py` `_layout_hall`, `_furnish`). The SUPERMARKET profile has `canopy='SHOPFRONT'`: one slab cantilevered
+  from the wall along the whole glazed front, no posts, a deep fascia in the profile's sign colour with returns at both
+  ends, and the sign 1.0 m above the door head, clear of it (was a 3 m plate over the door on two thin posts). The back
+  rooms of a hall program with an `@` hub are staff rooms (`room.staff`): the WC gets one toilet and a basin instead of
+  a row of cubicles, and the storage room shop shelving (`ShelfUniversal_01_wide`) and pallets instead of bookshelves
+  (`ShelfDecorative_01`, a living-room divider in the game).
+
+## Store
+
+A spec with a `store` block becomes one of our physical stores (`Feature/Shop`, #1143). The `store` stage writes a prefab
+that inherits `<Name>.et` and adds `LF_ShopComponent` (prices from `Configs/Shop/ShopPrices.conf` by prefab),
+`LF_StoreComponent` (stock, shelf points, boundary, restock) and one "Pay for goods" context with `LF_StoreTillAction`
+at every register the export placed. Place that prefab, not `<Name>.et`. The whole file is written from the spec on every
+run; never edit it by hand.
+
+```json
+"store": {
+  "prefab": "Supermarket_Store", "key": "everon_supermarket",
+  "boundary": { "center": [0, 0, 0], "half": [8.6, 0, 6.6] }, "restock_seconds": 120, "till": "CashierShop_01",
+  "lines": [ { "item": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "fixture": "ShelfShop_01", "pick": [4, 5],
+               "boards": [2], "per_board": 3, "max": 12, "restock": 4 } ]
+}
+```
+
+- `key` is the store's saved-stock key (`storestock`); keep it when the building changes.
+- `boundary` is store space (the building's): leaving it with unpaid goods is shoplifting. The supermarket's is the
+  whole building, so the stockroom is inside.
+- A line takes the fixtures `pick` names (the stage prints each fixture with its index, position and front),
+  `per_board` points on each of `boards`, spread along the fixture. A point is the fixture's position plus the board
+  point turned by its yaw. The boards are measured once per vanilla prefab in `tools/buildings/pipeline/fixtures.json`
+  (traces through the model); a fixture not in it is refused. The store spawns each copy on the surface found a short
+  trace under the point, so a few centimetres off still lands on the board.
+- The item needs a price in `ShopPrices.conf`.
 
 ## Not done yet
 
 - A delivery door at the back: ArchBuilder puts exterior doors on the street front only, so the supermarket's
   stockroom has none ([polish.md](polish.md) "Patterns").
 
-- Shop interiors: the supermarket's gondolas, coolers and tills arrive empty as vanilla props; making them our store's
-  slots and tills is the next step ([the spike](../architecture/building-pipeline-spike.md#supermarket-next-steps)).
 - Several buildings in one export (ArchBuilder can export a street at once); the pipeline does one per spec.
 - A building in the pack addon (`addon: LF_Everon1989`) is wired through the same `addon` field as the asset pipeline
   but untried.
