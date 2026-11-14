@@ -652,6 +652,9 @@ class LF_CarryActionBase : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Medic"))
+			return false;
+
 		return Offered(user);
 	}
 
@@ -672,6 +675,9 @@ class LF_DragAction : LF_CarryActionBase
 
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Medic", "LF_DragAction"))
+			return;
+
 		if (Replication.IsServer())
 			LF_Carry.Start(pUserEntity, pOwnerEntity, LF_ECarryMode.DRAG);
 	}
@@ -687,6 +693,9 @@ class LF_CarryAction : LF_CarryActionBase
 
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Medic", "LF_CarryAction"))
+			return;
+
 		if (Replication.IsServer())
 			LF_Carry.Start(pUserEntity, pOwnerEntity, LF_ECarryMode.CARRY);
 	}
@@ -702,6 +711,9 @@ class LF_DropAction : LF_CarryActionBase
 
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Medic", "LF_DropAction"))
+			return;
+
 		if (Replication.IsServer())
 			LF_Carry.Drop(pUserEntity);
 	}
@@ -717,6 +729,9 @@ class LF_LoadPatientAction : LF_CarryActionBase
 
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Medic", "LF_LoadPatientAction"))
+			return;
+
 		if (Replication.IsServer())
 			LF_Carry.Load(pUserEntity);
 	}

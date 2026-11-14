@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 54,
+      "msg": "shops.defaultSellPrice = -5 is below the minimum 0; keeping the shipped value"
+    }
+  ]
+}

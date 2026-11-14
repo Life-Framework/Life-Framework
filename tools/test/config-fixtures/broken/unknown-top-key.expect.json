@@ -1,0 +1,12 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "warn",
+      "line": 1,
+      "col": 23,
+      "msg": "config.json: unknown top-level key mystery; ignored"
+    }
+  ]
+}

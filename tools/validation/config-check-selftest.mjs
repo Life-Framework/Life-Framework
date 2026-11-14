@@ -59,6 +59,12 @@ expect(!bad.problems.some((p) => p.line === 8 || p.line === 13), "bad: a valid l
 
 // A shipped key is fine; "type:64" and "type:64,mode:2" are the same shipped rule.
 expect(run("typed.json").problems.length === 0, `typed: ${JSON.stringify(run("typed.json").problems)}`);
+
+// A whole-number list is legal (`jobs.tracks.*.levelThresholds`); a string in it is not.
+const thresholds = checkText('{"jobs":{"tracks":{"DELIVERY":{"levelThresholds":[400,1200,3000]}}}}', { sources, schema, loops: false });
+expect(thresholds.problems.length === 0, `thresholds: ${JSON.stringify(thresholds.problems)}`);
+const mixed = checkText('{"jobs":{"tracks":{"DELIVERY":{"levelThresholds":[400,"1200"]}}}}', { sources, schema, loops: false });
+expect(has(mixed.problems[0], "error", "jobs.tracks.DELIVERY.levelThresholds is not a list of whole numbers"), `thresholds string: ${JSON.stringify(mixed.problems)}`);
 expect(parseShopRuleKey("type:64").norm === "type:64,mode:2" && parseShopRuleKey("type:64,mode:1").norm === "type:64,mode:1", "ruleKey normalisation");
 expect(parseShopRuleKey("type:64,mode:2,x:1") === null && parseShopRuleKey("") === null && parseShopRuleKey("mode:1,type:64").norm === "mode:1,type:64" && parseShopRuleKey("type:") === null, "ruleKey grammar");
 

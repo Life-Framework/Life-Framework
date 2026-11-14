@@ -180,24 +180,35 @@ def kit(g):
     grain = g.noise(420, detail=4)
     pits = g.noise(90, detail=5, w=1.0)
     wear = g.pointiness(0.5, 0.64)
-    crev = g.math("SUBTRACT", 1.0, g.ao(0.004))
-    leather = g.mix((0.11, 0.058, 0.03), (0.2, 0.108, 0.058), g.ramp(grain, 0.42, 0.62))
-    leather = g.mix(leather, (0.34, 0.2, 0.11), g.math("MULTIPLY", wear, 0.7))                  # rubbed pale at the edges
-    leather = g.mix(leather, (0.04, 0.02, 0.01), g.math("MULTIPLY", g.ramp(crev, 0.3, 0.7), 0.7))
-    steel = g.mix((0.36, 0.37, 0.39), (0.6, 0.61, 0.63), g.math("MULTIPLY", wear, 0.9))
-    steel = g.mix(steel, (0.15, 0.15, 0.16), g.math("MULTIPLY", g.ramp(pits, 0.5, 0.7), 0.5))
+    ao = g.ao(0.004)
+    crev = g.math("SUBTRACT", 1.0, ao)
+    # Wallet: worn brown hide from ambientCG Leather014 (CC0): its colour, grain and scuffs, rubbed paler
+    # at the edges and dark in the folds.
+    hide = g.img("Leather014", "Color", data=False)
+    leather = g.mix(hide, (0.3, 0.18, 0.1), g.math("MULTIPLY", wear, 0.45))
+    leather = g.mix(leather, (0.03, 0.017, 0.01), g.math("MULTIPLY", g.ramp(crev, 0.3, 0.7), 0.7))
+    # The picks: spring steel, blued and a little scratched. A smooth, light steel mirrors the noon sky
+    # (white-blue), so it is dark, rougher and scratched by Metal038 (CC0).
+    scratch = g.img("Metal038", "Color", data=False)
+    steel = g.mix((0.04, 0.042, 0.046), (0.075, 0.078, 0.083), g.ramp(scratch, 0.2, 0.5))
+    steel = g.mix(steel, (0.18, 0.185, 0.195), g.math("MULTIPLY", wear, 0.6))
+    steel = g.mix(steel, (0.015, 0.015, 0.017), g.math("MULTIPLY", g.ramp(pits, 0.5, 0.7), 0.5))
     base = leather
     base = g.mix(base, (0.62, 0.55, 0.4), thread_m)
-    base = g.mix(base, (0.5, 0.36, 0.13), brass_m)
+    base = g.mix(base, (0.3, 0.2, 0.06), brass_m)
     base = g.mix(base, steel, steel_m)
     base = g.mix(base, (0.03, 0.03, 0.035), handle_m)
-    rough = g.mix(g.math("ADD", 0.55, g.math("MULTIPLY", grain, 0.35)), g.math("ADD", 0.25, g.math("MULTIPLY", pits, 0.3)), metal_m, kind="FLOAT")
-    rough = g.mix(rough, 0.4, handle_m, kind="FLOAT")
-    height = g.math("MULTIPLY", grain, 0.5)
-    return {"base": base, "rough": rough, "metal": metal_m, "height": height, "bump_strength": 0.5, "bump_distance": 0.0004}
+    leather_rough = g.math("ADD", 0.45, g.math("MULTIPLY", g.img("Leather014", "Roughness"), 0.5))
+    metal_rough = g.math("ADD", 0.5, g.math("ADD", g.math("MULTIPLY", g.img("Metal038", "Roughness"), 0.4), g.math("MULTIPLY", pits, 0.15)), clamp=True)
+    rough = g.mix(leather_rough, metal_rough, metal_m, kind="FLOAT")
+    rough = g.mix(rough, 0.5, handle_m, kind="FLOAT")
+    metal = g.math("MULTIPLY", metal_m, 0.95)
+    height = g.math("ADD", g.math("MULTIPLY", g.img("Leather014", "Displacement"), 0.6), g.math("MULTIPLY", grain, 0.2))
+    return {"base": base, "rough": rough, "metal": metal, "height": height, "bump_strength": 0.8, "bump_distance": 0.0006,
+            "ao": g.math("ADD", 0.35, g.math("MULTIPLY", ao, 0.65))}
 
 
-g = texbake.Graph("Lockpick_set", sets, tile=0.2)
+g = texbake.Graph("Lockpick_set", sets, tile=0.14)
 files = texbake.bake(obj, g, kit(g), px, raw)
 obj.data.materials.clear()
 obj.data.materials.append(texbake.preview_material("Lockpick", files))

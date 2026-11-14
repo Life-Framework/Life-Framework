@@ -4,12 +4,21 @@
 //! client names only the field. What the caller could see comes from the server (LF_Witness).
 class LF_WitnessPayphoneAction : ScriptedUserAction
 {
+	//! The Investigation system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Investigation");
+	}
+
 	[Attribute("clothing", UIWidgets.EditBox, "What this entry reports: clothing, vehicle or plate")]
 	protected string m_sField;
 
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_WitnessPayphoneAction"))
+			return;
+
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 
@@ -69,6 +78,9 @@ class LF_WitnessAskAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Investigation"))
+			return false;
+
 		if (!user || !GetOwner() || LF_NpcStun.BlocksTalk(GetOwner()) || vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) > REACH)
 			return false;
 
@@ -78,6 +90,9 @@ class LF_WitnessAskAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_WitnessAskAction"))
+			return;
+
 		if (!Replication.IsServer() || !pOwnerEntity || !pUserEntity)
 			return;
 

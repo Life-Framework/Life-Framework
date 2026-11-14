@@ -33,6 +33,9 @@ class LF_SirenModeAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("SirenLights", "LF_SirenModeAction"))
+			return;
+
 		if (!m_Manager)
 			return;
 
@@ -50,6 +53,9 @@ class LF_SirenModeAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("SirenLights"))
+			return false;
+
 		if (m_bDutyOnly && (!m_Manager || !m_Manager.MayOperate(user) || m_Manager.IsModeName(m_Mode)))
 			return false;
 

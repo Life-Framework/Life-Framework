@@ -2,13 +2,15 @@
 // Run: node scripts/configgen-selftest.mjs (Node 22.6+ strips the types).
 import fs from "node:fs";
 import assert from "node:assert/strict";
-import { defaultOf, minimalDiff, validate } from "../src/lib/configgen.ts";
+import { defaultOf, minimalDiff, checkConfig, fieldErrors, importConfig, exportText } from "../src/lib/configgen.ts";
+import { parseJson } from "../../tools/config/rules.mjs";
+import { checkText } from "../../tools/config/check.mjs";
 
 const schema = JSON.parse(fs.readFileSync(new URL("../../docs/config/config.schema.json", import.meta.url), "utf8"));
 const base = () => defaultOf(schema);
 
 assert.deepEqual(minimalDiff(schema, base()), { schemaVersion: 1 }, "defaults produce only schemaVersion");
-assert.deepEqual(validate(schema, base()), {}, "defaults validate");
+assert.deepEqual(checkConfig(schema, exportText(schema, base())), [], "defaults validate");
 
 const v = base();
 v.shops.defaultBuyPrice = 70;
@@ -25,11 +27,55 @@ assert.deepEqual(minimalDiff(schema, v), {
   },
 });
 
-v.shops.defaultBuyPrice = -1;
-v.shops.priceRules["Prefabs/Items/Food/"].sellPrice = 1.5;
-v.vehicles.buyPercent = 2000000;
-const errs = validate(schema, v);
-assert.ok(errs[".shops.defaultBuyPrice"]?.includes("at least 0"));
-assert.ok(errs[".shops.priceRules.Prefabs/Items/Food/.sellPrice"]?.includes("whole"));
-assert.equal(errs[".vehicles.buyPercent"], undefined, "no max declared, so no error");
+const fixtures = new URL("../../tools/validation/fixtures/config-check/", import.meta.url);
+const fx = (f) => fs.readFileSync(new URL(f, fixtures), "utf8");
+const plain = (n) => (n.t === "obj" ? Object.fromEntries(n.props.map((p) => [p.key, plain(p.val)])) : n.t === "arr" ? n.items.map(plain) : n.value);
+
+// #287: the page runs config-check's rules. Same messages for every fixture, the offline-only
+// shipped-record-key warning aside (it needs the shipped .conf files, which the page does not have).
+const offline = (p) => !p.msg.includes("no shipped record has this key");
+for (const f of ["bad.json", "typed.json", "zero.json", "too-new.json", "older.json", "syntax.json", "good.json"]) {
+  const web = checkConfig(schema, fx(f), f);
+  const cli = checkText(fx(f), { schema, source: f, loops: false }).problems.filter(offline);
+  assert.deepEqual(web.map((p) => [p.level, p.line, p.col, p.msg]), cli.map((p) => [p.level, p.line, p.col, p.msg]), `${f}: same messages as config-check`);
+}
+const badErrors = checkConfig(schema, fx("bad.json"), "bad.json").filter((p) => p.level === "error");
+assert.ok(badErrors.length >= 5, "bad.json has errors the page reports");
+assert.ok(Object.keys(fieldErrors(badErrors)).includes(".shops.defaultSellPrice"), "an error maps to its field");
+assert.equal(checkConfig(schema, fx("good.json")).filter((p) => p.level === "error").length, 0, "good.json is exportable");
+
+// The form path: an out-of-range value typed on the page is an error in the file it would export.
+const typed = base();
+typed.shops.defaultBuyPrice = -1;
+typed.shops.priceRules["Prefabs/Items/Food/"] = { prefab: "", buyPrice: 10, sellPrice: 1.5, hidden: false };
+const typedErrs = fieldErrors(checkConfig(schema, exportText(schema, typed)));
+assert.ok(typedErrs[".shops.defaultBuyPrice"]?.includes("below the minimum 0"), "range error from config-check's wording");
+assert.ok(typedErrs[".shops.priceRules.Prefabs/Items/Food/.sellPrice"]?.includes("whole number"));
+
+// #288: import then export of a valid file is byte-equivalent after formatting, unknown keys kept.
+for (const text of [fx("good.json"), fs.readFileSync(new URL("../../docs/config/config.example.json", import.meta.url), "utf8")]) {
+  const raw = plain(parseJson(text));
+  const { value, extras, keep } = importConfig(schema, raw);
+  assert.equal(exportText(schema, value, extras, keep), JSON.stringify(raw, null, 2) + "\n", "import then export round-trips");
+}
+{
+  const raw = { schemaVersion: 1, mystery: 1, shops: { defaultBuyPrice: 70, bogus: true, priceRules: { "Prefabs/A/": { buyPrice: 5, colour: 1 }, "Prefabs/B/": 5 } } };
+  const { value, extras } = importConfig(schema, raw);
+  assert.equal(value.shops.defaultBuyPrice, 70, "known value lands in the form");
+  assert.deepEqual(JSON.parse(exportText(schema, value, extras)), raw, "unknown keys and odd shapes survive export");
+  const notes = checkConfig(schema, exportText(schema, value, extras));
+  assert.ok(notes.some((p) => p.level === "warn" && p.msg.includes("mystery")), "unknown key is noted");
+  assert.ok(notes.some((p) => p.level === "error" && p.msg.includes("Prefabs/B/")), "odd record is still an error");
+}
+{
+  const older = plain(parseJson(fx("older.json")));
+  const { value, extras } = importConfig(schema, older);
+  const v3 = JSON.parse(fs.readFileSync(new URL("schema-v3.json", fixtures), "utf8"));
+  const notes = checkConfig(v3, exportText(v3, value, extras));
+  assert.ok(notes.some((p) => p.msg.includes("older than this build")), "older schemaVersion shows the migration notice");
+}
+{
+  const { value, extras } = importConfig(schema, plain(parseJson(fx("too-new.json"))));
+  assert.ok(checkConfig(schema, exportText(schema, value, extras)).some((p) => p.level === "error"), "a too-new file stays an error, export stays off");
+}
 console.log("configgen-selftest: OK");

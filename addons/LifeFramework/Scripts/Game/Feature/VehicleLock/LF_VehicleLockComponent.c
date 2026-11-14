@@ -104,7 +104,8 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	//! \return True when the vehicle is locked.
 	override bool IsLocked(IEntity user, BaseCompartmentSlot compartmentSlot)
 	{
-		if (m_bELIsLocked)
+		// VehicleLock off (#1076): a locked flag still saved on the vehicle does not shut the doors.
+		if (m_bELIsLocked && LF_Systems.IsEnabled("VehicleLock"))
 			return true;
 
 		return super.IsLocked(user, compartmentSlot);
@@ -218,6 +219,9 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	//! eturn True when the lock changed.
 	bool TryToggleBy(IEntity user, string source)
 	{
+		if (LF_Systems.Refuses("VehicleLock", "lock toggle"))
+			return false;
+
 		if (!Replication.IsServer() || !user || !GetOwner())
 			return false;
 
