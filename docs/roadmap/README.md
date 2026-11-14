@@ -47,6 +47,9 @@ Beside them runs **Development** (tooling and pipelines), which is not a release
 The asset pipelines (#339 to #343) and the ArchBuilder harness (#995) are
 foundation epics in M5.
 
+Foundation designs that span milestones: [building-foundation.md](building-foundation.md), placing
+items and props with a preview (epic #927).
+
 Each outline is planned in full only after the milestone before it closes.
 
 ## Rules for every scope
