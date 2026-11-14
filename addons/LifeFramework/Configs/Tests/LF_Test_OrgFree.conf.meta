@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2ABC36B260DF9AA2}Configs/Tests/LF_Test_OrgFree.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
