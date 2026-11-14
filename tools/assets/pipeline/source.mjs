@@ -17,7 +17,7 @@
 // user agent that names the software; a tool that surfaces Poly Haven content says where it comes from
 // (the contact sheet and every printed list say "Poly Haven"). The models are CC0.
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildSheet } from "./concepts.mjs";
@@ -307,6 +307,9 @@ export async function stageSource(ctx, { runBlender, blenderDir }) {
   writeFileSync(job, JSON.stringify({ gltf: gltfFile, textures: join(src, "textures"), raw }, null, 1));
   runBlender(join(blenderDir, "polyhaven_prep.py"), [job], { log: join(dir, "polyhaven-prep.log") });
   const prep = JSON.parse(readFileSync(join(raw, "prep.json"), "utf8"));
+  // A retextured library model (a modern label swapped for a period one): tools/assets/<slug>/base_color.png replaces the base colour map.
+  const retex = join(root, "tools", "assets", spec.slug, "base_color.png");
+  if (existsSync(retex)) { copyFileSync(retex, join(raw, "tex_base_color.png")); console.log(`source: base colour replaced by tools/assets/${spec.slug}/base_color.png`); }
 
   const rec = {
     slug: spec.slug, provider: "Poly Haven", id, name: info.name, url: assetUrl(id), licence: "CC0 1.0 (https://polyhaven.com/license)",
