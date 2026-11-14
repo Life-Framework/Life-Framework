@@ -37,10 +37,10 @@ class LF_WantedLook
 	//! Server: the suspect's look now; empty for a missing body or one with no prefab.
 	static string Capture(IEntity suspect)
 	{
-		if (!suspect || !suspect.GetPrefabData())
+		if (!suspect)
 			return string.Empty;
 
-		string look = GuidOf(suspect.GetPrefabData().GetPrefabName());
+		string look = GuidOf(LF_Utils.GetPrefabName(suspect));
 		if (look.IsEmpty())
 			return string.Empty;
 
@@ -51,10 +51,10 @@ class LF_WantedLook
 		for (int slot = 0; slot < storage.GetSlotsCount(); slot++)
 		{
 			IEntity item = storage.Get(slot);
-			if (!item || !item.GetPrefabData())
+			if (!item)
 				continue;
 
-			string guid = GuidOf(item.GetPrefabData().GetPrefabName());
+			string guid = GuidOf(LF_Utils.GetPrefabName(item));
 			if (!guid.IsEmpty())
 				look += PART + slot.ToString() + SLOT + guid;
 		}

@@ -127,10 +127,6 @@ class LF_SamePrefabPredicate : InventorySearchPredicate
 	//------------------------------------------------------------------------------------------------
 	override protected bool IsMatch(BaseInventoryStorageComponent storage, IEntity item, array<GenericComponent> queriedComponents, array<BaseItemAttributeData> queriedAttributes)
 	{
-		EntityPrefabData data = item.GetPrefabData();
-		if (!data)
-			return false;
-
-		return LF_Utils.SamePrefab(data.GetPrefabName(), m_sPrefab);
+		return LF_Utils.SamePrefab(LF_Utils.GetPrefabName(item), m_sPrefab);
 	}
 }

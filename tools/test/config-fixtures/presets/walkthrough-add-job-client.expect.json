@@ -1,0 +1,10 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "client": [
+    { "kind": "actionShown", "entity": "Annex_Job_Depot", "class": "LF_JobSignUpAction", "expect": true },
+    { "kind": "actionShown", "entity": "Annex_Job_Depot", "class": "LF_JobStartRunAction", "expect": true },
+    { "kind": "actionShown", "entity": "Annex_Job_Drop", "class": "LF_JobDropoffAction", "expect": true }
+  ]
+}

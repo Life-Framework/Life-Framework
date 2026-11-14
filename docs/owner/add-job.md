@@ -203,6 +203,38 @@ missing fuel, taxi or depot prefab logs its own error.
 What a player does: use the counter, sign up for courier work, use the counter again to pick up the
 parcel, carry it to the drop, use the drop. The run pays 40 once. Abandoning pays nothing.
 
+## The fixture that proves this page
+
+The config in step 6 and the depot and drop of steps 3 and 4 are checked by two config-harness
+fixtures, `tools/test/config-fixtures/presets/walkthrough-add-job-boot` and
+`walkthrough-add-job-client`. Both carry the exact JSON of step 6. If you change step 6, change the
+fixtures with it.
+
+| What is proved | Stage | Fixture |
+|---|---|---|
+| The config is legal (`config-check` prints no error) | parse, validate | both |
+| The server boots on that config, reads it without rejecting a field, and brings up the depot and drop sites (`[LFDebug:Jobs] site ... kind 0` and `kind 1`) | boot | `walkthrough-add-job-boot` |
+| A client at the depot is offered the sign-up and pick-up rows, and at the drop the drop-off row | client | `walkthrough-add-job-client` |
+
+The pay itself (120 XP a run, the thresholds `400 1200 3000`) is proved by the validate stage, which
+checks every value's type and range against the schema the server reads with, and by
+`LF_Test_JobLevelsConfig`, which merges the same shape. The server reads the `jobs` section on first
+use, not at boot, so no boot line reports it and the harness has no client read for XP yet.
+
+Run them with:
+
+```
+tools\cli config-harness                                  # parse and validate, offline
+tools\cli config-harness --stage boot --only walkthrough  # a fresh server on the config
+tools\cli session up --clients 1
+tools\cli session config-harness-proof --only walkthrough # the client reads
+tools\cli session down
+```
+
+The client fixture stands at the playtest annex's `Annex_Job_Depot` and `Annex_Job_Drop`, which
+are placed the way steps 3 and 4 say, so it proves the components in those steps offer their rows.
+It does not prove your own map; for that, read the `site ... kind` lines in step 7.
+
 ## Limits
 
 The line a courier sees when picking up the parcel names the playtest town's street: "Carry the
