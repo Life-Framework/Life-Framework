@@ -1,4 +1,5 @@
 // tools/validation/validate-core-village-names.mjs
+// inputs: addons/**, docs/architecture/**
 //
 // Core production Scripts must not name a village entity. The village (Street_*,
 // Signs, the chain layers, Roadmap_* entities) moves to the LF_Everon1989 pack in

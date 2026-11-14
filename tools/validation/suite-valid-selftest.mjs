@@ -1,4 +1,5 @@
 // Proves suite-valid on fixture names. Does not boot the game.
+// inputs: tools/**, agent-box/**, .githooks/**
 import { selftestSuiteStamp } from "../suite-stamp.mjs";
 
 const failures = selftestSuiteStamp();

@@ -1,4 +1,5 @@
 // Script outside the money paths must not write a balance directly (issue #330).
+// inputs: addons/**
 //
 // Every cash and bank change publishes LF_OnMoneyMoved from one of two choke points, which the
 // money ledger records: LF_MoneyUtils (cash) and LF_BankAccount (bank). A direct write skips the

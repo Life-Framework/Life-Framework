@@ -1,4 +1,5 @@
 // tools/validation/addon-boundary-selftest.mjs
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 //
 // Proves validate-addon-boundary fails on each violation it exists for. Every
 // case builds a fixture addons/ tree in a temp dir: a clean core and pack, then

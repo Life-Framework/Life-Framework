@@ -1,4 +1,5 @@
 # tools/validation/validate-debugworld.ps1 - ensure DebugWorld keeps every
+# inputs: addons/**
 # gameplay chain available for automated and manual verification.
 
 $ErrorActionPreference = "Stop"

@@ -6,7 +6,7 @@ asset declares in `spec.states`, after the `prefab` and `anim` stages:
 ```
 tools\cli asset states <slug>            check the prefab against spec.states
 tools\cli asset states <slug> --fix      write the values into the prefab
-tools\cli asset states <slug> --shots    one picture per declared state (a fresh --profile full session)
+tools\cli asset states <slug> --shots    one picture per declared state: ground and inventory by `look item` (no session), hand and use on a --profile full session
 tools\cli asset run <slug>               the states stage runs last and writes the values itself
 ```
 
@@ -100,11 +100,17 @@ write its grip centre and out direction into `HAND_POSES` from the bone and fing
 
 ## The pictures
 
-`--shots` brings up two clients, gives the item to client 1 (`itemgive`), holds it (`hold`), logs
-`heldxf`, and shoots client 1's own view and client 2's view of the hand; drops it (`itemdrop`) and
-looks down on it with client 2's free camera; and opens the inventory preview sheet. The PNGs land
-in `tmp/assets/<slug>/states/`. Read every one: the stage proves the numbers, the pictures prove the
-look.
+`--shots` takes the **ground** and **inventory** pictures with `tools\cli look item` (a hidden
+Workbench, about 30 s, no session): the item posed the way the inventory drops it (`RestingUP`,
+`RestingAdditiveOffsetLS`, lowest point on the ground) and the prefab's own preview camera
+(`CameraOrbitAngles`, distance, FOV, offset) on the item frozen in the air. That inventory picture is the
+3D view the engine's picture is made from, not the inventory UI: no slot frame, and the orbit angle
+sign convention (a negative pitch looks down from the item's front) is read from one vanilla-like
+prefab, so compare once with the sheet from a session before trusting an odd angle. The **hand**
+(and **use**) pictures still need a session: it brings up two clients, gives the item to client 1
+(`itemgive`), holds it (`hold`), logs `heldxf`, and shoots client 1's own view and client 2's view of
+the hand. The PNGs land in `tmp/assets/<slug>/states/`. Read every one: the stage proves the numbers,
+the pictures prove the look.
 
 ## Use states
 
