@@ -14,7 +14,7 @@
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROOT, addonOf, boundsOf, resolveChain } from "./place-action-contexts.mjs";
+import { ROOT, addonOf, boundsOf, parentOf, readResource, resolveChain } from "./place-action-contexts.mjs";
 
 export const OVERHANG_MAX = 0.1; // metres a prop may hang past the edge (round bottles, a tilted lid)
 export const MARGIN = 0.3; // centre may sit this far outside the footprint and still count as "on" it
@@ -81,6 +81,30 @@ export function meshOf(root, b, inheritedPrefab) {
   }
 }
 
+// The root scale a prefab carries through its parents (Cabbage.et is 0.5), used when the layer entry
+// has no scale line of its own. The place tool reads the same (prefabInfo); without it a scaled
+// prefab's footprint is measured at full size and "hangs off" a stall it fits (#924).
+const scaleCache = new Map();
+export function prefabScale(root, prefab) {
+  if (!prefab) return 1;
+  if (scaleCache.has(prefab)) return scaleCache.get(prefab);
+  let scale = 1;
+  try {
+    const seen = new Set();
+    for (let p = prefab, text = readResource(root, prefab); text && !seen.has(p); ) {
+      seen.add(p);
+      const m = text.match(/^ scale\s+(-?\d+(?:\.\d+)?)/m);
+      if (m) { scale = Number(m[1]); break; }
+      p = parentOf(text);
+      text = p ? readResource(root, p) : null;
+    }
+  } catch {
+    scale = 1;
+  }
+  scaleCache.set(prefab, scale);
+  return scale;
+}
+
 function nameOf(b) {
   const m = b.header.match(/^(?:\w+\s+)?(\w+)/);
   return m && m[1] !== "GenericEntity" && !m[1].startsWith("$") ? m[1] : "(unnamed)";
@@ -103,7 +127,7 @@ export function flatten(root, tree, file, { prefabRoot = null } = {}) {
       }
       const c = k.props.coords.split(" ").map(Number);
       const yaw = k.props.angleY ? Number(k.props.angleY) : 0;
-      const scale = k.props.scale ? Number(k.props.scale) : 1;
+      const scale = k.props.scale ? Number(k.props.scale) : prefabScale(root, prefabOf(k.header) || grpPrefab);
       const r = par ? (par.yaw * Math.PI) / 180 : 0;
       const x = par ? par.x + c[0] * Math.cos(r) + c[2] * Math.sin(r) : c[0];
       const z = par ? par.z - c[0] * Math.sin(r) + c[2] * Math.cos(r) : c[2];

@@ -15,6 +15,7 @@
 //   buildPrompts dropping the frame          -> FAIL concepts: every prompt ends in the shared product-shot frame
 //   sheetLayout using rows for columns       -> FAIL concepts: ten cells make a 5x2 grid, numbered left to right
 //   pickByRubric breaking ties on the high n -> FAIL concepts: a tie goes to the lower number
+//   pickByRubric taking ranking()[0] (2026-11-14) -> FAIL concepts: a tie goes to the lower number, era_current 0 is skipped
 //   ammoListWith without the includes test   -> FAIL prefab: listing the same ammo twice changes nothing
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -341,14 +342,19 @@ export async function main() {
     const r = rec();
     ok(!cc.scored(r), "concepts: an unscored set is not scored");
     await throws(async () => cc.pickByRubric(r), /scored first/, "concepts: --pick refuses an unscored set");
-    const full = (n) => Array(6).fill(n);
+    const full = (n) => Array(7).fill(n);
     for (let n = 1; n <= 10; n++) cc.applyScore(r, n, full(1));
-    cc.applyScore(r, 7, [2, 2, 2, 2, 2, 1], "reads as a baton");
-    cc.applyScore(r, 4, [2, 2, 2, 2, 2, 1]);
+    cc.applyScore(r, 7, [2, 2, 2, 2, 2, 1, 1], "reads as a baton");
+    cc.applyScore(r, 4, [2, 2, 2, 2, 2, 1, 1]);
+    cc.applyScore(r, 2, [2, 2, 0, 2, 2, 2, 2], "an antique: scores high, never picked");
     cc.pickByRubric(r, new Date("2026-11-13T10:00:00Z"));
-    ok(r.pick.n === 4 && r.pick.by === "rubric" && /11\/12/.test(r.pick.why) && /image_to_3d/.test(r.pick.why), `concepts: a tie goes to the lower number and the why is recorded (got ${JSON.stringify(r.pick)})`);
-    ok(cc.ranking(r)[0].n === 4 && cc.ranking(r)[1].n === 7, "concepts: the ranking is by total, then number");
-    await throws(async () => cc.applyScore(r, 3, [1, 2, 3, 0, 0, 0]), /integers 0 to 2/, "concepts: a score above 2 is refused");
+    ok(r.pick.n === 4 && r.pick.by === "rubric" && /12\/14/.test(r.pick.why) && /image_to_3d/.test(r.pick.why), `concepts: a tie goes to the lower number, era_current 0 is skipped, and the why is recorded (got ${JSON.stringify(r.pick)})`);
+    ok(cc.ranking(r)[0].n === 2 && cc.ranking(r)[1].n === 4 && cc.ranking(r)[2].n === 7, "concepts: the ranking is by total, then number");
+    const antique = rec(); for (let n = 1; n <= 10; n++) cc.applyScore(antique, n, [2, 2, 0, 2, 2, 2, 2]);
+    await throws(async () => cc.pickByRubric(antique), /era_current/, "concepts: --pick refuses a set where every concept is antique");
+    ok(cc.realismProblems(rec()).length === 2, "concepts: a set with no realism answers fails the realism gate");
+    ok(cc.realismProblems({ realism: { how: "an electric centrifugal juicer bought at the Kotva store", current: "every 1989 kitchen had a plastic electric one" } }).length === 0, "concepts: two realism answers pass the gate");
+    await throws(async () => cc.applyScore(r, 3, [1, 2, 3, 0, 0, 0, 0]), /integers 0 to 2/, "concepts: a score above 2 is refused");
     await throws(async () => cc.applyScore(r, 11, full(1)), /no concept 11/, "concepts: scoring a missing concept is refused");
     cc.pickConcept(r, 9, { by: "human", why: "the maintainer's pick" });
     ok(r.pick.n === 9 && r.pick.by === "human" && r.pick.why === "the maintainer's pick", "concepts: a human pick replaces the rubric pick and keeps its reason");
