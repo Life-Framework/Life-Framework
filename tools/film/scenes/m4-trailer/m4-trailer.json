@@ -1,0 +1,122 @@
+{
+  "format": "lf-storyboard/1",
+  "name": "m4-trailer",
+  "title": "Life Framework launch trailer (M4)",
+  "issue": 1292,
+  "parent": 1006,
+  "script": "docs/marketing/trailer-m4.md",
+  "world": "DebugWorld, mission playtest (LF_PlaytestTown)",
+  "session": "node agent-box/session.mjs up --clients 3 --mission playtest --profile full --res 1920x1080 --sound --wait --priority low",
+  "note": "Eight shots for the launch trailer, planned and set up only (#1292). Nothing here is published: trailer and launch media come last and need the maintainer's sign-off. A shot whose camera says `pending` is listed and skipped by film-make; cards #1293 (shots 1 to 4) and #1294 (shots 5 to 8) remove the `pending` line once the actor setup or the feature exists. Dry run: node tools/film/scenes/m4-trailer/check.mjs. Shoot: tools\\cli film-make tools/film/scenes/m4-trailer/m4-trailer.json --group <name> --client 1 --preview --no-vo. The trailer itself must pass docs/marketing/trailer/quality-gate.md.",
+  "output": { "size": [1920, 1080], "fps": 30, "aspect": "16:9" },
+  "lookDefaults": { "hour": 17.9, "weather": "Clear", "dayFrozen": true, "hud": "off", "hints": "off" },
+  "scenes": [
+    { "name": "street", "hour": 17.9, "weather": "Clear" },
+    { "name": "trailer-square", "hour": 17.9, "weather": "Clear" },
+    { "name": "trailer-square-dusk", "hour": 19.2, "weather": "Clear" },
+    { "name": "trailer-bank", "hour": 17.9, "weather": "Clear" },
+    { "name": "trailer-hospital", "hour": 17.9, "weather": "Clear" },
+    { "name": "trailer-police", "hour": 17.9, "weather": "Clear" }
+  ],
+  "shots": [
+    { "id": "T01", "kind": "title", "duration": 2, "lines": ["LIFE FRAMEWORK", "Arma Reforger roleplay, built in the open"] },
+    {
+      "id": "G01", "group": "village", "beat": 1, "duration": 5, "scene": "trailer-square",
+      "picture": "Drone rises over the spawn square at golden hour: cobbles, welcome sign, the street running east",
+      "camera": { "mode": "drone", "keys": [{ "pos": [110, 3, 252], "lookAt": [130, 1, 250] }, { "pos": [118, 14, 250], "lookAt": [170, 0, 250] }], "fov": 60 },
+      "location": { "area": "spawn-square", "point": [125, 0, 252] },
+      "reuse": { "from": "video/trailer-571.json S05", "holdsUp": "yes: same drone keys on the M2 layout; re-shoot only if the square changed (#607 landed)" },
+      "status": "ready",
+      "fallback": "still area-1-spawn-square/wide-after with a slow push in"
+    },
+    {
+      "id": "G02", "group": "heist", "beat": 2, "duration": 4, "scene": "trailer-bank",
+      "picture": "Low orbit round the cash van at the bank stop while a player drills the steel box on the rear step",
+      "camera": {
+        "mode": "orbit", "point": [196, 0, 252.4], "radius": 4, "azimuth": 90, "arc": 80, "height": 1.2,
+        "pending": "actor setup not written: a client at the van box with the drill (bank-kit-proof, work-anim-proof #513); remove this line when the shot's setup list exists"
+      },
+      "actors": [{ "id": "driller", "kind": "client", "client": 1, "do": "bank-kit-proof for the drill, then stand at the van box and use it" }],
+      "location": { "area": "cash-van", "point": [196, 0, 252.4], "note": "van at the bank stop facing west; the box is on the rear step, so azimuth 90 (+x) is the rear" },
+      "reuse": { "from": "video/trailer-571.json S01, S02, S19", "holdsUp": "partly: S01 and S02 were never shot (prose placement); the orbit replaces them" },
+      "status": "build",
+      "fallback": "orbit the bank front with no actor"
+    },
+    {
+      "id": "G03", "group": "chase", "beat": 3, "duration": 4, "scene": "street",
+      "picture": "Follow camera behind a car driving the main street; wheels turning, driver in the seat",
+      "camera": { "mode": "follow", "point": [128, 0, 250], "distance": 10 },
+      "actors": [{ "id": "driver", "kind": "puppet", "do": "scene street spawns the S105_beige and drives it east along z 250 (LF_FilmActor, docs/film-pipeline.md, Driving)" }],
+      "location": { "area": "main-street", "point": [128, 0, 250] },
+      "reuse": { "from": "video/camera-test.json follow", "holdsUp": "yes: same follow call, proven in game 2026-11-10 (physics-body drive, no engine or brake)" },
+      "status": "ready",
+      "fallback": "static on the street at 132 2.2 250 looking east, car passes through"
+    },
+    {
+      "id": "G04", "group": "ambulance", "beat": 4, "duration": 4, "scene": "trailer-hospital",
+      "picture": "Orbit the hospital front: the ambulance in its bay, a medic kneels by a downed player",
+      "camera": {
+        "mode": "orbit", "point": [262, 0, 252], "radius": 6, "azimuth": 180, "arc": 100, "height": 1.8,
+        "pending": "an ambulance run needs a driven ambulance prefab (the street scene drives only the S105) and a downed patient plus medic; remove this line when both are scripted"
+      },
+      "actors": [
+        { "id": "medic", "kind": "client", "client": 1, "do": "revive-anim-proof (clock in, hold Revive 4 s)" },
+        { "id": "patient", "kind": "client", "client": 2, "do": "downed by the proof" }
+      ],
+      "location": { "area": "hospital", "point": [262, 0, 252], "note": "front faces -z, so azimuth 180 sees it" },
+      "reuse": { "from": "video/trailer-571.json S17, S18", "holdsUp": "unknown: neither was shot; revive animation #512 and medic clock-in #625 must be closed" },
+      "status": "build",
+      "blockedBy": [512, 625],
+      "fallback": "still of the ambulance in its bay, slow push in"
+    },
+    {
+      "id": "G05", "group": "quiz", "beat": 5, "duration": 4, "scene": "trailer-square", "hud": "on",
+      "picture": "First person: a new account at the clerk's desk reads a rules question and answers it (#915)",
+      "camera": { "mode": "firstPerson", "client": 1, "pending": "needs a fresh account and the quiz-proof session flow to open the quiz; the client's own view is the picture" },
+      "actors": [{ "id": "newcomer", "kind": "client", "client": 1, "do": "fresh character; quiz-proof opens the rules quiz before form R-89" }],
+      "location": { "area": "spawn-square", "point": [134, 0, 243.5], "note": "Quest_Clerk and his desk" },
+      "reuse": { "from": "video/trailer-571.json S06", "holdsUp": "layout yes (form R-89 desk), the quiz screen is new" },
+      "status": "build",
+      "fallback": "still of the quiz screen from tools\\cli look"
+    },
+    {
+      "id": "G06", "group": "moderator", "beat": 6, "duration": 4, "scene": "trailer-square", "hud": "on",
+      "picture": "A moderator at work: the game-master panel open over the plaza, a player list and a teleport button",
+      "camera": { "mode": "firstPerson", "client": 2, "pending": "the game-master panel and the plaza boards are not merged (cards P1 and S9 of #1006); a moderator client on the roster is needed" },
+      "actors": [{ "id": "moderator", "kind": "client", "client": 2, "do": "on the moderator roster, game-master panel open" }],
+      "location": { "area": "spawn-square", "point": [125, 0, 250] },
+      "reuse": { "from": "none", "holdsUp": "no M2 clip exists for this" },
+      "status": "blocked",
+      "blockedBy": ["P1", "S9"],
+      "fallback": "still of the panel from tools\\cli look"
+    },
+    {
+      "id": "G07", "group": "recruits", "beat": 7, "duration": 4, "scene": "trailer-police",
+      "picture": "Police recruits in uniform lined up in front of the station, light bar flashing on the jeep behind",
+      "camera": {
+        "mode": "static", "position": [236, 1.7, 240], "lookAt": [244, 1.4, 246], "fov": 50,
+        "pending": "needs three clothed puppets in the police outfits (#393, tools\\cli outfits generate) placed with tools\\cli place; remove this line when they exist"
+      },
+      "actors": [{ "id": "recruits", "kind": "puppet", "do": "three police-outfit puppets standing in a row at the station front" }],
+      "location": { "area": "police-station", "point": [243.5, 0, 246] },
+      "reuse": { "from": "video/trailer-571.json S04, S15", "holdsUp": "partly: the jeep orbit S04 was never shot; the uniforms are the new part" },
+      "status": "build",
+      "fallback": "orbit the jeep, no recruits (S04)"
+    },
+    {
+      "id": "G08", "group": "crowd", "beat": 8, "duration": 6, "scene": "trailer-square-dusk",
+      "picture": "Slow orbit over the square at dusk with a real crowd of players on it",
+      "camera": {
+        "mode": "orbit", "point": [125, 0, 250], "radius": 16, "azimuth": 270, "arc": 120, "height": 7,
+        "pending": "a real crowd of players comes after the playtest; a session of three clients is not a crowd. Remove this line when at least 12 players are on the square"
+      },
+      "actors": [{ "id": "crowd", "kind": "players", "do": "12 or more real players on the spawn square at dusk" }],
+      "location": { "area": "spawn-square", "point": [125, 0, 250] },
+      "reuse": { "from": "video/trailer-571.json S23, S28", "holdsUp": "geometry yes (same orbit); never shot with people" },
+      "status": "blocked",
+      "blockedBy": ["playtest"],
+      "fallback": "S28 static main street at dusk, no people"
+    },
+    { "id": "T02", "kind": "title", "duration": 3, "lines": ["LIFE FRAMEWORK", "Join the server"] }
+  ]
+}

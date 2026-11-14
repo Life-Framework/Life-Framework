@@ -333,14 +333,36 @@ export function pidAlive(pid) {
 // callerPids: while queued, give up when one of these processes is gone, so a queued run whose caller
 // timed out never takes the slot later.
 export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {}, callerPids = [] } = {}) {
-  const hub = ensureHub(root);
-  const lockFile = join(hub, "locks", `${name}.lock`);
+  const lockFile = join(ensureHub(root), "locks", `${name}.lock`);
   const started = Date.now();
+  for (;;) {
+    if (tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
+    lockWaitCheck(name, lockFile, started, waitMs, callerPids);
+    sleep(pollMs);
+  }
+}
+
+// acquireLockAsync: acquireLock for a process that runs other async work at the same time. The sync
+// version sleeps with Atomics.wait, which freezes the whole event loop: in `ci` the build's 15-minute
+// wait on the `build` lock ran beside `validate --full`, so every check that had already finished sat
+// unreaped and reported the same 908.8 s (2026-11-14). lock-async-selftest proves the loop keeps ticking.
+export async function acquireLockAsync(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {}, callerPids = [] } = {}) {
+  const lockFile = join(ensureHub(root), "locks", `${name}.lock`);
+  const started = Date.now();
+  for (;;) {
+    if (tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
+    lockWaitCheck(name, lockFile, started, waitMs, callerPids);
+    await new Promise((r) => setTimeout(r, pollMs));
+  }
+}
+
+// One attempt: true when this process now holds the lock. A lock whose owner is gone is removed first.
+function tryTakeLock(lockFile, name, meta, stealMs) {
   for (;;) {
     try {
       openSync(lockFile, "wx");
       writeFileSync(lockFile, JSON.stringify({ ...meta, pid: process.pid, at: new Date().toISOString(), name }));
-      return { name, file: lockFile };
+      return true;
     } catch (e) {
       if (e.code !== "EEXIST") throw e;
       try {
@@ -352,22 +374,22 @@ export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs 
         } catch {
           stale = Date.now() - st.mtimeMs > stealMs;
         }
-        if (stale) {
-          try {
-            unlinkSync(lockFile);
-          } catch {}
-          continue;
-        }
+        if (!stale) return false;
+        try {
+          unlinkSync(lockFile);
+        } catch {}
       } catch {
-        continue;
+        // The lock vanished between open and stat: try again.
       }
-      if (waitMs <= 0 || Date.now() - started > waitMs) {
-        throw new Error(`lock '${name}' is held (${lockFile}); retry with --wait to queue`);
-      }
-      if (callerPids.some((p) => p && !pidAlive(p))) throw new Error(`lock '${name}': the caller is gone; not queuing any longer`);
-      sleep(pollMs);
     }
   }
+}
+
+function lockWaitCheck(name, lockFile, started, waitMs, callerPids) {
+  if (waitMs <= 0 || Date.now() - started > waitMs) {
+    throw new Error(`lock '${name}' is held (${lockFile}); retry with --wait to queue`);
+  }
+  if (callerPids.some((p) => p && !pidAlive(p))) throw new Error(`lock '${name}': the caller is gone; not queuing any longer`);
 }
 
 // transferLock: hand a held lock to another process (a detached server), so

@@ -19,7 +19,8 @@
 
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { renameRetry } from "./atomic-file.mjs";
 import { join, resolve } from "node:path";
 
 export const KEY_VERSION = 1;
@@ -120,7 +121,7 @@ export function store(mainRoot, key, rec) {
     mkdirSync(dir, { recursive: true });
     const tmp = join(dir, `.${key}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);
     writeFileSync(tmp, JSON.stringify({ ...rec, key }, null, 1) + "\n", "utf8");
-    renameSync(tmp, join(dir, `${key}.json`));
+    renameRetry(tmp, join(dir, `${key}.json`));
     return true;
   } catch {
     return false;
