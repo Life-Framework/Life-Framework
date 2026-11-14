@@ -207,7 +207,8 @@ the game profile). Hooks:
   list's `Item0Row_Action`).
 - `stand <EntityName>` asks the server to move the local character beside
   that entity so a 3m action radius can succeed, 1.2 m along +X and turned to
-  face it, so `press F` aims at the entity. It does not inject movement keys.
+  face it, so `press F` aims at the entity. A side token with a trailing 2 (`n2`) stands 2 m
+  out instead, to prove an action with a longer reach. It does not inject movement keys.
   The spot is snapped to the floor and checked clear of other characters and props;
   when the side is taken (a second player at the same target) or blocked, `stand` steps
   around the target, then out in wider rings, and logs `stand spot beside ... using ...`.

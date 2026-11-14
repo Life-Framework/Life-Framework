@@ -647,7 +647,7 @@ class LF_AgentCommand
 		if (parts.Count() > 3)
 		{
 			cmd.Arg2 = parts[3];
-			if (cmd.Arg2 != "e" && cmd.Arg2 != "w" && cmd.Arg2 != "n" && cmd.Arg2 != "s")
+			if (LF_AgentHarness.SideCompass(cmd.Arg2) == "" || (cmd.Arg2.Length() == 2 && cmd.Arg2.Substring(1, 1) != "2"))
 			{
 				cmd.Error = "bad_side";
 				return false;
@@ -1671,7 +1671,7 @@ class LF_AgentHarness
 		float startRad = Math.Atan2(plain[2] - origin[2], plain[0] - origin[0]);
 		for (int ring = 0; ring < 3; ring++)
 		{
-			float radius = STAND_SIDE + ring * 0.6;
+			float radius = StandDistance(side) + ring * 0.6;
 			array<vector> spots = {};
 			array<float> yaws = {};
 			float lowest = 1000;
@@ -1727,14 +1727,41 @@ class LF_AgentHarness
 	//! default), west, north (+Z), or south.
 	static vector StandOffset(string side)
 	{
-		if (side == "w")
-			return Vector(-STAND_SIDE, 0, 0);
-		if (side == "n")
-			return Vector(0, 0, STAND_SIDE);
-		if (side == "s")
-			return Vector(0, 0, -STAND_SIDE);
+		float dist = StandDistance(side);
+		string compass = SideCompass(side);
+		if (compass == "w")
+			return Vector(-dist, 0, 0);
+		if (compass == "n")
+			return Vector(0, 0, dist);
+		if (compass == "s")
+			return Vector(0, 0, -dist);
 
-		return Vector(STAND_SIDE, 0, 0);
+		return Vector(dist, 0, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The compass letter of a side token ("n2" is north, 2 m out); "" when it is not one.
+	static string SideCompass(string side)
+	{
+		if (side.Length() < 1 || side.Length() > 2)
+			return "";
+
+		string letter = side.Substring(0, 1);
+		if (letter == "e" || letter == "w" || letter == "n" || letter == "s")
+			return letter;
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far out stand puts the character: STAND_SIDE, or 2 m for a token with a trailing 2
+	//! (the proof of an action with a longer reach, such as an NPC's Talk).
+	static float StandDistance(string side)
+	{
+		if (side.Length() == 2 && side.Substring(1, 1) == "2")
+			return 2.0;
+
+		return STAND_SIDE;
 	}
 
 	//------------------------------------------------------------------------------------------------
