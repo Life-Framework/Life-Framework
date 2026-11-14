@@ -38,7 +38,7 @@ export const RX = {
   vegetation: /Vegetation\/|\/Tree|\bTree\b|Bush|Grass|Shrub/i,
   vehicle: /Prefabs\/Vehicles\/|_Car\b|_Van\b|Van$|Truck|UAZ|S105|S1203|Ural|LF_Vehicle/i,
   building: /Structures\/(Houses|Industrial|Commercial|Cultural|Military|Agriculture|Services|Civilian|Infrastructure\/(?!Lamps))|Building|House|Barn|Garage_|Shed|Office|Church|Station_|Hangar|Wall|Fence|Gate|Ramp/i,
-  mounted: /Sign|Board|Poster|Notice|Plaque|Map|Clock|WallLamp|Lamp_?Wall|Picture|Painting|Flag|Banner|Payphone_?Wall|Mirror/i,
+  mounted: /Sign|Board|Poster|Notice|Plaque|(^|[^a-z])Map|Clock|WallLamp|Lamp_?Wall|Picture|Painting|Flag|Banner|Payphone_?Wall|Mirror/i,
   laidDown: /Bag|Sack|Log|Plank|Tire|Tyre|Wheel|Body|Corpse|Lying|Fallen|Rubble|Debris|Pipe|Lumber|Board_|Ladder|Stretcher|Tarp/i,
   holder: /Shelf|Shelves|Rack|Stand|Display|Pallet|Table|Desk|Counter|Workbench|Trailer|Cart|Locker|Cabinet|Crate|Box|Basket|Bucket|Barrel|TradeContainer|Container/i,
   roadFurniture: /Cone|Barrier|Bollard|Speed|Manhole|Drain|Puddle|Decal|Crossing|Marking|Spawn|Trigger|Zone|Area|Point/i,
@@ -653,6 +653,12 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   if (suppressed.ranked.some((r) => r.name === "FloatCrate")) fail("the allowlist suppresses a problem");
   const text = inputText(recs.slice(0, 2));
   if (!text.startsWith("town ") || !text.includes("\n0 FloatCrate BoxWooden_01 0 1 0 0")) fail(`input text: ${text}`);
+  // "Roadmap_" holds "map": a backed prop named that way was read as a hung map and never checked for floating or
+  // sinking (the fuel counter stood 0.35 m into the kiosk floor and through its wall, #936).
+  const kioskCounter = { name: "Roadmap_Fuel_Counter", prefab: "Prefabs/Props/Commercial/CounterShop_01.et" };
+  const sunkM = { gap: -0.346, pgap: -0.345, over: 0, tilt: 0, scale: 1, walk: -1, backed: true, clip: [], box: { h: [0.75, 0.52, 0.56] } };
+  if (!singleProblems(kioskCounter, sunkM).some((p) => p.kind === "sunk")) fail("a backed prop named Roadmap_* sunk 0.35 m into a floor is flagged");
+  if (singleProblems({ name: "Roadmap_Sign_Map", prefab: "Prefabs/Props/Signs/Map_01.et" }, sunkM).length !== 0) fail("a real map on a wall is still hung");
   if (!process.exitCode) console.log("place-audit selftest: OK");
   return process.exitCode ?? 0;
 }
