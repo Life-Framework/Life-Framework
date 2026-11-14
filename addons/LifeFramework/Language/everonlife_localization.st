@@ -8478,6 +8478,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{4F89016AD2041FBE}" {
+     Id "LF-Chain_Action"
+     Target_en_us "Chain"
+     Comment "F-key action name for chain (#794)."
+    }
+    CustomStringTableItem "{F877F776FFD89CD3}" {
+     Id "LF-Chain_Denied"
+     Target_en_us "Chain is not available."
+     Comment "Greyed-out reason and toast when chain is refused (#794)."
+    }
   }
  }
 }
