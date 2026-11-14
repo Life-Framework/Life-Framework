@@ -1,0 +1,24 @@
+GenericEntity FixtureCrate_A : "{F0F0F0F0F0F0F001}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 10 0 10
+}
+GenericEntity FixtureCrate_Twin : "{F0F0F0F0F0F0F001}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 10.01 0 10
+}
+GenericEntity FixtureFloater : "{F0F0F0F0F0F0F002}Prefabs/Props/Barrel_01.et" {
+ coords 20 1.4 10
+}
+GenericEntity FixtureCup_1 : "{F0F0F0F0F0F0F003}Prefabs/Props/Cup_01.et" {
+ coords 30 0 10
+}
+GenericEntity FixtureCup_2 : "{F0F0F0F0F0F0F003}Prefabs/Props/Cup_01.et" {
+ coords 30.5 0 10
+}
+GenericEntity FixtureCup_3 : "{F0F0F0F0F0F0F003}Prefabs/Props/Cup_01.et" {
+ coords 31 0 10
+}
+GenericEntity FixtureCup_4 : "{F0F0F0F0F0F0F003}Prefabs/Props/Cup_01.et" {
+ coords 31.5 0 10
+}
+GenericEntity FixtureCup_5 : "{F0F0F0F0F0F0F003}Prefabs/Props/Cup_01.et" {
+ coords 32 0 10
+}
