@@ -366,6 +366,12 @@
   and the example the service writes at runtime against the schema, and
   `config-schema-selftest` proves it red on a stale schema and a bad example.
   Tools only, no game code (#280).
+- ✅ (2026-11-14) Every owner-config field carries help text in the schema.
+  The generator read only a named `desc:` and dropped the description most
+  attributes give as the third argument, so 145 fields had none; it now reads
+  both. `validate-config-schema` fails when any field, record field or section
+  has no description (`descriptionProblems`), and the Config generator page
+  shows the text under each field (#286).
 - ✅ (2026-11-12, #279 #302) Per-field reject: a price outside its attribute's
   `params: "min max"` (0 to 1000000) is refused with the value, limit and kept
   value logged, and the rest still applies; an unknown key (top level, section
