@@ -47,3 +47,23 @@ processing upgrade are kept at the desk.
 - A rank table editor at the desk (rename, set rights, add rungs) on top of `ApplyRankRow`;
   pack ladders from config. A fee and rent for the yard. The stash gated by `USE_STASH`.
 - The stash (M1-15) reads membership the same way the gate does.
+
+## Test org sign and the door's words (#934)
+
+- **Player sees:** a chalkboard beside the registry desk (`Sign_TestOrg`, about 291, 255.5) with
+  *Join test organisation* and *Leave organisation*, and a Read card that says what it is for.
+  The hideout door names itself: *Open* for a member, *Members only (Test Organisation)* for
+  everyone else, with the reason under it; a yard nobody holds says how to get it.
+- **Owner and side:** `LF_TestOrgSign` decides on the server, playtest only like the travel
+  globe (`LF_SpawnHub.IsEnabled()` and `LF_DevGate`), and a body within 5 m of the sign. The first
+  one in founds the shared "Test Organisation" as its founder and takes the hideout lease; later
+  ones join at the entry rank; Leave takes anyone out, founder included (the organisation stays on
+  the register so it can be joined again). `LF_OrganizationManager.FindByName`, `JoinDirect` and
+  `LeaveDirect` are the playtest seams; the normal paths (found, invite, leave) are unchanged.
+- **Door:** `LF_HideoutDoorComponent` carries the owner's name as an `RplProp` (written by
+  `LF_Hideout.PushLock`); `LF_HideoutDoorRules` picks the wording and `LF_DoorUserAction`
+  applies it on the prompt (`GetActionNameScript`) and the refusal.
+- **Data:** keys `LF-TestOrgSign_*` and `LF-Hideout_*`; the sign card is the `test_org` row of
+  `Configs/Signs/LF_Signs.conf`. Nothing new persists: the register and the hideout lease already do.
+- **Proof:** `organizations/test-org-sign` (LOGIC), `organizations/test-org-sign-world` (WORLD),
+  `node agent-box/session.mjs test-org-sign-proof`.

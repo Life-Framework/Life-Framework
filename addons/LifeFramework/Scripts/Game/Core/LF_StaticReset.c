@@ -96,6 +96,7 @@ class LF_StaticReset
 		LF_AssetAnim.ResetStatics();
 		LF_AssetAnimComponent.ResetStatics();
 		LF_DrillScene.ResetStatics();
+		LF_NpcStun.ResetStatics();
 		LF_WorldReset.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;

@@ -69,7 +69,7 @@ class LF_WitnessAskAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		if (!user || !GetOwner() || vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) > REACH)
+		if (!user || !GetOwner() || LF_NpcStun.BlocksTalk(GetOwner()) || vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) > REACH)
 			return false;
 
 		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));

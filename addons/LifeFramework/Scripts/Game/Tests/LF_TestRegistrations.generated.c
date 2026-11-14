@@ -239,6 +239,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_NpcClothesReplicate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcInteractionHeight(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_NpcStun(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_NpcStunWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcWearsClothes(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcWitness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
@@ -405,6 +407,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SurvivalSync(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TestOrgSignWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);

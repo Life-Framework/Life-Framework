@@ -29,6 +29,9 @@ const MENU_ACTIONS = new Set([
   // Character actions the harness drives for melee proof (pickaxe swing at an ore rock).
   "CharacterMelee",
   "CharacterTurnUp",
+  // Vehicle lights, to light the dashboard indicators for the vehicle HUD proof (#921).
+  "VehicleLightsToggle",
+  "CarLightsHiBeamToggle",
   "Inventory",
   "SwitchWeaponCategory1",
   "SwitchWeaponCategory2",
