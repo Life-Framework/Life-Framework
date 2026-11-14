@@ -134,8 +134,9 @@ function Records({ name, schema, value, path, errors, onChange }: { name: string
 }
 
 // parseJson keeps positions; the form wants plain values.
-const plainOf = (n: any): unknown =>
-  n.t === "obj" ? Object.fromEntries(n.props.map((p: any) => [p.key, plainOf(p.val)])) : n.t === "arr" ? n.items.map(plainOf) : n.value;
+type JsonNode = { t: string; value?: unknown; props?: { key: string; val: JsonNode }[]; items?: JsonNode[] };
+const plainOf = (n: JsonNode): unknown =>
+  n.t === "obj" ? Object.fromEntries(n.props.map((p) => [p.key, plainOf(p.val)])) : n.t === "arr" ? n.items.map(plainOf) : n.value;
 
 const ConfigShell = ({ children }: { children: ReactNode }) => (
   <>
