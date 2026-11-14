@@ -141,7 +141,8 @@ export function selectTests(tests, tokens) {
     const hit = tokens.some((k) => t.text.includes(k));
     for (const c of classes) {
       if (c.tier === "LOGIC") logic.push(c.name);
-      if (hit) related.push(c.name);
+      // A PERF test is a timing gate that only means something on `test --tier perf` (idle lane, more repeats); a gate never runs it at the normal settings.
+      if (hit && c.tier !== "PERF") related.push(c.name);
     }
   }
   return { logic: [...new Set(logic)], related: [...new Set(related)] };

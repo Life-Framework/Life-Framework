@@ -1871,6 +1871,15 @@ export function markDown(root, m, error) {
   markHealth(root, m, { reachable: false, error });
 }
 
+// This PC under its disk floor (hygieneGate threw): a run that may go elsewhere drops this PC and
+// goes to the pool machines (each checks its own disk before a run); a run pinned here, or with no
+// other machine, keeps the refusal. Returns the machines left, or throws the refusal.
+export function diskRoute(machines, err, { pinned = false } = {}) {
+  const others = machines.filter((m) => m.via !== "local");
+  if (pinned || !err?.refusal || !others.length) throw err;
+  return others;
+}
+
 // opts: mode "any"|"local"|"remote", machine (name or ssh host), purpose,
 // waitMs. Returns a slot with .release(), .machine, .waitedMs, and for a
 // remote slot .rDir, .prep, .snap.
@@ -1885,7 +1894,15 @@ export async function acquireSlot(root, opts = {}) {
   }
   let machines = resolveMachines(root, opts);
   if (machines.length === 0) throw new Error(`pool: no machine for --${mode}`);
-  if (machines.some((m) => m.via === "local")) hygieneGate(root);
+  if (machines.some((m) => m.via === "local")) {
+    try {
+      hygieneGate(root);
+    } catch (e) {
+      const kept = diskRoute(machines, e, { pinned: !!opts.machine || mode === "local" });
+      console.log(`pool: this PC refuses tests for now (${e.message.split(";")[0]}); the run goes to ${kept.map((m) => m.name).join(" or ")}`);
+      machines = kept;
+    }
+  }
 
   // Remote runs ship a snapshot; take it once, when a remote first comes into
   // play (what the worktree is when the run was asked for, or when a remote

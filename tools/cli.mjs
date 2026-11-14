@@ -83,6 +83,7 @@ import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
+import { helpRequest, usageText } from "./lib/help-guard.mjs";
 import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 
@@ -2958,6 +2959,12 @@ function cmdSession(args) {
     return r.status ?? 1;
   }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  // A session that `up` put on a pool machine is recorded only by agent-box/session.mjs
+  // (tmp/session-remote.json); it routes down/status/restart/wait there (cliSessionForwards).
+  if (session.cliSessionForwards(list[0], list.slice(1), session.readRemotePointer())) {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...list], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
   if ((list[0] === "restart" || list[0] === "down") && !list.includes("--force")) {
@@ -2987,8 +2994,8 @@ function cmdSession(args) {
 }
 
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
-  if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
-    console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
+  if (tier !== "fast" && tier !== "all" && tier !== "persistence" && tier !== "perf") {
+    console.log(`unknown tier: ${tier} (expected fast, all, persistence, or perf)`);
     return 2;
   }
   let only = [];
@@ -3545,14 +3552,7 @@ function ciWorkbenchInSession(root) {
 // The live view of every machine with the workbench cap, for wbGate.chooseGate: this PC's Workbench
 // slots and free RAM, each pool machine's over one ssh round trip (null when it does not answer).
 function workbenchMachines(root, { mode, machine }) {
-  const machines = pool.loadMachines(root).filter((m) => !m.disabled && (m.caps ?? []).includes("workbench"));
-  const limit = wbLock.wbLimit(root);
-  const localM = machines.find((m) => m.via === "local");
-  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, freeMb: Math.round(os.freemem() / 1048576), multiplier: localM?.budgetMultiplier ?? 1 };
-  const remotes = mode === "local" || machine === "local" ? [] : machines
-    .filter((m) => m.via === "ssh" && (!machine || m.name === machine))
-    .map((m) => ({ name: m.name, caps: m.caps, multiplier: m.budgetMultiplier ?? 1, m, state: wbGate.remoteWbState(m) }));
-  return { local, remotes };
+  return wbGate.workbenchView(root, { mode, machine });
 }
 
 // Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine
@@ -3759,12 +3759,15 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence|perf] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --core-only boots with -addons LifeFramework only (the pack folder is not
                                 on -addonsDir) and skips tests whose NeedsPack() names a reason.
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
+                                --tier perf runs only the PERF-tier timing gates (perf/budget-128), with more repeats and windows, on
+                                the pool's RAM gate and after a bounded wait for an idle CPU; never sharded, never
+                                cached, and not part of --tier all (so gates cannot flake on it). tools\\cli perf runs it.
                                 --shards N|auto (tier all): the registry split into N balanced slices run as
                                 separate pool jobs at once, one merged SUMMARY and exit code (auto: free
                                 test lanes, at most 4; tools/lib/test-shards.mjs). --only-classes <A,B>
@@ -3788,7 +3791,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 prune removes remote run folders of gone worktrees;
                                 prune --idle <min> removes every remote run folder idle that long
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
-  dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
+  dev [--tier fast|all|persistence|perf]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
   ci [--skip-core-only] [--shards N|auto|1] [--tiered]  validate --full + build + test + test --core-only, both passes at once, each sharded;
                                 --tiered runs the T1 data-only gate when the diff still is one
@@ -4022,7 +4025,7 @@ function wtHelpFull() {
   tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
                                        'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
-  tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
+  tools\\cli wt test <slug> [--tier fast|all|persistence|perf] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids] [--cash-swap]
                                        two-boot save-state E2E: persistence save boot ended by the
@@ -4744,6 +4747,7 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
     return 1;
   }
   const w = await q.ensureWorker(ROOT);
+  if (w.already) console.log(`ship: ${w.message}`);
   const qq = q.readQueue(ROOT);
   const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
   const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
@@ -5138,9 +5142,32 @@ async function discoveredHelp() {
 const [a, b] = rest;
 const HEAVY = ["build", "pack", "serve", "dev", "test", "ci", "e2e"];
 
+// `<heavy command> --help` / `-h` prints that command's usage and stops (tools/lib/help-guard.mjs).
+// It is asked before any dispatch, so nothing below (lock, build, boot, pool ticket) can start.
+function printUsage(req) {
+  if (req.cmd === "session") {
+    console.log(SESSION_USAGE);
+    return 0;
+  }
+  const keep = console.log;
+  let text = "";
+  console.log = (...a) => { text += `${a.join(" ")}
+`; };
+  try {
+    (req.cmd === "wt" ? wtHelpFull : cmdHelpFull)();
+  } finally {
+    console.log = keep;
+  }
+  console.log(usageText(text, req));
+  return 0;
+}
+
 let code;
 try {
-  if (cmd === "mcp") {
+  const helpReq = helpRequest(cmd, rest);
+  if (helpReq) {
+    code = printUsage(helpReq);
+  } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {

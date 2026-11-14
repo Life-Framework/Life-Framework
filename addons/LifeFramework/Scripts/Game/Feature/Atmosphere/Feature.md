@@ -32,7 +32,7 @@ Rung 1. A radio has one action, "Switch off" / "Switch on"
 
 ## Rules
 
-- A core prop names its sound by **slot** (`m_sSoundSlot`, `Configs/SoundSlots/LF_SoundSlots.conf`), never by the `.acp`; a pack overrides the slot by id (`Core/Config/LF_SoundSlots.c`, `validate-sound-slots`). `m_sSoundProject` stays for a pack's own placement and wins over the slot.
+- A core prop names its sound by **slot** (`m_sSoundSlot`, `Configs/SoundSlots/LF_SoundSlots.conf`), never by the `.acp`; a pack overrides the slot by id (`Core/Config/LF_SoundSlots.c`, `validate-sound-slots`). `m_sSoundProject` stays for a pack's own placement and wins over the slot. The town sounds are pack content (#323 batch 4): the core `atmo_*` slots have no default, and the flagship pack's sound-slot overlay fills them; core alone, those emitters are silent.
 - The server never plays or decides a sound; it replicates state.
 - A sound project comes from `tools\cli asset ambience`; its range lives in
   `tools/assets/atmosphere/ambience.json`, and the prefab radius sits inside it
