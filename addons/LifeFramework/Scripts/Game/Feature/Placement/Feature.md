@@ -35,7 +35,7 @@ selected; aimed placement with rotate, place and cancel is #1028.
   server (`LF_PlacementService.Confirm`) checks who, where the item is, `LF_RateLimit` SPAWN, the
   malformed-proposal check, the reach from where the player stands now (plus 1.5 m for walking;
   turning costs nothing), 15 degrees off straight across a road (only on a world with an AI road
-  network: DebugWorld has none) and the probes at the proposed spot, then spawns
+  network: DebugWorld has none; `LF_Test_PlacementRoad` runs it on real Everon roads in `Worlds/CoreOnEveron`, #1129) and the probes at the proposed spot, then spawns
   the replicated prefab there and uses the item up. No new RPC; the ghost stays local.
 - **Data:** the placeable's prefab attributes (footprint box, reach, snap, who, lifetime). Strings
   `#LF-Placement_Title`, `_NotAllowed`, `_NoGround`, `_Moved`, `_Blocked`. Nothing persists (#1032).
