@@ -104,6 +104,8 @@ export function soundProblems(rec) {
     }
     if (s.compose && !(Array.isArray(s.compose.steps) && s.compose.steps.length && s.compose.steps.every((t) => t.ratio > 0.2 && t.ratio < 4 && t.ms >= 100 && t.ms <= 3000))) out.push(`${at}: compose.steps must be a list of { ratio 0.2-4, ms 100-3000, fromMs }`);
     if (s.compose && !(Number.isInteger(s.compose.from_take) && Number.isInteger(s.compose.as_take) && s.compose.as_take > s.compose.from_take)) out.push(`${at}: compose needs from_take and an as_take above it`);
+    if (s.derive && !(Number.isInteger(s.derive.from_take) && Number.isInteger(s.derive.as_take) && s.derive.as_take > s.derive.from_take)) out.push(`${at}: derive needs from_take and an as_take above it`);
+    if (s.derive && s.derive.on_ms !== undefined && !(s.derive.on_ms >= 50 && s.derive.on_ms <= 2000 && s.derive.off_ms >= 50 && s.derive.off_ms <= 2000)) out.push(`${at}: derive on_ms and off_ms must be 50-2000`);
     if (s.layer && !(rec.sounds || []).some((o) => o.id === s.layer.id && o.layer_only)) out.push(`${at}: layer.id must name a sound marked layer_only`);
     if (s.layer && !(Number.isInteger(s.layer.take) && s.layer.take >= 1)) out.push(`${at}: layer.take must be a take number`);
     if (!s.prompt) out.push(`${at}: prompt is empty`);
@@ -285,6 +287,24 @@ export function alternateSteps(x, steps, repeat = 1, rate = RATE, fadeMs = 15) {
   for (let r = 0; r < repeat; r++) {
     let at = r * cycle;
     for (const p of parts) { out.set(p, at); at += p.length; }
+  }
+  return out;
+}
+
+// A take cut from fromMs on and, when onMs and offMs are given, chopped into a steady on/off cadence with short
+// ramps (a buzzer or horn the generator gave as one held tone). Whole cycles only.
+export function deriveTake(x, { fromMs = 0, onMs = 0, offMs = 0 } = {}, rate = RATE, rampMs = 8) {
+  const from = Math.round((fromMs * rate) / 1000);
+  let y = x.subarray(from);
+  if (!(onMs > 0 && offMs > 0)) return Int16Array.from(y);
+  const on = Math.round((onMs * rate) / 1000), cycle = on + Math.round((offMs * rate) / 1000), ramp = Math.round((rampMs * rate) / 1000);
+  const n = Math.floor(y.length / cycle) * cycle;
+  const out = new Int16Array(n);
+  for (let i = 0; i < n; i++) {
+    const k = i % cycle;
+    let g = 0;
+    if (k < on) g = Math.min(1, k / ramp, (on - 1 - k) / ramp);
+    out[i] = Math.round(y[i] * Math.max(0, g));
   }
   return out;
 }
@@ -767,6 +787,20 @@ export function stepProcess(root, slug) {
         ffmpeg(root, ["-i", cwav, "-filter_complex", "[0:a]asplit[a][b];[a]showwavespic=s=900x160:colors=white,format=rgb24[w];[b]showspectrumpic=s=900x340:legend=0:stop=16000,format=rgb24[s];[w][s]vstack", "-frames:v", "1", join(review, `${cname}.png`)]);
         console.log(`  ${cname}: composed from ${name}, ${cinfo.seconds.toFixed(2)} s, peak ${cinfo.peakDb.toFixed(1)} dB, rms ${cinfo.rmsDb.toFixed(1)} dB${s.loop ? `, seam ${(cinfo.seam * 100).toFixed(1)}% (largest inner step ${(cinfo.maxStep * 100).toFixed(0)}%)` : ""}`);
         for (const p of cproblems) console.log(`FAIL  ${cname}: ${p}`);
+      }
+      if (s.derive && g.take === s.derive.from_take) {
+        // A derived take stands in the pick list under its own number: cut and gated from this one.
+        let d = deriveTake(y, { fromMs: s.derive.from_ms ?? 0, onMs: s.derive.on_ms ?? 0, offMs: s.derive.off_ms ?? 0 });
+        d = normalisePeak(s.loop ? loopSeam(d) : d, -3);
+        const dname = takeName(s, s.derive.as_take);
+        const dwav = join(out, `${dname}.wav`);
+        writeFileSync(dwav, encodeWav(d));
+        const dinfo = wavInfo(readFileSync(dwav));
+        const dproblems = checkWav(dinfo, { loop: !!s.loop });
+        bad += dproblems.length;
+        ffmpeg(root, ["-i", dwav, "-filter_complex", "[0:a]asplit[a][b];[a]showwavespic=s=900x160:colors=white,format=rgb24[w];[b]showspectrumpic=s=900x340:legend=0:stop=16000,format=rgb24[s];[w][s]vstack", "-frames:v", "1", join(review, `${dname}.png`)]);
+        console.log(`  ${dname}: derived from ${name}, ${dinfo.seconds.toFixed(2)} s, peak ${dinfo.peakDb.toFixed(1)} dB, rms ${dinfo.rmsDb.toFixed(1)} dB${s.loop ? `, seam ${(dinfo.seam * 100).toFixed(1)}% (largest inner step ${(dinfo.maxStep * 100).toFixed(0)}%)` : ""}`);
+        for (const p of dproblems) console.log(`FAIL  ${dname}: ${p}`);
       }
       writeFileSync(wav, encodeWav(y));
       const info = wavInfo(readFileSync(wav));

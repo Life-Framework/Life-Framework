@@ -83,6 +83,8 @@ Which set feeds which map is in each asset's spec (`tools/assets/metal-ingot`, `
 ## Generated audio
 | Vault drill sounds: motor loop, grinding loop (`Sounds/Items/Drill/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above | `tools/assets/drill/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
 
+| Robbery alarms: bank bell, fuel station intruder alarm, store buzzer, van horn (`Sounds/Alarm/Robbery/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above. The fuel, store and van loops are one generated take cut into an on/off cadence (`derive` in `sounds.json`) | `tools/assets/robbery-alarms/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
+
 Music and ambience generated with ElevenLabs.
 
 | Asset | Tool | Source | Terms | Recorded in |

@@ -58,7 +58,7 @@ class LF_Dispatch
 	//! cabinet); a zero vector sounds no alarm (a murder in the street, the logic-tier seam).
 	//! \param officersOnDuty On-duty police when the crime started; negative counts them now.
 	//! \return The dispatch record, or null when the crime report was refused (no player uid).
-	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false)
+	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false, string alarmKind = "")
 	{
 		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence);
 		if (!report)
@@ -74,7 +74,7 @@ class LF_Dispatch
 		if (site == vector.Zero)
 			LF_Debug.Info(FEATURE, "no alarm site, no alarm sounded");
 		else
-			StartAlarm(site, forceLoud || IsLoud(officers));
+			StartAlarm(site, forceLoud || IsLoud(officers), alarmKind, offence);
 
 		// The report is a police service call on the bus (#250): the dispatch subscriber logs and
 		// radios it, the service board pins it. Both must be listening.
@@ -319,12 +319,12 @@ class LF_Dispatch
 	//! Server: spawn the alarm prefab for this level at the site and schedule its removal. An
 	//! older alarm still sounding at the same site is replaced.
 	//! \return The alarm entity, or null when the prefab does not spawn (logged).
-	static IEntity StartAlarm(vector site, bool loud)
+	static IEntity StartAlarm(vector site, bool loud, string alarmKind = "", string offence = "")
 	{
 		if (!Replication.IsServer())
 			return null;
 
-		ResourceName prefab = LF_PoliceConfig.AlarmPrefab(loud);
+		ResourceName prefab = LF_PoliceConfig.AlarmPrefabFor(alarmKind, offence, loud);
 		if (prefab.IsEmpty())
 		{
 			LF_Debug.Error(FEATURE, string.Format("no %1 alarm prefab configured; the site stays quiet", AlarmLevel(loud)));
@@ -350,7 +350,7 @@ class LF_Dispatch
 		s_mAlarms.Set(s_iAlarmNumber, alarm.GetID());
 		float seconds = LF_PoliceConfig.AlarmSeconds(loud);
 		GetGame().GetCallqueue().CallLater(ExpireAlarm, Math.Max(seconds, 1) * 1000, false, s_iAlarmNumber);
-		LF_Debug.Info(FEATURE, string.Format("%1 alarm sounding at %2 for %3 s (site %4)", AlarmLevel(loud), spot, seconds, site));
+		LF_Debug.Info(FEATURE, string.Format("%1 alarm sounding at %2 for %3 s (site %4, kind '%5', prefab %6)", AlarmLevel(loud), spot, seconds, site, alarmKind, prefab));
 		return alarm;
 	}
 

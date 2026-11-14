@@ -395,6 +395,32 @@
             "additionalProperties": false
           }
         },
+        "alarmKinds": {
+          "type": "object",
+          "description": "Records are an object keyed by a stable key. The key is the alarm kind id (bank, fuel, store, van), the id a robbed thing's alarm kind names. An id no shipped kind has adds one, which must set prefab; an existing id changes only the fields given. offences replaces the kind's offence list.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "prefab": {
+                "type": "string",
+                "default": ""
+              },
+              "loudPrefab": {
+                "type": "string",
+                "default": ""
+              },
+              "offences": {
+                "type": "array",
+                "description": "",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              }
+            },
+            "additionalProperties": false
+          }
+        },
         "catchInActRadius": {
           "type": "number",
           "default": 10,
