@@ -1,5 +1,6 @@
 // red-proof: before any sign was placed, `tools\cli test --no-build --only LF_Test_SignCoverage`
 // (2026-11-08) failed signs/coverage with "catalog sign 'police_whitelist' is placed in DebugWorld".
+// 2026-11-14 (#323 batch 1, mining sign moved to the pack world) it failed for 'mining' until IsPackPlaced.
 
 // tier: WORLD
 class LF_Test_SignCoverage : LF_Test
@@ -54,13 +55,22 @@ class LF_Test_SignCoverage : LF_Test
 
 		foreach (LF_SignDef def : config.m_aSigns)
 		{
-			ctx.True(s_aIds.Contains(def.m_sId), string.Format("catalog sign '%1' is placed in DebugWorld", def.m_sId));
+			if (!IsPackPlaced(def.m_sId))
+				ctx.True(s_aIds.Contains(def.m_sId), string.Format("catalog sign '%1' is placed in DebugWorld", def.m_sId));
 			ExpectTranslated(ctx, def.m_sId, "title", def.m_sTitle);
 			ExpectTranslated(ctx, def.m_sId, "what", def.m_sWhat);
 		}
 
 		s_aIds = null;
 		s_aUnusable = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A catalog sign whose only placement is the pack world (Everon1989Town, #323 batch 1), which the
+	//! core test mission does not load (docs/architecture/core-pack-inventory.md).
+	protected static bool IsPackPlaced(string id)
+	{
+		return id == "mining";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -30,6 +30,7 @@
       { "prefab": "SignCommercial_01_GroceryStore", "move": [-5.1, 0, 0], "why": "over the left shop window: above the door the 3.45 m canopy hides it from the street" }
     ]
   },
+  "addon": "LF_Everon1989",
   "asset_dir": "Assets/Buildings/Supermarket",
   "prefab_dir": "Prefabs/Buildings/Supermarket"
 }

@@ -40,6 +40,7 @@ Reference:
 
 - [Performance budget](architecture/performance.md) - the 128-player cost budget, the `perf/budget-128` gate, `tools\cli perf`, measured numbers.
 - [Core vs pack](architecture/core-vs-pack.md) — what goes in the core addon and what goes in the flagship pack; [inventory](architecture/core-pack-inventory.md).
+- Record shapes (M3, #746): [vehicle state](architecture/record-shape-vehicle.md) (#752a) and [held ground](architecture/record-shape-held-ground.md) (#751): the sidecar payloads, their fields, save-version plan and tests.
 - [Features](features.md) — implemented behavior and fragile paths.
 - [Persistence](persistence.md) — saved data, serializers, and restart rules.
 - [Foundation design](foundation-design.md) — economy, trade, processing, and ownership primitives.
