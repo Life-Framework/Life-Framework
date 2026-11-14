@@ -55,7 +55,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
    copy.
 7. **User-facing strings are localization keys** in
    `Language/everonlife_localization.st` (append, never rewrite; then
-   `tools\cli regen-localization`). Layouts reference `#Key`. Core text is neutral: place
+   `tools\cli regen-localization`, which sorts it by Id so string PRs merge on GitHub). Layouts reference `#Key`. Core text is neutral: place
    names and flavour copy go in the pack table (`LF_Everon1989/Language/`), and a pack key
    with the same Id overrides the core row (`validate-core-place-names`).
 8. **Update `docs/features.md` in the same change** that alters a feature.
