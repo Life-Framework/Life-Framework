@@ -60,7 +60,8 @@ class LF_ShopPricesConfig
 				overlayType = container.GetClassName().ToType();
 			if (!overlayType || !overlayType.IsInherited(LF_ShopPricesConfig))
 			{
-				LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("shops: pack overlay is not an LF_ShopPricesConfig, skipped: %1", overlay));
+				// One header list carries every section's overlays (the save alias table too, #965).
+				LF_Debug.Log(LF_ConfigService.FEATURE, string.Format("shops: pack overlay is not an LF_ShopPricesConfig, left to its own section: %1", overlay));
 				continue;
 			}
 

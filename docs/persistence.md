@@ -84,6 +84,59 @@ Identity:
   Workbench play, listen host) it falls back to a name-derived identity.
 - Character persistence id = `PersistenceIdUtils.Generate()` (stable UUID).
 
+## Stable ids and renamed content (#965)
+
+A save names pack content (items, jobs, shops, quests, places) by an id that survives a rename,
+and a pack that renames or removes content ships aliases instead of breaking saves.
+`LF_SaveIds` (`Scripts/Game/Persistence/LF_SaveIds.c`). The save format is unchanged: no new
+payload, no version bump (still 32). Proof: `tools\cli wt e2e <slug> --content-ids` (three boots).
+
+- **Ids.** A prefab is its `{GUID}`: a moved resource keeps it, so the path part may change
+  (`LF_Utils.SamePrefab` and the alias table both match on the GUID). A job, quest, chain or crop
+  is its config id; a place is the key its component registers (store key, station key, plot key,
+  hideout id, stash key such as `hideout:<id>`).
+- **Aliases.** `LF_SaveAliasesConfig` rows: `m_sKind` (`prefab`, `job`, `quest`, `place`,
+  `chain`, `crop`), `m_sFrom` (the id an older save holds) and `m_sTo` (the id now). The core
+  ships `Configs/Systems/Persistence/LF_SaveAliases.conf` empty; a pack lists its own
+  `LF_SaveAliasesConfig` file in the mission header's `m_aLF_ConfigOverlays` (the D4 seam, later
+  files win). Every store read runs the records it read through the table before the feature
+  applies them (`LF_SaveIds.Resolve*` in `ReadPersistencePayload`), so the next save writes the new
+  id and a second load changes nothing. Chains follow (a -> b -> c); a loop logs an error and loads
+  the id unchanged. Each alias logs `save alias used: <kind> <old> -> <new>` once per session, and a
+  load that used any ends with `save ids: N reference(s) loaded through an alias, M missing id(s)
+  held this session`.
+- **Missing.** A prefab that does not load after the aliases logs `save content missing: prefab
+  <id> ...` once per id and keeps its saved id. A stored inventory (carried, duty locker, placed
+  stash) holds such an item and everything inside it: `LF_StorageSnapshot.Set` carries it from the
+  snapshot being replaced into the new capture (`CarryHeld`), back into the same container when the
+  new capture has it (matched by the chain of prefabs above it), otherwise onto the root. It comes
+  back the first load after the content or its alias returns. Death drops held items with the rest
+  of the carried snapshot. Other kinds are held by their features already: job XP and playtime rows
+  for a job the config does not list are kept, and a station, plot or store row with no live
+  component waits for it and is saved again.
+- **Owners.** No `config.json` section yet; aliases come from the core and pack files.
+
+What each payload stores (audit, 2026-11-14):
+
+| Payload | Content reference | Stored as | Through the table |
+|---|---|---|---|
+| accounts (prefix) | character prefab | `{GUID}path` | prefab |
+| hideout | hideout id | place key | place |
+| vehicles | vehicle and spawn prefab; vehicle shop id | `{GUID}path`; key | prefab; place |
+| carried, itemstate, itemserials | item prefab per record; owner key | `{GUID}path`; character id or stash key | prefab; place |
+| progression | turned-in quest ids; licences | quest id; `LF_ELicenseType` name | quest; licences are core enum names |
+| progression | police rank | **index** into the ladder | no: the ladder only appends (`LF_PoliceConfig`); a rank id is a record-shape change for #761 |
+| jobsignups, playtime, joblevels | job | job id | job |
+| fenceserials, evidencelocker | tool or evidence prefab | `{GUID}path` | prefab |
+| chainstations | station key; chain id | place key; chain id | place; chain |
+| storestock, storeunpaid | store key; item prefab | place key; `{GUID}path` | place; prefab |
+| farmplots | plot key; crop id | place key; crop id | place; crop |
+| wanted, crimerecord | offence | core offence key | no: offences are core constants |
+| wantedlooks, idcards | look | prefab GUIDs (`LF_WantedLook`) | no: a missing GUID only drops that piece of the portrait |
+| organizations, orgranks | rank id | organization-local rank id | no: made by players, not pack content |
+
+Apart from the police rank, no payload stores pack content by index or by a bare path.
+
 ## Layer 1: data (serializers and config)
 
 - **Config binding (load-bearing).** `Configs/Systems/Persistence/LifeFramework.conf`
@@ -342,6 +395,13 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   reset.
 - `persist/carried-roundtrip` (PERSISTENCE) and `persist/carried-death-no-dupe`
   (WORLD) drive the carried payload through the real serializer and the death rule.
+- `persist/save-aliases` (WORLD): the alias file read through the pack-source seam, chains, the
+  GUID match, a loop and a bad row refused, a missing prefab kept. `persist/held-missing-content`
+  (WORLD): a capture holds missing items once, in their container, and an alias brings them back.
+  `e2e/content-ids` (`tools\cli wt e2e <slug> --content-ids`, three boots): boot 1 saves 4 apples
+  under a renamed id and a removed canteen; boot 2 loads the apples through the alias, logs and holds
+  the canteen, captures again and stops (SHUTDOWN save); boot 3, with the canteen's content back
+  (aliased to the water bottle), restores it inside the backpack.
 - In-session round trips prove nothing; the restart is ground truth. `wt e2e`
   covers save -> host-stop shutdown -> boot -> load with two processes; a
   single `LF_Test` run cannot survive a game-state transition.
