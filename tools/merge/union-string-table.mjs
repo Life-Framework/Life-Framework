@@ -8,7 +8,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { mergeLines } from "./merge-markdown.mjs";
 
-const ITEM_RE = /CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{[^}]*\}/g;
+// A quoted text may hold braces (a term placeholder such as {police}, #958), so the body skips quoted strings whole.
+const ITEM_RE = /CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{(?:[^}"]|"(?:[^"\\]|\\.)*")*\}/g;
 
 export function parseStringTable(text) {
   const items = [];

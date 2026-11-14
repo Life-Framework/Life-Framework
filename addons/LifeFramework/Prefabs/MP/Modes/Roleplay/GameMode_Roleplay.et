@@ -18,6 +18,22 @@ LF_GameModeRoleplay {
   }
   SCR_DestructionManagerComponent "{59751432896EFC0B}" {
   }
+  LF_EntityCatalogManagerComponent "{09F1F7FEAABF795D}" {
+   m_aEntityCatalogs {
+    SCR_EntityCatalogMultiList "{92D7974B51FA4745}" : "{EAD206A79A774696}Configs/EntityCatalog/FactionLess/Characters_EntityCatalog_Factionless.conf" {
+    }
+    SCR_EntityCatalogMultiList "{1D21EE68BC15C4C5}" : "{77243A71AF0E5A75}Configs/EntityCatalog/FactionLess/Vehicles_EntityCatalog_Factionless.conf" {
+    }
+    SCR_EntityCatalogMultiList "{8BF12F54DF358760}" : "{2E8FFD9558E26113}Configs/EntityCatalog/FactionLess/Groups_EntityCatalog_Factionless.conf" {
+    }
+    SCR_EntityCatalogMultiList "{064FE7DE8472931E}" : "{0CC054C7DEDC766E}Configs/EntityCatalog/FactionLess/WeaponTripod_EntityCatalog_Factionless.conf" {
+    }
+    SCR_EntityCatalogMultiList "{25739E052C5D5ECC}" : "{BB12292052E2F5B8}Configs/EntityCatalog/FactionLess/InventoryItems_EntityCatalog_Factionless.conf" {
+    }
+    SCR_EntityCatalog "{E7C28415EFA258A4}" : "{B80293331FB7BFCF}Configs/EntityCatalog/FactionLess/SupplyContainerItems_EntityCatalog_Factionless.conf" {
+    }
+   }
+  }
   SCR_HintManagerComponent "{59E8CC4E575D1802}" {
   }
   SCR_CommandingManagerComponent "{629426C491CF5D8E}" {
@@ -78,9 +94,6 @@ SCR_RespawnSystemComponent "{66BD3C8588F5687E}" {
   }
   ScriptedChatEntity ScriptedChatEntity : "{E67EAC45379783C0}Prefabs/MP/Modes/Roleplay/Chat_Roleplay.et" {
    ID "E67EAC45379783C0"
-  }
-  SCR_MPDestructionManager MPDestructionManager : "{9BB369F2803C6F71}Prefabs/MP/MPDestructionManager.et" {
-   ID "9BB369F2803C6F71"
   }
  }
 }

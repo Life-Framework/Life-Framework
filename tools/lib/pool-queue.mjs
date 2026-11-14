@@ -4,11 +4,16 @@
 
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
-  sessionIdleMin: 15,
-  // A session idle this long is closed even with nobody waiting (it holds RAM and client windows).
-  sessionIdleMaxMin: 30,
+  // Sessions flow like a river: a lane is held for the window it is used. A session idle this long
+  // while a job waits for its lane is closed; one idle sessionIdleMaxMin is closed with nobody
+  // waiting (it holds RAM and client windows). Any harness or session command resets the clock.
+  sessionIdleMin: 3,
+  sessionIdleMaxMin: 5,
   promoteMin: 20, starveMin: 20,
   minFreeMb: 1500,
+  // RAM headroom past which a machine counts as roomy: the speed (budgetMultiplier) then decides
+  // between machines, not more RAM (rankMachines).
+  roomyMb: 6144,
   // Memory a second concurrent session takes: the server, plus each game client (MB; measured
   // 2026-11-10, docs/worktrees.md "Session lanes"). The second session starts only while free RAM
   // minus this still clears minFreeMb.
@@ -20,9 +25,9 @@ export const DEFAULTS = {
   bootBudgetS: 30,
   // A session older than sessionHoldMin while another session request queues is warned, then
   // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.
-  sessionHoldMin: 20,
-  sessionGraceMin: 5,
-  sessionHoldMaxMin: 45,
+  sessionHoldMin: 10,
+  sessionGraceMin: 2,
+  sessionHoldMaxMin: 20,
   // Session folders older than this many hours (not in use, not film) are removed; a session or
   // test refuses to start with less free disk than minFreeDiskGb (docs/worktrees.md "Disk hygiene").
   sessionKeepHours: 24,
@@ -163,15 +168,18 @@ export function canBackfill(t, now, ctx = {}) {
 // Why a ticket waits, for `pool status`: "ram 2-client full: needs 3.8 GB free, local has 1.1 GB",
 // "lane", "behind N", plus "starved: holds the machine" once it reserves. freeMbOf(name) gives a
 // machine's live free RAM (MB) when known.
-export function waitReason(t, ahead = 0, { now = Date.now(), starveMs, freeMbOf } = {}) {
+export function waitReason(t, ahead = 0, { now = Date.now(), starveMs, freeMbOf, otherMachines = [] } = {}) {
   const hold = (t.stuck === "ram" || t.stuck === "lane") && starved(t, now, { starveMs }) ? "; starved, so it holds its place" : "";
   if (t.stuck === "ram") {
     const what = `ram${t.clients ? ` ${t.clients}-client` : ""}${t.profile && t.clients ? ` ${t.profile}` : ""}`;
-    if (!Number.isFinite(t.needMb)) return `${what}${hold}`;
+    // A pinned job (--local / --machine) will not move: say which machine it is not allowed to use has room.
+    const roomy = t.pinned ? roomElsewhere(t.needMb, t.machines, otherMachines.map((n) => ({ name: n, freeMb: freeMbOf?.(n) }))) : [];
+    const pin = roomy.length ? ` (pinned; ${roomy.join(", ")} ${roomy.length > 1 ? "have" : "has"} room)` : "";
+    if (!Number.isFinite(t.needMb)) return `${what}${pin}${hold}`;
     const gb = (x) => (x / 1024).toFixed(1);
     const busy = t.busyOn ?? [];
     const have = (t.machines ?? []).filter((n) => !busy.includes(n)).map((n) => [n, freeMbOf?.(n)]).filter(([, f]) => Number.isFinite(f)).map(([n, f]) => `${n} has ${gb(f)}`);
-    return `${what}: needs ${gb(t.needMb)} GB free${have.length ? `, ${have.join(", ")}` : ""}${busy.length ? `; every session lane taken on ${busy.join(", ")}` : ""}${hold}`;
+    return `${what}: needs ${gb(t.needMb)} GB free${have.length ? `, ${have.join(", ")}` : ""}${busy.length ? `; every session lane taken on ${busy.join(", ")}` : ""}${pin}${hold}`;
   }
   if (t.stuck === "lane") return `lane${hold}`;
   return ahead > 0 ? `behind ${ahead}` : "";
@@ -206,22 +214,59 @@ export function median(values) {
 
 // RAM gate. A job reserves what it is expected to take (reserveMb: a session's server and
 // clients; 0 for a test, which the floor covers) and sessions still booting count with what they
-// will take (pendingMb), since free RAM does not show it yet. With nothing else running on the
-// machine the job only has to fit (free >= reserve + pending): a machine is never over-committed,
-// and an idle one always takes a job that fits. Beside other servers it must also leave minFreeMb.
-export function ramVerdict({ running, freeMb, minFreeMb, reserveMb = 0, pendingMb = 0 }) {
+// will take (pendingMb), since free RAM does not show it yet. Every start, the first server on a
+// machine included, must leave minFreeMb free after its reserve: a machine below floor plus
+// reserve takes no new job (2026-11-14: this PC sat at 0.4 GB free and its first lane kept taking
+// runs that then timed out while the laptop idled). `running` only words the reason.
+export function ramVerdict({ running = 0, freeMb, minFreeMb, reserveMb = 0, pendingMb = 0 }) {
   const gb = (x) => (x / 1024).toFixed(1);
-  if (running <= 0) {
-    if (freeMb - pendingMb >= reserveMb) return { ok: true };
-    return { ok: false, needMb: reserveMb + pendingMb, reason: `free RAM ${gb(freeMb)} GB is under the ${gb(reserveMb + pendingMb)} GB the session needs` };
-  }
-  const after = freeMb - pendingMb - reserveMb;
-  if (after >= minFreeMb) return { ok: true };
+  if (freeMb - pendingMb - reserveMb >= minFreeMb) return { ok: true };
   const needMb = minFreeMb + reserveMb + pendingMb;
   if (reserveMb > 0 || pendingMb > 0) {
     return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(reserveMb + pendingMb)} GB for the session${pendingMb > 0 ? "(s) starting" : ""} would be under ${gb(minFreeMb)} GB` };
   }
-  return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB with ${running} server(s) running` };
+  return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB${running > 0 ? ` with ${running} server(s) running` : ""}` };
+}
+
+// ---------------------------------------------------------------- machine choice
+// Which machine a job tries first. Candidates are the machines that may take it (a pin leaves one);
+// the ones with no free lane of the job's kind or without the needed cap are not passed in or fail
+// the lane check when tried, so this only orders them.
+//   headroom = free RAM - sessions still booting - the job's reserve        (MB, null when unread)
+//   room     = headroom >= minFreeMb   (the same floor the RAM gate applies to every start)
+//   score    = min(headroom, roomyMb) / budgetMultiplier
+// A machine with room goes before one without. Among those with room the higher score wins: headroom
+// counts up to roomyMb (6 GB: past that more RAM changes nothing a test or session can use), divided by
+// the machine's budgetMultiplier (1 = this PC, 2 = the laptop, about twice as slow), so two machines that
+// are both roomy go to the faster one, and a slower one wins only with more than twice the headroom
+// below the cap. Equal scores keep the faster machine, then registry order. A machine whose RAM could
+// not be read goes after the ones with room and before those without. Those without room come last,
+// most headroom first (the gate refuses them anyway; the order only decides what `pool status` names).
+// cands: [{ name, freeMb, pendingMb?, multiplier? }]. Returns rows { name, room, headroomMb, score }
+// best first, in the order given for ties.
+export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb = 0, roomyMb = DEFAULTS.roomyMb } = {}) {
+  const rows = cands.map((c, i) => {
+    const known = Number.isFinite(c.freeMb);
+    const headroomMb = known ? c.freeMb - (Number(c.pendingMb) || 0) - reserveMb : null;
+    const multiplier = Number(c.multiplier) > 0 ? Number(c.multiplier) : 1;
+    const room = known ? headroomMb >= minFreeMb : null;
+    const score = known ? Math.min(headroomMb, roomyMb) / multiplier : 0;
+    return { name: c.name, room, headroomMb, score, multiplier, i };
+  });
+  const tier = (r) => (r.room === true ? 0 : r.room === null ? 1 : 2);
+  rows.sort((a, b) => {
+    if (tier(a) !== tier(b)) return tier(a) - tier(b);
+    if (tier(a) === 0 && a.score !== b.score) return b.score - a.score;
+    if (tier(a) === 2 && a.headroomMb !== b.headroomMb) return b.headroomMb - a.headroomMb;
+    return a.multiplier - b.multiplier || a.i - b.i;
+  });
+  return rows.map(({ i, multiplier, ...r }) => r);
+}
+
+// Machines outside `have` (a ticket's machines) that have room for the job's need (MB: floor plus
+// reserve), for the pinned-job hint of `pool status`. others: [{ name, freeMb }].
+export function roomElsewhere(needMb, have, others) {
+  return others.filter((o) => !(have ?? []).includes(o.name) && Number.isFinite(o.freeMb) && Number.isFinite(needMb) && o.freeMb >= needMb).map((o) => o.name);
 }
 
 // RAM gate for a late client (`session join`): the session already runs, so only the client's own

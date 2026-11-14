@@ -58,7 +58,8 @@ Chernarus or a custom map works by placing components, with no script change.
   Kinds in use: `BreachTarget` (`LF_BreachTargetComponent`, and every bank
   vault), `BankVault` (`LF_BankVaultComponent`, `LF_HeistVaultComponent`),
   `HospitalSite` (hospital till and cabinet), `HideoutDoor`
-  (`LF_HideoutDoorComponent`, under the hideout id).
+  (`LF_HideoutDoorComponent`, under the hideout id), `Workplace`
+  (`LF_WorkplaceComponent`, under the place id; `LF_Workplace.FindAll(job, into)` lists a job's).
 - An id defaults to the entity name only so placed layers keep their saved
   keys; nothing looks an entity up by that name.
 - A place that is not on the map is a null lookup: the system logs and that
@@ -84,6 +85,20 @@ references the pack" and test 3: it fails when a core file names a pack GUID,
 path, class, or the pack addon ID, and when the pack holds a `.c` file that is
 not on its allowlist (empty today).
 
+**The boot half of test 1 is `tools\cli test --core-only`** (#326). It boots DebugWorld with
+`-addons LifeFramework` only, with the pack folder left off `-addonsDir` (the core is reached through a
+junction in the generated `game-addons`), and defines `LF_CORE_ONLY`. Add it to any `test` run:
+`tools\cli test --no-build --tier all --core-only` (the pool runs it on any machine; `--only` and `--tier`
+work as usual). `tools\cli ci`, `wt gate` and `wt ship` run it after the normal suite whenever the
+checkout holds the pack (`--skip-core-only` drops it). Its stamp in `tmp/test-results/summaries.jsonl` is
+tier `all-core`, so it never stands in for a normal full run. `core/only-boot` fails the run if anything
+besides the core and the base game is loaded.
+
+A failure here names the missing resource, and the fix is a neutral core default or a core fixture,
+never a pack reference. A test that genuinely needs pack content overrides `NeedsPack()` with a
+one-line reason; a core-only run skips it, prints `SKIP <test> (core-only run: needs the pack: <reason>)`
+and counts it in `skipped=N` on the `SUMMARY` line. Today none do. Prefer a core fixture to a skip.
+
 ## Grey cases, decided
 
 | Case | Core | Pack |
@@ -92,6 +107,7 @@ not on its allowlist (empty today).
 | Vehicles | Ownership, garage, impound, and the base vehicle prefabs with LF components | The catalogue: which cars, their prices, liveries |
 | Police | The system and the rank mechanics | Faction names, uniforms, rank titles |
 | Strings | Functional UI and prompt keys | Flavour copy, in the pack's own string table |
+| Terms (Police, town, currency) | The placeholders (`{police}`) and neutral default words | The pack's own words for a term, in its table, or the owner's (#958, [owner guide](../owner/rename-terms.md)) |
 | DebugWorld | The test annex with neutral fixtures | The village |
 | Voice, dialogue, animation | The systems and generic animations | Voice lines and story content |
 
@@ -132,6 +148,12 @@ core's range, and a README of what to fill in. The `.meta` GUIDs are random and 
 against every GUID in `addons/`, so none repeats. It refuses a name the core already uses (`Test`:
 `LF_Test` is the test base class). `validate-pack-manifest` and `validate-addon-boundary` hold every
 `LF_*` addon, so a fresh pack passes with no edits (`pack-new-selftest.mjs`).
+
+`tools\cli pack new <Name> --job <ID>` (#1111) also writes `Prefabs/Jobs/<Name><Job>Workplace.et`,
+a prefab that inherits the core `Prefabs/Jobs/LF_Workplace.et` with the job id set. The core
+prefab brings the punch clock with the clock-in action, the place registration and an optional NPC
+slot, so a pack needs no hand-wired actions and no script. A job id that is not a duty job
+(`POLICE`, `MEDIC`) still registers its place; it shows no clock-in.
 
 ## Checking a pack
 

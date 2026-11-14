@@ -1,6 +1,6 @@
 {
  "_note": "Mesh bounds of the vanilla prefabs the layers use, written by `tools/cli place measure` and read by prefabInfo so place does not re-measure. Re-run after a layer starts using a new vanilla prefab. unmeasured: no mesh (managers, road generators).",
- "unmeasured": ["PrefabLibrary/Props/Civilian/SignPub_01.et","Prefabs/WEGenerators/Roads/Asphalt/RG_Road_Asphalt_E_01_Narrow.et","Prefabs/WEGenerators/Roads/Cobblestone/RG_Road_Cobblestone_01.et","Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et","Prefabs/World/Game/TimeAndWeatherManager.et"],
+ "unmeasured": ["PrefabLibrary/Props/Civilian/SignPub_01.et","Prefabs/MP/MPDestructionManager.et","Prefabs/WEGenerators/Roads/Asphalt/RG_Road_Asphalt_E_01_Narrow.et","Prefabs/WEGenerators/Roads/Cobblestone/RG_Road_Cobblestone_01.et","Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et","Prefabs/World/Game/TimeAndWeatherManager.et"],
  "prefabs": {
   "PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et": {"cls":"GenericEntity","mesh":"Assets/Props/Civilian/SackUniversal_01/SackUniversal_01_Pile.xob","bounds":{"min":[-0.894,-0.03,-0.702],"max":[1.066,1.225,0.78]},"scale":1,"dynamic":false},
   "PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et": {"cls":"GenericEntity","mesh":"Assets/Props/Furniture/TableRecreation_01/TableRecreation_01.xob","bounds":{"min":[-0.603,0,-0.605],"max":[0.603,0.899,0.605]},"scale":1,"dynamic":false},

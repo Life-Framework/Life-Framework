@@ -456,7 +456,7 @@ StringTable {
     }
     CustomStringTableItem "{D9132B47493CAD58}" {
      Id "LF-Sign_ConvoyPickup_Rules"
-     Target_en_us "Pays "00 cash in hand on delivery. Once you are in a vehicle, getting out before the pub or dying fails the run."
+     Target_en_us "Pays $200 cash in hand on delivery. Once you are in a vehicle, getting out before the pub or dying fails the run."
      Comment "Sign card for the convoy pickup at the barn out of town, Rules section."
     }
     CustomStringTableItem "{AE84DE1019124F89}" {

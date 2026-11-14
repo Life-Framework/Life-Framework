@@ -58,7 +58,8 @@ function Read-Items {
   param($StPath)
   $stText = [System.IO.File]::ReadAllText($StPath, [System.Text.Encoding]::UTF8)
   # Each item is a flat property block: CustomStringTableItem "{GUID}" { Id ... Target_xx ... }
-  $blockPattern = 'CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{([^}]*)\}'
+  # A quoted text may hold braces (a term placeholder such as {police}, #958), so the body skips quoted strings whole.
+  $blockPattern = 'CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{((?:[^}"]|"(?:[^"\\]|\\.)*")*)\}'
   $list = @()
   foreach ($m in [regex]::Matches($stText, $blockPattern)) {
     $body = $m.Groups[1].Value

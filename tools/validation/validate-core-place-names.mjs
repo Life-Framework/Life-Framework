@@ -11,7 +11,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const PLACE_NAMES = /\b(Everon|St\.?\s+Philippe|Saint\s+Philippe|1989)\b/i;
-const ITEM = /CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{([^}]*)\}/g;
+// A quoted text may hold braces (a term placeholder such as {police}, #958), so the body skips quoted strings whole.
+const ITEM = /CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{((?:[^}"]|"(?:[^"\\]|\\.)*")*)\}/g;
 
 // [{ id, text }] for every core key whose English text names a place.
 export function placeNameHits(stText) {

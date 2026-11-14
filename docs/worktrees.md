@@ -195,6 +195,7 @@ anywhere.
 tools\cli test --no-build --tier all                      # first free slot anywhere (--any, the default)
 tools\cli test --no-build --only LF_Test_Money --local     # this PC only
 tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
+tools\cli test --no-build --tier all --core-only           # the core alone, pack hidden (#326); any machine
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
@@ -349,16 +350,49 @@ it, picks a lane and a budget, and prints one line per outcome.
 - **One request per worktree (#542).** A new `session up` from a worktree whose earlier request is
   still queued drops the earlier queue entry (the older process exits with "a newer session request
   replaced this one") and keeps the first request's age. `pool status` marks any leftover
-  duplicate.
+  duplicate. A waiter never rewrites a ticket that is gone: the older request used to write its
+  queue entry back after the drop (its ssh read of the laptop takes seconds), so one worktree
+  waited twice.
+- **Machine choice (any run that is not pinned).** A test, e2e or session request tries machines in
+  order of RAM headroom, read live (this PC's `freemem`, a pool machine's ssh read cached for 8 s,
+  30 s when it did not answer, so a decision never costs an ssh):
+  `headroom = free RAM - sessions still booting - the job's reserve`; a machine with
+  `headroom >= minFreeMb` has room and goes before one without; among machines with room the one
+  with the higher `min(headroom, roomyMb) / budgetMultiplier` goes first (`roomyMb` 6144 caps what
+  more RAM is worth; `budgetMultiplier` is 1 here and 2 for the laptop, so two roomy machines go to
+  the faster one, and the laptop wins over this PC only when this PC's headroom is under half of
+  the laptop's, up to the cap). Ties keep the faster machine, then registry order. A machine whose
+  RAM could not be read goes after those with room and before those without. A machine below floor
+  plus reserve takes no job while another machine has room; with no room anywhere the job waits as
+  before. The rule is `q.rankMachines` in `tools/lib/pool-queue.mjs`, proven by
+  `tools/validation/pool-selftest.mjs`.
+- **Pinning.** `--local`, `--remote [name]` and `--machine <name>` keep their pin, RAM or not. When
+  another machine has room and the pool would have chosen it, the run prints one `WARN  pool: pinned
+  to local (--local); lf-testbox has room ...; drop --local ...` at queue time, and `pool status`
+  shows `waits: ram: needs 1.5 GB free, local has 0.4 (pinned; lf-testbox has room)` while it
+  waits. Do not pin to save a thought: the pool's choice is the one that finishes. `ci`,
+  `wt gate` and `wt ship` pin nothing; their suite and the placement audit go through the same
+  choice (the audit's input list goes up with the run and `out.txt` comes back; only the
+  interactive `place` loop stays on this PC).
+- **Sessions flow like a river.** A lane is held for the window it is used. A session idle
+  `sessionIdleMin` (3) minutes while a job waits for its lane, or `sessionIdleMaxMin` (5) with
+  nobody waiting, is closed (the check runs whenever the pool is touched: a queued request polls it
+  every 10 s, and so does `pool status`); any harness or session command resets the clock, and
+  `session lease [min]` holds one. The hold cap with a session request waiting is `sessionHoldMin`
+  (10) minutes, then `sessionGraceMin` (2) to finish, at most `sessionHoldMaxMin` (20) for
+  `session up --hold`. `wt gate` and `wt ship` hold a test lane only for the suite run itself,
+  never while `validate --full` or the build runs (`cmdCi` takes no lane; the selftest asserts
+  that no gate function acquires one).
 - **RAM gate (every machine, read live).** A job starts on a machine only when that machine's
   free RAM, read at that moment (`freemem` here, one ssh read on a pool machine, the same check in
   the box's slot holder), covers it. A session reserves its server (`sessionReserveServerMb`, 600)
   plus `sessionReserveClientMb` (850; lowspec 800) per client; sessions still booting count with
-  their reserve too, since free RAM does not show them yet. With nothing else running on the machine
-  the job only has to fit (free >= reserve), so a machine is never over-committed and an idle one
-  always takes a job that fits; beside other servers it must also leave `minFreeMb` (1500). A test
-  reserves nothing beyond that floor. It waits with one line ("free RAM 2.2 GB minus 1.4 GB for the
-  session would be under 1.5 GB"). Lane counts in `tools/pool.json` are ceilings (ports, heat); the
+  their reserve too, since free RAM does not show them yet. Every start, the first server on a
+  machine included, must leave `minFreeMb` (1500) free after its reserve (2026-11-14: the floor
+  gated only a second server, so this PC at 0.4 GB free kept taking its first test and session
+  runs, which then timed out while the laptop idled). A test reserves nothing beyond that floor.
+  A job that does not fit waits with one line ("free RAM 2.2 GB minus 1.4 GB for the session
+  would be under 1.5 GB"). Lane counts in `tools/pool.json` are ceilings (ports, heat); the
   gate decides how many run, so a RAM change (the laptop lost 32 GB on 2026-11-14) needs no config
   edit. Measured 2026-11-10 on this 15.6 GB PC: server plus one client 1.3 GB, the second client
   +0.8 GB; with ~3.8 GB free and nothing running a 2-client full session (2.3 GB) fits, a second
@@ -372,7 +406,7 @@ it, picks a lane and a budget, and prints one line per outcome.
   blocks anyone.
 - **Status.** `pool status` prints each machine's live free RAM (and the laptop's temperature),
   and per waiting job where it may run, the reason (`ram 2-client full: needs 3.8 GB free, local
-  has 1.1, lf-testbox has 2.8`, `lane`, `behind N`, `starved, so it holds its place`) and an
+  has 1.1, lf-testbox has 2.8`; a pinned job adds `(pinned; lf-testbox has room)`; `lane`, `behind N`, `starved, so it holds its place`) and an
   estimated start: the (ahead+1)-th projected lane release on its machines, a session at the median
   hold of the last 50 (never past its hold cap plus grace), a test at its median run plus boot.
 - **Priority.** `--priority high|normal|low` on `test`, `e2e`, `dev`, `ci`,
@@ -389,15 +423,15 @@ it, picks a lane and a budget, and prints one line per outcome.
 - **Session hold cap.** One session at a time fits this PC, so a session that
   outlives its job starves the queue. A session started after the cap existed
   (`session.json` carries `holdCap`; older sessions are never capped) is judged
-  only while another `session up` request is queued: past `sessionHoldMin` (20
-  min, `tools/pool.json`) it is warned, and `sessionGraceMin` (5) later it is
+  only while another `session up` request is queued: past `sessionHoldMin` (10
+  min, `tools/pool.json`) it is warned, and `sessionGraceMin` (2) later it is
   closed (`session down`, logged as a `hold-cap` reclaim, the waiter starts at
   once). The waiting `up` runs the check every 10 s. The warning is one line,
   printed once on the holder's next harness or session command: "session: N waiting;
-  finish and run node agent-box/session.mjs down within 5 min or it is closed"
+  finish and run node agent-box/session.mjs down within 2 min or it is closed"
   (a harness prints it on stderr). With nobody queued there is no cap,
   and a warning whose waiter left is void. `session up --hold <min>` raises this
-  session's cap (45 at most, the number it was asked for is logged). A test job
+  session's cap (20 at most, the number it was asked for is logged). A test job
   waiting on RAM does not start the cap; the idle rule below still applies.
 - **Session records.** Every session writes one line to `runs.jsonl` when it ends
   (`"kind":"session"`: slug, priority, `waitS`, `heldS`, `boots`, `bootS`,
@@ -410,7 +444,7 @@ it, picks a lane and a budget, and prints one line per outcome.
   at 40, first in line there since it arrived first) is not restarted by every
   retry. `session up --wait` queues up to 90 min (it was 30, which ended before
   a low job reached high). The resource-database refresh runs before the queue.
-- **Idle sessions without a waiter, and on the laptop.** A session idle `sessionIdleMaxMin` (30) minutes is
+- **Idle sessions without a waiter, and on the laptop.** A session idle `sessionIdleMaxMin` (5) minutes is
   closed even with nobody waiting (it holds RAM and two client windows), on the next `pool status` or queue
   poll. A pool machine's sessions are judged from this PC too (one ssh read of their lease and the clients'
   command/result mtimes, at most once a minute): idle `sessionIdleMin` while a request here waits for that
@@ -419,7 +453,7 @@ it, picks a lane and a budget, and prints one line per outcome.
 - **Session lease.** Every `session.mjs` verb and every harness command
   to a session client stamps `lease.json` in the session dir; `node
   agent-box/session.mjs lease [min]` holds the session for that long. A session
-  with no command for `sessionIdleMin` (15) minutes while a job waits for its
+  with no command for `sessionIdleMin` (3) minutes while a job waits for its
   slot or for RAM is closed by the next waiting run (`pool: closed the session of
   X: idle N min ...`), and the agent's next harness command says why. The
   mtimes of the clients' `command.txt` and `result.txt` count too, so a session
