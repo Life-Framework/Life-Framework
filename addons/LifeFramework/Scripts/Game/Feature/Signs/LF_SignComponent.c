@@ -184,7 +184,7 @@ class LF_SignComponent : ScriptComponent
 		if (!sign)
 			return string.Empty;
 
-		string text = LF_SignCatalog.Resolve(sign.m_sTitle);
+		string text = LF_SignCatalog.ResolveTitle(sign.m_sTitle);
 		text.ToUpper();
 		return text;
 	}

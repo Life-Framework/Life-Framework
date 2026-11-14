@@ -202,7 +202,7 @@ under "Hard-coded flagship values in script".
 
 | Path | Class | Reason |
 | --- | --- | --- |
-| `everonlife_localization.st` (862 keys) | split | Functional keys stay; about 138 `LF-Sign_*` titles and texts, the arrival and intro quest copy, and the Everon-named forms move to a pack table |
+| `everonlife_localization.st` (1468 keys after #325) | split, done | Functional and neutral keys stay. 195 per-sign `LF-Sign_*` rows and the Everon-named, arrival and clerk copy moved to `LF_Everon1989/Language/lf_everon1989_localization.st`; the core keeps a neutral row under the same key (the pack's text wins when it loads) |
 | `everonlife_localization.*.conf` (7) | split | Generated from the `.st`; regenerated per table |
 
 The flavour keys that name the setting today: `LF-Sign_TownMap_*` ("Welcome to
