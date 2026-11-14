@@ -3779,13 +3779,13 @@ function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
     return r.status;
   };
   try {
-    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back);
+    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, Boolean(opts.preMove));
   } finally {
     back();
   }
 }
 
-function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back) {
+function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, preMove = false) {
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacySave ? ", legacy save format" : ""}${oldBuild ? ", stamped as game build 1.8.0.13" : ""}) in ${e.path}`);
   const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
   let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines });
@@ -3820,7 +3820,7 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
     }
     console.log(`e2e: old build: backed up the save before the reload boot -> ${backup} (${host.findSavePoints(backup).length} save point(s))`);
   }
-  const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : ""].filter(Boolean).join(",");
+  const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : "", preMove ? "LF_E2E_PRE_MOVE" : ""].filter(Boolean).join(",");
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
   const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines });
   const log2 = e2eShutdown.newestTestConsole(e.path);

@@ -458,6 +458,7 @@ after it. That is a standing guarantee, not a one-off check of #323:
   `Missions/` file, a `.gproj`, the pack/core boundary (`tools/lib/addons.mjs`,
   `validate-addon-boundary.mjs`) or the e2e harness. Other diffs skip it with one line. The trigger
   is `tools/validation/pre-move-gate-selftest.mjs`, offline.
+- **Newer-than-ref assertions:** pass 2 compiles with `LF_E2E_PRE_MOVE`. An e2e assertion about state the ref build never wrote (a record, flag or owner file added after `PRE_MOVE_REF`) goes inside `#ifndef LF_E2E_PRE_MOVE`; without that the gate fails on the test, not on the save. Today: the rules quiz flag (`LF_Test_E2E_SaveState`) and the switches reload boot (`LF_Test_PersistSwitchesRestart`).
 - **Failure reading:** a load that resolves a prefab by path instead of GUID shows as a missing
   marker value in `pass2-verify-load` or an `Unable to find` line in the second boot. Fix the loader
   to compare GUIDs (`LF_SaveIds`), never re-point the ref.
