@@ -223,7 +223,12 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 
 ## Research before code
 
-Never guess an Enfusion API. Look it up from any terminal:
+Never guess an Enfusion API. Start from the installed game, not the docs dump:
+`toolscli api class <Name>` prints the real declaration (attributes such as
+`[BaseContainerProps()]` included) from the game paks, `api grep <regex>`
+searches them, and every answer carries the game build and a STALE note when
+`api_search`'s dump predates the install. `api_search` is the fallback. Other
+lookups, from any terminal:
 `tools\cli call api_search|game_read|wb_read_props|asset_search '<json>'`
 (use `@args.json` from PowerShell). `wb_read_props` gives resolved inherited
 prefab values; `asset_search` gives `{GUID}path`. Reading sibling features and
