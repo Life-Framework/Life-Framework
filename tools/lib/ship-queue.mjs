@@ -55,7 +55,7 @@ export function pickRunnable(entries, { slots = 1 } = {}) {
     else if (free <= 0) wait.push({ entry: e, why: `waits for a gate slot (${slots} running)` });
     else {
       free--;
-      start.push({ entry: e, why: running.length + start.length > 1 ? "starts beside the running gate(s): no shared files" : "head of the queue" });
+      start.push({ entry: e, why: running.length + start.length > 0 ? "starts beside the running gate(s): no shared files" : "head of the queue" });
     }
     ahead.push(e);
   }

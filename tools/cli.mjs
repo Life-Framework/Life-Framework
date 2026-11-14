@@ -3002,12 +3002,43 @@ function workbenchGate(root, opts = {}) {
   const t0 = Date.now();
   return pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" }).then((r) => {
     console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+    if (r.code === 0 && r.rDir) pullRemoteRdb(root, m, r.rDir);
     if (r.code === 3) {
       console.log(`ci: ${m.name} could not take the Workbench steps; running them here`);
       return ciWorkbench(root, opts);
     }
     return r.code === 0 ? 0 : 1;
   });
+}
+
+// After a remote Workbench build the run folder's resource database is current. A local one that is
+// stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
+// headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
+// registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
+function pullRemoteRdb(root, m, rDir) {
+  for (const name of rdbAddons(root)) {
+    const addon = addonDir(root, name);
+    const local = join(addon, "resourceDatabase.rdb");
+    const before = rdbFreshness(addon);
+    if (before.missing.length === 0) continue;
+    const got = `${local}.remote`;
+    const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
+    if (down.status !== 0 || !existsSync(got)) {
+      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      continue;
+    }
+    const keep = `${local}.local`;
+    if (existsSync(local)) copyFileSync(local, keep);
+    copyFileSync(got, local);
+    const after = rdbFreshness(addon);
+    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    else if (existsSync(keep)) {
+      copyFileSync(keep, local);
+      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+    }
+    rmSync(got, { force: true });
+    rmSync(keep, { force: true });
+  }
 }
 
 // The placement audit takes a test lane through the pool like `test` (any machine by default). On a
