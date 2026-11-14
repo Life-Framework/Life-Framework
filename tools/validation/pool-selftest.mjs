@@ -56,7 +56,7 @@
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
-import { hostname, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
@@ -69,6 +69,12 @@ import { trimScript } from "../lib/ws-trim.mjs";
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
 process.env.LF_POOL_POLL_MS = "100"; // read by tools/remote/pool.mjs on each poll
+// Hermetic: not this PC's hostname (tools/pool.json gives lf-testbox "hostname": "PC1", which on the laptop would make
+// that entry the local machine and drop it from the ssh list) and not its LF_TESTBOX env. A real lf.local.json is never
+// read: every root below is a fresh temp repo. The "laptop view" block below replays hostname PC1 on purpose.
+for (const k of ["LF_TESTBOX", "LF_TESTBOX_ROOT"]) delete process.env[k];
+const hostname = () => "lf-selftest-pc";
+pool.setHostnameForTest(hostname());
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
@@ -640,7 +646,20 @@ try {
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
   check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 2 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  // Laptop view: on the box itself (hostname PC1, the committed pool.json entry) the machines are lf-testbox as local and nothing
+  // else, with no TypeError ranking them; a PC (any other hostname) keeps local plus an ssh lf-testbox.
   writeFileSync(join(dir, "lf.local.json"), "{}");
+  pool.setHostnameForTest("PC1");
+  try {
+    const lapView = pool.loadMachines(dir);
+    check(lapView.length === 1 && lapView[0].name === "lf-testbox" && lapView[0].via === "local" && !lapView.some((m) => m.via === "ssh"), "on hostname PC1 the committed pool.json entry is not the only local machine");
+    const lapLocal = lapView.find((m) => m.via === "local");
+    check(pool.orderMachines(dir, [lapLocal], pool.poolSettings(dir)).length === 1 && pool.rankedMachines(dir, [lapLocal], pool.poolSettings(dir), { localFreeMb: 6000 })[0]?.name === "lf-testbox", "ranking the laptop's own local machine failed");
+    const lapPc = pool.loadMachines(dir).find((m) => m.via === "ssh");
+    check(lapPc === undefined, "the laptop kept an ssh entry for itself");
+  } finally {
+    pool.setHostnameForTest(hostname());
+  }
   check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
   check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox" && pool.sessionMachineCandidates(dir, 2).length === 2, "session candidates are not this PC first, then the laptop");
   check(pool.sessionMachineCandidates(dir, 3).map((m) => m.name).join() === "local", "a 3-client session went to the laptop past its maxClients (heat)");
