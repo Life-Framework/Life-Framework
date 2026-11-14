@@ -169,9 +169,15 @@ export function checkOwner(root, schema, source, shipped = {}) {
       case "string":
         if (n.t !== "str" && n.t !== "null") add("error", n, `${where} is not a string; ${keep}`, path);
         return;
-      case "array":
-        if (n.t !== "arr" || n.items.some((it) => it.t !== "str")) add("error", n, `${where} is not a list of strings; keeping the shipped list`, path);
+      case "array": {
+        const kind = sch.items?.type === "integer" || sch.items?.type === "number" ? "num" : sch.items?.type === "boolean" ? "bool" : "str";
+        const what = kind === "str" ? "strings" : kind === "bool" ? "true or false" : sch.items?.type === "integer" ? "whole numbers" : "numbers";
+        const wrong = n.t !== "arr"
+          || n.items.some((it) => it.t !== kind)
+          || (sch.items?.type === "integer" && n.items.some((it) => !Number.isInteger(it.value)));
+        if (wrong) add("error", n, `${where} is not a list of ${what}; keeping the shipped list`, path);
         return;
+      }
       default:
     }
   };
