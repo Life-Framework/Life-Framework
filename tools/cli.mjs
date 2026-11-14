@@ -64,7 +64,7 @@ import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
-import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
+import { interactiveNeeded, interactiveSpawnDetached, winQuote } from "./lib/interactive-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -1202,7 +1202,7 @@ function ensureAddonResourceDatabase(root, name) {
       "-profile", profile,
       ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ];
-    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
+    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
@@ -1219,6 +1219,20 @@ function ensureAddonResourceDatabase(root, name) {
   }
 }
 
+
+// Over ssh (a pool machine running a remote test or e2e) this is session 0, which has no GPU device:
+// Workbench logs "Couldn't build device list for any adapter", fails engine init and then hangs
+// ("Application hangs (generated dump and waiting)") until the timeout kills it, so every refresh
+// there took the full 600 s. Run it in the signed-in desktop session instead, through a one-shot
+// scheduled task (tools/remote/desktop/run-interactive.ps1, as ci --wb-only does since #1158).
+function workbenchInDesktopSession(root, exe, args, cwd, waitSec) {
+  const r = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, "tools", "remote", "desktop", "run-interactive.ps1"),
+    "-Exe", exe, "-WorkDir", cwd, "-WaitSec", String(waitSec), "-Arguments", args.map(winQuote).join(" ")], { cwd: root });
+  const out = `${r.stdout || ""}${r.stderr || ""}`;
+  const m = /state=(\w+) result=(-?\d+)/.exec(out);
+  if (!m) console.log(`WARN  desktop-session Workbench: ${out.trim().split(/\r?\n/).pop() || "no output"}`);
+  return { status: m ? Number(m[2]) : r.status };
+}
 
 // One headless Workbench run of a ResourceManager plugin under the build lock, bounded by
 // timeoutMs (a hung Workbench is killed with its job). Used by tools\cli asset (stage import).
@@ -2807,6 +2821,11 @@ async function cmdCi(root = ROOT, opts = {}) {
     // After the suite: a branch that moved or added world props must pass the placement audit. It
     // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
     ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    // The config harness (#301): static always (a second, ~1 s), the game-session parts only when config code, a .conf, the schema or a config fixture changed.
+    ["config harness", async () => {
+      const cg = await import("./commands/config-gate.mjs");
+      return (await import("./lib/config-gate.mjs")).runConfigGate(changedFiles(root), { static: () => cg.runStatic(root), sessions: () => cg.runSessions(root) });
+    }],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -3024,7 +3043,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
-  e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids]
+  e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids] [--pre-move <ref>] [--mission playtest]
                                 two-boot save, restart, and reload proof in this worktree;
                                 --legacy-save writes the save before #331 (version 23) in boot 1;
                                 --old-build stamps boot 1's save as game build 1.8.0.13 (#980);
@@ -3556,7 +3575,7 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build"), contentIds: args.includes("--content-ids") });
+  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build"), contentIds: args.includes("--content-ids"), ...e2eMoveFlags(e.path, args) });
 }
 
 // The two-boot save/restart proof in one pool slot: both boots run on the same
@@ -3581,7 +3600,7 @@ async function e2eOnce(root, opts, lastTry) {
   let extra = {};
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(opts.preMove ? ["--pre-move", opts.preMove] : []), ...(opts.mission ? ["--mission", opts.mission] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
       if (!lastTry && pool.machineGone(root, slot, code)) {
         extra = { lost: true };
@@ -3591,7 +3610,7 @@ async function e2eOnce(root, opts, lastTry) {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
       code = opts.contentIds
         ? e2eContentIds.runContentIds(root, (passOpts) => runE2ePass(root, "persistence", passOpts))
-        : runE2eHere(root, opts.legacySave, opts.oldBuild);
+        : runE2eHere(root, opts.legacySave, opts.oldBuild, opts);
     }
     return { code };
   } finally {
@@ -3608,11 +3627,68 @@ async function e2eOnce(root, opts, lastTry) {
 // oldBuild (--old-build, #980): the save boot stamps its save as game build 1.8.0.13 (LF_E2E_OLD_BUILD,
 // and the engine's meta-info.json is rewritten to match), the build gate sees an update and backs the
 // save up beside the profile, and the reload boot on the real build must load it whole.
-function runE2eHere(root, legacySave = false, oldBuild = false) {
+// --pre-move <ref> (#323, D7 (a)): pass 1 runs on <ref> (the tree before a move batch, resolved
+// to a commit before the run leaves this machine), pass 2 on this tree, so the reload boot loads a
+// save made before the move. Needs a clean tree; the checkout returns to this commit either way.
+// --mission playtest boots the playtest header (GUID 1054CC8646357708, core before batch 1, pack
+// after) instead of the suite's, the save key a real host has.
+function e2eMoveFlags(root, args) {
+  const out = {};
+  const ref = argValue(args, "--pre-move");
+  if (ref) {
+    const r = spawnSync("git", ["-C", root, "rev-parse", "--verify", `${ref}^{commit}`], { encoding: "utf8", windowsHide: true });
+    out.preMove = r.status === 0 ? r.stdout.trim() : ref;
+  }
+  const mission = argValue(args, "--mission");
+  if (mission) out.mission = mission;
+  return out;
+}
+
+function e2eGit(root, args) {
+  return spawnSync("git", ["-C", root, ...args], { encoding: "utf8", windowsHide: true });
+}
+
+function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
   const profile = join(root, "server", "profile", "test");
   const e = { path: root };
   const legacy = [legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_OLD_BUILD" : ""].filter(Boolean).join(",");
-  const mission = e2eShutdown.E2E_MISSION;
+  if (opts.mission && opts.mission !== "playtest") {
+    console.log(`FAIL  e2e: --mission takes 'playtest' (got ${opts.mission})`);
+    return 1;
+  }
+  const mission = opts.mission === "playtest" ? "{1054CC8646357708}Missions/LF_PlaytestTown.conf" : e2eShutdown.E2E_MISSION;
+  let restore = null;
+  if (opts.preMove) {
+    const dirty = e2eGit(root, ["status", "--porcelain", "--untracked-files=normal"]).stdout.trim();
+    if (dirty) {
+      console.log(`FAIL  e2e --pre-move needs a clean tree (commit first): ${dirty.split(String.fromCharCode(10)).slice(0, 3).join("; ")}`);
+      return 1;
+    }
+    const branch = e2eGit(root, ["symbolic-ref", "-q", "--short", "HEAD"]).stdout.trim();
+    restore = branch || e2eGit(root, ["rev-parse", "HEAD"]).stdout.trim();
+    const co = e2eGit(root, ["checkout", "-q", "--detach", opts.preMove]);
+    if (co.status !== 0) {
+      console.log(`FAIL  e2e --pre-move: checkout ${opts.preMove}: ${(co.stderr || co.stdout).trim()}`);
+      return 1;
+    }
+    console.log(`e2e: pre-move: pass 1 runs on ${opts.preMove.slice(0, 10)}, pass 2 on ${restore}`);
+  }
+  const back = () => {
+    if (!restore) return 0;
+    const r = e2eGit(root, ["checkout", "-q", ...(/^[0-9a-f]{40}$/.test(restore) ? ["--detach"] : []), restore]);
+    if (r.status !== 0) console.log(`FAIL  e2e --pre-move: could not return to ${restore}: ${(r.stderr || r.stdout).trim()}`);
+    else console.log(`e2e: pre-move: back on ${restore} for pass 2`);
+    restore = null;
+    return r.status;
+  };
+  try {
+    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back);
+  } finally {
+    back();
+  }
+}
+
+function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back) {
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacySave ? ", legacy save format" : ""}${oldBuild ? ", stamped as game build 1.8.0.13" : ""}) in ${e.path}`);
   const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
   let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines });
@@ -3633,6 +3709,7 @@ function runE2eHere(root, legacySave = false, oldBuild = false) {
     console.log(`e2e: profile ${profile}`);
     return pass1;
   }
+  if (back() !== 0) return 1;
   if (oldBuild) {
     const fake = "1.8.0.13";
     const point = host.stampNewestSave(profile, fake);
@@ -4031,7 +4108,7 @@ const cmds = {
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
-    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids") });
+    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids"), ...e2eMoveFlags(ROOT, flags ?? []) });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => {

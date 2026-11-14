@@ -96,6 +96,7 @@ export function gateSteps() {
     ["validate --full", ["tools/cli.mjs", "validate", "--full"]],
     ["release-ready --strict", ["tools/validation/validate-release-ready.mjs", "--strict"]],
     ["full suite", ["tools/cli.mjs", "test", "--no-build", "--tier", "all"]],
+    ["config harness (static + sessions)", ["tools/cli.mjs", "config-gate", "--full"]],
     ["audit placement --strict", ["tools/cli.mjs", "audit", "placement", "--strict"]],
     ["pack LifeFramework", ["tools/cli.mjs", "pack", "LifeFramework", "--wait"]],
     ["pack LF_Everon1989", ["tools/cli.mjs", "pack", "LF_Everon1989", "--wait"]],

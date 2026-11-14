@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------------------------
 class LF_ParkBrakeHarness
 {
-	static const ResourceName RAMP = "Prefabs/Structures/BuildingParts/Entry/ConcreteSlope_02_MediumVehicle.et";
+	static const ResourceName RAMP = "{BB64FBA6986C62F7}Prefabs/Structures/BuildingParts/Entry/ConcreteSlope_02_MediumVehicle.et";
 	static const vector SPOT = "300 0 100";
 	//! Metres above the ramp's own top surface the car is set down (it settles onto its wheels).
 	static const float DROP = 0.4; // lf-fixed: harness geometry, not a gameplay knob
