@@ -1,0 +1,43 @@
+{
+  "slug": "money-bag",
+  "name": "MoneyBag",
+  "kind": "gadget",
+  "roadmap": "#340",
+  "concept": "The bank's cash sack of 1989 Everon: a tall grey-brown hessian sack of banknotes with rope wound round its gathered neck. A robber carries it out of the vault by the neck in one hand, sets it down, or throws it into the back of a van.",
+  "prompt": "Canvas cash sack of a late-1980s Eastern-bloc bank: a lumpy bag stuffed with banknotes, a gathered neck tied with a drawstring or strap, and a plain stencilled panel or patch on the front. no text, no logos.",
+  "texture_prompt": "",
+  "meshy": {
+    "ai_model": "latest",
+    "target_polycount": 8000,
+    "remesh": false,
+    "texture_resolution": "2k"
+  },
+  "size_m": {
+    "length": 0.36,
+    "height": 0.46,
+    "width": 0.25
+  },
+  "budget": {
+    "lod0_tris": 8000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 2048,
+    "credits": 70
+  },
+  "fit": {
+    "offset": [
+      0,
+      0.229,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Roleplay/MoneyBag",
+  "prefab_dir": "Prefabs/Items/Roleplay",
+  "materials": {
+    "default": "fabric",
+    "regions": []
+  }
+}

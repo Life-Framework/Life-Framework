@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{831B6570B6ED4DA2}Assets/Props/Roleplay/AppleJuicer/Data/AppleJuicer_BCR.edds"
+ NMOMap "{6833E5127827C264}Assets/Props/Roleplay/AppleJuicer/Data/AppleJuicer_NMO.edds"
+}
