@@ -224,6 +224,26 @@ The session column is one recorded run (pool log: no wait, held 2.1 min) plus th
 numbers measured on 2026-11-10. So `look` is 5x faster for one area with an empty queue, 16x per
 shot, and avoids the queue; it does not use less RAM at its peak, it uses it for seconds.
 
+## Measured: `look serve` (2026-11-14, lf-cloud: Windows Server 2025, 8 vCPU, Tesla T4, 31.6 GB)
+
+`look bank --close 2` (7 shots), `--budget 240`, run over ssh from a pool run folder. lf-cloud is
+slower than the PCs (Workbench start 13 to 84 s, entering play up to a minute while its caches were
+cold), so compare the columns, not these numbers with the 2026-11-11 table.
+
+| | run 1 | run 2 | run 3 |
+|---|---|---|---|
+| through the server, same snapshot (`server-same`) | 17.4 s | 11.6 s | 11.6 s |
+| fresh Workbench (`--fresh`) | 37.7 s | 67.3 s | 126.2 s |
+| through the server after a `.layer` or script change (`server-restart`) | 38.5 s | 41.3 s | 48.3 s |
+| through the server after a docs-only change (`server-reopen`) | 19.6 s | | |
+
+Starting the server took 13 to 24 s once warm (103 s on its first boot). The fresh runs went up as the
+box got busier (another agent's Workbench and a Steam download beside them); the server runs did not.
+Proofs on the same box: two run folders with different `Signs.layer` states, shot back to back
+through one server, read back Sign_Bank at x 190.06, 193.06 and 190.06; a script change restarted
+and shot correctly; a server killed 45 s into a 17-shot request fell back to a fresh Workbench that
+returned all 17.
+
 ## The tools surveyed
 
 | Tool | Renders | Verdict |
