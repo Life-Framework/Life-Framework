@@ -99,6 +99,126 @@ class LF_PlacementGeometry
 		return Vector(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]);
 	}
 
+	//! Degrees a thing placed across a road may be turned off straight across by the player. Under
+	//! LF_PlacementService.TOLERANCE_DEGREES, so the ghost never shows a heading the server refuses.
+	static const float ROAD_SLACK = 10; // lf-fixed: under the confirm's 15 degree road tolerance, not a gameplay knob
+	//! One turn input, in degrees, and the fine one.
+	static const float STEP_DEGREES = 15; // lf-fixed: the placement turn step (docs/roadmap/building-foundation.md)
+	static const float FINE_DEGREES = 1; // lf-fixed: the placement fine turn step
+
+	//------------------------------------------------------------------------------------------------
+	//! Compass-style yaw in degrees of a heading (0 = +z, 90 = +x), 0 for a vertical one.
+	static float YawOf(vector forward)
+	{
+		vector flat = Flat(forward);
+		if (flat == vector.Zero)
+			return 0;
+
+		return Math.Atan2(flat[0], flat[2]) * Math.RAD2DEG;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The horizontal unit heading of a yaw (the inverse of YawOf).
+	static vector HeadingOf(float yaw)
+	{
+		float radians = yaw * Math.DEG2RAD;
+		return Vector(Math.Sin(radians), 0, Math.Cos(radians));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A yaw in [0, 360).
+	static float WrapYaw(float yaw)
+	{
+		float wrapped = yaw;
+		while (wrapped >= 360)
+			wrapped -= 360;
+
+		while (wrapped < 0)
+			wrapped += 360;
+
+		return wrapped;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `yaw` turned by `steps` (negative is left) of `degrees` each.
+	static float TurnYaw(float yaw, int steps, float degrees)
+	{
+		return WrapYaw(yaw + steps * degrees);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The point the aim ray picks, kept within `maxDistance` (horizontal) of `player`. `hit` is where
+	//! the ray struck something; with no strike the point is the ray's far end brought to the player's
+	//! own height (a level or upward look still points somewhere). `clamped` says the reach cut it.
+	static vector AimPoint(vector eye, vector aimDir, bool hasHit, vector hit, vector player, float maxDistance, float rayLength, out bool clamped)
+	{
+		vector point = hit;
+		if (!hasHit)
+		{
+			point = eye + aimDir * rayLength;
+			point[1] = player[1];
+		}
+
+		vector offset = Vector(point[0] - player[0], 0, point[2] - player[2]);
+		float distance = offset.Length();
+		clamped = distance > maxDistance;
+		if (clamped)
+		{
+			offset = offset * (maxDistance / distance);
+			point[0] = player[0] + offset[0];
+			point[2] = player[2] + offset[2];
+		}
+
+		return point;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The yaw a snap mode allows for what the player turned to. GROUND keeps it. ACROSS_ROAD with a
+	//! road near puts it straight across that road (either way across, the nearer), with at most
+	//! ROAD_SLACK degrees of turn either side; without a road it keeps it.
+	static float SnapYaw(LF_EPlacementSnap snap, float yaw, bool hasRoad, vector roadDir)
+	{
+		if (snap != LF_EPlacementSnap.ACROSS_ROAD || !hasRoad)
+			return WrapYaw(yaw);
+
+		vector along = Flat(roadDir);
+		if (along == vector.Zero)
+			return WrapYaw(yaw);
+
+		float across = YawOf(Vector(-along[2], 0, along[0]));
+		float delta = WrapYaw(yaw - across + 180) - 180;
+		if (delta > 90)
+		{
+			across += 180;
+			delta -= 180;
+		}
+		else if (delta < -90)
+		{
+			across -= 180;
+			delta += 180;
+		}
+
+		return WrapYaw(across + Math.Clamp(delta, -ROAD_SLACK, ROAD_SLACK));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The heading a thing placed against a wall takes: out of the wall face, along its horizontal
+	//! normal. Zero when the surface is not a wall (its normal is more up or down than sideways).
+	static vector WallForward(vector normal)
+	{
+		if (Math.AbsFloat(normal[1]) >= 0.5)
+			return vector.Zero;
+
+		return Flat(normal);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the thing lies against the wall: `hit` pushed out along the face by `offset`.
+	static vector WallOrigin(vector hit, vector forward, float offset)
+	{
+		return hit + forward * offset;
+	}
+
 	//! Largest coordinate a proposal may carry (a 100 km world), so a garbage float never reaches a trace.
 	static const float MAX_COORD = 100000; // lf-fixed: sanity bound on a wire value, not a gameplay knob
 
@@ -171,6 +291,9 @@ class LF_PlacementService
 	//! ACROSS_ROAD: a road whose centre line is this close to the spot turns the thing across it.
 	static const float ROAD_REACH = 12; // lf-fixed: geometry, how far a road is looked for around the player
 
+	//! How far past the aim reach the aim ray runs, so it can strike the ground the reach then clamps.
+	static const float AIM_RAY_EXTRA = 12; // lf-fixed: geometry of the aim ray, not a gameplay knob
+
 	protected static string s_sLastRefusal;
 
 	//------------------------------------------------------------------------------------------------
@@ -235,6 +358,66 @@ class LF_PlacementService
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client (the ghost): the spot the camera aims at, within the placeable's aim reach of `player`,
+	//! turned to `yaw` and then snapped by the snap mode (across the road for ACROSS_ROAD), probed like
+	//! Plan. `eye` and `aimDir` are the camera's position and forward. `clamped` says the reach cut the
+	//! aim. FLOOR and WALL are refused like Plan refuses them (the buildings build them, #1033).
+	static LF_EPlacementVerdict PlanAimed(IEntity player, notnull LF_PlaceableComponent placeable, IEntity ignore, vector eye, vector aimDir, float yaw, out vector transform[4], notnull LF_PlacementProbe probe, out bool clamped)
+	{
+		clamped = false;
+		vector playerTransform[4];
+		player.GetWorldTransform(playerTransform);
+		LF_EPlacementSnap snap = placeable.GetSnap();
+		if (snap != LF_EPlacementSnap.GROUND && snap != LF_EPlacementSnap.ACROSS_ROAD)
+		{
+			LF_Debug.Error(FEATURE, string.Format("snap mode %1 is not built yet (the buildings, #1033); refusing", typename.EnumToString(LF_EPlacementSnap, snap)));
+			LevelAt(playerTransform[3], LF_PlacementGeometry.HeadingOf(yaw), transform);
+			probe.m_bGround = false;
+			return LF_PlacementRules.Judge(probe, MAX_STEP);
+		}
+
+		array<IEntity> exclude = {player};
+		if (ignore)
+			exclude.Insert(ignore);
+
+		float rayLength = placeable.GetAimReach() + AIM_RAY_EXTRA;
+		vector hit;
+		bool hasHit = AimTrace(eye, aimDir, rayLength, exclude, hit);
+		vector point = LF_PlacementGeometry.AimPoint(eye, aimDir, hasHit, hit, playerTransform[3], placeable.GetAimReach(), rayLength, clamped);
+		bool hasRoad = false;
+		vector roadDir = vector.Zero;
+		if (snap == LF_EPlacementSnap.ACROSS_ROAD)
+			hasRoad = NearestRoad(point, roadDir);
+
+		float snapped = LF_PlacementGeometry.SnapYaw(snap, yaw, hasRoad, roadDir);
+		vector level[4];
+		LevelAt(point, LF_PlacementGeometry.HeadingOf(snapped), level);
+		return ProbeAt(player, placeable, ignore, level, transform, probe);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the aim ray first strikes the world or an entity (not `exclude`), within `length`.
+	protected static bool AimTrace(vector eye, vector aimDir, float length, array<IEntity> exclude, out vector hit)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return false;
+
+		TraceParam trace = new TraceParam();
+		trace.Start = eye;
+		trace.End = eye + aimDir * length;
+		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		trace.LayerMask = EPhysicsLayerPresets.Projectile;
+		trace.ExcludeArray = exclude;
+		float fraction = world.TraceMove(trace, null);
+		if (fraction >= 1)
+			return false;
+
+		hit = trace.Start + (trace.End - trace.Start) * fraction;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server and client: the probes at `spot` (its position and horizontal heading): the ground at
 	//! the footprint's two ends and its middle, the step between them, the clearance box over it and
 	//! what it would lie on. `transform` is the spot put on the ground, lying along the slope.
@@ -296,6 +479,20 @@ class LF_PlacementService
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: Confirm for the spot an aimed ghost showed (LF_PlacementAim's request: the ghost's
+	//! origin and forward), then the consumer's own bookkeeping for what was placed.
+	static IEntity ConfirmAimed(IEntity player, IEntity item, vector origin, vector forward)
+	{
+		vector proposal[4];
+		LF_PlacementGeometry.Transform(origin - forward * 0.5, origin + forward * 0.5, proposal);
+		IEntity placed = Confirm(player, item, proposal);
+		if (placed)
+			LF_SpikeStrips.Adopt(player, placed);
+
+		return placed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: `player` places the `item` they carry (or that lies at their feet) at `proposal`, the
 	//! spot their ghost showed. Refused with the reason logged (and toasted) unless they may place
 	//! it, the proposal is well formed and within reach of where they stand, and the probes there say
@@ -335,7 +532,7 @@ class LF_PlacementService
 		// Where the player stands now, not a fresh plan: the ghost was planned a moment ago, and the
 		// player may have walked or turned since. The reach bounds the spot; the probes judge it.
 		string offBy;
-		float maxDistance = placeable.GetReach() - placeable.GetFootprintMins()[2] + TOLERANCE_METRES;
+		float maxDistance = placeable.GetAimReach() + TOLERANCE_METRES;
 		vector playerTransform[4];
 		player.GetWorldTransform(playerTransform);
 		if (!LF_PlacementGeometry.WithinReach(playerTransform[3], proposal, maxDistance, MAX_RISE, offBy))

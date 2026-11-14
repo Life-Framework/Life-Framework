@@ -231,6 +231,95 @@ class LF_SpikeStripHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: aimed placement (#1028), driving what the keys drive.
+	//!   begin        the strip at the officer's feet: the "Place where I aim" action, through the engine
+	//!   face N       the character turns to yaw N degrees where it stands (the aim follows the camera)
+	//!   turn N       the ghost turns N steps of 15 degrees (negative left); fine N: N degrees
+	//!   hold|release freeze the ghost where it lies for a world shot, or let it follow again
+	//!   place        the Place key: the ghost's spot goes to the server
+	//!   cancel       the Cancel key
+	//!   state        where the ghost lies now and whether it is shown
+	static string Aim(string action, string value)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+			return "error no_character";
+
+		if (action == "begin")
+		{
+			IEntity item = GroundStrip(character);
+			if (!item)
+				return "error no_strip_on_ground";
+
+			BaseActionsManagerComponent manager = BaseActionsManagerComponent.Cast(item.FindComponent(BaseActionsManagerComponent));
+			array<BaseUserAction> actions = {};
+			if (manager)
+				manager.GetActionsList(actions);
+
+			LF_PlacementAimAction aim;
+			foreach (BaseUserAction candidate : actions)
+			{
+				if (!aim)
+					aim = LF_PlacementAimAction.Cast(candidate);
+			}
+
+			if (!aim)
+				return "error no_aim_action";
+
+			if (!aim.CanBeShownScript(character) || !aim.CanBePerformedScript(character))
+				return "error cannot_perform";
+
+			character.DoStartObjectAction(aim);
+			character.DoPerformObjectAction(aim);
+			if (!LF_PlacementAim.IsRunning())
+				return "error aim_did_not_start";
+		}
+		else if (action == "face")
+		{
+			vector transform[4];
+			character.GetWorldTransform(transform);
+			vector at = transform[3];
+			Math3D.AnglesToMatrix(Vector(value.ToFloat(), 0, 0), transform);
+			transform[3] = at;
+			character.Teleport(transform);
+			return string.Format("ok face yaw %1", value);
+		}
+		else if (action == "hold" || action == "release")
+			LF_PlacementAim.SetHeld(action == "hold");
+		else if (action == "turn")
+			LF_PlacementAim.Turn(value.ToInt(), false);
+		else if (action == "fine")
+			LF_PlacementAim.Turn(value.ToInt(), true);
+		else if (action == "place")
+		{
+			vector sentOrigin;
+			vector sentForward;
+			if (!LF_PlacementAim.CurrentSpot(sentOrigin, sentForward))
+				return "error no_ghost";
+
+			if (!LF_PlacementAim.Place())
+				return "error place_held_back " + LF_PlacementRules.Name(LF_PlacementAim.GetVerdict());
+
+			return string.Format("ok sent ghost %1 at %2 heading %3", LF_PlacementRules.Name(LF_PlacementAim.GetVerdict()), sentOrigin, sentForward);
+		}
+		else if (action == "cancel")
+		{
+			LF_PlacementAim.Cancel();
+			return string.Format("ok cancelled running=%1 ghost=%2", LF_PlacementAim.IsRunning(), LF_PlacementGhost.IsShown());
+		}
+		else if (action != "state")
+			return "error unknown_aim_action " + action;
+
+		LF_PlacementAim.Refresh();
+		vector origin;
+		vector forward;
+		if (!LF_PlacementAim.CurrentSpot(origin, forward))
+			return string.Format("ok no ghost running=%1", LF_PlacementAim.IsRunning());
+
+		return string.Format("ok ghost %1 at %2 heading %3 yaw %4 clamped %5", LF_PlacementRules.Name(LF_PlacementAim.GetVerdict()), origin, forward, LF_PlacementAim.GetYaw(), LF_PlacementAim.WasClamped());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: the deployed strip by the verge as this machine has it.
 	static string Where()
 	{

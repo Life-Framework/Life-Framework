@@ -880,7 +880,7 @@ class LF_Bank
 		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(bag);
 		if (manager)
 		{
-			int stored = LF_InventoryUtils.GetAmount(manager, LF_MoneyUtils.CashPrefab());
+			int stored = LF_MoneyUtils.GetCash(manager);
 			if (stored > 0)
 				return stored;
 		}

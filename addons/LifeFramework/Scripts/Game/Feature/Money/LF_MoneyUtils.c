@@ -13,18 +13,42 @@ class LF_MoneyUtils
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Prefabs that still count as cash though they are not the slot's prefab now (#1130): the core
+	//! cash when a pack swapped the slot after a server's first save, and every prefab the save
+	//! alias table leads to it. Stacks of these are counted and spent first; new cash is always the
+	//! slot prefab, so they drain away. The save format holds the prefab and is untouched.
+	static array<ResourceName> LegacyCashPrefabs()
+	{
+		array<ResourceName> legacy = {};
+		LF_PrefabSlots.LegacyPrefabs(SLOT_CASH, legacy);
+		return legacy;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Get the total amount of cash the target has across all storages
 	//! \return the total cash, or -1 when the target has no resolvable storage
 	static int GetCash(InventoryStorageManagerComponent target)
 	{
-		return LF_InventoryUtils.GetAmount(target, CashPrefab());
+		int total = LF_InventoryUtils.GetAmount(target, CashPrefab());
+		if (total < 0)
+			return total;
+
+		array<ResourceName> legacy = LegacyCashPrefabs();
+		foreach (ResourceName prefab : legacy)
+		{
+			int amount = LF_InventoryUtils.GetAmount(target, prefab);
+			if (amount > 0)
+				total += amount;
+		}
+
+		return total;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! \ref GetCash(InventoryStorageManagerComponent)
 	static int GetCash(IEntity target)
 	{
-		return LF_InventoryUtils.GetAmount(target, CashPrefab());
+		return GetCash(LF_InventoryUtils.GetResponsibleStorageManager(target));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,7 +84,7 @@ class LF_MoneyUtils
 	//! A partial removal returns the removed part, never the full request.
 	static int RemoveCash(InventoryStorageManagerComponent target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
 	{
-		int removed = LF_InventoryUtils.RemoveAmount(target, CashPrefab(), amount);
+		int removed = RemoveCounted(target, amount);
 		if (target)
 			PublishMoved(target.GetOwner(), removed, false, reason, counterpartyUid);
 
@@ -71,8 +95,32 @@ class LF_MoneyUtils
 	//! \ref RemoveCash(InventoryStorageManagerComponent, int, string, string)
 	static int RemoveCash(IEntity target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
 	{
-		int removed = LF_InventoryUtils.RemoveAmount(target, CashPrefab(), amount);
+		int removed = RemoveCounted(LF_InventoryUtils.GetResponsibleStorageManager(target), amount);
 		PublishMoved(target, removed, false, reason, counterpartyUid);
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes `amount` from the legacy stacks first, then the slot's prefab (the same set GetCash counts).
+	//! eturn what was removed in all
+	protected static int RemoveCounted(InventoryStorageManagerComponent target, int amount)
+	{
+		if (!target || amount <= 0)
+			return 0;
+
+		int removed;
+		array<ResourceName> legacy = LegacyCashPrefabs();
+		foreach (ResourceName prefab : legacy)
+		{
+			if (removed >= amount)
+				break;
+
+			removed += LF_InventoryUtils.RemoveAmount(target, prefab, amount - removed);
+		}
+
+		if (removed < amount)
+			removed += LF_InventoryUtils.RemoveAmount(target, CashPrefab(), amount - removed);
+
 		return removed;
 	}
 

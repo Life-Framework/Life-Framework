@@ -131,7 +131,10 @@
     "jailArrivalRadius": 8,
     "applyDeskRange": 6,
     "compliantSeconds": 60,
-    "spikeStripLifetimeSeconds": 600
+    "spikeStripLifetimeSeconds": 600,
+    "applyMinPlaytimeHours": 50,
+    "applyRejectCooldownHours": 72,
+    "trialHours": 168
   },
   "shops": {
     "defaultBuyPrice": 50,

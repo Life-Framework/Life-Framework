@@ -348,6 +348,7 @@ class LF_PoliceRanks
 		}
 
 		target.SetPoliceRank(nextRank);
+		LF_PoliceApplications.EndTrial(targetUid);
 		LF_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by %3", targetUid, nextRank, promoterUid));
 		return true;
 	}
@@ -383,6 +384,7 @@ class LF_PoliceRanks
 			return false;
 
 		account.SetPoliceRank(nextRank);
+		LF_PoliceApplications.EndTrial(uid);
 		LF_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by time on duty", uid, nextRank));
 		return true;
 	}

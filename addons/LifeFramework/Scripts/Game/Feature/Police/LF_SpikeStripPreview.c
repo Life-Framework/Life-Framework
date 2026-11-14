@@ -128,6 +128,10 @@ class LF_SpikeStripPreview
 	//------------------------------------------------------------------------------------------------
 	protected static void Tick()
 	{
+		// The aimed mode owns the one ghost while it runs (#1028).
+		if (LF_PlacementAim.IsRunning())
+			return;
+
 		IEntity officer = LF_Utils.GetLocalCharacter();
 		BaseWorld world = GetGame().GetWorld();
 		IEntity item;

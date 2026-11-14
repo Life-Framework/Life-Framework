@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! Server cost budget at the benchmark's player count (#335). Loaded from
 //! Configs/Perf/LF_PerfBudget.conf; LF_Test_PerfBudget fails when a measured cost passes a limit
-//! here. Times are wall-clock milliseconds for the whole synthetic population, not per player,
-//! so one limit reads "this pass costs at most N ms of one server frame budget". The numbers
+//! here. Time limits are counts of reference ops (one turn of the calibration loop in LF_Test_PerfBudget,
+//! timed in the same run), so the same limit holds on a slow or busy machine. The numbers
 //! came from `tools\cli perf` (docs/architecture/performance.md); tighten them when a system
 //! gets faster, raise one only with a line in that doc saying why.
 //!
@@ -21,14 +21,14 @@ class LF_PerfBudget
 	[Attribute("3", UIWidgets.Auto, "Crime events published per synthetic character")]
 	int m_iCrimeEventsPerPlayer;
 
-	[Attribute("100", UIWidgets.Auto, "Most ms to export every account (one save pass)")]
-	int m_iMaxAccountExportMs;
+	[Attribute("100", UIWidgets.Auto, "Most reference ops to export every account (one save pass)")]
+	int m_iMaxAccountExportRef;
 
-	[Attribute("1000", UIWidgets.Auto, "Most ms for the whole store write (SerializeStore, JSON)")]
-	int m_iMaxSaveWriteMs;
+	[Attribute("1000", UIWidgets.Auto, "Most reference ops for the whole store write (SerializeStore, JSON)")]
+	int m_iMaxSaveWriteRef;
 
-	[Attribute("1000", UIWidgets.Auto, "Most ms for the whole store read (DeserializeStore, JSON)")]
-	int m_iMaxSaveReadMs;
+	[Attribute("1000", UIWidgets.Auto, "Most reference ops for the whole store read (DeserializeStore, JSON)")]
+	int m_iMaxSaveReadRef;
 
 	[Attribute("1000", UIWidgets.Auto, "Most bytes of save per character with the shared logs empty (JSON text; binary is smaller)")]
 	int m_iMaxSaveBytesPerPlayer;
@@ -36,17 +36,17 @@ class LF_PerfBudget
 	[Attribute("6000000", UIWidgets.Auto, "Most bytes of the whole save with the ledger and incident log at their caps (JSON text)")]
 	int m_iMaxSaveBytesAtCap;
 
-	[Attribute("200", UIWidgets.Auto, "Most microseconds to publish one money event through every subscriber, log below its cap")]
-	int m_iMaxMoneyEventUs;
+	[Attribute("200", UIWidgets.Auto, "Most reference ops to publish one money event through every subscriber, log below its cap")]
+	int m_iMaxMoneyEventRef;
 
-	[Attribute("500", UIWidgets.Auto, "Most microseconds to publish one money event with the ledger at its retention cap")]
-	int m_iMaxMoneyEventAtCapUs;
+	[Attribute("500", UIWidgets.Auto, "Most reference ops to publish one money event with the ledger at its retention cap")]
+	int m_iMaxMoneyEventAtCapRef;
 
-	[Attribute("100", UIWidgets.Auto, "Most microseconds to publish one crime event")]
-	int m_iMaxCrimeEventUs;
+	[Attribute("100", UIWidgets.Auto, "Most reference ops to publish one crime event")]
+	int m_iMaxCrimeEventRef;
 
-	[Attribute("200", UIWidgets.Auto, "Most ms for one query per character against a full ledger (the incident view)")]
-	int m_iMaxLedgerQueryAllMs;
+	[Attribute("200", UIWidgets.Auto, "Most reference ops for one query per character against a full ledger (the incident view)")]
+	int m_iMaxLedgerQueryAllRef;
 
 	protected static ref LF_PerfBudget s_Budget;
 	protected static bool s_bLoadAttempted;

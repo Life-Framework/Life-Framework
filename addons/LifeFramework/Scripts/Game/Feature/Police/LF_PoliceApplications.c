@@ -1,8 +1,10 @@
 //------------------------------------------------------------------------------------------------
 //! Server record of police applications, a text file under the profile
-//! ($profile:LifeFramework/police_applications.txt, one `STATUS|uid|name|why|availability|unix`
-//! line each; STATUS is OPEN or APPROVED). It is not part of the save, so it needs no persistence
-//! version. Approval writes the police roster through LF_WhitelistManager.
+//! ($profile:LifeFramework/police_applications.txt, one `STATUS|uid|name|why|availability|unix|rejectedAt|trialEndsAt`
+//! line each; STATUS is OPEN, APPROVED, REJECTED or EXPIRED). It is not part of the save, so it needs
+//! no persistence version; the reader still takes the older six-field rows (both new fields 0), and
+//! the next write upgrades them. Approval writes the police roster through LF_WhitelistManager.
+//! Gates (#803): playtime and rejection cooldown at Submit, a trial that ends the roster entry.
 //------------------------------------------------------------------------------------------------
 class LF_PoliceApplication
 {
@@ -12,15 +14,22 @@ class LF_PoliceApplication
 	string m_sWhy;
 	string m_sAvailability;
 	int m_iTime;
+	int m_iRejectedAt;	// unix time of the rejection, 0 for none
+	int m_iTrialEndsAt;	// unix time the trial ends, 0 for no trial (or already promoted)
 }
 
 class LF_PoliceApplications
 {
 	static const string STATUS_OPEN = "OPEN";
 	static const string STATUS_APPROVED = "APPROVED";
+	static const string STATUS_REJECTED = "REJECTED";
+	static const string STATUS_EXPIRED = "EXPIRED";
+	static const int ROW_FIELDS_V1 = 6;
+	static const int ROW_FIELDS = 8;
 
 	protected static ref array<ref LF_PoliceApplication> s_aApplications;
 	protected static string s_sPath = "";
+	protected static int s_iLastSecondsLeft;
 
 	//------------------------------------------------------------------------------------------------
 	//! Tests point this at a private file. An empty path uses the profile file.
@@ -99,9 +108,41 @@ class LF_PoliceApplications
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: records an application. \return "" when filed, else the refusal key.
+	//! Wait (seconds) the latest refusal named: the playtime or cooldown left. 0 for any other refusal.
+	static int GetLastSecondsLeft()
+	{
+		return s_iLastSecondsLeft;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unix time of the latest rejection of uid, 0 for none.
+	static int LastRejectedAt(string uid)
+	{
+		int latest = 0;
+		foreach (LF_PoliceApplication app : All())
+		{
+			if (app.m_sUid == uid && app.m_iRejectedAt > latest)
+				latest = app.m_iRejectedAt;
+		}
+		return latest;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: records an application with no gates (playtest missions, tests).
+	//! \return "" when filed, else the refusal key.
 	static string Submit(string uid, string name, string why, string availability, bool onRoster)
 	{
+		return SubmitGated(uid, name, why, availability, onRoster, 0, 0, 0, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: records an application, refusing it under the playtime and cooldown gates (#803).
+	//! A refusal names its reason; GetLastSecondsLeft is the time left. A gate at 0 hours is off.
+	//! The cooldown reads the account's latest rejection from this file.
+	//! \return "" when filed, else the refusal key.
+	static string SubmitGated(string uid, string name, string why, string availability, bool onRoster, int playtimeSeconds, int minPlaytimeHours, int cooldownHours, int now)
+	{
+		s_iLastSecondsLeft = 0;
 		if (uid.IsEmpty())
 			return "#LF-PoliceApp_Error_NoAccount";
 
@@ -110,11 +151,13 @@ class LF_PoliceApplications
 		availability = LF_PoliceApplicationRules.Clean(availability);
 
 		string refusal = LF_PoliceApplicationRules.RefuseForm(name, why, availability);
+		int secondsLeft;
 		if (refusal.IsEmpty())
-			refusal = LF_PoliceApplicationRules.RefuseSubmit(onRoster, HasOpen(uid));
+			refusal = LF_PoliceApplicationRules.RefuseSubmitGated(onRoster, HasOpen(uid), playtimeSeconds, minPlaytimeHours, LastRejectedAt(uid), cooldownHours, now, secondsLeft);
 		if (!refusal.IsEmpty())
 		{
-			LF_Debug.Info("Police", string.Format("police application from %1 refused: %2", uid, refusal));
+			s_iLastSecondsLeft = secondsLeft;
+			LF_Debug.Info("Police", string.Format("police application from %1 refused: %2 (%3 left)", uid, refusal, LF_PoliceApplicationRules.FormatDuration(secondsLeft)));
 			return refusal;
 		}
 
@@ -142,12 +185,20 @@ class LF_PoliceApplications
 			return false;
 		}
 
-		return ApproveInstant(uid);
+		return ApproveAt(uid, System.GetUnixTime(), LF_PoliceConfig.TrialHours());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server, playtest missions only: approves with no admin present.
 	static bool ApproveInstant(string uid)
+	{
+		return ApproveAt(uid, System.GetUnixTime(), 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: approves the open application of uid at now. A trial of trialHours (0 for none)
+	//! ends the roster entry unless the officer is promoted first.
+	static bool ApproveAt(string uid, int now, int trialHours)
 	{
 		LF_PoliceApplication app = FindOpen(uid);
 		if (!app)
@@ -158,9 +209,81 @@ class LF_PoliceApplications
 
 		LF_WhitelistManager.AddFactionWhitelist(app.m_sUid, LF_EFactionType.POLICE);
 		app.m_sStatus = STATUS_APPROVED;
+		app.m_iTrialEndsAt = LF_PoliceApplicationRules.TrialEndsAt(now, trialHours);
 		Save();
-		LF_Debug.Info("Police", string.Format("police application of %1 (%2) approved, added to the police roster", app.m_sUid, app.m_sName));
+		LF_Debug.Info("Police", string.Format("police application of %1 (%2) approved, added to the police roster, trial ends at %3", app.m_sUid, app.m_sName, app.m_iTrialEndsAt));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: rejects the open application of uid and starts the reapply cooldown.
+	//! \return True when an open application was rejected.
+	static bool Reject(string uid, bool approverIsAdmin, int now)
+	{
+		if (!LF_PoliceApplicationRules.CanApprove(approverIsAdmin))
+		{
+			LF_Debug.Warn("Police", string.Format("rejection of %1 refused: the sender is not an administrator", uid));
+			return false;
+		}
+
+		LF_PoliceApplication app = FindOpen(uid);
+		if (!app)
+		{
+			LF_Debug.Warn("Police", string.Format("rejection refused: %1 has no open application", uid));
+			return false;
+		}
+
+		app.m_sStatus = STATUS_REJECTED;
+		app.m_iRejectedAt = now;
+		Save();
+		LF_Debug.Info("Police", string.Format("police application of %1 (%2) rejected at %3", app.m_sUid, app.m_sName, now));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a promotion ends the trial for good.
+	//! \return True when a running trial was ended.
+	static bool EndTrial(string uid)
+	{
+		bool ended = false;
+		foreach (LF_PoliceApplication app : All())
+		{
+			if (app.m_sStatus != STATUS_APPROVED || app.m_sUid != uid || app.m_iTrialEndsAt <= 0)
+				continue;
+
+			app.m_iTrialEndsAt = 0;
+			ended = true;
+		}
+
+		if (ended)
+		{
+			Save();
+			LF_Debug.Info("Police", string.Format("trial of %1 ended by promotion", uid));
+		}
+		return ended;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: removes from the police roster every officer whose trial ran out at now unpromoted.
+	//! \return How many left the roster.
+	static int ExpireTrials(int now)
+	{
+		int expired = 0;
+		foreach (LF_PoliceApplication app : All())
+		{
+			if (app.m_sStatus != STATUS_APPROVED || !LF_PoliceApplicationRules.TrialExpired(app.m_iTrialEndsAt, now))
+				continue;
+
+			LF_WhitelistManager.RemoveFactionWhitelist(app.m_sUid, LF_EFactionType.POLICE);
+			app.m_sStatus = STATUS_EXPIRED;
+			app.m_iTrialEndsAt = 0;
+			expired++;
+			LF_Debug.Info("Police", string.Format("trial of %1 (%2) expired unpromoted, removed from the police roster", app.m_sUid, app.m_sName));
+		}
+
+		if (expired > 0)
+			Save();
+		return expired;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -183,7 +306,8 @@ class LF_PoliceApplications
 		{
 			array<string> parts = {};
 			line.Split("|", parts, false);
-			if (parts.Count() != 6)
+			int fields = parts.Count();
+			if (fields != ROW_FIELDS_V1 && fields != ROW_FIELDS)
 				continue;
 
 			LF_PoliceApplication app = new LF_PoliceApplication();
@@ -193,6 +317,11 @@ class LF_PoliceApplications
 			app.m_sWhy = parts[3];
 			app.m_sAvailability = parts[4];
 			app.m_iTime = parts[5].ToInt();
+			if (fields == ROW_FIELDS)
+			{
+				app.m_iRejectedAt = parts[6].ToInt();
+				app.m_iTrialEndsAt = parts[7].ToInt();
+			}
 			s_aApplications.Insert(app);
 		}
 		handle.Close();
@@ -215,7 +344,7 @@ class LF_PoliceApplications
 
 		foreach (LF_PoliceApplication app : All())
 		{
-			handle.WriteLine(string.Format("%1|%2|%3|%4|%5|%6", app.m_sStatus, app.m_sUid, app.m_sName, app.m_sWhy, app.m_sAvailability, app.m_iTime));
+			handle.WriteLine(string.Format("%1|%2|%3|%4|%5|%6|%7|%8", app.m_sStatus, app.m_sUid, app.m_sName, app.m_sWhy, app.m_sAvailability, app.m_iTime, app.m_iRejectedAt, app.m_iTrialEndsAt));
 		}
 		handle.Close();
 	}

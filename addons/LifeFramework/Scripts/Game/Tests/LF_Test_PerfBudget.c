@@ -1,4 +1,11 @@
-// red-proof: 2026-11-14, load tolerance: with `m_iMaxMoneyEventUs 5` (a 10x regression against the ~50 us measured) the run failed `perf money-event-us 85 us/event over budget 11 (limit 5, load scale 231 pct)`; the calibration loop had scaled the limit for the loaded box and the regression still failed. Restored to 200; green. Earlier: Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` in Configs/Perf/LF_PerfBudget.conf, `tools\cli perf --local` failed `perf money-event-us 33 us/event over budget 1` and exited 1. Restored to 200; green.
+// red-proof: 2026-11-14, reference-op budgets: with the money publish tripled in the measured path (a planted 3x), `perf-budget` failed `perf money-event-us 23.4375 us/event over budget 20.72 (63 ref ops against 56, one ref op 370 ns)` on this PC and `... 124.219 us/event over budget 89.6 (77 ref ops against 56, one ref op 1600 ns)` on lf-cloud. Skips in the wt e2e boots (LF_E2E_HOST_STOP, LF_E2E_LOAD_BOOT). Removed the plant; green on this PC, lf-testbox and lf-cloud. Earlier: Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` the run failed `perf money-event-us 33 us/event over budget 1` and exited 1.
+//! One row of the calibration workload in LF_Test_PerfBudget.
+class LF_PerfRefItem
+{
+	string m_sKey;
+	int m_iValue;
+}
+
 // tier: PERSISTENCE
 //! perf/budget-128 (#335): the server cost gate. Builds a synthetic population (accounts, bank
 //! balances, a crime history, a money log) of `m_iPlayers` characters through the public
@@ -14,13 +21,19 @@ class LF_Test_PerfBudget : LF_Test
 {
 	protected static const string UID_PREFIX = "perf-bench-";
 
-	//! Calibration: a fixed CPU loop timed on this run. The budgets were set on an idle box; when the loop
-	//! takes longer than CALIBRATION_REF_MS the box is loaded (other sessions, builds) and every time limit
-	//! scales by the same ratio, capped at CALIBRATION_MAX_PCT. A real regression slows the code under test
-	//! but not this loop, so the ratio stays 1 and the unscaled budget catches it.
-	protected static const int CALIBRATION_REF_MS = 16;
-	protected static const int CALIBRATION_MAX_PCT = 400;
-	protected int m_iScalePct = 100;
+	//! Calibration. Every time limit in LF_PerfBudget is a count of reference ops, not microseconds: one
+	//! ref op is one turn of a small pure-script loop (allocate a managed row, build a string key, append
+	//! to an array, set a map entry), the same kind of work the bus, ledger and serializer do. The loop is
+	//! timed on this run, on this machine, right before each measure (best of three), so a slow box or a
+	//! busy one stretches the limit by the same ratio it stretches the code under test, and a measure that
+	//! needs 3x the budgeted ref ops fails on any machine. The limit has no scale cap and no floor.
+	protected static const int REF_OPS = 100000;
+	//! Rows the reference loop keeps alive before it drops them.
+	protected static const int REF_RETAIN = 1000;
+	//! One export is under a millisecond, so time a batch of them.
+	protected static const int EXPORT_BATCH = 20;
+	protected float m_fRefNs = 250;
+	protected bool m_bMuted;
 
 	override string GetName()
 	{
@@ -28,66 +41,117 @@ class LF_Test_PerfBudget : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One measure against one limit. The BENCH line prints even when it passes.
-	protected void Check(LF_TestContext ctx, string name, int value, int limit, string unit)
+	//! Bytes are deterministic: a plain limit.
+	protected void CheckBytes(LF_TestContext ctx, string name, int value, int limit, string unit)
 	{
-		LF_Debug.Info(LF_Perf.FEATURE, string.Format("BENCH %1 value=%2 budget=%3 unit=%4", name, value, limit, unit));
-		int scaled = limit;
-		if (unit != "bytes" && unit != "bytes/player")
-			scaled = (limit * m_iScalePct) / 100;
+		Say(string.Format("BENCH %1 value=%2 budget=%3 unit=%4", name, value, limit, unit));
+		ctx.True(value <= limit, string.Format("perf %1 %2 %3 over budget %4", name, value, unit, limit));
+	}
 
-		ctx.True(value <= scaled, string.Format("perf %1 %2 %3 over budget %4 (limit %5, load scale %6 pct)", name, value, unit, scaled, limit, m_iScalePct));
+	//------------------------------------------------------------------------------------------------
+	//! One measure of time against a limit in ref ops. costUs the measured cost in microseconds
+	//! (per event, or per pass for the ms measures); unit "ms" prints milliseconds, anything else microseconds.
+	protected void CheckRef(LF_TestContext ctx, string name, float costUs, int maxRef, string unit)
+	{
+		float used = (costUs * 1000) / m_fRefNs;
+		float limitUs = (maxRef * m_fRefNs) / 1000;
+		float value = costUs;
+		float limit = limitUs;
+		if (unit == "ms")
+		{
+			value = costUs / 1000;
+			limit = limitUs / 1000;
+		}
+
+		int shownValue = Math.Floor(value);
+		int shownLimit = Math.Floor(limit);
+		int shownUsed = Math.Floor(used);
+		int shownRefNs = Math.Floor(m_fRefNs);
+		Say(string.Format("BENCH %1 value=%2 budget=%3 unit=%4 refOps=%5 maxRefOps=%6 refNs=%7", name, shownValue, shownLimit, unit, shownUsed, maxRef, shownRefNs));
+		ctx.True(used <= maxRef, string.Format("perf %1 %2 %3 over budget %4 (%5 ref ops against %6, one ref op %7 ns)", name, value, unit, limit, shownUsed, maxRef, m_fRefNs));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void Report(string name, int value, string unit)
 	{
-		LF_Debug.Info(LF_Perf.FEATURE, string.Format("BENCH %1 value=%2 budget=none unit=%3", name, value, unit));
+		Say(string.Format("BENCH %1 value=%2 budget=none unit=%3", name, value, unit));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Best of three timings of a fixed loop; returns the load scale in percent (100 = idle box).
-	protected static int Calibrate()
+	//! The measures run with the LF_Debug console chatter off: every event logs a line or two, and the
+	//! cost of writing a line is the box's disk and console, not the code under test. The BENCH lines
+	//! print through here, which lifts the mute for one line.
+	protected void Say(string message)
+	{
+		LF_Debug.SetAllEnabled(true);
+		LF_Debug.Info(LF_Perf.FEATURE, message);
+		LF_Debug.SetAllEnabled(!m_bMuted);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Mute(bool muted)
+	{
+		m_bMuted = muted;
+		LF_Debug.SetAllEnabled(!muted);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Times the reference loop (best of three) and stores the cost of one ref op in ns.
+	protected void Calibrate()
 	{
 		int best = 0;
 		for (int run = 0; run < 3; run++)
 		{
 			int t0 = System.GetTickCount();
-			int acc = 0;
-			array<int> sink = new array<int>();
-			for (int i = 0; i < 400000; i++)
+			array<ref LF_PerfRefItem> rows = new array<ref LF_PerfRefItem>();
+			map<string, int> index = new map<string, int>();
+			for (int i = 0; i < REF_OPS; i++)
 			{
-				acc = (acc + i * 7) % 100003;
-				if ((i % 64) == 0)
-					sink.Insert(acc);
+				LF_PerfRefItem item = new LF_PerfRefItem();
+				item.m_sKey = UID_PREFIX + (i % 128).ToString();
+				item.m_iValue = i;
+				rows.Insert(item);
+				index.Set(item.m_sKey, i);
+				if (rows.Count() >= REF_RETAIN)
+					rows.Clear();
 			}
+
 			int ms = System.GetTickCount(t0);
 			if (run == 0 || ms < best)
 				best = ms;
 		}
 
-		int pct = (best * 100) / CALIBRATION_REF_MS;
-		if (pct < 100)
-			pct = 100;
-		if (pct > CALIBRATION_MAX_PCT)
-			pct = CALIBRATION_MAX_PCT;
-
-		LF_Debug.Info(LF_Perf.FEATURE, string.Format("BENCH calibration-ms value=%1 budget=none unit=ms scalePct=%2", best, pct));
-		return pct;
+		m_fRefNs = (best * 1000000.0) / REF_OPS;
+		if (m_fRefNs < 1)
+			m_fRefNs = 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static int PerOpUs(int ms, int ops)
+	protected static float PerOpUs(int ms, int ops)
 	{
 		if (ops <= 0)
 			return 0;
 
-		return (ms * 1000) / ops;
+		return (ms * 1000.0) / ops;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
+		// A restart proof (wt e2e: the save boot, LF_E2E_HOST_STOP, and the reload boot, LF_E2E_LOAD_BOOT) is
+		// not a perf proof. This test also resets the managers and writes 128 synthetic accounts, so it has
+		// no business in those boots; the ordinary suite and `tools\cli perf` still run it.
+#ifdef LF_E2E_HOST_STOP
+		LF_Debug.Info(LF_Perf.FEATURE, "perf/budget-128 skipped: restart-proof boot (LF_E2E_HOST_STOP)");
+		ctx.True(true, "perf budget not measured in a restart-proof boot");
+		return;
+#endif
+#ifdef LF_E2E_LOAD_BOOT
+		LF_Debug.Info(LF_Perf.FEATURE, "perf/budget-128 skipped: restart-proof boot (LF_E2E_LOAD_BOOT)");
+		ctx.True(true, "perf budget not measured in a restart-proof boot");
+		return;
+#endif
+
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves");
 		if (!gameMode)
@@ -98,7 +162,6 @@ class LF_Test_PerfBudget : LF_Test
 		if (!persistence)
 			return;
 
-		m_iScalePct = Calibrate();
 		LF_PerfBudget budget = LF_PerfBudget.Get();
 		int players = budget.m_iPlayers;
 		ctx.True(players >= 128, "the budget is set for at least 128 players");
@@ -138,38 +201,73 @@ class LF_Test_PerfBudget : LF_Test
 		Report("populate-ms", System.GetTickCount(t), "ms");
 		ctx.Equal(players, LF_PlayerAccountManager.ExportAll().Count(), "every synthetic account is resident");
 
-		// Crime history through the bus (the record and the incident log both listen).
-		t = System.GetTickCount();
-		int crimeOps = 0;
-		for (index = 0; index < players; index++)
+		Mute(true);
+
+		// Crime history through the bus (the record and the incident log both listen). Each section is
+		// timed in chunks of players and the cheapest chunk counts: a load spike on a shared box hits some
+		// chunks, a real regression hits all of them.
+		Calibrate();
+		float bestUs = -1;
+		int chunks = 2;
+		int per = players / chunks;
+		int ch;
+		for (ch = 0; ch < chunks; ch++)
 		{
-			for (int c = 0; c < budget.m_iCrimeEventsPerPlayer; c++)
+			int from = ch * per;
+			int to = from + per;
+			if (ch == chunks - 1)
+				to = players;
+
+			int crimeOps = 0;
+			t = System.GetTickCount();
+			for (index = from; index < to; index++)
 			{
-				LF_EventBus.Publish(LF_OnCrimeCommitted.Create(UID_PREFIX + index.ToString(), LF_WantedReports.OFFENCE_ROBBERY));
-				crimeOps++;
+				for (int c = 0; c < budget.m_iCrimeEventsPerPlayer; c++)
+				{
+					LF_EventBus.Publish(LF_OnCrimeCommitted.Create(UID_PREFIX + index.ToString(), LF_WantedReports.OFFENCE_ROBBERY));
+					crimeOps++;
+				}
 			}
+			float crimeUs = PerOpUs(System.GetTickCount(t), crimeOps);
+			if (bestUs < 0 || crimeUs < bestUs)
+				bestUs = crimeUs;
 		}
-		Check(ctx, "crime-event-us", PerOpUs(System.GetTickCount(t), crimeOps), budget.m_iMaxCrimeEventUs, "us/event");
+		CheckRef(ctx, "crime-event-us", bestUs, budget.m_iMaxCrimeEventRef, "us/event");
 
 		// Money log, below the cap: every subscriber (ledger, incident log) runs.
-		t = System.GetTickCount();
-		int moneyOps = 0;
-		for (index = 0; index < players; index++)
+		Calibrate();
+		bestUs = -1;
+		chunks = 4;
+		per = players / chunks;
+		for (ch = 0; ch < chunks; ch++)
 		{
-			int balance = 1000 + index;
-			for (int m = 0; m < budget.m_iMoneyEventsPerPlayer; m++)
-			{
-				bool credit = (m % 2) == 0;
-				if (credit)
-					balance += 50;
-				else
-					balance -= 50;
+			int moneyFrom = ch * per;
+			int moneyTo = moneyFrom + per;
+			if (ch == chunks - 1)
+				moneyTo = players;
 
-				LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(UID_PREFIX + index.ToString(), LF_Ledger.ACCOUNT_BANK, 50, credit, "perf-bench", balance, ""));
-				moneyOps++;
+			int moneyOps = 0;
+			t = System.GetTickCount();
+			for (index = moneyFrom; index < moneyTo; index++)
+			{
+				int balance = 1000 + index;
+				for (int m = 0; m < budget.m_iMoneyEventsPerPlayer; m++)
+				{
+					bool credit = (m % 2) == 0;
+					if (credit)
+						balance += 50;
+					else
+						balance -= 50;
+
+					LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(UID_PREFIX + index.ToString(), LF_Ledger.ACCOUNT_BANK, 50, credit, "perf-bench", balance, ""));
+					moneyOps++;
+				}
 			}
+			float moneyUs = PerOpUs(System.GetTickCount(t), moneyOps);
+			if (bestUs < 0 || moneyUs < bestUs)
+				bestUs = moneyUs;
 		}
-		Check(ctx, "money-event-us", PerOpUs(System.GetTickCount(t), moneyOps), budget.m_iMaxMoneyEventUs, "us/event");
+		CheckRef(ctx, "money-event-us", bestUs, budget.m_iMaxMoneyEventRef, "us/event");
 		Report("ledger-rows", LF_Ledger.Count(), "rows");
 		Report("incident-rows", LF_IncidentLog.Count(), "rows");
 
@@ -179,7 +277,7 @@ class LF_Test_PerfBudget : LF_Test
 		JsonSaveContext baseContext = new JsonSaveContext(false);
 		LF_PersistenceComponentSerializer.SerializeStore(persistence, baseContext);
 		int baseBytes = baseContext.SaveToString().Length();
-		Check(ctx, "save-bytes-per-player", baseBytes / players, budget.m_iMaxSaveBytesPerPlayer, "bytes/player");
+		CheckBytes(ctx, "save-bytes-per-player", baseBytes / players, budget.m_iMaxSaveBytesPerPlayer, "bytes/player");
 
 		// Money log at its retention cap: the steady state of a busy server. Fill it with rows
 		// of the same shape, then publish more.
@@ -200,38 +298,75 @@ class LF_Test_PerfBudget : LF_Test
 		}
 		LF_Ledger.ApplyAll(fill);
 
-		int capOps = 2000;
-		t = System.GetTickCount();
-		for (index = 0; index < capOps; index++)
+		Calibrate();
+		int capOps = 500;
+		bestUs = -1;
+		for (ch = 0; ch < 4; ch++)
 		{
-			LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(UID_PREFIX + (index % players).ToString(), LF_Ledger.ACCOUNT_BANK, 50, true, "perf-bench", 1050, ""));
+			t = System.GetTickCount();
+			for (index = 0; index < capOps; index++)
+			{
+				LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(UID_PREFIX + (index % players).ToString(), LF_Ledger.ACCOUNT_BANK, 50, true, "perf-bench", 1050, ""));
+			}
+			float capUs = PerOpUs(System.GetTickCount(t), capOps);
+			if (bestUs < 0 || capUs < bestUs)
+				bestUs = capUs;
 		}
-		Check(ctx, "money-event-at-cap-us", PerOpUs(System.GetTickCount(t), capOps), budget.m_iMaxMoneyEventAtCapUs, "us/event");
+		CheckRef(ctx, "money-event-at-cap-us", bestUs, budget.m_iMaxMoneyEventAtCapRef, "us/event");
 		Report("ledger-rows-at-cap", LF_Ledger.Count(), "rows");
 
-		// One query per character against the full ledger.
+		// One query per character against the full ledger (min of three passes).
+		Calibrate();
 		array<ref LF_LedgerEntry> found = new array<ref LF_LedgerEntry>();
-		t = System.GetTickCount();
-		for (index = 0; index < players; index++)
+		int bestMs = -1;
+		int rep;
+		for (rep = 0; rep < 3; rep++)
 		{
-			LF_Ledger.Last(UID_PREFIX + index.ToString(), LF_Ledger.ACCOUNT_BANK, 20, found);
+			t = System.GetTickCount();
+			for (index = 0; index < players; index++)
+			{
+				LF_Ledger.Last(UID_PREFIX + index.ToString(), LF_Ledger.ACCOUNT_BANK, 20, found);
+			}
+			int queryMs = System.GetTickCount(t);
+			if (bestMs < 0 || queryMs < bestMs)
+				bestMs = queryMs;
 		}
-		Check(ctx, "ledger-query-all-ms", System.GetTickCount(t), budget.m_iMaxLedgerQueryAllMs, "ms");
+		CheckRef(ctx, "ledger-query-all-ms", bestMs * 1000.0, budget.m_iMaxLedgerQueryAllRef, "ms");
 
 		// The save: export, then the store write and read through the real serializer.
-		t = System.GetTickCount();
-		array<ref LF_PlayerAccountRecord> exported = LF_PlayerAccountManager.ExportAll();
-		Check(ctx, "account-export-ms", System.GetTickCount(t), budget.m_iMaxAccountExportMs, "ms");
+		Calibrate();
+		array<ref LF_PlayerAccountRecord> exported;
+		bestMs = -1;
+		for (rep = 0; rep < 3; rep++)
+		{
+			t = System.GetTickCount();
+			for (int batch = 0; batch < EXPORT_BATCH; batch++)
+			{
+				exported = LF_PlayerAccountManager.ExportAll();
+			}
+			int exportMs = System.GetTickCount(t);
+			if (bestMs < 0 || exportMs < bestMs)
+				bestMs = exportMs;
+		}
+		CheckRef(ctx, "account-export-us", (bestMs * 1000.0) / EXPORT_BATCH, budget.m_iMaxAccountExportRef, "us");
 		ctx.Equal(players, exported.Count(), "the export carries every account");
 
-		JsonSaveContext saveContext = new JsonSaveContext(false);
-		t = System.GetTickCount();
-		ESerializeResult written = LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext);
-		int writeMs = System.GetTickCount(t);
-		ctx.True(written == ESerializeResult.OK, "the store serializes");
-		string saved = saveContext.SaveToString();
-		Check(ctx, "save-write-ms", writeMs, budget.m_iMaxSaveWriteMs, "ms");
-		Check(ctx, "save-bytes-at-cap", saved.Length(), budget.m_iMaxSaveBytesAtCap, "bytes");
+		Calibrate();
+		string saved;
+		bestMs = -1;
+		for (rep = 0; rep < 3; rep++)
+		{
+			JsonSaveContext saveContext = new JsonSaveContext(false);
+			t = System.GetTickCount();
+			ESerializeResult written = LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext);
+			int writeMs = System.GetTickCount(t);
+			ctx.True(written == ESerializeResult.OK, "the store serializes");
+			saved = saveContext.SaveToString();
+			if (bestMs < 0 || writeMs < bestMs)
+				bestMs = writeMs;
+		}
+		CheckRef(ctx, "save-write-ms", bestMs * 1000.0, budget.m_iMaxSaveWriteRef, "ms");
+		CheckBytes(ctx, "save-bytes-at-cap", saved.Length(), budget.m_iMaxSaveBytesAtCap, "bytes");
 
 		JsonLoadContext loadContext = new JsonLoadContext(false);
 		t = System.GetTickCount();
@@ -240,11 +375,23 @@ class LF_Test_PerfBudget : LF_Test
 		ctx.True(parsed, "the save parses");
 		Report("save-parse-ms", parseMs, "ms");
 
-		t = System.GetTickCount();
-		ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, loadContext), "the store reads");
-		Check(ctx, "save-read-ms", System.GetTickCount(t), budget.m_iMaxSaveReadMs, "ms");
+		Calibrate();
+		bestMs = -1;
+		for (rep = 0; rep < 3; rep++)
+		{
+			JsonLoadContext readContext = new JsonLoadContext(false);
+			ctx.True(readContext.LoadFromString(saved), "the save parses again");
+			t = System.GetTickCount();
+			bool read = LF_PersistenceComponentSerializer.DeserializeStore(persistence, readContext);
+			int readMs = System.GetTickCount(t);
+			ctx.True(read, "the store reads");
+			if (bestMs < 0 || readMs < bestMs)
+				bestMs = readMs;
+		}
+		CheckRef(ctx, "save-read-ms", bestMs * 1000.0, budget.m_iMaxSaveReadRef, "ms");
 		ctx.Equal(players, LF_PlayerAccountManager.ExportAll().Count(), "the read leaves every account in place");
 
+		Mute(false);
 		LF_Perf.Report();
 
 		// Put the session back.

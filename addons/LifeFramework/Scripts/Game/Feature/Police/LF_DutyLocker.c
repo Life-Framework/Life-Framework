@@ -49,6 +49,10 @@ class LF_DutyLocker
 		if (account.IsOnDuty())
 			return "#LF-Duty_AlreadyOn";
 
+		// A trial that ran out ends the roster entry before the check below (#803).
+		if (role == LF_Faction.POLICE)
+			LF_PoliceApplications.ExpireTrials(System.GetUnixTime());
+
 		// Police is the whitelisted role; the medic role is open to any registered player.
 		if (role == LF_Faction.POLICE && !LF_WhitelistManager.MayJoinFaction(account.GetPersistentId(), LF_EFactionType.POLICE))
 			return "#LF-Duty_NotOnRoster";

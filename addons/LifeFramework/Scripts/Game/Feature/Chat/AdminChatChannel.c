@@ -39,6 +39,16 @@ class AdminChatChannel : BaseChatChannel
 			LF_Debug.Log("Chat", string.Format("admin !wadd type=%1 uuid=%2", SCR_Enum.GetEnumName(LF_WhitelistType, type), uuid));
 		}
 
+		//!preject UID (#803): rejects the open police application of that account and starts the reapply cooldown
+		if (message.StartsWith("!preject"))
+		{
+			string rejectUid;
+			if (!LF_PoliceApplicationRules.TryParseReject(message, rejectUid))
+				return false;
+
+			LF_PoliceApplications.Reject(rejectUid, true, System.GetUnixTime());
+		}
+
 		//!handled NUMBER (#241): an incident a player reported has been dealt with
 		if (message.StartsWith("!handled"))
 		{

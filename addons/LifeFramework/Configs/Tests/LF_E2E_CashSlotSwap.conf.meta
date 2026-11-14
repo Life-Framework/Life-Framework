@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{266F551C39D78C7D}Configs/Tests/LF_E2E_CashSlotSwap.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
