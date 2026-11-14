@@ -168,10 +168,10 @@ class LF_TestOrgSign
 		if (founder)
 		{
 			// A founder holds the right to lease; the first one in takes the yard if it is free.
-			if (LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID) == LF_EOrgLease.FREE)
-				LF_OrgHideoutLease.Lease(characterId, LF_Hideout.HIDEOUT_ID);
+			if (LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId()) == LF_EOrgLease.FREE)
+				LF_OrgHideoutLease.Lease(characterId, LF_Hideout.OrgHideoutId());
 
-			if (LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID) == LF_EOrgLease.TAKEN)
+			if (LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId()) == LF_EOrgLease.TAKEN)
 				message = "#LF-TestOrgSign_YardTaken";
 		}
 

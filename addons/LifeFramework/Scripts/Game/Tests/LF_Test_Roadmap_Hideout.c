@@ -21,7 +21,7 @@ class LF_Test_Roadmap_Hideout : LF_Test
 		string founder = "roadmap-hideout-founder";
 		string member = "roadmap-hideout-member";
 		string outsider = "roadmap-hideout-outsider";
-		string hideoutId = LF_Hideout.HIDEOUT_ID;
+		string hideoutId = LF_Hideout.OrgHideoutId();
 
 		LF_Organization org = LF_OrganizationManager.Create(founder, "Hideout Outfit");
 		ctx.NotNull(org, "founder creates the owning organization");

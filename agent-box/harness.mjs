@@ -197,6 +197,13 @@ export function buildLine(id, spec) {
     if (spec.mode !== "start" && spec.mode !== "stop") throw new Error(`cpr mode must be start or stop: ${spec.mode}`);
     return `${id} cpr ${target} ${spec.mode}`;
   }
+  if (spec.verb === "cuffing") {
+    const target = Number(spec.playerId);
+    if (!Number.isInteger(target) || target <= 0) throw new Error(`cuffing needs a positive player id: ${spec.playerId}`);
+    if (spec.kind !== "cuff" && spec.kind !== "release") throw new Error(`cuffing kind must be cuff or release: ${spec.kind}`);
+    if (!["start", "cancel", "pin", "finish"].includes(spec.mode)) throw new Error(`cuffing mode must be start, cancel, pin or finish: ${spec.mode}`);
+    return `${id} cuffing ${target} ${spec.kind} ${spec.mode}`;
+  }
   if (spec.verb === "ui") {
     if (spec.mode === "text") return `${id} ui text`;
     if (spec.mode) throw new Error(`ui mode must be text: ${spec.mode}`);
@@ -1549,6 +1556,9 @@ function main(argv) {
     }
     if (cmd === "cpr") {
       return printResult(sendCommand({ verb: "cpr", playerId: rest[0], mode: rest[1] }, 10000));
+    }
+    if (cmd === "cuffing") {
+      return printResult(sendCommand({ verb: "cuffing", playerId: rest[0], kind: rest[1], mode: rest[2] }, 10000));
     }
     if (cmd === "ui") {
       if (rest[0] !== "text" && rest[0] !== "--text") return printResult(sendCommand({ verb: "ui" }));

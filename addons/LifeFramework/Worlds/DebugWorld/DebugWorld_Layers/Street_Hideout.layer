@@ -5,6 +5,7 @@ GenericEntity Roadmap_Hideout_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/Build
   }
   LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
    m_sHideoutId "Roadmap_Hideout"
+   m_bOrganizationHideout 1
   }
  }
  coords 302.4 0 288
