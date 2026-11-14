@@ -28,11 +28,268 @@ class LF_DialogueConfig
 
 	[Attribute("", UIWidgets.Object, "Voiced lines")]
 	ref array<ref LF_DialogueLine> m_aLines;
+
+	//------------------------------------------------------------------------------------------------
+	//! Loads one dialogue `.conf` as it ships, with no pack patch. Null (logged) when it does not
+	//! resolve or has another root class.
+	static LF_DialogueConfig Load(ResourceName path)
+	{
+		Resource container = BaseContainerTools.LoadContainer(path);
+		if (!container || !container.GetResource())
+		{
+			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("dialogue config does not resolve: %1", path));
+			return null;
+		}
+
+		LF_DialogueConfig config = LF_DialogueConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
+		if (!config)
+			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("dialogue config has an unexpected root class: %1", path));
+
+		return config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The conversation an NPC plays: the core file, then each pack patch of it in load order
+	//! (#957, #1109). The core must be playable or the result is null (logged). A pack patch that
+	//! leaves the conversation broken is dropped whole, logged, and the core dialogue plays.
+	//! \param[in] path The core `.conf` the NPC names.
+	static LF_DialogueConfig Layered(ResourceName path)
+	{
+		LF_DialogueConfig core = Load(path);
+		if (!core)
+			return null;
+
+		array<string> problems = {};
+		LF_DialogueFlow.Problems(core, problems);
+		if (!problems.IsEmpty())
+		{
+			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("dialogue '%1' is broken and will not be played: %2 (%3 problem(s))", core.m_sId, problems[0], problems.Count()));
+			return null;
+		}
+
+		LF_DialogueConfig patched = Load(path);
+		if (!patched || patched.ApplyPacks(path) == 0)
+			return core;
+
+		return LF_DialogueFlow.Choose(core, patched);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies every pack overlay of this dialogue's core file, in load order.
+	//! \return The overlays applied.
+	int ApplyPacks(ResourceName coreConf)
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(coreConf, LF_DialogueConfig, "dialogue", resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		int applied;
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			if (changed < 0)
+				continue;
+
+			applied++;
+			LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("dialogue '%1': pack patch %2 changed %3 entries", m_sId, names[i], changed));
+		}
+
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack `.conf` of this class: the header fields it sets directly (speaker, audio
+	//! project, hearing range, start node), then its lines, then its nodes by the override verbs
+	//! (`m_sOp`, #962). A pack file that names another dialogue id is skipped.
+	//! \return Entries and fields changed, or -1 when the file patches another dialogue.
+	int ApplyContainer(notnull BaseContainer container, string source = "pack", LF_ConfigClaims claims = null)
+	{
+		string id;
+		if (container.IsVariableSetDirectly("m_sId") && container.Get("m_sId", id) && id != m_sId)
+		{
+			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("%1 patches dialogue '%2', not '%3'; skipped", source, id, m_sId));
+			return -1;
+		}
+
+		int changed;
+		if (container.IsVariableSetDirectly("m_sSpeakerKey") && container.Get("m_sSpeakerKey", m_sSpeakerKey))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sSoundProject") && container.Get("m_sSoundProject", m_sSoundProject))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fHearRange") && container.Get("m_fHearRange", m_fHearRange))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sStart") && container.Get("m_sStart", m_sStart))
+			changed++;
+
+		if (!m_aLines)
+			m_aLines = new array<ref LF_DialogueLine>();
+		if (!m_aNodes)
+			m_aNodes = new array<ref LF_DialogueNode>();
+
+		changed += LF_ConfigOverlay.ApplyContainerList(new LF_DialogueLineList(this), container, "m_aLines", source, claims);
+		changed += LF_ConfigOverlay.ApplyContainerList(new LF_DialogueNodeList(this), container, "m_aNodes", source, claims);
+		return changed;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The nodes of a dialogue as the override model sees them (#1109): the id is the node id. A node
+//! `patch` changes the line it says and, when the patch writes `m_aOptions`, replaces the whole
+//! reply list (a reply has no id of its own: its text key repeats across nodes).
+class LF_DialogueNodeList : LF_ConfigList
+{
+	protected LF_DialogueConfig m_Config;
+
+	void LF_DialogueNodeList(LF_DialogueConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "dialogue.nodes";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aNodes.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aNodes[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_DialogueNode.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_DialogueNode node = LF_DialogueNode.Cast(record);
+		if (index < m_Config.m_aNodes.Count())
+			m_Config.m_aNodes.Set(index, node);
+		else
+			m_Config.m_aNodes.Insert(node);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aNodes.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_DialogueNode node = LF_DialogueNode.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sLine") && container.Get("m_sLine", node.m_sLine))
+			changed++;
+
+		if (container.IsVariableSetDirectly("m_aOptions"))
+		{
+			node.m_aOptions = new array<ref LF_DialogueOption>();
+			BaseContainerList options = container.GetObjectArray("m_aOptions");
+			if (options)
+			{
+				for (int i = 0; i < options.Count(); i++)
+				{
+					BaseContainer entry = options.Get(i);
+					if (!entry)
+						continue;
+
+					LF_DialogueOption option = LF_DialogueOption.Cast(BaseContainerTools.CreateInstanceFromContainer(entry));
+					if (option)
+						node.m_aOptions.Insert(option);
+				}
+			}
+			changed++;
+		}
+
+		return changed;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The voiced lines of a dialogue as the override model sees them (#1109): the id is the line id.
+class LF_DialogueLineList : LF_ConfigList
+{
+	protected LF_DialogueConfig m_Config;
+
+	void LF_DialogueLineList(LF_DialogueConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "dialogue.lines";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aLines.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aLines[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_DialogueLine.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_DialogueLine line = LF_DialogueLine.Cast(record);
+		if (index < m_Config.m_aLines.Count())
+			m_Config.m_aLines.Set(index, line);
+		else
+			m_Config.m_aLines.Insert(line);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aLines.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_DialogueLine line = LF_DialogueLine.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sTextKey") && container.Get("m_sTextKey", line.m_sTextKey))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sForKey") && container.Get("m_sForKey", line.m_sForKey))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sEvent") && container.Get("m_sEvent", line.m_sEvent))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fSeconds") && container.Get("m_fSeconds", line.m_fSeconds))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sMouth") && container.Get("m_sMouth", line.m_sMouth))
+			changed++;
+		return changed;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
 [BaseContainerProps()]
-class LF_DialogueNode
+class LF_DialogueNode : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Node id")]
 	string m_sId;
@@ -66,7 +323,7 @@ class LF_DialogueOption
 
 //------------------------------------------------------------------------------------------------
 [BaseContainerProps()]
-class LF_DialogueLine
+class LF_DialogueLine : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Line id")]
 	string m_sId;
@@ -324,5 +581,60 @@ class LF_DialogueFlow
 			if (count == 0 && node.m_sLine.IsEmpty())
 				problems.Insert(string.Format("node %1 says nothing and offers nothing", node.m_sId));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A reply that names a condition or action hook no class implements (LF_DialogueHook_<Name>).
+	//! Checked on a patched config: a pack picks from the hooks the core ships (#957).
+	static void HookProblems(LF_DialogueConfig config, notnull array<string> problems)
+	{
+		if (!config || !config.m_aNodes)
+			return;
+
+		foreach (LF_DialogueNode node : config.m_aNodes)
+		{
+			if (!node || !node.m_aOptions)
+				continue;
+
+			foreach (LF_DialogueOption option : node.m_aOptions)
+			{
+				if (!option)
+					continue;
+
+				if (!IsHook(option.m_sCondition))
+					problems.Insert(string.Format("node %1 names condition hook '%2', which has no class %3%2", node.m_sId, option.m_sCondition, LF_DialogueHook.CLASS_PREFIX));
+
+				if (!IsHook(option.m_sAction))
+					problems.Insert(string.Format("node %1 names action hook '%2', which has no class %3%2", node.m_sId, option.m_sAction, LF_DialogueHook.CLASS_PREFIX));
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An empty name is no hook and is fine; a name needs the class LF_DialogueHook_<name>.
+	protected static bool IsHook(string name)
+	{
+		if (name.IsEmpty())
+			return true;
+
+		typename type = (LF_DialogueHook.CLASS_PREFIX + name).ToType();
+		return type && type.IsInherited(LF_DialogueHook);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pack-patched dialogue when it can be played, else the core one. A patch that leaves a
+	//! node unreachable, a reply with no node, or a hook with no class is dropped whole and logged.
+	//! \param[in] core The shipped dialogue, already checked.
+	//! \param[in] patched The same dialogue with every pack patch applied.
+	static LF_DialogueConfig Choose(notnull LF_DialogueConfig core, notnull LF_DialogueConfig patched)
+	{
+		array<string> problems = {};
+		Problems(patched, problems);
+		HookProblems(patched, problems);
+		if (problems.IsEmpty())
+			return patched;
+
+		LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("dialogue '%1': the pack patch leaves it broken (%2; %3 problem(s)); the core dialogue plays", core.m_sId, problems[0], problems.Count()));
+		return core;
 	}
 }
