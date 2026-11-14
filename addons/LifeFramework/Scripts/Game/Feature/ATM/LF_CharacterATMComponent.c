@@ -161,6 +161,9 @@ class LF_CharacterATMComponent : ScriptComponent
 	//! \return NONE when the full amount moved, else why it did not.
 	static LF_EATMRefusal ServeDepositReason(IEntity character, notnull LF_BankAccount account, int amount, string playerUid)
 	{
+		if (LF_Systems.Refuses(LF_ATMManager.SYSTEM, "atm deposit") || LF_Systems.Refuses(LF_ATMAction.SYSTEM, "atm deposit"))
+			return LF_EATMRefusal.SYSTEM_OFF;
+
 		if (!LF_ATMManager.IsValidAmount(amount))
 		{
 			LF_Debug.Warn("ATM", string.Format("deposit rejected: invalid amount %1 (uid %2)", amount, playerUid));
@@ -203,6 +206,9 @@ class LF_CharacterATMComponent : ScriptComponent
 	//! \return NONE when the full amount moved, else why it did not.
 	static LF_EATMRefusal ServeWithdrawReason(IEntity character, notnull LF_BankAccount account, int amount, string playerUid)
 	{
+		if (LF_Systems.Refuses(LF_ATMManager.SYSTEM, "atm withdrawal") || LF_Systems.Refuses(LF_ATMAction.SYSTEM, "atm withdrawal"))
+			return LF_EATMRefusal.SYSTEM_OFF;
+
 		if (!LF_ATMManager.IsValidAmount(amount))
 		{
 			LF_Debug.Warn("ATM", string.Format("withdraw rejected: invalid amount %1 (uid %2)", amount, playerUid));
@@ -235,6 +241,9 @@ class LF_CharacterATMComponent : ScriptComponent
 	{
 		IEntity character = GetOwner();
 		if (!character)
+			return;
+
+		if (LF_Systems.Refuses(LF_ATMAction.SYSTEM, "atm balance"))
 			return;
 
 		LF_BankAccount account = LF_ATMManager.GetOrCreate(LF_Utils.GetPlayerUID(character));
