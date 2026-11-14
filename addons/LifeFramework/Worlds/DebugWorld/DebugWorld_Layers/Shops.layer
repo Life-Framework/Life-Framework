@@ -52,25 +52,25 @@ $grp GenericEntity {
       m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
       m_iMaxStock 6
       m_iRestockAmount 2
-      m_sSlots "-0.60 1.05 -0.15 | -0.40 1.05 -0.15 | -0.20 1.05 -0.15 | 0.00 1.05 -0.15"
+      m_sSlots "-0.26 1.05 -0.08 | -0.16 1.05 -0.08 | -0.06 1.05 -0.08 | 0.04 1.05 -0.08"
      }
      LF_StoreLine "{7C1A5E30B92D4F03}" {
       m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
       m_iMaxStock 6
       m_iRestockAmount 2
-      m_sSlots "0.20 1.05 -0.15 | 0.40 1.05 -0.15 | 0.60 1.05 -0.15"
+      m_sSlots "-0.26 1.05 0.12 | -0.16 1.05 0.12 | -0.06 1.05 0.12"
      }
      LF_StoreLine "{7C1A5E30B92D4F04}" {
       m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
       m_iMaxStock 4
       m_iRestockAmount 1
-      m_sSlots "0.00 1.05 0.15 | 0.20 1.05 0.15"
+      m_sSlots "-0.26 1.05 0.32 | -0.16 1.05 0.32"
      }
      LF_StoreLine "{7C1A5E30B92D4F05}" {
       m_ItemPrefab "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
       m_iMaxStock 4
       m_iRestockAmount 1
-      m_sSlots "0.40 1.05 0.15 | 0.60 1.05 0.15"
+      m_sSlots "-0.06 1.05 0.32 | 0.04 1.05 0.32"
      }
     }
     m_vBoundaryCenter 0 0 2.1
@@ -199,9 +199,9 @@ GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commerci
   }
  }
  Flags 0x403 0
- coords 179.056 1.039 244.276
+ coords 179.478 1.039 244.32
  angleY 0
 }
 GenericEntity Shop_GeneralStore_Radio : "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et" {
- coords 178.465 1.038 244.249
+ coords 178.483 1.038 243.994
 }

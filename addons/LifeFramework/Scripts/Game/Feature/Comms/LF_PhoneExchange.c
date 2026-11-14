@@ -177,6 +177,24 @@ class LF_PhoneExchange : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Forgets every call that is no longer live (the world reset); a call in progress stays.
+	//! eturn How many finished calls were dropped.
+	int PurgeEnded()
+	{
+		int dropped = 0;
+		for (int i = m_aCalls.Count() - 1; i >= 0; i--)
+		{
+			if (m_aCalls[i].IsLive())
+				continue;
+
+			m_aCalls.Remove(i);
+			dropped++;
+		}
+
+		return dropped;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	LF_PhoneCall Find(int callId)
 	{
 		foreach (LF_PhoneCall call : m_aCalls)

@@ -26,6 +26,28 @@ modded class SCR_DoorUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What this hideout door is to this viewer: theirs, members only, or nobody's yet.
+	protected LF_EHideoutDoorView HideoutView(IEntity user)
+	{
+		return LF_HideoutDoorRules.View(m_pHouseLock.GetHouseIdentifier(), LF_OrgReplication.ViewOf(user).m_sOrgId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A locked hideout door names itself for the viewer: "Open" for a member, "Members only (<org>)"
+	//! for everyone else. Every other door keeps the vanilla Open/Close.
+	override bool GetActionNameScript(out string outName)
+	{
+		if (m_pHideoutDoor && m_pHouseLock && m_pHouseLock.IsLocked())
+		{
+			LF_EHideoutDoorView view = HideoutView(LF_Utils.GetLocalCharacter());
+			outName = LF_HideoutDoorRules.Label(view, m_pHideoutDoor.GetOwnerName());
+			return true;
+		}
+
+		return super.GetActionNameScript(outName);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		if (!super.CanBePerformedScript(user))
@@ -41,10 +63,10 @@ modded class SCR_DoorUserAction
 			// decides below from the registry.
 			if (!Replication.IsServer())
 			{
-				string orgId = LF_OrgReplication.ViewOf(user).m_sOrgId;
-				if (orgId.IsEmpty() || orgId != m_pHouseLock.GetHouseIdentifier())
+				LF_EHideoutDoorView view = HideoutView(user);
+				if (view != LF_EHideoutDoorView.MEMBER)
 				{
-					SetCannotPerformReason("#EL-Hideout_NotMember");
+					SetCannotPerformReason(LF_HideoutDoorRules.Reason(view, m_pHideoutDoor.GetOwnerName()));
 					return false;
 				}
 
@@ -54,7 +76,7 @@ modded class SCR_DoorUserAction
 			string characterId = LF_Hideout.CharacterIdOf(user);
 			if (!LF_Hideout.AllowsUnlock(characterId, m_pHideoutDoor.GetHideoutId(), true))
 			{
-				SetCannotPerformReason("#EL-Hideout_NotMember");
+				SetCannotPerformReason(LF_HideoutDoorRules.Reason(HideoutView(user), m_pHideoutDoor.GetOwnerName()));
 				return false;
 			}
 

@@ -15,8 +15,6 @@ class LF_Test_ItemVolume : LF_Test
 	protected static const ResourceName BILL = "{75055A5BFE4372D5}Prefabs/Items/Roleplay/HospitalBill.et";
 	protected static const ResourceName SLIP = "{4C1A9E7B52D83F60}Prefabs/Items/Roleplay/SentenceSlip.et";
 	protected static const ResourceName EVIDENCE_BAG = "{A2E64B90F1C8D357}Prefabs/Investigation/LF_EvidenceBag.et";
-	protected static const ResourceName EVIDENCE_CASING = "{7D3A9E15C2B4F680}Prefabs/Investigation/LF_EvidenceCasing.et";
-	protected static const ResourceName EVIDENCE_MARKER = "{4C81F2A6D9E37B05}Prefabs/Investigation/LF_EvidenceMarker.et";
 	protected static const ResourceName DRILL = "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et";
 	protected static const ResourceName KEYCARD = "{F341AA386FA695E4}Prefabs/Items/Fence/LF_Keycard.et";
 	protected static const ResourceName LOCKPICK = "{6B1D3F5A92C47E08}Prefabs/Items/Fence/LF_Lockpick.et";
@@ -89,8 +87,8 @@ class LF_Test_ItemVolume : LF_Test
 		CheckItem(ctx, TICKET, 113, true, "ticket on a third spawn");
 
 		CheckItem(ctx, EVIDENCE_BAG, 20, true, "evidence bag");
-		CheckItem(ctx, EVIDENCE_CASING, 20, true, "evidence casing");
-		CheckItem(ctx, EVIDENCE_MARKER, 20, true, "evidence marker");
+		// The casing and the marker are scene evidence, not items, since #148: only the bag action takes
+		// them (investigation/scene-pieces-world asserts they have no inventory item component).
 		CheckItem(ctx, DRILL, 4000, false, "drill");
 		CheckItem(ctx, KEYCARD, 40, true, "keycard");
 		CheckItem(ctx, LOCKPICK, 40, true, "lockpick");

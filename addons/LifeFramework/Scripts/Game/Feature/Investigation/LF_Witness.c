@@ -489,6 +489,20 @@ class LF_Witness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What this witness said about the scene so far; null when nothing.
+	static LF_WitnessStatement StatementOf(LF_WitnessScene scene, string witnessKey)
+	{
+		if (!scene)
+			return null;
+
+		LF_WitnessEntry entry = FindEntry(scene, witnessKey);
+		if (!entry)
+			return null;
+
+		return FindStatement(scene, entry);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Toast key for an officer's question; see LF_WitnessDialogue.AnswerKey.
 	static string AskKey(bool sawScene, int said, int roll = 0)
 	{

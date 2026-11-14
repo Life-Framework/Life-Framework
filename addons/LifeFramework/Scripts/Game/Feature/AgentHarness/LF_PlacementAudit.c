@@ -689,6 +689,39 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One row per display copy a physical store puts on its shelf at load: "shelf <store>/<prefab>@<slot> <measure>".
+	//! They are spawned by script, not placed in a layer, so the layer list never names them; a slot
+	//! point written inside the till or the radio put an apple juice bottle into it (#919).
+	static void StockRows(notnull array<string> rows)
+	{
+		map<string, LF_StoreComponent> stores = LF_Stores.Stores();
+		if (!stores)
+			return;
+
+		foreach (string key, LF_StoreComponent store : stores)
+		{
+			if (!store)
+				continue;
+
+			store.FirstFill();
+			for (int line = 0; line < store.GetLineCount(); line++)
+			{
+				ResourceName prefab = store.GetLinePrefab(line);
+				string file = FilePath.StripPath(prefab);
+				file.Replace(".et", "");
+				for (int slot = 0; slot < 32; slot++)
+				{
+					IEntity item = store.GetShelfItem(prefab, slot);
+					if (!item)
+						continue;
+
+					rows.Insert(string.Format("shelf %1/%2@%3 %4 found=%5", key, file, slot, Format(Measure(item, false)), Label(item)));
+				}
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One line per door leaf within `radius` of `center`: its oriented box and the building it belongs to.
 	static void DoorLines(vector center, float radius, notnull array<string> lines)
 	{
@@ -835,6 +868,7 @@ class LF_PlacementAudit
 		}
 
 		input.Close();
+		StockRows(rows);
 		FileHandle output = FileIO.OpenFile(outPath, FileMode.WRITE);
 		if (!output)
 		{
