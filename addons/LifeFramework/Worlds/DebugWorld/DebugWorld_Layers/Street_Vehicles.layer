@@ -253,6 +253,6 @@ Vehicle Lot_Display_dana2101 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101
  angleY 180
 }
 Vehicle Lot_Display_t601 : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
- coords 208 -0.186 259.868
+ coords 208 0 260
  angleY 180
 }
