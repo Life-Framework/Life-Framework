@@ -25,11 +25,11 @@ const prefab = { file: "addons/LifeFramework/Prefabs/Radio.et", text: ' m_sSound
 const pack = "addons/LF_Pack/Configs/Sounds.conf";
 
 const clean = checkSoundSlots(
-  [{ file: CORE_FILE, text: conf([slot("pub_radio", RADIO), slot("siren", BASE)]) }, { file: pack, text: conf([slot("pub_radio", BASE, "patch"), slot("siren", null, "remove")]) }],
+  [{ file: CORE_FILE, text: conf([slot("pub_radio", null), slot("siren", BASE)]) }, { file: pack, text: conf([slot("pub_radio", RADIO, "patch"), slot("siren", null, "remove")]) }],
   [prefab, { file: "addons/LF_Pack/Worlds/Town.layer", text: ` m_sSoundProject "${RADIO}"\n` }, { file: "addons/LifeFramework/Scripts/Game/Tests/LF_Test_X.c", text: `"${RADIO}"` }], ctx);
 expect(clean.fails.length === 0, `clean files pass (a pack layer and a core test may name the sound): ${clean.fails.join("; ")}`);
 expect(clean.files === 2 && clean.slots === 2, "two files, two core slots");
-expect(clean.notes.some((n) => /1 core slot default/.test(n)), "a core default naming a pack-owned sound is noted");
+expect(!clean.notes.some((n) => /core slot default/.test(n)), "an empty core default that a pack fills is clean");
 
 const bad = checkSoundSlots(
   [
@@ -45,6 +45,7 @@ const bad = checkSoundSlots(
   ], ctx);
 const has = (re, msg) => expect(bad.fails.some((f) => re.test(f)), `${msg}: ${bad.fails.join(" | ")}`);
 has(/has GUID 2BC9B5C5F72B71E7 in its \.meta, the slot says 0000000000000001/, "a wrong GUID fails");
+has(/the core default names a pack-owned sound/, "a core default naming an atmosphere sound fails");
 has(/lists this slot twice/, "a duplicate core id fails");
 has(/LF_Missing\.acp is an addon path with no \.meta/, "a missing addon project fails");
 has(/Gone\.acp is neither an addon resource nor a base game sound project/, "a missing base game project fails");

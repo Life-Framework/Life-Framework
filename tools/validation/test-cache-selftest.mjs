@@ -130,6 +130,7 @@ try {
   // Runs that never use the cache.
   const skips = [
     [{ tier: "persistence" }, "persistence tier"],
+    [{ tier: "perf" }, "perf tier"],
     [{ tier: "all", opts: { noCache: true } }, "--no-cache"],
     [{ tier: "all", opts: { red: true } }, "--red"],
     [{ tier: "all", opts: { dev: true } }, "dev"],
@@ -138,6 +139,13 @@ try {
   ];
   for (const [arg, name] of skips) if (!tc.skipReason({ env: {}, ...arg })) failures.push(`${name} did not turn the cache off`);
   if (tc.skipReason({ tier: "all", env: {} })) failures.push("a plain run turned the cache off");
+  // The tier is in the key, so a pass of one tier never answers another (perf never stores one at all).
+  {
+    const base = { trees: { addons: "a", "tools/test": "t", "tools/lib/addons.mjs": "l" }, rdb: {}, addons: ["LifeFramework"], build: "b" };
+    const k = (tier) => tc.cacheKey(tc.keyInputs("unused", { ...base, tier }));
+    if (new Set(["all", "fast", "persistence", "perf"].map(k)).size !== 4) failures.push("two tiers share a cache key");
+    if (tc.keyInputs("unused", { ...base, tier: "all" }).v !== tc.KEY_VERSION || tc.KEY_VERSION < 2) failures.push("the key lost its version (2: `all` no longer runs the PERF tier)");
+  }
 } catch (e) {
   failures.push(`threw: ${e.message}`);
 } finally {

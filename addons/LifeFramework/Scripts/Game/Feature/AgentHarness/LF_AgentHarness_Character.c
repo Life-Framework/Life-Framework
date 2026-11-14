@@ -271,29 +271,30 @@ modded class SCR_ChimeraCharacter
 	//------------------------------------------------------------------------------------------------
 	//! Harness `resetplayer` (#496): the server puts this player back to a plain free civilian off duty:
 	//! cuffs off, any sentence ended, duty and faction cleared, wanted and the crime stores cleared. Cash
-	//! is trimmed to `cash` when it is 0 or more (-1 leaves it). Behind the dev gate, so a production
-	//! server refuses it.
-	void LF_AskHarnessResetPlayer(int commandId, int cash)
+	//! is trimmed to `cash` when it is 0 or more (-1 leaves it). The inventory is emptied and the civilian
+	//! kit issued unless `keepInventory` (the cash carried before stays). Behind the dev gate, so a
+	//! production server refuses it.
+	void LF_AskHarnessResetPlayer(int commandId, int cash, bool keepInventory = false)
 	{
 		if (Replication.IsServer())
 		{
-			LF_ApplyHarnessResetPlayer(commandId, true, cash);
+			LF_ApplyHarnessResetPlayer(commandId, true, cash, keepInventory);
 			return;
 		}
 
-		Rpc(RpcAsk_LF_HarnessResetPlayer, commandId, cash);
+		Rpc(RpcAsk_LF_HarnessResetPlayer, commandId, cash, keepInventory);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_HarnessResetPlayer(int commandId, int cash)
+	protected void RpcAsk_LF_HarnessResetPlayer(int commandId, int cash, bool keepInventory)
 	{
 		bool gateOpen = LF_DevGate.CheckHarnessRequest(this, "resetplayer");
-		LF_ApplyHarnessResetPlayer(commandId, gateOpen, cash);
+		LF_ApplyHarnessResetPlayer(commandId, gateOpen, cash, keepInventory);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void LF_ApplyHarnessResetPlayer(int commandId, bool gateOpen, int cash)
+	protected void LF_ApplyHarnessResetPlayer(int commandId, bool gateOpen, int cash, bool keepInventory)
 	{
 		if (!gateOpen)
 		{
@@ -355,6 +356,17 @@ modded class SCR_ChimeraCharacter
 			}
 		}
 
+		// The inventory goes last of the carried things: the bills above were counted from it. Cash is
+		// inventory too, so what was carried comes back unless the caller named an amount.
+		int cleared = -1;
+		if (!keepInventory)
+		{
+			int carriedCash = LF_MoneyUtils.GetCash(this);
+			cleared = LF_DutyLocker.ResetToCivilianKit(account, this);
+			if (cash < 0 && carriedCash > 0)
+				LF_MoneyUtils.AddCash(this, carriedCash, "debug-reset");
+		}
+
 		string crime = LF_WorldReset.RunAll("harness resetplayer", true);
 		if (cash >= 0)
 		{
@@ -365,8 +377,8 @@ modded class SCR_ChimeraCharacter
 				LF_MoneyUtils.AddCash(this, cash - have, "debug-reset");
 		}
 
-		LF_Debug.Info("AgentHarness", string.Format("resetplayer %1 cuffs=%2 sentence=%3 duty=%4 bills=%5", uid, cuffs, sentence, duty, bills));
-		LF_HarnessReply(commandId, "ok", string.Format("cuffs=%1 sentence=%2 duty=%3 bills=%4 cleared %5", cuffs, sentence, duty, bills, crime));
+		LF_Debug.Info("AgentHarness", string.Format("resetplayer %1 cuffs=%2 sentence=%3 duty=%4 bills=%5 items=%6", uid, cuffs, sentence, duty, bills, cleared));
+		LF_HarnessReply(commandId, "ok", string.Format("cuffs=%1 sentence=%2 duty=%3 bills=%4 items=%5 cleared %6", cuffs, sentence, duty, bills, cleared, crime));
 	}
 
 	//------------------------------------------------------------------------------------------------

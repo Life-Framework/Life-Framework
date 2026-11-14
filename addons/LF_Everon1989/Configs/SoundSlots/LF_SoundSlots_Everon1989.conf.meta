@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{78B148EEC4FAE33B}Configs/SoundSlots/LF_SoundSlots_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
