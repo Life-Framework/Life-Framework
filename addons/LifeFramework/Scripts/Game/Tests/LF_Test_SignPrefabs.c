@@ -46,7 +46,14 @@ class LF_Test_SignPrefabs : LF_Test
 		ctx.True(LF_SignCatalog.IsUsable(LF_SignCatalog.Find("police_whitelist")), "LF_Signs.conf has the police whitelist sign");
 		ctx.True(LF_SignCatalog.Find("no_such_sign") == null, "LF_Signs.conf has no unknown id");
 		if (mining)
-			ctx.EqualStr("Read: Mining area", LF_SignCatalog.ReadName(mining), "the mining sign reads Read: Mining area");
+		{
+			// The per-sign text is the pack's (#325); the core alone reads the neutral title.
+			string expected = "Read: Notice";
+			if (LF_SignCatalog.Resolve(mining.m_sTitle) != "")
+				expected = "Read: Mining area";
+
+			ctx.EqualStr(expected, LF_SignCatalog.ReadName(mining), "the mining sign reads Read: Mining area, or the neutral title without the pack");
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

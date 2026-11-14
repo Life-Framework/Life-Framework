@@ -10,7 +10,11 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import { dirname, join } from "node:path";
 import { mergeStringTables } from "./union-string-table.mjs";
 
-const ST_PATH = "addons/LifeFramework/Language/everonlife_localization.st";
+// The core's string table and each pack's (#325): the driver unions every one, then regenerates all confs.
+const ST_PATHS = [
+  "addons/LifeFramework/Language/everonlife_localization.st",
+  "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+];
 const TESTS_PREFIX = "addons/LifeFramework/Scripts/Game/Tests";
 const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 
@@ -162,12 +166,19 @@ function restoreAll(saved) {
 }
 
 function materializeStringTable(root, sides) {
-  const base = showPath(sides.base, ST_PATH) ?? "";
-  const ours = showPath(sides.ours, ST_PATH) ?? "";
-  const theirs = showPath(sides.theirs, ST_PATH) ?? "";
-  const merged = mergeStringTables(base, ours, theirs);
-  if (!merged.ok) return merged;
-  const saved = [snapshotWrite(root, ST_PATH, merged.text)];
+  const saved = [];
+  for (const stPath of ST_PATHS) {
+    const base = showPath(sides.base, stPath) ?? "";
+    const ours = showPath(sides.ours, stPath) ?? "";
+    const theirs = showPath(sides.theirs, stPath) ?? "";
+    if (!base && !ours && !theirs) continue;
+    const merged = mergeStringTables(base, ours, theirs);
+    if (!merged.ok) {
+      restoreAll(saved);
+      return merged;
+    }
+    saved.push(snapshotWrite(root, stPath, merged.text));
+  }
   return { ok: true, saved };
 }
 
@@ -221,10 +232,9 @@ function runDriver() {
       process.exit(result.status || 1);
     }
     const outputRel = plan.kind === "tests" ? registryRel : pathname.replace(/\\/g, "/").replace(/^\.\//, "");
-    const outputName = outputRel.split("/").pop();
     const outputPath = plan.kind === "tests"
       ? join(root, registryRel)
-      : join(root, "addons/LifeFramework/Language", outputName);
+      : join(root, outputRel);
     writeFileSync(oursPath, readFileSync(outputPath));
   } finally {
     restoreAll(prepared.saved);

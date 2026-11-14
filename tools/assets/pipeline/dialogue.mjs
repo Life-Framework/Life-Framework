@@ -136,6 +136,12 @@ export function specProblems(spec, strings = new Map()) {
 }
 
 // ---------------------------------------------------------------- string table
+// The pack's string table beside a core one, when the pack has one (#325): its text overrides the core's.
+export function packStringFile(root) {
+  const file = join(root, "addons", "LF_Everon1989", "Language", "lf_everon1989_localization.st");
+  return existsSync(file) ? file : null;
+}
+
 export function parseStrings(stText) {
   const map = new Map();
   for (const m of stText.matchAll(/Id "([^"]+)"\s*\n\s*Target_en_us "((?:[^"\\]|\\.)*)"/g)) map.set(m[1], m[2]);
@@ -321,7 +327,11 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   const stFile = stringTable(root, spec);
   if (!existsSync(stFile)) throw new Error(`${ADDON(spec)} has no ${stFile}; a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
   const stText = readFileSync(stFile, "utf8");
-  const problems = [...addonProblems(root, spec), ...specProblems(spec, parseStrings(stText))];
+  const packFile = packStringFile(root);
+  let packText = packFile ? readFileSync(packFile, "utf8") : "";
+  const known = parseStrings(stText);
+  for (const [k, v] of parseStrings(packText)) known.set(k, v);
+  const problems = [...addonProblems(root, spec), ...specProblems(spec, known)];
   if (problems.length) throw new Error("dialogue problems:\n  " + problems.join("\n  "));
   const prov = loadProvenance(root, id);
   const dir = cacheDir(root, id);
@@ -402,9 +412,14 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   if (!existsSync(conf + ".meta")) writeFileSync(conf + ".meta", simpleMeta(confRes(spec), freshGuid(used), "CONFResourceClass"));
   const files = expectedFiles(root, spec, prov);
   for (const [rel, text] of Object.entries(files)) writeFileSync(join(addon, rel), text);
-  const newSt = upsertStrings(stText, stringEntries(spec));
-  const stChanged = newSt !== stText;
-  if (stChanged) writeFileSync(stFile, newSt);
+  // A line whose key lives in the pack's table (its flavour text) is written there; the core keeps its neutral row.
+  const inPack = new Set(parseStrings(packText).keys());
+  const entries = stringEntries(spec);
+  const newSt = upsertStrings(stText, entries.filter((e) => !inPack.has(e.id)));
+  const newPack = packFile ? upsertStrings(packText, entries.filter((e) => inPack.has(e.id))) : packText;
+  const stChanged = newSt !== stText || newPack !== packText;
+  if (newSt !== stText) writeFileSync(stFile, newSt);
+  if (newPack !== packText) writeFileSync(packFile, newPack);
 
   let after = null;
   if (before) {
