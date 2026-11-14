@@ -12,15 +12,18 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, readd
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { zstdDecompressSync } from "node:zlib";
+import { createHash } from "node:crypto";
 import { ArchBuilderMissing, archBuilderSetup, licenseMarks, runArchBuilder, scanForMarks } from "./archbuilder.mjs";
 import { safeRemoveTree } from "../../link-safety.mjs";
-import { addonOf, addonPath, addonProblems } from "../../assets/pipeline/addon.mjs";
+import { CORE, addonOf, addonPath, addonProblems } from "../../assets/pipeline/addon.mjs";
+import { addonDir } from "../../lib/addons.mjs";
+import { stageStore } from "./store-slots.mjs";
 import { readGuid } from "../../assets/pipeline/meta.mjs";
 import { gameDb } from "./gamedb.mjs";
 import { materialsDir } from "./import.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGES = ["spec", "generate", "review", "polish", "export", "import", "prefab"];
+export const STAGES = ["spec", "generate", "review", "polish", "export", "import", "prefab", "store"];
 const NEEDS_ARCHBUILDER = new Set(["generate", "review", "polish", "export"]);
 
 export const specFile = (root, slug) => join(root, "tools", "buildings", slug, "spec.json");
@@ -178,6 +181,23 @@ export function moveEntities(text, entities = []) {
   return { text: out, hits };
 }
 
+// Vanilla props placed by hand (stockroom boxes, office files, a basket pile) where ArchBuilder's plan has
+// no furniture call. The export appends them to the furniture prefab every time, so a rerun keeps them.
+// spec.polish.props: [{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 90, "why": "..." }]
+// Building space, like the nudges: -Z is the street front. The prefab stage checks each GUID.
+export function addProps(text, props = [], slug = "") {
+  if (!props.length) return { text, added: 0 };
+  const close = text.lastIndexOf("\n }\n}");
+  if (close < 0) throw new Error("the furniture prefab has no child list to add spec.polish.props to");
+  const rows = props.map((p, i) => {
+    if (!/^\{[0-9A-F]{16}\}Prefabs\/[^"]+\.et$/.test(p.prefab || "")) throw new Error(`spec.polish.props[${i}]: prefab must be "{GUID}Prefabs/...et", not ${p.prefab}`);
+    if (!Array.isArray(p.at) || p.at.length !== 3 || p.at.some((n) => !Number.isFinite(n))) throw new Error(`spec.polish.props[${i}]: at must be [x, y, z]`);
+    const id = createHash("sha1").update(`${slug}|prop|${i}|${p.prefab}`).digest("hex").slice(0, 16).toUpperCase();
+    return `  GenericEntity : "${p.prefab}" {\n   ID "${id}"\n   coords ${p.at.join(" ")}\n${p.yaw ? `   angleY ${p.yaw}\n` : ""}  }`;
+  });
+  return { text: `${text.slice(0, close)}\n${rows.join("\n")}${text.slice(close)}`, added: rows.length };
+}
+
 // Counts in the exported building prefab: vanilla door sets and windows, probes.
 export function countOpenings(prefabText) {
   const refs = [...prefabText.matchAll(/:\s*"\{[0-9A-F]{16}\}([^"]+)"/g)].map((m) => m[1]);
@@ -228,7 +248,13 @@ async function stageExport(ctx) {
   for (const p of problems) console.log(`FAIL  ${p}`);
   if (counts.doors < ctx.spec.budget.min_doors) problems.push(`${counts.doors} door(s); the spec wants at least ${ctx.spec.budget.min_doors}`);
   if (problems.length) throw new Error(`${problems.length} export check(s) failed: what ArchBuilder shows in Blender would not reach the game`);
-  return { secs: r.secs, ...counts, props: props.total, propKinds: props.kinds, report: r.report, colours };
+  const handProps = ctx.spec.polish?.props || [];
+  if (handProps.length && existsSync(furniture)) {
+    const a = addProps(readFileSync(furniture, "utf8"), handProps, ctx.slug);
+    writeFileSync(furniture, a.text);
+    console.log(`        placed ${a.added} hand-placed prop(s) from spec.polish.props`);
+  }
+  return { secs: r.secs, ...counts, props: props.total, handProps: handProps.length, propKinds: props.kinds, report: r.report, colours };
 }
 
 // The vanilla props in the furniture prefab, by prefab file name: its child entities (indented),
@@ -304,8 +330,9 @@ async function stagePrefab(ctx) {
     for (const m of readFileSync(join(addon, rel), "utf8").matchAll(/\{([0-9A-F]{16})\}([A-Za-z0-9_\-./]+)/g)) {
       const [, guid, path] = m;
       if (rel.endsWith(".meta") && path + ".meta" === rel) continue;
-      if (existsSync(join(addon, path))) {
-        const g = readGuid(join(addon, path + ".meta"));
+      const home = [addon, addonDir(root, CORE)].find((a) => existsSync(join(a, path))); // a pack building may name the core
+      if (home) {
+        const g = readGuid(join(home, path + ".meta"));
         if (g !== guid) problems.push(`${rel} names {${guid}}${path}, but its .meta holds ${g || "no GUID"}`);
       } else if (/^Configs\/System\/ResourceTypes\//.test(path)) {
         continue; // the platform configs every .meta names
@@ -333,7 +360,7 @@ async function stagePrefab(ctx) {
   return { prefab: imp.prefab, ...counts, external: external.size, gameChecked: bad !== null };
 }
 
-const RUN = { spec: stageSpec, generate: stageGenerate, review: stageReview, polish: stagePolish, export: stageExport, import: stageImport, prefab: stagePrefab };
+const RUN = { spec: stageSpec, generate: stageGenerate, review: stageReview, polish: stagePolish, export: stageExport, import: stageImport, prefab: stagePrefab, store: stageStore };
 
 export async function run(root, slug, { from, only, force, workbench, hooks = {} } = {}) {
   const spec = loadSpec(root, slug);

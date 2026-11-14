@@ -30,6 +30,7 @@ export const SECTIONS = {
   "catalogue.items": { section: "catalogue", cls: "LF_ItemCatalogueConfig", core: "Configs/Catalogue/LF_ItemCatalogue.conf", field: "m_aItems", key: "items", id: (p) => p.m_sId ?? "", ownerKey: (k) => k },
   "catalogue.offers": { section: "catalogue", cls: "LF_ItemCatalogueConfig", core: "Configs/Catalogue/LF_ItemCatalogue.conf", field: "m_aOffers", key: "offers", id: (p) => (p.m_sOutlet && p.m_sItem ? `${p.m_sOutlet}/${p.m_sItem}` : ""), ownerKey: (k) => k },
   "crime.crimes": { section: "crime", cls: "LF_CrimeCatalogConfig", core: "Configs/Crime/LF_CrimeCatalog.conf", field: "m_aCrimes", key: "crimes", id: (p) => p.m_sCrimeId ?? "", ownerKey: (k) => k },
+  "vehicles.vehicles": { section: "vehicles", cls: "LF_VehiclePricesConfig", core: "Configs/Vehicles/LF_VehiclePrices.conf", field: "m_aVehicles", key: "vehicles", id: (p) => guidOf(p.m_Prefab), ownerKey: (k) => /^{?[0-9A-Fa-f]{16}}?$/.test(k) ? k.replace(/[{}]/g, "").toUpperCase() : "" },
   "shops.priceRules": { section: "shops", cls: "LF_ShopPricesConfig", core: "Configs/Shop/ShopPrices.conf", field: "m_aPriceRules", key: "priceRules", id: shopKey, ownerKey: (k) => parseShopRuleKey(k)?.norm ?? "" },
 };
 export const sectionNames = () => [...new Set(Object.values(SECTIONS).map((s) => s.section))];
@@ -158,6 +159,8 @@ export function mergeList(layers) {
   const lastPack = new Map(); // id -> label of the last pack layer that changed it
   const setField = (e, name, value, layer) => {
     const cur = e.fields.get(name);
+    // A patch that repeats the id field (the vehicle's prefab) or a value a lower layer has changes nothing: keep the lower source.
+    if (cur && JSON.stringify(cur.value) === JSON.stringify(value)) return;
     e.fields.set(name, { value, layer, was: cur ? [...cur.was, { value: cur.value, layer: cur.layer }] : [] });
   };
   for (const layer of layers) {

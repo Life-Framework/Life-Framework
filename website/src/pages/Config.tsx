@@ -148,7 +148,9 @@ const ConfigShell = ({ children }: { children: ReactNode }) => (
       <p>
         Change what you want and download <code>config.json</code>. The file holds only the values you changed from the defaults,
         plus the schema version, so it stays short and keeps working when the defaults improve. Put it at{" "}
-        <code>$profile:LifeFramework/config.json</code>. Nothing leaves your browser.
+        <code>profile/profile/LifeFramework/config.json</code> inside the folder you pass to <code>-profile</code>
+        (the engine calls that <code>$profile:LifeFramework/config.json</code>); the example server's <code>start</code> script does it for
+        you. Nothing leaves your browser.
       </p>
     </PageHeader>
     <div className="wrap max-w-6xl pb-16">{children}</div>
@@ -159,9 +161,10 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
   const [value, setValue] = useState<Obj>(() => defaultOf(schema) as Obj);
   const [extras, setExtras] = useState<Obj>({});
   const [keep, setKeep] = useState<Set<string>>(new Set());
+  const [shape, setShape] = useState<Obj | undefined>(undefined); // the imported file, for key order on export
   const [paste, setPaste] = useState("");
   const [importNote, setImportNote] = useState("");
-  const json = useMemo(() => exportText(schema, value, extras, keep), [schema, value, extras, keep]);
+  const json = useMemo(() => exportText(schema, value, extras, keep, shape), [schema, value, extras, keep, shape]);
   // The very rules `tools\cli config-check` applies, run over the file this page would export.
   const problems = useMemo(() => checkConfig(schema, json), [schema, json]);
   const errors = useMemo(() => fieldErrors(problems), [problems]);
@@ -188,6 +191,7 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
     setValue(got.value);
     setExtras(got.extras);
     setKeep(got.keep);
+    setShape(raw);
     setImportNote(from !== "the imported file" ? `Loaded ${from}. Change anything below.` : "Imported. Values outside the schema are marked below; keys this build does not know are kept in the export.");
   };
   const onFile = async (f?: File | null) => {
@@ -273,7 +277,7 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
             server.json
           </h2>
           <p className="muted mt-1">
-            The base game's dedicated-server file, with the Workshop ids of the core addon and, for the 1989 scenario, the pack. Upload it next to config.json, or drop both in your profile.
+            The base game's dedicated-server file, with the Workshop ids of the core addon and, for the 1989 scenario, the pack. Keep it next to the example server's <code>start.cmd</code> and run that with <code>server.json</code> and <code>config.json</code> replaced by these two files; or give a panel host the start line and mod ids below. Install guide: <a className="link" href={blob("docs/owner/install.md")}>docs/owner/install.md</a>.
           </p>
           <div className="py-3 grid gap-3 md:grid-cols-2 max-w-3xl">
             <label className="text-[0.875rem] font-semibold">
@@ -351,7 +355,7 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
           <button type="button" className="btn btn-primary" onClick={downloadBundle} disabled={bad > 0 || serverErrors > 0}>
             Download both files
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => { setValue(defaultOf(schema) as Obj); setExtras({}); setKeep(new Set()); setImportNote(""); }}>
+          <button type="button" className="btn btn-ghost" onClick={() => { setValue(defaultOf(schema) as Obj); setExtras({}); setKeep(new Set()); setShape(undefined); setImportNote(""); }}>
             Reset
           </button>
         </div>

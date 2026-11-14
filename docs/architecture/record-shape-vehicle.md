@@ -3,7 +3,9 @@
 Design spec for the M3 reshape of the owned-vehicle record (epic #746, part a of
 #752). It fixes the saved shape that the M5 behaviours fill: garages and towing
 (#774, #775), inspection and hidden compartments (#778, #779), and the vehicle
-cache sidecar (#859). No behaviour ships with it. Status: design, not built.
+cache sidecar (#859). No behaviour ships with it. Status: built in #1216 (save version 33)
+with the maintainer defaults on #752: real-clock stamps, the restart impound stays derived, no
+cargo tuning field (`m_iCargoTune` below is not in the row), the compartment a size level 0-3.
 
 Rules this follows: `docs/persistence.md` (positional payloads, append only),
 D5 and D6 in `docs/roadmap/m3-plan.md` section 6 (one PR per reshape, its own

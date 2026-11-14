@@ -18,6 +18,9 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
+// red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
+// red-proof 2026-11-14 (pool-rt-gc), each broken alone: with the rt gc sort reversed (newest idle first) "rt gc removes the wrong folders or in the wrong order: Life-Framework-rt-b,Life-Framework-rt-a,Life-Framework-rt-oldest"; with the live-lock keep rule off "rt gc removes the wrong folders or in the wrong order: ...oldest,Life-Framework-rt-locked,..." (a locked folder was chosen).
 // red-proof 2026-11-14 (pool-parallel-start), each broken alone: burstAdmit always refusing (strict FIFO) "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (1 of 14)"; without the in-flight RAM term "a burst start ignored the RAM of the starts in flight ahead of it (14 admitted, 4 fit)"; the holder gate without aheadMb "the holder's gate let a burst start overshoot the floor"; blocks() without the granted check "a ticket that already holds its lane still blocks the queue"; sharedSnapshot never reusing "six runs asked together did not share one snapshot (6 takes, 6 shas)".
 // red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
 // laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
@@ -56,11 +59,12 @@
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
-import { hostname, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
 import * as gc from "../lib/session-gc.mjs";
+import * as rt from "../lib/rt-gc.mjs";
 import { takeHoldWarning } from "../lib/session-lease.mjs";
 import * as pool from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
@@ -69,6 +73,13 @@ import { trimScript } from "../lib/ws-trim.mjs";
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
 process.env.LF_POOL_POLL_MS = "100"; // read by tools/remote/pool.mjs on each poll
+process.env.LF_POOL_RT_GC = "0"; // no run-folder cleanup over ssh from this suite (rtGcMachine is driven with a fake ssh below)
+// Hermetic: not this PC's hostname (tools/pool.json gives lf-testbox "hostname": "PC1", which on the laptop would make
+// that entry the local machine and drop it from the ssh list) and not its LF_TESTBOX env. A real lf.local.json is never
+// read: every root below is a fresh temp repo. The "laptop view" block below replays hostname PC1 on purpose.
+for (const k of ["LF_TESTBOX", "LF_TESTBOX_ROOT"]) delete process.env[k];
+const hostname = () => "lf-selftest-pc";
+pool.setHostnameForTest(hostname());
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
@@ -613,6 +624,70 @@ try {
       rmSync(base, { recursive: true, force: true });
     }
   }
+  // 4c. remote run-folder GC (tools/lib/rt-gc.mjs): which folders, in which order, busy ones kept.
+  {
+    const base0 = mkdtempSync(join(tmpdir(), "lf-rtgc-"));
+    const NOW = 10_000_000_000;
+    const ago = (min) => NOW - min * 60000;
+    const ent = (name, idleMin, busy = null) => ({ dir: `C:\\LF\\${name}`, busy, lastMs: idleMin === null ? 0 : ago(idleMin) });
+    const entries = [
+      ent("Life-Framework-rt-recent", 30),
+      ent("Life-Framework-rt-a", 300),
+      ent("Life-Framework-rt-b", 120),
+      ent("Life-Framework-rt-locked", 700, "lock"),
+      ent("Life-Framework-rt-running", 900, "proc"),
+      ent("Life-Framework-rt-next-s2", 800),
+      ent("Life-Framework-rt-oldest", 1200),
+      ent("Life-Framework-rt-unknown", null),
+      ent("Life-Framework", 5000),
+      ent("Life-Framework-ws-other", 5000),
+    ];
+    const plan = rt.planRtGc(entries, { now: NOW, idleMin: 60, keep: ["c:/lf/LIFE-FRAMEWORK-RT-NEXT-S2/"] });
+    check(plan.remove.map((r) => r.name).join() === "Life-Framework-rt-oldest,Life-Framework-rt-a,Life-Framework-rt-b", `rt gc removes the wrong folders or in the wrong order: ${plan.remove.map((r) => r.name).join()}`);
+    const why = (n) => plan.kept.find((k) => k.name === n)?.why;
+    check(why("Life-Framework-rt-locked") === "live lock" && why("Life-Framework-rt-running") === "process running in it" && why("Life-Framework-rt-recent") === "written recently" && why("Life-Framework-rt-next-s2") === "about to be used" && why("Life-Framework-rt-unknown") === "age unknown", `rt gc kept reasons are wrong: ${JSON.stringify(plan.kept)}`);
+    check(!plan.remove.concat(plan.kept).some((r) => r.name === "Life-Framework" || r.name === "Life-Framework-ws-other"), "rt gc considered a folder that is not a Life-Framework-rt-* run folder");
+    check(plan.remove[0].idleMin === 1200 && rt.planRtGc(entries, { now: NOW, idleMin: 10 }).remove.some((r) => r.name === "Life-Framework-rt-recent"), "rt gc idle limit is not the idle minutes asked for");
+    // what the box says round-trips
+    const scan = rt.parseRtScan(["lf-pool: disk 3.5", "lf-pool: rt - 1000 C:\\LF\\Life-Framework-rt-a", "lf-pool: rt lock 2000 C:\\LF\\Life-Framework-rt-b c", "noise"].join("\n"));
+    check(scan.freeGb === 3.5 && scan.entries.length === 2 && scan.entries[1].busy === "lock" && scan.entries[1].dir === "C:\\LF\\Life-Framework-rt-b c" && scan.entries[0].lastMs === 1000, `rt scan lines are not parsed: ${JSON.stringify(scan)}`);
+    const rm = rt.parseRtRemove(["lf-pool: gc removed 6.25 C:\\LF\\Life-Framework-rt-a", "lf-pool: gc kept lock C:\\LF\\Life-Framework-rt-b", "lf-pool: gc fail C:\\LF\\Life-Framework-rt-c", "lf-pool: gc free 6.25"].join("\n"));
+    check(rm.removed[0].freeGb === 6.25 && rm.kept[0].why === "lock" && rm.failed.length === 1 && rm.freeGb === 6.25, `rt remove lines are not parsed: ${JSON.stringify(rm)}`);
+    // the threshold: 3x the disk floor, configurable
+    const savedFloor = process.env.LF_POOL_MIN_FREE_DISK_GB;
+    process.env.LF_POOL_MIN_FREE_DISK_GB = "5";
+    check(rt.rtGcTargetGb(pool.poolSettings(base0)) === 15, `rt gc threshold is not 3x the disk floor (${rt.rtGcTargetGb(pool.poolSettings(base0))})`);
+    process.env.LF_POOL_RT_GC_FREE_FACTOR = "4";
+    process.env.LF_POOL_RT_IDLE_MIN = "90";
+    check(rt.rtGcTargetGb(pool.poolSettings(base0)) === 20 && pool.poolSettings(base0).rtIdleMin === 90, "rt gc threshold / idle minutes are not configurable");
+    delete process.env.LF_POOL_RT_GC_FREE_FACTOR;
+    delete process.env.LF_POOL_RT_IDLE_MIN;
+    check(pool.poolSettings(base0).rtIdleMin === 60 && pool.poolSettings(base0).rtGcFreeFactor === 3, "rt gc defaults are not 60 min / 3x");
+    process.env.LF_POOL_MIN_FREE_DISK_GB = savedFloor;
+    // the pass itself, against a fake box: low disk removes the oldest idle ones in order and logs one line each;
+    // a box above the threshold costs one scan and removes nothing; the folder about to be used is never sent
+    const box = { name: "cloud", host: "cloud", root: "C:/LF/Life-Framework", via: "ssh" };
+    const scanText = ["lf-pool: disk 3", ...entries.filter((e) => e.dir.includes("-rt-")).map((e) => `lf-pool: rt ${e.busy ?? "-"} ${e.lastMs} ${e.dir}`)].join("\n");
+    const sent = [];
+    const lines = [];
+    const fake = (disk) => async (host, script) => {
+      sent.push(script);
+      if (sent.length % 2 === 1) return { stdout: disk >= 15 ? `lf-pool: disk ${disk}\n` : scanText.replace("disk 3", `disk ${disk}`) };
+      return { stdout: ["lf-pool: gc removed 4.5 C:\\LF\\Life-Framework-rt-oldest", "lf-pool: gc removed 6 C:\\LF\\Life-Framework-rt-a", "lf-pool: gc free 6"].join("\n") };
+    };
+    const r1 = await pool.rtGcMachine(base0, box, { keep: ["C:/LF/Life-Framework-rt-next-s2"], idleMin: 60, targetGb: 15, log: (l) => lines.push(l), ssh: fake(3), now: () => NOW });
+    const rmScript = sent[1] ?? "";
+    const at = (n) => rmScript.indexOf(n);
+    check(sent.length === 2 && at("rt-oldest") > 0 && at("rt-oldest") < at("rt-a") && at("rt-a") < at("rt-b") && !/rt-(next-s2|locked|running|recent|unknown)/.test(rmScript.replace(/\$\w+ -like 'Life-Framework-rt-\*'/g, "")) && /safe-rm\.mjs/.test(rmScript) && /\$target = 15/.test(rmScript), "the removal sent to the box does not carry the idle folders oldest first (or carries a busy or kept one)");
+    check(lines.filter((l) => /gc cloud: removed/.test(l)).length === 2 && r1.removed.length === 2 && /rt-oldest.*idle 20 h.*freed 1\.5 GB/.test(lines.join("\n")), `rt gc did not log one line per folder removed: ${lines.join(" | ")}`);
+    sent.length = 0;
+    const r2 = await pool.rtGcMachine(base0, box, { keep: [], idleMin: 60, targetGb: 15, log: (l) => lines.push(l), ssh: fake(80), now: () => NOW });
+    check(sent.length === 1 && r2.removed.length === 0 && r2.freeGb === 80, "a box above the disk threshold was cleaned or scanned twice");
+    sent.length = 0;
+    const r3 = await pool.rtGcMachine(base0, box, { keep: [], idleMin: 60, targetGb: 0, dry: true, log: (l) => lines.push(l), ssh: fake(3), now: () => NOW });
+    check(sent.length === 1 && r3.removed.length === 0 && lines.filter((l) => /would remove/.test(l)).length === 4, "a dry run removed folders or did not list the idle ones");
+    rmSync(base0, { recursive: true, force: true });
+  }
   // 5. runtime budgets: learned from history, floor, seeded default, self-correcting.
   const passRuns = (kind, durS, n, machine = "local") => Array.from({ length: n }, () => ({ purpose: kind, machine, result: "pass", durS }));
   check(q.budgetSeconds([], "test only", "local").runS === 30 && q.budgetSeconds([], "test all", "local").runS === 90 && q.budgetSeconds([], "test persistence", "local").runS === 120, "seeded budgets are not 30/90/120 s");
@@ -621,6 +696,22 @@ try {
   check(q.budgetSeconds(passRuns("test all", 20, 20), "test all", "local").runS === 60, "budget is not 3x the p95");
   check(q.budgetSeconds(passRuns("test only", 9, 4), "test only", "local").source === "default", "4 passes already count as history");
   check(q.budgetSeconds(passRuns("e2e", 40, 6), "e2e", "local").runS === 60, "e2e budget is not per pass");
+  // 5b. the core-only suite is its own run kind: label, budget, counts, stamp tier.
+  check(q.testPurpose({ tier: "all" }) === "test all" && q.testPurpose({ tier: "all", coreOnly: true }) === "test all core-only", "ci core-only run is not labelled `test all core-only`");
+  check(q.testPurpose({ tier: "fast", only: ["LF_Test_X"] }) === "test only" && q.testPurpose({ tier: "all", only: ["A"], coreOnly: true }) === "test only core-only", "--only label wrong");
+  check(q.budgetSeconds([], "test all core-only", "local").runS === 90, "core-only has no seeded budget");
+  check(q.budgetSeconds(passRuns("test all", 20, 20), "test all core-only", "local").source === "default", "core-only budget borrowed the full run history");
+  const kindRuns = [
+    { purpose: "test all", result: "pass", durS: 30, passed: 531, total: 531 },
+    { purpose: "test all core-only", result: "pass", durS: 20, passed: 480, total: 480 },
+    { purpose: "test all", result: "fail", durS: 10, passed: 530, total: 531 },
+    { purpose: "session", kind: "session" }, { purpose: "reclaim" }, { purpose: "e2e", result: "pass", durS: 5 },
+  ];
+  const kinds = q.runsByPurpose(kindRuns);
+  check(kinds.length === 2 && kinds[0].purpose === "test all" && kinds[0].n === 2 && kinds[0].pass === 1 && kinds[0].lastTotal === 531, "runsByPurpose does not group the full run");
+  check(kinds[1].purpose === "test all core-only" && kinds[1].n === 1 && kinds[1].lastTotal === 480 && kinds[1].avgDurS === 20, "runsByPurpose mixes the core-only count into the full run");
+  check(/test all core-only +runs +1/.test(q.formatRunsByPurpose(kinds)) && q.formatRunsByPurpose(kinds).includes("last 480/480"), "formatRunsByPurpose omits the core-only row");
+  check(tb.stampTierOf("all", true) === "all-core" && tb.stampTierOf("all", false) === "all", "a remote core-only summary is not stamped all-core");
   check(q.budgetSeconds(passRuns("test only", 9, 20, "lf-testbox"), "test only", "local").source === "default", "another machine's history was used");
   const flaky = [...passRuns("test only", 9, 40), ...Array.from({ length: 3 }, () => ({ purpose: "test only", machine: "local", result: "timeout", durS: 30 }))];
   check(q.budgetSeconds(flaky, "test only", "local").runS === 60, "a 7% timeout rate did not raise the budget");
@@ -640,7 +731,20 @@ try {
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
   check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 2 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  // Laptop view: on the box itself (hostname PC1, the committed pool.json entry) the machines are lf-testbox as local and nothing
+  // else, with no TypeError ranking them; a PC (any other hostname) keeps local plus an ssh lf-testbox.
   writeFileSync(join(dir, "lf.local.json"), "{}");
+  pool.setHostnameForTest("PC1");
+  try {
+    const lapView = pool.loadMachines(dir);
+    check(lapView.length === 1 && lapView[0].name === "lf-testbox" && lapView[0].via === "local" && !lapView.some((m) => m.via === "ssh"), "on hostname PC1 the committed pool.json entry is not the only local machine");
+    const lapLocal = lapView.find((m) => m.via === "local");
+    check(pool.orderMachines(dir, [lapLocal], pool.poolSettings(dir)).length === 1 && pool.rankedMachines(dir, [lapLocal], pool.poolSettings(dir), { localFreeMb: 6000 })[0]?.name === "lf-testbox", "ranking the laptop's own local machine failed");
+    const lapPc = pool.loadMachines(dir).find((m) => m.via === "ssh");
+    check(lapPc === undefined, "the laptop kept an ssh entry for itself");
+  } finally {
+    pool.setHostnameForTest(hostname());
+  }
   check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
   check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox" && pool.sessionMachineCandidates(dir, 2).length === 2, "session candidates are not this PC first, then the laptop");
   check(pool.sessionMachineCandidates(dir, 3).map((m) => m.name).join() === "local", "a 3-client session went to the laptop past its maxClients (heat)");
@@ -744,7 +848,7 @@ const dir0 = () => {
     const tdir2 = mkdtempSync(join(tmpdir(), "lf-burstcfg-"));
     spawnSync("git", ["init", "-q", tdir2], { windowsHide: true });
     const hb = pool.holderConfig(tdir2, cloud, { sha: "a".repeat(40), head: "b".repeat(40) }, { purpose: "test fast", settings: bst, aheadMb: 2400, freeLocks: ["server-test-3", "server-test-5"], position: 1 });
-    check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /-s5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
+    check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /Life-Framework-lane-server-test-5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
     rmSync(tdir2, { recursive: true, force: true });
     // The holder's gate itself (PowerShell): the reserves in flight ahead and a test lock still booting.
     const ld = mkdtempSync(join(tmpdir(), "lf-burstgate-"));
@@ -1063,6 +1167,90 @@ const dir0 = () => {
       check(names(pool.resolveMachines(mroot, { mode: "any" })) === "local,lf-testbox" && order(400, 6000) === "lf-testbox,local", "the audit's any-choice does not pick the machine with room");
     }
     rmSync(mroot, { recursive: true, force: true });
+  }
+}
+
+// Lane run folders (run-overhead): a remote test runs in its lane's shared folder, owned through the lane
+// lock; sessions and gate syncs keep per-worktree folders; the bundle ref is unique per process; the
+// box-side checkout of a shared folder drops what the last run left under addons/ (rdb kept), through
+// the box clone's link-safe delete, and never follows a junction.
+{
+  const lroot = mkdtempSync(join(tmpdir(), "lf-lanes-"));
+  try {
+    spawnSync("git", ["init", "-q", lroot], { windowsHide: true });
+    const box = { name: "lf-x", via: "ssh", host: "lf-x", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 2, session: 1 } };
+    const lsettings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
+    const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
+    const hc = pool.holderConfig(lroot, box, snap, { purpose: "test only", settings: lsettings });
+    check(hc.slots.length === 2 && hc.slots.every((x) => x.shared && x.dir === `C:/LF/${pool.LANE_DIR_PREFIX}${x.lock}`), `remote test lanes do not run in the lane's shared folder (${JSON.stringify(hc.slots)})`);
+    check(new Set(hc.slots.map((x) => x.dir)).size === hc.slots.length, "two test lanes share one run folder");
+    const sess = pool.holderConfig(lroot, box, snap, { purpose: "session", settings: lsettings });
+    check(sess.slots.every((x) => !x.shared && /Life-Framework-rt-/.test(x.dir)), `session lanes moved into shared folders (${JSON.stringify(sess.slots)})`);
+    check(!pool.holderConfig(lroot, box, snap, { slots: 0, purpose: "gate", suffix: "-gate", settings: lsettings }).slots.length && /Life-Framework-rt-.*-gate$/.test(pool.holderConfig(lroot, box, snap, { slots: 0, purpose: "gate", suffix: "-gate", settings: lsettings }).dir), "a sync-only gate run lost its own folder");
+    check(pool.holderConfig(lroot, { ...box, lanes: undefined }, snap, { purpose: "test only", settings: lsettings }).slots.every((x) => !x.shared), "a machine without lanes got shared test folders");
+    check(tb.bundleSlug("C:/LF/Life-Framework-lane-server-test-1", 11) !== tb.bundleSlug("C:/LF/Life-Framework-lane-server-test-1", 12), "two processes bundle under one ref name");
+    check(!/clean-run-folder/.test(tb.psCheckoutOnly({ rDir: "C:/x/Life-Framework-rt-a", snap }, null)) && /clean-run-folder/.test(tb.psCheckoutOnly({ rDir: "C:/x/Life-Framework-lane-server-test-1", shared: true, snap }, null)), "only a shared folder is cleaned after the checkout");
+    // The generated box-side clean, run for real: a main clone with tools/link-safety.mjs, a linked lane worktree.
+    const main = join(lroot, "main");
+    mkdirSync(join(main, "tools"), { recursive: true });
+    mkdirSync(join(main, "addons", "A"), { recursive: true });
+    writeFileSync(join(main, "tools", "link-safety.mjs"), readFileSync(new URL("../link-safety.mjs", import.meta.url)));
+    writeFileSync(join(main, "addons", "A", "Tracked.c"), "tracked");
+    writeFileSync(join(main, ".gitignore"), "tmp/\nresourceDatabase.rdb\n");
+    const g = (...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...a], { windowsHide: true, encoding: "utf8" });
+    g("init", "-q", main);
+    g("-C", main, "add", "-A");
+    g("-C", main, "commit", "-q", "-m", "base");
+    const lane = join(lroot, "Life-Framework-lane-server-test-1");
+    g("-C", main, "worktree", "add", "-q", "--detach", lane);
+    const install = join(lroot, "steam", "core");
+    mkdirSync(install, { recursive: true });
+    writeFileSync(join(install, "core.gproj"), "sentinel");
+    writeFileSync(join(lane, "addons", "A", "Stray.c"), "another worktree's file");
+    writeFileSync(join(lane, "addons", "A", "resourceDatabase.rdb"), "rdb");
+    mkdirSync(join(lane, "addons", "A", "gen"), { recursive: true });
+    symlinkSync(install, join(lane, "addons", "A", "gen", "core"), "junction");
+    mkdirSync(join(lane, "tmp", "remote-in"), { recursive: true });
+    const ps = [`$dir = '${lane.replace(/'/g, "''")}'`, "Set-Location -LiteralPath $dir", "$in = Join-Path $dir 'tmp\\remote-in'", ...tb.psCleanShared(), "Write-Host 'clean-ok'"].join("\n");
+    const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { windowsHide: true, encoding: "utf8", timeout: 60000 });
+    const out = `${r.stdout}${r.stderr}`;
+    check(/lf-remote: cleaned 2 untracked path/.test(out) && /clean-ok/.test(out), `the box-side clean did not run (${out.trim().split(/\r?\n/).slice(-3).join(" | ")})`);
+    check(!existsSync(join(lane, "addons", "A", "Stray.c")) && !existsSync(join(lane, "addons", "A", "gen")), "the box-side clean left another worktree's files under addons/");
+    check(existsSync(join(lane, "addons", "A", "resourceDatabase.rdb")) && existsSync(join(lane, "addons", "A", "Tracked.c")), "the box-side clean took the rdb or a tracked file");
+    check(existsSync(join(install, "core.gproj")), "the box-side clean followed a junction into the install");
+  } finally {
+    const { unlinkReparsePoints } = await import("../link-safety.mjs");
+    unlinkReparsePoints(lroot);
+    rmSync(lroot, { recursive: true, force: true });
+  }
+}
+
+// The rdb of a remote run (run-overhead item 4): a pool machine with Workbench refreshes a stale one in
+// its own run, so this PC neither starts its Workbench for it nor sends it the stale copy; a fresh rdb
+// is still sent by hash, and a machine without Workbench still gets this PC's.
+{
+  const rr = mkdtempSync(join(tmpdir(), "lf-rdbplan-"));
+  try {
+    const core = join(rr, "addons", "LifeFramework");
+    mkdirSync(core, { recursive: true });
+    writeFileSync(join(core, "Thing.et"), "");
+    writeFileSync(join(core, "Thing.et.meta"), 'MetaFileClass {\n Name "{0123456789ABCDEF}Thing.et"\n}\n');
+    writeFileSync(join(core, "resourceDatabase.rdb"), "no entries");
+    const wb = { name: "lf-x", via: "ssh", caps: ["server", "workbench", "rdb"] };
+    const noWb = { name: "lf-y", via: "ssh", caps: ["server", "workbench"] };
+    check(tb.refreshesRdb(wb) && !tb.refreshesRdb(noWb) && !tb.refreshesRdb({ name: "local", via: "local", caps: ["workbench", "rdb"] }), "refreshesRdb: only a pool machine with the rdb cap refreshes its own rdb");
+    check(tb.staleRdbAddons(rr).join() === "LifeFramework", `a stale rdb is not seen as stale (${tb.staleRdbAddons(rr).join()})`);
+    const p1 = tb.rdbPlan(rr, wb, {});
+    check(p1.toSend.length === 0 && p1.stale.has("LifeFramework"), "a stale rdb is sent to a machine that refreshes its own");
+    check(tb.rdbPlan(rr, noWb, {}).toSend.length === 1, "a machine without the rdb cap is not sent this PC's rdb");
+    const name = Buffer.from("thing.et", "utf8");
+    const guid = Buffer.from("0123456789ABCDEF", "hex").reverse();
+    writeFileSync(join(core, "resourceDatabase.rdb"), Buffer.concat([name, guid]));
+    const p2 = tb.rdbPlan(rr, wb, {});
+    check(!tb.staleRdbAddons(rr).length && p2.toSend.length === 1, "a fresh rdb is not sent to a machine that refreshes its own");
+    check(tb.rdbPlan(rr, wb, { LifeFramework: p2.toSend[0]?.hash }).toSend.length === 0, "an rdb the run folder already has is sent again");
+  } finally {
+    rmSync(rr, { recursive: true, force: true });
   }
 }
 

@@ -70,6 +70,7 @@ Each of these must survive a server restart:
 21. Wanted looks (save version 29, payload `wantedlooks`, #758): the suspect's look at the crime (`LF_WantedLookRow`: the report sequence and the look, the character prefab and loadout item GUIDs of `LF_WantedLook`), so the portraits on the wanted board's face come back after a restart. A separate payload because the `wanted` records are positional and never change; `LF_WantedReports.ApplyLooks` matches rows to the loaded reports by sequence and skips a row whose report is gone. A version 28 or older save loads its reports with no look (an empty photo frame until the next crime). Proof: `persist/wanted-looks` (round trip, second load, a version 28 save) and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the report has no look).
 22. Identity cards (save version 30, payload `idcards`, #902): every printed identity card (`LF_PhotoIdRow`: number, holder character id, first and last name, age, in-game date of issue, the holder's look at issue as `LF_WantedLook` GUIDs). The card item carries only its number in its `LF_SerialComponent`, which the `itemserials` payload and the item serializer already persist; after a load `LF_IdCard.EnsurePrinted` prints a numbered blank card from its row (at spawn and whenever the server reads a card). The newest row of a holder is their valid card, an older one is void. A version 29 or older save has no rows: its carried cards come back blank, and a resident who earned a card has one printed (with a new number and photo) at their next spawn. Proof: `persist/photo-id-cards` (round trip, second load, a version 29 save) and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the restored card keeps its number and stays blank).
 24. Build stamp (save version 32, payload `buildstamp`, #980): one `LF_SaveStampRecord` with the game build that wrote the save (`GetGame().GetBuildVersion()`) and the save version (`LF_SaveStamp`). Read last; a load from another build warns with both builds. Every store read ends with `save loaded: version N, game build X, running Y` (the host preflight waits for it), or with `save load damaged` when any payload failed to read, which pauses autosave (`IsLoadDamaged`). A version 31 or older save reads as build `unknown`. Owners run `tools\cli host preflight` after a game update (`docs/ops/game-updates.md`). Proof: `persist/save-build-stamp` (an older build's save loads whole, twice; a version 31 save; a damaged load keeps live state and pauses autosave) and `e2e/pass2-verify-load` (`tools\cli e2e --old-build`: the restart loads a save stamped 1.8.0.13 on the real build, after the build gate backed it up).
+25. Vehicle state (save version 33, payload `vehiclestate`, #752a, spec `docs/architecture/record-shape-vehicle.md`): one `LF_VehicleStateRow` per owned vehicle whose state is not the default, keyed by vehicle id: tow state (`LF_EVehicleTowState`: 0 none, 1 towed, 2 police impound), towed-at and inspected-at (unix seconds, the real clock, so a timer keeps running while the server is down; 0 = never) and the hidden compartment size (0 none to 3). On the live side these are `[NonSerialized()]` fields on `LF_VehicleRecord`, so the `vehicles` payload layout does not move. Loaded after `vehicles`; `LF_VehicleOwnership.ApplyState` puts every record at the default, then writes each row; a row for a vehicle that is not loaded is skipped with a warning, a bad tow state or negative stamp reads as none, a compartment level is clamped to 0-3 (each `LF_Debug.Error`). The restart impound stays derived and untowed (a restart never writes `TOWED`). Nothing replicates. No feature writes the state yet: garages and towing (#774), inspection and compartments (#778, #779) and the vehicle cache (#859) fill it. A version 32 or older save has no rows and every vehicle loads with the default, which is what those builds had. Proof: `persist/vehicle-state` (round trip, second load, a stock car writes no row), `persist/vehicle-state-legacy` (version 32 and 23 saves), `vehicles/state-bad-row`, and `e2e/pass2-verify-load` (a real restart; with `--legacy-save` the car loads untowed).
 23. Case board (save version 31, payload `caseboard`, #148): `LF_CaseBoardRow` per open report (the world clock at the crime) and per evidence card (the locker row number, the kind, the note the piece carried, the pin order). Rows of a closed report (its suspect no longer wanted) are not saved. Loaded after `wanted` and `evidencelocker`; `LF_CaseBoard.ApplyAll` replaces the store and resumes the pin order after the highest loaded pin. A version 30 or older save loads its cases with no time and nothing pinned; the evidence stays logged in the locker. Proof: `investigation/case-board-persist` (round trip, second load) and `e2e/pass2-verify-load` (a real restart).
 
 On connect the player spawns at a spawn point with the active character's
@@ -174,7 +175,7 @@ Apart from the police rank, no payload stores pack content by index or by a bare
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
   survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
-  itemstate, wanted, jobsignups, tickets, ... joblevels, wantedlooks, idcards, caseboard, buildstamp. The written version is that list's length (currently 32). Deserialize stops at the stored version, so an
+  itemstate, wanted, jobsignups, tickets, ... joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate. The written version is that list's length (currently 33). Deserialize stops at the stored version, so an
   older save leaves later payloads untouched. A new system appends one entry at
   the end and raises the version by one. Never insert earlier or reorder.
   The override bodies live in public static `SerializeStore` /
@@ -202,7 +203,8 @@ Apart from the police rank, no payload stores pack content by index or by a bare
   | 26 | playtime per account and job (#692): account uid, job name, seconds (`LF_Playtime.ExportAll` / `ApplyAll`; export settles the online clocks) |
   | 27 | organization ranks (#750a): rights mask and ladder order per organization id and rank id (`LF_OrganizationManager.ExportRanks` / `ApplyRanks`, after `organizations`) |
   | 28 | job XP (#749): character record key, job id, total XP (`LF_JobLevels.ExportAll` / `ApplyAll`, after `progression`, which seeds it from a pre-#749 record) |
-  | 32 | build stamp (#980): game build and save version that wrote the save (`LF_SaveStamp.Export` / `Apply`), read last |
+  | 32 | build stamp (#980): game build and save version that wrote the save (`LF_SaveStamp.Export` / `Apply`) |
+  | 33 | vehicle state (#752a): tow state, towed-at, inspected-at and compartment level per vehicle id (`LF_VehicleOwnership.ExportState` / `ApplyState`, after `vehicles`) |
 
 - **Characters per account (#331, save version 24).** An account holds up to
   `LF_CharacterConfig.MaxPerAccount()` characters (`Configs/Account/LF_Characters.conf`,
@@ -464,3 +466,30 @@ across the `wt e2e` restart, keepLicences off from the owner file).
 - In-session round trips prove nothing; the restart is ground truth. `wt e2e`
   covers save -> host-stop shutdown -> boot -> load with two processes; a
   single `LF_Test` run cannot survive a game-state transition.
+
+## Pre-move save gate (#327, decision D7 (a))
+
+A move keeps each GUID and changes its path, so a save made before the pack move must still load
+after it. That is a standing guarantee, not a one-off check of #323:
+
+- **Pinned reference:** `PRE_MOVE_REF` in `tools/lib/pre-move-gate.mjs` is `502ebf39` (PR #1144),
+  the last commit before the first move batch. It is a fixed commit, not "the previous release",
+  so the guarantee does not slide forward with `main`. The playtest header (GUID `1054CC8646357708`)
+  is the save key a real host has; it lives in the core at that commit and in the pack now.
+- **Proof:** `tools\cli e2e --pre-move 502ebf39 --mission playtest`. Pass 1 checks out the ref (a
+  clean tree is required; the checkout returns either way), boots core only, and ends through the
+  host stop file so the engine writes the SHUTDOWN save. Pass 2 runs on the current tree with both
+  addons and `-loadSessionSave latest`; `e2e/pass2-verify-load` asserts the marker values (cash, the
+  carried inventory, the jail sentence, the card, the accounts) came back.
+- **Gate:** `ci`, `wt gate` and `wt ship` run it as the `pre-move save` step when the diff touches
+  persistence code (`Scripts/Game/Persistence/`, `*Persist*.c`, `*SaveAlias*.c`, `*SaveIds*.c`), any
+  `Missions/` file, a `.gproj`, the pack/core boundary (`tools/lib/addons.mjs`,
+  `validate-addon-boundary.mjs`) or the e2e harness. Other diffs skip it with one line. The trigger
+  is `tools/validation/pre-move-gate-selftest.mjs`, offline.
+- **Newer-than-ref assertions:** pass 2 compiles with `LF_E2E_PRE_MOVE`. An e2e assertion about state the ref build never wrote (a record, flag or owner file added after `PRE_MOVE_REF`) goes inside `#ifndef LF_E2E_PRE_MOVE`; without that the gate fails on the test, not on the save. Today: the rules quiz flag (`LF_Test_E2E_SaveState`) and the switches reload boot (`LF_Test_PersistSwitchesRestart`).
+- **Failure reading:** a load that resolves a prefab by path instead of GUID shows as a missing
+  marker value in `pass2-verify-load` or an `Unable to find` line in the second boot. Fix the loader
+  to compare GUIDs (`LF_SaveIds`), never re-point the ref.
+- **When the ref may change:** never to hide a failure. Only if a later save-format break makes the
+  old save unreadable by design (record that in "Save reset" above), then pin the newest commit
+  that is still readable and say why in the PR.

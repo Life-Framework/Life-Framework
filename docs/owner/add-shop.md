@@ -117,6 +117,28 @@ The shipped outlets and their items are in `Configs/Catalogue/LF_ItemCatalogue.c
 An outlet is the right choice when you want one list of items shared by several counters (a chain),
 or a job or licence gate per item. A price-rule shop is the right choice for a one-off counter.
 
+### The fixture that proves steps 3 and 4
+
+Both configs above are kept as config-harness fixtures, so a change that breaks this walkthrough fails
+a check instead of a reader:
+
+| Fixture (`tools/test/config-fixtures/presets/`) | Config | What it proves |
+|---|---|---|
+| `owner-add-shop` | step 3, verbatim | `config-check` gives 0 errors and the one expected warning for the new rule key. On a joined client, the debug general store's list shows the backpack at `$90` (the rule) and the cabbage at `$40` (the default) |
+| `owner-add-shop-catalogue` | step 4, verbatim | `config-check` gives 0 errors and 0 warnings: the item, the offer and the `FIREARM_PERMIT` gate are all known |
+
+```
+tools\cli config-harness                               # offline: both fixtures, no game
+tools\cli session up --clients 1
+tools\cli session config-harness-proof --only owner-add-shop    # the prices on the client's screen
+tools\cli session down
+```
+
+The client check writes the fixture as the server's `config.json`, reloads it and reads the shop's price
+list off client 1's screen, the same as step 5 does by hand. The catalogue fixture is offline only,
+because the debug world has no `gun_counter` shop yet. If you change a number in step 3 or 4, change
+the fixture with it (`docs/config/owner-config.md`, "Fixture harness").
+
 ## 5. Run it
 
 Start the server on the pack's mission, or press **Play** in Workbench on `Worlds/Town.ent`, the

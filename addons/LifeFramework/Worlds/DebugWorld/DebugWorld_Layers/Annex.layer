@@ -506,6 +506,11 @@ GenericEntity Annex_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_Wa
  angleY 0
 }
 GenericEntity Annex_Police_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
+ components {
+  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
+   m_sTargetId "Annex_Police_EvidenceLocker"
+  }
+ }
  coords 84 0 46.978
 }
 GenericEntity Annex_Escort_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {

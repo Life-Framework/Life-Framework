@@ -21,7 +21,7 @@ Quickest: copy the ready folder [`server/example/`](../../server/example/README.
 | Key | Set it to |
 |---|---|
 | `game.name` | your server's name in the browser |
-| `game.passwordAdmin` | a password with no spaces; log in in game with `#login <password>` |
+| `game.passwordAdmin` | a password with no spaces; in game, log in with `#login <password>` |
 | `game.admins` | your Steam64 ID or Bohemia identity ID (optional) |
 | `game.password` | a join password, or leave it empty |
 | `bindPort`, `publicPort`, `a2s.port` | other ports when 2001 and 17777 are taken; forward them (UDP) |

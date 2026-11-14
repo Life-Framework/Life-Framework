@@ -153,7 +153,8 @@ function attrInfo(args) {
 const SCALAR = { int: "integer", float: "number", bool: "boolean", string: "string", ResourceName: "string" };
 
 function scalarDefault(type, def) {
-  if (type === "bool") return def === "true" ? true : def === "false" ? false : undefined;
+  // [Attribute("1")] is how most checkboxes spell "on"; reading only true/false left 39 booleans without a default (#286).
+  if (type === "bool") return def === "true" || def === "1" ? true : def === "false" || def === "0" ? false : undefined;
   if (type === "int" || type === "float") return /^-?\d+(\.\d+)?$/.test(def) ? Number(def) : undefined;
   return def;
 }
@@ -299,10 +300,11 @@ export function runtimeExample(serviceText) {
   try { return JSON.parse(lines.join("\n")); } catch { return null; }
 }
 
-export function build() {
+/** The schema for the core plus the packs under `addonsDir` (the repo's addons/ by default; `config-check --addons` passes a test pack's). */
+export function build(addonsDir = join(REPO, "addons")) {
   const overrides = JSON.parse(readFileSync(OVERRIDES, "utf8"));
   const files = readScripts();
-  return generate(files, readFileSync(SERVICE, "utf8"), overrides, loadPackSections(join(REPO, "addons"), coreKeysOf(files)));
+  return generate(files, readFileSync(SERVICE, "utf8"), overrides, loadPackSections(addonsDir, coreKeysOf(files)));
 }
 
 if (process.argv[1] && /[\\/]schema\.mjs$/.test(process.argv[1])) {

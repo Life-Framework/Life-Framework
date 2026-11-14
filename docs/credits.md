@@ -89,7 +89,7 @@ Which set feeds which map is in each asset's spec (`tools/assets/metal-ingot`, `
 
 ## Poly Haven models (CC0)
 
-Taken whole from [Poly Haven](https://polyhaven.com/models) by the source stage of `toolscli asset` instead of being generated
+Taken whole from [Poly Haven](https://polyhaven.com/models) by the source stage of `tools\cli asset` instead of being generated
 (`docs/asset-pipeline/sources.md`). Poly Haven releases its models under CC0 1.0 (https://polyhaven.com/license): no attribution
 required, credited here anyway with the URL. The stage writes each row; `tools/assets/<slug>/source.json` holds the file hash.
 A model under CC-BY would also need its author credited in this table.

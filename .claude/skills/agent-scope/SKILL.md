@@ -7,6 +7,11 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
 
 `AGENTS.md` is the contract; this is the order to apply it in.
 
+**A background run never wakes a subagent or delegated task.** Ending your turn
+while `test`, `e2e` or `session` runs in the background ends the task
+unfinished. Run it in the foreground (timeout up to 600000 ms) or call
+`t3_background_wait` before ending the turn.
+
 1. **Worktree.** `tools\cli wt new <slug>`, then work only in
    `..\Life-Framework-ws-<slug>` on `ws/<slug>`. Never write into the main
    checkout. Scratch goes in `<worktree>\tmp\` with names unique to your task

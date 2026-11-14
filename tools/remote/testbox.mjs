@@ -35,6 +35,8 @@ import { basename, dirname, join, resolve } from "node:path";
 import * as wt from "../wt.mjs";
 import { ADDONS, CORE } from "../lib/addons.mjs";
 import { localSetting } from "../lib/local-config.mjs";
+import { cleanRunFolder } from "../link-safety.mjs";
+import { rdbFreshness } from "../lib/rdb-fresh.mjs";
 import { cmdRecord, cmdScreenshot, cmdStart, cmdVdd } from "./desktop.mjs";
 
 const DEFAULT_REMOTE_ROOT = "C:/LF/Life-Framework";
@@ -172,6 +174,13 @@ export function snapshotCommit(root) {
   }
 }
 
+// The name of the ref a run's bundle carries. Unique per process: lane folders
+// (Life-Framework-lane-server-test-1) have the same name on every machine and for every worktree, and
+// the ref is written in this PC's shared refs while the bundle is made.
+export function bundleSlug(rDir, pid = process.pid) {
+  return `${basename(rDir).replace(/^Life-Framework-(rt|lane)-/, "")}-p${pid}`;
+}
+
 // Bundle of the commits the box lacks: everything reachable from the snapshot
 // minus what the holder said the box has. null when the box has the snapshot.
 function makeBundle(root, slug, sha, has) {
@@ -193,12 +202,17 @@ function sha1File(file) {
   return createHash("sha1").update(readFileSync(file)).digest("hex");
 }
 
-function appendStamp(root, line, sha, consoleLog, host) {
+// A core-only run stamps tier "<tier>-core" (test-e2e.ps1 does the same locally), so it never stands in for the full run.
+export function stampTierOf(tier, coreOnly) {
+  return coreOnly ? `${tier}-core` : tier;
+}
+
+function appendStamp(root, line, sha, consoleLog, host, coreOnly = false) {
   const m = /\[LFTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(line);
   if (!m) return null;
   const dir = join(root, "tmp", "test-results");
   mkdirSync(dir, { recursive: true });
-  const rec = { sha, tier: m[1], passed: +m[2], failed: +m[3], total: +m[4], consoleLog: consoleLog || "", host };
+  const rec = { sha, tier: stampTierOf(m[1], coreOnly), passed: +m[2], failed: +m[3], total: +m[4], consoleLog: consoleLog || "", host };
   appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(rec) + "\n", "utf8");
   return rec;
 }
@@ -235,7 +249,7 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
   const t0 = Date.now();
   const m = slot.machine;
   const snap = slot.snap;
-  const slug = basename(slot.rDir).replace(/^Life-Framework-rt-/, "");
+  const slug = bundleSlug(slot.rDir);
   let bundle;
   try {
     bundle = makeBundle(root, slug, snap.sha, slot.prep.has);
@@ -243,8 +257,7 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
     console.log(`FAIL  bundle: ${e.message}`);
     return { ok: false };
   }
-  const rdbs = localRdbs(root);
-  const toSend = rdbs.filter((r) => r.hash !== slot.prep.rdbs?.[r.name]);
+  const { rdbs, toSend, stale } = rdbPlan(root, m, slot.prep.rdbs);
   const sendRdb = toSend.length > 0;
   const send = [bundle, ...toSend.map((r) => stageRdb(root, r))].filter(Boolean);
   const rdbHash = Object.fromEntries(rdbs.map((r) => [r.name, r.hash]));
@@ -263,11 +276,45 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
   const what = [
     slot.prep.fresh ? "new run folder" : "reused run folder",
     bundle ? `bundle ${(bundleBytes / 1024).toFixed(1)} KiB` : "no bundle (box has the snapshot)",
+    stale.size ? `stale rdb kept here (${[...stale].join(", ")}; the box refreshes its own)` : null,
     sendRdb ? toSend.map((r) => `rdb${r.name === CORE ? "" : ` ${r.name}`} ${(statSync(r.path).size / 1048576).toFixed(1)} MiB`).join(", ") : rdbs.length ? "rdb unchanged" : "no local rdb",
     slot.prep.fetched ? "box fetched origin" : null,
   ].filter(Boolean).join(", ");
   console.log(`pool: sync to ${m.name}: ${what} (${(ms / 1000).toFixed(1)} s)`);
   return { ok: true, sentBundle: !!bundle, bundleBytes, sentRdb: !!sendRdb, ms, bundleName: bundle ? basename(bundle) : null };
+}
+
+// A pool machine with the cap "rdb" refreshes a stale rdb in its own run: the remote `test --local` /
+// `e2e --local` / `session up` runs ensureResourceDatabase in the run folder (desktop-session
+// Workbench, #1158). "workbench" alone is not enough: on 2026-11-14 lf-cloud's Workbench exited 0
+// without registering anything (`ResourceDB: could not open cache file`, RESOURCES (E) for vanilla
+// UI textures), while lf-testbox registered a stale pack's 58 resources in 18 s. Give the cap only
+// to a machine where a refresh was seen to work.
+export function refreshesRdb(m) {
+  return !!m && m.via !== "local" && (m.caps ?? []).includes("rdb");
+}
+
+// The addons whose local resourceDatabase.rdb misses a resource of the worktree (tools/lib/rdb-fresh.mjs).
+export function staleRdbAddons(root) {
+  return ADDONS.map(({ name }) => name).filter((name) => {
+    const dir = join(root, "addons", name);
+    if (!existsSync(dir)) return false;
+    try {
+      return rdbFreshness(dir).missing.length > 0;
+    } catch {
+      return false;
+    }
+  });
+}
+
+// Which local rdbs a sync sends: those whose hash the run folder does not have, except a stale one
+// to a machine that refreshes its own (refreshesRdb). That run refreshes the folder's copy, which then
+// stays; sending ours would undo it and cost a refresh on every run. { rdbs, toSend, stale: Set }.
+export function rdbPlan(root, m, folderHashes = {}) {
+  const stale = refreshesRdb(m) ? new Set(staleRdbAddons(root)) : new Set();
+  const rdbs = localRdbs(root).filter((r) => !stale.has(r.name));
+  const toSend = rdbs.filter((r) => r.hash !== folderHashes?.[r.name]);
+  return { rdbs, toSend, stale };
 }
 
 // Every addon's local resourceDatabase.rdb: { name, path, hash, wire } (wire is the file name it
@@ -312,11 +359,44 @@ function psCheckout(slot, bundleName, slug) {
     "  Remove-Item -LiteralPath $bundle -Force",
     "}",
     "git checkout -q --detach -f $sha 2>&1 | Out-Null; if ($LASTEXITCODE) { Write-Host \"lf-remote: checkout $sha failed\"; exit 3 }",
+    ...(slot.shared ? psCleanShared() : []),
     "$rdbIn = Join-Path $in 'resourceDatabase.rdb'",
     "if (Test-Path -LiteralPath $rdbIn) { Move-Item -LiteralPath $rdbIn -Destination (Join-Path $dir 'addons\\LifeFramework\\resourceDatabase.rdb') -Force }",
     // Another addon's rdb travels as resourceDatabase.<name>.rdb (localRdbs).
     "foreach ($f in @(Get-ChildItem -LiteralPath $in -Filter 'resourceDatabase.*.rdb' -File -ErrorAction SilentlyContinue)) { $an = $f.Name.Substring(17, $f.Name.Length - 21); $ad = Join-Path $dir \"addons\\$an\"; if (Test-Path -LiteralPath $ad) { Move-Item -LiteralPath $f.FullName -Destination (Join-Path $ad 'resourceDatabase.rdb') -Force } }",
   ].join("\n");
+}
+
+// A shared lane folder (pool.mjs laneRunDir) after the checkout: drop what the previous run, from any
+// worktree, left under addons/ that git does not track, keeping each addon's resourceDatabase.rdb
+// (it is sent by hash, and moved in after this). cleanRunFolder runs on the box from the source this
+// PC ships (the box's clone may predate it), deleting through the box clone's safeRemoveTree, which
+// unlinks a junction instead of following it. A clean that fails stops the run (exit 3): the folder
+// would not hold exactly the snapshot.
+export function psCleanShared() {
+  const js = [
+    "const [helper, dir] = process.argv.slice(2);",
+    "const { spawnSync } = await import('node:child_process');",
+    "const { join } = await import('node:path');",
+    "const { safeRemoveTree } = await import(helper);",
+    `const cleanRunFolder = ${cleanRunFolder.toString()};`,
+    "try {",
+    "  const removed = cleanRunFolder(dir, { spawnSync, join, remove: safeRemoveTree });",
+    "  console.log(`lf-remote: cleaned ${removed.length} untracked path(s) under addons`);",
+    "} catch (e) {",
+    "  console.log(`lf-remote: clean failed: ${e.message}`);",
+    "  process.exit(1);",
+    "}",
+  ].join("\n");
+  const b64 = Buffer.from(js, "utf8").toString("base64");
+  return [
+    "$cleanJs = Join-Path $in 'lf-clean-run-folder.mjs'",
+    `[IO.File]::WriteAllText($cleanJs, [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}')))`,
+    "$mainDir = Split-Path -Parent (git rev-parse --path-format=absolute --git-common-dir)",
+    "$helper = 'file:///' + (Join-Path $mainDir 'tools\\link-safety.mjs').Replace('\\', '/')",
+    "& node $cleanJs $helper $dir",
+    "if ($LASTEXITCODE) { Write-Host 'lf-remote: the shared run folder could not be cleaned'; exit 3 }",
+  ];
 }
 
 // Files a run takes to the box and brings back (the placement audit: its input list goes up through an
@@ -340,7 +420,7 @@ export function remoteFilePlan(rDir, files = {}) {
 // { code, summary, localLog }. code 3: the box could not be prepared. files: remoteFilePlan.
 export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", writeSyncState, fetchLog = true, files }) {
   const m = slot.machine;
-  const slug = basename(slot.rDir).replace(/^Life-Framework-rt-/, "");
+  const slug = bundleSlug(slot.rDir);
   const snap = slot.snap;
   console.log(`remote: ${m.name} ${slot.rDir} @ ${snap.sha.slice(0, 10)}${snap.dirty ? ` (HEAD ${snap.head.slice(0, 10)} + ${snap.changed} uncommitted path(s))` : ""}`);
   let sync;
@@ -411,14 +491,14 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
       for (const l of key) console.log(`  ${l.trim()}`);
     }
   }
-  const summary = summaryLine ? appendStamp(root, summaryLine, snap.head, localLog, m.name) : null;
+  const summary = summaryLine ? appendStamp(root, summaryLine, snap.head, localLog, m.name, args.includes("--core-only")) : null;
   if (localLog) console.log(`remote: log ${localLog}`);
   return { code: slot.lost && code === 0 ? 3 : code, summary, localLog, sync };
 }
 
 // Sync only (no slot): used by sessions, whose server takes the box's lock itself.
 export function psCheckoutOnly(slot, bundleName) {
-  return psCheckout(slot, bundleName, basename(slot.rDir).replace(/^Life-Framework-rt-/, ""));
+  return psCheckout(slot, bundleName, bundleSlug(slot.rDir));
 }
 
 // Removes run folders on a box through the junction-safe helper of the box's

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "jobs": {
+    "tracks": {
+      "DELIVERY": {
+        "levelThresholds": [400, 1200, 3000]
+      }
+    },
+    "xpAwards": {
+      "delivery_run": { "xp": 120 }
+    }
+  }
+}

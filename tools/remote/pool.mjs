@@ -24,12 +24,13 @@
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
-import { freemem, hostname, totalmem } from "node:os";
+import { freemem, hostname as osHostname, totalmem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
 import * as gc from "../lib/session-gc.mjs";
+import * as rt from "../lib/rt-gc.mjs";
 import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
@@ -42,8 +43,16 @@ const HEALTH_TTL_MS = 60000;
 const REMOTE_RETRY_MS = 4000;
 export const SLOT_ENV = "LF_SERVER_SLOT_HELD";
 
+// This machine's name for the pool: the OS hostname, or what a self-test set (setHostnameForTest) so it
+// never depends on the PC it runs on (a pool entry with "hostname": this PC turns into the local machine).
+let hostnameOverride = null;
+const hostname = () => hostnameOverride ?? osHostname();
+export function setHostnameForTest(name) {
+  hostnameOverride = name ? String(name) : null;
+}
+
 export const slotLockName = q.slotLockName;
-export const { lanesFor, laneKind, portForLock, normalizePriority } = q;
+export const { lanesFor, laneKind, portForLock, normalizePriority, testPurpose, runsByPurpose, formatRunsByPurpose } = q;
 
 // Settings: pool.json top level, overridden by the "pool" key of lf.local.json,
 // then by env (tests use LF_POOL_*): sessionIdleMin (a session idle this long
@@ -72,12 +81,17 @@ export function poolSettings(root) {
     sessionHoldMaxMin: pick("sessionHoldMaxMin", "LF_POOL_SESSION_HOLD_MAX_MIN"),
     sessionKeepHours: pick("sessionKeepHours", "LF_POOL_SESSION_KEEP_H"),
     minFreeDiskGb: pick("minFreeDiskGb", "LF_POOL_MIN_FREE_DISK_GB"),
+    rtIdleMin: pick("rtIdleMin", "LF_POOL_RT_IDLE_MIN"),
+    rtGcFreeFactor: pick("rtGcFreeFactor", "LF_POOL_RT_GC_FREE_FACTOR"),
     sessionReserveServerMb: pick("sessionReserveServerMb", "LF_POOL_SESSION_RESERVE_SERVER_MB"),
     sessionReserveClientMb: pick("sessionReserveClientMb", "LF_POOL_SESSION_RESERVE_CLIENT_MB"),
     testReserveMb: pick("testReserveMb", "LF_POOL_TEST_RESERVE_MB"),
     testBootS: pick("testBootS", "LF_POOL_TEST_BOOT_S"),
     // Per profile: pool.json / lf.local.json "sessionReserve": { "lowspec": { "serverMb", "clientMb" } }.
     sessionReserve: { ...q.DEFAULTS.sessionReserve, ...(base.sessionReserve ?? {}), ...(over.sessionReserve ?? {}) },
+    // The ship queue's gate counts: "shipQueue": { "parallel": N, "light": N } in pool.json or the "pool" key of
+    // lf.local.json (tools/ship-queue.mjs gateSlots; the lf.local.json value wins per key).
+    shipQueue: { ...(isObj(base.shipQueue) ? base.shipQueue : {}), ...(isObj(over.shipQueue) ? over.shipQueue : {}) },
   };
 }
 
@@ -251,6 +265,8 @@ function normalize(m) {
     maxClients: Number(m.maxClients) > 0 ? Number(m.maxClients) : null,
     thermalLog: m.thermalLog ? String(m.thermalLog) : null,
     thermalHoldC: Number(m.thermalHoldC) > 0 ? Number(m.thermalHoldC) : 90,
+    // Workbenches this machine runs at once (the ship queue's gate slots, wb-gate's remote state); 1 when unset.
+    workbenchLimit: Number(m.workbenchLimit) > 0 ? Math.floor(Number(m.workbenchLimit)) : 1,
     disabled: !!m.disabled,
   };
 }
@@ -634,6 +650,16 @@ export function remoteRunDir(m, slug, i = 1, suffix = "") {
   return `${dirname(m.root).replace(/\\/g, "/")}/Life-Framework-rt-${slug}${suffix}${i > 1 ? `-s${i}` : ""}`;
 }
 
+// The run folder of one test lane on a pool machine, shared by every worktree: whoever holds the
+// lane's lock owns the folder, so two runs never share one. A worktree's first run on a lane no
+// longer creates a folder (git worktree add of ~5000 files: 17-24 s); it checks its snapshot out
+// over the last one and drops what that run left (tools/remote/testbox.mjs psCheckout,
+// tools/link-safety.mjs cleanRunFolder). pool prune leaves these; --lanes removes the idle ones.
+export const LANE_DIR_PREFIX = "Life-Framework-lane-";
+export function laneRunDir(m, lock) {
+  return `${dirname(m.root).replace(/\\/g, "/")}/${LANE_DIR_PREFIX}${lock}`;
+}
+
 // The holder: acquire (when cfg.slots is non-empty), prepare the run folder,
 // report what the folder already has, then hold until its ssh session ends.
 // Stops processes whose command line names a run folder (never deletes files,
@@ -813,10 +839,128 @@ function hookExit() {
   }
 }
 
+// ---------------------------------------------------------------- remote run-folder GC
+
+// Every run on an ssh machine gets a worktree there (Life-Framework-rt-<slug>[-session][-sN], ~1.4 GB)
+// and nothing else removed them while the worktree on this PC lived: 2026-11-14 lf-cloud hit 0 GB free
+// and every run sent there failed the disk floor. The choice is in tools/lib/rt-gc.mjs.
+
+// ssh without blocking the event loop (a removal pass can take minutes); never rejects.
+function sshPsAsync(host, script, { timeout = 90000, connectTimeout = 4 } = {}) {
+  return new Promise((resolvePromise) => {
+    let out = "";
+    let settled = false;
+    let child = null;
+    const finish = (status) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolvePromise({ status, stdout: out });
+    };
+    const timer = setTimeout(() => {
+      try {
+        child?.kill();
+      } catch {}
+      finish(null);
+    }, timeout);
+    try {
+      child = spawn("ssh", tb.sshPsArgs(host, script, { connectTimeout }), { windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+    } catch {
+      finish(null);
+      return;
+    }
+    child.stdout.on("data", (d) => (out += d.toString("utf8")));
+    child.stderr.on("data", (d) => (out += d.toString("utf8")));
+    child.on("error", () => finish(null));
+    child.on("close", (code) => finish(code));
+  });
+}
+
+// Removes the idle run folders of one ssh machine, oldest first. targetGb > 0: only while the box has
+// less free than that, and only until it has that much (the automatic pass before a run); 0: every
+// idle one (pool prune --idle). keep: folders about to be used. Busy rules, on the box: a live lock
+// naming the folder, a process whose command line names it, a write in the last idleMin minutes.
+// Deletion is the box's own tools/safe-rm.mjs. One log line per folder removed. Never throws.
+// opts.ssh / opts.now are test seams.
+export async function rtGcMachine(root, m, { keep = [], idleMin, targetGb = 0, dry = false, log = console.log, ssh = sshPsAsync, now = Date.now } = {}) {
+  const idle = idleMin ?? poolSettings(root).rtIdleMin;
+  const parent = dirname(m.root).replace(/\\/g, "/");
+  const res = { machine: m.name, freeGb: null, removed: [], failed: 0 };
+  try {
+    const seen = rt.parseRtScan((await ssh(m.host, rt.rtScanScript(parent, targetGb), { timeout: 90000 })).stdout);
+    res.freeGb = seen.freeGb;
+    if (seen.freeGb === null) {
+      log(`WARN  pool: ${m.name}: run-folder cleanup skipped (the box did not report its free disk)`);
+      return res;
+    }
+    if (targetGb > 0 && seen.freeGb >= targetGb) return res;
+    const plan = rt.planRtGc(seen.entries, { now: now(), idleMin: idle, keep });
+    const why = [...new Set(plan.kept.map((k) => k.why))].join(", ");
+    const lead = targetGb > 0 ? `${m.name} has ${seen.freeGb.toFixed(1)} GB free, under ${targetGb.toFixed(0)} GB` : `${m.name}: ${seen.freeGb.toFixed(1)} GB free`;
+    if (plan.remove.length === 0) {
+      log(`pool: ${lead}; no run folder idle for ${idle} min to remove (${plan.kept.length} kept${why ? `: ${why}` : ""})`);
+      return res;
+    }
+    if (dry) {
+      for (const r of plan.remove) log(`pool: gc ${m.name}: would remove ${r.dir} (idle ${rt.fmtIdle(r.idleMin)})`);
+      return res;
+    }
+    log(`pool: ${lead}; removing idle run folders, oldest first (${plan.remove.length} idle for ${idle} min or more)`);
+    const done = rt.parseRtRemove((await ssh(m.host, rt.rtRemoveScript(parent, plan.remove.map((r) => r.dir), { targetGb, cutoffMs: now() - idle * 60000 }), { timeout: 900000 })).stdout);
+    const byDir = new Map(plan.remove.map((r) => [rt.normDir(r.dir), r]));
+    let before = seen.freeGb;
+    for (const d of done.removed) {
+      const r = byDir.get(rt.normDir(d.dir));
+      log(`pool: gc ${m.name}: removed ${d.dir} (idle ${r ? rt.fmtIdle(r.idleMin) : "?"}, freed ${Math.max(0, d.freeGb - before).toFixed(1)} GB, ${d.freeGb.toFixed(1)} GB free)`);
+      before = d.freeGb;
+      res.removed.push(d.dir);
+    }
+    for (const f of done.failed) {
+      res.failed++;
+      log(`WARN  pool: gc ${m.name}: could not remove ${f}`);
+    }
+    if (done.freeGb !== null) res.freeGb = done.freeGb;
+    else if (done.removed.length) res.freeGb = before;
+    if (targetGb > 0 && res.freeGb !== null && res.freeGb < targetGb) log(`WARN  pool: ${m.name} still has only ${res.freeGb.toFixed(1)} GB free after the cleanup (under ${targetGb.toFixed(0)} GB); the rest is busy or recent`);
+  } catch (e) {
+    log(`WARN  pool: ${m.name}: run-folder cleanup failed (${String(e?.message ?? e).split("\n")[0]})`);
+  }
+  return res;
+}
+
+const RT_GC_OK_MS = 60000;
+const RT_GC_RETRY_MS = 300000;
+const rtGcChain = new Map();
+const rtGcQuiet = new Map();
+
+// Before a run starts on an ssh machine: when its free disk is under rtGcFreeFactor x minFreeDiskGb, remove
+// its idle run folders until it is back above that. keep: the folders this run is about to use. One pass at a
+// time per machine in this process (a burst of starts does not scan the box once each), and a box that was just
+// checked is not asked again for a minute (five minutes when the pass could not get it above the threshold).
+export function rtGcBeforeRun(root, m, keep = [], opts = {}) {
+  if (m.via !== "ssh" || process.env.LF_POOL_RT_GC === "0") return Promise.resolve(null);
+  const settings = poolSettings(root);
+  const targetGb = rt.rtGcTargetGb(settings);
+  if (!(targetGb > 0)) return Promise.resolve(null);
+  const next = (rtGcChain.get(m.name) ?? Promise.resolve()).then(async () => {
+    if (Date.now() < (rtGcQuiet.get(m.name) ?? 0)) return null;
+    const r = await rtGcMachine(root, m, { ...opts, keep, targetGb, idleMin: settings.rtIdleMin });
+    rtGcQuiet.set(m.name, Date.now() + (r.freeGb !== null && r.freeGb >= targetGb ? RT_GC_OK_MS : RT_GC_RETRY_MS));
+    return r;
+  });
+  rtGcChain.set(m.name, next.catch(() => null));
+  return next;
+}
+
 // Starts a holder. Resolves { slot } once it holds a slot and the run folder
 // is ready, { busy: [holder json...] } when every slot there is taken, or
-// { error } when the machine could not be used.
-export function startHolder(root, m, cfg, { onLost, onAcquired } = {}) {
+// { error } when the machine could not be used. A box low on disk first has its idle run folders removed.
+export async function startHolder(root, m, cfg, opts = {}) {
+  await rtGcBeforeRun(root, m, [cfg.dir, ...(cfg.slots ?? []).map((s) => s.dir)].filter(Boolean));
+  return spawnHolder(root, m, cfg, opts);
+}
+
+function spawnHolder(root, m, cfg, { onLost, onAcquired } = {}) {
   hookExit();
   return new Promise((resolvePromise) => {
     const child = spawn("ssh", tb.sshPsArgs(m.host, holderScript(cfg), { connectTimeout: 4 }), { windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
@@ -868,7 +1012,8 @@ export function startHolder(root, m, cfg, { onLost, onAcquired } = {}) {
       else if ((mm = /^lf-pool: error (.*)$/.exec(t))) done({ error: `${m.name}: ${mm[1]}` });
       else if (/^lf-pool: (reclaiming|stopping)/.test(t)) console.log(`pool: ${m.name}: ${t.slice(9)}`);
       else if (t === "lf-pool: ready") {
-        const dir = acquired ? cfg.slots[acquired.index - 1].dir : cfg.dir;
+        const held = acquired ? cfg.slots[acquired.index - 1] : null;
+        const dir = held ? held.dir : cfg.dir;
         const slot = {
           machine: m,
           index: acquired?.index ?? 0,
@@ -876,6 +1021,8 @@ export function startHolder(root, m, cfg, { onLost, onAcquired } = {}) {
           local: false,
           token: cfg.token,
           rDir: dir,
+          // A lane folder another worktree may have used last: the checkout cleans it (psCheckout).
+          shared: !!held?.shared,
           prep,
           child,
           lost: false,
@@ -994,9 +1141,12 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
   const slug = slugFor(root);
   const base = originMain(root) ?? snap.head;
   const last = readSyncState(root)[m.name]?.sha;
+  // Test lanes of a machine with lanes run in the lane's shared folder; sessions (their saves stay
+  // with the worktree) and a machine without lanes keep the per-worktree folders.
+  const shared = laneKind(purpose) === "test" && !!m.lanes && !suffix;
   const slotList = lanesFor(m, laneKind(purpose))
     .slice(0, slots)
-    .map((l) => ({ lock: l.lock, dir: remoteRunDir(m, slug, l.index, suffix) }));
+    .map((l) => (shared ? { lock: l.lock, dir: laneRunDir(m, l.lock), shared: true } : { lock: l.lock, dir: remoteRunDir(m, slug, l.index, suffix) }));
   return {
     main: m.root,
     token: randomBytes(8).toString("hex"),
@@ -2458,6 +2608,9 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     }
   } catch {}
   const last = runs.filter(isTestRun).slice(-8);
+  const kinds = q.runsByPurpose(runs.filter(isTestRun).slice(-100));
+  if (kinds.length) console.log(`recent runs by kind (core-only counted apart):
+${q.formatRunsByPurpose(kinds)}`);
   if (!verbose) {
     const n = (res) => last.filter((r) => r.result === res).length;
     console.log(`last ${last.length} run(s): ${n("pass")} pass, ${last.filter((r) => r.result !== "pass" && r.result !== "timeout").length} other, ${n("timeout")} timeout; --verbose lists them and the sessions`);
@@ -2465,12 +2618,12 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
   }
   console.log(`last ${last.length} run(s):`);
   for (const r of last) {
-    console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
+    console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(19)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
   printSessions(runs.filter(isSession), 8);
   // The ship queue wt ship feeds (tools/ship-queue.mjs): what gates now, what waits and why, the last few done.
   const sq = shipQueue.readQueue(wt.hubDirOf(root));
-  if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
+  if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99, lightSlots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
   else console.log("ship queue: empty (tools\cli ship-queue status)");
   return 0;
 }
@@ -2505,6 +2658,9 @@ export function cmdPoolStats(root) {
     by.get(k).push(r);
   }
   console.log(`pool stats: ${runs.length} run(s)`);
+  const kinds = q.runsByPurpose(runs);
+  if (kinds.length) console.log(`by kind (a core-only suite is its own kind):
+${q.formatRunsByPurpose(kinds)}`);
   for (const [k, rs] of by) {
     const avg = (f) => (rs.reduce((a, r) => a + (Number(r[f]) || 0), 0) / rs.length).toFixed(1);
     const pass = rs.filter((r) => r.result === "pass").length;
@@ -2524,9 +2680,13 @@ export function cmdPoolStats(root) {
 // says which PC and slug it belongs to (tmp/pool-owner.json); only this PC's
 // are touched. --unmarked also takes folders from before the marker whose slug
 // has no worktree here. Folders behind a live slot lock are kept.
+// --lanes also takes the shared lane folders (laneRunDir) whose lock is no longer one of the machine's
+// test lanes (after its lane count went down); a configured lane's folder is never pruned, a run may
+// take its lock at any moment.
 export function cmdPoolPrune(root, flags = []) {
   const dry = flags.includes("--dry-run");
   const unmarked = flags.includes("--unmarked");
+  const lanes = flags.includes("--lanes");
   const known = new Set(Object.keys(wt.readState(root).worktrees ?? {}));
   const known2 = new Set(wt.listWorktrees(root).map((w) => w.path.replace(/\\/g, "/").toLowerCase()));
   let fail = 0;
@@ -2539,8 +2699,22 @@ export function cmdPoolPrune(root, flags = []) {
       `$main = ${tb.psQuote(m.root)}`,
       "$busy = @(Get-ChildItem -LiteralPath (Join-Path $main 'tmp\\wt\\locks') -Filter 'server-*.lock' -ErrorAction SilentlyContinue | ForEach-Object { try { $i = Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json; if ($i.rDir -and (Get-Process -Id $i.pid -ErrorAction SilentlyContinue)) { $i.rDir } } catch {} })",
       "git -C $main worktree list --porcelain | Where-Object { $_ -like 'worktree *' } | ForEach-Object { $d = $_.Substring(9); if ((Split-Path -Leaf $d) -like 'Life-Framework-rt-*') { $o = Join-Path $d 'tmp\\pool-owner.json'; $own = ''; if (Test-Path -LiteralPath $o) { $own = (Get-Content -Raw -LiteralPath $o).Trim() }; $b = [bool]($busy | Where-Object { $_.Replace('\\','/').TrimEnd('/') -ieq $d.Replace('\\','/').TrimEnd('/') }); Write-Host \"lf-pool: dir $b $d|$own\" } }",
+      `git -C $main worktree list --porcelain | Where-Object { $_ -like 'worktree *' } | ForEach-Object { $d = $_.Substring(9); if ((Split-Path -Leaf $d) -like '${LANE_DIR_PREFIX}*') { $b = [bool]($busy | Where-Object { $_.Replace('\\','/').TrimEnd('/') -ieq $d.Replace('\\','/').TrimEnd('/') }); Write-Host \"lf-pool: lane $b $d\" } }`,
     ].join("\n"), { timeout: 60000 });
     const victims = [];
+    const liveLanes = new Set(lanesFor(m, "test").map((l) => l.lock));
+    for (const l of (list.stdout ?? "").split(/\r?\n/)) {
+      const lm = /^lf-pool: lane (True|False) (.+)$/.exec(l.trim());
+      if (!lm || !lanes) continue;
+      const lock = lm[2].replace(/\\/g, "/").split("/").pop().slice(LANE_DIR_PREFIX.length);
+      if (liveLanes.has(lock)) continue;
+      if (lm[1] === "True") {
+        console.log(`pool prune: ${m.name} ${lm[2]} is in use; kept`);
+        continue;
+      }
+      victims.push(lm[2]);
+      console.log(`pool prune: ${m.name} ${lm[2]}: lane ${lock} is no longer one of its test lanes${dry ? " (dry run)" : ""}`);
+    }
     for (const l of (list.stdout ?? "").split(/\r?\n/)) {
       const mm = /^lf-pool: dir (True|False) ([^|]+)\|(.*)$/.exec(l.trim());
       if (!mm) continue;
@@ -2571,15 +2745,42 @@ export function cmdPoolPrune(root, flags = []) {
   return fail;
 }
 
+// pool prune --idle <min> [--dry-run]: every ssh machine's run folders that no lock or process holds and
+// nothing wrote to for <min> minutes, whatever the free disk (the automatic pass before a run only acts
+// on a box under its disk threshold). This PC's own worktrees do not matter: an idle folder is rebuilt
+// by the next run.
+export async function cmdPoolPruneIdle(root, flags = []) {
+  const i = flags.indexOf("--idle");
+  const min = Number(flags[i + 1]);
+  if (!(min > 0)) {
+    console.log("usage: tools\\cli pool prune --idle <minutes> [--dry-run]");
+    return 2;
+  }
+  let fail = 0;
+  for (const m of loadMachines(root).filter((x) => x.via === "ssh")) {
+    if (!probe(root, m, { fresh: true }).reachable) {
+      console.log(`pool prune: ${m.name} down; skipped`);
+      continue;
+    }
+    const r = await rtGcMachine(root, m, { idleMin: min, targetGb: 0, dry: flags.includes("--dry-run") });
+    if (r.failed || r.freeGb === null) fail = 1;
+    else console.log(`pool prune: ${m.name}: ${r.removed.length} run folder(s) removed, ${r.freeGb.toFixed(1)} GB free`);
+  }
+  return fail;
+}
+
 export function cmdPool(root, args = []) {
   const [sub, ...rest] = args;
   if (sub === "status" || !sub) return cmdPoolStatus(root, rest.includes("--verbose") || process.env.LF_OUTPUT === "full");
   if (sub === "stats") return cmdPoolStats(root);
-  if (sub === "prune") return cmdPoolPrune(root, rest);
-  console.log(`usage: tools\\cli pool status|stats|prune [--dry-run] [--unmarked]
+  if (sub === "prune") return rest.includes("--idle") ? cmdPoolPruneIdle(root, rest) : cmdPoolPrune(root, rest);
+  console.log(`usage: tools\\cli pool status|stats|prune [--dry-run] [--unmarked] [--lanes] | prune --idle <min> [--dry-run]
   status   machines, reachability, server build, slots and holders, queue, last 20 runs
   stats    runs per machine: count, passes, average wait and run time
-  prune    remove remote run folders whose worktree on this PC is gone (junction-safe)
+  prune    remove remote run folders whose worktree on this PC is gone (junction-safe);
+           --lanes also removes idle lane folders of lanes a machine no longer has
+  prune --idle <min>  remove every remote run folder idle that long (no lock, no process, no write), oldest first;
+           lane folders are not run folders of a worktree and are never taken
 machines: tools/pool.json, overridden by "pool" in lf.local.json`);
   return sub === "help" ? 0 : 2;
 }

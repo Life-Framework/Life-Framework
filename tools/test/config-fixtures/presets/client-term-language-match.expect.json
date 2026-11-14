@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "client": [
+    {"kind":"uiText","entity":"Roadmap_Org_Desk","class":"LF_OrganizationDeskAction","expect":"Register a new Gang here","absent":"Bande"}
+  ]
+}
