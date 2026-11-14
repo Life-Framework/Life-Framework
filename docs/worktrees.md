@@ -698,7 +698,10 @@ it, picks a lane and a budget, and prints one line per outcome.
   `tools/safe-rm.mjs`, so junctions are unlinked, never followed. It then refuses with one line
   when free disk on that volume is under `minFreeDiskGb` (5). Both are settings: `tools/pool.json`,
   the `pool` key of `lf.local.json`, or `LF_POOL_SESSION_KEEP_H` / `LF_POOL_MIN_FREE_DISK_GB`.
-  `pool status` prints the free disk.
+  `pool status` prints the free disk. A test that may run anywhere is not refused: this PC drops out
+  (`pool: this PC refuses tests for now (...); the run goes to lf-testbox or lf-cloud`) and the pool
+  machines take it, each checking its own disk first (`diskRoute` in `tools/remote/pool.mjs`). A run
+  pinned here (`--local`), or with no pool machine, keeps the refusal.
 - **One request per worktree (#542).** A new `session up` from a worktree whose earlier request is
   still queued drops the earlier queue entry (the older process exits with "a newer session request
   replaced this one") and keeps the first request's age. `pool status` marks any leftover
