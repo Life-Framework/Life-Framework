@@ -3,9 +3,11 @@
 This page goes from a machine with the dedicated server installed to a player joining. It needs no
 Workbench, no checkout and no script.
 
-The life server ships as Workshop items. Today the playtest town is in the core item
-(`79636E668EA37AC9`). The 1989 pack becomes a second item (#223) and is not published yet; when it
-is, add its ID to `game.mods` beside the core's.
+The life server ships as two Workshop items: the core (`79636E668EA37AC9`) and the 1989 Everon pack
+(`B1E84D5687E11724`, #223), which holds the playtest town mission. `game.mods` lists both. A pack
+you build yourself ([add a delivery job](add-job.md)) goes in beside them or replaces the 1989 pack.
+Neither item is on the Workshop until the first upload (`docs/roadmap/m3-plan.md` D3); until then
+the server cannot download them and the steps below need a local `-addonsDir` instead.
 
 ## 1. Install the server
 
