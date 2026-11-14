@@ -7,6 +7,43 @@ GameProject {
  }
  Configurations {
   GameProjectConfig PC {
+   WidgetManagerSettings WidgetManagerSettings "{7274A84915931A46}" {
+    StringTables {
+     StringTableDefinition "{EE62C9CFFA8CF304}" {
+      StringTableSource "{DAF66C66F5EE637D}Language/lf_everon1989_localization.st"
+      Languages {
+       LanguageDefinition "{421BA99497AD4B50}" {
+        Code "en_us"
+        StringTableRuntime "{011A93445635BC7D}Language/lf_everon1989_localization.en_us.conf"
+       }
+       LanguageDefinition "{80149472DF4815FD}" {
+        Code "de_de"
+        StringTableRuntime "{8A540ED989D7AC03}Language/lf_everon1989_localization.de_de.conf"
+       }
+       LanguageDefinition "{7A5067FFA08494AD}" {
+        Code "es_es"
+        StringTableRuntime "{8E2EE0BC74A6AFB3}Language/lf_everon1989_localization.es_es.conf"
+       }
+       LanguageDefinition "{0AD725F5D4A00528}" {
+        Code "fr_fr"
+        StringTableRuntime "{8F0A3BB545F592B7}Language/lf_everon1989_localization.fr_fr.conf"
+       }
+       LanguageDefinition "{2AC4DEAD0D47075F}" {
+        Code "it_it"
+        StringTableRuntime "{7F02CAC973814E5D}Language/lf_everon1989_localization.it_it.conf"
+       }
+       LanguageDefinition "{B15F45FD1755CE27}" {
+        Code "pt_br"
+        StringTableRuntime "{1A310D1874C3EA84}Language/lf_everon1989_localization.pt_br.conf"
+       }
+       LanguageDefinition "{91C39834C36421AA}" {
+        Code "pt_pt"
+        StringTableRuntime "{A2D396DF36338CEF}Language/lf_everon1989_localization.pt_pt.conf"
+       }
+      }
+     }
+    }
+   }
   }
   GameProjectConfig XBOX_ONE {
   }

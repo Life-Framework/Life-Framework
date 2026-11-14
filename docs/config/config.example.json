@@ -16,6 +16,10 @@
       }
     }
   },
+  "cleanup": {
+    "sweepIntervalSeconds": 300,
+    "rules": {}
+  },
   "crime": {
     "crimes": {
       "#LF-Offence_Robbery": {

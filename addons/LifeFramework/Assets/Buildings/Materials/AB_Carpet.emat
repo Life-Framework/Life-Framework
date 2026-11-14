@@ -1,0 +1,9 @@
+MatPBRBasic {
+ Color 0.3 0.32 0.36 1
+ BCRMap "{794A8F488BA2687E}Assets/_SharedData/Fabric/ST_Fabric_Rough01_1m_BCR.edds"
+ NMOMap "{419234DA52D53AE0}Assets/_SharedData/Fabric/ST_Fabric_Rough01_1m_NMO.edds"
+ GlobalMapsUVTransform MatUVTransform "{010745A67D929B5B}" {
+  TilingU 1
+  TilingV 1
+ }
+}
