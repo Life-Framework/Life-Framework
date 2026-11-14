@@ -163,6 +163,25 @@ async function h2b() {
   log({ step: "quit", ...r });
 }
 
+async function h2c() {
+  const ONLY = "fast\nengine/math-string-sanity,whitelist/command-parse,vehicles/price-model,police/wanted-look,config/vehicle-prices-owner";
+  if (!suiteRun("only clean", 20000, ONLY).ok) return;
+  const orig = readFileSync(SMOKE, "utf8");
+  try {
+    writeFileSync(SMOKE, orig.replace('ctx.Equal(5, Math.AbsInt(-5), "Math.AbsInt");', 'ctx.Equal(4, Math.AbsInt(-5), "Math.AbsInt");'));
+    if (!reloadRound(null, false, "smoke test broken").ok) return;
+    if (!suiteRun("only red", 20000, ONLY).ok) return;
+  } finally {
+    writeFileSync(SMOKE, orig);
+  }
+  if (!reloadRound(null, false, "smoke test restored").ok) return;
+  if (!suiteRun("only green again", 20000, ONLY).ok) return;
+  for (let i = 1; i <= 5; i++) if (!reloadRound("M" + i, false, "memory " + i).ok) return;
+  if (!suiteRun("only after 7 reloads", 20000, ONLY).ok) return;
+  const r = send("quit", "", 60);
+  log({ step: "quit", ...r });
+}
+
 async function main() {
   const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
   const lock = await acquireWorkbench(ROOT, { purpose: "warm-runner-spike", waitMs: 900000 });
@@ -186,6 +205,10 @@ async function main() {
     r = play(8000);
     log({ step: "play", expect: "T0", ...r, sinceLaunchS: ((Date.now() - tLaunch) / 1000).toFixed(1) });
 
+    if (scenario === "h2c") {
+      await h2c();
+      return;
+    }
     if (scenario === "h2b") {
       await h2b();
       return;

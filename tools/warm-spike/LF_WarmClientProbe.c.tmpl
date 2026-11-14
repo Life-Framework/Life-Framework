@@ -1,0 +1,59 @@
+// LF_WarmClientProbe.c - warm-runner spike H3 (2026-11-14). Not shipped. __TOKEN__ is replaced per round.
+// Prints which code a process runs, and on $profile:lf-warm-reload.txt (a new id in it) asks the engine to
+// reinitialize the game (Game.RequestReload), the in-process path a client takes when a join changes its mods.
+modded class ArmaReforgerScripted
+{
+	protected int m_iLfWarmNext;
+	protected bool m_bLfWarmAsked;
+
+	override void OnAfterInit(BaseWorld world)
+	{
+		super.OnAfterInit(world);
+		Print("[LFWARM] after init token=__TOKEN__");
+	}
+
+	override bool OnGameStart()
+	{
+		bool r = super.OnGameStart();
+		Print("[LFWARM] game start token=__TOKEN__ server=" + Replication.IsServer());
+		return r;
+	}
+
+	override void OnUpdate(BaseWorld world, float timeslice)
+	{
+		super.OnUpdate(world, timeslice);
+		int now = System.GetTickCount();
+		if (now < m_iLfWarmNext || m_bLfWarmAsked)
+			return;
+
+		m_iLfWarmNext = now + 1000;
+		string id;
+		FileHandle f = FileIO.OpenFile("$profile:lf-warm-reload.txt", FileMode.READ);
+		if (!f)
+			return;
+
+		f.ReadLine(id);
+		f.Close();
+		string done;
+		FileHandle d = FileIO.OpenFile("$profile:lf-warm-reload-done.txt", FileMode.READ);
+		if (d)
+		{
+			d.ReadLine(done);
+			d.Close();
+		}
+
+		if (id.IsEmpty() || id == done)
+			return;
+
+		FileHandle w = FileIO.OpenFile("$profile:lf-warm-reload-done.txt", FileMode.WRITE);
+		if (w)
+		{
+			w.WriteLine(id);
+			w.Close();
+		}
+
+		m_bLfWarmAsked = true;
+		Print("[LFWARM] RequestReload id=" + id + " token=__TOKEN__");
+		RequestReload();
+	}
+}

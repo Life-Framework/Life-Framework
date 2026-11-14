@@ -21,11 +21,21 @@ modded class LF_TestRunnerComponent
 			return;
 
 		string mode;
+		string only;
 		FileHandle m = FileIO.OpenFile("$profile:lf-warm/run-suite.txt", FileMode.READ);
 		if (m)
 		{
 			m.ReadLine(mode);
+			m.ReadLine(only);
 			m.Close();
+		}
+
+		only.TrimInPlace();
+		if (!only.IsEmpty())
+		{
+			array<string> names = {};
+			only.Split(",", names, true);
+			LF_TestManager.GetInstance().SetOnly(names);
 		}
 
 		mode.TrimInPlace();
