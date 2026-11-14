@@ -115,6 +115,9 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 		int idle;
 		int beat = SERVE_BEAT_MS;
+		// FileIO.DeleteFile does not remove go.txt here (lf-cloud 2026-11-14: one request ran 40 times), so a
+		// request is told apart by its id: one already served is ignored until Node removes or replaces go.txt.
+		string lastId;
 		while (!FileIO.FileExists(DIR + "/stop.txt"))
 		{
 			if (beat >= SERVE_BEAT_MS)
@@ -123,7 +126,23 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 				WriteLine(DIR + "/alive.txt", System.GetTickCount().ToString());
 			}
 
-			if (!FileIO.FileExists(DIR + "/go.txt"))
+			string id;
+			string reload;
+			if (FileIO.FileExists(DIR + "/go.txt"))
+			{
+				FileHandle go = FileIO.OpenFile(DIR + "/go.txt", FileMode.READ);
+				if (go)
+				{
+					go.ReadLine(id);
+					go.ReadLine(reload);
+					go.Close();
+				}
+
+				id.TrimInPlace();
+				reload.TrimInPlace();
+			}
+
+			if (id.IsEmpty() || id == lastId)
 			{
 				if (idle > SERVE_IDLE_MS)
 					break;
@@ -134,20 +153,9 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 				continue;
 			}
 
+			lastId = id;
 			idle = 0;
-			string id;
-			string reload;
-			FileHandle go = FileIO.OpenFile(DIR + "/go.txt", FileMode.READ);
-			if (go)
-			{
-				go.ReadLine(id);
-				go.ReadLine(reload);
-				go.Close();
-			}
-
 			FileIO.DeleteFile(DIR + "/go.txt");
-			id.TrimInPlace();
-			reload.TrimInPlace();
 			m_aStatus.Clear();
 			m_iStart = System.GetTickCount();
 			m_Camera = null;

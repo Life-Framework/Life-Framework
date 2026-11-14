@@ -74,6 +74,14 @@ export function classifyChange({ from, to, changes = [], pluginChanged = false }
   return { reload: "reopen", reason: inAddons ? `${inAddons} world/prefab file(s) changed` : "only files outside addons/ changed" };
 }
 
+// Why a server's answer cannot be used (null when it can): it must be this request's, complete, with the world open.
+export function answerProblem(status, id) {
+  if (status.request !== id) return `status.txt answers request ${status.request}, not ${id}`;
+  if (!status.world) return `the server never opened the world${status.errors.length ? ` (${status.errors.join("; ")})` : ""}`;
+  if (!status.done) return "status.txt has no done line";
+  return null;
+}
+
 export function goText(id, reload) {
   return `${id}\n${reload}\n`;
 }
@@ -290,6 +298,7 @@ async function sendRequest(st, id, reload, plan, budgetS) {
         text = readFileSync(done, "utf8");
       } catch {}
       if (doneMatches(text, id)) {
+        rmSync(join(raw, "go.txt"), { force: true }); // the plugin cannot delete it itself
         const statusFile = join(raw, "status.txt");
         return { ok: true, statusText: existsSync(statusFile) ? readFileSync(statusFile, "utf8") : "", seconds: (Date.now() - t0) / 1000, raw };
       }
@@ -361,9 +370,10 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
     return { ok: false, why: res.why };
   }
   const status = parseStatus(res.statusText);
-  if (status.request !== id) {
+  const why = answerProblem(status, id);
+  if (why) {
     killServer(root, st, log);
-    return { ok: false, why: `status.txt answers request ${status.request}, not ${id}` };
+    return { ok: false, why };
   }
   writeServeState(root, { ...st, sha: snap.sha, lastUsed: new Date().toISOString(), by: root });
   return { ok: true, served, sha: snap.sha, reason: decision.reason, raw: res.raw, statusText: res.statusText, seconds: res.seconds, id };

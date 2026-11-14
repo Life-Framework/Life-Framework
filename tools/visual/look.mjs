@@ -825,7 +825,8 @@ export async function selftest() {
   ok(fanHits([188, 242], [186.5, 244.5], 0.1, [188, 260]) && !fanHits([188, 242], [188, 250], 0.1, [188, 252]), "fan geometry: a pole inside the reach is hit, one beyond it is not");
 
   // The look server (look-serve.mjs): the diff classifier and the request protocol.
-  // red-proof: 2026-11-14 adding ".c" to FAST_PATH_EXT failed "a script change must restart"; restored.
+  // red-proof: 2026-11-14 adding ".c" to FAST_PATH_EXT failed "a script change must restart"; dropping the world check
+  // in answerProblem failed "an answer with no world was taken"; both restored.
   const serve = await import("./look-serve.mjs");
   const ns = serve.parseNameStatus("M\taddons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer\r\nM\taddons/LifeFramework/Prefabs/Props/LF_Till.et\nA\taddons/LifeFramework/Prefabs/Props/New.et\nD\tdocs/x.md\nR100\ta.et\tb.et\n");
   ok(ns.length === 5 && ns[0].status === "M" && ns[0].path.endsWith("Shops.layer") && ns[2].status === "A" && ns[4].status === "R", `parseNameStatus: ${JSON.stringify(ns)}`);
@@ -851,6 +852,12 @@ export async function selftest() {
   const reqStatus = parseStatus("5 ok request 123-456 reload=reopen\n900 ok world $LifeFramework:Worlds/DebugWorld/DebugWorld.ent view=1x1 entities=1\n");
   ok(reqStatus.request === "123-456" && reqStatus.world, "status request id");
   ok(parseStatus("12 ok world X view=1x1 entities=0").request === null, "a status with no request line has an id");
+  const full = parseStatus("5 ok request 7-1 reload=none\n900 ok world W view=1x1 entities=1\n950 done 1 0\n");
+  ok(serve.answerProblem(full, "7-1") === null, "a complete answer was refused");
+  ok(/not 7-2/.test(serve.answerProblem(full, "7-2") || ""), "another request's answer was taken");
+  ok(/never opened/.test(serve.answerProblem(parseStatus("5 ok request 7-1 reload=none\n6 ok edit waited=0\n"), "7-1") || ""), "an answer with no world was taken (lf-cloud 2026-11-14: a re-run request had rewritten status.txt)");
+  ok(/no done/.test(serve.answerProblem(parseStatus("5 ok request 7-1 reload=none\n900 ok world W view=1x1 entities=1\n"), "7-1") || ""), "an unfinished answer was taken");
+  ok(/id == lastId/.test(plugin), "the plugin must skip a request id it already served (its DeleteFile of go.txt does not take)");
   for (const f of ["serve.txt", "alive.txt", "go.txt", "done.txt", "stop.txt", "ok request "]) ok(plugin.includes(f), `the plugin lost the server protocol piece '${f}'`);
 
   if (failures.length) {
