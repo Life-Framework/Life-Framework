@@ -27,11 +27,13 @@
 //! Police tickets (amount, deadline clock, paid flag) live in LF_FineTickets.
 //! The incident log (deaths, sampled damage, cash moves; server only) lives in LF_IncidentLog.
 //! The money ledger (every cash and bank change, trimmed by LF_LedgerConfig) lives in LF_Ledger.
+//! Vehicle state (tow state, towed-at, inspected-at, compartment level; #752a) rides beside the
+//! vehicle records in LF_VehicleOwnership as [NonSerialized()] fields, keyed by vehicle id.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp. The written version is that list's length (32). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate. The written version is that list's length (33). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -78,6 +80,8 @@
 //! A version 31 save includes the case board and has no build stamp (#980): the game build that wrote it
 //! is unknown, so the load logs "game build unknown". The host preflight reads the engine's own stamp
 //! (meta-info.json m_sGameVersion) before a boot either way.
+//! A version 32 save includes the build stamp and has no vehicle state rows (#752a): every vehicle
+//! loads untowed, uninspected and with no compartment, which is what that build had.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -189,6 +193,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("idcards");
 		order.Insert("caseboard");
 		order.Insert("buildstamp");
+		order.Insert("vehiclestate");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -222,7 +227,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 32);
+		context.WriteValue("version", 33);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -646,6 +651,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_SaveStampRecord> stampRows = LF_SaveStamp.Export(stampVersion);
 			context.Write(stampRows);
 			LF_Debug.Log("Persistence", string.Format("saved build stamp: game build %1, save version %2", stampRows.Get(0).m_sGameBuild, stampVersion));
+		}
+		else if (payload == "vehiclestate")
+		{
+			// Tow, inspection and compartment per vehicle id (#752a); a stock car writes no row.
+			array<ref LF_VehicleStateRow> vehicleStateRows = LF_VehicleOwnership.ExportState();
+			context.Write(vehicleStateRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 vehicle state row(s)", vehicleStateRows.Count()));
 		}
 		else
 		{
@@ -1131,12 +1143,27 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		}
 		else if (payload == "buildstamp")
 		{
-			// Last payload (#980): which game build wrote this save. A version 1-31 save never reaches it.
+			// Which game build wrote this save (#980). A version 1-31 save never reaches it.
 			array<ref LF_SaveStampRecord> stampRows = new array<ref LF_SaveStampRecord>();
 			if (context.Read(stampRows))
 				LF_SaveStamp.Apply(stampRows);
 			else
 				ReadFailed("build stamp failed to read: the game build that wrote this save is unknown");
+		}
+		else if (payload == "vehiclestate")
+		{
+			// Runs after "vehicles" in the same load, which rebuilt the records with the default state.
+			// A version 1-32 save never reaches this payload and every vehicle keeps the default.
+			array<ref LF_VehicleStateRow> vehicleStateRows = new array<ref LF_VehicleStateRow>();
+			if (context.Read(vehicleStateRows))
+			{
+				int vehicleStatesApplied = LF_VehicleOwnership.ApplyState(vehicleStateRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 vehicle state row(s)", vehicleStatesApplied, vehicleStateRows.Count()));
+			}
+			else
+			{
+				ReadFailed("vehicle state rows failed to read, every vehicle keeps the default state");
+			}
 		}
 		else
 		{

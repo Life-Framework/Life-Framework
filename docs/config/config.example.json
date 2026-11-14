@@ -34,10 +34,14 @@
   },
   "disconnect": {
     "cuffedRule": "jail",
+    "escortedCountsAsCuffed": true,
     "cuffedWantedAdd": 1,
     "cuffedMinJailSeconds": 300,
     "cuffedFine": 1000,
-    "wantedLogoutAdd": 0
+    "cuffedFineAllowsDebt": true,
+    "downedDies": true,
+    "wantedLogoutAdd": 0,
+    "jailClockOffline": false
   },
   "idCard": {
     "replacementFee": 50,
@@ -99,7 +103,14 @@
     }
   },
   "persistence": {
-    "autosaveInterval": 600
+    "enableAutosave": true,
+    "autosaveInterval": 600,
+    "keepCash": true,
+    "keepCarriedGear": true,
+    "keepSurvival": true,
+    "keepWanted": true,
+    "keepJail": true,
+    "keepLicences": true
   },
   "police": {
     "arrestMinRank": 0,
@@ -124,6 +135,7 @@
     "ticketFirstDeadline": 1800,
     "ticketSecondDeadline": 1800,
     "ticketLateMultiplier": 2,
+    "officerKillOfWantedExempt": true,
     "searchCooldownSeconds": 120,
     "ticketMaxOpen": 5,
     "ticketKeepPaid": 3,
@@ -137,6 +149,8 @@
     "trialHours": 168
   },
   "rulesQuiz": {
+    "enabled": true,
+    "repeatOnConnect": false,
     "passPercent": 80,
     "maxAttempts": 3
   },
@@ -184,6 +198,8 @@
       "LAWLESS": {
         "suppressesWanted": true
       }
-    }
+    },
+    "safeBlocksPlayerDamage": true,
+    "lawlessSuppressesWanted": false
   }
 }

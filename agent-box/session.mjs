@@ -44,7 +44,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { addonsArgs, launchAddons, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
+import { addonsArgs, launchAddons, launchAddonsFor, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
 export { applyClientSettings, resolveProfile };
@@ -211,13 +211,14 @@ export function laneArgs(port) {
 }
 
 // rp: the resolved session profile (session-profile.mjs); absent means full.
-// addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header.
-export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons() }) {
+// addons: the -addons list (tools/lib/addons.mjs launchAddons); "playtest" boots that list's header, or `header` (a
+// `--pack` session: the pack's own Missions/<name>.conf, tools/lib/addons.mjs packLaunch).
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full"), addons = launchAddons(), header = "" }) {
   // The template mission boots what server/example/server.json names: its scenario and its mods. The
   // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
   const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", tpl ? tpl.scenario : mission === "playtest" ? playtestMission(addons) : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : SERVER_WORLD,
     "-addonsDir", addonsDir,
     ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
@@ -1013,9 +1014,6 @@ async function routeMachine(cmd, rest) {
   if (want === "local") return { local: true, args };
   const clients = parseClients(args);
   const profile = parseSessionProfile(args).profile;
-  // A remote leg ships this worktree's resourceDatabase.rdb: refresh it here first, before the queue,
-  // as `test` does (a fresh worktree sent a 0.1 MiB rdb and the box ran its own headless Workbench).
-  spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
   // A record whose machine went away is not a session any more: forget it.
   if (ptr) {
     const pm = pool.findMachine(machines, ptr.machine);
@@ -1095,6 +1093,11 @@ async function upOnRemote(pool, target, args, clients, ptr) {
     mkdirSync(dirname(remotePointerFile()), { recursive: true });
     writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir, at: new Date().toISOString(), root: ROOT }));
   };
+  // The remote leg ships this worktree's resourceDatabase.rdb. A machine with Workbench refreshes a stale
+  // one in its own `up` (in its desktop session since #1158) and is not sent the stale copy
+  // (testbox.syncToSlot); only for one without, this PC's headless Workbench refreshes it first.
+  const tb = await import("../tools/remote/testbox.mjs");
+  if (!tb.refreshesRdb(target)) spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
   const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", "--machine", "local", ...args], onSlot: (rDir) => writePtr(rDir) });
   if (r.code === 0) {
     writePtr(r.rDir);
