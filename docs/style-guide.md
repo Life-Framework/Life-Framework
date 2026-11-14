@@ -67,7 +67,7 @@ sheet of paper or a terminal that belongs to the object the player walked up to.
   `HEADING`, `LINE`, `RICH`, `FIELD`, `ROW`, `STATUS`, `QUANTITY`, `KEYS`, `LIST`, `RULE`, `IMAGE`, `PORTRAIT`,
   `BUTTON`, `CLOSE`. `tools\cli feature new <Area> <Name> --kind ui` writes one. No new `.layout`
   for a screen; `validate-ui-kit` fails it.
-- **The theme is `LF_UITheme` and nothing else.** Warm paper (238, 230, 212), carbon ink
+- **The theme is `LF_UITheme` and nothing else.** Its values live in `Configs/UI/LF_UITheme.conf` (#966), so a pack restyles every sheet by patching a theme id (`docs/architecture/ui-theme.md`); the numbers below are the 1989 flagship's. Warm paper (238, 230, 212), carbon ink
   (28, 26, 22), brass rule (122, 102, 64), blued-steel rim (62, 64, 58), a darker strip for rows
   (220, 208, 182). RobotoCondensed Bold for print, Regular for a notice's body. Title 28, body 18,
   button 20, caption 16, heading 15. A feature never sets a colour, a font or a size; a sheet that

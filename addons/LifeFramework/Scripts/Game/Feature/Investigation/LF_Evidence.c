@@ -44,7 +44,15 @@ class LF_Evidence
 	static const string KIND_FOOTPRINT = "footprint";
 	static const string KIND_STATEMENT = "statement";
 	static const ResourceName CASING_PREFAB = "{7D3A9E15C2B4F680}Prefabs/Investigation/LF_EvidenceCasing.et";
-	static const ResourceName MARKER_PREFAB = "{4C81F2A6D9E37B05}Prefabs/Investigation/LF_EvidenceMarker.et";
+	//! The prefab slot (#964) of the paper marker beside a dropped item.
+	static const string SLOT_MARKER = "evidence_marker";
+
+	//! The marker prefab (slot "evidence_marker"), or empty when no usable prefab resolves (logged).
+	static ResourceName MarkerPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_MARKER);
+	}
+
 	static const ResourceName BAG_PREFAB = "{A2E64B90F1C8D357}Prefabs/Investigation/LF_EvidenceBag.et";
 	static const ResourceName FOOTPRINT_PREFAB = "{BDD2844E23A8782C}Prefabs/Investigation/LF_EvidenceFootprint.et";
 	static const ResourceName STATEMENT_PREFAB = "{964BD33ED81ADE29}Prefabs/Investigation/LF_EvidenceStatement.et";
@@ -290,7 +298,7 @@ class LF_Evidence
 			return null;
 
 		vector spot = LF_ScenePieces.GroundSpot(item.GetOrigin() + LF_ScenePieces.MARKER_OFFSET, LF_ScenePieces.PAPER_BASE);
-		IEntity marker = LF_Utils.SpawnEntityPrefab(MARKER_PREFAB, spot);
+		IEntity marker = LF_Utils.SpawnEntityPrefab(MarkerPrefab(), spot);
 		if (!marker)
 			return null;
 

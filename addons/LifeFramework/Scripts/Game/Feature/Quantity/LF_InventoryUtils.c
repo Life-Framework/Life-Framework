@@ -5,6 +5,7 @@ modded class LF_InventoryUtils
 	static int GetAmount(InventoryStorageManagerComponent target, ResourceName prefab)
 	{
 		if (!target) return -1;
+		if (prefab.IsEmpty()) return 0; // an empty prefab slot (LF_PrefabSlots) counts nothing
 
 		// No quantity used, so default engine count function
 		if (!SCR_BaseContainerTools.FindComponentSource(Resource.Load(prefab), LF_QuantityComponent))
@@ -41,7 +42,7 @@ modded class LF_InventoryUtils
 	//! Returns actual amount added or 0 on faulty operations.
 	static int AddAmount(InventoryStorageManagerComponent storageManager, ResourceName prefab, int amount, bool dropOverflow = false)
 	{
-		if (!storageManager || amount <= 0) return 0;
+		if (!storageManager || amount <= 0 || prefab.IsEmpty()) return 0;
 		if (!Replication.IsServer()) return 0;
 
 		int remainingAmount = amount;
@@ -124,7 +125,7 @@ modded class LF_InventoryUtils
 	//! Returns acutal amount removed or 0 on faulty opertations.
 	static int RemoveAmount(InventoryStorageManagerComponent storageManager, ResourceName prefab, int amount)
 	{
-		if (!storageManager || amount <= 0) return 0;
+		if (!storageManager || amount <= 0 || prefab.IsEmpty()) return 0;
 		if (!Replication.IsServer()) return 0;
 
 		int remainingAmount = amount;
