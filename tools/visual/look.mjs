@@ -919,19 +919,85 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+
+// This PC has no workbench cap (tools/lib/wb-route.mjs): `look` runs on a pool machine with it, in a synced
+// run folder (`look ... --local --fresh --clean` there, in its signed-in desktop session), and the pictures
+// come back into tmp/look (or --out) here, with the paths in each index.json made local.
+export function remoteLookArgs(argv) {
+  const out = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--out") i++; // the box writes its own tmp/look; the pictures are copied to --out here
+    else if (argv[i] !== "--serve" && argv[i] !== "--local") out.push(argv[i]);
+  }
+  return ["look", ...out, "--local", "--fresh", "--clean"];
+}
+
+// Every string in a parsed index.json that starts with the box's output folder, moved under ours.
+export function rebasePaths(value, fromDir, toDir) {
+  const norm = (p) => String(p).replace(/\\/g, "/").toLowerCase();
+  const from = norm(fromDir).replace(/\/$/, "");
+  const walk = (v) => {
+    if (typeof v === "string") return norm(v).startsWith(`${from}/`) || norm(v) === from ? join(toDir, v.slice(from.length)) : v;
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
+    return v;
+  };
+  return walk(value);
+}
+
+async function lookOnPool(args, argv, route) {
+  const wt = await import("../wt.mjs");
+  if (wt.isMainCheckout(ROOT)) {
+    console.log("REFUSE  'look' runs in the main checkout, which is the world-editor copy (it opens a second Workbench on the project).");
+    console.log("        create a worktree first:  tools\\cli wt new <feature>");
+    return 2;
+  }
+  const outRoot = resolve(ROOT, args.flags.out || join("tmp", "look"));
+  const r = await route.routeWorkbench(ROOT, { purpose: `look ${args.pos[0]}`, suffix: "-look", args: remoteLookArgs(argv), runLocal: async () => 1 });
+  if (!r.machine || !r.rDir) return r.code || 3;
+  // The box's pictures, flagged or not (a flagged look exits 1 and still wrote them).
+  const remoteOut = `${String(r.rDir).replace(/\\/g, "/").replace(/\/$/, "")}/tmp/look`;
+  mkdirSync(outRoot, { recursive: true });
+  const got = tb.scp(["-r", `${r.machine.host}:${remoteOut}/.`, outRoot]);
+  if (got.status !== 0) {
+    console.log(`FAIL  look: could not copy the pictures from ${r.machine.name}:${remoteOut} (${(got.stderr || got.stdout || "").trim().split(/\r?\n/).pop()})`);
+    return 1;
+  }
+  const remoteDir = join(String(r.rDir), "tmp", "look");
+  for (const d of readdirSync(outRoot, { withFileTypes: true })) {
+    const idx = join(outRoot, d.name, "index.json");
+    if (!d.isDirectory() || !existsSync(idx)) continue;
+    try {
+      writeFileSync(idx, JSON.stringify(rebasePaths(JSON.parse(readFileSync(idx, "utf8")), remoteDir, outRoot), null, 2) + "\n");
+    } catch {}
+  }
+  console.log(`look: pictures from ${r.machine.name} are in ${outRoot}`);
+  return r.code;
+}
 
 export async function main(argv) {
   const args = parseArgs(argv);
+  if (args.flags.local) process.env.LF_WB_LOCAL = "1"; // a human's explicit ask for this PC's Workbench
   if (args.pos[0] === "selftest") return selftest();
-  if (args.pos[0] === "serve") return serveMain(args);
+  const route = await import("../lib/wb-route.mjs");
+  if (args.pos[0] === "serve") {
+    // The look server is a long-lived Workbench on this PC: no remote form. --status and --stop start nothing.
+    const pol = route.localWorkbench(ROOT);
+    if (!pol.allowed && !args.flags.status && !args.flags.stop) {
+      console.log(`FAIL  ${route.refusalText("look serve", pol.host)} \`look <area>\` still works: it runs on a pool machine.`);
+      return 2;
+    }
+    return serveMain(args);
+  }
   if (!args.pos.length || args.flags.help) {
     console.log(USAGE);
     return args.flags.help ? 0 : 2;
   }
+  if (args.flags.clean) rmSync(resolve(ROOT, args.flags.out || join("tmp", "look")), { recursive: true, force: true }); // a pool machine's run folder keeps its tmp between runs
+  if (!route.localWorkbench(ROOT).allowed) return lookOnPool(args, argv, route);
   // One of this PC's Workbench slots for the whole look (tools/lib/wb-lock.mjs).
-  const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
-  const wb = await acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
+  const wb = await route.acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
   try {
     return await run(args);
   } finally {

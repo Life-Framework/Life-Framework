@@ -573,7 +573,8 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   three on this PC and one on the box, all 224/224, against 36 s for the four
   in a row on this PC. The pool pays most when this PC's slot is held by
   something long (`host`, `session`, `e2e`, another agent's gate).
-- **Limits.** A plain `build` and `validate --full` stay on this PC. A pre-pool
+- **Limits.** A plain `build` and `validate --full` stay on this PC while it has
+  the `workbench` cap; without it they go to a pool machine ("No Workbench on this PC"). A pre-pool
   branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
   local only until it merges main.
 
@@ -650,6 +651,41 @@ pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
 gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
+
+### No Workbench on this PC (the `workbench` cap)
+
+The maintainer's world editor lives on this PC (Gaming-Box) and agents never
+run a headless Workbench on it. That is `workbench` missing from this machine's
+caps: `lf.local.json` `pool.machines` entry `{ "name": "local", "caps":
+["server"] }`. A pool machine's own entry (`lf-cloud`, `lf-testbox`) keeps the
+cap and runs what is sent to it. `tools/lib/wb-route.mjs` reads the cap; every
+path that would start a Workbench here asks it first:
+
+| Path | Without the cap on this PC |
+| --- | --- |
+| `ci`, `ci --remote`, `ci --tiered`, `wt gate`, `wt ship` (`chooseGate`) | this PC is never a candidate and never the fallback; no pool machine answering is "wait" (re-check every 30 s, `LF_WB_RAM_WAIT_S`, 1 h), then a pool failure. The retry after an early death never lands here. `LF_TESTBOX_AUTO=0` no longer keeps the gate here |
+| the rdb refresh before `test`, `session up`, `serve`, `e2e` and a gate; `rdb`, `rdb --wait` (`chooseRefresh`) | goes to a machine with the `rdb` cap even when it can only queue there; none yet: waits (`LF_RDB_WAIT_S`, 900 s, `rdb --budget <s>`), then warns and leaves the rdb stale. It never falls back to a local refresh |
+| `validate --full` (the `validate-scripts.ps1` compile) | `ci --wb-only --compile-only` on a pool machine, its transcript streamed here |
+| `build`, and `test` without `--no-build` | `ci --wb-only --build-only [--addon X]` on a pool machine; the exit code is the result |
+| `look <area>`, `look item` | runs on a pool machine (`look ... --local --fresh --clean` in its desktop session); the pictures are copied back to `tmp/look` (or `--out`) with the paths in each `index.json` made local. `look serve` (start) refuses: its Workbench is long-lived and local |
+| `pack`, `asset` plugin runs, `ui-image`, `wt open --workbench` | refuse with the reason: their output is files in this worktree |
+| `cli call wb_*` (and so `agent-box/harness.mjs launch`, `play`) | refuse: every `wb_*` tool needs a Workbench and the MCP starts one itself. `api_search`, `game_read`, `asset_search` and `api class` need none |
+| `validate-scripts.ps1` run by hand | refuses unless the CLI launched it (`LF_WB_GUARDED=1`) or `LF_WB_LOCAL=1` |
+
+The backstop is the Workbench slot itself: `wb-route.acquireWorkbench` throws
+`LocalWorkbenchRefused` before `wb-lock` takes a lock, so a caller that forgot to
+route fails loudly instead of starting Workbench. `validate-wb-policy.mjs`
+fails the repo checks when a file takes a slot from `wb-lock` directly, or names
+the Workbench executable without consulting the cap. A new launcher goes through
+`wb-route` (`routeWorkbench` for a step that can run elsewhere,
+`requireLocalWorkbench` for one that cannot).
+
+An explicit `--local` (or `--machine local`) on `build`, `ci`, `rdb`, `look`,
+`pack`, `asset`, `validate` or `wt` from a human sets `LF_WB_LOCAL=1` and runs
+here anyway; so does exporting `LF_WB_LOCAL=1`. `test`, `session`, `e2e` and
+`serve` take `--local` for the server only and never unlock the Workbench.
+Agents do not pass it. Proven by `tools/validation/wb-policy-selftest.mjs`
+(choice, wait budget, routed run, slot backstop, `--local`).
 
 ### Lanes, priority, leases, budgets (this PC)
 
