@@ -24,6 +24,8 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_QuestTrackerComponent "{4EDDFD87ACFEE921}" {
     }
+    LF_LicenseManagerComponent "{0477062462EF2157}" {
+    }
     LF_BuildingManagerComponent "{DF8FCA7984804E51}" {
     m_PreviewMaterial "{58F07022C12D0CF5}Assets/Editor/PlacingPreview/Preview.emat"
     m_BasePreviewPrefab "{5626E68741FCB9DB}Prefabs/Building/BaseBuildingPreview.et"

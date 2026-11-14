@@ -59,8 +59,9 @@ class LF_ConfigStream
 	//! \param[in] vehicles The effective vehicle prices, or null to leave the section out.
 	//! \param[in] police The effective police tunables and ranks, or null to leave the section out.
 	//! \param[in] organizations The effective organization tunables, or null to leave the section out.
+	//! \param[in] catalogue The effective item catalogue and outlets (#988), or null to leave the section out.
 	//! \return The payload text.
-	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null)
+	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null, LF_ItemCatalogueConfig catalogue = null)
 	{
 		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext(false);
 		ctx.WriteValue(KEY_FORMAT, FORMAT_VERSION);
@@ -90,6 +91,12 @@ class LF_ConfigStream
 			organizations.WriteStream(ctx);
 			ctx.EndObject();
 		}
+		if (catalogue)
+		{
+			ctx.StartObject(LF_ItemCatalogueConfig.SECTION);
+			catalogue.WriteStream(ctx);
+			ctx.EndObject();
+		}
 		return ctx.ExportToString();
 	}
 
@@ -117,7 +124,11 @@ class LF_ConfigStream
 		if (!organizations)
 			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no organization config on the server; clients keep their shipped organization values");
 
-		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations);
+		LF_ItemCatalogueConfig catalogue = LF_ItemCatalogueConfig.Get();
+		if (!catalogue)
+			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no item catalogue on the server; clients keep their shipped outlet prices");
+
+		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations, catalogue);
 		int hash = payload.Hash();
 		bool changed = !s_bPublished || hash != s_iPublishedHash;
 		s_sPublished = payload;
@@ -250,6 +261,9 @@ class LF_ConfigStream
 
 		// The clerk's fee for a replacement identity card (server).
 		LF_PhotoIdCardConfig.Reload();
+
+		// The item catalogue and its outlets: the next read layers the owner file (server) or the stream (client).
+		LF_ItemCatalogueConfig.Reload();
 	}
 
 	//------------------------------------------------------------------------------------------------

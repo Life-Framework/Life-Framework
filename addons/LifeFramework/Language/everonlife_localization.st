@@ -9076,6 +9076,111 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Something is in the way."
      Comment "Toast when a placement is refused because something stands where it would go: a car, a post, a spike strip already lying there (#928)."
     }
+    CustomStringTableItem "{8BCA5C98D5D6CB15}" {
+     Id "LF-Shop_RefuseNeedsLicence"
+     Target_en_us "Not without a %1."
+     Comment "Order slip refusal at a gated outlet: %1 is the licence the buyer lacks, e.g. 'Firearm permit' (#988)."
+    }
+    CustomStringTableItem "{49544D45EB25DEC6}" {
+     Id "LF-Shop_RefuseNeedsJob"
+     Target_en_us "Sold to %1 only."
+     Comment "Order slip refusal at a gated outlet: %1 is the job the buyer must be in, e.g. 'Police' (#988)."
+    }
+    CustomStringTableItem "{739357983E4CECD0}" {
+     Id "LF-Shop_RefuseNeedsRank"
+     Target_en_us "Needs the rank %1."
+     Comment "Order slip refusal at a gated outlet: %1 is the lowest rank title that may buy, e.g. 'Senior Officer' (#988)."
+    }
+    CustomStringTableItem "{A2CCDA69FAA56F18}" {
+     Id "LF-Shop_RefuseNeedsOrgRight"
+     Target_en_us "Your organisation rank lacks: %1."
+     Comment "Order slip refusal at a gated outlet: %1 is the organisation right the buyer's rank must carry (#988)."
+    }
+    CustomStringTableItem "{9F162C71E3737F75}" {
+     Id "LF-License_FirearmPermit_Name"
+     Target_en_us "Firearm permit"
+     Comment "Licence name: lets a civilian buy and carry a handgun from a licensed gun counter (#988)."
+    }
+    CustomStringTableItem "{4FB1382492A8D697}" {
+     Id "LF-License_FirearmPermit_Desc"
+     Target_en_us "Buy and carry a handgun from a licensed gun counter."
+     Comment "Licence description for the firearm permit (#988)."
+    }
+    CustomStringTableItem "{02730936057A3FB7}" {
+     Id "LF-Offence_UnlicensedItem"
+     Target_en_us "Carrying without a licence"
+     Comment "Offence: carrying an item that needs a licence (a handgun without a firearm permit) (#988)."
+    }
+    CustomStringTableItem "{467D009B1D72E627}" {
+     Id "LF-Offence_RestrictedItem"
+     Target_en_us "Carrying restricted equipment"
+     Comment "Offence: carrying equipment only a licence holder may carry, such as police kit (#988)."
+    }
+    CustomStringTableItem "{9499603B0EEA25D2}" {
+     Id "LF-Offence_IllegalItem"
+     Target_en_us "Carrying contraband"
+     Comment "Offence: carrying an item that is illegal for anyone (#988)."
+    }
+    CustomStringTableItem "{79098ED875FE1D2B}" {
+     Id "LF-OrgRight_WITHDRAW"
+     Target_en_us "Withdraw from the fund"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{83B81936948E8F2E}" {
+     Id "LF-OrgRight_INVITE"
+     Target_en_us "Invite members"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{665DB356B526C676}" {
+     Id "LF-OrgRight_KICK"
+     Target_en_us "Remove members"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{5AB8DC50BD7DC910}" {
+     Id "LF-OrgRight_BUY_UPGRADE"
+     Target_en_us "Buy upgrades"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{DFC65A7B39D19F53}" {
+     Id "LF-OrgRight_MANAGE_RANKS"
+     Target_en_us "Manage ranks"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{6CA987E909812994}" {
+     Id "LF-OrgRight_DECLARE_WAR"
+     Target_en_us "Declare war"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{35B5C1078661D599}" {
+     Id "LF-OrgRight_USE_STASH"
+     Target_en_us "Use the stash"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{69DB6A2760E0386A}" {
+     Id "LF-OrgRight_MANAGE_TERRITORY"
+     Target_en_us "Manage territory"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{C99C38C351DB03E8}" {
+     Id "LF-OrgRight_SPEND_FUND"
+     Target_en_us "Spend the fund"
+     Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{65BB7224C4B126D9}" {
+     Id "LF-Shop_Name_GunCounter"
+     Target_en_us "Gun counter"
+     Comment "Shop name of the licensed gun counter outlet (#988)."
+    }
+    CustomStringTableItem "{9FF131B1A71F8990}" {
+     Id "LF-Shop_Desc_GunCounter"
+     Target_en_us "Handguns for permit holders."
+     Comment "Shop description of the licensed gun counter outlet (#988)."
+    }
+    CustomStringTableItem "{B62D96514AE04259}" {
+     Id "LF-Shop_Open_GunCounter"
+     Target_en_us "Buy a handgun"
+     Comment "Action prompt at the gun counter (#988)."
+    }
   }
  }
 }

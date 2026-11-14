@@ -172,6 +172,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_GunCounter(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Handcuffs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessPerf(), LF_TestTier.LOGIC);
@@ -203,6 +204,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IntroductionsSerializer(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ItemCatalogue(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ItemVolume(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailOnlineTime(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JailPlacedCell(), LF_TestTier.WORLD);

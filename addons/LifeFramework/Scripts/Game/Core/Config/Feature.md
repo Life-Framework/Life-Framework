@@ -240,6 +240,21 @@ The owner layer is server-only; the server prices every buy and sell with it.
 
 On a listen host the host is the server and prices with the owner values directly.
 
+## Catalogue section (#988)
+
+`LF_ItemCatalogueConfig` (`Configs/Catalogue/LF_ItemCatalogue.conf`) is the `catalogue` section: the
+item catalogue and the outlets' offers (`Feature/Catalogue/Feature.md`).
+
+- `items`, keyed by item id; `offers`, keyed by `outlet/item`. An existing key changes only the fields
+  given; a new item must set a `prefab` that loads; `removed: true` takes a record out and a later layer
+  can set it back. Until the shared overlay model (#962) lands, the merge is the class's own
+  (`ApplyContainer` for packs, `ApplyOwner` for the owner and the stream).
+- `category` and `legality` are words; one the catalogue does not know is refused and the lower
+  layer's word stays.
+- Streamed: `WriteStream` writes every record in the owner's shape (removed ones too), and the client
+  applies it with `ApplyOwner`, so its price list shows what the server charges. `ApplyToFeatures`
+  drops the cached instance (`LF_ItemCatalogueConfig.Reload`).
+
 ## Jobs section (#749, D8)
 
 `LF_JobsConfig` (`Configs/Jobs/LF_Jobs.conf`) is the `jobs` section: duty pay, the

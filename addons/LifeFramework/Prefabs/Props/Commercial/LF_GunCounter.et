@@ -1,0 +1,44 @@
+GenericEntity {
+ ID "B04A984DEEE23C87"
+ components {
+  MeshObject "{59151C6A5551D485}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{4303DF671D580512}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ShopComponent "{6EA70364DEB62E72}" {
+   m_sShopName "#LF-Shop_Name_GunCounter"
+   m_sShopDescription "#LF-Shop_Desc_GunCounter"
+   m_sOutletId "gun_counter"
+  }
+  ActionsManagerComponent "{B7C803CAFE3104A4}" {
+   ActionContexts {
+    UserActionContext "{B53FAB2AC4EE72B5}" {
+     ContextName "default"
+     Position PointInfo "{18FE0FE97C8BE4F1}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{5C5F25A80A5E24FA}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7045932E6CDA0A7C}" {
+      Name "#LF-Shop_Open_GunCounter"
+      Description "#LF-Shop_Desc_GunCounter"
+     }
+    }
+   }
+  }
+  RplComponent "{0B9A3F1C2D4E5A61}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}

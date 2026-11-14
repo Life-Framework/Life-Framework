@@ -242,15 +242,16 @@ class LF_Test_ShopRefusalReasons : LF_Test
 		LF_MoneyUtils.AddCash(buyer, funds);
 
 		int money;
-		ctx.Equal(LF_EShopRefusal.NOT_ENOUGH_CASH, shop.Buy(M9_PREFAB, 1, buyer, money), "half the price says the cash is short");
+		string missing;
+		ctx.Equal(LF_EShopRefusal.NOT_ENOUGH_CASH, shop.Buy(M9_PREFAB, 1, buyer, money, missing), "half the price says the cash is short");
 		ctx.Equal(0, money, "a refused order charges nothing");
-		ctx.Equal(LF_EShopRefusal.NOT_SOLD_HERE, shop.Buy(WATER_PREFAB, 1, buyer, money), "an item this counter does not stock says so");
-		ctx.Equal(LF_EShopRefusal.BAD_QUANTITY, shop.Buy(M9_PREFAB, 0, buyer, money), "a zero order says the quantity is wrong");
-		ctx.Equal(LF_EShopRefusal.NOTHING_TO_SELL, shop.Sell(M9_PREFAB, 1, buyer, money), "selling what you do not carry says so");
+		ctx.Equal(LF_EShopRefusal.NOT_SOLD_HERE, shop.Buy(WATER_PREFAB, 1, buyer, money, missing), "an item this counter does not stock says so");
+		ctx.Equal(LF_EShopRefusal.BAD_QUANTITY, shop.Buy(M9_PREFAB, 0, buyer, money, missing), "a zero order says the quantity is wrong");
+		ctx.Equal(LF_EShopRefusal.NOTHING_TO_SELL, shop.Sell(M9_PREFAB, 1, buyer, money, missing), "selling what you do not carry says so");
 		ctx.Equal(funds, LF_MoneyUtils.GetCash(buyer), "no refusal moved the buyer's cash");
 
 		LF_MoneyUtils.AddCash(buyer, price);
-		ctx.Equal(LF_EShopRefusal.NONE, shop.Buy(M9_PREFAB, 1, buyer, money), "a covered order is paid");
+		ctx.Equal(LF_EShopRefusal.NONE, shop.Buy(M9_PREFAB, 1, buyer, money, missing), "a covered order is paid");
 		ctx.Equal(price, money, "the slip reports the price charged");
 
 		LF_TestCharacterFixture.Delete(buyer);
