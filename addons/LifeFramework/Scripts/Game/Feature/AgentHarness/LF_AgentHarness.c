@@ -203,6 +203,14 @@ class LF_AgentCommand
 
 			return true;
 		}
+		if (cmd.Verb == "spikeaim")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			if (parts.Count() > 3)
+				cmd.Arg2 = parts[3];
+			return true;
+		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 			return true;
 		if (cmd.Verb == "emote")
@@ -1397,6 +1405,15 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "ok", emoted);
 			else
 				WriteResult(cmd.Id, "error", emoted);
+			return;
+		}
+		if (cmd.Verb == "spikeaim")
+		{
+			string aimed = LF_SpikeStripHarness.Aim(cmd.Arg1, cmd.Arg2);
+			if (aimed.StartsWith("ok "))
+				WriteResult(cmd.Id, "ok", aimed.Substring(3, aimed.Length() - 3));
+			else
+				WriteResult(cmd.Id, "error", aimed);
 			return;
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")

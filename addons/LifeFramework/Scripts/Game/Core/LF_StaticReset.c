@@ -114,6 +114,7 @@ class LF_StaticReset
 		LF_Systems.ResetStatics();
 		LF_ItemCatalogue.ResetStatics();
 		LF_Cleanup.ResetStatics();
+		LF_PlacementAim.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

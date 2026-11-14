@@ -195,6 +195,14 @@ class LF_SpikeStrips
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: sets the deployer on what the placement service placed for `officer` through aimed
+	//! placement (LF_PlacementService.ConfirmAimed), when it is a strip.
+	static void Adopt(IEntity officer, IEntity placed)
+	{
+		Placed(officer, placed);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The strip the service placed, with its deployer set; or null with the service's refusal kept.
 	protected static IEntity Placed(IEntity officer, IEntity strip)
 	{

@@ -54,6 +54,9 @@ class LF_PlaceableComponent : ScriptComponent
 	[Attribute("1", UIWidgets.Auto, "Metres between the player and the near edge of the footprint")]
 	protected float m_fReach;
 
+	[Attribute("0", UIWidgets.Auto, "Furthest metres the aimed ghost's origin may lie from the player (#1028). Never less than the reach plus the footprint's near edge, which is where the plain Deploy puts it")]
+	protected float m_fAimReach;
+
 	[Attribute("0", UIWidgets.ComboBox, desc: "How the spot is found", enums: ParamEnumArray.FromEnum(LF_EPlacementSnap))]
 	protected LF_EPlacementSnap m_eSnap;
 
@@ -92,6 +95,13 @@ class LF_PlaceableComponent : ScriptComponent
 	float GetReach()
 	{
 		return m_fReach;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Furthest horizontal distance from the player's feet to the ghost's origin, aimed or not.
+	float GetAimReach()
+	{
+		return Math.Max(m_fAimReach, m_fReach - m_vFootprintMins[2]);
 	}
 
 	//------------------------------------------------------------------------------------------------

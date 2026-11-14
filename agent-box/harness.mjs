@@ -172,6 +172,9 @@ export function buildLine(id, spec) {
     if (spec.what !== undefined && !/^[a-z]+(,[a-z]+)*$/.test(spec.what)) throw new Error(`reload what must be names joined by commas (config,dialogue): ${spec.what}`);
     return spec.what ? `${id} reload ${spec.what}` : `${id} reload`;
   }
+  if (spec.verb === "spikeaim") {
+    return `${id} spikeaim ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
+  }
   if (spec.verb === "dialogue") {
     return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
   }
@@ -1526,6 +1529,9 @@ function main(argv) {
     }
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
+    }
+    if (cmd === "spikeaim") {
+      return printResult(sendCommand({ verb: "spikeaim", arg: rest[0], value: rest[1] }, 10000));
     }
     if (cmd === "dialogue") {
       return printResult(sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 15000));

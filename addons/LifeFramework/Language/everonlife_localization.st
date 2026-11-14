@@ -8453,6 +8453,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logout in custody"
      Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
+    CustomStringTableItem "{42A73AE4842C1045}" {
+     Id "LF-Placement_Aim"
+     Target_en_us "Place where I aim"
+     Comment "Action name on a placeable item: enters aimed placement mode, the ghost follows the aim (#1028)."
+    }
+    CustomStringTableItem "{0C64EF85E0E4C2F5}" {
+     Id "LF-Placement_AimHint"
+     Target_en_us "Enter or A place   Backspace or B cancel   [ and ] turn   Shift or right stick fine"
+     Comment "Hint line while the placement ghost follows the aim: the keys (#1028)."
+    }
+    CustomStringTableItem "{5B1D9E0A7C3F4A21}" {
+     Id "LF-Placement_AimTitle"
+     Target_en_us "Placing"
+     Comment "Title of the aimed placement hint (#1028)."
+    }
+    CustomStringTableItem "{6C2E0F1B8D4A5B32}" {
+     Id "LF-Placement_KeyPlace"
+     Target_en_us "Place item"
+     Comment "Key binding name: confirm the placement ghost (#1028)."
+    }
+    CustomStringTableItem "{7D3F102C9E5B6C43}" {
+     Id "LF-Placement_KeyCancel"
+     Target_en_us "Cancel placing"
+     Comment "Key binding name: leave aimed placement (#1028)."
+    }
+    CustomStringTableItem "{8E40213DAF6C7D54}" {
+     Id "LF-Placement_KeyTurnLeft"
+     Target_en_us "Turn placement left"
+     Comment "Key binding name: rotate the placement ghost left (#1028)."
+    }
+    CustomStringTableItem "{9F51324EB07D8E65}" {
+     Id "LF-Placement_KeyTurnRight"
+     Target_en_us "Turn placement right"
+     Comment "Key binding name: rotate the placement ghost right (#1028)."
+    }
+    CustomStringTableItem "{A062435FC18E9F76}" {
+     Id "LF-Placement_KeyFine"
+     Target_en_us "Turn placement finely (hold)"
+     Comment "Key binding name: hold to rotate the placement ghost in 1 degree steps (#1028)."
+    }
   }
  }
 }
