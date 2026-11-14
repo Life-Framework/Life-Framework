@@ -42,8 +42,56 @@ harmless to your editor because the worktree is a separate directory.
   one build at a time, everyone else `--wait`s. `cli dev` skips the build
   entirely, so the everyday loop never contends.
 - **Hub** — coordination state lives in `<main>/tmp/wt/` (git-ignored):
-  `state.json` (registry + ports) and `locks/`. Derived from `git worktree
+  `state.json` (registry + ports + the warm pool) and `locks/`. Derived from `git worktree
   list`, so it survives worktrees created by hand.
+
+## Fast `wt new`: short lock and warm pool
+
+A checkout of this repo is about 1.5 GB and takes 12-30 s; that used to run
+inside the `wt` lock, so a burst of agents queued behind each other and the
+second one failed with `lock 'wt' is held`. Now:
+
+- **The `wt` lock covers bookkeeping only**: reserving the slug and its ports in
+  `state.json`, claiming a warm tree, and git metadata (`git branch`, `git worktree
+  add --no-checkout`), each well under a second. Fetch, checkout (`git reset --hard`),
+  the marker and the rdb copy run unlocked, so concurrent `wt new` calls overlap.
+  `wt new` waits up to 2 min for the lock (10 min with `--wait`). While its checkout
+  runs the entry has `status: "creating"` (`wt list` shows `creating`;
+  `validate-worktrees` and `wt prune --merged` skip it); a `wt new` that died there is
+  cleared by the next `wt new` of that slug, or `wt prune <slug> --force`. `state.json`
+  is written by temp file plus rename, always under the lock.
+- **Warm pool**: K checkouts on detached `origin/main` at
+  `..\Life-Framework-warm-<id>`, recorded in `state.warm` (never `state.worktrees`).
+  `wt new` claims the oldest ready one: it checks the tree is pristine (`git status
+  --ignored` empty) and holds no junction or symlink, `git worktree move`s it to
+  `Life-Framework-ws-<slug>`, and checks out `ws/<slug>` cut from `origin/<base>` (a
+  fast-forward when main moved since the tree was made). It then writes `tmp/wt.json` and
+  copies the rdb like a fresh one; the registry entry, marker, ports, path, branch and its
+  upstream are the same, so `test`, `session up`, `look`, `wt ship`, `wt prune` and the
+  pool's `Life-Framework-rt-<slug>` run folders cannot tell the difference. A claim takes
+  about 2 s instead of 12-30 s; the output prints `(warm pool)` or `(fresh checkout)` and a
+  `time:` line per phase. With no ready tree, or one that fails the checks (marked
+  `broken`), `wt new` makes a fresh one as before.
+- **Why move and not keep the pooled path**: the final path is then the one every
+  consumer derives from the slug, and a move is a directory rename (about 0.1 s). A
+  warm tree has never booted a server, so it has no `game-addons` junction; the claim
+  refuses one that has any link, so nothing with a junction is ever moved. The git
+  admin dir keeps its `Life-Framework-warm-<id>` name, which nothing reads.
+- **Filling**: after every `wt new` and `wt prune`, `tools/wt-warm.mjs fill` starts
+  detached and hidden at below-normal priority, makes trees one at a time until K are
+  ready or preparing, and exits. One filler at a time (lock `wt-warm`). It never fills
+  while free disk on the worktree volume is under `LF_WT_WARM_MIN_FREE_GB` (default 12;
+  the pool's `minFreeDiskGb` floor is 5), and logs why to `<main>/tmp/wt/warm.log`.
+  It also removes trees a dead filler or claimer left behind and `broken` ones.
+- **Removal** of a warm tree goes through `recycleWorktree` in `tools/link-safety.mjs`
+  (junctions unlinked first, `link-safety-selftest` covers it); never delete a
+  `Life-Framework-warm-*` folder by hand.
+- **Settings** (env or `lf.local.json`): `LF_WT_WARM` = K (default 3; 0 turns the pool
+  off), `LF_WT_WARM_MIN_FREE_GB`, `LF_WT_WARM_KICK=0` (no background filler).
+  `tools\cli wt warm` shows the pool, `wt warm fill` fills it in the foreground,
+  `wt warm drain` removes the ready trees, `wt new <slug> --no-warm` forces a fresh one.
+- Proof: `tools/validation/wt-warm-selftest.mjs` (fixture repo: fill, stale claim,
+  fresh fallback, junction refusal, prune, drain).
 
 ## Daily use
 
@@ -246,12 +294,14 @@ tools\cli test --no-build --only LF_Test_Money --local     # this PC only
 tools\cli test --no-build --red LF_Test_A,LF_Test_B        # batched red proof: one boot, every listed test must FAIL
 tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
 tools\cli test --no-build --tier all --core-only           # the core alone, pack hidden (#326); any machine
+tools\cli test --no-build --tier all --shards auto --both  # normal + core-only passes at the same time (what ci and wt gate run)
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
 tools\cli pool stats                                       # per machine: runs, passes, average wait and run
 tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
 ```
 
+- **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
 - **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
   waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer
@@ -718,6 +768,45 @@ late-join path (`session join`) trims first when free RAM is under the floor plu
 reserve, then refuses with a one-line reason if it still would breach the floor (#563). The lane count (`lanes.session`) stays 2 here: raise it only after a run with three
 concurrent proofs holds the floor.
 
+### Session boot time
+
+Where `session up` spends its time (lf-cloud, lowspec, 1 client, 2026-11-14, from the box's `up.log` and
+the client `console.log`; this PC could not run it that day: free disk under the 5 GB floor, and since
+the same day client sessions go to lf-cloud or the laptop only):
+
+| Phase | Time |
+|---|---|
+| Fresh worktree only: resource database refresh here (about 15 s) and on the box, queue, sync | up to 220 s, once per worktree; later `up` is 0.1 s of sync |
+| Server launch to `Entered online game state.` | 10-15 s |
+| Client launch to its connect attempt: render device 3 s, shader reload 3.4 s, compiling Game scripts 16 s, rest | 28-32 s |
+| Connect to the server's registration-form line (world load, join) | 1-3 s, 20-60 s when the box is busy |
+
+The client was the critical path: it used to start only after the server was ready, so the server's
+10-15 s were pure waiting. **Client 1 now launches with the server** (`tools/lib/session-overlap.mjs`,
+`sessionLaunch` in `tools/cli.mjs`); clients 2 and up still start one after another, each after the
+previous one joined, so player ids follow client numbers. Nothing is shared between sessions: every `up`
+still boots its own server on this worktree's scripts (a warm, reusable server would add nothing, since
+the client's own start-up is longer than a server boot, and it would need a per-build validity key), the lane
+lock moves to the server's pid before the client starts, and the RAM reserve and idle reaping are
+unchanged.
+
+The risk is a client that reaches its connect attempt before the server listens. The client's own log is
+watched (`Starting RPL client`, `Client L2 connection established`): a client that tried and is not
+connected 20 s after the server was ready, or died, or never tried within 150 s, is relaunched once (the
+line `session: client 1 raced the server; relaunching it once` and `up.log` say so). The worst case is the
+old serial time plus the grace period, never a failed session. `LF_SESSION_SERIAL=1` restores the old
+order. Polls of the server log and the join check are 0.5 s (were 2 s).
+
+Measured on lf-cloud, ready-in (`up` start to the join line), 10 runs each, one session after another
+(the box is shared, so the spread is wide; run it again if a number matters):
+
+| | median | min | max |
+|---|---|---|---|
+| serial (before; 5 runs before, 5 as a control after) | 61.4 s | 31.9 s | 168.8 s |
+| overlapped (after, two batches of 5) | 34.8 s | 25.2 s | 141.1 s |
+
+`selftest`: `tools/validation/session-overlap-selftest.mjs` (the plan, the retry and give-up rules, the log patterns).
+
 ### Waiting on a session
 
 `node agent-box/session.mjs up` blocks until the server and every client are
@@ -1004,8 +1093,15 @@ instead.
 Merged worktrees show `merged (prune me)` in `cli wt list`. `cli wt prune
 <slug>` verifies the branch is merged and clean before removing it; `--force`
 discards unmerged work. A squash-merged PR counts as merged (a merged PR whose head SHA is the branch tip, or
-the same files as origin/main). `cli wt prune --merged` lists every worktree that is merged, clean, idle 30 min and
-holds no lock or session; `--yes` prunes them, without it a dry run. `wt ship --refs N` needs N of 1 or more; with
+the same files as origin/main). `cli wt prune --merged` lists every worktree whose branch has a MERGED PR, is clean, idle 30 min and
+holds no lock or session; `--yes` prunes them, without it a dry run. The merged PR comes from one batched
+`gh pr list --state merged` (newest 500, 45 s timeout), matched on `ws/<slug>` and the worktree's base, and its
+head SHA must equal the branch tip, so a branch with a commit the PR did not carry is kept. **Ancestry of
+`origin/main` never qualifies a worktree**: a brand-new worktree is an ancestor too. The dry run says why each
+one stays (`keep <slug>: no merged PR (ancestor only)`, `PR #N merged, but the branch has commits after it`,
+`uncommitted changes`, `touched N min ago`, a lock). When `gh` is missing, fails or times out, nothing is pruned
+and the command exits 1 saying so; there is no fallback to ancestry. Warm-pool trees are never listed. `wt prune <slug>`
+and `--force` keep their checks: you named the worktree on purpose. `wt ship --refs N` needs N of 1 or more; with
 no issue, leave the flag out. `cli validate` warns you about worktrees that are ready
 to prune and about any registry inconsistency.
 

@@ -242,6 +242,32 @@ Apart from the police rank, no payload stores pack content by index or by a bare
 - Spawning: `LF_SpawnLogic : SCR_SpawnLogic`; `Prefabs/MP/Spawn/SpawnPoint_LIFE.et`
   is a vanilla `SCR_SpawnPoint`.
 
+## Record shapes: append only (#761)
+
+A payload is an array of record objects written by reflection, so a record's
+saved shape is its serialized fields in declaration order (base class first,
+nested `LF_` records inline). The rule, adapted from Overthrow's
+`OVT_PlayerManagerSerializer`: new data is only ever appended, and every older
+save still loads.
+
+- A shipped field is never removed, renamed, reordered or retyped. A retired
+  field stays as padding (`LF_SurvivalStatsRecord.m_fHealth`).
+- New data is a **sidecar payload**: a `[NonSerialized()]` field on the live
+  record and a row class (`int m_iVersion` first) in a payload appended to
+  `RegisterPersistencePayloads` with a version bump, which an older save simply
+  lacks (`orgranks` #750a, `joblevels` #749). One PR per reshape (D6).
+- Before the persistent launch (#556) a serialized field may be appended to a
+  record only with a save version bump and a read path for the older shape.
+  After it, a shipped record takes no new serialized field at all.
+- `tools/validation/validate-record-shapes.mjs` locks every record's fields in
+  `tools/validation/record-shapes.json` and fails on a removed, renamed,
+  reordered or retyped field, a dropped payload, or an append or new record
+  without a bump. After a legal change (a bump with appends or a new payload)
+  run `node tools/validation/validate-record-shapes.mjs --update` and commit
+  the lock. At #556 set `"launched": true` in the lock.
+- The audit of every record, its version and whether it is final for launch:
+  [`docs/architecture/record-shape-audit.md`](architecture/record-shape-audit.md).
+
 ## Layer 2: orchestration (when a save happens)
 
 Without this layer nothing asked for a save point, so a dedicated-server
@@ -384,8 +410,8 @@ across the `wt e2e` restart, keepLicences off from the owner file).
   character persistence id and slot name) is captured at each save point and on
   disconnect, and applied on spawn in place of the starter kit. Apply reconciles
   against what the entity already has, so it is idempotent. Death clears it.
-- A field added to a persisted record class breaks every older positional save.
-  The M3 record reshapes follow this as sidecar payloads: `docs/architecture/record-shape-vehicle.md`
+- A field added to a persisted record class breaks every older positional save
+  ("Record shapes: append only" above). The M3 record reshapes follow this as sidecar payloads: `docs/architecture/record-shape-vehicle.md`
   (#752a) and `docs/architecture/record-shape-held-ground.md` (#751).
   Per-item state (`LF_StorageItemRecord.m_iAmmo`) is `[NonSerialized()]` and
   travels in its own payload instead; `police/item-state` proves the carried

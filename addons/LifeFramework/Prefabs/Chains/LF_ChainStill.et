@@ -9,7 +9,7 @@ GenericEntity : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
    m_sStepId "distill"
   }
   LF_AmbientEmitterComponent "{6EABDEBA1C579413}" {
-   m_sSoundProject "{371B46E27DAC90B8}Sounds/Atmosphere/Atmosphere_Still.acp"
+   m_sSoundSlot "atmo_still"
    m_fRadius 17
    m_iPriority 1
    m_vOffset 0 1 0
