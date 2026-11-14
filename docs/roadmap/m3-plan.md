@@ -302,7 +302,7 @@ loses the scenario.
 exception (this breaks the 2026-11-09 "no temporary exception rows" decision).
 (c) Freeze Workshop updates from batch 1 until the M3 release.
 *Recommend (a).*
-**Decided:** (a). The pack item publishes in the same release as batch 1; the host doc and `playtest-server.json` list both IDs; Discord is told one session ahead.
+**Decided:** (a) on 2026-11-12, changed on 2026-11-14: nothing is published before the two addons exist. M1 closed unpublished, #109 moved to M3, and the first Workshop publish of both items comes after the whole move (batches 1 to 4). No host runs the old single-item build, so the header move strands nobody.
 
 **D4. How does a pack supply its `.conf` defaults?** The outline's precedence
 (owner, then pack, then core) needs a mechanism, and the core may not name the
@@ -381,6 +381,7 @@ issue template and a link to the credits-source issue.
 are open. Is M1 signed off once #109's publish lands, or does the freeze wait
 for all three?
 **Decided:** Not signed off. The freeze (#322) waits for all three open M1 issues: #101, #109 and #199.
+**Resolved 2026-11-14:** #101 verified, #199 closed (Esc works in play; the failures were harness input timing), #109 moved to M3 (see D3). M1 is closed and the freeze is lifted.
 
 **D12. Skills on job levels (#749): replace or sit under?**
 (a) The per-job XP map replaces `LF_PlayerLevelComponent`'s single level (the

@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{DBABB67C549C4755}Assets/Items/Roleplay/Drill/Data/Drill_BCR.edds"
+ NMOMap "{969F11A3D0B80D35}Assets/Items/Roleplay/Drill/Data/Drill_NMO.edds"
+}

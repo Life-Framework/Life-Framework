@@ -1,0 +1,14 @@
+AnimSetInstanceSource {
+ Template "{621FC2071DD7E522}Anims/Workspaces/Work/LF_DrillPush.ast"
+ Lines {
+  AnimSetInstanceSource_Line "Use.Default.In" {
+   Resource "{049E30C2E772A11D}Anims/LF/Drill/Drill_push_in.anm"
+  }
+  AnimSetInstanceSource_Line "Use.Default.Loop" {
+   Resource "{4C0421858EAEFA82}Anims/LF/Drill/Drill_push_loop.anm"
+  }
+  AnimSetInstanceSource_Line "Use.Default.Out" {
+   Resource "{B7AA1EEC6BE6D8F6}Anims/LF/Drill/Drill_push_out.anm"
+  }
+ }
+}

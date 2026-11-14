@@ -11,6 +11,7 @@ tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]
 tools\cli asset score <slug> <n> <silhouette,era,scale_grip,background,no_text,image_to_3d> [note]
 tools\cli asset pick <slug> <n> [--why "..."]     the human's choice from the concept sheet
 tools\cli asset status [<slug>]
+tools\cli asset anim <slug> [--fix]  moving parts, the character's clips, effects: animation.md
 tools\cli asset sound <slug>  generated sound effects, after the prefab stage: sounds.md
 tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
@@ -34,7 +35,9 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | `import` | Copies the sources into the addon, writes every `.meta` with fresh GUIDs and the `.emat`, rebuilds them in a hidden Workbench, then reads the `.xob` back and checks bones, sockets, material and collider | The tool |
 | `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry; a gadget: one held item; a deployable: the deployed prop and the carried item). Every kind but `weapon` has its own `prefab-<kind>.mjs` | The agent finishes them: strings, feature component, placement |
 
-After `prefab` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
+| `anim` | Only for a spec with an `anim` block: solves the custom character clips and has Workbench compile them, writes the character workspace and the spark effect, and checks the prefab's `LF_AssetAnimComponent` against the spec. The bones and sockets the block names are built in `clean` and checked in `import` | The tool checks reach, feet and loops; the agent reads the pose previews and films the result: [animation.md](animation.md) |
+
+After `anim` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
 Sound is its own command with its own record, because a review sits in the middle of it:
 [sounds.md](sounds.md).
 
@@ -114,6 +117,8 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   spike strip the bake left dark dents around every spike; the generator's own normal map reads better there.
 - `fit` corrects what the clean stage guessed: `up_axis` (`"x"`, `"y"`, `"z"`), `flip_up`,
   `flip_forward`, `pitch_deg`, `scale`, `offset` (metres, Enfusion axes: x right, y up, z forward).
+- `anim` (optional) is what moves: bones, sockets, effects, sounds, the character's clips, the carry profile
+  ([animation.md](animation.md)).
 - `parts` are the moving parts. Every face whose centre lies in the box is split off and skinned
   to the bone. Boxes are in Enfusion model space after the fit.
 - `sockets` (optional) overrides a socket position by name.

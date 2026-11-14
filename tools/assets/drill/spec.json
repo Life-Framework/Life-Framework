@@ -1,0 +1,104 @@
+{
+  "slug": "drill",
+  "name": "Drill",
+  "kind": "gadget",
+  "roadmap": "#340",
+  "concept": "The robbery drill of 1989 Everon: a heavy olive-green pistol-grip workshop drill with a long masonry bit and a clamp frame. A robber buys it from the fence, pushes it into the vault wall and leaves it there as evidence.",
+  "prompt": "Portable heavy-duty safe-cracking drill, 1980s, a handheld rig with a body, a long bit and a side handle, no text, no logos.",
+  "texture_prompt": "",
+  "meshy": {
+    "ai_model": "latest",
+    "target_polycount": 30000
+  },
+  "size_m": {
+    "length": 0.62,
+    "height": 0.23,
+    "width": 0.15
+  },
+  "budget": {
+    "lod0_tris": 6000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 1024,
+    "credits": 70
+  },
+  "fit": {
+    "flip_forward": true,
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Roleplay/Drill",
+  "prefab_dir": "Prefabs/Items/Fence",
+  "anim": {
+    "prefab": "Prefabs/Items/Fence/LF_Drill.et",
+    "bones": [
+      {
+        "name": "chuck",
+        "motion": "spin",
+        "axis": "z",
+        "speed": 1440,
+        "pivot": [
+          -0.034,
+          0.075,
+          0.08
+        ],
+        "box": [
+          -0.064,
+          0.046,
+          0.045,
+          -0.004,
+          0.105,
+          0.32
+        ]
+      }
+    ],
+    "sockets": [
+      {
+        "name": "fx_bit",
+        "pos": [
+          -0.034,
+          0.075,
+          0.3
+        ]
+      }
+    ],
+    "effects": [
+      {
+        "socket": "fx_bit",
+        "sparks": {
+          "rate": 60,
+          "speed": 1.8,
+          "life": 0.3,
+          "size": 0.012,
+          "spread": 75
+        }
+      }
+    ],
+    "character": {
+      "workspace": "LF_DrillPush",
+      "dir": "Anims/Workspaces/Work",
+      "control": 562,
+      "clips": {
+        "in": "clip:push_in",
+        "loop": "clip:push_loop",
+        "out": "clip:push_out"
+      }
+    },
+    "sounds": [
+      {
+        "event": "SOUND_LF_DRILL_MOTOR_LP",
+        "project": "{7C4797BC82794F5A}Sounds/Items/Drill/Items_Drill_Use.acp"
+      },
+      {
+        "event": "SOUND_LF_DRILL_GRIND_LP",
+        "project": "{7C4797BC82794F5A}Sounds/Items/Drill/Items_Drill_Use.acp"
+      }
+    ]
+  }
+}

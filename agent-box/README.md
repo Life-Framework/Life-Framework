@@ -604,7 +604,7 @@ node agent-box/session.mjs up --clients 2 --visible            # on the user's d
 node agent-box/session.mjs restart            # playtest: shutdown save, load, same clients rejoin
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
-node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
+node agent-box/session.mjs proof              # client 1 robs Roadmap_Test_Till, client 2 (police) gets the alert
 node agent-box/session.mjs police-proof       # client 2 clocks in at the desk, client 1 robs the till, both read the wanted board
 node agent-box/session.mjs murder-proof       # client 1 kills client 2 at the fuel station (wanted 3), then shoots on the square (refused); needs m_bDownedEnabled 0 in LF_Medic.conf for the run
 node agent-box/session.mjs downed-proof       # M2 #255: client 1 downs client 2 (alive, INCAPACITATED, no murder); client 1 and a late-joining client 3 (`session.mjs join 3`) read it downed; the downed player's death is the murder, then the hospital respawn
@@ -703,7 +703,7 @@ node agent-box/session.mjs down
 | `give` | 1, 2 | stand at `Player<id>`, `LF_GiveCashAction`, type 50, hand over | -50 / +50 |
 | `police` | 2 | debug menu `FactionPoliceButton` (fixture; bare DebugWorld only) | POLICE on duty |
 | `clockin` | 2 | `LF_DutyAction` at `Roadmap_Police_Desk` (playtest only; `session.mjs roster 2` before `up`) | POLICE on duty |
-| `rob` | 1, 2 | `LF_RobAction` at `Roadmap_Fuel_Till` | wanted and cash rise; an on-duty officer's last toast is the robbery alert |
+| `rob` | 1, 2 | `LF_RobAction` at `Roadmap_Test_Till` (the fuel till is robbed through its attendant, `fuel-robbery-proof`) | wanted and cash rise; an on-duty officer's last toast is the robbery alert |
 | `board` | 1, 2 | officer and civilian read `Roadmap_Police_WantedBoard` | officer sees "WANTED - police notices" with the robbery, civilian the public board |
 | `dispatch` | 2 | read `Roadmap_Police_DispatchBoard`; the radio call came with the robbery | `dispatch` >= 1, `lastdispatch` is the robbery and place, no name |
 | `ticket` | 1, 2 | officer `LF_PlayerRoleAction` on the holder, offence row 0; holder reads the card, pays at the desk | holder cash -owed, no unpaid ticket |

@@ -1,0 +1,141 @@
+{
+  "slug": "drill",
+  "name": "Drill",
+  "kind": "gadget",
+  "project_dir": "Sounds/Items/Drill",
+  "project_prefix": "Items_Drill",
+  "output_format": "pcm_48000",
+  "budget": {
+    "generations": 8
+  },
+  "sounds": [
+    {
+      "id": "motor",
+      "event": "SOUND_LF_DRILL_MOTOR_LP",
+      "project": "Use",
+      "bus": "sfx",
+      "range": "voice70",
+      "volume_db": -8,
+      "loop": true,
+      "duration_seconds": 4,
+      "prompt": "The steady loud whine of a heavy 1980s mains-powered electric hand drill motor running at constant full speed under load, a continuous rough universal-motor whirr with gearbox rattle. Constant, no start, no stop, no speed change. Recorded close, dry, no reverb, no music, no voice.",
+      "prompt_influence": 0.7,
+      "variations": 2,
+      "pick": [
+        2
+      ],
+      "reason": "Take 2: even level from start to end, steady horizontal harmonic lines (a motor at constant speed) over broadband noise, loop seam 3.6%. Take 1 is as even but its harmonics wobble twice and its seam is 17.3%, which would tick every 4 s. One take: a tool that changes pitch between uses reads as a different tool."
+    },
+    {
+      "id": "grind",
+      "event": "SOUND_LF_DRILL_GRIND_LP",
+      "project": "Use",
+      "bus": "sfx",
+      "range": "voice70",
+      "volume_db": -10,
+      "loop": true,
+      "duration_seconds": 4,
+      "prompt": "A steel drill bit grinding continuously into thick hardened steel plate: a constant harsh metallic screech and scrape of metal cutting metal, even and unbroken. No motor, no hammering, no impacts, no start, no stop. Recorded close, dry, no reverb, no music, no voice.",
+      "prompt_influence": 0.7,
+      "variations": 2,
+      "pick": [
+        2
+      ],
+      "reason": "Take 2: broadband scrape with a few dips but no silence, seam 3.7%; the dips read as the bit biting in bursts. Take 1 has a 0.3 s hole of silence a quarter in, which would repeat every loop."
+    }
+  ],
+  "generations": [
+    {
+      "id": "motor",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "The steady loud whine of a heavy 1980s mains-powered electric hand drill motor running at constant full speed under load, a continuous rough universal-motor whirr with gearbox rattle. Constant, no start, no stop, no speed change. Recorded close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 4,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 768000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "motor",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "The steady loud whine of a heavy 1980s mains-powered electric hand drill motor running at constant full speed under load, a continuous rough universal-motor whirr with gearbox rattle. Constant, no start, no stop, no speed change. Recorded close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 4,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 768000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "grind",
+      "take": 1,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A steel drill bit grinding continuously into thick hardened steel plate: a constant harsh metallic screech and scrape of metal cutting metal, even and unbroken. No motor, no hammering, no impacts, no start, no stop. Recorded close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 4,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 768000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "grind",
+      "take": 2,
+      "date": "2026-11-13",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A steel drill bit grinding continuously into thick hardened steel plate: a constant harsh metallic screech and scrape of metal cutting metal, even and unbroken. No motor, no hammering, no impacts, no start, no stop. Recorded close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 4,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 768000,
+      "credits_estimate": 200
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-13",
+      "generations": 4,
+      "seconds": 16,
+      "plan": "starter",
+      "credits_before": 6167,
+      "credits_after": 6167,
+      "credits": 0
+    }
+  ],
+  "wired": {
+    "Use": {
+      "project": "{7C4797BC82794F5A}Sounds/Items/Drill/Items_Drill_Use.acp",
+      "events": [
+        "SOUND_LF_DRILL_MOTOR_LP",
+        "SOUND_LF_DRILL_GRIND_LP"
+      ],
+      "samples": [
+        "{6F5818203620961E}Sounds/Items/Drill/Samples/Items_Drill_LF_DRILL_MOTOR_LP_01.wav",
+        "{AD575BDB1248FD27}Sounds/Items/Drill/Samples/Items_Drill_LF_DRILL_GRIND_LP_01.wav"
+      ]
+    }
+  },
+  "account": {
+    "date": "2026-11-13",
+    "plan": "starter",
+    "used": 6327,
+    "limit": 40000,
+    "used_before_first_run": 6167,
+    "note": "used - used_before_first_run is this asset's cost only if nothing else spent credits on the account in between"
+  }
+}

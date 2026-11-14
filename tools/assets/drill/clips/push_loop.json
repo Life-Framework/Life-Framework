@@ -1,0 +1,220 @@
+{
+  "name": "push_loop",
+  "about": "Both hands on the drill at chest height, one foot forward, leaning into it; the body rocks a little as the bit bites.",
+  "fps": 30,
+  "frames": 40,
+  "loop": true,
+  "bones": "body",
+  "preview": {
+    "wall_z": 0.95,
+    "props": [
+      {
+        "asset": "drill",
+        "name": "Drill",
+        "pos": [
+          0.135,
+          1.23,
+          0.63
+        ]
+      }
+    ]
+  },
+  "keys": [
+    {
+      "frame": 0,
+      "hips": [
+        0,
+        -0.05,
+        0.02
+      ],
+      "turn": {
+        "Spine1": [
+          7,
+          0,
+          0
+        ],
+        "Spine3": [
+          6,
+          0,
+          0
+        ],
+        "Spine5": [
+          4,
+          0,
+          0
+        ],
+        "Neck1": [
+          -8,
+          0,
+          0
+        ]
+      },
+      "legs": {
+        "left": {
+          "foot": [
+            -0.16,
+            0.1,
+            0.24
+          ],
+          "yaw": 5
+        },
+        "right": {
+          "foot": [
+            0.19,
+            0.1,
+            -0.3
+          ],
+          "yaw": 25
+        }
+      },
+      "arms": {
+        "right": {
+          "hand": [
+            0.1,
+            1.2,
+            0.42
+          ],
+          "elbow": [
+            0.45,
+            1.0,
+            0.0
+          ],
+          "fingers": [
+            0,
+            -0.25,
+            1
+          ],
+          "palm": [
+            -1,
+            0,
+            0
+          ]
+        },
+        "left": {
+          "hand": [
+            0.02,
+            1.13,
+            0.5
+          ],
+          "elbow": [
+            -0.4,
+            0.9,
+            0.2
+          ],
+          "fingers": [
+            0.35,
+            0.1,
+            1
+          ],
+          "palm": [
+            0.3,
+            1,
+            0
+          ]
+        }
+      },
+      "curl": {
+        "right": 75,
+        "left": 70
+      }
+    },
+    {
+      "frame": 20,
+      "hips": [
+        0,
+        -0.055,
+        0.05
+      ],
+      "turn": {
+        "Spine1": [
+          9,
+          0,
+          0
+        ],
+        "Spine3": [
+          7,
+          0,
+          0
+        ],
+        "Spine5": [
+          5,
+          0,
+          0
+        ],
+        "Neck1": [
+          -9,
+          0,
+          0
+        ]
+      },
+      "legs": {
+        "left": {
+          "foot": [
+            -0.16,
+            0.1,
+            0.24
+          ],
+          "yaw": 5
+        },
+        "right": {
+          "foot": [
+            0.19,
+            0.1,
+            -0.3
+          ],
+          "yaw": 25
+        }
+      },
+      "arms": {
+        "right": {
+          "hand": [
+            0.1,
+            1.2,
+            0.435
+          ],
+          "elbow": [
+            0.45,
+            1.0,
+            0.0
+          ],
+          "fingers": [
+            0,
+            -0.25,
+            1
+          ],
+          "palm": [
+            -1,
+            0,
+            0
+          ]
+        },
+        "left": {
+          "hand": [
+            0.02,
+            1.13,
+            0.515
+          ],
+          "elbow": [
+            -0.4,
+            0.9,
+            0.2
+          ],
+          "fingers": [
+            0.35,
+            0.1,
+            1
+          ],
+          "palm": [
+            0.3,
+            1,
+            0
+          ]
+        }
+      },
+      "curl": {
+        "right": 75,
+        "left": 70
+      }
+    }
+  ]
+}

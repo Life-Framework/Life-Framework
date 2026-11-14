@@ -455,10 +455,11 @@ class LF_Bank
 	//------------------------------------------------------------------------------------------------
 	//! The drill stays at the vault. It leaves the robber's inventory, lies by the door, and the
 	//! scene evidence hook marks it for the officer to bag; its serial still names the buyer.
-	protected static void LeaveTool(string vaultId, IEntity robber, IEntity tool)
+	//! \return The tool where it lies (a scaled tool is set down as a copy), or null when it was not left.
+	protected static IEntity LeaveTool(string vaultId, IEntity robber, IEntity tool)
 	{
 		if (!tool || !robber)
-			return;
+			return null;
 
 		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(tool.FindComponent(InventoryItemComponent));
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
@@ -467,7 +468,7 @@ class LF_Bank
 			if (!inventory.TryRemoveItemFromStorage(tool, itemComponent.GetParentSlot().GetStorage()))
 			{
 				LF_Debug.Error("Bank", string.Format("tool not left at %1: it would not leave the inventory", vaultId));
-				return;
+				return null;
 			}
 		}
 
@@ -479,6 +480,7 @@ class LF_Bank
 		vector rest = LF_Dispatch.RestingSpot(origin + "0 0.3 0", tool);
 		IEntity left = SetDown(tool, rest, robber.GetAngles()[1]);
 		LF_Evidence.OnDropped(left, System.GetTickCount());
+		return left;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -681,9 +683,11 @@ class LF_Bank
 
 		if (tool == TOOL_DRILL)
 		{
-			LeaveTool(vaultId, robber, toolItem);
-			// The drill shows (#513): the robber works the lock while the drill bites.
-			LF_WorkAnim.Begin(robber, VaultOrigin(vaultId), LF_EWorkAnimKind.DRILL, LF_WorkAnim.DRILL_SECONDS, true);
+			IEntity leftDrill = LeaveTool(vaultId, robber, toolItem);
+			// The drill shows (#513, #340): the robber pushes it into the wall, the bit spins and sparks
+			// fly; when the work ends the drill is back where LeaveTool laid it.
+			if (LF_WorkAnim.Begin(robber, VaultOrigin(vaultId), LF_EWorkAnimKind.DRILL, LF_WorkAnim.DRILL_SECONDS, true))
+				LF_DrillScene.Begin(robber, leftDrill);
 		}
 
 		if (!tool.IsEmpty())

@@ -715,6 +715,22 @@ for o in markers:
     o.hide_render = True
 shot(os.path.join(out, "icon.png"), (-0.8, 0.9, 0.5), ortho=False, res=(512, 512), transparent=True)
 shot(os.path.join(review, "clean_side.png"), (-1, 0, 0))
+# Each moving part, moved: what the bone carries, and nothing else, should have left its place.
+for part in kind.get("animReview", []):
+    pb = arm.pose.bones[part["name"]]
+    axis = e2b(part["axis"])
+    if part["motion"] == "hinge":
+        pb.rotation_mode = "QUATERNION"
+        # Enfusion's axes are a mirror of Blender's, so the same turn has the opposite sign.
+        pb.rotation_quaternion = Matrix.Rotation(-math.radians(part["angle"]), 4, axis).to_quaternion()
+    else:
+        pb.location = axis * (part["distance"] if part["motion"] == "slide" else 0.25 * span)
+    bpy.context.view_layer.update()
+    shot(os.path.join(review, "part_%s.png" % part["name"]), (-0.8, 0.9, 0.5), ortho=False)
+    shot(os.path.join(review, "part_%s_side.png" % part["name"]), (-1, 0, 0))
+    pb.location = (0, 0, 0)
+    pb.rotation_quaternion = (1, 0, 0, 0)
+    bpy.context.view_layer.update()
 # The lowest LOD on its own: a broken silhouette here means the ratio is too low.
 lods[0].hide_render = True
 lods[-1].hide_render = False

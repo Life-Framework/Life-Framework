@@ -40,6 +40,12 @@ export const wavRes = (spec, id) => `${soundDir(spec)}/${spec.id}_${id}.wav`;
 export const acpRes = (spec) => `${soundDir(spec)}/Dialogue_${spec.id}.acp`;
 export const confRes = (spec) => `Configs/Dialogue/LF_Dialogue_${spec.name}.conf`;
 
+// What the voice is asked to say: `say` when the line has one (the caption `text` with eleven_v3
+// audio tags such as [panicked] added), else the caption itself.
+export const voicedText = (line) => (line.say || line.text || "").trim();
+// `say` with its [audio tags] removed: what must read the same as the caption.
+export const untagged = (say) => say.replace(/\[[a-z][a-z ,'-]*\]/g, " ").replace(/\s+/g, " ").trim();
+
 export function lineHash(voice, text) {
   return createHash("sha1").update(JSON.stringify([voice.id, voice.model || eleven.DEFAULT_MODEL, voice.settings || null, text])).digest("hex").slice(0, 16);
 }
@@ -89,6 +95,13 @@ export function specProblems(spec, strings = new Map()) {
     const text = (line.text || "").trim();
     if (text.length < 2 || text.length > 320) out.push(`line ${id}: text must be 2 to 320 characters (a longer speech is two lines)`);
     if (/[<>{}\[\]%]|#[A-Z]/.test(text)) out.push(`line ${id}: text has markup or a placeholder; the voice would read it aloud`);
+    if (line.say !== undefined) {
+      const say = String(line.say).trim();
+      if (/[<>{}%]|#[A-Z]/.test(say)) out.push(`line ${id}: say has markup other than [audio tags]`);
+      if (untagged(say) !== text.replace(/\s+/g, " ")) out.push(`line ${id}: say without its [audio tags] must read exactly as text (the caption)`);
+      if (!/\[[a-z]/.test(say)) out.push(`line ${id}: say adds no [audio tag]; drop it and keep text`);
+      if (say.length > 400) out.push(`line ${id}: say must be at most 400 characters`);
+    }
     if (line.for_key) {
       if (!strings.has(line.for_key.replace(/^#/, ""))) out.push(`line ${id}: for_key ${line.for_key} is not in the string table`);
       if (forKeys.has(line.for_key)) out.push(`line ${id}: for_key ${line.for_key} is spoken by two lines`);
@@ -297,7 +310,7 @@ export function expectedFiles(root, spec, prov) {
 
 // Lines whose audio in the addon does not match the spec (new, reworded, or a new voice).
 export function staleLines(root, spec, prov) {
-  return Object.entries(spec.lines).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(spec.voice, line.text.trim()) || !existsSync(join(root, ADDON, wavRes(spec, id)))).map(([id]) => id);
+  return Object.entries(spec.lines).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(spec.voice, voicedText(line)) || !existsSync(join(root, ADDON, wavRes(spec, id)))).map(([id]) => id);
 }
 
 // ---------------------------------------------------------------- the stage
@@ -317,7 +330,7 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   if (force === "all") Object.keys(spec.lines).forEach((l) => stale.add(l));
   else if (force) { if (!spec.lines[force]) throw new Error(`--force ${force}: no such line`); stale.add(force); }
   const todo = [...stale].map((lineId) => {
-    const text = spec.lines[lineId].text.trim();
+    const text = voicedText(spec.lines[lineId]);
     const hash = lineHash(spec.voice, text);
     const mp3 = join(dir, `${lineId}.${hash}.mp3`);
     // A forced line is a new paid take even when the old download is still there.
