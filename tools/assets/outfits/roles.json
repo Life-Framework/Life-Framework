@@ -30,6 +30,10 @@
     "trousers_grey": { "Pants": "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et" },
     "trousers_grey_dirty": { "Pants": "{537FD11C135757AC}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey_Dirty.et" },
     "fisherman_green": { "Pants": "{0B1F0174869E0351}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et" },
+    "police_shirt": { "Jacket": "{0E64DC32FA7BBF30}Prefabs/Characters/Uniforms/LF/PoliceShirt.et" },
+    "police_trousers": { "Pants": "{EA29B6E9594A4C23}Prefabs/Characters/Uniforms/LF/PoliceTrousers.et" },
+    "police_cap": { "Hat": "{CD05F51AF7A904B3}Prefabs/Characters/Uniforms/LF/PoliceCap.et" },
+    "doctor_coat": { "Jacket": "{14346777961E2DDA}Prefabs/Characters/Uniforms/LF/DoctorCoat.et" },
     "boots_us": { "Boots": "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et" },
     "boots_soviet_dirty": { "Boots": "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et" },
     "cap_flat_grey": { "Hat": "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et" },
@@ -84,7 +88,7 @@
     },
     {
       "id": "police", "name": "Police officer", "base": "default",
-      "outfits": [["suit_black", "boots_us", "cap_peaked"], ["turtle_blue", "trousers_grey", "boots_us"]],
+      "outfits": [["police_shirt", "police_trousers", "boots_us"], ["police_shirt", "police_trousers", "boots_us", "police_cap"]],
       "greet": "Officer on duty. Keep your hands where I can see them, and we will get along.",
       "what": "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again.",
       "where": "The station is the building behind me. The town board on the square lists everything else.",
@@ -93,7 +97,7 @@
     },
     {
       "id": "medic", "name": "Doctor", "base": "default",
-      "outfits": [["suit_grey", "boots_us"], ["turtle_beige", "trousers_grey", "boots_us"]],
+      "outfits": [["doctor_coat", "trousers_grey", "boots_us"], ["doctor_coat", "trousers_brown", "boots_us"]],
       "greet": "Come in. Are you hurt?",
       "what": "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse.",
       "where": "If you need a bandage and I am not here, the general store keeps dressings by the counter.",

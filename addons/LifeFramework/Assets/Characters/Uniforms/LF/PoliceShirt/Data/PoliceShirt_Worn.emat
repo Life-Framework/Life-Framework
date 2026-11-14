@@ -1,0 +1,4 @@
+MatPBRMulti : "{A49C304725186186}Assets/Characters/Uniforms/Shirt_CottonShirt_01/Data/Shirt_CottonShirt_01_Deflated_V6.emat" {
+ BCR_1 "{A933ED9C486BC015}Assets/Characters/Uniforms/LF/PoliceShirt/Data/PoliceShirt_Worn_BCR.edds"
+ DirtBCRMap "{5E6E7E05C1E7CB56}Assets/Characters/Uniforms/LF/PoliceShirt/Data/PoliceShirt_Worn_DirtBCR.edds"
+}
