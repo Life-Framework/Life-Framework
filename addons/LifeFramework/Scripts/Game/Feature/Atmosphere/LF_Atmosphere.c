@@ -6,6 +6,9 @@
 class LF_Atmosphere
 {
 	static const string FEATURE = "Atmosphere";
+
+	//! The system a server switches the town sound off with (#1075).
+	static const string SYSTEM = "Atmosphere";
 	static const int TICK_MS = 500; // lf-fixed: how often this machine re-reads listener distances, not a gameplay knob
 
 	//! Most ambient voices at once on this machine. The engine mixes far more; this keeps a busy
@@ -140,6 +143,18 @@ class LF_Atmosphere
 		array<LF_AmbientEmitterComponent> emitters = LF_AmbientEmitterComponent.GetAll();
 		if (emitters.IsEmpty() || !s_aCandidates)
 			return;
+
+		// Atmosphere off: every voice stops and none starts. Emitters and their switches keep their state (#1075).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+		{
+			foreach (LF_AmbientEmitterComponent silent : emitters)
+			{
+				if (silent && silent.IsPlaying())
+					silent.Stop("Atmosphere is off");
+			}
+
+			return;
+		}
 
 		float hour = HourNow();
 		s_aCandidates.Clear();

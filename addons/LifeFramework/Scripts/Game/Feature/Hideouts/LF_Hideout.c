@@ -39,6 +39,9 @@ class LF_HideoutState : Managed
 //------------------------------------------------------------------------------------------------
 class LF_Hideout
 {
+	//! The system a server switches hideouts off with (#1075). Leases and locks already saved are kept.
+	static const string SYSTEM = "Hideouts";
+
 	//! LF_Places kind of a hideout's door (LF_HideoutDoorComponent); the id is the hideout id.
 	static const string PLACE_KIND_DOOR = "HideoutDoor";
 
@@ -182,6 +185,9 @@ class LF_Hideout
 		if (!Server())
 			return false;
 
+		if (LF_Systems.Refuses(SYSTEM, "hideout lease " + hideoutId))
+			return false;
+
 		if (hideoutId.IsEmpty() || organizationId.IsEmpty())
 		{
 			Refuse("assign refused: empty id");
@@ -267,6 +273,9 @@ class LF_Hideout
 		if (!Server())
 			return false;
 
+		if (LF_Systems.Refuses(SYSTEM, "hideout door " + hideoutId))
+			return false;
+
 		if (characterId.IsEmpty())
 		{
 			if (report)
@@ -299,6 +308,9 @@ class LF_Hideout
 	static bool AllowsStash(string characterId, string hideoutId, bool report)
 	{
 		if (!Server())
+			return false;
+
+		if (LF_Systems.Refuses(SYSTEM, "hideout stash " + hideoutId))
 			return false;
 
 		LF_HideoutState state = Find(hideoutId);
@@ -382,6 +394,9 @@ class LF_Hideout
 	protected static bool EvaluateProcess(string characterId, string hideoutId, bool report)
 	{
 		if (!Server())
+			return false;
+
+		if (LF_Systems.Refuses(SYSTEM, "hideout machine " + hideoutId))
 			return false;
 
 		string ownerId = GetOwner(hideoutId);

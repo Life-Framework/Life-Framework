@@ -12,7 +12,8 @@ enum LF_EChainStation
 	NO_ACCESS,
 	MISSING_INPUTS,
 	TOO_FAST,
-	FAILED
+	FAILED,
+	SYSTEM_OFF	//!< The Chains system is off on this server (#1075).
 }
 
 //------------------------------------------------------------------------------------------------
@@ -56,6 +57,9 @@ class LF_ChainStationComponentClass : ScriptComponentClass
 //! version 20). The key must be unique in the world and stable; it is not the entity id.
 class LF_ChainStationComponent : ScriptComponent
 {
+	//! The system a server switches the stations off with (#1075). A saved batch stays in its station.
+	static const string SYSTEM = "Chains";
+
 	[Attribute("", UIWidgets.EditBox, "Stable key, unique in the world. The saved batch is matched by it")]
 	protected string m_sStationKey;
 
@@ -339,6 +343,9 @@ class LF_ChainStationComponent : ScriptComponent
 	//! Server: a worker puts a batch in. Takes the step's inputs from their inventory, all or none.
 	LF_EChainStation ServerLoad(IEntity user, float nowSeconds)
 	{
+		if (LF_Systems.Refuses(SYSTEM, "station load at " + m_sStationKey))
+			return LF_EChainStation.SYSTEM_OFF;
+
 		LF_ChainDef chain;
 		LF_ChainStepDef step;
 		if (!Resolve(chain, step))
@@ -368,6 +375,9 @@ class LF_ChainStationComponent : ScriptComponent
 	//! Server: one finished held action. Adds one unit of work to the station, whoever the worker is.
 	LF_EChainStation ServerWork(IEntity user, float nowSeconds)
 	{
+		if (LF_Systems.Refuses(SYSTEM, "station work at " + m_sStationKey))
+			return LF_EChainStation.SYSTEM_OFF;
+
 		LF_ChainDef chain;
 		LF_ChainStepDef step;
 		if (!Resolve(chain, step))
@@ -412,6 +422,9 @@ class LF_ChainStationComponent : ScriptComponent
 	//! Server: a worker takes a finished batch out. Anyone in reach may; the product is theirs.
 	LF_EChainStation ServerCollect(IEntity user, float nowSeconds)
 	{
+		if (LF_Systems.Refuses(SYSTEM, "station collect at " + m_sStationKey))
+			return LF_EChainStation.SYSTEM_OFF;
+
 		LF_ChainDef chain;
 		LF_ChainStepDef step;
 		if (!Resolve(chain, step))
@@ -500,6 +513,7 @@ class LF_ChainStationComponent : ScriptComponent
 			case LF_EChainStation.MISSING_INPUTS: return "#LF-Chain_MissingInputs";
 			case LF_EChainStation.TOO_FAR: return "#LF-Chain_TooFar";
 			case LF_EChainStation.FAILED: return "#LF-Chain_Failed";
+			case LF_EChainStation.SYSTEM_OFF: return "#LF-Systems_Off";
 		}
 
 		return "";

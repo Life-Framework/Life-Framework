@@ -42,6 +42,13 @@ just before a reload) is refused with a log line and, where the player sees a re
     `LicensePlate`, `SirenLights`, `Quests`. Each hides its prompts, refuses its server entry points and
     keeps its saved data; Vehicles also leaves parked vehicles and garage records alone. Police needs
     Crime and Investigation needs Police.
+  - World (#1075): `Gathering` (the gather action), `Processing` (the machine action), `Mining`
+    (ore hits, grow-back, the world-reset step, `LF_MiningArea` spawns), `Resources` (tool damage on
+    trees and rocks), `Chains` (station load, work, collect), `Hideouts` (lease, door, stash, hideout
+    machine), `Houses` (lock enforcement on house doors, house-wide lock toggles), `Survival` (the
+    tick, health cost, stamina penalty, food), `Toys` (the jump pad), `Atmosphere` (the voice mix, the
+    radio switch), `Emote` (the radial, seats). Spawned things stop spawning and respawning while off
+    (ore from a mining area, a rock's grow-back waits and asks again); nothing saved is touched.
   - `NOT_YET`: not gated yet; a config that turns it off is refused with a logged reason and it
     stays on. Follow-ups move them to `SWITCHABLE` one by one.
   - `LOCKED`: framework plumbing (Account, Character, Interaction, UIKit, ...); always on.
@@ -78,5 +85,6 @@ just before a reload) is refused with a log line and, where the player sees a re
 - `systems/world-gates` (WORLD): the shipped catalog; the DebugWorld farm plot, robbery seams and a
   pager with the systems off and on; a pack overlay under the owner; the stream to a client.
 - `systems/services` (WORLD): one entry point per service system, off and on, and what it saved stays.
+- `systems/world-resources` and `systems/world-places` (WORLD, #1075): the eleven world systems above on real fixtures.
 - `systems/keep-data` (PERSISTENCE): a crop saved and loaded while Farming is off; across a restart
   with `tools\cli wt e2e` (the save boot writes a config.json with Farming off).
