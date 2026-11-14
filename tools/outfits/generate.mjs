@@ -27,6 +27,9 @@ const LAYERS = join(ADDON, "Worlds/DebugWorld/DebugWorld_Layers");
 export const ROLE_COMPONENT_GUID = "7A31C05E94D2B861";
 const LOADOUT_COMPONENT_GUID = "5A4B0B84C86D5843";
 const SLOT_ORDER = ["Jacket", "Pants", "Boots", "Hat"];
+// A slot an override names must use the class the base prefab declares, or it does not replace the
+// inherited slot. Since 1.8 the base boots slot is SCR_FeetLoadoutSlotInfo (foot damage when barefoot).
+export const SLOT_CLASS = { Boots: "SCR_FeetLoadoutSlotInfo" };
 
 // The seed hash LF_Roles.PickOutfit uses too (kept small so it never overflows a script int).
 const SEED_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
@@ -109,7 +112,7 @@ export function prefabText(spec, v) {
   lines.push("   Slots {");
   for (const slot of SLOT_ORDER) {
     if (!slots[slot]) continue;
-    lines.push(`    LoadoutSlotInfo ${slot} {`);
+    lines.push(`    ${SLOT_CLASS[slot] || "LoadoutSlotInfo"} ${slot} {`);
     if (slot === "Hat") lines.push("     Enabled 1");
     lines.push(`     Prefab "${slots[slot]}"`);
     lines.push("    }");

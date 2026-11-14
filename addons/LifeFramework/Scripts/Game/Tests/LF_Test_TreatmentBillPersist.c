@@ -52,7 +52,7 @@ class LF_Test_TreatmentBillPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(31, version, "the save is written at version 31 (bills is payload 19)");
+		ctx.Equal(32, version, "the save is written at version 32 (bills is payload 19)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "bills");
 		LF_TreatmentBillRecord loadedPaid = LF_TreatmentBills.Find(paidNumber);
 		LF_TreatmentBillRecord loadedOpen = LF_TreatmentBills.Find(openNumber);

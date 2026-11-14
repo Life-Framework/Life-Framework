@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{CCFDE666D0731628}Assets/Items/Fence/PoliceScanner/Data/PoliceScanner_BCR.edds"
+ NMOMap "{36D10E9C25F7DC3F}Assets/Items/Fence/PoliceScanner/Data/PoliceScanner_NMO.edds"
+}

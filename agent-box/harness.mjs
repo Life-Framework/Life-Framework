@@ -133,7 +133,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "spikeseen" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "sound") {
@@ -160,6 +160,11 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload" || spec.verb === "robhold") {
     return `${id} ${spec.verb}`;
+  }
+  if (spec.verb === "reload") {
+    // reload [config|dialogue|config,dialogue]: the server reads the owner config and the dev caption file again (#970).
+    if (spec.what !== undefined && !/^[a-z]+(,[a-z]+)*$/.test(spec.what)) throw new Error(`reload what must be names joined by commas (config,dialogue): ${spec.what}`);
+    return spec.what ? `${id} reload ${spec.what}` : `${id} reload`;
   }
   if (spec.verb === "dialogue") {
     return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
@@ -1410,6 +1415,8 @@ function usage() {
   node agent-box/harness.mjs type <FieldName> <Text>
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
+  node agent-box/harness.mjs reload [config|dialogue|config,dialogue]
+  node agent-box/harness.mjs dialogue [caption <#key>|shown]
   node agent-box/harness.mjs input <MenuAction>
   node agent-box/harness.mjs open DebugMenu
   node agent-box/harness.mjs kit
@@ -1518,7 +1525,7 @@ function main(argv) {
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "spikeseen" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {
@@ -1585,6 +1592,14 @@ function main(argv) {
     }
     if (cmd === "use") {
       return printResult(sendCommand({ verb: "use", className: rest[0], entityName: rest[1] }));
+    }
+    if (cmd === "reload") {
+      // reload [config|dialogue|config,dialogue]: the server reads config.json and the dev caption file again (#970).
+      return printResult(sendCommand({ verb: "reload", what: rest[0] }, 10000));
+    }
+    if (cmd === "dialogue") {
+      // dialogue [caption <#key> | shown | pick <row> | skip | ...]: the conversation scene on this client.
+      return printResult(sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 10000));
     }
     if (cmd === "input") {
       return printResult(sendCommand({ verb: "input", action: rest[0], value: rest[1] }));

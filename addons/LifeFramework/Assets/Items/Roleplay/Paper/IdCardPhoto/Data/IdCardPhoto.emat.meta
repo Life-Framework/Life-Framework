@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{E95FEE28E2F51F0A}Assets/Items/Roleplay/Paper/IdCardPhoto/Data/IdCardPhoto.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

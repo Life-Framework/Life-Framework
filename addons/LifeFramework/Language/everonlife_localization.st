@@ -9076,6 +9076,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The cuffing was interrupted."
      Comment "Toast to the officer when the cuff or uncuff hold stops by itself: someone moved out of reach, the cuffs left the hand, or a rule no longer holds."
     }
+    CustomStringTableItem "{F4BBE2F164436809}" {
+     Id "LF-Placement_Blocked"
+     Target_en_us "Something is in the way."
+     Comment "Toast when a placement is refused because something stands where it would go: a car, a post, a spike strip already lying there (#928)."
+    }
   }
  }
 }

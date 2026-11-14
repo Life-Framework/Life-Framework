@@ -83,6 +83,18 @@ class LF_DevGate
 		if (playerManager && character)
 			playerId = playerManager.GetPlayerIdFromControlledEntity(character);
 
+		return CheckPlayerRequest(playerId, feature, request);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side check for an RPC that arrives on the player's own controller (the sender is known).
+	//! Logs the refusal through LF_Debug.
+	//! \param playerId The sending player.
+	//! \param feature LF_Debug feature tag.
+	//! \param request Short request name for the log line.
+	//! \return true when the request may proceed.
+	static bool CheckPlayerRequest(int playerId, string feature, string request)
+	{
 		if (IsAllowedForPlayer(playerId))
 			return true;
 

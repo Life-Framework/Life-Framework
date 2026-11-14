@@ -1,0 +1,5 @@
+MatPBRBasic {
+ Color 0.6 0.6 0.6 1
+ BCRMap "{545A5C63B79F0A55}Assets/Items/Roleplay/Paper/Receipt/Data/ReceiptSheet_BCR.edds"
+ NMOMap "{9F90B8F99EE04DC2}Assets/Items/Roleplay/Paper/Receipt/Data/ReceiptSheet_NMO.edds"
+}

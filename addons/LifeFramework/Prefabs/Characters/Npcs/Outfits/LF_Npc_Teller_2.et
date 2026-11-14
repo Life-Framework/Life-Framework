@@ -12,7 +12,7 @@ LF_NpcBaseEntity : "{8F3DB2237B844542}Prefabs/Characters/Npcs/LF_BankTeller.et" 
     LoadoutSlotInfo Pants {
      Prefab "{E65D5C9848AC18E9}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_brown_V1.et"
     }
-    LoadoutSlotInfo Boots {
+    SCR_FeetLoadoutSlotInfo Boots {
      Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
     }
    }

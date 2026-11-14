@@ -1,0 +1,15 @@
+{
+  "slug": "post-parcel",
+  "generations": [
+    {
+      "date": "2026-11-14",
+      "tool": "Meshy image-to-3D",
+      "model": "latest",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d96b-ce85-7300-9cab-69fe8e61a327",
+      "concept": 1,
+      "conceptTaskId": "01a1d95c-ce75-77b8-9460-1b5413bb6e94",
+      "conceptPrompt": "A 1989 post parcel from the Everon post office: a flat rectangular packet wrapped in brown paper and tied with string, with a blank address label on top. Plain brown kraft paper, crisp folded corners, string tied round both ways with a knot on top, a blank white label on the top face. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

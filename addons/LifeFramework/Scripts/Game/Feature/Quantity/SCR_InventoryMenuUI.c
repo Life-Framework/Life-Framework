@@ -177,7 +177,7 @@ modded class SCR_InventoryMenuUI
 					InventoryItemComponent item = slot.GetInventoryItemComponent();
 					if (item && m_aELRefreshEntities.Contains(item.GetOwner()))
 					{
-						storage.Refresh();
+						storage.RequestRefresh();
 						break;
 					}
 				}
@@ -193,9 +193,12 @@ modded class SCR_InventoryMenuUI
 			IEntity selectedEntity;
 			if (selectedItem) selectedEntity = selectedItem.GetOwner();
 			SCR_InventoryStorageBaseUI storageUi = m_aELQuantityOperationSourceSlotUi.GetStorageUI();
-			storageUi.Refresh();
+			storageUi.RequestRefresh();
 			if (IsUsingGamepad())
 			{
+				// Focus needs the rebuilt slots now. Consuming the request rebuilds once and clears the flag,
+				// so OnMenuUpdate does not rebuild this storage a second time.
+				storageUi.ConsumeRefreshRequest();
 				bool focusSet;
 				if (selectedEntity)
 				{
@@ -214,7 +217,7 @@ modded class SCR_InventoryMenuUI
 				if (!focusSet) FocusOnSlotInStorage(storageUi);
 			}
 		}
-		if (m_aELQuantityOperationDestinationSlotUi) m_aELQuantityOperationDestinationSlotUi.GetStorageUI().Refresh();
+		if (m_aELQuantityOperationDestinationSlotUi) m_aELQuantityOperationDestinationSlotUi.GetStorageUI().RequestRefresh();
 
 		if (fullRefresh)
 		{

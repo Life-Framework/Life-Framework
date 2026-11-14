@@ -28,11 +28,11 @@ class LF_Test_BankRobKit : LF_Test
 		IEntity pack = LF_Utils.SpawnEntityPrefab("{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et", robber.GetOrigin());
 		ctx.True(pack != null && inventory.TryInsertItem(pack, EStoragePurpose.PURPOSE_LOADOUT_PROXY), "the robber wears a pack");
 
-		LF_Bank.Configure("kit-drill", 1, 100, 0, 0, 0, "");
+		LF_Bank.Configure("kit-drill", 1, 100, 0, 0, 0);
 		LF_Bank.ConfigureTools("kit-drill", "drill", 0);
-		LF_Bank.Configure("kit-card", 1, 100, 0, 0, 0, "");
+		LF_Bank.Configure("kit-card", 1, 100, 0, 0, 0);
 		LF_Bank.ConfigureTools("kit-card", "keycard", 0);
-		LF_Bank.Configure("kit-charge", 1, 100, 0, 0, 0, "");
+		LF_Bank.Configure("kit-charge", 1, 100, 0, 0, 0);
 		LF_Bank.ConfigureTools("kit-charge", "charge", 0);
 		ctx.False(LF_Bank.HasTool("kit-drill", robber), "before the kit a bare character cannot work a drill vault");
 

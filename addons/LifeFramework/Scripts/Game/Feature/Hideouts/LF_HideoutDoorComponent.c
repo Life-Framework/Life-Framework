@@ -92,7 +92,7 @@ class LF_HideoutDoorComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_HideoutDoorComponent : ScriptComponent
 {
-	[Attribute("Roadmap_Hideout", UIWidgets.EditBox, desc: "Hideout id. The owning organization id is written onto the lock.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Hideout id (the layer sets it; empty falls back to LF_Hideout.HIDEOUT_ID). The owning organization id is written onto the lock.")]
 	protected string m_sHideoutId;
 
 	//! Name of the owning organization: written by the server (LF_Hideout.PushLock), read by clients.

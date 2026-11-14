@@ -24,7 +24,7 @@ class LF_Test_VaultTool : LF_Test
 		IEntity pack = LF_Utils.SpawnEntityPrefab("Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et", robber.GetOrigin());
 		ctx.True(pack != null && inventory.TryInsertItem(pack, EStoragePurpose.PURPOSE_LOADOUT_PROXY), "the robber wears a pack");
 
-		LF_Bank.Configure(vaultId, 1, 100, 0, 0, 0, "");
+		LF_Bank.Configure(vaultId, 1, 100, 0, 0, 0);
 		LF_Bank.ConfigureTools(vaultId, "drill,charge", 0.5);
 
 		ctx.False(LF_Bank.HasTool(vaultId, robber), "the robber starts with no tool");
