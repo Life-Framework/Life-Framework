@@ -75,10 +75,9 @@ class LF_Test_ZoneRules : LF_Test
 		ctx.False(LF_Zones.WantedSuppressedAt("5001 0 5001"), "lawless does not switch off wanted by default");
 
 		// The per-rule table (#755): an entry changes what its rule does, one answer for every caller.
-		LF_ZoneConfig table = new LF_ZoneConfig();
+		LF_ZoneConfig table = LF_ZoneConfig.CreateDefault();
 		table.m_aRuleSets = {};
-		LF_ZoneRuleSet lawlessSet = new LF_ZoneRuleSet();
-		lawlessSet.m_eRule = LF_ZoneRule.LAWLESS;
+		LF_ZoneRuleSet lawlessSet = LF_ZoneRuleSet.CreateDefault(LF_ZoneRule.LAWLESS);
 		lawlessSet.m_bSuppressesWanted = true;
 		lawlessSet.m_bAllowsRobbery = false;
 		lawlessSet.m_fFineMultiplier = 2.5;

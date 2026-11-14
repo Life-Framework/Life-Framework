@@ -2,7 +2,7 @@
 //! One item of the catalogue (#988): what it is, what it costs, and what the law says about it.
 //! The id is the stable key packs and the owner patch by; never rename one.
 [BaseContainerProps()]
-class LF_CatalogueItem
+class LF_CatalogueItem : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Stable item id (pistol_m9, jacket_raincoat). Packs and the owner patch by it, so never rename one")]
 	string m_sId;
@@ -31,7 +31,7 @@ class LF_CatalogueItem
 	[Attribute("0", UIWidgets.CheckBox, "Clothing: hides the wearer's build from a witness")]
 	bool m_bConcealsBuild;
 
-	[Attribute("0", UIWidgets.CheckBox, "Removed by a pack or the owner: no outlet sells it")]
+	[Attribute("0", UIWidgets.CheckBox, "Hidden: no outlet sells it; a later layer can set it back. The remove verb takes the item out of the list instead")]
 	bool m_bRemoved;
 
 	//------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class LF_CatalogueItem
 //! outlet (LF_ShopComponent.m_sOutletId); the outlet is every offer with that outlet id. Every gate
 //! that is set must pass; the refusal names the first one that does not.
 [BaseContainerProps()]
-class LF_OutletOffer
+class LF_OutletOffer : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Outlet id a shop counter names (gun_counter, clothing_rack, police_armory)")]
 	string m_sOutlet;
@@ -85,7 +85,7 @@ class LF_OutletOffer
 	[Attribute("", UIWidgets.EditBox, "Gate: organisation right the buyer's rank must carry (LF_EOrganizationPermission name). Empty is no right gate")]
 	string m_sOrgRight;
 
-	[Attribute("0", UIWidgets.CheckBox, "Removed by a pack or the owner: the outlet no longer sells the item")]
+	[Attribute("0", UIWidgets.CheckBox, "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead")]
 	bool m_bRemoved;
 
 	//------------------------------------------------------------------------------------------------
@@ -215,314 +215,109 @@ class LF_ItemCatalogueConfig
 
 	//------------------------------------------------------------------------------------------------
 	//! Layers every overlay over this instance, which holds the core `.conf`: pack overlays in list
-	//! order, the owner section, and on a client the server's streamed section.
+	//! order, the owner section, and on a client the server's streamed section. Every layer adds,
+	//! replaces, patches or removes by id through the shared merge (LF_ConfigOverlay, #962).
 	//! \param[in] coreConf The core file, to ask the pack source for its overlays.
 	void ApplyLayers(ResourceName coreConf)
 	{
-		array<ResourceName> overlays = {};
-		LF_ConfigService.GetPackOverlays(coreConf, overlays);
-		foreach (ResourceName overlay : overlays)
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(coreConf, LF_ItemCatalogueConfig, SECTION, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
 		{
-			Resource resource = BaseContainerTools.LoadContainer(overlay);
-			if (!resource || !resource.IsValid() || !resource.GetResource())
-			{
-				LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("catalogue: pack overlay does not resolve, skipped: %1", overlay));
-				continue;
-			}
-
-			BaseContainer container = resource.GetResource().ToBaseContainer();
-			typename overlayType;
-			if (container)
-				overlayType = container.GetClassName().ToType();
-			if (!overlayType || !overlayType.IsInherited(LF_ItemCatalogueConfig))
-				continue;
-
-			if (overlay == coreConf)
-			{
-				LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("catalogue: the pack lists the core file as an overlay, skipped: %1", overlay));
-				continue;
-			}
-
-			int changed = ApplyContainer(container);
-			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("catalogue: pack overlay %1 set %2 fields", overlay, changed));
+			int changed = ApplyContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("catalogue: pack overlay %1 changed %2 entries", names[i], changed));
 		}
 
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (reader)
 		{
-			ApplyOwner(reader);
+			ApplyOwner(reader, LF_ConfigService.GetOwnerSource());
 			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("catalogue: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
 		}
 
-		// Client: the server's effective values, written in the owner's shape (WriteStream). Null on the server.
+		// Client: the server's effective lists (WriteStream) replace the client's, so an entry the
+		// server removed is gone here too. Null on the server.
 		LF_ConfigReader streamed = LF_ConfigStream.OpenReceivedSection(SECTION);
 		if (streamed)
 		{
-			ApplyOwner(streamed);
+			m_aItems = new array<ref LF_CatalogueItem>();
+			m_aOffers = new array<ref LF_OutletOffer>();
+			ApplyOwner(streamed, "the server's stream");
 			LF_Debug.Info(LF_ConfigService.FEATURE, "catalogue: using the server's values");
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges one pack overlay: an item or offer whose key the catalogue has changes only the fields
-	//! the overlay writes; a new key is added whole.
-	//! \return Fields set and records added.
-	int ApplyContainer(notnull BaseContainer container)
+	//! Merges one pack overlay's items and offers by id (LF_ConfigOverlay).
+	//! \param[in] source The overlay file, for log lines and the two-pack warning.
+	//! \return Entries changed.
+	int ApplyContainer(notnull BaseContainer container, string source = "pack", LF_ConfigClaims claims = null)
 	{
-		int changed;
-		if (!m_aItems)
-			m_aItems = new array<ref LF_CatalogueItem>();
-		if (!m_aOffers)
-			m_aOffers = new array<ref LF_OutletOffer>();
-
-		BaseContainerList items = container.GetObjectArray("m_aItems");
-		if (items)
-		{
-			for (int i = 0; i < items.Count(); i++)
-			{
-				BaseContainer itemContainer = items.Get(i);
-				if (!itemContainer)
-					continue;
-
-				string id;
-				itemContainer.Get("m_sId", id);
-				if (id.IsEmpty())
-				{
-					LF_Debug.Error(LF_ConfigService.FEATURE, "catalogue: a pack item has no id; skipped");
-					continue;
-				}
-
-				LF_CatalogueItem item = FindItem(id);
-				if (!item)
-				{
-					item = LF_CatalogueItem.Cast(BaseContainerTools.CreateInstanceFromContainer(itemContainer));
-					if (!item)
-						continue;
-					m_aItems.Insert(item);
-					changed++;
-					continue;
-				}
-
-				changed += SetIfWritten(itemContainer, "m_Prefab", item);
-				changed += SetIfWritten(itemContainer, "m_sCategory", item);
-				changed += SetIfWritten(itemContainer, "m_iPrice", item);
-				changed += SetIfWritten(itemContainer, "m_iSellPrice", item);
-				changed += SetIfWritten(itemContainer, "m_sLegality", item);
-				changed += SetIfWritten(itemContainer, "m_sLicence", item);
-				changed += SetIfWritten(itemContainer, "m_bConcealsFace", item);
-				changed += SetIfWritten(itemContainer, "m_bConcealsBuild", item);
-				changed += SetIfWritten(itemContainer, "m_bRemoved", item);
-			}
-		}
-
-		BaseContainerList offers = container.GetObjectArray("m_aOffers");
-		if (offers)
-		{
-			for (int o = 0; o < offers.Count(); o++)
-			{
-				BaseContainer offerContainer = offers.Get(o);
-				if (!offerContainer)
-					continue;
-
-				string outlet;
-				string itemId;
-				offerContainer.Get("m_sOutlet", outlet);
-				offerContainer.Get("m_sItem", itemId);
-				if (outlet.IsEmpty() || itemId.IsEmpty())
-				{
-					LF_Debug.Error(LF_ConfigService.FEATURE, "catalogue: a pack offer has no outlet or item; skipped");
-					continue;
-				}
-
-				LF_OutletOffer offer = FindOffer(outlet, itemId);
-				if (!offer)
-				{
-					offer = LF_OutletOffer.Cast(BaseContainerTools.CreateInstanceFromContainer(offerContainer));
-					if (!offer)
-						continue;
-					m_aOffers.Insert(offer);
-					changed++;
-					continue;
-				}
-
-				changed += SetOfferIfWritten(offerContainer, "m_sLicence", offer);
-				changed += SetOfferIfWritten(offerContainer, "m_sJob", offer);
-				changed += SetOfferIfWritten(offerContainer, "m_iMinRank", offer);
-				changed += SetOfferIfWritten(offerContainer, "m_sOrgRight", offer);
-				changed += SetOfferIfWritten(offerContainer, "m_bRemoved", offer);
-			}
-		}
-
+		EnsureLists();
+		int changed = LF_ConfigOverlay.ApplyContainerList(new LF_CatalogueItemList(this), container, "m_aItems", source, claims);
+		changed += LF_ConfigOverlay.ApplyContainerList(new LF_OutletOfferList(this), container, "m_aOffers", source, claims);
 		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One item field from a pack container, only when the overlay writes it. \return 1 when set.
-	protected static int SetIfWritten(BaseContainer from, string field, LF_CatalogueItem item)
-	{
-		if (!from.IsVariableSetDirectly(field))
-			return 0;
-
-		bool ok;
-		if (field == "m_Prefab")
-			ok = from.Get(field, item.m_Prefab);
-		else if (field == "m_sCategory")
-			ok = from.Get(field, item.m_sCategory);
-		else if (field == "m_iPrice")
-			ok = from.Get(field, item.m_iPrice);
-		else if (field == "m_iSellPrice")
-			ok = from.Get(field, item.m_iSellPrice);
-		else if (field == "m_sLegality")
-			ok = from.Get(field, item.m_sLegality);
-		else if (field == "m_sLicence")
-			ok = from.Get(field, item.m_sLicence);
-		else if (field == "m_bConcealsFace")
-			ok = from.Get(field, item.m_bConcealsFace);
-		else if (field == "m_bConcealsBuild")
-			ok = from.Get(field, item.m_bConcealsBuild);
-		else if (field == "m_bRemoved")
-			ok = from.Get(field, item.m_bRemoved);
-
-		if (ok)
-			return 1;
-
-		return 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! One offer field from a pack container, only when the overlay writes it. \return 1 when set.
-	protected static int SetOfferIfWritten(BaseContainer from, string field, LF_OutletOffer offer)
-	{
-		if (!from.IsVariableSetDirectly(field))
-			return 0;
-
-		bool ok;
-		if (field == "m_sLicence")
-			ok = from.Get(field, offer.m_sLicence);
-		else if (field == "m_sJob")
-			ok = from.Get(field, offer.m_sJob);
-		else if (field == "m_iMinRank")
-			ok = from.Get(field, offer.m_iMinRank);
-		else if (field == "m_sOrgRight")
-			ok = from.Get(field, offer.m_sOrgRight);
-		else if (field == "m_bRemoved")
-			ok = from.Get(field, offer.m_bRemoved);
-
-		if (ok)
-			return 1;
-
-		return 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Applies the owner's "catalogue" section (or the server's stream, which has the same shape).
-	//! `items` is keyed by item id and `offers` by "outlet/item". An existing key changes only the
-	//! fields given; a new key adds a record, and a new item must set prefab; `removed: true` takes a
-	//! record out without deleting it, so a later layer can put it back.
+	//! `items` is keyed by item id and `offers` by "outlet/item", each record with an optional "op"
+	//! (add, replace, patch, remove). With no op an existing key changes only the fields given and a
+	//! new key adds a record; a new or replaced item must set a prefab that loads.
 	//! \param[in] reader A reader on the section.
-	void ApplyOwner(notnull LF_ConfigReader reader)
+	//! \param[in] source The file, for log lines.
+	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
 		array<string> ownerKeys = {"items", "offers"};
 		reader.WarnUnknownKeys(ownerKeys);
+		EnsureLists();
+		LF_ConfigOverlay.ApplyRecords(reader, "items", new LF_CatalogueItemList(this), source);
+		LF_ConfigOverlay.ApplyRecords(reader, "offers", new LF_OutletOfferList(this), source);
+	}
 
+	//------------------------------------------------------------------------------------------------
+	protected void EnsureLists()
+	{
 		if (!m_aItems)
 			m_aItems = new array<ref LF_CatalogueItem>();
 		if (!m_aOffers)
 			m_aOffers = new array<ref LF_OutletOffer>();
+	}
 
-		int count = reader.BeginRecords("items");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
+	//------------------------------------------------------------------------------------------------
+	//! Reads an item's owner fields (LF_CatalogueItemList).
+	void ReadItem(notnull LF_CatalogueItem item, notnull LF_ConfigReader reader)
+	{
+		array<string> itemKeys = {"op", "prefab", "category", "price", "sellPrice", "legality", "licence", "concealsFace", "concealsBuild", "removed"};
+		reader.WarnUnknownKeys(itemKeys);
+		reader.ReadResource("prefab", item.m_Prefab);
+		string category = item.m_sCategory;
+		if (reader.ReadString("category", category))
+			item.m_sCategory = KnownWord(reader, "category", category, item.m_sCategory, true);
+		reader.ReadInt("price", item.m_iPrice, PRICE_MIN, PRICE_MAX);
+		reader.ReadInt("sellPrice", item.m_iSellPrice, PRICE_MIN, PRICE_MAX);
+		string legality = item.m_sLegality;
+		if (reader.ReadString("legality", legality))
+			item.m_sLegality = KnownWord(reader, "legality", legality, item.m_sLegality, false);
+		reader.ReadString("licence", item.m_sLicence);
+		reader.ReadBool("concealsFace", item.m_bConcealsFace);
+		reader.ReadBool("concealsBuild", item.m_bConcealsBuild);
+		reader.ReadBool("removed", item.m_bRemoved);
+	}
 
-			array<string> itemKeys = {"prefab", "category", "price", "sellPrice", "legality", "licence", "concealsFace", "concealsBuild", "removed"};
-			reader.WarnUnknownKeys(itemKeys);
-
-			LF_CatalogueItem item = FindItem(key);
-			bool added;
-			if (!item)
-			{
-				if (key.IsEmpty() || !reader.Has("prefab"))
-				{
-					reader.RejectRecord("a new item needs an id and a prefab");
-					reader.EndRecord();
-					continue;
-				}
-
-				item = LF_CatalogueItem.Make(key, ResourceName.Empty, "equipment", 100, 50, "legal");
-				added = true;
-			}
-
-			reader.ReadResource("prefab", item.m_Prefab);
-			string category = item.m_sCategory;
-			if (reader.ReadString("category", category))
-				item.m_sCategory = KnownWord(reader, "category", category, item.m_sCategory, true);
-			reader.ReadInt("price", item.m_iPrice, PRICE_MIN, PRICE_MAX);
-			reader.ReadInt("sellPrice", item.m_iSellPrice, PRICE_MIN, PRICE_MAX);
-			string legality = item.m_sLegality;
-			if (reader.ReadString("legality", legality))
-				item.m_sLegality = KnownWord(reader, "legality", legality, item.m_sLegality, false);
-			reader.ReadString("licence", item.m_sLicence);
-			reader.ReadBool("concealsFace", item.m_bConcealsFace);
-			reader.ReadBool("concealsBuild", item.m_bConcealsBuild);
-			reader.ReadBool("removed", item.m_bRemoved);
-			if (added && item.m_Prefab.IsEmpty())
-			{
-				reader.RejectRecord("a new item's prefab does not load");
-				reader.EndRecord();
-				continue;
-			}
-
-			if (added)
-				m_aItems.Insert(item);
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
-
-		count = reader.BeginRecords("offers");
-		for (int o = 0; o < count; o++)
-		{
-			string offerKey = reader.GetRecordKey(o);
-			if (!reader.BeginRecord(offerKey))
-				continue;
-
-			array<string> offerKeys = {"licence", "job", "minRank", "orgRight", "removed"};
-			reader.WarnUnknownKeys(offerKeys);
-
-			int slash = offerKey.IndexOf("/");
-			if (slash <= 0 || slash >= offerKey.Length() - 1)
-			{
-				reader.RejectRecord("the key is not outlet/item");
-				reader.EndRecord();
-				continue;
-			}
-
-			string outlet = offerKey.Substring(0, slash);
-			string itemId = offerKey.Substring(slash + 1, offerKey.Length() - slash - 1);
-			LF_OutletOffer offer = FindOffer(outlet, itemId);
-			bool addedOffer;
-			if (!offer)
-			{
-				offer = LF_OutletOffer.Make(outlet, itemId);
-				addedOffer = true;
-			}
-
-			reader.ReadString("licence", offer.m_sLicence);
-			reader.ReadString("job", offer.m_sJob);
-			reader.ReadInt("minRank", offer.m_iMinRank, RANK_MIN, RANK_MAX);
-			reader.ReadString("orgRight", offer.m_sOrgRight);
-			reader.ReadBool("removed", offer.m_bRemoved);
-			if (addedOffer)
-				m_aOffers.Insert(offer);
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
+	//------------------------------------------------------------------------------------------------
+	//! Reads an offer's owner fields (LF_OutletOfferList).
+	void ReadOffer(notnull LF_OutletOffer offer, notnull LF_ConfigReader reader)
+	{
+		array<string> offerKeys = {"op", "licence", "job", "minRank", "orgRight", "removed"};
+		reader.WarnUnknownKeys(offerKeys);
+		reader.ReadString("licence", offer.m_sLicence);
+		reader.ReadString("job", offer.m_sJob);
+		reader.ReadInt("minRank", offer.m_iMinRank, RANK_MIN, RANK_MAX);
+		reader.ReadString("orgRight", offer.m_sOrgRight);
+		reader.ReadBool("removed", offer.m_bRemoved);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -668,5 +463,215 @@ class LF_ItemCatalogueConfig
 		}
 
 		return changed;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One pack container field into a record field, only when the overlay writes it. \return 1 when set.
+class LF_CatalogueFields
+{
+	static int Copy(BaseContainer from, string field, inout string value)
+	{
+		if (from.IsVariableSetDirectly(field) && from.Get(field, value))
+			return 1;
+		return 0;
+	}
+
+	static int CopyInt(BaseContainer from, string field, inout int value)
+	{
+		if (from.IsVariableSetDirectly(field) && from.Get(field, value))
+			return 1;
+		return 0;
+	}
+
+	static int CopyBool(BaseContainer from, string field, inout bool value)
+	{
+		if (from.IsVariableSetDirectly(field) && from.Get(field, value))
+			return 1;
+		return 0;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The catalogue's `items` for the shared merge (LF_ConfigOverlay), keyed by item id.
+class LF_CatalogueItemList : LF_ConfigList
+{
+	protected LF_ItemCatalogueConfig m_Config;
+
+	void LF_CatalogueItemList(LF_ItemCatalogueConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "catalogue.items";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aItems.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aItems[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_CatalogueItem.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "an item id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_CatalogueItem.Make(id, ResourceName.Empty, "equipment", 100, 50, "legal");
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_CatalogueItem item = LF_CatalogueItem.Cast(record);
+		if (index < m_Config.m_aItems.Count())
+			m_Config.m_aItems.Set(index, item);
+		else
+			m_Config.m_aItems.Insert(item);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aItems.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_CatalogueItem item = LF_CatalogueItem.Cast(record);
+		string prefab = item.m_Prefab;
+		int changed = LF_CatalogueFields.Copy(container, "m_Prefab", prefab);
+		item.m_Prefab = prefab;
+		changed += LF_CatalogueFields.Copy(container, "m_sCategory", item.m_sCategory);
+		changed += LF_CatalogueFields.CopyInt(container, "m_iPrice", item.m_iPrice);
+		changed += LF_CatalogueFields.CopyInt(container, "m_iSellPrice", item.m_iSellPrice);
+		changed += LF_CatalogueFields.Copy(container, "m_sLegality", item.m_sLegality);
+		changed += LF_CatalogueFields.Copy(container, "m_sLicence", item.m_sLicence);
+		changed += LF_CatalogueFields.CopyBool(container, "m_bConcealsFace", item.m_bConcealsFace);
+		changed += LF_CatalogueFields.CopyBool(container, "m_bConcealsBuild", item.m_bConcealsBuild);
+		changed += LF_CatalogueFields.CopyBool(container, "m_bRemoved", item.m_bRemoved);
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		m_Config.ReadItem(LF_CatalogueItem.Cast(record), reader);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		if (LF_CatalogueItem.Cast(record).m_Prefab.IsEmpty())
+			return "a new or replaced item needs a prefab that loads";
+		return string.Empty;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The catalogue's `offers` for the shared merge (LF_ConfigOverlay), keyed by "outlet/item".
+class LF_OutletOfferList : LF_ConfigList
+{
+	protected LF_ItemCatalogueConfig m_Config;
+
+	void LF_OutletOfferList(LF_ItemCatalogueConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "catalogue.offers";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aOffers.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aOffers[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_OutletOffer.Cast(record).Key();
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string outlet;
+		string item;
+		container.Get("m_sOutlet", outlet);
+		container.Get("m_sItem", item);
+		if (outlet.IsEmpty() || item.IsEmpty())
+			return string.Empty;
+		return LF_ItemCatalogueConfig.OfferKey(outlet, item);
+	}
+
+	override string CanonicalId(string key)
+	{
+		int slash = key.IndexOf("/");
+		if (slash <= 0 || slash >= key.Length() - 1)
+			return string.Empty;
+		return key;
+	}
+
+	override string IdHint()
+	{
+		return "outlet/item";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		int slash = id.IndexOf("/");
+		return LF_OutletOffer.Make(id.Substring(0, slash), id.Substring(slash + 1, id.Length() - slash - 1));
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_OutletOffer offer = LF_OutletOffer.Cast(record);
+		if (index < m_Config.m_aOffers.Count())
+			m_Config.m_aOffers.Set(index, offer);
+		else
+			m_Config.m_aOffers.Insert(offer);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aOffers.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_OutletOffer offer = LF_OutletOffer.Cast(record);
+		int changed = LF_CatalogueFields.Copy(container, "m_sLicence", offer.m_sLicence);
+		changed += LF_CatalogueFields.Copy(container, "m_sJob", offer.m_sJob);
+		changed += LF_CatalogueFields.CopyInt(container, "m_iMinRank", offer.m_iMinRank);
+		changed += LF_CatalogueFields.Copy(container, "m_sOrgRight", offer.m_sOrgRight);
+		changed += LF_CatalogueFields.CopyBool(container, "m_bRemoved", offer.m_bRemoved);
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		m_Config.ReadOffer(LF_OutletOffer.Cast(record), reader);
 	}
 }

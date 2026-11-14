@@ -16,7 +16,7 @@ class LF_Test_ZoneRuleSetBackcompat : LF_Test
 		ctx.False(LF_ZoneConfig.Resolve(null, LF_ZoneRule.LAWLESS).m_bSuppressesWanted, "no config: lawless keeps wanted");
 
 		// Old shape: flags only, no table.
-		LF_ZoneConfig legacy = new LF_ZoneConfig();
+		LF_ZoneConfig legacy = LF_ZoneConfig.CreateDefault();
 		legacy.m_bSafeBlocksPlayerDamage = true;
 		legacy.m_bLawlessSuppressesWanted = false;
 		LF_ZoneRuleSet safe = LF_ZoneConfig.Resolve(legacy, LF_ZoneRule.SAFE);
@@ -39,8 +39,7 @@ class LF_Test_ZoneRuleSetBackcompat : LF_Test
 		ctx.True(LF_ZoneConfig.Resolve(legacy, LF_ZoneRule.LAWLESS).m_bSuppressesWanted, "legacy flags: lawless can suppress wanted");
 
 		// A table entry overrides the flags for its own rule only.
-		LF_ZoneRuleSet entry = new LF_ZoneRuleSet();
-		entry.m_eRule = LF_ZoneRule.LAWLESS;
+		LF_ZoneRuleSet entry = LF_ZoneRuleSet.CreateDefault(LF_ZoneRule.LAWLESS);
 		entry.m_bSuppressesWanted = false;
 		legacy.m_aRuleSets = {};
 		legacy.m_aRuleSets.Insert(entry);

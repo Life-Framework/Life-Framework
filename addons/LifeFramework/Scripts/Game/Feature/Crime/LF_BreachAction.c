@@ -7,6 +7,9 @@ class LF_BreachArmAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		return TargetComponent() != null;
 	}
 
@@ -38,6 +41,9 @@ class LF_BreachArmAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_BreachArmAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -81,6 +87,9 @@ class LF_BreachRepairAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		return TargetComponent() != null;
 	}
 
@@ -106,6 +115,9 @@ class LF_BreachRepairAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_BreachRepairAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

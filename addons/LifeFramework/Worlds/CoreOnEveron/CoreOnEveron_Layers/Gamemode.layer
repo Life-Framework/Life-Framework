@@ -1,0 +1,12 @@
+LF_GameModeRoleplay GameMode_CoreOnEveron : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et" {
+}
+SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
+ coords 4471.854 21.689 10535.136
+}
+GenericEntity LF_TestRunner {
+ components {
+  LF_TestRunnerComponent "{AE14DCE8B4B2C9FB}" {
+  }
+ }
+ coords 4471.854 21.689 10530.136
+}

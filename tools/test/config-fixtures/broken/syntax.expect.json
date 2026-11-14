@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "fail",
+  "problems": [
+    {
+      "level": "error",
+      "line": 5,
+      "col": 3,
+      "msg": "config.json is not valid JSON (expected a property name in quotes, found '}'); every section uses the shipped defaults"
+    }
+  ]
+}

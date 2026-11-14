@@ -13,7 +13,8 @@ tools\cli serve       # boot the test server and stream logs (blocks)
 
 - **Config**: `configs/test-server.json` — runs `Missions/EL_DebugTest.conf`
   (DebugWorld), RCON on UDP 19999 (password `lf-test`), local mod loaded via
-  `-addonsDir`/`-addons LifeFramework`.
+  `-addonsDir`/`-addons LifeFramework,LF_Everon1989` (the core alone when the
+  pack folder is absent; `tools/lib/addons.mjs`).
 - **Requirements**: Arma Reforger Server (Steam app 1874900). The CLI looks for
   it at the default Steam path or `ENFUSION_SERVER_PATH` in `opencode.json`.
 - **Runtime files** (`profile/`, `logs/`, `build/`) are git-ignored.

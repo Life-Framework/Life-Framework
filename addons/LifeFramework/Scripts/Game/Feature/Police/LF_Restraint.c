@@ -491,6 +491,9 @@ class LF_RestrainAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;
 
@@ -516,6 +519,9 @@ class LF_RestrainAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_RestrainAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -546,6 +552,9 @@ class LF_ReleaseRestraintAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;
 
@@ -567,6 +576,9 @@ class LF_ReleaseRestraintAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_ReleaseRestraintAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

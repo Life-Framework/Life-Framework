@@ -45,6 +45,9 @@ class LF_SystemDef
 
 	[Attribute("", UIWidgets.ResourceNamePicker, "Item prefabs only this system uses. A loadout leaves them out while the system is off", "et")]
 	ref array<ResourceName> m_aItems;
+
+	[Attribute("", UIWidgets.Auto, "LF_Places kinds this system works at. At game start, with none of them placed on the map, it switches itself off for that world (#1047)")]
+	ref array<string> m_aPlaces;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -690,10 +693,64 @@ class LF_Systems
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Drops the run-time offs (tests; world end goes through ResetStatics).
-	static void ClearRuntimeOff()
+	//! Server, at game start (LF_GameModeRoleplay.OnGameStart, #1047): a system whose catalog entry
+	//! lists places (m_aPlaces, LF_Places kinds) and finds none of them on this map switches itself
+	//! off for this world, with one log line ("no JailCell placed on this map: off"). Placed
+	//! components register in OnPostInit, before the game mode starts. A pack for another map places
+	//! the components and the system stays on with no script change.
+	//! \return How many systems this call switched off.
+	static int CheckPlaces()
 	{
-		s_mRuntimeOff = new map<string, string>();
+		if (!Replication.IsServer())
+			return 0;
+
+		EnsureResolved();
+		if (!s_Catalog || !s_Catalog.m_aSystems)
+			return 0;
+
+		int switched;
+		array<IEntity> found = {};
+		foreach (LF_SystemDef def : s_Catalog.m_aSystems)
+		{
+			if (!def || !def.m_aPlaces || def.m_aPlaces.IsEmpty() || s_mRuntimeOff.Contains(def.m_sId))
+				continue;
+
+			bool placed;
+			string kinds;
+			foreach (string kind : def.m_aPlaces)
+			{
+				found.Clear();
+				if (LF_Places.FindAll(kind, found) > 0)
+				{
+					placed = true;
+					break;
+				}
+
+				if (!kinds.IsEmpty())
+					kinds += " or ";
+				kinds += kind;
+			}
+
+			if (placed)
+				continue;
+
+			if (SwitchOff(def.m_sId, string.Format("no %1 placed on this map", kinds)))
+				switched++;
+		}
+
+		return switched;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the run-time offs (tests; world end goes through ResetStatics).
+	//! \param[in] id One system's run-time off; empty drops them all.
+	static void ClearRuntimeOff(string id = string.Empty)
+	{
+		if (id.IsEmpty() || !s_mRuntimeOff)
+			s_mRuntimeOff = new map<string, string>();
+		else
+			s_mRuntimeOff.Remove(id);
+
 		PublishIfLive();
 	}
 

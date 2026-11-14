@@ -339,6 +339,12 @@ class LF_WantedBoard
 //! paper sound and asks the server, which answers with the posters this reader may see.
 class LF_WantedBoardReadAction : ScriptedUserAction
 {
+	//! The Police system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Police");
+	}
+
 	[Attribute("SOUND_PICK_UP", UIWidgets.EditBox, "Sound event on the board's SCR_SoundDataComponent played when the reader takes a poster in hand")]
 	protected string m_sReadSound;
 
@@ -364,6 +370,9 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_WantedBoardReadAction"))
+			return;
+
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 

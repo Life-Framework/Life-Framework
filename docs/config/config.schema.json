@@ -21,6 +21,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "prefab": {
                 "type": "string",
                 "default": ""
@@ -68,6 +80,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "licence": {
                 "type": "string",
                 "default": ""
@@ -107,6 +131,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "wantedAdd": {
                 "type": "integer",
                 "default": 1,
@@ -662,6 +698,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "prefab": {
                 "type": "string",
                 "default": ""

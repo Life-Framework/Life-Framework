@@ -1,5 +1,11 @@
 class LF_OpenPoliceMenuAction : ScriptedUserAction
 {
+	//! The Police system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Police");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -25,6 +31,9 @@ class LF_OpenPoliceMenuAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_OpenPoliceMenuAction"))
+			return;
+
 		LF_PoliceMenu menu = LF_PoliceMenu.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.PoliceMenu));
 		if (menu)
 		{

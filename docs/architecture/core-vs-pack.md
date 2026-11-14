@@ -62,7 +62,11 @@ Chernarus or a custom map works by placing components, with no script change.
 - An id defaults to the entity name only so placed layers keep their saved
   keys; nothing looks an entity up by that name.
 - A place that is not on the map is a null lookup: the system logs and that
-  one feature stays off.
+  one feature stays off. A system that cannot work without a place lists its
+  kinds in its catalog entry (`m_aPlaces`, `LF_SystemCatalog.conf`); at game
+  start it switches off with one line when none is placed (#1047). The jail
+  cell registers as `JailCell`. `Worlds/CoreOnEveron` boots the core alone on
+  vanilla Everon to prove it (`tools\cli test --tier fast --world ...`).
 - Tests keep their annex fixtures and may look them up by name.
 
 
@@ -118,3 +122,13 @@ is `tools\cli asset`, which writes the `.meta` files of what it imports (a
 headless Workbench cannot register a new `.fbx`) with GUIDs unique across both
 addons, and imports a pack asset with `--addon LF_Everon1989`
 ([`asset-pipeline/README.md`](../asset-pipeline/README.md) "Target addon").
+
+## Starting a pack
+
+`tools\cli pack new <Name>` scaffolds `addons/LF_<Name>/` (#968): the `.gproj` on the base
+game and the core, the folder tree, an empty string table with its language confs, a mission
+header that names the manifest and lists one empty overlay, the manifest holding the running
+core's range, and a README of what to fill in. The `.meta` GUIDs are random and checked
+against every GUID in `addons/`, so none repeats. It refuses a name the core already uses (`Test`:
+`LF_Test` is the test base class). `validate-pack-manifest` and `validate-addon-boundary` hold every
+`LF_*` addon, so a fresh pack passes with no edits (`pack-new-selftest.mjs`).

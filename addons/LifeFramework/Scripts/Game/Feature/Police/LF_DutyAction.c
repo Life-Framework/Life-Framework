@@ -7,6 +7,12 @@
 //! client, the punch-clock click for everyone nearby, then a short toast.
 class LF_DutyAction : ScriptedUserAction
 {
+	//! The Police system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Police");
+	}
+
 	[Attribute("SOUND_RANGECP_STARTBUTTON", UIWidgets.EditBox, "Sound event on the desk's SCR_SoundDataComponent played when a card is punched")]
 	protected string m_sPunchSound;
 
@@ -48,6 +54,9 @@ class LF_DutyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_DutyAction"))
+			return;
+
 		// The acting client reaches for the clock; the server does the work.
 		if (pUserEntity && pUserEntity == LF_Utils.GetLocalCharacter())
 			PlayGesture(pUserEntity);

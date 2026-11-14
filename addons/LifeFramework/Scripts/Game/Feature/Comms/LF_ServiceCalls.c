@@ -320,6 +320,9 @@ class LF_ServiceCalls
 	//! \return The route; null off the server.
 	static LF_ServiceRoute Place(string callerUid, string serviceKey, string place, string summary, vector position, array<ref LF_ServiceCandidate> players = null)
 	{
+		if (LF_Systems.Refuses("Comms", "service call"))
+			return null;
+
 		if (!Replication.IsServer())
 			return null;
 
