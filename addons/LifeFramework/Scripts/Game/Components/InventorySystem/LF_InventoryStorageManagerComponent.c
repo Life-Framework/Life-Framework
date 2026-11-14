@@ -29,7 +29,7 @@ modded class SCR_InventoryStorageManagerComponent
 			return;
 		}
 
-		ResourceName itemPrefab = pItem.GetPrefabData().GetPrefabName();
+		ResourceName itemPrefab = LF_Utils.GetPrefabName(pItem);
 		int unitValue = LF_TraderManagerComponent.GetUnitValue(trader.m_aTradableItems, itemPrefab);
 		if (unitValue <= 0)
 		{
