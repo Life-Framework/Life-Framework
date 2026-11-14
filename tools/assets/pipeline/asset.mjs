@@ -519,9 +519,9 @@ export async function main(flags, { workbench } = {}) {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  asset runs only in a worktree"); return 1; }
     if (sub === "new") return cmdNew(root, rest, workbench);
-    const slug = rest.find((f) => !f.startsWith("--") && f !== flag(rest, "--from") && f !== flag(rest, "--only"));
+    const slug = rest.find((f) => !f.startsWith("--") && f !== flag(rest, "--from") && f !== flag(rest, "--only") && f !== flag(rest, "--to"));
     if (!slug) { console.log("usage: tools\\cli asset run <slug> [--from <stage>] [--only <stage>] [--force] [--pick]"); return 2; }
-    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench, flags: rest });
+    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), pick: rest.includes("--pick"), workbench, flags: rest, to: flag(rest, "--to") });
   }
   console.log(`usage: tools\\cli asset new <slug> --kind ${Object.keys(KINDS).join("|")} --prompt "..."
        tools\\cli asset new <slug> --kind clothing --base "{GUID}Prefabs/...et" --slot Jacket [--route a|b|c]     a garment (docs/asset-pipeline/clothing.md)

@@ -6,7 +6,7 @@ Tools core 2026-08). The second half is the pipeline and what it proved.
 
 ```
 tools\cli asset new <slug> --kind clothing --base "{GUID}Prefabs/Characters/...et" --slot Jacket [--route a|b|c]
-tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--previews] [--no-shots] [--reuse-shots]
+tools\cli asset run <slug> [--from <stage>] [--only <stage>] [--to <stage>] [--previews] [--no-shots] [--reuse-shots]
 ```
 
 Stages: `spec`, `vanilla`, `textures`, `fit`, `import`, `prefab`, `verify`. Like the prop kinds,
