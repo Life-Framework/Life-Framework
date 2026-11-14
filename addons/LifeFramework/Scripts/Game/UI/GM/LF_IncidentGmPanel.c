@@ -207,6 +207,8 @@ class LF_IncidentGmView
 			kindKey = "#LF-IncidentGm_Kind_aim";
 		else if (kind == "nlr")
 			kindKey = "#LF-IncidentGm_Kind_nlr";
+		else if (kind == "logout")
+			kindKey = "#LF-IncidentGm_Kind_logout";
 
 		string kindText = WidgetManager.Translate(kindKey);
 		string text;
@@ -219,6 +221,8 @@ class LF_IncidentGmView
 			text = text + " " + p[7];
 		else if (kind == "admin")
 			text = text + " " + WidgetManager.Translate(p[7]);
+		else if (kind == "logout")
+			text = text + " " + p[8];
 
 		return text;
 	}

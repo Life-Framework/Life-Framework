@@ -4,7 +4,7 @@
 //! LF_Downed.Finish, the real death (murder hook, hospital wake). The downed player can also give
 //! up once the configured delay has passed. The client reads the time left through a replicated,
 //! throttled copy (SCR_ChimeraCharacter.LF_GetBleedSecondsLeft); nothing replicates per frame.
-//! A character that disconnects while downed dies the same way (config).
+//! A character that disconnects while downed dies the same way (owner config disconnect.downedDies, #691).
 //------------------------------------------------------------------------------------------------
 class LF_BleedOut
 {
@@ -196,11 +196,11 @@ class LF_BleedOut
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a player disconnects. While downed that counts as death (config), so the murder
+	//! Server: a player disconnects. While downed that counts as death (LF_DisconnectRules), so the murder
 	//! and the hospital wake do not depend on the body the base game deletes next.
 	static void OnPlayerDisconnected(int playerId)
 	{
-		if (!Replication.IsServer() || !LF_MedicConfig.Get().m_bDisconnectWhileDownedKills)
+		if (!Replication.IsServer() || !LF_DisconnectRules.DownedDies())
 			return;
 
 		PlayerManager playerManager = GetGame().GetPlayerManager();

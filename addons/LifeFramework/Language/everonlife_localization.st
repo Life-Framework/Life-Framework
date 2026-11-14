@@ -8363,6 +8363,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You moved. Look at the spot again and retry."
      Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
     }
+    CustomStringTableItem "{46261105E82813B6}" {
+     Id "LF-IncidentGm_Kind_logout"
+     Target_en_us "Logout in custody"
+     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
+    }
     CustomStringTableItem "{F06569B011E7028F}" {
      Id "LF-Police_Shirt_Name"
      Target_en_us "Officer's shirt"

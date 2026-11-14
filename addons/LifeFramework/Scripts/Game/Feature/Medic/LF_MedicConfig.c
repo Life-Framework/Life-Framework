@@ -25,9 +25,6 @@ class LF_MedicConfig
 	[Attribute("30", UIWidgets.Auto, "Seconds a player must be downed before they can give up", params: "0 3600")]
 	float m_fGiveUpDelaySeconds;
 
-	[Attribute("1", UIWidgets.CheckBox, "Disconnecting while downed counts as death. Off: the body is left to the base game disconnect handling")]
-	bool m_bDisconnectWhileDownedKills;
-
 	[Attribute("1", UIWidgets.CheckBox, "Anyone can add bleed-out time to a downed player with a bandage, tourniquet or saline bag (#257). Off: only a player whose job is medic")]
 	bool m_bFirstAidAnyone;
 
@@ -130,7 +127,6 @@ class LF_MedicConfig
 		config.m_fDownedHealthScaled = 0.1;
 		config.m_fBleedOutSeconds = 180;
 		config.m_fGiveUpDelaySeconds = 30;
-		config.m_bDisconnectWhileDownedKills = true;
 		config.m_bFirstAidAnyone = true;
 		config.m_fBandageSeconds = 30;
 		config.m_fTourniquetSeconds = 45;
