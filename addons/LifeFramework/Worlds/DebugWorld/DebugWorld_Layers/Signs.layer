@@ -249,7 +249,7 @@ GenericEntity Sign_MarketChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_
    m_sSignId "traders"
   }
  }
- coords 190.5 0 246.2
+ coords 194.999 0.006 235.6
 }
 GenericEntity Sign_PubHanging : "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_02_Pub_V1.et" {
  coords 116.5 2.8 270.6

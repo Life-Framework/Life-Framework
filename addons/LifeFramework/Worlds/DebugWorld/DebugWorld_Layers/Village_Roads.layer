@@ -335,32 +335,32 @@ SplineShapeEntity Village_VehicleLot {
  }
 }
 SplineShapeEntity Village_Market {
- coords 186 0 240.5
+ coords 192 0 236.5
  Points {
   ShapePoint "{2D23A81A71D8F0EB}" {
    Position 0 0 0
   }
   ShapePoint "{D18B9E9B17BADD1A}" {
-   Position 35 0 0
+   Position 26 0 0
   }
  }
  {
-  RoadGeneratorEntity : "{8E83BBD5CEC42A11}Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et" {
+  RoadGeneratorEntity : "{24948AB10942D327}Prefabs/WEGenerators/Roads/Cobblestone/RG_Road_Cobblestone_01.et" {
    coords 0 0 0
    AdjustHeightMap 0
    {
     RoadEntity {
-     ID "523EAA80CAA6C6B5"
+     ID "56F07CB2CD0F496C"
      SplinePoints {
        ShapePoint "{F01293228CAC38C0}" {
         Position 0 0 0
        }
        ShapePoint "{ED805524BEB619E8}" {
-        Position 35 0 0
+        Position 26 0 0
        }
      }
      IsClosedSpline 0
-     Width 7
+     Width 12
     }
    }
   }

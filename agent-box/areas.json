@@ -5,6 +5,7 @@
     { "n": 18, "name": "pub", "front": 0, "x": 118, "y": 0, "z": 283, "radius": 10, "note": "the Hostinec pub from its front lawn; the terrace radio stands by the door", "wideCands": [{ "az": 0, "dist": 11, "up": 2.6 }, { "az": 25, "dist": 11, "up": 2.6 }, { "az": -25, "dist": 11, "up": 2.6 }] },
     { "n": 2, "name": "bank", "front": 180, "x": 188, "y": 0, "z": 260, "radius": 18 },
     { "n": 3, "name": "general-store", "front": 0, "x": 182, "y": 0, "z": 246, "radius": 20 },
+    { "n": 3, "name": "market", "front": 0, "x": 204, "y": 0, "z": 239, "radius": 18, "note": "the market square on the lane south of the main street: the trader stalls under the trees" },
     { "n": 4, "name": "car-lot", "front": 180, "x": 225, "y": 0, "z": 262, "radius": 28 },
     { "n": 5, "name": "fuel-station", "front": 0, "x": 266, "y": 0, "z": 240, "radius": 13, "note": "kiosk, canopy and pumps; the ambulance bay is in front, so the wide comes in from the south-west", "wideCands": [{ "az": -60, "dist": 9, "up": 2.5 }, { "az": -55, "dist": 10, "up": 3 }, { "az": -65, "dist": 9, "up": 2.2 }] },
     { "n": 6, "name": "police-station", "front": 0, "x": 233, "y": 0, "z": 234, "radius": 24 },
