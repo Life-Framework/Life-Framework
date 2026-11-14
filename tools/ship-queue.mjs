@@ -170,11 +170,15 @@ function runLogged(log, exe, args, { cwd, budgetMs = JOB_BUDGET_MS, env = proces
 
 const changedFiles = (wtPath, base) => wt.git(wtPath, ["diff", "--name-only", `${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
 
-// The gate a branch gets: `ci --remote` when addons/ changed (or --full-gate), else `validate --all` (cheap, here).
+// The gate a branch gets: `validate --all` (cheap, here) when nothing under addons/ changed; else `ci --remote`,
+// tiered unless --full-gate: ci classifies the merged diff again and runs the T1 data-only gate when it holds
+// (tools/lib/gate-tier.mjs, docs/worktrees.md "Gate tiers").
 // pin: the machine flags `wt ship` was given (--remote <name> / --machine <name> / --local), in place
 // of the bare --remote. Agents do not pin; a human or the lead can.
 export function gateCommand(files, fullGate = false, pin = []) {
-  return fullGate || files.some((f) => f.startsWith("addons/")) ? ["ci", ...(pin.length ? pin : ["--remote"])] : ["validate", "--all"];
+  const where = pin.length ? pin : ["--remote"];
+  if (fullGate) return ["ci", ...where];
+  return files.some((f) => f.startsWith("addons/")) ? ["ci", "--tiered", ...where] : ["validate", "--all"];
 }
 
 async function runJob(root, entry) {

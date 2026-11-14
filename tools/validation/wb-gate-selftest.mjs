@@ -76,8 +76,9 @@ check("a pass is never an environment failure", earlyDeath({ status: 0, seconds:
 check("env code is distinct from 0, 1 and the remote fallback code 3", ![0, 1, 3].includes(ENV_SHORT_CODE));
 
 // 9. wt ship's pin reaches the ship queue's gate; no pin keeps `ci --remote`
-check("no pin: ci --remote", JSON.stringify(gateCommand(["addons/x.c"], false)) === JSON.stringify(["ci", "--remote"]));
-check("pin replaces the bare --remote", JSON.stringify(gateCommand(["addons/x.c"], false, ["--remote", "lf-cloud"])) === JSON.stringify(["ci", "--remote", "lf-cloud"]));
+check("no pin: ci --tiered --remote", JSON.stringify(gateCommand(["addons/x.c"], false)) === JSON.stringify(["ci", "--tiered", "--remote"]));
+check("--full-gate: plain ci --remote", JSON.stringify(gateCommand(["addons/x.c"], true)) === JSON.stringify(["ci", "--remote"]));
+check("pin replaces the bare --remote", JSON.stringify(gateCommand(["addons/x.c"], false, ["--remote", "lf-cloud"])) === JSON.stringify(["ci", "--tiered", "--remote", "lf-cloud"]));
 check("no addons change ignores the pin", JSON.stringify(gateCommand(["tools/x.mjs"], false, ["--machine", "lf-cloud"])) === JSON.stringify(["validate", "--all"]));
 
 check("parse box state", JSON.stringify(parseWbState("x\nlf-wb: 1 6123\n", undefined)) === JSON.stringify({ wbAlive: 1, freeMb: 6123, wbLimit: 1 }));
