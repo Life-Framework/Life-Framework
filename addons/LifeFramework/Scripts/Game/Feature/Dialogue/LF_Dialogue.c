@@ -61,6 +61,12 @@ class LF_Dialogue
 		int playerId = controller.GetPlayerId();
 		IEntity player = controller.GetControlledEntity();
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
+		if (LF_NpcStun.BlocksTalk(npc))
+		{
+			LF_Debug.Info(FEATURE, string.Format("start refused for player %1: the NPC is stunned", playerId));
+			return false;
+		}
+
 		if (!config || !InReach(player, npc))
 		{
 			LF_Debug.Warn(FEATURE, string.Format("start refused for player %1: no playable dialogue on that NPC, or not within %2 m", playerId, REACH));
@@ -93,9 +99,9 @@ class LF_Dialogue
 		IEntity player = controller.GetControlledEntity();
 		IEntity npc = GetGame().GetWorld().FindEntityByID(session.m_NpcId);
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
-		if (!config || !InReach(player, npc))
+		if (!config || !InReach(player, npc) || LF_NpcStun.BlocksTalk(npc))
 		{
-			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2: the NPC is gone or out of reach; conversation ended", index, playerId));
+			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2: the NPC is gone, out of reach or stunned; conversation ended", index, playerId));
 			End(controller, true);
 			return false;
 		}

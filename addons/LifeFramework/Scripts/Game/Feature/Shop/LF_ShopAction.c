@@ -64,7 +64,7 @@ class LF_ShopAction : ScriptedUserAction
 			return false;
 
 		IEntity owner = GetOwner();
-		if (!owner)
+		if (!owner || LF_NpcStun.BlocksTalk(owner))
 			return false;
 
 		return vector.Distance(user.GetOrigin(), owner.GetOrigin()) <= LF_ShopPriceList.SHOW_DISTANCE;

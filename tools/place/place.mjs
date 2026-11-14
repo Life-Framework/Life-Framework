@@ -603,6 +603,9 @@ export function onGround({ samples, prop }) {
   if (!ys.length) throw new PlaceError("no ground found there");
   const spread = Math.max(...ys) - Math.min(...ys);
   if (spread > TOL.groundFlat) throw new PlaceError(`the ground under the footprint is not level (${r2(Math.min(...ys))} to ${r2(Math.max(...ys))} m): a slope, a kerb or something standing there`);
+  // A tree or bush is authored with its pivot at ground level and its roots below it (a rowan's mesh starts
+  // 0.39 m under the pivot): standing its mesh base on the ground floats the trunk (#924).
+  if (isKind(prop, "vegetation")) return { y: samples[0].y, notes: [`ground ${r3(samples[0].y)} m (${r2(spread)} m across the footprint); vegetation: the pivot stands on it, the roots go below`] };
   return { y: samples[0].y - prop.bounds.min[1] * prop.scale, notes: [`ground ${r3(samples[0].y)} m (${r2(spread)} m across the footprint)`] };
 }
 
@@ -806,7 +809,9 @@ export function judge(targets, records, outText, { allow = [], areas = [], roads
           else if (new RegExp(`\\b${label}\\b`).test(p.text)) problems.push(`${r.name}: ${p.text}`);
         }
       }
-      if (!t.hung && !m.point && Math.abs(m.gap) > TOL.rest && !problems.some((p) => /floating|sunk/.test(p))) problems.push(`its base is ${r2(m.gap)} m ${m.gap > 0 ? "above" : "below"} ${m.on}`);
+      // A tree's roots go below its pivot (onGround): judge it by its pivot, which the audit's own sunk rule covers.
+      const rest = isKind(t, "vegetation") ? Math.max(m.gap, m.pgap ?? m.gap) : m.gap;
+      if (!t.hung && !m.point && Math.abs(rest) > TOL.rest && !problems.some((p) => /floating|sunk/.test(p))) problems.push(`its base is ${r2(rest)} m ${rest > 0 ? "above" : "below"} ${m.on}`);
       if (t.hung && !m.backed) problems.push("nothing is behind it within 0.3 m: it hangs in the air");
       if (!m.point && !m.character) {
         const want = rot(t.yaw, 0, 1);
@@ -1092,7 +1097,7 @@ function groundPlans(ctx, wants, flags) {
     w.pivot = [w.at[0] - mid[0], w.at[1] - mid[1]];
     const pts = [w.at, ...footprintCorners(w.item.bounds, w.item.scale, w.yaw).map((p) => [w.pivot[0] + mid[0] + (p[0] - mid[0]) * 0.9, w.pivot[1] + mid[1] + (p[1] - mid[1]) * 0.9])];
     const y0 = hintOf(w.at);
-    early.push({ x: w.pivot[0], y: y0 - w.item.bounds.min[1] * w.item.scale, z: w.pivot[1], yaw: w.yaw, item: w.item });
+    early.push({ x: w.pivot[0], y: isKind(w.item, "vegetation") ? y0 : y0 - w.item.bounds.min[1] * w.item.scale, z: w.pivot[1], yaw: w.yaw, item: w.item });
     pts.forEach((p, k) => lines.push(rayLine(`g${i}_${k}`, [p[0], y0 + 3, p[1]], [p[0], y0 - 8, p[1]], excludeOf(w.item))));
   });
   // Roads, doors and neighbours do not depend on the exact height: refuse those before booting the server.

@@ -8151,236 +8151,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
      Comment "Written on form R-89 when the server still has no platform identity for the player after waiting for it."
     }
-    CustomStringTableItem "{57F981BB07357D29}" {
-     Id "LF-FuelClerk_Name"
-     Target_en_us "Fuel attendant"
-     Comment "Speaker name of the fuel station attendant in a conversation."
-    }
-    CustomStringTableItem "{5BF4FCC1A15400BB}" {
-     Id "LF-FuelClerk_Talk"
-     Target_en_us "Talk to the attendant"
-     Comment "Action on the fuel station attendant: opens the conversation."
-    }
-    CustomStringTableItem "{94A1952EED77A6E8}" {
-     Id "LF-RobHold_ClerkBeg"
-     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
-     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
-    }
-    CustomStringTableItem "{0F045151110132ED}" {
-     Id "LF-RobHold_ClerkStammer"
-     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
-     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
-    }
-    CustomStringTableItem "{AB28C43BB756D769}" {
-     Id "LF-RobHold_ClerkPaid"
-     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
-     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
-    }
-    CustomStringTableItem "{2040F7D3825AA900}" {
-     Id "LF-RobHold_ClerkPolice"
-     Target_en_us "Police! In here! He has a gun! Help me!"
-     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
-    }
-    CustomStringTableItem "{EFA416C7403C71CF}" {
-     Id "LF-RobHold_ClerkGone"
-     Target_en_us "He is gone? Oh God. Somebody call the police!"
-     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
-    }
-    CustomStringTableItem "{FE6717CB3E1F9AF6}" {
-     Id "LF-RobHold_Title"
-     Target_en_us "ROBBERY"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Header of the hold panel."
-    }
-    CustomStringTableItem "{A117438990F577D9}" {
-     Id "LF-RobHold_Timer"
-     Target_en_us "Keep the clerk at gunpoint: %1"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the time left, as 0:20."
-    }
-    CustomStringTableItem "{653858F0C99AEAC1}" {
-     Id "LF-RobHold_Range"
-     Target_en_us "Stay within %1 m of the till. You are %2 m away."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the radius, %2 the distance."
-    }
-    CustomStringTableItem "{0846C4E67EC47B16}" {
-     Id "LF-RobHold_Edge"
-     Target_en_us "Too far! Back to the counter: %2 m of %1 m"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Shown near the edge of the radius. %1 is the radius, %2 the distance."
-    }
-    CustomStringTableItem "{09906F4013CF0802}" {
-     Id "LF-RobHold_Rules"
-     Target_en_us "It fails if you leave, put your weapon away, go down, or the police arrive."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
-    }
-    CustomStringTableItem "{917C7F209A2E5AE2}" {
-     Id "LF-RobHold_Success"
-     Target_en_us "The till is open. You took the cash."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
-    }
-    CustomStringTableItem "{8851882B617E8962}" {
-     Id "LF-RobHold_Fail_Left"
-     Target_en_us "Robbery failed: you left the counter."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
-    }
-    CustomStringTableItem "{985FFEE6750F2BA2}" {
-     Id "LF-RobHold_Fail_Weapon"
-     Target_en_us "Robbery failed: you put your weapon away."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
-    }
-    CustomStringTableItem "{D6A9DD47C75E011F}" {
-     Id "LF-RobHold_Fail_Police"
-     Target_en_us "Robbery failed: the police arrived."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
-    }
-    CustomStringTableItem "{C823A75E1A8C79F8}" {
-     Id "LF-RobHold_Fail_Downed"
-     Target_en_us "Robbery failed: you went down."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
-    }
-    CustomStringTableItem "{90B712FFFF5477C3}" {
-     Id "LF-RobHold_Fail_Till"
-     Target_en_us "Robbery failed: the till could not pay out."
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
-    }
-    CustomStringTableItem "{008CB39C11D31B0D}" {
-     Id "LF-RobHold_Refused_Cooldown"
-     Target_en_us "(The till was emptied a short while ago. Come back later.)"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
-    }
-    CustomStringTableItem "{0078A75E091ED0E8}" {
-     Id "LF-RobHold_Refused_Police"
-     Target_en_us "(Not enough police on duty for a robbery.)"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
-    }
-    CustomStringTableItem "{7A61B157428F9D30}" {
-     Id "LF-RobHold_Refused_Busy"
-     Target_en_us "(This till is already being robbed.)"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
-    }
-    CustomStringTableItem "{66AD4C2125D11C00}" {
-     Id "LF-RobHold_Refused_NoTill"
-     Target_en_us "(There is no till here to rob.)"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
-    }
-    CustomStringTableItem "{670B9380BE43A60E}" {
-     Id "LF-RobHold_Refused_Rate"
-     Target_en_us "(Too soon. Wait a moment.)"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
-    }
-    CustomStringTableItem "{2014B40942A90812}" {
-     Id "LF-RobHold_Refused_Civilian"
-     Target_en_us "(Only civilians can rob.)"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
-    }
-    CustomStringTableItem "{34CD07CABFFB2080}" {
-     Id "LF-RobHold_Refused_Weapon"
-     Target_en_us "(You need a weapon drawn.)"
-     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
-    }
-    CustomStringTableItem "{7FFE44F7F81E5976}" {
-     Id "LF-Dialogue_FuelClerk_Greet"
-     Target_en_us "Hello. Pump two sticks, so use pump one. What can I do for you?"
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{D472603DD9705158}" {
-     Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{ADE95A91477ED67E}" {
-     Id "LF-Dialogue_FuelClerk_ChatQuiet"
-     Target_en_us "Quiet as a church. A tractor at nine, the post van at noon, and now you. The radio says rain by Thursday."
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{F89E614A9ED832B3}" {
-     Id "LF-Dialogue_FuelClerk_ChatNews"
-     Target_en_us "Army trucks on the coast road again, all night long. Nobody tells us anything. My mother says it is like sixty eight."
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{0FC2714512F080F2}" {
-     Id "LF-Dialogue_FuelClerk_RobPanic"
-     Target_en_us "W-what? No, no, no. Please, put that away. I have a little girl at home. Please do not shoot me!"
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{5DE47529DF3B5A69}" {
-     Id "LF-Dialogue_FuelClerk_RobOpen"
-     Target_en_us "Yes! Yes, I am opening it. The key, where is the... here, here it is. Just do not shoot, please, I am doing it!"
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{27029AD6A4C46ABD}" {
-     Id "LF-Dialogue_FuelClerk_RobEmpty"
-     Target_en_us "It is empty! I swear on my mother, the boss took the cash to the bank. Look, look, there is nothing!"
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{3D26F89BA596C1B8}" {
-     Id "LF-Dialogue_FuelClerk_RobOff"
-     Target_en_us "Oh God. Oh God, thank you. Just go. Please, just go."
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{EB24FB16C4F34B2F}" {
-     Id "LF-Dialogue_FuelClerk_Beg"
-     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{7A946164FACF3403}" {
-     Id "LF-Dialogue_FuelClerk_Stammer"
-     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{74D57E4F126FE30F}" {
-     Id "LF-Dialogue_FuelClerk_Paid"
-     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{E769B1D12183A675}" {
-     Id "LF-Dialogue_FuelClerk_Police"
-     Target_en_us "Police! In here! He has a gun! Help me!"
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{CC61CA49E7915664}" {
-     Id "LF-Dialogue_FuelClerk_Gone"
-     Target_en_us "He is gone? Oh God. Somebody call the police!"
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{0896B3E1E8535C8F}" {
-     Id "LF-Dialogue_FuelClerk_Bye"
-     Target_en_us "Drive safe. Mind the potholes on the coast road."
-     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
-    }
-    CustomStringTableItem "{169564188FA741B2}" {
-     Id "LF-Dialogue_FuelClerk_SayWhere"
-     Target_en_us "Hey, where are we?"
-     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
-    }
-    CustomStringTableItem "{DCA9D412FEC4B04C}" {
-     Id "LF-Dialogue_FuelClerk_SayChat"
-     Target_en_us "Quiet day?"
-     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
-    }
-    CustomStringTableItem "{E0C9B717E8A63B4D}" {
-     Id "LF-Dialogue_FuelClerk_SayNews"
-     Target_en_us "Anything happening in town?"
-     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
-    }
-    CustomStringTableItem "{78F76EB9DCC3A7F0}" {
-     Id "LF-Dialogue_FuelClerk_SayRob"
-     Target_en_us "This is a robbery. Hands where I can see them!"
-     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
-    }
-    CustomStringTableItem "{C3A3478410D6A6C7}" {
-     Id "LF-Dialogue_FuelClerk_SayDemand"
-     Target_en_us "Open the till. Now, or you die behind that counter."
-     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
-    }
-    CustomStringTableItem "{47B1E52CE1513EFD}" {
-     Id "LF-Dialogue_FuelClerk_SayOff"
-     Target_en_us "Forget it. You never saw me."
-     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
-    }
-    CustomStringTableItem "{30BA5B858FBF23FC}" {
-     Id "LF-Dialogue_FuelClerk_SayBye"
-     Target_en_us "Goodbye."
-     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
-    }
     CustomStringTableItem "{C3D98F355E87E01F}" {
      Id "LF-TestOrgSign_Title"
      Target_en_us "Test organisation"
@@ -8620,6 +8390,241 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Parcel_DroppedNearby"
      Target_en_us "You dropped the parcel. It is on the ground nearby, marked with a glow."
      Comment "Toast when a carried courier parcel lands on the ground (#920)."
+    }
+    CustomStringTableItem "{57F981BB07357D29}" {
+     Id "LF-FuelClerk_Name"
+     Target_en_us "Fuel attendant"
+     Comment "Speaker name of the fuel station attendant in a conversation."
+    }
+    CustomStringTableItem "{5BF4FCC1A15400BB}" {
+     Id "LF-FuelClerk_Talk"
+     Target_en_us "Talk to the attendant"
+     Comment "Action on the fuel station attendant: opens the conversation."
+    }
+    CustomStringTableItem "{94A1952EED77A6E8}" {
+     Id "LF-RobHold_ClerkBeg"
+     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{0F045151110132ED}" {
+     Id "LF-RobHold_ClerkStammer"
+     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{AB28C43BB756D769}" {
+     Id "LF-RobHold_ClerkPaid"
+     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{2040F7D3825AA900}" {
+     Id "LF-RobHold_ClerkPolice"
+     Target_en_us "Police! In here! He has a gun! Help me!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{EFA416C7403C71CF}" {
+     Id "LF-RobHold_ClerkGone"
+     Target_en_us "He is gone? Oh God. Somebody call the police!"
+     Comment "Caption of a fuel attendant line spoken during a robbery (voiced: tools/assets/dialogue/fuel_clerk)."
+    }
+    CustomStringTableItem "{FE6717CB3E1F9AF6}" {
+     Id "LF-RobHold_Title"
+     Target_en_us "ROBBERY"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Header of the hold panel."
+    }
+    CustomStringTableItem "{A117438990F577D9}" {
+     Id "LF-RobHold_Timer"
+     Target_en_us "Keep the clerk at gunpoint: %1"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the time left, as 0:20."
+    }
+    CustomStringTableItem "{653858F0C99AEAC1}" {
+     Id "LF-RobHold_Range"
+     Target_en_us "Stay within %1 m of the till. You are %2 m away."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). %1 is the radius, %2 the distance."
+    }
+    CustomStringTableItem "{0846C4E67EC47B16}" {
+     Id "LF-RobHold_Edge"
+     Target_en_us "Too far! Back to the counter: %2 m of %1 m"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Shown near the edge of the radius. %1 is the radius, %2 the distance."
+    }
+    CustomStringTableItem "{09906F4013CF0802}" {
+     Id "LF-RobHold_Rules"
+     Target_en_us "It fails if you leave, put your weapon away, go down, or the police arrive."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{917C7F209A2E5AE2}" {
+     Id "LF-RobHold_Success"
+     Target_en_us "The till is open. You took the cash."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{8851882B617E8962}" {
+     Id "LF-RobHold_Fail_Left"
+     Target_en_us "Robbery failed: you left the counter."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{985FFEE6750F2BA2}" {
+     Id "LF-RobHold_Fail_Weapon"
+     Target_en_us "Robbery failed: you put your weapon away."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{D6A9DD47C75E011F}" {
+     Id "LF-RobHold_Fail_Police"
+     Target_en_us "Robbery failed: the police arrived."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{C823A75E1A8C79F8}" {
+     Id "LF-RobHold_Fail_Downed"
+     Target_en_us "Robbery failed: you went down."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{90B712FFFF5477C3}" {
+     Id "LF-RobHold_Fail_Till"
+     Target_en_us "Robbery failed: the till could not pay out."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
+    CustomStringTableItem "{008CB39C11D31B0D}" {
+     Id "LF-RobHold_Refused_Cooldown"
+     Target_en_us "(The till was emptied a short while ago. Come back later.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{0078A75E091ED0E8}" {
+     Id "LF-RobHold_Refused_Police"
+     Target_en_us "(Not enough police on duty for a robbery.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{7A61B157428F9D30}" {
+     Id "LF-RobHold_Refused_Busy"
+     Target_en_us "(This till is already being robbed.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{66AD4C2125D11C00}" {
+     Id "LF-RobHold_Refused_NoTill"
+     Target_en_us "(There is no till here to rob.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{670B9380BE43A60E}" {
+     Id "LF-RobHold_Refused_Rate"
+     Target_en_us "(Too soon. Wait a moment.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{2014B40942A90812}" {
+     Id "LF-RobHold_Refused_Civilian"
+     Target_en_us "(Only civilians can rob.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{34CD07CABFFB2080}" {
+     Id "LF-RobHold_Refused_Weapon"
+     Target_en_us "(You need a weapon drawn.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{7FFE44F7F81E5976}" {
+     Id "LF-Dialogue_FuelClerk_Greet"
+     Target_en_us "Hello. Pump two sticks, so use pump one. What can I do for you?"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{D472603DD9705158}" {
+     Id "LF-Dialogue_FuelClerk_AboutWhere"
+     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{ADE95A91477ED67E}" {
+     Id "LF-Dialogue_FuelClerk_ChatQuiet"
+     Target_en_us "Quiet as a church. A tractor at nine, the post van at noon, and now you. The radio says rain by Thursday."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{F89E614A9ED832B3}" {
+     Id "LF-Dialogue_FuelClerk_ChatNews"
+     Target_en_us "Army trucks on the coast road again, all night long. Nobody tells us anything. My mother says it is like sixty eight."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{0FC2714512F080F2}" {
+     Id "LF-Dialogue_FuelClerk_RobPanic"
+     Target_en_us "W-what? No, no, no. Please, put that away. I have a little girl at home. Please do not shoot me!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{5DE47529DF3B5A69}" {
+     Id "LF-Dialogue_FuelClerk_RobOpen"
+     Target_en_us "Yes! Yes, I am opening it. The key, where is the... here, here it is. Just do not shoot, please, I am doing it!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{27029AD6A4C46ABD}" {
+     Id "LF-Dialogue_FuelClerk_RobEmpty"
+     Target_en_us "It is empty! I swear on my mother, the boss took the cash to the bank. Look, look, there is nothing!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{3D26F89BA596C1B8}" {
+     Id "LF-Dialogue_FuelClerk_RobOff"
+     Target_en_us "Oh God. Oh God, thank you. Just go. Please, just go."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{EB24FB16C4F34B2F}" {
+     Id "LF-Dialogue_FuelClerk_Beg"
+     Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{7A946164FACF3403}" {
+     Id "LF-Dialogue_FuelClerk_Stammer"
+     Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{74D57E4F126FE30F}" {
+     Id "LF-Dialogue_FuelClerk_Paid"
+     Target_en_us "There! That is all of it, all of it! Take it and go, please, just go!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{E769B1D12183A675}" {
+     Id "LF-Dialogue_FuelClerk_Police"
+     Target_en_us "Police! In here! He has a gun! Help me!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{CC61CA49E7915664}" {
+     Id "LF-Dialogue_FuelClerk_Gone"
+     Target_en_us "He is gone? Oh God. Somebody call the police!"
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{0896B3E1E8535C8F}" {
+     Id "LF-Dialogue_FuelClerk_Bye"
+     Target_en_us "Drive safe. Mind the potholes on the coast road."
+     Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{169564188FA741B2}" {
+     Id "LF-Dialogue_FuelClerk_SayWhere"
+     Target_en_us "Hey, where are we?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{DCA9D412FEC4B04C}" {
+     Id "LF-Dialogue_FuelClerk_SayChat"
+     Target_en_us "Quiet day?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{E0C9B717E8A63B4D}" {
+     Id "LF-Dialogue_FuelClerk_SayNews"
+     Target_en_us "Anything happening in town?"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{78F76EB9DCC3A7F0}" {
+     Id "LF-Dialogue_FuelClerk_SayRob"
+     Target_en_us "This is a robbery. Hands where I can see them!"
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{C3A3478410D6A6C7}" {
+     Id "LF-Dialogue_FuelClerk_SayDemand"
+     Target_en_us "Open the till. Now, or you die behind that counter."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{47B1E52CE1513EFD}" {
+     Id "LF-Dialogue_FuelClerk_SayOff"
+     Target_en_us "Forget it. You never saw me."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{30BA5B858FBF23FC}" {
+     Id "LF-Dialogue_FuelClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
+    }
+    CustomStringTableItem "{77F083725C2B630B}" {
+     Id "LF-Police_NpcStunned"
+     Target_en_us "%1 is stunned"
+     Comment "Toast to the officer whose taser dart downed a town NPC (#922). %1 is the NPC's name."
     }
   }
  }
