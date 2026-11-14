@@ -84,7 +84,7 @@
     },
     {
       "id": "police", "name": "Police officer", "base": "default",
-      "outfits": [["m88", "boots_us", "cap_peaked"], ["m88", "boots_us", "beret_black"]],
+      "outfits": [["suit_black", "boots_us", "cap_peaked"], ["turtle_blue", "trousers_grey", "boots_us"]],
       "greet": "Officer on duty. Keep your hands where I can see them, and we will get along.",
       "what": "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again.",
       "where": "The station is the building behind me. The town board on the square lists everything else.",
@@ -187,6 +187,9 @@
     "Quest_Clerk": "clerk",
     "Roadmap_Fuel_Clerk": "fuel_clerk",
     "PoliceNpc": "police",
+    "Hospital_Doctor": "medic",
+    "CarLot_Mechanic": "mechanic",
+    "Shop_Clerk": "store_clerk",
     "FarmerNpc": "farmer",
     "MinerNpc": "miner",
     "CementBuilderNpc": "miner",

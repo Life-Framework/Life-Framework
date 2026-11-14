@@ -1,0 +1,343 @@
+{
+  "slug": "robbery-alarms",
+  "name": "RobberyAlarms",
+  "kind": "gadget",
+  "project_dir": "Sounds/Alarm/Robbery",
+  "project_prefix": "Alarm_Robbery",
+  "output_format": "pcm_48000",
+  "budget": {
+    "generations": 16
+  },
+  "sounds": [
+    {
+      "id": "bank",
+      "event": "SOUND_LF_ALARM_BANK_LP",
+      "project": "Bank",
+      "bus": "sfx",
+      "range": "far170",
+      "volume_db": -8,
+      "loop": true,
+      "prompt": "A loud 1980s bank burglar alarm bell: a heavy electric gong bell mounted on an outside wall, ringing continuously and fast at a constant rate, hard metallic clanging with a ringing decay between strikes. Steady level from start to end. Recorded outdoors a few metres away, dry, no voice, no music, no siren, no speech.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "variations": 3,
+      "derive": {
+        "from_take": 2,
+        "as_take": 4,
+        "from_ms": 1800
+      },
+      "pick": [
+        4
+      ],
+      "reason": "Listening criteria (the review pictures, nobody can listen): an even level left to right, a repeating strike pattern (a bell, not a drone), no gap, a loop seam under 5%. All three bank takes open with a ring that dies into 1 to 2 s of silence, then run steady. Take 2 has the clearest steady stretch and a visible strike pattern about every 0.2 s over strong harmonic lines (a struck metal bell), so take 4 is its steady part from 1.8 s on (derive in sounds.json, deriveTake in sound.mjs), 3.1 s, seam 2.7%."
+    },
+    {
+      "id": "fuel",
+      "event": "SOUND_LF_ALARM_FUEL_LP",
+      "project": "Fuel",
+      "bus": "sfx",
+      "range": "voice70",
+      "volume_db": -9,
+      "loop": true,
+      "prompt": "A harsh 1980s shop intruder alarm from a wall-mounted box: a piercing electronic buzzing screech in short rapid bursts, on and off about four times a second at one constant pitch, loud and shrill. Steady level from start to end. Recorded indoors close, no voice, no music, no bell, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "variations": 3,
+      "derive": {
+        "from_take": 2,
+        "as_take": 4,
+        "on_ms": 130,
+        "off_ms": 110
+      },
+      "pick": [
+        4
+      ],
+      "reason": "The generator returns one held tone for a pulsed prompt (no take shows on/off in the spectrogram). Take 2 is the most tonal (clean stacked lines, rms flat at -15 dB, no wobble; take 1 is broadband hiss, take 3 wobbles), so take 4 chops it into 130 ms on, 110 ms off, the fast shrill pulsing of a 1980s shop intruder alarm: 20 even bursts, seam 0.0%."
+    },
+    {
+      "id": "store",
+      "event": "SOUND_LF_ALARM_STORE_LP",
+      "project": "Store",
+      "bus": "sfx",
+      "range": "reload60",
+      "volume_db": -12,
+      "loop": true,
+      "prompt": "A small 1980s corner shop till buzzer alarm: one flat nasal electric buzz from a small plastic box, on for half a second then off for half a second, repeating evenly at a constant level, modest in volume. Recorded indoors in a small room, dry, no voice, no music, no bell, no siren.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "variations": 3,
+      "derive": {
+        "from_take": 1,
+        "as_take": 4,
+        "on_ms": 500,
+        "off_ms": 500
+      },
+      "pick": [
+        4
+      ],
+      "reason": "One held buzz again. Take 1 has the flattest level and the lowest seam of the three (5.1%, take 3 24.5%), so take 4 chops it into 500 ms on, 500 ms off: the slow flat buzz of a till buzzer, clearly slower and plainer than the fuel pulses; seam 0.0%."
+    },
+    {
+      "id": "van",
+      "event": "SOUND_LF_ALARM_VAN_LP",
+      "project": "Van",
+      "bus": "sfx",
+      "range": "voice70",
+      "volume_db": -9,
+      "loop": true,
+      "prompt": "A 1980s armoured van alarm: a loud single-note electric horn honking in short hard blasts, honk, pause, honk, pause, each honk about a third of a second with a third of a second gap, repeating evenly at constant level. Recorded outdoors from a few metres, dry, no voice, no music, no siren sweep, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "variations": 3,
+      "derive": {
+        "from_take": 1,
+        "as_take": 4,
+        "on_ms": 330,
+        "off_ms": 330
+      },
+      "pick": [
+        4
+      ],
+      "reason": "One held horn tone again. Take 1 has the lowest seam (0.8%) and even harmonic lines, so take 4 chops it into 330 ms on, 330 ms off: seven separate honks, an armoured van's horn alarm, a slower honk cadence than the fuel station pulses and a harder note than the store buzz; seam 0.0%."
+    }
+  ],
+  "generations": [
+    {
+      "id": "bank",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A loud 1980s bank burglar alarm bell: a heavy electric gong bell mounted on an outside wall, ringing continuously and fast at a constant rate, hard metallic clanging with a ringing decay between strikes. Steady level from start to end. Recorded outdoors a few metres away, dry, no voice, no music, no siren, no speech.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "bank",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A loud 1980s bank burglar alarm bell: a heavy electric gong bell mounted on an outside wall, ringing continuously and fast at a constant rate, hard metallic clanging with a ringing decay between strikes. Steady level from start to end. Recorded outdoors a few metres away, dry, no voice, no music, no siren, no speech.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "bank",
+      "take": 3,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A loud 1980s bank burglar alarm bell: a heavy electric gong bell mounted on an outside wall, ringing continuously and fast at a constant rate, hard metallic clanging with a ringing decay between strikes. Steady level from start to end. Recorded outdoors a few metres away, dry, no voice, no music, no siren, no speech.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "fuel",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A harsh 1980s shop intruder alarm from a wall-mounted box: a piercing electronic buzzing screech in short rapid bursts, on and off about four times a second at one constant pitch, loud and shrill. Steady level from start to end. Recorded indoors close, no voice, no music, no bell, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "fuel",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A harsh 1980s shop intruder alarm from a wall-mounted box: a piercing electronic buzzing screech in short rapid bursts, on and off about four times a second at one constant pitch, loud and shrill. Steady level from start to end. Recorded indoors close, no voice, no music, no bell, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "fuel",
+      "take": 3,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A harsh 1980s shop intruder alarm from a wall-mounted box: a piercing electronic buzzing screech in short rapid bursts, on and off about four times a second at one constant pitch, loud and shrill. Steady level from start to end. Recorded indoors close, no voice, no music, no bell, no siren sweep.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "store",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small 1980s corner shop till buzzer alarm: one flat nasal electric buzz from a small plastic box, on for half a second then off for half a second, repeating evenly at a constant level, modest in volume. Recorded indoors in a small room, dry, no voice, no music, no bell, no siren.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "store",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small 1980s corner shop till buzzer alarm: one flat nasal electric buzz from a small plastic box, on for half a second then off for half a second, repeating evenly at a constant level, modest in volume. Recorded indoors in a small room, dry, no voice, no music, no bell, no siren.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "store",
+      "take": 3,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small 1980s corner shop till buzzer alarm: one flat nasal electric buzz from a small plastic box, on for half a second then off for half a second, repeating evenly at a constant level, modest in volume. Recorded indoors in a small room, dry, no voice, no music, no bell, no siren.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "van",
+      "take": 1,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s armoured van alarm: a loud single-note electric horn honking in short hard blasts, honk, pause, honk, pause, each honk about a third of a second with a third of a second gap, repeating evenly at constant level. Recorded outdoors from a few metres, dry, no voice, no music, no siren sweep, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "van",
+      "take": 2,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s armoured van alarm: a loud single-note electric horn honking in short hard blasts, honk, pause, honk, pause, each honk about a third of a second with a third of a second gap, repeating evenly at constant level. Recorded outdoors from a few metres, dry, no voice, no music, no siren sweep, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "van",
+      "take": 3,
+      "date": "2026-11-14",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A 1980s armoured van alarm: a loud single-note electric horn honking in short hard blasts, honk, pause, honk, pause, each honk about a third of a second with a third of a second gap, repeating evenly at constant level. Recorded outdoors from a few metres, dry, no voice, no music, no siren sweep, no engine.",
+      "duration_seconds": 5,
+      "prompt_influence": 0.7,
+      "loop": true,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 960000,
+      "credits_estimate": 200
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-14",
+      "generations": 12,
+      "seconds": 60,
+      "plan": "starter",
+      "credits_before": 7225,
+      "credits_after": 7725,
+      "credits": 500
+    }
+  ],
+  "wired": {
+    "Bank": {
+      "project": "{5744183C79938E91}Sounds/Alarm/Robbery/Alarm_Robbery_Bank.acp",
+      "events": [
+        "SOUND_LF_ALARM_BANK_LP"
+      ],
+      "samples": [
+        "{B31B962497C6A1F8}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_BANK_LP_01.wav"
+      ]
+    },
+    "Fuel": {
+      "project": "{1B3FA9393B0D5416}Sounds/Alarm/Robbery/Alarm_Robbery_Fuel.acp",
+      "events": [
+        "SOUND_LF_ALARM_FUEL_LP"
+      ],
+      "samples": [
+        "{631197D530A0A15B}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_FUEL_LP_01.wav"
+      ]
+    },
+    "Store": {
+      "project": "{832839DA75DBEF9C}Sounds/Alarm/Robbery/Alarm_Robbery_Store.acp",
+      "events": [
+        "SOUND_LF_ALARM_STORE_LP"
+      ],
+      "samples": [
+        "{D69769B82403CC22}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_STORE_LP_01.wav"
+      ]
+    },
+    "Van": {
+      "project": "{68533083E027EB46}Sounds/Alarm/Robbery/Alarm_Robbery_Van.acp",
+      "events": [
+        "SOUND_LF_ALARM_VAN_LP"
+      ],
+      "samples": [
+        "{17E677589DD8C62C}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_VAN_LP_01.wav"
+      ]
+    }
+  },
+  "account": {
+    "date": "2026-11-14",
+    "plan": "starter",
+    "used": 7825,
+    "limit": 40000,
+    "used_before_first_run": 7225,
+    "note": "used - used_before_first_run is this asset's cost only if nothing else spent credits on the account in between"
+  }
+}

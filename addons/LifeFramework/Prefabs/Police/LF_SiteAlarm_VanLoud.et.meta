@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D9FBE82D3D057A8D}Prefabs/Police/LF_SiteAlarm_VanLoud.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

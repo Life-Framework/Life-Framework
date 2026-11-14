@@ -32,14 +32,6 @@ GenericEntity ATM_Debug {
 }
 GenericEntity Bank_Counter_West {
  components {
-  MeshObject "{5A4B0B84C86D5843}" {
-   Object "{DC34EB7CEFB68115}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01_window.xob"
-  }
-  RigidBody "{5A4B0B84C86D5844}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
   LF_AmbientEmitterComponent "{C91E5F69BE9C12FE}" {
    m_sSoundProject "{6539B71BA4BFA1FC}Sounds/Atmosphere/Atmosphere_BankTill.acp"
    m_fRadius 11
@@ -47,19 +39,11 @@ GenericEntity Bank_Counter_West {
   }
  }
   Flags 0x403 0
- coords 177 0 258.7
+ coords 175.4 0.2 262.4
  angleY 180
 }
 GenericEntity Bank_Counter_East {
  components {
-  MeshObject "{5A4B0B84C86D6A43}" {
-   Object "{DC34EB7CEFB68115}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01_window.xob"
-  }
-  RigidBody "{5A4B0B84C86D6A44}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
   LF_AmbientEmitterComponent "{D25A477E7141C287}" {
    m_sSoundProject "{9E627437CDE85DF1}Sounds/Atmosphere/Atmosphere_BankMurmur.acp"
    m_fRadius 15
@@ -67,10 +51,10 @@ GenericEntity Bank_Counter_East {
   }
  }
   Flags 0x403 0
- coords 187 0 258.7
+ coords 179.4 0.2 262.4
  angleY 180
 }
 LF_NpcBaseEntity Bank_Teller : "{5B2A1E072C8DD6B7}Prefabs/Characters/Npcs/Outfits/LF_Npc_Teller_2.et" {
- coords 176.3 0.16 259.5
+ coords 175.4 0.2 264.4
  angleY 180
 }

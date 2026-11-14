@@ -233,3 +233,6 @@ GenericEntity Lot_Display_uaz452 : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/U
  coords 230 0 261
  angleY 180
 }
+LF_NpcBaseEntity CarLot_Mechanic : "{009A8952A2537BB4}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_2.et" {
+ coords 213.2 -0.005 263.569
+}

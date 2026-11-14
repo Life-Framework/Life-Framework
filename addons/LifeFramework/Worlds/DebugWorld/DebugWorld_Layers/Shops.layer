@@ -206,3 +206,6 @@ GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commerci
 GenericEntity Shop_GeneralStore_Radio : "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et" {
  coords 178.483 1.038 243.994
 }
+LF_NpcBaseEntity Shop_Clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 179.5 -0.005 243.369
+}

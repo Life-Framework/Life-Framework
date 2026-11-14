@@ -28,6 +28,9 @@ class LF_RobAction : ScriptedUserAction
 	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Robbed only through the attendant's dialogue (LF_RobHold): the world action is hidden and refused. The fuel station till (#936).")]
 	protected bool m_bDialogueOnly;
 
+	[Attribute(defvalue: "store", uiwidget: UIWidgets.EditBox, desc: "Alarm kind of this till's alarm (an LF_AlarmKind id in LF_Police.conf): store is the small buzzer, fuel the station's intruder alarm. Empty uses the plain siren.")]
+	protected string m_sAlarmKind;
+
 	[Attribute(defvalue: "30", uiwidget: UIWidgets.Auto, desc: "Dialogue robbery: seconds the robber must keep the attendant at gunpoint before the till opens")]
 	protected float m_fHoldSeconds;
 
@@ -157,7 +160,7 @@ class LF_RobAction : ScriptedUserAction
 	//! receive, and nothing is deposited to an account. Gates that refuse log
 	//! LF_Debug.Error and leave cash, wanted, and the cooldown where they were.
 	//! An accepted robbery starts the cooldown and alerts police once.
-	static int CommitRobbery(string playerUid, IEntity user, int payout, int policeOnDuty, int minPolice, float cooldownSeconds, float lastRobTimeMs, float nowMs, out float outLastRobTimeMs)
+	static int CommitRobbery(string playerUid, IEntity user, int payout, int policeOnDuty, int minPolice, float cooldownSeconds, float lastRobTimeMs, float nowMs, out float outLastRobTimeMs, string alarmKind = "")
 	{
 		outLastRobTimeMs = lastRobTimeMs;
 
@@ -171,7 +174,7 @@ class LF_RobAction : ScriptedUserAction
 		int paid = PayCash(user, payout);
 		outLastRobTimeMs = nowMs;
 		s_sLastRefusal = "";
-		Report(playerUid, user, policeOnDuty);
+		Report(playerUid, user, policeOnDuty, alarmKind);
 		NotePaid(playerUid, paid);
 		return paid;
 	}
@@ -204,7 +207,7 @@ class LF_RobAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	//! The crime is on record: wanted level, then the alarm at the till and the radio call to
 	//! on-duty officers (LF_Dispatch, which also opens the witness and evidence scene).
-	protected static void Report(string playerUid, IEntity user, int policeOnDuty)
+	protected static void Report(string playerUid, IEntity user, int policeOnDuty, string alarmKind)
 	{
 		LF_PlayerAccount account = FindAccount(playerUid);
 		if (account)
@@ -221,7 +224,7 @@ class LF_RobAction : ScriptedUserAction
 		if (user)
 			origin = user.GetOrigin();
 
-		LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_ROBBERY, origin, policeOnDuty);
+		LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_ROBBERY, origin, policeOnDuty, false, alarmKind);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -259,7 +262,7 @@ class LF_RobAction : ScriptedUserAction
 
 		m_fLastRobTime = NowMs();
 		s_sLastRefusal = "";
-		Report(LF_Utils.GetPlayerUid(user), user, LF_AccountReplication.CountPoliceOnDuty());
+		Report(LF_Utils.GetPlayerUid(user), user, LF_AccountReplication.CountPoliceOnDuty(), m_sAlarmKind);
 		return "";
 	}
 
@@ -414,7 +417,7 @@ class LF_RobAction : ScriptedUserAction
 		string playerUid = LF_Utils.GetPlayerUid(pUserEntity);
 		int policeOnDuty = LF_AccountReplication.CountPoliceOnDuty();
 		float nextLast = m_fLastRobTime;
-		int paid = CommitRobbery(playerUid, pUserEntity, payout, policeOnDuty, m_iMinPoliceOnDuty, m_fCooldown, m_fLastRobTime, nowMs, nextLast);
+		int paid = CommitRobbery(playerUid, pUserEntity, payout, policeOnDuty, m_iMinPoliceOnDuty, m_fCooldown, m_fLastRobTime, nowMs, nextLast, m_sAlarmKind);
 		m_fLastRobTime = nextLast;
 
 		if (paid > 0)

@@ -194,6 +194,19 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The alarm this vault sounds when it is broken or its drill jams (an LF_AlarmKind id; empty: by offence).
+	static void ConfigureAlarmKind(string vaultId, string alarmKind)
+	{
+		if (!Vaults().Get(vaultId))
+		{
+			LF_Debug.Error("Bank", string.Format("alarm kind refused: vault %1 is not configured", vaultId));
+			return;
+		}
+
+		LF_Breach.SetAlarmKind(vaultId, alarmKind);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Sets the fence tools this vault needs (#273): a comma list of "drill" and "charge", any one
 	//! opens it. Empty means no tool is required. jamChance is the drill's chance (0..1) to jam.
 	static void ConfigureTools(string vaultId, string tools, float jamChance)
@@ -667,7 +680,7 @@ class LF_Bank
 				if (jamOffence.IsEmpty())
 					jamOffence = LF_WantedReports.OFFENCE_BREAK_IN;
 
-				LF_Dispatch.Report(playerUid, robber, jamOffence, VaultOrigin(vaultId), -1, LF_Breach.IsLoud(vaultId));
+				LF_Dispatch.Report(playerUid, robber, jamOffence, VaultOrigin(vaultId), -1, LF_Breach.IsLoud(vaultId), LF_Breach.AlarmKind(vaultId));
 				LeaveTool(vaultId, robber, toolItem);
 				LF_Debug.Info("Bank", string.Format("drill jammed on %1 (serial %2)", vaultId, serial));
 				LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, tool, serial, "jammed"));

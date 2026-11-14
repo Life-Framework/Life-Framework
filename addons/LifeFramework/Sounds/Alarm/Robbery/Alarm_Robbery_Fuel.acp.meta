@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1B3FA9393B0D5416}Sounds/Alarm/Robbery/Alarm_Robbery_Fuel.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

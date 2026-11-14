@@ -1354,6 +1354,7 @@ GenericEntity Annex_Test_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_F
       Name "#EL-Fuel_Till_Rob"
       Description "#EL-Fuel_Till_Rob_Desc"
      }
+     m_sAlarmKind "fuel"
      m_iMoneyAmount 150
      m_iMinPayout 150
      m_iMaxPayout 150
@@ -1436,6 +1437,7 @@ GenericEntity Annex_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_F
       Name "#EL-Fuel_Till_Rob"
       Description "#EL-Fuel_Till_Rob_Desc"
      }
+     m_sAlarmKind "fuel"
      m_iMoneyAmount 150
      m_iMinPayout 150
      m_iMaxPayout 150
