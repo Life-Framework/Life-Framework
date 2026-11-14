@@ -9231,6 +9231,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sputnik T601"
      Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
     }
+    CustomStringTableItem "{8EB5BE0F4B310C71}" {
+     Id "LF-Cleanup_Action"
+     Target_en_us "Cleanup"
+     Comment "F-key action name for cleanup (#690)."
+    }
+    CustomStringTableItem "{D9E3E533E519382B}" {
+     Id "LF-Cleanup_Denied"
+     Target_en_us "Cleanup is not available."
+     Comment "Greyed-out reason and toast when cleanup is refused (#690)."
+    }
   }
  }
 }
