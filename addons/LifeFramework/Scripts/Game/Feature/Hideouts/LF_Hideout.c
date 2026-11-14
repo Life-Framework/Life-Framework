@@ -538,9 +538,13 @@ class LF_Hideout
 	//------------------------------------------------------------------------------------------------
 	//! Sets one site's held ground (server). The writer is the scoring tick (#751 behaviour); bad
 	//! values are corrected as on load. An empty holder clears the site.
-	//! \return False (the site is left as it was) when the holder is gone or does not lease the site.
+	//! \return False (the site is left as it was) off the server, or when the holder is gone or does
+	//! not lease the site.
 	static bool SetHeldGround(string hideoutId, string holderOrgId, int holdSeconds, int holdPoints)
 	{
+		if (!Server())
+			return false;
+
 		LF_HideoutState state = Find(hideoutId);
 		if (holderOrgId.IsEmpty())
 		{

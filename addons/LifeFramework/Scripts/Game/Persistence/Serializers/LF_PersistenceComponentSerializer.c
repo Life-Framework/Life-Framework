@@ -160,9 +160,6 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The only payload order. Index 0 is version 1. Written version equals this length.
-	//! Append the next system at the end; do not insert or reorder.
-	//! \param[out] order Empty array filled with the payload names in save order.
 	//! The save version a payload first appears in: its place in RegisterPersistencePayloads, from 1.
 	//! A save at a lower version never wrote it. 0 for an unknown payload.
 	static int PayloadSinceVersion(string payload)
@@ -173,6 +170,9 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The only payload order. Index 0 is version 1. Written version equals this length.
+	//! Append the next system at the end; do not insert or reorder.
+	//! \param[out] order Empty array filled with the payload names in save order.
 	protected static void RegisterPersistencePayloads(notnull array<string> order)
 	{
 		order.Insert("survival");

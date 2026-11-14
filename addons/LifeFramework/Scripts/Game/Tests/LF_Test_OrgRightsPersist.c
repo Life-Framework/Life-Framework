@@ -224,6 +224,18 @@ class LF_TestLegacySnapshot : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected bool HadLease(string hideoutId)
+	{
+		foreach (LF_HideoutRecord record : m_aHideouts)
+		{
+			if (record && record.m_sHideoutId == hideoutId)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Restore()
 	{
 		LF_OrganizationManager.ApplyAll(m_aRecords);
@@ -232,8 +244,14 @@ class LF_TestLegacySnapshot : Managed
 		LF_WantedReports.ApplyAll(m_aWanted);
 		LF_PhotoIdCard.ApplyAll(m_aIdCards);
 		LF_VehicleOwnership.ApplyState(m_aVehicleState);
-		// Organizations first: the held ground checks the holder against them and the lease.
-		LF_Hideout.Reset();
+		// Organizations first: the held ground checks the holder against them and the lease. Only the
+		// leases change: one the test added is released, the saved ones are re-applied; unleased doors
+		// and test character bindings are left alone.
+		foreach (LF_HideoutRecord now : LF_Hideout.ExportAll())
+		{
+			if (now && !HadLease(now.m_sHideoutId))
+				LF_Hideout.Release(now.m_sHideoutId);
+		}
 		LF_Hideout.ApplyAll(m_aHideouts);
 		LF_Hideout.ApplyHeldGround(m_aHeldGround);
 	}
