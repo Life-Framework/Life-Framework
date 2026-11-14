@@ -135,7 +135,8 @@ proven by a real restart (#1032).
   `LF_DeployableItemComponent`.
 - `Feature/Placement/LF_PlacementService.c`: `Plan` (both sides, the spot by snap mode), `ProbeAt`
   (both sides, the probes at one spot) and `Confirm` (server: who, holder, `LF_RateLimit` SPAWN, the
-  0.5 m / 10 degree tolerance against its own plan, the probes at the proposal, spawn, the item used
+  malformed-proposal check, the reach from where the player stands now plus 1.5 m, 15 degrees
+  off straight across a road, the probes at the proposal, spawn, the item used
   up, `[LFDebug:Placement] placed ...`). `LF_PlacementGeometry` holds the pure geometry it shares
   with the strip.
 - The proposal travels in the action's own data: `LF_SpikeStripDeployAction.OnSaveActionData` writes

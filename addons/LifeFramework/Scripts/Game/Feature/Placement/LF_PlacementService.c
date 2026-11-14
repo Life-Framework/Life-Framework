@@ -4,9 +4,10 @@
 //!   Plan     (both sides) the spot in front of the player by the item's snap mode, and its verdict;
 //!            the client's ghost shows it, the server uses it as the reference for a proposal
 //!   ProbeAt  (both sides) the probes at one given spot: ground, step, clearance, surface
-//!   Confirm  (server) the client proposes a spot; the server re-probes it, accepts it within
-//!            TOLERANCE_METRES and TOLERANCE_DEGREES of its own plan, refuses anything not VALID,
-//!            rate-limits (SPAWN), spawns the placed prefab there and uses the item up
+//!   Confirm  (server) the client proposes a spot; the server rejects a malformed one, accepts it
+//!            within the item's reach plus TOLERANCE_METRES of where the player stands now (and,
+//!            across a road, within TOLERANCE_DEGREES of straight across), re-probes it, refuses
+//!            anything not VALID, rate-limits (SPAWN), spawns the placed prefab and uses the item up
 //! The proposal arrives through the placing action's own data (OnSaveActionData/OnLoadActionData,
 //! LF_SpikeStripDeployAction), so there is no extra RPC. The ghost is never replicated.
 //------------------------------------------------------------------------------------------------
@@ -98,20 +99,58 @@ class LF_PlacementGeometry
 		return Vector(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]);
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! Whether `proposed` lies within `metres` and `degrees` (horizontal heading) of `own`. `reason`
-	//! says how far off it is either way, for the log line.
-	static bool WithinTolerance(vector own[4], vector proposed[4], float metres, float degrees, out string reason)
-	{
-		float distance = vector.Distance(own[3], proposed[3]);
-		float angle = 180;
-		vector a = Flat(own[2]);
-		vector b = Flat(proposed[2]);
-		if (a != vector.Zero && b != vector.Zero)
-			angle = Math.Acos(Math.Clamp(vector.Dot(a, b), -1, 1)) * Math.RAD2DEG;
+	//! Largest coordinate a proposal may carry (a 100 km world), so a garbage float never reaches a trace.
+	static const float MAX_COORD = 100000; // lf-fixed: sanity bound on a wire value, not a gameplay knob
 
-		reason = string.Format("%1 m and %2 deg from the server's spot (most %3 m, %4 deg)", distance, angle, metres, degrees);
-		return distance <= metres && angle <= degrees;
+	//------------------------------------------------------------------------------------------------
+	//! What is wrong with a proposal off the wire, or "" when it is usable: an origin that is not a
+	//! finite number within the world's bounds, or a forward that is not a horizontal unit vector.
+	//! Written as !(x < bound) so a NaN fails too.
+	static string ProposalProblem(vector proposal[4])
+	{
+		vector origin = proposal[3];
+		for (int i = 0; i < 3; i++)
+		{
+			if (!(Math.AbsFloat(origin[i]) < MAX_COORD))
+				return string.Format("origin %1 is out of the world", origin);
+		}
+
+		vector forward = proposal[2];
+		float length = forward.Length();
+		if (!(length > 0.9 && length < 1.1))
+			return string.Format("forward %1 is not a unit vector", forward);
+
+		if (!(Math.AbsFloat(forward[1]) < 0.5))
+			return string.Format("forward %1 is not horizontal", forward);
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the proposal's origin lies within `maxDistance` (horizontal) and `maxRise` (vertical)
+	//! of `player`, where the player stands now. `reason` says how far it is either way, for the log.
+	static bool WithinReach(vector player, vector proposal[4], float maxDistance, float maxRise, out string reason)
+	{
+		vector spot = proposal[3];
+		float distance = vector.Distance(Vector(player[0], 0, player[2]), Vector(spot[0], 0, spot[2]));
+		float rise = Math.AbsFloat(spot[1] - player[1]);
+		reason = string.Format("%1 m from the player and %2 m above or below (most %3 m, %4 m)", distance, rise, maxDistance, maxRise);
+		return distance <= maxDistance && rise <= maxRise;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Degrees between the horizontal `heading` and straight across the road running along `roadDir`
+	//! (either way across counts), or 90 when either is vertical.
+	static float AcrossAngle(vector heading, vector roadDir)
+	{
+		vector a = Flat(heading);
+		vector along = Flat(roadDir);
+		if (a == vector.Zero || along == vector.Zero)
+			return 90;
+
+		vector across = Vector(-along[2], 0, along[0]);
+		float dot = Math.AbsFloat(vector.Dot(a, across));
+		return Math.Acos(Math.Clamp(dot, 0, 1)) * Math.RAD2DEG;
 	}
 }
 
@@ -119,10 +158,14 @@ class LF_PlacementGeometry
 class LF_PlacementService
 {
 	static const string FEATURE = "Placement";
-	//! How far a client's proposal may lie from the server's own plan: what the player moved or
-	//! turned between the ghost and the server seeing the request.
-	static const float TOLERANCE_METRES = 0.5; // lf-fixed: the #1026 confirm tolerance, latency slack not a gameplay knob
-	static const float TOLERANCE_DEGREES = 10; // lf-fixed: the #1026 confirm tolerance, latency slack not a gameplay knob
+	//! How much further than the item's reach a proposal may lie from where the player stands when
+	//! the server sees it: a player walking or running between the ghost and the request (about
+	//! 5 m/s over 300 ms). Turning moves the ghost along a circle of the reach, so it costs nothing.
+	static const float TOLERANCE_METRES = 1.5; // lf-fixed: the #1026 confirm tolerance, latency slack not a gameplay knob
+	//! Across a road, how far a proposal's heading may be from straight across.
+	static const float TOLERANCE_DEGREES = 15; // lf-fixed: the #1026 confirm tolerance, a curved road's slack not a gameplay knob
+	//! How far above or below the player's feet a proposal may lie.
+	static const float MAX_RISE = 2; // lf-fixed: the #1026 confirm tolerance, a bank or a step, not a gameplay knob
 	//! Largest rise along a footprint: the placement tool's 0.25 m ground rule.
 	static const float MAX_STEP = 0.25; // lf-fixed: the placement tool's ground rule (docs/placement-tool.md)
 	//! ACROSS_ROAD: a road whose centre line is this close to the spot turns the thing across it.
@@ -255,7 +298,7 @@ class LF_PlacementService
 	//------------------------------------------------------------------------------------------------
 	//! Server: `player` places the `item` they carry (or that lies at their feet) at `proposal`, the
 	//! spot their ghost showed. Refused with the reason logged (and toasted) unless they may place
-	//! it, the proposal lies within the tolerance of the server's own plan, and the probes there say
+	//! it, the proposal is well formed and within reach of where they stand, and the probes there say
 	//! VALID. On success the placed prefab stands at the probed spot and the item is used up.
 	//! \return the placed entity, or null.
 	static IEntity Confirm(IEntity player, IEntity item, vector proposal[4])
@@ -285,13 +328,27 @@ class LF_PlacementService
 			return null;
 		}
 
-		// The server's own plan for where this player stands is the reference for the proposal.
-		vector own[4];
-		LF_PlacementProbe ownProbe = new LF_PlacementProbe();
-		Plan(player, placeable, item, own, ownProbe);
+		string problem = LF_PlacementGeometry.ProposalProblem(proposal);
+		if (!problem.IsEmpty())
+			return Refuse(player, "refused: malformed proposal: " + problem, "");
+
+		// Where the player stands now, not a fresh plan: the ghost was planned a moment ago, and the
+		// player may have walked or turned since. The reach bounds the spot; the probes judge it.
 		string offBy;
-		if (!LF_PlacementGeometry.WithinTolerance(own, proposal, TOLERANCE_METRES, TOLERANCE_DEGREES, offBy))
+		float maxDistance = placeable.GetReach() - placeable.GetFootprintMins()[2] + TOLERANCE_METRES;
+		vector playerTransform[4];
+		player.GetWorldTransform(playerTransform);
+		if (!LF_PlacementGeometry.WithinReach(playerTransform[3], proposal, maxDistance, MAX_RISE, offBy))
 			return Refuse(player, "refused: the proposal is " + offBy, "#LF-Placement_Moved");
+
+		if (placeable.GetSnap() == LF_EPlacementSnap.ACROSS_ROAD)
+		{
+			string roadNote;
+			string roadProblem = RoadHeadingProblem(proposal, roadNote);
+			offBy += roadNote;
+			if (!roadProblem.IsEmpty())
+				return Refuse(player, "refused: " + roadProblem, "#LF-Placement_Moved");
+		}
 
 		vector transform[4];
 		LF_PlacementProbe probe = new LF_PlacementProbe();
@@ -335,7 +392,9 @@ class LF_PlacementService
 
 	//------------------------------------------------------------------------------------------------
 	//! The direction of the AI road network's road nearest to `at`, when one lies within ROAD_REACH.
-	protected static bool NearestRoad(vector at, out vector roadDir)
+	//! A world with no AI road network (DebugWorld: its roads are spline meshes only) has none, and an
+	//! ACROSS_ROAD item lies where the player faces there. LF_Test_PlacementRoad runs on Arland.
+	static bool NearestRoad(vector at, out vector roadDir)
 	{
 		roadDir = vector.Zero;
 		ChimeraAIWorld aiWorld = ChimeraAIWorld.Cast(GetGame().GetAIWorld());
@@ -353,6 +412,24 @@ class LF_PlacementService
 		float segmentDistance;
 		roadDir = LF_PlacementGeometry.NearestSegmentDirection(points, at, segmentDistance);
 		return roadDir != vector.Zero;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: why an ACROSS_ROAD proposal's heading is refused, or "" when no road is near or it runs
+	//! within TOLERANCE_DEGREES of straight across. `note` gets the angle for the placed log line.
+	static string RoadHeadingProblem(vector proposal[4], out string note)
+	{
+		note = "";
+		vector roadDir;
+		if (!NearestRoad(proposal[3], roadDir))
+			return "";
+
+		float across = LF_PlacementGeometry.AcrossAngle(proposal[2], roadDir);
+		note = string.Format(", %1 deg off across the road", across);
+		if (across <= TOLERANCE_DEGREES)
+			return "";
+
+		return string.Format("the proposal is %1 deg off across the road (most %2 deg)", across, TOLERANCE_DEGREES);
 	}
 
 	//------------------------------------------------------------------------------------------------

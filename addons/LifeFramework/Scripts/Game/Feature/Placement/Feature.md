@@ -33,7 +33,9 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Owner and side:** `LF_PlaceableComponent` on the carried item is the data. The officer's machine
   sends the ghost's spot in the action's own data (`LF_SpikeStripDeployAction.OnSaveActionData`); the
   server (`LF_PlacementService.Confirm`) checks who, where the item is, `LF_RateLimit` SPAWN, the
-  0.5 m / 10 degree tolerance against its own plan and the probes at the proposed spot, then spawns
+  malformed-proposal check, the reach from where the player stands now (plus 1.5 m for walking;
+  turning costs nothing), 15 degrees off straight across a road (only on a world with an AI road
+  network: DebugWorld has none) and the probes at the proposed spot, then spawns
   the replicated prefab there and uses the item up. No new RPC; the ghost stays local.
 - **Data:** the placeable's prefab attributes (footprint box, reach, snap, who, lifetime). Strings
   `#LF-Placement_Title`, `_NotAllowed`, `_NoGround`, `_Moved`, `_Blocked`. Nothing persists (#1032).

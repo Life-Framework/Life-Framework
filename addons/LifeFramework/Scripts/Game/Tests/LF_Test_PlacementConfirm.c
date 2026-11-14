@@ -1,10 +1,11 @@
-// red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_PlacementConfirm`: LF_PlacementService.Confirm with its tolerance check disabled failed `a proposal 3 m off is refused`, `... the logged reason says 'from the server's spot'` and `a proposal 3 m off keeps the item` (the strip was placed 3 m off); restored, green.
+// red-proof: observed 2026-11-14 (#1026 review) with `--only LF_Test_PlacementConfirm`: TOLERANCE_METRES = 0 failed `the officer's proposal at the server's spot was refused` (3.57 m from the player after stepping back, most 2.75 m), and Confirm without its ProposalProblem refusal failed `a proposal with no forward` and `a proposal out of the world: the logged reason says 'malformed'`; restored, green.
 // tier: WORLD
 //! #1026 acceptance: the placement service's server confirm. An on-duty officer stands on the main
-//! street's south verge facing across it with the folded spike strip at their feet. A proposal at
-//! the server's own plan places the strip there and uses the item up. A proposal 3 m along the
-//! street, one turned 30 degrees, one on the strip just laid, and one from a civilian proposing
-//! the same place are each refused with the reason logged, and their items stay.
+//! street's south verge, half turned up the street, with the folded spike strip at their feet. The
+//! ghost's spot is still placed after the officer stepped 1 m back and turned 25 degrees, and the item
+//! is used up. Proposals 5 m along the street, malformed
+//! (no forward, out of the world), on the strip just laid, and a civilian's are each refused with
+//! the reason logged, and their items stay.
 class LF_Test_PlacementConfirm : LF_Test
 {
 	static const ResourceName ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";
@@ -33,9 +34,9 @@ class LF_Test_PlacementConfirm : LF_Test
 		LF_TestPoliceKit.Account(CIVILIAN_UID, false);
 		LF_PoliceRanks.BindOfficer(civilian, CIVILIAN_UID);
 
-		Stand(officer, VERGE);
+		Stand(officer, VERGE, 40);
 		// Out of the way while the officer places.
-		Stand(civilian, VERGE + "12 0 0");
+		Stand(civilian, VERGE + "12 0 0", 0);
 		IEntity strip = RunConfirm(ctx, officer, civilian);
 
 		LF_TestCharacterFixture.Delete(strip);
@@ -66,29 +67,37 @@ class LF_Test_PlacementConfirm : LF_Test
 		LF_EPlacementVerdict verdict = LF_PlacementService.Plan(officer, placeable, item, own, probe);
 		ctx.Equal(LF_EPlacementVerdict.VALID, verdict, "the verge in front of the officer is valid: " + LF_PlacementRules.Reason(verdict, probe, LF_PlacementService.MAX_STEP));
 
-		// 3 m along the street: further than the tolerance from the server's spot.
+		// DebugWorld has no AI road network, so the plan runs where the officer faces (40 degrees);
+		// the across-the-road plan and check run on Arland in LF_Test_PlacementRoad.
+		vector roadDir;
+		ctx.False(LF_PlacementService.NearestRoad(own[3], roadDir), "DebugWorld has no AI road network");
+
+		// 5 m along the street: out of reach of where the officer stands.
 		vector far[4];
 		Copy(own, far);
-		far[3] = own[3] + "3 0 0";
-		ExpectRefused(ctx, officer, item, far, "from the server's spot", "a proposal 3 m off");
+		far[3] = own[3] + "5 0 0";
+		ExpectRefused(ctx, officer, item, far, "from the player", "a proposal 5 m off");
 
-		// Turned 30 degrees: the heading is outside the tolerance.
-		vector turned[4];
-		Copy(own, turned);
-		vector yaw[4];
-		Math3D.AnglesToMatrix("30 0 0", yaw);
-		turned[2] = yaw[2];
-		ExpectRefused(ctx, officer, item, turned, "from the server's spot", "a proposal turned 30 degrees");
+		// Malformed payloads: no forward, and an origin out of the world.
+		vector noForward[4];
+		Copy(own, noForward);
+		noForward[2] = vector.Zero;
+		ExpectRefused(ctx, officer, item, noForward, "malformed", "a proposal with no forward");
+		vector outside[4];
+		Copy(own, outside);
+		outside[3] = "1000000000 0 0";
+		ExpectRefused(ctx, officer, item, outside, "malformed", "a proposal out of the world");
 
 		// The civilian at the officer's spot proposes the same place.
 		IEntity civilianItem = LF_Utils.SpawnEntityPrefab(ITEM, civilian.GetOrigin() + "0.5 0 0");
 		ExpectRefused(ctx, civilian, civilianItem, own, "not on-duty police", "a civilian's proposal");
 		LF_TestCharacterFixture.Delete(civilianItem);
 
-		// Within the tolerance (20 cm along the street): placed where the proposal said.
+		// The ghost's spot after the officer stepped 1 m back from it and turned 25 degrees (the
+		// request is in flight while they move): placed where the ghost was.
 		vector near[4];
 		Copy(own, near);
-		near[3] = own[3] + "0.2 0 0";
+		Stand(officer, VERGE + "0 0 -1", 65);
 		// A wrongly accepted proposal above used the item up (and failed there); carry on with another.
 		if (!item)
 			item = LF_Utils.SpawnEntityPrefab(ITEM, officer.GetOrigin() + "0.5 0 0");
@@ -107,7 +116,7 @@ class LF_Test_PlacementConfirm : LF_Test
 		ctx.True(GetGame().GetWorld().FindEntityByID(itemId) == null, "the folded item is used up");
 		vector placed[4];
 		strip.GetWorldTransform(placed);
-		ctx.InRange(Horizontal(placed[3], near[3]), 0, 0.05, "the strip lies where the proposal put it, not at the server's own spot");
+		ctx.InRange(Horizontal(placed[3], near[3]), 0, 0.05, "the strip lies where the ghost was, not at a plan from where the officer stands now");
 		float ground = GetGame().GetWorld().GetSurfaceY(placed[3][0], placed[3][2]);
 		ctx.InRange(placed[3][1] - ground, -0.05, 0.3, "the strip lies on the ground");
 
@@ -154,11 +163,12 @@ class LF_Test_PlacementConfirm : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Stand(IEntity character, vector at)
+	//! `yaw` in degrees from north (+z) toward east (+x).
+	protected void Stand(IEntity character, vector at, float yaw)
 	{
 		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
 		vector transform[4];
-		Math3D.AnglesToMatrix("0 0 0", transform);
+		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
 		transform[3] = at;
 		character.SetWorldTransform(transform);
 		character.Update();
