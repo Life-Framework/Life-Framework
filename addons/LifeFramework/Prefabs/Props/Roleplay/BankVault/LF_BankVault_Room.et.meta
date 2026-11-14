@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7EDF6DC122D6CE41}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Room.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

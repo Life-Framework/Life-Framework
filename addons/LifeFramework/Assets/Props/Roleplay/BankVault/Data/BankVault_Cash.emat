@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{3508BF06600D9531}Assets/Props/Roleplay/BankVault/Data/BankVault_Cash_BCR.edds"
+ NMOMap "{94DA66191FCD3CF7}Assets/Props/Roleplay/BankVault/Data/BankVault_Cash_NMO.edds"
+}

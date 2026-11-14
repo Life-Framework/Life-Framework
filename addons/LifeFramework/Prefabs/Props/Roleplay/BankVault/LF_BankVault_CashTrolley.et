@@ -1,0 +1,12 @@
+GenericEntity {
+ ID "B91236A8E4B07000"
+ components {
+  MeshObject "{120C7A2A013F4087}" {
+   Object "{D5323C15B15EA44D}Assets/Props/Roleplay/BankVault/VaultCashTrolley.xob"
+  }
+  RigidBody "{0334D112D550D6C8}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+}

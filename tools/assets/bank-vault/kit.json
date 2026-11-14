@@ -1,0 +1,51 @@
+{
+  "slug": "bank-vault",
+  "about": "The 1989 bank vault as a modular kit: the round door #1 in its frame and wall (VaultFront and VaultDoor), the steel room behind it (VaultRoom), the deposit box wall (VaultDepositWall) and the cash trolley (VaultCashTrolley). Built by build.py in headless Blender; only the door detail is generated (tools/assets/vault-front, Meshy image-to-3D from front concept 1).",
+  "asset_dir": "Assets/Props/Roleplay/BankVault",
+  "prefab_dir": "Prefabs/Props/Roleplay/BankVault",
+  "script": "build.py",
+  "generated": {
+    "glb": "tmp/assets/vault-front/raw/model.glb",
+    "maps": "tmp/assets/vault-front/raw",
+    "note": "Measured on the raw model (Blender axes, model units): door centre x 0.025 z 0, door radius 0.675, wall face y 0.045, hinge barrel axis x -0.75 y -0.054; the front faces -Y.",
+    "centre": [0.025, 0.0],
+    "door_radius": 0.675,
+    "wall_face_y": 0.045,
+    "cut_y": 0.0,
+    "hinge_x": -0.75,
+    "hinge_y": -0.054,
+    "hinge_side_x": -0.55,
+    "plate_radius": 0.8,
+    "plate_y": -0.13,
+    "scale": 1.64
+  },
+  "layout_m": {
+    "about": "Enfusion metres: x right, y up, z forward. The door faces +z; the room lies behind the wall at -z.",
+    "door_centre_y": 1.35,
+    "tunnel_radius": 1.05,
+    "wall": { "half_width": 1.7, "height": 3.2, "depth": 0.6 },
+    "floor_y": 0.47,
+    "room": { "width": 3.0, "depth": 3.0, "height": 2.5, "wall": 0.2 },
+    "plug": { "radius": 0.9, "depth": 0.35, "bolt_radius": 0.05, "bolt_length": 0.12 },
+    "step": { "half_width": 0.7, "depth": 0.3, "height": 0.22 }
+  },
+  "lod_ratios": [0.5, 0.2],
+  "texture_px": { "door": 2048, "kit": 1024 },
+  "materials": {
+    "door": {
+      "about": "Meshy marks most of the painted door as metal, so there are no regions: the paint keeps a little of Meshy's metal for the wheel and bolts and stays matt (docs/style-guide.md: steel is dull).",
+      "default": "paint",
+      "regions": [],
+      "classes": {
+        "paint": { "rough": [0.5, 0.72], "metal": [0.05, 0.35], "base_scale": 1.0 }
+      }
+    }
+  },
+  "colliders": {
+    "VaultFront": { "layerPreset": "BuildingFireView", "gamemat": "{1A05231C3FD1627A}Common/Materials/Game/concrete.gamemat" },
+    "VaultDoor": { "layerPreset": "DoorFireView", "gamemat": "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat" },
+    "VaultRoom": { "layerPreset": "BuildingFireView", "gamemat": "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat" },
+    "VaultDepositWall": { "layerPreset": "PropFireView", "gamemat": "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat" },
+    "VaultCashTrolley": { "layerPreset": "PropFireView", "gamemat": "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat" }
+  }
+}
