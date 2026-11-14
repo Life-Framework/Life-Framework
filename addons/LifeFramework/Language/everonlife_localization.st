@@ -8256,5 +8256,15 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_en_us "Notice"
    Comment "Title of a sign card whose own text is not available (its pack is not loaded). Shown in the prompt as Read: Notice."
   }
+    CustomStringTableItem "{8EB5BE0F4B310C71}" {
+     Id "LF-Cleanup_Action"
+     Target_en_us "Cleanup"
+     Comment "F-key action name for cleanup (#690)."
+    }
+    CustomStringTableItem "{D9E3E533E519382B}" {
+     Id "LF-Cleanup_Denied"
+     Target_en_us "Cleanup is not available."
+     Comment "Greyed-out reason and toast when cleanup is refused (#690)."
+    }
  }
 }
