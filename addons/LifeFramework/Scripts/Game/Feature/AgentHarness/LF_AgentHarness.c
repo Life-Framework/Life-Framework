@@ -36,6 +36,18 @@ class LF_AgentCommand
 
 	static const string SESSION_PREFIX = "s:";
 
+	//! Verbs that act on the local character (split in chunks: the compiler rejects one long formula).
+	static bool IsCharacterVerb(string verb)
+	{
+		if (verb == "scanner" || verb == "drill" || verb == "keycard" || verb == "charge" || verb == "apples" || verb == "nuggets" || verb == "crate" || verb == "parceldrop" || verb == "pistol" || verb == "moonshine" || verb == "stash" || verb == "park")
+			return true;
+
+		if (verb == "shelf" || verb == "keys" || verb == "spikedrop" || verb == "spikecar" || verb == "spikecheck")
+			return true;
+
+		return false;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Whether a client accepts a command. A session client (started with -lfSession <id>) runs
 	//! only commands addressed to that id, so a command written for another worktree's session
@@ -173,7 +185,7 @@ class LF_AgentCommand
 				cmd.Arg2 = parts[3];
 			return true;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "parceldrop" || cmd.Verb == "pistol" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
+		if (LF_AgentCommand.IsCharacterVerb(cmd.Verb))
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -1255,7 +1267,7 @@ class LF_AgentHarness
 			DoConfigReload(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "parceldrop" || cmd.Verb == "pistol" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
+		if (LF_AgentCommand.IsCharacterVerb(cmd.Verb))
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
