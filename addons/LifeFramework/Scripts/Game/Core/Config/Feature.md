@@ -285,6 +285,13 @@ unemployment benefit, and the job XP tables of `LF_JobLevels`.
   `gather`): `job`, `xp` per unit, `cooldownSeconds`. A new action must set `job`.
 - `licenceGates`, keyed by licence name (`LF_ELicenseType`): `job` and `minLevel`. A
   licence with no row keeps its shipped gate; a new row must set both.
+- The three lists run on the override model (#1106, `docs/config/override-model.md`):
+  `LF_JobTrackList`, `LF_JobXpAwardList` and `LF_JobLicenceGateList` describe them, the pack
+  overlays of `LF_JobsConfig` merge through `LoadPackOverlays` (lists only; the duty-pay and
+  benefit numbers are still owner-only), and each owner record takes an `"op"` (add, replace,
+  patch, remove). No `op` still patches an existing key and adds a new one. A replaced record
+  starts from the class defaults (a track with no cap, an award with 0 xp). Removing a
+  licence gate gives the licence the gate `LF_LicenseManagerComponent` ships with it.
 - Server-side only, so no stream: `ApplyToFeatures` drops the cached instance
   (`LF_JobsConfig.Reload`) and the next read layers the owner file again. The DELIVERY
   level the sign-up offer needs reaches clients through `LF_PlayerJobComponent`.
