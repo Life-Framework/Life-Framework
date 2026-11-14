@@ -1,4 +1,5 @@
 # Static DebugWorld layout gate.
+# inputs: addons/**
 # Fails on overlapping area boxes, tables outside their box (in layers that have
 # boxes), raised ground props, and hard intersections between configured
 # large-prop footprints.

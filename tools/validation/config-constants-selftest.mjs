@@ -1,4 +1,5 @@
 // Proves validate-config-constants fails on a planted tunable and passes on the
+// inputs: tools/**, agent-box/**, .githooks/**
 // exempt forms (lf-fixed mark, config-class default, structural name, baselined).
 // Fixtures: tools/validation/fixtures/config-constants/{bad,good}/<Area>/*.c.
 //

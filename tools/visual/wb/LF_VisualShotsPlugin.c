@@ -27,6 +27,10 @@
 //     never under the ground. A ray from the camera to the target measures how much of
 //     the way is clear (1 = nothing between); the first candidate at or above `accept`
 //     wins, else the clearest one.
+//   item <name> ground|inventory <x> <z> <9 axes> <ox oy oz> <pitch yaw roll> <dist> <fov> <cx cy cz> <prefab>
+//     spawns the prefab (play mode only), poses it, takes the picture, deletes it. ground: the item's three
+//     axes in the world (RestingUP faces up), lowest point on the ground, then a close-up. inventory: model
+//     orientation, frozen, seen from the prefab's PreviewRenderAttributes camera (tools/visual/look-item.mjs).
 //   close <name> <entity|-> <x> <y> <z> <az>
 //     a close-up of the entity a layer placed there (found by name, else the nearest
 //     entity with a mesh within 1 m). Framed from its world bounds, from the clearest of
@@ -58,6 +62,8 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	protected CameraBase m_Camera;
 	protected float m_fHour = -1;
 	protected IEntity m_Nearest;
+	//! An item the plan spawned: TakeClose frames this one instead of searching the layers.
+	protected IEntity m_ForceEntity;
 	protected float m_fNearest;
 	protected vector m_vNearest;
 
@@ -139,7 +145,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 				firstMs = Rest(line, 6).ToInt();
 			else if (line.StartsWith("park "))
 				park = Rest(line, 5);
-			else if (line.StartsWith("shot ") || line.StartsWith("close "))
+			else if (line.StartsWith("shot ") || line.StartsWith("close ") || line.StartsWith("item "))
 				shots.Insert(line);
 		}
 
@@ -354,6 +360,9 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		if (p[0] == "close")
 			return TakeClose(p, shot, settleMs, first, firstMs);
 
+		if (p[0] == "item")
+			return TakeItem(p, shot, settleMs, first, firstMs);
+
 		if (p.Count() < 8)
 		{
 			Note("error bad_shot " + shot);
@@ -446,8 +455,8 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 		string name = p[1];
 		vector pos = Vector(p[3].ToFloat(), p[4].ToFloat(), p[5].ToFloat());
-		IEntity entity;
-		if (p[2] != "-")
+		IEntity entity = m_ForceEntity;
+		if (!entity && p[2] != "-")
 			entity = m_World.FindEntityByName(p[2]);
 
 		if (!entity)
@@ -523,6 +532,104 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		// The entity and about its own width of surroundings on each side, whatever its size.
 		float fov = Math.Clamp(2 * Math.Atan2(radius * 2.4, dist) * Math.RAD2DEG, 24, VERTICAL_FOV);
 		return Capture(name, cam, target, fov, string.Format("clear=%1 %2", clear, found), settleMs, first, firstMs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected IEntity SpawnItem(Resource res, vector mat[4])
+	{
+		EntitySpawnParams params = new EntitySpawnParams();
+		params.TransformMode = ETransformMode.WORLD;
+		params.Transform = mat;
+		return GetGame().SpawnEntityPrefab(res, m_World, params);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! item <name> <mode> <x> <z> <ix iy iz jx jy jz kx ky kz> <ox oy oz> <pitch yaw roll> <dist> <fov> <cx cy cz> <prefab>
+	//! Spawns the prefab on the ground at x z (play mode only), poses it, takes the picture, deletes it.
+	//! ground: the item's axes are the nine numbers (RestingUP faces up), its lowest point on the ground, then a
+	//!   close-up. inventory: model orientation, frozen at 1.5 m, the camera of PreviewRenderAttributes.
+	protected bool TakeItem(notnull array<string> p, string shot, int settleMs, bool first, int firstMs)
+	{
+		if (!m_bPlay || p.Count() < 26)
+		{
+			Note("error bad_item " + shot);
+			return false;
+		}
+
+		string name = p[1];
+		string mode = p[2];
+		float x = p[3].ToFloat();
+		float z = p[4].ToFloat();
+		Resource res = Resource.Load(p[25]);
+		if (!res || !res.IsValid())
+		{
+			Note("error item_not_loaded " + p[25]);
+			return false;
+		}
+
+		float ground = m_World.GetSurfaceY(x, z);
+		vector mat[4];
+		Math3D.MatrixIdentity4(mat);
+		if (mode == "ground")
+		{
+			for (int axis = 0; axis < 3; axis++)
+				mat[axis] = Vector(p[5 + axis * 3].ToFloat(), p[6 + axis * 3].ToFloat(), p[7 + axis * 3].ToFloat());
+		}
+
+		mat[3] = Vector(x, ground + 1.5, z);
+		IEntity item = SpawnItem(res, mat);
+		if (!item)
+		{
+			Note("error item_not_spawned " + p[25]);
+			return false;
+		}
+
+		// A placed pose, not a fall: nothing moves it while the picture is taken.
+		Physics physics = item.GetPhysics();
+		if (physics)
+			physics.ChangeSimulationState(SimulationState.NONE);
+
+		vector mins, maxs;
+		item.GetWorldBounds(mins, maxs);
+		if (mode == "ground")
+		{
+			// Lowest point on the ground, then the prefab's nudge (RestingAdditiveOffsetLS, in world axes).
+			// Moving a spawned item did not take; the bounds do not depend on where it stands, so spawn it again at its place.
+			mat[3] = Vector(x + p[14].ToFloat(), mat[3][1] + ground - mins[1] + p[15].ToFloat(), z + p[16].ToFloat());
+			SCR_EntityHelper.DeleteEntityAndChildren(item);
+			item = SpawnItem(res, mat);
+			if (!item)
+			{
+				Note("error item_not_spawned " + p[25]);
+				return false;
+			}
+
+			physics = item.GetPhysics();
+			if (physics)
+				physics.ChangeSimulationState(SimulationState.NONE);
+
+			m_ForceEntity = item;
+			string close = string.Format("close %1 - %2 %3 %4 180", name, x, ground, z);
+			array<string> cp = {};
+			close.Split(" ", cp, true);
+			bool okGround = TakeClose(cp, close, settleMs, first, firstMs);
+			m_ForceEntity = null;
+			SCR_EntityHelper.DeleteEntityAndChildren(item);
+			return okGround;
+		}
+
+		vector center = (mins + maxs) * 0.5;
+		float pitch = p[17].ToFloat();
+		float yaw = p[18].ToFloat() * Math.DEG2RAD;
+		float dist = p[20].ToFloat();
+		float fov = p[21].ToFloat();
+		vector target = center + Vector(p[22].ToFloat(), p[23].ToFloat(), p[24].ToFloat());
+		// Orbit: yaw round the item from its front (+z), a negative pitch looks down on it.
+		float el = -pitch * Math.DEG2RAD;
+		vector cam = target + Vector(Math.Sin(yaw) * Math.Cos(el), Math.Sin(el), Math.Cos(yaw) * Math.Cos(el)) * dist;
+		bool ok = Capture(name, cam, target, fov, string.Format("clear=1 found=1 size=%1,%2,%3", maxs[0] - mins[0], maxs[1] - mins[1], maxs[2] - mins[2]), settleMs, first, firstMs);
+		SCR_EntityHelper.DeleteEntityAndChildren(item);
+		return ok;
 	}
 
 	//------------------------------------------------------------------------------------------------

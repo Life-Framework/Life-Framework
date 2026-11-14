@@ -1,4 +1,5 @@
 // tools/validation/release-ready-selftest.mjs
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 //
 // Proves validate-release-ready fails on each missing field and names it. Each
 // case builds a fixture repo (clean core, pack and kits), plants one defect and

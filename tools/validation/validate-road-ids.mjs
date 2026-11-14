@@ -1,4 +1,5 @@
 // tools/validation/validate-road-ids.mjs
+// inputs: addons/**
 //
 // A road spline's RoadEntity takes its material from the road generator prefab only when its `ID`
 // is the ID of that prefab's own RoadEntity child. Swap the generator (dirt for cobblestone) and

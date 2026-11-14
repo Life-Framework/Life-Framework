@@ -1,4 +1,5 @@
 // tools/validation/map-independence-selftest.mjs
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // Plants each kind of map knowledge in a temp tree and asserts validate-map-independence
 // fails it; a comment, a Tests/ file, the harness folder, an offset literal and a
 // baselined finding pass; a stale or issue-less or new baseline entry fails.

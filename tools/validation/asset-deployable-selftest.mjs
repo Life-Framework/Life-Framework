@@ -1,4 +1,5 @@
 // Proves the deployable kind of tools\cli asset offline (tools/assets/pipeline/prefab-deployable.mjs,
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // the deployable profile in kinds.mjs, the import log filter): no Meshy, no Blender, no Workbench.
 // The spike strip (tools/assets/spike-strip) is the worked example.
 // red-proof: 2026-11-13, one line broken per block, each restored after its FAIL was seen:

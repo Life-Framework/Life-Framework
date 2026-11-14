@@ -1,4 +1,5 @@
 // Clicks each button of the playtest launcher's choice window (tools/release/launcher/play.ps1
+// inputs: tools/**, agent-box/**, .githooks/**
 // -ClickTest) and checks the pick comes back. playtest-m2-2 shipped a launcher whose buttons threw
 // "The property 'Tag' cannot be found" on the first real click; the -ShotTo screenshot never clicks.
 // red-proof: with the click handler restored to `$form.Tag = $result` it printed
