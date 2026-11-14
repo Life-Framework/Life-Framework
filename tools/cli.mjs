@@ -3461,7 +3461,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
   pool status|stats|prune       test pool: machines, lanes and holders, queue, last runs;
-                                prune removes remote run folders of gone worktrees
+                                prune removes remote run folders of gone worktrees;
+                                prune --idle <min> removes every remote run folder idle that long
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)

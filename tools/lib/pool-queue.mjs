@@ -37,6 +37,11 @@ export const DEFAULTS = {
   // test refuses to start with less free disk than minFreeDiskGb (docs/worktrees.md "Disk hygiene").
   sessionKeepHours: 24,
   minFreeDiskGb: 5,
+  // Run folders on an ssh machine (Life-Framework-rt-*, ~1.4 GB each): before a run starts there, a box
+  // with less than rtGcFreeFactor x minFreeDiskGb free has its run folders idle for rtIdleMin minutes
+  // removed, oldest first, until it is back above that (tools/lib/rt-gc.mjs; pool prune --idle <min>).
+  rtIdleMin: 60,
+  rtGcFreeFactor: 3,
 };
 
 // "high" | "normal" | "low" (any case), or null when it is not one.
