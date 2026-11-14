@@ -952,11 +952,13 @@
   no longer re-sets the base mesh, which dropped the prefab's material
   overrides and rendered the items white. Cash, pickaxe, axe, ore and bar
   inventory previews use the Front preset with a narrow FOV.
-- ⚠️ Inventory previews draw the mesh's baked material and ignore the prefab's
-  material override, so nuggets preview as grey stone and bars as red brick
-  (re-applying the remap to `ResolvePreviewEntityForPrefab` did not change the
-  render, 2026-11-08). The fix is a mesh that bakes the ore material (Workbench
-  FBX import). The pickaxe uses the pistol rig and is gripped at the handle end;
+- ✅ Each ore and metal reads at a glance (2026-11-14): one cast ingot model for the three bars
+  (`Assets/Resources/Mining/Ingot/`), one fractured lump for the three nuggets
+  (`Assets/Resources/Mining/Nugget/`), each with a material per metal, and the iron, copper and gold
+  rocks show their ore as veins on the granite (`Assets/Resources/Mining/OreVein/`). Made in Blender
+  from CC0 textures by `tools\cli asset` (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`);
+  prefab and emat GUIDs are unchanged, so mining, smelting and selling are untouched.
+- ⚠️ The pickaxe uses the pistol rig and is gripped at the handle end;
   `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
   needs a re-exported mesh with the pivot up the handle.
 

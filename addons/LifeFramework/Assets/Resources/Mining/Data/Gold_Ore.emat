@@ -1,14 +1,4 @@
-MatPBR2Layers {
- Color 0.62 0.5 0.18 1
- RoughnessScale 2
- MetalnessScale 0.4
- BCRMap "{0C9E95518A613FB7}Assets/_SharedData/Concrete/ST_Concrete_Mid_01_BCR.edds"
- NormalPower 1.3
- NMOMap "{1C5B574FA1CE7490}Assets/_SharedData/Concrete/ST_Concrete_Rough_01_NMO.edds"
- BCRMap2 "{029A84113517FD09}Assets/_SharedData/Concrete/ST_Concrete_Clean_01_BCR.edds"
- Color2 0.4 0.31 0.1 1
- NormalPower2 3.5
- NMOMap2 "{3A423F83EC60AF97}Assets/_SharedData/Concrete/ST_Concrete_Clean_01_NMO.edds"
- MaskMap "{F43096EA54DBF607}Assets/Props/Debris/Concrete/Data/ConcreteFragment_dbr_GLOBAL_MASK.edds"
- UVSrcMaskMap "UV set 2"
+MatPBRBasic {
+ BCRMap "{3DF993ABB29058A5}Assets/Resources/Mining/Nugget/Data/OreNugget_Gold_BCR.edds"
+ NMOMap "{8053D923F63F7581}Assets/Resources/Mining/Nugget/Data/OreNugget_Gold_NMO.edds"
 }
