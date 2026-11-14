@@ -181,10 +181,12 @@ list is in the [config reference](../config/owner-config.md).
 ## 7. Run it
 
 For a local check, start the dedicated server on the pack's mission. Use the mission header's
-resource path (right-click it in Workbench):
+resource path (right-click it in Workbench). `-addonsDir` takes a comma list and must also name the
+server's own `addons` folder, or the base game is not found (`Game addon '58D0FB3206B6F859' not found`);
+`ArmaReforgerServer.exe` is not on the path, so give its full path:
 
 ```
-ArmaReforgerServer.exe -server "{GUID}Missions/LF_Town.conf" -addonsDir C:\path\to\repo\addons -addons LifeFramework,LF_Town -profile C:\LFServer\profile -maxFPS 60
+"%ProgramFiles(x86)%\Steam\steamapps\common\Arma Reforger Server\ArmaReforgerServer.exe" -server "{GUID}Missions/LF_Town.conf" -addonsDir C:\path\to\repo\addons,"%ProgramFiles(x86)%\Steam\steamapps\common\Arma Reforger Server\addons" -addons LifeFramework,LF_Town -profile C:\LFServer\profile -maxFPS 60
 ```
 
 Or open `Worlds/Town.ent` and press **Play** in Workbench for a listen host. Players join the same

@@ -27,7 +27,7 @@ Quickest: copy the ready folder [`server/example/`](../../server/example/README.
 | `bindPort`, `publicPort`, `a2s.port` | other ports when 2001 and 17777 are taken; forward them (UDP) |
 | `game.maxPlayers` | up to the town's 16, or more at your own risk |
 
-Leave `game.scenarioId` (`{1054CC8646357708}Missions/LF_PlaytestTown.conf`) and `game.mods` as
+Leave `game.scenarioId` (`{C638C03B775C31BB}Missions/LF_Everon1989.conf`) and `game.mods` as
 they are. The config follows the BIKI page
 [Arma_Reforger:Server_Config](https://community.bistudio.com/wiki/Arma_Reforger:Server_Config).
 

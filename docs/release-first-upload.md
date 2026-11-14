@@ -17,7 +17,7 @@ The pack depends on the core, so the core goes first. Both are APL (decision D2)
 
 1. Arma Reforger Tools, the **stable** Workbench. **Workbench > Link**: sign in with the Bohemia Account
    that will own both items. Read the Workshop Terms of Service once.
-2. The checks below ran green on 2026-11-14 on `main` (`release 0.2.0` dry run, `release-ready --strict`,
+2. The checks below ran green on 2026-11-14 on `main` (`release 0.1.0` dry run, `release-ready --strict`,
    `example-zip` draft). Re-run them in step 1; do not skip it, `main` moves.
 3. The first publish waits for the whole pack move (decision D3 in [roadmap/m3-plan.md](roadmap/m3-plan.md)):
    check that batches 1 to 4 of #323 are all merged before you press Publish. Until then a release is
@@ -35,12 +35,15 @@ tools\cli pack LF_Everon1989      # the pack, same check
 git status                         # must be clean
 ```
 
-Choose the version once. The core item already exists on the Workshop (the boot check found its ID
-on 2026-11-14), so its **Version** must be higher than the one Workbench shows in the Publish dialog.
-The pack is new: `0.1.0`. Every publish takes a higher number, even a text-only change.
+The version is `0.1.0` for both items (the maintainer's choice). The core item already exists on the
+Workshop (the boot check found its ID on 2026-11-14). If the Publish dialog shows a version at or above
+`0.1.0` for it, stop and ask: every publish takes a higher number, even a text-only change. The pack is
+new. The scenario in the server config is `LF_Everon1989`
+(`{C638C03B775C31BB}Missions/LF_Everon1989.conf`).
 
-`tools\cli release <x.y.z> --confirm` (stamps both `.gproj` and the kit READMEs, runs every gate, tags
-`v<x.y.z>` locally) is optional for this first upload; if you use it, upload from the tagged commit.
+`tools\cli release 0.1.0 --confirm` (stamps both `.gproj` and the kit READMEs, runs every gate, tags
+`v0.1.0` locally) is optional for this first upload; if you use it, upload from the tagged commit.
+The release's upgrade page is [upgrades/0.1.0.md](upgrades/0.1.0.md).
 
 ## 2. Publish the core
 
