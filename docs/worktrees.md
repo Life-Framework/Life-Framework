@@ -1120,6 +1120,11 @@ password or repo credential.
    which does not update itself, so run `provision` again after a server update. It then clones the repo to
    `C:\LF\Life-Framework` and sends the rdb (above). `pool status` must show the same server build as this PC.
    A provision stopped part-way leaves SteamCMD running on the box; the next run waits for it.
+   It also gives `Users` modify on `C:\LF` (inherited, so new and existing files). ssh runs elevated, so the
+   clone, the run folders and the rdb `scp` sends belong to Administrators, while Workbench in the desktop session
+   runs with a standard token. A stock Server image's `C:\` gives Users no modify, so that Workbench could not save
+   `resourceDatabase.rdb` (`ResourceDB: could not open cache file`, exit 0, nothing registered). A client image
+   inherits `Authenticated Users:Modify` from `C:\` and never shows it.
 6. **Join the pool** with the gitignored `lf.local.json`. A rented box stays out of `tools/pool.json`.
    Give the same entry to both sides: this PC's `lf.local.json`, and the box's own
    `C:\LF\Life-Framework\lf.local.json` with `hostname` set to the box's hostname. On the box, the box-side
