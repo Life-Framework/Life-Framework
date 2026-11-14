@@ -260,16 +260,59 @@ only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; i
 hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
 sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
 
-**Waiting.** `wt ship` waits until the gate passed or failed and prints
-`SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
-default when stdout is not a terminal, so an agent's report says what really happened; a terminal
-returns once queued (`--no-wait`, `--wait` to force). `tools\cli ship-queue wait <slug>` resumes a wait
-(the wait gives up after 3 h with exit 2, the gate keeps going), `ship-queue status` and `pool status`
+**Waiting.** See "Async ship" below: `wt ship` returns once the PR is queued. `wt ship --wait` blocks
+until the gate passed or failed and prints `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ...
+log=<path>` (exit 0 on pass); `tools\cli ship-queue wait <slug>` does the same for a queued slug (gives
+up after 3 h with exit 2, the gate keeps going). `ship-queue status` and `pool status`
 show what gates, what waits and why, and the last few results; `ship-queue cancel <slug>` drops a
 waiting entry. A re-ship of a waiting slug replaces its entry and keeps its place; one whose gate runs
 is refused until it ends. The worker logs to `tmp/logs/ship-queue-worker.log`, each gate to
 `tmp/logs/ship-<slug>-<stamp>.log`; a gate is killed after 100 min, an idle worker exits after 3 min,
 and a worker that died leaves its running entries to be re-queued by the next one.
+
+### Async ship
+
+A queued gate takes 15-90 min (PR #1250: validate --full about 15 min, the Workbench build on lf-cloud about
+5, the sharded suite, then GitHub; 86 min in all). An agent's shell call is capped at 10 min, so a blocking
+`wt ship` went to the background, the agent sat in wait loops, ended its turn mid-ship and went idle. Now
+`wt ship <slug>` returns in about a minute or two (preflight, push, PR, enqueue) and the gate runs in the queue worker:
+
+1. **Preflight, here, before the push** (`--no-preflight` skips it): the clean-tree and PR-body checks as
+   before, `git merge-tree` against `origin/<base>` (a conflict in a driver-merged file is left to the
+   worker's merge; any other conflicted file stops the ship with the merge command to run), then
+   `validate` of the checks whose inputs changed (incremental, no Workbench compile). A red check costs
+   seconds here instead of a queue slot and a gate.
+2. **Push, PR, enqueue.** Auto-merge is off on the PR (an earlier ship's auto-merge is switched off first).
+   `wt ship` prints `SUMMARY ship queued <slug> PR #N position ... log=<path>` and exits 0.
+3. **The gate runs detached** in the ship-queue worker (the steps above). Its state goes to three places:
+   the queue file, `<worktree>/tmp/ship-status.json` (the status line and the entry, on every change), and
+   a `ship-gate` commit status on the PR head (pending while queued or gating, success on the pushed head,
+   failure with the reason, error when cancelled), so `gh pr checks` and the PR page show it.
+4. **Pass:** the worker pushes and enables auto-merge; GitHub merges once the required `validate` check
+   is green. **Fail:** the PR gets a comment with the failing lines and the log path, `ship-gate` goes
+   red with the reason, auto-merge stays off.
+
+**Why auto-merge, not a required status, guards the merge.** Branch protection on `main` requires only
+the `validate` Actions check. Making `ship-gate` required would block every PR that does not go through the
+queue (`wt sync-base`, `--no-queue`, a human's PR, website-only work). The worker is the only thing that
+turns auto-merge on for a queued PR, and `prs heal` skips any PR with a live ship-queue entry (it would
+otherwise merge main into the same worktree and switch auto-merge on before the gate passed).
+
+**Checking and waiting** (both read the queue in the main checkout, from any worktree):
+
+```sh
+tools\cli wt ship-status <slug>            # one line: ship-status <slug> queued|running|passed|failed PR #N: ... log=<path>
+tools\cli wait ship <slug> [--budget 540]  # blocks up to the budget; one SUMMARY line; exit 0 passed, 1 failed, 2 still going
+```
+
+`wait ship` defaults to 540 s, under the 10 min tool cap: run it in the foreground and run it again on exit 2.
+`wt ship-status` exits 1 only when the gate failed or the slug is unknown. `wt ship --wait` (or
+`LF_SHIP_WAIT=1`) keeps the old blocking ship for a human at a terminal.
+
+**What an agent does while the gate runs.** It may start the next stacked PR (a new worktree from
+`origin/main`, or `--base` on its own branch when it needs the unmerged code). It reports
+"shipped, gate running" with the PR URL, and before its final report runs `wt ship-status` (or
+`wait ship`): passed means "merged, in-dev" once GitHub merges, failed means fix, commit, `wt ship` again.
 
 ## Keeping PRs moving (`prs`)
 
