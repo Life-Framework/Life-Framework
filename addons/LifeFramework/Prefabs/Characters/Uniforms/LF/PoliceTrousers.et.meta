@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{EA29B6E9594A4C23}Prefabs/Characters/Uniforms/LF/PoliceTrousers.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{279D69CA83A6F0DA}Assets/Characters/Uniforms/LF/PoliceCap/Data/PoliceCap_Worn.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

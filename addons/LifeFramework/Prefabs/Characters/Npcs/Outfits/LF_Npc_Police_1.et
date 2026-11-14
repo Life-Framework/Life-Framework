@@ -7,17 +7,13 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
   BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
    Slots {
     LoadoutSlotInfo Jacket {
-     Prefab "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et"
+     Prefab "{0E64DC32FA7BBF30}Prefabs/Characters/Uniforms/LF/PoliceShirt.et"
     }
     LoadoutSlotInfo Pants {
-     Prefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
+     Prefab "{EA29B6E9594A4C23}Prefabs/Characters/Uniforms/LF/PoliceTrousers.et"
     }
     SCR_FeetLoadoutSlotInfo Boots {
      Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
-    }
-    LoadoutSlotInfo Hat {
-     Enabled 1
-     Prefab "{3523CB7D5961246B}Prefabs/Characters/HeadGear/Hat_PeakedCap_USSR_01/Hat_PeakedCap_USSR_01.et"
     }
    }
   }

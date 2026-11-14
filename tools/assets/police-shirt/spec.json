@@ -1,0 +1,102 @@
+{
+  "slug": "police-shirt",
+  "name": "PoliceShirt",
+  "kind": "clothing",
+  "route": "a",
+  "roadmap": "",
+  "concept": "1989 Everon police shirt: the vanilla chambray cotton shirt in police blue with a gold badge on the left chest, retextured on the vanilla layout (route a).",
+  "base": "{D78000A3AAAC12AC}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V6.et",
+  "slot": "Jacket",
+  "hide": null,
+  "materials": [
+    {
+      "use": "worn",
+      "maps": {
+        "BCR_1": {
+          "tint": {
+            "rgb": [
+              0.1,
+              0.15,
+              0.27
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          },
+          "paint": "chest.png"
+        },
+        "DirtBCRMap": {
+          "tint": {
+            "rgb": [
+              0.1,
+              0.15,
+              0.27
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "use": "item",
+      "maps": {
+        "BCRMap": {
+          "tint": {
+            "rgb": [
+              0.1,
+              0.15,
+              0.27
+            ],
+            "strength": 1,
+            "mask": {
+              "lum": [
+                0.1,
+                0.95
+              ],
+              "sat": [
+                0,
+                1
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "budget": {
+    "texture_px": 2048,
+    "lod0_tris": 9000,
+    "lod_ratios": [
+      0.5,
+      0.25,
+      0.12
+    ]
+  },
+  "asset_dir": "Assets/Characters/Uniforms/LF/PoliceShirt",
+  "prefab_dir": "Prefabs/Characters/Uniforms/LF",
+  "prefab": {
+    "name_key": "#LF-Police_Shirt_Name",
+    "description_key": null
+  },
+  "verify": {
+    "expect": "changed"
+  }
+}
