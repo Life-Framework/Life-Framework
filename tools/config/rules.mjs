@@ -239,7 +239,7 @@ export function checkOwner(root, schema, source, shipped = {}) {
       if (v.t !== "num" || !Number.isInteger(v.value)) add("error", v, `${source}: schemaVersion is not a whole number; reading it as version 1`, [p.key]);
       else if (v.value < 1) add("error", v, `${source}: schemaVersion ${v.value} is below 1; reading it as version 1`, [p.key]);
       else if (v.value > max) add("error", v, `${source} is written for schemaVersion ${v.value} but this build reads up to ${max}; update the server. Fields this build knows still apply, anything else is ignored with a warning`, [p.key]);
-      else if (v.value < max) add("warn", v, `${source} is written for schemaVersion ${v.value}, older than this build's ${max}; read as-is (migrations are #303)`, [p.key]);
+      else if (v.value < max) add("warn", v, `${source} is written for schemaVersion ${v.value}, older than this build's ${max}; the server migrates it at boot (the Migrations lines list the steps)`, [p.key]);
       continue;
     }
     // Read by hand, not by a config class (LF_TermBook.ApplyOwner): an object, whose words the game checks.

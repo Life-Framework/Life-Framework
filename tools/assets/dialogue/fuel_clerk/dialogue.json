@@ -101,7 +101,7 @@
   "replies": {
     "where": "Hey, where are we?",
     "chat": "Quiet day?",
-    "news": "Anything happening in town?",
+    "news": "Anything happening in {town}?",
     "rob": "This is a robbery. Hands where I can see them!",
     "demand": "Open the till. Now, or you die behind that counter.",
     "off": "Forget it. You never saw me.",

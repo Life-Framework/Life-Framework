@@ -45,7 +45,7 @@ class LF_JailEscortAction : ScriptedUserAction
 	{
 		if (!CanBeShownScript(user))
 		{
-			SetCannotPerformReason("#EL-Jail_NotOfficer");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Jail_NotOfficer"));
 			return false;
 		}
 

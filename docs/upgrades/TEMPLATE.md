@@ -49,7 +49,16 @@ If nothing changed in config this release, write "No config changes."
 
 `<None.>` / `<The config migration <id> runs at boot. The original file is backed
 up to <path> first.>` Config migrations run at boot once they exist (#303).
-`config-check` lists the ones that would run (#304).
+`config-check` lists the ones that would run (#304). Run it on a file written for the
+previous release, paste its `Migrations:` lines here, and keep the steps in order:
+
+```
+tools\cli config-check <path\to\old-config.json> --no-loops
+```
+
+`Migrations: ...: schemaVersion <old>, this build reads <new>; N would run, in order:` and one
+numbered line per step with the fields it renames, drops or defaults. A file already at the
+release's schema prints `none needed`. It is a dry run and never writes the file.
 
 ## Manual steps
 

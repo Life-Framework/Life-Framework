@@ -335,7 +335,7 @@ class LF_FineTicketPad
 		}
 
 		int minutes = LF_FineTicketRules.MinutesLeft(LF_PoliceConfig.TicketFirstDeadline());
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "TicketPadNote", WidgetManager.Translate("#LF-Ticket_PadNote", minutes)));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "TicketPadNote", LF_Terms.Text("#LF-Ticket_PadNote", minutes.ToString())));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "TicketPadClose", "#LF-Ticket_PadClose"));
 		return parts;
 	}

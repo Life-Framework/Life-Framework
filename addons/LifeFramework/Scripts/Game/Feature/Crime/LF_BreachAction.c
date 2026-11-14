@@ -105,7 +105,7 @@ class LF_BreachRepairAction : ScriptedUserAction
 
 		if (!target.CanRepairForOffer(user))
 		{
-			SetCannotPerformReason("#EL-Breach_RepairDenied");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Breach_RepairDenied"));
 			return false;
 		}
 
