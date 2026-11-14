@@ -911,7 +911,7 @@ async function capture(h, area, o) {
     sh.frame = w.frame;
   });
   if (!wides.length && !eyeOnly) take("wide", "wide", "wide", null, placeCamera(probe, "wide", area, { aim }, () => [aim.x, area.y + 1, aim.z]));
-  // The character camera cannot pitch, so a top-down needs the (crashing) free camera: opt in with --free-camera.
+  // The character camera cannot pitch, so a top-down needs the free camera: opt in with --free-camera.
   if (o.args.flags["free-camera"]) take("top", "top", "top", null, placeCamera(probe, "top", area, {}, () => lookAt(0)));
   if (!noClose) for (const [dirName, az] of [["N", 0], ["E", 90], ["S", 180], ["W", 270]]) {
     // Standing at the radius edge on that side, looking in: the camera sits on the side named.

@@ -8,7 +8,7 @@ Adding an NPC: `docs/asset-pipeline/dialogue.md`.
 | File | Side | Does |
 |---|---|---|
 | `LF_DialogueOverrides.c` | both | Dev caption overrides (#970): `$profile:LifeFramework/dev/dialogue.json` read by `reload dialogue`, streamed to clients; the scene shows the override instead of the translated key |
-| `LF_DialogueConfig.c` | both | The data classes and `LF_DialogueFlow`, the pure rules (which replies are offered, what is said, the mouth envelope, config problems) |
+| `LF_DialogueConfig.c` | both | The data classes and `LF_DialogueFlow`, the pure rules (which replies are offered, what is said, the mouth envelope, config problems). Nodes and lines are `LF_ConfigRecord`s: a pack patch of a dialogue adds, replaces, patches or removes them by id (`LF_DialogueConfig.Layered`, `docs/config/override-model.md` "Dialogue patches", #1109); a patch that leaves the conversation broken is dropped and the core plays |
 | `LF_DialogueComponent.c` | both | On the NPC prefab; loads and checks the config once |
 | `LF_DialogueHook.c` | server | Base of a reply's condition or action; `Find("Name")` resolves class `LF_DialogueHook_Name` |
 | `LF_Dialogue.c` | server | Sessions: start, choose, end; tells bystanders what to hear |
@@ -27,6 +27,7 @@ Rules:
   Hooks hold no state.
 - Every way out of the scene restores the camera, the controls and the HUD (`LF_DialogueScene.Close`).
 - An NPC whose config is missing or broken talks the way it did before; the reason is logged once.
+- A pack patches a dialogue by node and line id (`m_sOp`), never by copying the `.conf`. Replies have no id: a node patch replaces its reply list. Tests `dialogue/override-verbs`, `config/pack-patch-overlays`.
 
 Converted so far: the town clerk (`Prefabs/Characters/Quests/QuestGiver_Clerk.et`, hooks in
 `Feature/Quests/LF_QuestDialogue.c`).

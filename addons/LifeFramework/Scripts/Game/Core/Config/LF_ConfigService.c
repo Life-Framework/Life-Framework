@@ -196,7 +196,7 @@ class LF_ConfigService
 	//! adds its key here when its feature reads it (#282, #283).
 	static bool IsKnownTopLevelKey(string key)
 	{
-		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_ItemCatalogueConfig.SECTION || key == LF_SystemsConfig.SECTION || key == LF_CleanupConfig.SECTION;
+		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_ItemCatalogueConfig.SECTION || key == LF_SystemsConfig.SECTION || key == LF_CleanupConfig.SECTION || key == LF_Terms.SECTION;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -470,6 +470,27 @@ class LF_ConfigReader
 	{
 		if (m_aKeyStack.Count() > 0)
 			m_aKeyStack.Remove(m_aKeyStack.Count() - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The keys of the innermost open object (the section, or the record BeginRecord entered), in
+	//! file order, for a section whose keys are the data (terms: one key per term id).
+	//! \return How many keys.
+	int GetKeys(notnull array<string> keys)
+	{
+		keys.Clear();
+		if (m_aKeyStack.Count() == 0)
+			return 0;
+
+		keys.Copy(m_aKeyStack[m_aKeyStack.Count() - 1]);
+		return keys.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Classifies one key of the innermost open object (KindOf on this reader's cursor).
+	LF_EConfigJsonKind KindOfKey(string key)
+	{
+		return KindOf(m_Ctx, key);
 	}
 
 	//------------------------------------------------------------------------------------------------
