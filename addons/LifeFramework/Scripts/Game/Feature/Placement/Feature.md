@@ -24,3 +24,18 @@ selected; aimed placement with rotate, place and cancel is #1028.
   String `#LF-Placement_Blocked`. Nothing persists (#1032 adds permanent placements).
 - **Proof:** `placement/validity` (LOGIC), the clearance check in `police/spike-strip` (WORLD),
   `session.mjs placement-preview-proof` (pictures in `website/public/docs-images/928/`).
+
+## Placement service (#1026)
+
+- **Player sees:** the strip lands exactly where the ghost was, on every client. A refusal is a
+  toast under "Placing": not allowed, no flat ground, something in the way, or "You moved" when the
+  officer turned or stepped away between the ghost and the server seeing Deploy.
+- **Owner and side:** `LF_PlaceableComponent` on the carried item is the data. The officer's machine
+  sends the ghost's spot in the action's own data (`LF_SpikeStripDeployAction.OnSaveActionData`); the
+  server (`LF_PlacementService.Confirm`) checks who, where the item is, `LF_RateLimit` SPAWN, the
+  0.5 m / 10 degree tolerance against its own plan and the probes at the proposed spot, then spawns
+  the replicated prefab there and uses the item up. No new RPC; the ghost stays local.
+- **Data:** the placeable's prefab attributes (footprint box, reach, snap, who, lifetime). Strings
+  `#LF-Placement_Title`, `_NotAllowed`, `_NoGround`, `_Moved`, `_Blocked`. Nothing persists (#1032).
+- **Proof:** `placement/confirm` (WORLD), the tolerance in `placement/validity` (LOGIC),
+  `session.mjs placement-confirm-proof` (two clients; pictures in `website/public/docs-images/1026/`).

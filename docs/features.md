@@ -1822,10 +1822,10 @@
 
 ### `LF_SpikeStrips` — `Feature/Police/LF_SpikeStrip.c`, `Prefabs/Props/Roleplay/SpikeStrip/` (#646, 2026-11-13)
 - ✅ Police spike strip. Every rank's armory kit carries the folded strip (`SpikeStrip_Item.et`, 6 kg).
-  On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN) lays `SpikeStrip.et`
+  On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN; through `LF_PlacementService.Confirm` since #1026, at the spot the officer's ghost showed) lays `SpikeStrip.et`
   (3.5 m) from 1 m in front of the officer: along their facing, or straight across the nearest road
   within 12 m when the AI road network has one. Its three ground points take the higher of terrain and
-  what stands there; more than 0.25 m between them refuses (`#LF-SpikeStrip_NoGround`). Something standing in
+  what stands there; more than 0.25 m between them refuses (`#LF-Placement_NoGround`). Something standing in
   the footprint (a post, a car) or under it (a strip already laid, anything dynamic) refuses
   (`#LF-Placement_Blocked`, #928). The item is used up.
 - ⚠️ Placement preview (#928 prototype, dev-tools worlds only, selecting the action is not automated): while Deploy is selected the officer sees a ghost
@@ -2717,3 +2717,6 @@
 
 ### `LF_PlacementRules`, `LF_PlacementGhost` — `Feature/Placement/LF_Placement.c` (#927, #928, 2026-11-14)
 - ⚠️ The placement foundation's first piece (design: `docs/roadmap/building-foundation.md`). A feature measures a spot into an `LF_PlacementProbe`; `LF_PlacementRules.Judge` gives `VALID`, `NO_GROUND`, `TOO_STEEP` (more than the step along the footprint) or `BLOCKED` (something in the clearance box, or a dynamic or same-kind surface underneath), with a reason for the log. `LF_PlacementGhost` shows a prefab's mesh on this machine only, in Conflict's blue `CanBuild` or red `CannotBuild` material. The spike strip is the only user so far. Tests: `placement/validity` (LOGIC); the clearance check in `police/spike-strip` (WORLD); session proof `placement-preview-proof`.
+
+### `LF_PlacementService`, `LF_PlaceableComponent` — `Feature/Placement/LF_PlacementService.c`, `LF_PlaceableComponent.c` (#1026, 2026-11-14)
+- ⚠️ One server-checked path for putting a carried item into the world. `LF_PlaceableComponent` on the item names the placed prefab, the footprint box, the reach, the snap mode (`GROUND`, `ACROSS_ROAD`; floor and wall are #1028), who may place it (`ANYONE`, `ON_DUTY_POLICE`; the policy is #1030) and the lifetime. The player's machine proposes the spot its ghost shows in the placing action's own data (no RPC); `LF_PlacementService.Confirm` refuses it unless the player may place it, the item is on the ground or in their own inventory, `LF_RateLimit` SPAWN allows it, it lies within 0.5 m and 10 degrees of the server's own plan, and the probes there say `VALID`; then it spawns the prefab at the probed spot and uses the item up. Refusals toast under `#LF-Placement_Title` and log `[LFDebug:Placement] refused: ...`. The spike strip is the first consumer. Tests `placement/confirm` (WORLD), `placement/validity` (LOGIC); proof `session.mjs placement-confirm-proof` (two clients on a dedicated server, the strip within 1 mm of the ghost on both).

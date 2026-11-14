@@ -27,7 +27,7 @@ export async function main() {
     name_key: "#LF-Strip_Name", description_key: "#LF-Strip_Description", weight: 6, item_volume: 2500,
     components: [{ class: "LF_SpikeStripComponent", props: { m_sItemPrefab: "$item", m_fHalfLength: 1.75 } }],
     actions: [{ class: "LF_SpikeStripPickUpAction" }],
-    item_components: [{ class: "LF_DeployableItemComponent", props: { m_sDeployedPrefab: "$deployed" } }],
+    item_components: [{ class: "LF_PlaceableComponent", props: { m_sPlacedPrefab: "$deployed" } }],
     item_actions: [{ class: "LF_SpikeStripDeployAction" }],
   });
   let n = 0;
@@ -72,7 +72,7 @@ export async function main() {
     ok(item.includes('ActionsManagerComponent "{508AB5952B584B2E}"') && item.includes('UserActionContext "{508AC2ABEC97066C}"'), "prefab: the item overrides Item_Base's actions by GUID");
     ok(item.includes('ItemDisplayName UIInfo "{5222EB4D07D865FA}"') && item.includes("ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {"), "prefab: the item overrides the base's name and physical attributes by id");
     ok(/Weight 6\n\s+SizeSetupStrategy Volume\n\s+ItemVolume 2500\n/.test(item), "prefab: the item's weight and volume come from the spec");
-    ok(item.includes(`m_sDeployedPrefab "${refs.deployed}"`) && item.includes("LF_SpikeStripDeployAction"), "prefab: the item names what it deploys into and carries the deploy action");
+    ok(item.includes(`m_sPlacedPrefab "${refs.deployed}"`) && item.includes("LF_SpikeStripDeployAction"), "prefab: the item names what it deploys into and carries the deploy action");
     ok(item.includes("SCR_GadgetComponent"), "prefab: the item has a gadget component (LF_Test_ItemVolume: or it takes no room)");
     ok(balanced(item), "prefab: the item's braces balance");
   }
@@ -104,7 +104,7 @@ export async function main() {
     const itemText = read("Prefabs/Props/Roleplay/Strip/Strip_Item.et");
     ok(itemText.includes(`{6666666666666666}${assetDir}/Strip_Folded.xob`), "scaffold: the item carries the folded model");
     ok(stripText.includes(`{5555555555555555}${assetDir}/Strip.xob`), "scaffold: the deployed prop carries the strip model");
-    ok(stripText.includes(`m_sItemPrefab "${ref.item}"`) && itemText.includes(`m_sDeployedPrefab "${ref.deployed}"`), "scaffold: the two prefabs name each other by {GUID}path");
+    ok(stripText.includes(`m_sItemPrefab "${ref.item}"`) && itemText.includes(`m_sPlacedPrefab "${ref.deployed}"`), "scaffold: the two prefabs name each other by {GUID}path");
     ok(read("Prefabs/Props/Roleplay/Strip/Strip_Item.et.meta").includes(`Name "${ref.item}"`), "scaffold: the item's .meta holds the GUID the prop names");
     writeFileSync(join(addon, "Prefabs/Props/Roleplay/Strip/Strip.et"), stripText + "// edited by hand\n");
     console.log = () => {};

@@ -113,7 +113,7 @@ proven by a real restart (#1032).
 - `Feature/Placement/LF_Placement.c`: `LF_EPlacementVerdict`, `LF_PlacementProbe`,
   `LF_PlacementRules` (`Judge`, `Reason`, `FindBlocker`, `SurfaceBlocker`) and
   `LF_PlacementGhost`.
-- `LF_SpikeStrips.Plan` measures the spot into a probe. `LF_SpikeStrips.Deploy` (server) and
+- `LF_SpikeStrips.Plan` (since #1026 `LF_PlacementService.Plan`) measures the spot into a probe. `LF_SpikeStrips.Deploy` (server) and
   `LF_SpikeStripPreview` (client, every 50 ms) both use it, so the colour the officer sees is the
   answer the server gives. Deploy now also refuses a strip on top of another, under a car, or
   against a post.
@@ -125,6 +125,27 @@ proven by a real restart (#1032).
   `website/public/docs-images/928/`.
 - Found on the way: the AI road network has no road at the DebugWorld main street (`plan: road 0`
   on the server and the client), so the strip follows the officer's facing there. That is #1029.
+
+## 7a. The placement service in the tree (#1026)
+
+- `Feature/Placement/LF_PlaceableComponent.c`: the placed prefab, the footprint box (the clearance box,
+  lifted off the surface; the ground is sampled at its two z ends and its middle), the reach in front
+  of the player, the snap mode (`GROUND`, `ACROSS_ROAD`; `FLOOR` and `WALL` refuse until #1028), who
+  (`ANYONE`, `ON_DUTY_POLICE` until the #1030 policy) and the lifetime. It replaced
+  `LF_DeployableItemComponent`.
+- `Feature/Placement/LF_PlacementService.c`: `Plan` (both sides, the spot by snap mode), `ProbeAt`
+  (both sides, the probes at one spot) and `Confirm` (server: who, holder, `LF_RateLimit` SPAWN, the
+  0.5 m / 10 degree tolerance against its own plan, the probes at the proposal, spawn, the item used
+  up, `[LFDebug:Placement] placed ...`). `LF_PlacementGeometry` holds the pure geometry it shares
+  with the strip.
+- The proposal travels in the action's own data: `LF_SpikeStripDeployAction.OnSaveActionData` writes
+  the ghost's origin and forward on the officer's machine, `OnLoadActionData` keeps it on the server for
+  3 s, `PerformAction` confirms it. No RPC. A perform with no proposal confirms the server's own plan.
+- `LF_SpikeStrips.Deploy` / `DeployAt` are consumers: they add the deployer and the strip's log line.
+- Proof: WORLD `placement/confirm` (own spot places; 3 m off, turned 30 degrees, on a laid strip and
+  a civilian are refused with the reason); `session.mjs placement-confirm-proof` (two clients on a
+  dedicated server: the strip lies within 1 mm of the ghost on both; pictures in
+  `website/public/docs-images/1026/`).
 
 ## 8. Core and pack
 

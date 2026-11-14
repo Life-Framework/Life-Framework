@@ -2,7 +2,8 @@
 // tier: LOGIC
 //! The placement foundation's verdict (#927, #928): a probe maps to valid or to one invalid reason,
 //! in a fixed order (no ground, then too steep, then blocked), and every invalid verdict carries a
-//! reason for the log and the refusal while a valid one carries none.
+//! reason for the log and the refusal while a valid one carries none. A client's proposal is within
+//! the confirm tolerance (#1026) up to 0.5 m and 10 degrees from the server's spot, and not beyond.
 class LF_Test_Placement : LF_Test
 {
 	override string GetName()
@@ -39,6 +40,22 @@ class LF_Test_Placement : LF_Test
 
 		ctx.EqualStr("blocked", LF_PlacementRules.Name(LF_EPlacementVerdict.BLOCKED), "verdict names are lower case for logs and the harness");
 		ctx.EqualStr("valid", LF_PlacementRules.Name(LF_EPlacementVerdict.VALID), "the valid name");
+
+		// The confirm tolerance (#1026): a proposal within 0.5 m and 10 degrees of the server's spot.
+		vector own[4];
+		LF_PlacementGeometry.Transform("0 0 -1", "0 0 1", own);
+		vector moved[4];
+		LF_PlacementGeometry.Transform("0.4 0 -1", "0.4 0 1", moved);
+		vector far[4];
+		LF_PlacementGeometry.Transform("0.6 0 -1", "0.6 0 1", far);
+		vector turned[4];
+		LF_PlacementGeometry.Transform("-0.26 0 -0.97", "0.26 0 0.97", turned);
+		string offBy;
+		ctx.True(LF_PlacementGeometry.WithinTolerance(own, own, 0.5, 10, offBy), "the server's own spot is within the tolerance");
+		ctx.True(LF_PlacementGeometry.WithinTolerance(own, moved, 0.5, 10, offBy), "40 cm off is within it");
+		ctx.False(LF_PlacementGeometry.WithinTolerance(own, far, 0.5, 10, offBy), "60 cm off is not");
+		ctx.True(offBy.IndexOf("from the server's spot") != -1, "the tolerance reason says how far off: " + offBy);
+		ctx.False(LF_PlacementGeometry.WithinTolerance(own, turned, 0.5, 10, offBy), "turned 15 degrees is not");
 	}
 
 	//------------------------------------------------------------------------------------------------
