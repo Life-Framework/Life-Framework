@@ -451,6 +451,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SystemsWorldPlaces(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SystemsWorldResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Terms(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestOrgSignWorld(), LF_TestTier.WORLD);
