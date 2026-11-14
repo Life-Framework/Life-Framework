@@ -3359,7 +3359,10 @@ function wtHelpFull() {
   console.log(`worktree commands (parallel agent isolation)
 
   tools\\cli wt new <slug> [--wait] [--base B] [--priority low]  create Life-Framework-ws-<slug> at ws/<slug>, allocate ports;
-                                       --priority records the pool priority for that worktree (spikes: low)
+                                       --priority records the pool priority for that worktree (spikes: low);
+                                       claims a ready warm worktree when one exists (--no-warm: always fresh)
+  tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
+                                       'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
@@ -3412,8 +3415,9 @@ function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
-    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args) });
-    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""}`);
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 600000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args), warm: !args.includes("--no-warm") });
+    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""} in ${(r.ms / 1000).toFixed(1)} s (${r.warm ? "warm pool" : "fresh checkout"}; lock ${(r.lockMs / 1000).toFixed(1)} s)`);
+    console.log(`  time:   ${Object.entries(r.phases ?? {}).map(([k, v]) => `${k} ${(v / 1000).toFixed(1)}s`).join(", ")}`);
     console.log(`  base:   origin/${r.base}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
@@ -3462,6 +3466,10 @@ async function wtListCmd() {
   })));
   const dirtyOf = new Map(live.map((e, i) => [e.path, statuses[i].trim() ? "dirty" : "clean"]));
   for (const e of rows) {
+    if (e.status === "creating") {
+      console.log(line(e, "creating"));
+      continue;
+    }
     if (!existsSync(e.path)) {
       console.log(line(e, "MISSING"));
       continue;
@@ -3488,7 +3496,34 @@ async function wtListCmd() {
     else if (merged && ahead === 0) stateText = "dirty, uncommitted work (commit or discard before prune)";
     console.log(line(e, stateText));
   }
+  const warm = Object.values(state.warm ?? {});
+  if (warm.length) console.log(`warm pool: ${warm.filter((w) => w.status === "ready").length} ready, ${warm.filter((w) => w.status !== "ready").length} busy (tools\\cli wt warm)`);
   return 0;
+}
+
+function wtWarmCmd(args) {
+  const sub = args[0] ?? "status";
+  try {
+    if (sub === "fill") {
+      const r = wt.wtWarmFill(ROOT, { log: (m) => console.log(m) });
+      if (r.skipped) console.log(`warm: ${r.skipped}`);
+      else console.log(`warm: made ${r.made.length} tree(s)`);
+    } else if (sub === "drain") {
+      const gone = wt.wtWarmDrain(ROOT);
+      console.log(`warm: removed ${gone.length} tree(s)${gone.length ? ": " + gone.join(", ") : ""}`);
+    } else if (sub !== "status") {
+      console.log("usage: tools\\cli wt warm [status|fill|drain]");
+      return 1;
+    }
+    const s = wt.warmStatus(ROOT);
+    console.log(`warm pool: K=${s.k} (LF_WT_WARM), fills while free disk >= ${s.minFreeGb} GB (LF_WT_WARM_MIN_FREE_GB); free ${s.freeGb === null ? "unknown" : s.freeGb.toFixed(1) + " GB"}`);
+    for (const w of s.trees) console.log(`  ${w.status.padEnd(11)}${w.path}${w.head ? `  at ${w.head.slice(0, 8)}` : ""}${w.pid ? `  pid ${w.pid}` : ""}`);
+    if (!s.trees.length) console.log("  (empty)");
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
 }
 
 function wtSyncCmd(args) {
@@ -4139,6 +4174,7 @@ function cmdWt(rest) {
   const table = {
     new: () => wtNewCmd(subArgs),
     list: () => wtListCmd(),
+    warm: () => wtWarmCmd(subArgs),
     test: () => wtTestCmd(subArgs),
     e2e: () => wtE2eCmd(subArgs),
     dev: () => wtDevCmd(subArgs),

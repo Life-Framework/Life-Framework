@@ -42,8 +42,56 @@ harmless to your editor because the worktree is a separate directory.
   one build at a time, everyone else `--wait`s. `cli dev` skips the build
   entirely, so the everyday loop never contends.
 - **Hub** — coordination state lives in `<main>/tmp/wt/` (git-ignored):
-  `state.json` (registry + ports) and `locks/`. Derived from `git worktree
+  `state.json` (registry + ports + the warm pool) and `locks/`. Derived from `git worktree
   list`, so it survives worktrees created by hand.
+
+## Fast `wt new`: short lock and warm pool
+
+A checkout of this repo is about 1.5 GB and takes 12-30 s; that used to run
+inside the `wt` lock, so a burst of agents queued behind each other and the
+second one failed with `lock 'wt' is held`. Now:
+
+- **The `wt` lock covers bookkeeping only**: reserving the slug and its ports in
+  `state.json`, claiming a warm tree, and git metadata (`git branch`, `git worktree
+  add --no-checkout`), each well under a second. Fetch, checkout (`git reset --hard`),
+  the marker and the rdb copy run unlocked, so concurrent `wt new` calls overlap.
+  `wt new` waits up to 2 min for the lock (10 min with `--wait`). While its checkout
+  runs the entry has `status: "creating"` (`wt list` shows `creating`;
+  `validate-worktrees` and `wt prune --merged` skip it); a `wt new` that died there is
+  cleared by the next `wt new` of that slug, or `wt prune <slug> --force`. `state.json`
+  is written by temp file plus rename, always under the lock.
+- **Warm pool**: K checkouts on detached `origin/main` at
+  `..\Life-Framework-warm-<id>`, recorded in `state.warm` (never `state.worktrees`).
+  `wt new` claims the oldest ready one: it checks the tree is pristine (`git status
+  --ignored` empty) and holds no junction or symlink, `git worktree move`s it to
+  `Life-Framework-ws-<slug>`, and checks out `ws/<slug>` cut from `origin/<base>` (a
+  fast-forward when main moved since the tree was made). It then writes `tmp/wt.json` and
+  copies the rdb like a fresh one; the registry entry, marker, ports, path, branch and its
+  upstream are the same, so `test`, `session up`, `look`, `wt ship`, `wt prune` and the
+  pool's `Life-Framework-rt-<slug>` run folders cannot tell the difference. A claim takes
+  about 2 s instead of 12-30 s; the output prints `(warm pool)` or `(fresh checkout)` and a
+  `time:` line per phase. With no ready tree, or one that fails the checks (marked
+  `broken`), `wt new` makes a fresh one as before.
+- **Why move and not keep the pooled path**: the final path is then the one every
+  consumer derives from the slug, and a move is a directory rename (about 0.1 s). A
+  warm tree has never booted a server, so it has no `game-addons` junction; the claim
+  refuses one that has any link, so nothing with a junction is ever moved. The git
+  admin dir keeps its `Life-Framework-warm-<id>` name, which nothing reads.
+- **Filling**: after every `wt new` and `wt prune`, `tools/wt-warm.mjs fill` starts
+  detached and hidden at below-normal priority, makes trees one at a time until K are
+  ready or preparing, and exits. One filler at a time (lock `wt-warm`). It never fills
+  while free disk on the worktree volume is under `LF_WT_WARM_MIN_FREE_GB` (default 12;
+  the pool's `minFreeDiskGb` floor is 5), and logs why to `<main>/tmp/wt/warm.log`.
+  It also removes trees a dead filler or claimer left behind and `broken` ones.
+- **Removal** of a warm tree goes through `recycleWorktree` in `tools/link-safety.mjs`
+  (junctions unlinked first, `link-safety-selftest` covers it); never delete a
+  `Life-Framework-warm-*` folder by hand.
+- **Settings** (env or `lf.local.json`): `LF_WT_WARM` = K (default 3; 0 turns the pool
+  off), `LF_WT_WARM_MIN_FREE_GB`, `LF_WT_WARM_KICK=0` (no background filler).
+  `tools\cli wt warm` shows the pool, `wt warm fill` fills it in the foreground,
+  `wt warm drain` removes the ready trees, `wt new <slug> --no-warm` forces a fresh one.
+- Proof: `tools/validation/wt-warm-selftest.mjs` (fixture repo: fill, stale claim,
+  fresh fallback, junction refusal, prune, drain).
 
 ## Daily use
 
