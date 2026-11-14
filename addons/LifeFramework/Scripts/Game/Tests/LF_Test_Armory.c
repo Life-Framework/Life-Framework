@@ -25,7 +25,7 @@ class LF_Test_Armory : LF_Test
 		ctx.True(pack != null && inventory.TryInsertItem(pack, EStoragePurpose.PURPOSE_LOADOUT_PROXY), "the robber wears a pack");
 
 		ResourceName m9 = "{C95F0E5226F71550}Prefabs/Items/Police/LF_ArmoryM9.et";
-		LF_Bank.Configure(storeId, 1, 1, 600, 0, 0, "");
+		LF_Bank.Configure(storeId, 1, 1, 600, 0, 0);
 		LF_Bank.ConfigureTools(storeId, "keycard,charge", 0);
 		LF_Bank.ConfigureHeist(storeId, LF_BankLoot.KIND_WEAPONS, m9 + "," + m9, LF_WantedReports.OFFENCE_ARMORY, true, 2, 1800);
 
