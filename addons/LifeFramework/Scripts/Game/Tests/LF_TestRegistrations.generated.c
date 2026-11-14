@@ -324,6 +324,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplication(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
@@ -332,6 +334,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceWantedBoard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceStationWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceItemState(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceTrialExpiry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);

@@ -8453,6 +8453,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logout in custody"
      Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
     }
+    CustomStringTableItem "{A3D17C50B8E24F96}" {
+     Id "LF-PoliceApp_Error_Playtime"
+     Target_en_us "You need more play time before you can apply. Time left: %1."
+     Comment "Refusal: the playtime gate (#803). %1 is the play time still missing, such as 12h 30m."
+    }
+    CustomStringTableItem "{5E8B02D6C9A17F43}" {
+     Id "LF-PoliceApp_Error_Cooldown"
+     Target_en_us "Your last application was rejected. You can apply again in %1."
+     Comment "Refusal: the rejection cooldown (#803). %1 is the wait left, such as 2h 5m."
+    }
     CustomStringTableItem "{B56342EA30F0AFB8}" {
      Id "LF-ClipStamp_Action"
      Target_en_us "Show clip stamp"
