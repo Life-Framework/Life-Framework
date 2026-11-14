@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DA7ED0853C72446B}Configs/Gazette/LF_Gazette.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

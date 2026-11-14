@@ -62,6 +62,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_DevGameMaster.Install(AreDevToolsEnabled());
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
+		LF_Gazette.Install();
 		LF_ChainTrace.Install();
 		// The replicated DELIVERY level follows every job level change (server only, #749).
 		LF_JobLevelSync.EnsureSubscribed();

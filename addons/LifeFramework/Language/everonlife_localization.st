@@ -8468,6 +8468,96 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{140982C0EE016EBF}" {
+     Id "LF-Gazette_Action"
+     Target_en_us "Gazette"
+     Comment "F-key action name for gazette (#792)."
+    }
+    CustomStringTableItem "{43049026883A77F2}" {
+     Id "LF-Gazette_Title"
+     Target_en_us "THE {TOWN} GAZETTE"
+     Comment "Printed heading of the gazette sheet (#792)."
+    }
+    CustomStringTableItem "{A6F19A818990CF82}" {
+     Id "LF-Gazette_Crime"
+     Target_en_us "%1 is wanted by the {police}: %2."
+     Comment "Story: a named suspect of a reported crime (#792). %1 name, %2 offence."
+    }
+    CustomStringTableItem "{9E4BD90486B32C71}" {
+     Id "LF-Gazette_CrimeAnon"
+     Target_en_us "The {police} want to speak to a suspect: %2."
+     Comment "Story: a reported crime, suspect not yet identified (#792). %2 offence."
+    }
+    CustomStringTableItem "{3AABE62738C531F7}" {
+     Id "LF-Gazette_Arrest"
+     Target_en_us "%1 was arrested and sentenced to %3 minutes."
+     Comment "Story: an arrest (#792). %1 name, %3 sentence minutes."
+    }
+    CustomStringTableItem "{A5E9F746431D1ACB}" {
+     Id "LF-Gazette_Murder"
+     Target_en_us "%1 is wanted by the {police} for murder."
+     Comment "Story: an identified killer (#792)."
+    }
+    CustomStringTableItem "{89D22AEE787B4E4E}" {
+     Id "LF-Gazette_MurderAnon"
+     Target_en_us "A resident of {Town} was found dead. The {police} are investigating."
+     Comment "Story: a killing, killer not identified (#792)."
+    }
+    CustomStringTableItem "{818220A89D03B0E7}" {
+     Id "LF-Gazette_Chop"
+     Target_en_us "%1 sold a stolen vehicle to a chop shop for %3."
+     Comment "Story: a chopped vehicle, chopper identified (#792)."
+    }
+    CustomStringTableItem "{4E5FACB67D5DE318}" {
+     Id "LF-Gazette_ChopAnon"
+     Target_en_us "A vehicle vanished into a chop shop in {Town}."
+     Comment "Story: a chopped vehicle, chopper not identified (#792)."
+    }
+    CustomStringTableItem "{6F33DE692FC8CB46}" {
+     Id "LF-Gazette_Heist"
+     Target_en_us "%1 is wanted for a heist in {Town}."
+     Comment "Story: an identified heist robber (#792)."
+    }
+    CustomStringTableItem "{DEC80ECACF93C6A0}" {
+     Id "LF-Gazette_HeistAnon"
+     Target_en_us "A heist shook {Town}: %3 was taken."
+     Comment "Story: a heist, robber not identified (#792). %3 loot."
+    }
+    CustomStringTableItem "{15395AF30492C572}" {
+     Id "LF-Gazette_Vault"
+     Target_en_us "%1 cracked open a vault in {Town}."
+     Comment "Story: an identified vault breaker (#792)."
+    }
+    CustomStringTableItem "{CA1E169027BF6557}" {
+     Id "LF-Gazette_VaultAnon"
+     Target_en_us "A vault in {Town} was cracked open overnight."
+     Comment "Story: a vault breach, robber not identified (#792)."
+    }
+    CustomStringTableItem "{2EF30EED9CC5A416}" {
+     Id "LF-Gazette_Job"
+     Target_en_us "A day of honest work paid %3 in {Town}."
+     Comment "Story: a completed job, nobody named (#792). %3 pay."
+    }
+    CustomStringTableItem "{CCCE1FA1B1428382}" {
+     Id "LF-Gazette_Fence"
+     Target_en_us "A fence did a brisk trade in {Town}: %3 in tools."
+     Comment "Story: a fence sale, nobody named (#792). %3 price."
+    }
+    CustomStringTableItem "{8AD2E950517FCF3E}" {
+     Id "LF-Gazette_Medic"
+     Target_en_us "A {medic} brought a patient to hospital in {Town}."
+     Comment "Story: a patient delivered to a bed, nobody named (#792)."
+    }
+    CustomStringTableItem "{2DBC8D39DB8519EB}" {
+     Id "LF-Gazette_Empty"
+     Target_en_us "No edition has been printed yet."
+     Comment "The newsstand line before the first edition (#792)."
+    }
+    CustomStringTableItem "{8DB339305A12A14E}" {
+     Id "LF-Gazette_Edition"
+     Target_en_us "Edition %1"
+     Comment "Heading of an edition on the sheet (#792). %1 edition number."
+    }
   }
  }
 }
