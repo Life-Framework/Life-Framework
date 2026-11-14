@@ -36,8 +36,11 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`), write the PR body
    to `tmp\pr-body.md`, then
    `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body.md`. It
-   checks the tree, merges main only on conflict, runs `validate --full` +
-   build + `--tier all`, pushes, opens the PR, and queues auto-merge.
+   checks the tree, pushes, opens the PR and puts it in the ship queue, which
+   merges main once and runs `ci --remote` (`validate --full` + build +
+   `--tier all` on pool machines), then queues auto-merge. It waits until the
+   gate passed or failed (`SUMMARY ship ok|fail ... log=`); if your shell
+   times out first, `tools\cli ship-queue wait <slug>` resumes the wait.
    Ship checks the body before the gate and refuses: an `addons/` change with no
    body file, a `TODO(scaffold)` left in it, no `## Manual testing` section, a
    player-visible change with no embedded picture (`look`, `look item` or

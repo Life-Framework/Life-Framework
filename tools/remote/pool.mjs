@@ -35,6 +35,7 @@ import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
+import * as shipQueue from "../lib/ship-queue.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -107,6 +108,11 @@ export function resolvePriority(root, flag) {
 
 // Every ssh to a pool machine is bounded: ConnectTimeout 4 s plus these overall limits.
 export const PROBE_TIMEOUT_MS = 12000; // probe, lock read
+export const PROBE_RETRY_TIMEOUT_MS = 30000; // the second, patient probe of a machine that answered lately
+export const SLOW_PROBE_MS = 6000; // an answer slower than this shows "slow"
+export const RECENT_OK_MS = 5 * 60000; // "answered recently": still used while probes miss
+export const DOWN_AFTER_FAILS = 3; // DOWN needs this many misses in a row ...
+export const DOWN_WINDOW_MS = 90000; // ... spread over at least this long
 export const HOLDER_FIRST_BYTE_MS = 40000; // no output at all from the holder
 export const HOLDER_TIMEOUT_MS = 180000; // holder never reports a slot, busy, or error
 
@@ -315,29 +321,68 @@ function healthFile(root) {
 
 // { reachable, build, at, ms }. Remote answers are cached for a minute in the
 // hub, so a queue of waiting agents does not ssh a dead box every poll.
-export function probe(root, m, { fresh = false } = {}) {
-  if (m.via === "local") return { reachable: true, build: tb.serverBuildId(tb.localServerDir(root)), at: Date.now(), ms: 0 };
+//
+// A busy machine (3 servers, 6 clients, 2 Workbenches) answers ssh slowly. One missed answer is not
+// "down": judgeHealth keeps a machine that answered recently in use and shows it as "slow".
+export function probe(root, m, { fresh = false, ssh = tb.sshPs, now = Date.now } = {}) {
+  if (m.via === "local") return { reachable: true, build: tb.serverBuildId(tb.localServerDir(root)), at: now(), ms: 0 };
   const file = healthFile(root);
   const cache = readJson(file, {});
   const hit = cache[m.name];
-  if (!fresh && hit && Date.now() - hit.at < HEALTH_TTL_MS) return hit;
-  const t0 = Date.now();
-  const res = tb.sshPs(m.host, [`$main = ${tb.psQuote(m.root)}`, tb.PS_BUILDID, "Write-Host 'lf-pool: ok'"].join("\n"), { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
-  const out = res.stdout ?? "";
-  const h = { reachable: /lf-pool: ok/.test(out), build: /lf-remote: buildid (\d+)/.exec(out)?.[1] ?? null, at: Date.now(), ms: Date.now() - t0 };
-  const now = readJson(file, {});
-  now[m.name] = h;
+  if (!fresh && hit && now() - hit.at < HEALTH_TTL_MS) return hit;
+  const script = [`$main = ${tb.psQuote(m.root)}`, tb.PS_BUILDID, "Write-Host 'lf-pool: ok'"].join("\n");
+  const attempt = (timeout, connectTimeout) => {
+    const t0 = now();
+    const res = ssh(m.host, script, { timeout, connectTimeout });
+    const out = res?.stdout ?? "";
+    return { ok: /lf-pool: ok/.test(out), build: /lf-remote: buildid (\d+)/.exec(out)?.[1] ?? null, ms: now() - t0 };
+  };
+  let s = attempt(PROBE_TIMEOUT_MS, 4);
+  // A machine that answered recently is most likely busy, not gone: ask once more, patiently.
+  if (!s.ok && hit?.okAt && now() - hit.okAt < RECENT_OK_MS) s = attempt(PROBE_RETRY_TIMEOUT_MS, 10);
+  const h = judgeHealth(hit, s, now());
+  const cur = readJson(file, {});
+  cur[m.name] = h;
   try {
-    writeFileSync(file, JSON.stringify(now, null, 2));
+    writeFileSync(file, JSON.stringify(cur, null, 2));
   } catch {}
   return h;
 }
 
-function markHealth(root, m, h) {
+// Health rule (pure; the selftest drives it). prev is the stored entry, sample { ok, build, ms }.
+// An answer is reachable at once ("slow" when it took over SLOW_PROBE_MS). A miss counts as one
+// consecutive failure; the machine stays reachable ("slow") while it answered within RECENT_OK_MS
+// and has not failed DOWN_AFTER_FAILS times in a row across at least DOWN_WINDOW_MS. A machine that
+// never answered, or last answered longer ago than RECENT_OK_MS, is DOWN on the first miss.
+export function judgeHealth(prev, sample, at, { hard = false } = {}) {
+  const p = prev ?? {};
+  if (sample.ok) {
+    return { reachable: true, slow: sample.ms > SLOW_PROBE_MS, fails: 0, firstFailAt: null, okAt: at, build: sample.build ?? p.build ?? null, at, ms: sample.ms };
+  }
+  const fails = (p.fails ?? 0) + 1;
+  const firstFailAt = p.firstFailAt ?? at;
+  const recent = Number.isFinite(p.okAt) && at - p.okAt < RECENT_OK_MS;
+  const sustained = fails >= DOWN_AFTER_FAILS && at - firstFailAt >= DOWN_WINDOW_MS;
+  const reachable = !hard && recent && !sustained;
+  return { reachable, slow: reachable, fails, firstFailAt, okAt: p.okAt ?? null, build: reachable ? p.build ?? null : null, at, ms: sample.ms ?? null, error: sample.error };
+}
+
+// The word `pool status` prints: up, slow (answered late, or missed lately but still trusted), DOWN.
+export function healthWord(h, now = Date.now()) {
+  if (!h.reachable) return "DOWN";
+  if (!h.slow) return "up";
+  if (h.fails > 0 && Number.isFinite(h.okAt)) return `slow (last answer ${Math.round((now - h.okAt) / 1000)} s ago, ${h.fails} miss${h.fails === 1 ? "" : "es"})`;
+  return `slow (${Math.round((h.ms ?? 0) / 1000)} s to answer)`;
+}
+
+// markHealth records one outcome. A reachable one is an answer; an unreachable one is a miss the
+// rule above may forgive (soft); hard: true is a run that really lost its machine (no forgiveness).
+function markHealth(root, m, h, { hard = false, now = Date.now() } = {}) {
   const hf = healthFile(root);
   const hc = readJson(hf, {});
   const prev = hc[m.name] ?? {};
-  hc[m.name] = { ...prev, ...h, build: h.build ?? (h.reachable ? prev.build : null) ?? null, at: Date.now() };
+  const next = judgeHealth(prev, { ok: !!h.reachable, build: h.build ?? null, ms: 0, error: h.error }, now, { hard });
+  hc[m.name] = next;
   try {
     writeFileSync(hf, JSON.stringify(hc, null, 2));
   } catch {}
@@ -1667,7 +1712,7 @@ export function machineGone(root, slot, code, opts = {}) {
   if (!slot.lost && code !== 255) return false;
   const h = (opts.probe ?? ((x) => probe(root, x, { fresh: true })))(m);
   if (h.reachable && !slot.lost) return false;
-  if (!h.reachable) markHealth(root, m, { reachable: false, error: "went away during a run" });
+  if (!h.reachable) markHealth(root, m, { reachable: false, error: "went away during a run" }, { hard: true });
   console.log(`pool: ${m.name} went away during the run (${slot.lost ? "its slot holder dropped" : "ssh failed"}${h.reachable ? "" : ", it does not answer"}); queuing the run again${h.reachable ? "" : `, without ${m.name} for a minute`}`);
   return true;
 }
@@ -2326,7 +2371,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const st = h.reachable && m.via !== "local" ? remoteState(m) : null;
     const heat = st && Number.isFinite(st.thermalC) ? `  ${st.thermalC} °C (holds new jobs at ${m.thermalHoldC})` : m.thermalLog && st ? "  temperature unknown (thermal log stale)" : "";
     const ram = m.via === "local" ? ramText(root) : st && Number.isFinite(st.freeMb) ? `RAM ${(st.freeMb / 1024).toFixed(1)}/${(st.totalMb / 1024).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${heat}` : "";
-    const head = `${m.name}  ${where}  ${h.reachable ? "up" : "DOWN"}  ${build}  ${ram ? `${ram}  ` : ""}${lanes}`.replace(/ {2,}$/, "");
+    const head = `${m.name}  ${where}  ${healthWord(h, now)}  ${build}  ${ram ? `${ram}  ` : ""}${lanes}`.replace(/ {2,}$/, "");
     if (!h.reachable) {
       console.log(head);
       continue;
@@ -2423,6 +2468,10 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
   printSessions(runs.filter(isSession), 8);
+  // The ship queue wt ship feeds (tools/ship-queue.mjs): what gates now, what waits and why, the last few done.
+  const sq = shipQueue.readQueue(wt.hubDirOf(root));
+  if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
+  else console.log("ship queue: empty (tools\cli ship-queue status)");
   return 0;
 }
 

@@ -134,6 +134,8 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
 
 - A line is a `patch` when the core has its id and an `add` when it does not (`"op": "remove"` removes). A
   node takes `"op"` the same way and a node with `options` replaces its reply list (a reply has no id).
+- A pack made with `toolscli pack new <Name>` is taken by `--addon LF_<Name>` (its `.gproj` is read; no list to edit). Its string table may still be the empty one `pack new` wrote.
+- A node with `options` replaces the core node's list, so write every reply the node should keep, and give each a text in `replies` (a reply the patch does not list is refused). `"options_from"` may name a core node.
 - Without a `voice` every patched line is text only: no ElevenLabs call, no budget, no wav. The core's
   recording (if it has one) keeps playing for the lines the patch does not touch; a reworded line shows its
   new caption over the old voice, so reword only where that reads right.

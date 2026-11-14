@@ -856,16 +856,64 @@ function lastTouched(e) {
   return newest;
 }
 
-// Every worktree `wt prune --merged` would remove, and the ones it skips with the reason.
-export function pruneCandidates(root, { idleMs = 30 * 60 * 1000, now = Date.now(), mergedHeads = mergedPrHeads } = {}) {
+// One batched gh call: the newest merged PRs with their head branch, head SHA, base and merge time.
+// `wt prune --merged` matches worktrees against this list. Returns { ok, prs } or { ok: false, error };
+// a missing gh, a failed call, a timeout or unreadable output is an error, never an empty list, so the
+// caller prunes nothing instead of falling back to ancestry.
+export const MERGED_PR_LIMIT = 500;
+export function mergedPrList(root, { timeoutMs = 45000 } = {}) {
+  const gh = ghBin();
+  if (!gh) return { ok: false, error: "gh not found" };
+  const res = run(gh, ["pr", "list", "--state", "merged", "--json", "headRefName,headRefOid,baseRefName,mergedAt,number",
+    "--limit", String(MERGED_PR_LIMIT)], { cwd: root, timeout: timeoutMs });
+  if (res.error && res.error.code === "ETIMEDOUT") return { ok: false, error: `gh pr list timed out after ${Math.round(timeoutMs / 1000)} s` };
+  if (res.status !== 0) return { ok: false, error: `gh pr list failed: ${(res.stderr || res.stdout).trim().slice(0, 200)}` };
+  try {
+    const prs = JSON.parse(res.stdout || "[]");
+    if (!Array.isArray(prs)) return { ok: false, error: "gh pr list returned no list" };
+    return { ok: true, prs };
+  } catch {
+    return { ok: false, error: "gh pr list output was not JSON" };
+  }
+}
+
+// Is this worktree's work in a merged PR, exactly? Pure over the PR list. Merged means a merged PR whose head
+// branch is e.branch, whose base is the worktree's base, and whose head SHA is the branch tip: the branch has
+// no commit the PR did not carry. Ancestry of origin/<base> says nothing here (a fresh branch is an ancestor).
+// Returns { merged, via } where via is the reason either way.
+export function prMergedVerdict(root, e, prs) {
+  const base = baseOf(e);
+  const tip = git(root, ["rev-parse", "--verify", "--quiet", `refs/heads/${e.branch}`]).stdout.trim();
+  if (!tip) return { merged: false, via: "missing branch" };
+  const mine = prs.filter((p) => p.headRefName === e.branch && (!p.baseRefName || p.baseRefName === base));
+  const hit = mine.find((p) => p.headRefOid === tip);
+  if (hit) return { merged: true, via: `merged PR #${hit.number}` };
+  if (mine.length) {
+    const newest = mine.slice().sort((x, y) => String(y.mergedAt).localeCompare(String(x.mergedAt)))[0];
+    return { merged: false, via: `PR #${newest.number} merged, but the branch has commits after it` };
+  }
+  if (gitOk(root, ["merge-base", "--is-ancestor", e.branch, `origin/${base}`])) return { merged: false, via: "no merged PR (ancestor only)" };
+  return { merged: false, via: "no merged PR (not in origin/" + base + ")" };
+}
+
+// Every worktree `wt prune --merged` would remove, and the ones it skips with the reason. Only a merged PR
+// qualifies a worktree (see prMergedVerdict); uncommitted changes, a lock or session and recent activity
+// still keep it. When gh cannot list the PRs, nothing is taken and `ghError` says why. Warm-pool trees live in
+// state.warm, not state.worktrees, so they are never seen here. opts.mergedPrs(root) replaces the gh call.
+export function pruneCandidates(root, { idleMs = 30 * 60 * 1000, now = Date.now(), mergedPrs = mergedPrList } = {}) {
   git(root, ["fetch", "origin", "--prune"]);
   const state = readState(root);
   const take = [];
   const skip = [];
+  const list = mergedPrs(root);
+  if (!list.ok) {
+    for (const [slug, e] of Object.entries(state.worktrees ?? {})) skip.push({ slug, why: `${e.status === "creating" ? "being created" : "merged PRs unknown"}` });
+    return { take, skip, ghError: list.error };
+  }
   for (const [slug, e] of Object.entries(state.worktrees ?? {})) {
     if (e.status === "creating") { skip.push({ slug, why: "being created" }); continue; }
     if (!existsSync(e.path)) { skip.push({ slug, why: "directory missing" }); continue; }
-    const m = branchMerged(root, e.branch, baseOf(e), { mergedHeads });
+    const m = prMergedVerdict(root, e, list.prs);
     if (!m.merged) { skip.push({ slug, why: m.via }); continue; }
     if (git(e.path, ["status", "--porcelain"]).stdout.trim()) { skip.push({ slug, why: "uncommitted changes" }); continue; }
     const busy = worktreeBusy(root, e);

@@ -152,6 +152,7 @@ export function runPatch(root, spec, { dryRun = false, log = console.log } = {})
   const known = parseStrings(readFileSync(stringTable(root, { addon: CORE_NAME }), "utf8"));
   for (const [k, v] of parseStrings(stText)) known.set(k, v);
   const core = loadCoreSpec(root, spec);
+  expand(spec, core.nodes);
   const problems = [...addonProblems(root, spec), ...patchProblems(spec, core, known)];
   if (problems.length) throw new Error("dialogue patch problems:\n  " + problems.join("\n  "));
   log(`dialogue patch ${spec.id}: ${Object.keys(spec.lines || {}).length} line(s) and ${(spec.nodes || []).length} node(s) of '${spec.patches}', text only: 0 characters to buy`);
@@ -164,7 +165,8 @@ export function runPatch(root, spec, { dryRun = false, log = console.log } = {})
   const stChanged = newSt !== stText;
   if (stChanged) writeFileSync(stFile, newSt);
   assertBoundary(root, spec);
-  log(`wrote ${addonDirOf(spec)}/${confRes(spec)}; list it in the pack's mission header m_aLF_ConfigOverlays`);
+  log(`wrote ${addonDirOf(spec)}/${confRes(spec)}; list it in the pack's mission header m_aLF_ConfigOverlays:
+  "{${readGuid(conf + ".meta")}}${confRes(spec)}"`);
   if (stChanged) log("string table changed: run tools\\cli regen-localization");
   return { generated: 0, chars: 0, need: 0, stChanged };
 }

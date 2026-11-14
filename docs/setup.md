@@ -343,6 +343,17 @@ stays the world-editor copy.
 Logs: `server/logs/` (test server), Workbench console under
 `Documents/My Games/ArmaReforger/logs/<date>/`.
 
+## Workshop items and the clean-server check
+
+The two Workshop items are the core `LifeFramework` (`79636E668EA37AC9`) and the pack `LF_Everon1989`
+(`B1E84D5687E11724`). A server owner lists both ids in `game.mods` (`server/example/server.json`) and the server
+downloads them on first boot. The maintainer's upload steps are [release-first-upload.md](release-first-upload.md);
+the proof that a stranger's server boots from the Workshop alone is
+`toolscli workshop boot-check 79636E668EA37AC9 B1E84D5687E11724` (#371). It boots a clean dedicated server on lf-cloud
+with no local addons and an empty cache, then joins a client. **Status:** the tool is proven up to the server's
+`Addon <id> - Addon was not found on workshop.` line; the passing run, its log lines and the Workshop page URLs are
+recorded here after the first upload (#370).
+
 ## Next steps
 
 - [Roadmap](roadmap/README.md) — the live plan

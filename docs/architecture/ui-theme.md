@@ -68,6 +68,17 @@ Only the fields written change. The test fixture is `Configs/Tests/LF_Test_UIThe
 is no owner `config.json` section: a look is a pack's job, and the client would need the config
 stream to see it. Packs load on every client, so none is needed.
 
+Steps from a fresh `toolscli pack new <Name>` (checked on a scratch pack, 2026-11-15):
+
+1. Add `Configs/UITheme.conf` (class `LF_UIThemeConfig`, a `patch` record per theme id, a unique GUID per
+   record) and its `.meta`; list it in the pack mission header's `m_aLF_ConfigOverlays`.
+2. `m_Font` and `m_PaperTexture` take a `{GUID}path`, a core one or one the pack ships. Colours are plain
+   `#RRGGBB` strings (`pack check` does not read them as string keys).
+3. `toolscli pack check <addon>` passes offline. `LF_UIThemeConfig` is in
+   `public-surface.json`, so the boundary check accepts it. `pack explain` does not cover themes yet.
+4. The scaffolded mission header has no `World` or `SystemsConfig`: a pack that only restyles still
+   needs a world to boot, so it cannot be booted alone until `session up --pack` lands.
+
 A malformed colour logs `[LFDebug:UITheme]` once when the theme loads and that token takes the
 built-in paper colour; the sheet still opens.
 

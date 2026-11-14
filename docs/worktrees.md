@@ -101,7 +101,7 @@ tools\cli wt list               # who's working, ports, dirty/merged state
 tools\cli wt test <slug>        # run the LFTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
 tools\cli wt gate <slug>        # validate --full + build + test (tier=all)
-tools\cli wt ship <slug>        # gate -> push -> PR -> auto-merge (merges main only on conflict)
+tools\cli wt ship <slug>        # push -> PR -> ship queue (merge main, gate on the pool) -> auto-merge
 tools\cli wt prune <slug>       # remove a merged worktree + branch
 ```
 
@@ -156,7 +156,8 @@ comment, close on pass). It runs none of them: the maintainer or lead reviews an
 
 ## Auto-merge
 
-`wt ship <slug> [--refs N] [--body-file F]`:
+`wt ship <slug> [--refs N] [--body-file F]` goes through the ship queue (next section). The steps
+below are the old local path, still used with `--no-queue` (or `LF_SHIP_QUEUE=0`, or without `gh`):
 
 1. Refuses a dirty tree or a branch with no commits beyond `origin/main`.
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
@@ -180,6 +181,53 @@ comment, close on pass). It runs none of them: the maintainer or lead reviews an
 conflicts, the ship stops with a message; fix, commit, and re-run the same
 command. Do not merge `origin/main` by hand unless GitHub reports the PR
 `CONFLICTING` or you need code from main.
+
+## Ship queue
+
+About fifteen agents ship at once. With a local gate each `wt ship` ran `validate --full`, a build and the
+suite on this PC, and often twice: main moved during the gate, GitHub reported the PR `CONFLICTING`, the
+agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules in
+`tools/lib/ship-queue.mjs`) is one merge train for the repo:
+
+1. `wt ship <slug>` checks the tree and the PR body as before, pushes `ws/<slug>`, opens the PR (or reuses
+   it, switching off an auto-merge left from an earlier ship, so the push cannot land ungated) and adds it
+   to the queue (`tmp/wt/ship-queue.json` in the main checkout). It starts the worker when none runs.
+2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
+   (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
+   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
+   the Workbench compile and build on whichever pool machine has the `workbench` cap and room
+   (`tools/lib/wb-gate.mjs`), the suite, core-only run and placement audit on pool test lanes. A branch
+   that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
+   build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
+   so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
+   one worktree at a time behind the hub build lock, in the first queue run).
+3. **Re-gate rule.** When the gate passes, the worker fetches again. If main moved, it re-gates only
+   when the new main commits change a file the PR changes, or a generated file (the test registry, a
+   language conf, the string table). Driver-merged docs (`docs/features.md`, `docs/debug-log-triage.md`,
+   the lint baseline) do not count. Otherwise it pushes the gated head as is, and GitHub's required
+   `validate` check covers the combination. After three gates it pushes regardless.
+4. Pass: push, `gh pr merge --auto --merge`. Fail: a PR comment with the failing lines of the log and
+   its path, the entry is marked failed, and the queue moves on. Fix, commit, `wt ship` again.
+   A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
+   is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
+   most twice, then fails like any gate.
+
+**Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
+or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
+A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes
+(driver-merged docs again do not count), so PRs on disjoint files gate side by side on different
+machines and overlapping ones keep their order.
+
+**Waiting.** `wt ship` waits until the gate passed or failed and prints
+`SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
+default when stdout is not a terminal, so an agent's report says what really happened; a terminal
+returns once queued (`--no-wait`, `--wait` to force). `tools\cli ship-queue wait <slug>` resumes a wait
+(the wait gives up after 3 h with exit 2, the gate keeps going), `ship-queue status` and `pool status`
+show what gates, what waits and why, and the last few results; `ship-queue cancel <slug>` drops a
+waiting entry. A re-ship of a waiting slug replaces its entry and keeps its place; one whose gate runs
+is refused until it ends. The worker logs to `tmp/logs/ship-queue-worker.log`, each gate to
+`tmp/logs/ship-<slug>-<stamp>.log`; a gate is killed after 100 min, an idle worker exits after 3 min,
+and a worker that died leaves its running entries to be re-queued by the next one.
 
 ## Keeping PRs moving (`prs`)
 
@@ -376,7 +424,11 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   within 180 s, counts as down too: the run prints one line (`pool: <machine>:
   <reason>; <machine> marked down for this run, falling back to <next>`), does
   not retry that machine, and takes the next machine or this PC. `pool status`
-  bounds each probe at 12 s and prints `DOWN`. A waiting run prints one line
+  bounds each probe at 12 s (a machine that answered in the last 5 min gets a
+  second, 30 s probe). One missed answer is not DOWN: a machine that answered
+  within 5 min stays in use and `pool status` prints `slow (last answer N s ago,
+  M misses)`; DOWN needs 3 misses in a row over at least 90 s, or a miss with no
+  answer in the last 5 min, or a run that lost its machine mid-run. A waiting run prints one line
   when it queues and one when it gets its slot, nothing in between. A machine whose server Steam build differs from this PC's is skipped
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
@@ -1093,8 +1145,15 @@ instead.
 Merged worktrees show `merged (prune me)` in `cli wt list`. `cli wt prune
 <slug>` verifies the branch is merged and clean before removing it; `--force`
 discards unmerged work. A squash-merged PR counts as merged (a merged PR whose head SHA is the branch tip, or
-the same files as origin/main). `cli wt prune --merged` lists every worktree that is merged, clean, idle 30 min and
-holds no lock or session; `--yes` prunes them, without it a dry run. `wt ship --refs N` needs N of 1 or more; with
+the same files as origin/main). `cli wt prune --merged` lists every worktree whose branch has a MERGED PR, is clean, idle 30 min and
+holds no lock or session; `--yes` prunes them, without it a dry run. The merged PR comes from one batched
+`gh pr list --state merged` (newest 500, 45 s timeout), matched on `ws/<slug>` and the worktree's base, and its
+head SHA must equal the branch tip, so a branch with a commit the PR did not carry is kept. **Ancestry of
+`origin/main` never qualifies a worktree**: a brand-new worktree is an ancestor too. The dry run says why each
+one stays (`keep <slug>: no merged PR (ancestor only)`, `PR #N merged, but the branch has commits after it`,
+`uncommitted changes`, `touched N min ago`, a lock). When `gh` is missing, fails or times out, nothing is pruned
+and the command exits 1 saying so; there is no fallback to ancestry. Warm-pool trees are never listed. `wt prune <slug>`
+and `--force` keep their checks: you named the worktree on purpose. `wt ship --refs N` needs N of 1 or more; with
 no issue, leave the flag out. `cli validate` warns you about worktrees that are ready
 to prune and about any registry inconsistency.
 
@@ -1125,3 +1184,25 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
+
+## Lead view
+
+`tools\cli lead` is the dispatch screen for the lead agent (about 30 lines, about 10 s, no session or lock taken). The sections run in
+parallel, each with its own timeout; one that fails prints one line and the rest still print.
+
+- MILESTONES: open M2 and M3 issues split by label: needs code (`agent:working` counted separately), `in-dev`, `needs-playtest`,
+  `needs-human`. A human gate beats a playtest, a playtest beats in-dev. M2.5 is not M2.
+- PRS: every open PR, conflicting first, then BLOCKED/UNSTABLE/BEHIND, then CLEAN; checks and age. A conflicting PR names whether only
+  generated or driver-merged files conflict (`prs heal` fixes those) or a source file needs a human (`git merge-tree`, no checkout).
+  A PR GitHub has not graded yet (UNKNOWN) is asked through the REST endpoint.
+- WORKTREES: active (a file, commit or log touched in 30 min) vs idle; merged-prunable; orphans (in the registry but not a git worktree
+  or missing, or a `Life-Framework-ws-*` folder nobody registered); disk. A worktree is merged only through a merged GitHub PR whose head
+  SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
+  Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
+  `~N GB (k/n measured)`; the walk never follows a junction.
+- POOL: one line per machine (free RAM, lanes busy/total, temperature, DOWN or slow) and the queue length, read from `pool status`.
+- ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
+
+`tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
+a merged PR on GitHub, no uncommitted change, idle 30 min, no live lock or session, and re-checked clean just before the delete. When
+GitHub cannot list the merged PRs it prunes nothing.

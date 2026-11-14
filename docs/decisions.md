@@ -129,6 +129,16 @@ neutral engine page cannot carry. What it means for code: no period branding,
 copy, or art in the core (the existing core/pack red line); pack-only strings
 and art live in the pack.
 
+**2026-11-14 — Brand briefs and the two kits.** `docs/branding/core.md` and
+`docs/branding/everon-1989.md` hold the voice, premise and art direction each Workshop page is
+written from; the maintainer signs them off. The core's `.gproj` TITLE is "Life Framework (Core)",
+so the Workshop Project Name matches the decided name. The core page is neutral, opens with a
+"Looking to play?" pointer to the pack, and has no scenario. The pack page carries the 1989 premise
+and the playtest how-to, and the village screenshots belong to it. While both items are 0.x,
+`tools\cli release` stamps one version into both, so they publish together; the pack's kit names the
+core version it needs. `validate-release-ready` checks the TITLE against the kit Project Name,
+that each page names the other, the `Requires` row, and that both briefs exist.
+
 ## Gameplay
 
 **2026-11-07 — In-world first.** Systems live in the environment, not behind a
