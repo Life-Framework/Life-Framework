@@ -184,6 +184,8 @@ under "Hard-coded flagship values in script".
 | `Chat/` | core | Channels |
 | `Core/EditorManagerCore.conf` | core | Engine setup |
 | `UI/LF_UITheme.conf` | split | The theme shape (`LF_UIThemeRecord`, the reader) is core; the 1989 paper, brass and phosphor values are the flagship's look, kept as the core default until the M3 move. A pack overlay patches a theme by id (#966) |
+| `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
+| `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`); a text-only line, listed in the pack's mission header |
 | `Dialogue/LF_Dialogue_Clerk.conf` | pack | The town clerk's conversation (generated from `tools/assets/dialogue/clerk/`); the scene system in `Feature/Dialogue/` is core |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
@@ -281,6 +283,7 @@ its save.
 | `Assets/Items/Roleplay/Drill/`, `Anims/LF/Drill/`, `Anims/Workspaces/Work/LF_DrillPush.*`, `Particles/LF/Drill_fx_bit.ptc`, `Sounds/Items/Drill/` | core | The vault drill and its scene (#340): model, push clips, sparks, motor and grinding loops. They follow `Prefabs/Items/Fence/LF_Drill.et`, the robbery's tool; the component that plays them (`Feature/AssetAnim/`) is core |
 | `Assets/Items/Resources/CementBag/` | core | The cement bag item, a CC0 Poly Haven model through the source stage (`docs/asset-pipeline/sources.md`): the quarry's cement chain is core. |
 | `Sounds/Alarm/Robbery/`, `Prefabs/Police/LF_SiteAlarm_{Bank,Fuel,Store,Van}*.et` | core | The site alarm of each robbery type (#740): bank bell, fuel station intruder alarm, store buzzer, van horn, each with a loud twin. They play through `LF_SiteAlarmComponent` and are picked by the `m_aAlarmKinds` rows of `LF_Police.conf`; the kinds' ids and offences are data, so a pack changes which robbery sounds which alarm without code |
+| `Prefabs/Jobs/LF_Workplace.et` | core | The generic workplace (#1111): a desk, a punch clock with the clock-in action, `LF_WorkplaceComponent` (job id, place registration, optional NPC slot). The police and medic duty desks inherit it; a pack inherits it for its own job (`pack new --job`) |
 | `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |

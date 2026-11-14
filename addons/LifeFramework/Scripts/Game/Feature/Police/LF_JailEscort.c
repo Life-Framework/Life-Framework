@@ -460,6 +460,17 @@ class LF_JailEscort
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An officer is escorting prisonerUid on foot or in a car (LF_DisconnectRules, #691).
+	static bool IsEscorted(string prisonerUid)
+	{
+		if (prisonerUid.IsEmpty() || !s_mHolds || !s_mHolds.Contains(prisonerUid))
+			return false;
+
+		LF_JailEscortHold hold = s_mHolds.Get(prisonerUid);
+		return hold && hold.m_bActive;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsSeated(string prisonerUid)
 	{
 		return GetSeat(prisonerUid) >= 0;

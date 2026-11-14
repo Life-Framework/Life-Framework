@@ -38,6 +38,16 @@ What an agent session used to be needed for, and what does it now:
 | The item in a hand | session, 2 clients | still a session (`asset states --shots` does hand and use) |
 | Dialogue shot, a door, a siren, a held pose | session | still a session |
 
+## Profile fixtures and rejoin (agent-box sessions)
+
+A proof that needs a police roster (or any file the server reads from `$profile:LifeFramework/`) seeds it
+in `up`: `session.mjs up --clients 2 --mission playtest --roster 2` or `--seed <file>`. The leg that boots
+the server writes the fixture just before the server starts, on the machine the session runs on; a file
+written on this PC before `up` never reaches a pool machine. `session.mjs roster <id>` on a live session
+writes the roster and the server reloads it. A client that quits and rejoins keeps its identity (a session
+slot, not the player id): `session.mjs rejoin <n>`, worked example `rejoin-proof`. Details:
+`agent-box/README.md` "Stable client identity and rejoin".
+
 ## The matrix
 
 Evidence levels: **(a)** data only (layer, prefab and config files), **(b)** a world query with no
@@ -137,6 +147,13 @@ seconds and asks the pool to trim idle sessions first; under that it fails at on
 (`--force` skips the check). The run is killed at its budget (90 s plus about 1 s per shot) and
 says `TIMEOUT`. It refuses the main checkout.
 
+A run never hands back fallback pictures (#1147): the plugin opens the requested world or errors
+(`world_not_opened`, `world_mismatch`), the Node side re-checks the world path from `status.txt`, and 3 or more
+byte-identical frames fail the run. A Workbench that came up on its default scene (an empty world with a green
+vegetable crate, seen under memory pressure and after `--force`) now prints `FAIL  look: the requested world did
+not load ...` and keeps no pictures. The asset verify/states clothing shots use the same check. `look <area> --world
+<path>` overrides the world, which is how to force the failure.
+
 ### What it does not show
 
 - **UI.** A Workbench play capture is the 3D view only.
@@ -173,6 +190,7 @@ shot, and avoids the queue; it does not use less RAM at its peak, it uses it for
 | Workbench play mode from a command-line plugin (`-plugin=`, `RunCommandline`, `SwitchToGameMode`, `CameraBase`, `System.MakeScreenshot`) | yes, hidden | **`look`.** Clean frames, run-time spawns present, 0.5 s per shot |
 | Workbench World Editor view (`WorldEditorAPI.SetCamera` + `System.MakeScreenshot`) | yes, hidden | `look --edit`. Starts 2 s sooner; shows editor helper shapes and nothing a script spawns |
 | `wb_*` MCP tools (`wb_launch`, `wb_play`, `wb_capture`) | yes | One shot per call through a start/poll handler on a Workbench that stays up. Good for poking at one object by hand, slow for a set |
+| `wb_preview` (Resource Manager preview via `SetOpenedResource` + `System.MakeScreenshot`, edit-mode `SetCamera`) | yes | One resource with no world loaded, on a Workbench that is already up: 1.3 to 2.4 s a shot against `look item` at 28 s a cold start (measured 2026-11-14, LF_SeedCrate_Cabbage). Needs a Workbench serving NET API port 5775. The shot is the Resource Manager preview viewport while a resource is open, not the World Editor view. Handler and tool: `tools/mcp-patches/enfusion-workbench-mcp/` |
 | Headless Workbench (the build and rdb path), dedicated server, `tools\cli test` server | no | No pixels (`agent-box/README.md` "Screenshots"). World queries only: this is what `audit placement` uses |
 | Game client with `-world` and no server | yes | Not measured. It would capture UI, which Workbench cannot, at the cost of a client boot and the harness to drive it. The next thing to try for UI shots without a session |
 | Offline `.xob` bounds cache | no | Not built. `audit placement --from` already re-ranks the last run's measured bounds without a server |

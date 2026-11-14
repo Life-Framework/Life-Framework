@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "client": [ { "kind": "actionShown", "entity": "Bank_Teller", "class": "LF_ATMAction", "expect": false } ]
+}

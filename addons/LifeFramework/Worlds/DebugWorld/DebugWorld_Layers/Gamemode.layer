@@ -38,3 +38,6 @@ GenericEntity LF_LawlessZone_Quarry {
  }
  coords 178 0 172
 }
+SCR_MPDestructionManager MPDestructionManager : "{9BB369F2803C6F71}Prefabs/MP/MPDestructionManager.et" {
+ coords 0 0 0
+}

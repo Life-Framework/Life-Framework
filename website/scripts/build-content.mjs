@@ -124,11 +124,14 @@ function addRepoDoc(rel, { slug, group, order, title }) {
 addRepoDoc("docs/setup.md", { slug: "setup", group: "Start here", order: 0, title: "Set up your tools" });
 addRepoDoc("docs/playtest.md", { slug: "playtest", group: "Start here", order: 1, title: "Open the playtest" });
 addRepoDoc("CONTRIBUTING.md", { slug: "contributing", group: "Start here", order: 2 });
+addRepoDoc("docs/player-faq.md", { slug: "player-faq", group: "Start here", order: 3, title: "Player FAQ" });
+addRepoDoc("docs/player-clips.md", { slug: "clip-guide", group: "Start here", order: 4, title: "Record a clip" });
 
 addRepoDoc("docs/owner/install.md", { slug: "owner-install", group: "For server owners", order: 0, title: "Install a server" });
 addRepoDoc("docs/owner/add-job.md", { slug: "owner-add-job", group: "For server owners", order: 1, title: "Add a delivery job" });
 addRepoDoc("docs/owner/add-shop.md", { slug: "owner-add-shop", group: "For server owners", order: 2, title: "Add a shop" });
 addRepoDoc("docs/config/owner-config.md", { slug: "owner-config", group: "For server owners", order: 3, title: "Check your owner config" });
+addRepoDoc("docs/upgrades/README.md", { slug: "upgrades", group: "For server owners", order: 4, title: "Upgrade notes" });
 
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
 // Lands in its own PR; addRepoDoc skips a file that is not there yet.
@@ -144,6 +147,7 @@ addRepoDoc("docs/dedicated-session.md", { slug: "dedicated-session", group: "Eng
 addRepoDoc("docs/debug-log-triage.md", { slug: "debug-log-triage", group: "Engineering reference", order: 5 });
 addRepoDoc("docs/street-manifest.md", { slug: "street-manifest", group: "Engineering reference", order: 6 });
 addRepoDoc("docs/building-pipeline/README.md", { slug: "building-pipeline", group: "Engineering reference", order: 7, title: "Make a building" });
+addRepoDoc("docs/release-process.md", { slug: "release-process", group: "Engineering reference", order: 8, title: "Release process" });
 
 addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Research & community", order: 0 });
 addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Research & community", order: 1 });

@@ -20,6 +20,19 @@ Attribution Required: [Yes/No and how]
 
 ---
 
+## Role uniforms (retextures of Bohemia Interactive garments)
+
+```
+Asset Name: Police shirt, police trousers, police cap, doctor's white coat
+Author: Bohemia Interactive (base game garments); recoloured and overpainted by Life Framework
+Source: Arma Reforger base game (cotton shirt, trousers, peaked cap, suit jacket), through tools/assets/<slug>/spec.json
+License: Bohemia's terms apply to the derived textures (Arma Public License for the Workshop build); not MIT
+Usage: NPC and player role outfits (tools/assets/outfits/roles.json)
+Attribution Required: Bohemia Interactive, as for every base game asset. The maintainer decides whether these textures stay (docs/asset-pipeline/clothing.md "Licensing")
+```
+
+---
+
 ## Audio Assets
 
 *No third-party audio assets currently used.*

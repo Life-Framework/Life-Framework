@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{F1AB6F4876972A56}Assets/Characters/Uniforms/LF/PoliceShirt/Data/PoliceShirt_Item.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

@@ -121,10 +121,11 @@ export async function shoot(root, { garments, outDir, budgetS, mannequin, poses,
   const statusFile = join(raw, "status.txt");
   const statusText = existsSync(statusFile) ? readFileSync(statusFile, "utf8") : "";
   const status = look.parseStatus(statusText);
-  if (!status.world) {
+  const wp = look.worldProblem(status, "Worlds/DebugWorld/DebugWorld.ent");
+  if (wp) {
     const log = look.latestLog(profile);
     const errs = look.compileErrors(log);
-    throw new Error(`Workbench exit ${res.code} after ${Math.round(res.seconds)} s and the plugin never opened the world${errs.length ? `: ${errs.join(" | ")}` : ""}${log ? ` (log ${log})` : ""}`);
+    throw new Error(`${wp}: Workbench exit ${res.code} after ${Math.round(res.seconds)} s${errs.length ? `: ${errs.join(" | ")}` : ""}${log ? ` (log ${log})` : ""}`);
   }
   mkdirSync(outDir, { recursive: true });
   const shots = {};

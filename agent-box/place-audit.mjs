@@ -473,18 +473,25 @@ export function inputText(records, extra = []) {
   return lines.join("\n") + "\n";
 }
 
+// The `tools\cli test` arguments of one audit boot. It goes through the pool's "any" choice like every
+// other test run (the machine with the RAM headroom takes it; `tools\cli test` ships the input list up
+// and brings out.txt back); only an interactive caller that wants the quick local loop pins it (local).
+export function auditTestArgs({ local = false } = {}) {
+  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", townWorld(), ...(local ? ["--local"] : []), "--verbose"];
+}
+
 // One boot of the dedicated test server: LF_Test_PlacementAuditTown measures `records` and traces the
 // `extra` input lines (the placement tool's probe rays). Returns the raw out.txt (null when the server
-// wrote none) and whether the test failed. --local: the list goes in and the result comes out through
-// this checkout's test profile.
-export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log } = {}) {
+// wrote none) and whether the test failed. The list goes in and the result comes out through this
+// checkout's test profile, on whichever machine the pool picked.
+export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false } = {}) {
   mkdirSync(outDir, { recursive: true });
   const inFile = join(outDir, "in.txt");
   const outFile = join(PROFILE_DIR, "out.txt");
   rmSync(outFile, { force: true });
   writeFileSync(inFile, inputText(records, extra));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
-  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", townWorld(), "--local", "--verbose"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
   const keep = text.split(/\r?\n/).filter((l) => /SUMMARY|^pool:|FAILED|TIMEOUT|error/i.test(l));
   for (const l of keep.slice(-4)) log(`  ${l.trim()}`);

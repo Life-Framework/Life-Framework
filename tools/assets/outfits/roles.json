@@ -30,6 +30,10 @@
     "trousers_grey": { "Pants": "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et" },
     "trousers_grey_dirty": { "Pants": "{537FD11C135757AC}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey_Dirty.et" },
     "fisherman_green": { "Pants": "{0B1F0174869E0351}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et" },
+    "police_shirt": { "Jacket": "{0E64DC32FA7BBF30}Prefabs/Characters/Uniforms/LF/PoliceShirt.et" },
+    "police_trousers": { "Pants": "{EA29B6E9594A4C23}Prefabs/Characters/Uniforms/LF/PoliceTrousers.et" },
+    "police_cap": { "Hat": "{CD05F51AF7A904B3}Prefabs/Characters/Uniforms/LF/PoliceCap.et" },
+    "doctor_coat": { "Jacket": "{14346777961E2DDA}Prefabs/Characters/Uniforms/LF/DoctorCoat.et" },
     "boots_us": { "Boots": "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et" },
     "boots_soviet_dirty": { "Boots": "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et" },
     "cap_flat_grey": { "Hat": "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et" },
@@ -61,7 +65,7 @@
       "outfits": [["suit_grey", "boots_us"], ["suit_brown", "boots_us"]],
       "greet": "Good day. Welcome to the bank. How can I help?",
       "what": "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals.",
-      "where": "The post office is right beside us. The town board on the square lists the rest, and the police station is a short walk up the street.",
+      "where": "The post office is right beside us. The {town} board on the square lists the rest, and the {police} station is a short walk up the street.",
       "rumour": "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business.",
       "bye": "Good day. Mind your money."
     },
@@ -73,7 +77,7 @@
       "id": "store_clerk", "name": "Store clerk", "base": "default",
       "outfits": [["shirt_v3", "trousers_grey", "boots_us"], ["turtle_blue", "trousers_brown", "boots_us"]],
       "greet": "Morning. Looking for something in particular?",
-      "what": "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in town does.",
+      "what": "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in {town} does.",
       "where": "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side.",
       "rumour": "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either.",
       "bye": "Take care out there."
@@ -83,17 +87,17 @@
       "outfits": [["shirt_v2", "trousers_grey_dirty", "boots_soviet_dirty", "cap_trucker_everon"], ["shirt_v4_dirty", "trousers_brown", "boots_soviet_dirty", "cap_trucker_sawmill"]]
     },
     {
-      "id": "police", "name": "Police officer", "base": "default",
-      "outfits": [["suit_black", "boots_us", "cap_peaked"], ["turtle_blue", "trousers_grey", "boots_us"]],
+      "id": "police", "name": "{Police} officer", "base": "default",
+      "outfits": [["police_shirt", "police_trousers", "boots_us"], ["police_shirt", "police_trousers", "boots_us", "police_cap"]],
       "greet": "Officer on duty. Keep your hands where I can see them, and we will get along.",
       "what": "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again.",
-      "where": "The station is the building behind me. The town board on the square lists everything else.",
+      "where": "The station is the building behind me. The {town} board on the square lists everything else.",
       "rumour": "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces.",
       "bye": "Stay out of trouble."
     },
     {
       "id": "medic", "name": "Doctor", "base": "default",
-      "outfits": [["suit_grey", "boots_us"], ["turtle_beige", "trousers_grey", "boots_us"]],
+      "outfits": [["doctor_coat", "trousers_grey", "boots_us"], ["doctor_coat", "trousers_brown", "boots_us"]],
       "greet": "Come in. Are you hurt?",
       "what": "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse.",
       "where": "If you need a bandage and I am not here, the general store keeps dressings by the counter.",
@@ -132,7 +136,7 @@
       "outfits": [["shirt_v5", "trousers_brown", "boots_us", "cap_flat_light"], ["shirt_v6", "trousers_grey", "boots_us"], ["denim_brown", "trousers_grey", "boots_us", "knit_black"]],
       "greet": "Fresh today. Have a look.",
       "what": "I buy and sell at the stall. Bring me what you grow or make and I will give you a fair price.",
-      "where": "The farm is out past the greenhouse. For anything else, the town board on the square will tell you.",
+      "where": "The farm is out past the greenhouse. For anything else, the {town} board on the square will tell you.",
       "rumour": "The price of apples went up this week. Somebody is hoarding them, I think.",
       "bye": "Come back when you have more."
     },
@@ -150,7 +154,7 @@
       "outfits": [["suit_black", "boots_us"], ["suit_brown", "boots_us"], ["turtle_grey", "trousers_brown", "boots_us"]],
       "greet": "Good day. The office is open. What do you need?",
       "what": "I handle the paperwork here. Forms, records, keys and permits. Everything has a stamp, and nothing is quick.",
-      "where": "The town board on the square lists every office and who is hiring. The post office is next to the bank.",
+      "where": "The {town} board on the square lists every office and who is hiring. The post office is next to the bank.",
       "rumour": "More people arrive every week with no papers. The registry cannot keep up.",
       "bye": "Good day to you."
     },
@@ -158,7 +162,7 @@
       "id": "ranger", "name": "Ranger", "base": "default",
       "outfits": [["rain_green", "fisherman_green", "boots_soviet_dirty", "boonie_olive"]],
       "greet": "Quiet out here. Good. Keep it that way.",
-      "what": "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast on Everon.",
+      "what": "I teach people to survive outside {town}. Water, food, a fire, a shelter. The weather turns fast out here.",
       "where": "Walk the road, not the woods, until you know them. The coast is east and the farms are north.",
       "rumour": "Somebody has been leaving fires burning in the forest. It will not end well.",
       "bye": "Walk safe."
@@ -167,18 +171,18 @@
       "id": "fence", "name": "Fence", "base": "fence",
       "outfits": [["suit_black", "boots_soviet_dirty", "knit_black"]],
       "greet": "You did not see me. Now, what are you after?",
-      "what": "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool.",
+      "what": "I sell tools to people who do not ask what they are for. Locks are hard and the {police} are harder. Choose the right tool.",
       "where": "Ask nobody about me. Keep to the back streets.",
-      "rumour": "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police.",
+      "rumour": "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the {police}.",
       "bye": "We never spoke."
     },
     {
       "id": "townsfolk", "name": "Resident", "base": "default", "also": ["civilian"],
       "outfits": [["shirt_v2", "trousers_brown", "boots_us"], ["turtle_grey", "trousers_grey", "boots_us"], ["denim_brown", "trousers_grey", "boots_us", "knit_black"]],
-      "greet": "Hello. New in town?",
+      "greet": "Hello. New in {town}?",
       "what": "I live here. I get by, as everyone does. The work is simple and the people are decent.",
-      "where": "The town board on the square shows everything. The post office hires couriers, and the bank is beside it.",
-      "rumour": "People say the police are watching the main street. Burglars are about. Keep your doors locked.",
+      "where": "The {town} board on the square shows everything. The post office hires couriers, and the bank is beside it.",
+      "rumour": "People say the {police} are watching the main street. Burglars are about. Keep your doors locked.",
       "bye": "Take care."
     }
   ],

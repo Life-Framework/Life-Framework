@@ -59,7 +59,8 @@ class LF_IncidentRecord : Managed
 //! It is a subscriber on LF_EventBus: LF_OnPlayerKilled, LF_OnPlayerDamaged, LF_OnMoneyMoved,
 //! LF_OnPlayerDowned (kind "downed", #255: the downer is the other party), LF_OnHoldUp (kind
 //! "holdup", #244: subject the actor, other the target), LF_OnAimedAt (kind "aim", #245: same shape),
-//! LF_OnAdminAction (kind "admin", #246: subject the admin, other the target, how the action). No
+//! LF_OnAdminAction (kind "admin", #246: subject the admin, other the target, how the action),
+//! LF_OnFlaggedLogout (kind "logout", #691: how is the state and what the rules did). No
 //! feature calls it. Never replicated: nothing here is sent to a client.
 //! BOUNDED: config m_iMaxRecords (oldest go first) and m_iRetentionHours (older than that are
 //! dropped on every append and load).
@@ -81,6 +82,7 @@ class LF_IncidentLog
 	protected static ref LF_IncidentAdminSubscriber s_Admin;
 	protected static ref LF_IncidentAimSubscriber s_Aim;
 	protected static ref LF_IncidentNlrSubscriber s_Nlr;
+	protected static ref LF_IncidentLogoutSubscriber s_Logout;
 
 	//------------------------------------------------------------------------------------------------
 	protected static array<ref LF_IncidentRecord> Records()
@@ -110,6 +112,8 @@ class LF_IncidentLog
 			LF_EventBus.Unsubscribe(LF_OnAimedAt, s_Aim);
 		if (s_Nlr)
 			LF_EventBus.Unsubscribe(LF_OnNewLifeReturn, s_Nlr);
+		if (s_Logout)
+			LF_EventBus.Unsubscribe(LF_OnFlaggedLogout, s_Logout);
 
 		s_aRecords = null;
 		s_iLastNumber = 0;
@@ -122,6 +126,7 @@ class LF_IncidentLog
 		s_Admin = null;
 		s_Aim = null;
 		s_Nlr = null;
+		s_Logout = null;
 		LF_AimIntent.ResetStatics();
 		LF_HoldUp.ResetStatics();
 		LF_IncidentConfig.ResetStatics();
@@ -145,6 +150,7 @@ class LF_IncidentLog
 		s_Admin = new LF_IncidentAdminSubscriber();
 		s_Aim = new LF_IncidentAimSubscriber();
 		s_Nlr = new LF_IncidentNlrSubscriber();
+		s_Logout = new LF_IncidentLogoutSubscriber();
 		LF_EventBus.Subscribe(LF_OnPlayerKilled, s_Killed);
 		LF_EventBus.Subscribe(LF_OnPlayerDamaged, s_Damaged);
 		LF_EventBus.Subscribe(LF_OnMoneyMoved, s_Money);
@@ -153,6 +159,7 @@ class LF_IncidentLog
 		LF_EventBus.Subscribe(LF_OnAdminAction, s_Admin);
 		LF_EventBus.Subscribe(LF_OnAimedAt, s_Aim);
 		LF_EventBus.Subscribe(LF_OnNewLifeReturn, s_Nlr);
+		LF_EventBus.Subscribe(LF_OnFlaggedLogout, s_Logout);
 		s_bInstalled = true;
 		LF_Debug.Info(FEATURE, string.Format("incident log installed (%1 record(s) loaded)", Records().Count()));
 	}
@@ -467,6 +474,22 @@ class LF_IncidentNlrSubscriber : LF_EventSubscriber
 			return false;
 
 		LF_IncidentLog.Append(LF_IncidentConfig.KIND_NLR, System.GetUnixTime(), back.m_sPlayerUid, "", back.m_vPosition, back.m_iSecondsSinceWake, "", false);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A logout the disconnect rules flagged (#691): how is "<state> -> <outcome>", amount the sentence
+//! seconds or the fine taken.
+class LF_IncidentLogoutSubscriber : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnFlaggedLogout left = LF_OnFlaggedLogout.Cast(busEvent);
+		if (!left)
+			return false;
+
+		LF_IncidentLog.Append(LF_IncidentConfig.KIND_LOGOUT, System.GetUnixTime(), left.m_sPlayerUid, "", left.m_vPosition, left.m_iAmount, left.m_sState + " -> " + left.m_sOutcome, false);
 		return true;
 	}
 }

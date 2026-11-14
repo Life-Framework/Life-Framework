@@ -32,6 +32,13 @@
       }
     }
   },
+  "disconnect": {
+    "cuffedRule": "jail",
+    "cuffedWantedAdd": 1,
+    "cuffedMinJailSeconds": 300,
+    "cuffedFine": 1000,
+    "wantedLogoutAdd": 0
+  },
   "idCard": {
     "replacementFee": 50,
     "showSeconds": 8

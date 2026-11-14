@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{CBA1807CA39750B5}Assets/Characters/Uniforms/LF/PoliceTrousers/Data/PoliceTrousers_Worn.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

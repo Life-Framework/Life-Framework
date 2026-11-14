@@ -116,7 +116,7 @@ class LF_Test_StoreShelf : LF_Test
 				ctx.True(poorStorage.TryInsertItem(poorApple), "the second shopper takes an apple");
 				ctx.Equal(LF_EStorePay.NOT_ENOUGH_CASH, LF_Stores.Pay(store, poor, paid), "no cash, no payment");
 				ctx.Equal(1, LF_Stores.UnpaidCount(), "the apple is still tagged unpaid");
-				ctx.Equal(0, LF_InventoryUtils.GetAmount(poor, LF_Stores.RECEIPT_PREFAB), "no receipt for no payment");
+				ctx.Equal(0, LF_InventoryUtils.GetAmount(poor, LF_Stores.ReceiptPrefab()), "no receipt for no payment");
 			}
 
 			LF_TestCharacterFixture.Delete(poor);

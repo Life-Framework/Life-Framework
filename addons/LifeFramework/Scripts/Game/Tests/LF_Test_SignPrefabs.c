@@ -35,7 +35,7 @@ class LF_Test_SignPrefabs : LF_Test
 			ExpectOneRead(ctx, path);
 		}
 
-		Resource face = Resource.Load(LF_SignComponent.FACE_PREFAB);
+		Resource face = Resource.Load(LF_SignComponent.FacePrefab());
 		ctx.True(face && face.IsValid(), "the board face sheet prefab loads");
 		Resource faceLayout = Resource.Load(LF_SignComponent.FACE_LAYOUT);
 		ctx.True(faceLayout && faceLayout.IsValid(), "the board face layout loads");

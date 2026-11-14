@@ -1,7 +1,7 @@
 {
   "slug": "supermarket",
   "name": "Supermarket",
-  "concept": "The small-town self-service grocery of 1989 Everon: the one-storey supermarket that replaced the counter shop in the late 1970s and 80s (a French 'supérette' or a Czech 'samoobsluha'). One rendered hall about 18 by 14 m, a flat roof, plate-glass shop front with a glass entrance and a canopy on the street side, blind side and back walls so shelving can stand against them, and a stockroom, office and WC behind the sales floor. ArchBuilder's SUPERMARKET archetype is that building: one tall storey (5 m), flat metal roof, panoramic front glazing on the front only, a vanilla GroceryStore fascia sign. Its default size (30 to 46 m wide) is a modern out-of-town store, so the spec shrinks it to a village-centre plot and gives it a cream render, which reads as 1980s rather than the profile's metal panels. (Plain white plaster renders near-white in game: the base game's plaster texture is meant to be tinted, and only the coloured stucco materials carry a tint.) Built with Reforger proportions and vanilla doors and windows. The shelves stay out for now: our shop feature fills them in a follow-up (docs/architecture/building-pipeline-spike.md \"Supermarket next steps\").",
+  "concept": "The small-town self-service grocery of 1989 Everon: the one-storey supermarket that replaced the counter shop in the late 1970s and 80s (a French 'supérette' or a Czech 'samoobsluha'). One rendered hall about 18 by 14 m, a flat roof, plate-glass shop front with a glass entrance and a canopy on the street side, blind side and back walls so shelving can stand against them, and a stockroom behind the sales floor with the office and staff WC off it, one service door onto the hall. ArchBuilder's SUPERMARKET archetype is that building: one tall storey, flat metal roof, panoramic front glazing on the front only, a vanilla GroceryStore fascia sign. Its default size (30 to 46 m wide, a 5.75 m storey with Reforger proportions) is a modern out-of-town store, so the spec shrinks it to a village-centre plot with a 3.8 m storey (parapet top 4.9 m; Everon's vanilla grocery ShopModern_E_01 is 5.8 m, docs/building-pipeline/polish.md) and gives it a cream render, which reads as 1980s rather than the profile's metal panels. (Plain white plaster renders near-white in game: the base game's plaster texture is meant to be tinted, and only the coloured stucco materials carry a tint.) Built with Reforger proportions and vanilla doors and windows. ArchBuilder furnishes it as a supermarket and the export swaps every piece for a vanilla prop: gondolas, wall shelves, coolers, checkouts with tills, ceiling lamps and the GroceryStore fascia. The shelves arrive empty; our shop fills them (docs/architecture/building-pipeline-spike.md \"Supermarket next steps\").",
   "red_line": "pack",
   "archbuilder": {
     "archetype": "SUPERMARKET",
@@ -9,16 +9,27 @@
     "footprint": "RECTANGLE",
     "storeys": 1,
     "seed": 1989,
-    "width": 18.0,
-    "depth": 14.0,
+    "width": 18,
+    "depth": 14,
+    "custom_dims": true,
+    "storey_h": 3.8,
+    "wall_thick": 0.45,
     "wall_mat": "AB_Stucco_Beige",
     "roof_style": "FLAT",
     "do_interior": true,
-    "do_furniture": false,
+    "do_furniture": true,
     "plot_fence": "NONE"
   },
-  "export": { "furniture": false, "lamps": true, "vanilla_props": true, "lods": true, "probes": "ONE", "bsp": false },
-  "budget": { "tris": 60000, "footprint_m": [19, 15], "height_m": 9, "min_doors": 1 },
+  "export": { "furniture": true, "lamps": true, "vanilla_props": true, "lods": true, "probes": "ONE", "bsp": true },
+  "budget": { "tris": 60000, "footprint_m": [19, 15], "height_m": 7, "min_doors": 1 },
+  "polish": {
+    "edits": [
+      "lining (WallFinish): the sales hall cream paint below 1.5 m is AB_Tiles_Wall, a tiled dado (polish-dado.py)"
+    ],
+    "entities": [
+      { "prefab": "SignCommercial_01_GroceryStore", "move": [-5.1, 0, 0], "why": "over the left shop window: above the door the 3.45 m canopy hides it from the street" }
+    ]
+  },
   "asset_dir": "Assets/Buildings/Supermarket",
   "prefab_dir": "Prefabs/Buildings/Supermarket"
 }

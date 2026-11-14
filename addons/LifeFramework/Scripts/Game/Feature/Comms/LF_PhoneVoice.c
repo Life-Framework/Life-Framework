@@ -128,7 +128,14 @@ class LF_PhoneLineTransport : LF_PhoneVoiceTransport
 //! The alternative: a handset item in each talker's inventory for the call.
 class LF_PhoneHandsetTransport : LF_PhoneVoiceTransport
 {
-	static const ResourceName HANDSET_PREFAB = "{3942EAE9AFB4F8F3}Prefabs/Comms/LF_PhoneHandset.et";
+	//! The prefab slot (#1128): The handset handed to a receiver in a call.
+	static const string SLOT_HANDSET = "phone_handset";
+
+	//! The prefab (slot "phone_handset"), or empty when no usable prefab resolves (logged).
+	static ResourceName HandsetPrefab()
+	{
+		return LF_PrefabSlots.Get(SLOT_HANDSET);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override string Name()
@@ -194,9 +201,9 @@ class LF_PhoneHandsetTransport : LF_PhoneVoiceTransport
 
 		array<BaseRadioComponent> before = {};
 		LF_ServiceRadio.FindCarried(body, before);
-		if (!LF_InventoryUtils.AddItem(inventory, HANDSET_PREFAB))
+		if (!LF_InventoryUtils.AddItem(inventory, HandsetPrefab()))
 		{
-			LF_Debug.Error(LF_PhoneVoice.FEATURE, string.Format("call %1: the receiver did not fit in the inventory (%2)", callId, HANDSET_PREFAB));
+			LF_Debug.Error(LF_PhoneVoice.FEATURE, string.Format("call %1: the receiver did not fit in the inventory (%2)", callId, HandsetPrefab()));
 			return null;
 		}
 

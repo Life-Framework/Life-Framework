@@ -16,6 +16,7 @@
 //      and the heat headroom; a machine down at the start is used when it comes back; live RAM per
 //      machine (never over-committed); backfill until a RAM head starves, then it drains; remote tests
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
+// red-proof 2026-11-14 (pool-ram-select), each rule broken alone: with the rank sort disabled "a starved local was still tried before a roomy remote (local,lf-testbox)"; with the old first-server rule "the first test server on a starved machine (0.4 GB free) was admitted"; without the budgetMultiplier weight "a local machine with ample RAM lost to the slower laptop"; without the pinned hint "pool status does not say the other machine has room"; with rewriteTicket writing a dropped ticket "a replaced request came back when its waiter rewrote the ticket (one worktree queued twice)"; with pool.json sessionIdleMaxMin 30 "a session idle 6 min with nobody waiting was kept (limit 5)"; with acquireSlot in cmdCi "a lane is taken outside the suite run in: cmdCi"; with --local in auditTestArgs "the placement audit pins its test run to this PC"; without the cache "the remote RAM read was not cached for its ttl (3 reads for 3 decisions over 9 s)"; with pinWarning off "no queue-time warning for a pin onto a starved machine (null)"; without the upload step "a remote audit run does not carry its input and output".
 // red-proof 2026-11-14 (pool-throughput), each rule broken alone: with the old early return
 // (machines.length < 2) in chooseSessionMachine "a 2-client request that started while the laptop was
 // down did not move to it when it came back (local after 80 ms)"; with a starved RAM head always
@@ -49,7 +50,8 @@
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
 import * as gc from "../lib/session-gc.mjs";
 import { takeHoldWarning } from "../lib/session-lease.mjs";
@@ -116,7 +118,8 @@ try {
   let scanned = false;
   check(pool.tryLocal(dir, local, 1, {}, { runs: [], serverAlive: () => (scanned = true) }) === null && !scanned, "young local holder: reclaimed or scanned");
   holdLock(30);
-  const s = pool.tryLocal(dir, local, 1, { slug: "next", purpose: "test only", root: dir }, { runs: [], serverAlive: () => false });
+  // (freeMb is explicit: this PC may really be short of RAM, and the first start now needs the floor too)
+  const s = pool.tryLocal(dir, local, 1, { slug: "next", purpose: "test only", root: dir }, { runs: [], serverAlive: () => false, freeMb: 9000 });
   check(!!s, "hung local holder: slot not reclaimed");
   const runsFile = join(dir, "tmp", "wt", "pool", "runs.jsonl");
   const logged = existsSync(runsFile) && readFileSync(runsFile, "utf8").includes('"kind":"hang"');
@@ -186,8 +189,10 @@ try {
   check(q.waitReason({ ...bigHead, profile: "lowspec", clients: 2, needMb: 3700, machines: ["local", "lf-testbox"], busyOn: ["lf-testbox"] }, 0, { now: T0, starveMs: min20, freeMbOf: (n) => ({ local: 1126, "lf-testbox": 6300 })[n] }) === "ram 2-client lowspec: needs 3.6 GB free, local has 1.1; every session lane taken on lf-testbox", "waitReason blames RAM on a machine whose lanes are all taken");
   check(/starved, so it holds its place/.test(q.waitReason(oldHead, 0, { now: T0, starveMs: min20 })), "waitReason does not say a starved head holds its place");
   // A machine is never over-committed: even the first server there must fit in what is free.
-  check(!q.ramVerdict({ running: 0, freeMb: 2000, minFreeMb: 1500, reserveMb: 2300 }).ok && q.ramVerdict({ running: 0, freeMb: 2400, minFreeMb: 1500, reserveMb: 2300 }).ok, "the first session on a machine started without the RAM it needs");
-  check(!q.ramVerdict({ running: 0, freeMb: 2400, minFreeMb: 1500, reserveMb: 2300, pendingMb: 600 }).ok, "the first-server check ignores sessions still booting");
+  // 2026-11-14: the floor gated only a second server; this PC at 0.4 GB free kept taking its first run.
+  check(!q.ramVerdict({ running: 0, freeMb: 2000, minFreeMb: 1500, reserveMb: 2300 }).ok && !q.ramVerdict({ running: 0, freeMb: 2400, minFreeMb: 1500, reserveMb: 2300 }).ok && q.ramVerdict({ running: 0, freeMb: 3800, minFreeMb: 1500, reserveMb: 2300 }).ok, "the first session on a machine started without the RAM it needs plus the floor");
+  check(!q.ramVerdict({ running: 0, freeMb: 3800, minFreeMb: 1500, reserveMb: 2300, pendingMb: 600 }).ok, "the first-server check ignores sessions still booting");
+  check(!q.ramVerdict({ running: 0, freeMb: 400, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 0, freeMb: 1500, minFreeMb: 1500 }).ok, "the first test server on a starved machine (0.4 GB free) was admitted");
   // Estimated start: the (ahead+1)-th lane release, then rounds of a typical hold.
   check(q.estimateStart([T0 + 5000, T0, T0 + 3000], 0) === T0 && q.estimateStart([T0 + 5000, T0, T0 + 3000], 2) === T0 + 5000 && q.estimateStart([T0, T0 + 1000], 3, 60000) === T0 + 61000 && q.estimateStart([], 0) === null, "estimateStart");
   check(q.projectedRelease({ atMs: T0 - 60000, now: T0, typicalMs: 300000 }) === T0 + 240000, "projectedRelease: start plus the typical hold");
@@ -210,7 +215,7 @@ try {
     rmSync(jroot, { recursive: true, force: true });
   }
   check(q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500, reserveMb: 3600 }).needMb === 5100, "ramVerdict does not report needMb");
-  check(q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
+  check(!q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
 
   // Aging is the fair share: a low job that waited 40 min is "high" and, arriving first, goes ahead of new
   // normal and new high jobs; at 61 min it still does. (The film job's real starvation was the wait cap and the
@@ -307,6 +312,25 @@ try {
     check(reap(waiting, { now: Date.now() - 19 * 60000 }).length === 0, "reaper closed a session under the idle limit");
     check(reap(waiting).length === 1 && closed.length === 1, "reaper did not close a session idle 20 min (limit 15) with a job waiting");
     check(existsSync(join(sdir, "reaped.json")), "reaper left no note for the session's agent");
+
+    // Sessions flow like a river (defaults 3 min idle with a waiter, 5 min with nobody; a command resets the clock).
+    {
+      const ds = pool.poolSettings(rdir);
+      check(ds.sessionIdleMin === 3 && ds.sessionIdleMaxMin === 5 && ds.sessionHoldMin === 10 && ds.sessionGraceMin === 2 && ds.sessionHoldMaxMin === 20, `river defaults are wrong (${ds.sessionIdleMin}/${ds.sessionIdleMaxMin} idle, ${ds.sessionHoldMin}/${ds.sessionGraceMin}/${ds.sessionHoldMaxMin} hold)`);
+      const closedD = [];
+      const lastCmd = (min) => writeFileSync(join(sdir, "lease.json"), JSON.stringify({ lastCommandAt: new Date(Date.now() - min * 60000).toISOString() }));
+      const reapD = (tickets) => pool.reapIdleSessions(rdir, [lanes], tickets, ds, { sessionDir: sdir, close: (i) => closedD.push(i.pid) }).length;
+      lastCmd(4);
+      check(reapD([]) === 0, "a session idle 4 min with nobody waiting was closed (limit 5)");
+      lastCmd(6);
+      check(reapD([]) === 1, "a session idle 6 min with nobody waiting was kept (limit 5)");
+      lastCmd(2);
+      check(reapD(waiting) === 0, "a session idle 2 min with a job waiting was closed (limit 3)");
+      lastCmd(4);
+      check(reapD(waiting) === 1, "a session idle 4 min with a job waiting was kept (limit 3)");
+      lastCmd(0);
+      check(reapD(waiting) === 0, "a harness command did not reset the idle clock");
+    }
 
     // Hold cap: a driven (not idle) session past its cap with a session request waiting is warned once,
     // then closed after the grace; no waiter, no holdCap stamp, or a raised --hold means no close.
@@ -700,6 +724,93 @@ const dir0 = () => {
       holder.kill();
       rmSync(croot, { recursive: true, force: true });
     }
+  }
+  // Machine choice by RAM headroom (2026-11-14: this PC at 0.4 GB free kept its first lanes while the
+  // laptop, 6 GB free, idled). Rule: headroom = free - booting - reserve; a machine with headroom >= the floor
+  // goes before one without; among those min(headroom, roomyMb) / budgetMultiplier, so two roomy machines
+  // go to the faster one; the floor gates the first server on a machine too; a pin stays a pin.
+  {
+    const mroot = dir0();
+    const local = pool.loadMachines(mroot).find((x) => x.via === "local");
+    const lap = pool.loadMachines(mroot).find((x) => x.via === "ssh");
+    const stt = pool.poolSettings(mroot);
+    const lapState = (freeMb) => () => ({ locks: {}, freeMb, totalMb: 15606 });
+    const names = (ms) => ms.map((x) => x.name).join();
+    const order = (localFree, lapFree, extra = {}) => names(pool.orderMachines(mroot, [local, lap], stt, { stateOf: lapState(lapFree), localFreeMb: localFree, ...extra }));
+    check(!!local && !!lap && lap.budgetMultiplier === 2, "tools/pool.json lost the laptop's 2x budgetMultiplier");
+    // 1. a starved local plus a roomy remote goes to the remote (and the registry order is local first)
+    check(order(400, 6000) === "lf-testbox,local", `a starved local was still tried before a roomy remote (${order(400, 6000)})`);
+    check(names(pool.orderMachines(mroot, [lap, local], stt, { stateOf: lapState(400), localFreeMb: 6000 })) === "local,lf-testbox", "a starved remote was tried before a roomy local");
+    // 2. both roomy goes to the faster machine, whichever is listed first
+    check(order(9000, 12000) === "local,lf-testbox" && names(pool.orderMachines(mroot, [lap, local], stt, { stateOf: lapState(12000), localFreeMb: 9000 })) === "local,lf-testbox", "two roomy machines did not go to the faster one");
+    check(order(3500, 9000) === "local,lf-testbox", "a local machine with ample RAM lost to the slower laptop");
+    check(order(2500, 9000) === "lf-testbox,local", "a local machine with little headroom beat a laptop with a lot");
+    check(order(5000, 5000, { reserveMb: 2000 }) === "local,lf-testbox" && order(3600, 6000, { reserveMb: 2300 }) === "lf-testbox,local", "the job's reserve is not taken off the headroom");
+    check(order(900, undefined) === "lf-testbox,local", "a remote whose RAM could not be read went after a starved local");
+    check(order(5000, null) === "local,lf-testbox", "a remote whose RAM could not be read went before a local with room");
+    // 3. both starved: neither has room, nothing starts (the gate refuses each; the wait ticket names them)
+    const starved = q.rankMachines([{ name: "local", freeMb: 600, multiplier: 1 }, { name: "lf-testbox", freeMb: 900, multiplier: 2 }], { minFreeMb: stt.minFreeMb });
+    check(starved.every((r) => r.room === false), "a machine under the floor was reported to have room");
+    const gate = (freeMb, blocked = {}) => pool.tryLocal(mroot, { ...local, lanes: null, slots: 1 }, { lock: "server-test-1", index: 1, port: 2002 }, { slug: "starved", purpose: "test only" }, { freeMb, blocked });
+    const bl = {};
+    check(gate(400, bl) === null && !!bl.ram && bl.needMb === stt.minFreeMb, "the first local lane started a test at 0.4 GB free");
+    const roomy = gate(4000);
+    check(!!roomy, "the first local lane refused a test with 4 GB free");
+    roomy?.release();
+    // 4. a pinned job stays pinned, and pool status says who has room
+    check(names(pool.resolveMachines(mroot, { mode: "local" })) === "local" && names(pool.resolveMachines(mroot, { machine: "lf-testbox" })) === "lf-testbox" && names(pool.resolveMachines(mroot, { mode: "remote" })) === "lf-testbox", "a pinned job was given machines beyond its pin");
+    const pinnedT = { stuck: "ram", pinned: true, machines: ["local"], needMb: 1500 };
+    const hint = q.waitReason(pinnedT, 0, { freeMbOf: (n) => ({ local: 400, "lf-testbox": 6000 })[n], otherMachines: ["lf-testbox"] });
+    check(/ram: needs 1\.5 GB free, local has 0\.4 \(pinned; lf-testbox has room\)$/.test(hint), `pool status does not say the other machine has room (${hint})`);
+    check(!/pinned/.test(q.waitReason({ ...pinnedT, pinned: false }, 0, { freeMbOf: () => 6000, otherMachines: ["lf-testbox"] })) && !/pinned/.test(q.waitReason(pinnedT, 0, { freeMbOf: (n) => ({ "lf-testbox": 900 })[n], otherMachines: ["lf-testbox"] })), "the pinned hint shows for a job that may move or when the other machine has no room");
+    const warn = (localFree, lapFree) => pool.pinWarning(mroot, [local], [lap], stt, { flag: "--local", stateOf: lapState(lapFree), localFreeMb: localFree });
+    check(/pinned to local \(--local\); lf-testbox has room/.test(warn(400, 6000) ?? ""), `no queue-time warning for a pin onto a starved machine (${warn(400, 6000)})`);
+    check(warn(9000, 9000) === null && warn(400, 900) === null, "a pin that costs nothing, or with no room anywhere, still warned");
+    // Remote RAM is read once per ttl, not per decision.
+    {
+      let reads = 0;
+      const rd = () => (++reads, { locks: {}, freeMb: 5000 });
+      const t0 = 1000000;
+      const cm = { name: "cache-probe" };
+      pool.remoteStateCached(cm, { read: rd, now: t0 });
+      pool.remoteStateCached(cm, { read: rd, now: t0 + 5000 });
+      pool.remoteStateCached(cm, { read: rd, now: t0 + 9000 });
+      check(reads === 2, `the remote RAM read was not cached for its ttl (${reads} reads for 3 decisions over 9 s)`);
+    }
+    // 5. one worktree's newer request replaces the older: a waiter's rewrite must not bring a dropped ticket back
+    {
+      const f = pool.writeTicket(mroot, { pid: process.pid, at: new Date().toISOString(), slug: "river", purpose: "session", lane: "session", machines: ["local"], waitingOn: [] });
+      check(pool.rewriteTicket(mroot, f, { pid: process.pid, at: new Date().toISOString(), slug: "river", purpose: "session", lane: "session", machines: ["local"], waitingOn: ["server-2001"] }) === true && pool.liveTickets(mroot).some((t) => t.file === f), "a live ticket could not be rewritten");
+      pool.dropTicket(mroot, f);
+      check(pool.rewriteTicket(mroot, f, { pid: process.pid, at: new Date().toISOString(), slug: "river", purpose: "session", lane: "session", machines: ["local"], waitingOn: ["ram"] }) === false && !pool.liveTickets(mroot).some((t) => t.file === f), "a replaced request came back when its waiter rewrote the ticket (one worktree queued twice)");
+    }
+    // 6. `ci` and `wt ship` take a test lane only for the suite: no lane or slot is acquired outside it.
+    {
+      const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "cli.mjs"), "utf8");
+      const body = (name) => {
+        const i = src.indexOf(`function ${name}(`);
+        const j = src.indexOf("\n}\n", i);
+        return i < 0 || j < 0 ? "" : src.slice(i, j);
+      };
+      const bad = ["cmdCi", "cmdBuild", "cmdRunArea", "wtShipCmd", "wtGateCmd", "runWorktreeCli", "cmdTest"].filter((n) => /acquireSlot\(|withServerSlot\(|SERVER_SLOT|server-2001|server-test/.test(body(n)));
+      check(bad.length === 0 && body("cmdCi").length > 100 && /acquireSlot\(/.test(body("testOnce")), `a lane is taken outside the suite run in: ${bad.join(", ") || "(function not found)"}`);
+      // The suite and the placement audit of `ci` / `wt ship` / `wt gate` go through the pool's "any" choice, never a pin.
+      const pinned = ["cmdCi", "wtShipCmd", "wtGateCmd", "gateArgs"].filter((n) => /--local|--remote|--machine|mode: "local"|local: true/.test(body(n)));
+      check(pinned.length === 0 && body("gateArgs").length > 50, `the gate pins its test runs to a machine in: ${pinned.join(", ") || "(function not found)"}`);
+      check(!/local: true|"--local"/.test(src.slice(src.indexOf("  ci: (flags)"), src.indexOf("\n", src.indexOf("  ci: (flags)")))), "the ci command pins its test runs");
+    }
+    // 7. the placement audit (the last step of ci / wt ship) is a test run like any other: no --local, and
+    // its input list and out.txt travel with a run the pool sends to another machine.
+    {
+      const pa = await import("../../agent-box/place-audit.mjs");
+      check(!pa.auditTestArgs().includes("--local") && pa.auditTestArgs({ local: true }).includes("--local") && pa.auditTestArgs().includes("LF_Test_PlacementAuditTown"), `the placement audit pins its test run to this PC (${pa.auditTestArgs().join(" ")})`);
+      const plan = tb.remoteFilePlan("C:\\LF\\Life-Framework-rt-x\\", { env: { LF_PLACE_AUDIT_IN: "C:/wt/tmp/place-audit/in.txt" }, down: [{ from: "server/profile/test/profile/place-audit/out.txt", to: "C:/wt/out.txt" }] });
+      check(plan.uploads[0]?.to === "C:/LF/Life-Framework-rt-x/tmp/remote-in/in.txt" && /^\$env:LF_PLACE_AUDIT_IN = '.*tmp\\remote-in\\in\.txt'$/.test(plan.env[0] ?? "") && plan.downloads[0]?.from === "C:/LF/Life-Framework-rt-x/server/profile/test/profile/place-audit/out.txt", `a remote audit run does not carry its input and output (${JSON.stringify(plan)})`);
+      check(tb.remoteFilePlan("C:/LF/x").uploads.length === 0 && tb.remoteFilePlan("C:/LF/x").env.length === 0, "a run without files got file steps");
+      // the same any-choice that takes a roomy remote for the suite takes it for the audit
+      check(names(pool.resolveMachines(mroot, { mode: "any" })) === "local,lf-testbox" && order(400, 6000) === "lf-testbox,local", "the audit's any-choice does not pick the machine with room");
+    }
+    rmSync(mroot, { recursive: true, force: true });
   }
 }
 

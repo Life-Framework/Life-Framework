@@ -234,6 +234,54 @@
       "additionalProperties": false,
       "x-class": "LF_CrimeCatalogConfig"
     },
+    "disconnect": {
+      "type": "object",
+      "description": "Disconnect rules (#691): what logging out does to a player who is cuffed, escorted, downed, wanted or jailed, so leaving never escapes an arrest, a death or a sentence.",
+      "properties": {
+        "cuffedRule": {
+          "type": "string",
+          "default": "jail"
+        },
+        "escortedCountsAsCuffed": {
+          "type": "boolean"
+        },
+        "cuffedWantedAdd": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 5
+        },
+        "cuffedMinJailSeconds": {
+          "type": "integer",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "cuffedFine": {
+          "type": "integer",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "cuffedFineAllowsDebt": {
+          "type": "boolean"
+        },
+        "downedDies": {
+          "type": "boolean"
+        },
+        "wantedLogoutAdd": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 5
+        },
+        "jailClockOffline": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_DisconnectConfig"
+    },
     "idCard": {
       "type": "object",
       "description": "The photo identity card (#902): Configs/Identity/LF_PhotoIdCard.conf with the owner's `idCard` section layered over it.",
@@ -941,6 +989,18 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
               "spawnPrefab": {
                 "type": "string",
                 "default": ""
@@ -1074,6 +1134,31 @@
       },
       "additionalProperties": false,
       "x-class": "LF_ZoneConfig"
+    },
+    "everon1989": {
+      "type": "object",
+      "description": "Pack LF_Everon1989: Settings of the 1989 Everon pack. A sample section: the owner's config.json can set it, but nothing reads it yet (the M5 chains will).",
+      "properties": {
+        "festivalDay": {
+          "type": "integer",
+          "default": 3,
+          "description": "Day of the week the harbour festival runs, 1 to 7.",
+          "minimum": 1,
+          "maximum": 7
+        },
+        "harbourName": {
+          "type": "string",
+          "default": "Saint Philippe",
+          "description": "The harbour town name the pack uses in announcements."
+        },
+        "chainsEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the pack turns its resource chains on."
+        }
+      },
+      "additionalProperties": false,
+      "x-pack": "LF_Everon1989"
     }
   },
   "additionalProperties": false

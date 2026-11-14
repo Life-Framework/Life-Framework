@@ -34,6 +34,7 @@ import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sess
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
+import { statusLine } from "../lib/wb-lock.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -46,8 +47,8 @@ export const { lanesFor, laneKind, portForLock, normalizePriority } = q;
 // Settings: pool.json top level, overridden by the "pool" key of lf.local.json,
 // then by env (tests use LF_POOL_*): sessionIdleMin (a session idle this long
 // while others queue is closed), promoteMin (a queued job moves up one
-// priority level per this many minutes), minFreeMb (RAM floor for a second
-// concurrent server), sessionHoldMin / sessionGraceMin / sessionHoldMaxMin (the
+// priority level per this many minutes), minFreeMb (RAM floor for every server
+// start), roomyMb (headroom past which speed, not RAM, picks a machine), sessionHoldMin / sessionGraceMin / sessionHoldMaxMin (the
 // hold cap, below).
 export function poolSettings(root) {
   const base = readJson(POOL_JSON, {});
@@ -63,6 +64,7 @@ export function poolSettings(root) {
     promoteMin: pick("promoteMin", "LF_POOL_PROMOTE_MIN"),
     starveMin: pick("starveMin", "LF_POOL_STARVE_MIN"),
     minFreeMb: pick("minFreeMb", "LF_POOL_MIN_FREE_MB"),
+    roomyMb: pick("roomyMb", "LF_POOL_ROOMY_MB"),
     bootBudgetS: pick("bootBudgetS", "LF_POOL_BOOT_BUDGET_S"),
     sessionHoldMin: pick("sessionHoldMin", "LF_POOL_SESSION_HOLD_MIN"),
     sessionGraceMin: pick("sessionGraceMin", "LF_POOL_SESSION_GRACE_MIN"),
@@ -593,8 +595,7 @@ if ($cfg.ram -and $slots.Count -gt 0) {
     $running++
     if ($h.purpose -eq 'session') { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt 180) { $c = 1; if ($h.clients) { $c = [int]$h.clients }; $pending += $cfg.ram.serverMb + $cfg.ram.clientMb * $c } } catch {} }
   }
-  $need = $cfg.ram.reserveMb + $pending
-  if ($running -gt 0) { $need += $cfg.ram.floorMb }
+  $need = $cfg.ram.reserveMb + $pending + $cfg.ram.floorMb
   # Only a lane that is free (or stale) makes RAM the reason; all lanes taken is plain busy.
   $anyFree = $false
   foreach ($s in $slots) { $h = $null; try { $h = [IO.File]::ReadAllText((Join-Path $ld ($s.lock + '.lock'))) | ConvertFrom-Json } catch {}; if (-not $h -or -not (Test-Alive $h.pid)) { $anyFree = $true } }
@@ -1384,16 +1385,22 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
       let ramShort = null;
       let laneSeen = false;
       const busy = [];
-      for (const m of machines) {
-        const lanes = lanesFor(m, "session");
-        let st = null;
-        if (m.via !== "local") {
-          st = remoteSeen.get(m.name);
-          if (!st || now - st.at > 6000) {
-            st = { at: now, state: stateOf(m) };
-            remoteSeen.set(m.name, st);
-          }
+      // The remote read (6 s cache), shared by the ordering and the verdicts below.
+      const seenOf = (m) => {
+        if (m.via === "local") return null;
+        let st = remoteSeen.get(m.name);
+        if (!st || now - st.at > 6000) {
+          st = { at: now, state: stateOf(m) };
+          remoteSeen.set(m.name, st);
         }
+        return st;
+      };
+      // The machine with the most RAM headroom for this session goes first, weighted by speed
+      // (q.rankMachines): a starved machine is not tried while another has room.
+      const order = orderMachines(root, machines, settings, { reserveMb: q.sessionReserveMb(settings, clients, profile), stateOf: (m) => seenOf(m)?.state, localFreeMb: opts.localFreeMb });
+      for (const m of order) {
+        const lanes = lanesFor(m, "session");
+        const st = seenOf(m);
         const ctx = machineCtx(root, m, settings, st?.state);
         const blockers = me ? tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, now, settings.promoteMin * 60000, ctx)) : [];
         for (const l of lanes) want.push(m.via === "local" ? l.lock : `${m.name}:${l.lock}`);
@@ -1501,12 +1508,19 @@ export function resolveMachines(root, opts = {}) {
 }
 
 // Temp file + rename: a reader never sees a half-written ticket (and deletes it).
-function rewriteTicket(root, f, t) {
+// A ticket that is gone (a newer request from the same worktree dropped it, or the reaper did) is not
+// written again: a waiter that rewrote it after the drop (its ssh read takes seconds) brought the
+// replaced request back, so one worktree queued twice. Returns whether it wrote.
+export function rewriteTicket(root, f, t) {
   const file = join(queueDir(root), f);
+  if (!existsSync(file)) return false;
   try {
     writeFileSync(`${file}.tmp`, JSON.stringify(t));
     renameSync(`${file}.tmp`, file);
-  } catch {}
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // How often a run whose machine went away is queued again (the last try keeps its verdict).
@@ -1606,6 +1620,18 @@ export async function acquireSlot(root, opts = {}) {
   const pinned = !!opts.machine || mode !== "any";
   const kind = laneKind(purpose);
   const priority = q.normalizePriority(opts.priority) ?? resolvePriority(root);
+  // A pin (--local / --machine) overrides the pool's RAM-aware choice: one line at queue time when
+  // another machine has room and would have been chosen (`pool status` says it again while it waits).
+  if (pinned) {
+    try {
+      const st = poolSettings(root);
+      const health = readJson(healthFile(root), {});
+      const others = loadMachines(root).filter((x) => x.caps.includes("server") && !machines.some((p) => p.name === x.name) && !(x.via !== "local" && health[x.name] && Date.now() - health[x.name].at < HEALTH_TTL_MS && !health[x.name].reachable));
+      const flag = opts.machine ? `--machine ${opts.machine}` : mode === "local" ? "--local" : "--remote";
+      const w = pinWarning(root, machines, others, st, { flag, reserveMb: kind === "session" ? q.sessionReserveMb(st, 1, "full") : 0, stateOf: (x) => remoteStateCached(x) });
+      if (w) console.log(w);
+    } catch {}
+  }
   let waitingOn = [];
   let stuck = "";
   let needMb;
@@ -1687,7 +1713,14 @@ export async function acquireSlot(root, opts = {}) {
         } catch {}
       }
       const aheadCounts = [];
-      for (const m of machines) {
+      // Try the machine with the most RAM headroom first, weighted by speed (q.rankMachines); the
+      // remote read is cached, and a machine below the floor is refused by the gate anyway.
+      let order = machines;
+      try {
+        const st = poolSettings(root);
+        order = orderMachines(root, machines, st, { reserveMb: kind === "session" ? q.sessionReserveMb(st, 1, "full") : 0, stateOf: (x) => (usable(x) ? remoteStateCached(x) : null) });
+      } catch {}
+      for (const m of order) {
         // A machine that is down for this run neither blocks nor counts as waited on.
         if (m.via !== "local" && !usable(m)) continue;
         let blockers = [];
@@ -1920,6 +1953,54 @@ function remoteLocks(m) {
   return remoteState(m)?.locks ?? null;
 }
 
+// remoteState, remembered for ttlMs (an unreadable machine for downTtlMs), so choosing a machine
+// for a run or a session does not ssh on every decision. opts.read / opts.now are test seams.
+const stateCache = new Map();
+export function remoteStateCached(m, { ttlMs = 8000, downTtlMs = 30000, now = Date.now(), read = remoteState } = {}) {
+  const hit = stateCache.get(m.name);
+  if (hit && now - hit.at < (hit.state ? ttlMs : downTtlMs)) return hit.state;
+  let state = null;
+  try {
+    state = read(m);
+  } catch {}
+  stateCache.set(m.name, { at: now, state });
+  return state;
+}
+
+// The machines in the order a job should try them (q.rankMachines): live free RAM per machine, this
+// PC read here, a pool machine from stateOf(m) (its cached ssh read; null when unreadable), less the
+// sessions still booting there, less the job's reserve. One machine: as given.
+export function orderMachines(root, machines, settings, opts = {}) {
+  if (machines.length < 2) return machines;
+  return rankedMachines(root, machines, settings, opts).map((r) => machines.find((m) => m.name === r.name));
+}
+
+// The rows of q.rankMachines for these machines ({ name, room, headroomMb, score }, best first).
+export function rankedMachines(root, machines, settings, { reserveMb = 0, stateOf = () => null, localFreeMb } = {}) {
+  const views = machines.map((m) => {
+    if (m.via === "local") {
+      const pendingMb = otherSessionLanes(root, m, null).reduce((n, s) => n + s.pendingMb, 0);
+      return { name: m.name, freeMb: localFreeMb ?? Math.round(freemem() / 1048576), pendingMb, multiplier: m.budgetMultiplier };
+    }
+    const st = stateOf(m);
+    const pendingMb = st ? remotePendingMb(settings, Object.values(st.locks ?? {}).filter((i) => i?.alive)) : 0;
+    return { name: m.name, freeMb: st?.freeMb ?? null, pendingMb, multiplier: m.budgetMultiplier };
+  });
+  return q.rankMachines(views, { minFreeMb: settings.minFreeMb, reserveMb, roomyMb: settings.roomyMb });
+}
+
+// One line for a job pinned to `pinned` (--local / --machine / --remote) when the pool, left to
+// choose among pinned and others, would send it elsewhere: another machine has room and ranks
+// above the pinned ones. null when the pin costs nothing. flag names the pin for the hint.
+export function pinWarning(root, pinned, others, settings, { flag = "--local", ...opts } = {}) {
+  if (!others.length) return null;
+  const rows = rankedMachines(root, [...pinned, ...others], settings, opts);
+  const best = rows[0];
+  if (!best || best.room !== true || pinned.some((m) => m.name === best.name)) return null;
+  const gb = (x) => (x / 1024).toFixed(1);
+  return `WARN  pool: pinned to ${pinned.map((m) => m.name).join(", ")} (${flag}); ${best.name} has room (${gb(best.headroomMb)} GB headroom) and would be chosen; drop ${flag} and the pool picks the machine with the most RAM headroom`;
+}
+
 // Memory the pool's own running jobs hold on a machine (MB), from their lock records: a session its
 // reserve (clients, profile), a test the server share. What draining that machine could free.
 export function heldMbOf(settings, infos) {
@@ -2102,6 +2183,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     seen.set(m.name, { m, infos, capMin, freeMb });
   }
   const diskGb = gc.freeDiskGb(sessionBase());
+  console.log(statusLine(root)); // the Workbench limit of this PC (tools/lib/wb-lock.mjs)
   console.log(`disk: ${diskGb === null ? "unknown" : `${diskGb.toFixed(1)} GB free`} on the session volume (floor ${settings.minFreeDiskGb} GB; session folders older than ${settings.sessionKeepHours} h are removed on the next session or test start)`);
   const promoteMs = settings.promoteMin * 60000;
   const starveMs = settings.starveMin * 60000;
@@ -2121,7 +2203,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const base = q.normalizePriority(t.priority) ?? "normal";
     const eff = q.PRIORITIES[q.effectiveRank(t, now, promoteMs)];
     const prio = eff === base ? base : `${base}>${eff}`;
-    const why = q.waitReason(t, pos - 1, { now, starveMs, freeMbOf });
+    const why = q.waitReason(t, pos - 1, { now, starveMs, freeMbOf, otherMachines: machines.map((x) => x.name) });
     // Estimated start: the (ahead+1)-th projected lane release on the machines it can use. A RAM wait
     // ends when a session on those machines lets go (a test frees little and is gone in seconds).
     const releases = [];

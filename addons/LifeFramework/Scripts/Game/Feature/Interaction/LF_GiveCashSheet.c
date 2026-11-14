@@ -23,7 +23,7 @@ class LF_GiveCashSheet
 	{
 		ref array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "GiveCashTitle", "#LF-Interact_GiveCashTitle"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "GiveCashCarried", WidgetManager.Translate("#LF-Interact_GiveCashCarried", carried)));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "GiveCashCarried", LF_Terms.Text("#LF-Interact_GiveCashCarried", carried.ToString())));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_AMOUNT, "#LF-Interact_GiveCashAmount"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_ERROR, ""));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_GIVE, "#LF-Interact_GiveCashButton"));

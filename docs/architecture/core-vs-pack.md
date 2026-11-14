@@ -58,7 +58,8 @@ Chernarus or a custom map works by placing components, with no script change.
   Kinds in use: `BreachTarget` (`LF_BreachTargetComponent`, and every bank
   vault), `BankVault` (`LF_BankVaultComponent`, `LF_HeistVaultComponent`),
   `HospitalSite` (hospital till and cabinet), `HideoutDoor`
-  (`LF_HideoutDoorComponent`, under the hideout id).
+  (`LF_HideoutDoorComponent`, under the hideout id), `Workplace`
+  (`LF_WorkplaceComponent`, under the place id; `LF_Workplace.FindAll(job, into)` lists a job's).
 - An id defaults to the entity name only so placed layers keep their saved
   keys; nothing looks an entity up by that name.
 - A place that is not on the map is a null lookup: the system logs and that
@@ -148,6 +149,12 @@ against every GUID in `addons/`, so none repeats. It refuses a name the core alr
 `LF_Test` is the test base class). `validate-pack-manifest` and `validate-addon-boundary` hold every
 `LF_*` addon, so a fresh pack passes with no edits (`pack-new-selftest.mjs`).
 
+`tools\cli pack new <Name> --job <ID>` (#1111) also writes `Prefabs/Jobs/<Name><Job>Workplace.et`,
+a prefab that inherits the core `Prefabs/Jobs/LF_Workplace.et` with the job id set. The core
+prefab brings the punch clock with the clock-in action, the place registration and an optional NPC
+slot, so a pack needs no hand-wired actions and no script. A job id that is not a duty job
+(`POLICE`, `MEDIC`) still registers its place; it shows no clock-in.
+
 ## Checking a pack
 
 `tools\cli pack check <addon>` (#969) reads a pack offline and reports each finding with the
@@ -161,3 +168,27 @@ terms (#958), map independence (#961) and profit loops over pack prices (#686) a
 Exit 1 on any error. `pack explain` is its other half: `docs/config/owner-config.md` "Where a value came from".
 The list sections both read are one table, `SECTIONS` in `tools/pack/layers.mjs`; a section moved onto the
 override model adds its row there (`pack-check-selftest.mjs` fails until it does).
+
+### A pack's own config sections (#553)
+
+A pack that needs settings the core sections do not cover declares them in its manifest `.conf`
+(`LF_PackManifest.m_aConfigSections`), as data: a pack has no script, and the core never reads a pack
+section's values. Each `LF_PackConfigSection` has a name and `LF_PackConfigField` rows (key, type
+`int|float|bool|string`, default, optional min and max, description).
+
+- **Name:** the pack id without `LF_`, lower case, alone or continued by an upper-case word:
+  `LF_Everon1989` may declare `everon1989` and `everon1989Chains`, nothing else. That keeps packs
+  off each other and off the core. A name that is a core section's (`shops`) is refused even for a pack
+  whose namespace is that word.
+- **At boot:** `LF_ConfigService` asks the pack source for the manifest (`LF_ConfigPackSource.GetManifest`),
+  accepts each valid section (`LF_PackConfigSections.Collect`), and logs an `[LFDebug:Packs]` error for
+  each one it ignores. An accepted section is a known top-level key; the owner's values are read per
+  field over the declared defaults (`LF_PackConfigSections.Read`): wrong type or out of range keeps the
+  default, an unknown key warns. The pack's own mission/feature code reaches the values only through
+  that call, never by naming a core class that knows the pack.
+- **Offline:** `tools/config/pack-sections.mjs` reads the same declarations; `node tools/config/schema.mjs --write`
+  merges every valid pack section into `config.schema.json` after the core
+  ones (`x-pack` names the addon), so `config-check`, the website generator and the reference page cover
+  it unchanged. `pack check` reports a section the server would ignore under `config`; `pack explain
+  <section>[.<field>]` shows the default and the owner's value. Sample: `everon1989` in
+  `addons/LF_Everon1989/Configs/LF_PackManifest.conf`.

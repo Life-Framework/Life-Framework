@@ -6,10 +6,6 @@ MetaFileClass {
    MergeMeshes 0
    ExportSceneHierarchy 1
    MaterialAssigns {
-    MaterialAssignClass "{38991718FFCC0EAB}" {
-     SourceMaterial "AB_Cabinet_White"
-     AssignedMaterial "{50427C1F6FF60920}Assets/Buildings/Materials/AB_Cabinet_White.emat"
-    }
     MaterialAssignClass "{1DEE65D5EAAD6ED3}" {
      SourceMaterial "AB_Carpet"
      AssignedMaterial "{934EF64464A22581}Assets/Buildings/Materials/AB_Carpet.emat"
@@ -29,18 +25,6 @@ MetaFileClass {
     MaterialAssignClass "{83E91890B782A819}" {
      SourceMaterial "AB_Frame_Dark"
      AssignedMaterial "{038F1BCB638D4C0B}Assets/Buildings/Materials/AB_Frame_Dark.emat"
-    }
-    MaterialAssignClass "{96C11EBB07D37E85}" {
-     SourceMaterial "AB_Glass_Frosted"
-     AssignedMaterial "{6ABAC259E263495C}Assets/Structures/BuildingsParts/Windows/Data/window_glass_dirty.emat"
-    }
-    MaterialAssignClass "{571D5FB18D7F874E}" {
-     SourceMaterial "AB_Lamp"
-     AssignedMaterial "{F94C5856EA411094}Assets/Buildings/Materials/AB_Lamp.emat"
-    }
-    MaterialAssignClass "{FA7C0DCAF812A50D}" {
-     SourceMaterial "AB_Metal_Black"
-     AssignedMaterial "{DC01D43F244616E5}Assets/Buildings/Materials/AB_Metal_Black.emat"
     }
     MaterialAssignClass "{82740D6F7B666A83}" {
      SourceMaterial "AB_Metal_Panel"
@@ -70,10 +54,6 @@ MetaFileClass {
      SourceMaterial "AB_Roof_Flat"
      AssignedMaterial "{FC145870AA937CDD}Assets/Buildings/Materials/AB_Roof_Flat.emat"
     }
-    MaterialAssignClass "{8E475E2706C89883}" {
-     SourceMaterial "AB_Sign"
-     AssignedMaterial "{06066674F6571CCE}Assets/Buildings/Materials/AB_Sign.emat"
-    }
     MaterialAssignClass "{0BF96C8768A6DAA9}" {
      SourceMaterial "AB_Stone"
      AssignedMaterial "{3FD84AFE0D74D08E}Assets/Buildings/Materials/AB_Stone.emat"
@@ -86,9 +66,17 @@ MetaFileClass {
      SourceMaterial "AB_Tiles_Wall"
      AssignedMaterial "{4615B6849BF1827A}Assets/Buildings/Materials/AB_Tiles_Wall.emat"
     }
-    MaterialAssignClass "{C657FDE97E040284}" {
-     SourceMaterial "AB_Trim_White"
-     AssignedMaterial "{1D9FE9A0F682E234}Assets/Buildings/Materials/AB_Trim_White.emat"
+    MaterialAssignClass "{767F2F41D2283C83}" {
+     SourceMaterial "PRT_195x182_A_EM"
+     AssignedMaterial "{21AC9F856E331806}Assets/_SharedMaterials/Portals/PRT_195x182_A_EM.emat"
+    }
+    MaterialAssignClass "{3AF7876A922C9F5F}" {
+     SourceMaterial "PRT_DOOR_EXT_GLASS_A_EM"
+     AssignedMaterial "{EBB2191AB49E6C11}Assets/_SharedMaterials/Portals/PRT_DOOR_EXT_GLASS_A_EM.emat"
+    }
+    MaterialAssignClass "{A76C7C4023D72806}" {
+     SourceMaterial "dummyvolume"
+     AssignedMaterial "{D3975B51F51E6BD5}Common/Materials/dummyvolume.emat"
     }
    }
    MeshParams {
@@ -138,14 +126,6 @@ MetaFileClass {
      Mass 0
      Margin 0
     }
-    GeometryParam UTM_BD_plastic {
-     LayerPreset "BuildingFireView"
-     SurfaceProperties {
-      "{5EAA7FB0A83F90CF}Common/Materials/Game/plastic.gamemat"
-     }
-     Mass 0
-     Margin 0
-    }
     GeometryParam UTM_BD_stone {
      LayerPreset "BuildingFireView"
      SurfaceProperties {
@@ -162,14 +142,6 @@ MetaFileClass {
      Mass 0
      Margin 0
     }
-    GeometryParam UTM_BD_wood {
-     LayerPreset "BuildingFireView"
-     SurfaceProperties {
-      "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"
-     }
-     Mass 0
-     Margin 0
-    }
     GeometryParam UTM_BD_wood_floor {
      LayerPreset "BuildingFireView"
      SurfaceProperties {
@@ -178,16 +150,9 @@ MetaFileClass {
      Mass 0
      Margin 0
     }
-    GeometryParam UTM_GL_glass {
-     LayerPreset "Glass"
-     SurfaceProperties {
-      "{3DC7C8A918E3F4A5}Common/Materials/Game/glass.gamemat"
-     }
-     Mass 0
-     Margin 0
-    }
    }
    Common TXOCommonClass "{16E174CF20E1F970}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+    GenerateBSP 1
    }
    ApplicationVendor "Blender Foundation"
    ApplicationName "Blender (stable FBX IO)"
@@ -195,22 +160,27 @@ MetaFileClass {
   }
   FBXResourceClass XBOX_ONE : PC {
    Common TXOCommonClass "{0BC1858887C293A5}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+    GenerateBSP 1
    }
   }
   FBXResourceClass XBOX_SERIES : PC {
    Common TXOCommonClass "{F60C10F3F9D45E02}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+    GenerateBSP 1
    }
   }
   FBXResourceClass PS4 : PC {
    Common TXOCommonClass "{D2848CAC981E68BB}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+    GenerateBSP 1
    }
   }
   FBXResourceClass PS5 : PC {
    Common TXOCommonClass "{D8F044214D268D5C}" : "{F62AA8E7B8EA9D26}Configs/System/ResourceTypes/PS5/MeshObjectCommon.conf" {
+    GenerateBSP 1
    }
   }
   FBXResourceClass HEADLESS : PC {
    Common TXOCommonClass "{0D3651D854655191}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+    GenerateBSP 1
    }
   }
  }

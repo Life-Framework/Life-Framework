@@ -20,9 +20,10 @@ enum LF_EVehiclePriceAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! One vehicle. A -1 override means "derive from the base price and the multiplier".
+//! One vehicle. A -1 override means "derive from the base price and the multiplier". Its id in the
+//! override model (#962, #1109) is the lot prefab's GUID.
 [BaseContainerProps()]
-class LF_VehiclePriceEntry
+class LF_VehiclePriceEntry : LF_ConfigRecord
 {
 	static const int NO_OVERRIDE = -1;
 
@@ -232,14 +233,26 @@ class LF_VehiclePricesConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "vehicles" section over this instance, which holds the core `.conf`, then
-	//! (on a client) the server's streamed values over that.
-	void ApplyLayers()
+	//! Layers the pack overlays of the core file (in load order), then the owner's "vehicles"
+	//! section, over this instance, which holds the core `.conf`; then (on a client) the server's
+	//! streamed values over that. The list merges through LF_ConfigOverlay (#962, #1109).
+	//! \param[in] coreConf The core file whose pack overlays apply.
+	void ApplyLayers(ResourceName coreConf = CONFIG_PATH)
 	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(coreConf, LF_VehiclePricesConfig, SECTION, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("vehicles: pack overlay %1 set %2 fields", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (reader)
 		{
-			ApplyOwner(reader);
+			ApplyOwner(reader, LF_ConfigService.GetOwnerSource());
 			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("vehicles: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
 		}
 
@@ -361,12 +374,41 @@ class LF_VehiclePricesConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Applies the owner's "vehicles" section field by field: a key the owner leaves out keeps the
-	//! shipped value. `vehicles` is an object keyed by the vehicle's prefab GUID (16 hex digits); a
-	//! record changes the entry whose lot prefab or locked child has that GUID, and a GUID no entry
-	//! has adds a vehicle, which must set basePrice (an unpriced vehicle would sell for nothing).
+	//! Applies one pack `.conf` of this class: the percents and the cap it sets directly, and its
+	//! `m_aVehicles` entries by the override verbs (`m_sOp`, #962).
+	//! \param[in] container The overlay's root container.
+	//! \return The number of values and entries it changed.
+	int ApplyContainer(notnull BaseContainer container, string source = "pack", LF_ConfigClaims claims = null)
+	{
+		int changed;
+		if (container.IsVariableSetDirectly("m_iBuyPercent") && container.Get("m_iBuyPercent", m_iBuyPercent))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iSellBackPercent") && container.Get("m_iSellBackPercent", m_iSellBackPercent))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iChopPercent") && container.Get("m_iChopPercent", m_iChopPercent))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iChopValueCap") && container.Get("m_iChopValueCap", m_iChopValueCap))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iImpoundPercent") && container.Get("m_iImpoundPercent", m_iImpoundPercent))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iGaragePercent") && container.Get("m_iGaragePercent", m_iGaragePercent))
+			changed++;
+
+		if (!m_aVehicles)
+			m_aVehicles = new array<ref LF_VehiclePriceEntry>();
+
+		changed += LF_ConfigOverlay.ApplyContainerList(new LF_VehiclePriceList(this), container, "m_aVehicles", source, claims);
+		return changed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the owner's "vehicles" section: the percents and the cap, then `vehicles`, an object
+	//! keyed by the vehicle's prefab GUID (16 hex digits), each record with an optional "op"
+	//! (add, replace, patch, remove; none patches a listed vehicle and adds an unlisted one). A key
+	//! addresses the entry whose lot prefab or locked child has that GUID. A new or replaced vehicle
+	//! must set basePrice above 0 (an unpriced vehicle would sell for nothing).
 	//! \param[in] reader A reader on the section.
-	void ApplyOwner(notnull LF_ConfigReader reader)
+	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
 		array<string> ownerKeys = {"buyPercent", "sellBackPercent", "chopPercent", "chopValueCap", "impoundPercent", "garagePercent", "vehicles"};
 		reader.WarnUnknownKeys(ownerKeys);
@@ -380,52 +422,7 @@ class LF_VehiclePricesConfig
 		if (!m_aVehicles)
 			m_aVehicles = new array<ref LF_VehiclePriceEntry>();
 
-		int count = reader.BeginRecords("vehicles");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
-
-			string guid;
-			if (!LF_VehiclePriceModel.ParseGuidKey(key, guid))
-			{
-				reader.RejectRecord("the key is not a prefab GUID (16 hex digits)");
-				reader.EndRecord();
-				continue;
-			}
-
-			LF_VehiclePriceEntry entry = FindByGuid(guid);
-			if (!entry && !reader.Has("basePrice"))
-			{
-				reader.RejectRecord("a vehicle the shipped prices do not list needs a basePrice");
-				reader.EndRecord();
-				continue;
-			}
-
-			if (!entry)
-			{
-				ResourceName added = "{" + guid + "}";
-				entry = LF_VehiclePriceEntry.Make(added, "", 0);
-				m_aVehicles.Insert(entry);
-			}
-
-			array<string> recordKeys = {"spawnPrefab", "basePrice", "buyOverride", "sellBackOverride", "chopOverride", "impoundOverride", "garageOverride"};
-			reader.WarnUnknownKeys(recordKeys);
-			string spawn = entry.m_SpawnPrefab;
-			if (reader.ReadString("spawnPrefab", spawn))
-				entry.m_SpawnPrefab = spawn;
-			reader.ReadInt("basePrice", entry.m_iBasePrice, PRICE_MIN, PRICE_MAX);
-			reader.ReadInt("buyOverride", entry.m_iBuyOverride, OVERRIDE_MIN, PRICE_MAX);
-			reader.ReadInt("sellBackOverride", entry.m_iSellBackOverride, OVERRIDE_MIN, PRICE_MAX);
-			reader.ReadInt("chopOverride", entry.m_iChopOverride, OVERRIDE_MIN, PRICE_MAX);
-			reader.ReadInt("impoundOverride", entry.m_iImpoundOverride, OVERRIDE_MIN, PRICE_MAX);
-			reader.ReadInt("garageOverride", entry.m_iGarageOverride, OVERRIDE_MIN, PRICE_MAX);
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
+		LF_ConfigOverlay.ApplyRecords(reader, "vehicles", new LF_VehiclePriceList(this), source);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -506,5 +503,160 @@ class LF_VehiclePricesConfig
 			return -1;
 
 		return config.PriceFor(action, prefab);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The vehicle list as the override model sees it (#962, #1109). The id is the lot prefab's GUID;
+//! an owner key or a pack entry naming the locked child's GUID addresses the same entry, as it
+//! always did.
+class LF_VehiclePriceList : LF_ConfigList
+{
+	protected LF_VehiclePricesConfig m_Config;
+
+	void LF_VehiclePriceList(LF_VehiclePricesConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "vehicles.vehicles";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aVehicles.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aVehicles[index];
+	}
+
+	//! The entry whose lot prefab or locked child has this GUID.
+	override int IndexOf(string id)
+	{
+		for (int i = 0; i < Count(); i++)
+		{
+			LF_VehiclePriceEntry entry = m_Config.m_aVehicles[i];
+			if (!entry)
+				continue;
+
+			if (LF_VehiclePriceModel.GuidOf(entry.m_Prefab) == id || LF_VehiclePriceModel.GuidOf(entry.m_SpawnPrefab) == id)
+				return i;
+		}
+
+		return -1;
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		LF_VehiclePriceEntry entry = LF_VehiclePriceEntry.Cast(record);
+		if (entry.m_Prefab.IsEmpty())
+			return string.Empty;
+
+		return LF_VehiclePriceModel.GuidOf(entry.m_Prefab);
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string prefab;
+		container.Get("m_Prefab", prefab);
+		if (prefab.IsEmpty())
+			return string.Empty;
+
+		return LF_VehiclePriceModel.GuidOf(prefab);
+	}
+
+	//! A prefab GUID: 16 hex digits, braces and case ignored.
+	override string CanonicalId(string key)
+	{
+		string guid;
+		if (!LF_VehiclePriceModel.ParseGuidKey(key, guid))
+			return string.Empty;
+
+		return guid;
+	}
+
+	override string IdHint()
+	{
+		return "a prefab GUID (16 hex digits)";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_VehiclePriceEntry.Make("{" + id + "}", "", 0);
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_VehiclePriceEntry entry = LF_VehiclePriceEntry.Cast(record);
+		if (index < m_Config.m_aVehicles.Count())
+			m_Config.m_aVehicles.Set(index, entry);
+		else
+			m_Config.m_aVehicles.Insert(entry);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aVehicles.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_VehiclePriceEntry entry = LF_VehiclePriceEntry.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_SpawnPrefab"))
+		{
+			string spawn;
+			if (container.Get("m_SpawnPrefab", spawn))
+			{
+				entry.m_SpawnPrefab = spawn;
+				changed++;
+			}
+		}
+		if (container.IsVariableSetDirectly("m_iBasePrice") && container.Get("m_iBasePrice", entry.m_iBasePrice))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iBuyOverride") && container.Get("m_iBuyOverride", entry.m_iBuyOverride))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iSellBackOverride") && container.Get("m_iSellBackOverride", entry.m_iSellBackOverride))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iChopOverride") && container.Get("m_iChopOverride", entry.m_iChopOverride))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iImpoundOverride") && container.Get("m_iImpoundOverride", entry.m_iImpoundOverride))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iGarageOverride") && container.Get("m_iGarageOverride", entry.m_iGarageOverride))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_VehiclePriceEntry entry = LF_VehiclePriceEntry.Cast(record);
+		array<string> recordKeys = {"op", "spawnPrefab", "basePrice", "buyOverride", "sellBackOverride", "chopOverride", "impoundOverride", "garageOverride"};
+		reader.WarnUnknownKeys(recordKeys);
+		string spawn = entry.m_SpawnPrefab;
+		if (reader.ReadString("spawnPrefab", spawn))
+			entry.m_SpawnPrefab = spawn;
+		reader.ReadInt("basePrice", entry.m_iBasePrice, LF_VehiclePricesConfig.PRICE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
+		reader.ReadInt("buyOverride", entry.m_iBuyOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
+		reader.ReadInt("sellBackOverride", entry.m_iSellBackOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
+		reader.ReadInt("chopOverride", entry.m_iChopOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
+		reader.ReadInt("impoundOverride", entry.m_iImpoundOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
+		reader.ReadInt("garageOverride", entry.m_iGarageOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
+	}
+
+	//! An unpriced vehicle would sell for nothing, and a vehicle with no prefab cannot be found.
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_VehiclePriceEntry entry = LF_VehiclePriceEntry.Cast(record);
+		if (entry.m_Prefab.IsEmpty())
+			return "the vehicle has no prefab";
+
+		if (entry.m_iBasePrice <= 0)
+			return "a vehicle the shipped prices do not list needs a basePrice above 0";
+
+		return string.Empty;
 	}
 }

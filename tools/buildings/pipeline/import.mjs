@@ -8,7 +8,7 @@
 // references in saved worlds and layers), else a fresh one no repo addon holds (AGENTS.md rule 2).
 // References to the base game ({GUID}Prefabs/Structures/...) are left alone and listed, so the
 // prefab stage can check each one exists.
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, statSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { freshGuid, readGuid } from "../../assets/pipeline/meta.mjs";
@@ -114,10 +114,14 @@ export function planImport({ staging, spec, addonDir, used, random }) {
     // resolve to another mod's ArchBuilder export: they share GUIDs.
     for (const m of f.text.matchAll(staged)) problems.push(`${f.rel} still holds the staging GUID ${m[0]}`);
   }
-  // Shared materials belong to every building that uses them: a different one is refused.
+  // Shared materials belong to every building that uses them: a different one is refused when
+  // another building's model names it. One only this building uses is this building's to change.
+  const others = otherBuildingMetas(addonDir, spec);
   for (const f of files) {
     const dest = join(addonDir, f.to);
     if (!isSharedMaterial(f.to, spec) || !existsSync(dest)) continue;
+    const ematPath = f.to.replace(/\.meta$/, "");
+    if (!others.some((m) => m.text.includes(ematPath))) continue;
     const now = f.text ?? readFileSync(f.from);
     const before = f.text !== undefined ? readFileSync(dest, "utf8") : readFileSync(dest);
     if (f.text !== undefined ? now !== before : !now.equals(before)) {
@@ -128,6 +132,20 @@ export function planImport({ staging, spec, addonDir, used, random }) {
   if (new Set(fresh).size !== fresh.length) problems.push("two new resources drew the same GUID");
   for (const g of fresh) if (used.has(g)) problems.push(`new GUID ${g} is already used in the repo`);
   return { files, map, external: [...external].map(([path, guid]) => ({ path, guid })), problems };
+}
+
+// The .xob.meta of every other building in Assets/Buildings (their material assignments).
+export function otherBuildingMetas(addonDir, spec) {
+  const base = join(addonDir, "Assets", "Buildings");
+  if (!existsSync(base)) return [];
+  const out = [];
+  for (const d of readdirSync(base, { withFileTypes: true })) {
+    if (!d.isDirectory() || `Assets/Buildings/${d.name}` === spec.asset_dir || `Assets/Buildings/${d.name}` === materialsDir(spec)) continue;
+    for (const f of readdirSync(join(base, d.name))) {
+      if (f.endsWith(".xob.meta")) out.push({ path: `Assets/Buildings/${d.name}/${f}`, text: readFileSync(join(base, d.name, f), "utf8") });
+    }
+  }
+  return out;
 }
 
 // Writes the plan into the addon. Returns the paths written (relative to the addon).

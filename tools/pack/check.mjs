@@ -6,6 +6,8 @@
 //   header     the mission header names the manifest and loads real overlays; an overlay no header loads
 //   ids        add of an id the lower layers have; replace, patch or remove of one they lack; an unknown
 //              verb; a record with no id; an offer for an item the merged catalogue lacks
+//   config     a section the pack adds (#553) that the server ignores: a core name, outside the pack
+//              namespace, a bad field type, default or range (tools/config/pack-sections.mjs)
 //   packs      a second pack changing an id an earlier pack changed (a warning naming both)
 //   guids      a {GUID}path in an overlay that names another path, or a stale GUID of a file in this repo
 //   strings    a #Key in an overlay that no string table of the core or the pack defines
@@ -19,6 +21,8 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { checkPackManifest } from "../validation/validate-pack-manifest.mjs";
 import { checkBoundary } from "../validation/validate-addon-boundary.mjs";
+import { coreKeysOf, readScripts } from "../config/schema.mjs";
+import { loadPackSections } from "../config/pack-sections.mjs";
 import { CORE, SECTIONS, guidOf, loadPackOverlays, metaIndex, mergeList, pathOfRes, rel, sectionLayers, strings, walk } from "./layers.mjs";
 
 const CAP = 20;
@@ -30,6 +34,12 @@ function stringIds(addonDir) {
     for (const m of readFileSync(f, "utf8").matchAll(/^\s*Id\s+"([^"]+)"/gm)) ids.add(m[1]);
   }
   return ids;
+}
+
+/** The core's own top-level owner keys, read from its config classes; just schemaVersion without scripts. */
+export function coreKeysFor(addonsDir) {
+  const scripts = join(addonsDir, CORE, "Scripts", "Game");
+  return existsSync(scripts) ? coreKeysOf(readScripts(scripts)) : new Set(["schemaVersion"]);
 }
 
 export function packDirs(addonsDir) {
@@ -66,6 +76,20 @@ export function checkPack(root, pack) {
   if (loaded.header) {
     const hit = manifestGuid ? meta.get(manifestGuid) : null;
     if (!hit || hit.addon !== pack) add("error", "header", loaded.header, "m_LF_PackManifest", `the header names ${loaded.manifestRef ?? "no manifest"}, which is not a resource of this pack`);
+  }
+
+  // config: sections this pack adds to the owner file; the server ignores one with a problem.
+  const coreKeys = coreKeysFor(addonsDir);
+  const mine0 = loadPackSections(addonsDir, coreKeys).filter((p) => p.pack === pack);
+  const claimed = new Map(); // section name -> the other pack that declares it
+  for (const other of loadPackSections(addonsDir, coreKeys)) {
+    if (other.pack !== pack) for (const s of other.sections) if (!s.problem) claimed.set(s.name, other.pack);
+  }
+  for (const pk of mine0) {
+    for (const s of pk.sections) {
+      if (s.problem) add("error", "config", pk.file, s.name || "(no name)", `${s.problem}; the server ignores this section`);
+      else if (claimed.has(s.name)) add("error", "config", pk.file, s.name, `pack ${claimed.get(s.name)} declares section ${s.name} too`);
+    }
   }
 
   // ids: the merge of every section this pack overlays, packs after the core, as the server does it.

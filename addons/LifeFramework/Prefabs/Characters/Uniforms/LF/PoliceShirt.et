@@ -1,0 +1,20 @@
+GameEntity : "{D78000A3AAAC12AC}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V6.et" {
+ ID "5104869D194C6243"
+ components {
+  SCR_UniversalInventoryStorageComponent "{5222CB01D5B9A306}" {
+   Attributes SCR_ItemAttributeCollection "{5222CB01245CDF32}" {
+    ItemDisplayName UIInfo "{5222CB0109A04AB2}" {
+     Name "#LF-Police_Shirt_Name"
+    }
+   }
+  }
+  BaseLoadoutClothComponent "{5104869D194C627A}" {
+   WornMaterialsOverride {
+    "{6FD93B037FE1C585}Assets/Characters/Uniforms/LF/PoliceShirt/Data/PoliceShirt_Worn.emat"
+   }
+   ItemMaterialsOverride {
+    "{F1AB6F4876972A56}Assets/Characters/Uniforms/LF/PoliceShirt/Data/PoliceShirt_Item.emat"
+   }
+  }
+ }
+}

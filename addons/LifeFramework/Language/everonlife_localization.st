@@ -537,13 +537,13 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
   }
   CustomStringTableItem "{FDB3A4352A9457A4}" {
    Id "EL-Item_Sold"
-   Target_en_us "Sold item for $%1!"
-   Target_es_es "Item vendido por $%1!"
-   Target_de_de "Item für $%1 verkauft!"
-   Target_fr_fr "Objet vendu pour $%1!"
-   Target_it_it "Oggetto venduto per $%1!"
-   Target_pt_pt "Item vendido por $%1!"
-   Target_pt_br "Item vendido por $%1!"
+   Target_en_us "Sold item for {currency:sym}%1!"
+   Target_es_es "Item vendido por {currency:sym}%1!"
+   Target_de_de "Item für {currency:sym}%1 verkauft!"
+   Target_fr_fr "Objet vendu pour {currency:sym}%1!"
+   Target_it_it "Oggetto venduto per {currency:sym}%1!"
+   Target_pt_pt "Item vendido por {currency:sym}%1!"
+   Target_pt_br "Item vendido por {currency:sym}%1!"
   }
   CustomStringTableItem "{5AA164EA498BDCE0}" {
    Id "EL-Not_Enough_Money"
@@ -1379,10 +1379,10 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{72732E59A99DA11E}" {
      Id "EL-Police_Title"
-     Target_en_us "Police Action"
-     Target_de_de "Polizeiaktion"
-     Target_fr_fr "Action de police"
-     Target_it_it "Azione di polizia"
+     Target_en_us "{Police} Action"
+     Target_de_de "{Police}aktion"
+     Target_fr_fr "Action de {police}"
+     Target_it_it "Azione di {police}"
      Target_es_es "Acción policial"
      Target_pt_pt "Ação policial"
      Target_pt_br "Ação policial"
@@ -1509,7 +1509,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A3FCAC46DE2FB463}" {
      Id "EL-Breach_RepairDenied"
-     Target_en_us "Only police or the owner can repair this"
+     Target_en_us "Only {police} or the owner can repair this"
      Comment "Breach repair refused for this player"
     }
     CustomStringTableItem "{C4E8A17B2D9056F3}" {
@@ -1534,7 +1534,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C91A4E7700B10014}" {
      Id "EL-Rank_DrawDenied"
-     Target_en_us "Only on-duty police can draw a kit"
+     Target_en_us "Only on-duty {police} can draw a kit"
      Comment "Armory draw refused"
     }
     CustomStringTableItem "{C91A4E7700B10015}" {
@@ -1559,7 +1559,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C91A4E7700B10019}" {
      Id "EL-Rank_WantedListDenied"
-     Target_en_us "Only on-duty police can view the wanted list"
+     Target_en_us "Only on-duty {police} can view the wanted list"
      Comment "Wanted list refused for someone who is not on-duty police"
     }
     CustomStringTableItem "{685890AF28A71E11}" {
@@ -1584,7 +1584,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B706E8A6FFF1E84A}" {
      Id "EL-Rob_NeedPolice"
-     Target_en_us "Not enough police on duty"
+     Target_en_us "Not enough {police} on duty"
      Comment "Cash robbery refused because too few police are on duty"
     }
     CustomStringTableItem "{F1030FBC0E45B177}" {
@@ -1594,7 +1594,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8AEA48F56B9C5F59}" {
      Id "EL-Jail_NotOfficer"
-     Target_en_us "Only on-duty police can send someone to jail"
+     Target_en_us "Only on-duty {police} can send someone to jail"
      Comment "Jail action refused because the user is not an on-duty officer"
     }
     CustomStringTableItem "{C1D59E0ED7B03055}" {
@@ -1634,7 +1634,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B7E41C90A2D64F14}" {
      Id "EL-Bank_NeedPolice"
-     Target_en_us "Not enough police on duty"
+     Target_en_us "Not enough {police} on duty"
      Comment "Bank vault robbery refused below the minimum police count"
     }
     CustomStringTableItem "{B7E41C90A2D64F15}" {
@@ -1714,7 +1714,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A11C0B01E4A1000F}" {
      Id "EL-Job_Paid"
-     Target_en_us "Run paid: $%1"
+     Target_en_us "Run paid: {currency:sym}%1"
      Comment "Cash notice after a completed delivery run"
     }
     CustomStringTableItem "{A11C0B01E4A10010}" {
@@ -1884,7 +1884,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FB26058E34D791AC}" {
      Id "EL-Hospital_TillNeedPolice"
-     Target_en_us "Not enough police are on duty"
+     Target_en_us "Not enough {police} are on duty"
      Comment "Hospital till action refused below the minimum police count"
     }
     CustomStringTableItem "{0C37169F45E8A2BD}" {
@@ -2219,7 +2219,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0F3FC6994B2A56D8}" {
      Id "LF-Job_NeedPoliceBadge"
-     Target_en_us "You need your police warrant card to go on duty. It is issued at the station."
+     Target_en_us "You need your {police} warrant card to go on duty. It is issued at the station."
      Target_es_es "Necesitas la placa policial para entrar de servicio. Se expide en la comisaría."
      Comment "Police job refused: the player lacks the police credential licence"
     }
@@ -2249,8 +2249,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{52D2FDF4AA85DFF5}" {
      Id "LF-Job_OnDutyPolice_Title"
-     Target_en_us "Police on duty"
-     Target_es_es "Policía de servicio"
+     Target_en_us "{Police} on duty"
+     Target_es_es "{Police} de servicio"
      Comment "Hint title when a police officer starts a shift"
     }
     CustomStringTableItem "{B8F62B559B06F232}" {
@@ -2714,7 +2714,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CAE4963AFB138F1B}" {
      Id "LF-Rob_NeedPoliceCount"
-     Target_en_us "At least %1 police officers must be on duty"
+     Target_en_us "At least %1 {police} officers must be on duty"
      Comment "Vehicle/weapon robbery refused because too few police are on duty. %1 = required count"
     }
     CustomStringTableItem "{DDFD7A1F8207F359}" {
@@ -2840,7 +2840,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{92FBA59A53BA6764}" {
      Id "EL-Confiscate_OnDutyOnly"
-     Target_en_us "Only on-duty police can confiscate"
+     Target_en_us "Only on-duty {police} can confiscate"
      Comment "Confiscate action refused because the player is not an on-duty officer"
     }
     CustomStringTableItem "{4D0E7310AF59E5DA}" {
@@ -2910,7 +2910,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F4D6F78E634D1214}" {
      Id "EL-Duty_Paid"
-     Target_en_us "Duty pay: $%1 cash"
+     Target_en_us "Duty pay: {currency:sym}%1 cash"
      Comment "Toast after the station desk hands an officer going off duty their shift pay in cash; %1 is the amount"
     }
     CustomStringTableItem "{F4D6F78E634D1216}" {
@@ -2925,7 +2925,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{13CD00AAEFCF43FD}" {
      Id "EL-Benefit_Paid"
-     Target_en_us "Unemployment benefit: $%1 cash"
+     Target_en_us "Unemployment benefit: {currency:sym}%1 cash"
      Comment "Toast after the job counter hands over the unemployment benefit; %1 is the amount"
     }
     CustomStringTableItem "{6B1E0C2D9A4F7E31}" {
@@ -3345,12 +3345,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F3146FBEA250635F}" {
      Id "LF-Interact_CashGiven"
-     Target_en_us "You handed over $%1."
+     Target_en_us "You handed over {currency:sym}%1."
      Comment "Give cash performed, giver side. %1 is the amount."
     }
     CustomStringTableItem "{CDE85A79D1DDEB85}" {
      Id "LF-Interact_CashReceived"
-     Target_en_us "You were handed $%1."
+     Target_en_us "You were handed {currency:sym}%1."
      Comment "Give cash performed, receiver side. %1 is the amount."
     }
     CustomStringTableItem "{4785856902D6478D}" {
@@ -3380,7 +3380,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C316763AB24BFEC1}" {
      Id "LF-Interact_GiveCashCarried"
-     Target_en_us "In your pocket: $%1"
+     Target_en_us "In your pocket: {currency:sym}%1"
      Comment "Give cash sheet line. %1 is the cash carried."
     }
     CustomStringTableItem "{D123351114EF634A}" {
@@ -3470,7 +3470,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{5CDA9148049FE180}" {
      Id "LF-Garage_LedgerFee"
-     Target_en_us "Release fee at the impound desk behind the garage: $%1 in cash."
+     Target_en_us "Release fee at the impound desk behind the garage: {currency:sym}%1 in cash."
      Comment "Ledger card line when a vehicle is impounded. %1 is the fee"
     }
     CustomStringTableItem "{66D8858FA06871D7}" {
@@ -3665,7 +3665,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F8D832E3CE9C3E7A}" {
      Id "LF-Duty_NotOnRoster"
-     Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
+     Target_en_us "Only officers on the {police} roster can clock in. Ask an admin to join the {police}."
      Comment "Duty desk refusal: the player is not whitelisted for police."
     }
     CustomStringTableItem "{B20154B0D085697C}" {
@@ -3785,17 +3785,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E69F55595D3DEC33}" {
      Id "LF-Org_Title"
-     Target_en_us "Organization register"
+     Target_en_us "{Org} register"
      Comment "Toast title for organization registry messages."
     }
     CustomStringTableItem "{D4B253C21B4066E6}" {
      Id "LF-Org_LedgerTitle"
-     Target_en_us "Organization Register"
+     Target_en_us "{Org} Register"
      Comment "Registry ledger page title."
     }
     CustomStringTableItem "{D45EFB759CEED8F8}" {
      Id "LF-Org_FoundIntro"
-     Target_en_us "Register a new organization here. Write its name once; the clerk takes a $%1 fee in cash."
+     Target_en_us "Register a new {org} here. Write its name once; the clerk takes a {currency:sym}%1 fee in cash."
      Comment "Ledger founding line. %1 is the fee."
     }
     CustomStringTableItem "{A74957BC3D56482F}" {
@@ -3805,7 +3805,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C7FD7A0ABE2999FE}" {
      Id "LF-Org_FoundButton"
-     Target_en_us "Sign and pay $%1"
+     Target_en_us "Sign and pay {currency:sym}%1"
      Comment "Ledger founding button. %1 is the fee."
     }
     CustomStringTableItem "{155A971B5EE37AD7}" {
@@ -3840,7 +3840,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AF38925B41949B01}" {
      Id "LF-Org_AlreadyMember"
-     Target_en_us "You already belong to an organization."
+     Target_en_us "You already belong to an {org}."
      Comment "Founding refusal: already a member."
     }
     CustomStringTableItem "{BFB5F121CB45359D}" {
@@ -3850,7 +3850,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1536EF0E4145400E}" {
      Id "LF-Org_NoCharacter"
-     Target_en_us "Register your character at the town hall first."
+     Target_en_us "Register your character at the {town} hall first."
      Comment "Ledger refusal: no character."
     }
     CustomStringTableItem "{6FEEAF6F48E6E38E}" {
@@ -3965,7 +3965,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A26182C89E316E79}" {
      Id "LF-Org_Left"
-     Target_en_us "You left the organization."
+     Target_en_us "You left the {org}."
      Comment "Ledger notice after leaving."
     }
     CustomStringTableItem "{5057D088D80BAF22}" {
@@ -4085,7 +4085,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C6C3575A8274C731}" {
      Id "LF-Contraband_NotHideoutOwner"
-     Target_en_us "Your organization has to hold the hideout before it can run this convoy."
+     Target_en_us "Your {org} has to hold the hideout before it can run this convoy."
      Comment "Convoy start refused: the player's organization does not hold the hideout"
     }
     CustomStringTableItem "{ADBB1F127BBEB201}" {
@@ -4095,7 +4095,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{07C181E87F83A891}" {
      Id "LF-Contraband_JoinOrg"
-     Target_en_us "Contraband runs are for organization members. Join one or found your own at the organization desk."
+     Target_en_us "Contraband runs are for {org} members. Join one or found your own at the {org} desk."
      Comment "Convoy start refused: the player has no organization"
     }
     CustomStringTableItem "{50FCD7F3D7EB972C}" {
@@ -4120,7 +4120,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1CF2A86D80F0C6CA}" {
      Id "LF-Murder_Wanted"
-     Target_en_us "You killed someone. You are wanted for murder, and witnesses will describe your clothes and vehicle to the police."
+     Target_en_us "You killed someone. You are wanted for murder, and witnesses will describe your clothes and vehicle to the {police}."
      Comment "Toast to the killer after a murder. The police get a description, not a name."
     }
     CustomStringTableItem "{3DCC039CAC772B0D}" {
@@ -4280,7 +4280,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0C17FD1924B2AF02}" {
      Id "LF-Ticket_Title"
-     Target_en_us "Police ticket"
+     Target_en_us "{Police} ticket"
      Comment "Toast title for every ticket message."
     }
     CustomStringTableItem "{D3D038CBB83F2177}" {
@@ -4300,7 +4300,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{81F80B9BFCEBBE61}" {
      Id "LF-Ticket_CardTitle"
-     Target_en_us "POLICE TICKET"
+     Target_en_us "{POLICE} TICKET"
      Comment "Title printed on the ticket card."
     }
     CustomStringTableItem "{7033F4EADCC25C6B}" {
@@ -4325,27 +4325,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E43A03504CE37DC5}" {
      Id "LF-Ticket_DueOpen"
-     Target_en_us "Pay within %1 min of your time in town. After that the fine rises to %2."
+     Target_en_us "Pay within %1 min of your time in {town}. After that the {fine} rises to %2."
      Comment "Ticket line before the first deadline. %1 is online minutes left, %2 the raised amount. Time only counts while the holder is online."
     }
     CustomStringTableItem "{F8790EF1AB943842}" {
      Id "LF-Ticket_DueLate"
-     Target_en_us "OVERDUE: the fine went up. Pay within %1 min of your time in town or the police will want you."
+     Target_en_us "OVERDUE: the {fine} went up. Pay within %1 min of your time in {town} or the {police} will want you."
      Comment "Ticket line after the first deadline. %1 is online minutes left before the holder becomes wanted."
     }
     CustomStringTableItem "{8758643952766548}" {
      Id "LF-Ticket_DueWanted"
-     Target_en_us "UNPAID: the police want you for this fine. It can still be paid."
+     Target_en_us "UNPAID: the {police} want you for this {fine}. It can still be paid."
      Comment "Ticket line after the second deadline."
     }
     CustomStringTableItem "{2AED2A45EFDE680C}" {
      Id "LF-Ticket_HowToPay"
-     Target_en_us "Pay in cash at the punch clock on the police station desk: Pay ticket. Not from the bank."
+     Target_en_us "Pay in cash at the punch clock on the {police} station desk: Pay ticket. Not from the bank."
      Comment "Ticket line: where and how to pay. Pay ticket is the exact action name."
     }
     CustomStringTableItem "{46A53FAB3C5D54F3}" {
      Id "LF-Ticket_PaidLine"
-     Target_en_us "PAID %1. Stamped at the police desk. Keep this as your receipt."
+     Target_en_us "PAID %1. Stamped at the {police} desk. Keep this as your receipt."
      Comment "Ticket line once paid. %1 is the in-game date and time of payment."
     }
     CustomStringTableItem "{329E1C0F66D568D4}" {
@@ -4405,7 +4405,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D88B2F96BB0FB203}" {
      Id "LF-Ticket_Overdue"
-     Target_en_us "Your ticket is overdue. The fine is now %1."
+     Target_en_us "Your ticket is overdue. The {fine} is now %1."
      Comment "Toast at the first deadline. %1 is the raised amount."
     }
     CustomStringTableItem "{DBEBFF247E50B272}" {
@@ -4425,7 +4425,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DC2428C790D45A2D}" {
      Id "LF-Ticket_PadTitle"
-     Target_en_us "POLICE TICKET"
+     Target_en_us "{POLICE} TICKET"
      Comment "Title of the officer's ticket pad."
     }
     CustomStringTableItem "{BBEF205C1F2CB38F}" {
@@ -4435,7 +4435,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8E6D57F980FC5B64}" {
      Id "LF-Ticket_PadPick"
-     Target_en_us "Tick one offence. Each has a fixed fine."
+     Target_en_us "Tick one offence. Each has a fixed {fine}."
      Comment "Ticket pad instruction."
     }
     CustomStringTableItem "{461AFE9329D0D247}" {
@@ -4450,7 +4450,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{406456BDD3AE8B75}" {
      Id "LF-Ticket_PadNote"
-     Target_en_us "They pay in cash at the police desk within %1 min of their time in town. Unpaid, it rises once, then they are wanted."
+     Target_en_us "They pay in cash at the {police} desk within %1 min of their time in {town}. Unpaid, it rises once, then they are wanted."
      Comment "Ticket pad footer. %1 is the first deadline in online minutes."
     }
     CustomStringTableItem "{99C269ABF65CD6EC}" {
@@ -4930,7 +4930,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FCFCCDFEF32ED302}" {
      Id "LF-Evidence_OnDutyOnly"
-     Target_en_us "Only on-duty police bag evidence."
+     Target_en_us "Only on-duty {police} bag evidence."
      Comment "Refusal: bagging needs an on-duty officer."
     }
     CustomStringTableItem "{6A6002C800B9F27D}" {
@@ -5070,7 +5070,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A07851BD4B020CFC}" {
      Id "LF-Witness_Noted"
-     Target_en_us "Noted. It goes on the police board."
+     Target_en_us "Noted. It goes on the {police} board."
      Comment "Toast: the witness statement was taken down."
     }
     CustomStringTableItem "{C37C0A98B9E81B46}" {
@@ -5130,12 +5130,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{53CD088BE893DA58}" {
      Id "LF-Revive_Revived"
-     Target_en_us "A medic brought you back. You are weak: take it easy."
+     Target_en_us "A {medic} brought you back. You are weak: take it easy."
      Comment "Toast to the revived player."
     }
     CustomStringTableItem "{4AC63DA91F04B8C1}" {
      Id "LF-Revive_NotMedic"
-     Target_en_us "Only a medic on duty can revive."
+     Target_en_us "Only a {medic} on duty can revive."
      Comment "Revive refusal: the user is not clocked in as a medic."
     }
     CustomStringTableItem "{9DE20E9DD947A51A}" {
@@ -5170,7 +5170,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7A30C5E1D49B6A05}" {
      Id "LF-Carry_NotAllowed"
-     Target_en_us "Only a medic on duty can move them."
+     Target_en_us "Only a {medic} on duty can move them."
      Comment "Carry refusal: config limits it to medics."
     }
     CustomStringTableItem "{7A30C5E1D49B6A06}" {
@@ -5340,7 +5340,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3055EF1F232FA28A}" {
      Id "LF-Bed_NotMedic"
-     Target_en_us "Only an on-duty medic can admit a patient."
+     Target_en_us "Only an on-duty {medic} can admit a patient."
      Comment "Refusal: not a medic on duty."
     }
     CustomStringTableItem "{A22291637AB2A76D}" {
@@ -5620,7 +5620,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{45C2C41BF9850640}" {
      Id "LF-Stolen_Reported"
-     Target_en_us "Reported. The police have the plate."
+     Target_en_us "Reported. The {police} have the plate."
      Comment "Toast: report filed (#414)."
     }
     CustomStringTableItem "{B07C0014F4165300}" {
@@ -5640,7 +5640,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
      Id "LF-Stolen_Already"
-     Target_en_us "The police already have this one"
+     Target_en_us "The {police} already have this one"
      Comment "Toast: report refused (#414)."
     }
     CustomStringTableItem "{F9299F02744818C6}" {
@@ -5740,7 +5740,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{2FE09D890B43FD73}" {
      Id "LF-Store_Paid"
-     Target_en_us "Paid $%1. Thank you, here is your receipt."
+     Target_en_us "Paid {currency:sym}%1. Thank you, here is your receipt."
      Comment "Toast: the till took the cash and printed a receipt (#202). %1 is the total."
     }
     CustomStringTableItem "{2D6C14FA64678072}" {
@@ -5750,7 +5750,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6A109C7952B78879}" {
      Id "LF-Store_NotEnough"
-     Target_en_us "You owe $%1 and do not have that much cash."
+     Target_en_us "You owe {currency:sym}%1 and do not have that much cash."
      Comment "Toast: not enough cash at the till (#202). %1 is the total owed."
     }
     CustomStringTableItem "{E76A90141796C076}" {
@@ -5937,7 +5937,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7B1E5A0C00000001}" {
      Id "LF-Shop_RefuseClosed"
-     Target_en_us "The back room is shut. Police have been through it. Come back in a few minutes."
+     Target_en_us "The back room is shut. {Police} have been through it. Come back in a few minutes."
      Comment "Shop refusal: a raided back room is shut for a while (#600)."
     }
     CustomStringTableItem "{7B1E5A0C00000002}" {
@@ -6207,7 +6207,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B5EC482E2E329B9F}" {
      Id "LF-PoliceApp_Title"
-     Target_en_us "Application to the Police"
+     Target_en_us "Application to the {Police}"
      Comment "Police application form title."
     }
     CustomStringTableItem "{8AE64C101F1D0F7D}" {
@@ -6242,7 +6242,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{62BF90390E136693}" {
      Id "LF-PoliceApp_Status"
-     Target_en_us "Police application"
+     Target_en_us "{Police} application"
      Comment "Toast title for police application messages."
     }
     CustomStringTableItem "{F39424782E4C72BE}" {
@@ -6282,7 +6282,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7F7AA537F0C237BB}" {
      Id "LF-PoliceApp_Error_OnRoster"
-     Target_en_us "You are already on the police roster."
+     Target_en_us "You are already on the {police} roster."
      Comment "Refusal: applicant is already police."
     }
     CustomStringTableItem "{57C1C2B309431CF5}" {
@@ -6867,7 +6867,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E060F7BC110E80EE}" {
      Id "LF-Wanted_PosterStolenTip"
-     Target_en_us "Seen it? Tell the police."
+     Target_en_us "Seen it? Tell the {police}."
      Comment "Stolen-car poster on the wanted board's face: the appeal under the plate and the car's name."
     }
     CustomStringTableItem "{4C1C8D5F5970AE54}" {
@@ -7047,7 +7047,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4DDB701E3B9C046A}" {
      Id "LF-Dialogue_Clerk_SayNew"
-     Target_en_us "I am new in town."
+     Target_en_us "I am new in {town}."
      Comment "Dialogue reply the player can pick when talking to the clerk NPC."
     }
     CustomStringTableItem "{BCE0D0B87758A6FA}" {
@@ -7062,7 +7062,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{53AB451CE6742B73}" {
      Id "LF-Dialogue_Clerk_SayTown"
-     Target_en_us "Tell me about this town."
+     Target_en_us "Tell me about this {town}."
      Comment "Dialogue reply the player can pick when talking to the clerk NPC."
     }
     CustomStringTableItem "{50187032E73CA183}" {
@@ -7192,7 +7192,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{71C47D0D3468E849}" {
      Id "LF-IdCard_ClerkNeverIssued"
-     Target_en_us "You are not in the register yet. Tell me you are new in town."
+     Target_en_us "You are not in the register yet. Tell me you are new in {town}."
      Comment "Clerk's answer: the player was never issued a card (#902)."
     }
     CustomStringTableItem "{2BF7801852A79CB9}" {
@@ -7332,7 +7332,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{20EB5D2AA9C99C49}" {
      Id "LF-TestOrgSign_Denied"
-     Target_en_us "Playtest only. This sign works in the playtest town."
+     Target_en_us "Playtest only. This sign works in the playtest {town}."
      Comment "Toast when the playtest gate or the dev gate refuses the org sign (#934)."
     }
     CustomStringTableItem "{50FAC5EDA66028A3}" {
@@ -7467,7 +7467,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F73D61D21FC86CE9}" {
      Id "LF-NpcRole_teller_Where"
-     Target_en_us "The post office is right beside us. The town board on the square lists the rest, and the police station is a short walk up the street."
+     Target_en_us "The post office is right beside us. The {town} board on the square lists the rest, and the {police} station is a short walk up the street."
      Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{00471DBB1C9CD1F1}" {
@@ -7492,7 +7492,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CC45BA0D974D99A0}" {
      Id "LF-NpcRole_store_clerk_What"
-     Target_en_us "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in town does."
+     Target_en_us "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in {town} does."
      Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{F504491DC9865F5A}" {
@@ -7512,7 +7512,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{01F9E92E5799351C}" {
      Id "LF-NpcRole_police_Name"
-     Target_en_us "Police officer"
+     Target_en_us "{Police} officer"
      Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{A046683357332A30}" {
@@ -7527,7 +7527,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{62757641F715D6E6}" {
      Id "LF-NpcRole_police_Where"
-     Target_en_us "The station is the building behind me. The town board on the square lists everything else."
+     Target_en_us "The station is the building behind me. The {town} board on the square lists everything else."
      Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{49A24B144B6B7371}" {
@@ -7677,7 +7677,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{655793D24F3EAED3}" {
      Id "LF-NpcRole_trader_Where"
-     Target_en_us "The farm is out past the greenhouse. For anything else, the town board on the square will tell you."
+     Target_en_us "The farm is out past the greenhouse. For anything else, the {town} board on the square will tell you."
      Comment "NPC role talk (trader), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{EBF9DA4890A4D8CD}" {
@@ -7737,7 +7737,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1ADD957AEEDCC448}" {
      Id "LF-NpcRole_office_Where"
-     Target_en_us "The town board on the square lists every office and who is hiring. The post office is next to the bank."
+     Target_en_us "The {town} board on the square lists every office and who is hiring. The post office is next to the bank."
      Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{8CFD9631DE74BF7E}" {
@@ -7762,7 +7762,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A1118D74AAFF5068}" {
      Id "LF-NpcRole_ranger_What"
-     Target_en_us "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast out here."
+     Target_en_us "I teach people to survive outside {town}. Water, food, a fire, a shelter. The weather turns fast out here."
      Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{92AF2B723370C179}" {
@@ -7792,7 +7792,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BD9E1AD26E9C116D}" {
      Id "LF-NpcRole_fence_What"
-     Target_en_us "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool."
+     Target_en_us "I sell tools to people who do not ask what they are for. Locks are hard and the {police} are harder. Choose the right tool."
      Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{083AD49A99ED768C}" {
@@ -7802,7 +7802,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B9DD707B081D614A}" {
      Id "LF-NpcRole_fence_Rumour"
-     Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police."
+     Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the {police}."
      Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{37198FB9F87D5EA3}" {
@@ -7817,7 +7817,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{71D2F38275FD0E1F}" {
      Id "LF-NpcRole_townsfolk_Greet"
-     Target_en_us "Hello. New in town?"
+     Target_en_us "Hello. New in {town}?"
      Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{9E04F675DD356F60}" {
@@ -7827,12 +7827,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{276C699503CB062D}" {
      Id "LF-NpcRole_townsfolk_Where"
-     Target_en_us "The town board on the square shows everything. The post office hires couriers, and the bank is beside it."
+     Target_en_us "The {town} board on the square shows everything. The post office hires couriers, and the bank is beside it."
      Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{3A755020504E7116}" {
      Id "LF-NpcRole_townsfolk_Rumour"
-     Target_en_us "People say the police are watching the main street. Burglars are about. Keep your doors locked."
+     Target_en_us "People say the {police} are watching the main street. Burglars are about. Keep your doors locked."
      Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{8A817B1EEF80D979}" {
@@ -7927,7 +7927,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D6A9DD47C75E011F}" {
      Id "LF-RobHold_Fail_Police"
-     Target_en_us "Robbery failed: the police arrived."
+     Target_en_us "Robbery failed: the {police} arrived."
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
     }
     CustomStringTableItem "{C823A75E1A8C79F8}" {
@@ -7947,7 +7947,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0078A75E091ED0E8}" {
      Id "LF-RobHold_Refused_Police"
-     Target_en_us "(Not enough police on duty for a robbery.)"
+     Target_en_us "(Not enough {police} on duty for a robbery.)"
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
     }
     CustomStringTableItem "{7A61B157428F9D30}" {
@@ -8057,7 +8057,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E0C9B717E8A63B4D}" {
      Id "LF-Dialogue_FuelClerk_SayNews"
-     Target_en_us "Anything happening in town?"
+     Target_en_us "Anything happening in {town}?"
      Comment "Dialogue reply the player can pick when talking to the fuel_clerk NPC."
     }
     CustomStringTableItem "{78F76EB9DCC3A7F0}" {
@@ -8250,7 +8250,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sputnik T601"
      Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
     }
-  }
   CustomStringTableItem "{FCEA5FDC41E5650D}" {
    Id "LF-Sign_Generic_Title"
    Target_en_us "Notice"
@@ -8343,5 +8342,117 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "$"
      Comment "Term "currency" (#958): the symbol that goes before an amount, {currency:sym}."
     }
+    CustomStringTableItem "{42E27FF2B0C5A49F}" {
+     Id "LF-Placement_Title"
+     Target_en_us "Placing"
+     Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{CC9466F58FD8A430}" {
+     Id "LF-Placement_NotAllowed"
+     Target_en_us "You are not allowed to place this."
+     Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
+    }
+    CustomStringTableItem "{70A8229A6F903FA6}" {
+     Id "LF-Placement_NoGround"
+     Target_en_us "There is no flat ground there."
+     Comment "Toast when a placement is refused because the ground under it is missing or rises too much (a kerb, a slope) (#1026)."
+    }
+    CustomStringTableItem "{284442A5E34D1270}" {
+     Id "LF-Placement_Moved"
+     Target_en_us "You moved. Look at the spot again and retry."
+     Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
+    }
+    CustomStringTableItem "{F06569B011E7028F}" {
+     Id "LF-Police_Shirt_Name"
+     Target_en_us "Officer's shirt"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{EC25FEE290BAEB26}" {
+     Id "LF-Police_Trousers_Name"
+     Target_en_us "Officer's trousers"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{C0906C82C890BD00}" {
+     Id "LF-Police_Cap_Name"
+     Target_en_us "Officer's cap"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{7E260D671F665668}" {
+     Id "LF-Doctor_Coat_Name"
+     Target_en_us "Doctor's white coat"
+     Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{EFA49FCF4C181DD3}" {
+     Id "LF-Term_Org"
+     Target_en_us "organization"
+     Target_de_de "Organisation"
+     Target_fr_fr "organisation"
+     Target_it_it "organizzazione"
+     Target_es_es "organización"
+     Target_pt_pt "organização"
+     Target_pt_br "organização"
+     Comment "Term "org" (#1136): a player organization as a sentence names it. Core text writes {org} or {Org}; a pack or the owner renames it (Gang, Crew)."
+    }
+    CustomStringTableItem "{857D8BAEB3AA5709}" {
+     Id "LF-Term_Org_Plural"
+     Target_en_us "organizations"
+     Target_de_de "Organisationen"
+     Target_fr_fr "organisations"
+     Target_it_it "organizzazioni"
+     Target_es_es "organizaciones"
+     Target_pt_pt "organizações"
+     Target_pt_br "organizações"
+     Comment "Term "org", plural form: {org:pl}."
+    }
+    CustomStringTableItem "{B543BF50A77A5A7C}" {
+     Id "LF-Term_Fine"
+     Target_en_us "fine"
+     Target_de_de "Bußgeld"
+     Target_fr_fr "amende"
+     Target_it_it "multa"
+     Target_es_es "multa"
+     Target_pt_pt "multa"
+     Target_pt_br "multa"
+     Comment "Term "fine" (#1136): a police fine as a sentence names it. {fine} or {Fine}."
+    }
+    CustomStringTableItem "{CA4254F348EBC44B}" {
+     Id "LF-Term_Fine_Plural"
+     Target_en_us "fines"
+     Target_de_de "Bußgelder"
+     Target_fr_fr "amendes"
+     Target_it_it "multe"
+     Target_es_es "multas"
+     Target_pt_pt "multas"
+     Target_pt_br "multas"
+     Comment "Term "fine", plural form: {fine:pl}."
+    }
+    CustomStringTableItem "{B07D4BA4D1FF679B}" {
+     Id "LF-Term_Job"
+     Target_en_us "job"
+     Target_de_de "Beruf"
+     Target_fr_fr "métier"
+     Target_it_it "lavoro"
+     Target_es_es "trabajo"
+     Target_pt_pt "trabalho"
+     Target_pt_br "trabalho"
+     Comment "Term job singular (#1136): {job}. The named forms ({job:miner}) are the jobs' own name keys."
+    }
+    CustomStringTableItem "{8BF1E0FB4113B1DE}" {
+     Id "LF-Term_Job_Plural"
+     Target_en_us "jobs"
+     Target_de_de "Berufe"
+     Target_fr_fr "métiers"
+     Target_it_it "lavori"
+     Target_es_es "trabajos"
+     Target_pt_pt "trabalhos"
+     Target_pt_br "trabalhos"
+     Comment "Term job, plural form: {job:pl}."
+    }
+    CustomStringTableItem "{46261105E82813B6}" {
+     Id "LF-IncidentGm_Kind_logout"
+     Target_en_us "Logout in custody"
+     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
+    }
+  }
  }
 }

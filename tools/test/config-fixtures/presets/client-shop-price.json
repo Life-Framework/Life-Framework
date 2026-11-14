@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "priceRules": {
+      "Prefabs/Items/Drinks/": { "buyPrice": 17 }
+    }
+  }
+}

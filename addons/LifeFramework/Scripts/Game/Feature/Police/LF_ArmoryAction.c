@@ -21,7 +21,7 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 	{
 		if (!OfferDraw(user))
 		{
-			SetCannotPerformReason("#EL-Rank_DrawDenied");
+			SetCannotPerformReason(LF_Terms.Text("#EL-Rank_DrawDenied"));
 			return false;
 		}
 

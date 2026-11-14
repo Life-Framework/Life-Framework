@@ -62,8 +62,8 @@ class LF_Test_SpikeStrip : LF_Test
 		LF_TestCharacterFixture.Delete(refusedItem);
 
 		IEntity item = LF_Utils.SpawnEntityPrefab(ITEM, officer.GetOrigin() + "0.5 0 0");
-		LF_DeployableItemComponent deployable = LF_Component<LF_DeployableItemComponent>.Find(item);
-		ctx.True(deployable != null && LF_Utils.SamePrefab(deployable.GetDeployedPrefab(), STRIP), "the folded strip deploys into the strip prefab");
+		LF_PlaceableComponent placeable = LF_Component<LF_PlaceableComponent>.Find(item);
+		ctx.True(placeable != null && LF_Utils.SamePrefab(placeable.GetPlacedPrefab(), STRIP), "the folded strip places the strip prefab");
 
 		int before = LF_SpikeStrips.Count();
 		EntityID itemId = item.GetID();

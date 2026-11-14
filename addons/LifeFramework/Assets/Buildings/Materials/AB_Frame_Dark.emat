@@ -1,5 +1,5 @@
 MatPBRBasic {
- Color 0.07 0.07 0.08 1
+ Color 0.0383 0.0383 0.0438 1
  BCRMap "{BB440784A103CB06}Assets/_SharedData/Metal/ST_MetalPaint_Coated_1m_BCR.edds"
  NMOMap "{839CBC1678749998}Assets/_SharedData/Metal/ST_MetalPaint_Coated_1m_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{2D84952E94662280}" {

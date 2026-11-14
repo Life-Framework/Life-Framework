@@ -20,7 +20,7 @@
 //   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
-//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template|template-core-only]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
 //   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   audit placement [--top N] [--area a] [--layer L]  Ranked placement audit of every DebugWorld layer entity, on the test server (agent-box/place-audit.mjs)
@@ -50,6 +50,7 @@ import * as playtest from "./host/playtest.mjs";
 import { cmdPlaytestServer } from "./release/playtest-server.mjs";
 import { cmdPlaytestRelease } from "./release/release-playtest.mjs";
 import * as session from "../agent-box/session.mjs";
+import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
@@ -67,6 +68,8 @@ import { interactiveNeeded, interactiveSpawnDetached, winQuote } from "./lib/int
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
+import * as wbLock from "./lib/wb-lock.mjs";
+import * as wbGate from "./lib/wb-gate.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
@@ -688,7 +691,13 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
       const started = Date.now();
-      job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
+      // The Workbench compile takes one of this PC's Workbench slots first (tools/lib/wb-lock.mjs).
+      const wb = FULL_ONLY.has(job.s) ? await wbLock.acquireWorkbench(root, { purpose: job.s }) : null;
+      try {
+        job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
+      } finally {
+        wb?.release();
+      }
       job.secs = (Date.now() - started) / 1000;
     }
   };
@@ -919,12 +928,18 @@ function latestWorkbenchLog(profile) {
 // builds just that one.
 async function cmdBuild(root = ROOT, opts = {}) {
   guardHeavy(root, "build", opts.force);
-  if (opts.addon) return buildAddon(root, opts);
-  for (const addon of launchAddons(root)) {
-    const code = await buildAddon(root, { ...opts, addon });
-    if (code !== 0) return code;
+  // One of this PC's Workbench slots for the whole build (tools/lib/wb-lock.mjs).
+  const wb = await wbLock.acquireWorkbench(root, { purpose: "build" });
+  try {
+    if (opts.addon) return await buildAddon(root, opts);
+    for (const addon of launchAddons(root)) {
+      const code = await buildAddon(root, { ...opts, addon });
+      if (code !== 0) return code;
+    }
+    return 0;
+  } finally {
+    wb.release();
   }
-  return 0;
 }
 
 function buildAddon(root, opts) {
@@ -2011,8 +2026,78 @@ function cmdSessionJoin(root, dir, flags) {
   if (failed !== null) return failed;
   const joined = sessionAwaitJoin(log, before + 1, marker, fail, state);
   if (joined < 0) return 1;
-  console.log(`session: client ${n} joined late (${joined} join(s) in the server log)`);
+  const st = recordIdentities(dir, state);
+  const id = st.clients.find((x) => x.n === n)?.identity;
+  console.log(`session: client ${n} joined late (${joined} join(s) in the server log)${id ? `; player ${id.playerId}, slot ${id.slot}, identity ${id.uid}` : ""}`);
   return 0;
+}
+
+// Gives each client the identity the server logged for it (LF_PlayerIdentity.SlotOf): the harness
+// then knows which account a client is, and a rejoined client can be checked against its old one.
+// Waits up to 20 s for the slot lines (they follow the join marker by a moment). Returns the state.
+function recordIdentities(dir, state) {
+  const log = session.newestLog(join(state.serverProfile, "logs"));
+  let out = { clients: state.clients ?? [], seen: state.slotSeen ?? 0 };
+  for (let i = 0; i < 10 && log; i++) {
+    out = session.assignIdentities(state.clients ?? [], session.parseSlotLines(readFileSync(log, "utf8")), state.slotSeen ?? 0);
+    if (out.clients.every((c) => c.identity)) break;
+    sleepMs(2000);
+  }
+  state.clients = out.clients;
+  state.slotSeen = out.seen;
+  session.writeSession(dir, state);
+  return state;
+}
+
+// `session identity [n]`: which account each client is.
+function cmdSessionIdentity(dir, flags) {
+  const s = session.readSession(dir);
+  if (!s || s.stoppedAt) {
+    console.log("session: no running session");
+    return 1;
+  }
+  const want = flags[0] === undefined ? null : Number(flags[0]);
+  let any = false;
+  for (const c of s.clients ?? []) {
+    if (want !== null && c.n !== want) continue;
+    any = true;
+    console.log(c.identity ? `client ${c.n}: player ${c.identity.playerId} slot ${c.identity.slot} identity ${c.identity.uid}` : `client ${c.n}: no identity recorded yet`);
+  }
+  return any ? 0 : 1;
+}
+
+// `session rejoin <n>`: closes client n's game, waits for the server to log that it let go of the
+// slot, starts the client again and prints the old and the new identity. Exit 0 only when the
+// rejoined client is the same identity (a new player id, the same account).
+function cmdSessionRejoin(root, dir, flags) {
+  const n = Number(flags[0]);
+  const s = session.readSession(dir);
+  const c = s?.clients?.find((x) => x.n === n);
+  if (!s || s.stoppedAt || !c || !host.pidAlive(s.serverPid)) {
+    console.log("usage: session rejoin <n> on a running session that has client <n>");
+    return 1;
+  }
+  if (!c.identity) recordIdentities(dir, s);
+  const before = session.readSession(dir).clients.find((x) => x.n === n)?.identity;
+  if (!before) {
+    console.log(`FAIL  client ${n} has no recorded identity (is the server build older than the session slots?)`);
+    return 1;
+  }
+  const log = session.newestLog(join(s.serverProfile, "logs"));
+  const released = session.countSlotReleases(readFileSync(log, "utf8"));
+  console.log(`session: client ${n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
+  const deadline = Date.now() + 90000;
+  while (Date.now() < deadline && session.countSlotReleases(readFileSync(log, "utf8")) <= released) sleepMs(2000);
+  if (session.countSlotReleases(readFileSync(log, "utf8")) <= released) {
+    console.log(`FAIL  the server did not log client ${n} leaving within 90 s (log ${log})`);
+    return 1;
+  }
+  const code = cmdSessionJoin(root, dir, [String(n)]);
+  if (code !== 0) return code;
+  const after = session.readSession(dir).clients.find((x) => x.n === n)?.identity;
+  const same = !!after && after.uid === before.uid;
+  console.log(`session: rejoin client ${n}: was player ${before.playerId} (${before.uid}), now player ${after?.playerId} (${after?.uid}): ${same ? "SAME identity" : "DIFFERENT identity"}`);
+  return same ? 0 : 1;
 }
 
 function cmdSessionStatus(dir) {
@@ -2054,6 +2139,8 @@ function sessionCapNote(root, settings, holdMin) {
 
 function cmdSessionUp(root, dir, flags) {
   guardHeavy(root, "session up", flags.includes("--force"));
+  // --roster / --seed fixtures are written into the server profile by sessionLaunch, right before the server boots.
+  const seeds = session.parseSeeds(flags);
   const clients = session.parseClients(flags);
   const mission = session.parseMission(flags);
   const rp = session.parseSessionProfile(flags);
@@ -2141,13 +2228,14 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, marker: /(?:registration form sent to player|spawning player) \d+/g });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
     const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
     if (joined < 0) return 1;
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
+    recordIdentities(dir, state);
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
     console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${playtestMission(launchAddons(ROOT)).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
     sessionCapNote(root, settings, hold.min);
@@ -2272,9 +2360,22 @@ function cmdSessionMeasure(root, dir, flags) {
 // Boots the server (fresh, or with -loadSessionSave), then each client in
 // order with its own profile. Returns the server console.log path, or the exit
 // code fail() returned.
-function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker }) {
+function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker, seeds = [] }) {
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
+  // The fixtures go in last, after anything that could have made or cleared the profile, and
+  // before the server reads it. The boot log line below proves it was there.
+  for (const f of session.seedProfile(paths.server, seeds)) {
+    console.log(`session: seeded ${f}`);
+    slog(`seeded ${f}`);
+  }
+  if (isTemplateMission(mission)) {
+    // What server/example/start.cmd does: the owner config goes to $profile:LifeFramework/config.json (#295).
+    const owner = join(paths.server, "profile", "LifeFramework");
+    mkdirSync(owner, { recursive: true });
+    copyFileSync(join(root, "server", "example", "config.json"), join(owner, "config.json"));
+    slog(`template: config.json copied to ${owner}`);
+  }
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
@@ -2521,7 +2622,7 @@ function cmdSessionRestart(root, dir, flags) {
   }
 }
 
-const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait [--timeout s] | join <n> | restart | down | status";
+const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
 
 function cmdSession(args) {
   const list = args ?? [];
@@ -2548,6 +2649,8 @@ function cmdSession(args) {
     }
   }
   if (list[0] === "join") return cmdSessionJoin(ROOT, dir, list.slice(1));
+  if (list[0] === "identity") return cmdSessionIdentity(dir, list.slice(1));
+  if (list[0] === "rejoin") return cmdSessionRejoin(ROOT, dir, list.slice(1));
   if (list[0] === "measure") return cmdSessionMeasure(ROOT, dir, list.slice(1));
   if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
@@ -2603,7 +2706,11 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   try {
     if (!slot.local) {
       const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
-      const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState });
+      // The placement audit (agent-box/place-audit.mjs) hands its input list in through
+      // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
+      const auditIn = process.env.LF_PLACE_AUDIT_IN;
+      const files = auditIn && existsSync(auditIn) ? { env: { LF_PLACE_AUDIT_IN: auditIn }, down: [{ from: "server/profile/test/profile/place-audit/out.txt", to: join(root, "server", "profile", "test", "profile", "place-audit", "out.txt") }] } : undefined;
+      const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState, files });
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
@@ -2696,15 +2803,29 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 
 async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
+  // `ci --wb-only`: just the Workbench steps, here (what a pool machine runs for a remote gate).
+  if (opts.wbOnly) return ciWorkbench(root, opts);
   const steps = [
-    ["validate --full", () => cmdRunArea("validate", root, { full: true })],
-    ["build", () => cmdBuild(root, { wait: opts.wait })],
+    // The cheap checks run here while the Workbench compile and build run wherever there is room
+    // (this PC or a pool machine, tools/lib/wb-gate.mjs). The gate starts first, so its snapshot is
+    // taken before any generator check rewrites a file.
+    ["validate --full + build", async () => {
+      const gate = workbenchGate(root, opts);
+      const v = await cmdRunArea("validate", root, {});
+      const g = await gate;
+      return v !== 0 || g !== 0 ? 1 : 0;
+    }],
     ["test", () => cmdTest(true, "all", root, opts)],
     // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
     ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
-    // After the suite: a branch that moved or added world props must pass the placement audit. It runs
-    // through the same test lane as "test" (queues, never collides with a session).
-    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), async (a) => (await import("../agent-box/place-audit.mjs")).main(["placement", ...a]))],
+    // After the suite: a branch that moved or added world props must pass the placement audit. It
+    // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    // The config harness (#301): static always (a second, ~1 s), the game-session parts only when config code, a .conf, the schema or a config fixture changed.
+    ["config harness", async () => {
+      const cg = await import("./commands/config-gate.mjs");
+      return (await import("./lib/config-gate.mjs")).runConfigGate(changedFiles(root), { static: () => cg.runStatic(root), sessions: () => cg.runSessions(root) });
+    }],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -2714,6 +2835,120 @@ async function cmdCi(root = ROOT, opts = {}) {
   }
   console.log(failed === 0 ? "\nci: ALL PASSED" : `\nci: ${failed} step(s) failed`);
   return failed === 0 ? 0 : 1;
+}
+
+// The Workbench compile (validate-scripts.ps1) and the build, on this PC, under one Workbench slot.
+async function ciWorkbench(root, opts = {}) {
+  // Over ssh (a pool machine's remote gate) this is session 0, which has no GPU device: Workbench
+  // dies with "Couldn't build device list for any adapter". Rerun in the signed-in desktop session.
+  if (opts.wbOnly && process.platform === "win32" && process.env.SSH_CONNECTION && process.env.LF_WB_INTERACTIVE !== "1") return ciWorkbenchInSession(root);
+  const wb = await wbLock.acquireWorkbench(root, { purpose: "ci compile+build" });
+  try {
+    let ok = true;
+    const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()));
+    if (skip.has("validate-scripts.ps1")) console.log("SKIP  validate/validate-scripts.ps1 (LF_VALIDATE_SKIP)");
+    else {
+      const t0 = Date.now();
+      const res = await invokeScriptAsync(join(root, "tools", "validation", "validate-scripts.ps1"), { cwd: root, env: toolEnv() });
+      console.log(`${res.status === 0 ? "PASS" : "FAIL"}  validate/validate-scripts.ps1 (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+      for (const t of [res.stdout, res.stderr]) if (t) process.stdout.write(t.endsWith("\n") ? t : `${t}\n`);
+      ok = res.status === 0;
+    }
+    console.log("--- ci: build ---");
+    const b = await cmdBuild(root, { wait: true, force: opts.force });
+    return ok && b === 0 ? 0 : 1;
+  } finally {
+    wb.release();
+  }
+}
+
+// `ci --wb-only` again, in the signed-in session through a one-shot scheduled task
+// (tools/remote/desktop/run-interactive.ps1); its transcript and exit code come back through files.
+// No one signed in, or no exit code: 3, so the caller runs the steps on its own machine.
+function ciWorkbenchInSession(root) {
+  const dir = join(root, "tmp", "wb-session");
+  mkdirSync(dir, { recursive: true });
+  const [log, codeFile, ps1] = ["ci.log", "ci.code", "ci.ps1"].map((n) => join(dir, n));
+  for (const f of [log, codeFile]) rmSync(f, { force: true });
+  const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
+  writeFileSync(ps1, [
+    "$env:LF_WB_INTERACTIVE = '1'",
+    `Set-Location -LiteralPath ${q(root)}`,
+    `& ${q(process.execPath)} tools\\cli.mjs ci --wb-only --local *> ${q(log)}`,
+    `Set-Content -LiteralPath ${q(codeFile)} -Value $LASTEXITCODE`,
+  ].join("\n"));
+  console.log("ci: running the Workbench steps in this machine's signed-in desktop session (ssh has no GPU device)");
+  const r = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, "tools", "remote", "desktop", "run-interactive.ps1"),
+    "-Exe", "powershell.exe", "-WorkDir", root, "-WaitSec", "2400", "-Arguments", `-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "${ps1}"`], { cwd: root });
+  process.stdout.write(r.stdout + r.stderr);
+  if (existsSync(log)) {
+    // Windows PowerShell's *> writes UTF-16 LE with a BOM.
+    const buf = readFileSync(log);
+    process.stdout.write(buf[0] === 0xff && buf[1] === 0xfe ? buf.subarray(2).toString("utf16le") : buf.toString("utf8"));
+  }
+  const code = existsSync(codeFile) ? Number(readFileSync(codeFile, "utf8").trim()) : NaN;
+  if (!Number.isInteger(code)) {
+    console.log("FAIL  the desktop-session run left no exit code (is a user signed in on this machine?)");
+    return 3;
+  }
+  return code === 3 ? 1 : code;
+}
+
+// Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine
+// gets this worktree's snapshot, uncommitted state included, through pool.syncAndRun.
+function workbenchGate(root, opts = {}) {
+  const machine = opts.machine && opts.machine !== "any" ? opts.machine : opts.remote || null;
+  let mode = "any";
+  if (opts.local) mode = "local";
+  else if (opts.remote !== undefined || machine) mode = "remote";
+  else if (!opts.any && envOf().LF_TESTBOX_AUTO === "0") mode = "local";
+  const limit = wbLock.wbLimit(root);
+  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit };
+  let remotes = [];
+  if (mode === "remote" || (mode === "any" && local.busy + local.queued >= limit)) {
+    remotes = pool.loadMachines(root)
+      .filter((m) => m.via === "ssh" && (m.caps ?? []).includes("workbench") && (!machine || m.name === machine))
+      .map((m) => ({ name: m.name, caps: m.caps, m, state: wbGate.remoteWbState(m) }));
+  }
+  const c = wbGate.chooseGate({ local, remotes, mode, machine });
+  console.log(`ci: Workbench compile + build on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
+  if (c.where === "local") return ciWorkbench(root, opts);
+  const m = remotes.find((r) => r.name === c.where).m;
+  const t0 = Date.now();
+  return pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" }).then((r) => {
+    console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+    if (r.code === 3) {
+      console.log(`ci: ${m.name} could not take the Workbench steps; running them here`);
+      return ciWorkbench(root, opts);
+    }
+    return r.code === 0 ? 0 : 1;
+  });
+}
+
+// The placement audit takes a test lane through the pool like `test` (any machine by default). On a
+// pool machine the audit runs in the synced run folder; its nested test inherits the held lane.
+async function placementAudit(root, a, opts = {}) {
+  const purpose = "placement audit";
+  let slot;
+  try {
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 3;
+  }
+  if (slot.local) {
+    // The audit's own test run takes the local lane again (place-audit.mjs measureTown).
+    slot.release();
+    return (await import("../agent-box/place-audit.mjs")).main(["placement", ...a]);
+  }
+  let code = 3;
+  try {
+    code = (await testbox.runRemote(root, slot, { args: ["audit", "placement", ...a], writeSyncState: pool.writeSyncState, fetchLog: false })).code;
+    return code;
+  } finally {
+    slot.release();
+    if (!slot.inherited) pool.recordRun(root, slot, { purpose, code });
+  }
 }
 
 // Tool runs live on the private LF-Agents desktop (tools/lib/quiet-launch.mjs),
@@ -3870,7 +4105,7 @@ const cmds = {
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids"), ...e2eMoveFlags(ROOT, flags ?? []) });

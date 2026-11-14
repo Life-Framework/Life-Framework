@@ -25,7 +25,7 @@ class LF_ShopAction : ScriptedUserAction
 		string reason = LF_BackRoomDoor.ReasonKey(shop.IsBackRoom(), shop.IsShutShown());
 		if (!reason.IsEmpty())
 		{
-			SetCannotPerformReason(reason);
+			SetCannotPerformReason(LF_Terms.Text(reason));
 			return false;
 		}
 
