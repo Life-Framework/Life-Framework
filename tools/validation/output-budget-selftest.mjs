@@ -43,6 +43,9 @@ const warned = sum("session-up", 0, [...Array.from({ length: 20 }, (_, i) => `se
 check(warned.some((l) => l.includes("past its 20 min cap")), "a pool warning that changes a decision is shown");
 check(warned.some((l) => l.includes("session: ready")), "the ready line is kept");
 
+const fixture = sum("wt-ship", 0, [...Array.from({ length: 12 }, (_, i) => `PASS  validate/c${i}.mjs (0.1 s)`), "PASS  validate/pool-selftest.mjs (0.5 s)", "pool: the session of x is past its 20 min cap with 1 waiting; warned, it closes in 5 min", "WARN  pool: the scheduler reclaimed this run's slot", "PASS  validate/validate-worktrees.ps1 (1 s)", "WARN  worktree 'a' is clean"]);
+check(fixture.some((l) => l.includes("warnings=1 ")) && !fixture.some((l) => l.includes("scheduler reclaimed")), "warnings printed by a passing selftest (pool fixtures) are not this run's warnings, a check's own WARN is");
+
 const short = sum("look", 0, ["look: 17/17 shot(s) in 30.8 s", "  bank: tmp\\look\\bank\\contact.jpg"]);
 check(short.length === 3 && short[2].includes("contact.jpg"), `a run of at most ${PASSTHROUGH} lines prints as it is`);
 

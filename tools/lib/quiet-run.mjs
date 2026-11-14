@@ -53,16 +53,20 @@ export function summarize({ label, code, text, logPath, seconds }) {
   const keeps = [];
   const skips = [];
   let inFailBlock = 0;
+  let fixtureBlock = false; // the output of a passing *-selftest.mjs is fixtures (pool, merge), not this run
   for (const raw of lines) {
     const line = raw.replace(/\r$/, "");
     const header = /^(PASS|FAIL)\b/.exec(line);
-    if (header) inFailBlock = header[1] === "FAIL" ? 12 : 0;
+    if (header) {
+      inFailBlock = header[1] === "FAIL" ? 12 : 0;
+      fixtureBlock = header[1] === "PASS" && line.includes("selftest.mjs");
+    }
     const skip = /^SKIP\s+(\S+)/.exec(line);
     if (skip) {
       skips.push(skip[1].replace("validate/", ""));
       continue;
     }
-    if ((label === "validate" ? VALIDATE_WARN_RE : WARN_RE).test(line)) {
+    if (!fixtureBlock && (label === "validate" ? VALIDATE_WARN_RE : WARN_RE).test(line)) {
       warns.push(line);
       continue;
     }
