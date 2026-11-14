@@ -8,6 +8,7 @@ tools\cli audit placement [--area a]     numbers, no pixels, test server, about 
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
+tools\cli look serve                     one Workbench that stays up and takes every look in turn: a few seconds a look
 tools\cli shots area <name>              pictures from a game client on a `--profile full` session (docs/agent-area-polish.md)
 tools\cli evidence <issue> before|after <area>   keep a look picture for the PR; `evidence <issue> table` prints the embed
 ```
@@ -101,6 +102,57 @@ that say where to look first, not verdicts:
 On 2026-11-11 a run over all 23 areas raised no flag, while the sheets showed things to fix (a
 moonshine still on its side, sack piles taller than the barrels beside them, a pole in front of the
 bank's wide shot). So the flags catch broken renders; the judgment is still the reading.
+
+### `tools\cli look serve`: one Workbench for every look
+
+A fresh `look` starts a Workbench (about 28 s, 1.9 GB peak) and exits. With about ten agents on a
+15.6 GB PC those spikes queue behind each other on the build lock. `look serve` keeps one hidden
+Workbench up for the whole machine; while it is up, every `tools\cli look <area>` from any worktree
+sends its plan there instead and costs a few seconds.
+
+```
+tools\cli look serve                 start it on this worktree's state (about 17 s), or say it is up
+tools\cli look serve --status        pid, snapshot, idle time, health
+tools\cli look serve --stop          stop it; --remove also removes the viewer checkout
+tools\cli look bank --serve          use the server, starting it when none is up
+tools\cli look bank --fresh          never use the server (the old path)
+```
+
+The server runs on its own detached checkout beside the main one, `Life-Framework-look-viewer`
+(a git worktree with no branch and no junctions; `--stop --remove` deletes it through
+`tools/link-safety.mjs`). Each request carries a snapshot commit of the caller's worktree: HEAD plus
+uncommitted and untracked files, the same snapshot remote test runs use. The viewer checks it out
+(git writes only the files that differ) and the server shoots it. What changed between the snapshot
+the server last showed and this one decides how:
+
+| Change since the last request | How it is served (`served=` in the summary and `index.json`) |
+|---|---|
+| nothing (the same snapshot) | `server-same`: shot as is |
+| only modified, existing `.layer` or `.et` files | `server-reopen`: the world is reopened from disk (`SetOpenedResource`), about 5 to 10 s |
+| anything else: a `.c`, a `.meta`, a `.conf`, a `.layout`, an asset, a string table, an added, deleted or renamed file, the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started (about 17 s plus the shots) |
+| no server up, or it is dead, hung or crashed | `fresh`: a Workbench of the caller's own, as before |
+
+The fast path lists only file types proven live: change the file, reopen, and read the changed value
+back from `status.txt` (a moved entity's `cam=`, a prefab's `size=`). A modified `.layer` (an entity
+moved) and a modified `.et` (`scale 3` on an existing prefab) were proven in edit and play mode on
+2026-11-14; `.conf` and `.ent` are not, so they restart. A changed script under a live Workbench
+followed by a reopen crashed it (access violation, two of two), which is why a `.c` always restarts.
+`resourceDatabase.rdb` is not compared: it is Workbench's own cache of the files (`-forceUpdate`
+rebuilds it), and its bytes differ between worktrees at the same commit and size, so comparing it
+would restart every request. The viewer is seeded with the caller's copy once and keeps its own.
+
+Every request still takes the build lock for its seconds (never while the server idles), and a
+`look` waits up to 2 minutes for it when a server is up (`--wait` for 10). The RAM gate is asked
+only when a Workbench is about to start. Before every shot Node checks the viewer is exactly the
+snapshot (HEAD and `git status`), and the first status line must carry the request id, so a picture
+of an older state is never returned as this one. A server that is gone, whose heartbeat
+(`alive.txt`, every 3 s while idle) is stale, that dies during a request or does not answer in its
+budget is killed with its children (the `CrashReporter` a crash leaves on the hidden desktop),
+forgotten, and the caller runs a fresh Workbench and still gets its pictures. With no request for 10
+minutes the server exits and frees its memory. `look item` stays on the fresh path.
+
+Server-mode log lines in `console.log` under `Life-Framework-look-viewer/server/profile/visual-serve/logs/`
+start with `[LFVisual]`, like a fresh run's; `ok request <id> reload=<mode>` opens each request.
 
 ### `tools\cli look item`
 
