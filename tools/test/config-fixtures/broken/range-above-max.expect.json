@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 87,
+      "msg": "shops.priceRules.Prefabs/Items/Food/.buyPrice = 2000000 is above the maximum 1000000; keeping the shipped value"
+    }
+  ]
+}

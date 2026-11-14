@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 85,
+      "msg": "shops.priceRules.Prefabs/Items/Food/.hidden is not true or false; keeping the shipped value"
+    }
+  ]
+}
