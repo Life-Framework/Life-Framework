@@ -95,10 +95,48 @@ LF_ItemCatalogueConfig {
 | `catalogue` | `items` | item id (`pistol_m9`) |
 | `catalogue` | `offers` | `outlet/item` (`gun_counter/pistol_m9`) |
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
+| `vehicles` | `vehicles` | the lot prefab's GUID, 16 hex digits, braces and case ignored (`54C3CC22DEBD57BE`). A key naming the locked child's GUID addresses the same entry. A new or replaced vehicle needs `basePrice` above 0 |
+| `dialogue` | `lines`, `nodes` | line id, node id. Pack patch only (see "Dialogue patches") |
 | `shops` | `priceRules` | `prefab:<GUID>`, a prefab-path substring, or `type:<flags>,mode:<mode>` (`type:64` is `type:64,mode:2`). Two core rules can share a key; a layer addresses the last one, the one that wins the walk |
 
 The catalogue's `removed: true` is a field, not a verb: it hides an entry and a later layer can set
 it back to false. `"op": "remove"` takes the entry out of the list.
+
+## Dialogue patches (#957, #1109)
+
+Dialogue is not a `config.json` section: a conversation is one generated `.conf` per NPC, with no
+owner file and no stream, because every client loads the same file and the server sends node and
+line ids only. It still has lists with ids, so a pack patches them with the same verbs:
+`LF_DialogueNodeList` (`m_aNodes`, id `m_sId`) and `LF_DialogueLineList` (`m_aLines`, id `m_sId`),
+both on the shared merge. A pack ships a `.conf` of class `LF_DialogueConfig` and lists it as an
+overlay of the core dialogue file (the D4 seam, `Core/Config/Feature.md`):
+
+```
+LF_DialogueConfig {
+ m_sId "clerk"
+ m_sStart "menu"
+ m_aLines {
+  LF_DialogueLine "{...}" { m_sOp "patch" m_sId "greet" m_sTextKey "#LF-Everon_Clerk_Greet" }
+ }
+ m_aNodes {
+  LF_DialogueNode "{...}" { m_sOp "remove" m_sId "work" }
+  LF_DialogueNode "{...}" {
+   m_sOp "patch"
+   m_sId "menu"
+   m_aOptions { LF_DialogueOption "{...}" { m_sTextKey "#LF-Everon_Leave" m_sNext "bye" } }
+  }
+ }
+}
+```
+
+- The header fields (`m_sSpeakerKey`, `m_sSoundProject`, `m_fHearRange`, `m_sStart`) change when the file sets them. A file whose `m_sId` is another dialogue's is skipped.
+- A node `patch` changes `m_sLine`, and replaces the whole reply list when it writes `m_aOptions`. A **reply has no id of its own** (its text key repeats across nodes, and the key is what the player reads), so a pack adds or drops a reply by patching its node. `replace` rebuilds the node from the file alone.
+- A line `patch` changes the fields it writes (`m_sTextKey`, `m_sForKey`, `m_sEvent`, `m_fSeconds`, `m_sMouth`).
+- After every pack is applied the conversation is checked (`LF_DialogueFlow.Problems`, plus a hook check: a reply naming a condition or action with no class `LF_DialogueHook_<Name>` is a problem). A patched dialogue that is broken is **dropped whole**, logged, and the core dialogue plays (`LF_DialogueFlow.Choose`). The refusal of a single entry (a patch of a missing node) skips only that entry.
+- `LF_DialogueConfig.Layered(path)` is the one call; `LF_DialogueComponent.GetConfig` uses it, so an NPC's prefab path still names the core file and nothing breaks without a pack.
+- `reload dialogue` (#970) overrides a caption by its text key, so it reaches a patched line like any other.
+
+Not here (still #957): naming a dialogue by id instead of a prefab path, the `asset dialogue --addon` tool output, the text-only line (the check still wants a recording on every line), the neutral core clerk and the Everon clerk as a pack patch, and the `validate` rule that reads a pack patch against its core.
 
 ## Moving a section onto the model
 
@@ -111,4 +149,4 @@ it back to false. `"op": "remove"` takes the entry out of the list.
    `LF_ConfigOverlay.ApplyRecords(reader, "field", list, source)`.
 4. `node tools/config/schema.mjs --write`: the schema gains `op` on the section's records.
 
-Test: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`).
+Tests: `LF_Test_ConfigOverlayIds` (`config/overlay-ids`), `LF_Test_VehicleOverrideVerbs` (`config/vehicle-override-verbs`), `LF_Test_DialogueOverrideVerbs` (`dialogue/override-verbs`), `LF_Test_PackPatchOverlays` (`config/pack-patch-overlays`, pack `.conf` files for vehicles and the clerk).

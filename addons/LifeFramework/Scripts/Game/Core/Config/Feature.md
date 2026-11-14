@@ -26,8 +26,9 @@ a new key is appended, so it wins the rule walk.
 each record has an id and each layer adds, replaces, patches or removes it by id (`"op"` in JSON,
 `m_sOp` in a pack `.conf`, from `LF_ConfigRecord`). An id a verb needs that no lower layer has is
 refused with the source and id; two packs on one id warn and the later wins. On it today: `shops`
-(`priceRules`), `catalogue` (`items`, `offers`) and `crime` (`crimes`; it now reads pack overlays
-too). Verbs, examples and how to move a section: `docs/config/override-model.md`.
+(`priceRules`), `catalogue` (`items`, `offers`), `crime` (`crimes`; it now reads pack overlays
+too) and `vehicles` (`vehicles`, keyed by prefab GUID; the section now reads pack overlays and the
+percents too, #1109). Dialogue nodes and lines take the same verbs in a pack patch (#957, #1109). Verbs, examples and how to move a section: `docs/config/override-model.md`.
 
 The service is generic. A feature loads its core instance, then calls its own
 apply step (shops: `LF_ShopPricesConfig.ApplyLayers`), which asks the service
