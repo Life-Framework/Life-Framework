@@ -63,7 +63,7 @@ import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
-import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
+import { interactiveNeeded, interactiveSpawnDetached, winQuote } from "./lib/interactive-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -1187,7 +1187,7 @@ function ensureAddonResourceDatabase(root, name) {
       "-profile", profile,
       ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ];
-    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
+    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
@@ -1204,6 +1204,20 @@ function ensureAddonResourceDatabase(root, name) {
   }
 }
 
+
+// Over ssh (a pool machine running a remote test or e2e) this is session 0, which has no GPU device:
+// Workbench logs "Couldn't build device list for any adapter", fails engine init and then hangs
+// ("Application hangs (generated dump and waiting)") until the timeout kills it, so every refresh
+// there took the full 600 s. Run it in the signed-in desktop session instead, through a one-shot
+// scheduled task (tools/remote/desktop/run-interactive.ps1, as ci --wb-only does since #1158).
+function workbenchInDesktopSession(root, exe, args, cwd, waitSec) {
+  const r = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, "tools", "remote", "desktop", "run-interactive.ps1"),
+    "-Exe", exe, "-WorkDir", cwd, "-WaitSec", String(waitSec), "-Arguments", args.map(winQuote).join(" ")], { cwd: root });
+  const out = `${r.stdout || ""}${r.stderr || ""}`;
+  const m = /state=(\w+) result=(-?\d+)/.exec(out);
+  if (!m) console.log(`WARN  desktop-session Workbench: ${out.trim().split(/\r?\n/).pop() || "no output"}`);
+  return { status: m ? Number(m[2]) : r.status };
+}
 
 // One headless Workbench run of a ResourceManager plugin under the build lock, bounded by
 // timeoutMs (a hung Workbench is killed with its job). Used by tools\cli asset (stage import).
