@@ -452,6 +452,8 @@ try {
       const alive = (pid) => pid === 777;
       const plan = gc.planSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
       check(plan.remove.map((r) => r.name).sort().join() === "wt-linked,wt-old,wt-stopped", "gc plan removes the wrong folders: " + plan.remove.map((r) => r.name).sort().join());
+      const orph = gc.planSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")], orphan: (n) => n === "wt-new" || n === "wt-live" || n === "wt-film-take" });
+      check(orph.remove.some((r) => r.name === "wt-new") && !orph.remove.some((r) => r.name === "wt-live" || r.name === "wt-film-take"), "gc orphan rule must remove a recent folder whose worktree is gone, never a live or film one");
       check(plan.keep.find((k) => k.name === "wt-live")?.why === "in use" && plan.keep.find((k) => k.name === "wt-film-take")?.why === "film" && plan.keep.find((k) => k.name === "wt-new")?.why === "recent", "gc kept reasons are wrong");
       const run = gc.runSessionGc(base, { now: nowMs, keepHours: 24, alive, skip: [join(base, "wt-mine")] });
       check(run.removed.length === 3 && !existsSync(join(base, "wt-old")) && existsSync(join(base, "wt-live")) && existsSync(join(base, "wt-film-take")) && existsSync(join(base, "wt-mine")) && existsSync(join(base, "wt-new")), "gc run did not remove exactly the old idle folders");

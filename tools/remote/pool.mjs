@@ -975,8 +975,8 @@ export function recordSession(root, r) {
 export function hygieneGate(root, { log = console.log, base = sessionBase(), freeGb } = {}) {
   const settings = poolSettings(root);
   try {
-    const r = gc.runSessionGc(base, { keepHours: settings.sessionKeepHours, alive: wt.pidAlive, skip: [sessionDirOf(root)] });
-    if (r.removed.length) log(`pool: removed ${r.removed.length} session folder(s) older than ${settings.sessionKeepHours} h (${r.removed.slice(0, 5).join(", ")}${r.removed.length > 5 ? ", ..." : ""})`);
+    const r = gc.runSessionGc(base, { keepHours: settings.sessionKeepHours, alive: wt.pidAlive, skip: [sessionDirOf(root)], orphan: (name) => /-ws-/.test(name) && !existsSync(join(dirname(wt.mainRootOf(root)), name)) });
+    if (r.removed.length) log(`pool: removed ${r.removed.length} session folder(s) older than ${settings.sessionKeepHours} h or with no worktree (${r.removed.slice(0, 5).join(", ")}${r.removed.length > 5 ? ", ..." : ""})`);
     for (const f of r.failed) log(`WARN  pool: could not remove session folder ${f.name}: ${f.error}`);
   } catch (e) {
     log(`WARN  pool: session folder cleanup failed (${String(e?.message ?? e).split("\n")[0]})`);
