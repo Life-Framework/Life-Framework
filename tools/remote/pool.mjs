@@ -35,6 +35,7 @@ import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
+import * as shipQueue from "../lib/ship-queue.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -2467,6 +2468,10 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
   printSessions(runs.filter(isSession), 8);
+  // The ship queue wt ship feeds (tools/ship-queue.mjs): what gates now, what waits and why, the last few done.
+  const sq = shipQueue.readQueue(wt.hubDirOf(root));
+  if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
+  else console.log("ship queue: empty (tools\cli ship-queue status)");
   return 0;
 }
 

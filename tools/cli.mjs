@@ -3228,12 +3228,43 @@ function workbenchGate(root, opts = {}) {
   const t0 = Date.now();
   return pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" }).then((r) => {
     console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+    if (r.code === 0 && r.rDir) pullRemoteRdb(root, m, r.rDir);
     if (r.code === 3) {
       console.log(`ci: ${m.name} could not take the Workbench steps; running them here`);
       return ciWorkbench(root, opts);
     }
     return r.code === 0 ? 0 : 1;
   });
+}
+
+// After a remote Workbench build the run folder's resource database is current. A local one that is
+// stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
+// headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
+// registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
+function pullRemoteRdb(root, m, rDir) {
+  for (const name of rdbAddons(root)) {
+    const addon = addonDir(root, name);
+    const local = join(addon, "resourceDatabase.rdb");
+    const before = rdbFreshness(addon);
+    if (before.missing.length === 0) continue;
+    const got = `${local}.remote`;
+    const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
+    if (down.status !== 0 || !existsSync(got)) {
+      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      continue;
+    }
+    const keep = `${local}.local`;
+    if (existsSync(local)) copyFileSync(local, keep);
+    copyFileSync(got, local);
+    const after = rdbFreshness(addon);
+    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    else if (existsSync(keep)) {
+      copyFileSync(keep, local);
+      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+    }
+    rmSync(got, { force: true });
+    rmSync(keep, { force: true });
+  }
 }
 
 // The placement audit takes a test lane through the pool like `test` (any machine by default). On a
@@ -3620,8 +3651,10 @@ function wtHelpFull() {
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
   tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
-                                       clean-tree check -> merge origin/<base> only if it conflicts ->
-                                       gate -> push -> PR (or reuse the open one) -> gh auto-merge
+                                       clean-tree and PR-body checks -> push -> PR (auto-merge off) -> ship queue:
+                                       merge origin/<base> once, ci --remote on a pool machine, push, auto-merge
+                                       (docs/worktrees.md "Ship queue"); waits until gated unless --no-wait
+                                       (a terminal defaults to --no-wait); --no-queue gates here the old way
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
   tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
@@ -4240,6 +4273,66 @@ async function wtSyncBaseCmd(args) {
   }
 }
 
+// `wt ship` through the ship queue. Returns at once with a status line (--no-wait), or blocks until the
+// gate passed or failed (--wait; the default when stdout is not a terminal, so an agent's report holds).
+async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const q = await import("./ship-queue.mjs");
+  const sql = await import("./lib/ship-queue.mjs");
+  const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
+  let body = customBody ?? [
+    `Automated ship from worktree \`${slug}\`.`,
+    "",
+    "Gated by the ship queue: origin/" + base + " merged in, then `ci --remote` (validate --full, build, test tier=all on pool machines).",
+    "",
+    "## Commits",
+    ...subjects.map((s) => `- ${s}`),
+  ].join("\n");
+  body = refsBody(body, closes);
+  let pr = wt.findOpenPrGh(wtRoot, e.branch);
+  // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
+  if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
+  console.log("=== ship: push (auto-merge waits for the ship queue's gate) ===");
+  const push = wt.git(wtRoot, ["push", "-u", "origin", e.branch]);
+  if (push.status !== 0) {
+    console.log(`FAIL  push: ${push.stderr || push.stdout}`);
+    return 1;
+  }
+  try {
+    if (!pr) pr = wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base });
+  } catch (err) {
+    console.log(`FAIL  PR creation: ${err.message}`);
+    return 1;
+  }
+  const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
+  const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15);
+  const log = join(wt.mainRootOf(ROOT), "tmp", "logs", `ship-${slug}-${stamp}.log`);
+  mkdirSync(dirname(log), { recursive: true });
+  let entry;
+  try {
+    entry = q.withQueue(ROOT, (qq) => sql.enqueue(qq, { slug, branch: e.branch, base, wtPath: wtRoot, pr: pr.number, prUrl: pr.url, head, files, log, fullGate: flags.includes("--full-gate") }));
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+  const w = await q.ensureWorker(ROOT);
+  const qq = q.readQueue(ROOT);
+  const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
+  const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
+  const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
+  console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
+  console.log(`PR: ${pr.url}`);
+  const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
+  if (!wait) {
+    console.log(`ship: queued. 'tools\\cli ship-queue wait ${slug}' blocks until it is gated; 'tools\\cli pool status' shows the queue.`);
+    return 0;
+  }
+  const code = await q.waitFor(ROOT, slug);
+  if (code === 0) console.log(`ship: gated and auto-merge queued; merged, in-dev once GitHub merges it. Prune after merge: 'cli wt prune ${slug}'`);
+  console.log(`PR ${pr.url}, head ${wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim()}`);
+  return code;
+}
+
 async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
@@ -4314,6 +4407,11 @@ async function wtShipCmd(args) {
     }
     if (customBody !== null) customBody = withReview(customBody, reviewText);
   }
+  // The ship queue (tools/ship-queue.mjs, docs/worktrees.md "Ship queue"): push, open the PR with
+  // auto-merge off, enqueue; the queue worker merges main once, gates on the pool, pushes, queues
+  // auto-merge. --no-queue (or LF_SHIP_QUEUE=0) is the old local gate below.
+  const useQueue = !flags.includes("--no-queue") && process.env.LF_SHIP_QUEUE !== "0" && !skipGate && !prOnly && wt.ghAvailable();
+  if (useQueue) return shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
