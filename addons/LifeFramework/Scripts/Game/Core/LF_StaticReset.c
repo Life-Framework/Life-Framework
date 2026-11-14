@@ -15,6 +15,7 @@ class LF_StaticReset
 	static void ResetAll()
 	{
 		LF_Places.ResetStatics();
+		LF_PrefabSlots.ResetStatics();
 		LF_Breach.ResetStatics();
 		LF_PlayerIdentity.ResetStatics();
 		LF_Lockpick.ResetStatics();
@@ -55,6 +56,7 @@ class LF_StaticReset
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
 		LF_SaveStamp.ResetStatics();
+		LF_SaveIds.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
 		LF_Playtime.ResetStatics();
 		LF_JobLevels.ResetStatics();
@@ -107,6 +109,7 @@ class LF_StaticReset
 		LF_Roles.ResetStatics();
 		LF_DownedPatient.ResetStatics();
 		LF_PlacementGhost.ResetStatics();
+		LF_PlacementService.ResetStatics();
 		LF_Systems.ResetStatics();
 		LF_ItemCatalogue.ResetStatics();
 		LF_Cleanup.ResetStatics();

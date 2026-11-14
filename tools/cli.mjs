@@ -17,7 +17,7 @@
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full|--all]           Run the checks in tools/validation/ whose inputs changed since their last green run (--all: every check; --full: every check plus the Workbench compile)
-//   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
+//   test [--no-build] [--tier T] [--core-only]  Boot DebugWorld and run the LFTEST suite (--core-only: the core alone, the pack hidden, #326)
 //   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
@@ -44,6 +44,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
+import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
 import { cmdPlaytestServer } from "./release/playtest-server.mjs";
@@ -67,6 +68,7 @@ import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
+import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
@@ -246,8 +248,26 @@ function syncLocalPatches() {
         copied.push(`${name}: +${sub}/${rel}`);
       }
     }
+    copied.push(...registerPatchedTools(name));
   }
   return copied;
+}
+
+function registerPatchedTools(name) {
+  const toolsDir = join(PATCH_DIR, SERVERS[name].dir, "src", "tools");
+  const serverTs = join(MCP_DIR, SERVERS[name].dir, "src", "server.ts");
+  if (!existsSync(toolsDir) || !existsSync(serverTs)) return [];
+  const tools = [];
+  for (const f of readdirSync(toolsDir)) {
+    if (!f.endsWith(".ts")) continue;
+    const call = registerLine(readFileSync(join(toolsDir, f), "utf8"));
+    if (call) tools.push({ file: f, call });
+  }
+  if (!tools.length) return [];
+  const { text, added, missing } = injectRegistrations(readFileSync(serverTs, "utf8"), tools);
+  if (added.length) writeFileSync(serverTs, text);
+  for (const m of missing) console.log(`WARN  ${name}: ${m}`);
+  return added.map((fn) => `${name}: server.ts registers ${fn}`);
 }
 
 /** Recursively list files under a directory. */
@@ -448,6 +468,8 @@ function cmdInstall(name) {
       failed++;
       continue;
     }
+    // Patches go in before the build, or a patched .ts never reaches dist/.
+    syncLocalPatches();
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
@@ -487,17 +509,18 @@ function cmdUpdate(name) {
     }
     const before = (gitIn(dir, ["rev-parse", "--short", "HEAD"]).stdout || "").trim();
     const status = gitIn(dir, ["status", "--porcelain"]);
+    // The clone is dirty once patches are applied (copied files, server.ts
+    // registrations). Then skip the pull and only re-apply and rebuild.
     if (status.stdout.trim()) {
-      console.log(`SKIP  ${n}: working tree dirty (${status.stdout.trim().split(/\r?\n/)[0]}); stash or reset first`);
-      failed++;
-      continue;
-    }
-    console.log(`${n}: updating ${before} -> latest ...`);
-    const pull = gitIn(dir, ["pull", "--ff-only"]);
-    if (pull.status !== 0) {
-      console.log(`FAIL  pull ${n}: ${pull.stderr || pull.stdout}`);
-      failed++;
-      continue;
+      console.log(`${n}: working tree dirty (${status.stdout.trim().split(/\r?\n/)[0]}); not pulling, re-applying patches and rebuilding`);
+    } else {
+      console.log(`${n}: updating ${before} -> latest ...`);
+      const pull = gitIn(dir, ["pull", "--ff-only"]);
+      if (pull.status !== 0) {
+        console.log(`FAIL  pull ${n}: ${pull.stderr || pull.stdout}`);
+        failed++;
+        continue;
+      }
     }
     const after = (gitIn(dir, ["rev-parse", "--short", "HEAD"]).stdout || "").trim();
     const ci = sh(NPM, ["ci", "--no-audit", "--no-fund"], { cwd: dir });
@@ -506,6 +529,8 @@ function cmdUpdate(name) {
       failed++;
       continue;
     }
+    // Patches go in before the build, or a patched .ts never reaches dist/.
+    syncLocalPatches();
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
@@ -1184,7 +1209,13 @@ function ensureAddonResourceDatabase(root, name) {
 // timeoutMs (a hung Workbench is killed with its job). Used by tools\cli asset (stage import).
 // `addon` (name, default the core) picks the project Workbench opens: the pack's project loads the
 // core as its dependency, so a pack asset's .meta and .xob resolve beside it (#971).
-function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addon = CORE }) {
+// With `doneWhen` (a function) Workbench is not told to exit after init: the call returns a
+// promise, polls doneWhen() every 2 s, and stops Workbench settleMs after it first returns true (or
+// at timeoutMs). A model with many colliders needs it: with -exitAfterInit Workbench exits while it
+// is still writing the collider surfaces and the .meta and .xob keep only the first few
+// (tools\cli building, docs/architecture/building-pipeline-spike.md).
+function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addon = CORE, doneWhen, settleMs = 3000 }) {
+  if (doneWhen) return runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, logFile, addon, doneWhen, settleMs });
   const addonInfo = resolveAddon(addon);
   if (!addonInfo) throw new Error(`unknown addon "${addon}"; known: LifeFramework, LF_Everon1989`);
   const exe = workbenchExe();
@@ -1203,6 +1234,50 @@ function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addo
     ], { cwd: gameDir, timeoutMs, stdout: logFile, stderr: logFile });
     return { status: res.status, profile };
   } finally {
+    wt.releaseLock(root, "build");
+  }
+}
+
+async function runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, logFile, addon, doneWhen, settleMs }) {
+  const addonInfo = resolveAddon(addon);
+  if (!addonInfo) throw new Error(`unknown addon "${addon}"; known: LifeFramework, LF_Everon1989`);
+  const exe = workbenchExe();
+  if (!existsSync(exe)) throw new Error("Workbench not found: " + exe);
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(root, "server", "profile", "rdb");
+  mkdirSync(profile, { recursive: true });
+  wt.acquireLock(root, "build", { waitMs: 900000 });
+  let child = null;
+  let exited = null;
+  let exitResolve;
+  const exitedP = new Promise((r) => { exitResolve = r; });
+  try {
+    child = quietSpawn(exe, [
+      "-gproj", gprojOf(root, addonInfo.name),
+      "-wbModule=ResourceManager", "-noSplash", "-run",
+      "-plugin=" + plugin, ...pluginArgs,
+      "-profile", profile,
+      ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
+    ], { cwd: gameDir, stdout: logFile, stderr: logFile });
+    child.on("exit", (code) => { exited = code; exitResolve(); });
+    // A predicate that throws (a file Workbench is writing that moment) counts as "not yet".
+    const done = () => { try { return !!doneWhen(); } catch { return false; } };
+    const started = Date.now();
+    let doneAt = 0;
+    while (exited === null && Date.now() - started < timeoutMs) {
+      await new Promise((r) => setTimeout(r, 2000));
+      // It must still hold when the settle time is up: Workbench may be re-saving a file.
+      if (done()) doneAt ||= Date.now();
+      else doneAt = 0;
+      if (doneAt && Date.now() - doneAt >= settleMs) break;
+    }
+    return { status: exited, done: !!doneAt, timedOut: !doneAt && exited === null, profile };
+  } finally {
+    // Stopped and gone before the lock is released: the next Workbench must not meet this one.
+    if (child && exited === null) {
+      child.kill(); // the helper's kill-on-close job ends Workbench with it
+      await Promise.race([exitedP, new Promise((r) => setTimeout(r, 30000))]);
+    }
     wt.releaseLock(root, "build");
   }
 }
@@ -1770,8 +1845,9 @@ function cmdPlaytest(args) {
   if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
   if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
   if (sub === "server") return cmdPlaytestServer(list.slice(1));
+  if (sub === "checklist" || sub === "verdicts") return import("./commands/playtest-checklist.mjs").then((m) => m.main(list, { root: ROOT }));
   if (sub === "release") return cmdPlaytestRelease(ROOT, list.slice(1), { ensureRdb: ensureResourceDatabase, isMain: wt.isMainCheckout(ROOT) });
-  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]");
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]|checklist [--all]|verdicts <file>");
   return 1;
 }
 
@@ -2512,8 +2588,12 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
   let extra = {};
   try {
     if (!slot.local) {
-      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
-      const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState });
+      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      // The placement audit (agent-box/place-audit.mjs) hands its input list in through
+      // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
+      const auditIn = process.env.LF_PLACE_AUDIT_IN;
+      const files = auditIn && existsSync(auditIn) ? { env: { LF_PLACE_AUDIT_IN: auditIn }, down: [{ from: "server/profile/test/profile/place-audit/out.txt", to: join(root, "server", "profile", "test", "profile", "place-audit", "out.txt") }] } : undefined;
+      const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState, files });
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
@@ -2525,7 +2605,7 @@ async function testOnce(root, { purpose, tier, only, opts, lastTry }) {
     }
     const before = Date.now();
     activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-    code = runLocalTest(root, tier, only, opts.world);
+    code = runLocalTest(root, tier, only, opts.world, opts.coreOnly);
     const stamp = newestStamp(root, before);
     if (stamp) extra = { passed: stamp.passed, total: stamp.total };
     return { code };
@@ -2560,7 +2640,8 @@ function poolMode(root, opts) {
 
 // world: another world or mission header to boot instead of DebugWorld (Worlds/CoreOnEveron/CoreOnEveron.ent
 // boots the core alone on vanilla Everon, #1047). Its layers must place an LF_TestRunner.
-function runLocalTest(root, tier, only, world) {
+// coreOnly: the core alone, the pack hidden (#326, test-e2e.ps1 -CoreOnly).
+function runLocalTest(root, tier, only, world, coreOnly) {
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [LFTEST] SUMMARY, self-terminates.
@@ -2583,6 +2664,7 @@ function runLocalTest(root, tier, only, world) {
       ...budgetArgs(),
       ...(only.length ? ["-Only", only.join(",")] : []),
       ...(world ? ["-Mission", world] : []),
+      ...(coreOnly ? ["-CoreOnly"] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
@@ -2608,6 +2690,8 @@ async function cmdCi(root = ROOT, opts = {}) {
     ["validate --full", () => cmdRunArea("validate", root, { full: true })],
     ["build", () => cmdBuild(root, { wait: opts.wait })],
     ["test", () => cmdTest(true, "all", root, opts)],
+    // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
+    ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
     // After the suite: a branch that moved or added world props must pass the placement audit. It runs
     // through the same test lane as "test" (queues, never collides with a session).
     ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), async (a) => (await import("../agent-box/place-audit.mjs")).main(["placement", ...a]))],
@@ -2705,17 +2789,20 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
+                                --core-only boots with -addons LifeFramework only (the pack folder is not
+                                on -addonsDir) and skips tests whose NeedsPack() names a reason.
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
-  e2e [--local|--remote [name]] [--legacy-save] [--old-build]
+  e2e [--local|--remote [name]] [--legacy-save] [--old-build] [--content-ids]
                                 two-boot save, restart, and reload proof in this worktree;
                                 --legacy-save writes the save before #331 (version 23) in boot 1;
-                                --old-build stamps boot 1's save as game build 1.8.0.13 (#980)
+                                --old-build stamps boot 1's save as game build 1.8.0.13 (#980);
+                                --content-ids runs the three-boot stable-id proof instead (#965)
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -2724,7 +2811,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
-  ci                            validate --full + build + test (full gate, worktree only)
+  ci [--skip-core-only]         validate --full + build + test + test --core-only (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
                                 runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
@@ -2940,13 +3027,16 @@ function wtHelpFull() {
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
-  tools\\cli wt e2e <slug> [--legacy-save] [--old-build]
+  tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids]
                                        two-boot save-state E2E: persistence save boot ended by the
                                        host stop file (SHUTDOWN save), then reload same profile
                                        with -loadSessionSave (latest = the shutdown save);
                                        --legacy-save: boot 1 writes the pre-#331 format (version 23)
                                        --old-build: boot 1 stamps game build 1.8.0.13; the build gate
                                        backs the save up and boot 2 must load it (#980)
+                                       --content-ids: three boots of LF_Test_E2E_ContentIds: a save with
+                                       a renamed and a removed item, reload with the alias (held), reload
+                                       with the content back (#965)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
@@ -3207,6 +3297,7 @@ function runE2ePass(root, tier, opts = {}) {
   if (opts.hostStop) psArgs.push("-HostStop");
   if (opts.hostStopAfter) psArgs.push("-HostStopAfter", opts.hostStopAfter);
   if (opts.extraDefine) psArgs.push("-ExtraDefine", opts.extraDefine);
+  if (opts.only) psArgs.push("-Only", opts.only);
   return withServerSlot(root, 0, () => {
     const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
@@ -3239,7 +3330,7 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build") });
+  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save"), oldBuild: args.includes("--old-build"), contentIds: args.includes("--content-ids") });
 }
 
 // The two-boot save/restart proof in one pool slot: both boots run on the same
@@ -3264,7 +3355,7 @@ async function e2eOnce(root, opts, lastTry) {
   let extra = {};
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
       if (!lastTry && pool.machineGone(root, slot, code)) {
         extra = { lost: true };
@@ -3272,7 +3363,9 @@ async function e2eOnce(root, opts, lastTry) {
       }
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-      code = runE2eHere(root, opts.legacySave, opts.oldBuild);
+      code = opts.contentIds
+        ? e2eContentIds.runContentIds(root, (passOpts) => runE2ePass(root, "persistence", passOpts))
+        : runE2eHere(root, opts.legacySave, opts.oldBuild);
     }
     return { code };
   } finally {
@@ -3700,19 +3793,19 @@ const cmds = {
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
-    return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), ...remoteFlags(list) });
+    return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   test: (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), ...remoteFlags(list) });
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
-    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build") });
+    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => {
@@ -3822,7 +3915,7 @@ function cmdSuiteValid(flags) {
   return 1;
 }
 
-// Commands that live one file each in tools/commands/ (export `help` and `main(args, { root })`).
+// Commands that live one file each in tools/commands/ (export `help` and `main(args, { root, workbench })`).
 // Add a command there, not to `cmds` above: this file was edited by 66 commits in ten days.
 function discoveredCommand(name) {
   return /^[a-z][a-z0-9-]*$/.test(name) && existsSync(join(ROOT, "tools", "commands", `${name}.mjs`));
@@ -3856,14 +3949,15 @@ try {
     code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
-  } else if (cmd === "pack" && rest[0] === "new") {
-    // `pack` builds the Workshop bundle; `pack new <Name>` scaffolds a content pack (tools/commands/pack.mjs).
+  } else if (cmd === "pack" && ["new", "check", "explain"].includes(rest[0])) {
+    // `pack` builds the Workshop bundle; `pack new|check|explain` are the content-pack tools (tools/commands/pack.mjs).
     code = await (await import("./commands/pack.mjs")).main(rest, { root: ROOT });
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "asset" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" || cmd === "config-check" ? rest : a);
   } else if (cmd && discoveredCommand(cmd)) {
     // tools/commands/<cmd>.mjs: a new command is one file and touches no shared list.
-    code = (await import(`./commands/${cmd}.mjs`)).main(rest, { root: ROOT });
+    // `workbench` runs one hidden ResourceManager plugin under the build lock (runWorkbenchPlugin).
+    code = (await import(`./commands/${cmd}.mjs`)).main(rest, { root: ROOT, workbench: runWorkbenchPlugin });
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

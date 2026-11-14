@@ -20,7 +20,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const fixtures = join(here, "fixtures", "enforce-lint");
 
 // Findings each bad fixture must produce for its own rule.
-const EXPECT = { L1: 1, L2: 7, L3: 2, L4: 1, L5: 1, L6: 3, L7: 1, L8: 1 };
+const EXPECT = { L1: 1, L2: 7, L3: 2, L4: 1, L5: 1, L6: 3, L7: 1, L8: 1, L9: 3 };
 
 function runFixture(name) {
   const tmp = mkdtempSync(join(tmpdir(), "lf-enforce-lint-"));

@@ -177,12 +177,47 @@ recording (`tools/film`) cannot see that desktop; film a game client you start
 yourself on a visible monitor. `film.mjs` no longer brings that window to the
 front; on a second monitor it lifts it without activating it.
 
+### Workbench window capture (`wb-shot`)
+
+`System.MakeScreenshot` grabs only the 3D framebuffer. `tools\cli wb-shot --pid <Workbench pid>
+[--title "World Editor"] [--crop x,y,w,h] [--max-px N] [--out f.png]` captures the whole Qt window
+(Log Console, Resource Browser, Object Properties, menus) with Win32 `PrintWindow`
+(`PW_RENDERFULLCONTENT`, fallback 0), `GetDIBits` 24-bit top-down, BGR to RGB, optional crop and
+downscale, PNG. `--list` shows the pid's windows, `--find` the Workbench pids, `--wait <s>` blocks
+(bounded) until the pid has a visible window. Code: `tools/lib/wb-window-capture.{ps1,mjs}`.
+
+- **It works on `LF-Agents`**, but only because the capture thread attaches to that desktop first
+  (`SetThreadDesktop`, which never switches the visible desktop). Without it `PrintWindow` returns
+  false there. A Workbench on `LF-Agents` is a live, rendered session, so the spec's constraint holds.
+- It needs the window visible and not minimised, and a pid: only that process's windows are listed
+  or captured. It sends no input, never focuses a window and never reads the screen.
+- The main window of an ultrawide Workbench is 5136x1456; use `--crop` for one panel at full
+  resolution (`--crop 0,0,1000,1456` is the Log Console + Resource Browser column) or `--max-px`
+  for an overview. A frame with under 16 colours is reported as blank (exit 1).
+- `System.MakeScreenshot` stays the tool for the 3D view; this one is for panels and dialogs.
+
 - `tools\cli hidden` lists processes with a window on `LF-Agents`;
   `tools\cli hidden --close` ends them (a hidden Workbench stays up between agent
   calls, as the visible one used to).
 - `LF_SHOW_WINDOWS=1` turns all of this off for debugging: every run starts on
   your desktop again.
 - `wt open --workbench` and `wt open` are for you, so they still open visibly.
+
+**Modal dialogs on the hidden desktop.** `RegisterResourceFile` on a new
+`.fbx` opens "Register Resource File(s)" (as Model / as Animation), and the
+first restricted script call can open "Script Authorization Required". On
+`LF-Agents` nobody can click them, so the NET API call hangs. Set
+`LF_WB_DIALOG_WATCHER=1` (or pass `dialogWatcher: true` to
+`ensureQuietWorkbench`; `startDialogWatcher({ workbenchPid, log })` for a
+Workbench you launched yourself) and `tools/lib/wb-dialog-watcher.ps1` runs
+beside that Workbench on `LF-Agents`. It answers only those two titles, only
+on windows owned by that one Workbench pid, by `BM_CLICK` on a Button child,
+then a posted Alt mnemonic, then a click posted at a fixed offset from the
+dialog's bottom-right corner ("as Model" for the FBX prompt). It never moves
+the cursor or injects input, and it exits 3 without looking at a window when
+its thread is not on `LF-Agents`. Each answer is one JSON line in
+`<checkout>/tmp/wb-dialog-watcher.jsonl`, with a PNG of the dialog in
+`tmp/wb-dialog-snaps/`; it exits with the Workbench.
 
 ### Video post-production (optional, `film-make`)
 

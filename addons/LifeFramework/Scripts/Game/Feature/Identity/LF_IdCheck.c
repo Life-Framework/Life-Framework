@@ -245,7 +245,7 @@ class LF_IdRequestSheet
 	{
 		ref array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "IdRequestTitle", "#LF-IdCard_RequestTitle"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "IdRequestBody", "#LF-IdCard_RequestBody"));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "IdRequestBody", LF_Terms.Text("#LF-IdCard_RequestBody")));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, SHOW, "#LF-IdCard_RequestShow"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, REFUSE, "#LF-IdCard_RequestRefuse"));
 		return parts;

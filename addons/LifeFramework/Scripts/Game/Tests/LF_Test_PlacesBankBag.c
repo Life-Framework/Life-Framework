@@ -34,7 +34,7 @@ class LF_Test_PlacesBankBag : LF_Test
 		LF_Bank.FillVaultBag(VAULT_ID, 250);
 		ctx.True(LF_Places.Find(LF_Bank.BAG_PLACE_KIND, VAULT_ID) == null, "a vault with no bag placed has none");
 
-		IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, vault.GetOrigin() + "0 -20 0", "0 0 0", false);
+		IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Bank.BagPrefab(), vault.GetOrigin() + "0 -20 0", "0 0 0", false);
 		ctx.NotNull(bag, "an unnamed bag spawns");
 		if (!bag)
 			return;

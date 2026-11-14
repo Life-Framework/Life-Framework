@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{B050696FB54746B9}Configs/Tests/LF_Test_UIThemePack.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

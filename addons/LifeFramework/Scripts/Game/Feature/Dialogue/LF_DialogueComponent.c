@@ -30,29 +30,8 @@ class LF_DialogueComponent : ScriptComponent
 			return null;
 		}
 
-		Resource container = BaseContainerTools.LoadContainer(m_sDialogue);
-		if (!container || !container.GetResource())
-		{
-			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("dialogue config does not resolve: %1", m_sDialogue));
-			return null;
-		}
-
-		LF_DialogueConfig config = LF_DialogueConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
-		if (!config)
-		{
-			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("dialogue config has an unexpected root class: %1", m_sDialogue));
-			return null;
-		}
-
-		array<string> problems = {};
-		LF_DialogueFlow.Problems(config, problems);
-		if (!problems.IsEmpty())
-		{
-			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("dialogue '%1' is broken and will not be played: %2 (%3 problem(s))", config.m_sId, problems[0], problems.Count()));
-			return null;
-		}
-
-		m_Config = config;
+		// The core file with the mission's pack patches over it (#957, #1109).
+		m_Config = LF_DialogueConfig.Layered(m_sDialogue);
 		return m_Config;
 	}
 

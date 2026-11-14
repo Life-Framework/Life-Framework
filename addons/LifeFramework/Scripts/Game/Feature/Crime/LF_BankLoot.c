@@ -80,7 +80,7 @@ class LF_BankLoot
 			// A small turn each, so the row reads as set down by hand rather than stamped out.
 			int odd = i % 2;
 			float turn = yaw + 12 * odd - 6;
-			IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, at, Vector(turn, 0, 0));
+			IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Bank.BagPrefab(), at, Vector(turn, 0, 0));
 			if (!bag)
 			{
 				LF_Debug.Error("Bank", "spill refused: the money bag did not spawn");

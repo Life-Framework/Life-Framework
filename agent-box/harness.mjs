@@ -134,7 +134,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "spikeplace" || spec.verb === "spikewhere" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "sound") {
@@ -246,7 +246,8 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "kit") {
     const step = token(spec.step, "kit step");
-    if (step === "show" || step === "hide") return `${id} kit ${step}`;
+    if (step === "show" || step === "hide" || step === "terminal") return `${id} kit ${step}`;
+    if (step === "theme") return `${id} kit theme ${token(spec.name, "theme")}`;
     if (step === "line") return `${id} kit line ${token(spec.part, "part")} ${token(spec.text, "text")}`;
     if (step === "status") {
       return `${id} kit status ${token(spec.part, "part")} ${token(spec.label, "label")} ${token(spec.statusText, "status")} ${token(spec.action, "action")}`;
@@ -259,7 +260,7 @@ export function buildLine(id, spec) {
       }
       return `${id} kit quantity ${token(spec.part, "part")} ${total} ${take}`;
     }
-    throw new Error(`kit step must be show, hide, line, status, or quantity: ${step}`);
+    throw new Error(`kit step must be show, hide, terminal, theme, line, status, or quantity: ${step}`);
   }
   if (spec.verb === "previews") {
     if (spec.mode === "hide") return `${id} previews hide`;
@@ -795,7 +796,8 @@ const PRESS = {
 
 function sendKit(rest) {
   const step = rest[0];
-  if (step === "show" || step === "hide") return sendCommand({ verb: "kit", step });
+  if (step === "show" || step === "hide" || step === "terminal") return sendCommand({ verb: "kit", step });
+  if (step === "theme") return sendCommand({ verb: "kit", step, name: rest[1] });
   if (step === "line") return sendCommand({ verb: "kit", step, part: rest[1], text: rest[2] });
   if (step === "status") {
     return sendCommand({
@@ -810,7 +812,7 @@ function sendKit(rest) {
   if (step === "quantity") {
     return sendCommand({ verb: "kit", step, part: rest[1], total: rest[2], take: rest[3] });
   }
-  throw new Error(`kit step must be show, hide, line, status, or quantity: ${step}`);
+  throw new Error(`kit step must be show, hide, terminal, theme, line, status, or quantity: ${step}`);
 }
 
 const KIT_SHOTS = ["kit-sheet", "kit-balance", "kit-status", "kit-keep", "kit-take", "kit-focus"];
@@ -1530,7 +1532,7 @@ function main(argv) {
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "spikeplace" || cmd === "spikewhere" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {

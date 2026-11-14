@@ -10,6 +10,9 @@
 // checked against every GUID already in addons/ so none repeats. The .meta files are written here
 // because a headless Workbench cannot register a file it did not create; opening the project in
 // Workbench adopts them unchanged.
+// `--job <ID>` also writes a workplace for that job (#1111): Prefabs/Jobs/<Name><Job>Workplace.et
+// inheriting the core Prefabs/Jobs/LF_Workplace.et with the job id set. The clock-in action, the
+// place registration and the optional NPC slot come from the core prefab; the pack sets values.
 // red-proof: tools/validation/pack-new-selftest.mjs.
 
 import { randomBytes } from "node:crypto";
@@ -23,9 +26,11 @@ const FOLDERS = ["Assets", "Configs", "Language", "Missions", "Prefabs", "UI", "
 const LANGS = ["en_us", "de_de", "es_es", "fr_fr", "it_it", "pt_br", "pt_pt"];
 const PLATFORMS = ["XBOX_ONE", "XBOX_SERIES", "PS4", "HEADLESS"];
 
-const USAGE = `usage: tools\\cli pack new <Name>
+const USAGE = `usage: tools\\cli pack new <Name> [--job <ID>]
 
-  <Name>  PascalCase, becomes addons/LF_<Name> (Everon1989 -> LF_Everon1989)`;
+  <Name>  PascalCase, becomes addons/LF_<Name> (Everon1989 -> LF_Everon1989)
+  --job   also write a workplace prefab for that job id (BAKER, POLICE), inheriting the core
+          Prefabs/Jobs/LF_Workplace.et: punch clock, place registration, optional NPC slot`;
 
 function walk(dir, out = []) {
   if (!existsSync(dir)) return out;
@@ -59,13 +64,42 @@ export function coreRange(coreDir) {
   return { min: version, below: `${maj}.${min + 1}.0` };
 }
 
+const WORKPLACE = "Prefabs/Jobs/LF_Workplace.et";
+
+// The core workplace prefab's GUID (its .meta) and the GUID of its LF_WorkplaceComponent, which a
+// derived prefab must reuse to override the component.
+function workplaceBase(coreDir) {
+  const meta = join(coreDir, `${WORKPLACE}.meta`);
+  const et = join(coreDir, WORKPLACE);
+  if (!existsSync(meta) || !existsSync(et)) return null;
+  const prefabGuid = readFileSync(meta, "utf8").match(/Name\s+"\{([0-9A-F]{16})\}/)?.[1];
+  const compGuid = readFileSync(et, "utf8").match(/LF_WorkplaceComponent\s+"\{([0-9A-F]{16})\}"/)?.[1];
+  return prefabGuid && compGuid ? { prefabGuid, compGuid } : null;
+}
+
+function prefabMeta(guid, path) {
+  const rest = PLATFORMS.map((p) => `  EntityTemplateResourceClass ${p} : PC {
+  }
+`).join("");
+  return `MetaFileClass {
+ Name "{${guid}}${path}"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+${rest} }
+}
+`;
+}
+
 function confMeta(guid, path, cls = "CONFResourceClass") {
   const rest = PLATFORMS.map((p) => `  ${cls} ${p} : PC {\n  }\n`).join("");
   return `MetaFileClass {\n Name "{${guid}}${path}"\n Configurations {\n  ${cls} PC {\n  }\n${rest} }\n}\n`;
 }
 
 // Returns { error } or { dir, id, files }. `addonsDir` is addons/ of the repo (or a test tree).
-export function scaffoldPack(addonsDir, name) {
+export function scaffoldPack(addonsDir, name, opts = {}) {
+  const job = opts.job ?? null;
+  if (job !== null && !/^[A-Z][A-Z0-9_]*$/.test(job)) return { error: `--job must be an upper-case job id such as BAKER, got '${job}'` };
   if (!/^[A-Z][A-Za-z0-9]*$/.test(name ?? "")) return { error: `<Name> must be PascalCase, got '${name ?? ""}'` };
   if (/^(LF|EL)_/i.test(name)) return { error: "<Name> comes without the LF_ prefix" };
   const id = `LF_${name}`;
@@ -84,6 +118,12 @@ export function scaffoldPack(addonsDir, name) {
   const idRe = new RegExp(`\\b${id}\\b`);
   const clash = walk(coreDir).find((f) => /\.(c|et|conf|layout|layer|st|gproj)$/.test(f) && idRe.test(readFileSync(f, "utf8")));
   if (clash) return { error: `${id} is already a name in the core (${clash.slice(coreDir.length + 1)}); pick another` };
+
+  let base = null;
+  if (job !== null) {
+    base = workplaceBase(coreDir);
+    if (!base) return { error: `--job needs the core workplace prefab ${WORKPLACE} (and its .meta) in the core` };
+  }
 
   const used = usedGuids(addonsDir);
   const guid = () => {
@@ -166,6 +206,22 @@ ${otherConfigs}
     put(`Language/${prefix}_localization.${l.code}.conf.meta`, confMeta(l.res, `Language/${prefix}_localization.${l.code}.conf`));
   }
 
+  let workplacePath = null;
+  if (job !== null) {
+    const pascal = job.toLowerCase().replace(/(^|_)([a-z0-9])/g, (_, __, c) => c.toUpperCase());
+    workplacePath = `Prefabs/Jobs/${name}${pascal}Workplace.et`;
+    put(workplacePath, `GenericEntity : "{${base.prefabGuid}}${WORKPLACE}" {
+ ID "${guid()}"
+ components {
+  LF_WorkplaceComponent "{${base.compGuid}}" {
+   m_sJob "${job}"
+  }
+ }
+}
+`);
+    put(`${workplacePath}.meta`, prefabMeta(guid(), workplacePath));
+  }
+
   put("README.md", `# ${id}
 
 A Life Framework content pack, scaffolded by \`tools\\cli pack new ${name}\`. The core decides what
@@ -185,7 +241,8 @@ including, ${range.below}. Raise \`m_sCoreBelow\` once you have tested the pack 
   [\`public-surface.md\`](../../docs/architecture/public-surface.md) are allowed.
 - [ ] \`Language/${prefix}_localization.st\`: the place names, sign titles and flavour copy, as \`${id}-<Thing>\` keys.
 - [ ] \`Worlds/\`, \`Prefabs/\`, \`Assets/\`, \`UI/\`: the setting itself. Prefabs inherit core prefabs.
-- [ ] Open the project in Workbench once, so it registers the resources.
+${workplacePath ? `- [ ] \`${workplacePath}\`: the ${job} workplace. It inherits the core workplace (punch clock, place registration, optional NPC slot). Place it, name it in the world, and set the NPC prefab if it has a clerk.
+` : ""}- [ ] Open the project in Workbench once, so it registers the resources.
 
 No script here: a pack that needs code asks for an extension point in the core.
 \`validate-addon-boundary\` fails on a \`.c\` file in a pack.
@@ -200,13 +257,16 @@ No script here: a pack that needs code asks for an extension point in the core.
 }
 
 export async function main(args, ctx) {
-  const [sub, name] = args;
-  if (sub !== "new" || !name) {
+  const [sub, name, ...flags] = args;
+  let job = null;
+  const at = flags.indexOf("--job");
+  if (at >= 0) job = flags[at + 1] ?? "";
+  if (sub !== "new" || !name || (job !== null && !job)) {
     console.log(USAGE);
     return 1;
   }
   const root = ctx?.root ?? join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-  const r = scaffoldPack(join(root, "addons"), name);
+  const r = scaffoldPack(join(root, "addons"), name, { job });
   if (r.error) {
     console.error(`pack new: ${r.error}`);
     return 1;

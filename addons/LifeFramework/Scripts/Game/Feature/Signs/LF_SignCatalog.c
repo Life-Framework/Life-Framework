@@ -57,6 +57,8 @@ class LF_SignCatalog
 	static const string KEY_RULES = "#LF-Sign_Rules";
 	static const string KEY_NEXT = "#LF-Sign_Next";
 	static const string KEY_CLOSE = "#LF-Sign_Close";
+	//! What a board with no text of its own reads (a sign whose pack text is not loaded; #325).
+	static const string KEY_GENERIC_TITLE = "#LF-Sign_Generic_Title";
 
 	//! Mark before a list item: a typed hyphen, which every UI font has. (U+2022 is a glyph the bitmap faces may lack.)
 	static const string BULLET = "-";
@@ -138,13 +140,29 @@ class LF_SignCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A #key is translated. Anything else is returned as written.
+	//! A #key is translated. Anything else is returned as written. A key no string table knows (the
+	//! sign's text lives in a pack that is not loaded, #325) comes back empty: the card skips that section.
 	static string Resolve(string value)
 	{
 		if (!IsKey(value))
 			return value;
 
-		return WidgetManager.Translate(value);
+		string text = WidgetManager.Translate(value);
+		if (text == value)
+			return string.Empty;
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A sign's title: the text, or the core's neutral title when the text is not available.
+	static string ResolveTitle(string value)
+	{
+		string text = Resolve(value);
+		if (text.IsEmpty())
+			return WidgetManager.Translate(KEY_GENERIC_TITLE);
+
+		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -157,7 +175,13 @@ class LF_SignCatalog
 		string name = Resolve(nameKey);
 		string money = LF_MoneyFormat.FormatMoney(price);
 		if (IsKey(template))
-			return WidgetManager.Translate(template, name, money);
+		{
+			string filled = WidgetManager.Translate(template, name, money);
+			if (filled == template)
+				return WidgetManager.Translate(KEY_GENERIC_TITLE);
+
+			return filled;
+		}
 
 		string text = template;
 		text.Replace("%1", name);
@@ -190,7 +214,7 @@ class LF_SignCatalog
 		if (!sign)
 			return string.Empty;
 
-		return WidgetManager.Translate(KEY_READ, Resolve(sign.m_sTitle));
+		return WidgetManager.Translate(KEY_READ, ResolveTitle(sign.m_sTitle));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -344,7 +368,7 @@ class LF_SignCatalog
 	//! of frame, so a card needs to stay under MAX_CARD_HEIGHT). Markup tags do not count as text.
 	static float EstimateHeight(array<ref LF_UIPart> parts, float sheetWidth, float scale)
 	{
-		float fontBody = LF_UITheme.FONT_BODY * scale;
+		float fontBody = LF_UITheme.BodySize() * scale;
 		float pitch = fontBody * 1.35;
 		float perLine = (sheetWidth - 56) / (fontBody * 0.46);
 		float height = 40;
@@ -352,7 +376,7 @@ class LF_SignCatalog
 		{
 			if (part.GetKind() == LF_EUIPartKind.TITLE)
 			{
-				float fontTitle = LF_UITheme.FONT_TITLE * 1.35 * scale;
+				float fontTitle = LF_UITheme.TitleSize() * 1.35 * scale;
 				int titleLines = 1;
 				if (part.GetText().Length() * fontTitle * 0.48 > sheetWidth - 56)
 					titleLines = 2;
@@ -365,7 +389,7 @@ class LF_SignCatalog
 			}
 			else if (part.GetKind() == LF_EUIPartKind.HEADING)
 			{
-				height += 18 + LF_UITheme.FONT_HEADING * scale * 1.3;
+				height += 18 + LF_UITheme.HeadingSize() * scale * 1.3;
 			}
 			else if (part.GetKind() == LF_EUIPartKind.RICH)
 			{
@@ -433,7 +457,7 @@ class LF_SignCatalog
 		if (skin)
 			accent = skin.m_sAccentRgba;
 
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", Resolve(sign.m_sTitle)));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", ResolveTitle(sign.m_sTitle)));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RULE, "TitleRule", ""));
 		if (!sign.m_sImage.IsEmpty())
 			parts.Insert(LF_UIPart.CreateImage("Image", sign.m_sImage, sign.m_sImageName));

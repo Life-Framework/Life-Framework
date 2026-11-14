@@ -142,24 +142,28 @@ class LF_PoliceConfig
 	int m_iSearchCooldownSeconds;
 
 	[Attribute("3", UIWidgets.Auto, "Unpaid tickets one holder may carry; a further ticket is refused", params: "1 20")]
-	int m_iTicketMaxOpen = 3;
+	int m_iTicketMaxOpen;
 
 	[Attribute("3", UIWidgets.Auto, "Paid tickets kept per holder so a receipt reprints after a restart", params: "0 20")]
-	int m_iTicketKeepPaid = 3;
+	int m_iTicketKeepPaid;
 
 	[Attribute("5", UIWidgets.Auto, "Metres an officer may stand from a suspect to arrest or fine from the police menu or the arrest action", params: "1 30")]
-	float m_fArrestReach = 5;
+	float m_fArrestReach;
 
 	[Attribute("8", UIWidgets.Auto, "Metres from the cell a jail escort counts as arrived", params: "1 50")]
-	float m_fJailArrivalRadius = 8;
+	float m_fJailArrivalRadius;
 
 	[Attribute("6", UIWidgets.Auto, "Metres a player may stand from the police application desk for the form to open", params: "1 30")]
-	float m_fApplyDeskRange = 6;
+	float m_fApplyDeskRange;
 	[Attribute("60", UIWidgets.Auto, "Seconds after a hold-up during which the held-up player, holding no weapon, may be handcuffed by an on-duty officer. A downed player may always be. 0 allows downed players only", params: "0 600")]
 	int m_iCompliantSeconds;
 
 	[Attribute("600", UIWidgets.Auto, "Seconds a deployed spike strip stays before it goes away by itself (#646). An officer can pick it up sooner", params: "30 7200")]
 	int m_iSpikeStripLifetimeSeconds;
+
+	//! How many rungs the core file ships; a remove of one of them is refused (a saved rank is its
+	//! index). Not an attribute. -1 until the first layer pass counts them.
+	int m_iShippedRanks = -1;
 
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -205,10 +209,26 @@ class LF_PoliceConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "police" section over this instance, which holds the core `.conf`, then
-	//! (on a client) the server's streamed values over that.
+	//! Merges the layers over this instance, which holds the core `.conf`: each pack overlay of this
+	//! class in load order (its `m_aRanks`, LF_ConfigOverlay, #1108), then the owner's "police"
+	//! section, then (on a client) the server's streamed values over that.
 	void ApplyLayers()
 	{
+		if (!m_aRanks)
+			m_aRanks = new array<ref LF_PoliceRank>();
+
+		m_iShippedRanks = m_aRanks.Count();
+		LF_PoliceRankList list = new LF_PoliceRankList(this);
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_PoliceConfig, SECTION, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = LF_ConfigOverlay.ApplyContainerList(list, resource.GetResource().ToBaseContainer(), "m_aRanks", names[i], claims);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("police: pack overlay %1 changed %2 ranks", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (reader)
 		{
@@ -220,15 +240,41 @@ class LF_PoliceConfig
 		LF_ConfigReader streamed = LF_ConfigStream.OpenReceivedSection(SECTION);
 		if (streamed)
 		{
+			DropRanksNotIn(streamed);
 			ApplyOwner(streamed);
 			LF_Debug.Info(LF_ConfigService.FEATURE, "police: using the server's values");
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: the stream writes every rung, so a rung the server's layers removed (a pack's rung the
+	//! owner took out) is dropped here too. A stream with no ranks (an older server) keeps the ladder.
+	protected void DropRanksNotIn(notnull LF_ConfigReader streamed)
+	{
+		if (!m_aRanks || !streamed.Has("ranks"))
+			return;
+
+		array<string> ids = {};
+		int count = streamed.BeginRecords("ranks");
+		for (int i = 0; i < count; i++)
+			ids.Insert(streamed.GetRecordKey(i));
+
+		if (count >= 0)
+			streamed.EndRecords();
+
+		for (int j = m_aRanks.Count() - 1; j >= 0; j--)
+		{
+			LF_PoliceRank rank = m_aRanks[j];
+			if (rank && !ids.Contains(rank.m_sId))
+				m_aRanks.RemoveOrdered(j);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Applies the owner's "police" section field by field; a key left out keeps the shipped value.
-	//! `ranks` is keyed by rank id: an id the ladder has changes that rank field by field, an id it
-	//! lacks appends a rung (a saved rank is its index, so the ladder only ever grows).
+	//! `ranks` is keyed by rank id, each record with an optional "op" (add, replace, patch, remove; no
+	//! op patches a rung the ladder has and appends one it lacks). A saved rank is its index, so a
+	//! remove is refused on a shipped rung and on any rung that is not the last.
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
@@ -263,46 +309,7 @@ class LF_PoliceConfig
 		if (!m_aRanks)
 			m_aRanks = new array<ref LF_PoliceRank>();
 
-		int count = reader.BeginRecords("ranks");
-		for (int i = 0; i < count; i++)
-		{
-			string key = reader.GetRecordKey(i);
-			if (!reader.BeginRecord(key))
-				continue;
-
-			if (key.IsEmpty())
-			{
-				reader.RejectRecord("the key is empty; it is the rank id");
-				reader.EndRecord();
-				continue;
-			}
-
-			LF_PoliceRank rank = FindRank(key);
-			if (!rank)
-			{
-				rank = LF_PoliceRank.Create(key, key, 1000, -1, 0, ResourceName.Empty);
-				rank.m_aKit.Clear();
-				m_aRanks.Insert(rank);
-			}
-
-			array<string> recordKeys = {"titleKey", "fineCap", "payPerSecond", "dutySecondsForNext", "kit"};
-			reader.WarnUnknownKeys(recordKeys);
-			reader.ReadString("titleKey", rank.m_sTitleKey);
-			reader.ReadInt("fineCap", rank.m_iFineCap, FINE_CAP_MIN, FINE_CAP_MAX);
-			reader.ReadFloat("payPerSecond", rank.m_fPayPerSecond, RANK_PAY_MIN, RANK_PAY_MAX);
-			reader.ReadInt("dutySecondsForNext", rank.m_iDutySecondsForNext, RANK_DUTY_MIN, RANK_DUTY_MAX);
-			array<string> kit = {};
-			if (reader.ReadStrings("kit", kit))
-			{
-				rank.m_aKit = {};
-				foreach (string prefab : kit)
-					rank.m_aKit.Insert(prefab);
-			}
-			reader.EndRecord();
-		}
-
-		if (count >= 0)
-			reader.EndRecords();
+		LF_ConfigOverlay.ApplyRecords(reader, "ranks", new LF_PoliceRankList(this), LF_ConfigService.GetOwnerSource());
 
 		ApplyAlarmKinds(reader);
 	}
@@ -833,7 +840,7 @@ class LF_TicketOffence
 //------------------------------------------------------------------------------------------------
 //! One rung of the police ladder. The rank saved on an account is this row's index.
 [BaseContainerProps()]
-class LF_PoliceRank
+class LF_PoliceRank : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Stable name of the rank, for logs and packs")]
 	string m_sId;
@@ -865,5 +872,132 @@ class LF_PoliceRank
 		rank.m_aKit = {};
 		rank.m_aKit.Insert(kitPrefab);
 		return rank;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The police `ranks` list for the shared merge (LF_ConfigOverlay), keyed by rank id. A saved rank is
+//! the rung's index, so a rung leaves only from the end of the ladder and never a shipped one.
+class LF_PoliceRankList : LF_ConfigList
+{
+	protected LF_PoliceConfig m_Config;
+
+	void LF_PoliceRankList(LF_PoliceConfig config)
+	{
+		m_Config = config;
+		if (!m_Config.m_aRanks)
+			m_Config.m_aRanks = new array<ref LF_PoliceRank>();
+
+		if (m_Config.m_iShippedRanks < 0)
+			m_Config.m_iShippedRanks = m_Config.m_aRanks.Count();
+	}
+
+	override string GetName()
+	{
+		return "police.ranks";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aRanks.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aRanks[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_PoliceRank.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a rank id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		LF_PoliceRank rank = LF_PoliceRank.Create(id, id, 1000, -1, 0, ResourceName.Empty);
+		rank.m_aKit.Clear();
+		return rank;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_PoliceRank rank = LF_PoliceRank.Cast(record);
+		if (index < m_Config.m_aRanks.Count())
+			m_Config.m_aRanks.Set(index, rank);
+		else
+			m_Config.m_aRanks.Insert(rank);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aRanks.RemoveOrdered(index);
+	}
+
+	override string RemoveRefusal(int index)
+	{
+		if (index < m_Config.m_iShippedRanks)
+			return "a shipped rank cannot be removed: a saved rank is its index, so patch or replace it instead";
+
+		if (index != m_Config.m_aRanks.Count() - 1)
+			return "only the last rank can be removed: removing this one would move the saved index of the ranks above it";
+
+		return string.Empty;
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_PoliceRank rank = LF_PoliceRank.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sTitleKey") && container.Get("m_sTitleKey", rank.m_sTitleKey))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iFineCap") && container.Get("m_iFineCap", rank.m_iFineCap))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fPayPerSecond") && container.Get("m_fPayPerSecond", rank.m_fPayPerSecond))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iDutySecondsForNext") && container.Get("m_iDutySecondsForNext", rank.m_iDutySecondsForNext))
+			changed++;
+		if (container.IsVariableSetDirectly("m_aKit"))
+		{
+			array<ResourceName> kit = {};
+			if (container.Get("m_aKit", kit))
+			{
+				rank.m_aKit = {};
+				foreach (ResourceName prefab : kit)
+					rank.m_aKit.Insert(prefab);
+				changed++;
+			}
+		}
+
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_PoliceRank rank = LF_PoliceRank.Cast(record);
+		array<string> recordKeys = {"op", "titleKey", "fineCap", "payPerSecond", "dutySecondsForNext", "kit"};
+		reader.WarnUnknownKeys(recordKeys);
+		reader.ReadString("titleKey", rank.m_sTitleKey);
+		reader.ReadInt("fineCap", rank.m_iFineCap, LF_PoliceConfig.FINE_CAP_MIN, LF_PoliceConfig.FINE_CAP_MAX);
+		reader.ReadFloat("payPerSecond", rank.m_fPayPerSecond, LF_PoliceConfig.RANK_PAY_MIN, LF_PoliceConfig.RANK_PAY_MAX);
+		reader.ReadInt("dutySecondsForNext", rank.m_iDutySecondsForNext, LF_PoliceConfig.RANK_DUTY_MIN, LF_PoliceConfig.RANK_DUTY_MAX);
+		array<string> kit = {};
+		if (reader.ReadStrings("kit", kit))
+		{
+			rank.m_aKit = {};
+			foreach (string prefab : kit)
+				rank.m_aKit.Insert(prefab);
+		}
 	}
 }

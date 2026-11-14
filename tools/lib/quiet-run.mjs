@@ -125,6 +125,8 @@ export function policy(script, args) {
   const name = basename(script);
   const [a, b] = positional(args);
   if (name === "cli.mjs") {
+    // pack new|check|explain print their own short answer (tools/pack/); only the Workshop bundle is heavy.
+    if (a === "pack" && ["new", "check", "explain"].includes(b)) return null;
     if (["validate", "test", "e2e", "build", "pack", "ci", "dev", "look", "shots", "audit"].includes(a)) return a;
     if (a === "session" && ["up", "down", "restart", "wait", "join"].includes(b)) return `session-${b}`;
     if (a === "wt" && ["gate", "ship", "e2e"].includes(b)) return `wt-${b}`;

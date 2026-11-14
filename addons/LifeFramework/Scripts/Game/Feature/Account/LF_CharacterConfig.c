@@ -16,10 +16,10 @@ class LF_CharacterConfig
 	int m_iMaxPerAccount;
 
 	[Attribute("18", UIWidgets.Auto, "Youngest age a new character may register with", params: "1 120")]
-	int m_iMinAge = 18;
+	int m_iMinAge;
 
 	[Attribute("80", UIWidgets.Auto, "Oldest age a new character may register with", params: "1 120")]
-	int m_iMaxAge = 80;
+	int m_iMaxAge;
 
 	protected static ref LF_CharacterConfig s_Config;
 	protected static bool s_bLoadAttempted;

@@ -132,6 +132,7 @@ under "Hard-coded flagship values in script".
 | Path | Class | Reason |
 | --- | --- | --- |
 | `Building/` | core | Building preview |
+| `Buildings/Supermarket/` | pack | The 1989 Everon supermarket from `tools\cli building` (ArchBuilder, `tools/buildings/supermarket/spec.json`): the building is this server's look. The `Annex_Supermarket` placement in the core `Annex.layer` is the pipeline's proof and must go or be replaced by a neutral building before the M3 move |
 | `Characters/Core/` | core | Player and NPC bases |
 | `Characters/Presets/` (3) | core | Neutral spawn bodies the game mode lists |
 | `Characters/Npcs/Npc_Default_01.et` | split | Base of every NPC, dressed in the M88 uniform; core needs a neutral base |
@@ -179,6 +180,7 @@ under "Hard-coded flagship values in script".
 | --- | --- | --- |
 | `Chat/` | core | Channels |
 | `Core/EditorManagerCore.conf` | core | Engine setup |
+| `UI/LF_UITheme.conf` | split | The theme shape (`LF_UIThemeRecord`, the reader) is core; the 1989 paper, brass and phosphor values are the flagship's look, kept as the core default until the M3 move. A pack overlay patches a theme by id (#966) |
 | `Dialogue/LF_Dialogue_Clerk.conf` | pack | The town clerk's conversation (generated from `tools/assets/dialogue/clerk/`); the scene system in `Feature/Dialogue/` is core |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
 | `Inventory/` | core | Navigation bar |
@@ -201,7 +203,7 @@ under "Hard-coded flagship values in script".
 
 | Path | Class | Reason |
 | --- | --- | --- |
-| `everonlife_localization.st` (862 keys) | split | Functional keys stay; about 138 `LF-Sign_*` titles and texts, the arrival and intro quest copy, and the Everon-named forms move to a pack table |
+| `everonlife_localization.st` (1468 keys after #325) | split, done | Functional and neutral keys stay. 195 per-sign `LF-Sign_*` rows and the Everon-named, arrival and clerk copy moved to `LF_Everon1989/Language/lf_everon1989_localization.st`; the core keeps a neutral row under the same key (the pack's text wins when it loads) |
 | `everonlife_localization.*.conf` (7) | split | Generated from the `.st`; regenerated per table |
 
 The flavour keys that name the setting today: `LF-Sign_TownMap_*` ("Welcome to
@@ -247,6 +249,8 @@ its save.
 
 | Path | Class | Reason |
 | --- | --- | --- |
+| `Buildings/Supermarket/` | pack | Model and `.xob.meta` of the supermarket above |
+| `Buildings/Materials/` | split | ArchBuilder's `AB_*` materials over vanilla `_SharedData` textures, shared by every generated building: neutral, but only pack buildings use them today; they move with the first pack building or stay as a core material set |
 | `Crafting/` | core | Station meshes |
 | `Items/` | core | Cash, ID card, food, roleplay meshes |
 | `Props/CementMound/`, `Props/Military/Sandbags/` | core | Chain item textures |
@@ -273,6 +277,7 @@ its save.
 | `Assets/Items/Roleplay/Drill/`, `Anims/LF/Drill/`, `Anims/Workspaces/Work/LF_DrillPush.*`, `Particles/LF/Drill_fx_bit.ptc`, `Sounds/Items/Drill/` | core | The vault drill and its scene (#340): model, push clips, sparks, motor and grinding loops. They follow `Prefabs/Items/Fence/LF_Drill.et`, the robbery's tool; the component that plays them (`Feature/AssetAnim/`) is core |
 | `Assets/Items/Resources/CementBag/` | core | The cement bag item, a CC0 Poly Haven model through the source stage (`docs/asset-pipeline/sources.md`): the quarry's cement chain is core. |
 | `Sounds/Alarm/Robbery/`, `Prefabs/Police/LF_SiteAlarm_{Bank,Fuel,Store,Van}*.et` | core | The site alarm of each robbery type (#740): bank bell, fuel station intruder alarm, store buzzer, van horn, each with a loud twin. They play through `LF_SiteAlarmComponent` and are picked by the `m_aAlarmKinds` rows of `LF_Police.conf`; the kinds' ids and offences are data, so a pack changes which robbery sounds which alarm without code |
+| `Prefabs/Jobs/LF_Workplace.et` | core | The generic workplace (#1111): a desk, a punch clock with the clock-in action, `LF_WorkplaceComponent` (job id, place registration, optional NPC slot). The police and medic duty desks inherit it; a pack inherits it for its own job (`pack new --job`) |
 | `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |
