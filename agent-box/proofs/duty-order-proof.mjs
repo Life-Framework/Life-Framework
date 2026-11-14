@@ -45,8 +45,11 @@ async function runDutyOrderProof() {
     const look = on(1, { verb: "look" });
     if (look.status !== "ok") { fails.push(`${desk.name}: look returned ${look.status} ${look.detail}`); continue; }
     fails.push(...judgeDutyOrder(look.detail, desk));
-    on(1, { verb: "capture", mode: "world", name: `${prefix}_${desk.name}` }, 25000);
+    on(1, { verb: "capture", mode: "ui", name: `${prefix}_${desk.name}` }, 25000);
     // Clock in, then the same row must read Clock out (one state-aware row): the second `use` toggles back.
+    // Only the hospital desk takes a civilian: the police desk refuses a non-officer (cannot_perform), so the
+    // police desk is judged on row order and the picture alone.
+    if (desk.name === "Roadmap_Police_Desk") continue;
     const a = on(1, { verb: "use", className: DUTY, entityName: desk.name }, 10000);
     wait(2000);
     const s1 = on(1, { verb: "state" }, 10000).detail;
