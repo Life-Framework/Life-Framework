@@ -89,6 +89,9 @@ export function poolSettings(root) {
     testBootS: pick("testBootS", "LF_POOL_TEST_BOOT_S"),
     // Per profile: pool.json / lf.local.json "sessionReserve": { "lowspec": { "serverMb", "clientMb" } }.
     sessionReserve: { ...q.DEFAULTS.sessionReserve, ...(base.sessionReserve ?? {}), ...(over.sessionReserve ?? {}) },
+    // The ship queue's gate counts: "shipQueue": { "parallel": N, "light": N } in pool.json or the "pool" key of
+    // lf.local.json (tools/ship-queue.mjs gateSlots; the lf.local.json value wins per key).
+    shipQueue: { ...(isObj(base.shipQueue) ? base.shipQueue : {}), ...(isObj(over.shipQueue) ? over.shipQueue : {}) },
   };
 }
 
@@ -262,6 +265,8 @@ function normalize(m) {
     maxClients: Number(m.maxClients) > 0 ? Number(m.maxClients) : null,
     thermalLog: m.thermalLog ? String(m.thermalLog) : null,
     thermalHoldC: Number(m.thermalHoldC) > 0 ? Number(m.thermalHoldC) : 90,
+    // Workbenches this machine runs at once (the ship queue's gate slots, wb-gate's remote state); 1 when unset.
+    workbenchLimit: Number(m.workbenchLimit) > 0 ? Math.floor(Number(m.workbenchLimit)) : 1,
     disabled: !!m.disabled,
   };
 }
@@ -2618,7 +2623,7 @@ ${q.formatRunsByPurpose(kinds)}`);
   printSessions(runs.filter(isSession), 8);
   // The ship queue wt ship feeds (tools/ship-queue.mjs): what gates now, what waits and why, the last few done.
   const sq = shipQueue.readQueue(wt.hubDirOf(root));
-  if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
+  if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99, lightSlots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
   else console.log("ship queue: empty (tools\cli ship-queue status)");
   return 0;
 }

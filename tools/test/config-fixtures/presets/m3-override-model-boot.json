@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "vehicles": { "vehicles": { "C8B16ABCA57679A2": { "op": "remove" }, "54C3CC22DEBD57BE": { "op": "patch", "basePrice": 1500 }, "AAAABBBBCCCCDDDD": { "op": "patch", "basePrice": 5 } } },
+  "crime": { "crimes": { "#LF-Offence_Robbery": { "op": "patch", "fine": 400 }, "test-missing": { "op": "patch", "fine": 1 } } },
+  "catalogue": { "offers": { "clothing_rack/raincoat_green": { "op": "remove" } } },
+  "jobs": {
+    "tracks": { "LUMBERJACK": { "op": "remove" }, "GHOST": { "op": "patch", "dailyXpCap": 1 } },
+    "xpAwards": { "gather": { "op": "patch", "xp": 9 } },
+    "licenceGates": { "MINER_GOLD": { "op": "add", "job": "MINER", "minLevel": 3 } }
+  },
+  "police": { "ranks": { "patrol": { "op": "remove" }, "ghost": { "op": "patch", "fineCap": 1 } } },
+  "zones": { "ruleSets": { "SAFE": { "op": "remove" } } },
+  "organizations": { "rankDefaults": { "officer": { "op": "remove" } } }
+}

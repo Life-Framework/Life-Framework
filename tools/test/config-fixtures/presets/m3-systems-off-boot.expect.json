@@ -1,0 +1,15 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "boot": true,
+  "bootLog": {
+    "has": [
+      "Robbery is off (owner config)", "Shop is off (owner config)", "ATM is off (owner config)", "Jobs is off (owner config)", "Organizations is off (owner config)", "Trader is off (owner config)",
+      "Pager is off (owner config)", "Farming is off (owner config)",
+      "Gathering is off (owner config)", "Mining is off (owner config)", "Processing is off (owner config)", "Resources is off (owner config)", "Chains is off (owner config)", "Hideouts is off (owner config)", "Houses is off (owner config)", "Survival is off (owner config)", "Toys is off (owner config)", "Atmosphere is off (owner config)", "Emote is off (owner config)",
+      "Comms is off (owner config)", "Chat is off (owner config)", "Medic is off (owner config)", "Police is off (owner config)", "Crime is off (owner config)", "Investigation is off (owner config)", "Vehicles is off (owner config)", "VehicleLock is off (owner config)", "LicensePlate is off (owner config)", "SirenLights is off (owner config)", "Quests is off (owner config)",
+      "systems: "
+    ]
+  }
+}

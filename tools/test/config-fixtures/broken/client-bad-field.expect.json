@@ -1,0 +1,44 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "warn",
+      "line": 3,
+      "col": 3,
+      "msg": "config.json: unknown top-level key shop; ignored"
+    },
+    {
+      "level": "error",
+      "line": 5,
+      "col": 24,
+      "msg": "shops.defaultBuyPrice = 5000000 is above the maximum 1000000; keeping the shipped value"
+    },
+    {
+      "level": "warn",
+      "line": 6,
+      "col": 5,
+      "msg": "shops.defaultSellPrise is not a known key; ignored"
+    },
+    {
+      "level": "error",
+      "line": 7,
+      "col": 103,
+      "msg": "shops.priceRules.Prefabs/Items/Drinks/.buyPrice is not a whole number; keeping the shipped value"
+    }
+  ],
+  "client": [
+    {
+      "kind": "shopPrice",
+      "shop": "Shop_GeneralStore_Debug",
+      "item": "Apple",
+      "expect": "$13"
+    },
+    {
+      "kind": "shopPrice",
+      "shop": "Shop_GeneralStore_Debug",
+      "item": "Water",
+      "expect": "$6"
+    }
+  ]
+}

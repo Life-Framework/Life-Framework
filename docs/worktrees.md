@@ -128,6 +128,38 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `tools\cli wt sync-base m3 [--source main]` opens a PR that merges `origin/main` into `m3` from a `ws/sync-m3-<stamp>` worktree (merge drivers resolve generated files; any other conflict stops with the file list). It never force-pushes; prune the sync worktree after the merge.
 - The `validate` workflow runs on every `pull_request` (no branch filter), so PRs into `m3` get it. Making `validate` a required check on `m3` is a GitHub branch-protection setting, not done by the tooling.
 
+### Gate tiers
+
+`wt gate` and `wt ship` (and the ship queue, which runs `wt ship`) pick the gate from the diff
+against the merge base with `origin/<base>`, uncommitted and untracked files included
+(`tools/lib/gate-tier.mjs`, proven by `tools/validation/gate-tier-selftest.mjs`):
+
+| Tier | When | Runs |
+|---|---|---|
+| T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
+| T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
+| T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
+
+T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
+head have the same line count, every line holding a brace is unchanged (same blocks, same
+component and widget GUIDs), and each changed line keeps its key and swaps one scalar value with no
+`{GUID}` in it. Per type: `.conf` and `.layout` any number, vector, quoted string or word
+(`Text "#Key"`, `Color 1 0.8 0.8 1`, `m_iPrice 7`); `.et` numbers and vectors only; `.st`
+only `Target_*` text and `Comment`; a language `.conf` never its `Ids` block. `ID`, `Id`,
+`Name`, `Parent` and prefab keys are identities, never values.
+
+Always T2: a `.c` file, a `.meta`, an added, deleted, renamed or untracked file under `addons/`,
+a `.layer`/`.ent`, a binary asset, a changed resource reference, a `.conf` that **adds or removes
+a key** (the key can switch on a code path its default never ran, and an equal line count is how the
+classifier knows the blocks did not move), and a `.et` string value or component change.
+
+T1 skips the build because `test --no-build` loads the addons from source; the build only
+packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
+diff is no longer data-only. Measured 2026-11-14 on a one-value `.conf` change (`m_iPrice 500 -> 505`), same worktree, warm rdb:
+T2 (`--full-gate`) 630 s (compile + build 390 s on lf-cloud, both suite passes about 2 min, config
+sessions about 2 min); T1 112 s (validate 49 s, one boot of 267 tests 57 s); T0 44 s. Both T1 runs in
+that measurement failed on the related test that asserts the changed value.
+
 ## Release gates (`stable`, `promote`)
 
 `main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `tools\cli release` use. Playtests run on `main`.
@@ -163,10 +195,9 @@ below are the old local path, still used with `--no-queue` (or `LF_SHIP_QUEUE=0`
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
    merge drivers in `tools/merge/` then resolve the generated files). A clean
    branch ships as is.
-3. Runs the gate (never incremental; see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
-   build + `test` tier=all. A branch that changes nothing under `addons/`
-   (docs, website, tools) runs plain `validate` instead and never waits for a
-   pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule). After the suite,
+3. Runs the gate for the diff's tier ("Gate tiers" below). T2 is never incremental (see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
+   build + `test` tier=all. T0 (nothing under `addons/`) runs plain `validate --all` and never waits for a
+   pool slot. T1 (values changed in place) skips the compile, build and full suite. `--full-gate` forces T2 (`wt gate` follows the same rule); the gate prints the tier and why, and ship adds it to the PR body under `## Gate`. After the suite,
    a branch that touches a `.layer`, a `Prefabs` `.et` or LF_Utils/spawn code also runs
    `audit placement --strict` (queued like `test`); anything flagged and not in the allowlist fails the
    gate, and it prints the entities with the allowlist fix hint (`docs/placement-audit.md`).
@@ -194,7 +225,8 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    to the queue (`tmp/wt/ship-queue.json` in the main checkout). It starts the worker when none runs.
 2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
    (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
-   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote` there:
+   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote --tiered` there
+   (`--full-gate` drops `--tiered`; a data-only diff gets the T1 gate, "Gate tiers" below, else the full gate):
    the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
    free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
    the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
@@ -213,11 +245,20 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
 
-**Parallel gates.** Up to N gates run at once, N being `"shipQueue": { "parallel": N }` in `pool.json`
-or `lf.local.json`, else the sum of the Workbench limits of the ssh machines with the `workbench` cap.
-A queued PR starts only when no running gate and no earlier waiting PR changes a file it changes
-(driver-merged docs again do not count), so PRs on disjoint files gate side by side on different
-machines and overlapping ones keep their order.
+**Parallel gates.** Up to N Workbench gates run at once, N being `"shipQueue": { "parallel": N }` in
+`pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
+limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
+`pool.machines` entry (1 when unset; lf-cloud has 2). This PC is not counted. A queued PR starts only when
+no running gate and no earlier waiting PR changes a file it changes. Driver-merged docs and any
+`docs/**/*.md` do not count (two PRs that edit `docs/worktrees.md` gate side by side; a text conflict
+shows at the merge of main, in GitHub's mergeable state, or in `prs heal`), so PRs on disjoint files
+gate side by side on different machines and overlapping ones keep their order.
+
+**Gates with no Workbench take no slot.** A PR that changes nothing under `addons/` runs `validate --all`
+only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; it counts against
+`"shipQueue": { "light": N }` instead (default 4). The entry's `tier` (0|1|2) and `builds` fields are the
+hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
+sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
 
 **Waiting.** `wt ship` waits until the gate passed or failed and prints
 `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
