@@ -18,7 +18,8 @@ function Get-PayloadToken([string]$word) {
   $lower = $word.ToLowerInvariant()
   if ($lower.StartsWith("organiz")) { return "organizations" }
   if ($lower.StartsWith("hideout")) { return "hideout" }
-  if ($lower.StartsWith("vehicle")) { return "vehicles" }
+  # "vehiclestate" (#752a) is its own payload, not a spelling of "vehicles".
+  if ($lower.StartsWith("vehicle") -and -not $lower.StartsWith("vehiclestate")) { return "vehicles" }
   return $lower
 }
 
