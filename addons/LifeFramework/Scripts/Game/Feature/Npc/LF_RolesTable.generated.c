@@ -18,7 +18,7 @@ class LF_RolesTable
 		role.AddOutfit("{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et", true);
 		role.AddOutfit("{7DF1D48E0AF60852}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_2.et", true);
 		roles.Insert(role);
-		role = new LF_RoleDef("fuel_clerk", false);
+		role = new LF_RoleDef("fuel_clerk", true);
 		role.AddOutfit("{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et", true);
 		role.AddOutfit("{084863A4188BCAFB}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_2.et", true);
 		roles.Insert(role);

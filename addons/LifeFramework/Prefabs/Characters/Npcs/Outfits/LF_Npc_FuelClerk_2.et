@@ -1,4 +1,4 @@
-LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+LF_NpcBaseEntity : "{9FF2685A41D86574}Prefabs/Characters/Npcs/LF_FuelClerk.et" {
  ID "AA76F7CFB4B0D552"
  components {
   LF_NpcRoleComponent "{7A31C05E94D2B861}" {

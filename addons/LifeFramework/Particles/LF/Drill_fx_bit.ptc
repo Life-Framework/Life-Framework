@@ -1,0 +1,65 @@
+EffectDef {
+ Version 2
+ Emitters {
+  EmitterDef flash {
+   BirthRate 10
+   LodMin 0
+   LodMax 1
+   Material "{EF5B1079929283A6}Particles/_Materials/Fire/Base_Sparks_05.emat"
+   StretchMultiplier 1
+   SizeMultiplier 0.048
+   SizeRND 0.5
+   VelAngle 1
+   Velocity 0
+   RandomFrame 1
+   Lifetime 0.06
+   Size {
+    0 0.6 0.5 1 1 0
+   }
+   EmittingTime 1
+   EnableLight 1
+   MaxLV 4
+   LightColorMast {
+    0 1 0.72 0.35
+   }
+   LightIntensityMast {
+    0 0.5 0.25 1 0.5 0.4 0.75 0.9 1 0.5
+   }
+  }
+  EmitterDef streaks {
+   ConeAngle 360 0 75
+   MaxNum 29
+   BirthRate 60
+   BirthRateRND 30
+   LodMin 0
+   LodMax 1
+   Material "{D9FC42124DBB8845}Particles/_Materials/Fire/Base_Sparks_06.emat"
+   StretchMultiplier 1.1
+   StreakFullUV 1
+   SizeMultiplier 0.012
+   SizeRND 0.3
+   VelAngle 1
+   Velocity 1.8
+   VelocityRND 1.08
+   VelAffect 0.1
+   AirResistance 0.3
+   AirResistanceRND 0.6
+   GravityMultiply 0.5
+   GravityMultiplyRND 0.5
+   RandomFrame 1
+   Lifetime 0.3
+   LifetimeRND 0.15
+   Color {
+    0 1 0.95 0.8 0.25 1 0.68 0.3 1 0.9 0.3 0.06
+   }
+   Alpha {
+    0 1 0.8 1 1 0
+   }
+   Size {
+    0 1 0.7 0.9 1 0
+   }
+   EmittingTime 1
+  }
+ }
+ LightRadius 6
+}

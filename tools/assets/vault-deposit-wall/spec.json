@@ -1,0 +1,38 @@
+{
+  "slug": "vault-deposit-wall",
+  "name": "VaultDepositWall",
+  "kind": "deployable",
+  "roadmap": "",
+  "concept": "The safety deposit box wall inside the 1989 Everon bank vault: robbers drill the door, then take loot from the boxes.",
+  "prompt": "1989 bank vault safety deposit box wall: a tall steel unit covered in a grid of small hinged box doors with keyholes, grey-green painted steel. no text, no logos.",
+  "texture_prompt": "",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 20000
+  },
+  "size_m": {
+    "length": 2.4,
+    "height": 2.2,
+    "width": 0.5
+  },
+  "budget": {
+    "lod0_tris": 6000,
+    "lod_ratios": [
+      0.5,
+      0.25
+    ],
+    "texture_px": 2048,
+    "credits": 40
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Props/Roleplay/BankVault/DepositWall",
+  "prefab_dir": "Prefabs/Props/Roleplay/BankVault",
+  "build": "Blender geometry from the picked concept, no 3D credits"
+}

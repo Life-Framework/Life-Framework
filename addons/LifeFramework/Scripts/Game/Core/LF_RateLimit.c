@@ -15,7 +15,8 @@ enum LF_ERequestKind
 	TRAVEL,		//!< Spawn hub travel globe
 	COMMS,		//!< Service board and other comms reads or posts
 	SPAWN,		//!< Building placement, give item or cash, arrest: spawns or moves an entity
-	INVENTORY	//!< Quantity split and transfer from the inventory screen
+	INVENTORY,	//!< Quantity split and transfer from the inventory screen
+	CRIME		//!< Starting a crime that runs on (a held robbery, LF_RobHold)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -150,6 +151,9 @@ class LF_RateLimit
 	// lf-fixed: anti-spam floor; dragging stacks around the inventory stays well under it
 	static const int INVENTORY_WINDOW_MS = 1000;
 	static const int INVENTORY_BURST = 8; // lf-fixed: see INVENTORY_WINDOW_MS
+	// lf-fixed: anti-spam floor; a held robbery takes half a minute, two starts in ten seconds is already a retry
+	static const int CRIME_WINDOW_MS = 10000;
+	static const int CRIME_BURST = 2; // lf-fixed: see CRIME_WINDOW_MS
 
 	protected static ref LF_RateLimiter s_Limiter;
 
@@ -163,6 +167,7 @@ class LF_RateLimit
 			case LF_ERequestKind.COMMS: return COMMS_WINDOW_MS;
 			case LF_ERequestKind.SPAWN: return SPAWN_WINDOW_MS;
 			case LF_ERequestKind.INVENTORY: return INVENTORY_WINDOW_MS;
+			case LF_ERequestKind.CRIME: return CRIME_WINDOW_MS;
 		}
 
 		return SPAWN_WINDOW_MS;
@@ -178,6 +183,7 @@ class LF_RateLimit
 			case LF_ERequestKind.COMMS: return COMMS_BURST;
 			case LF_ERequestKind.SPAWN: return SPAWN_BURST;
 			case LF_ERequestKind.INVENTORY: return INVENTORY_BURST;
+			case LF_ERequestKind.CRIME: return CRIME_BURST;
 		}
 
 		return SPAWN_BURST;

@@ -102,6 +102,8 @@ export function soundProblems(rec) {
       if (!RANGE[s.range]) out.push(`${at}: range must be one of ${Object.keys(RANGE).join(", ")}`);
       if (!(s.volume_db <= 0 && s.volume_db >= -40)) out.push(`${at}: volume_db must be -40 to 0`);
     }
+    if (s.compose && !(Array.isArray(s.compose.steps) && s.compose.steps.length && s.compose.steps.every((t) => t.ratio > 0.2 && t.ratio < 4 && t.ms >= 100 && t.ms <= 3000))) out.push(`${at}: compose.steps must be a list of { ratio 0.2-4, ms 100-3000, fromMs }`);
+    if (s.compose && !(Number.isInteger(s.compose.from_take) && Number.isInteger(s.compose.as_take) && s.compose.as_take > s.compose.from_take)) out.push(`${at}: compose needs from_take and an as_take above it`);
     if (s.layer && !(rec.sounds || []).some((o) => o.id === s.layer.id && o.layer_only)) out.push(`${at}: layer.id must name a sound marked layer_only`);
     if (s.layer && !(Number.isInteger(s.layer.take) && s.layer.take >= 1)) out.push(`${at}: layer.take must be a take number`);
     if (!s.prompt) out.push(`${at}: prompt is empty`);
@@ -255,6 +257,34 @@ export function mixLayer(base, over, rate = RATE, { gainDb = 0, delayMs = 0 } = 
   for (let i = 0; i < out.length; i++) {
     const v = (i >= d && i - d < base.length ? base[i - d] : 0) + (i < over.length ? over[i] * g : 0);
     out[i] = Math.max(-32768, Math.min(32767, Math.round(v)));
+  }
+  return out;
+}
+
+// A sound the generator will not make in one piece, a two-note siren: it returns one steady note and
+// never alternates. Re-pitch one steady take into a repeating pattern of notes. Each step reads
+// `ms` of output from the take starting at `fromMs`, `ratio` times as fast (pitch x ratio, by linear
+// resampling: fine for a steady tone), with a short fade at each end so the notes do not click.
+export function alternateSteps(x, steps, repeat = 1, rate = RATE, fadeMs = 15) {
+  const parts = [];
+  for (const st of steps) {
+    const n = Math.round((st.ms * rate) / 1000);
+    const from = Math.round(((st.fromMs ?? 0) * rate) / 1000);
+    const seg = new Int16Array(n);
+    for (let i = 0; i < n; i++) {
+      const pos = from + i * st.ratio;
+      const a = Math.floor(pos);
+      if (a + 1 >= x.length) throw new Error(`step at ${st.fromMs} ms reads past the end of the take`);
+      const f = pos - a;
+      seg[i] = Math.round(x[a] * (1 - f) + x[a + 1] * f);
+    }
+    parts.push(fade(seg, rate, { inMs: fadeMs, outMs: fadeMs }));
+  }
+  const cycle = parts.reduce((n, p) => n + p.length, 0);
+  const out = new Int16Array(cycle * repeat);
+  for (let r = 0; r < repeat; r++) {
+    let at = r * cycle;
+    for (const p of parts) { out.set(p, at); at += p.length; }
   }
   return out;
 }
@@ -724,6 +754,19 @@ export function stepProcess(root, slug) {
         const top = processSamples(decode(root, overRaw, og.channels), { trimDb: over.trim_db });
         // Halve both first so the sum cannot clip, then bring the peak back.
         y = normalisePeak(mixLayer(normalisePeak(y, -9), normalisePeak(top, -9), RATE, { gainDb: s.layer.gain_db ?? 0, delayMs: s.layer.delay_ms ?? 0 }), -3);
+      }
+      if (s.compose && g.take === s.compose.from_take) {
+        // The composed take stands in the pick list under its own number, built from this one.
+        const composed = normalisePeak(alternateSteps(y, s.compose.steps, s.compose.repeat ?? 1), -3);
+        const cname = takeName(s, s.compose.as_take);
+        const cwav = join(out, `${cname}.wav`);
+        writeFileSync(cwav, encodeWav(composed));
+        const cinfo = wavInfo(readFileSync(cwav));
+        const cproblems = checkWav(cinfo, { loop: !!s.loop });
+        bad += cproblems.length;
+        ffmpeg(root, ["-i", cwav, "-filter_complex", "[0:a]asplit[a][b];[a]showwavespic=s=900x160:colors=white,format=rgb24[w];[b]showspectrumpic=s=900x340:legend=0:stop=16000,format=rgb24[s];[w][s]vstack", "-frames:v", "1", join(review, `${cname}.png`)]);
+        console.log(`  ${cname}: composed from ${name}, ${cinfo.seconds.toFixed(2)} s, peak ${cinfo.peakDb.toFixed(1)} dB, rms ${cinfo.rmsDb.toFixed(1)} dB${s.loop ? `, seam ${(cinfo.seam * 100).toFixed(1)}% (largest inner step ${(cinfo.maxStep * 100).toFixed(0)}%)` : ""}`);
+        for (const p of cproblems) console.log(`FAIL  ${cname}: ${p}`);
       }
       writeFileSync(wav, encodeWav(y));
       const info = wavInfo(readFileSync(wav));

@@ -1,0 +1,12 @@
+GenericEntity {
+ ID "6CEEC95016C110DF"
+ components {
+  MeshObject "{0FA9DC8A026BC7F2}" {
+   Object "{AFF764337DF91819}Assets/Props/Roleplay/BankVault/VaultDepositWall.xob"
+  }
+  RigidBody "{763FA41EC8ED5C2E}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+}

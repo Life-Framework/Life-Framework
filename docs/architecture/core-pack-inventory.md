@@ -156,6 +156,8 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
 | `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
+| `Props/Roleplay/BankVault/` | pack | The 1989 bank vault kit: the round door in its frame and wall, the steel room, the deposit box wall, the cash trolley, and the assembled vault closed and open. Display only so far; the gameplay vault (`LF_BankVaultComponent`) is core and is moved inside the bank under roadmap item 9 |
+| `Assets/Props/Roleplay/BankVault/` | pack | Meshes and materials of the vault kit (door generated with Meshy, `docs/credits.md`; the rest built by `tools/assets/bank-vault/build.py`) |
 | `Assets/Props/Roleplay/SpikeStrip/` | split | Mesh of the strip above (generated with Meshy, `docs/credits.md`): example in core, the police stinger in pack |
 | `Resources/` | core | Ore, trees, logs |
 | `Structures/` | core | Doors, jail door, bank, concrete plant |
@@ -265,6 +267,7 @@ its save.
 | `Sounds/` | core | Siren |
 | `Sounds/Atmosphere/` | pack | The Everon town's two radio tracks and fifteen background loops (`docs/architecture/atmosphere.md`); the emitter scripts and `Prefabs/Atmosphere/` that play them are core |
 | `Sounds/Weapons/Handguns/Taser/` | split | Sounds of the stun weapon (shot, handling, stun buzz): they follow the taser, example in core, police-issue item in pack |
+| `Assets/Items/Roleplay/Drill/`, `Anims/LF/Drill/`, `Anims/Workspaces/Work/LF_DrillPush.*`, `Particles/LF/Drill_fx_bit.ptc`, `Sounds/Items/Drill/` | core | The vault drill and its scene (#340): model, push clips, sparks, motor and grinding loops. They follow `Prefabs/Items/Fence/LF_Drill.et`, the robbery's tool; the component that plays them (`Feature/AssetAnim/`) is core |
 | `Sounds/Dialogue/clerk/` | pack | The town clerk's recorded lines and audio project (`tools\cli asset dialogue clerk`) |
 | `UI/Layouts/` | core | Generic kit and screens; colours come from `LF_UITheme` |
 | `LifeFramework.gproj`, `thumbnail.png` | core | Project |

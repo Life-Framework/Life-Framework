@@ -1,0 +1,78 @@
+MetaFileClass {
+ Name "{D5323C15B15EA44D}Assets/Props/Roleplay/BankVault/VaultCashTrolley.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{EA8F1ABAF29D52D3}" {
+     SourceMaterial "BankVault_Paint"
+     AssignedMaterial "{D0802AB317A8F26B}Assets/Props/Roleplay/BankVault/Data/BankVault_Paint.emat"
+    }
+    MaterialAssignClass "{C038D8EDC3D32206}" {
+     SourceMaterial "BankVault_Steel"
+     AssignedMaterial "{A4FE49A2AE03F45F}Assets/Props/Roleplay/BankVault/Data/BankVault_Steel.emat"
+    }
+    MaterialAssignClass "{9A97FE608258010E}" {
+     SourceMaterial "BankVault_Dark"
+     AssignedMaterial "{A9B9953E8C8096FB}Assets/Props/Roleplay/BankVault/Data/BankVault_Dark.emat"
+    }
+    MaterialAssignClass "{08E9085DC5AF8898}" {
+     SourceMaterial "BankVault_Cash"
+     AssignedMaterial "{72A06329D9605EB8}Assets/Props/Roleplay/BankVault/Data/BankVault_Cash.emat"
+    }
+   }
+   MeshParams {
+    MeshParam VaultCashTrolley {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_VaultCashTrolley_00 {
+     LayerPreset "PropFireView"
+     SurfaceProperties {
+      "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+    GeometryParam UBX_VaultCashTrolley_01 {
+     LayerPreset "PropFireView"
+     SurfaceProperties {
+      "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+    GeometryParam UBX_VaultCashTrolley_02 {
+     LayerPreset "PropFireView"
+     SurfaceProperties {
+      "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{CDAD410EF742117A}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{7DDAEB637CFE1532}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{6BF6FFDBE0E6671E}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{57FCBC8413177DA4}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{8F28715F08D86531}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

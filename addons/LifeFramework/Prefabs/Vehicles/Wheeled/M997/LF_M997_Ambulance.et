@@ -13,9 +13,35 @@ Vehicle : "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.e
    m_eService MEDIC
    m_Modes LF_SirenModes "{B1F0340624EE4436}" : "{01051CFE4BC64945}Prefabs/Vehicles/SirenLights/LightBarLED.conf" {
    }
+   m_sLoopProject "{504037CAE978B960}Sounds/Siren/Ambulance/Siren_Ambulance_Hilo.acp"
+   m_sLoopEvent "SOUND_LF_SIREN_AMBULANCE_LP"
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_SirenModeAction "{A3D1C0DE00000923}" {
+     ParentContextList {
+      "light_switch"
+     }
+     UIInfo UIInfo "{A3D1C0DE00000924}" {
+      Name "#LF-Siren_AmbulanceOn"
+     }
+     VisibilityRange 1.6
+     "Sort Priority" 7
+     m_bDutyOnly 1
+     m_Mode "Mode2"
+    }
+    LF_SirenModeAction "{A3D1C0DE00000925}" {
+     ParentContextList {
+      "light_switch"
+     }
+     UIInfo UIInfo "{A3D1C0DE00000926}" {
+      Name "#LF-Siren_AmbulanceOff"
+     }
+     VisibilityRange 1.6
+     "Sort Priority" 7
+     m_bDutyOnly 1
+     m_Mode "default"
+    }
     LF_VehicleLockAction "{E8BD9E1428464528}" {
      ParentContextList {
       "door_l01"

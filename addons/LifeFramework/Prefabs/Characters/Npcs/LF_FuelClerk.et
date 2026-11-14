@@ -1,0 +1,29 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "9FF2685A41D86574"
+ components {
+  LF_DialogueComponent "{866AB7833997DAAC}" {
+   m_sDialogue "{6E980D0B378BB71E}Configs/Dialogue/LF_Dialogue_FuelClerk.conf"
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{BC503829ED442AA5}" {
+     ContextName "Talk"
+     Position PointInfo "{47352EF509239819}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{D081164C592336A8}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{A37B015B3245D462}" {
+      Name "#LF-FuelClerk_Talk"
+     }
+    }
+   }
+  }
+ }
+}

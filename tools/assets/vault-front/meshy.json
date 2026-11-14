@@ -1,0 +1,15 @@
+{
+  "slug": "vault-front",
+  "generations": [
+    {
+      "date": "2026-11-13",
+      "tool": "Meshy image-to-3D",
+      "model": "meshy-6",
+      "texturePrompt": "",
+      "imageTaskId": "01a1d738-153c-73e5-8c6f-e0ed6fc34a38",
+      "concept": 1,
+      "conceptTaskId": "01a1d6db-7666-70ff-954f-d0b8a47397fe",
+      "conceptPrompt": "Keep the exact look of the round grey-green painted steel vault door in the reference picture (four-spoke wheel, riveted rim, hinge arm and big hinge barrels on the left) and show it as a complete late-1980s bank vault entrance: the door in its heavy round steel frame and thick collar, built into a square block of reinforced wall. Closed door, the frame flush in a plain square block of grey concrete wall, a painted grey-green frame ring. Single object, orthographic-style three-quarter product shot from slightly above, the whole object in frame, plain flat light grey background, soft even studio light, no hands, no stand, no text, no logos, no watermark."
+    }
+  ]
+}

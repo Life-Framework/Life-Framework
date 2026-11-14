@@ -5,7 +5,8 @@
     "civilian": "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et",
     "teller": "{8F3DB2237B844542}Prefabs/Characters/Npcs/LF_BankTeller.et",
     "fence": "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et",
-    "clerk": "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et"
+    "clerk": "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et",
+    "fuel": "{9FF2685A41D86574}Prefabs/Characters/Npcs/LF_FuelClerk.et"
   },
   "clothes": {
     "suit_grey": { "Jacket": "{E652D625A46A00FC}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Grey_V1.et", "Pants": "{401072A652DD9849}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_grey_V1.et" },
@@ -78,13 +79,8 @@
       "bye": "Take care out there."
     },
     {
-      "id": "fuel_clerk", "name": "Fuel station clerk", "base": "default",
-      "outfits": [["shirt_v2", "trousers_grey_dirty", "boots_soviet_dirty", "cap_trucker_everon"], ["shirt_v4_dirty", "trousers_brown", "boots_soviet_dirty", "cap_trucker_sawmill"]],
-      "greet": "Evening. Pumps are on, pay at the window.",
-      "what": "Petrol and diesel, and a little to eat. Bring a jerrycan if you broke down on the road. I will fill it.",
-      "where": "The town is back west along the road. Keep to the tarmac. The shortcuts across the fields eat tyres.",
-      "rumour": "A grey van has been parking behind the pumps after closing. Nobody I know owns one.",
-      "bye": "Safe driving."
+      "id": "fuel_clerk", "name": "Fuel station clerk", "base": "fuel", "own_dialogue": true,
+      "outfits": [["shirt_v2", "trousers_grey_dirty", "boots_soviet_dirty", "cap_trucker_everon"], ["shirt_v4_dirty", "trousers_brown", "boots_soviet_dirty", "cap_trucker_sawmill"]]
     },
     {
       "id": "police", "name": "Police officer", "base": "default",

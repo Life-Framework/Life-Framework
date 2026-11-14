@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{811295E017B50CF5}Sounds/Dialogue/fuel_clerk/Dialogue_fuel_clerk.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
