@@ -1304,6 +1304,10 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
+  prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
+  validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
+  that freeze is printed once as `WARN  validate: this process was frozen N s`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
 
 ## Lead view

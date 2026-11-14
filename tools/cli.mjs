@@ -83,6 +83,8 @@ import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
+import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
+import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -645,16 +647,34 @@ function invokeScriptAsync(full, opts = {}) {
   if (full.endsWith(".ps1")) [cmd, args] = [PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full]];
   else if (full.endsWith(".cmd") || full.endsWith(".bat")) [cmd, args] = ["cmd", ["/c", full]];
   else if (full.endsWith(".sh")) [cmd, args] = ["bash", [full]];
-  return new Promise((done) => {
+  const { onSpawn, ...spawnOpts } = opts;
+  return new Promise((resolveRun) => {
     let stdout = "";
     let stderr = "";
-    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...opts });
+    let settled = false;
+    const done = (r) => {
+      if (!settled) {
+        settled = true;
+        resolveRun(r);
+      }
+    };
+    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...spawnOpts });
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
     child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+    // kill(why): end the check and its children now and settle with a failure (the budget ran out).
+    // Settles without waiting for `close`: a grandchild holding the pipes open must not hold the run.
+    onSpawn?.({
+      pid: child.pid,
+      kill(why) {
+        killTreeSync(child.pid);
+        done({ status: 124, stdout, stderr: `${stderr}${stderr && !stderr.endsWith("\n") ? "\n" : ""}${why}\n`, timedOut: true });
+      },
+    });
   });
 }
+
 
 async function cmdRunArea(area, root = ROOT, opts = {}) {
   // Worktree checks must use the target checkout's scripts. Using the main
@@ -696,20 +716,33 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const lastSecs = (j) => state?.checks[j.s]?.secs ?? 0;
   const queue = jobs.filter((j) => !j.skipped).sort((a, b) => lastSecs(b) - lastSecs(a));
   const env = toolEnv();
+  // Per-check budget (tools/lib/check-budget.mjs): a check over it is killed and fails by name. Times
+  // leave out any freeze of this process, which is reported once below instead of blamed on a check.
+  const handles = new Map();
+  const dog = createWatchdog({
+    onTimeout: (s, ms) => {
+      console.log(`TIMEOUT ${area}/${s}: over its ${Math.round(ms / 1000)} s budget (LF_VALIDATE_CHECK_BUDGET_S); killing it`);
+      handles.get(s)?.kill(`TIMEOUT ${area}/${s}: killed after ${Math.round(ms / 1000)} s, over the per-check budget (LF_VALIDATE_CHECK_BUDGET_S, default ${checkBudgetMs({}) / 1000} s)`);
+    },
+  });
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
       const started = Date.now();
       // The Workbench compile takes one of this PC's Workbench slots first (tools/lib/wb-lock.mjs).
       const wb = FULL_ONLY.has(job.s) ? await wbLock.acquireWorkbench(root, { purpose: job.s }) : null;
       try {
-        job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
+        dog.start(job.s, checkBudgetMs(process.env, FULL_ONLY.has(job.s) ? 1200 : null));
+        job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env, onSpawn: (h) => handles.set(job.s, h) });
       } finally {
         wb?.release();
       }
-      job.secs = (Date.now() - started) / 1000;
+      const own = dog.end(job.s);
+      job.secs = own ? own.ownMs / 1000 : (Date.now() - started) / 1000;
+      job.frozen = own ? own.frozenMs / 1000 : 0;
     }
   };
   await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
+  dog.stop();
   let failed = 0;
   let skippedIncr = 0;
   for (const job of jobs) {
@@ -720,7 +753,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     }
     const { res } = job;
     const ok = res.status === 0;
-    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s)`);
+    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok) failed++;
@@ -740,6 +773,9 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
       console.log(`slowest: ${slow}`);
     }
     if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+  }
+  if (dog.frozenMs() >= 5000) {
+    console.log(`WARN  ${area}: this process was frozen ${(dog.frozenMs() / 1000).toFixed(0)} s (longest ${(dog.longestFreezeMs() / 1000).toFixed(0)} s) by a synchronous call beside the checks (a lock wait or spawnSync in the same process); check times above leave it out`);
   }
   console.log(`${area}: ${ran.length} check(s) run, ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
   return failed ? 1 : 0;
@@ -950,7 +986,7 @@ async function cmdBuild(root = ROOT, opts = {}) {
   }
 }
 
-function buildAddon(root, opts) {
+async function buildAddon(root, opts) {
   const exe = workbenchExe();
   if (!existsSync(exe)) {
     console.log(`FAIL  workbench not found: ${exe}`);
@@ -960,9 +996,16 @@ function buildAddon(root, opts) {
   // One Workbench build at a time across ALL worktrees: concurrent instances
   // fight over the shared shader cache and can corrupt the user's editor
   // session. The fast dev loop (cli dev) skips the build, so this rarely blocks.
+  // The async wait: `ci` runs validate --full beside this build in one process (tools/wt.mjs acquireLockAsync).
   let lock;
   try {
-    lock = wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
+    try {
+      lock = wt.acquireLock(root, "build", { waitMs: 0 });
+    } catch (e) {
+      if (!opts.wait || !/is held/.test(e.message)) throw e;
+      console.log(`build: waiting up to 900 s for the build lock, held by ${describeHolder(join(wt.ensureHub(root), "locks", "build.lock"))}`);
+      lock = await wt.acquireLockAsync(root, "build", { waitMs: 900000 });
+    }
   } catch (e) {
     console.log(`FAIL  ${e.message} (a headless Workbench build is running in another worktree)`);
     return Promise.resolve(1);
@@ -1231,6 +1274,33 @@ function releaseLaneForRdb(root, slot) {
   return true;
 }
 
+// The refresh Workbench, stopped once the rdb is complete and has stopped changing for 3 s
+// (tools/lib/wb-until.mjs): on this PC it writes the rdb in ~2 s and then freezes until the 600 s
+// timeout. Shape of the spawnSync result the caller reads ({ status, error }).
+function refreshUntilFresh(exe, args, gameDir, addon, tag) {
+  let pid;
+  try {
+    pid = quietSpawnDetached(exe, args, { cwd: gameDir });
+  } catch (e) {
+    return { status: null, error: e };
+  }
+  let lastMtime = null;
+  const r = waitUntilDone({
+    timeoutMs: 600000,
+    alive: () => wbPidAlive(pid),
+    done: () => {
+      const f = rdbFreshness(addon);
+      const steady = f.mtimeMs !== undefined && f.mtimeMs === lastMtime;
+      lastMtime = f.mtimeMs;
+      return f.missing.length === 0 && steady;
+    },
+  });
+  if (!r.exited) killTreeSync(pid);
+  if (r.done && !r.exited) console.log(`resource database${tag}: rdb complete after ${(r.ms / 1000).toFixed(0)} s; stopped Workbench instead of waiting for it to exit`);
+  if (r.timedOut) console.log(`WARN  resource database refresh${tag}: Workbench ran the full 600 s without a complete rdb; stopped it`);
+  return { status: r.exited ? 0 : r.done ? 0 : null, error: r.timedOut ? { code: "ETIMEDOUT" } : undefined };
+}
+
 function ensureAddonResourceDatabase(root, name) {
   const addon = addonDir(root, name);
   const tag = name === CORE ? "" : ` [${name}]`;
@@ -1275,7 +1345,7 @@ function ensureAddonResourceDatabase(root, name) {
       "-profile", profile,
       ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ];
-    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
+    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : refreshUntilFresh(exe, args, gameDir, addon, tag);
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
