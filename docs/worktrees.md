@@ -1136,3 +1136,25 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
+
+## Lead view
+
+`tools\cli lead` is the dispatch screen for the lead agent (about 30 lines, about 10 s, no session or lock taken). The sections run in
+parallel, each with its own timeout; one that fails prints one line and the rest still print.
+
+- MILESTONES: open M2 and M3 issues split by label: needs code (`agent:working` counted separately), `in-dev`, `needs-playtest`,
+  `needs-human`. A human gate beats a playtest, a playtest beats in-dev. M2.5 is not M2.
+- PRS: every open PR, conflicting first, then BLOCKED/UNSTABLE/BEHIND, then CLEAN; checks and age. A conflicting PR names whether only
+  generated or driver-merged files conflict (`prs heal` fixes those) or a source file needs a human (`git merge-tree`, no checkout).
+  A PR GitHub has not graded yet (UNKNOWN) is asked through the REST endpoint.
+- WORKTREES: active (a file, commit or log touched in 30 min) vs idle; merged-prunable; orphans (in the registry but not a git worktree
+  or missing, or a `Life-Framework-ws-*` folder nobody registered); disk. A worktree is merged only through a merged GitHub PR whose head
+  SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
+  Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
+  `~N GB (k/n measured)`; the walk never follows a junction.
+- POOL: one line per machine (free RAM, lanes busy/total, temperature, DOWN or slow) and the queue length, read from `pool status`.
+- ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
+
+`tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
+a merged PR on GitHub, no uncommitted change, idle 30 min, no live lock or session, and re-checked clean just before the delete. When
+GitHub cannot list the merged PRs it prunes nothing.
