@@ -34,6 +34,16 @@ its jobs.
 Do not add a `.c` file here. `validate-addon-boundary` fails a script in a pack, and a pack that
 needs code asks the core for an extension point.
 
+A job with a punch clock (police, medic) needs no hand assembly. Add `--job` and the scaffold also
+writes a workplace for it:
+
+```
+tools\cli pack new Town --job MEDIC
+```
+
+That adds `Prefabs/Jobs/TownMedicWorkplace.et`, which inherits the core workplace
+`{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et`. See [A workplace with a punch clock](#a-workplace-with-a-punch-clock).
+
 ## 2. Make the world
 
 In Workbench:
@@ -91,6 +101,31 @@ The taxi rank and the fuel can are the same pattern. A taxi rank needs an
 `m_eJob FUEL_DELIVERY` and `m_eSite FUEL`, and usually holds the jerrycan prefab as a child. Both
 carry `RplComponent Enabled 1`, as the playtest town's do. Level 2 opens fuel delivery and level 3
 opens taxi.
+
+## A workplace with a punch clock
+
+The core ships one workplace prefab, `Prefabs/Jobs/LF_Workplace.et`: a desk with a punch clock that
+carries the clock-in action, plus `LF_WorkplaceComponent`. A pack does not copy it; it inherits
+it and sets values, which is what `pack new <Name> --job <ID>` writes. In Workbench, place the
+prefab on your layer and set:
+
+| Field (`LF_WorkplaceComponent`) | Meaning |
+|---|---|
+| `m_sJob` | the job id (the job track id). `POLICE` and `MEDIC` clock in as that duty role; any other id registers the place and shows no clock-in |
+| `m_sPlaceId` | the stable place id; empty uses the entity name (name the entity) |
+| `m_NpcPrefab`, `m_vNpcOffset`, `m_fNpcYaw` | an optional NPC (a clerk, a dispatcher) the server spawns beside the desk; leave the prefab empty for none |
+
+The workplace registers in the place registry under the kind `Workplace`, so a system finds it by
+`LF_Places.Find("Workplace", id)` and never by entity name. Extra rows go on the punch clock child
+(`DutyClock`) in a derived prefab, in the `LF_DutyClock` context, the way the police desk adds the
+fine and application rows. The server log names each workplace:
+
+```
+[LFDebug:Places] placed Workplace 'Town_Clinic_Desk'
+```
+
+`workplace for X has no place id and the entity is unnamed` means the entity needs a name;
+`workplace ... has no job id` means `m_sJob` is empty.
 
 ## 5. Point the mission at the world
 

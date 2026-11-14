@@ -58,7 +58,8 @@ Chernarus or a custom map works by placing components, with no script change.
   Kinds in use: `BreachTarget` (`LF_BreachTargetComponent`, and every bank
   vault), `BankVault` (`LF_BankVaultComponent`, `LF_HeistVaultComponent`),
   `HospitalSite` (hospital till and cabinet), `HideoutDoor`
-  (`LF_HideoutDoorComponent`, under the hideout id).
+  (`LF_HideoutDoorComponent`, under the hideout id), `Workplace`
+  (`LF_WorkplaceComponent`, under the place id; `LF_Workplace.FindAll(job, into)` lists a job's).
 - An id defaults to the entity name only so placed layers keep their saved
   keys; nothing looks an entity up by that name.
 - A place that is not on the map is a null lookup: the system logs and that
@@ -132,6 +133,12 @@ core's range, and a README of what to fill in. The `.meta` GUIDs are random and 
 against every GUID in `addons/`, so none repeats. It refuses a name the core already uses (`Test`:
 `LF_Test` is the test base class). `validate-pack-manifest` and `validate-addon-boundary` hold every
 `LF_*` addon, so a fresh pack passes with no edits (`pack-new-selftest.mjs`).
+
+`tools\cli pack new <Name> --job <ID>` (#1111) also writes `Prefabs/Jobs/<Name><Job>Workplace.et`,
+a prefab that inherits the core `Prefabs/Jobs/LF_Workplace.et` with the job id set. The core
+prefab brings the punch clock with the clock-in action, the place registration and an optional NPC
+slot, so a pack needs no hand-wired actions and no script. A job id that is not a duty job
+(`POLICE`, `MEDIC`) still registers its place; it shows no clock-in.
 
 ## Checking a pack
 

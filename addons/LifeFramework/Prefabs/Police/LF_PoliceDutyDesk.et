@@ -1,8 +1,8 @@
-GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+GenericEntity : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
  ID "1F1FD347C068108F"
  components {
-  RplComponent "{5624A88DC2D9928D}" {
-   Enabled 1
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "POLICE"
   }
   LF_AmbientEmitterComponent "{0E22F63132093424}" {
    m_sSoundProject "{78589B4D585BFBA4}Sounds/Atmosphere/Atmosphere_PoliceDesk.acp"
@@ -11,38 +11,11 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
   }
  }
  {
-  GenericEntity DutyClock : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
+  GenericEntity DutyClock {
    ID "281D3BD880CE964E"
    components {
-    SCR_SoundDataComponent "{BC459247BBA4457F}" {
-     m_aAudioSourceConfiguration {
-      SCR_AudioSourceConfiguration "{B46B5DD6F8897BFD}" {
-       m_sSoundProject "{5A46144CB8BFC66B}Sounds/Structures/Military/Training/RangeCP/Structures_RangeCP.acp"
-       m_sSoundEventName "SOUND_RANGECP_STARTBUTTON"
-      }
-     }
-    }
     ActionsManagerComponent "{775836274AF8BE66}" {
-     ActionContexts {
-      UserActionContext "{22A17EEEA2399F2D}" {
-       ContextName "LF_DutyClock"
-       Position PointInfo "{B046DE7E017B07C6}" {
-        Offset -0.0228 0.928 0.1792
-       }
-       Radius 1.58
-      }
-     }
      additionalActions {
-      LF_DutyAction "{E0CCF06A3D9A2E06}" {
-       ParentContextList {
-        "LF_DutyClock"
-       }
-       UIInfo UIInfo "{857016BF95624B25}" {
-        Name "#LF-Duty_ClockIn"
-        Description "#LF-Duty_ClockDesc"
-       }
-       "Sort Priority" 1
-      }
       LF_FineTicketPayAction "{6F2B91D4C8A3E517}" {
        ParentContextList {
         "LF_DutyClock"
@@ -76,8 +49,6 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
      }
     }
    }
-   coords -0.85 0.215 0.33
-   angleY 0
   }
  }
 }
