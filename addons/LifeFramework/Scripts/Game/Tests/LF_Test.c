@@ -32,6 +32,16 @@ class LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Empty: the test runs everywhere. A reason: the test needs content only the flagship pack
+	//! holds, so a core-only run (tools\cli test --core-only, scripting define
+	//! LF_CORE_ONLY, #326) skips it with that reason. Keep the list short: a test that names a
+	//! pack resource usually wants a neutral core fixture instead.
+	string NeedsPack()
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Run(LF_TestContext ctx)
 	{
 		ctx.Fail("Test did not override Run()");

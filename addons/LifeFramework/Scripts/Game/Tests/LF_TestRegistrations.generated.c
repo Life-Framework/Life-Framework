@@ -101,6 +101,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfZeroConfigs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConsumableEffectLoads(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ContentReload(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CoreOnlyBoot(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterLocalOnly(), LF_TestTier.WORLD);
