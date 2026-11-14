@@ -107,7 +107,7 @@ class LF_Test_SystemsKeepData : LF_Test
 		Owner(string.Empty);
 		ctx.True(LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM), "Farming is on again");
 		ctx.EqualFloat(40, plot.GetGrownSeconds(), 0.001, "turning it on finds the crop as it was");
-		ctx.Equal(1, LF_FarmPlots.AdvanceAll(5), "and it grows again");
+		ctx.True(LF_FarmPlots.AdvanceAll(5) >= 1, "and it grows again (other planted plots grow with it)");
 		ctx.EqualFloat(45, plot.GetGrownSeconds(), 0.001, "by the time that passed while on");
 
 		LF_FarmPlots.ApplyAll(before);
