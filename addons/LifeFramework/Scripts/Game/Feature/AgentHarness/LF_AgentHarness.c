@@ -509,8 +509,20 @@ class LF_AgentCommand
 		}
 
 		cmd.Arg1 = parts[2];
-		if (cmd.Arg1 == "show" || cmd.Arg1 == "hide")
+		if (cmd.Arg1 == "show" || cmd.Arg1 == "hide" || cmd.Arg1 == "terminal")
 			return true;
+
+		if (cmd.Arg1 == "theme")
+		{
+			if (parts.Count() < 4 || (parts[3] != "flagship" && parts[3] != "testpack"))
+			{
+				cmd.Error = "need_theme";
+				return false;
+			}
+
+			cmd.Arg2 = parts[3];
+			return true;
+		}
 
 		if (cmd.Arg1 == "line")
 		{
@@ -3270,6 +3282,31 @@ class LF_AgentHarness
 			return;
 		}
 
+		if (cmd.Arg1 == "terminal")
+		{
+			LF_UIScreen terminal = LF_UISampleScreen.OpenTerminal();
+			if (!terminal)
+			{
+				WriteResult(cmd.Id, "error", "open_failed");
+				return;
+			}
+
+			LF_Debug.Log(FEATURE, "kit terminal");
+			WriteResult(cmd.Id, "ok", "opened");
+			return;
+		}
+
+		if (cmd.Arg1 == "theme")
+		{
+			// The pack source stands in for a loaded pack: "testpack" layers the test pack's UI theme
+			// (Configs/Tests/LF_Test_UIThemePack.conf) over the core theme, "flagship" layers nothing.
+			LF_ConfigService.SetPackSource(new LF_AgentThemePackSource(cmd.Arg2 == "testpack"));
+			LF_UITheme.Reload();
+			LF_Debug.Log(FEATURE, "kit theme " + cmd.Arg2);
+			WriteResult(cmd.Id, "ok", cmd.Arg2);
+			return;
+		}
+
 		if (cmd.Arg1 == "hide")
 		{
 			LF_UISampleScreen.Hide();
@@ -4097,3 +4134,27 @@ class LF_AgentHarness
 		LF_Debug.Log(FEATURE, string.Format("result %1 %2 %3", id, status, detail));
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! The play session's stand-in for a loaded pack (#966): the test pack's UI theme overlay, or none.
+//! Only the `kit theme` command installs it.
+class LF_AgentThemePackSource : LF_ConfigPackSource
+{
+	protected bool m_bPack;
+
+	void LF_AgentThemePackSource(bool pack)
+	{
+		m_bPack = pack;
+	}
+
+	override void GetOverlays(ResourceName coreConf, notnull array<ResourceName> overlays)
+	{
+		if (m_bPack && coreConf == LF_UIThemeConfig.CONFIG_PATH)
+			overlays.Insert("{B050696FB54746B9}Configs/Tests/LF_Test_UIThemePack.conf");
+	}
+
+	override string GetName()
+	{
+		return "agent-theme";
+	}
+};
