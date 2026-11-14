@@ -7,6 +7,9 @@ class LF_VehicleSearchAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		return LF_PlayerInteraction.IsOnDutyPolice(user);
 	}
 
@@ -25,6 +28,9 @@ class LF_VehicleSearchAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_VehicleSearchAction"))
+			return;
+
 		if (!Replication.IsServer() || !pOwnerEntity || !pUserEntity)
 			return;
 

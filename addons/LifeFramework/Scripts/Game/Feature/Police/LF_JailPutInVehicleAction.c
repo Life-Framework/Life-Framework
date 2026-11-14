@@ -30,6 +30,9 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
 		if (!GetOwner() || !user)
 			return false;
 
@@ -68,6 +71,9 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Police", "LF_JailPutInVehicleAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

@@ -5,6 +5,12 @@
 //------------------------------------------------------------------------------------------------
 class LF_ConvoyStartAction : ScriptedUserAction
 {
+	//! The Crime system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Crime");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
@@ -15,6 +21,9 @@ class LF_ConvoyStartAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_ConvoyStartAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -65,6 +74,9 @@ class LF_ConvoyDeliverAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Crime"))
+			return false;
+
 		return IsActiveDrop(GetOwner());
 	}
 
@@ -77,6 +89,9 @@ class LF_ConvoyDeliverAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Crime", "LF_ConvoyDeliverAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

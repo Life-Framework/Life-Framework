@@ -299,6 +299,12 @@ class LF_EvidenceLocker
 //! Shared offer rules for the locker actions.
 class LF_EvidenceLockerAction : ScriptedUserAction
 {
+	//! The Investigation system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Investigation");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	protected LF_BreachTargetComponent Target()
 	{
@@ -313,12 +319,18 @@ class LF_LogEvidenceAction : LF_EvidenceLockerAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Investigation"))
+			return false;
+
 		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_LogEvidenceAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -345,12 +357,18 @@ class LF_ReadLockerAction : LF_EvidenceLockerAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Investigation"))
+			return false;
+
 		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_ReadLockerAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 
@@ -389,6 +407,9 @@ class LF_RaidLockerAction : LF_EvidenceLockerAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Investigation"))
+			return false;
+
 		LF_BreachTargetComponent target = Target();
 		if (!target || !target.IsReplicatedOpen())
 			return false;
@@ -399,6 +420,9 @@ class LF_RaidLockerAction : LF_EvidenceLockerAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_RaidLockerAction"))
+			return;
+
 		if (!Replication.IsServer())
 			return;
 

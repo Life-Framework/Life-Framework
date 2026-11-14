@@ -6,6 +6,9 @@ class LF_CaseBoardActionBase : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Investigation"))
+			return false;
+
 		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
@@ -57,6 +60,9 @@ class LF_CaseBoardPinAction : LF_CaseBoardActionBase
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_CaseBoardPinAction"))
+			return;
+
 		if (!ServerAllows(pUserEntity))
 			return;
 
@@ -82,6 +88,9 @@ class LF_CaseBoardUnpinAction : LF_CaseBoardActionBase
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Investigation", "LF_CaseBoardUnpinAction"))
+			return;
+
 		if (!ServerAllows(pUserEntity))
 			return;
 
