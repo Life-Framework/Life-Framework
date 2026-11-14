@@ -38,8 +38,9 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    build + `--tier all`, pushes, opens the PR, and queues auto-merge.
    Ship checks the body before the gate and refuses: an `addons/` change with no
    body file, a `TODO(scaffold)` left in it, no `## Manual testing` section, a
-   player-visible change with no embedded picture (`tools\cli evidence` prints
-   the markdown; `No screenshots: <reason>` waives it), or an open finding in
+   player-visible change with no embedded picture (`look`, `look item` or
+   `wb_preview` pictures kept with `tools\cli evidence`, which prints the
+   markdown; no session needed; `No screenshots: <reason>` waives it), or an open finding in
    `tmp/review-<slug>.md` (**interrogate**), which ship appends to the PR.
    The body has: what changed, one line on how it is in-world first (or why
    it needs UI; `docs/decisions.md` "In-world first"), red and green evidence
@@ -63,9 +64,13 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    started (`tools\cli host stop`, close the play session). Leave no process
    holding a lock.
 9. **Budget.** Your agent file sets a tool-call budget (`docs/agent-budget.md`).
-   At it, hand off at the next checkpoint: commit to `ws/<slug>`, write
+   Shipping is inside it. When you are near the limit (about 60 of 80 calls) and the work
+   passes its tests, ship what you have (step 5): list the checks you did not reach under
+   `## Manual testing` or as follow-up issues, and do not keep polishing. Only when the work is
+   not yet shippable, hand off at the next checkpoint: commit to `ws/<slug>`, write
    `tmp/handoff-<slug>.md` (at most 15 lines), and end with
-   `RESUME <worktree>\tmp\handoff-<slug>.md`.
+   `RESUME <worktree>\tmp\handoff-<slug>.md`. A fresh agent that only ships gets the
+   ship-only brief in `docs/agent-budget.md`.
 10. **Report.** Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, and
    last exactly `PR <full URL>, head <SHA>, checks and reviews <state>`
    (`gh pr view <n> --json statusCheckRollup,reviewDecision,mergeStateStatus`),

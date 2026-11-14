@@ -20,7 +20,8 @@ export function placeNameHits(stText) {
   for (const m of stText.matchAll(ITEM)) {
     const id = /Id\s+"([^"]+)"/.exec(m[1])?.[1];
     const en = /Target_en_us\s+"([^"]*)"/.exec(m[1])?.[1];
-    if (id && en && PLACE_NAMES.test(en)) hits.push({ id, text: en });
+    // The credits name real projects as written in docs/credits.md (Everon Life, Everon fork authors) (#481).
+    if (id && !id.startsWith("LF-Credits_") && en && PLACE_NAMES.test(en)) hits.push({ id, text: en });
   }
   return hits;
 }
