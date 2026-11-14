@@ -437,6 +437,11 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SurvivalLight(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalRealHealth(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SurvivalSync(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Systems(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SystemsEconomy(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SystemsKeepData(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_SystemsServices(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SystemsWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.LOGIC);
@@ -454,6 +459,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VaultDoorSwing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageLedger(), LF_TestTier.LOGIC);

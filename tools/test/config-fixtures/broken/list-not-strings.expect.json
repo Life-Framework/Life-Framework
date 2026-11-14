@@ -1,0 +1,12 @@
+{
+  "exit": 1,
+  "parse": "ok",
+  "problems": [
+    {
+      "level": "error",
+      "line": 1,
+      "col": 54,
+      "msg": "shops.extraItemPrefabs is not a list of strings; keeping the shipped list"
+    }
+  ]
+}

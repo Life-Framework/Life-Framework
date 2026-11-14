@@ -20,11 +20,16 @@ enum LF_EShopRefusal
 	NEEDS_LICENCE,
 	NEEDS_JOB,
 	NEEDS_RANK,
-	NEEDS_ORG_RIGHT
+	NEEDS_ORG_RIGHT,
+	//! The Shop system is off on this server (#1074).
+	SYSTEM_OFF
 }
 
 class LF_ShopRefusal
 {
+	//! The system id the Shop switch answers to (#1074).
+	static const string SYSTEM = "Shop";
+
 	//------------------------------------------------------------------------------------------------
 	//! Slip line for a refusal; empty for NONE.
 	static string Key(LF_EShopRefusal reason)
@@ -77,6 +82,9 @@ class LF_ShopRefusal
 		if (reason == LF_EShopRefusal.NEEDS_ORG_RIGHT)
 			return "#LF-Shop_RefuseNeedsOrgRight";
 
+		if (reason == LF_EShopRefusal.SYSTEM_OFF)
+			return "#LF-Systems_Off";
+
 		return string.Empty;
 	}
 
@@ -98,7 +106,7 @@ class LF_ShopRefusal
 	//! The upper bound is the last enum value: it was OUT_OF_STOCK, which read CLOSED as no shop.
 	static LF_EShopRefusal FromWire(int reason)
 	{
-		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.NEEDS_ORG_RIGHT)
+		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.SYSTEM_OFF)
 			return LF_EShopRefusal.NO_SHOP;
 
 		return reason;

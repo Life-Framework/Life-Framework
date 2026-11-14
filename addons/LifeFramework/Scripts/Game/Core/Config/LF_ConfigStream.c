@@ -61,8 +61,9 @@ class LF_ConfigStream
 	//! \param[in] organizations The effective organization tunables, or null to leave the section out.
 	//! \param[in] devCaptions The dev dialogue caption overrides (#970); the section is written only when there are some.
 	//! \param[in] catalogue The effective item catalogue and outlets (#988), or null to leave the section out.
+	//! \param[in] systems Whether to write every system's effective on or off (LF_Systems, #960).
 	//! \return The payload text.
-	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null, map<string, string> devCaptions = null, LF_ItemCatalogueConfig catalogue = null)
+	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null, map<string, string> devCaptions = null, LF_ItemCatalogueConfig catalogue = null, bool systems = false)
 	{
 		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext(false);
 		ctx.WriteValue(KEY_FORMAT, FORMAT_VERSION);
@@ -104,6 +105,12 @@ class LF_ConfigStream
 			catalogue.WriteStream(ctx);
 			ctx.EndObject();
 		}
+		if (systems)
+		{
+			ctx.StartObject(LF_SystemsConfig.SECTION);
+			LF_Systems.WriteStream(ctx);
+			ctx.EndObject();
+		}
 		return ctx.ExportToString();
 	}
 
@@ -135,7 +142,7 @@ class LF_ConfigStream
 		if (!catalogue)
 			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no item catalogue on the server; clients keep their shipped outlet prices");
 
-		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations, LF_DialogueOverrides.GetCaptions(), catalogue);
+		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations, LF_DialogueOverrides.GetCaptions(), catalogue, true);
 		int hash = payload.Hash();
 		bool changed = !s_bPublished || hash != s_iPublishedHash;
 		s_sPublished = payload;
@@ -272,6 +279,9 @@ class LF_ConfigStream
 
 		// The clerk's fee for a replacement identity card (server).
 		LF_PhotoIdCardConfig.Reload();
+
+		// Which systems run (#960): the server reads the owner file again, a client takes the stream's.
+		LF_Systems.Reload();
 
 		// Dev dialogue caption overrides (#970): a client takes the stream's; the server keeps what it read.
 		LF_DialogueOverrides.ApplyReceived();

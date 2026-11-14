@@ -188,6 +188,12 @@ class LF_ServiceCallDispatch : LF_EventSubscriber
 //! (a phone carries one action per preset). The server does everything; the client only asks.
 class LF_PayphoneAction : ScriptedUserAction
 {
+	//! The Comms system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Comms");
+	}
+
 	[Attribute("police", UIWidgets.EditBox, "Service key from Configs/Comms/LF_ServiceCalls.conf")]
 	protected string m_sService;
 
@@ -218,6 +224,9 @@ class LF_PayphoneAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Comms", "LF_PayphoneAction"))
+			return;
+
 		if (!pOwnerEntity || !pUserEntity)
 		{
 			LF_Debug.Error(LF_Payphone.FEATURE, "action performed without a phone or a user");

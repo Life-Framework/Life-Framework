@@ -197,6 +197,9 @@ class LF_Cuffing
 	//! \return true when a hold is running for this officer on this target.
 	static bool Begin(IEntity officer, IEntity target, LF_ECuffingKind kind, bool pinned = false)
 	{
+		if (LF_Systems.Refuses("Police", "cuffing"))
+			return false;
+
 		if (!Replication.IsServer())
 			return false;
 

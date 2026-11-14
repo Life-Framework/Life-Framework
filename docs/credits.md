@@ -79,6 +79,8 @@ https://creativecommons.org/publicdomain/zero/1.0/): no attribution required, cr
 | Rust 009 | ambientCG | https://ambientcg.com/view?id=Rust009 | CC0 1.0 | Iron ingot rust spots; iron ore; iron staining on the ore rocks |
 | Rock 035 | ambientCG | https://ambientcg.com/view?id=Rock035 | CC0 1.0 | Host rock of the iron and copper nuggets; grain in the gold quartz |
 | Rock 058 | ambientCG | https://ambientcg.com/view?id=Rock058 | CC0 1.0 | Host rock of the ore veins on the quarry rocks (darkened and desaturated; ore only in its crevices and thin veins) (`Assets/Resources/Mining/OreVein/`) |
+| Metal 038 | ambientCG | https://ambientcg.com/view?id=Metal038 | CC0 1.0 | Handcuff and lockpick steel: scratches, scuffs, roughness (`Assets/Items/Roleplay/Handcuffs/Data/`, `Lockpick/Data/`) |
+| Leather 014 | ambientCG | https://ambientcg.com/view?id=Leather014 | CC0 1.0 | Lockpick wallet leather grain (`Assets/Items/Roleplay/Lockpick/Data/`) |
 
 Which set feeds which map is in each asset's spec (`tools/assets/metal-ingot`, `ore-nugget`, `ore-veins`, `source.textures`).
 

@@ -4,6 +4,12 @@
 //! a toast (LF_PhoneCalls). The client only reaches for the receiver.
 class LF_PhoneActionBase : ScriptedUserAction
 {
+	//! The Comms system is off (#1076): no prompt.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_Systems.IsEnabled("Comms");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Player id of the character using the action, 0 when it is not a player's. The same id on
 	//! every machine, so it compares with the line's talker anywhere.
@@ -18,6 +24,9 @@ class LF_PhoneActionBase : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (LF_Systems.Refuses("Comms", "LF_PhoneActionBase"))
+			return;
+
 		if (!pOwnerEntity || !pUserEntity)
 		{
 			LF_Debug.Error(LF_PhoneCalls.FEATURE, "phone action performed without a phone or a user");
@@ -51,6 +60,9 @@ class LF_PhoneDialAction : LF_PhoneActionBase
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Comms"))
+			return false;
+
 		int talker;
 		return LF_PhoneLineComponent.StateAt(GetOwner(), talker) == LF_EPhoneLineState.IDLE;
 	}
@@ -81,6 +93,9 @@ class LF_PhoneAnswerAction : LF_PhoneActionBase
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Comms"))
+			return false;
+
 		int talker;
 		return LF_PhoneLineComponent.StateAt(GetOwner(), talker) == LF_EPhoneLineState.RINGING;
 	}
@@ -99,6 +114,9 @@ class LF_PhoneHangUpAction : LF_PhoneActionBase
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Comms"))
+			return false;
+
 		int talker;
 		LF_EPhoneLineState state = LF_PhoneLineComponent.StateAt(GetOwner(), talker);
 		return state == LF_EPhoneLineState.BUSY && talker > 0 && talker == PlayerIdOf(user);
@@ -119,6 +137,9 @@ class LF_PhoneLeaveRequestAction : LF_PhoneActionBase
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Comms"))
+			return false;
+
 		int talker;
 		if (LF_PhoneLineComponent.StateAt(GetOwner(), talker) != LF_EPhoneLineState.IDLE)
 			return false;
@@ -142,6 +163,9 @@ class LF_PhoneReadPadAction : LF_PhoneActionBase
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		if (!LF_Systems.IsEnabled("Comms"))
+			return false;
+
 		int talker;
 		return LF_PhoneLineComponent.StateAt(GetOwner(), talker) == LF_EPhoneLineState.IDLE;
 	}
