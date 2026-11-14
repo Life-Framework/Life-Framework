@@ -239,6 +239,42 @@
       "additionalProperties": false,
       "x-class": "LF_CrimeCatalogConfig"
     },
+    "dayCycle": {
+      "type": "object",
+      "description": "The `dayCycle` owner section (M4, #1343): how fast the in-game clock runs.",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "default": "vanilla"
+        },
+        "dayLengthMinutes": {
+          "type": "integer",
+          "default": 1440,
+          "minimum": 1,
+          "maximum": 10080
+        },
+        "nightSpeed": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0.1,
+          "maximum": 10
+        },
+        "startHour": {
+          "type": "number",
+          "default": 8,
+          "minimum": 0,
+          "maximum": 24
+        },
+        "clockOffsetMinutes": {
+          "type": "integer",
+          "default": 0,
+          "minimum": -1440,
+          "maximum": 1440
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_DayCycleConfig"
+    },
     "disconnect": {
       "type": "object",
       "description": "Disconnect rules (#691): what logging out does to a player who is cuffed, escorted, downed, wanted or jailed, so leaving never escapes an arrest, a death or a sentence.",
@@ -911,6 +947,30 @@
       "additionalProperties": false,
       "x-class": "LF_PoliceConfig"
     },
+    "restarts": {
+      "type": "object",
+      "description": "The `restarts` owner section (M4, #1343): when the server restarts each day and how far ahead players are warned.",
+      "properties": {
+        "times": {
+          "type": "array",
+          "description": "",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "warningMinutes": {
+          "type": "array",
+          "description": "",
+          "items": {
+            "type": "integer"
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_RestartConfig"
+    },
     "rulesQuiz": {
       "type": "object",
       "description": "The rules orientation quiz switches (#915): Configs/Rules/LF_Quiz.conf, then each pack overlay of this class, then the owner's `rulesQuiz` section.",
@@ -1013,6 +1073,18 @@
       },
       "additionalProperties": false,
       "x-class": "LF_ShopPricesConfig"
+    },
+    "staff": {
+      "type": "object",
+      "description": "The `staff` owner section (M4, #1343): where staff notifications are posted.",
+      "properties": {
+        "webhookUrl": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_StaffWebhookConfig"
     },
     "systems": {
       "type": "object",
