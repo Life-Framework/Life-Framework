@@ -148,7 +148,9 @@ const ConfigShell = ({ children }: { children: ReactNode }) => (
       <p>
         Change what you want and download <code>config.json</code>. The file holds only the values you changed from the defaults,
         plus the schema version, so it stays short and keeps working when the defaults improve. Put it at{" "}
-        <code>$profile:LifeFramework/config.json</code>. Nothing leaves your browser.
+        <code>profile/profile/LifeFramework/config.json</code> inside the folder you pass to <code>-profile</code>
+        (the engine calls that <code>$profile:LifeFramework/config.json</code>); the example server's <code>start</code> script does it for
+        you. Nothing leaves your browser.
       </p>
     </PageHeader>
     <div className="wrap max-w-6xl pb-16">{children}</div>
@@ -273,7 +275,7 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
             server.json
           </h2>
           <p className="muted mt-1">
-            The base game's dedicated-server file, with the Workshop ids of the core addon and, for the 1989 scenario, the pack. Upload it next to config.json, or drop both in your profile.
+            The base game's dedicated-server file, with the Workshop ids of the core addon and, for the 1989 scenario, the pack. Keep it next to the example server's <code>start.cmd</code> and run that with <code>server.json</code> and <code>config.json</code> replaced by these two files; or give a panel host the start line and mod ids below. Install guide: <a className="link" href={blob("docs/owner/install.md")}>docs/owner/install.md</a>.
           </p>
           <div className="py-3 grid gap-3 md:grid-cols-2 max-w-3xl">
             <label className="text-[0.875rem] font-semibold">

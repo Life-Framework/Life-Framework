@@ -27,7 +27,7 @@ expect(silently(() => main(["--stage", "nope"])) === 2, "an unknown stage exits 
 for (const fx of fixtures) {
   expect(fx.expect, `${fx.name}: no .expect.json`);
   if (!fx.expect) continue;
-  if (fx.kind === "preset") expect(fx.expect.problems.length === 0 && fx.expect.exit === 0, `${fx.name}: a preset must expect nothing`);
+  if (fx.kind === "preset") expect(fx.expect.problems.every((p) => p.level === "warn") && fx.expect.exit === 0, `${fx.name}: a preset must expect no error (a warning for a rule key it adds is fine)`);
   else expect(fx.expect.problems.length > 0, `${fx.name}: a broken fixture must expect a log line`);
 }
 expect(fixtures.filter((f) => f.kind === "broken").length >= 12, "fewer than 12 reject classes covered");

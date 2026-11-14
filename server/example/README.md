@@ -44,6 +44,10 @@ copy `profile/` away first (a save written by an older build; `docs/ops/game-upd
 - Boot proof from a checkout: `tools\cli session up --mission template` starts a dedicated server on this folder's
   scenario and mods (with `config.json` in its profile) and joins a client. The engine refuses `-config` together with
   `-addons`, so a checkout boots the same files with `-server` and `-addons`; only a published mod loads through `-config`.
+  A `-config` server with a mod id that is not on the Workshop stops with `Addon <id> - Addon was not found on workshop`, and
+  `-config` with `-noBackend` cannot read the mission header, so local addon folders cannot stand in for the Workshop on an owner
+  start. To prove a generated bundle before the items are published, seed its config: `tools\cli session up --mission template
+  --seed path\to\config.json` (the file lands in the session's `LifeFramework/` profile folder, the same place `start.cmd` copies to).
 - The release download (#296): `tools\cli example-zip` packs this folder into `LifeFramework-ExampleServer.zip` with the Workshop ids from
   `tools/release/example-zip.json`; `--final` refuses a placeholder id. Steps: `docs/release-process.md` "The example server download".
 

@@ -18,6 +18,7 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-14 (pool-rt-gc), each broken alone: with the rt gc sort reversed (newest idle first) "rt gc removes the wrong folders or in the wrong order: Life-Framework-rt-b,Life-Framework-rt-a,Life-Framework-rt-oldest"; with the live-lock keep rule off "rt gc removes the wrong folders or in the wrong order: ...oldest,Life-Framework-rt-locked,..." (a locked folder was chosen).
 // red-proof 2026-11-14 (pool-parallel-start), each broken alone: burstAdmit always refusing (strict FIFO) "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (1 of 14)"; without the in-flight RAM term "a burst start ignored the RAM of the starts in flight ahead of it (14 admitted, 4 fit)"; the holder gate without aheadMb "the holder's gate let a burst start overshoot the floor"; blocks() without the granted check "a ticket that already holds its lane still blocks the queue"; sharedSnapshot never reusing "six runs asked together did not share one snapshot (6 takes, 6 shas)".
 // red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
 // laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
@@ -61,6 +62,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
 import * as gc from "../lib/session-gc.mjs";
+import * as rt from "../lib/rt-gc.mjs";
 import { takeHoldWarning } from "../lib/session-lease.mjs";
 import * as pool from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
@@ -69,6 +71,7 @@ import { trimScript } from "../lib/ws-trim.mjs";
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
 process.env.LF_POOL_POLL_MS = "100"; // read by tools/remote/pool.mjs on each poll
+process.env.LF_POOL_RT_GC = "0"; // no run-folder cleanup over ssh from this suite (rtGcMachine is driven with a fake ssh below)
 // Hermetic: not this PC's hostname (tools/pool.json gives lf-testbox "hostname": "PC1", which on the laptop would make
 // that entry the local machine and drop it from the ssh list) and not its LF_TESTBOX env. A real lf.local.json is never
 // read: every root below is a fresh temp repo. The "laptop view" block below replays hostname PC1 on purpose.
@@ -619,6 +622,70 @@ try {
       rmSync(base, { recursive: true, force: true });
     }
   }
+  // 4c. remote run-folder GC (tools/lib/rt-gc.mjs): which folders, in which order, busy ones kept.
+  {
+    const base0 = mkdtempSync(join(tmpdir(), "lf-rtgc-"));
+    const NOW = 10_000_000_000;
+    const ago = (min) => NOW - min * 60000;
+    const ent = (name, idleMin, busy = null) => ({ dir: `C:\\LF\\${name}`, busy, lastMs: idleMin === null ? 0 : ago(idleMin) });
+    const entries = [
+      ent("Life-Framework-rt-recent", 30),
+      ent("Life-Framework-rt-a", 300),
+      ent("Life-Framework-rt-b", 120),
+      ent("Life-Framework-rt-locked", 700, "lock"),
+      ent("Life-Framework-rt-running", 900, "proc"),
+      ent("Life-Framework-rt-next-s2", 800),
+      ent("Life-Framework-rt-oldest", 1200),
+      ent("Life-Framework-rt-unknown", null),
+      ent("Life-Framework", 5000),
+      ent("Life-Framework-ws-other", 5000),
+    ];
+    const plan = rt.planRtGc(entries, { now: NOW, idleMin: 60, keep: ["c:/lf/LIFE-FRAMEWORK-RT-NEXT-S2/"] });
+    check(plan.remove.map((r) => r.name).join() === "Life-Framework-rt-oldest,Life-Framework-rt-a,Life-Framework-rt-b", `rt gc removes the wrong folders or in the wrong order: ${plan.remove.map((r) => r.name).join()}`);
+    const why = (n) => plan.kept.find((k) => k.name === n)?.why;
+    check(why("Life-Framework-rt-locked") === "live lock" && why("Life-Framework-rt-running") === "process running in it" && why("Life-Framework-rt-recent") === "written recently" && why("Life-Framework-rt-next-s2") === "about to be used" && why("Life-Framework-rt-unknown") === "age unknown", `rt gc kept reasons are wrong: ${JSON.stringify(plan.kept)}`);
+    check(!plan.remove.concat(plan.kept).some((r) => r.name === "Life-Framework" || r.name === "Life-Framework-ws-other"), "rt gc considered a folder that is not a Life-Framework-rt-* run folder");
+    check(plan.remove[0].idleMin === 1200 && rt.planRtGc(entries, { now: NOW, idleMin: 10 }).remove.some((r) => r.name === "Life-Framework-rt-recent"), "rt gc idle limit is not the idle minutes asked for");
+    // what the box says round-trips
+    const scan = rt.parseRtScan(["lf-pool: disk 3.5", "lf-pool: rt - 1000 C:\\LF\\Life-Framework-rt-a", "lf-pool: rt lock 2000 C:\\LF\\Life-Framework-rt-b c", "noise"].join("\n"));
+    check(scan.freeGb === 3.5 && scan.entries.length === 2 && scan.entries[1].busy === "lock" && scan.entries[1].dir === "C:\\LF\\Life-Framework-rt-b c" && scan.entries[0].lastMs === 1000, `rt scan lines are not parsed: ${JSON.stringify(scan)}`);
+    const rm = rt.parseRtRemove(["lf-pool: gc removed 6.25 C:\\LF\\Life-Framework-rt-a", "lf-pool: gc kept lock C:\\LF\\Life-Framework-rt-b", "lf-pool: gc fail C:\\LF\\Life-Framework-rt-c", "lf-pool: gc free 6.25"].join("\n"));
+    check(rm.removed[0].freeGb === 6.25 && rm.kept[0].why === "lock" && rm.failed.length === 1 && rm.freeGb === 6.25, `rt remove lines are not parsed: ${JSON.stringify(rm)}`);
+    // the threshold: 3x the disk floor, configurable
+    const savedFloor = process.env.LF_POOL_MIN_FREE_DISK_GB;
+    process.env.LF_POOL_MIN_FREE_DISK_GB = "5";
+    check(rt.rtGcTargetGb(pool.poolSettings(base0)) === 15, `rt gc threshold is not 3x the disk floor (${rt.rtGcTargetGb(pool.poolSettings(base0))})`);
+    process.env.LF_POOL_RT_GC_FREE_FACTOR = "4";
+    process.env.LF_POOL_RT_IDLE_MIN = "90";
+    check(rt.rtGcTargetGb(pool.poolSettings(base0)) === 20 && pool.poolSettings(base0).rtIdleMin === 90, "rt gc threshold / idle minutes are not configurable");
+    delete process.env.LF_POOL_RT_GC_FREE_FACTOR;
+    delete process.env.LF_POOL_RT_IDLE_MIN;
+    check(pool.poolSettings(base0).rtIdleMin === 60 && pool.poolSettings(base0).rtGcFreeFactor === 3, "rt gc defaults are not 60 min / 3x");
+    process.env.LF_POOL_MIN_FREE_DISK_GB = savedFloor;
+    // the pass itself, against a fake box: low disk removes the oldest idle ones in order and logs one line each;
+    // a box above the threshold costs one scan and removes nothing; the folder about to be used is never sent
+    const box = { name: "cloud", host: "cloud", root: "C:/LF/Life-Framework", via: "ssh" };
+    const scanText = ["lf-pool: disk 3", ...entries.filter((e) => e.dir.includes("-rt-")).map((e) => `lf-pool: rt ${e.busy ?? "-"} ${e.lastMs} ${e.dir}`)].join("\n");
+    const sent = [];
+    const lines = [];
+    const fake = (disk) => async (host, script) => {
+      sent.push(script);
+      if (sent.length % 2 === 1) return { stdout: disk >= 15 ? `lf-pool: disk ${disk}\n` : scanText.replace("disk 3", `disk ${disk}`) };
+      return { stdout: ["lf-pool: gc removed 4.5 C:\\LF\\Life-Framework-rt-oldest", "lf-pool: gc removed 6 C:\\LF\\Life-Framework-rt-a", "lf-pool: gc free 6"].join("\n") };
+    };
+    const r1 = await pool.rtGcMachine(base0, box, { keep: ["C:/LF/Life-Framework-rt-next-s2"], idleMin: 60, targetGb: 15, log: (l) => lines.push(l), ssh: fake(3), now: () => NOW });
+    const rmScript = sent[1] ?? "";
+    const at = (n) => rmScript.indexOf(n);
+    check(sent.length === 2 && at("rt-oldest") > 0 && at("rt-oldest") < at("rt-a") && at("rt-a") < at("rt-b") && !/rt-(next-s2|locked|running|recent|unknown)/.test(rmScript.replace(/\$\w+ -like 'Life-Framework-rt-\*'/g, "")) && /safe-rm\.mjs/.test(rmScript) && /\$target = 15/.test(rmScript), "the removal sent to the box does not carry the idle folders oldest first (or carries a busy or kept one)");
+    check(lines.filter((l) => /gc cloud: removed/.test(l)).length === 2 && r1.removed.length === 2 && /rt-oldest.*idle 20 h.*freed 1\.5 GB/.test(lines.join("\n")), `rt gc did not log one line per folder removed: ${lines.join(" | ")}`);
+    sent.length = 0;
+    const r2 = await pool.rtGcMachine(base0, box, { keep: [], idleMin: 60, targetGb: 15, log: (l) => lines.push(l), ssh: fake(80), now: () => NOW });
+    check(sent.length === 1 && r2.removed.length === 0 && r2.freeGb === 80, "a box above the disk threshold was cleaned or scanned twice");
+    sent.length = 0;
+    const r3 = await pool.rtGcMachine(base0, box, { keep: [], idleMin: 60, targetGb: 0, dry: true, log: (l) => lines.push(l), ssh: fake(3), now: () => NOW });
+    check(sent.length === 1 && r3.removed.length === 0 && lines.filter((l) => /would remove/.test(l)).length === 4, "a dry run removed folders or did not list the idle ones");
+    rmSync(base0, { recursive: true, force: true });
+  }
   // 5. runtime budgets: learned from history, floor, seeded default, self-correcting.
   const passRuns = (kind, durS, n, machine = "local") => Array.from({ length: n }, () => ({ purpose: kind, machine, result: "pass", durS }));
   check(q.budgetSeconds([], "test only", "local").runS === 30 && q.budgetSeconds([], "test all", "local").runS === 90 && q.budgetSeconds([], "test persistence", "local").runS === 120, "seeded budgets are not 30/90/120 s");
@@ -627,6 +694,22 @@ try {
   check(q.budgetSeconds(passRuns("test all", 20, 20), "test all", "local").runS === 60, "budget is not 3x the p95");
   check(q.budgetSeconds(passRuns("test only", 9, 4), "test only", "local").source === "default", "4 passes already count as history");
   check(q.budgetSeconds(passRuns("e2e", 40, 6), "e2e", "local").runS === 60, "e2e budget is not per pass");
+  // 5b. the core-only suite is its own run kind: label, budget, counts, stamp tier.
+  check(q.testPurpose({ tier: "all" }) === "test all" && q.testPurpose({ tier: "all", coreOnly: true }) === "test all core-only", "ci core-only run is not labelled `test all core-only`");
+  check(q.testPurpose({ tier: "fast", only: ["LF_Test_X"] }) === "test only" && q.testPurpose({ tier: "all", only: ["A"], coreOnly: true }) === "test only core-only", "--only label wrong");
+  check(q.budgetSeconds([], "test all core-only", "local").runS === 90, "core-only has no seeded budget");
+  check(q.budgetSeconds(passRuns("test all", 20, 20), "test all core-only", "local").source === "default", "core-only budget borrowed the full run history");
+  const kindRuns = [
+    { purpose: "test all", result: "pass", durS: 30, passed: 531, total: 531 },
+    { purpose: "test all core-only", result: "pass", durS: 20, passed: 480, total: 480 },
+    { purpose: "test all", result: "fail", durS: 10, passed: 530, total: 531 },
+    { purpose: "session", kind: "session" }, { purpose: "reclaim" }, { purpose: "e2e", result: "pass", durS: 5 },
+  ];
+  const kinds = q.runsByPurpose(kindRuns);
+  check(kinds.length === 2 && kinds[0].purpose === "test all" && kinds[0].n === 2 && kinds[0].pass === 1 && kinds[0].lastTotal === 531, "runsByPurpose does not group the full run");
+  check(kinds[1].purpose === "test all core-only" && kinds[1].n === 1 && kinds[1].lastTotal === 480 && kinds[1].avgDurS === 20, "runsByPurpose mixes the core-only count into the full run");
+  check(/test all core-only +runs +1/.test(q.formatRunsByPurpose(kinds)) && q.formatRunsByPurpose(kinds).includes("last 480/480"), "formatRunsByPurpose omits the core-only row");
+  check(tb.stampTierOf("all", true) === "all-core" && tb.stampTierOf("all", false) === "all", "a remote core-only summary is not stamped all-core");
   check(q.budgetSeconds(passRuns("test only", 9, 20, "lf-testbox"), "test only", "local").source === "default", "another machine's history was used");
   const flaky = [...passRuns("test only", 9, 40), ...Array.from({ length: 3 }, () => ({ purpose: "test only", machine: "local", result: "timeout", durS: 30 }))];
   check(q.budgetSeconds(flaky, "test only", "local").runS === 60, "a 7% timeout rate did not raise the budget");

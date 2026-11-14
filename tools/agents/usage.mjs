@@ -16,6 +16,7 @@ import { homedir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
+import { formatRunsByPurpose, runsByPurpose } from "../lib/pool-queue.mjs";
 
 import { cost } from "./usage-scan.mjs"; // one weighting for per-run and per-account figures
 export { cost };
@@ -254,6 +255,19 @@ function mainRoot() {
   return here;
 }
 
+// The pool test runs by kind (runs.jsonl): test all and test all core-only are counted apart.
+export function poolRunsText(file = join(mainRoot(), "tmp", "wt", "pool", "runs.jsonl")) {
+  if (!existsSync(file)) return "";
+  const rows = [];
+  for (const l of readFileSync(file, "utf8").split("\n")) {
+    try {
+      if (l.trim()) rows.push(JSON.parse(l));
+    } catch {}
+  }
+  const groups = runsByPurpose(rows);
+  return groups.length ? "\npool test runs by kind (tmp/wt/pool/runs.jsonl):\n" + formatRunsByPurpose(groups) : "";
+}
+
 export function defaultDirs() {
   const name = projectName(mainRoot());
   return [".claude", ".claude-gaming"].map((p) => join(homedir(), p, "projects", name)).filter(existsSync);
@@ -414,7 +428,11 @@ export async function main(args = process.argv.slice(2)) {
   }
   const runs = await collect(dirs, opt);
   if (opt.json) console.log(JSON.stringify(runs.sort((a, b) => b.cost - a.cost).slice(0, opt.top), null, 1));
-  else console.log(report(runs, opt));
+  else {
+    console.log(report(runs, opt));
+    const pool = poolRunsText();
+    if (pool) console.log(pool);
+  }
   return 0;
 }
 
