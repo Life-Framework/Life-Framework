@@ -317,7 +317,6 @@ GenericEntity Annex_Bank_Vault : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingP
   }
   LF_BankVaultComponent "{7C31A9E04B18D6A4}" {
    m_sVaultId "Annex_Bank_Vault"
-   m_sBagEntity "Annex_Bank_Bag"
    m_fJamChance 0
    m_iBagCount 1
    m_iCashPerBag 500
@@ -339,6 +338,12 @@ GenericEntity Annex_Bank_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/Buildi
  angleY 180
 }
 GenericEntity Annex_Bank_Bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
+ components {
+  LF_PlaceComponent "{E6AEB35B5871B57D}" {
+   m_sKind "BankBag"
+   m_sId "Annex_Bank_Vault"
+  }
+ }
  Flags 0x403 0
  coords 72.002 0.025 40.987
  angleY 0

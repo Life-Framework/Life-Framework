@@ -3,11 +3,23 @@ GenericEntity Roadmap_Fuel_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial
  angleY 0
 }
 GenericEntity Roadmap_Fuel_Till : "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et" {
+ components {
+  LF_PlaceComponent "{7EA8A6A19591BAC1}" {
+   m_sKind "DispatchSource"
+   m_sId "Roadmap_Fuel_Till"
+  }
+ }
  Flags 0x403 0
  coords 283.656 1.384 237.43
  angleY 0
 }
 SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ components {
+  LF_PlaceComponent "{49DB70E0F8C39103}" {
+   m_sKind "DispatchSource"
+   m_sId "Roadmap_Fuel_Payphone"
+  }
+ }
  coords 256.5 0 237.0
  angleY 90
 }

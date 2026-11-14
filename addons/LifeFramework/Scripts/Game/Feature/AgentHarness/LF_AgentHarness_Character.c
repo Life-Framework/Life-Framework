@@ -377,6 +377,24 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "slopecar" || tool == "slopecheck" || tool == "slopedrive")
+		{
+			// The park brake proof's stand-ins (LF_ParkBrakeHarness, #979).
+			string slope;
+			if (tool == "slopecar")
+				slope = LF_ParkBrakeHarness.Spawn();
+			else if (tool == "slopedrive")
+				slope = LF_ParkBrakeHarness.Drive();
+			else
+				slope = LF_ParkBrakeHarness.Check();
+
+			if (slope.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", slope.Substring(3, slope.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", slope);
+			return;
+		}
+
 		if (tool == "spikedrop" || tool == "spikecar" || tool == "spikecheck")
 		{
 			// The spike strip proof's stand-ins (LF_SpikeStripHarness, #646).

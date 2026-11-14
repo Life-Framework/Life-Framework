@@ -135,6 +135,7 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      UIInfo UIInfo "{606120CC8281F8AE}" {
       Name "#LF-Restrain_Action"
      }
+     Duration 1.8
     }
     LF_ReleaseRestraintAction "{AF70CE56F3804F01}" {
      ParentContextList {
@@ -143,6 +144,7 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      UIInfo UIInfo "{198EEA9448F82642}" {
       Name "#LF-Restrain_Release"
      }
+     Duration 1.5
     }
     LF_PlayerRoleAction "{2B55172B79B0124D}" {
      ParentContextList {

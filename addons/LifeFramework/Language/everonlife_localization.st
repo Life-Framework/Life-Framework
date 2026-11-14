@@ -1853,16 +1853,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cargo truck"
      Comment "Lot catalog row for the M923 cargo truck"
     }
-    CustomStringTableItem "{E1C0E00100000F01}" {
-     Id "EL-Vehicle_Dana2101"
-     Target_en_us "Dana 2101"
-     Comment "Lot catalog row for the beige Dana 2101 (vanilla V2101, free in 1.9)"
-    }
-    CustomStringTableItem "{E1C0E00100000F02}" {
-     Id "EL-Vehicle_SputnikT601"
-     Target_en_us "Sputnik T601"
-     Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
-    }
     CustomStringTableItem "{E1C0E0010000000C}" {
      Id "EL-Vehicle_Bought"
      Target_en_us "Vehicle purchased"
@@ -9085,6 +9075,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Placement_Blocked"
      Target_en_us "Something is in the way."
      Comment "Toast when a placement is refused because something stands where it would go: a car, a post, a spike strip already lying there (#928)."
+    }
+    CustomStringTableItem "{E1C0E00100000F01}" {
+     Id "EL-Vehicle_Dana2101"
+     Target_en_us "Dana 2101"
+     Comment "Lot catalog row for the beige Dana 2101 (vanilla V2101, free in 1.9)"
+    }
+    CustomStringTableItem "{E1C0E00100000F02}" {
+     Id "EL-Vehicle_SputnikT601"
+     Target_en_us "Sputnik T601"
+     Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
+    }
+    CustomStringTableItem "{DF8BF4F56126B7CA}" {
+     Id "LF-Restrain_Interrupted"
+     Target_en_us "The cuffing was interrupted."
+     Comment "Toast to the officer when the cuff or uncuff hold stops by itself: someone moved out of reach, the cuffs left the hand, or a rule no longer holds."
     }
   }
  }

@@ -92,6 +92,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigStreamRoundTrip(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigStreamVehicles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigUnknownKeys(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConsumableEffectLoads(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ContentReload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
@@ -106,6 +107,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CrimeRecordPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CropPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CropStages(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CuffingOpenState(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CuffingRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugDispatch(), LF_TestTier.WORLD);
@@ -260,6 +263,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ParcelCarry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelCollision(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ParkBrakeWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
@@ -277,6 +281,10 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacesBankBag(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacesCashVan(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacesDispatch(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacesOrgHideout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesRegistry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacesUnnamedDoor(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
