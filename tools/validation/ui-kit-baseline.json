@@ -32,5 +32,7 @@
     "addons/LifeFramework/UI/Layouts/Signs/LF_SignPaintFace.layout",
     "addons/LifeFramework/UI/Layouts/WidgetLibrary/ThinSliderWidget.layout"
   ],
-  "exceptions": {}
+  "exceptions": {
+    "addons/LifeFramework/UI/Layouts/HUD/LF_RobHold.layout": "A HUD strip, not a screen: the held-robbery timer, bar and distance shown over the game while the player keeps moving (#936). Takes no input."
+  }
 }

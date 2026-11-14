@@ -574,10 +574,11 @@ export function judgeOrg(before1, after1, after2, gateBefore, gateAfter) {
 }
 
 // The M1-05 card proof on a running `up --clients 2` session: client 1 is a
-// civilian who robs Roadmap_Fuel_Till, client 2 is an on-duty officer (debug
+// civilian who robs Roadmap_Test_Till (the instant world action; the fuel
+// station till is robbed through its attendant's dialogue since #936), client 2 is an on-duty officer (debug
 // menu, dev gate open on the bare DebugWorld) who receives the alert. Prints
 // `state` for both before and after, then judges the after line.
-export const ROB_TARGET = "Roadmap_Fuel_Till";
+export const ROB_TARGET = "Roadmap_Test_Till";
 // The officer's last toast after a robbery: the radio dispatch line (LF_Dispatch, M1-20).
 export const ROB_ALERT = "#LF-Dispatch_Radio";
 

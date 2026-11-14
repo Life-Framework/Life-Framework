@@ -62,6 +62,12 @@ export async function main() {
     bad((s) => { s.lines.sold.for_key = "#LF-Test_Missing"; }, /not in the string table/, "a for_key that is not a real string is refused");
     bad((s) => { s.nodes[0].options[0].action = "shop.open"; }, /must be PascalCase/, "a hook name that cannot be a class is refused");
     bad((s) => { s.budget_chars = 99999; }, /budget_chars/, "a budget over the per-NPC cap is refused");
+    bad((s) => { s.lines.greet.say = "[cheerful] Good morning. Stale bread today."; }, /read exactly as text/, "a voiced say that differs from its caption is refused");
+    bad((s) => { s.lines.greet.say = "Good morning. Fresh bread today."; }, /adds no \[audio tag\]/, "a say with no audio tag is refused");
+    const tagged = spec();
+    tagged.lines.greet.say = "[cheerful] Good morning. [warmly] Fresh bread today.";
+    ok(dlg.specProblems(tagged, strings).length === 0, `spec: a say with audio tags over the same words passes (${dlg.specProblems(tagged, strings)[0]})`);
+    ok(dlg.voicedText(tagged.lines.greet) === tagged.lines.greet.say && dlg.voicedText(tagged.lines.bye) === "Good day.", "spec: the voice is sent say when there is one, else the caption");
   }
 
   // ---- envelope: the mouth follows the loudness of the recording -------------------------------

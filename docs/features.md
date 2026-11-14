@@ -1392,6 +1392,7 @@
   `LF_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted.
+- 🔧 **Fuel till robbed through its attendant** (#936, merged, in-dev): the till is `LF_FuelTill_Attended.et` (its world action is retired) and the voiced `LF_FuelClerk` stands behind it. The robbery reply in the `fuel_clerk` dialogue is offered only while a weapon is drawn (`RobArmed` hook, `LF_RobDialogue.c`). Picking it calls `LF_RobHold.Start` on the server (armed, in range, free till, cooldown, `LF_RateLimit` CRIME), starts a hold timer with a bar and radius warning (`LF_RobHoldHud`), and pays through `PayHeld` when the hold is kept; leaving, weapon away, police arriving or going down each end it with a message and a cry from the attendant. Alarm, dispatch, witness and evidence fire as before. Tests `crime/rob-hold`, `crime/fuel-clerk-dialogue`. Demo: `session.mjs fuel-robbery-proof`.
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
   `Street_Fuel.layer` at `259 1.04 241.2` (on a counter at the fuel station) is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits

@@ -175,6 +175,33 @@ class LF_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the NPC says the line voiced for `key` (its `for_key`) to everyone within its hear
+	//! range, outside any conversation: another feature's moment, such as a robbery's begging
+	//! (LF_RobHold). A key with no voiced line is logged and not sent.
+	static void Announce(IEntity npc, string key)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
+		if (!config)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("'%1' not said: the NPC has no playable dialogue", key));
+			return;
+		}
+
+		string line = LF_DialogueFlow.SpokenFor(config, key);
+		if (line == key)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("'%1' not said: '%2' has no line voiced for that key", key, config.m_sId));
+			return;
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("'%1' says '%2' to whoever is near", config.m_sId, line));
+		Overhear(0, npc, config, line);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: players standing near the NPC hear what it says to the talker.
 	protected static void Overhear(int talkerId, IEntity npc, LF_DialogueConfig config, string list)
 	{

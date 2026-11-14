@@ -1,0 +1,165 @@
+FrameWidgetClass "{48EF562C0C8C51E4}" {
+ Name "RobHoldRoot"
+ Slot FrameWidgetSlot "{14A87A3ADA0119D0}" {
+  Anchor 0 0 1 1
+ }
+ {
+  FrameWidgetClass "{8E9A0EA384676B6F}" {
+   Name "Panel"
+   Slot FrameWidgetSlot "{B70174E4D6F23B77}" {
+    Anchor 0.5 0.09 0.5 0.09
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 540
+    OffsetRight -540
+    SizeY 150
+    OffsetBottom -150
+    Alignment 0.5 0
+   }
+   {
+    ImageWidgetClass "{DC8E53C020E00B21}" {
+     Name "Back"
+     Slot FrameWidgetSlot "{51A74CC5BB53FFB1}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.035 0.033 0.03 0.86
+    }
+    ImageWidgetClass "{97E82B7C5A8CFF92}" {
+     Name "Edge"
+     Slot FrameWidgetSlot "{8DF2035D171E3EA0}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 540
+      OffsetRight -540
+      SizeY 3
+      OffsetBottom -3
+     }
+     Color 0.72 0.14 0.1 1
+    }
+    TextWidgetClass "{872F6F67F2FC3974}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{F86B2FE143F7B069}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 10
+      OffsetTop 10
+      SizeX 500
+      OffsetRight -520
+      SizeY 18
+      OffsetBottom -28
+     }
+     Color 0.85 0.25 0.18 1
+     Text "#LF-RobHold_Title"
+     "Font Size" 15
+     "Min Font Size" 15
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{29749A989829B1FF}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{F39370E8CE699B2B}" {
+     Name "Timer"
+     Slot FrameWidgetSlot "{23166B4D91B6773E}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 30
+      OffsetTop 30
+      SizeX 500
+      OffsetRight -520
+      SizeY 32
+      OffsetBottom -62
+     }
+     Color 0.95 0.93 0.88 1
+     Text ""
+     "Font Size" 28
+     "Min Font Size" 20
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{56784FCF040A6D7D}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    ImageWidgetClass "{13E89261817F835B}" {
+     Name "Track"
+     Slot FrameWidgetSlot "{C91D5D49567380A1}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 70
+      OffsetTop 70
+      SizeX 500
+      OffsetRight -520
+      SizeY 14
+      OffsetBottom -84
+     }
+     Color 0.2 0.19 0.17 1
+    }
+    ImageWidgetClass "{9DDED015FB149C91}" {
+     Name "Fill"
+     Slot FrameWidgetSlot "{6EC1F1CB2129D9E9}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 70
+      OffsetTop 70
+      SizeX 0
+      OffsetRight -20
+      SizeY 14
+      OffsetBottom -84
+     }
+     Color 0.86 0.66 0.22 1
+    }
+    TextWidgetClass "{DEE5204CC69BD1DC}" {
+     Name "Range"
+     Slot FrameWidgetSlot "{1EB69480BD913E15}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 92
+      OffsetTop 92
+      SizeX 500
+      OffsetRight -520
+      SizeY 24
+      OffsetBottom -116
+     }
+     Color 0.82 0.8 0.74 1
+     Text ""
+     "Font Size" 19
+     "Min Font Size" 15
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{46BEF01054D2D599}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{29BB47594127AA96}" {
+     Name "Rules"
+     Slot FrameWidgetSlot "{89127863A716D963}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 120
+      OffsetTop 120
+      SizeX 500
+      OffsetRight -520
+      SizeY 20
+      OffsetBottom -140
+     }
+     Color 0.6 0.58 0.52 0.95
+     Text "#LF-RobHold_Rules"
+     "Font Size" 14
+     "Min Font Size" 12
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{0E8E965927DA6B5D}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+   }
+  }
+ }
+}
