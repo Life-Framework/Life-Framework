@@ -1,4 +1,5 @@
 // No EL_ identifiers in addons/ (AGENTS.md golden rule 5, issue #334).
+// inputs: addons/**
 //
 // Every class, method, define and key is LF_; an EL_ name can collide with the real
 // EveronLife mod on the same server. The one exception is a resource file whose path is

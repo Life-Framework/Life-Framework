@@ -1,4 +1,5 @@
 // Proves the perf report parser and the over-budget rule on fixture lines. Does not boot the game.
+// inputs: tools/**, agent-box/**, .githooks/**
 import { selftestPerf } from "../perf/perf-report.mjs";
 
 const failures = selftestPerf();

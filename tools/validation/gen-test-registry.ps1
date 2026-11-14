@@ -1,4 +1,5 @@
 # tools/validation/gen-test-registry.ps1 - auto-generate the LF_Test registry.
+# inputs: addons/**
 #
 # The test registry used to be a hand-edited list inside LF_TestManager.c, which
 # made it a single-writer file that parallel agents could not touch safely. This

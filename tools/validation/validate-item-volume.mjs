@@ -1,4 +1,5 @@
 // An item prefab with an InventoryItemComponent needs `SizeSetupStrategy Volume` in its
+// inputs: addons/**
 // ItemPhysAttributes (own or inherited from an addon prefab). Without it the engine derives the
 // volume from the mesh for every instance after the first spawned in a process (a 40 ItemVolume
 // keycard reads 440, a seed packet 1073) and the inventory refuses it; which test or player saw the

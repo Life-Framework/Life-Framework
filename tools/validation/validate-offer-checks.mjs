@@ -1,4 +1,5 @@
 // Offer checks run on the player's machine. CanBeShownScript and
+// inputs: addons/**
 // CanBePerformedScript are evaluated on the client to build the interact list,
 // and LF_PlayerAccountManager lives on the server only: on a dedicated client
 // every account lookup returns null, so an offer gated on it is never shown.

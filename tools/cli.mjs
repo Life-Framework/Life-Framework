@@ -38,7 +38,9 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
+import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
@@ -598,7 +600,7 @@ const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
 // their time is PowerShell start-up). Output is printed in file order.
-const AREA_CONCURRENCY = 8;
+const AREA_CONCURRENCY = Math.max(8, Math.min(12, os.cpus().length));
 
 function invokeScriptAsync(full, opts = {}) {
   let cmd = process.execPath;
@@ -637,14 +639,25 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   // base game or MCP build). Each skip is printed so a run never hides one.
   const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()).filter(Boolean));
   const areaStarted = Date.now();
+  // Incremental mode (plain `validate` and `dev` only): a check whose declared inputs are
+  // unchanged since its last green run is skipped and counted. Full runs never use it.
+  const isValidate = area === "validate";
+  const state = isValidate ? loadState(root) : null;
+  let inc = null;
+  if (isValidate && opts.incremental && !opts.full && !incrementalOff()) {
+    inc = plan(root, dir, scripts, state, snapshotFiles(root));
+  }
   const jobs = scripts.map((s) => {
     if (skip.has(s)) return { s, skipped: "LF_VALIDATE_SKIP" };
-    if (area === "validate" && !opts.full && FULL_ONLY.has(s)) {
+    if (isValidate && !opts.full && FULL_ONLY.has(s)) {
       return { s, skipped: "Workbench compile: runs in 'validate --full', ci, wt gate, wt ship" };
     }
+    if (inc?.get(s)?.unchanged) return { s, skipped: inc.get(s).why, incremental: true };
     return { s };
   });
-  const queue = jobs.filter((j) => !j.skipped);
+  // Longest first (from the last recorded times) so one slow check never starts last.
+  const lastSecs = (j) => state?.checks[j.s]?.secs ?? 0;
+  const queue = jobs.filter((j) => !j.skipped).sort((a, b) => lastSecs(b) - lastSecs(a));
   const env = toolEnv();
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
@@ -655,9 +668,11 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   };
   await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
   let failed = 0;
+  let skippedIncr = 0;
   for (const job of jobs) {
     if (job.skipped) {
-      console.log(`SKIP  ${area}/${job.s} (${job.skipped})`);
+      if (job.incremental) skippedIncr++;
+      else console.log(`SKIP  ${area}/${job.s} (${job.skipped})`);
       continue;
     }
     const { res } = job;
@@ -667,7 +682,23 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok) failed++;
   }
-  console.log(`${area}: ${scripts.length} check(s), ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
+  const ran = jobs.filter((j) => j.res);
+  if (isValidate) {
+    // Record a green run (fingerprint + time) only when the check passed; a full run records the
+    // time and a fingerprint too, since it proves the same inputs. Failing checks are forgotten.
+    const fps = plan(root, dir, scripts, state, snapshotFiles(root)); // after the run: generators rewrite their own inputs
+    for (const j of ran) {
+      if (j.res.status === 0) state.checks[j.s] = { fp: fps.get(j.s)?.fp ?? null, secs: j.secs, at: Date.now() };
+      else delete state.checks[j.s];
+    }
+    saveState(root, state);
+    if (ran.length > 1) {
+      const slow = [...ran].sort((a, b) => b.secs - a.secs).slice(0, 3).map((j) => `${j.s} ${j.secs.toFixed(1)} s`).join(", ");
+      console.log(`slowest: ${slow}`);
+    }
+    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+  }
+  console.log(`${area}: ${ran.length} check(s) run, ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
   return failed ? 1 : 0;
 }
 
@@ -2521,7 +2552,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // then dump the per-feature [LFDebug:*] lines from the same log.
   guardHeavy(root, "dev", opts.force);
   console.log("=== dev: validate ===");
-  const v = await cmdRunArea("validate", root);
+  const v = await cmdRunArea("validate", root, { incremental: true });
   if (v !== 0) return v;
   console.log("\n=== dev: test (no build) ===");
   process.env.LF_TEST_DEBUG_LINES = "1"; // dev is the verb that dumps the feature lines
@@ -3251,7 +3282,7 @@ function gateArgs(wtRoot, flags) {
     return ["ci", ...flags.filter((f) => f !== "--full-gate")];
   }
   console.log("=== gate: no addons/ changes; validate only (pass --full-gate to force the in-game gate) ===");
-  return ["validate"];
+  return ["validate", "--all"];
 }
 
 async function wtGateCmd(args) {
@@ -3558,7 +3589,10 @@ const cmds = {
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
-  validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
+  validate: (flags) => {
+    const f = flags ?? [];
+    return cmdRunArea("validate", ROOT, { full: f.includes("--full"), incremental: !f.includes("--full") && !f.includes("--all") });
+  },
   "film-make": async (flags) => (await import("./film/post.mjs")).main(flags ?? []),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");

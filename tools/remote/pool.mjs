@@ -105,6 +105,9 @@ export const PROBE_TIMEOUT_MS = 12000; // probe, lock read
 export const HOLDER_FIRST_BYTE_MS = 40000; // no output at all from the holder
 export const HOLDER_TIMEOUT_MS = 180000; // holder never reports a slot, busy, or error
 
+// Queue poll interval; the selftest shortens it (LF_POOL_POLL_MS) so waits in it cost 0.1 s, not 1 s.
+const pollMs = () => Number(process.env.LF_POOL_POLL_MS) || 1000;
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -1137,7 +1140,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
         needMb = blocked.needMb;
         rewriteTicket(root, ticket, body());
       }
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, pollMs());
     }
   } finally {
     dropTicket(root, ticket);
@@ -1233,7 +1236,7 @@ export async function chooseSessionMachine(root, { clients = 1, waitMs = 0, prio
         waitingOn = want;
         rewriteTicket(root, ticket, ticketBody());
       }
-      await sleep(1000);
+      await sleep(pollMs());
     }
   } finally {
     dropTicket(root, ticket);
@@ -1528,7 +1531,7 @@ export async function acquireSlot(root, opts = {}) {
         console.log(`pool: ${kind} slots busy; queued as ${priority} (${ahead} ahead), it starts by itself when one frees`);
       }
       if (Date.now() - started > waitMs) throw new Error(`pool: no slot within ${Math.round(waitMs / 60000)} min`);
-      await sleep(1000);
+      await sleep(pollMs());
     }
   } finally {
     dropTicket(root, ticket);

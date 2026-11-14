@@ -1,4 +1,5 @@
 // Proves `tools\cli config-check` (#281): each reject class of an owner config.json comes back
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // with the line, column and message the server would log, a clean file passes, warnings alone exit
 // 0, and the rules follow the schema (a range or a version changed in the schema changes the
 // verdict with no edit to the checker). Fixtures: tools/validation/fixtures/config-check/.

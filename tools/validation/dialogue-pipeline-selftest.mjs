@@ -1,4 +1,5 @@
 // Proves tools\cli asset dialogue (tools/assets/pipeline/dialogue.mjs) offline: no ElevenLabs call,
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // no ffmpeg. The network is a fake that counts what it is asked for. The last block checks the
 // dialogues in this repo: the generated config and audio project match their dialogue.json, and
 // every line's recording is in the addon, so a reworded line cannot ship with its old voice.

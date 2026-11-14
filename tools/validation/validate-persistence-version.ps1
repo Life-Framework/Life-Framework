@@ -1,4 +1,5 @@
 # tools/validation/validate-persistence-version.ps1
+# inputs: addons/**
 #
 # LF_PersistenceComponentSerializer.c writes one version integer.
 # RegisterPersistencePayloads is the only order. SerializeStore (the body the

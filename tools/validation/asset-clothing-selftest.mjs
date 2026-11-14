@@ -1,4 +1,5 @@
 // Proves the clothing kind of tools\cli asset offline (docs/asset-pipeline/clothing.md): the spec rules,
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // the Enfusion text reader and the prefab-chain merge, the EDDS unpacking (COPY and LZ4 mips), the route
 // (a) material and prefab text, the checks against the vanilla garment, the route (b)/(c) model checks,
 // the state-picture plan and its pair difference, and the committed fixture specs. No game paks, no

@@ -1,4 +1,5 @@
 # tools/validation/validate-repo.ps1 - Life Framework repo validator.
+# inputs: always
 #
 # Used by the pre-commit hook (with -Staged) and standalone (full tree) via:
 #   tools\cli validate

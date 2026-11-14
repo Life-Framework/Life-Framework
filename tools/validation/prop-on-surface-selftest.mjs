@@ -1,4 +1,5 @@
 // Proves the overhang math on fixed bounds (no game files needed).
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 import { checkEntities, overhang, footprint, prefabScale } from "../actions/prop-on-surface.mjs";
 import { ROOT } from "../actions/place-action-contexts.mjs";
 // red-proof: 2026-11-14 (#924), with flatten() reading only the layer scale line the market's cabbages

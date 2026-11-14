@@ -1,4 +1,5 @@
 // No UTF-8 byte-order mark in committed .json, .md or .c files.
+// inputs: **/*.json, **/*.md, **/*.c
 //
 // A BOM breaks JSON.parse (the website build failed on gallery.json) and shows as junk
 // in diffs. Writers: Node `writeFileSync` adds none; in PowerShell use

@@ -1,4 +1,5 @@
 // Every video/*.json that declares a storyboard format must validate, and the storyboard module's own selftest must
+// inputs: video/**, tools/film/**
 // pass (a bad storyboard names its field). video/storyboard.schema.json must parse. Post-production boards (no
 // `format`, a `clips` list) are checked by film-make itself.
 //

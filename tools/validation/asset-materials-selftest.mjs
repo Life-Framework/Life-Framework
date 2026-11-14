@@ -1,4 +1,5 @@
 // Proves the material-class step of the clean stage (tools/assets/pipeline/materials.mjs and
+// inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // blender/materials.py): the default plan, the spec checks, the shipped specs' classes, and, when
 // Blender is installed, the remapped numbers. No Meshy, no Workbench.
 // red-proof: 2026-11-13, one line broken per block, each restored after its FAIL was seen:
