@@ -161,9 +161,10 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
   const [value, setValue] = useState<Obj>(() => defaultOf(schema) as Obj);
   const [extras, setExtras] = useState<Obj>({});
   const [keep, setKeep] = useState<Set<string>>(new Set());
+  const [shape, setShape] = useState<Obj | undefined>(undefined); // the imported file, for key order on export
   const [paste, setPaste] = useState("");
   const [importNote, setImportNote] = useState("");
-  const json = useMemo(() => exportText(schema, value, extras, keep), [schema, value, extras, keep]);
+  const json = useMemo(() => exportText(schema, value, extras, keep, shape), [schema, value, extras, keep, shape]);
   // The very rules `tools\cli config-check` applies, run over the file this page would export.
   const problems = useMemo(() => checkConfig(schema, json), [schema, json]);
   const errors = useMemo(() => fieldErrors(problems), [problems]);
@@ -190,6 +191,7 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
     setValue(got.value);
     setExtras(got.extras);
     setKeep(got.keep);
+    setShape(raw);
     setImportNote(from !== "the imported file" ? `Loaded ${from}. Change anything below.` : "Imported. Values outside the schema are marked below; keys this build does not know are kept in the export.");
   };
   const onFile = async (f?: File | null) => {
@@ -353,7 +355,7 @@ function Form({ schema, presets, server }: { schema: Schema; presets: Preset[]; 
           <button type="button" className="btn btn-primary" onClick={downloadBundle} disabled={bad > 0 || serverErrors > 0}>
             Download both files
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => { setValue(defaultOf(schema) as Obj); setExtras({}); setKeep(new Set()); setImportNote(""); }}>
+          <button type="button" className="btn btn-ghost" onClick={() => { setValue(defaultOf(schema) as Obj); setExtras({}); setKeep(new Set()); setShape(undefined); setImportNote(""); }}>
             Reset
           </button>
         </div>
