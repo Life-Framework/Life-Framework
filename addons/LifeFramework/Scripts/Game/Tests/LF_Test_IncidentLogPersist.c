@@ -41,7 +41,7 @@ class LF_Test_IncidentLogPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(30, version, "the save is written at version 30 (incidents is payload 13)");
+		ctx.Equal(31, version, "the save is written at version 31 (incidents is payload 13)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "incidents");
 
 		ctx.Equal(2, LF_IncidentLog.Count(), "both incidents are back");

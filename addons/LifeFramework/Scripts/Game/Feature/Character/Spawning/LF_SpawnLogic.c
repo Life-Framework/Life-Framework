@@ -244,6 +244,9 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (!account)
 			return;
 
+		// A playtest world starts clean after a death when nobody else is on (LF_WorldReset gates it).
+		LF_WorldReset.OnRespawn(playerId);
+
 		CreateCharacter(playerId, account);
 	}
 

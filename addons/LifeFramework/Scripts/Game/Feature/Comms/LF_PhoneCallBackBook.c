@@ -104,6 +104,17 @@ class LF_PhoneCallBackBook : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Drops every offer and request (the world reset).
+	//! eturn How many entries were dropped.
+	int Clear()
+	{
+		int dropped = m_aOffers.Count() + m_aRequests.Count();
+		m_aOffers.Clear();
+		m_aRequests.Clear();
+		return dropped;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The live offer of this caller at this phone, or null.
 	LF_PhoneCallBackOffer OfferFor(float now, string callerUid, string phoneKey)
 	{

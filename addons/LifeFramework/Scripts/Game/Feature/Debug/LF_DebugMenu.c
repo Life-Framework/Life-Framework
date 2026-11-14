@@ -32,6 +32,10 @@ class LF_DebugMenu : ChimeraMenuBase
 	protected ButtonWidget m_wGrantXpButton;
 	protected ButtonWidget m_wJobFarmerButton;
 	protected ButtonWidget m_wJobUnemployedButton;
+	protected ButtonWidget m_wResetWorldButton;
+	protected TextWidget m_wResetWorldLabel;
+	protected int m_iResetArmedAt = -1;
+	protected static const int RESET_CONFIRM_MS = 5000; // lf-fixed: how long the second press counts as the confirm
 
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuOpen()
@@ -53,6 +57,8 @@ class LF_DebugMenu : ChimeraMenuBase
 		m_wGrantXpButton = ButtonWidget.Cast(root.FindAnyWidget("GrantXpButton"));
 		m_wJobFarmerButton = ButtonWidget.Cast(root.FindAnyWidget("JobFarmerButton"));
 		m_wJobUnemployedButton = ButtonWidget.Cast(root.FindAnyWidget("JobUnemployedButton"));
+		m_wResetWorldButton = ButtonWidget.Cast(root.FindAnyWidget("ResetWorldButton"));
+		m_wResetWorldLabel = TextWidget.Cast(root.FindAnyWidget("ResetWorldButtonLabel"));
 
 		SCR_InputButtonComponent hintBack = SCR_InputButtonComponent.GetInputButtonComponent("HintBack", root);
 		if (hintBack)
@@ -72,6 +78,7 @@ class LF_DebugMenu : ChimeraMenuBase
 		if (w == m_wSurvivalEmptyButton) { AskAction(LF_EDebugAction.SET_SURVIVAL, 0); return true; }
 		if (w == m_wGrantXpButton) { AskAction(LF_EDebugAction.ADD_XP, 500); return true; }
 		if (w == m_wJobFarmerButton) { AskAction(LF_EDebugAction.SET_JOB, LF_EJobType.FARMER); return true; }
+		if (w == m_wResetWorldButton) { OnResetWorldPressed(); return true; }
 		if (w == m_wJobUnemployedButton) { AskAction(LF_EDebugAction.SET_JOB, LF_EJobType.UNEMPLOYED); return true; }
 
 		return super.OnClick(w, x, y, button);
@@ -88,6 +95,34 @@ class LF_DebugMenu : ChimeraMenuBase
 			return;
 		}
 		character.LF_AskDebugAction(action, value);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! First press asks "sure?"; a second press within RESET_CONFIRM_MS resets the world for everyone.
+	protected void OnResetWorldPressed()
+	{
+		int now = GetGame().GetWorld().GetWorldTime();
+		bool armed = m_iResetArmedAt >= 0 && now - m_iResetArmedAt <= RESET_CONFIRM_MS;
+		if (!armed)
+		{
+			m_iResetArmedAt = now;
+			if (m_wResetWorldLabel)
+				m_wResetWorldLabel.SetText("#LF-DebugMenu_ResetWorldSure");
+			return;
+		}
+
+		m_iResetArmedAt = -1;
+		if (m_wResetWorldLabel)
+			m_wResetWorldLabel.SetText("#LF-DebugMenu_ResetWorld");
+
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			LF_Debug.Error("DebugMenu", "world reset not asked: no local character");
+			return;
+		}
+
+		character.LF_AskWorldReset("menu");
 	}
 
 	//------------------------------------------------------------------------------------------------

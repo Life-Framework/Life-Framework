@@ -173,7 +173,7 @@ class LF_AgentCommand
 				cmd.Arg2 = parts[3];
 			return true;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "parceldrop" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -952,6 +952,9 @@ class LF_AgentCommand
 		// Look up or down (mouse pitch), so a swing can reach a low rock.
 		if (actionName == "CharacterTurnUp")
 			return true;
+		// Vehicle lights and high beams, to light the dashboard indicators for the vehicle HUD proof (#921).
+		if (actionName == "VehicleLightsToggle" || actionName == "CarLightsHiBeamToggle")
+			return true;
 		return false;
 	}
 }
@@ -1246,7 +1249,7 @@ class LF_AgentHarness
 			DoConfigReload(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "nuggets" || cmd.Verb == "crate" || cmd.Verb == "parceldrop" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf" || cmd.Verb == "keys" || cmd.Verb == "spikedrop" || cmd.Verb == "spikecar" || cmd.Verb == "spikecheck")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
