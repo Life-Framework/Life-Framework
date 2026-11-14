@@ -35,6 +35,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    m_vFootprintMins -0.2 0.1 -1.75
    m_vFootprintMaxs 0.2 0.6 1.75
    m_fReach 1
+   m_fAimReach 4
    m_eSnap ACROSS_ROAD
    m_eWho ON_DUTY_POLICE
    m_eLifetime TEMPORARY
@@ -51,6 +52,11 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
    additionalActions {
     LF_SpikeStripDeployAction "{7143B0D0A967F5B1}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_PlacementAimAction "{7143B0D0A967F5C2}" {
      ParentContextList {
       "default"
      }

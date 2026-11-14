@@ -115,6 +115,7 @@ class LF_StaticReset
 		LF_ItemCatalogue.ResetStatics();
 		LF_Cleanup.ResetStatics();
 		LF_Quiz.ResetStatics();
+		LF_PlacementAim.ResetStatics();
 		LF_ClipStamp.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;

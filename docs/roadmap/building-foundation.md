@@ -148,6 +148,18 @@ proven by a real restart (#1032).
   dedicated server: the strip lies within 1 mm of the ghost on both; pictures in
   `website/public/docs-images/1026/`).
 
+## 7b. Aimed placement in the tree (#1028)
+
+- `Feature/Placement/LF_PlacementAim.c` (client mode and the "Place where I aim" action),
+  `LF_PlacementPlayerController.c` (the keys and `RpcAsk_LF_PlaceAimed`), `LF_PlacementService.PlanAimed` /
+  `ConfirmAimed`, and the pure aim geometry in `LF_PlacementGeometry` (`AimPoint`, `TurnYaw`, `SnapYaw`,
+  `WallForward`). Vanilla `CharacterPlacementContext` / `CharacterPlaceItem` belong to
+  `SCR_ItemPlacementComponent`'s weapon-slot flow and are not bound for a carried gadget, so the LF actions
+  carry their own bindings.
+- GROUND and ACROSS_ROAD are aimed; FLOOR and WALL still refuse (the wall geometry is pure and tested; the
+  buildings wire it, #1033). The strip's aim reach is 4 m, so the confirm's reach became
+  `GetAimReach() + 1.5 m`.
+
 ## 8. Core and pack
 
 All of the above is core: a modern-setting server would use it unchanged. The pack decides the
