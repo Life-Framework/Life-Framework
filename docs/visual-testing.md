@@ -128,8 +128,8 @@ the server last showed and this one decides how:
 | Change since the last request | How it is served (`served=` in the summary and `index.json`) |
 |---|---|
 | nothing (the same snapshot) | `server-same`: shot as is |
-| only modified, existing `.layer` or `.et` files | `server-reopen`: the world is reopened from disk (`SetOpenedResource`), about 5 to 10 s |
-| anything else: a `.c`, a `.meta`, a `.conf`, a `.layout`, an asset, a string table, an added, deleted or renamed file, the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started (about 17 s plus the shots) |
+| only modified, existing `.layer` or `.et` files under `addons/`, and any change outside `addons/` (Workbench never loads it) | `server-reopen`: the world is reopened from disk (`SetOpenedResource`), about 5 to 10 s |
+| anything else under `addons/`: a `.c`, a `.meta`, a `.conf`, a `.layout`, an asset, a string table, an added, deleted or renamed file, the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started (about 17 s plus the shots) |
 | no server up, or it is dead, hung or crashed | `fresh`: a Workbench of the caller's own, as before |
 
 The fast path lists only file types proven live: change the file, reopen, and read the changed value

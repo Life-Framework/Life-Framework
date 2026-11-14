@@ -13,7 +13,8 @@
 // are written) and the server shoots it. What changed between the snapshot the server last
 // showed and the requested one decides how:
 //   identical                                      shoot as is (reload none)
-//   only modified, existing .layer / .et files     reopen the world (proven live, docs/visual-testing.md)
+//   only modified, existing .layer / .et files     reopen the world (proven live, docs/visual-testing.md);
+//   (files outside addons/ never reach Workbench: a change there alone also reopens)
 //   anything else (a .c, .meta, an added, deleted or renamed file, the plugin) a new Workbench on the snapshot
 // A script change under a live Workbench crashed it in the probe (0xC0000005, 2 of 2), so a .c
 // always restarts. A server that is gone, hung or crashed never fails the caller: look kills
@@ -63,10 +64,14 @@ export function classifyChange({ from, to, changes = [], pluginChanged = false }
   if (pluginChanged) return { reload: "restart", reason: "the look plugin changed" };
   if (!changes.length) return from === to ? { reload: "none", reason: "same snapshot" } : { reload: "reopen", reason: "same files, other commit" };
   for (const c of changes) {
+    // Workbench loads only addons/ (the gproj and -addonsDir); tools, docs and the rest cannot change a picture.
+    // The plugin it runs is copied from tools/ and compared by its hash above. Still a reopen, never "none".
+    if (!c.path.startsWith("addons/")) continue;
     if (c.status !== "M") return { reload: "restart", reason: `${c.status} ${c.path}` };
     if (!FAST_PATH_EXT.includes(extname(c.path).toLowerCase())) return { reload: "restart", reason: `M ${c.path}` };
   }
-  return { reload: "reopen", reason: `${changes.length} world/prefab file(s) changed` };
+  const inAddons = changes.filter((c) => c.path.startsWith("addons/")).length;
+  return { reload: "reopen", reason: inAddons ? `${inAddons} world/prefab file(s) changed` : "only files outside addons/ changed" };
 }
 
 export function goText(id, reload) {

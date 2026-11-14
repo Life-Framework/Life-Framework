@@ -644,7 +644,7 @@ async function run(args) {
     const { cols } = sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
-    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), contact, shots: rows }, null, 2) + "\n");
+    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, contact, shots: rows }, null, 2) + "\n");
     const bad = rows.filter((r) => r.flags.length);
     summaries.push({ area: area.name, contact, bad, count: rows.length });
     if (rows[0].file) overview.push({ file: rows[0].file, label: `${area.name}${bad.length ? `  [${bad.length} flagged]` : ""}`, marks: [] });
@@ -659,7 +659,7 @@ async function run(args) {
   const total = (Date.now() - started) / 1000;
   const ram = res.peakMb ? `, Workbench peak ${res.peakMb} MB` : "";
   const startLabel = served === "fresh" ? "Workbench start" : "request to first step";
-  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
+  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
     for (const b of s.bad) console.log(`    ${b.flags.join(",")}: ${b.kind} ${b.label}${b.size ? ` ${sizeText(b.size)}` : ""}`);
@@ -837,6 +837,8 @@ export async function selftest() {
   for (const p of ["addons/LifeFramework/Prefabs/Props/LF_Till.et.meta", "addons/LifeFramework/Assets/x.xob", "addons/LifeFramework/Assets/x.emat", "addons/LifeFramework/Assets/x.edds", "addons/LifeFramework/UI/x.layout", "addons/LifeFramework/Language/everonlife_localization.st", "addons/LifeFramework/Configs/x.conf", "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent"])
     ok(cls([M(p)]) === "restart", `a modified ${p.split(".").slice(1).join(".")} must restart (not proven live)`);
   for (const st of ["A", "D", "R", "C", "T"]) ok(cls([{ status: st, path: "addons/LifeFramework/Prefabs/Props/LF_Till.et" }]) === "restart", `status ${st} must restart`);
+  ok(cls([M("tools/visual/look.mjs"), { status: "A", path: "docs/new.md" }]) === "reopen", "a change outside addons/ alone must reopen, not restart");
+  ok(cls([M("tools/visual/look.mjs"), { status: "A", path: "addons/LifeFramework/Prefabs/New.et" }]) === "restart", "an added addon file beside a tools change must restart");
   ok(cls([], { pluginChanged: true }) === "restart" && cls([M("a.layer")], { pluginChanged: true }) === "restart", "a changed plugin must restart");
   ok(serve.goText("123-456", "reopen") === "123-456\nreopen\n", "go.txt text");
   ok(serve.doneMatches("123-456\r\n", "123-456") && !serve.doneMatches("123-45\n", "123-456") && !serve.doneMatches("", "1"), "done.txt matching");
