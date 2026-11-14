@@ -509,7 +509,7 @@ class LF_AgentCommand
 		}
 
 		cmd.Arg1 = parts[2];
-		if (cmd.Arg1 == "show" || cmd.Arg1 == "hide" || cmd.Arg1 == "terminal")
+		if (cmd.Arg1 == "show" || cmd.Arg1 == "hide" || cmd.Arg1 == "terminal" || cmd.Arg1 == "credits")
 			return true;
 
 		if (cmd.Arg1 == "theme")
@@ -3326,6 +3326,20 @@ class LF_AgentHarness
 			}
 
 			LF_Debug.Log(FEATURE, "kit terminal");
+			WriteResult(cmd.Id, "ok", "opened");
+			return;
+		}
+
+		if (cmd.Arg1 == "credits")
+		{
+			LF_UIScreen credits = LF_CreditsSheet.Open();
+			if (!credits)
+			{
+				WriteResult(cmd.Id, "error", "open_failed");
+				return;
+			}
+
+			LF_Debug.Log(FEATURE, "kit credits");
 			WriteResult(cmd.Id, "ok", "opened");
 			return;
 		}

@@ -247,7 +247,7 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "kit") {
     const step = token(spec.step, "kit step");
-    if (step === "show" || step === "hide" || step === "terminal") return `${id} kit ${step}`;
+    if (step === "show" || step === "hide" || step === "terminal" || step === "credits") return `${id} kit ${step}`;
     if (step === "theme") return `${id} kit theme ${token(spec.name, "theme")}`;
     if (step === "line") return `${id} kit line ${token(spec.part, "part")} ${token(spec.text, "text")}`;
     if (step === "status") {
@@ -797,7 +797,7 @@ const PRESS = {
 
 function sendKit(rest) {
   const step = rest[0];
-  if (step === "show" || step === "hide" || step === "terminal") return sendCommand({ verb: "kit", step });
+  if (step === "show" || step === "hide" || step === "terminal" || step === "credits") return sendCommand({ verb: "kit", step });
   if (step === "theme") return sendCommand({ verb: "kit", step, name: rest[1] });
   if (step === "line") return sendCommand({ verb: "kit", step, part: rest[1], text: rest[2] });
   if (step === "status") {
