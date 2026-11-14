@@ -12,6 +12,7 @@ tools\cli asset score <slug> <n> <silhouette,era,scale_grip,background,no_text,i
 tools\cli asset pick <slug> <n> [--why "..."]     the human's choice from the concept sheet
 tools\cli asset status [<slug>]
 tools\cli asset anim <slug> [--fix]  moving parts, the character's clips, effects: animation.md
+tools\cli asset states <slug> [--fix] [--shots]  inventory, ground, hand and use states: states.md
 tools\cli asset sound <slug>  generated sound effects, after the prefab stage: sounds.md
 tools\cli asset doctor        Blender, the Meshy key file, the credit balance
 tools\cli asset selftest      the offline checks (also part of tools\cli validate)
@@ -36,8 +37,9 @@ stage produces is cached in `tmp/assets/<slug>/`, which is not.
 | `prefab` | Scaffolds the prefabs once (a weapon: weapon, magazine, projectile, magazine config, ammunition list entry; a gadget: one held item; a deployable: the deployed prop and the carried item). Every kind but `weapon` has its own `prefab-<kind>.mjs` | The agent finishes them: strings, feature component, placement |
 
 | `anim` | Only for a spec with an `anim` block: solves the custom character clips and has Workbench compile them, writes the character workspace and the spark effect, and checks the prefab's `LF_AssetAnimComponent` against the spec. The bones and sockets the block names are built in `clean` and checked in `import` | The tool checks reach, feet and loops; the agent reads the pose previews and films the result: [animation.md](animation.md) |
+| `states` | Only for a spec with a `states` block: writes the inventory camera, the rest pose on the ground, and the borrowed hand pose with the `HandAdditive*` values that put the spec's grip point in the closed hand; checks the prefab against the spec. `asset states <slug> --shots` takes one picture per declared state in a session | The tool checks the values; the agent reads the pictures: [states.md](states.md) |
 
-After `anim` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
+After `states` comes verification, which is not a stage yet: [review-checklist.md](review-checklist.md).
 Sound is its own command with its own record, because a review sits in the middle of it:
 [sounds.md](sounds.md).
 
@@ -82,7 +84,7 @@ Read this before any `generate`.
 | Kind | State | Fit | Collider | Prefab scaffold |
 |---|---|---|---|---|
 | `weapon` | proven with the taser | Scaled to the vanilla M9's height and put on its grip; skinned to the M9 skeleton with its sockets | convex `UCX_`, `WeaponFire` | weapon on `Handgun_M9_base.et`, magazine, projectile, config |
-| `gadget` | proven with the handcuffs (#664) | Centred on the origin, scaled to `size_m.length`; the origin is where the hand holds it | box `UBX_`, `ItemFireView` | one held item on the vanilla `Item_Base.et` (`prefab-gadget.mjs`): name, volume, the vanilla gauze hand attachment, `SCR_GadgetComponent`, preview camera, `gadget.components` |
+| `gadget` | proven with the handcuffs (#664) | Centred on the origin, scaled to `size_m.length`; `states.hand` puts the grip in the hand ([states.md](states.md)) | box `UBX_`, `ItemFireView` | one held item on the vanilla `Item_Base.et` (`prefab-gadget.mjs`): name, volume, the vanilla gauze hand attachment, `SCR_GadgetComponent`, preview camera, `gadget.components` |
 | `deployable` | proven with the spike strip | Standing on the origin, scaled to `size_m.length`; `fit.repeat` tiles one generated link along the length, `fit.fold` stacks the links into a second model | thin box `UBX_` (3 cm), `ItemFireView` | the deployed prop and the carried item (`prefab-deployable.mjs`) |
 
 The profiles are in `tools/assets/pipeline/kinds.mjs`. A new weapon family (a rifle, a melee
@@ -117,6 +119,10 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
   spike strip the bake left dark dents around every spike; the generator's own normal map reads better there.
 - `fit` corrects what the clean stage guessed: `up_axis` (`"x"`, `"y"`, `"z"`), `flip_up`,
   `flip_forward`, `pitch_deg`, `scale`, `offset` (metres, Enfusion axes: x right, y up, z forward).
+- `states` (optional) is how the item sits in each state it has: `inventory`, `ground`, `hand` (pose, grip
+  point, which axis runs up through the fist and which points away from the palm), `use` (declared needs)
+  ([states.md](states.md)). A gadget with states must declare `hand`. Declaring states also adds the
+  build criteria to the concept rubric ([concepts.md](concepts.md)).
 - `anim` (optional) is what moves: bones, sockets, effects, sounds, the character's clips, the carry profile
   ([animation.md](animation.md)).
 - `parts` are the moving parts. Every face whose centre lies in the box is split off and skinned
@@ -124,8 +130,10 @@ weapon) is a new kind with its own reference skeleton: read it from the vanilla 
 - `sockets` (optional) overrides a socket position by name.
 - `weapon.components` are extra components written into the weapon prefab, with their values.
 - A gadget has a `gadget` block instead: `name_key`, `description_key`, `weight`, `volume`, `components`, and `hand`
-  (`rotation`, `translation`: the `HandAdditive*` values; the default is the lockpick's). Vanilla held gadgets have no
-  bones or sockets (`Gauze_01_packed.xob`): the hand holds the model at its origin, so move the grip there with `fit.offset`.
+  (`rotation`, `translation`: the `HandAdditive*` values the scaffold writes). The scaffold borrows the gauze's hand
+  graph, whose anim set has no hold clips, so the hand stays open: declare `states.hand` and the states stage swaps
+  in a real hold pose and computes the values ([states.md](states.md)). The model's origin goes on the left hand's
+  `LeftHandProp` bone; vanilla held gadgets have no grip sockets.
 - A gadget is scaled on its length, so the size check holds the length to 5 % and the height and width to 40 %.
 - `fit.stretch` (not for a weapon) fits each axis to `size_m` on its own instead of scaling by the
   length: right for a flat prop whose height the generator guesses.

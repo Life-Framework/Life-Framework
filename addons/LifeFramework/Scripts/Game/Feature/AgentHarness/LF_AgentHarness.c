@@ -210,6 +210,20 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "peers")
 			return true;
+		if (cmd.Verb == "heldxf")
+			return true;
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop")
+		{
+			// itemgive|itemdrop <{GUID}prefab>: the asset states proof (LF_AssetStatesHarness).
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_prefab";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "hold")
 		{
 			if (parts.Count() < 3)
@@ -1290,6 +1304,24 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", "no_character");
 			else
 				animCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
+			return;
+		}
+		if (cmd.Verb == "heldxf")
+		{
+			string heldText = LF_AssetStatesHarness.Held();
+			if (heldText.StartsWith("ok "))
+				WriteResult(cmd.Id, "ok", heldText.Substring(3, heldText.Length() - 3));
+			else
+				WriteResult(cmd.Id, "error", heldText);
+			return;
+		}
+		if (cmd.Verb == "itemgive" || cmd.Verb == "itemdrop")
+		{
+			SCR_ChimeraCharacter itemCharacter = LF_Utils.GetLocalCharacter();
+			if (!itemCharacter)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				itemCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb + " " + cmd.Arg1);
 			return;
 		}
 		if (cmd.Verb == "animseen")
@@ -2381,13 +2413,28 @@ class LF_AgentHarness
 
 		array<IEntity> items = {};
 		inventory.GetItems(items);
+		// The prefab whose file name is the argument wins over one whose path merely contains it
+		// (Handcuffs.et before Before_Handcuffs.et).
+		IEntity held;
 		foreach (IEntity item : items)
 		{
 			if (!item || !item.FindComponent(SCR_GadgetComponent) || !LF_Utils.GetPrefabName(item).Contains(cmd.Arg1))
 				continue;
 
-			gadgets.SetGadgetMode(item, EGadgetMode.IN_HAND);
-			LF_Debug.Log(FEATURE, "hold " + LF_Utils.GetPrefabName(item));
+			if (FilePath.StripExtension(FilePath.StripPath(LF_Utils.GetPrefabName(item))) == cmd.Arg1)
+			{
+				held = item;
+				break;
+			}
+
+			if (!held)
+				held = item;
+		}
+
+		if (held)
+		{
+			gadgets.SetGadgetMode(held, EGadgetMode.IN_HAND);
+			LF_Debug.Log(FEATURE, "hold " + LF_Utils.GetPrefabName(held));
 			WriteResult(cmd.Id, "ok", "held " + cmd.Arg1);
 			return;
 		}

@@ -64,5 +64,49 @@
         "base_scale": 0.55
       }
     }
+  },
+  "states": {
+    "inventory": {
+      "angles": [
+        -55,
+        -30,
+        0
+      ],
+      "distance": 0.6,
+      "fov": 20
+    },
+    "ground": {
+      "up": "Up"
+    },
+    "hand": {
+      "pose": "fist",
+      "grip": [
+        -0.032,
+        0,
+        0
+      ],
+      "up": "+z",
+      "out": "+x"
+    },
+    "use": [
+      {
+        "name": "closed",
+        "needs": "mesh",
+        "note": "the model as generated: both cuffs shut"
+      },
+      {
+        "name": "worn",
+        "needs": "prefab",
+        "prefab": "Prefabs/Items/Roleplay/Handcuffs_Worn.et",
+        "note": "on the suspect's wrists (#664)"
+      },
+      {
+        "name": "open",
+        "needs": "bone",
+        "bone": "strand_l",
+        "planned": true,
+        "note": "each cuff's single strand swings out on a hinge at its lock box; needs the strands as separate parts"
+      }
+    ]
   }
 }
