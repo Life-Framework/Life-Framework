@@ -59,8 +59,9 @@ class LF_ConfigStream
 	//! \param[in] vehicles The effective vehicle prices, or null to leave the section out.
 	//! \param[in] police The effective police tunables and ranks, or null to leave the section out.
 	//! \param[in] organizations The effective organization tunables, or null to leave the section out.
+	//! \param[in] devCaptions The dev dialogue caption overrides (#970); the section is written only when there are some.
 	//! \return The payload text.
-	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null)
+	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null, map<string, string> devCaptions = null)
 	{
 		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext(false);
 		ctx.WriteValue(KEY_FORMAT, FORMAT_VERSION);
@@ -90,6 +91,12 @@ class LF_ConfigStream
 			organizations.WriteStream(ctx);
 			ctx.EndObject();
 		}
+		if (devCaptions && devCaptions.Count() > 0)
+		{
+			ctx.StartObject(LF_DialogueOverrides.SECTION);
+			LF_DialogueOverrides.WriteStream(ctx, devCaptions);
+			ctx.EndObject();
+		}
 		return ctx.ExportToString();
 	}
 
@@ -117,7 +124,7 @@ class LF_ConfigStream
 		if (!organizations)
 			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no organization config on the server; clients keep their shipped organization values");
 
-		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations);
+		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations, LF_DialogueOverrides.GetCaptions());
 		int hash = payload.Hash();
 		bool changed = !s_bPublished || hash != s_iPublishedHash;
 		s_sPublished = payload;
@@ -125,11 +132,15 @@ class LF_ConfigStream
 		s_bPublished = true;
 
 		if (changed)
+		{
 			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("stream: published %1 bytes, hash %2, owner layer %3", payload.Length(), hash, LF_ConfigService.HasOwnerLayer()));
-		if (changed && payload.Length() > WARN_BYTES)
-			LF_Debug.Warn(LF_ConfigService.FEATURE, string.Format("stream: %1 bytes is above the %2 this stream was proven with; if clients show shipped prices, trim the owner's priceRules", payload.Length(), WARN_BYTES));
+			if (payload.Length() > WARN_BYTES)
+				LF_Debug.Warn(LF_ConfigService.FEATURE, string.Format("stream: %1 bytes is above the %2 this stream was proven with; if clients show shipped prices, trim the owner's priceRules", payload.Length(), WARN_BYTES));
+		}
 		else
+		{
 			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("stream: values unchanged (hash %1); nothing to send", hash));
+		}
 		return changed;
 	}
 
@@ -250,6 +261,9 @@ class LF_ConfigStream
 
 		// The clerk's fee for a replacement identity card (server).
 		LF_PhotoIdCardConfig.Reload();
+
+		// Dev dialogue caption overrides (#970): a client takes the stream's; the server keeps what it read.
+		LF_DialogueOverrides.ApplyReceived();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -263,6 +277,13 @@ class LF_ConfigStream
 	static int GetReceivedHash()
 	{
 		return s_iReceivedHash;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The last payload a client accepted, or empty before one arrived.
+	static string GetReceivedPayload()
+	{
+		return s_sReceived;
 	}
 
 	//------------------------------------------------------------------------------------------------

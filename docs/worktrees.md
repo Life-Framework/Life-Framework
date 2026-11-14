@@ -663,6 +663,37 @@ tools\cli testbox vdd                        # (re)install the virtual display d
   loopback alone measured -30.9 dB mean. Not yet measured: a capture with the
   lid closed, on the virtual display.
 
+## Live reload (#970)
+
+Scripts and the string table are compiled in and cannot be read again in a running game, and the engine
+caches a `.conf` once loaded (`Resource.Load` "gets it from cache"). What can change without a restart is
+text read from the profile. `reload <what>` (harness verb; the server decides) re-reads it and sends it to
+every client through the config stream:
+
+| What | Reads | Shows |
+|---|---|---|
+| `config` | `$profile:LifeFramework/config.json` (what `/configreload` does) | shop prices, vehicle prices, police, organizations, ... |
+| `dialogue` | `$profile:LifeFramework/dev/dialogue.json`: `{"captions": {"#LF-Dialogue_Clerk_Greet": "new text"}}` | the NPC's caption, the replies and the speaker name in the next scene |
+
+```
+node agent-box/harness.mjs --client 1 reload                  config and dialogue
+node agent-box/harness.mjs --client 1 reload dialogue         one of them (a comma list is fine)
+node agent-box/harness.mjs --client 1 dialogue caption '#LF-Dialogue_Clerk_Greet'
+                                                              what this client would show, and the override count
+node agent-box/session.mjs live-reload-proof                  the proof (up --clients 1)
+```
+
+- Gate: `config` passes `LF_ConfigReload.IsAllowed` (harness build, dev tools or an administrator). `dialogue`
+  also needs dev tools open in the game mode (`LF_ContentReload.DevToolsOpen`: a dev world or a harness
+  build); an administrator alone does not read it, so a live server never reads a developer's file.
+- Dialogue: the text is a caption only. The voice is the recording and does not change; node structure,
+  replies and hooks live in the `.conf` and need a restart. The overrides live in memory: a restart, or a
+  reload with no file, drops them. A client that joins later gets them through the join snapshot.
+- The log names what changed: `[LFDebug:Dialogue] reload: <key> changed [old] -> [new]`, then
+  `[LFDebug:Config] reload dialogue by player N: 1 added, 0 changed, 0 removed, 1 override(s) now`.
+- Terms (#958) are not built yet. They plug in with one file: `class LF_ContentReloader_Terms :
+  LF_ContentReloader` (`Core/Config/LF_ContentReload.c`), found by name, no list to append to.
+
 ## Scratch files
 
 Each worktree has a gitignored `tmp/` (created by `wt new`, also home of the

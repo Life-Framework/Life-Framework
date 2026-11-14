@@ -338,6 +338,7 @@
   logs an error, and the server boots on shipped values. Schema is still v1, so none ship
   yet; the v0 to v1 step is a test fixture. Tests `config/migration-chain`,
   `config/migration-file`.
+- ✅ (2026-11-14, #970) Live reload: `reload <what>` (harness verb; `LF_ContentReload`) makes the server read content again in a running session and stream it to the clients. `config` is `/configreload`; `dialogue` reads `$profile:LifeFramework/dev/dialogue.json` (`{"captions": {"#key": "text"}}`) as caption overrides (`LF_DialogueOverrides`) that the conversation scene shows for the caption, the replies and the speaker (text only: the voice and the node structure need the pipeline and a restart). The `dialogue` file is read only where dev tools are open (a dev world or a harness build), never for an administrator alone on a live server. A reloader is the class `LF_ContentReloader_<Name>` (no list; the terms layer, #958, adds its own). The overrides ride the config stream as a `devDialogue` section written only while there are some, so a payload without them is unchanged. Test `reload/dialogue-file`. Proof `agent-box/proofs/live-reload-proof.mjs` (`up --clients 1`). `docs/worktrees.md` "Live reload". Merged, in-dev.
 - ✅ (2026-11-12, #285) Config stream: the server serialises the effective
   client-relevant values (the `shops` section: defaults, every rule in walk
   order, extra prefabs) with a format version and a hash. Clients get them on

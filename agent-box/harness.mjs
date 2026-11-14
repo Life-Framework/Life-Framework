@@ -161,6 +161,11 @@ export function buildLine(id, spec) {
   if (spec.verb === "phone" || spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report" || spec.verb === "configreload" || spec.verb === "robhold") {
     return `${id} ${spec.verb}`;
   }
+  if (spec.verb === "reload") {
+    // reload [config|dialogue|config,dialogue]: the server reads the owner config and the dev caption file again (#970).
+    if (spec.what !== undefined && !/^[a-z]+(,[a-z]+)*$/.test(spec.what)) throw new Error(`reload what must be names joined by commas (config,dialogue): ${spec.what}`);
+    return spec.what ? `${id} reload ${spec.what}` : `${id} reload`;
+  }
   if (spec.verb === "dialogue") {
     return `${id} dialogue ${spec.arg ?? ""} ${spec.value ?? ""}`.trim();
   }
@@ -1403,6 +1408,8 @@ function usage() {
   node agent-box/harness.mjs type <FieldName> <Text>
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
+  node agent-box/harness.mjs reload [config|dialogue|config,dialogue]
+  node agent-box/harness.mjs dialogue [caption <#key>|shown]
   node agent-box/harness.mjs input <MenuAction>
   node agent-box/harness.mjs open DebugMenu
   node agent-box/harness.mjs kit
@@ -1575,6 +1582,14 @@ function main(argv) {
     }
     if (cmd === "use") {
       return printResult(sendCommand({ verb: "use", className: rest[0], entityName: rest[1] }));
+    }
+    if (cmd === "reload") {
+      // reload [config|dialogue|config,dialogue]: the server reads config.json and the dev caption file again (#970).
+      return printResult(sendCommand({ verb: "reload", what: rest[0] }, 10000));
+    }
+    if (cmd === "dialogue") {
+      // dialogue [caption <#key> | shown | pick <row> | skip | ...]: the conversation scene on this client.
+      return printResult(sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 10000));
     }
     if (cmd === "input") {
       return printResult(sendCommand({ verb: "input", action: rest[0], value: rest[1] }));
