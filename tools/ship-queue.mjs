@@ -171,8 +171,10 @@ function runLogged(log, exe, args, { cwd, budgetMs = JOB_BUDGET_MS, env = proces
 const changedFiles = (wtPath, base) => wt.git(wtPath, ["diff", "--name-only", `${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
 
 // The gate a branch gets: `ci --remote` when addons/ changed (or --full-gate), else `validate --all` (cheap, here).
-export function gateCommand(files, fullGate = false) {
-  return fullGate || files.some((f) => f.startsWith("addons/")) ? ["ci", "--remote"] : ["validate", "--all"];
+// pin: the machine flags `wt ship` was given (--remote <name> / --machine <name> / --local), in place
+// of the bare --remote. Agents do not pin; a human or the lead can.
+export function gateCommand(files, fullGate = false, pin = []) {
+  return fullGate || files.some((f) => f.startsWith("addons/")) ? ["ci", ...(pin.length ? pin : ["--remote"])] : ["validate", "--all"];
 }
 
 async function runJob(root, entry) {
@@ -193,7 +195,7 @@ async function runJob(root, entry) {
     say(`merged ${baseRef}: ${m.status}${m.resolved?.length ? ` (resolved ${m.resolved.join(", ")})` : ""}`);
     const gatedBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
     const files = changedFiles(wtPath, baseRef);
-    const cmd = gateCommand(files, entry.fullGate);
+    const cmd = gateCommand(files, entry.fullGate, entry.pin ?? []);
     attempts++;
     update(root, entry.id, { state: "gating", attempts, files, gatedBase }, `gate ${attempts}: ${cmd.join(" ")} on main ${gatedBase.slice(0, 7)}`);
     const t0 = Date.now();
