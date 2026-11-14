@@ -225,10 +225,32 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   machine that can run more servers at once (a network namespace or VM per
   slot) only raises the number.
 - **Queue.** Tickets live in `<main>/tmp/wt/pool/queue/` (time, pid, slug,
-  machines wanted). A ticket may try a machine only when no older live ticket
-  wants it; tickets of dead processes are deleted. A local lock whose owner is
+  machines wanted). A ticket served before another (priority, then arrival)
+  wants the machine first; tickets of dead processes are deleted. A local lock whose owner is
   dead is taken over after any `ArmaReforgerServer` still running from that
   owner's `server/profile` is stopped.
+- **Burst starts (#1195).** Runs that fit start together. A ticket may start
+  beside the tickets ahead of it on a machine when that machine has a free lane
+  of its kind for each of them and one more for itself, none of them waits on
+  RAM, and live free RAM, less what still boots there, covers all their
+  reserves and its own above `minFreeMb`. The reserves of the starts still in
+  flight ahead (`testReserveMb`, 800, per test; a session's reserve) go into
+  this start's RAM gate, here or in the box's holder, and a test lane locked
+  less than `testBootS` (60) seconds ago counts with `testReserveMb` too, so a
+  burst cannot overshoot the floor. A ticket whose holder has taken its lock is
+  marked `granted` and no longer holds anyone back while its run folder is
+  prepared. Unknown lanes or RAM (an unreadable machine) fall back to one start
+  at a time. Each start still takes its lock with an atomic create (the
+  holder's `CreateNew`, this PC's `openSync "wx"`, unchanged since the pool
+  began), so starts in flight together, and pool code on older branches that
+  still starts one at a time, can race for a lane but never share one; a burst
+  start tries the k-th free lane first so they rarely race. Runs asked together
+  from one worktree share one snapshot (taken under `tmp/remote/snapshot.lock`,
+  reused for 10 s at the same HEAD and index). Measured 2026-11-14, 14
+  `test --tier fast --machine lf-cloud` at once (16 lanes): before, one start
+  every ~3 s (holder ssh, gate and lock 2-3 s, then a 1 s poll; a new run folder
+  held the queue head 22 s), peak 7, starts spread over 83 s; after, peak 14,
+  spread 3.4 s.
 - **Remote slots.** A holder (one ssh session running PowerShell on the
   remote) creates the remote `server-2001` lock with its own pid, prepares the
   run folder, and watches its ancestor processes. When the run ends, or this
@@ -414,7 +436,9 @@ it, picks a lane and a budget, and prints one line per outcome.
   their reserve too, since free RAM does not show them yet. Every start, the first server on a
   machine included, must leave `minFreeMb` (1500) free after its reserve (2026-11-14: the floor
   gated only a second server, so this PC at 0.4 GB free kept taking its first test and session
-  runs, which then timed out while the laptop idled). A test reserves nothing beyond that floor.
+  runs, which then timed out while the laptop idled). A test reserves nothing beyond that floor
+  for itself, but tests still booting (locked under `testBootS`, 60 s) and starts in flight
+  ahead of it count with `testReserveMb` (800) each ("Burst starts").
   A job that does not fit waits with one line ("free RAM 2.2 GB minus 1.4 GB for the session
   would be under 1.5 GB"). Lane counts in `tools/pool.json` are ceilings (ports, heat); the
   gate decides how many run, so a RAM change (the laptop lost 32 GB on 2026-11-14) needs no config
