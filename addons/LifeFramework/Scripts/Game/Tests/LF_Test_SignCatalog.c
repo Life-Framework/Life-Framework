@@ -30,7 +30,8 @@ class LF_Test_SignCatalog : LF_Test
 		LF_SignConfig config = new LF_SignConfig();
 		config.m_aSigns = {};
 		config.m_aSigns.Insert(MakeSign("bank", "Bank", "Money is kept here.", "", "  ", "No guns inside."));
-		config.m_aSigns.Insert(MakeSign("mining", "#LF-Sign_Mining_Title", "#LF-Sign_Mining_What", "#LF-Sign_Mining_How", "#LF-Sign_Mining_Needs", "#LF-Sign_Mining_Rules"));
+		// Literal text: the per-sign keys are the pack's (#325), and this test must pass on the core alone.
+		config.m_aSigns.Insert(MakeSign("mining", "Mining area", "Ore in the rocks.", "Swing the pickaxe.", "A pickaxe.", "Keep the area clean."));
 
 		LF_SignDef bank = LF_SignCatalog.FindIn(config, "bank");
 		ctx.NotNull(bank, "bank is found by id");

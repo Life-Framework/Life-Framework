@@ -340,9 +340,14 @@ function peakWorkingSetMb(marker) {
 
 // Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
 export function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
-  const gproj = join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
+  // With the pack in the checkout, open its project: it depends on the core, so both load and the pack's
+  // string table shows (a sign board reads its own title, not the core's neutral one; #325).
+  const packGproj = join(ROOT, "addons", "LF_Everon1989", "LF_Everon1989.gproj");
+  const gproj = existsSync(packGproj) ? packGproj : join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
   const game = process.env.ENFUSION_GAME_PATH || join(steamCommon(), "Arma Reforger");
-  const args = ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=" + plugin, "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", join(game, "addons")];
+  const addonDirs = [join(game, "addons")];
+  if (existsSync(packGproj)) addonDirs.push(join(ROOT, "addons"));
+  const args = ["-gproj", gproj, "-wbModule=WorldEditor", "-plugin=" + plugin, "-noSplash", "-forceUpdate", "-noSound", "-profile", profile, "-addonsDir", addonDirs.join(",")];
   return new Promise((done) => {
     const started = Date.now();
     let peakMb = 0;

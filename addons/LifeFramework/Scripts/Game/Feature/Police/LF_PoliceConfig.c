@@ -142,19 +142,19 @@ class LF_PoliceConfig
 	int m_iSearchCooldownSeconds;
 
 	[Attribute("3", UIWidgets.Auto, "Unpaid tickets one holder may carry; a further ticket is refused", params: "1 20")]
-	int m_iTicketMaxOpen = 3;
+	int m_iTicketMaxOpen;
 
 	[Attribute("3", UIWidgets.Auto, "Paid tickets kept per holder so a receipt reprints after a restart", params: "0 20")]
-	int m_iTicketKeepPaid = 3;
+	int m_iTicketKeepPaid;
 
 	[Attribute("5", UIWidgets.Auto, "Metres an officer may stand from a suspect to arrest or fine from the police menu or the arrest action", params: "1 30")]
-	float m_fArrestReach = 5;
+	float m_fArrestReach;
 
 	[Attribute("8", UIWidgets.Auto, "Metres from the cell a jail escort counts as arrived", params: "1 50")]
-	float m_fJailArrivalRadius = 8;
+	float m_fJailArrivalRadius;
 
 	[Attribute("6", UIWidgets.Auto, "Metres a player may stand from the police application desk for the form to open", params: "1 30")]
-	float m_fApplyDeskRange = 6;
+	float m_fApplyDeskRange;
 	[Attribute("60", UIWidgets.Auto, "Seconds after a hold-up during which the held-up player, holding no weapon, may be handcuffed by an on-duty officer. A downed player may always be. 0 allows downed players only", params: "0 600")]
 	int m_iCompliantSeconds;
 

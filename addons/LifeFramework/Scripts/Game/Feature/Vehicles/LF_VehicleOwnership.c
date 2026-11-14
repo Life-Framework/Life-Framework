@@ -556,6 +556,31 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when this entity is the live car of a saved vehicle record, by session or by the key id
+	//! its lock carries. The world cleanup never sweeps one.
+	static bool IsOwnedEntity(IEntity entity)
+	{
+		if (!entity)
+			return false;
+
+		string lockId;
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(entity);
+		if (vehicleLock)
+			lockId = vehicleLock.GetVehicleIdentifier();
+
+		foreach (string vehicleId, LF_VehicleRecord record : Records())
+		{
+			if (GetVehicle(vehicleId) == entity)
+				return true;
+
+			if (!lockId.IsEmpty() && record.m_sKeyId == lockId)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static IEntity GetVehicle(string vehicleId)
 	{
 		LF_VehicleSession session = Sessions().Get(vehicleId);

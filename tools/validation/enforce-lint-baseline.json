@@ -81,11 +81,6 @@
  },
  {
   "rule": "L3",
-  "file": "Scripts/Game/Feature/SirenLights/LF_SirenManagerComponent.c",
-  "text": "class LF_SirenManagerComponent : ScriptComponent"
- },
- {
-  "rule": "L3",
   "file": "Scripts/Game/Feature/UIKit/LF_UIQuantityRelay.c",
   "text": "class LF_UIQuantityRelay : ScriptedWidgetComponent"
  },
@@ -103,5 +98,20 @@
   "rule": "L6",
   "file": "Prefabs/Items/Food/RowanBerries.et",
   "text": "Object \"{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/rowan_berries.xob\""
+ },
+ {
+  "rule": "L9",
+  "file": "Scripts/Game/Feature/Signs/LF_SignCatalog.c",
+  "text": "string m_sImageName = \"full\";"
+ },
+ {
+  "rule": "L9",
+  "file": "Scripts/Game/Feature/Toys/LF_JumpPad.c",
+  "text": "protected bool m_bEnabled = true;"
+ },
+ {
+  "rule": "L9",
+  "file": "Scripts/Game/Feature/Toys/LF_JumpPad.c",
+  "text": "protected float m_fUpwardSpeed = 12;"
  }
 ]
