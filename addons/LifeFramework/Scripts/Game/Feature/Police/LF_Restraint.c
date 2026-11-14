@@ -412,9 +412,16 @@ class LF_Restraint
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: an officer holds playerUid in cuffs (the body may be gone already).
+	static bool HasHold(string playerUid)
+	{
+		return !playerUid.IsEmpty() && s_mHolds && s_mHolds.Contains(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server, on disconnect: a prisoner who leaves frees the cuffs back to the officer who cuffed
 	//! them (or loses them, logged, when that officer is gone too). An officer who leaves keeps no
-	//! hold: any on-duty officer may release the prisoner. Rejoin rules are #691's.
+	//! hold: any on-duty officer may release the prisoner. What leaving cuffed costs is LF_DisconnectRules' (#691).
 	//! \return 1 when a hold on playerUid was dropped.
 	static int ReleasePlayer(string playerUid)
 	{

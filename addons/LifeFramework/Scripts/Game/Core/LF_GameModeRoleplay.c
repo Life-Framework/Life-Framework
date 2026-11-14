@@ -175,12 +175,15 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	//------------------------------------------------------------------------------------------------
 	//! Releases per-player server state the player can no longer act on: escort holds where they
 	//! are officer or prisoner, handcuffs on them (LF_Restraint), and a running convoy (fails it and drops the vehicle watch).
-	//! Jail sentences are kept on purpose: they persist and resume on reconnect. The carried
+	//! Jail sentences are kept on purpose: they persist and resume on reconnect. LF_DisconnectRules
+	//! decides first what leaving cuffed, downed, wanted or jailed costs (#691). The carried
 	//! inventory is captured before the base game deletes the character.
 	override void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
 	{
 		if (Replication.IsServer())
 		{
+			// First: the rules read the cuffs, escort and downed state that the cleanup below ends (#691).
+			LF_DisconnectRules.OnPlayerDisconnected(playerId);
 			LF_BleedOut.OnPlayerDisconnected(playerId);
 			LF_PhoneCalls.OnPlayerDisconnected(playerId);
 			ReleaseDisconnectedPlayer(playerId);

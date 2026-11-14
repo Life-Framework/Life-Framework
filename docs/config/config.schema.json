@@ -234,6 +234,54 @@
       "additionalProperties": false,
       "x-class": "LF_CrimeCatalogConfig"
     },
+    "disconnect": {
+      "type": "object",
+      "description": "Disconnect rules (#691): what logging out does to a player who is cuffed, escorted, downed, wanted or jailed, so leaving never escapes an arrest, a death or a sentence.",
+      "properties": {
+        "cuffedRule": {
+          "type": "string",
+          "default": "jail"
+        },
+        "escortedCountsAsCuffed": {
+          "type": "boolean"
+        },
+        "cuffedWantedAdd": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 5
+        },
+        "cuffedMinJailSeconds": {
+          "type": "integer",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "cuffedFine": {
+          "type": "integer",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "cuffedFineAllowsDebt": {
+          "type": "boolean"
+        },
+        "downedDies": {
+          "type": "boolean"
+        },
+        "wantedLogoutAdd": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 5
+        },
+        "jailClockOffline": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_DisconnectConfig"
+    },
     "idCard": {
       "type": "object",
       "description": "The photo identity card (#902): Configs/Identity/LF_PhotoIdCard.conf with the owner's `idCard` section layered over it.",

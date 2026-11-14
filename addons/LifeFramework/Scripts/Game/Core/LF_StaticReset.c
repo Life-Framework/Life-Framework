@@ -66,6 +66,7 @@ class LF_StaticReset
 		LF_WantedPosterBoardComponent.ResetStatics();
 		LF_WantedPostersConfig.Reload();
 		LF_PhotoIdCardConfig.Reload();
+		LF_DisconnectConfig.Reload();
 		LF_EvidenceLocker.ResetStatics();
 		LF_Evidence.ResetStatics();
 		LF_Witness.ResetStatics();

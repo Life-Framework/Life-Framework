@@ -5353,6 +5353,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "New Life Rule return"
      Comment "Incident kind: a player wearing the New Life wristband came back near where they died."
     }
+    CustomStringTableItem "{46261105E82813B6}" {
+     Id "LF-IncidentGm_Kind_logout"
+     Target_en_us "Logout in custody"
+     Comment "Incident kind: a player logged out while cuffed, escorted, downed, wanted or jailed; the row adds the state and what the disconnect rules did."
+    }
     CustomStringTableItem "{5934A766F9EB76E9}" {
      Id "LF-NewLife_WakeToast"
      Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
