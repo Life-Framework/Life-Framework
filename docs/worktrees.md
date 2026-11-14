@@ -718,6 +718,45 @@ late-join path (`session join`) trims first when free RAM is under the floor plu
 reserve, then refuses with a one-line reason if it still would breach the floor (#563). The lane count (`lanes.session`) stays 2 here: raise it only after a run with three
 concurrent proofs holds the floor.
 
+### Session boot time
+
+Where `session up` spends its time (lf-cloud, lowspec, 1 client, 2026-11-14, from the box's `up.log` and
+the client `console.log`; this PC could not run it that day: free disk under the 5 GB floor, and since
+the same day client sessions go to lf-cloud or the laptop only):
+
+| Phase | Time |
+|---|---|
+| Fresh worktree only: resource database refresh here (about 15 s) and on the box, queue, sync | up to 220 s, once per worktree; later `up` is 0.1 s of sync |
+| Server launch to `Entered online game state.` | 10-15 s |
+| Client launch to its connect attempt: render device 3 s, shader reload 3.4 s, compiling Game scripts 16 s, rest | 28-32 s |
+| Connect to the server's registration-form line (world load, join) | 1-3 s, 20-60 s when the box is busy |
+
+The client was the critical path: it used to start only after the server was ready, so the server's
+10-15 s were pure waiting. **Client 1 now launches with the server** (`tools/lib/session-overlap.mjs`,
+`sessionLaunch` in `tools/cli.mjs`); clients 2 and up still start one after another, each after the
+previous one joined, so player ids follow client numbers. Nothing is shared between sessions: every `up`
+still boots its own server on this worktree's scripts (a warm, reusable server would add nothing, since
+the client's own start-up is longer than a server boot, and it would need a per-build validity key), the lane
+lock moves to the server's pid before the client starts, and the RAM reserve and idle reaping are
+unchanged.
+
+The risk is a client that reaches its connect attempt before the server listens. The client's own log is
+watched (`Starting RPL client`, `Client L2 connection established`): a client that tried and is not
+connected 20 s after the server was ready, or died, or never tried within 150 s, is relaunched once (the
+line `session: client 1 raced the server; relaunching it once` and `up.log` say so). The worst case is the
+old serial time plus the grace period, never a failed session. `LF_SESSION_SERIAL=1` restores the old
+order. Polls of the server log and the join check are 0.5 s (were 2 s).
+
+Measured on lf-cloud, ready-in (`up` start to the join line), 10 runs each, one session after another
+(the box is shared, so the spread is wide; run it again if a number matters):
+
+| | median | min | max |
+|---|---|---|---|
+| serial (before; 5 runs before, 5 as a control after) | 61.4 s | 31.9 s | 168.8 s |
+| overlapped (after, two batches of 5) | 34.8 s | 25.2 s | 141.1 s |
+
+`selftest`: `tools/validation/session-overlap-selftest.mjs` (the plan, the retry and give-up rules, the log patterns).
+
 ### Waiting on a session
 
 `node agent-box/session.mjs up` blocks until the server and every client are

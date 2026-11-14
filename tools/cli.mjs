@@ -78,6 +78,7 @@ import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
+import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
 
 function mcpDirFor(root) {
@@ -2390,27 +2391,50 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   wt.transferLock(root, laneLockOf(state), srv.pid);
   session.writeSession(dir, state);
 
+  // Client 1 starts with the server (tools/lib/session-overlap.mjs): its 28-32 s of engine and script
+  // start-up hide the server's 10-15 s boot. The lane already belongs to the server's pid here.
+  const overlap = overlapPlan({ clients: paths.clients.length });
+  const launchedEarly = new Set();
+  if (overlap.early) {
+    const first = paths.clients[0];
+    const failed = sessionLaunchClient(root, dir, state, first, { game, mission, res, visible, fail, settleMs: 0 });
+    if (failed !== null) return failed;
+    launchedEarly.add(first.n);
+    slog(`client ${first.n} launched with the server (${overlap.reason})`);
+  }
+
   let log = null;
+  let readyAt = 0;
   const deadline = Date.now() + 300000;
   while (Date.now() < deadline && host.pidAlive(srv.pid)) {
-    sleepMs(2000);
+    sleepMs(500);
     const f = session.newestLog(join(paths.server, "logs"));
     if (f && !before.has(basenameOfLogDir(f))) log = f;
-    if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
+    if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) {
+      readyAt = Date.now();
+      break;
+    }
   }
   if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
-  slog(`server up (pid ${srv.pid}); log ${log}`);
+  slog(`server up (pid ${srv.pid}); log ${log}; ${Math.round((readyAt - Date.parse(state.startedAt)) / 100) / 10} s after the lane was taken`);
+
+  if (launchedEarly.has(1)) {
+    const failed = sessionFirstClientConnects(root, dir, state, paths.clients[0], { game, mission, res, visible, fail, readyAt });
+    if (failed !== null) return failed;
+  }
 
   for (const c of paths.clients) {
-    const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
-    if (failed !== null) return failed;
+    if (!launchedEarly.has(c.n)) {
+      const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
+      if (failed !== null) return failed;
+    }
     // Client n+1 starts once client n has joined, so player ids follow client numbers and two clients
     // do not load at once. This replaced a fixed 15 s sleep: a client joins in about 7 s (measured
     // 2026-11-10: 6.7 to 8.2 s from launch to the server's join line).
     if (marker && c.n < paths.clients.length) {
       const joinBy = Date.now() + 40000;
       while (Date.now() < joinBy && host.pidAlive(state.serverPid) && (readFileSync(log, "utf8").match(marker) ?? []).length < c.n) sleepMs(500);
-      slog(`client ${c.n} joined ${Math.round((Date.now() - Date.parse(state.clients.at(-1).launchedAt)) / 100) / 10} s after its launch`);
+      slog(`client ${c.n} joined ${Math.round((Date.now() - Date.parse(state.clients.find((x) => x.n === c.n).launchedAt)) / 100) / 10} s after its launch`);
     }
   }
   return log;
@@ -2418,7 +2442,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
 
 // Launches one session client (its own profile) and records it in the session state. Returns
 // null, or the code fail() returned.
-function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail }) {
+function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail, settleMs = 3000 }) {
   mkdirSync(c.box, { recursive: true });
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
@@ -2459,9 +2483,45 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
   state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs, launchedAt: new Date().toISOString() });
   session.writeSession(dir, state);
   // The next client waits for this one's join line (sessionLaunch); here only a client that dies at once is caught.
-  sleepMs(3000);
-  if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+  // settleMs 0: a client launched with the server is watched by sessionFirstClientConnects instead.
+  if (settleMs > 0) sleepMs(settleMs);
+  if (settleMs > 0 && !host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
   return null;
+}
+
+// Client 1 was launched together with the server: waits until it has connected, and relaunches it once
+// when it raced the server (tried before the server listened, or died, or never tried). Returns null, or
+// the code fail() returned. The wait costs nothing extra: a join needs this connection anyway.
+function sessionFirstClientConnects(root, dir, state, c, { game, mission, res, visible, fail, readyAt }) {
+  let retried = false;
+  let attemptSeenAt = 0;
+  const entry = () => state.clients.find((x) => x.n === c.n);
+  for (;;) {
+    const e = entry();
+    const cl = session.newestLog(c.logs);
+    const text = cl ? readFileSync(cl, "utf8") : "";
+    const now = Date.now();
+    if (!attemptSeenAt && CONNECT_TRY.test(text)) attemptSeenAt = now;
+    const verdict = firstClientVerdict({ now, serverReadyAt: readyAt, launchedAt: Date.parse(e.launchedAt), attemptSeenAt, connected: CONNECTED.test(text), alive: host.pidAlive(e.pid), retried });
+    if (verdict === "connected") {
+      slog(`client ${c.n} connected ${Math.round((now - Date.parse(e.launchedAt)) / 100) / 10} s after its launch${retried ? " (relaunched once)" : ""}`);
+      return null;
+    }
+    if (verdict === "stuck") return null;
+    if (verdict === "retry") {
+      slog(`client ${c.n} did not connect (attempt ${attemptSeenAt ? "seen" : "not seen"}, ${host.pidAlive(e.pid) ? "running" : "gone"}); relaunching it once now that the server is ready`);
+      console.log(`session: client ${c.n} raced the server; relaunching it once`);
+      killTree(e.pid);
+      state.clients = state.clients.filter((x) => x.n !== c.n);
+      retried = true;
+      attemptSeenAt = 0;
+      const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
+      if (failed !== null) return failed;
+      // The server is ready now: the relaunched client's clock starts at its launch.
+      continue;
+    }
+    sleepMs(500);
+  }
 }
 
 // One look at a starting session: { joined } while it is still coming up, or
@@ -2499,7 +2559,7 @@ function sessionAwaitJoin(log, clients, marker, fail, state) {
     }
     joined = v.joined;
     if (joined >= clients) return joined;
-    sleepMs(2000);
+    sleepMs(500);
   }
   fail(`${joined}/${clients} client(s) joined within 240s (server log ${log})`);
   return -1;
