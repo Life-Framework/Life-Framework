@@ -3,7 +3,7 @@
 // The server process is sampled every N seconds for at most M seconds. A raw sample is
 // { t (epoch ms), cpuSec (cumulative CPU seconds of the server), wsMb (working set), sentBytes
 // (cumulative bytes sent) }. Rows are the change between two samples: CPU as a percent of ONE core,
-// working set, upload in Mbit/s. The verdict compares the mean CPU and upload with the 40-player
+// working set, upload in Mbit/s. The verdict compares the mean CPU and upload with the 16-player
 // budget (CPU under 80% of one core, upload under the configured Mbit/s) and names the peak too.
 // The sampler, the clock and the sleep are injected, so the selftest
 // (tools/validation/host-perf-selftest.mjs) reads no process.

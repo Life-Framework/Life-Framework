@@ -10,8 +10,9 @@ headless Blender, then moving its export into the addon and compiling it in a hi
 taught us is in [`docs/architecture/building-pipeline-spike.md`](../architecture/building-pipeline-spike.md).
 
 ```
-tools\cli building run <slug> [--from <stage>] [--only <stage>] [--force]
+tools\cli building run <slug> [--from <stage>] [--only <stage>] [--force] [--full]   --full: compile every model again
 tools\cli building adopt <slug> [<file.blend>]   keep a scene polished by hand as the export source
+tools\cli building review <slug> --shots   Blender review renders and a contact sheet, no game (polish.md "Review shots")
 tools\cli building status [<slug>]
 tools\cli building doctor      Blender, the add-on, its licence, one headless generate
 tools\cli building selftest    the offline checks (also part of tools\cli validate)
@@ -48,15 +49,50 @@ neither.
 | `review` | Front, side, top and three-quarter renders in `review/`, and `review/stats.json`: triangles per part, storeys, footprint and height in metres. Over the spec's budget fails | The agent reads the pictures (Review below) |
 | `polish` | Renders what a player sees into `polish/`: a plan section, the four sides and the street corner from eye height, the hall from inside. Lists the spec's hand edits; warns when a hand-polished `polished.blend` was made with other settings than the spec. Never fails | The human or agent polishing it by hand: [polish.md](polish.md) |
 | `export` | ArchBuilder's Reforger export (its scene export of `tools/buildings/<slug>/polished.blend` when there is one) into a staging addon, `tmp/buildings/<slug>/export/`, with its Workbench step off. Gives every `AB_*` material its game colour (Materials below). Fails on any export warning, any furniture ArchBuilder left out of the game, no vanilla props with furniture on, and fewer doors than `budget.min_doors`. Applies `spec.polish.entities` and warns about three or more door sets in a row on one wall | The tool |
-| `import` | Refuses any file carrying the licence watermark, moves the export into the addon with new GUIDs, compiles the model in a hidden Workbench and reads the `.xob` back | The tool |
+| `import` | Refuses any file carrying the licence watermark, moves the export into the addon with new GUIDs, writes only the files that changed, compiles a changed model in a hidden Workbench (on a pool machine when this PC has no Workbench) and reads the `.xob` back (Fast polish iterations below) | The tool |
 | `prefab` | Every reference in the building's files resolves: our own by `.meta` (in the building's addon or the core), the base game's by path and GUID in the game's resource database. Door sets, windows, the model and its collider surfaces are there | The tool; then a placement and a look |
 | `store` | Only with a `store` block: writes `<prefab_dir>/<store.prefab>.et`, the building as one of our physical stores (Store below). Prints each fixture with the index `pick` uses | The tool; then a session: take, pay, walk out |
 
 A finished stage is skipped on the next `run`. `--only review` reruns one stage, `--from export` reruns it and everything
-after it, and `--force` reruns from the start.
+after it, and `--force` reruns from the start (and compiles every model again, like `--full`).
 
-- **A failed import** can leave new files beside old ones in the addon. Rerun `--from import`: it rewrites every file and
-  keeps every GUID. Commit only after the `prefab` stage passes.
+- **A failed import** can leave new files beside old ones in the addon. Rerun `--from import`: it writes every file that
+  differs from the plan and keeps every GUID. Commit only after the `prefab` stage passes.
+
+## Fast polish iterations
+
+A polish iteration is an edit to `polished.blend` (or the spec's `polish` block) and `tools\cli building run <slug> --from polish`.
+Two things keep it short:
+
+- **One Blender per run.** Every Blender stage of a run (generate, review, polish, export and the export's materials job)
+  goes to one headless Blender (`archbuilder_job.py --serve`, `BlenderSession` in `archbuilder.mjs`): each job opens its
+  own `.blend` there, its log is still `tmp/buildings/<slug>/<stage>-blender.log`, and the whole session's log is
+  `tmp/buildings/<slug>/blender-session/blender.log`. Blender's start-up was most of each stage (ArchBuilder's generate
+  and export take under a second). The Enfusion Blender Tools add-on prints the same `ar_mqa` and `object_visualization`
+  import errors on every start; they stay in the log and are left out of what a failed stage prints.
+- **Only what changed is imported.** The export runs Blender with `PYTHONHASHSEED=0`, so the same scene gives the same
+  `.fbx` byte for byte apart from its creation time stamp (Blender's FBX writer derived each object's id from Python's
+  per-process salted `hash()`). The import hashes every planned file against what is in the addon and writes only those
+  that differ, and it compiles a model in Workbench only when its `.fbx` or planned `.xob.meta` changed since the last
+  import, or the `.xob` in the addon is not the one that import made (a `git checkout`). The record is
+  `tmp/buildings/<slug>/import-manifest.json`, written only after a good import. With nothing changed the import says
+  `nothing changed since the last import ... Workbench skipped` and takes a second. `--full` compiles every model again.
+- **Where Workbench runs.** This PC has no `workbench` cap (agents never start a headless Workbench here,
+  `tools/lib/wb-route.mjs`), so the compile goes to a pool machine that has one: the pool syncs the worktree (the planned
+  `.fbx` and `.xob.meta` included), runs `tools\cli building compile <slug> <model.fbx>` there in its signed-in desktop
+  session (ssh has no GPU device), and copies the `.xob`, its re-saved `.meta` and the `.txo` back. Keeping one Workbench
+  open between runs is not possible with the plugin runner: Workbench runs its plugin once, at start-up.
+
+Measured on the supermarket, 2026-11-15, this PC under load (0.5 GB RAM free), Workbench on lf-cloud:
+
+| Case | Before | After |
+|---|---|---|
+| Full run, `--force` | Blender stages 39 s (17 + 9 + 5 + 8), then the import refuses here; 72 to 136 s of Workbench where one may run | 97 s: Blender stages 16 s (11 + 2 + 1 + 2), import 80 s (compile 38 s, sync and copy back the rest) |
+| One mesh changed, `--from polish` | polish and export 67 s, import refused here | 103 s: polish and export 33 s, import 69 s (compile 41 s) |
+| Nothing changed, `--from polish` | polish and export 32 s, import refused here | 14 s: polish 10 s, export 2 s, import 1 s with no Workbench |
+
+The Blender times vary a lot on this PC (one polish stage took 4 s on one run and 26 s on the next); the first Blender job
+of a run carries the start-up.
 - **Renaming a building** (`name`) makes a new building with new GUIDs; saved worlds keep naming the old ones. The old
   `Assets/Buildings/<Old>/` and `Prefabs/Buildings/<Old>/` stay until you delete them, once nothing references them.
 - **The import refuses** a machine with no ArchBuilder licence file (it could not check the watermark), any file the add-on

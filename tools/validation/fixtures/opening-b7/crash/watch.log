@@ -1,0 +1,5 @@
+[LFDebug:HostWatch] host up (pid 4120)
+[LFDebug:HostWatch] host exited: exit without a stop or a restart marker
+[LFDebug:HostWatch] crash 1: console log kept in backups/20261115-213603-crash
+[LFDebug:HostWatch] restarting the host (exit without a stop or a restart marker)
+[LFDebug:HostWatch] host up (pid 5532)

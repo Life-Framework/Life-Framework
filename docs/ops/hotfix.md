@@ -74,8 +74,8 @@ telling players first (step 6).
    reports an error the repo copy did not, stop: the file was changed by hand or a
    secret was merged into the wrong key.
 6. **Warn, then restart.** The server only picks up `config.json` at boot.
-   - Post the restart on Discord (`tools\cli host announce --at <time>` *(planned)*, #1274;
-     until then post the time by hand).
+   - Post the restart on Discord (`tools\cli host announce --at <time>`; `--build` is
+     needed only while the host has no save, see the [session runbook](session-runbook.md)).
    - Players get an in-game toast at each warning lead time once the owner config lists
      restart times (`restarts` in `config.json`; planned in #1264 and #1265). The flagship
      restarts at 06:00 and 18:00 server time, with warnings at 15, 5 and 1 minute and no

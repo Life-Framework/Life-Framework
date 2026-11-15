@@ -1,0 +1,6 @@
+{
+  "dayCycle": {
+    "mode": "accelerated",
+    "dayLengthMinutes": 60
+  }
+}

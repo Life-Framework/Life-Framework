@@ -100,3 +100,21 @@ class LF_OnAimedAt : LF_Event
 		return e;
 	}
 }
+
+//! A player's /report flagged incidents (LF_IncidentFlags.Report), published after the flag rows were
+//! inserted. Only a report that flagged something publishes it; a refused or empty one does not.
+//! The staff relay (LF_StaffRelay) sends it to the staff channel.
+class LF_OnIncidentFlagged : LF_Event
+{
+	string m_sReporterUid;
+	//! How many incidents this report flagged (at least 1).
+	int m_iFlagged;
+
+	static LF_OnIncidentFlagged Create(string reporterUid, int flagged)
+	{
+		LF_OnIncidentFlagged e = new LF_OnIncidentFlagged();
+		e.m_sReporterUid = reporterUid;
+		e.m_iFlagged = flagged;
+		return e;
+	}
+}

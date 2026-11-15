@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { NextSessionPanel } from "@/components/NextSession";
+import { NextSessionPanel, upcoming, utcText } from "@/components/NextSession";
 import { Figure, GoLink, PageHeader, Section, Stamp } from "@/components/ui";
 import { CORE_VS_PACK_URL, DISCORD_URL, blob, milestone, milestoneName, siteData, still } from "@/lib/content";
 
@@ -20,6 +20,16 @@ const configs = [
   ["Configs/Vehicles/VehicleSettings.conf", "Vehicle lot and ownership"],
   ["Configs/Signs/LF_Signs.conf", "What each sign in town says"],
 ];
+
+// The og:description of /servers, which entry-server.tsx writes into the prerendered page (#1615). A link
+// preview (Discord) says the next session time or that none is announced: no player count, no status
+// (decision 2026-11-14). The prerender is as old as the build, so a session that has passed is dropped at the
+// next build, by the same rule as the panel.
+// eslint-disable-next-line react-refresh/only-export-components
+export const serversOgDescription = (base: string, now: number) => {
+  const next = upcoming(now);
+  return `${next ? `Next session: ${utcText(next.when)}.` : "No session announced."} ${base}`;
+};
 
 const Servers = () => {
   const m3 = milestone("M3");
@@ -195,9 +205,9 @@ const Servers = () => {
             the latest save, and backs saves up. You need Arma Reforger Server (Steam app 1874900).
           </p>
           <p className="muted md:col-start-1">
-            Our public flagship opens in M4, after the framework release. It starts as announced sessions from the same PC, sized for
-            about 40 players, and moves to a rented box for 24/7 play once sessions fill several times in a row and donations cover
-            three months of rent.
+            Our public flagship opens in M4, after the framework release. The alpha runs on a rented server with 16 player slots. It is
+            invite-only: you join with a password from our Discord. The full launch, about 40 players, comes later, once sessions fill
+            those 16 slots several times in a row and donations cover three months of rent.
           </p>
           <ul className="space-y-2">
             <li>
