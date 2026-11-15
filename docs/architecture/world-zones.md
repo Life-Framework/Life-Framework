@@ -80,8 +80,10 @@ with the next town pass, or the slice asks the lead for a `town-` worktree.
 
 | Check | Town | Grid |
 |---|---|---|
-| `tools\cli audit placement --strict` | Fails on any flagged entity | Not measured by default. With `--annex` its rows are listed, and `--strict` ignores them |
-| `validate-player-props` | Fails on a new `*_Debug` name or `/Debug/` prefab, in the DebugWorld village and the pack town world (the baseline is today's debt and never grows) | Not checked |
+| `tools\cli audit placement --strict` | A flagged entity is a **warning on every branch**, never a failure | Fails on a flagged entity in a non-town layer the branch adds or moves (`--annex --hard-layer <layers>`, which `wt gate` passes from the diff); a grid layer the branch did not touch only warns |
+| `validate-prop-on-surface` | A prop overhanging a surface in a town layer is a **warning on every branch** | A finding in a grid layer or a prefab still fails |
+| `validate-town-manifest`, `validate-road-ids` | Warn on every branch (they read only town layers; a normal PR cannot change one) | Not checked |
+| `validate-player-props` | Warns on a new `*_Debug` name or `/Debug/` prefab, in the DebugWorld village and the pack town world (the baseline is today's debt and never grows) | Not checked |
 | `polish` checklist | Every line holds (`.claude/skills/polish/SKILL.md`) | Only "It sits on its surface" and "can be reached on foot"; one `look grid:<slug>` picture in the PR |
 | `tools\cli place` | The full set of checks | The full set of checks (they measure physics, not taste) |
 | `look` | `look <area>` or `look town:<area>`; `town:` refuses an area inside the grid | `look grid:<slug>` |
@@ -102,6 +104,13 @@ instead:
 
 The town manifest (`agent-box/town.mjs`) keeps its contracts (each site offers its actions, has a
 sign with a card) and only warns about distances, on every branch.
+
+**The town never blocks anyone** (maintainer rule, 2026-11-15; #1867 left the chop shop's `Workbench_Vice_01` 0.41 m
+above its bench and failed every other PR). The town is hand-edited, so every layout finding on a town entity
+is a warning on every branch: `tools/lib/town-findings.mjs` splits a finding by the layer it blames, and
+`tools/lib/world-checks.mjs` (`TOWN_LAYOUT_CHECKS`) lists the checks that read only town layers.
+`validate-world-zones` stays hard: a normal branch that changes a town layer still fails. Proof:
+`tools/validation/town-warn-selftest.mjs`.
 
 ## The town-placement pass at chapter close
 
