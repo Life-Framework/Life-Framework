@@ -19,11 +19,13 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as mg from "./lib/main-guard.mjs";
+import * as pin from "./lib/guard-pin.mjs";
 
 const SELF = fileURLToPath(import.meta.url);
 const TICK_MS = 60 * 1000;
 const STEP_BUDGET_MS = 90 * 60 * 1000;
 const RUN_SLUG = "main-guard-run";
+const COMPILE_SLUG = "main-guard-compile";
 const now = () => new Date().toISOString();
 
 const hub = (root) => wt.ensureHub(root);
@@ -73,13 +75,22 @@ const gh = (cwd, args) => {
   return spawnSync(bin, args, { cwd, encoding: "utf8", windowsHide: true, timeout: 120000 });
 };
 
-function runDir(root) {
-  return join(dirname(mainRoot(root)), `Life-Framework-ws-${RUN_SLUG}`);
+function runDir(root, slug = RUN_SLUG) {
+  return join(dirname(mainRoot(root)), `Life-Framework-ws-${slug}`);
+}
+
+// A head's verdict: <hub>/main-guard-state.json and the GitHub commit status `main-guard` (what world sync and
+// wt new pin to on any machine).
+function mark(root, dir, sha, status, extra) {
+  try { pin.recordHead(hub(root), sha, status, extra); } catch (e) { log(root, `state write failed: ${e.message}`); }
+  const r = pin.postStatus(dir, sha, status);
+  if (r.status !== 0) log(root, `commit status ${status} on ${sha.slice(0, 8)} not posted: ${String(r.stderr || "").trim().slice(0, 160)}`);
 }
 
 // The guard's own worktree, made once with `wt new` (ports, junctions, rdb), then moved by detached checkouts.
-function ensureRunWorktree(root) {
-  const dir = runDir(root);
+function ensureRunWorktree(root, slug = RUN_SLUG) {
+  const RUN_SLUG = slug;
+  const dir = runDir(root, slug);
   if (existsSync(join(dir, ".git"))) return dir;
   const r = spawnSync(process.execPath, [join(mainRoot(root), "tools", "cli.mjs"), "wt", "new", RUN_SLUG], { cwd: mainRoot(root), encoding: "utf8", windowsHide: true, timeout: 600000 });
   if (r.status !== 0 || !existsSync(join(dir, ".git"))) throw new Error(`wt new ${RUN_SLUG} failed: ${(r.stdout + r.stderr).trim().split(/\r?\n/).slice(-3).join(" | ")}`);
@@ -155,18 +166,59 @@ async function checkHead(root, dir, head) {
       return x.code !== 0;
     });
     checkout(dir, head);
-    const refusal = mg.revertRefusal(b.culprit, readState(root));
+    const refusal = mg.revertRefusal(b.culprit, readState(root), { step: step.name });
     if (refusal) {
       log(root, `${head.slice(0, 8)} ${step.name} red, no revert: ${refusal}`);
+      if (mg.fixCardInstead(b.culprit, step.name)) openFixCard(root, dir, b.culprit, step.name, what, r.log);
+      mark(root, dir, head, "red", { step: step.name, what });
       writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal } });
       return;
     }
     await revert(root, dir, b.culprit, what, r.log);
+    mark(root, dir, head, "red", { step: step.name, what });
     writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), culprit: mg.prOfMerge(b.culprit.subject) } });
     return;
   }
+  mark(root, dir, head, "green");
   writeState(root, { running: null, lastChecked: head, lastGreen: head, lastResult: { head, verdict: "green", at: now() } });
   log(root, `${head.slice(0, 8)} green`);
+}
+
+function openFixCard(root, dir, c, stepName, what, failLog) {
+  const card = mg.fixCard(c, stepName, what, failLog);
+  const bf = join(mainRoot(root), "tmp", "logs", `main-guard-fixcard-${mg.prOfMerge(c.subject)}-${Date.now()}.md`);
+  writeFileSync(bf, card.body);
+  const r = gh(dir, ["issue", "create", "--title", card.title, "--body-file", bf]);
+  log(root, `fix card: ${r.status === 0 ? (r.stdout || "").trim() : `create failed: ${(r.stderr || "").trim().slice(0, 200)}`}`);
+}
+
+// Stage 1: the Workbench compile on a new head, in its own worktree, before anything else. A red compile is
+// deterministic: bisect at once (no recheck) and revert the culprit.
+async function compileHead(root, cdir, head) {
+  const state = readState(root);
+  writeState(root, { lastCompileAt: now(), compiling: { head, at: now() } });
+  const compile = async (sha) => {
+    checkout(cdir, sha);
+    const x = await runCli(root, cdir, mg.COMPILE, `compile-${sha.slice(0, 8)}`);
+    const v = mg.compileVerdict(x.code);
+    log(root, `  compile ${sha.slice(0, 8)}: ${v} (exit ${x.code}, ${x.log})`);
+    return v;
+  };
+  const from = state.lastCompiled ?? state.lastGreen ?? state.startHead;
+  const g = await mg.compileGate({ head, merges: mergesSince(cdir, from, head, state.startHead), state, compile });
+  writeState(root, { compiling: null });
+  if (g.verdict === "env") { log(root, `${head.slice(0, 8)} compile: no verdict (pool machine), retry next tick`); return; }
+  if (g.verdict === "compiled-ok") {
+    mark(root, cdir, head, "compiled-ok");
+    writeState(root, { lastCompiled: head });
+    log(root, `${head.slice(0, 8)} compiled-ok`);
+    return;
+  }
+  mark(root, cdir, head, "red", { step: "compile" });
+  writeState(root, { lastCompileRed: head });
+  if (g.refusal) { log(root, `${head.slice(0, 8)} compile red, no revert: ${g.refusal}`); return; }
+  log(root, `${head.slice(0, 8)} compile red; bisected to ${g.culprit.sha.slice(0, 8)} (${g.culprit.subject.slice(0, 60)}); reverting`);
+  await revert(root, cdir, g.culprit, "Workbench compile", "compile logs under tmp/logs/main-guard-compile-*");
 }
 
 async function revert(root, dir, c, what, failLog) {
@@ -231,6 +283,8 @@ export async function runWorker(root) {
   writeFileSync(lockPath(root), JSON.stringify({ pid: process.pid, at: now() }));
   log(root, `worker pid ${process.pid} starts`);
   const dir = ensureRunWorktree(root);
+  const cdir = ensureRunWorktree(root, COMPILE_SLUG);
+  let stage2 = null;
   git(dir, ["fetch", "origin", "--prune"]);
   const head0 = git(dir, ["rev-parse", "origin/main"]).stdout.trim();
   const st = readState(root);
@@ -244,12 +298,15 @@ export async function runWorker(root) {
     try {
       git(dir, ["fetch", "origin", "--prune"]);
       const head = git(dir, ["rev-parse", "origin/main"]).stdout.trim();
+      // Stage 1 first: compile the newest head.
+      const c = mg.shouldCompile(readState(root), head, Date.now());
+      if (c.run) await compileHead(root, cdir, head);
+      // Stage 2 in the background, only ever on the newest compiled-ok head.
       const s = readState(root);
-      const d = mg.shouldRun(s, head, Date.now());
-      if (d.run) {
-        log(root, `run: ${d.why}`);
-        if (!s.lastGreen && s.lastChecked === null && s.lastResult === undefined) log(root, "first run: proving the start head before anything can be blamed");
-        await checkHead(root, dir, head);
+      const d = mg.shouldRun(s, s.lastCompiled, Date.now());
+      if (!stage2 && d.run) {
+        log(root, `run: ${d.why} (compiled-ok)`);
+        stage2 = checkHead(root, dir, s.lastCompiled).catch((e) => { log(root, `stage 2 failed: ${e?.message ?? e}`); writeState(root, { running: null }); }).finally(() => { stage2 = null; });
       }
     } catch (e) {
       log(root, `tick failed: ${e?.message ?? e}`);

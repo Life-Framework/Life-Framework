@@ -65,7 +65,10 @@ class LF_WorkbenchPlay
 	//------------------------------------------------------------------------------------------------
 	//! Which header stands in for the missing one: of the headers whose world is the open world, the
 	//! one listing the most overlays (the full server header over a trimmed playtest one); the first
-	//! on a tie. -1 when none names the world with any overlay.
+	//! on a tie. When no header for the open world lists any overlay (DebugWorld: the village is a
+	//! SubScene of it, and only the pack's headers carry the overlays), the header with the most
+	//! overlays of all: Workbench loads the pack beside the core, so its dialogue voices, signs,
+	//! quiz and sounds belong to any world opened there. -1 when no header lists an overlay.
 	//! \param worlds World path of each candidate header, in path order.
 	//! \param overlayCounts How many config overlays each lists.
 	//! \param openWorld The open world's path.
@@ -76,16 +79,26 @@ class LF_WorkbenchPlay
 			return -1;
 
 		int best = -1;
+		int bestAny = -1;
 		for (int i = 0; i < worlds.Count() && i < overlayCounts.Count(); i++)
 		{
-			if (overlayCounts[i] <= 0 || NormalizeWorld(worlds[i]) != open)
+			if (overlayCounts[i] <= 0)
+				continue;
+
+			if (bestAny < 0 || overlayCounts[i] > overlayCounts[bestAny])
+				bestAny = i;
+
+			if (NormalizeWorld(worlds[i]) != open)
 				continue;
 
 			if (best < 0 || overlayCounts[i] > overlayCounts[best])
 				best = i;
 		}
 
-		return best;
+		if (best >= 0)
+			return best;
+
+		return bestAny;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -196,12 +209,16 @@ class LF_WorkbenchPlay
 		int pick = PickFallbackHeader(worlds, overlayCounts, GetGame().GetWorldFile());
 		if (pick < 0)
 		{
-			LF_Debug.Warn(FEATURE, string.Format("Workbench play with no mission header, and none of %1 mission header(s) (%2 LF) names %3; no pack overlay loads", search.m_aFound.Count(), headers.Count(), GetGame().GetWorldFile()));
+			LF_Debug.Warn(FEATURE, string.Format("Workbench play with no mission header, and none of %1 mission header(s) (%2 LF) lists a pack overlay; no pack overlay loads, so the dialogue voices, signs and quiz are the core's (world %3)", search.m_aFound.Count(), headers.Count(), GetGame().GetWorldFile()));
 			return null;
 		}
 
 		s_FallbackHeader = headers[pick];
-		LF_Debug.Info(FEATURE, string.Format("Workbench play with no mission header: pack overlays come from the header for this world (%1 overlays)", overlayCounts[pick]));
+		string forWorld = "for this world";
+		if (NormalizeWorld(worlds[pick]) != NormalizeWorld(GetGame().GetWorldFile()))
+			forWorld = "of the pack (no header for this world lists overlays: " + GetGame().GetWorldFile() + ")";
+
+		LF_Debug.Info(FEATURE, string.Format("Workbench play with no mission header: pack overlays come from the header %1 (%2 overlays)", forWorld, overlayCounts[pick]));
 		return s_FallbackHeader;
 	}
 }

@@ -2020,6 +2020,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
+    CustomStringTableItem "{A3AB2264A6CAAA6D}" {
+     Id "LF-Bank_Drill"
+     Target_en_us "Drill the vault door"
+     Comment "Vault prompt while the drill is held in the hands (hand tool)."
+    }
+    CustomStringTableItem "{CAA5DA4BC5610FC2}" {
+     Id "LF-Bank_DrillBusy"
+     Target_en_us "Someone is already drilling this vault"
+     Comment "Vault refusal: another robber's drill is running."
+    }
+    CustomStringTableItem "{73C6A60BDEBFFA84}" {
+     Id "LF-Bank_DrillStarted"
+     Target_en_us "Drilling. Hold the drill at the door until the lock gives."
+     Comment "Notice when the timed vault drill starts."
+    }
+    CustomStringTableItem "{E6126385C63EE88F}" {
+     Id "LF-Bank_DrillStop"
+     Target_en_us "Stop drilling"
+     Comment "Vault prompt for the robber who is drilling; cancels and pays nothing."
+    }
+    CustomStringTableItem "{5689C202D23903C6}" {
+     Id "LF-Bank_DrillStopped"
+     Target_en_us "The drilling stopped. Nothing gave."
+     Comment "Notice when the vault drill is cancelled, interrupted, unequipped or walked away from."
+    }
+    CustomStringTableItem "{05B9191F30E7B9A2}" {
+     Id "LF-Bank_HoldDrill"
+     Target_en_us "Take the drill in your hands (quick slot) to drill the vault"
+     Comment "Vault refusal: the drill is carried but not held."
+    }
     CustomStringTableItem "{A27300000000BA01}" {
      Id "LF-Bank_NeedTool"
      Target_en_us "The vault needs a drill or a charge"
@@ -4635,12 +4665,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{315A7D38264FAED4}" {
      Id "LF-Item_MoneyBag"
-     Target_en_us "Cash case"
+     Target_en_us "Cash sack"
      Comment "Bank vault money bag item name"
     }
     CustomStringTableItem "{44F201EB4501CD73}" {
      Id "LF-Item_MoneyBag_Desc"
-     Target_en_us "A heavy case of banknotes from the vault."
+     Target_en_us "A heavy sack of banknotes from the vault, carried by the neck."
      Comment "Bank money bag item description"
     }
     CustomStringTableItem "{798CD609229F3E62}" {
@@ -7866,6 +7896,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Dispatch"
      Comment "Title of dispatch toasts."
     }
+    CustomStringTableItem "{5B17BCD5B61026B6}" {
+     Id "LF-Shop_Browse"
+     Target_en_us "Browse goods"
+     Comment "Interaction name on a shopkeeper NPC or stall: opens the shop's price list."
+    }
     CustomStringTableItem "{C2D8EF8EC8E7CAC8}" {
      Id "LF-Shop_CashLine"
      Target_en_us "Cash in hand: %1"
@@ -7934,6 +7969,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The Fence"
      Comment "Fence shop name (#271)."
     }
+    CustomStringTableItem "{103833B3B4711CB4}" {
+     Id "LF-Shop_Name_FenceStall"
+     Target_en_us "Under the counter"
+     Comment "Title of the fence stall's price list."
+    }
     CustomStringTableItem "{9B2FF881F1CB91D3}" {
      Id "LF-Shop_Name_General"
      Target_en_us "General store"
@@ -7949,6 +7989,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_NoReply"
      Target_en_us "The till did not answer. Try again."
      Comment "Shop slip line when the server did not answer within 5 seconds."
+    }
+    CustomStringTableItem "{3F69457F6AC513EA}" {
+     Id "LF-Shop_Offer"
+     Target_en_us "Offer"
+     Comment "Shop price list row button on a line the counter buys: puts it on the slip to sell."
     }
     CustomStringTableItem "{F1C7C0F870099A03}" {
      Id "LF-Shop_OpenDesc_BackRoom"
@@ -8105,6 +8150,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell these"
      Comment "Shop till key: sell the slip's quantity of the picked item back to the counter."
     }
+    CustomStringTableItem "{BAB816EED21FF256}" {
+     Id "LF-Shop_SellTotal"
+     Target_en_us "Sell for %1"
+     Comment "Shop till key on a buyback line. %1 is what the counter pays."
+    }
     CustomStringTableItem "{89D9F751DFF3D649}" {
      Id "LF-Shop_SlipEmpty"
      Target_en_us "Order slip: pick a line from the list."
@@ -8120,6 +8170,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sold for %1."
      Comment "Shop slip line after a sale. %1 is the amount received."
     }
+    CustomStringTableItem "{0C99B82FA61A85FA}" {
+     Id "LF-Shop_WePay"
+     Target_en_us "We pay %1"
+     Comment "Shop price list: price column of a line the counter only buys. %1 is what it pays for one."
+    }
     CustomStringTableItem "{B385B4702F2997BF}" {
      Id "LF-Shop_Working"
      Target_en_us "At the till ..."
@@ -8129,6 +8184,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shopkeeper_Name"
      Target_en_us "Shopkeeper"
      Comment "Speaker name of a store's shopkeeper in a conversation (#1143)."
+    }
+    CustomStringTableItem "{5F6ED016BC4C3C34}" {
+     Id "LF-Shopkeeper_ShowGoods"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply to any NPC that keeps a shop: closes the talk and opens the price list."
+    }
+    CustomStringTableItem "{5B4C827A55F06D5F}" {
+     Id "LF-Shopkeeper_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "What a shopkeeper NPC says before the price list opens."
     }
     CustomStringTableItem "{D10D43C9BEB02467}" {
      Id "LF-Shopkeeper_Talk"
@@ -8983,6 +9048,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
     }
+    CustomStringTableItem "{65D7E4795D634FBD}" {
+     Id "LF-TownBoard_Dir_E"
+     Target_en_us "east"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{4B11C0ECDDCE8189}" {
+     Id "LF-TownBoard_Dir_N"
+     Target_en_us "north"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{80F58ACCD4A1C233}" {
+     Id "LF-TownBoard_Dir_NE"
+     Target_en_us "north-east"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{A38A10DDFC45AF7C}" {
+     Id "LF-TownBoard_Dir_NW"
+     Target_en_us "north-west"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{5168FCB118D8BC18}" {
+     Id "LF-TownBoard_Dir_S"
+     Target_en_us "south"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{7CB6ADB42B55E8EF}" {
+     Id "LF-TownBoard_Dir_SE"
+     Target_en_us "south-east"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{022D42E11871EFF4}" {
+     Id "LF-TownBoard_Dir_SW"
+     Target_en_us "south-west"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{C708215620CD3A47}" {
+     Id "LF-TownBoard_Dir_W"
+     Target_en_us "west"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{00286F357D4A57D8}" {
+     Id "LF-TownBoard_Mark"
+     Target_en_us "Set waypoint"
+     Comment "Button on a town board card's sheet: puts a marker over the place on the screen. No travel."
+    }
+    CustomStringTableItem "{5CF22CABB2E8D8C8}" {
+     Id "LF-TownBoard_NoPlace"
+     Target_en_us "Ask around"
+     Comment "Where line of a town board card whose place is not on this map."
+    }
+    CustomStringTableItem "{99C4660CE7F6A41D}" {
+     Id "LF-TownBoard_Title"
+     Target_en_us "Notice board"
+     Comment "Header printed across the top of the town board (the cork board of things to do). A pack overrides it with the town's name."
+    }
+    CustomStringTableItem "{5B0C1BA1D4744F19}" {
+     Id "LF-TownBoard_Unmark"
+     Target_en_us "Clear waypoint"
+     Comment "Button on a town board card's sheet when that card's place is already the waypoint: takes the marker away."
+    }
+    CustomStringTableItem "{FB7DFFA399262048}" {
+     Id "LF-TownBoard_Where"
+     Target_en_us "%1, %2 m %3"
+     Comment "Where a town board card's place is. %1 place name, %2 distance in metres, %3 a compass direction (LF-TownBoard_Dir_*). Example: Post office, 60 m east."
+    }
+    CustomStringTableItem "{2D9C41CAF21653BE}" {
+     Id "LF-TownBoard_WhereLabel"
+     Target_en_us "Where"
+     Comment "Section label on a town board card's sheet, above where the place is."
+    }
+    CustomStringTableItem "{30CA1A24F0A2C32A}" {
+     Id "LF-TownBoard_WhereNear"
+     Target_en_us "%1, right here"
+     Comment "Where a town board card's place is when it stands beside the board. %1 place name."
+    }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"
      Target_en_us "Keep %1"
@@ -9147,6 +9287,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Wanted_Wearing"
      Target_en_us "Wearing %1"
      Comment "Wanted poster description. %1 is a list of clothing names."
+    }
+    CustomStringTableItem "{79517D819FE7FE2B}" {
+     Id "LF-Waypoint_Distance"
+     Target_en_us "%1 m"
+     Comment "Distance under the waypoint marker on the screen. %1 metres."
     }
     CustomStringTableItem "{7AF5414FC3686A70}" {
      Id "LF-Weapon_Taser_Description"

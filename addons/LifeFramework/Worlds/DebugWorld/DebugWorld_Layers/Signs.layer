@@ -63,19 +63,16 @@ $grp GenericEntity : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
   coords 181.5 3.05 241.58
  }
 }
-$grp GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
- Sign_TownMap {
-  components {
-   LF_SignComponent "{C8DC6C24E38F2C19}" {
-    m_sSignId "town_map"
-    m_vRimColor 0.92 0.88 0.76
-    m_vPaintColor 0.12 0.3 0.2
-    m_vTextColor 0.95 0.92 0.8
-   }
+GenericEntity Sign_TownMap : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
+ components {
+  LF_SignComponent "{CB0DD0E500C1A1EE}" {
+   m_sSignId "town_map"
   }
-  coords 128.039 0 249.884
-  angles 0 -90 0
  }
+ coords 128.039 0 249.884
+ angles 0 90 0
+}
+$grp GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
  Sign_Market {
   components {
    LF_SignComponent "{C8DC6C24E38F2C19}" {

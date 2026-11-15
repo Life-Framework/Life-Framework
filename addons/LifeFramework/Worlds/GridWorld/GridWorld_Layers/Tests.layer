@@ -1,0 +1,7 @@
+SCR_DestructibleEntity LF_TestRunner : "{467951CEFC8F345B}PrefabLibrary/Props/Civilian/SignPub_01.et" {
+ components {
+  LF_TestRunnerComponent "{A5E5E5A1B17E0001}" {
+  }
+ }
+ coords 59.995 0.001 103.617
+}

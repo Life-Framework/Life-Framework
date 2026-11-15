@@ -14,6 +14,9 @@ class LF_SignComponent : ScriptComponent
 {
 	//! The prefab slot (#1128): The face a sign draws its text on.
 	static const string SLOT_FACE = "sign_face";
+	//! LF_Places kind every sign claims under its sign id, so a reader (the town board) finds the
+	//! place a sign stands for by component, never by entity name or coordinates.
+	static const string PLACE_KIND = "Sign";
 
 	//! The prefab (slot "sign_face"), or empty when no usable prefab resolves (logged).
 	static ResourceName FacePrefab()
@@ -206,6 +209,10 @@ class LF_SignComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
+		// The first prop of an id stands for the place; a second (two safe zone signs) is skipped.
+		if (!m_sSignId.IsEmpty())
+			LF_Places.Claim(PLACE_KIND, m_sSignId, owner);
+
 		if (!m_bShowFace || m_sSignId.IsEmpty())
 			return;
 

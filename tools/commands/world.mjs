@@ -331,7 +331,7 @@ export async function main(args, { root }) {
   try {
     if (sub === "diff") return await cmdDiff(rest, root);
     if (sub === "ship") return await cmdShip(rest, root);
-    // sync: world-sync.mjs (the sync subcommand is added here by tools/lib/world-sync.mjs's author)
+    if (sub === "sync") return await (await import("./world-sync.mjs")).main(rest, { root });
   } catch (err) {
     console.log(`FAIL  world ${sub}: ${err.message}`);
     return 1;

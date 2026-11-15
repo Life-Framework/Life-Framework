@@ -35,6 +35,9 @@ class LF_DialogueScene
 	protected static int s_iGuardUntilMs;
 	protected static int s_iWaitSinceMs;
 	protected static int s_iShown;
+	//! The action hook of the reply this player picked last, run on this client when the talk ends.
+	protected static string s_sAfterHook;
+	protected static string s_sAfterParam;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -49,6 +52,8 @@ class LF_DialogueScene
 		s_bWaiting = false;
 		s_bStepHeld = false;
 		s_iShown = 0;
+		s_sAfterHook = string.Empty;
+		s_sAfterParam = string.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -312,7 +317,10 @@ class LF_DialogueScene
 
 		if (s_iMask == 0)
 		{
+			string afterHook = s_sAfterHook;
+			string afterParam = s_sAfterParam;
 			Close("the conversation ended", false);
+			RunAfterScene(afterHook, afterParam, npc);
 			return;
 		}
 
@@ -418,6 +426,15 @@ class LF_DialogueScene
 			return false;
 
 		int index = s_aRows[row];
+		s_sAfterHook = string.Empty;
+		s_sAfterParam = string.Empty;
+		LF_DialogueOption picked = LF_DialogueFlow.Pick(LF_DialogueFlow.FindNode(s_Config, s_sNode), s_iMask, index);
+		if (picked && picked.m_sNext.IsEmpty())
+		{
+			s_sAfterHook = picked.m_sAction;
+			s_sAfterParam = picked.m_sParam;
+		}
+
 		s_bChoosing = false;
 		s_bWaiting = true;
 		s_iWaitSinceMs = System.GetTickCount();
@@ -425,6 +442,19 @@ class LF_DialogueScene
 		SetText("Hint", "");
 		controller.LF_AskDialogueChoose(index);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the reply that ended the talk names a hook; let it act on this screen (a shopkeeper's
+	//! "show me what you've got" opens the price list).
+	protected static void RunAfterScene(string hookName, string param, IEntity npc)
+	{
+		if (hookName.IsEmpty() || !npc)
+			return;
+
+		LF_DialogueHook hook = LF_DialogueHook.Find(hookName);
+		if (hook)
+			hook.AfterScene(LF_Utils.GetLocalCharacter(), npc, param);
 	}
 
 	//------------------------------------------------------------------------------------------------

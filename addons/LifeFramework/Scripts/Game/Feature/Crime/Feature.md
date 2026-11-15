@@ -81,6 +81,7 @@ isn't today — see current state).
 - LF_BankVaultComponent.m_sRequiredTools (drill,charge, any one) gates LF_Bank.Rob for a player robber. None held: 
 ob refused logged, offer reads #LF-Bank_NeedTool.
 - While the drill works (#340, `LF_DrillScene.c`): the drill LeaveTool laid down is held in front of the robber at the push animation's hands and switched on (`LF_AssetAnimComponent`: spinning chuck, sparks, motor and grinding loops), then switched off and laid back when `LF_WorkAnim` ends for any reason. A jammed drill is only laid down.
+- Timed drill (hand tool): the drill is an `LF_HandToolComponent` held from the quick slots; `LF_Bank.Rob` with it held starts `LF_VaultDrill`, which pays through `LF_Bank.FinishDrill` only after `m_fDrillSeconds` of server time held in reach. Cancel, put away, walk off or go down pays nothing.
 - Drill: kept, jams at m_fJamChance, and is left at the vault as scene evidence either way (its serial names the buyer at the locker). Charge: consumed by LF_Breach.Arm, which also accepts the fence LF_Charge. Drill time is the vault fuse.
 - Every attempt publishes LF_OnVaultBreach (opened, jammed, refused). Test crime/vault-tool; proof session.mjs vault-proof.
 

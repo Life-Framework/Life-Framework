@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------------------------
 //! The stun (#341, the police taser): a hit from a stun weapon downs a player for a few seconds
-//! and deals no damage. It rides the downed state (LF_Downed): the same replicated flag holds the
-//! character in vanilla unconsciousness, so a late joiner and the owning client see it the way
-//! they see a downed player. What differs is the end. Nothing bleeds out, the player cannot give
-//! up, and the server wakes them when the time is over.
+//! and deals no damage. It is a knockout (LF_Knockout): the downed flag holds the character in
+//! vanilla unconsciousness, the owner ragdolls the body until the time is over, and vanilla's
+//! wake-up animation stands it up. Nothing bleeds out, the player cannot give up, and the server
+//! wakes them when the time is over.
 //!
 //! Server-authoritative. A weapon is a stun weapon when its prefab carries LF_StunWeaponComponent;
 //! the hit is recognised by the weapon in the shooter's hands, so any magazine fired from it stuns
@@ -76,56 +76,31 @@ class LF_Stun
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: stun a character for `seconds`. Refused for a character that is already downed, is
-	//! not a player's, or cannot go unconscious.
+	//! Server: stun a character for `seconds`: a knockout (LF_Knockout) that ragdolls the body, holds
+	//! it down and stands it up with the vanilla wake-up. Refused for a character that is dead,
+	//! downed, already unconscious, not a player's, or cannot go unconscious.
 	static bool Apply(notnull SCR_ChimeraCharacter victim, float seconds, string byUid = "")
 	{
-		if (!Replication.IsServer())
+		if (!LF_Knockout.Begin(victim, seconds, byUid, "stun"))
 			return false;
-
-		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(victim.FindComponent(SCR_CharacterDamageManagerComponent));
-		if (!damageManager || seconds <= 0 || !CanDown(victim, damageManager))
-		{
-			LF_Debug.Info(FEATURE, string.Format("stun of %1 refused (downed %2, seconds %3)", Uid(victim), victim.LF_IsDowned(), seconds));
-			return false;
-		}
-
-		int token = victim.LF_BeginStun();
-		damageManager.UpdateConsciousness();
-		if (GetGame().GetCallqueue())
-			GetGame().GetCallqueue().CallLater(Wake, seconds * 1000, false, victim, token);
 
 		s_iStunCount++;
 		LF_Utils.NotifyEntity(victim, "#LF-Police_Stunned", "", 4.0, Math.Ceil(seconds).ToString());
-		LF_Debug.Info(FEATURE, string.Format("player %1 is stunned for %2 s (by %3)", Uid(victim), seconds, byUid));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the stun's time is over. Does nothing when that stun already ended (a revive, a
-	//! death) or a later stun replaced it.
+	//! Server: the stun's time is over (LF_Knockout.Wake).
 	static void Wake(SCR_ChimeraCharacter victim, int token)
 	{
-		if (!victim || !victim.LF_IsStunned() || victim.LF_GetStunToken() != token)
-			return;
-
-		End(victim);
+		LF_Knockout.Wake(victim, token);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: end a stun now. The character wakes with the health it had.
+	//! Server: end a stun now (LF_Knockout.End).
 	static bool End(notnull SCR_ChimeraCharacter victim)
 	{
-		if (!Replication.IsServer() || !victim.LF_IsStunned())
-			return false;
-
-		victim.LF_SetDowned(false, "");
-		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(victim.FindComponent(SCR_CharacterDamageManagerComponent));
-		if (damageManager)
-			damageManager.UpdateConsciousness();
-
-		LF_Debug.Info(FEATURE, string.Format("player %1 is no longer stunned", Uid(victim)));
-		return true;
+		return LF_Knockout.End(victim);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -151,11 +126,11 @@ class LF_Stun
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The same gate the downed state uses: on in config, a player's character, not downed yet,
-	//! and the game mode permits unconsciousness.
+	//! The knockout gate: on in config, a player's character, alive, conscious, not downed, and the
+	//! game mode permits unconsciousness.
 	protected static bool CanDown(notnull SCR_ChimeraCharacter victim, notnull SCR_CharacterDamageManagerComponent damageManager)
 	{
-		return LF_Downed.Enabled() && LF_Downed.IsEligible(victim) && !victim.LF_IsDowned() && damageManager.GetPermitUnconsciousness();
+		return LF_Knockout.CanKnockOut(victim);
 	}
 
 	//------------------------------------------------------------------------------------------------
