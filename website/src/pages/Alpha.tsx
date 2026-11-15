@@ -78,7 +78,7 @@ const asking: { title: string; body: ReactNode }[] = [
 ];
 
 const gate: { title: string; body: string }[] = [
-  { title: "Sessions at the player target", body: "Several sessions in a row reach about 40 players." },
+  { title: "Sessions at the player target", body: "Several sessions in a row fill the server's 16 slots." },
   { title: "No save loss", body: "No session lost or corrupted a save, and a restart brought every player's progress back." },
   { title: "No blocking regression", body: "No open regression stops a player from joining, playing a job, or keeping progress." },
   { title: "Trial moderators in place", body: "The staff roster names them, chosen from the playtesters, before the public opening." },
