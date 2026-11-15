@@ -48,6 +48,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
 import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
+import * as hostPublic from "./host/public.mjs";
+import * as hostDrift from "./host/drift.mjs";
 import * as playtest from "./host/playtest.mjs";
 import { cmdPlaytestServer } from "./release/playtest-server.mjs";
 import { cmdPlaytestRelease } from "./release/release-playtest.mjs";
@@ -57,7 +59,7 @@ import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
 import { boxMode, missingForHostStart } from "./lib/host-box.mjs";
-import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
+import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE, PACK, PACK_MISSION } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -1724,7 +1726,12 @@ function hostPrintLines(log, from = 0, limit = 40) {
   for (const l of lines.slice(-limit)) console.log(`  ${l.trim()}`);
 }
 
-function hostJoinInfo(port = host.GAME_PORT) {
+function hostJoinInfo(port = host.GAME_PORT, isPublic = false) {
+  if (isPublic) {
+    console.log("join: in-game Server Browser, search \"Life Framework | Everon 1989 (Alpha)\", enter the password; or direct connect <public IP>:2001");
+    console.log("      check the listing with 'tools\\cli host players <public IP>:17777' from outside your network (docs/owner/host-the-flagship.md)");
+    return;
+  }
   if (port !== host.GAME_PORT) {
     console.log(`join: 127.0.0.1:${port} (UDP; a scratch host on a pool session lane, this PC only)`);
     return;
@@ -1744,6 +1751,7 @@ function cmdHostStatus(dir) {
   if (s) {
     console.log(`  addon:    ${s.root}`);
     console.log(`  mission:  ${s.mission}`);
+    console.log(`  mode:     ${s.public ? "public (backend-listed, -config server.json, Workshop mods)" : "local (-noBackend: direct connect only, no join password)"}`);
     console.log(`  addons:   ${(s.addons ?? [CORE]).join(",")}`);
     console.log(`  started:  ${s.startedAt}${s.loadSave ? " (continued the latest save)" : " (fresh: no save existed)"}`);
   }
@@ -1758,8 +1766,22 @@ function cmdHostStatus(dir) {
   console.log(`  backups:  ${backups.length ? `${backups.length}, newest ${join(p.backups, backups[backups.length - 1])}` : "none yet"}`);
   const log = host.newestConsoleLog(p.profile);
   if (log) console.log(`  log:      ${log}`);
-  if (alive) hostJoinInfo(s.port ?? host.GAME_PORT);
+  if (alive) hostJoinInfo(s.port ?? host.GAME_PORT, s.public);
   return 0;
+}
+
+// `host start --public` (docs/owner/host-the-flagship.md, tools/host/public.mjs): the backend-listed flagship,
+// booted from the host profile's server.json with the Workshop items in game.mods. Refused until the pre-flight
+// passes (published and confirmed Workshop IDs, a join password, the flagship scenario, no drift).
+function hostPublicPreflight(root, dir) {
+  const serverJsonFile = join(host.hostPaths(dir).profile, "server.json");
+  const drift = hostDrift.driftHost(dir, { flagship: join(root, "server", "flagship") }).changes ?? [];
+  return hostPublic.publicPreflight({
+    serverJson: hostPublic.readServerJson(serverJsonFile),
+    confirm: hostPublic.readWorkshopConfirm(dir),
+    drift,
+    scenario: PACK_MISSION,
+  });
 }
 
 function cmdHostStart(root, dir, opts) {
@@ -1793,6 +1815,20 @@ function cmdHostStart(root, dir, opts) {
   // runs on that lane's port and the caller keeps the lock, so a crash restart needs no new lock and
   // never takes server-2001 beside a live session.
   let held = null;
+  if (opts.public) {
+    if (process.env[pool.SLOT_ENV]) {
+      console.log("FAIL  host start --public runs on port 2001 for players, never on a pool session lane");
+      return 1;
+    }
+    const pf = hostPublicPreflight(root, dir);
+    for (const w of pf.warnings) console.log(`WARN  ${w}`);
+    if (!pf.ok) {
+      for (const r of pf.refusals) console.log(`FAIL  ${r}`);
+      console.log("      host start --public refused; nothing was launched (docs/owner/host-the-flagship.md)");
+      return 1;
+    }
+    console.log("host: public pre-flight passed (Workshop IDs confirmed, password set, flagship scenario, no drift)");
+  }
   if (process.env[pool.SLOT_ENV]) {
     try {
       held = pool.heldSlotFromEnv(root);
@@ -1813,19 +1849,28 @@ function cmdHostStart(root, dir, opts) {
   const port = held?.port ?? host.GAME_PORT;
   let pid = 0;
   try {
-    ensureResourceDatabase(root);
-    const junction = serverGameAddons(root);
     mkdirSync(p.profile, { recursive: true });
     const saves = host.findSavePoints(p.profile);
     // #322: the pack loads when it is in the checkout; a save keeps the header it was made on.
-    const addons = launchAddons(root);
-    const { mission, loadSave } = host.hostMission(p.profile, addons, opts.flagship ? flagshipMission(addons) : undefined);
+    // --public: the Workshop items in server.json game.mods, never the checkout's addons.
+    const addons = opts.public ? ["(Workshop) " + (hostPublic.readServerJson(join(p.profile, "server.json"))?.game?.mods ?? []).map((m) => m.modId).join(",")] : launchAddons(root);
+    const { mission, loadSave } = opts.public
+      ? host.hostMission(p.profile, [CORE, PACK], PACK_MISSION)
+      : host.hostMission(p.profile, addons, opts.flagship ? flagshipMission(addons) : undefined);
     if (saves.length) {
       const b = host.backupSaves(dir, "start");
       console.log(`host: backed up saves -> ${b}`);
     }
-    const args = host.hostArgs({ addons, mission, addonsDir: [join(root, "addons"), junction].join(","), profile: p.profile, loadSave, port });
-    console.log(`host: ${loadSave ? `continuing the latest save (${saves.length} save point(s))` : saves.length ? "no save of this mission yet, starting a fresh session" : "no save yet, starting a fresh session"}; mission ${mission}; addons ${addons.join(",")}`);
+    let args;
+    if (opts.public) {
+      mkdirSync(hostPublic.workshopDir(dir), { recursive: true });
+      args = hostPublic.publicHostArgs({ profile: p.profile, serverJson: join(p.profile, "server.json"), workshopDir: hostPublic.workshopDir(dir), loadSave });
+    } else {
+      ensureResourceDatabase(root);
+      const junction = serverGameAddons(root);
+      args = host.hostArgs({ addons, mission, addonsDir: [join(root, "addons"), junction].join(","), profile: p.profile, loadSave, port });
+    }
+    console.log(`host: ${loadSave ? `continuing the latest save (${saves.length} save point(s))` : saves.length ? "no save of this mission yet, starting a fresh session" : "no save yet, starting a fresh session"}; mission ${mission}; addons ${addons.join(",")}${opts.public ? "; PUBLIC (backend-listed)" : ""}`);
     console.log(`launching: ${exe}`);
     console.log(`  ${args.join(" ")}`);
     const before = new Set(existsSync(join(p.profile, "logs")) ? readdirSync(join(p.profile, "logs")) : []);
@@ -1834,10 +1879,11 @@ function cmdHostStart(root, dir, opts) {
     child.unref();
     if (!pid) throw new Error("server did not start");
     if (!held) wt.transferLock(root, SERVER_SLOT, pid);
-    host.writeHostState(dir, { pid, root, mission, addons, loadSave, startedAt: new Date().toISOString(), exe, port, lane: held?.lockName ?? SERVER_SLOT });
+    host.writeHostState(dir, { pid, root, mission, addons, loadSave, startedAt: new Date().toISOString(), exe, port, lane: held?.lockName ?? SERVER_SLOT, public: !!opts.public });
 
-    // Wait for the world: "Entered online game state." in the new console.log.
-    const deadline = Date.now() + (opts.timeoutSec ?? 300) * 1000;
+    // Wait for the world: "Entered online game state." in the new console.log. A public first boot
+    // downloads both Workshop items first, so it gets longer.
+    const deadline = Date.now() + (opts.timeoutSec ?? (opts.public ? 900 : 300)) * 1000;
     let log = null;
     while (Date.now() < deadline) {
       sleepMs(2000);
@@ -1860,7 +1906,7 @@ function cmdHostStart(root, dir, opts) {
     sleepMs(3000); // the session-start check logs just after the game state.
     console.log(`host: up (pid ${pid}); log ${log}`);
     hostPrintLines(log);
-    hostJoinInfo(port);
+    hostJoinInfo(port, opts.public);
     console.log("stop with: tools\\cli host stop");
     return 0;
   } catch (e) {
@@ -2005,14 +2051,14 @@ async function hostCommandsHelp() {
   }
 }
 
-const HOST_USAGE = "usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force] [--flagship]";
+const HOST_USAGE = "usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force] [--flagship] [--public]";
 
 function cmdHost(args) {
   const list = args ?? [];
   const sub = list[0];
   const dir = host.hostDir();
   const timeout = argValue(list, "--timeout");
-  const opts = { force: list.includes("--force"), wait: list.includes("--wait"), flagship: list.includes("--flagship"), timeoutSec: timeout ? Number(timeout) : undefined };
+  const opts = { force: list.includes("--force"), wait: list.includes("--wait"), flagship: list.includes("--flagship"), public: list.includes("--public"), timeoutSec: timeout ? Number(timeout) : undefined };
   if (sub === "start") return cmdHostStart(ROOT, dir, opts);
   if (sub === "stop") return cmdHostStop(dir, opts);
   if (sub === "status") return cmdHostStatus(dir);
@@ -3847,7 +3893,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 website/public/playtest-server.json, tools/release/playtest-server.mjs)
                                 release [--tag playtest-m2-N]: refresh the rdb, attach it to a pre-release,
                                 start the playtest-release workflow (worktree at origin/main)
-  host start|stop|status|backup  playtest dedicated server on the pack header Missions/LF_PlaytestTown.conf (a save made on LF_Everon1989 keeps its header; start --flagship boots LF_Everon1989, the real-server values);
+  host start|stop|status|backup  playtest dedicated server on the pack header Missions/LF_PlaytestTown.conf (a save made on LF_Everon1989 keeps its header; start --flagship boots LF_Everon1989, the real-server values; start --public is the backend-listed flagship from the profile server.json and the Workshop items, docs/owner/host-the-flagship.md);
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout).
                                 start refuses a save from another game build until a preflight passes

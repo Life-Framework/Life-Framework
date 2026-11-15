@@ -5,8 +5,10 @@ same three things as [install a server from zero](install.md) (the framework, th
 but for a panel: which files go where, the Workshop IDs to enter, the startup parameters, the log lines
 that mean success, and the backups.
 
-**Candidate host: 0grind.** It is the host the maintainer is trialling (#378). Every 0grind step below is
-marked *unverified until #378*: the panel's exact screens and fields are not checked yet. Once the trial
+**Host: 0grind, with 16 player slots.** Decision 2026-11-15: the flagship alpha runs on a rented 0grind
+server (Ryzen 9 7950X3D, 16 GB RAM) with 16 slots, so `game.maxPlayers` is 16. The maintainer's trial (#378)
+checks the panel. Every 0grind step below is marked *unverified until #378*: the panel's exact screens and
+fields are not checked yet. Once the trial
 reports, the marks come off the steps that held and the page is split into one page per host (#379).
 Any other host follows the same steps with its own panel names.
 
@@ -15,7 +17,7 @@ repeat the install steps or the log lines; it links them.
 
 ## What you need from the host
 
-- A dedicated server slot for Arma Reforger (the base game's server, Steam app `1874900`).
+- A dedicated server for Arma Reforger with 16 player slots (the base game's server, Steam app `1874900`).
 - The two Workshop items. The core is `79636E668EA37AC9` (Life Framework) and the pack is
   `B1E84D5687E11724` (Life Framework: Everon 1989). The core goes first. The pack depends on it.
 - UDP `2001` (game) and UDP `17777` (the A2S query the server browser uses) open to players.
@@ -35,7 +37,7 @@ The owner config is optional. A server with no `config.json` runs on the shipped
 `no owner config` line. See [where config.json goes](install.md#6-where-configjson-goes).
 
 Keep the two `game.mods` entries and `scenarioId` exactly as the example server sets them. Change the
-name, the ports, the maximum players (up to 16 on the town), the admin password and whether the server
+name, the ports, the maximum players (16 on the 0grind alpha server, and the most the 1989 town is sized for), the admin password and whether the server
 is listed. Admin and join passwords stay out of any file you share.
 
 On the maintainer's own machine, `tools\cli host config apply` writes the profile's `config.json` and

@@ -26,8 +26,9 @@ export function scriptPath(root) {
   return win32.join(root, "tools", "host", "autostart.mjs");
 }
 
-export function taskCommand({ root, nodePath }) {
-  return `"${nodePath}" "${scriptPath(root)}" --run`;
+// `public` (install --public): the task runs the public host (`host watch --flagship --public`).
+export function taskCommand({ root, nodePath, public: pub = false }) {
+  return `"${nodePath}" "${scriptPath(root)}" --run${pub ? " --public" : ""}`;
 }
 
 export function currentUser() {
@@ -38,9 +39,9 @@ export function currentUser() {
 
 // The exact `schtasks /Create` arguments: at logon of this user, no elevation, /F so a stale
 // task from a moved checkout is replaced (install only gets here when it must).
-export function createArgs({ root, nodePath, user }) {
+export function createArgs({ root, nodePath, user, public: pub = false }) {
   return [
-    "/Create", "/TN", TASK_NAME, "/TR", taskCommand({ root, nodePath }),
+    "/Create", "/TN", TASK_NAME, "/TR", taskCommand({ root, nodePath, public: pub }),
     "/SC", "ONLOGON", "/RU", user, "/RL", "LIMITED", "/DELAY", LOGON_DELAY, "/F",
   ];
 }
@@ -117,17 +118,17 @@ export function queryTask(run) {
 }
 
 // Register the task. { ok, changed, message }: a task already running the same command is left alone.
-export function installTask({ run, root, nodePath, user }) {
+export function installTask({ run, root, nodePath, user, public: pub = false }) {
   const q = queryTask(run);
   if (q.error) return { ok: false, message: q.error };
-  const want = taskCommand({ root, nodePath });
+  const want = taskCommand({ root, nodePath, public: pub });
   if (q.info.registered && q.info.command === want) {
     return { ok: true, changed: false, message: `already installed (runs at logon as ${q.info.user || user})` };
   }
-  const r = run(createArgs({ root, nodePath, user }), { timeoutMs: SCHTASKS_TIMEOUT_MS });
+  const r = run(createArgs({ root, nodePath, user, public: pub }), { timeoutMs: SCHTASKS_TIMEOUT_MS });
   if (r.error || r.status !== 0) return { ok: false, message: failure("create", r) };
-  const how = q.info.registered ? "updated (the checkout moved)" : "installed";
-  return { ok: true, changed: true, message: `${how}: \`host watch --flagship\` starts at logon of ${user}, hidden` };
+  const how = q.info.registered ? "updated (the checkout or the mode changed)" : "installed";
+  return { ok: true, changed: true, message: `${how}: \`host watch --flagship${pub ? " --public" : ""}\` starts at logon of ${user}, hidden` };
 }
 
 export function removeTask({ run }) {
@@ -139,16 +140,17 @@ export function removeTask({ run }) {
   return { ok: true, changed: true, message: "removed" };
 }
 
-// What the logon task runs: `host watch --flagship` on the hidden LF-Agents desktop. Returns its pid.
-export function runAtLogon({ root, nodePath = process.execPath, spawn = quietSpawnDetached }) {
-  return spawn(nodePath, [win32.join(root, "tools", "cli.mjs"), "host", "watch", "--flagship"], { cwd: root });
+// What the logon task runs: `host watch --flagship` (plus --public for a public host, install --public)
+// on the hidden LF-Agents desktop. Returns its pid.
+export function runAtLogon({ root, nodePath = process.execPath, spawn = quietSpawnDetached, public: pub = false }) {
+  return spawn(nodePath, [win32.join(root, "tools", "cli.mjs"), "host", "watch", "--flagship", ...(pub ? ["--public"] : [])], { cwd: root });
 }
 
 // Entry for the scheduled task: `node tools/host/autostart.mjs --run`.
 if (process.argv[1] && process.argv.includes("--run") && pathToFileURL(process.argv[1]).href === import.meta.url) {
   const root = win32.resolve(fileURLToPath(import.meta.url), "..", "..", "..");
   try {
-    const pid = runAtLogon({ root });
+    const pid = runAtLogon({ root, public: process.argv.includes("--public") });
     console.log(`[LFDebug:HostAutostart] host watch started hidden (pid ${pid})`);
   } catch (e) {
     console.log(`[LFDebug:HostAutostart] could not start host watch: ${e.message}`);

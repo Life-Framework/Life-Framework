@@ -13,13 +13,14 @@ checkout.
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host drift` *(planned)* | Exit 0: the live `config.json` and `server.json` match `server/flagship/`. A changed field is named; exit 1. |
-| `tools\cli host ready` *(planned)* | One line per check, then `GO`. `NO-GO` means do not open. |
+| `tools\cli host ready` | First, and again at the end: one line per check (build gate, staff roster, backup age, last restore drill, disk), then `GO`. `NO-GO` names the failed checks and means do not open; exit 1. |
+| `tools\cli host config apply` | Host stopped. Writes the profile's `config.json` and `server.json` from `server/flagship/` plus the host's `secrets.json`; never prints a secret. A new host needs it once. `--dry-run` shows what it would write. |
+| `tools\cli host drift` | Exit 0: the live `config.json` and `server.json` match `server/flagship/`. A changed field is named; exit 1. |
 | `tools\cli host preflight` | After a game update only: it backs up, boots the new build and passes. A failure restores the backup; read [game updates](game-updates.md). |
 | `tools\cli host backup` | `host: backed up saves -> <folder>`. |
-| `tools\cli host verify` *(planned)* | Every backup `ok`, none `empty` or `changed`; exit 0. |
+| `tools\cli host verify` | Every backup `ok`, none `empty` or `changed`; exit 0. |
 | `tools\cli host drill` | The newest backup boots on a scratch profile and the log shows `save loaded:`. Weekly and after a preflight. It queues for a pool lane by itself (no `--wait`) and may run on a pool machine. |
-| `tools\cli host applications` *(planned)* | The open police applications, oldest first, then the officers on trial. Read only; approve in game. |
+| `tools\cli host applications` | The open police applications, oldest first, then the officers on trial. Read only; approve in game. |
 | `tools\cli host announce --at <time> --build <build>` | The post is printed and the next session is written to `website/content/sessions.json` (a tracked file: `git checkout -- website/content/sessions.json` after a dry run, commit it for a real one). `--build` is the installed game build, e.g. `1.9.0.37`; needed until the host has a save. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
 
 ## Start
@@ -37,7 +38,7 @@ checkout.
 |---|---|
 | `tools\cli host players` | Server name, map, and players over max within 3 seconds. |
 | `tools\cli host say "Hotfix restart in 10 minutes"` *(planned)* | Every player gets one toast within 10 seconds; the server logs `host say:`. |
-| `tools\cli host perf` *(planned)* | A verdict line against the 40-player budget and a CSV in `<host>/perf/`. |
+| `tools\cli host perf` | A verdict line against the 16-player budget and a CSV in `<host>/perf/`. |
 | `tools\cli host status` | Still `up`. Saves are never touched while it runs. |
 
 ## Restart at 06:00 or 18:00
@@ -60,10 +61,10 @@ restart by hand, say it in Discord first, then:
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host logs archive` *(planned)* | The finished session's logs moved to `<host>/logs/<session-stamp>/`; the live folder untouched. |
+| `tools\cli host logs archive` | The finished session's logs moved to `<host>/logs/<session-stamp>/`; the live folder untouched. |
 | `tools\cli host triage` | Error groups counted, each `known` or `new` against [debug-log-triage](../debug-log-triage.md). A `new` group becomes an issue. |
-| `tools\cli host attendance` *(planned)* | Unique players, the peak and when it was, minutes per player. |
-| `tools\cli host offsite <dir>` *(planned)* | Every backup copied to the second drive and checked by size and hash. |
+| `tools\cli host attendance` | Unique players, the peak and when it was, minutes per player. |
+| `tools\cli host offsite <dir>` | Every backup copied to the second drive and checked by size and hash. |
 | `tools\cli host prune --dry-run` | Lists what it would delete. Then `tools\cli host prune` keeps the newest 20 and never deletes a tagged backup. |
 
 ## A wipe, with 24 hours' notice
