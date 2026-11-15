@@ -556,6 +556,24 @@
       "additionalProperties": false,
       "x-class": "LF_JobsConfig"
     },
+    "joinNotice": {
+      "type": "object",
+      "description": "The `joinNotice` owner section: one toast at each player's first spawn of the session.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Show the join notice toast at each player's first spawn of the session. Off in the core",
+          "default": false
+        },
+        "key": {
+          "type": "string",
+          "description": "Localization key of the notice text, with or without the leading #. Empty shows nothing and logs a warning",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_JoinNoticeConfig"
+    },
     "licences": {
       "type": "object",
       "description": "The owner's `licences` section (D8): which licences a new character starts with and which need the job whitelist.",

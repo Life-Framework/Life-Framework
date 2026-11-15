@@ -44,5 +44,16 @@ reading a rule and picking an answer needs text; it asks nothing a world object 
   `node agent-box/session.mjs quiz-proof`. A proof that arrives through the registration form
   (`arrive` in `agent-box/session.mjs`) answers the quiz right first (`passQuiz`).
 
+## Join notice (#1448)
+
+- **Player sees:** one toast, about 12 seconds, at their first spawn of the session (not on a respawn).
+- **Owner and side:** `LF_JoinNotice` (`LF_JoinNotice.c`) subscribes to `LF_OnPlayerSpawnedEvent` on the
+  server and sends the toast to that player only (`LF_NotificationManagerComponent.NotifyPlayer`).
+- **Data:** `LF_JoinNoticeConfig`, owner section `joinNotice`: `enabled` (false in the core) and `key`
+  (a localization key, with or without `#`). The pack ships the text: `LF_Everon1989_AlphaNotice`.
+  Enabled with an empty key logs one `[LFDebug:JoinNotice]` warning per session and shows nothing.
+- **Persisted:** nothing; "once" is per account uid per world session.
+- **Proof:** `rules/join-notice` (LOGIC).
+
 Not done: a world prop at the clerk's desk, the "cannot leave the arrival room" gate beyond no
 registration and no spawn, staff chat commands, shuffled options.
