@@ -1,0 +1,14 @@
+usage: tools\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force] [--flagship]
+
+More host commands (tools/host/commands/, one file each):
+  announce --at <iso> [--build v] [--wipe] [--send]   draft the session post and record the next session for the site; --send posts it (maintainer only)
+  crashpack [--session <stamp>] [--out <dir>] [--lines N]   one zip of the newest (or named) crash: dump, log tail, build stamp, mods, server.json and config.json with passwords and webhooks <redacted>, plus an issue body draft; prints the gh command, never runs it
+  disk   save and backup sizes, growth over the last 5 backups, free space, sessions that fit before 5 GB free; exits 1 under 5 GB
+  drill [<backup>] [--timeout <s>] [--keep]   boot a backup on a scratch profile on a pool machine; pass only if the save loads with its accounts
+  perf [--every 30] [--for 120] [--upload-mbit 20]   sample the running server CPU, memory and upload (Windows; upload is the machine's adapter total) into <host>/perf/perf-<stamp>.csv and print one verdict against the 40-player budget (CPU under 80% of one core, upload under --upload-mbit or env LF_HOST_UPLOAD_MBIT)
+  players [address:a2sport]   A2S query: server name, map, players and max players (default 127.0.0.1:17777)
+  ports [--config server.json] [--external host:a2sport]   check game/A2S/RCON ports are free or held by the server, print router forward rules
+  prune [--keep N] [--dry-run]   delete the oldest start/stop backups beyond N (default 20); tagged backups are never deleted
+  triage [<console.log>] [--triage <file>] [--json] [--draft [--out <dir>]]   group a server log's errors and warnings: known (docs/debug-log-triage.md) or new; --draft writes tmp/triage/<date>/<n>.md per new group and prints the gh issue create commands (never runs them)
+  watch [--flagship] [--force] [--max-restarts N] [--crash-limit N] [--crash-window MIN]   keep the host up: restart a crash (log + save backup kept in backups/<time>-crash) or a scheduled close; ends after `host stop`; N crashes (default 3) inside MIN minutes (default 10) stop the restarts, keep the host down and alert staff (0 = guard off; env LF_CRASHLOOP_LIMIT, LF_CRASHLOOP_WINDOW_MIN)
+  wipe --confirm <host dir name>   back the saves up (wipe tag), move them aside, log to backups/wipes.log; refuses while the host runs

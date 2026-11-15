@@ -1,0 +1,19 @@
+18:00:00.000  DEFAULT      : Engine start
+18:00:30.000  NETWORK      : Entered online game state.
+18:01:00.000  NETWORK      : ### Connecting player: connectionID=0, Name=
+18:01:00.100  NETWORK      : ### Creating player: PlayerId=1, Name=Anna
+18:01:00.200  NETWORK      : ### Updating player: PlayerId=1, Name=Anna, rplIdentity=0x01, IdentityId=aaaaaaaa-0000-0000-0000-000000000001
+18:05:00.000  NETWORK      : ### Connecting player: connectionID=1, Name=
+18:05:00.100  NETWORK      : ### Creating player: PlayerId=2, Name=Ben
+18:05:00.200  NETWORK      : ### Updating player: PlayerId=2, Name=Ben, rplIdentity=0x02, IdentityId=bbbbbbbb-0000-0000-0000-000000000002
+18:10:00.000  NETWORK      : ### Connecting player: connectionID=2, Name=
+18:10:00.100  NETWORK      : ### Creating player: PlayerId=3, Name=Cleo
+18:10:00.200  NETWORK      : ### Updating player: PlayerId=3, Name=Cleo, rplIdentity=0x03, IdentityId=cccccccc-0000-0000-0000-000000000003
+18:12:00.000  SCRIPT (E): [LFDebug:Persistence] save point FAILED id=12
+18:12:30.000  SCRIPT (E): [LFDebug:Persistence] save point FAILED id=47
+18:15:00.000  SCRIPT (E): [LFDebug:Taxi] fare table is empty for zone 4
+18:16:00.000  SCRIPT (E): [LFDebug:Taxi] fare table is empty for zone 9
+18:17:00.000  SCRIPT (W): [LFDebug:Jobs] job request refused: player 2 is away from the workplace
+18:20:00.000  NETWORK      : Player disconnected: connectionID=1
+18:30:00.000  NETWORK      : Player disconnected: connectionID=0
+19:00:00.000  SCRIPT       : [LFDebug:Ops] restart due: wrote the restart marker, closing

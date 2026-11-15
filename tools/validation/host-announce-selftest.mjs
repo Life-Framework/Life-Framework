@@ -7,6 +7,10 @@
 // and refuses an --at 23 hours out while accepting 24. Nothing is posted and no real file is touched.
 // red-proof: before tools/host/announce.mjs existed the import failed:
 // "Cannot find module .../tools/host/announce.mjs" (2026-11-15).
+// #1537 (announce wrote a boolean, so host wipe refused every wipe): the posted-time cases printed
+// "FAIL draft row got ...\"announced\":false", "FAIL posted notice records the ISO post time got: false
+// want: \"2026-11-20T12:00:00.000Z\"" and "FAIL wipe allowed 25 h after the post got: false want: true"
+// (11 case(s) failed, exit 1). The wipe guard comes from #1538.
 
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -37,9 +41,13 @@ const AT = "2026-11-22T19:00:00Z";
 const BUILD = "1.8.0.13";
 const template = readFileSync(join(ROOT, "docs", "community", "announce-template.md"), "utf8");
 
-// 1. the session row matches the SJ schema: { at, build, wipe, announced }
+// 1. the session row matches the SJ schema: { at, build, wipe } for a draft, plus `announced`
+// (the ISO time it was posted) only once it was posted (#1537).
 const row = lib.sessionRow({ at: AT, build: BUILD, wipe: false });
-eq("row", JSON.stringify(row), JSON.stringify({ at: "2026-11-22T19:00:00.000Z", build: BUILD, wipe: false, announced: false }));
+eq("draft row", JSON.stringify(row), JSON.stringify({ at: "2026-11-22T19:00:00.000Z", build: BUILD, wipe: false }));
+const POSTED = new Date(NOW).toISOString();
+eq("posted row", JSON.stringify(lib.sessionRow({ at: AT, build: BUILD, wipe: false, announced: POSTED })),
+  JSON.stringify({ at: "2026-11-22T19:00:00.000Z", build: BUILD, wipe: false, announced: POSTED }));
 
 // 2. the post for a plain session
 const post = lib.buildPost({ template, at: AT, build: BUILD, wipe: false, now: NOW });
@@ -64,6 +72,22 @@ eq("wipe 24h+1s accepted", lib.checkAt({ at: new Date(NOW + 24 * 3600 * 1000 + 1
 eq("plain 23h accepted", lib.checkAt({ at: at(23), wipe: false, now: NOW }).ok, true);
 eq("past refused", lib.checkAt({ at: at(-1), wipe: false, now: NOW }).ok, false);
 eq("garbage refused", lib.checkAt({ at: "next friday", wipe: false, now: NOW }).ok, false);
+
+// A row against the schema's own `required` and `properties` lists and its date-time rule; the full
+// validator is sessions-json-selftest. Returns "" when the row passes.
+function checkSchemaSimple(doc, schema) {
+  const ns = schema.properties.next;
+  const row = doc && typeof doc === "object" ? doc : {};
+  for (const k of ns.required) if (!(k in row)) return `${k} is required`;
+  for (const [k, v] of Object.entries(row)) {
+    if (!ns.properties[k]) return `unknown key ${k}`;
+    const t = ns.properties[k];
+    if (t.type === "string" && typeof v !== "string") return `${k} must be a string, got ${JSON.stringify(v)}`;
+    if (t.type === "boolean" && typeof v !== "boolean") return `${k} must be a boolean, got ${JSON.stringify(v)}`;
+    if (t.format === "date-time" && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/.test(v)) return `${k} is not an ISO date-time with an offset`;
+  }
+  return "";
+}
 
 // 5. the command: prints, writes the row, never posts without --send
 const dir = mkdtempSync(join(tmpdir(), "lf-host-announce-"));
@@ -98,6 +122,47 @@ try {
   // --send with no channel must fail before it posts anything
   const r4 = run(["--at", AT, "--build", BUILD, "--send"], { LF_ANNOUNCE_CHANNEL: "" });
   if (r4.status === 0) fail(`announce --send without a channel must exit non-zero: ${out(r4)}`);
+
+  // #1537: a draft carries no `announced`; only a posted notice records the ISO post time, and
+  // `host wipe` counts its 24 hours from that time. A fake say.mjs stands in for Discord.
+  const { checkWipeNotice } = await import(pathToFileURL(join(ROOT, "tools", "host", "wipe.mjs")).href);
+  const schema = JSON.parse(readFileSync(join(ROOT, "website", "content", "sessions.schema.json"), "utf8"));
+  const HOUR = 3600 * 1000;
+  const WIPE_AT = at(48);
+  const read = () => JSON.parse(readFileSync(sessions, "utf8")).next;
+  const okSay = join(dir, "say-ok.mjs");
+  const badSay = join(dir, "say-fail.mjs");
+  writeFileSync(okSay, "console.log('posted (fake)');\n");
+  writeFileSync(badSay, "console.error('discord said no');\nprocess.exit(1);\n");
+  const send = (say) => run(["--at", WIPE_AT, "--build", BUILD, "--wipe", "--send", "--channel", "123"], { LF_ANNOUNCE_SAY: say });
+
+  const d = run(["--at", WIPE_AT, "--build", BUILD, "--wipe"]);
+  if (d.status !== 0) fail(`wipe draft exited ${d.status}: ${out(d)}`);
+  eq("draft has no announced key", "announced" in read(), false);
+  const drafted = checkWipeNotice(sessions, new Date(NOW + 30 * HOUR));
+  eq("wipe guard refuses a drafted notice", drafted.ok, false);
+  if (!/draft/i.test(drafted.reason ?? "")) fail(`a drafted notice is refused as drafted, got: ${drafted.reason}`);
+
+  const f = send(badSay);
+  if (f.status === 0) fail(`a failed post must exit non-zero: ${out(f)}`);
+  eq("failed post leaves no announced key", "announced" in read(), false);
+
+  const s = send(okSay);
+  if (s.status !== 0) fail(`announce --wipe --send exited ${s.status}: ${out(s)}`);
+  eq("posted notice records the ISO post time", read().announced, POSTED);
+  const bad = checkSchemaSimple(read(), schema);
+  if (bad) fail(`posted row breaks sessions.schema.json: ${bad}`);
+  const young = checkWipeNotice(sessions, new Date(NOW + 23 * HOUR));
+  eq("wipe refused 23 h after the post", young.ok, false);
+  const aged = checkWipeNotice(sessions, new Date(NOW + 25 * HOUR));
+  eq("wipe allowed 25 h after the post", aged.ok, true);
+  eq("wipe guard reads the post time", aged.postedAt, POSTED);
+
+  // a draft written over a posted notice (a new session) is a draft again
+  run(["--at", at(72), "--build", BUILD, "--wipe"]);
+  eq("a new draft drops the old post time", "announced" in read(), false);
+  const draftSchema = checkSchemaSimple(read(), schema);
+  if (draftSchema) fail(`draft row breaks sessions.schema.json: ${draftSchema}`);
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
