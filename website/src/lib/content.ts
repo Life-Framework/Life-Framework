@@ -187,7 +187,7 @@ export const MILESTONE_PLAN: Record<string, { goal: string; plan: { label: strin
     plan: { label: "M3 outline", to: "/docs/roadmap-m3-outline" },
   },
   M4: {
-    goal: "Our 1989 Everon server opens to the public on the released core and pack, for about 40 players.",
+    goal: "Our 1989 Everon server opens to the public on the released core and pack, on 16 player slots to start.",
     plan: { label: "M4 outline", to: "/docs/roadmap-m4-outline" },
   },
   M5: {

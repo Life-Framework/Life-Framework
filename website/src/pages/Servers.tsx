@@ -205,9 +205,9 @@ const Servers = () => {
             the latest save, and backs saves up. You need Arma Reforger Server (Steam app 1874900).
           </p>
           <p className="muted md:col-start-1">
-            Our public flagship opens in M4, after the framework release. It starts as announced sessions from the same PC, sized for
-            about 40 players, and moves to a rented box for 24/7 play once sessions fill several times in a row and donations cover
-            three months of rent.
+            Our public flagship opens in M4, after the framework release. The alpha runs on a rented server with 16 player slots. It is
+            invite-only: you join with a password from our Discord. The full launch, about 40 players, comes later, once sessions fill
+            those 16 slots several times in a row and donations cover three months of rent.
           </p>
           <ul className="space-y-2">
             <li>

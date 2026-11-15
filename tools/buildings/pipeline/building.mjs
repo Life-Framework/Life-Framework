@@ -1,9 +1,11 @@
 // tools\cli building <command>: a committed spec -> ArchBuilder (headless Blender 5.3) -> the addon.
 // Playbook: docs/building-pipeline/README.md. Spike: docs/architecture/building-pipeline-spike.md.
 //
-//   building run <slug> [--from <stage>] [--only <stage>] [--force]
+//   building run <slug> [--from <stage>] [--only <stage>] [--force] [--full]   (--full: import every model again)
 //   building adopt <slug> [<file.blend>]   keep a hand-polished scene (docs/building-pipeline/polish.md)
-//   building plan <slug>     building proof <slug>     building status [<slug>]     building doctor     building selftest
+//   building plan <slug>     building proof <slug>   (plan.mjs, proof.mjs)
+//   building review <slug> --shots         Blender review renders and a contact sheet, no game
+//   building status [<slug>]     building doctor     building selftest
 //
 // The spec is tools/buildings/<slug>/spec.json (tracked). Every stage writes into
 // tmp/buildings/<slug>/ and a finished stage is skipped until --force or an earlier stage reruns.
@@ -13,7 +15,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { zstdDecompressSync } from "node:zlib";
 import { createHash } from "node:crypto";
-import { ArchBuilderMissing, archBuilderSetup, licenseMarks, runArchBuilder, scanForMarks } from "./archbuilder.mjs";
+import { ArchBuilderMissing, archBuilderSetup, closeSession, licenseMarks, openSession, runArchBuilder, scanForMarks } from "./archbuilder.mjs";
 import { safeRemoveTree } from "../../link-safety.mjs";
 import { CORE, addonOf, addonPath, addonProblems } from "../../assets/pipeline/addon.mjs";
 import { addonDir } from "../../lib/addons.mjs";
@@ -362,9 +364,19 @@ async function stagePrefab(ctx) {
 
 const RUN = { spec: stageSpec, generate: stageGenerate, review: stageReview, polish: stagePolish, export: stageExport, import: stageImport, prefab: stagePrefab, store: stageStore };
 
-export async function run(root, slug, { from, only, force, workbench, hooks = {} } = {}) {
+export async function run(root, slug, { from, only, force, full, workbench, hooks = {} } = {}) {
   const spec = loadSpec(root, slug);
   const dir = cacheDir(root, slug);
+  // Every Blender stage of this run goes to one Blender (archbuilder.mjs BlenderSession).
+  openSession(join(dir, "blender-session"));
+  try {
+    return await runStages(root, slug, { spec, dir, from, only, force, full: full || force, workbench, hooks });
+  } finally {
+    closeSession();
+  }
+}
+
+async function runStages(root, slug, { spec, dir, from, only, force, full, workbench, hooks }) {
   const fullState = readState(dir);
   let rerun = !!force;
   const list = only ? [only] : STAGES.slice(from ? STAGES.indexOf(from) : 0);
@@ -379,7 +391,7 @@ export async function run(root, slug, { from, only, force, workbench, hooks = {}
     rerun = true;
     const started = Date.now();
     console.log(`--- ${stage}`);
-    const ctx = { root, slug, spec, dir, fullState, workbench, ...hooks };
+    const ctx = { root, slug, spec, dir, fullState, workbench, full, ...hooks };
     try {
       if (NEEDS_ARCHBUILDER.has(stage)) {
         const setup = (hooks.archBuilderSetup || archBuilderSetup)();
@@ -493,18 +505,30 @@ function cmdDoctor() {
 export async function main(flags, { workbench } = {}) {
   const [sub, ...rest] = flags;
   const root = ROOT;
-  if (sub === "selftest") return (await import("../../validation/building-pipeline-selftest.mjs")).main(rest);
+  if (sub === "selftest") return Math.max(await (await import("../../validation/building-pipeline-selftest.mjs")).main(rest), await (await import("../../validation/building-import-delta-selftest.mjs")).main(rest));
   if (sub === "doctor") return cmdDoctor();
   if (sub === "plan") return rest[0] ? (await import("./plan.mjs")).cmdPlan(root, rest[0]) : say("usage: tools\\cli building plan <slug>", 2);
   if (sub === "proof") return rest[0] && !rest[0].startsWith("--") ? (await import("./proof.mjs")).cmdProof(root, rest[0], rest.slice(1)) : say("usage: tools\\cli building proof <slug> [--entity E] [--skip-audit] [--no-session] [--mission debug|playtest]", 2);
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "adopt") return rest[0] ? cmdAdopt(root, rest[0], rest[1]) : say("usage: tools\\cli building adopt <slug> [<file.blend>]", 2);
+  if (sub === "review") {
+    const slug = rest.find((f) => !f.startsWith("--"));
+    if (!slug || !rest.includes("--shots")) return say("usage: tools\cli building review <slug> --shots     Blender review renders and a contact sheet (polish.md \"Review shots\")", 2);
+    const wt = await import("../../wt.mjs");
+    if (wt.isMainCheckout(root)) return say("FAIL  building review runs only in a worktree", 1);
+    return (await import("./review-shots.mjs")).reviewShots(root, slug);
+  }
   if (sub === "run") {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  building runs only in a worktree"); return 1; }
     const slug = rest.find((f) => !f.startsWith("--") && f !== flag(rest, "--from") && f !== flag(rest, "--only"));
-    if (!slug) { console.log("usage: tools\\cli building run <slug> [--from <stage>] [--only <stage>] [--force]"); return 2; }
-    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), workbench });
+    if (!slug) { console.log("usage: tools\\cli building run <slug> [--from <stage>] [--only <stage>] [--force] [--full]"); return 2; }
+    return run(root, slug, { from: flag(rest, "--from"), only: flag(rest, "--only"), force: rest.includes("--force"), full: rest.includes("--full"), workbench });
+  }
+  // The Workbench half of the import, on a pool machine with the workbench cap (import.mjs routes it).
+  if (sub === "compile") {
+    const { cmdCompile } = await import("./import.mjs");
+    return cmdCompile(root, rest[0], rest.slice(1), { workbench });
   }
   console.log(`usage: tools\\cli building run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
        tools\\cli building adopt <slug> [<file.blend>]     keep a hand-polished scene
