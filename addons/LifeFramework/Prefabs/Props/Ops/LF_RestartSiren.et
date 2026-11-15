@@ -1,0 +1,10 @@
+StaticModelEntity : "{50C18F1B8EC49EEA}Prefabs/Structures/Military/Sirens/SirenMilitary_E_01/SirenMilitary_E_01_base.et" {
+ ID "3B7E1C0A5D94F2A6"
+ components {
+  MeshObject "{56ACD1C4DC78C87B}" {
+   Object "{0307143088DCC5AE}Assets/Structures/Military/Sirens/SirenMilitary_E_01/SirenMilitary_E_01.xob"
+  }
+  LF_RestartSirenComponent "{6C2A9E41B07D3F58}" {
+  }
+ }
+}
