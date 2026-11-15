@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{282507B1EB901416}Configs/NpcOutfits/LF_Outfit_Official_SuitBlack.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
