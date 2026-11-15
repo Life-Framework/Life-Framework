@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_SoundSlots`: making LF_SoundSlots.Resolve keep the core default instead of the pack project failed `- pack: the store radio is filled with a project that loads (expected '{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp', got '')`. Restored; green.
+// red-proof: observed 2026-11-16 (wb-fast-play) with `--no-cache --only LF_Test_SoundSlots`: made LF_SoundSlots.IsUnfilled return false; got `- core: a slot nobody fills is reported unfilled (one summary, not a line per emitter)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! A stand-in pack source that overlays the sound slots core file with a test fixture.
@@ -46,6 +47,8 @@ class LF_Test_SoundSlots : LF_Test
 			ctx.True(LF_SoundSlots.Get(id).IsEmpty(), "core: slot " + id + " has no core sound, so it is silent");
 
 		ctx.True(LF_SoundSlots.Get("no_such_slot").IsEmpty(), "an unknown slot is empty, so that one sound is off");
+		ctx.True(LF_SoundSlots.IsUnfilled("atmo_farm"), "core: a slot nobody fills is reported unfilled (one summary, not a line per emitter)");
+		ctx.True(!LF_SoundSlots.IsUnfilled("no_such_slot"), "an unknown slot is not 'unfilled': its emitter is a broken prefab and logs an error");
 		ctx.EqualStr("no sound project", LF_SoundSlots.Unusable(ResourceName.Empty), "an empty project is named");
 		ctx.EqualStr("does not load", LF_SoundSlots.Unusable("{F00DF00DF00DF00D}Sounds/LF_Test/NoSuch_Fixture.acp"), "a missing project is named");
 		ctx.EqualStr("", LF_SoundSlots.Unusable(BASE), "a real project is usable");
@@ -54,6 +57,7 @@ class LF_Test_SoundSlots : LF_Test
 		LF_ConfigService.SetPackSource(new LF_Test_SoundSlotsPackStub());
 		LF_SoundSlots.ResetStatics();
 		ctx.EqualStr(BASE, LF_SoundSlots.Get("atmo_store_radio"), "pack: the store radio is filled with a project that loads");
+		ctx.True(!LF_SoundSlots.IsUnfilled("atmo_store_radio"), "pack: a filled slot is not unfilled");
 		ctx.True(LF_SoundSlots.Get("atmo_pub_radio").IsEmpty(), "pack: a project that does not load is rejected; the slot stays empty");
 		ctx.True(LF_SoundSlots.Get("atmo_still").IsEmpty(), "pack: a removed slot keeps the empty core default");
 		ctx.True(LF_SoundSlots.Get("atmo_sawmill").IsEmpty(), "pack: a slot the pack leaves alone stays core (empty)");

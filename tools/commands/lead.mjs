@@ -344,6 +344,14 @@ async function shipSection(root) {
   return [shipQueueLine(readQueue(wt.ensureHub(root)), Date.now())];
 }
 
+// ---------------------------------------------------------------- main guard (tools/main-guard.mjs)
+
+async function guardSection(root) {
+  const g = await import("../main-guard.mjs");
+  const { statusLine } = await import("../lib/main-guard.mjs");
+  return [statusLine(g.readState(root), { alive: g.workerAlive(root), off: process.env.LF_MAIN_GUARD === "0" })];
+}
+
 // ---------------------------------------------------------------- accounts, slices (other branches; skipped until they land)
 
 async function accountsSection(root) {
@@ -426,12 +434,13 @@ export async function main(args, { root }) {
     section("WORKTREES", 14000, () => needGh("WORKTREES", async () => worktreeLines(await gatherWorktrees(root, gh)))),
     section("POOL", 13500, () => poolSection(root)),
     section("SHIP QUEUE", 5000, () => shipSection(root)),
+    section("MAIN GUARD", 3000, () => guardSection(root)),
     section("ACCOUNTS", 13000, () => accountsSection(root)),
     section("SLICES", 13000, () => slicesSection(root)),
   ]);
   // Disk: its own process (the walk is synchronous), cached sizes refreshed inside a deadline; appended to the worktree block.
   const diskP = sh(process.execPath, [join(root, "tools", "cli.mjs"), "lead", "--disk-worker"], { cwd: root, timeout: 12500 });
-  const [ms, prs, wts, pool, ship, acc, sl] = await sections;
+  const [ms, prs, wts, pool, ship, guard, acc, sl] = await sections;
   let diskLine;
   try {
     const dr = await diskP;
@@ -445,7 +454,7 @@ export async function main(args, { root }) {
     diskLine = "  disk: unavailable (size walk failed)";
   }
   wts.push(diskLine);
-  const out = [...ms, ...prs, ...wts, ...pool, ...ship, ...acc, ...sl];
+  const out = [...ms, ...prs, ...wts, ...pool, ...ship, ...guard, ...acc, ...sl];
   out.push(`lead ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(out.join("\n"));
   return 0;

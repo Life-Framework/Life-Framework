@@ -86,6 +86,23 @@ with the next town pass, or the slice asks the lead for a `town-` worktree.
 | `tools\cli place` | The full set of checks | The full set of checks (they measure physics, not taste) |
 | `look` | `look <area>` or `look town:<area>`; `town:` refuses an area inside the grid | `look grid:<slug>` |
 
+## Tests do not read the town
+
+Maintainer direction, 2026-11-15: tests must not fail because he moved things in the town; most of
+where things stand is arbitrary, so it is not written down. A test, harness proof or flow, the town
+manifest, the harness selftest or a validator never quotes a town entity name and never writes a
+position on the town. `validate-no-town-layout-asserts` enforces it (rules and escape hatch in its
+header); `tools/validation/town-layout-baseline.json` is the debt and only shrinks. What to write
+instead:
+
+- a fixture in the grid (`toolscli grid place`) or a prefab the test spawns and deletes;
+- a test-owned stand-in for a town fact (`LF_Zones.RegisterCircle` for a safe zone);
+- a contract that must hold wherever things stand: find it by component, `LF_Places`, a sign id or
+  the actions it carries, and measure from what was found.
+
+The town manifest (`agent-box/town.mjs`) keeps its contracts (each site offers its actions, has a
+sign with a card) and only warns about distances, on every branch.
+
 ## The town-placement pass at chapter close
 
 When every slice of a chapter has merged, the planner adds one **town placement** slice before the
