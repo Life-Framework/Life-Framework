@@ -46,10 +46,12 @@ Optional: pointers, `path:line` places, decisions already made.
 | `machines` | none, test, session, session-2p, full-profile | What the pool must find free |
 | `budget` | `N min / M calls` | At most 45 min and 60 calls. Bigger: split it now |
 | `owns` | backticked files or globs | Disjoint from every slice that can run at once; shared append-only files excepted |
-| `depends` | keys in a plan, `#N` on an issue | Ready once each is merged (`in-dev` or later) |
+| `depends` | keys in a plan, or `#N` for a sub-issue the parent already has | Ready once each is merged (`in-dev` or later). `slice new` checks a plan against the parent's live sub-issues, owns included |
 | `acceptance` | `test LF_Test_X`, `proof <verb>`, `fixture <path>` | Written first and seen red |
 | `risk` | none, persistence, replication, money, inventory | Needs T2 and an independent reviewer |
 | `release-blocker` | yes, no | Flags the slice and every slice it depends on in the queue |
+
+A card labelled `hold` (a maintainer decision pending, such as filming before a sign-off) is never ready.
 
 ## Agent brief
 
