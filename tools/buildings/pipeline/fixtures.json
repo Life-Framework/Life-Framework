@@ -99,6 +99,11 @@
    "center": [0.002, -0.002],
    "mesh": "{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/RowanBerries.xob"
   },
+  "Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et": {
+   "size": [0.075, 0.028, 0.074],
+   "center": [0.006, -0.003],
+   "mesh": "{11637F1DB22C2F9D}Assets/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01/Tourniquet_USSR_01_rolledup.xob"
+  },
   "Prefabs/Items/Food/LF_Crackers.et": {
    "size": [0.171, 0.03, 0.088],
    "center": [0.001, 0],
@@ -114,15 +119,35 @@
    "center": [-0.001, 0.001],
    "mesh": "{4B7F315DD3774443}Assets/Items/Medicine/FieldDressing_01/FieldDressing_US_01/FieldDressing_US_01.xob"
   },
+  "Prefabs/Items/Medicine/Gauze_02/Gauze_02.et": {
+   "size": [0.218, 0.06, 0.069],
+   "center": [0, 0],
+   "mesh": "{AC449262EE17E21B}Assets/Items/Medicine/Gauze_02/Gauze_02_package.xob"
+  },
   "Prefabs/Items/Food/Plum.et": {
    "size": [0.046, 0.063, 0.044],
    "center": [0.001, 0.002],
    "mesh": "{3EB653D9ECE9E4E9}Assets/Items/Food/Plum/Plum.xob"
   },
+  "Prefabs/Items/Medicine/AspirinBottle.et": {
+   "size": [0.073, 0.13, 0.076],
+   "center": [0, 0],
+   "mesh": "{22E1D76D80258FE3}Assets/Items/Medicine/Aspirin_01/Aspirin_01.xob"
+  },
   "Prefabs/Items/Food/Apple.et": {
    "size": [0.082, 0.067, 0.082],
    "center": [0, 0],
    "mesh": "{D0566D3CAE967F4D}Assets/Items/Food/Apple/Apple.xob"
+  },
+  "Prefabs/Items/Medicine/FieldDressing_01/Gauze_01.et": {
+   "size": [0.106, 0.056, 0.062],
+   "center": [0, 0.001],
+   "mesh": "{9EF00D573FC5604A}Assets/Items/Medicine/Gauze_01/Gauze_01_packed.xob"
+  },
+  "Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et": {
+   "size": [0.091, 0.04, 0.094],
+   "center": [-0.003, 0.009],
+   "mesh": "{A833815CADDECDC8}Assets/Items/Medicine/Tourniquet_01/Tourniquet_US_01/Tourniquet_US_01_rolledup.xob"
   }
  },
  "racks": {

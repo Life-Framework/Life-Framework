@@ -429,3 +429,11 @@ SCR_DestructibleBuildingEntity : "{FD91931F589C05BF}Prefabs/Structures/Houses/To
  coords 262 0 264.35
  angles 0 180 0
 }
+SCR_DestructibleBuildingEntity Village_Drugstore : "{BD40585C1FC1DCCF}Prefabs/Buildings/Drugstore/Drugstore_Store.et" {
+ coords 140 0 266.05
+ angleY 180
+}
+LF_NpcBaseEntity Village_Drugstore_Pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
+ coords 136.9 0.199 267.3
+ angleY 180
+}
