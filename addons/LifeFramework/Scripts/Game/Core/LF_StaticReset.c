@@ -118,6 +118,8 @@ class LF_StaticReset
 		LF_Quiz.ResetStatics();
 		LF_PlacementAim.ResetStatics();
 		LF_ClipStamp.ResetStatics();
+		LF_StaffRelay.Uninstall();
+		LF_Session.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

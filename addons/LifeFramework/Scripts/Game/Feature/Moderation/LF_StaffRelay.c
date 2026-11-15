@@ -43,6 +43,7 @@ class LF_StaffRelay
 	protected static ref LF_StaffRelayAdminSubscriber s_Admin;
 	protected static ref LF_StaffRelayFlagSubscriber s_Flag;
 	protected static bool s_bTicking;
+	protected static int s_iInstalls;
 
 	//! Admin actions waiting in the current window, and when the first arrived (0 = none waiting).
 	protected static int s_iAdminCount;
@@ -61,6 +62,7 @@ class LF_StaffRelay
 		s_Admin = null;
 		s_Flag = null;
 		s_bTicking = false;
+		s_iInstalls = 0;
 		s_iAdminCount = 0;
 		s_iAdminSince = 0;
 		s_sAdminLast = string.Empty;
@@ -91,7 +93,8 @@ class LF_StaffRelay
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Drops both subscriptions and whatever waits (tests restore the bus with it).
+	//! Drops both subscriptions, the flush tick and whatever waits (tests restore the bus with it).
+	//! LF_StaticReset.ResetAll calls it when a world ends. Safe to call when nothing is installed.
 	static void Uninstall()
 	{
 		if (s_Admin)
@@ -100,7 +103,7 @@ class LF_StaffRelay
 		if (s_Flag)
 			LF_EventBus.Unsubscribe(LF_OnIncidentFlagged, s_Flag);
 
-		if (s_bTicking)
+		if (s_bTicking && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(Tick);
 
 		ResetStatics();
@@ -108,13 +111,43 @@ class LF_StaffRelay
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: subscribes, and keeps a 1 s tick that sends what is waiting once its window ends.
+	//! Called from the game mode's OnGameStart (the modded class below); safe to call again.
 	static void Install()
 	{
-		if (!EnsureSubscribed() || s_bTicking)
-			return;
+		InstallAs(Replication.IsServer());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Install with the role passed in, so a test can be a client. A client does nothing: no
+	//! subscription, no tick. \return true when the relay is installed afterwards.
+	static bool InstallAs(bool isServer)
+	{
+		if (!isServer)
+			return false;
+
+		if (s_bTicking)
+			return true;
+
+		if (!EnsureSubscribed())
+			return false;
 
 		s_bTicking = true;
+		s_iInstalls++;
 		GetGame().GetCallqueue().CallLater(Tick, 1000, true);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many times an install took effect since the last Uninstall: 1 on a started server, 0 on a client.
+	static int GetInstallCount()
+	{
+		return s_iInstalls;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsInstalled()
+	{
+		return s_bTicking && s_Admin && s_Flag;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -193,5 +226,17 @@ class LF_StaffRelay
 		}
 
 		return sent;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Self-start: the staff relay comes up with the world, on the server only.
+modded class LF_GameModeRoleplay
+{
+	//------------------------------------------------------------------------------------------------
+	protected override void OnGameStart()
+	{
+		super.OnGameStart();
+		LF_StaffRelay.Install();
 	}
 }
