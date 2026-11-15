@@ -1,11 +1,12 @@
 // tools/validation/host-listing-selftest.mjs
-// inputs: tools/host/listing.mjs, tools/host/commands/listing.mjs, tools/host/a2s.mjs, server/flagship/server.json
+// inputs: tools/host/listing.mjs, tools/host/commands/listing.mjs, tools/host/a2s.mjs, server/flagship/server.json, tools/host/remote-0grind.mjs
 //
 // Proves `tools\cli host listing`: an injected A2S reply that matches server/flagship/server.json
 // passes; a wrong name, a missing password flag and 64 max players each fail with one line;
 // the alpha name is pinned; the challenge step and a silent server are handled.
 // red-proof: before tools/host/listing.mjs existed this printed
 // "FAIL cannot load tools/host/listing.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
+// The --remote case (#1734) failed first with "FAIL  commands/listing.mjs does not export listingTarget" (2026-11-16).
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -103,6 +104,24 @@ const down = await listing.runListing({ expected, exchange: async () => { throw 
 check(!down.ok && down.problems.length === 1 && /timed out/.test(down.problems[0]), `timeout gave ${JSON.stringify(down.problems)}`);
 const junk = await run(Buffer.from("00112233490000", "hex"));
 check(!junk.ok && junk.problems.length === 1, `garbage reply gave ${JSON.stringify(junk.problems)}`);
+
+// --remote 0grind (#1734): the rented box the alpha runs on, by name instead of a typed address.
+const cmd = await import(pathToFileURL(join(ROOT, "tools", "host", "commands", "listing.mjs")).href);
+const { FLAGSHIP_0GRIND } = await import(pathToFileURL(join(ROOT, "tools", "host", "remote-0grind.mjs")).href);
+if (typeof cmd.listingTarget !== "function") fail("commands/listing.mjs does not export listingTarget");
+else {
+  const box = cmd.listingTarget([], "0grind");
+  check(box === `${FLAGSHIP_0GRIND.address}:${FLAGSHIP_0GRIND.a2sPort}`, `--remote 0grind resolved to ${box}`);
+  let unknown = "";
+  try {
+    cmd.listingTarget([], "nitrado");
+  } catch (e) {
+    unknown = e.message;
+  }
+  check(/nitrado/.test(unknown) && /0grind/.test(unknown), `an unknown remote must refuse and name the known ones, got '${unknown}'`);
+  check(cmd.listingTarget(["10.0.0.5:17777"], "0grind") === "10.0.0.5:17777", "a typed address must win over --remote");
+  check(cmd.listingTarget(["10.0.0.5:17777"], null) === "10.0.0.5:17777", "a typed address alone is passed through");
+}
 
 if (failed) {
   console.log(`SUMMARY host-listing-selftest fail ${failed}`);
