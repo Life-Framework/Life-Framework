@@ -3,6 +3,7 @@
 //
 //   building run <slug> [--from <stage>] [--only <stage>] [--force] [--full]   (--full: import every model again)
 //   building adopt <slug> [<file.blend>]   keep a hand-polished scene (docs/building-pipeline/polish.md)
+//   building plan <slug>     building proof <slug>   (plan.mjs, proof.mjs)
 //   building review <slug> --shots         Blender review renders and a contact sheet, no game
 //   building status [<slug>]     building doctor     building selftest
 //
@@ -249,6 +250,14 @@ async function stageExport(ctx) {
   for (const p of problems) console.log(`FAIL  ${p}`);
   if (counts.doors < ctx.spec.budget.min_doors) problems.push(`${counts.doors} door(s); the spec wants at least ${ctx.spec.budget.min_doors}`);
   if (problems.length) throw new Error(`${problems.length} export check(s) failed: what ArchBuilder shows in Blender would not reach the game`);
+  // The lighting preset: ceiling fixtures placed from the room sizes (lighting.mjs). After the prop
+  // checks above, which count only what ArchBuilder recorded.
+  if (ctx.spec.lighting?.off !== true && existsSync(furniture)) {
+    const { applyLighting } = await import("./lighting.mjs");
+    const l = applyLighting(readFileSync(furniture, "utf8"), colours.rooms || [], ctx.slug, ctx.spec.lighting || {});
+    writeFileSync(furniture, l.text);
+    console.log(`        lighting: ${l.fixtures} ceiling fixture(s) in ${(colours.rooms || []).length} room(s), ${l.removed} ArchBuilder ceiling lamp(s) replaced`);
+  }
   const handProps = ctx.spec.polish?.props || [];
   if (handProps.length && existsSync(furniture)) {
     const a = addProps(readFileSync(furniture, "utf8"), handProps, ctx.slug);
@@ -506,6 +515,8 @@ export async function main(flags, { workbench } = {}) {
   const root = ROOT;
   if (sub === "selftest") return Math.max(await (await import("../../validation/building-pipeline-selftest.mjs")).main(rest), await (await import("../../validation/building-import-delta-selftest.mjs")).main(rest));
   if (sub === "doctor") return cmdDoctor();
+  if (sub === "plan") return rest[0] ? (await import("./plan.mjs")).cmdPlan(root, rest[0]) : say("usage: tools\\cli building plan <slug>", 2);
+  if (sub === "proof") return rest[0] && !rest[0].startsWith("--") ? (await import("./proof.mjs")).cmdProof(root, rest[0], rest.slice(1)) : say("usage: tools\\cli building proof <slug> [--entity E] [--skip-audit] [--no-session] [--mission debug|playtest]", 2);
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "adopt") return rest[0] ? cmdAdopt(root, rest[0], rest[1]) : say("usage: tools\\cli building adopt <slug> [<file.blend>]", 2);
   if (sub === "review") {
@@ -529,6 +540,8 @@ export async function main(flags, { workbench } = {}) {
   }
   console.log(`usage: tools\\cli building run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
        tools\\cli building adopt <slug> [<file.blend>]     keep a hand-polished scene
+       tools\\cli building plan <slug>      the facts an agent brief needs (also tmp/buildings/<slug>/plan.md)
+       tools\\cli building proof <slug>     doors, scale, audit, pictures and proof.json on a full session
        tools\\cli building status [<slug>] | doctor | selftest
 playbook: docs/building-pipeline/README.md`);
   return sub ? 2 : 0;

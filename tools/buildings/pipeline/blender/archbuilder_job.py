@@ -307,11 +307,13 @@ def materials():
             m = o.material_slots[poly.material_index].material
             if m is None or not m.name.startswith("AB_"):
                 continue
-            e = mats.setdefault(m.name, {"colour": [round(c, 4) for c in m.diffuse_color[:3]], "area": 0.0, "outside": 0.0})
+            e = mats.setdefault(m.name, {"colour": [round(c, 4) for c in m.diffuse_color[:3]], "area": 0.0, "outside": 0.0, "up": 0.0})
             n = (nm @ poly.normal).normalized()
             c = mw @ poly.center
             area = poly.area
             e["area"] += area
+            if n.z > 0.7:
+                e["up"] += area  # floors, roofs, tabletops: faces that look up
             # the centre and points part-way to each corner: one big face (a flat roof) can have
             # its centre under a rooftop unit and still be mostly open sky
             pts = [c] + [c + (mw @ me.vertices[v].co - c) * f for v in poly.vertices for f in (0.4, 0.8)]
@@ -320,6 +322,8 @@ def materials():
         ev.to_mesh_clear()
     for e in mats.values():
         e["outside_share"] = round(e["outside"] / e["area"], 3) if e["area"] else 0.0
+        e["up_share"] = round(e["up"] / e["area"], 3) if e["area"] else 0.0
+        e["up"] = round(e["up"], 2)
         e["area"] = round(e["area"], 2)
         e["outside"] = round(e["outside"], 2)
 
@@ -333,7 +337,11 @@ def materials():
         n = len(px) // 4
         means[name] = [round(sum(lin(px[i * 4 + c]) for i in range(n)) / n, 4) for c in range(3)]
         bpy.data.images.remove(im)
-    done({"materials": mats, "means": means})
+    # the rooms ride along: the lighting preset (lighting.mjs) places ceiling lights from their sizes
+    src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lf_rooms.py")
+    ns = {}
+    exec(compile(open(src, encoding="utf-8").read(), src, "exec"), ns)
+    done({"materials": mats, "means": means, "rooms": ns["find_rooms"](a, dg)})
 
 
 MODES = {"generate": generate, "review": review, "polish": review, "export": export, "materials": materials}

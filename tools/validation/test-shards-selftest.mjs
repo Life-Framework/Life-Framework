@@ -1,10 +1,12 @@
 // Proves the test-shard split and merge (tools/lib/test-shards.mjs) on fixtures. Does not boot the game.
-// inputs: tools/lib/test-shards.mjs, tools/validation/test-shards-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c
+// inputs: tools/lib/test-cache.mjs, tools/lib/test-shards.mjs, tools/validation/test-shards-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c
+// red-proof 2026-11-15 (#1703 gate "shard 1: no SUMMARY (exit 0); its 568 test(s) have no verdict", a re-queued gate answered by the pass cache): with parseShardOutput not reading the CACHED line "a CACHED pass line is the slice's verdict (summary=false 0/0)".
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as s from "../lib/test-shards.mjs";
+import * as tc from "../lib/test-cache.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -163,6 +165,16 @@ check(m.code === 1, "a failed test outranks a missing verdict");
   check(peak === 4, `every slice of both passes runs at once (peak ${peak})`);
   check(results.length === 2 && results[0].merged.code === 0 && results[0].merged.total === 6, "the normal pass merges green");
   check(results[1].merged.code === 3 && results[1].merged.notes.length === 1, "a slice that cannot start fails its pass with exit 3");
+}
+
+// A slice answered from the pass cache prints no [LFTEST] SUMMARY, only the CACHED line: that is a verdict (a re-queued gate re-runs identical inputs).
+{
+  const cache = tc.reuseLine({ at: "2026-11-15T13:32:51.327Z", machine: "lf-cloud", worktree: "x", passed: 568, total: 568, tier: "all", key: "f6e1d38b8136aa" });
+  const cp = s.parseShardOutput(cache);
+  check(cp.summary && cp.passed === 568 && cp.failed === 0 && cp.total === 568, `a CACHED pass line is the slice's verdict (summary=${cp.summary} ${cp.passed}/${cp.total})`);
+  const m = s.mergeShards([{ index: 1, expected: 568, code: 0, parsed: cp, seconds: 1 }]);
+  check(m.code === 0 && m.passed === 568 && !m.notes.length, `a cached slice merges as a pass (code ${m.code}, ${m.notes.join("; ")})`);
+  check(!s.parseShardOutput(tc.reuseLine({ at: "t", passed: 1, tier: "all", key: "k" })).summary, "a cached line with no counts is no verdict");
 }
 
 if (failures.length) {

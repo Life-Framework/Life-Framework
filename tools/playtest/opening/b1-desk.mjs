@@ -1,3 +1,4 @@
+// opening-run: host=outside
 // tools/playtest/opening/b1-desk.mjs
 // Beat B1 of docs/playtest/m4-opening-day.md: the desk, go or no-go before opening, on a scratch host.
 //
@@ -19,13 +20,16 @@
 //   drill         `host drill` boots the newest backup on a pool machine; this script runs with no machine, so it is BLOCKED.
 //   ready         `host ready` prints go.
 //   prune         `host prune --dry-run` lists no tagged (preflight, wipe, crash) backup for removal.
+// A step a fresh host cannot show is BLOCKED with the reason, not FAIL (#1693): `uid pending` when the maintainer's uid is
+// not in the staff roster yet (`host config apply` refuses it; the roster lists nobody), `no save yet` when `host ready` is
+// no-go on a host with no save point (it has no backup or restore drill to judge).
 // Proof: tools/validation/opening-b1-selftest.mjs.
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { hostDir } from "../../host/host.mjs";
+import { findSavePoints, hostDir, hostPaths } from "../../host/host.mjs";
 import { isPlainBackup } from "../../host/rotate.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -92,7 +96,8 @@ export function runB1(opts) {
     const r = call(["host", "config", "apply"]);
     const serverJson = join(host, "profile", "server.json");
     const configJson = join(host, "profile", "config.json");
-    if (r.timedOut || r.status !== 0) line("config-apply", "FAIL", failed(r, "host config apply"));
+    if (!r.timedOut && r.status !== 0 && /has no uid yet/.test(r.text)) line("config-apply", "BLOCKED", `uid pending: the maintainer's uid is not in staff.txt yet (a human step); ${failed(r, "host config apply")}`);
+    else if (r.timedOut || r.status !== 0) line("config-apply", "FAIL", failed(r, "host config apply"));
     else if (!existsSync(configJson) || !existsSync(serverJson)) line("config-apply", "FAIL", "host config apply left no profile/config.json and server.json in the host folder");
     else {
       let password = "";
@@ -119,7 +124,7 @@ export function runB1(opts) {
     else {
       const entries = parseRoster(readFileSync(file, "utf8"));
       const bad = entries.find((e) => !LEVELS.includes(e.level));
-      if (!entries.length) line("roster", "FAIL", `${where} lists nobody: the maintainer's uid is still pending (a human step)`);
+      if (!entries.length) line("roster", "BLOCKED", `uid pending: ${where} lists nobody, the maintainer's uid is still to be added (a human step)`);
       else if (entries.length > 1) line("roster", "FAIL", `${where} lists ${entries.length} people; the maintainer is the only staff`);
       else if (bad) line("roster", "FAIL", `${where} gives the entry no known level (moderator, operator, administrator)`);
       else if (entries[0].level !== "administrator") line("roster", "FAIL", `${where} lists the maintainer as ${entries[0].level}, not administrator`);
@@ -136,6 +141,7 @@ export function runB1(opts) {
     const r = call(["host", "ready"]);
     if (r.timedOut) line("ready", "FAIL", failed(r, "host ready"));
     else if (r.status === 0 && /\bgo\b/i.test(r.text) && !/no-go/i.test(r.text)) line("ready", "PASS", "host ready prints go");
+    else if (r.status !== 0 && /no-go/i.test(r.text) && findSavePoints(hostPaths(host).profile).length === 0) line("ready", "BLOCKED", `no save yet: host ready is no-go on a fresh host (no backup or restore drill to judge); ${failed(r, "host ready")}`);
     else line("ready", "FAIL", r.status === 0 ? `host ready did not print go: ${firstLine(r.text)}` : failed(r, "host ready"));
   }
 

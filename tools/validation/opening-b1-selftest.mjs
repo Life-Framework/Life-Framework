@@ -78,10 +78,17 @@ try {
   check(ok.status === 0, `case 1: exit 0 with no FAIL (got ${ok.status})`);
 
   // 2. a roster that is not "the maintainer only" is a FAIL.
-  for (const f of ["staff-two.txt", "staff-pending.txt", "staff-mod-only.txt"]) {
+  for (const f of ["staff-two.txt", "staff-mod-only.txt"]) {
     const r = run(["--host", makeHost(f), "--help-file", join(FIX, "help-main.txt")]);
     check(r.byId.roster?.verdict === "FAIL", `case 2: ${f} gives roster FAIL (got ${r.byId.roster?.verdict})`);
     check(r.status === 1, `case 2: ${f} exits 1 (got ${r.status})`);
+  }
+
+  // 2b. a roster with nobody yet (the maintainer's uid is a human step) is BLOCKED "uid pending", not FAIL (#1693).
+  {
+    const r = run(["--host", makeHost("staff-pending.txt"), "--help-file", join(FIX, "help-main.txt")]);
+    check(r.byId.roster?.verdict === "BLOCKED" && /uid pending/.test(r.byId.roster?.reason || ""), `case 2: staff-pending.txt gives roster BLOCKED "uid pending" (got ${r.byId.roster?.verdict})`);
+    check(r.status === 0, `case 2: staff-pending.txt exits 0 (got ${r.status})`);
   }
 
   // 3. config apply and ready through the stand-in cli, which lists them.
@@ -94,7 +101,14 @@ try {
   check(emptyPw.byId["config-apply"]?.verdict === "FAIL" && /password/i.test(emptyPw.byId["config-apply"]?.reason || ""), "case 3: an empty join password in the host server.json is FAIL");
   const failApply = run(base(makeHost("staff-good.txt")), fake({ FAKE_CONFIG: "fail" }));
   check(failApply.byId["config-apply"]?.verdict === "FAIL" && failApply.status === 1, "case 3: a failing config apply is FAIL, exit 1");
-  const noGo = run(base(makeHost("staff-good.txt")), fake({ FAKE_READY: "nogo" }));
+  // no-go on a host that has a save point is a FAIL; on a host with none it is BLOCKED "no save yet" (#1693)
+  const savedHost = makeHost("staff-good.txt");
+  const sp = join(savedHost, "profile", "profile", ".save", "u", "game", "M", "playthrough000", "savepoint000");
+  mkdirSync(sp, { recursive: true });
+  writeFileSync(join(sp, "meta-info.json"), "{}");
+  const noGo = run(base(savedHost), fake({ FAKE_READY: "nogo" }));
+  const noGoFresh = run(base(makeHost("staff-good.txt")), fake({ FAKE_READY: "nogo" }));
+  check(noGoFresh.byId.ready?.verdict === "BLOCKED" && /no save yet/.test(noGoFresh.byId.ready?.reason || ""), "case 3: no-go on a host with no save is BLOCKED no save yet");
   check(noGo.byId.ready?.verdict === "FAIL" && /no-go/i.test(noGo.byId.ready?.reason || ""), "case 3: no-go from host ready is FAIL with the reason");
   const flagship = join(scratch, "flagship-leak");
   mkdirSync(flagship, { recursive: true });

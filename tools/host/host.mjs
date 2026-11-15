@@ -5,10 +5,10 @@
 // worktree or wiping a test profile never touches the playtest saves. The
 // profile holds no junctions: the game-addons junction stays under the
 // worktree's server/profile/serve, created by the CLI's own helper.
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
-import { spawnSync } from "node:child_process";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
 import { networkInterfaces, tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, PACK, PACK_MISSION, playtestMission } from "../lib/addons.mjs";
 import { sessionA2sPort } from "../lib/pool-queue.mjs";
@@ -284,6 +284,89 @@ export function newestConsoleLog(profile) {
     if (existsSync(f)) return f;
   }
   return null;
+}
+
+// #1667: the engine writes <profile>\logs\logs_<stamp>\console.log within seconds of launch. A
+// server with none after this long never will, so the start stops instead of waiting out --timeout.
+export const NO_LOG_MS = 60000;
+
+function sleepSync(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+// Records the server's exit code in `file`. Node learns a child's code only on its event loop,
+// which the start's synchronous wait never runs, so a small hidden PowerShell holds a handle to
+// the process and writes ExitCode when it ends. Windows only; elsewhere the code stays unknown.
+export function startExitWatch(pid, file) {
+  if (process.platform !== "win32" || !pid) return null;
+  rmSync(file, { force: true }); // a code left by an earlier run is not this one's
+  const lit = file.replace(/'/g, "''");
+  const ps = `$p = Get-Process -Id ${pid} -ErrorAction SilentlyContinue; if ($p) { $null = $p.Handle; $p.WaitForExit(); Set-Content -LiteralPath '${lit}' -Value $p.ExitCode }`;
+  try {
+    // Not detached: PowerShell 5.1 started without a console (DETACHED_PROCESS) never runs the command.
+    const c = spawn("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { stdio: "ignore", windowsHide: true });
+    c.unref();
+    return { file, pid: c.pid };
+  } catch {
+    return null;
+  }
+}
+
+function stopExitWatch(w) {
+  if (w?.pid && pidAlive(w.pid)) {
+    try {
+      process.kill(w.pid);
+    } catch {}
+  }
+}
+
+// The code the exit watch wrote; it lands just after the process ends, so give it a few seconds.
+function readExitCode(w, sleep) {
+  if (!w?.file) return null;
+  for (let i = 0; i < 25; i++) {
+    try {
+      const n = Number(readFileSync(w.file, "utf8").trim());
+      if (Number.isFinite(n)) return n;
+    } catch {}
+    sleep(200);
+  }
+  return null;
+}
+
+// The `host start` wait (#1667): polls for the new console.log and the ready line and ends on the
+// first of: ready, the process exited (with its code), no console.log `noLogMs` after launch (the
+// server is killed; says whether the profile log folder exists and prints the args), or the deadline.
+// Returns { status: "ready"|"exited"|"nolog"|"timeout", log, lines } where lines are what to print.
+export function waitForHostLog({ pid, profile, before = new Set(), deadlineMs, noLogMs = NO_LOG_MS, pollMs = 2000, args = [], exitWatch = null, alive = pidAlive, sleep = sleepSync, now = Date.now }) {
+  const started = now();
+  const logs = join(profile, "logs");
+  const got = args.length ? [`      the server got: ${args.join(" ")}`] : [];
+  let log = null;
+  for (;;) {
+    sleep(pollMs);
+    if (!alive(pid)) {
+      const code = readExitCode(exitWatch, sleep);
+      const how = code === null ? "exit code unknown" : `exit code ${code}`;
+      return { status: "exited", log, lines: [`FAIL  the server exited during startup (${how}${log ? "" : `, no console.log under ${logs}`})`, ...(log ? [] : got)] };
+    }
+    const f = newestConsoleLog(profile);
+    if (f && !before.has(basename(dirname(f)))) log = f;
+    if (log && readFileSync(log, "utf8").includes(READY_LINE)) {
+      stopExitWatch(exitWatch);
+      return { status: "ready", log, lines: [] };
+    }
+    if (!log && now() - started >= noLogMs) {
+      try {
+        process.kill(pid);
+      } catch {}
+      const why = existsSync(logs) ? `no new console.log under ${logs}` : `the profile log folder ${logs} was never created`;
+      return { status: "nolog", log: null, lines: [`FAIL  no console.log ${Math.round(noLogMs / 1000)} s after launch: ${why}; stopped the server (pid ${pid})`, ...got] };
+    }
+    if (now() >= deadlineMs) {
+      stopExitWatch(exitWatch);
+      return { status: "timeout", log, lines: [`WARN  no '${READY_LINE}' within the timeout; the server is still running (pid ${pid})`, ...(log ? [`      log: ${log}`] : [])] };
+    }
+  }
 }
 
 // The lines a host run is judged by: world ready, session start/continue,
