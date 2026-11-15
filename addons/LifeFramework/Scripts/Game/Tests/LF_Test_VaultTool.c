@@ -47,6 +47,11 @@ class LF_Test_VaultTool : LF_Test
 		string stamped = LF_FenceSerials.Issue(uid, LF_Bank.DRILL_PREFAB);
 		ctx.True(serial.SetSerial(stamped), "the fence stamps the drill");
 
+		// The drill works from the hands (hand tool): a drill only in the pack is refused.
+		ctx.False(LF_Bank.Rob(vaultId, uid, robber, 0.9), "a drill in the pack: refused");
+		LF_TestVaultDrillFixture.Hold(robber, drill, true);
+		LF_Places.Register(LF_Bank.PLACE_KIND, vaultId, robber);
+
 		ctx.True(LF_Bank.Jams(0.5, 0.2), "a low roll jams");
 		ctx.False(LF_Bank.Jams(0.5, 0.8), "a high roll runs");
 		ctx.False(LF_Bank.Rob(vaultId, uid, robber, 0.2), "a jammed drill opens nothing");
@@ -54,7 +59,13 @@ class LF_Test_VaultTool : LF_Test
 		ctx.True(LF_InventoryUtils.FindItemsByPrefab(inventory, LF_Bank.DRILL_PREFAB).IsEmpty(), "jam: the drill left the robber");
 
 		ctx.True(LF_InventoryUtils.AddItem(inventory, LF_Bank.DRILL_PREFAB), "a second drill");
-		ctx.True(LF_Bank.Rob(vaultId, uid, robber, 0.9), "with a drill the breach starts");
+		LF_TestVaultDrillFixture.Hold(robber, LF_HandTool.Carried(robber, LF_VaultDrill.TOOL_ID), true);
+		LF_VaultDrill.s_fNowOverride = 50;
+		ctx.True(LF_Bank.Rob(vaultId, uid, robber, 0.9), "with a drill the drilling starts");
+		ctx.False(LF_Breach.IsOpen(vaultId), "drilling: still shut");
+		LF_VaultDrill.s_fNowOverride = 50 + LF_Bank.GetDrillSeconds(vaultId);
+		LF_VaultDrill.Tick();
+		LF_VaultDrill.s_fNowOverride = -1;
 		ctx.True(LF_Breach.IsOpen(vaultId), "the vault opened");
 		ctx.Equal(1, LF_Bank.GetSpawnedBagCount(vaultId), "the haul spawned");
 

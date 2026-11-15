@@ -2020,6 +2020,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
+    CustomStringTableItem "{A3AB2264A6CAAA6D}" {
+     Id "LF-Bank_Drill"
+     Target_en_us "Drill the vault door"
+     Comment "Vault prompt while the drill is held in the hands (hand tool)."
+    }
+    CustomStringTableItem "{CAA5DA4BC5610FC2}" {
+     Id "LF-Bank_DrillBusy"
+     Target_en_us "Someone is already drilling this vault"
+     Comment "Vault refusal: another robber's drill is running."
+    }
+    CustomStringTableItem "{73C6A60BDEBFFA84}" {
+     Id "LF-Bank_DrillStarted"
+     Target_en_us "Drilling. Hold the drill at the door until the lock gives."
+     Comment "Notice when the timed vault drill starts."
+    }
+    CustomStringTableItem "{E6126385C63EE88F}" {
+     Id "LF-Bank_DrillStop"
+     Target_en_us "Stop drilling"
+     Comment "Vault prompt for the robber who is drilling; cancels and pays nothing."
+    }
+    CustomStringTableItem "{5689C202D23903C6}" {
+     Id "LF-Bank_DrillStopped"
+     Target_en_us "The drilling stopped. Nothing gave."
+     Comment "Notice when the vault drill is cancelled, interrupted, unequipped or walked away from."
+    }
+    CustomStringTableItem "{05B9191F30E7B9A2}" {
+     Id "LF-Bank_HoldDrill"
+     Target_en_us "Take the drill in your hands (quick slot) to drill the vault"
+     Comment "Vault refusal: the drill is carried but not held."
+    }
     CustomStringTableItem "{A27300000000BA01}" {
      Id "LF-Bank_NeedTool"
      Target_en_us "The vault needs a drill or a charge"

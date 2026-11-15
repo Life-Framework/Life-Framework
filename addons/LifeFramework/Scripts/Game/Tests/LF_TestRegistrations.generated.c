@@ -206,6 +206,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_GuidCompare(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GunCounter(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Handcuffs(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HandToolEquip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessPerf(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessProbe(), LF_TestTier.LOGIC);
@@ -548,6 +549,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDoorSwing(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VaultDrillAction(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_VaultDrillCancel(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_VaultDrillPayOnce(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleColours(), LF_TestTier.LOGIC);
