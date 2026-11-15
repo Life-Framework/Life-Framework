@@ -37,8 +37,8 @@ Listed in the order they run (restructured 2026-11-14).
 | M3 | Framework Release | Next. Nothing is published until the whole addon move is done ([m3-outline.md](m3-outline.md), [m3-plan.md](m3-plan.md)) | Your town in five minutes #1004 · Make it yours #1005. Foundation: two addons #223, upgrade path #229, Workshop release #366, record shapes #746, patterns #684 |
 | M2.5 | Showcase and Outreach | After M3, before M4, so outreach points at a build people can get ([m2-5-outline.md](m2-5-outline.md)) | The showcase #566 |
 | M4 | Flagship Live | The public 1989 server ([m4-outline.md](m4-outline.md)) | Opening day #1006 |
-| M5 | Settling in | First weeks after launch: every player is new | Arrival · Armed and dressed · On patrol · Evenings in the village · Read all about it · story: The relocated |
-| M6 | Making a living | Players with jobs and money want more from them | The market moves · Getting better at the job · Working the routes · Scrap and salvage · The bank · story: The state factory |
+| M5 | Settling in | Started 2026-11-15. First weeks after launch: every player is new ([m5-outline.md](m5-outline.md)) | Armed and dressed · Evenings in the village · On patrol · Arrival · story: The relocated |
+| M6 | Making a living | Players with jobs and money want more from them | The market moves · Getting better at the job · Catch the bus · Working the routes · Scrap and salvage · The bank · story: The state factory |
 | M7 | Power and turf | Organisations form and crime escalates | Gang war · The convoy job · The big heist · Dirty money · Behind bars · Making detective · story: The shipment |
 | M8 | Roots | Long-term players want something of their own | A place of your own · Working the land · Garages and lockers · Neighbours (pull forward if launch is quiet) · story: The anniversary |
 | Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | GitHub milestone "Backlog" |
