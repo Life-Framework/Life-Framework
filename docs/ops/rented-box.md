@@ -124,7 +124,7 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
 - [ ] **Restart schedule.** The flagship restarts at 06:00 and 18:00 server time, with in-game warnings at 15, 5
       and 1 minute ([m4-slice-plan](../roadmap/m4-slice-plan.md), "Decisions"). The times are set in
       `server/flagship/config.json` (`restarts.times`), and the in-world warning counts down to them.
-      A restart by hand is announced first with `toolscli host announce --at <iso time>`.
+      A restart by hand is announced first with `toolsi host announce --at <iso time>`.
 - [ ] A scheduled restart is also a backup point: `host stop` backs up, `host start` backs up. Rotate with
       `tools\cli host prune --keep 20` (dry-run it with `--dry-run`); tagged backups (preflight, wipe, crash,
       replaced-by-restore) are never deleted.
