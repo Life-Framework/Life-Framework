@@ -188,3 +188,7 @@ GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.e
  coords 181.5 0 306.6
  angleY 75
 }
+GenericEntity FenceStall : "{4855AC571C89CA6D}Prefabs/Props/Commercial/LF_FenceStall.et" {
+ coords 186.498 0 306.571
+ angleY 180
+}
