@@ -432,6 +432,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SearchCooldown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ServerPerfLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceRadio(), LF_TestTier.WORLD);
