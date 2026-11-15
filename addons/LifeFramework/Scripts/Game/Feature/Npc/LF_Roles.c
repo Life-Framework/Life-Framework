@@ -196,6 +196,9 @@ class LF_Roles
 		for (int i = 0; i < answers.Count(); i++)
 		{
 			LF_DialogueNode answer = NewNode(answers[i], Key(roleId, parts[i]));
+			// Any role NPC that keeps a shop offers its goods after saying what it does.
+			if (answers[i] == "what")
+				answer.m_aOptions.Insert(LF_ShopkeeperTalk.BrowseOption());
 			answer.m_aOptions.Insert(NewOption("#LF-NpcTalk_More", "menu"));
 			answer.m_aOptions.Insert(NewOption("#LF-NpcTalk_Bye", "bye"));
 			config.m_aNodes.Insert(answer);

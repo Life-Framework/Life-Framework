@@ -122,6 +122,7 @@ class LF_BankLoot
 			}
 
 			spawned.Insert(weapon);
+			LF_StolenGoods.Mark(weapon);
 			LF_SerialComponent stamp = LF_SerialComponent.Cast(weapon.FindComponent(LF_SerialComponent));
 			if (!stamp)
 			{

@@ -7866,6 +7866,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Dispatch"
      Comment "Title of dispatch toasts."
     }
+    CustomStringTableItem "{5B17BCD5B61026B6}" {
+     Id "LF-Shop_Browse"
+     Target_en_us "Browse goods"
+     Comment "Interaction name on a shopkeeper NPC or stall: opens the shop's price list."
+    }
     CustomStringTableItem "{C2D8EF8EC8E7CAC8}" {
      Id "LF-Shop_CashLine"
      Target_en_us "Cash in hand: %1"
@@ -7934,6 +7939,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The Fence"
      Comment "Fence shop name (#271)."
     }
+    CustomStringTableItem "{103833B3B4711CB4}" {
+     Id "LF-Shop_Name_FenceStall"
+     Target_en_us "Under the counter"
+     Comment "Title of the fence stall's price list."
+    }
     CustomStringTableItem "{9B2FF881F1CB91D3}" {
      Id "LF-Shop_Name_General"
      Target_en_us "General store"
@@ -7949,6 +7959,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_NoReply"
      Target_en_us "The till did not answer. Try again."
      Comment "Shop slip line when the server did not answer within 5 seconds."
+    }
+    CustomStringTableItem "{3F69457F6AC513EA}" {
+     Id "LF-Shop_Offer"
+     Target_en_us "Offer"
+     Comment "Shop price list row button on a line the counter buys: puts it on the slip to sell."
     }
     CustomStringTableItem "{F1C7C0F870099A03}" {
      Id "LF-Shop_OpenDesc_BackRoom"
@@ -8105,6 +8120,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell these"
      Comment "Shop till key: sell the slip's quantity of the picked item back to the counter."
     }
+    CustomStringTableItem "{BAB816EED21FF256}" {
+     Id "LF-Shop_SellTotal"
+     Target_en_us "Sell for %1"
+     Comment "Shop till key on a buyback line. %1 is what the counter pays."
+    }
     CustomStringTableItem "{89D9F751DFF3D649}" {
      Id "LF-Shop_SlipEmpty"
      Target_en_us "Order slip: pick a line from the list."
@@ -8120,6 +8140,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sold for %1."
      Comment "Shop slip line after a sale. %1 is the amount received."
     }
+    CustomStringTableItem "{0C99B82FA61A85FA}" {
+     Id "LF-Shop_WePay"
+     Target_en_us "We pay %1"
+     Comment "Shop price list: price column of a line the counter only buys. %1 is what it pays for one."
+    }
     CustomStringTableItem "{B385B4702F2997BF}" {
      Id "LF-Shop_Working"
      Target_en_us "At the till ..."
@@ -8129,6 +8154,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shopkeeper_Name"
      Target_en_us "Shopkeeper"
      Comment "Speaker name of a store's shopkeeper in a conversation (#1143)."
+    }
+    CustomStringTableItem "{5F6ED016BC4C3C34}" {
+     Id "LF-Shopkeeper_ShowGoods"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply to any NPC that keeps a shop: closes the talk and opens the price list."
+    }
+    CustomStringTableItem "{5B4C827A55F06D5F}" {
+     Id "LF-Shopkeeper_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "What a shopkeeper NPC says before the price list opens."
     }
     CustomStringTableItem "{D10D43C9BEB02467}" {
      Id "LF-Shopkeeper_Talk"
