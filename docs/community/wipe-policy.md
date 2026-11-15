@@ -10,10 +10,10 @@ This page covers the alpha server, "Life Framework | Everon 1989 (Alpha)". It is
 
 ## For staff
 
-The maintainer is the only admin, so the maintainer runs every step below. The commands are planned and not all of them exist yet. Run `tools\cli host help` to see what is merged.
+The maintainer is the only admin, so the maintainer runs every step below. Run `tools\cli host help` to see the flags.
 
-1. **Announce.** `host announce --wipe` drafts the Discord notice. It refuses a wipe less than 24 hours out, so the 24 hour notice is enforced by the announce command (planned).
-2. **Back up.** The wipe step writes a backup of the save before it clears anything. `host backup` takes a backup by hand today.
-3. **Clear.** `host wipe --confirm` clears the save after the backup is written. It needs the typed confirmation (planned).
+1. **Announce.** `host announce --at <iso time> --wipe` drafts the Discord notice. It refuses a wipe less than 24 hours out, so the 24 hour notice is enforced by the announce command.
+2. **Back up.** The wipe step writes a backup of the save before it clears anything. `host backup` takes a backup by hand.
+3. **Clear.** `host wipe --confirm <host dir name>` clears the save after the backup is written. It needs the typed confirmation, refuses while the host runs, and refuses without a wipe notice posted 24 hours earlier.
 
 Do not clear a save before the announcement has gone out.

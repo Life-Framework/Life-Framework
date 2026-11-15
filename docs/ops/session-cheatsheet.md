@@ -14,13 +14,13 @@ checkout.
 | Command | Success looks like |
 |---|---|
 | `tools\cli host drift` *(planned)* | Exit 0: the live `config.json` and `server.json` match `server/flagship/`. A changed field is named; exit 1. |
-| `tools\cli host ready` *(planned)* | One line per check, then `GO`. `NO-GO` means do not open. |
+| `tools\cli host ready` | One line per check, then `GO`. `NO-GO` means do not open. |
 | `tools\cli host preflight` | After a game update only: it backs up, boots the new build and passes. A failure restores the backup; read [game updates](game-updates.md). |
 | `tools\cli host backup` | `host: backed up saves -> <folder>`. |
 | `tools\cli host verify` *(planned)* | Every backup `ok`, none `empty` or `changed`; exit 0. |
 | `tools\cli host drill` | The newest backup boots on a scratch profile and the log shows `save loaded:`. Weekly and after a preflight. |
 | `tools\cli host applications` *(planned)* | The open police applications, oldest first, then the officers on trial. Read only; approve in game. |
-| `tools\cli host announce --at <time>` *(planned)* | The post is printed and the next session is written to `website/content/sessions.json`. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
+| `tools\cli host announce --at <iso time>` | The post is printed and the next session is written to `website/content/sessions.json`. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
 
 ## Start
 
@@ -37,7 +37,7 @@ checkout.
 |---|---|
 | `tools\cli host players` | Server name, map, and players over max within 3 seconds. |
 | `tools\cli host say "Hotfix restart in 10 minutes"` *(planned)* | Every player gets one toast within 10 seconds; the server logs `host say:`. |
-| `tools\cli host perf` *(planned)* | A verdict line against the 40-player budget and a CSV in `<host>/perf/`. |
+| `tools\cli host perf` | A verdict line against the 40-player budget and a CSV in `<host>/perf/`. |
 | `tools\cli host status` | Still `up`. Saves are never touched while it runs. |
 
 ## Restart at 06:00 or 18:00
@@ -73,7 +73,7 @@ Never wipe before the announcement is out.
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host announce --at <time> --wipe` *(planned)* | Refuses a time less than 24 hours away; otherwise prints the post and records the notice. |
+| `tools\cli host announce --at <iso time> --wipe` | Refuses a time less than 24 hours away; otherwise prints the post and records the notice. |
 | `tools\cli host stop` | The host is down; `wipe` refuses while it runs. |
 | `tools\cli host wipe --confirm <host dir name>` | A `wipe` backup, the saves moved aside (nothing deleted), a line in `backups/wipes.log`, and how to restore. |
 | `tools\cli host start --flagship --wait` | A fresh world comes up. |

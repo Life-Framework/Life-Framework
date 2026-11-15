@@ -5,9 +5,10 @@ once the trigger in step 1 is met, not before. It is host-agnostic: everything h
 Linux box. The part that depends on the host is left for the host #378 picks (the last section).
 
 How to read it: each step names a command or a file. A command that has not merged yet is in code font as its
-card names it and marked *(planned)*; when it merges, drop the mark. Run the steps in order and tick the
-box when the step's check passes. Sessions on the live server follow [game-updates](game-updates.md) for
-builds and the session runbook (O16, #1275) for a normal session.
+card names it and marked *(planned)* until it merges; `tools\cli host help` lists the merged ones, and
+`tools/validation/ops-doc-commands-selftest.mjs` fails on a merged command still marked planned. Run the
+steps in order and tick the box when the step's check passes. Sessions on the live server follow
+[game-updates](game-updates.md) for builds and the [session runbook](session-runbook.md) for a normal session.
 
 ## 1. The trigger
 
@@ -82,8 +83,8 @@ servers stopped.
 
 On the old host (the maintainer's PC):
 
-1. [ ] Announce the downtime on Discord, with the time (`tools\cli host announce --at <time>` *(planned)*; by
-       hand until it merges).
+1. [ ] Announce the downtime on Discord, with the time (`tools\cli host announce --at <iso time>` drafts the
+       post; `--send` posts it, maintainer only).
 2. [ ] `tools\cli host stop --wait` so the engine writes the shutdown save.
 3. [ ] `tools\cli host backup` and note the folder name it prints. This is the copy that travels.
 4. [ ] Copy the whole `backups/<that folder>` to the new box (scp, or an archive). Leave the old profile
@@ -93,9 +94,10 @@ On the new box:
 
 5. [ ] Put the backup under the new host dir's `backups/`, and run `tools\cli host restore <folder name>` to
        lay it into the profile. `restore` keeps what it replaces under `backups/<time>-replaced-by-restore`.
-6. [ ] **Drill before opening:** `tools\cli host drill <folder name>` *(planned)* boots a throwaway copy with
-       `-loadSessionSave` and passes only on a `save loaded:` line and at least one applied account record. Without
-       `host drill`, start the box once without announcing it and read the console log
+6. [ ] **Drill before opening:** `tools\cli host drill <folder name>` boots a throwaway copy of that backup on a
+       scratch profile and passes only if the save loads with its accounts (`--keep` leaves the scratch profile
+       to read). `host drill` boots on a pool machine; on a box that is not in the pool, start the box once
+       without announcing it and read the console log
        (`tools\cli logs "save loaded:"`): it must show `[LFDebug:Persistence] save loaded: version N, game build X,
        running Y`, with none of `save load damaged`, `continued save never reached the LF store`, `VME:` or
        `SCRIPT (E)`. Stop it with `host stop` so the shutdown save is written.
@@ -111,17 +113,17 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
 - [ ] Windows: `tools\cli host start --flagship`, or the start script in the flagship folder. Linux:
       `LF_REFORGER_SERVER=~/reforger-server ./start.sh -loadSessionSave`. Both pass `-maxFPS 60` and keep the
       owner `config.json` in the profile.
-- [ ] **Watchdog.** `tools\cli host watch` *(planned)* supervises the process: an exit without the stop file
+- [ ] **Watchdog.** `tools\cli host watch --flagship` supervises the process: an exit without the stop file
       is a crash, so it keeps the crash log under `backups/<time>-crash/`, backs the saves up, and restarts with
-      `-loadSessionSave` within a minute. Until it merges, or on Linux, use the OS: a Windows scheduled task
-      (trigger "at startup", restart on failure every minute) or a systemd unit with `Restart=on-failure`. Both
-      must pass `-loadSessionSave`, and a stop through `host stop` must not trigger a restart.
+      `-loadSessionSave` within a minute; three crashes in ten minutes stop the watch and alert staff.
+      `tools\cli host autostart install` makes a Windows scheduled task run it at logon, so the box returns after
+      a reboot. On Linux use the OS: a systemd unit with `Restart=on-failure`. It must pass `-loadSessionSave`,
+      and a stop through `host stop` must not trigger a restart.
 - [ ] Kill the server process by hand once. It is back, with the crash backup, inside a minute, and the log
       shows `save loaded:`.
-- [ ] **Restart schedule.** The flagship's restart times are an open question for the maintainer
-      ([m4-slice-plan](../roadmap/m4-slice-plan.md) "Open questions"): until it is answered, restarts are by hand,
-      announced with `tools\cli host announce` *(planned)*, and the config sets no `restarts` list. Once there
-      are times, they go in `server/flagship/config.json` and the in-world warning counts down to them.
+- [ ] **Restart schedule.** The flagship restarts at 06:00 and 18:00 server time (`restarts` in
+      `server/flagship/config.json`), with in-world warnings at 15, 5 and 1 minute. A restart by hand is announced
+      first with `tools\cli host announce --at <iso time>`.
 - [ ] A scheduled restart is also a backup point: `host stop` backs up, `host start` backs up. Rotate with
       `tools\cli host prune --keep 20` (dry-run it with `--dry-run`); tagged backups (preflight, wipe, crash,
       replaced-by-restore) are never deleted.
@@ -132,9 +134,8 @@ The live `config.json` is public in this repo, so no password or webhook goes in
 
 - [ ] Write `secrets.json` in the host dir on the box only: the join password, the admin password and the staff
       webhook URL.
-- [ ] `tools\cli host config apply` *(planned)* writes the profile's `config.json` and `server.json` from the
-      repo files plus `secrets.json`. Until it merges, copy `config.json` to
-      `profile/profile/LifeFramework/config.json` and fill the passwords in `server.json` by hand on the box.
+- [ ] `tools\cli host config apply` writes the profile's `config.json` and `server.json` from the repo files
+      plus `secrets.json` and the roster's admins (`--dry-run` first; it refuses while the host runs).
 - [ ] `secrets.json` is in no backup that leaves the box, and in no commit.
 
 ## 8. DNS and the address
@@ -145,7 +146,7 @@ The live `config.json` is public in this repo, so no password or webhook goes in
 - [ ] Join by `<name>:2001` from outside the network. The browser listing uses the IP and A2S port, so it needs
       step 3 too.
 - [ ] Update every place that shows the address: the Discord announcement template, the website `sessions.json`
-      *(planned, O14)*, and `docs/playtest.md`, which today says the server is one PC.
+      (written by `tools\cli host announce`), and `docs/playtest.md`, which today says the server is one PC.
 
 ## 9. Dry run, then open
 
@@ -161,7 +162,7 @@ The dry run is the manual check of #311, on `lf-testbox` (the LAN laptop) or on 
 
 ## 10. After the move
 
-- [ ] Run `tools\cli host triage` *(planned)* on the first full session's console log; file what is new.
+- [ ] Run `tools\cli host triage --draft` on the first full session's console log; file what is new.
 - [ ] Add the box's one-off facts (below) and the monthly cost to `website/content/costs.json`.
 - [ ] Open a follow-up issue for anything this checklist got wrong, and fix this page the same day.
 

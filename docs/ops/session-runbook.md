@@ -4,9 +4,10 @@ How to run one session of the flagship server, "Life Framework | Everon 1989 (Al
 announcement to the log read afterwards. It is written so a second person can follow it with the
 maintainer away. Paste the commands as they are. Issue: #1275 (M4, ops).
 
-A command marked *(planned)* is on the M4 plan and has not merged yet. Its name is written as its
-card names it, in code font and unlinked. `tools\cli host help` lists what exists today; the
-last section says what to do until a planned command lands.
+Every command here is on `main`; `tools\cli host help` lists them with their flags. A command that
+is named but not merged yet is marked *(planned)*, and the last section says what to do then.
+`tools/validation/ops-doc-commands-selftest.mjs` fails when this page names a command `host help`
+does not list.
 
 Rules for the whole page:
 
@@ -23,13 +24,13 @@ Rules for the whole page:
 
 1. **Pick the time and announce it.** The player-facing wording and the Discord steps are in the
    [session playbook](../playtest/session-playbook.md).
-   *(planned)* `tools\cli host announce --at <time> [--wipe]` prints the post and writes the next
-   session to `website/content/sessions.json`; with `--send` it posts through the Discord tooling.
-   Until it merges, write the post by hand from the playbook's text and post it in Discord. The
-   website shows the next session time only, so the time in the post is the one that counts.
+   `tools\cli host announce --at <iso time> [--build <version>] [--wipe]` prints the post and writes
+   the next session to `website/content/sessions.json`; `--send` posts it through the Discord
+   tooling (maintainer only). The website shows the next session time only, so the time in the post
+   is the one that counts.
 
-   A wipe is announced **at least 24 hours ahead**, with `--wipe` once the command exists. Policy:
-   [wipe policy](../community/wipe-policy.md).
+   A wipe is announced **at least 24 hours ahead**, with `--wipe`; `host wipe` refuses without that
+   notice. Policy: [wipe policy](../community/wipe-policy.md).
 
 2. **Check what changed.** After any Arma Reforger update, run the preflight before opening the
    server. It backs the save up, boots it on the new build, and restores it if it does not load:
@@ -49,16 +50,22 @@ Rules for the whole page:
    tools\cli host backup
    ```
 
-4. **Check the staff roster and the config.** *(planned)* `tools\cli staff roster check`
-   validates `server/flagship/staff-roster.json`. *(planned)* `tools\cli host config apply` writes
-   the profile's `config.json` and `server.json` from `server/flagship/` and the host-only
-   `secrets.json` (the join and admin passwords and the webhook URLs stay out of the repo). Until
-   they merge, check by hand that the password in the live `server.json` is set and the name is
-   exactly `Life Framework | Everon 1989 (Alpha)`.
+4. **Check the staff roster and the config.** `tools\cli staff roster check` validates the roster
+   `server/flagship/staff.txt`. `tools\cli host config apply` (add `--dry-run` to see it first)
+   writes the profile's `config.json` and `server.json` from `server/flagship/`, the host-only
+   `secrets.json` (the join and admin passwords and the webhook URLs stay out of the repo) and the
+   roster's admins; it refuses while the host runs and never prints a secret. Then check by hand
+   that the name in the live `server.json` is exactly `Life Framework | Everon 1989 (Alpha)`.
+   `tools\cli host drift` *(planned)* will compare the live files with the repo; until it merges the apply
+   output is the check.
 
-5. **Prove the newest backup restores.** *(planned)* `tools\cli host drill` boots the newest
-   backup on a scratch profile and passes only when the log shows `save loaded:`. Run it once a
-   week and after a preflight.
+5. **Prove the newest backup restores.** `tools\cli host drill` boots the newest backup on a scratch
+   profile on a pool machine and passes only when the save loads with its accounts (`host drill
+   <backup>` for a named one). Run it once a week and after a preflight.
+
+6. **Go or no-go.** `tools\cli host ready` checks the build gate, the staff roster, the backup age,
+   the last restore drill and the disk, and exits 1 on `NO-GO`. Do not open on a `NO-GO`.
+   `tools\cli host disk` shows the sizes behind the disk line.
 
 ## Start
 
@@ -81,18 +88,22 @@ Rules for the whole page:
    (The second line is PowerShell.) You want `save loaded:` with the build you expect. `save load damaged` or `saving disabled for
    this session` means stop and see "When it goes wrong".
 
-3. Keep it alive. *(planned)* `tools\cli host watch` supervises the server: a crash (an exit
+3. Keep it alive. `tools\cli host watch --flagship` supervises the server: a crash (an exit
    without `host stop`) copies the console log to `backups/<time>-crash/`, backs the saves up and
-   restarts it with the latest save. Three crashes in ten minutes stop the watch and alert staff.
-   Until it merges, nobody restarts a crashed server except by `host start` below.
+   restarts it with the latest save, and a scheduled close restarts it too. Three crashes in ten
+   minutes stop the watch, keep the host down and alert staff. `tools\cli host autostart install`
+   registers a scheduled task that runs the watch at logon, so the host returns after a reboot
+   (`host autostart status` says whether it is registered). Without the watch, nobody restarts a
+   crashed server except by `host start` below.
 
 4. Join once yourself with the server password and walk to the plaza. If you cannot, the session
    is not open.
 
 ## During
 
-- **Who is staff.** Read the roster, not memory. *(planned)* `tools\cli staff roster check`
-  validates `server/flagship/staff-roster.json`; the maintainer is the only administrator. A
+- **Who is staff.** Read the roster, not memory. `tools\cli staff roster check` validates
+  `server/flagship/staff.txt` and `staff roster admins` prints the admins; the maintainer is the
+  only administrator. A
   moderator works from tickets and `/report` flags as the [moderator guide](../community/moderator-guide.md)
   says and does not act in game.
 - **Is it healthy.** Every so often:
@@ -101,10 +112,12 @@ Rules for the whole page:
   tools\cli host status
   ```
 
-  *(planned)* `tools\cli host players` asks the server who is on, with a 3 second timeout.
-- **Warnings.** *(planned)* a restart schedule in the config sends every player a toast "Server
-  restart in N minutes" at each warning; nothing in this runbook needs doing at those times. A
-  restart you start by hand is announced in Discord first (see "Restart").
+  `tools\cli host players` asks the server (A2S) who is on, and `tools\cli host perf` samples CPU,
+  memory and upload against the 40-player budget.
+- **Warnings.** The flagship restarts at 06:00 and 18:00 server time (`restarts` in
+  `server/flagship/config.json`); every player gets a toast "Server restart in N minutes" at 15, 5
+  and 1 minute, and nothing in this runbook needs doing at those times. A restart you start by hand
+  is announced in Discord first (see "Restart").
 - **Do not touch the saves while it runs.** `host wipe` and `host restore` refuse while the host
   runs; stop it first.
 
@@ -131,21 +144,23 @@ tools\cli host stop
 ```
 
 It prints `host: backed up saves -> <folder>`. Check it, then say in Discord that the session is
-over and when the next one is. If `tools\cli host watch` is running *(planned)*, an exit after
+over and when the next one is. If `tools\cli host watch` is running, an exit after
 `host stop` ends the watch by itself.
 
 ## After
 
-1. **Read the log.** *(planned)* `tools\cli host triage` groups the newest `console.log` by
-   normalised text, counts each group and marks it known or new against
-   [debug-log-triage](../debug-log-triage.md). Until it merges:
+1. **Read the log.** `tools\cli host triage` groups the newest `console.log` by normalised text,
+   counts each group and marks it known or new against [debug-log-triage](../debug-log-triage.md):
 
    ```
-   tools\cli host status
-   Select-String -Path "<log path that host status prints>" -Pattern "SCRIPT \(E\)","VME:","LFDebug:[A-Za-z]+\] .*(Error|Warn)"
+   tools\cli host triage
+   tools\cli host triage --draft
    ```
 
-   Anything new and not in the triage page becomes an issue with the lines pasted in.
+   `--draft` writes `tmp/triage/<date>/<n>.md` for each new group and prints the `gh issue create`
+   commands without running them. Anything new and not in the triage page becomes an issue with
+   the lines pasted in. After a crash, `tools\cli host crashpack` zips the newest crash (dump, log
+   tail, build stamp, config with the secrets redacted) and drafts an issue body.
 
 2. **Rotate the backups.** It keeps the newest 20 plain (start, stop) backups and never touches a
    preflight, wipe, crash or replaced-by-restore backup:
@@ -187,7 +202,5 @@ Stop after two tries of a step and ask the maintainer. Do not improvise with the
 | The wrong save is live, or a wipe was a mistake | `tools\cli host stop`, then `tools\cli host restore` (the newest backup) or `tools\cli host restore <backup folder name>`. |
 | The host folder is full | `tools\cli host prune`. |
 | The server crashed and nothing restarted it | `tools\cli host start --flagship --wait`. The log from before the crash is in the newest `logs` folder under the host profile; keep it and triage it. |
-| A planned command is not there | Do the step by hand as written beside it, and write down what you did in the session log. |
-
-When the planned commands merge, slice O16R replaces the *(planned)* names here with the real
-ones.
+| A command is not there (`tools\cli host help` does not list it) | It is not merged yet. Do the step by hand as written beside it, and write down what you did in the session log. |
+| The server crashed and `host watch` stopped after three crashes | The host stays down on purpose. Run `tools\cli host crashpack`, read the crash log, then `tools\cli host start --flagship --wait` once. |
