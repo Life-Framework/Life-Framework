@@ -25,6 +25,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { layerFile, worldLayerDirs } from "../lib/addons.mjs";
+import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
 import { LIMITS, analyse, auditRecords, doorZone, insideFraction, isKind, measureTown, obbAabb, obbPenetration, parseDoor, parseKv, parseRoads, parseRow, polylineDistance, readJson } from "../../agent-box/place-audit.mjs";
@@ -1259,12 +1260,13 @@ function cmdAgainst(args, flags) {
   return commit(ctx, [plan], flags);
 }
 
-// Every vanilla prefab (one the addon does not hold) the layers reference, measured once from the .xob headers.
+// Every vanilla prefab (one the addon does not hold) an entity in the layers is placed from, measured once from the
+// .xob headers. A loadout-slot or inventory prefab is not a placed prop (tools/lib/layer-prefabs.mjs).
 export function vanillaPrefabs(root = ROOT) {
   const set = new Set();
   for (const file of worldLayerDirs(root).flatMap((d) => readdirSync(d).filter((f) => f.endsWith(".layer")).map((f) => join(d, f)))) {
-    for (const m of readFileSync(file, "utf8").matchAll(/"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/g)) {
-      if (!existsSync(join(ADDON, m[1])) && !existsSync(join(root, "addons", "LF_Everon1989", m[1]))) set.add(m[1]);
+    for (const p of layerEntityPrefabs(readFileSync(file, "utf8"))) {
+      if (!existsSync(join(ADDON, p)) && !existsSync(join(root, "addons", "LF_Everon1989", p))) set.add(p);
     }
   }
   return [...set].sort();
