@@ -23,7 +23,7 @@ one at a time to the live server as each passes its playtest, in this order:
 | 2 | Evenings in the village #1011 | Emotes and sitting #982, drunk effect #636, race runner #790 | Chess, range and hall #802, drunk effect #637, dirt race #791 |
 | 3 | On patrol #1014 | Spike strips, cones and barriers #646, placement preview #928, board answers #758, nearest named place #760 | Police kit #647, an alarm per robbery type #929 |
 | 4 | Arrival #1007 | Onboarding chain #794, rejoin #640, combat logout #1794, handbook #642 | Arrival chain #795, rejoin #641, handbook #643 |
-| 5 | Story: The relocated #1015 | Event shell #757, event scenes #1754 | Bus at dawn #1755, the clerk's welcome #1756, townspeople #1757, the first night #1758, radio music #1759 |
+| 5 | Story: The relocated #1015 | Event shell #757, event scenes #1754 | Arrival at dawn (on foot) #1754, the clerk's welcome #1756, townspeople #1757, the first night #1758, radio music #1759 |
 
 Why this order: Armed and dressed is mostly built (the catalogue and clothing
 are merged and in playtest), and Evenings builds on the emotes and sitting
@@ -70,10 +70,11 @@ Development on 2026-11-15, because no M5 chapter needs them.
 
 ## Moved out of M5
 
-- The bus (#203, the AI route driver #772, the Everon line #1101) is its own
-  M6 chapter, Catch the bus #1793 (maintainer, 2026-11-15): AI driving is the
-  riskiest piece, so M5 does not wait for it. The story's dawn bus is parked
-  until then.
+- The bus is in Backlog with everything that belongs to it (maintainer,
+  2026-11-15): the chapter Catch the bus #1793, the timetable bus #203, the AI
+  route driver #772, the Everon line #1101, the story's dawn bus #1755 and the
+  bus slice cards. The families walk into the square at dawn instead. M7's
+  convoy job (#773) needs #772 back when M7 is planned.
 - The breathalyser and drug-test kit (#634, #635) went to Backlog
   (maintainer, 2026-11-15: dull gameplay).
 - The town paper is removed from the roadmap (maintainer, 2026-11-15; #1008,
