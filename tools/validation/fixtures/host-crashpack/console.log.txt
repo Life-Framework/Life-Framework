@@ -1,0 +1,8 @@
+12:00:01 DEFAULT : Entered online game state.
+12:00:02 SCRIPT : [LFDebug:Persistence] save loaded: version 32, game build 1.9.0.37, running 1.9.0.37
+12:00:02 SCRIPT : [LFDebug:Ops] alert posted to https://discord.com/api/webhooks/444444444444444444/FAKE-WEBHOOK-TOKEN-dddd
+12:01:10 SCRIPT : [LFDebug:Host] rcon login with FAKE-ADMIN-PW-4410
+12:02:30 SCRIPT : [LFDebug:Jobs] route 4 started
+12:03:10 SCRIPT    (E): Virtual Machine Exception
+12:03:10 SCRIPT    (E): Class:      LF_JobBoard
+12:03:11 DEFAULT : CRASH: access violation at 0x00007FF6A1B2C3D4

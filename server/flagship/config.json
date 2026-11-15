@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "persistence": {
+    "enableAutosave": true,
+    "autosaveInterval": 600
+  },
+  "shops": {
+    "defaultBuyPrice": 50,
+    "defaultSellPrice": 25
+  },
+  "jobs": {
+    "policeDutyPayPerSecond": 0.5,
+    "benefitAmount": 100,
+    "benefitCooldownSeconds": 1200
+  },
+  "vehicles": {
+    "buyPercent": 100,
+    "sellBackPercent": 50,
+    "impoundPercent": 10
+  },
+  "dayCycle": {
+    "mode": "accelerated",
+    "dayLengthMinutes": 120
+  },
+  "restarts": {
+    "times": [
+      "06:00",
+      "18:00"
+    ],
+    "warningMinutes": [
+      15,
+      5,
+      1
+    ]
+  }
+}
