@@ -2605,11 +2605,9 @@ class LF_AgentHarness
 				joined += " | ";
 
 			joined += string.Format("player=%1 downed=%2 life=%3", id, downed, LifeStateToken(body));
-			// #261: who has this body (replicated), whether it sits in a vehicle seat, where it is.
+			// #261: whether this body sits in a vehicle seat and where it is. `carrier` is kept at 0
+			// for the readers' line shape: the drag and carry hold was cut on 2026-11-15.
 			int carrier = 0;
-			SCR_ChimeraCharacter peer = SCR_ChimeraCharacter.Cast(body);
-			if (peer)
-				carrier = peer.LF_GetCarrierPlayerId();
 
 			int seated = 0;
 			if (SCR_CompartmentAccessComponent.GetVehicleIn(body))
@@ -2633,9 +2631,6 @@ class LF_AgentHarness
 				patientDowned = 1;
 
 			int patientCarrier = 0;
-			SCR_ChimeraCharacter patientBody = SCR_ChimeraCharacter.Cast(patient);
-			if (patientBody)
-				patientCarrier = patientBody.LF_GetCarrierPlayerId();
 
 			int patientSeated = 0;
 			if (SCR_CompartmentAccessComponent.GetVehicleIn(patient))
