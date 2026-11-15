@@ -3200,10 +3200,8 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   prepareResourceDatabase(root, opts);
   // --shards N|auto: the registry split into balanced slices, each its own pool job, run together (tools/lib/test-shards.mjs).
   if (opts.shards !== undefined && !only.length && !opts.world && tier === "all") {
-    // A pass the cache already holds (identical inputs) is not run again.
-    const wanted = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
-    const specs = wanted.filter((sp) => !passCacheCheck(root, { tier, only, opts: { ...opts, coreOnly: sp.coreOnly, red } })?.hit);
-    if (!specs.length) return 0;
+    // A pass the cache already holds (identical inputs) is not run again (runShardedTests checks each pass).
+    const specs = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
     const r = await runShardedTests(root, specs, opts);
     if (r !== null) return r;
   }
@@ -3254,16 +3252,20 @@ function passCacheCheck(root, { tier, only, opts }) {
   }
   const key = testCache.cacheKey(inputs);
   const mainRoot = wt.mainRootOf(root);
-  const rec = testCache.lookup(mainRoot, key);
-  if (!rec) return { hit: false, key, inputs, mainRoot };
-  console.log(testCache.reuseLine(rec));
+  // The exact key, or (for a slim gate's LOGIC need) the agent's own `--tier all` pass of this very tree.
+  const found = testCache.lookupCovering(mainRoot, inputs);
+  if (!found) return { hit: false, key, inputs, mainRoot };
+  const { rec } = found;
+  const as = found.via === "exact" ? null : tier;
+  console.log(testCache.reuseNote(rec, found.key, as));
+  console.log(testCache.reuseLine({ ...rec, key: found.key }));
   try {
     const dir = join(root, "tmp", "test-results");
     mkdirSync(dir, { recursive: true });
     const sha = wt.git(root, ["rev-parse", "HEAD"]).stdout.trim();
-    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha)) + "\n", "utf8");
+    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha, as)) + "\n", "utf8");
   } catch {}
-  return { hit: true, key, inputs, mainRoot };
+  return { hit: true, key: found.key, inputs, mainRoot };
 }
 
 function passCacheStore(root, cache, { tier, only, opts, run }) {
@@ -3281,6 +3283,9 @@ function passCacheStore(root, cache, { tier, only, opts, run }) {
     worktree: pool.slugFor(root),
     consoleLog: run.consoleLog ?? "",
     inputs: cache.inputs,
+    // who ran it: a queue gate (LF_SHIP_QUEUE_JOB) or an agent by hand; a gate logs "reused agent pass" for the latter
+    by: process.env.LF_SHIP_QUEUE_JOB ? "gate" : "agent",
+    red: false,
   };
   if (testCache.store(cache.mainRoot, cache.key, rec)) console.log(`test: pass cached (key ${cache.key.slice(0, 12)}); an identical run reuses it`);
 }
@@ -3434,6 +3439,16 @@ function runShardChild(root, job) {
 // `test --shards` and `ci`: every pass (normal, core-only) split into slices, all slices running at once.
 // Returns the exit code, or null when there is nothing to gain (one slice, one pass): the caller runs as before.
 async function runShardedTests(root, specs, opts) {
+  // A pass the cache holds for this exact tree (the agent's own `--tier all` run, or an earlier gate) is not run
+  // again; each pass that misses keeps its key to be stored under once it passes.
+  const cacheOf = new Map();
+  specs = specs.filter((sp) => {
+    const c = passCacheCheck(root, { tier: "all", only: [], opts: { ...opts, coreOnly: sp.coreOnly } });
+    if (c?.hit) return false;
+    if (c) cacheOf.set(!!sp.coreOnly, c);
+    return true;
+  });
+  if (!specs.length) return 0;
   const tests = shards.readRegistry(root);
   if (!tests.length) return null;
   let lanes = [];
@@ -3472,6 +3487,8 @@ async function runShardedTests(root, specs, opts) {
     console.log(`=== tests ${pass.name}${pass.coreOnly ? " (core only)" : ""}, ${merged.shards} shard(s) ===`);
     for (const l of shards.mergedLines(merged, { tier, label: pass.name })) console.log(l);
     if (merged.code === 0) stampMergedSuite(root, tier, merged);
+    const cache = cacheOf.get(!!pass.coreOnly);
+    if (merged.code === 0 && cache?.key) passCacheStore(root, cache, { tier: "all", only: [], opts: { ...opts, coreOnly: pass.coreOnly }, run: { passed: merged.passed, total: merged.total, machine: null, consoleLog: "" } });
     if (merged.code !== 0 && code === 0) code = merged.code;
   }
   console.log(`shards: ${((Date.now() - t0) / 1000).toFixed(1)} s wall for ${passes.length} pass(es)`);
