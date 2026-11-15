@@ -63,6 +63,8 @@ function scanTree() {
   let scanned = 0;
   for (const f of tracked()) {
     if (f.startsWith(FIXTURES + "/") || f.includes("node_modules/")) continue;
+    // Validator fixtures and selftests hold fake secrets on purpose.
+    if (f.startsWith("tools/validation/fixtures/") || /^tools\/validation\/[\w.-]*-selftest\.mjs$/.test(f)) continue;
     const abs = join(root, f);
     if (!existsSync(abs)) continue;
     const text = readText(abs);
