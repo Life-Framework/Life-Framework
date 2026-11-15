@@ -4,7 +4,7 @@
 //      is still accepted;
 //   2. an unknown level, a duplicate uid and a malformed uid fail `check`;
 //   3. a #pending entry (no uid yet) is a warning on `check` and an error on `admins`;
-//   4. the committed server/flagship/staff.txt passes `check` (maintainer pending, warned);
+//   4. the committed server/flagship/staff.txt passes `check` and `admins` prints the maintainer's uid;
 //   5. `add`, `remove` and `promote` (#1466) edit a fixture roster in place, keep comments and order,
 //      refuse a duplicate, bad or missing entry without touching the file, and run the check after.
 // inputs: tools/**, server/**
@@ -73,8 +73,10 @@ eq((await run(["roster", "admins", "--file", fixture("#pending moderator Mo")]))
 // 4: the committed roster
 r = await run(["roster", "check"]);
 eq(r.code, 0, "committed roster passes check");
-if (!/WARN/.test(r.out)) failures.push(`committed roster: the pending maintainer should warn:\n${r.out}`);
-eq(failed(await run(["roster", "admins"])), "fail", "committed roster: admins waits for the maintainer's uid");
+if (/WARN/.test(r.out)) failures.push(`committed roster: the maintainer has a uid, check should not warn:\n${r.out}`);
+r = await run(["roster", "admins"]);
+eq(r.code, 0, "committed roster: admins exit");
+if (!/"[0-9a-f-]{36}"/.test(r.out)) failures.push(`committed roster: admins should print the maintainer's uid:\n${r.out}`);
 eq(failed(await run(["roster"])), "fail", "no subcommand prints usage and fails");
 
 // 5: add / remove / promote edit the file in place (#1466): comments and order stay, check runs after
