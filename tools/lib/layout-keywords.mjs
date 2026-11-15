@@ -1,7 +1,7 @@
 // tools/lib/layout-keywords.mjs
 //
 // Reads the property keywords a .layout file writes directly on each widget, per widget class.
-// Shared by tools/validation/gen-layout-keywords.mjs (vanilla, from the game paks) and
+// Shared by tools/gen-layout-keywords.mjs (vanilla, from the game paks) and
 // tools/validation/validate-layout-keywords.mjs (this repo's layouts against that list).
 //
 // A layout is nested blocks. A widget block opens with `<Name>WidgetClass "{GUID}" {`; its direct

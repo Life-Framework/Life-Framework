@@ -1,17 +1,17 @@
-// tools/validation/gen-layout-keywords.mjs
+// tools/gen-layout-keywords.mjs (a generator, kept out of tools/validation/ so validate never runs it and CI never needs the game)
 //
 // Writes tools/validation/layout-keywords.json: every property keyword the base game's own .layout
 // files write directly on each widget class, read from the installed game paks. The CI runner has no
 // game install, so validate-layout-keywords.mjs checks against this file. Run it again after a game
-// update: node tools/validation/gen-layout-keywords.mjs
+// update: node tools/gen-layout-keywords.mjs
 
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildStamp, openVfs } from "../lib/install-api.mjs";
-import { widgetKeys } from "../lib/layout-keywords.mjs";
+import { buildStamp, openVfs } from "./lib/install-api.mjs";
+import { widgetKeys } from "./lib/layout-keywords.mjs";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "tools", "validation", "layout-keywords.json");
 
 const vfs = await openVfs();

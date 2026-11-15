@@ -42,7 +42,7 @@ function walk(dir, out) {
 }
 
 if (!existsSync(DATA)) {
-  console.log("validate-layout-keywords: FAILED (tools/validation/layout-keywords.json is missing; run node tools/validation/gen-layout-keywords.mjs)");
+  console.log("validate-layout-keywords: FAILED (tools/validation/layout-keywords.json is missing; run node tools/gen-layout-keywords.mjs)");
   process.exit(1);
 }
 const known = JSON.parse(readFileSync(DATA, "utf8")).classes;
