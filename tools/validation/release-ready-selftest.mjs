@@ -17,7 +17,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { checkRelease, CORE, PACK } from "./validate-release-ready.mjs";
 
-const CORE_GUID = "79636E668EA37AC9";
+const CORE_GUID = "4550A2B656E1B569";
 const PACK_GUID = "B1E84D5687E11724";
 const BASE = "58D0FB3206B6F859";
 const KIT = "docs/marketing/workshop";

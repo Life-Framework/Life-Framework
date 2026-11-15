@@ -9,8 +9,12 @@ items, two brands"; briefs in [`docs/branding/`](../branding/core.md)).
 
 | Item | Addon | Mod ID | Kit |
 |---|---|---|---|
-| Life Framework (Core) | `LifeFramework` | `79636E668EA37AC9` | [`docs/marketing/workshop/`](../marketing/workshop/README.md) |
+| Life Framework (Core) | `LifeFramework` | `4550A2B656E1B569` | [`docs/marketing/workshop/`](../marketing/workshop/README.md) |
 | Life Framework: Everon 1989 | `LF_Everon1989` | `B1E84D5687E11724` | [`docs/marketing/workshop/everon-1989/`](../marketing/workshop/everon-1989/README.md) |
+
+The core's first ID, `79636E668EA37AC9`, belongs to an unrelated Workshop item published by someone
+else on 2026-08-30, so the core moved to `4550A2B656E1B569` on 2026-11-15. A new ID must return 404 at
+`https://reforger.armaplatform.com/workshop/<id>` before it goes in a `.gproj`.
 
 Run the steps below once per item, core first: the pack depends on the core, so its Workshop upload
 needs the core item to exist. Nothing is uploaded before the whole pack move lands (D3 in
@@ -81,7 +85,7 @@ the same commit as the latest zip so the two do not drift.
 5. Click **Publish**. Workbench bundles (about a minute), then shows the upload size, about
    55 MB. Confirm and wait for the upload to finish.
 6. Workbench reports the item published. The Workshop page address starts with
-   `https://reforger.armaplatform.com/workshop/79636E668EA37AC9`; copy the full address from the
+   `https://reforger.armaplatform.com/workshop/4550A2B656E1B569`; copy the full address from the
    browser. Open it in a browser and check
    the preview, the screenshots, and the description.
 
@@ -133,11 +137,11 @@ turned back into source; the source is this repository.
 ## How the local test was done
 
 `tools\cli pack` produced the same `data.pak` Publish bundles. A clean client profile got it in
-`profile/addons/LifeFramework_79636E668EA37AC9/` (where the Workshop puts downloads) with a copy of
+`profile/addons/LifeFramework_4550A2B656E1B569/` (where the Workshop puts downloads) with a copy of
 the backend `meta` file a download carries, because the in-game Scenarios list reads its entries
 from that file. A test-only driver addon then pressed through the title screen, opened
 Scenarios, selected the town, pressed Play, and signed form R-89. A dedicated server
-(`-server <scenarioId> -addons 79636E668EA37AC9`, the packed copy in `-addonsDir`) then took a
+(`-server <scenarioId> -addons 4550A2B656E1B569`, the packed copy in `-addonsDir`) then took a
 client from another clean profile: form R-89, spawn on the square, the cash top-up and both test
 cars. A `-config` start with the example config could not be proven before publish: the server
 fetches `game.mods` from the Workshop and does not use a local copy of an unpublished item.
