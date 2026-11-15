@@ -3581,6 +3581,8 @@ async function cmdCi(root = ROOT, opts = {}) {
     const c = gateTierOf(root);
     console.log(`ci: ${gateTier.tierLine(c)}`);
     if (c.tier === 1) return ciDataOnly(root, c, opts, maint);
+    // T2s: a normal code change gets validate --full + LOGIC; the main guard runs the rest after the merge.
+    if (c.tier === 2 && c.slim && process.env.LF_SLIM_GATE !== "0") return ciSlim(root, opts, maint);
   }
   const steps = [
     // The cheap checks run here while the Workbench compile and build run wherever there is room
@@ -3623,6 +3625,35 @@ async function cmdCi(root = ROOT, opts = {}) {
     if (code !== 0) failed++;
   }
   console.log(failed === 0 ? "\nci: ALL PASSED" : `\nci: ${failed} step(s) failed`);
+  return failed === 0 ? 0 : 1;
+}
+
+// T2s, the slim gate (tools/lib/gate-tier.mjs + gate-risk.mjs, docs/worktrees.md "Gate tiers"): validate --full
+// (the cheap checks here, the Workbench compile on a pool machine with the workbench cap, no build) and the
+// LOGIC tier. No build, full suite, core-only pass, placement audit, config sessions or pre-move e2e: the main
+// guard (tools/main-guard.mjs) runs those on main after the merge and reverts the PR that breaks them.
+async function ciSlim(root, opts = {}, maint = maintainerGate(root, opts)) {
+  const t0 = Date.now();
+  const steps = [
+    ["validate --full (compile, no build)", async () => {
+      const gate = workbenchGate(root, { ...opts, compileOnly: true });
+      const v = await maint.validate();
+      const g = await gate;
+      return v !== 0 || g !== 0 ? 1 : 0;
+    }],
+    ["test (LOGIC tier)", () => cmdTest(true, "fast", root, { ...opts, shards: undefined })],
+  ];
+  let failed = 0;
+  for (const [name, fn] of steps) {
+    console.log(`
+=== ci: ${name} ===`);
+    const code = await Promise.resolve(fn());
+    if (code !== 0) failed++;
+  }
+  const secs = Math.round((Date.now() - t0) / 1000);
+  console.log(failed === 0 ? `
+ci: ALL PASSED (T2s slim, ${secs} s)` : `
+ci: ${failed} step(s) failed (T2s slim, ${secs} s)`);
   return failed === 0 ? 0 : 1;
 }
 
@@ -3845,7 +3876,7 @@ async function workbenchGate(root, opts = {}) {
     else {
       const m = remotes.find((r) => r.name === c.where).m;
       const t0 = Date.now();
-      const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" });
+      const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local", ...(opts.compileOnly ? ["--compile-only"] : [])], suffix: "-gate", purpose: "gate" });
       console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
       if (r.code === 0 && r.rDir) pullRemoteRdb(root, m, r.rDir);
       if (r.code === 3 && !retry) {
@@ -4893,7 +4924,16 @@ function gateTierOf(wtRoot, forceFull = false) {
       return !!g && !!mb && git(["grep", "-q", "-F", g[0], mb, "--", "addons"]).status === 0;
     });
   };
-  return gateTier.classify(files, { branch, worldEdit });
+  return gateTier.classify(files, { branch, worldEdit, review: reviewFiles(wtRoot) });
+}
+
+// An interrogate file (tmp/review-<slug>.md) keeps the full gate (gate-risk.mjs "review").
+function reviewFiles(wtRoot) {
+  try {
+    return readdirSync(join(wtRoot, "tmp")).filter((f) => /^review-.+.md$/.test(f)).map((f) => `tmp/${f}`);
+  } catch {
+    return [];
+  }
 }
 
 function gateArgs(wtRoot, flags) {
@@ -4907,7 +4947,7 @@ function gateArgs(wtRoot, flags) {
   console.log(`=== gate: ${line} ===`);
   const rest = flags.filter((f) => f !== "--full-gate");
   if (c.tier === 0) return ["validate", "--all"];
-  if (c.tier === 1) return ["ci", "--tiered", ...rest];
+  if (c.tier === 1 || (c.tier === 2 && c.slim)) return ["ci", "--tiered", ...rest];
   return ["ci", ...rest];
 }
 

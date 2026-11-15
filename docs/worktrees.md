@@ -139,7 +139,19 @@ against the merge base with `origin/<base>`, uncommitted and untracked files inc
 | T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
 | T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
 | T1w | a maintainer hand edit: the branch is `town-maintainer-*` and every changed `addons/` file is a modified `.layer` whose entities were only moved, or added / removed from prefabs already in use ("Maintainer world edits") | `validate --world` (hard checks block, layout checks warn), `audit placement --strict --layer <touched>` (findings warn), the tests that name a touched layer or entity |
-| T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
+| T2s | anything else (a normal code change), unless a risk class below hits | slim: `validate --full` (the Workbench compile on a pool machine with the `workbench` cap, no build) and the LOGIC tier (`--tier fast`). The main guard runs the rest on main after the merge |
+| T2 | a risk class, or `--full-gate` | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate, the pre-move e2e |
+
+**Risk classes keep the full T2 gate** (`tools/lib/gate-risk.mjs`, proven by `tools/validation/gate-risk-selftest.mjs`):
+persistence (a `Persistence/` folder, a `*Persist*`/`*Serializ*`/`*Save*`/`*Record*.c` file, a changed line that registers a
+payload or touches a save/load context); money (Shop, ATM, Money, Banking, Trader, the bank, robbery, fence, cash-van and
+chop-shop scripts, vehicle lot/prices/ownership, or a changed line that moves cash); RPC (a changed line naming `RplRpc`,
+`RpcAsk_` or `RpcDo_`, or one inside an RPC handler's body); GUID (any `.meta` added, changed or removed, or a hunk that
+swaps one `{GUID}` reference for another); the addon boundary (a `.gproj`, a mission header, `tools/lib/addons.mjs`,
+`validate-addon-boundary`); any `tmp/review-*.md` interrogate file in the worktree; a changed script whose diff cannot be
+read. The gate prints which class hit (`gate tier T2 (full gate): full gate (money): ...`). `LF_SLIM_GATE=0` turns T2s back
+into T2. The rules apply to a gate that starts after they merged: the queue merges main into the worktree before it gates,
+and the gate runs the worktree's own `tools/cli.mjs`.
 
 T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
 head have the same line count, every line holding a brace is unchanged (same blocks, same
@@ -154,12 +166,39 @@ a `.layer`/`.ent`, a binary asset, a changed resource reference, a `.conf` that 
 a key** (the key can switch on a code path its default never ran, and an equal line count is how the
 classifier knows the blocks did not move), and a `.et` string value or component change.
 
+Measured 2026-11-16 over the last 40 merges on main: 22 T0, 12 T2s, 6 kept the full gate (guid 3, persistence 2, money 2, rpc 1).
+
 T1 skips the build because `test --no-build` loads the addons from source; the build only
 packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
 diff is no longer data-only. Measured 2026-11-14 on a one-value `.conf` change (`m_iPrice 500 -> 505`), same worktree, warm rdb:
 T2 (`--full-gate`) 630 s (compile + build 390 s on lf-cloud, both suite passes about 2 min, config
 sessions about 2 min); T1 112 s (validate 49 s, one boot of 267 tests 57 s); T0 44 s. Both T1 runs in
 that measurement failed on the related test that asserts the changed value.
+
+### Main guard
+
+The slim gate leaves the build, the full suite, the placement audit and the pre-move e2e to one worker on main
+(`tools/main-guard.mjs`, rules in `tools/lib/main-guard.mjs`, proven by `main-guard-selftest.mjs`). It lives on one machine
+(the laptop) and sends its heavy runs through the pool at `--priority high`, so it goes ahead of agent work in the queue.
+
+```sh
+toolscli main-guard start | stop | status   # status is also a line in `toolscli lead`
+```
+
+1. On a new `origin/main` head, batched to one run per 10 min, it checks the head out in its own worktree
+   (`Life-Framework-ws-main-guard-run`, detached) and runs `build`, `test --no-build --tier all`, `audit placement --strict`
+   and `e2e --pre-move 502ebf39 --mission playtest`. All green: that head is the last green head.
+2. A red step reruns at the same head (only the failing tests). Green on the rerun is a flake: one line in
+   `tmp/logs/main-guard-flakes.log`, nothing reverted.
+3. Red twice: it bisects the first-parent PR merges since the last green head, rerunning only what failed at each.
+4. The culprit is reverted with `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR titled `Revert #N (main guard: <what
+   failed>)` with auto-merge (only GitHub's `validate` check gates it), a comment on #N, its issues reopened as
+   `regression`, and one line to the staff webhook when `LF_STAFF_WEBHOOK_URL` or `"mainGuard": { "webhookUrl" }` in
+   `lf.local.json` names one (the URL is never printed).
+
+Safety: it never reverts a revert, never blames a merge that was on main when it first started (`startHead` in
+`<hub>/main-guard.json`), reverts a PR at most once, never pushes `main`. `LF_MAIN_GUARD=0` stops the worker and
+refuses `start`. Log: `tmp/logs/main-guard.log`, one file per step beside it.
 
 ## Release gates (`stable`, `promote`)
 
