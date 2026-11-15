@@ -27,7 +27,7 @@ Prefab and script names for each scope are in [sources.md](../sources.md). The h
 - Assets are base-game prefabs, chosen in config. A missing prefab logs an error and that site stays closed.
 - The server decides the payout, the sentence, and the lock state. The client only asks.
 - Player-facing strings are localization keys.
-- Update [features.md](../../features.md) in the same change that implements the scope.
+- Update the area file in [features/](../../features/) in the same change that implements the scope.
 
 ## Areas
 

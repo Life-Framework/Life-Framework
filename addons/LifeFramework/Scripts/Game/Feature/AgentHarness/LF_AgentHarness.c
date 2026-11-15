@@ -10,6 +10,31 @@
 // Results land in $profile:agent-box/result.txt. A headless dedicated server
 // never starts the poll: EnsureLoop() runs only for the local player.
 
+//------------------------------------------------------------------------------------------------
+//! Per-feature harness verbs. LF_AgentHarness.Dispatch asks this after its own (frozen) list. A feature
+//! adds verbs in its own file, so two PRs adding verbs never touch the same file:
+//!   modded class LF_AgentHarnessVerbs
+//!   {
+//!   	override bool Handle(LF_AgentCommand cmd)
+//!   	{
+//!   		if (cmd.Verb == "myverb")
+//!   		{
+//!   			LF_AgentHarness.Answer(cmd.Id, "ok", "done");
+//!   			return true;
+//!   		}
+//!   		return super.Handle(cmd);
+//!   	}
+//!   }
+class LF_AgentHarnessVerbs : Managed
+{
+	//! True when this verb was handled (a result is written or on its way).
+	bool Handle(LF_AgentCommand cmd)
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class LF_AgentCommand
 {
 	int Id;
@@ -1636,7 +1661,20 @@ class LF_AgentHarness
 			return;
 		}
 
+		// New verbs live in their feature: a `modded class LF_AgentHarnessVerbs` (below). This list is
+		// frozen; validate-registries.mjs fails a new `cmd.Verb == "..."` here.
+		LF_AgentHarnessVerbs verbs = new LF_AgentHarnessVerbs();
+		if (verbs.Handle(cmd))
+			return;
+
 		WriteResult(cmd.Id, "error", "unknown_verb");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The result line for a command, for verb handlers outside this class (LF_AgentHarnessVerbs).
+	static void Answer(int id, string status, string detail)
+	{
+		WriteResult(id, status, detail);
 	}
 
 	//------------------------------------------------------------------------------------------------

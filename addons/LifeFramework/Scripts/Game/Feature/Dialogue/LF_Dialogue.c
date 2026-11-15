@@ -243,3 +243,16 @@ class LF_Dialogue
 			LF_Debug.Info(FEATURE, string.Format("%1 bystander(s) hear '%2' say: %3", heard, config.m_sId, list));
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Dialogue");
+		if (apply)
+			LF_Dialogue.ResetStatics();
+	}
+}
