@@ -99,6 +99,8 @@ A line with `SCRIPT (E)`, `VME` or `Virtual Machine Exception` is a failure, and
 `Entered online game state.`. Run [`server-doctor`](#9-check-a-log-with-server-doctor) on it, or look the line up
 in the Problems table.
 
+The lines to expect and the fix for the fifteen commonest errors are on [read your server log](log-lines.md).
+
 ## 5. Know the two folders
 
 The `-profile` argument names a folder. The game puts its own profile one level down:
