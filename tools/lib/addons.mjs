@@ -18,7 +18,9 @@ export const ADDONS = [
 ];
 // A pack an author scaffolded with `pack new` (addons/LF_<Name>/LF_<Name>.gproj) is a repo addon too: the
 // asset stages take it by `--addon`, and a launch loads it beside the core. Its GUID is the one in its .gproj.
-for (const e of readdirSync(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "addons"), { withFileTypes: true })) {
+// A clone with no addons/ (a rented box before it is complete) imports fine; `host start` then names the gap (#1642).
+const ADDONS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "addons");
+for (const e of existsSync(ADDONS_ROOT) ? readdirSync(ADDONS_ROOT, { withFileTypes: true }) : []) {
   if (!e.isDirectory() || !/^LF_[A-Za-z0-9]+$/.test(e.name) || ADDONS.some((a) => a.name === e.name)) continue;
   const gproj = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "addons", e.name, e.name + ".gproj");
   const guid = existsSync(gproj) && /GUID "([0-9A-F]{16})"/.exec(readFileSync(gproj, "utf8"))?.[1];

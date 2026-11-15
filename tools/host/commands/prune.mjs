@@ -1,7 +1,7 @@
 import { hostPaths } from "../host.mjs";
 import { DEFAULT_KEEP, pruneBackups } from "../rotate.mjs";
 
-export const help = "prune [--keep N] [--dry-run]   delete the oldest start/stop backups beyond N (default 20); tagged backups are never deleted";
+export const help = "prune [--keep N] [--dry-run]   delete the oldest start, stop and restart backups beyond N (default 20); tagged backups are never deleted";
 
 export async function main(args, ctx) {
   const i = args.indexOf("--keep");

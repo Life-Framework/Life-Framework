@@ -12,6 +12,7 @@ taught us is in [`docs/architecture/building-pipeline-spike.md`](../architecture
 ```
 tools\cli building run <slug> [--from <stage>] [--only <stage>] [--force]
 tools\cli building adopt <slug> [<file.blend>]   keep a scene polished by hand as the export source
+tools\cli building review <slug> --shots   Blender review renders and a contact sheet, no game (polish.md "Review shots")
 tools\cli building status [<slug>]
 tools\cli building doctor      Blender, the add-on, its licence, one headless generate
 tools\cli building selftest    the offline checks (also part of tools\cli validate)

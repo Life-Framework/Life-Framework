@@ -1,5 +1,6 @@
 // Pins the maintainer's decisions for the flagship (#1405) in server/flagship, so a drift fails one line naming the field:
 //   restarts at 06:00 and 18:00, warnings 15/5/1 minutes, toast only (no siren); dayCycle accelerated, 120-minute day;
+//   16 player slots (the rented 0grind box, decided 2026-11-15; 40 is the later full launch);
 //   the listing name exactly "Life Framework | Everon 1989 (Alpha)"; a server password is the alpha gate, so
 //   game.password stays in server.json as an empty key and its value lives only in the host's secrets.json;
 //   the maintainer is the only staff (one administrator line or #pending entry, game.admins empty);
@@ -17,6 +18,7 @@ import { parseRoster } from "../commands/staff.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const NAME = "Life Framework | Everon 1989 (Alpha)";
 const MAINTAINER = "Jasper";
+const SLOTS = 16;
 const SECRET_KEY = /password|passwd|secret|token|webhook|apikey|api_key|credential/i;
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -43,6 +45,7 @@ export function decisionProblems({ config, server, staff }) {
 
   want("game.name", getPath(server, "game.name") === NAME, `must be exactly "${NAME}"`);
   const password = getPath(server, "game.password");
+  want("game.maxPlayers", getPath(server, "game.maxPlayers") === SLOTS, `must be ${SLOTS} (the alpha runs on 16 slots)`);
   want("game.password", password === "", password === undefined ? "the key must stay (the alpha gate; the host's secrets.json supplies the value)" : "must be empty (the value is host-only)");
   want("game.passwordAdmin", getPath(server, "game.passwordAdmin") === "", "must be present and empty (host-only)");
   want("game.admins", same(getPath(server, "game.admins"), []), "must be an empty array (host-only; staff.txt lists the maintainer)");
