@@ -102,12 +102,11 @@ At opening the maintainer is the only staff, so this is the whole path from the
 appeal post to the answer. It reads the same record as "Look up a ban"; the host
 command is the faster way to the row when you are at the host.
 
-1. **Find the ban.** On the host, `tools\cli host bans --player <uid>` *(planned,
-   #1609)* prints one line per ban and unban of that account with the reason,
-   staff uid and incident ids; `--open` shows only bans with no later unban.
-   Until #1609 merges, type `#banrecord <uid>` in chat or RCON instead. The uid
-   comes from the ticket or the incident row, matched by the in-game name in the
-   appeal.
+1. **Find the ban.** On the host, `tools\cli host bans --player <uid>` prints
+   one line per ban and unban of that account with the reason, staff uid and
+   incident ids; add `--open` to show only bans with no later unban. Away from
+   the host, type `#banrecord <uid>` in chat or RCON instead. The uid comes from
+   the ticket or the incident row, matched by the in-game name in the appeal.
 2. **Read its incident.** Take the incident ids off the `BAN` row and read those
    rows in the Game Master incident panel (see "Look up a ban", step 3). The log
    keeps 14 days, so inside the window the rows are still there.
@@ -117,7 +116,7 @@ command is the faster way to the row when you are at the host.
 4. **Unban.** To lift, type the in-game unban, `#ban remove <id>`, with the reason
    as the administrator who is lifting it. The server writes an `UNBAN` row beside
    the `BAN` row (reason and your staff uid), so the record shows both. Confirm
-   with `tools\cli host bans --player <uid>` *(planned, #1609)* or `#banrecord <uid>`:
+   with `tools\cli host bans --player <uid>` or `#banrecord <uid>`:
    the `BAN` row is followed by the `UNBAN` row.
 5. **Answer.** Write the ruling in the appeal post as described in "Answering".
 
