@@ -31,7 +31,7 @@ what staff apply. Update this file in the same change.
 | START HERE | #rules | Staff | Eight rules. The guild's rules channel |
 | START HERE | #announcements | Staff | Announcement channel |
 | COMMUNITY | #general | Everyone | 5 s slowmode. Links and uploads only for Trusted, Contributor, staff |
-| COMMUNITY | #feedback | Everyone | Forum. Tags Bug, Idea, Question, Playtest (one required). 10 min between new posts |
+| COMMUNITY | #feedback | Everyone | Forum. Tags Bug, Idea, Question, Playtest (one required). 10 min between new posts. How a session's posts became issue drafts: [dry run, November 2026](feedback-dryrun-2026-11.md) |
 | COMMUNITY | #playtest-feedback | Everyone | Playtest reports in the pinned template; the /playtest page links here. Created 2026-11-10. Reports become GitHub issues ([onboarding](onboarding.md)) |
 | COMMUNITY | #showcases | Trusted, Contributor, staff open posts | Forum. Everyone can reply |
 | PROJECT | #github | GitHub Actions merged-PR feed (webhook) | Read only for people |
