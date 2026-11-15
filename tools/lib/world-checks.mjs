@@ -32,6 +32,18 @@ export const LAYOUT_CHECKS = [
   "validate-prop-on-surface.mjs",
 ];
 
+// The LAYOUT checks that read only town layers. The town is hand-edited and must never block anyone
+// (maintainer rule, 2026-11-15), so these warn on EVERY branch, not just a town-maintainer-* one. A normal PR
+// cannot change a town layer (validate-world-zones stays HARD), so a finding here is never the PR's doing.
+// validate-prop-on-surface and the placement audit judge per entity instead (tools/lib/town-findings.mjs):
+// town entities warn, grid and prefab findings still block. The rest of LAYOUT_CHECKS read tests, core scripts
+// or the annex, so they stay hard off a maintainer branch.
+export const TOWN_LAYOUT_CHECKS = [
+  "validate-town-manifest.mjs",
+  "validate-player-props.mjs",
+  "validate-road-ids.mjs",
+];
+
 // Checks that read .layer files and stay hard on a maintainer edit, each with the reason. Audited 2026-11-15: none
 // of these judges where a thing stands; a failure is a broken or unsafe layer, or says nothing about the world.
 export const LAYER_READERS_KEPT_HARD = {
@@ -53,11 +65,12 @@ export function worldScripts(all) {
 // { failed, warned } from [{ s, status }]: a failing LAYOUT check warns only while `demote` is on.
 export function judgeChecks(results, { demote = false } = {}) {
   const layout = new Set(LAYOUT_CHECKS);
+  const town = new Set(TOWN_LAYOUT_CHECKS);
   const failed = [];
   const warned = [];
   for (const r of results) {
     if (r.status === 0) continue;
-    if (demote && layout.has(r.s)) warned.push(r.s);
+    if (town.has(r.s) || (demote && layout.has(r.s))) warned.push(r.s);
     else failed.push(r.s);
   }
   return { failed, warned };
