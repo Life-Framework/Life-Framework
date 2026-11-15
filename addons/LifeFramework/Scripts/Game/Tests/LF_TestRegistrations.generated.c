@@ -229,6 +229,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentFlagged(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLog(), LF_TestTier.LOGIC);
@@ -339,6 +340,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplication(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceApplicationRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplicationStaff(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
@@ -484,6 +486,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStrip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
