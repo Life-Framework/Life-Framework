@@ -26,3 +26,15 @@ GenericEntity Sign_RunYourOwn : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_P
  coords 119 0.602 256.986
  angleY 180
 }
+GenericEntity Sign_Registry : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+ components {
+  LF_SignComponent "{C8DC6C24E38F2C19}" {
+   m_sSignId "registry"
+   m_vRimColor 0.08 0.18 0.42
+   m_vPaintColor 0.95 0.93 0.86
+   m_vTextColor 0.08 0.18 0.42
+  }
+ }
+ coords 137.286 0.602 243.703
+ angleY -78.495
+}

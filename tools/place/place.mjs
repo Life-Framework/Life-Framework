@@ -620,6 +620,11 @@ export function againstWall({ rays, floors, prop, yaw, n, hang = null, gap = TOL
   return { along: d - gap + back, lat: -latMid, y: floor.y + (hang ?? 0) - prop.bounds.min[1] * prop.scale, depth, notes };
 }
 
+// A building whose mesh starts under its pivot (a foundation) stands on its pivot, like a tree.
+export function pivotOnGround(prop) {
+  return isKind(prop, "building") && prop.bounds.min[1] * (prop.scale ?? 1) < -0.05;
+}
+
 // Stand a prop on the ground from height samples under its centre (first) and footprint corners.
 export function onGround({ samples, prop }) {
   const ys = samples.map((s) => s.y).filter(Number.isFinite);
@@ -629,6 +634,9 @@ export function onGround({ samples, prop }) {
   // A tree or bush is authored with its pivot at ground level and its roots below it (a rowan's mesh starts
   // 0.39 m under the pivot): standing its mesh base on the ground floats the trunk (#924).
   if (isKind(prop, "vegetation")) return { y: samples[0].y, notes: [`ground ${r3(samples[0].y)} m (${r2(spread)} m across the footprint); vegetation: the pivot stands on it, the roots go below`] };
+  // A building is authored the same way: its floor at the pivot, a foundation under it for slopes (the
+  // newspaper booth's goes 1.06 m down). Standing that foundation on the ground puts the building on stilts.
+  if (pivotOnGround(prop)) return { y: samples[0].y, notes: [`ground ${r3(samples[0].y)} m (${r2(spread)} m across the footprint); building: the pivot stands on it, the foundation goes below`] };
   return { y: samples[0].y - prop.bounds.min[1] * prop.scale, notes: [`ground ${r3(samples[0].y)} m (${r2(spread)} m across the footprint)`] };
 }
 
@@ -834,7 +842,7 @@ export function judge(targets, records, outText, { allow = [], areas = [], roads
         }
       }
       // A tree's roots go below its pivot (onGround): judge it by its pivot, which the audit's own sunk rule covers.
-      const rest = isKind(t, "vegetation") ? Math.max(m.gap, m.pgap ?? m.gap) : m.gap;
+      const rest = isKind(t, "vegetation") || isKind(t, "building") ? Math.max(m.gap, m.pgap ?? m.gap) : m.gap;
       if (!t.hung && !m.point && Math.abs(rest) > TOL.rest && !problems.some((p) => /floating|sunk/.test(p))) problems.push(`its base is ${r2(rest)} m ${rest > 0 ? "above" : "below"} ${m.on}`);
       if (t.hung && !m.backed) problems.push("nothing is behind it within 0.3 m: it hangs in the air");
       if (!m.point && !m.character) {
