@@ -21,13 +21,13 @@ one at a time to the live server as each passes its playtest, in this order:
 | --- | --- | --- | --- |
 | 1 | Armed and dressed #1009 | Catalogue and outlets #988 (stock #1064, outlets #1065, armory #1066, search and seizure #1067, conceal flags #1068, licence desk #1069), store previews #583 | Weapon split #989, clothing and equipment #990, police career #797, vanilla period assets #981 |
 | 2 | Evenings in the village #1011 | Emotes and sitting #982, drunk effect #636, race runner #790 | Chess, range and hall #802, drunk effect #637, dirt race #791 |
-| 3 | On patrol #1014 | Spike strips, cones and barriers #646, placement preview #928, breathalyser #634, board answers #758, nearest named place #760 | Police kit #647, breathalyser #635, an alarm per robbery type #929 |
-| 4 | Arrival #1007 | Onboarding chain #794, rejoin #640, handbook #642 | Arrival chain #795, rejoin #641, handbook #643 |
-| 5 | Story: The relocated #1015 | Event shell #757, event scenes #1754 | Bus at dawn #1755, the clerk's welcome #1756, townspeople #1757, the hostel #1758, radio music #1759 |
+| 3 | On patrol #1014 | Spike strips, cones and barriers #646, placement preview #928, board answers #758, nearest named place #760 | Police kit #647, an alarm per robbery type #929 |
+| 4 | Arrival #1007 | Onboarding chain #794, rejoin #640, combat logout #1794, handbook #642 | Arrival chain #795, rejoin #641, handbook #643 |
+| 5 | Story: The relocated #1015 | Event shell #757, event scenes #1754 | Bus at dawn #1755, the clerk's welcome #1756, townspeople #1757, the first night #1758, radio music #1759 |
 
 Why this order: Armed and dressed is mostly built (the catalogue and clothing
-are merged and in playtest). Evenings comes before On patrol because the
-breathalyser needs the drunk effect. The story chapter needs the event shell,
+are merged and in playtest), and Evenings builds on the emotes and sitting
+already merged. The story chapter needs the event shell,
 so it comes last and carries the update's trailer.
 
 ## Foundation
@@ -56,6 +56,13 @@ Development on 2026-11-15, because no M5 chapter needs them.
 - **Firearm permit (2026-11-15).** A fee and a clean record (no active
   warrant, no recent conviction); issued after one in-game day; police can
   revoke it (#1069).
+- **Combat logout (2026-11-15).** Rejoin is not an escape hatch: the
+  logged-out character stays in the world for a while as a lootable body with
+  a "Logged out" tag, and a player who logs out cuffed or fleeing police
+  rejoins in jail (#1794).
+- **The first night (2026-11-15).** First spawn only, in a base-game building
+  that works as a hostel; if none does, a homestay in an ordinary house with an
+  annoying host who plays the drums (#1758).
 - **Car upkeep stays light (2026-11-09).** Fuel and simple repairs only, with
   no parts system and no random breakdowns (repair kit #648 is in M6).
 - **Base-game assets first.** A new mesh only comes through the 3D harness,
@@ -67,6 +74,8 @@ Development on 2026-11-15, because no M5 chapter needs them.
   M6 chapter, Catch the bus #1793 (maintainer, 2026-11-15): AI driving is the
   riskiest piece, so M5 does not wait for it. The story's dawn bus is parked
   until then.
+- The breathalyser and drug-test kit (#634, #635) went to Backlog
+  (maintainer, 2026-11-15: dull gameplay).
 - The town paper is removed from the roadmap (maintainer, 2026-11-15; #1008,
   #792 and #793 closed).
 - Food, the state factory and the market go to M6 Making a living
@@ -92,5 +101,5 @@ Development on 2026-11-15, because no M5 chapter needs them.
 ## Open questions
 
 - Whether Meshy's plan terms allow Workshop redistribution (#664).
-- Whether a new character's spawn can be a hostel bed without a core change
-  (#1758).
+- Whether a first spawn can be told apart without a core change, and which
+  building is the hostel or the homestay (#1758).
