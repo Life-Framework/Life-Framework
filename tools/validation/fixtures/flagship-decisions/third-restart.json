@@ -1,0 +1,1 @@
+{ "file": "config.json", "set": { "restarts.times": ["06:00", "12:00", "18:00"] }, "expect": "restarts.times" }
