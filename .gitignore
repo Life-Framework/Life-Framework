@@ -100,3 +100,6 @@ video/music/*.mp3
 
 # Example server template runtime files
 server/example/profile/
+
+# Stray git merge temp files
+.merge_file_*
