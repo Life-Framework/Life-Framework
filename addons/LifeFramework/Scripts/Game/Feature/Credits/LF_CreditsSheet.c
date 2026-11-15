@@ -12,7 +12,7 @@ class LF_CreditsSheet
 	static const float SHEET_WIDTH = 760;
 	//! Body lines one page may hold so Previous, Next and Close stay inside the 900-high frame at
 	//! 720p (#1738); a long section continues on another page under the same heading.
-	static const int MAX_BODY_LINES = 18;
+	static const int MAX_BODY_LINES = 18;	// lf-fixed: what the 900-high frame holds at 720p
 	//! Characters that fit one wrapped body line at the sheet width (measured, with a margin).
 	static const int LINE_CHARS = 78;
 
