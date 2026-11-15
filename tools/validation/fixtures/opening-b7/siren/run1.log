@@ -1,0 +1,14 @@
+21:30:02.114  DEFAULT      : Entered online game state.
+21:30:20.001  SCRIPT       : [LFDebug:Persistence] save loaded: version 3, game build 1.6.0.2, running 1.6.0.2
+21:30:21.200  SCRIPT       : [LFDebug:Ops] restart warner: ticking once a second, restarts at 21:36, warnings 3, 2, 1 min before, next in 339 s
+21:33:00.010  SCRIPT       : [LFDebug:Ops] restart warning: 3 minute(s) to the restart at 21:36 (180 s)
+21:33:00.012  SCRIPT       : [LFDebug:Ops] restart toast: told every player the server restarts in 3 minute(s) (180 s)
+21:34:00.010  SCRIPT       : [LFDebug:Ops] restart warning: 2 minute(s) to the restart at 21:36 (120 s)
+21:34:00.012  SCRIPT       : [LFDebug:Ops] restart toast: told every player the server restarts in 2 minute(s) (120 s)
+21:35:00.010  SCRIPT       : [LFDebug:Ops] restart warning: 1 minute(s) to the restart at 21:36 (60 s)
+21:35:00.012  SCRIPT       : [LFDebug:Ops] restart toast: told every player the server restarts in 1 minute(s) (60 s)
+21:35:00.020  SCRIPT       : [LFDebug:Ops] restart siren: sounding the final-minute siren
+21:36:00.003  SCRIPT       : [LFDebug:Ops] restart due at 21:36 (clock 21:36), publishing LF_OnRestartDue
+21:36:00.004  SCRIPT       : [LFDebug:Ops] restart due: wrote $profile:lf-host-restart, closing the game (engine shutdown save follows)
+21:36:00.500  SCRIPT       : [LFDebug:Persistence] system state ACTIVE -> SHUTDOWN
+21:36:01.200  SCRIPT       : [LFDebug:Persistence] save completed (SHUTDOWN)

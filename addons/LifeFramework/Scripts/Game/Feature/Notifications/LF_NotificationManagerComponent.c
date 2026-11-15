@@ -338,6 +338,7 @@ class LF_NotificationManagerComponent : ScriptComponent
 		}
 
 		// Client-side: Show custom notification toast
+		LF_Debug.Log("Notify", string.Format("toast received (all players): %1", message));
 		ShowNotificationToast(title, message, duration, type, messageArg);
 	}
 	

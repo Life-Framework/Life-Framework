@@ -164,6 +164,20 @@ export function buildLine(id, spec) {
     if (!/^\{[0-9A-F]{16}\}[A-Za-z0-9_/.-]+\.et$/.test(spec.prefab ?? "")) throw new Error(`${spec.verb} needs a {GUID}path prefab: ${spec.prefab}`);
     return `${id} ${spec.verb} ${spec.prefab}`;
   }
+  if (spec.verb === "chat") {
+    // chat [admin|global|local|ooc] <text>: this client sends one chat line through the real path (LF_HarnessChat);
+    // `!handled 3` goes to the Admin channel, which re-checks the sender's role on the server.
+    const text = String(spec.text ?? "");
+    if (!/^[\x20-\x7E]{1,400}$/.test(text) || text.trim() !== text) throw new Error(`chat text must be 1 to 400 printable ASCII characters with no edge spaces: ${JSON.stringify(spec.text)}`);
+    if (spec.channel && !/^(admin|global|local|ooc)$/.test(spec.channel)) throw new Error(`chat channel must be admin, global, local or ooc: ${spec.channel}`);
+    return `${id} chat ${spec.channel ? `${spec.channel} ` : ""}${text}`;
+  }
+  if (spec.verb === "staffapprove") {
+    // staffapprove <uid>: approve that account's open police application through LF_PoliceApplicationStaff.ApproveByUid
+    // (LF_HarnessStaff). The uid is the same test as the staff API's (1..64 of letters, digits, - and _).
+    if (!/^[A-Za-z0-9_-]{1,64}$/.test(spec.uid ?? "")) throw new Error(`staffapprove needs an account uid (1..64 of A-Za-z0-9_-): ${spec.uid}`);
+    return `${id} staffapprove ${spec.uid}`;
+  }
   if (spec.verb === "hold") {
     return `${id} hold ${token(spec.item, "item")}`;
   }
@@ -370,7 +384,9 @@ export function sendCommand(spec, timeoutMs = 8000) {
   // client has its own box and a session id, so concurrent sessions in two checkouts (one per
   // session lane) do not share a channel and need no claim.
   const boxes = profileBoxes();
-  const sessionOnly = boxes.length > 0 && boxes.every((b) => sessionDirOfBox(b));
+  // A box set with its own session id (setBoxes(dirs, id): the scratch host client, #1588) is a
+  // private channel too.
+  const sessionOnly = boxes.length > 0 && (boxes.every((b) => sessionDirOfBox(b)) || (!!boxOverride && !!sessionOverride));
   if (!sessionOnly) playClaim = playClaim ?? claimPlay(ROOT);
   if (!sessionOnly && !playClaim.ok) return { id, status: "error", detail: playClaim.reason, line, raw: `${id} error ${playClaim.reason}` };
   for (const dir of profileBoxes()) {
@@ -932,6 +948,28 @@ function selftest() {
   if ((check.status ?? 1) !== 0) throw new Error(check.stderr || "life-agent-box MCP server failed to parse");
   const use = buildLine(4, { verb: "use", className: "LF_ShopAction", entityName: "Trader_01" });
   if (use !== "4 use LF_ShopAction Trader_01") throw new Error(use);
+  const approve = buildLine(6, { verb: "staffapprove", uid: "00bbbddd-5e55-0000-0000-000000000002" });
+  if (approve !== "6 staffapprove 00bbbddd-5e55-0000-0000-000000000002") throw new Error(approve);
+  for (const bad of ["", "a b", "a|b", "x".repeat(65), undefined]) {
+    let refused = false;
+    try {
+      buildLine(6, { verb: "staffapprove", uid: bad });
+    } catch {
+      refused = true;
+    }
+    if (!refused) throw new Error(`staffapprove accepted the uid ${JSON.stringify(bad)}`);
+  }
+  if (buildLine(7, { verb: "chat", text: "!handled 3" }) !== "7 chat !handled 3") throw new Error("chat line");
+  if (buildLine(7, { verb: "chat", channel: "admin", text: "!wadd POLICE abc" }) !== "7 chat admin !wadd POLICE abc") throw new Error("chat line with a channel");
+  for (const bad of [{ text: "" }, { text: " lead" }, { text: "line\nbreak" }, { text: "x".repeat(401) }, { text: "hi", channel: "radio" }, {}]) {
+    let refused = false;
+    try {
+      buildLine(7, { verb: "chat", ...bad });
+    } catch {
+      refused = true;
+    }
+    if (!refused) throw new Error(`chat accepted ${JSON.stringify(bad)}`);
+  }
   const quizClear = buildLine(9, { verb: "quizclear" });
   if (quizClear !== "9 quizclear") throw new Error(quizClear);
   const input = buildLine(5, { verb: "input", action: "MenuSelect" });
@@ -1440,6 +1478,8 @@ function usage() {
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
   node agent-box/harness.mjs reload [config|dialogue|config,dialogue]
+  node agent-box/harness.mjs chat [admin|global|local|ooc] <text>   (one chat line as this client, e.g. chat !handled 3)
+  node agent-box/harness.mjs staffapprove <account uid>   (server, harness gate; the staff API still needs an administrator)
   node agent-box/harness.mjs quizclear   (server, LF_HARNESS build only: forget this client's rules-quiz pass)
   node agent-box/harness.mjs dialogue [caption <#key>|shown]
   node agent-box/harness.mjs input <MenuAction>
@@ -1561,6 +1601,14 @@ function main(argv) {
     }
     if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "spikeplace" || cmd === "spikewhere" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen" || cmd === "quizclear") {
       return printResult(sendCommand({ verb: cmd }, 10000));
+    }
+    if (cmd === "chat") {
+      // chat [admin|global|local|ooc] <text...>
+      const named = /^(admin|global|local|ooc)$/.test(rest[0] ?? "") && rest.length > 1;
+      return printResult(sendCommand({ verb: "chat", channel: named ? rest[0] : undefined, text: rest.slice(named ? 1 : 0).join(" ") }, 10000));
+    }
+    if (cmd === "staffapprove") {
+      return printResult(sendCommand({ verb: "staffapprove", uid: rest[0] }, 10000));
     }
     if (cmd === "engine") {
       return printResult(sendCommand({ verb: "engine", entityName: rest[0] }, 10000));
