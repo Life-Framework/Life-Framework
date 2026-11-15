@@ -32,6 +32,9 @@ class LF_UIScreen
 	static const float PORTRAIT_HEIGHT = 225;	// lf-fixed: the layout's photo window
 	static const int PORTRAIT_LINES = 6;	// lf-fixed: the layout's line widgets
 
+	//! Open kit sheets that hold the world interaction prompt off.
+	protected static int s_iPromptHolds;
+
 	protected Widget m_wRoot;
 	protected bool m_bHasField;
 	protected bool m_bInputArmed;
@@ -1557,13 +1560,33 @@ class LF_UIScreen
 	//! sheet, so it is off while one is open and back on at close (#494).
 	protected static void SetActionPromptShown(bool shown)
 	{
+		if (shown)
+			s_iPromptHolds = Math.Max(0, s_iPromptHolds - 1);
+		else
+			s_iPromptHolds++;
+
 		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
 		if (!hud)
 			return;
 
-		SCR_BaseInteractionDisplay display = SCR_BaseInteractionDisplay.Cast(hud.FindInfoDisplay(SCR_ActionMenuInteractionDisplay));
-		if (display)
-			display.SetEnabled(shown);
+		SCR_ActionMenuInteractionDisplay display = SCR_ActionMenuInteractionDisplay.Cast(hud.FindInfoDisplay(SCR_ActionMenuInteractionDisplay));
+		if (!display)
+			return;
+
+		// SetEnabled only stops the per-frame update, so a prompt already on screen stayed drawn
+		// (#1738): hide it now; LF_ActionPromptGate keeps it hidden while a sheet is open.
+		display.SetEnabled(s_iPromptHolds == 0);
+		if (s_iPromptHolds > 0)
+			display.HideDisplay();
+		else if (shown)
+			display.ShowDisplay();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while at least one kit sheet is open: the world interaction prompt stays hidden (#1738).
+	static bool IsActionPromptSuppressed()
+	{
+		return s_iPromptHolds > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
