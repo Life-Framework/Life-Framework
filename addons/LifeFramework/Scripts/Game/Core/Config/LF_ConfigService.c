@@ -212,6 +212,10 @@ class LF_ConfigService
 		if (key == LF_QuizConfig.SECTION)
 			return true;
 
+		// The M4 sections (#1343), also split out for the compiler.
+		if (key == LF_RestartConfig.SECTION || key == LF_StaffWebhookConfig.SECTION || key == LF_DayCycleConfig.SECTION)
+			return true;
+
 		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_ItemCatalogueConfig.SECTION || key == LF_SystemsConfig.SECTION || key == LF_CleanupConfig.SECTION || key == LF_DisconnectConfig.SECTION || key == LF_Terms.SECTION;
 	}
 

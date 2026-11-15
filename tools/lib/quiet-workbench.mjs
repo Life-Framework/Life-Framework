@@ -77,6 +77,10 @@ export function stopDialogWatcher(watcher) {
 // Returns a short status line; never throws, so the MCP can still fall back.
 export async function ensureQuietWorkbench({ serverDir, env = process.env, timeoutMs = 240000, log = console.error, dialogWatcher } = {}) {
   if (process.platform !== "win32" || showWindows()) return "skip: LF_SHOW_WINDOWS=1 or not Windows";
+  // Backstop: tools/mcp-call.mjs already refuses wb_* tools on a PC without the workbench cap; never start one here either.
+  const route = await import("./wb-route.mjs");
+  const pol = route.localWorkbench(join(dirname(fileURLToPath(import.meta.url)), "..", ".."));
+  if (!pol.allowed) return `skip: ${route.refusalText("quiet Workbench", pol.host)}`;
   const port = Number(env.ENFUSION_WORKBENCH_PORT) || DEFAULT_PORT;
   if (await listening(port)) return `skip: a Workbench already serves NET API port ${port}`;
 

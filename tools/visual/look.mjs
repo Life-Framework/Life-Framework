@@ -385,6 +385,8 @@ export function workbenchArgs(root, profile, plugin = "LF_VisualShotsPlugin") {
 
 // Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
 export async function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
+  // The one place a look-style run starts Workbench (look, look server, clothing shots): never on a PC without the workbench cap.
+  (await import("../lib/wb-route.mjs")).requireLocalWorkbench(ROOT, `Workbench run (${plugin})`);
   const args = workbenchArgs(ROOT, profile, plugin);
   const il = await import("../lib/interactive-launch.mjs");
   if (il.interactiveNeeded()) return runInteractive(il, exe, args, profile, budgetS);
@@ -959,22 +961,35 @@ const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [
 
 export async function main(argv) {
   const args = parseArgs(argv);
+  if (args.flags.local) process.env.LF_WB_LOCAL = "1"; // a human's explicit ask for this PC's Workbench
   if (args.pos[0] === "selftest") return selftest();
-  if (args.pos[0] === "serve") return serveMain(args);
+  const route = await import("../lib/wb-route.mjs");
+  if (args.pos[0] === "serve") {
+    // The look server is a long-lived Workbench on this PC: no remote form. --status and --stop start nothing.
+    const pol = route.localWorkbench(ROOT);
+    if (!pol.allowed && !args.flags.status && !args.flags.stop) {
+      console.log(`FAIL  ${route.refusalText("look serve", pol.host)} \`look <area>\` still works: it runs on a pool machine.`);
+      return 2;
+    }
+    return serveMain(args);
+  }
   if (!args.pos.length || args.flags.help) {
     console.log(USAGE);
     return args.flags.help ? 0 : 2;
   }
   const serve = await import("./look-serve.mjs");
-  if (routeMode(args, { serverUp: () => serve.serverUp(ROOT), env: process.env }) === "local") return localLook(args);
+  let mode = routeMode(args, { serverUp: () => serve.serverUp(ROOT), env: process.env });
+  // A PC without the workbench cap never looks locally unless a human passed --local (LF_WB_LOCAL=1).
+  if (mode === "local" && !route.localWorkbench(ROOT).allowed) mode = "route";
+  if (mode === "local") return localLook(args);
   const wt = await import("../wt.mjs");
   if (wt.isMainCheckout(ROOT)) return run(args); // refuses with the worktree hint
   return routeLook(args, argv);
 }
 
-// This PC: one of its Workbench slots for the whole look (tools/lib/wb-lock.mjs), then the run.
+// This PC: one of its Workbench slots for the whole look (tools/lib/wb-lock.mjs, behind the workbench-cap check), then the run.
 async function localLook(args) {
-  const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
+  const { acquireWorkbench } = await import("../lib/wb-route.mjs");
   const wb = await acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
   try {
     return await run(args);
@@ -1032,7 +1047,7 @@ async function routeLook(args, argv) {
     let view;
     let c;
     for (;;) {
-      view = wbGate.workbenchView(ROOT, { mode: "any", machine });
+      view = (await import("../lib/wb-route.mjs")).workbenchMachines(ROOT, { mode: "any", machine }); // this PC only with the workbench cap
       c = wbGate.chooseGate({ ...view, machine, exclude: tried, reserveMb: LOOK_RESERVE_MB, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
       if (c.where !== "wait") break;
       if (Date.now() - t0 > waitS * 1000) {

@@ -287,16 +287,59 @@ only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; i
 hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
 sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
 
-**Waiting.** `wt ship` waits until the gate passed or failed and prints
-`SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
-default when stdout is not a terminal, so an agent's report says what really happened; a terminal
-returns once queued (`--no-wait`, `--wait` to force). `tools\cli ship-queue wait <slug>` resumes a wait
-(the wait gives up after 3 h with exit 2, the gate keeps going), `ship-queue status` and `pool status`
+**Waiting.** See "Async ship" below: `wt ship` returns once the PR is queued. `wt ship --wait` blocks
+until the gate passed or failed and prints `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ...
+log=<path>` (exit 0 on pass); `tools\cli ship-queue wait <slug>` does the same for a queued slug (gives
+up after 3 h with exit 2, the gate keeps going). `ship-queue status` and `pool status`
 show what gates, what waits and why, and the last few results; `ship-queue cancel <slug>` drops a
 waiting entry. A re-ship of a waiting slug replaces its entry and keeps its place; one whose gate runs
 is refused until it ends. The worker logs to `tmp/logs/ship-queue-worker.log`, each gate to
 `tmp/logs/ship-<slug>-<stamp>.log`; a gate is killed after 100 min, an idle worker exits after 3 min,
 and a worker that died leaves its running entries to be re-queued by the next one.
+
+### Async ship
+
+A queued gate takes 15-90 min (PR #1250: validate --full about 15 min, the Workbench build on lf-cloud about
+5, the sharded suite, then GitHub; 86 min in all). An agent's shell call is capped at 10 min, so a blocking
+`wt ship` went to the background, the agent sat in wait loops, ended its turn mid-ship and went idle. Now
+`wt ship <slug>` returns in about a minute or two (preflight, push, PR, enqueue) and the gate runs in the queue worker:
+
+1. **Preflight, here, before the push** (`--no-preflight` skips it): the clean-tree and PR-body checks as
+   before, `git merge-tree` against `origin/<base>` (a conflict in a driver-merged file is left to the
+   worker's merge; any other conflicted file stops the ship with the merge command to run), then
+   `validate` of the checks whose inputs changed (incremental, no Workbench compile). A red check costs
+   seconds here instead of a queue slot and a gate.
+2. **Push, PR, enqueue.** Auto-merge is off on the PR (an earlier ship's auto-merge is switched off first).
+   `wt ship` prints `SUMMARY ship queued <slug> PR #N position ... log=<path>` and exits 0.
+3. **The gate runs detached** in the ship-queue worker (the steps above). Its state goes to three places:
+   the queue file, `<worktree>/tmp/ship-status.json` (the status line and the entry, on every change), and
+   a `ship-gate` commit status on the PR head (pending while queued or gating, success on the pushed head,
+   failure with the reason, error when cancelled), so `gh pr checks` and the PR page show it.
+4. **Pass:** the worker pushes and enables auto-merge; GitHub merges once the required `validate` check
+   is green. **Fail:** the PR gets a comment with the failing lines and the log path, `ship-gate` goes
+   red with the reason, auto-merge stays off.
+
+**Why auto-merge, not a required status, guards the merge.** Branch protection on `main` requires only
+the `validate` Actions check. Making `ship-gate` required would block every PR that does not go through the
+queue (`wt sync-base`, `--no-queue`, a human's PR, website-only work). The worker is the only thing that
+turns auto-merge on for a queued PR, and `prs heal` skips any PR with a live ship-queue entry (it would
+otherwise merge main into the same worktree and switch auto-merge on before the gate passed).
+
+**Checking and waiting** (both read the queue in the main checkout, from any worktree):
+
+```sh
+tools\cli wt ship-status <slug>            # one line: ship-status <slug> queued|running|passed|failed PR #N: ... log=<path>
+tools\cli wait ship <slug> [--budget 540]  # blocks up to the budget; one SUMMARY line; exit 0 passed, 1 failed, 2 still going
+```
+
+`wait ship` defaults to 540 s, under the 10 min tool cap: run it in the foreground and run it again on exit 2.
+`wt ship-status` exits 1 only when the gate failed or the slug is unknown. `wt ship --wait` (or
+`LF_SHIP_WAIT=1`) keeps the old blocking ship for a human at a terminal.
+
+**What an agent does while the gate runs.** It may start the next stacked PR (a new worktree from
+`origin/main`, or `--base` on its own branch when it needs the unmerged code). It reports
+"shipped, gate running" with the PR URL, and before its final report runs `wt ship-status` (or
+`wait ship`): passed means "merged, in-dev" once GitHub merges, failed means fix, commit, `wt ship` again.
 
 ## Keeping PRs moving (`prs`)
 
@@ -580,7 +623,8 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   three on this PC and one on the box, all 224/224, against 36 s for the four
   in a row on this PC. The pool pays most when this PC's slot is held by
   something long (`host`, `session`, `e2e`, another agent's gate).
-- **Limits.** A plain `build` and `validate --full` stay on this PC. A pre-pool
+- **Limits.** A plain `build` and `validate --full` stay on this PC while it has
+  the `workbench` cap; without it they go to a pool machine ("No Workbench on this PC"). A pre-pool
   branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
   local only until it merges main.
 
@@ -598,7 +642,8 @@ check, so a gate right after a green `--tier all` reuses it.
 - **The key**: git tree hashes of `addons/`, `tools/test/` and
   `tools/lib/addons.mjs` from a throwaway copy of the index with every untracked
   non-ignored file added; the hash of each `addons/*/resourceDatabase.rdb`; the
-  tier, the resolved `--only` list (order kept), `--world`, `--core-only`; the
+  tier, the resolved `--only` list (order kept), `--world` (the routed one too,
+  "Test world" below), `--core-only`; the
   launch addon list; this PC's server build id (the pool sends a run only to a
   machine with that build). The machine is not in it: a gate already accepts a
   pass from any pool machine, and `LF_Test_PerfBudget` is calibrated per
@@ -612,6 +657,31 @@ check, so a gate right after a green `--tier all` reuses it.
   caller owns the cache.
 - `runs.jsonl` rows of a cacheable run carry `cacheKey` (16 hex), so the hit rate
   can be counted later.
+
+### Test world (LOGIC runs)
+
+A run whose every selected test is LOGIC boots the minimal world
+`Worlds/TestLogic/TestLogic.ent` instead of DebugWorld (`tools/lib/test-world.mjs`):
+a world entity, the time manager, `GameMode_Roleplay_Debug`, the destruction
+manager and an `LF_TestRunner` flagged `m_bLogicWorld`. No terrain, village,
+annex, zones or spawn points, so the engine skips the entity load and preload a
+LOGIC test never reads (about 2.4 s on lf-cloud, 1.5 s on the laptop).
+
+- **Routed to TestLogic**: `--tier fast` (fast runs LOGIC only), and `--only` or
+  `--red` when every name resolves to a LOGIC test (class name or `GetName()`,
+  read from the `// tier:` lines). `test` prints `test: world
+  Worlds/TestLogic/TestLogic.ent (<reason>)`.
+- **DebugWorld as before**: `--tier all`, `--tier persistence`, an `--only` list
+  with any WORLD, PERSISTENCE or unknown name, `e2e`, `ci`, `wt gate`.
+- **Override**: `--world <path>` always wins (`--world
+  Worlds/DebugWorld/DebugWorld.ent` for the old behaviour); `LF_TEST_LOGIC_WORLD=0`
+  turns the routing off.
+- **Mis-tiered tests fail loudly.** In TestLogic a WORLD or PERSISTENCE test fails
+  as `FAIL <name> (wrong world)`; a failing LOGIC test prints `hint: <name> ran in
+  the minimal LOGIC world ...; if it needs world content, its tier is WORLD`. A
+  LOGIC test that asserts nothing there already fails (`no assertions executed`).
+- **Pass cache**: the chosen world is the key's `--world`, so a TestLogic pass is
+  never reused for a DebugWorld request.
 
 ### Workbench limit and the remote gate
 
@@ -657,6 +727,41 @@ pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
 gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
+
+### No Workbench on this PC (the `workbench` cap)
+
+The maintainer's world editor lives on this PC (Gaming-Box) and agents never
+run a headless Workbench on it. That is `workbench` missing from this machine's
+caps: `lf.local.json` `pool.machines` entry `{ "name": "local", "caps":
+["server"] }`. A pool machine's own entry (`lf-cloud`, `lf-testbox`) keeps the
+cap and runs what is sent to it. `tools/lib/wb-route.mjs` reads the cap; every
+path that would start a Workbench here asks it first:
+
+| Path | Without the cap on this PC |
+| --- | --- |
+| `ci`, `ci --remote`, `ci --tiered`, `wt gate`, `wt ship` (`chooseGate`) | this PC is never a candidate and never the fallback; no pool machine answering is "wait" (re-check every 30 s, `LF_WB_RAM_WAIT_S`, 1 h), then a pool failure. The retry after an early death never lands here. `LF_TESTBOX_AUTO=0` no longer keeps the gate here |
+| the rdb refresh before `test`, `session up`, `serve`, `e2e` and a gate; `rdb`, `rdb --wait` (`chooseRefresh`) | goes to a machine with the `rdb` cap even when it can only queue there; none yet: waits (`LF_RDB_WAIT_S`, 900 s, `rdb --budget <s>`), then warns and leaves the rdb stale. It never falls back to a local refresh |
+| `validate --full` (the `validate-scripts.ps1` compile) | `ci --wb-only --compile-only` on a pool machine, its transcript streamed here |
+| `build`, and `test` without `--no-build` | `ci --wb-only --build-only [--addon X]` on a pool machine; the exit code is the result |
+| `look <area>`, `look item` | runs on a pool machine (`look ... --local --fresh --clean` in its desktop session); the pictures are copied back to `tmp/look` (or `--out`) with the paths in each `index.json` made local. `look serve` (start) refuses: its Workbench is long-lived and local |
+| `pack`, `asset` plugin runs, `ui-image`, `wt open --workbench` | refuse with the reason: their output is files in this worktree |
+| `cli call wb_*` (and so `agent-box/harness.mjs launch`, `play`) | refuse: every `wb_*` tool needs a Workbench and the MCP starts one itself. `api_search`, `game_read`, `asset_search` and `api class` need none |
+| `validate-scripts.ps1` run by hand | refuses unless the CLI launched it (`LF_WB_GUARDED=1`) or `LF_WB_LOCAL=1` |
+
+The backstop is the Workbench slot itself: `wb-route.acquireWorkbench` throws
+`LocalWorkbenchRefused` before `wb-lock` takes a lock, so a caller that forgot to
+route fails loudly instead of starting Workbench. `validate-wb-policy.mjs`
+fails the repo checks when a file takes a slot from `wb-lock` directly, or names
+the Workbench executable without consulting the cap. A new launcher goes through
+`wb-route` (`routeWorkbench` for a step that can run elsewhere,
+`requireLocalWorkbench` for one that cannot).
+
+An explicit `--local` (or `--machine local`) on `build`, `ci`, `rdb`, `look`,
+`pack`, `asset`, `validate` or `wt` from a human sets `LF_WB_LOCAL=1` and runs
+here anyway; so does exporting `LF_WB_LOCAL=1`. `test`, `session`, `e2e` and
+`serve` take `--local` for the server only and never unlock the Workbench.
+Agents do not pass it. Proven by `tools/validation/wb-policy-selftest.mjs`
+(choice, wait budget, routed run, slot backstop, `--local`).
 
 ### Lanes, priority, leases, budgets (this PC)
 
