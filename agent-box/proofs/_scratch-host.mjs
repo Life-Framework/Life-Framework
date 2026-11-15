@@ -21,7 +21,7 @@
 //   the pids this module started or read from host.json, never by image name.
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { closeSync, existsSync, mkdirSync, openSync, readFileSync } from "node:fs";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as pool from "../../tools/remote/pool.mjs";
@@ -67,7 +67,10 @@ function joinsIn(log) {
 
 // Takes a session lane, starts `host watch` on a scratch LF_HOST_DIR (unless noHost: the red run) and
 // waits for the world. Returns a handle; call handle.teardown() in a finally.
-export function startScratchHost({ root = ROOT, waitMin = 10, noHost = false, log = console.log, readyS = 420 } = {}) {
+// maxRestarts is the watch's --max-restarts (0 is the red run of #1563: the watch does not restart a
+// crash). config, when given, is written as the host's $profile:LifeFramework/config.json before boot
+// (the autosave interval of a crash proof).
+export function startScratchHost({ root = ROOT, waitMin = 10, noHost = false, log = console.log, readyS = 420, maxRestarts = 3, config = null } = {}) {
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const dir = join(scratchBase(), `${pool.slugFor(root)}-${stamp}`);
   const hostDir = join(dir, "host");
@@ -83,9 +86,14 @@ export function startScratchHost({ root = ROOT, waitMin = 10, noHost = false, lo
   const h = { root, dir, hostDir, lock, port, token, lane, watchPid: 0, client: null, id: newSessionId(), log };
   h.teardown = () => teardown(h);
   if (noHost) return h;
+  if (config) {
+    const cfgDir = join(hostPaths(hostDir).profile, "profile", "LifeFramework");
+    mkdirSync(cfgDir, { recursive: true });
+    writeFileSync(join(cfgDir, "config.json"), `${JSON.stringify(config, null, 2)}\n`);
+  }
   const out = openSync(join(dir, "watch.log"), "a");
   const env = { ...process.env, LF_HOST_DIR: hostDir, [pool.SLOT_ENV]: `${lock}:${token}` };
-  const watch = spawn(process.execPath, [join(root, "tools", "cli.mjs"), "host", "watch", "--max-restarts", "3", "--crash-limit", "0"], { cwd: root, env, stdio: ["ignore", out, out], windowsHide: true });
+  const watch = spawn(process.execPath, [join(root, "tools", "cli.mjs"), "host", "watch", "--max-restarts", String(maxRestarts), "--crash-limit", "0"], { cwd: root, env, stdio: ["ignore", out, out], windowsHide: true });
   closeSync(out);
   h.watchPid = watch.pid;
   watch.unref();
@@ -139,10 +147,30 @@ export function joinPlainClient(h, { joinS = 240 } = {}) {
   throw new Error(`client joined: no join line in the host log within ${joinS}s`);
 }
 
+// A client that lost its server: closes it by pid and starts the plain client again on the same scratch
+// profile, against the host's newest console.log (`serverLog` is re-pointed first, so only a join line in
+// the restarted host's log counts).
+export function rejoinPlainClient(h, { joinS = 240 } = {}) {
+  if (h.client?.pid && pidAlive(h.client.pid)) {
+    spawnSync("taskkill", ["/PID", String(h.client.pid), "/T", "/F"], { windowsHide: true });
+    for (let i = 0; i < 20 && pidAlive(h.client.pid); i++) sleep(500);
+  }
+  h.serverLog = newestConsoleLog(hostPaths(h.hostDir).profile) ?? h.serverLog;
+  return joinPlainClient(h, { joinS });
+}
+
 // Sends one harness command to the scratch client.
 export function on(h, spec, timeoutMs = 8000) {
   setBoxes([h.client.box], h.id);
-  return sendCommand(spec, timeoutMs);
+  // The game holds result.txt open for a moment after it writes it: the harness's unlink can hit EBUSY or EPERM.
+  for (let i = 0; ; i++) {
+    try {
+      return sendCommand(spec, timeoutMs);
+    } catch (e) {
+      if (i >= 4 || !/EBUSY|EPERM|EACCES/.test(String(e?.code ?? e?.message))) throw e;
+      sleep(1500);
+    }
+  }
 }
 
 // Walks the client through what a new player sees (quiz, faction, spawn, registration) with ui, click

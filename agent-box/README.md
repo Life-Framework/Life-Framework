@@ -795,3 +795,26 @@ client, the setup a crash-then-rejoin proof (#1563) builds on. The logic is
   is released and the scratch dir removed (`LF_SCRATCH_KEEP=1` keeps it).
 - **Red run.** `--no-host` starts no watch, so the client never joins and the proof fails at
   "client joined".
+
+## Crash, then rejoin (#1563)
+
+`tools\cli session crash-rejoin-proof` runs on the scratch host above (no session needed). It seeds the
+host's `config.json` with `autosaveInterval: 30`, registers a plain client, notes the bank, waits for a save
+that began after the bank line (a killed process writes no shutdown save), kills the host by the pid in
+`host.json`, and judges the restart. The harness `state` verb stays refused (the dev gate), so what survived
+is read from the host's console.log:
+
+- **Before.** The player's uid, faction and last ledger bank balance.
+- **Crash backup.** `backups/*-crash` holds the saves and a `crash-log` folder (the watch writes both).
+- **Host back.** A new pid in `host.json` and the ready line in a new console.log.
+- **Save loaded.** `save loaded:` and `applied N account record(s)` / `applied N bank account record(s)` with
+  N of at least 1.
+- **Rejoin.** The same client, relaunched on its own profile: `spawning player`, no `registration form sent`,
+  and no `starting-bank` or `debug-topup` ledger line for the uid (a lost account would be paid again). The
+  ledger prints only on a movement, so a restored account has no line after the load; the proof then holds the
+  balance as unchanged. Cash is not checked: the log does not record it.
+- **Red run.** `--no-restart` gives the watch `--max-restarts 0`: it records the crash and leaves the host
+  down, and the proof fails at "host back".
+
+The client needs Steam, which runs on the box (`lf-testbox`), not on every PC: run it there (the pool's
+`syncAndRun`) when the local `client1/.../console.log` says `SteamAPI_Init failed`.
