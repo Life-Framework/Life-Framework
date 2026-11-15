@@ -8,7 +8,8 @@
 // It refuses while the host runs, refuses a secret found in a repo file, never writes under the
 // repo, and never returns a secret in its summary (every secret value is masked).
 //
-// secrets.json shape: { "game": { "password": "...", "passwordAdmin": "..." }, "staffWebhookUrl": "https://..." }
+// secrets.json shape: { "game": { "password": "...", "passwordAdmin": "..." }, "staffWebhookUrl": "https://...", "announceWebhookUrl": "https://..." }
+// announceWebhookUrl is read by `host post` (#1414), not written into either file here; it is known so it is not warned about.
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,8 +19,8 @@ import { hostPaths, pidAlive, readHostState } from "./host.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SECRET_KEY = /password|passwd|secret|token|webhook|apikey|api_key|credential/i;
 // Paths whose values never print.
-const MASKED = new Set(["game.password", "game.passwordAdmin", "staff.webhookUrl"]);
-const KNOWN_SECRETS = new Set(["game", "staffWebhookUrl"]);
+const MASKED = new Set(["game.password", "game.passwordAdmin", "staff.webhookUrl", "announceWebhookUrl"]);
+const KNOWN_SECRETS = new Set(["game", "staffWebhookUrl", "announceWebhookUrl"]);
 const KNOWN_GAME_SECRETS = new Set(["password", "passwordAdmin"]);
 
 const refuse = (reason) => ({ ok: false, reason, lines: [], warnings: [], written: [] });

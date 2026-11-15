@@ -44,3 +44,19 @@ The playtest mission closes the gate. A session started with
 `-scrDefine LF_HARNESS` (`session.mjs up --mission playtest`) opens it for the
 harness RPCs only (`LF_DevGate.CheckHarnessRequest`); the define changes the
 script checksum, so only clients with the same define can join that server.
+
+`LF_HarnessStaff.c` is the staff side of the police application for the proofs (#1450): the `staffapprove <uid>`
+verb (server, through `LF_AskHarnessScanner`) calls `LF_PoliceApplicationStaff.ApproveByUid` with the sender's account and
+`AdminChatChannel.IsAdminPlayer`, so the staff check still decides. `up --admin-client N` seeds `harness-admins.txt` and a harness
+build gives that client `SESSION_ADMINISTRATOR` (`GrantAdminIfListed`, on connect and on spawn; the engine refuses a script grant of
+`ADMINISTRATOR`), which `IsAdminPlayer` counts in a harness build only; `--no-instant-approval` and
+`--skip-playtime-gate` seed `harness-flags.txt`, which the application form reads through `InstantApproval` and
+`ApplyMinPlaytimeHours`. Every entry point is a no-op unless `LF_DevGate.HarnessBuild()`.
+
+`LF_HarnessChat.c`: harness `chat [channel] <text>` sends one chat line on this client through `SCR_ChatComponent.SendMessage`, so the server's channel handler (`AdminChatChannel` for `!handled`, `!wadd`, `!preject`) sees a real sender and re-checks its role.
+
+`LF_QuizHarness.c` is the `quizclear` verb (#1567): the server forgets the sending client's own account's rules-quiz pass
+(`LF_Quiz.Reset`: this session's pass, the failed-attempt count, and the `flag:` entry in the progression store), so a proof can
+make a rejoin see the quiz again. `LF_QuizHarness.Run` refuses with `error harness_only` unless `LF_DevGate.HarnessBuild()`, on top
+of the harness gate the RPC already passed. Dispatch is the client's `LF_AgentHarness` (`LF_AskHarnessScanner`) and the server's
+`LF_ApplyHarnessScanner`, like `staffapprove`.

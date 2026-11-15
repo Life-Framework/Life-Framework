@@ -6,7 +6,7 @@
 // save, and judges the console log: `save loaded:` plus at least one applied account record.
 // The judge reuses preflightVerdict (tools/host/host.mjs); the account line is the one
 // tools/dedicated/session.mjs expects after a restart.
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { findSavePoints, hostPaths, newestConsoleLog, pickBackup, preflightVerdict, restoreBackup } from "./host.mjs";
@@ -33,6 +33,57 @@ export function summaryLine({ ok, backup, machine, accounts, log, reason }) {
   return parts.join(" ");
 }
 
+// The last result, kept beside the backups: <host dir>/drill-last.json = { ok, backup, machine, accounts, reason, at }.
+// A drill that ran on a pool machine leaves its log there, so `host ready` (tools/host/ready.mjs) reads this file
+// first and the log only as a fallback.
+export const DRILL_RESULT_FILE = "drill-last.json";
+
+export function drillResultPath(hostDir) {
+  return join(hostDir, DRILL_RESULT_FILE);
+}
+
+// Writes the result file; returns its path. `at` defaults to now.
+export function writeDrillResult(hostDir, { ok, backup, machine, accounts, reason, at }) {
+  mkdirSync(hostDir, { recursive: true });
+  const file = drillResultPath(hostDir);
+  const doc = {
+    ok: !!ok,
+    backup: backup ?? null,
+    machine: machine ?? "local",
+    accounts: Number(accounts) || 0,
+    reason: String(reason ?? ""),
+    at: at ?? new Date().toISOString(),
+  };
+  writeFileSync(file, `${JSON.stringify(doc, null, 2)}\n`);
+  return file;
+}
+
+// The result file, or null when it is missing, unreadable or holds no pass/fail.
+export function readDrillResult(hostDir) {
+  if (!hostDir) return null;
+  const file = drillResultPath(hostDir);
+  if (!existsSync(file)) return null;
+  try {
+    const j = JSON.parse(readFileSync(file, "utf8"));
+    if (!j || typeof j !== "object" || typeof j.ok !== "boolean") return null;
+    return { ok: j.ok, backup: j.backup ?? null, machine: j.machine ?? null, accounts: Number(j.accounts) || 0, reason: String(j.reason ?? ""), at: j.at ?? null };
+  } catch {
+    return null;
+  }
+}
+
+// The inverse of summaryLine: the last `SUMMARY host-drill` line in a pool machine's output, or null.
+export function parseSummaryLine(text) {
+  const lines = String(text ?? "").split(/\r?\n/).filter((l) => /\bSUMMARY host-drill (ok|fail)\b/.test(l));
+  const line = lines[lines.length - 1];
+  if (!line) return null;
+  const ok = /\bSUMMARY host-drill ok\b/.test(line);
+  const field = (k) => new RegExp(`\\b${k}=(\\S+)`).exec(line)?.[1] ?? null;
+  const reason = /\breason="(.*?)"(?: log=|$)/.exec(line)?.[1] ?? "";
+  const acc = field("accounts");
+  return { ok, backup: field("backup"), machine: field("machine"), accounts: acc ? Number(acc) : 0, reason, log: field("log") };
+}
+
 // The named backup of the host dir, else its newest; null when there is none.
 export function pickDrillBackup(hostDir, name) {
   return pickBackup(hostDir, name);
@@ -49,25 +100,27 @@ export function prepareScratch(backup, scratchDir) {
 }
 
 // Runs `host <args>` in a child on the scratch host dir. The child is bounded by timeoutMs.
-function hostCli(root, scratchDir, args, timeoutMs) {
+// slotEnv is the pool lane this drill holds as "<lock>:<token>" (LF_SERVER_SLOT_HELD, #1637): the host
+// boots on that lane's port and never takes server-2001 beside a live session.
+function hostCli(root, scratchDir, args, timeoutMs, slotEnv) {
   const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "host", ...args], {
     cwd: root, encoding: "utf8", timeout: timeoutMs, windowsHide: true,
-    env: { ...process.env, LF_HOST_DIR: scratchDir, LF_QUIET_CHILD: "1" },
+    env: { ...process.env, LF_HOST_DIR: scratchDir, LF_QUIET_CHILD: "1", ...(slotEnv ? { LF_SERVER_SLOT_HELD: slotEnv } : {}) },
   });
   return { code: r.status ?? 1, out: `${r.stdout ?? ""}${r.stderr ?? ""}` };
 }
 
 // Boots the scratch profile on this machine, stops it, judges the log. Returns { ok, reason, accounts, log }.
-export function runDrillHere({ root, scratchDir, timeoutSec = 300, log = console.log }) {
-  const started = hostCli(root, scratchDir, ["start", "--force", "--timeout", String(timeoutSec)], (timeoutSec + 120) * 1000);
+export function runDrillHere({ root, scratchDir, timeoutSec = 300, log = console.log, slotEnv = "" }) {
+  const started = hostCli(root, scratchDir, ["start", "--force", "--timeout", String(timeoutSec)], (timeoutSec + 120) * 1000, slotEnv);
   const tail = started.out.trim().split(/\r?\n/).slice(-6).join("\n  ");
   const consoleLog = newestConsoleLog(hostPaths(scratchDir).profile);
   if (started.code !== 0) {
     // A server that came up but missed the ready line still needs closing; for a dead one stop is a no-op.
-    hostCli(root, scratchDir, ["stop"], 240000);
+    hostCli(root, scratchDir, ["stop"], 240000, slotEnv);
     return { ok: false, reason: `the server did not start: ${tail}`, accounts: 0, log: consoleLog };
   }
-  const stopped = hostCli(root, scratchDir, ["stop"], 240000);
+  const stopped = hostCli(root, scratchDir, ["stop"], 240000, slotEnv);
   const text = consoleLog && existsSync(consoleLog) ? readFileSync(consoleLog, "utf8") : "";
   if (stopped.code !== 0) log("drill: the server did not stop cleanly; judging the log anyway");
   return { ...drillVerdict(text), log: consoleLog };

@@ -249,6 +249,9 @@ the game profile). Hooks:
 - `session.mjs bed-proof` (2 clients): the medic loads a downed client into the hospital ambulance, the bleed-out stays paused, the medic puts them in `Hospital_Bed_2`, the patient wakes with the reduced bill.
 - `siren <EntityName> <mode>` (dev gate) sets a placed vehicle's siren mode on the server through the driver key's rule (`LF_SirenManagerComponent.ApplyRequest`); replies `siren changed=C on=O broadcasts=N`. `session.mjs siren-proof` runs it on the ambulance and the police car and checks client 2.
 - `dialogue` (runs on the client) reports the conversation scene: `closed`, or node, phase (`line`, `choosing`, `waiting`), replies shown, whether the camera is taken, and how many voiced lines and lip frames this client has played. `dialogue pick <row>`, `dialogue skip`, `dialogue closeup 0|1` (a proof-only face close-up with the scene widgets hidden, to film the mouth; the conversation itself never zooms), `dialogue mouth <0..1>` (holds a pose), `dialogue rig|nodrig|blinkrig <Bone:ax,ay,az,tx,ty,tz;...>` (angles are radians) and `dialogue bones <part>` (lists skeleton bone names) drive it and pose the face for a shot. Proof: `session.mjs dialogue-proof` (`up --profile full --clients 2`).
+- `staffapprove <uid>` (server, harness gate; `session.mjs staff-approve <client n | uid> [--client N]`) approves that account's open police application through `LF_PoliceApplicationStaff.ApproveByUid`. The sender is the caller the staff API checks, so it works only from an engine administrator or a `staff.txt` account and replies `error #LF-PoliceApp_NotAdmin` for anyone else. A session has no `server.json` to put `game.admins` in (`-config` is fatal with `-addons`), and the engine refuses a script grant of `ADMINISTRATOR`, so `up --mission playtest --admin-client 1[,2]` makes those clients administrators another way: it seeds `LifeFramework/harness-admins.txt` with their session identities, the harness build (`LF_HarnessStaff`) gives them `SESSION_ADMINISTRATOR` on connect, and `AdminChatChannel.IsAdminPlayer` counts that role in a `LF_HARNESS` build only (a real server never does). `up --no-instant-approval` runs the application form's gated path on the playtest mission (which approves on submit) and `up --skip-playtime-gate` lets a fresh account past the minimum playtime; seeded as `harness-flags.txt`, read only in a `LF_HARNESS` build, never a change to the gameplay default. Proof: `session.mjs staff-approve-proof` (`up --clients 2 --mission playtest --admin-client 1 --no-instant-approval --skip-playtime-gate`).
+- `chat [admin|global|local|ooc] <text>` (client, harness build or dev tools; `LF_HarnessChat`) types one chat line as this client through the real send path (`SCR_ChatComponent.SendMessage` on that channel's id). Left out, a `!` line goes to the Admin channel and anything else to global. `!handled <n>`, `!wadd`, `!preject <uid>` are Admin channel commands, so the server's `AdminChatChannel` re-checks the sender: from a client that is not an administrator they do nothing. `/` lines (the chat box's own commands) are refused, and `#` lines go as plain text on global (not exercised yet). The reply only says the line was sent; read the verdict in the server log. Proof: `staff-approve-proof` sends `!preject` from both clients.
+- `quizclear` (server, harness build only; `LF_QuizHarness`, #1567) forgets the sending client's own account's rules-quiz pass in the server's memory and in the progression store (`LF_Quiz.Reset`, what the staff reset does), so the next connect or `session.mjs rejoin <n>` is sent the quiz again. Replies `quiz pass cleared for <uid> had=1` (`had=0` when there was nothing to forget). It is refused as `error harness_only` in any build without `-scrDefine LF_HARNESS` (`session up --mission playtest` passes it), so no real server runs it, an administrator included. The quiz questions come from the flagship pack, so the session boots with `--pack LF_Everon1989`.
 - `giveup` presses the give-up key for the local player (#256); the server refuses it before `m_fGiveUpDelaySeconds`. `state` reports `bleed=` (seconds left as this client reads them, -1 when not downed).
 - `resetcrime` (dev gate, #867) runs the crime-state steps of the world-reset service (`Core/LF_WorldReset.c`, #937): every account's wanted level, wanted posters and dispatch log, till and vault cooldowns and stock, search cooldowns, evidence, loose loot, spike strips and calls. The reply is `cleared name=count ...` per step. It never moves a car or regrows a rock; the full reset (those too) is the death-screen respawn when alone, or the debug menu and globe button. The per-proof reset (`_reset.mjs`) uses it, because the debug menu's wanted button is refused for a non-admin; the reset prints `crime state cleared (...)` or `still dirty: ...`.
 - `die` asks the server to kill the local character for real, downed or not (dev gate; `LF_Downed.Finish`), so a session
@@ -766,3 +769,54 @@ server to release the slot, starts it again and exits 0 only when the identity i
 needs "the same player came back" calls it and then reads the server log (`spawning player <new id>` is a
 returning account; `registration form sent` is a new one). `session.mjs rejoin-proof` is the worked example
 (`up --clients 2 --mission playtest --roster 2`).
+
+## Scratch host under the watch (#1588)
+
+`tools\cli session crash-host-setup` needs no session: it boots its own playtest host and a plain
+client, the setup a crash-then-rejoin proof (#1563) builds on. The logic is
+`agent-box/proofs/_scratch-host.mjs` (`startScratchHost`, `joinPlainClient`, `registerClient`,
+`readState`, `teardown`).
+
+- **Host.** `host watch` on a scratch `LF_HOST_DIR` under
+  `%LOCALAPPDATA%\LifeFramework\scratch-host\<slug>-<time>\host`. The host is a real `host start`:
+  no `-scrDefine`, so `LF_HARNESS` never reaches it.
+- **Port and lock.** The proof takes a pool session lane (`pool.acquireSessionLaneSync`, the queue
+  `session up` waits in) and passes it down as `LF_SERVER_SLOT_HELD=<lock>:<token>`. `host start` then
+  boots on that lane's port (`-addr 127.0.0.1:<port>` past lane 1) and leaves the lock with the proof,
+  so a watch restart needs no new lock and never takes 2001 under a live session. The proof extends
+  this checkout's session lease while it runs.
+- **Client.** A game client with no `-scrDefine` (the same script checksum as the host), its own
+  scratch `-profile` (its own `agent-box/command.txt`) and `-lfSession <id>`. That flag is a CLI
+  parameter, not a define. The harness poll needs no define, so `ui`, `type`, `click` and `look`
+  answer, and `arrive` registers the player.
+- **State.** `state` is a server request behind `LF_DevGate`. A hosted header closes dev tools and
+  the player is not an admin, so it answers `dev_gate_closed` by design. The proof then reads the
+  scratch host's own console.log (`hostLogState`): uid, faction (the role kit), bank balance, cash
+  top-ups.
+- **Teardown.** By the pids it started or read from `host.json`, never by image name. Then the lane
+  is released and the scratch dir removed (`LF_SCRATCH_KEEP=1` keeps it).
+- **Red run.** `--no-host` starts no watch, so the client never joins and the proof fails at
+  "client joined".
+
+## Crash, then rejoin (#1563)
+
+`tools\cli session crash-rejoin-proof` runs on the scratch host above (no session needed). It seeds the
+host's `config.json` with `autosaveInterval: 30`, registers a plain client, notes the bank, waits for a save
+that began after the bank line (a killed process writes no shutdown save), kills the host by the pid in
+`host.json`, and judges the restart. The harness `state` verb stays refused (the dev gate), so what survived
+is read from the host's console.log:
+
+- **Before.** The player's uid, faction and last ledger bank balance.
+- **Crash backup.** `backups/*-crash` holds the saves and a `crash-log` folder (the watch writes both).
+- **Host back.** A new pid in `host.json` and the ready line in a new console.log.
+- **Save loaded.** `save loaded:` and `applied N account record(s)` / `applied N bank account record(s)` with
+  N of at least 1.
+- **Rejoin.** The same client, relaunched on its own profile: `spawning player`, no `registration form sent`,
+  and no `starting-bank` or `debug-topup` ledger line for the uid (a lost account would be paid again). The
+  ledger prints only on a movement, so a restored account has no line after the load; the proof then holds the
+  balance as unchanged. Cash is not checked: the log does not record it.
+- **Red run.** `--no-restart` gives the watch `--max-restarts 0`: it records the crash and leaves the host
+  down, and the proof fails at "host back".
+
+The client needs Steam, which runs on the box (`lf-testbox`), not on every PC: run it there (the pool's
+`syncAndRun`) when the local `client1/.../console.log` says `SteamAPI_Init failed`.
