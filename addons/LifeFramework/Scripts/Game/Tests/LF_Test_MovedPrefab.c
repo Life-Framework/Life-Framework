@@ -5,6 +5,7 @@
 //! string saved or configured before the move carries the old path. Each name below shares a real
 //! GUID with a shipped prefab under a path that does not exist, the way a pre-move config or save
 //! looks to a post-move entity (and the other way round). The lookups must still find the prefab.
+// red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
 // tier: WORLD
 class LF_Test_MovedPrefab : LF_Test
 {
@@ -14,7 +15,7 @@ class LF_Test_MovedPrefab : LF_Test
 	static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
 	static const ResourceName DRESSING = "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et";
 	static const ResourceName HOUSE_KEY = "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et";
-	static const string STORE_COUNTER = "Shop_GeneralStore_Debug";
+	static const string STORE_COUNTER = "Grid_orgs_vehicles_Store";
 
 	//------------------------------------------------------------------------------------------------
 	//! The name the resource would report after a move to `path`: same GUID, new path.
@@ -68,7 +69,7 @@ class LF_Test_MovedPrefab : LF_Test
 		if (counter)
 			store = LF_Component<LF_StoreComponent>.Find(counter);
 
-		ctx.NotNull(store, "the DebugWorld general store resolves");
+		ctx.NotNull(store, "the GridWorld test store resolves");
 		if (store)
 			ctx.True(store.HasLine(appleMoved), "a store line configured before the move finds the moved apple");
 

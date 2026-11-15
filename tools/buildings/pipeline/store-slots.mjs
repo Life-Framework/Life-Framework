@@ -20,8 +20,7 @@
 // `pick` indexes the fixtures of that prefab in the order the stage prints (by x, then z, then yaw);
 // `boards` indexes their boards, lowest first (the stage prints those too). Optional per line:
 // `per_board` (at most this many copies on a board), `rows`, `max` (default: one per shelf point),
-// `restock` (default: a sixth of max), `start`, `stack` (N: every shelf point is a folded pile of N
-// copies, one item height apart with a small seeded twist, taken from the top; see pilePoints).
+// `restock` (default: a sixth of max), `start`.
 //
 // A building made from a vanilla one (spec.vanilla, no ArchBuilder export) has no shop furniture of its
 // own, so the store block places it, and two more kinds of row exist (gun store, #1143 follow-up):
@@ -160,21 +159,6 @@ export function slotsOf(f, board, item, { perBoard = BOARD_CAP, rows = MAX_ROWS 
   return out;
 }
 
-// A folded pile (line "stack": N, the clothing store): each shelf point becomes N points one item height
-// apart, bottom first, each with a small seeded twist as the fourth number (yaw, degrees, store-relative).
-// LF_StoreComponent stands only the bottom copy on the board and keeps the others at their height above it.
-export const PILE_TWIST = 8;
-export function pilePoints(slots, stack, height, seed) {
-  const out = [];
-  slots.forEach((p, i) => {
-    for (let k = 0; k < stack; k++) {
-      const u = parseInt(hex16(`${seed}|pile|${i}|${k}`).slice(0, 8), 16) / 0xffffffff;
-      out.push([p[0], +(p[1] + k * height).toFixed(3), p[2], +((u * 2 - 1) * PILE_TWIST).toFixed(1)]);
-    }
-  });
-  return out;
-}
-
 const REF = /^\{[0-9A-F]{16}\}Prefabs\/[^"]+\.et$/;
 const v3 = (a) => Array.isArray(a) && a.length === 3 && a.every((n) => Number.isFinite(n));
 const deg = (a) => +((((a % 360) + 540) % 360) - 180).toFixed(3);
@@ -263,15 +247,8 @@ export function storePlan(store, furnitureText, fixtures = FIXTURES, items = ITE
       }
     }
     if (!slots.length) problems.push(`${at}: no shelf points (pick and boards)`);
-    const stack = l.stack ?? 0;
-    let points = slots;
-    if (stack > 1) {
-      const tall = (l.boards || []).map((b) => data.boards[b]).find((b) => b.clear !== null && stack * item.size[1] > b.clear - AIR);
-      if (tall) problems.push(`${at}: a pile of ${stack} ${itemKey(l.item)} is ${num(stack * item.size[1])} m, over the ${num(tall.clear - AIR)} m under the board above (y ${tall.y})`);
-      points = pilePoints(slots, stack, item.size[1], l.item);
-    }
-    const max = l.max ?? points.length;
-    lines.push({ item: l.item, max, restock: l.restock ?? Math.max(1, Math.round(max / 6)), start: l.start ?? -1, slots: points, stack: stack > 1 ? stack : 0 });
+    const max = l.max ?? slots.length;
+    lines.push({ item: l.item, max, restock: l.restock ?? Math.max(1, Math.round(max / 6)), start: l.start ?? -1, slots });
   }
   const tills = children.filter((c) => c.name === (store.till || "CashierShop_01")).map((c) => [c.at[0], c.at[1] + TILL_CONTEXT_UP, c.at[2]].map((v) => +v.toFixed(3)));
   if (!tills.length && lines.length) problems.push(`the export placed no ${store.till || "CashierShop_01"} to pay at`);
@@ -305,7 +282,6 @@ export function storePrefab(slug, store, plan, buildingRef) {
     ...(l.start !== -1 ? [`     m_iStartStock ${l.start}`] : []),
     `     m_iRestockAmount ${l.restock}`,
     `     m_sSlots "${l.slots.map(vec).join(" | ")}"`,
-    ...(l.stack ? [`     m_iStack ${l.stack}`] : []),
     "    }",
   ]);
   // The shop's allowlist is the store's own lines. An empty list sells (and buys back) every priced

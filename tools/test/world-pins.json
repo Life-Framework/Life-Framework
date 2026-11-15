@@ -6,36 +6,8 @@
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
     {
-      "name": "e2e/narrative-loop",
-      "reason": "an end-to-end loop across town places, which are not in GridWorld"
-    },
-    {
-      "name": "e2e/pass1-write-save",
-      "reason": "an end-to-end loop across town places, which are not in GridWorld"
-    },
-    {
-      "name": "e2e/roadmap-contraband",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "e2e/roadmap-jailbreak",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "e2e/roadmap-jailing",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
       "name": "incident/holdup",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
-    },
-    {
-      "name": "org/registry",
-      "reason": "reads the town organization hideout and sign, which are not in GridWorld"
-    },
-    {
-      "name": "organizations/test-org-sign",
-      "reason": "reads the town organization hideout and sign, which are not in GridWorld"
     },
     {
       "name": "persist/store-stock",
@@ -50,44 +22,12 @@
       "reason": "reads a town place found through LF_Places, which is not in GridWorld"
     },
     {
-      "name": "places/org-hideout",
-      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
-    },
-    {
       "name": "playtest/offers",
-      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
-    },
-    {
-      "name": "prefab/moved-path",
       "reason": "reads a town place found through LF_Places, which is not in GridWorld"
     },
     {
       "name": "quests/arrival-chain",
       "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
-    },
-    {
-      "name": "roadmap/contraband",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/escort",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/hideout",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/jailbreak",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/jailing",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/jailing-save",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
     },
     {
       "name": "security/quest-turnin-takes-items",
@@ -103,14 +43,6 @@
     },
     {
       "name": "shop/refusal-reasons",
-      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
-    },
-    {
-      "name": "signs/coverage",
-      "reason": "reads the town signs, which are not in GridWorld"
-    },
-    {
-      "name": "store/folded-stack",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
     {
@@ -130,20 +62,8 @@
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
     {
-      "name": "systems/world-places",
-      "reason": "checks town world gates and places, which are not in GridWorld"
-    },
-    {
       "name": "townboard/board-world",
       "reason": "reads the town board and the post office sign through LF_Places, which are not in GridWorld"
-    },
-    {
-      "name": "vehicles/key-inventory",
-      "reason": "reads the town test cars, which are not in GridWorld"
-    },
-    {
-      "name": "vehicles/test-cars",
-      "reason": "reads the town test cars, which are not in GridWorld"
     }
   ]
 }
