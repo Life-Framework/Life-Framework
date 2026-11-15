@@ -12,7 +12,8 @@ class LF_Test_StaffRelay : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		LF_StaffRelay.ResetStatics();
+		// The game mode installs the relay at start: drop that one (subscriber and tick) so the test has the only one.
+		LF_StaffRelay.Uninstall();
 		ref array<string> sink = new array<string>();
 		LF_StaffWebhook.SetCaptureForTest(sink);
 		ctx.True(LF_StaffRelay.EnsureSubscribed(), "the relay subscribes to both events");
