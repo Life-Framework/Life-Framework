@@ -13,8 +13,8 @@ checkout.
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host ready` | First, and again at the end: one line per check (build gate, staff roster, backup age, last restore drill, disk), then `GO`. `NO-GO` names the failed checks and means do not open; exit 1. |
 | `tools\cli host config apply` | Host stopped. Writes the profile's `config.json` and `server.json` from `server/flagship/` and the host's `secrets.json`; never prints a secret; with no `secrets.json` it warns that the join password is empty. A new host needs it once, and after any config change. `--dry-run` shows what it would write. Until it has run there is no `server.json`, so `host players` times out and `host ready` says NO-GO. |
+| `tools\cli host ready` | After `host config apply`, and again at the end: one line per check (build gate, staff roster, backup age, last restore drill, disk), then `GO`. `NO-GO` names the failed checks and means do not open; exit 1. |
 | `tools\cli host drift` | Exit 0: the live `config.json` and `server.json` match `server/flagship/`. A changed field is named; exit 1. |
 | `tools\cli host preflight` | After a game update only: it backs up, boots the new build and passes. A failure restores the backup; read [game updates](game-updates.md). |
 | `tools\cli host backup` | `host: backed up saves -> <folder>`. |
