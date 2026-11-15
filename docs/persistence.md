@@ -140,6 +140,8 @@ What each payload stores (audit, 2026-11-14):
 | wantedlooks, idcards | look | prefab GUIDs (`LF_WantedLook`) | no: a missing GUID only drops that piece of the portrait |
 | organizations, orgranks | rank id | organization-local rank id | no: made by players, not pack content |
 
+A car's colour is its spawn prefab (epic #1826): the colour prefab is the `vehicles` record's `m_sSpawnPrefab`, so colours add no field and the save version stays 34. A respawn whose saved colour no longer loads falls back to the model's base colour.
+
 Apart from the police rank, no payload stores pack content by index or by a bare path.
 
 ## Layer 1: data (serializers and config)
