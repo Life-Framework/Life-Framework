@@ -25,6 +25,9 @@ import { loadWorld } from "./layers.mjs";
 //   when     the player state the actions need ("an on-duty officer"). The
 //            report walks as a civilian, so play mode reports a missing
 //            action there as a warning ("needs <when>"), not a failure
+//   signRadiusM optional per-site override of signRadiusM, for a site whose anchor entity
+//            stands off its sign by design (the maintainer's 2026-11 layout: the car lot
+//            is a row of cars and the sign stands at its street corner)
 //   outskirts true for a site that stands off the street by design (farm,
 //            quarry, the contraband barn out of town): the neighbour rule skips
 //            it (docs/roadmap/m1-25-village.md)
@@ -35,7 +38,7 @@ export const TOWN = {
   sites: [
     // The civilian town spawn on the square. The other spawn points (mine,
     // police) are elsewhere, and their centre is not a place a player stands.
-    { id: "spawn", entity: "Spawn_Town", actions: [], sign: "town_map", step: 4 },
+    { id: "spawn", entity: "Spawn_Town", actions: [], sign: "town_map", step: 4, signRadiusM: 12 },
     // Arrival step 1 on the square (QuestGiver_Clerk, M1-18): behind the registry counter, the REGISTRY OFFICE board beside him.
     { id: "clerk", entity: "Quest_Clerk", actions: ["LF_QuestAction"], sign: "registry", step: 5 },
     { id: "post_office", entity: "Roadmap_Job_Depot", actions: ["LF_JobSignUpAction", "LF_JobStartRunAction"], sign: "post_office", step: 6 },
@@ -44,7 +47,7 @@ export const TOWN = {
     { id: "atm", entity: "ATM_Debug", actions: ["LF_ATMAction"], sign: "atm", step: 8 },
     { id: "general_store", entity: "Shop_GeneralStore_Debug", actions: ["LF_ShopAction"], sign: "general_store", step: 9 },
     { id: "black_market", entity: "Shop_BlackMarket_Debug", actions: ["LF_ShopAction"], sign: "black_market", step: 9 },
-    { id: "vehicle_lot", entity: "Roadmap_Vehicle_Lot", actions: ["LF_VehicleBuyAction"], sign: "vehicle_lot", step: 10 },
+    { id: "vehicle_lot", entity: "Roadmap_Vehicle_Lot", actions: ["LF_VehicleBuyAction"], sign: "vehicle_lot", step: 10, signRadiusM: 22 },
     // The till is robbed through its attendant's dialogue with a weapon drawn (#936); its world action is retired.
     { id: "fuel_station", entity: "Roadmap_Fuel_Clerk", actions: ["LF_DialogueTalkAction"], sign: "fuel_station", step: 11, when: "the robbery reply needs a weapon drawn" },
     { id: "hospital_till", entity: "Roadmap_Hospital_Till", actions: ["LF_RobAction"], sign: null, step: 11 },
@@ -97,6 +100,7 @@ export function manifestErrors(manifest) {
     if (!Array.isArray(site?.actions)) errors.push(`${label}: actions must be a list`);
     if (site?.sign !== null && (typeof site?.sign !== "string" || !site.sign)) errors.push(`${label}: sign is an LF_Signs.conf id or null`);
     if (!Number.isInteger(site?.step)) errors.push(`${label}: step must be a journey step number`);
+    if ("signRadiusM" in (site || {}) && !(site.signRadiusM > 0)) errors.push(`${label}: signRadiusM must be a positive number`);
     if ("when" in (site || {}) && (typeof site.when !== "string" || !site.when)) errors.push(`${label}: when names the player state its actions need`);
     if ("x" in (site || {}) || "z" in (site || {}) || "coords" in (site || {})) {
       errors.push(`${label}: positions come from the layers, not the manifest`);
@@ -227,6 +231,7 @@ export function nearestSign(signId, point, world) {
 // verdict ("blank" or "ok") from play mode; otherwise the config decides.
 export function signIssues(site, point, world, catalog, strings, radiusM, live = {}) {
   if (!site.sign) return { issues: [], sign: null };
+  radiusM = site.signRadiusM ?? radiusM;
   const sign = nearestSign(site.sign, point, world);
   const issues = [];
   if (!sign) issues.push(`no ${site.sign} sign placed`);

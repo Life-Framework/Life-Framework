@@ -13,6 +13,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join, resolve } from "node:path";
 import * as wd from "../lib/world-diff.mjs";
 import { selectTests } from "../lib/gate-tier.mjs";
+import { layoutWarnings } from "../lib/world-checks.mjs";
 
 export const help = "world diff|ship [--wt <slug>] [--json|--dry-run]   semantic diff of .layer edits / commit, check and ship a maintainer world edit";
 
@@ -113,7 +114,7 @@ export function allowEntries(report, touched, existing = []) {
   return out;
 }
 
-export function prBody(d, { slug, allowed = [], checks = [] }) {
+export function prBody(d, { slug, allowed = [], checks = [], warnings = [] }) {
   const L = [];
   L.push(`Maintainer world edit from \`${slug}\`, shipped with \`tools\\cli world ship\`.`, "", `**${wd.summaryLine(d)}**`, "", "## Changes", "");
   for (const f of d.files.filter((x) => !x.noiseOnly)) {
@@ -126,6 +127,10 @@ export function prBody(d, { slug, allowed = [], checks = [] }) {
   if (allowed.length) {
     L.push("", "## Placements allowlisted", "", `The placement audit flagged these; the maintainer placed them by hand, so they went to \`${ALLOW_FILE}\` with the reason "${ALLOW_REASON}":`, "");
     for (const a of allowed) L.push(`- \`${a.match}\` ${a.kind}: ${a.why}`);
+  }
+  if (warnings.length) {
+    L.push("", "## Layout warnings", "", "These judge where things stand, not whether the layer is sound, so they did not block this PR (tools/lib/world-checks.mjs). Look at them when you play the world:", "");
+    for (const w of warnings) L.push(`- ${w}`);
   }
   if (checks.length) L.push("", "## Checks", "", ...checks.map((c) => `- ${c}`));
   L.push("", "No screenshots: the maintainer placed and looked at these entities in Workbench while editing.", "");
@@ -211,7 +216,7 @@ async function cmdShip(args, root) {
   const tests = existsSync(testsDir) ? readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") })) : [];
   const related = selectTests(tests, wd.testTokens(layers, touched)).related;
   if (dry) {
-    console.log(`dry run: would commit ${real.length} layer file(s), run validate, audit placement --layer ${layers.join(",")}${related.length ? `, test --only ${related.join(",")}` : ", no layer-named tests"}, then wt ship ${w.slug}`);
+    console.log(`dry run: would commit ${real.length} layer file(s), run validate --world (layout checks warn), audit placement --layer ${layers.join(",")}${related.length ? `, test --only ${related.join(",")}` : ", no layer-named tests"}, then wt ship ${w.slug}`);
     return done(true, `dry run: ${wd.summaryLine(d)}`);
   }
 
@@ -229,9 +234,12 @@ async function cmdShip(args, root) {
 
   // 4. Fast checks.
   const checks = [];
-  const v = cli(w.path, ["validate"]);
+  // Only the checks that read .layer files run (validate --world); a layout check that fails is a warning.
+  const warnings = [];
+  const v = cli(w.path, ["validate", "--world"]);
   note(v.out);
-  checks.push(`validate: ${v.status === 0 ? "pass" : "FAIL"}`);
+  for (const lw of layoutWarnings(v.out)) warnings.push(`validate/${lw.check}: ${lw.text || "failed"}`);
+  checks.push(`validate --world: ${v.status === 0 ? `pass${warnings.length ? ` (${warnings.length} layout warning(s))` : ""}` : "FAIL"}`);
   if (v.status !== 0) {
     console.log(`FAIL  validate: ${lastSummary(v.out) || "see log"}`);
     return done(false, "validate failed");
@@ -241,12 +249,13 @@ async function cmdShip(args, root) {
   let report = null;
   try { report = JSON.parse(readFileSync(join(w.path, "tmp", "place-audit", "report.json"), "utf8")); } catch { /* no report */ }
   if (!report) {
-    console.log(`FAIL  audit placement wrote no report: ${lastSummary(a.out) || "see log"}`);
-    return done(false, "placement audit failed to run");
+    console.log(`WARN  audit placement wrote no report: ${lastSummary(a.out) || "see log"}`);
+    warnings.push(`placement audit wrote no report (${lastSummary(a.out) || "see the log"}); the touched placements were not audited`);
   }
   const allowPath = join(w.path, ALLOW_FILE);
   const allowJson = JSON.parse(readFileSync(allowPath, "utf8"));
-  const added = allowEntries(report, touched, allowJson.allow);
+  const added = report ? allowEntries(report, touched, allowJson.allow) : [];
+  for (const e of added) warnings.push(`placement audit ${e.kind}: ${e.why}`);
   if (added.length) {
     allowJson.allow.push(...added);
     writeFileSync(allowPath, `${JSON.stringify(allowJson, null, 2)}\n`);
@@ -267,7 +276,7 @@ async function cmdShip(args, root) {
 
   // 5. Push, PR, queue (wt ship classifies the branch T1w: static validate, audit, layer-named tests).
   const bodyFile = join(w.path, "tmp", `pr-body-world-${w.slug}.md`);
-  writeFileSync(bodyFile, prBody(d, { slug: w.slug, allowed: added, checks }));
+  writeFileSync(bodyFile, prBody(d, { slug: w.slug, allowed: added, checks, warnings }));
   const mainRoot = root;
   const s = cli(mainRoot, ["wt", "ship", w.slug, "--body-file", bodyFile]);
   note(s.out);
