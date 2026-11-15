@@ -56,6 +56,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
+import { boxMode, missingForHostStart } from "./lib/host-box.mjs";
 import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
@@ -826,6 +827,7 @@ function serverExe() {
 function guardHeavy(root, command, force) {
   if (!wt.isMainCheckout(root) || force) return;
   console.log(`REFUSE  '${command}' runs in the main checkout, which is the world-editor copy.`);
+  if (command.startsWith("host ")) console.log("        a rented box (a plain clone) is not an editor copy: run 'tools\\cli host box on' once, or set LF_HOST_BOX=1 (docs/ops/rented-box.md)");
   console.log("        create a worktree first:  tools\\cli wt new <feature>");
   console.log(`        then run from the worktree, or 'cli wt ${command} <slug>', or pass --force to override.`);
   throw new Error("main-checkout guard");
@@ -1757,7 +1759,7 @@ function cmdHostStatus(dir) {
 }
 
 function cmdHostStart(root, dir, opts) {
-  guardHeavy(root, "host start", opts.force);
+  guardHeavy(root, "host start", opts.force || boxMode(root).on);
   const p = host.hostPaths(dir);
   const s = host.readHostState(dir);
   if (s && host.pidAlive(s.pid)) {
@@ -1765,8 +1767,10 @@ function cmdHostStart(root, dir, opts) {
     return 1;
   }
   const exe = serverExe();
-  if (!existsSync(exe)) {
-    console.log(`FAIL  dedicated server not found: ${exe}`);
+  const missing = missingForHostStart(root, { exe });
+  if (missing.length) {
+    console.log(`FAIL  host start: this clone cannot start the server, missing ${missing.join("; and ")}`);
+    console.log("      'tools\\cli host box check' lists them again (docs/ops/rented-box.md step 4)");
     return 1;
   }
   // #980: the first boot on a new game build goes through `host preflight`.
