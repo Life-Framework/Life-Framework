@@ -66,7 +66,8 @@ export async function main(args, ctx) {
     const pool = await import("../../remote/pool.mjs");
     slot = await pool.acquireSlot(root, { mode: "any", purpose: "drill", priority: "low" });
     if (slot.local) {
-      const r = runDrillHere({ root, scratchDir: scratch, timeoutSec });
+      // Hand the lane this run holds to the host it boots; a lane inherited from a caller is already in the env.
+      const r = runDrillHere({ root, scratchDir: scratch, timeoutSec, slotEnv: slot.token && !slot.inherited ? `${slot.lockName}:${slot.token}` : "" });
       // The scratch profile is deleted below; keep the console log the verdict came from.
       let kept = r.log;
       if (r.log && existsSync(r.log)) {
