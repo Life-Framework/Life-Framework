@@ -1,0 +1,56 @@
+{
+  "about": "#1143: one shopper talks to the shopkeeper, picks a torch, crackers and a water off the shelves with the F key, pays at a till and walks out clean, then picks a field dressing and walks out unpaid: the shopkeeper's line, the alarm on the shop-front box, dispatch and a wanted level. Points are building space (tools/buildings/pipeline/scenario.mjs). Stock across a restart stays `node agent-box/session.mjs restart` after this, then the `restored` line.",
+  "session": { "profile": "full", "mission": "playtest" },
+  "steps": [
+    { "shot": "warmup", "look": [0, 3.1, -7], "from": [-8, -1.5, -9], "wait": 6000, "why": "the first frames after a teleport draw the building before it streams in" },
+    { "shot": "street", "look": [0, 3.1, -7], "from": [-8, -1.5, -9] },
+    { "shot": "alarm_box", "look": [-2.4, 2.3, -7], "from": [1.5, -2.2, -5] },
+    { "shot": "hall", "look": [-1.5, 1.0, 2.5], "from": [1.5, -0.9, -9] },
+    { "shot": "fruit", "look": [-5.2, 0.9, -1.5], "from": [1.8, -0.8, -2.2] },
+    { "shot": "dry_goods", "look": [0.8, 0.9, -1.5], "from": [1.6, -0.8, -2.2] },
+    { "shot": "cooler", "look": [-8.0, 0.75, -3.6], "from": [1.6, -0.65, 0.6] },
+
+    { "shot": "shopkeeper", "look": [7.83, 1.4, 0.35], "from": [-1.0, -1.3, 0] },
+    { "do": { "verb": "use", "className": "LF_DialogueTalkAction", "entityName": "$entity_Shopkeeper" }, "wait": 2500, "why": "talking to the shopkeeper" },
+    { "do": { "verb": "dialogue", "arg": "", "value": "" }, "expect": "open node=greet", "why": "the shopkeeper's conversation opens on the greeting" },
+    { "ui": "talk" },
+    { "do": { "verb": "dialogue", "arg": "pick", "value": "0" }, "wait": 3000 },
+    { "do": { "verb": "dialogue", "arg": "", "value": "" }, "expect": "node=pay", "why": "\"How do I pay?\" is answered" },
+    { "ui": "talk_pay" },
+    { "do": { "verb": "dialogue", "arg": "skip", "value": "" }, "wait": 1500 },
+    { "do": { "verb": "dialogue", "arg": "pick", "value": "2" }, "wait": 3000 },
+    { "do": { "verb": "dialogue", "arg": "skip", "value": "" }, "wait": 1500 },
+    { "do": { "verb": "dialogue", "arg": "", "value": "" }, "expect": "^closed", "why": "the conversation ends on Goodbye" },
+
+    { "state": "before" },
+    { "shot": "take_torch", "look": [3.29, 0.9, -0.3], "from": [-0.8, -0.8, 0] },
+    { "pickup": "Flashlight_Soviet_01", "expect": "took item=\\S*Flashlight_Soviet_01", "why": "the F key takes a torch off the gondola by the tills" },
+    { "shot": "take_crackers", "look": [0.75, 0.9, -2.8], "from": [0.75, -0.8, 0] },
+    { "pickup": "LF_Crackers", "expect": "took item=\\S*LF_Crackers", "why": "the F key takes crackers off the third gondola" },
+    { "shot": "take_water", "look": [-8.04, 0.8, -5.5], "from": [1.3, -0.7, 0] },
+    { "pickup": "WaterBottle", "expect": "took item=\\S*WaterBottle", "why": "the F key takes a water out of the cooler" },
+    { "shot": "till", "look": [8.174, 1.14, -5.394], "from": [-1.1, -1.04, 0] },
+    { "do": { "verb": "use", "className": "LF_StoreTillAction", "entityName": "$entity" }, "wait": 1500, "why": "paying at the till" },
+    { "state": "paid" },
+    { "shot": "out_clean", "look": [0, 1.4, -10.5], "from": [0, -1.3, -2], "wait": 3000 },
+    { "state": "clean" },
+
+    { "shot": "take_dressing", "look": [3.29, 0.9, -2.8], "from": [-0.9, -0.8, 0] },
+    { "pickup": "FieldDressing_US_01", "expect": "took item=\\S*FieldDressing_US_01", "why": "the F key takes a field dressing" },
+    { "shot": "out_thief", "look": [0, 1.4, -10.5], "from": [0, -1.3, -2], "wait": 3000 },
+    { "state": "caught" },
+    { "shot": "alarm", "look": [-2.4, 2.3, -7], "from": [1.5, -2.2, -5] }
+  ],
+  "checks": [
+    { "lt": ["paid.cash", "before.cash"], "why": "the till took the money for the goods" },
+    { "eq": ["clean.wanted", 0], "why": "walking out after paying sets no wanted level" },
+    { "in": ["clean.alarm", ["", "none"]], "why": "walking out after paying sounds no alarm" },
+    { "gt": ["caught.wanted", 0], "why": "walking out unpaid sets a wanted level" }
+  ],
+  "log": [
+    { "re": "everon_supermarket: \\S+ paid \\d+ for 3 item\\(s\\)", "why": "the till charged for the three picked items" },
+    { "re": "everon_supermarket: \\S+ walked out with 1 unpaid item", "why": "the walk-out with the dressing was caught" },
+    { "re": "everon_supermarket: 1 member\\(s\\) of staff called", "why": "the shopkeeper reacted to the walk-out" },
+    { "last": "alarm sounding at <([^>]+)>", "near": [-2.4, 2.3, -7], "within": 1.5, "why": "the alarm sounds on the shop-front box" }
+  ]
+}
