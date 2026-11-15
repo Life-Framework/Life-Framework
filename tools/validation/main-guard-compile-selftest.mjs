@@ -67,6 +67,10 @@ const HEAD = "d".repeat(40);
   const card = mg.fixCard(town, "suite", "LF_Test_X", "log.txt");
   check(/#1867/.test(card.title) && /maintainer/.test(card.body), "fix card names the PR and why");
 }
+// 3b. Exit 1 without the compiler's words (2026-11-15: 11 s on lf-cloud, a false red that bisected to an already
+// fixed PR) is no verdict; with "does not compile" it is red.
+check(mg.compileVerdict(1, "main guard compile: lf-cloud finished (exit 1) in 11 s") === "env", "exit 1 without a compile error: env");
+check(mg.compileVerdict(1, "validate-scripts: FAILED - Enforce Script does not compile [LifeFramework]") === "fail", "exit 1 with a compile error: fail");
 // 4b. A revert runs with every merge driver set to keep ours (they fail under git revert; #1847 and #1856 were
 // left unreverted that way), then regenerates the generated files.
 {
