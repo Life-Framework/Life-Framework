@@ -1,0 +1,43 @@
+{
+  "note": "Local times (the backup folder stamps are local). Three sessions: S1 ends on a stop, S2 on a crash, S3 on a stop and is followed by a wipe. The 99-player perf row sits outside every session and must not count.",
+  "backups": [
+    "2026-11-10_18-00-00-start",
+    "2026-11-10_18-30-00-manual",
+    "2026-11-10_20-00-00-stop",
+    "2026-11-11_18-00-00-start",
+    "2026-11-11_19-10-00-crash",
+    "2026-11-11_19-12-00-start",
+    "2026-11-11_22-00-00-stop",
+    "2026-11-12_09-00-00-wipe",
+    "2026-11-12_09-00-00-wiped-saves"
+  ],
+  "wipes": [
+    { "at": "2026-11-12_09-00-00", "backup": "2026-11-12_09-00-00-wipe", "aside": "2026-11-12_09-00-00-wiped-saves" }
+  ],
+  "perf": [
+    { "at": "2026-11-10_18-45-00", "players": "12" },
+    { "at": "2026-11-10_19-15-00", "players": "24" },
+    { "at": "2026-11-10_19-45-00", "players": "18" },
+    { "at": "2026-11-11_12-00-00", "players": "99" },
+    { "at": "2026-11-11_18-30-00", "players": "31" },
+    { "at": "2026-11-11_19-00-00", "players": "29" },
+    { "at": "2026-11-11_20-00-00", "players": "" }
+  ],
+  "expected": [
+    {
+      "start": "2026-11-10 18:00:00", "end": "2026-11-10 20:00:00", "minutes": 120, "ended": "stop", "crashes": 0,
+      "backups": ["2026-11-10_18-00-00-start", "2026-11-10_18-30-00-manual", "2026-11-10_20-00-00-stop"],
+      "wipes": [], "peakPlayers": 24
+    },
+    {
+      "start": "2026-11-11 18:00:00", "end": "2026-11-11 19:10:00", "minutes": 70, "ended": "crash", "crashes": 1,
+      "backups": ["2026-11-11_18-00-00-start", "2026-11-11_19-10-00-crash"],
+      "wipes": [], "peakPlayers": 31
+    },
+    {
+      "start": "2026-11-11 19:12:00", "end": "2026-11-11 22:00:00", "minutes": 168, "ended": "stop", "crashes": 0,
+      "backups": ["2026-11-11_19-12-00-start", "2026-11-11_22-00-00-stop"],
+      "wipes": [{ "at": "2026-11-12 09:00:00", "backup": "2026-11-12_09-00-00-wipe" }], "peakPlayers": null
+    }
+  ]
+}
