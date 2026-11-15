@@ -3200,10 +3200,8 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   prepareResourceDatabase(root, opts);
   // --shards N|auto: the registry split into balanced slices, each its own pool job, run together (tools/lib/test-shards.mjs).
   if (opts.shards !== undefined && !only.length && !opts.world && tier === "all") {
-    // A pass the cache already holds (identical inputs) is not run again.
-    const wanted = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
-    const specs = wanted.filter((sp) => !passCacheCheck(root, { tier, only, opts: { ...opts, coreOnly: sp.coreOnly, red } })?.hit);
-    if (!specs.length) return 0;
+    // A pass the cache already holds (identical inputs) is not run again (runShardedTests checks each pass).
+    const specs = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
     const r = await runShardedTests(root, specs, opts);
     if (r !== null) return r;
   }
@@ -3254,16 +3252,20 @@ function passCacheCheck(root, { tier, only, opts }) {
   }
   const key = testCache.cacheKey(inputs);
   const mainRoot = wt.mainRootOf(root);
-  const rec = testCache.lookup(mainRoot, key);
-  if (!rec) return { hit: false, key, inputs, mainRoot };
-  console.log(testCache.reuseLine(rec));
+  // The exact key, or (for a slim gate's LOGIC need) the agent's own `--tier all` pass of this very tree.
+  const found = testCache.lookupCovering(mainRoot, inputs);
+  if (!found) return { hit: false, key, inputs, mainRoot };
+  const { rec } = found;
+  const as = found.via === "exact" ? null : tier;
+  console.log(testCache.reuseNote(rec, found.key, as));
+  console.log(testCache.reuseLine({ ...rec, key: found.key }));
   try {
     const dir = join(root, "tmp", "test-results");
     mkdirSync(dir, { recursive: true });
     const sha = wt.git(root, ["rev-parse", "HEAD"]).stdout.trim();
-    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha)) + "\n", "utf8");
+    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha, as)) + "\n", "utf8");
   } catch {}
-  return { hit: true, key, inputs, mainRoot };
+  return { hit: true, key: found.key, inputs, mainRoot };
 }
 
 function passCacheStore(root, cache, { tier, only, opts, run }) {
@@ -3281,6 +3283,9 @@ function passCacheStore(root, cache, { tier, only, opts, run }) {
     worktree: pool.slugFor(root),
     consoleLog: run.consoleLog ?? "",
     inputs: cache.inputs,
+    // who ran it: a queue gate (LF_SHIP_QUEUE_JOB) or an agent by hand; a gate logs "reused agent pass" for the latter
+    by: process.env.LF_SHIP_QUEUE_JOB ? "gate" : "agent",
+    red: false,
   };
   if (testCache.store(cache.mainRoot, cache.key, rec)) console.log(`test: pass cached (key ${cache.key.slice(0, 12)}); an identical run reuses it`);
 }
@@ -3434,6 +3439,16 @@ function runShardChild(root, job) {
 // `test --shards` and `ci`: every pass (normal, core-only) split into slices, all slices running at once.
 // Returns the exit code, or null when there is nothing to gain (one slice, one pass): the caller runs as before.
 async function runShardedTests(root, specs, opts) {
+  // A pass the cache holds for this exact tree (the agent's own `--tier all` run, or an earlier gate) is not run
+  // again; each pass that misses keeps its key to be stored under once it passes.
+  const cacheOf = new Map();
+  specs = specs.filter((sp) => {
+    const c = passCacheCheck(root, { tier: "all", only: [], opts: { ...opts, coreOnly: sp.coreOnly } });
+    if (c?.hit) return false;
+    if (c) cacheOf.set(!!sp.coreOnly, c);
+    return true;
+  });
+  if (!specs.length) return 0;
   const tests = shards.readRegistry(root);
   if (!tests.length) return null;
   let lanes = [];
@@ -3472,6 +3487,8 @@ async function runShardedTests(root, specs, opts) {
     console.log(`=== tests ${pass.name}${pass.coreOnly ? " (core only)" : ""}, ${merged.shards} shard(s) ===`);
     for (const l of shards.mergedLines(merged, { tier, label: pass.name })) console.log(l);
     if (merged.code === 0) stampMergedSuite(root, tier, merged);
+    const cache = cacheOf.get(!!pass.coreOnly);
+    if (merged.code === 0 && cache?.key) passCacheStore(root, cache, { tier: "all", only: [], opts: { ...opts, coreOnly: pass.coreOnly }, run: { passed: merged.passed, total: merged.total, machine: null, consoleLog: "" } });
     if (merged.code !== 0 && code === 0) code = merged.code;
   }
   console.log(`shards: ${((Date.now() - t0) / 1000).toFixed(1)} s wall for ${passes.length} pass(es)`);
@@ -3553,6 +3570,14 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 // On a town-maintainer-* branch the ci placement audit and the layout checks are warn-only, whatever the gate tier
 // (docs/worktrees.md "Maintainer world edits"): they run, print WARN, and record their findings in
 // tmp/gate-warnings.json, which the ship queue lists in the PR body. Any other branch gets the plain checks.
+// The test sources ({ file, text }) that name an assertion's owner when a transcript has no FAIL header.
+function sourceTests(root) {
+  const dir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  return () => {
+    try { return readdirSync(dir).filter((f) => /^LF_Test_w+.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
+  };
+}
+
 function maintainerGate(root, opts = {}) {
   const branch = process.env.GITHUB_HEAD_REF || wt.currentBranch(root) || "";
   const on = worldChecks.MAINTAINER_BRANCH.test(branch);
@@ -3561,6 +3586,8 @@ function maintainerGate(root, opts = {}) {
   return {
     on,
     audit: gateWarnings.demotePlacement(branch, (a) => placementAudit(root, a, opts), record),
+    // A failing test is a warning too, at every tier (a compile error or a run with no SUMMARY still blocks).
+    test: (run, fallbackTests = []) => gateWarnings.demoteTests(branch, run, record, { fallbackTests, tests: sourceTests(root) })(),
     validate: async (o = {}) => {
       if (!on) return cmdRunArea("validate", root, o);
       const { code, text } = await gateWarnings.captureStdout(() => cmdRunArea("validate", root, o));
@@ -3595,17 +3622,18 @@ async function cmdCi(root = ROOT, opts = {}) {
       return v !== 0 || g !== 0 ? 1 : 0;
     }],
     // Both passes at once, each split over the free pool lanes (`--shards 1` runs them one after the other, whole).
-    ...(opts.shards !== undefined && String(opts.shards) !== "1" ? [["test (sharded)", async () => {
+    // maint.test: a failing test is a warning on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits").
+    ...(opts.shards !== undefined && String(opts.shards) !== "1" ? [["test (sharded)", () => maint.test(async () => {
       const core = launchAddons(root).length > 1 && !opts.skipCoreOnly;
       ensureResourceDatabase(root);
       const r = await runShardedTests(root, [{ coreOnly: false }, ...(core ? [{ coreOnly: true }] : [])], opts);
       if (r !== null) return r;
       const a = await cmdTest(true, "all", root, { ...opts, shards: undefined });
       return core ? (await cmdTest(true, "all", root, { ...opts, shards: undefined, coreOnly: true })) || a : a;
-    }]] : [
-      ["test", () => cmdTest(true, "all", root, opts)],
+    })]] : [
+      ["test", () => maint.test(() => cmdTest(true, "all", root, opts))],
       // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
-      ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
+      ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => maint.test(() => cmdTest(true, "all", root, { ...opts, coreOnly: true }))]] : []),
     ]),
     // After the suite: a branch that moved or added world props must pass the placement audit. It
     // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
@@ -3641,7 +3669,7 @@ async function ciSlim(root, opts = {}, maint = maintainerGate(root, opts)) {
       const g = await gate;
       return v !== 0 || g !== 0 ? 1 : 0;
     }],
-    ["test (LOGIC tier)", () => cmdTest(true, "fast", root, { ...opts, shards: undefined })],
+    ["test (LOGIC tier)", () => maint.test(() => cmdTest(true, "fast", root, { ...opts, shards: undefined }))],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -3680,7 +3708,7 @@ async function ciDataOnly(root, c, opts = {}, maint = maintainerGate(root, opts)
     ["validate (static)", () => maint.validate()],
     ["config harness (static)", async () => (await import("./commands/config-gate.mjs")).runStatic(root)],
     ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), maint.audit)],
-    ["test (T1: LOGIC + related)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") })],
+    ["test (T1: LOGIC + related)", () => maint.test(() => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") }), classes)],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
