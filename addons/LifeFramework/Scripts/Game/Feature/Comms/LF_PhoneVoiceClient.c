@@ -331,3 +331,16 @@ class LF_PhoneVoiceClient
 		return string.Format("voice=%1 call=%2 entry=%3 radio=%4 txSet=%5 txNow=%6 captures=%7/%8", s_sState, s_iCallId, active, radio, s_iTransmitSets, tx, s_iCapturesOnLine, s_iCaptures) + string.Format(" receives=%1/%2", s_iReceivesOnLine, s_iReceives);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_PhoneVoiceClient");
+		if (apply)
+			LF_PhoneVoiceClient.ResetStatics();
+	}
+}

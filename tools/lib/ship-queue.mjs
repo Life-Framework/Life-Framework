@@ -32,11 +32,14 @@ const norm = (p) => String(p).replace(/\\/g, "/");
 // Prose under docs/ (docs/worktrees.md, docs/architecture/*.md ...). Two PRs that both edit one, or only
 // append to it, are not made to wait for each other: a text conflict shows at merge time (the worker's
 // merge of origin/<base>, then GitHub's mergeable state, then `prs heal`), and no gate result depends on it.
+// Every other markdown file too (Feature/<Area>/Feature.md, READMEs): the lf-markdown driver merges
+// rows both sides add, and nothing a gate runs reads them. #1852 waited for #1850 on Medic/Feature.md.
 export function docsText(path) {
-  return /^docs\/.+\.md$/i.test(norm(path));
+  return /\.md$/i.test(norm(path));
 }
 
-// The files two PRs both change, driver-merged files and docs/**/*.md left out.
+// The files two PRs both change, driver-merged files and markdown left out. Only real code or resource
+// overlaps serialize.
 export function overlap(a = [], b = []) {
   const skip = (p) => driverMerged(p) || docsText(p);
   const set = new Set(a.map(norm).filter((p) => !skip(p)));

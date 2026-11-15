@@ -147,6 +147,7 @@ for (const [path, driver] of [
   ["addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf", "lf-regen-localization"],
   ["addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c", "lf-regen-tests"],
   ["docs/features.md", "lf-markdown"],
+  ["docs/features/*.md", "lf-markdown"],
   ["docs/debug-log-triage.md", "lf-markdown"],
   ["tools/validation/enforce-lint-baseline.json", "lf-lint-baseline"],
   ["docs/asset-inventory.md", "lf-table-rows"],

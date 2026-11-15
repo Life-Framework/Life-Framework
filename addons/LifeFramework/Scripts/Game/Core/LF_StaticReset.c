@@ -6,6 +6,23 @@
 //! LF_PlayerAccountManager.Reset. It is NOT called at game start: placed breach targets, jail
 //! cells, garages, and spawn points register in their OnPostInit, which runs before the game
 //! mode starts; a start-time reset would wipe them.
+//!
+//! Nothing is listed here. Each class that owns statics registers its reset in its own file with a
+//! `modded class LF_StaticResetHooks` (the feature scaffold writes it; template in
+//! tools/lib/static-reset-hooks.mjs). A central list made every feature PR touch this file, so the
+//! ship queue ran them one after another; validate-registries.mjs rejects a call added here.
+//------------------------------------------------------------------------------------------------
+class LF_StaticResetHooks : Managed
+{
+	//------------------------------------------------------------------------------------------------
+	//! Every feature's modded override calls super.Run first, inserts its class name into done, and
+	//! resets its statics only when apply is true (apply false lists the hooks without running them:
+	//! LF_Test_StaticResetHooks).
+	void Run(notnull array<string> done, bool apply)
+	{
+	}
+}
+
 //------------------------------------------------------------------------------------------------
 class LF_StaticReset
 {
@@ -14,118 +31,21 @@ class LF_StaticReset
 	//------------------------------------------------------------------------------------------------
 	static void ResetAll()
 	{
-		LF_Places.ResetStatics();
-		LF_DayCycleSave.ResetStatics();
-		LF_PrefabSlots.ResetStatics();
-		LF_VehicleColoursConfig.Reload();
-		LF_SoundSlots.ResetStatics();
-		LF_Breach.ResetStatics();
-		LF_PlayerIdentity.ResetStatics();
-		LF_Lockpick.ResetStatics();
-		LF_WorkAnim.ResetStatics();
-		LF_Hotwire.ResetStatics();
-		LF_StolenVehicles.ResetStatics();
-		LF_Jail.ResetStatics();
-		LF_JailWork.ResetStatics();
-		LF_JailEscort.ResetStatics();
-		LF_Restraint.ResetStatics();
-		LF_Cuffing.ResetStatics();
-		LF_JailCellComponent.ResetStatics();
-		LF_JailArrestableComponent.ResetStatics();
-		LF_Contraband.Reset();
-		LF_PoliceRanks.ResetStatics();
-		LF_VehicleGarageComponent.ResetStatics();
-		LF_VehicleSpawnPointComponent.ResetStatics();
-		LF_QuantityComponent.ResetStatics();
-		LF_StorageSnapshot.ResetStatics();
-		LF_PersistentStorageComponent.ResetStatics();
-		LF_Progression.ResetStatics();
-		LF_Introductions.ResetStatics();
-		LF_KnownNames.ResetStatics();
-		LF_Dispatch.ResetStatics();
-		LF_Dialogue.ResetStatics();
-		LF_DialogueVoice.ResetStatics();
-		LF_DialogueScene.ResetStatics();
-		LF_RobHold.ResetStatics();
-		LF_RobHoldHud.ResetStatics();
-		LF_DialogueCamera.ResetStatics();
-		LF_EventBus.ResetStatics();
-		LF_ChainCatalog.ResetStatics();
-		LF_Downed.ResetStatics();
-		LF_NpcDamage.ResetStatics();
-		LF_BleedOut.ResetStatics();
-		LF_Carry.ResetStatics();
-		LF_BedDelivery.ResetStatics();
-		LF_FineTickets.ResetStatics();
-		LF_Ledger.ResetStatics();
-		LF_SaveStamp.ResetStatics();
-		LF_SaveIds.ResetStatics();
-		LF_CrimeRecord.ResetStatics();
-		LF_Playtime.ResetStatics();
-		LF_JobLevels.ResetStatics();
-		LF_JobLevelSync.ResetStatics();
-		LF_JobsConfig.Reload();
-		LF_FenceSerials.ResetStatics();
-		LF_WantedPosters.ResetStatics();
-		LF_WantedPosterFaces.ResetStatics();
-		LF_WantedPosterBoardComponent.ResetStatics();
-		LF_WantedPostersConfig.Reload();
-		LF_PhotoIdCardConfig.Reload();
-		LF_DisconnectConfig.Reload();
-		LF_EvidenceLocker.ResetStatics();
-		LF_Evidence.ResetStatics();
-		LF_Witness.ResetStatics();
-		LF_WitnessConfig.ResetStatics();
-		LF_EvidenceConfig.ResetStatics();
-		LF_IncidentLog.ResetStatics();
-		LF_ServiceCallsConfig.ResetStatics();
-		LF_Payphone.ResetStatics();
-		LF_ServiceCallDispatch.ResetStatics();
-		LF_ServiceBoard.ResetStatics();
-		LF_PhoneCalls.ResetStatics();
-		LF_PhoneCallBacks.ResetStatics();
-		LF_PhoneVoice.ResetStatics();
-		LF_PhoneVoiceClient.ResetStatics();
-		LF_PhoneConfig.ResetStatics();
-		LF_PhoneComponent.ResetStatics();
-		LF_PhoneLineComponent.ResetStatics();
-		LF_ChainSites.ResetStatics();
-		LF_ChainTrace.ResetStatics();
-		LF_ChainStations.ResetStatics();
-		LF_Stores.ResetStatics();
-		LF_OrgInvites.Reset();
-		LF_RateLimit.ResetStatics();
-		LF_SpikeStrips.ResetStatics();
-		LF_ConfigStream.Reset();
-		LF_DialogueOverrides.Reset();
-		LF_CaseBoard.ResetStatics();
-		LF_CaseBoardView.ResetStatics();
-		LF_CaseBoardComponent.ResetStatics();
-		LF_ScenePieces.ResetStatics();
-		LF_PhotoIdCard.ResetStatics();
-		LF_IdCardView.ResetStatics();
-		LF_IdCheck.ResetStatics();
-		LF_AssetAnim.ResetStatics();
-		LF_AssetAnimComponent.ResetStatics();
-		LF_DrillScene.ResetStatics();
-		LF_VaultDrill.ResetStatics();
-		LF_NpcStun.ResetStatics();
-		LF_WorldReset.ResetStatics();
-		LF_Roles.ResetStatics();
-		LF_DownedPatient.ResetStatics();
-		LF_PlacementGhost.ResetStatics();
-		LF_PlacementService.ResetStatics();
-		LF_Systems.ResetStatics();
-		LF_ItemCatalogue.ResetStatics();
-		LF_Cleanup.ResetStatics();
-		LF_Quiz.ResetStatics();
-		LF_PlacementAim.ResetStatics();
-		LF_ClipStamp.ResetStatics();
-		LF_StaffRelay.Uninstall();
-		LF_Session.ResetStatics();
-		LF_PoliceRosterNotice.ResetStatics();
+		array<string> done = new array<string>();
+		LF_StaticResetHooks hooks = new LF_StaticResetHooks();
+		hooks.Run(done, true);
 
 		s_iRuns = s_iRuns + 1;
-		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));
+		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1, %2 hooks)", s_iRuns, done.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The registered hooks by class name, without running them.
+	static array<string> Registered()
+	{
+		array<string> done = new array<string>();
+		LF_StaticResetHooks hooks = new LF_StaticResetHooks();
+		hooks.Run(done, false);
+		return done;
 	}
 }
