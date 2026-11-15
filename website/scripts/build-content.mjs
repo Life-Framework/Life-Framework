@@ -173,7 +173,7 @@ addRepoDoc("docs/credits.md", { slug: "credits", group: "Research & community", 
 const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
   .map((p) => toPosix(path.relative(repo, p)))
   .sort((a, b) => {
-    const order = ["docs/roadmap/README.md", "docs/roadmap/m1-playtest-town.md", "docs/roadmap/m2-outline.md", "docs/roadmap/m3-outline.md", "docs/roadmap/m4-outline.md"];
+    const order = ["docs/roadmap/README.md", "docs/roadmap/m1-playtest-town.md", "docs/roadmap/m2-outline.md", "docs/roadmap/m3-outline.md", "docs/roadmap/m2-5-outline.md", "docs/roadmap/m4-outline.md", "docs/roadmap/m5-outline.md"];
     const rank = (p) => (order.includes(p) ? order.indexOf(p) : order.length);
     const key = (p) => p.replace(/README\.md$/, ""); // a folder's README sorts before its files
     return rank(a) - rank(b) || key(a).localeCompare(key(b));
