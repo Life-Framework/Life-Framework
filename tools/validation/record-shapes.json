@@ -1,6 +1,6 @@
 {
   "saveVersion": 34,
-  "launched": false,
+  "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
     "survival": "LF_SurvivalStatsRecord",
