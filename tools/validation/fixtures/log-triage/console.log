@@ -1,0 +1,15 @@
+12:00:01.100  DEFAULT      : Engine start, not a triage line
+12:00:02.200  SCRIPT       : [LFDebug:Mining] spawned 5/5 ores
+12:00:03.300  SCRIPT (E): [LFDebug:Persistence] save point FAILED id=12
+12:00:04.400  SCRIPT (E): [LFDebug:Persistence] save point FAILED id=47
+12:00:05.500  SCRIPT (W): [LFDebug:Jobs] job request refused: player 3 is away from the workplace
+12:00:06.600  SCRIPT (W): [LFDebug:Jobs] job request refused: player 9 is away from the workplace
+12:00:08.800  GUI (W): Missing string ID = #LF_Fixture_Hello
+12:00:09.900  GUI (W): Not a triage line, GUI warnings are out of scope without a known row
+12:00:10.000  SCRIPT (E): [LFDebug:Siren] mode switch exploded at 0x7FF61A2B3C4D
+12:00:11.100  SCRIPT (E): Can't find variable 'm_Frobnicator' in class 'LF_FooComponent' (Scripts/Game/Feature/Foo/LF_FooComponent.c:88)
+12:00:12.200  SCRIPT (E): Can't find variable 'm_Frobnicator' in class 'LF_FooComponent' (Scripts/Game/Feature/Foo/LF_FooComponent.c:91)
+12:00:13.300  SCRIPT       : [LFDebug:Siren] mode -> default (index 0)
+12:00:14.400  Missing string ID = #LF_Fixture_Hello
+12:00:15.500  SCRIPT (E): VME: NULL pointer to instance in LF_BarComponent.OnInit (Scripts/Game/Feature/Bar/LF_BarComponent.c:140)
+12:00:16.600  SCRIPT (E): VME: NULL pointer to instance in LF_BarComponent.OnInit (Scripts/Game/Feature/Bar/LF_BarComponent.c:140)
