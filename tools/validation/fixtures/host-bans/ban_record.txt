@@ -1,0 +1,10 @@
+V1|BAN|aaaa-1111|1700000000|staff-1|0|3,7|Griefing the bank
+V1|BAN|bbbb-2222|1700000100|rcon|86400||Spam in chat
+this line is not a ban row
+V1|UNBAN|aaaa-1111|1700005000|staff-2|0||Appeal accepted
+V1|BAN|cccc-3333|1700006000|staff-1|3600|12|Cheating
+V1|BAN|aaaa-1111|1700009000|staff-1|0|21,22|Second offence
+V2|BAN|dddd-4444|1700010000|staff-1|0||A layout this reader does not know
+V1|BAN|eeee-5555|notatime|staff-1|0||Bad time
+
+V1|FREEZE|ffff-6666|1700011000|staff-1|0||Unknown action
