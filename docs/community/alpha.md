@@ -78,6 +78,9 @@ The alpha opens to the public when all four hold:
   At the start of the alpha only the maintainer is an administrator, so this item
   is not a condition for the first invites.
 
+The sheet the maintainer fills in on #555, with the evidence each line needs, is
+[the opening-gate checklist](opening-gate.md).
+
 When the four are checked, the maintainer removes the password and announces the
 opening on Discord. Progress is kept from that day, as in the wipe policy.
 

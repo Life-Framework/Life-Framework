@@ -1,0 +1,1 @@
+{ "file": "config.json", "set": { "restarts.warningMinutes": [30, 5, 1] }, "expect": "restarts.warningMinutes" }
