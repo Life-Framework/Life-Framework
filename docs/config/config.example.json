@@ -32,6 +32,13 @@
       }
     }
   },
+  "dayCycle": {
+    "mode": "vanilla",
+    "dayLengthMinutes": 1440,
+    "nightSpeed": 1,
+    "startHour": 8,
+    "clockOffsetMinutes": 0
+  },
   "disconnect": {
     "cuffedRule": "jail",
     "escortedCountsAsCuffed": true,
@@ -148,6 +155,14 @@
     "applyRejectCooldownHours": 72,
     "trialHours": 168
   },
+  "restarts": {
+    "times": [],
+    "warningMinutes": [
+      15,
+      5,
+      1
+    ]
+  },
   "rulesQuiz": {
     "enabled": true,
     "repeatOnConnect": false,
@@ -167,6 +182,9 @@
       }
     },
     "extraItemPrefabs": []
+  },
+  "staff": {
+    "webhookUrl": ""
   },
   "systems": {
     "switches": {}
