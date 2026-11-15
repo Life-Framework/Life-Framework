@@ -1,0 +1,41 @@
+{
+  "about": "Gun store: a buyer with cash and no firearm permit orders the M9 and its magazine at the gun counter and is refused, gets the permit, and the same order is paid; then takes binoculars off the wall shelf, pays at the till on the counter and walks out clean, then takes a compass and walks out unpaid: the clerk's line, the alarm on the shop-front bell box and a wanted level. Points are building space (tools/buildings/pipeline/scenario.mjs); the shop front faces +z.",
+  "session": { "profile": "full", "mission": "playtest" },
+  "steps": [
+    { "shot": "warmup", "look": [1.5, 3.0, 7.6], "from": [-6, -1.4, 9], "wait": 6000, "why": "the first frames after a teleport draw the building before it streams in" },
+    { "shot": "street", "look": [1.5, 3.0, 7.6], "from": [-6, -1.4, 9] },
+    { "shot": "sign", "look": [2.4, 3.3, 7.7], "from": [0, -1.6, 4.5] },
+    { "shot": "alarm_box", "look": [-0.9, 2.6, 7.65], "from": [1.2, -2.4, 4] },
+    { "shot": "shop", "look": [3.0, 1.0, -0.5], "from": [-0.6, 0.6, 4.0] },
+    { "shot": "rack_wall", "look": [5.5, 1.0, 0.6], "from": [-2.8, 0.6, 0] },
+
+    { "permit": { "licence": "FIREARM_PERMIT", "look": [3.0, 1.1, -0.5], "from": [0, -0.9, 1.3], "rows": [0, 1], "items": ["Handgun_M9", "Magazine_9x19_M9_15rnd_Ball"] } },
+
+    { "state": "before" },
+    { "shot": "take_binoculars", "look": [5.4, 1.0, 3.35], "from": [-1.0, -0.8, 0] },
+    { "pickup": "Binoculars_B8", "expect": "took item=\\S*Binoculars_B8", "why": "the F key takes binoculars off the gear shelf" },
+    { "shot": "till", "look": [2.55, 1.45, -0.6], "from": [0, -1.25, 1.3] },
+    { "do": { "verb": "use", "className": "LF_StoreTillAction", "entityName": "$entity" }, "wait": 1500, "why": "paying at the till on the gun counter" },
+    { "state": "paid" },
+    { "shot": "out_clean", "look": [1.5, 1.4, 10.5], "from": [0, -1.3, 2], "wait": 3000 },
+    { "state": "clean" },
+
+    { "shot": "take_compass", "look": [5.4, 1.35, 3.0], "from": [-1.0, -1.15, 0] },
+    { "pickup": "Compass_Adrianov", "expect": "took item=\\S*Compass_Adrianov", "why": "the F key takes a compass" },
+    { "shot": "out_thief", "look": [1.5, 1.4, 10.5], "from": [0, -1.3, 2], "wait": 3000 },
+    { "state": "caught" },
+    { "shot": "alarm", "look": [-0.9, 2.6, 7.65], "from": [1.2, -2.4, 4] }
+  ],
+  "checks": [
+    { "lt": ["paid.cash", "before.cash"], "why": "the till took the money for the binoculars" },
+    { "eq": ["clean.wanted", 0], "why": "walking out after paying sets no wanted level" },
+    { "in": ["clean.alarm", ["", "none"]], "why": "walking out after paying sounds no alarm" },
+    { "gt": ["caught.wanted", 0], "why": "walking out unpaid sets a wanted level" }
+  ],
+  "log": [
+    { "re": "everon_gunstore: \\S+ paid \\d+ for 1 item\\(s\\)", "why": "the till charged for the binoculars" },
+    { "re": "everon_gunstore: \\S+ walked out with 1 unpaid item", "why": "the walk-out with the compass was caught" },
+    { "re": "everon_gunstore: 1 member\\(s\\) of staff called", "why": "the clerk reacted to the walk-out" },
+    { "last": "alarm sounding at <([^>]+)>", "near": [-0.9, 2.6, 7.65], "within": 1.5, "why": "the alarm sounds on the shop-front bell box" }
+  ]
+}

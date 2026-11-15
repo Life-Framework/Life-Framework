@@ -429,3 +429,11 @@ SCR_DestructibleBuildingEntity : "{FD91931F589C05BF}Prefabs/Structures/Houses/To
  coords 262 0 264.35
  angles 0 180 0
 }
+SCR_DestructibleBuildingEntity Village_GunStore : "{1902DB32C6DE05E6}Prefabs/Buildings/GunStore/GunStore_Store.et" {
+ coords 378 0 266
+ angles 0 180 0
+}
+LF_NpcBaseEntity Village_GunStore_Clerk : "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et" {
+ coords 375 0.199 267.6
+ angles 0 180 0
+}
