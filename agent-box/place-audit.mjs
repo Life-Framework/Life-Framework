@@ -8,6 +8,8 @@
 //   audit selftest
 //
 // red-proof: 2026-11-14, the fixture layer's twin crate moved 1 m away printed "FAILED duplicate not named"; restored, OK.
+// red-proof: 2026-11-15, with the bounds scan reading every "{GUID}path.et" again (loadout-slot clothing counted) the fixture check printed
+//   "FAILED entity prefabs read from a layer: ...CombatBoots_US_01.et..." and exited 1; with layerEntityPrefabs it prints OK.
 // red-proof: 2026-11-14, LIMITS.sharedOverlap set to 0.08 printed "place-audit selftest: FAILED cups on one counter"; restored, OK.
 // In-game (LF_PlacementAudit.c): floating / sunk (a trace down from the bounds base), corners hanging
 // off a surface edge, clips through walls and other surfaces, tilt, scale, reach, oriented boxes, doors.
@@ -18,6 +20,8 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadWorld } from "./layers.mjs";
+import { boundsGapVerdict, layerEntityPrefabs } from "../tools/lib/layer-prefabs.mjs";
+import { judgeStrict } from "../tools/lib/town-findings.mjs";
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
@@ -514,7 +518,7 @@ export function readJson(file, fallback) {
 
 function parseArgs(argv) {
   const out = { _: [], flags: {} };
-  const valued = new Set(["top", "area", "layer", "from", "out"]);
+  const valued = new Set(["top", "area", "layer", "from", "out", "hard-layer"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a.startsWith("--")) {
@@ -572,11 +576,15 @@ async function placement(argv) {
   console.log(lines.slice(0, 3 + world.length + top).join("\n"));
   if (res.ranked.length > top) console.log(`  ... ${res.ranked.length - top} more`);
   console.log(`report: ${join(outDir, "report.txt")} (json beside it)`);
-  // --strict holds the town to the bar; with --annex the debug grid is listed but never fails it
-  // (docs/architecture/world-zones.md).
-  const townRanked = res.ranked.filter((r) => !inAnnex(r));
-  if (flags.strict && townRanked.length < res.ranked.length) console.log(`audit placement: ${res.ranked.length - townRanked.length} flagged in the debug grid; --strict counts the town only`);
-  return testFailed || (flags.strict && (townRanked.length || world.length)) ? 1 : 0;
+  // --strict: the town is hand-edited and never blocks anyone (maintainer rule 2026-11-15), so a flagged town
+  // entity prints as WARN on every branch. What blocks is a flagged entity in a non-town layer the branch itself
+  // adds or moves (--hard-layer A.layer,B.layer; without it every non-town layer, measured with --annex).
+  // docs/architecture/world-zones.md, tools/lib/town-findings.mjs.
+  if (!flags.strict) return testFailed ? 1 : 0;
+  const hardLayers = flags["hard-layer"] ? String(flags["hard-layer"]).split(",").filter(Boolean) : null;
+  const verdict = judgeStrict(res.ranked, world, { hardLayers });
+  for (const l of verdict.lines) console.log(l);
+  return testFailed || verdict.fail ? 1 : 0;
 }
 
 // The fixture layer (agent-box/fixtures/place-budget/Fixture.layer): a crate and its twin 1 cm apart, a barrel
@@ -604,12 +612,53 @@ function worldSelftest(fail) {
     const addon = join(ROOT, "addons", "LifeFramework");
     const unlisted = new Set();
     for (const f of worldLayerDirs(ROOT).flatMap((d) => readdirSync(d).filter((n) => n.endsWith(".layer")).map((n) => join(d, n)))) {
-      for (const m of readFileSync(f, "utf8").matchAll(/"{[0-9A-Fa-f]{16}}([^"]+.et)"/g)) {
-        if (!existsSync(join(addon, m[1])) && !existsSync(join(ROOT, "addons", "LF_Everon1989", m[1])) && !list.prefabs[m[1]] && !(list.unmeasured ?? []).includes(m[1])) unlisted.add(m[1]);
+      for (const p of layerEntityPrefabs(readFileSync(f, "utf8"))) {
+        if (!existsSync(join(addon, p)) && !existsSync(join(ROOT, "addons", "LF_Everon1989", p)) && !list.prefabs[p] && !(list.unmeasured ?? []).includes(p)) unlisted.add(p);
       }
     }
-    if (unlisted.size) fail(`vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`);
+    const verdict = boundsGapVerdict(unlisted.size, currentBranch());
+    const msg = `vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`;
+    if (verdict === "fail") fail(msg);
+    else if (verdict === "warn") console.log(`WARN  place-audit selftest: ${msg} (a warning on a maintainer branch)`);
   }
+  // Only a prefab an entity is placed from needs bounds. A clothing prefab in a character's loadout slot, an item in
+  // an inventory or a spawner's resource is a Prefab/ResourceName property, not a world prop (the maintainer's NPC
+  // Dresser wrote 30 of them into the town layer and the audit demanded bounds for each).
+  const layerText = [
+    'LF_NpcBaseEntity Roadmap_Civilian_3 : "{61550FC3CB30580E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et" {',
+    " components {",
+    '  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {',
+    "   Slots {",
+    "    SCR_FeetLoadoutSlotInfo Boots {",
+    "     Enabled 1",
+    '     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"',
+    "    }",
+    "   }",
+    "  }",
+    " }",
+    ' {',
+    '  GenericEntity Child : "{1111111111111111}Prefabs/Props/Child_01.et" {',
+    "   coords 0 0 0",
+    "  }",
+    " }",
+    "}",
+    '$grp GenericEntity : "{2222222222222222}Prefabs/Props/Crate_01.et" {',
+    " coords 1 0 1",
+    "}",
+    "",
+  ].join("\n");
+  const seen = [...layerEntityPrefabs(layerText)].sort().join();
+  if (seen !== "Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et,Prefabs/Props/Child_01.et,Prefabs/Props/Crate_01.et") fail(`entity prefabs read from a layer: ${seen}`);
+  if (boundsGapVerdict(2, "ws/town-maintainer-edits") !== "warn" || boundsGapVerdict(2, "town-maintainer-x") !== "warn") fail("missing bounds warn on a maintainer branch");
+  if (boundsGapVerdict(2, "ws/some-slice") !== "fail" || boundsGapVerdict(2, "") !== "fail") fail("missing bounds fail off a maintainer branch");
+  if (boundsGapVerdict(0, "ws/town-maintainer-edits") !== "ok" || boundsGapVerdict(0, "main") !== "ok") fail("no gap is ok");
+}
+
+// The branch this checkout is on ("" when unknown); CI passes the PR's head in GITHUB_HEAD_REF.
+function currentBranch() {
+  if (process.env.GITHUB_HEAD_REF) return process.env.GITHUB_HEAD_REF;
+  const r = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd: ROOT, encoding: "utf8", windowsHide: true });
+  return r.status === 0 ? r.stdout.trim() : "";
 }
 
 function selftest() {
