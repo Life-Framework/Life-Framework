@@ -102,7 +102,9 @@ appends one ledger row:
 tools\cli slice record <issue> --model sonnet --type capability --outcome merged|handoff|split|failed --gate pass|fail --minutes 38 [--wait 4]
 ```
 
-`--gate` is the first gate run, `--minutes` the slice's lead time from start
+`--outcome merged` is refused unless `gh` shows a merged PR for the slice (branch
+`ws/slice-<N>` or a body that refs it); record `handoff` while the PR is open, or
+pass `--force`. `--gate` is the first gate run, `--minutes` the slice's lead time from start
 to PR, `--wait` the minutes queued for the pool. The ledger is one JSONL file
 in the git common dir (`.git/lf/slice-ledger.jsonl`), so every worktree writes
 to the same file. `tools\cli slice stats` reports, overall and per model and

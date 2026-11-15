@@ -404,6 +404,22 @@ export function ledgerRow(o) {
   return p;
 }
 
+// `record --outcome merged` is true only when a PR for the slice is merged (agents recorded "merged" while
+// the PR was still open). prs: [{ number, state, mergedAt, headRefName, body }] from `gh pr list`. A PR belongs
+// to the slice when its branch is ws/slice-<N> (or ws/slice-<N>-...) or its body says Refs/Closes/Fixes #<N>.
+export function mergeVerdict(prs, issue) {
+  const n = String(issue);
+  const mine = (prs || []).filter(
+    (p) => new RegExp(`^ws/slice-${n}(?!\\d)`).test(p.headRefName || "") || new RegExp(`\\b(?:refs|closes|fixes|resolves)\\s+#${n}(?!\\d)`, "i").test(p.body || ""),
+  );
+  const merged = mine.find((p) => p.state === "MERGED" || p.mergedAt);
+  if (merged) return { ok: true, pr: merged, reason: `PR #${merged.number} is merged` };
+  const hint = "record --outcome handoff while the PR is unmerged, or --force to record merged anyway";
+  if (!mine.length) return { ok: false, reason: `no PR found for #${n} (branch ws/slice-${n} or a body that refs it); ${hint}` };
+  const seen = mine.map((p) => `#${p.number} ${String(p.state || "open").toLowerCase()}`).join(", ");
+  return { ok: false, reason: `#${n} has no merged PR (${seen}); ${hint}` };
+}
+
 const median = (xs) => {
   if (!xs.length) return null;
   const s = [...xs].sort((a, b) => a - b);
