@@ -98,7 +98,7 @@ class LF_Test_RolesWorld : LF_Test
 		}
 
 		m_aFound = new array<IEntity>();
-		GetGame().GetWorld().QueryEntitiesBySphere("200 0 250", 400, InsertFound, FilterNpc);
+		GetGame().GetWorld().QueryEntitiesBySphere("200 0 250", 400, InsertFound, FilterNpc); // town-layout-ok: a whole-world sweep, not a position
 		array<IEntity> placed = {};
 		placed.Copy(m_aFound);
 		ctx.True(placed.Count() > 0, "the town places NPCs");

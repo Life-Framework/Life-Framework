@@ -195,7 +195,15 @@ class LF_ChopShopRules
 	//! car placed in a layer (which overrides components) resolves like a spawned one.
 	static int PayoutFor(IEntity vehicle)
 	{
-		ResourceName prefab = LF_Utils.GetPrefabName(vehicle);
+		return PayoutForPrefab(LF_Utils.GetPrefabName(vehicle));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PayoutFor by prefab. A colour child (epic #1826) is paid as its model: it resolves to the base
+	//! colour's locked prefab first, so the prices config and the yard's value table find it.
+	static int PayoutForPrefab(ResourceName prefab)
+	{
+		prefab = LF_VehicleColoursConfig.ResolveBase(prefab);
 		int payout = LF_VehiclePricesConfig.Lookup(LF_EVehiclePriceAction.CHOP, prefab);
 		if (payout < 0)
 			payout = Payout(LF_ChopShopConfig.ValueOf(prefab), LF_ChopShopConfig.Cap(), LF_ChopShopConfig.Percent());
