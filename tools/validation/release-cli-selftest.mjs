@@ -49,7 +49,7 @@ function buildTemplate() {
   sh(root, "config", "commit.gpgsign", "false");
   sh(root, "config", "tag.gpgsign", "false");
   sh(root, "remote", "add", "origin", origin);
-  put(root, "addons/LifeFramework/LifeFramework.gproj", gproj("LifeFramework", "79636E668EA37AC9", "Life Framework"));
+  put(root, "addons/LifeFramework/LifeFramework.gproj", gproj("LifeFramework", "4550A2B656E1B569", "Life Framework"));
   put(root, "addons/LF_Everon1989/LF_Everon1989.gproj", gproj("LF_Everon1989", "B1E84D5687E11724", "Pack"));
   put(root, "docs/marketing/workshop/README.md", readme);
   put(root, "docs/marketing/workshop/everon-1989/README.md", readme);

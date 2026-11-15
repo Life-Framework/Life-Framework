@@ -3,7 +3,7 @@
 This page goes from a machine with the dedicated server installed to a player joining. It needs no
 Workbench, no checkout and no script.
 
-The life server is two Workshop items: the **core** (`LifeFramework`, `79636E668EA37AC9`) and the
+The life server is two Workshop items: the **core** (`LifeFramework`, `4550A2B656E1B569`) and the
 **1989 Everon pack** (`LF_Everon1989`). The pack depends on the core, so `game.mods` lists the core
 first. The pack carries the town; the core alone boots only its DebugWorld test map. To run the core with your
 own pack ([add a delivery job](add-job.md) builds one), see [swap the pack out](../../server/example/README.md#swap-the-pack-out).
@@ -51,7 +51,7 @@ Workshop items, the core first:
 ```json
 "scenarioId": "{C638C03B775C31BB}Missions/LF_Everon1989.conf",
 "mods": [
-  { "modId": "79636E668EA37AC9", "name": "Life Framework (Core)" },
+  { "modId": "4550A2B656E1B569", "name": "Life Framework (Core)" },
   { "modId": "B1E84D5687E11724", "name": "Life Framework: Everon 1989" }
 ]
 ```

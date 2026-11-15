@@ -3,7 +3,7 @@ GameProject {
  GUID "B1E84D5687E11724"
  TITLE "Life Framework: Everon 1989"
  Dependencies {
-  "58D0FB3206B6F859" "79636E668EA37AC9"
+  "58D0FB3206B6F859" "4550A2B656E1B569"
  }
  Configurations {
   GameProjectConfig PC {
