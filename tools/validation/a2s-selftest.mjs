@@ -57,6 +57,13 @@ check(info.map === "LF_Everon1989", `map is ${info.map}`);
 check(info.players === 3, `players is ${info.players}`);
 check(info.maxPlayers === 32, `maxPlayers is ${info.maxPlayers}`);
 
+// The visibility byte (after bots, server type and environment) is the password flag; a reply that ends at bots leaves it unknown.
+const withVis = (vis) => Buffer.concat([Buffer.from([0xff, 0xff, 0xff, 0xff, 0x49, 17]), Buffer.from("n\0m\0f\0g\0", "latin1"), Buffer.from([0, 0, 1, 16, 0, 0x64, 0x6c, vis, 0])]);
+check(a2s.parseInfoReply(withVis(1)).passworded === true, "visibility 1 does not parse as passworded");
+check(a2s.parseInfoReply(withVis(0)).passworded === false, "visibility 0 does not parse as public");
+check(a2s.parseInfoReply(withVis(1).subarray(0, withVis(1).length - 4)).passworded === undefined, "a reply that ends at bots does not leave passworded unknown");
+check(players.formatInfo({ name: "n", map: "m", players: 0, maxPlayers: 16, passworded: true }).includes("password: set"), "formatInfo does not show the password flag");
+
 // Garbage and truncation are errors, never a throw out of the parser's callers' timers.
 for (const [label, buf] of [["empty", Buffer.alloc(0)], ["bad header", Buffer.from("00112233490000", "hex")], ["truncated", hex("info.hex").subarray(0, 12)], ["unknown type", Buffer.from("ffffffff5800", "hex")]]) {
   let threw = false;
