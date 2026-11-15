@@ -1,0 +1,7 @@
+# Fixture roster: comments and order must survive every edit.
+# one account uid per line
+
+boss-1 administrator # Boss
+#pending moderator Mo
+mod_2 moderator # Two
+legacy-4

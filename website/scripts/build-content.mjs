@@ -135,6 +135,10 @@ addRepoDoc("docs/owner/add-shop.md", { slug: "owner-add-shop", group: "For serve
 addRepoDoc("docs/config/owner-config.md", { slug: "owner-config", group: "For server owners", order: 3, title: "Check your owner config" });
 addRepoDoc("docs/upgrades/README.md", { slug: "upgrades", group: "For server owners", order: 4, title: "Upgrade notes" });
 addRepoDoc("docs/upgrades/0.1.0.md", { slug: "upgrade-0-1-0", group: "For server owners", order: 5, title: "Upgrade to 0.1.0" });
+addRepoDoc("docs/owner/password-alpha.md", { slug: "owner-password-alpha", group: "For server owners", order: 6, title: "Run a password alpha" });
+addRepoDoc("docs/owner/day-cycle.md", { slug: "owner-day-cycle", group: "For server owners", order: 7, title: "Set the day cycle" });
+addRepoDoc("docs/owner/log-lines.md", { slug: "owner-log-lines", group: "For server owners", order: 8, title: "Read your server log" });
+addRepoDoc("docs/owner/rented-host.md", { slug: "owner-rented-host", group: "For server owners", order: 9, title: "Run on a rented host" });
 
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
 // Lands in its own PR; addRepoDoc skips a file that is not there yet.
@@ -158,7 +162,11 @@ addRepoDoc("docs/overthrow-survey.md", { slug: "overthrow-survey", group: "Resea
 addRepoDoc("docs/everonlife-forks.md", { slug: "everonlife-forks", group: "Research & community", order: 3 });
 addRepoDoc("docs/community/discord.md", { slug: "discord", group: "Research & community", order: 4 });
 addRepoDoc("docs/community/support.md", { slug: "support", group: "Research & community", order: 5 });
-addRepoDoc("docs/credits.md", { slug: "credits", group: "Research & community", order: 6 });
+addRepoDoc("docs/community/alpha.md", { slug: "alpha-guide", group: "Research & community", order: 6, title: "Invite-only alpha" });
+addRepoDoc("docs/community/appeals.md", { slug: "appeals", group: "Research & community", order: 7, title: "Appeal a ban" });
+// docs/community/police-path.md is not on main yet; add a row here when it lands.
+// docs/community/moderator-drill.md is staff-only (its last section is the maintainer's answer key): not on the site.
+addRepoDoc("docs/credits.md", { slug: "credits", group: "Research & community", order: 8 });
 
 const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
   .map((p) => toPosix(path.relative(repo, p)))
