@@ -1,0 +1,3 @@
+12:00:01 DEFAULT : Entered online game state.
+12:00:02 SCRIPT : [LFDebug:Persistence] session starting fresh, no save point
+12:03:10 SCRIPT : [LFDebug:Persistence] save completed (SHUTDOWN)
