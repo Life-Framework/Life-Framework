@@ -15,6 +15,7 @@ import { cpSync, existsSync, mkdirSync, openSync, readSync, closeSync, statSync 
 import { dirname, join } from "node:path";
 import { backupSaves, freshDir, hostPaths, newestConsoleLog, pidAlive, readHostState, stamp, STOP_FILE } from "./host.mjs";
 import { DEFAULT_KEEP, pruneBackups } from "./rotate.mjs";
+import { crashAlertText, decideCrashLoop } from "./crashloop.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
 
 // LF_RestartClose.MARKER_FILE = "$profile:lf-host-restart" (Ops O8, #1267), under -profile <dir>\profile.
@@ -117,13 +118,18 @@ export function recordCrash(dir, now = new Date(), { keep = DEFAULT_KEEP } = {})
 //   launch()          -> { ok, pid?, reason? }  start the host, return once it is up
 //   isAlive()         -> bool                   the host process still runs
 //   signals(final)    -> state for decideExit   (flag files; with final, the log lines too)
-//   onCrash(n)        record the nth crash (log, backups)
+//   onCrash(n)        record the nth crash (log, backups); may return { logDir } for the alert
 //   afterExit(d)      the exit was judged d (clear the flag files, print)
 //   sleep(ms), log(msg)
-// Ends with { reason: "stop" | "launch-failed" | "max-crashes", crashes, launches }.
-export function watchLoop({ launch, isAlive, signals, onCrash, afterExit, sleep, log, maxRestarts = DEFAULT_MAX_CRASHES, pollMs = POLL_MS, restartDelayMs = 0 }) {
+//   now()             epoch ms, for the crash-loop window (default Date.now)
+//   crashLoop         { limit, windowMs } turns the crash-loop guard on (crashloop.mjs, #1263); null/absent is off
+// Ends with { reason: "stop" | "launch-failed" | "max-crashes" | "crash-loop", crashes, launches }.
+// "crash-loop" also carries `alert`, the staff message naming the crash logs; the caller sends it.
+export function watchLoop({ launch, isAlive, signals, onCrash, afterExit, sleep, log, maxRestarts = DEFAULT_MAX_CRASHES, pollMs = POLL_MS, restartDelayMs = 0, now = Date.now, crashLoop = null }) {
   let crashes = 0;
   let launches = 0;
+  const crashTimes = [];
+  const crashLogs = [];
   const merge = (a, b) => ({
     stopFilePresent: a.stopFilePresent || b.stopFilePresent,
     stopSeen: a.stopSeen || b.stopSeen || a.stopFilePresent || b.stopFilePresent,
@@ -152,7 +158,17 @@ export function watchLoop({ launch, isAlive, signals, onCrash, afterExit, sleep,
     }
     if (d.crash) {
       crashes++;
-      onCrash(crashes);
+      const at = now();
+      const rec = onCrash(crashes);
+      crashTimes.push(at);
+      crashLogs.push(rec?.logDir ?? null);
+      if (crashLoop && decideCrashLoop(crashTimes, at, crashLoop) === "hold") {
+        const inWindow = crashTimes.map((t) => at - t < crashLoop.windowMs);
+        const logDirs = crashLogs.filter((d, i) => d && inWindow[i]);
+        const recent = inWindow.filter(Boolean).length;
+        log(`crash loop: ${recent} crashes in ${crashLoop.windowMs / 60000} minute(s); the watch ends and the host stays down`);
+        return { reason: "crash-loop", crashes, launches, alert: crashAlertText({ crashes: recent, windowMs: crashLoop.windowMs, logDirs }) };
+      }
       if (crashes > maxRestarts) {
         log(`${crashes} crashes: more than --max-restarts ${maxRestarts}; the watch ends and the host stays down`);
         return { reason: "max-crashes", crashes, launches };
