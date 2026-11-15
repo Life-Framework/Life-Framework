@@ -24,8 +24,8 @@ saves that must keep loading (D7, and the `wt e2e --legacy-save` proof loads a
 version 23 save). New M3 data goes in sidecar payloads, the
 pattern #750a (`orgranks`, version 27) and #749 (`joblevels`, version 28) set.
 
-Two sidecar reshapes are still to land before launch (#1216, #1217), each its own PR with its
-own version bump (D6). They change no existing record:
+The two sidecar reshapes landed before launch (#1216 `vehiclestate`, #1217 `heldground`),
+each its own PR with its own version bump (D6). They changed no existing record:
 
 | Reshape | Spec | Payload | Live side |
 |---|---|---|---|
@@ -38,8 +38,8 @@ police rank an int index into the config ladder (qualifications moved to #860,
 M5); #755 is config on placed zones; #753, #748 and the other new payloads
 moved to M5 (D5) and append there.
 
-At #556 (#1218) the lock's `"launched"` flips to `true`: from then on a shipped record
-takes no new serialized field at all, only sidecar payloads.
+**Frozen 2026-11-15 at save version 34 (#1218).** The lock's `"launched"` is `true`: a shipped
+record takes no new serialized field at all, only sidecar payloads.
 
 ## Notes per record
 
