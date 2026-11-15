@@ -28,7 +28,7 @@ GenericEntity : "{61C577C0E2A178A6}Prefabs/Items/Food/Food_Base.et" {
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/rowan_berries.xob"
+   Object "{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/RowanBerries.xob"
   }
  }
 }

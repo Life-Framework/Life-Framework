@@ -215,6 +215,8 @@ try {
   if (r.code !== 0 || Object.keys(onlySent).sort().join() !== "password,server_name") fail(`config push --only sent ${Object.keys(onlySent).join(",")} instead of server_name and password: ${r.out}`);
   if (state.settings.scenario_id !== "{X}Missions/Default.conf" || state.settings.mods[0] !== "keep") fail("config push --only changed the scenario or the mods");
   if (writes().filter((c) => c.method === "PUT").length !== putsBefore) fail("config push --only wrote a file to the box");
+  r = await run(["0grind", "config", "push", "--only", "name,password"]);
+  if (r.code !== 0 || !/only name, password/.test(r.out)) fail(`config push --only needs --admins-pending for fields that are not admins: ${r.out}`);
   r = await run(["0grind", "config", "push", "--admins-pending", "--only", "bogus"]);
   if (r.code === 0 || !/not a game field/.test(r.out)) fail("config push --only accepted an unknown field");
 

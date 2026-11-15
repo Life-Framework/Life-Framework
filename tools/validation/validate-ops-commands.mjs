@@ -1,5 +1,5 @@
 // The ops pages name only `tools\cli` commands that exist, or mark them *(planned)* (#1502).
-// inputs: docs/ops/*.md, docs/playtest/m4-opening-day.md, tools/cli.mjs, tools/commands/*.mjs, tools/host/commands/*.mjs, tools/validation/fixtures/ops-commands/**
+// inputs: docs/ops/*.md, docs/community/*.md, docs/playtest/m4-opening-day.md, tools/cli.mjs, tools/commands/*.mjs, tools/host/commands/*.mjs, tools/validation/fixtures/ops-commands/**
 //
 // "A second person can run a session from the runbook" only holds while every command the pages
 // tell them to type exists. A `tools\cli <cmd> [<sub>]` in inline code or a fenced block passes when
@@ -16,6 +16,10 @@
 //
 // red-proof (#1633): 2026-11-15, before checkPage took a mode, `--selftest` printed
 // `FAIL  fixture: host backup is marked planned but exists, and was not reported` and exited 1.
+// red-proof (#1666): 2026-11-15, with a stub scan() and numbered markers unrecognised, `--selftest` printed
+// `FAIL  fixture: a missing command marked *(planned, #N)* was flagged` and `FAIL  fixture: community page expected
+// exactly one unmarked-missing finding, got none`, 4 failures, exit 1. docs/community/*.md is scanned warn-only;
+// `*(planned, #N)*` counts as planned, and a stale numbered marker only warns, on every page.
 // red-proof: 2026-11-15, with checkPage a stub returning no findings, `--selftest` printed
 // `FAIL fixture: missing command was not reported` and exited 1.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -55,6 +59,10 @@ function mjsNames(dir) {
 }
 
 const REF = /tools[/\\]cli\b([^`\n]*)/;
+// A planned marker: `*(planned)*` or `*(planned, #N)*` (#1666). After the code span the marker may wrap to the next
+// line, so `(planned` followed by `)` or `,` is enough; before the span it must close on the same line.
+const PLANNED_AFTER = /^\s*\*?_?\(planned[,)]/i;
+const PLANNED_BEFORE = /\(planned(?:,\s*#\d+)?\)\*?_?\s*$/i;
 
 // Each `tools\cli ...` reference in inline code or a fenced block that names a missing command and is
 // not marked planned: [{ line, ref, text }]. With mode "stale", the references that name an existing command
@@ -69,16 +77,16 @@ export function checkPage(md, known, mode = "missing") {
     }
     const spans = [];
     if (fenced) {
-      if (REF.test(line)) spans.push({ code: line, planned: /\(planned\)/i.test(line) });
+      if (REF.test(line)) spans.push({ code: line, planned: /\(planned(?:,\s*#\d+)?\)/i.test(line), numbered: /\(planned,/i.test(line) });
     } else {
       for (const m of line.matchAll(/(`+)([^`]*?)\1/g)) {
         if (!REF.test(m[2])) continue;
         const after = line.slice(m.index + m[0].length);
         const before = line.slice(0, m.index);
-        spans.push({ code: m[2], planned: /^\s*\*?_?\(planned\)/i.test(after) || /\(planned\)\*?_?\s*$/i.test(before) });
+        spans.push({ code: m[2], planned: PLANNED_AFTER.test(after) || PLANNED_BEFORE.test(before), numbered: /^\s*\*?_?\(planned,/i.test(after) || /\(planned,[^)]*\)\*?_?\s*$/i.test(before) });
       }
     }
-    for (const { code, planned } of spans) {
+    for (const { code, planned, numbered } of spans) {
       const words = (REF.exec(code)[1].trim().match(/\S+/g) ?? []);
       const word = (w) => (w && /^[a-z][a-z0-9-]*$/.test(w) ? w : null);
       const cmd = word(words[0]);
@@ -94,7 +102,7 @@ export function checkPage(md, known, mode = "missing") {
         if (sub && !exists) ref = named;
       }
       if (mode === "stale") {
-        if (exists && planned) out.push({ line: i + 1, ref: named, text: code.trim() });
+        if (exists && planned) out.push({ line: i + 1, ref: named, text: code.trim(), numbered });
       } else if (ref && !planned) out.push({ line: i + 1, ref, text: code.trim() });
     }
   });
@@ -117,19 +125,49 @@ async function selftest() {
   if (!found.includes("host zz-not-a-command")) fail("fixture: missing command was not reported");
   if (!found.includes("zz-fixture-missing")) fail("fixture: missing top-level command in a fenced block was not reported");
   if (found.some((r) => r === "host commands")) fail("fixture: a bare `tools\\cli host` family name was flagged");
+  if (found.some((r) => r.startsWith("host zz-numbered"))) fail("fixture: a missing command marked *(planned, #N)* was flagged");
   if (found.length !== 2) fail(`fixture: expected exactly 2 findings, got ${found.length}: ${found.join(", ")}`);
   // a real command still marked *(planned)*, the marker after or before the code span or on a fenced line (#1633)
   const stale = checkPage(text, real, "stale").map((f) => f.ref);
   for (const r of ["host backup", "host restore", "host start"]) if (!stale.includes(r)) fail(`fixture: ${r} is marked planned but exists, and was not reported`);
   if (stale.length !== 3) fail(`fixture: expected exactly 3 stale findings, got ${stale.length}: ${stale.join(", ")}`);
+  // docs/community pages (#1666): the same two checks, both warn-only; the numbered marker counts as planned
+  const tree = scan(join(root, "tools", "validation", "fixtures", "ops-commands", "tree"), real);
+  if (tree.findings.length !== 1 || tree.findings[0].ref !== "zz-community-unmarked") fail(`fixture: community page expected exactly one unmarked-missing finding, got ${tree.findings.map((f) => f.ref).join(", ") || "none"}`);
+  const community = tree.stale.filter((f) => f.page.startsWith("docs/community/"));
+  if (community.length !== 1 || community[0].ref !== "host status") fail(`fixture: community page expected one stale planned marker on host status, got ${community.map((f) => f.ref).join(", ") || "none"}`);
+  if (tree.findings.concat(community).some((f) => !f.warnOnly)) fail("fixture: a docs/community finding must stay warn-only");
+  // on an ops page a plain stale marker still fails (#1633); a stale numbered one only warns
+  const ops = tree.stale.filter((f) => f.page.startsWith("docs/ops/"));
+  if (ops.length !== 2 || ops.find((f) => f.ref === "host status")?.warnOnly !== false || ops.find((f) => f.ref === "host backup")?.warnOnly !== true) fail("fixture: ops page expected a failing plain stale marker and a warn-only numbered one");
   console.log(failed ? `SUMMARY validate-ops-commands selftest fail ${failed}` : "SUMMARY validate-ops-commands selftest ok");
   process.exit(failed ? 1 : 0);
 }
 
+// The pages under root: docs/ops/*.md, the PAGES list, then docs/community/*.md. A community page's findings are
+// warn-only whatever the mode (#1666): that folder is prose around a command, not the runbook.
 function pagesOf(root) {
-  const dir = join(root, "docs", "ops");
-  const ops = existsSync(dir) ? readdirSync(dir).filter((n) => n.endsWith(".md")).sort().map((n) => `docs/ops/${n}`) : [];
-  return [...ops, ...PAGES.filter((p) => existsSync(join(root, p)))];
+  const list = (d) => {
+    const dir = join(root, "docs", d);
+    return existsSync(dir) ? readdirSync(dir).filter((n) => n.endsWith(".md")).sort().map((n) => `docs/${d}/${n}`) : [];
+  };
+  return [
+    ...list("ops").map((page) => ({ page, warnOnly: false })),
+    ...PAGES.filter((p) => existsSync(join(root, p))).map((page) => ({ page, warnOnly: false })),
+    ...list("community").map((page) => ({ page, warnOnly: true })),
+  ];
+}
+
+function scan(root, known) {
+  const findings = [];
+  const stale = [];
+  for (const { page, warnOnly } of pagesOf(root)) {
+    const md = readFileSync(join(root, page), "utf8");
+    for (const f of checkPage(md, known)) findings.push({ ...f, page, warnOnly });
+    // a numbered marker was never recognised before (#1666), so a stale one warns on every page, not fails
+    for (const f of checkPage(md, known, "stale")) stale.push({ ...f, page, warnOnly: warnOnly || f.numbered });
+  }
+  return { findings, stale };
 }
 
 if (process.argv.includes("--selftest")) await selftest();
@@ -137,20 +175,16 @@ if (process.argv.includes("--selftest")) await selftest();
 const strict = process.argv.includes("--strict");
 const known = knownCommands(ROOT);
 const pages = pagesOf(ROOT);
-const findings = [];
-for (const p of pages) {
-  for (const f of checkPage(readFileSync(join(ROOT, p), "utf8"), known)) findings.push({ ...f, page: p });
-}
-const stale = [];
-for (const p of pages) {
-  for (const f of checkPage(readFileSync(join(ROOT, p), "utf8"), known, "stale")) stale.push({ ...f, page: p });
-}
-for (const f of stale) console.log(`FAIL  ${f.page}:${f.line} \`tools\\cli ${f.ref}\` exists but is marked *(planned)*: drop the marker and say what it does (${f.text})`);
-const level = strict || !WARN_ONLY ? "FAIL" : "WARN";
-for (const f of findings) console.log(`${level}  ${f.page}:${f.line} \`tools\\cli ${f.ref}\` is not a command: write it as *(planned)* or add it (${f.text})`);
-if (stale.length || (findings.length && level === "FAIL")) {
-  const missing = level === "FAIL" ? findings.length : 0;
-  console.log(`SUMMARY validate-ops-commands fail ${missing} missing, ${stale.length} stale *(planned)* in ${pages.length} pages`);
+const { findings, stale } = scan(ROOT, known);
+// A stale marker on an ops page is an error; on a community page it warns (#1666). A missing command is a
+// warning until the wave-4 commands land, or an error under --strict.
+const staleFail = stale.filter((f) => !f.warnOnly);
+const missingFail = strict || !WARN_ONLY ? findings : [];
+for (const f of stale) console.log(`${f.warnOnly ? "WARN" : "FAIL"}  ${f.page}:${f.line} stale planned marker: \`tools\\cli ${f.ref}\` exists but is marked *(planned)*; drop the marker and say what it does (${f.text})`);
+for (const f of findings) console.log(`${missingFail.includes(f) ? "FAIL" : "WARN"}  ${f.page}:${f.line} \`tools\\cli ${f.ref}\` is not a command: write it as *(planned, #N)* or add it (${f.text})`);
+if (staleFail.length || missingFail.length) {
+  console.log(`SUMMARY validate-ops-commands fail ${missingFail.length} missing, ${staleFail.length} stale *(planned)* in ${pages.length} pages`);
   process.exit(1);
 }
-console.log(findings.length ? `SUMMARY validate-ops-commands warn ${findings.length} unmarked missing in ${pages.length} pages (warn-only until the wave-4 commands land)` : `SUMMARY validate-ops-commands ok ${pages.length} pages`);
+const warnStale = stale.length - staleFail.length;
+console.log(findings.length || warnStale ? `SUMMARY validate-ops-commands warn ${findings.length} unmarked missing, ${warnStale} stale planned marker in ${pages.length} pages (warn-only)` : `SUMMARY validate-ops-commands ok ${pages.length} pages`);
