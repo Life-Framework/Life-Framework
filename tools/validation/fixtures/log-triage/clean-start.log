@@ -1,0 +1,8 @@
+12:10:00.100  DEFAULT      : Engine start, not a triage line
+12:10:01.200  SCRIPT (W): [LFDebug:DebugWorld] collision repair enabled traceability for GameEntity at <1204.5, 12.25, 3310>
+12:10:01.201  SCRIPT (W): [LFDebug:DebugWorld] collision repair enabled traceability for GameEntity at <-1204.5, 12.25, 3310>
+12:10:01.202  SCRIPT (W): [LFDebug:DebugWorld] collision repair enabled traceability for GameEntity at <1204.5, -12.25, -3310.75>
+12:10:01.203  SCRIPT (W): [LFDebug:DebugWorld] collision repair enabled traceability for GenericEntity at <5,6,7>
+12:10:01.204  SCRIPT (W): [LFDebug:DebugWorld] collision repair enabled traceability for GenericEntity at <-5.5,6,-7>
+12:10:01.205  SCRIPT (W): [LFDebug:DebugWorld] collision repair enabled traceability for GenericEntity at <0, 0, 0>
+12:10:01.206  SCRIPT (W): [LFDebug:DebugWorld] collision repair enabled traceability for PlumTree_01
