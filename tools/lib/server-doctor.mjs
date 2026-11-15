@@ -2,9 +2,11 @@
 // mods loaded, which script errors it holds (with the fix from docs/debug-log-triage.md when the table knows
 // the line), the first-boot success lines, and a PASS/FAIL verdict. No game needed; the verdict is
 // judgeBootLog's (tools/release/boot-check.mjs), so a boot check and the doctor never disagree.
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { judgeBootLog, READY_LINE } from "../release/boot-check.mjs";
+import { matchKnown, parseTriageTable } from "./log-triage.mjs";
+import { checkEffectiveConfig } from "./server-doctor-config.mjs";
 
 const SCRIPT_ERROR = /SCRIPT\s+\(E\)|\bVME\b|Virtual Machine Exception/;
 const GPROJ = /gproj:\s*'([^']+)'\s*guid:\s*'([0-9A-Fa-f]{16})'(?:\s*version:\s*'([^']*)')?/;
@@ -27,49 +29,71 @@ export function parseMods(lines) {
   return mods;
 }
 
-// The triage table rows: pattern fragments (the backticked spans, split at "...") and the advice text.
-export function parseTriage(md) {
-  const rows = [];
-  for (const l of String(md ?? "").split(/\r?\n/)) {
-    if (!l.startsWith("|")) continue;
-    const cells = l.split(/(?<!\\)\|/).slice(1, -1).map((c) => c.trim());
-    if (cells.length < 3 || /^-+$/.test(cells[0]) || /^Message/.test(cells[0])) continue;
-    const spans = [...cells[0].matchAll(/`([^`]+)`/g)].map((m) => m[1].split("...").map((f) => f.trim()).filter(Boolean));
-    const usable = spans.filter((fr) => fr.length && fr.join("").length >= 12).sort((a, b) => b.join("").length - a.join("").length);
-    // a row is keyed by its most specific span; a short generic span ("NULL pointer to instance") would match unrelated lines
-    if (usable.length) rows.push({ spans: [usable[0]], fix: `${cells[1].replace(/\*/g, "")}: ${cells[2]}` });
-  }
-  return rows;
-}
+const TIMESTAMP = /^\s*\d{1,2}:\d{2}:\d{2}(?:\.\d+)?\s+/;
 
-export function triageFix(line, rows) {
-  const hit = rows.find((r) => r.spans.some((fr) => fr.every((f) => line.includes(f))));
-  return hit ? hit.fix : null;
+// An error line against the triage table, through the shared matcher (tools/lib/log-triage.mjs, #1385).
+// A known line carries the row's verdict and advice ("OPEN: <what to do>"); a new line carries no fix.
+function markLine(line, rows, md) {
+  const hit = matchKnown(line.replace(TIMESTAMP, "").trimEnd(), rows);
+  if (!hit) return { line: clip(line), known: false, fix: null };
+  const cells = (md[hit.row.line - 1] ?? "").split(/(?<!\\)\|/).slice(1, -1).map((c) => c.trim());
+  const advice = cells[2] ? `${hit.row.verdict}: ${cells[2]}` : hit.row.verdict;
+  return { line: clip(line), known: true, fix: advice };
 }
 
 const STAGE_FIX = {
+  config: "A config.json field is bad: the server drops it and keeps the shipped default. Fix the field named in the effective-config section (docs/config/config.schema.json says the range).",
   mods: "A mod could not load: check the Workshop id in server.json is the one the Workshop page shows, the item is Public or Unlisted, and the host can reach the Workshop.",
   scripts: "A script error stopped the boot: fix the first SCRIPT (E) line below; later ones are usually fallout.",
   ready: "The server never printed the ready line: it stopped or hung during boot; read the last log line quoted here.",
 };
 
-export function diagnose(text, { triage = "" } = {}) {
+// `profile` is the profile folder holding config.json; without it the report has no config section.
+export function diagnose(text, { triage = "", profile = null } = {}) {
   const lines = String(text ?? "").split(/\r?\n/);
-  const rows = parseTriage(triage);
+  const md = String(triage ?? "").split(/\r?\n/);
+  const rows = parseTriageTable(String(triage ?? ""));
   const judged = judgeBootLog(text, { client: false });
-  const errors = lines.filter((l) => SCRIPT_ERROR.test(l)).map((l) => ({ line: clip(l), fix: triageFix(l, rows) }));
+  const errors = lines.filter((l) => SCRIPT_ERROR.test(l)).map((l) => markLine(l, rows, md));
   const success = lines.filter((l) => SUCCESS.test(l)).slice(0, 8).map(clip);
+  const config = profile ? checkEffectiveConfig(profile) : null;
+  // a field the server rejects (kind bad) or a config.json it cannot read (kind file) fails the doctor;
+  // an unknown key is only ignored, so it is listed but does not fail
+  const configFail = !!config && config.findings.some((f) => f.kind === "bad" || f.kind === "file");
+  const stage = judged.ok && configFail ? "config" : judged.stage;
+  const configLine = config?.findings.find((f) => f.kind === "bad" || f.kind === "file");
+  const ok = judged.ok && !configFail;
   return {
-    verdict: judged.ok ? "PASS" : "FAIL",
-    stage: judged.stage,
-    line: judged.line,
-    fix: judged.ok ? null : STAGE_FIX[judged.stage] ?? null,
+    verdict: ok ? "PASS" : "FAIL",
+    stage,
+    line: judged.ok && configFail ? `${configLine.field ?? "config.json"}: ${configLine.msg}` : judged.line,
+    fix: ok ? null : STAGE_FIX[stage] ?? null,
     mods: parseMods(lines),
     errors,
     success,
+    config,
     engine: /Initializing engine, version (\S+)/.exec(String(text ?? ""))?.[1] ?? null,
     game: /Creating game instance\([^)]*\), version (\S+)/.exec(String(text ?? ""))?.[1] ?? null,
   };
+}
+
+// A profile folder or a console.log: reads the newest log, and the profile's config.json when the target is a
+// folder. Null when there is no console.log to read.
+export function diagnoseTarget(target, { triage = "" } = {}) {
+  const log = findLog(target);
+  if (!log) return null;
+  const profile = statSync(target).isDirectory() ? target : null;
+  return diagnose(readFileSync(log, "utf8"), { triage, profile });
+}
+
+function renderConfig(c) {
+  const out = [`effective config (${c.present ? "config.json" : "no config.json: shipped defaults"}):`];
+  if (!c.findings.length) { out.push("  ok: every field is valid"); return out; }
+  for (const f of c.findings) {
+    const note = f.kind === "unknown" ? "ignored" : f.fellBack ? "server keeps the shipped default" : "";
+    out.push(`  ${f.kind}  ${f.field ?? "config.json"}: ${f.msg}${f.line ? ` (line ${f.line})` : ""}${note ? `  [${note}]` : ""}`);
+  }
+  return out;
 }
 
 export function renderReport(r) {
@@ -80,11 +104,12 @@ export function renderReport(r) {
   if (!r.mods.length) out.push("  (none listed: the log has no \"Loaded addons:\" block)");
   out.push(`script errors (${r.errors.length}):`);
   for (const e of r.errors) {
-    out.push(`  ${e.line}`);
+    out.push(`  [${e.known ? "known" : "new"}] ${e.line}`);
     out.push(`    fix: ${e.fix ?? "not in docs/debug-log-triage.md; classify it and add a row"}`);
   }
   out.push(`first-boot success lines (${r.success.length}):`);
   for (const s of r.success) out.push(`  ${s}`);
+  if (r.config) out.push(...renderConfig(r.config));
   if (r.verdict === "FAIL") {
     out.push(`stopped at stage "${r.stage}"${r.line ? `: ${r.line}` : ""}`);
     if (r.fix) out.push(`fix: ${r.fix}`);
