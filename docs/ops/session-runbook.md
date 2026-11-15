@@ -23,13 +23,24 @@ Rules for the whole page:
 
 1. **Pick the time and announce it.** The player-facing wording and the Discord steps are in the
    [session playbook](../playtest/session-playbook.md).
-   *(planned)* `tools\cli host announce --at <time> [--wipe]` prints the post and writes the next
-   session to `website/content/sessions.json`; with `--send` it posts through the Discord tooling.
-   Until it merges, write the post by hand from the playbook's text and post it in Discord. The
-   website shows the next session time only, so the time in the post is the one that counts.
+   `tools\cli host announce --at <iso time> --build <build> [--wipe]` prints the post and writes
+   the next session to `website/content/sessions.json`; with `--send` (maintainer only) it posts
+   through the Discord tooling. Without `--send` it is a draft: nothing is posted. The website
+   shows the next session time only, so the time in the post is the one that counts.
 
-   A wipe is announced **at least 24 hours ahead**, with `--wipe` once the command exists. Policy:
-   [wipe policy](../community/wipe-policy.md).
+   - **`--build` is needed on a fresh host.** The command reads the build from the newest host
+     save, and a new host has none, so it stops with `no build: pass --build <version>`. The
+     number is the installed game build, the file version of `ArmaReforgerServer.exe` (the Steam
+     folder, or `ENFUSION_SERVER_PATH`), for example `1.9.0.37`. After the first save,
+     `host status` prints `save and game are both <build>` and `--build` can be left out.
+   - **It edits a tracked file, even as a draft.** The command rewrites
+     `website/content/sessions.json` in your worktree, so the checkout is dirty afterwards. If
+     that was a dry run, put the file back with `git checkout -- website/content/sessions.json`.
+     If it was the real announcement, commit the file on purpose in a PR; do not leave it
+     modified.
+
+   A wipe is announced **at least 24 hours ahead**, with `--wipe`; the command refuses a time
+   less than 24 hours away. Policy: [wipe policy](../community/wipe-policy.md).
 
 2. **Check what changed.** After any Arma Reforger update, run the preflight before opening the
    server. It backs the save up, boots it on the new build, and restores it if it does not load:
