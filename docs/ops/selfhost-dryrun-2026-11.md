@@ -138,8 +138,10 @@ SUMMARY workshop-boot-check ok stage=pass host=lf-cloud ...
   mission`. The `no owner config` line is absent because the run folder holds no `config.json` (step 6).
 - `RESOURCES (E): Wrong GUID/name` lines for the base game's `Rally_*` worlds are the known ones in
   [debug-log-triage.md](../debug-log-triage.md). Two more name `Language/everonlife_localization.st` and
-  `Language/lf_everon1989_localization.st` in the Workshop build; the boot reached
-  `Entered online game state.` regardless. Whether strings resolve in game was not checked. They are a separate card if they stay in 0.1.1.
+  `Language/lf_everon1989_localization.st` (`StringTableSource`): the Workshop build ships the runtime `.conf` tables but not the
+  `.st` source, so the engine cannot resolve the source the `.gproj` names. By design, also in
+  [debug-log-triage.md](../debug-log-triage.md); the runtime table loads and the boot reached `Entered online game state.`.
+  A client reading the strings was not checked.
 - A first run with a game client on the same box failed at `join`: the server logged `authentication timeout
   (identity=0x00000000)` for the box's client, which had no signed-in identity. That is the box, not the mod, and it
   leaves #371's "a client joins" line unproven by this tool. A player joining the live flagship on 0grind proves it.
