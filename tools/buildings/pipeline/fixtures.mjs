@@ -163,8 +163,9 @@ export async function measureAll(root) {
     const slots = rackSlotsFrom(root, vfs, from, readText);
     if (!slots.length) throw new Error(`${from}: no SCR_WeaponRackSlotEntity in its chain`);
     // `from` is the plain path: the game's GUID for it is found only when the GUID index is warm.
-    const own = await resolvePrefab(root, ours);
-    out.racks[rackName(ours)] = { prefab: own.ref ?? ours, from, slots };
+    // Our copy may not be written yet (a pack adds it with its first rack): the path stands in until then.
+    const own = await resolvePrefab(root, ours).catch(() => null);
+    out.racks[rackName(ours)] = { prefab: own?.ref ?? ours, from, slots };
   }
   return out;
 }

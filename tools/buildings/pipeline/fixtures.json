@@ -127,7 +127,7 @@
  },
  "racks": {
   "LF_WeaponRackCabinet_Display": {
-   "prefab": "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et",
+   "prefab": "Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et",
    "from": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackCabinetArsenal_FIA.et",
    "slots": [
     {
@@ -223,7 +223,7 @@
    ]
   },
   "LF_WeaponRackStand_Display": {
-   "prefab": "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et",
+   "prefab": "Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et",
    "from": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackStandArsenal_FIA.et",
    "slots": [
     {

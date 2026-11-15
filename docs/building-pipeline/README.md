@@ -328,7 +328,7 @@ Three store rows matter most for such a building (all optional, any store can us
   "pick": [0], "kind": "long", "slots": [0, 1, 2] }`: the item's model stands in a display rack's slots. The copy is a
   plain entity with the item's `MeshObject` only, so it can be looked at and never picked up or taken; it is no stock and
   not on the till's list (sell it over a counter). Racks: `LF_WeaponRackCabinet_Display` and `LF_WeaponRackStand_Display`
-  (core), the FIA arsenal racks' models without the arsenal, service point and faction components, so they hand out
+  (core prefabs that land with the gun store), the FIA arsenal racks' models without the arsenal, service point and faction components, so they hand out
   nothing. Their slots (`racks` in `fixtures.json`, 10 `long` upright slots each, the cabinet also `pistol` and `other`)
   are read by `tools\cli fixtures` from the vanilla racks' `SCR_WeaponRackSlotEntity` children; `kind` picks long,
   pistol or other, `slots` indexes those (default all of that kind). A display line's item needs its model measured
