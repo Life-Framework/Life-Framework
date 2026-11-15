@@ -94,8 +94,8 @@ servers stopped.
 
 On the old host (the maintainer's PC):
 
-1. [ ] Announce the downtime on Discord, with the time (`tools\cli host announce --at <time>` *(planned)*; by
-       hand until it merges).
+1. [ ] Announce the downtime on Discord, with the time (`tools\cli host announce --at <time>`; see the
+       [session runbook](session-runbook.md) for `--build` and the `sessions.json` edit).
 2. [ ] `tools\cli host stop --wait` so the engine writes the shutdown save.
 3. [ ] `tools\cli host backup` and note the folder name it prints. This is the copy that travels.
 4. [ ] Copy the whole `backups/<that folder>` to the new box (scp, or an archive). Leave the old profile
