@@ -23,6 +23,8 @@ dispatch queue and every card's brief is `tools\cli slice brief <issue>`.
 - **Widened the same day: 60 slices, 2255 agent-minutes.** The re-cut of 2026-11-14 added 10 cards
   ([`m4-slices/plan-1006-widen.md`](m4-slices/plan-1006-widen.md), #1343 to #1352) and re-pointed 37
   ([Widening the graph](#widening-the-graph)).
+- **Wave 3 (2026-11-15): 80 slices.** 20 cards from the gaps the outline and the decisions left
+  ([`m4-slices/plan-1006-wave3.md`](m4-slices/plan-1006-wave3.md), #1405 to #1427); see [Wave 3](#wave-3-2026-11-15).
 - **Models.** 56 Sonnet (`lf-builder`), 4 Opus (`lf-hard`): O8 and X3 (persistence), S6 (ban record file), S9 (GM RPC,
   replication), plus the independent reviewer on each of those.
 - **Enablers first.** K2 lets `host` subcommands live one file each in
@@ -65,6 +67,48 @@ reopens them; the cards below already follow them.
 | Flagship restarts (answered 2026-11-15) | Twice a day, at 06:00 and 18:00 server time, with warnings at 15, 5 and 1 minute | C1 sets `restarts.times` to `["06:00", "18:00"]` and leaves `warningMinutes` at the shipped 15, 5, 1; O5, O6, O6T and O9 test with these values |
 | Restart siren (answered 2026-11-15) | No plaza siren: the toast alone is enough. The siren prefab stays in core as an option; the flagship pack must not place one | O7 is toast-only for the flagship (the siren plays only where a server places one); P1 places the two boards and no siren; the trailer shot has no siren; OS stays as the core option |
 | Staff at opening | Only the maintainer is an administrator; the staff tools ship with a roster file to fill in later | New R1 (roster file and checker); S3 names nobody |
+
+## Decisions (2026-11-15)
+
+| Topic | Decision | What it did to the slices |
+|---|---|---|
+| Restart times | 06:00 and 18:00, warned with the toast only | FD (#1405) sets them in `server/flagship/config.json`; O7 (#1266) is on `hold` and O9 (#1268) no longer waits for it; P1 (#1280) places the boards, no siren |
+| Trailer | Storyboard and script first; no filming until the maintainer signs off | G2, G3, G3C and G4 (#1293, #1294, #1351, #1295) are on `hold`; SIGNOFF (#1422) and SCRIPT (#1423) are the next trailer cards; no filming card is cut |
+| DebugWorld zones | A fenced debug grid for slices' props (`tools\cli grid place`), a polished town touched only by one chapter-close card | No wave-3 card places props except TOWN (#1427), M4's town placement |
+
+A `hold` label keeps a card out of `slice list --ready` until the maintainer lifts it.
+
+## Wave 3 (2026-11-15)
+
+Every card of the first three plan files was an issue and the ready queue had run down, so the planner cut 20 more
+from what the M4 outline promises and no card yet covered. `slice new` now checks a plan against the chapter's live
+sub-issues, so a card may depend on one as `#N` and must be file-disjoint from the running ones.
+
+| Key | Issue | Slice | Model, tier | Min | Depends |
+|---|---|---|---|---|---|
+| FD | #1405 | Flagship config carries the decisions, with a check | sonnet T1 | 35 | #1321 |
+| PERF | #1406 | `host perf`: CPU, memory, upload for 40 players | sonnet T0 | 40 | |
+| DISK | #1407 | `host disk`: backups never fill the drive | sonnet T0 | 30 | |
+| READY | #1408 | `host ready`: go or no-go before a session | sonnet T0 | 40 | DISK |
+| HIST | #1409 | `host history` from the host's own records | sonnet T0 | 35 | PERF |
+| GATE | #1410 | `host gate`: the #555 opening gate | sonnet T0 | 40 | HIST |
+| WIPEN | #1413 | `host wipe` needs a notice 24 hours old | sonnet T0 | 30 | #1273 |
+| POST | #1414 | `host post` to the Discord webhook | sonnet T0 | 35 | #1273, #1322 |
+| PASSROT | #1415 | `host password rotate` for the alpha | sonnet T0 | 30 | #1322 |
+| NEXT | #1416 | `host next`: next restart and session | sonnet T0 | 30 | FD |
+| LOGFIX | #1417 | Owner log-line-to-fix table | sonnet T0 | 40 | |
+| DAYDOC | #1418 | Day-cycle owner page | haiku T0 | 30 | |
+| FAQ | #1419 | Player FAQ covers the alpha | haiku T0 | 30 | |
+| WSCOPY | #1420 | Workshop copy follows the decisions | haiku T0 | 30 | |
+| QUIZMAP | #1421 | Every quiz question tests a published rule | sonnet T1 | 40 | |
+| SIGNOFF | #1422 | Trailer sign-off packet | sonnet T0 | 35 | #1352 |
+| SCRIPT | #1423 | Trailer script names the features it shows | sonnet T0 | 35 | |
+| RYO | #1424 | Every flagship surface links run-your-own | sonnet T0 | 35 | |
+| BEATS | #1425 | Opening-day beat sheet for the integration run | haiku T0 | 30 | |
+| TOWN | #1427 | Town placement: M4's systems in the polished town (chapter close) | sonnet T1 | 45 | #1280 |
+
+Not sliced: a scripted operator restart (`host restart --in N`) would edit `LF_HostStop` beside the running close
+(O8, #1267); cut it once O8 merges.
 
 ## Widening the graph
 
