@@ -184,9 +184,9 @@ modded class SCR_PlayerController
 		bool playtest = header && header.m_bLF_InstantPoliceApproval;
 		string refusal;
 		if (playtest)
-			refusal = LF_PoliceApplications.Submit(uid, applicant, why, availability, onRoster);
+			refusal = LF_PoliceApplicationRelay.File(uid, applicant, why, availability, onRoster, LF_Playtime.Total(uid), 0, 0, now);
 		else
-			refusal = LF_PoliceApplications.SubmitGated(uid, applicant, why, availability, onRoster, LF_Playtime.Total(uid), LF_PoliceConfig.ApplyMinPlaytimeHours(), LF_PoliceConfig.ApplyRejectCooldownHours(), now);
+			refusal = LF_PoliceApplicationRelay.File(uid, applicant, why, availability, onRoster, LF_Playtime.Total(uid), LF_PoliceConfig.ApplyMinPlaytimeHours(), LF_PoliceConfig.ApplyRejectCooldownHours(), now);
 		if (!refusal.IsEmpty())
 		{
 			int secondsLeft = LF_PoliceApplications.GetLastSecondsLeft();
