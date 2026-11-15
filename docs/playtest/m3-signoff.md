@@ -200,7 +200,7 @@ After ticking: `tools\cli playtest verdicts docs/playtest/m3-signoff.md` prints 
   - covered: `session up --mission template` boots the template server, loads both addons and logs `owner config loaded` ([#1166](https://github.com/Life-Framework/Life-Framework/pull/1166)), and `template-core-only` boots with one client joined ([#1171](https://github.com/Life-Framework/Life-Framework/pull/1171)). Left: the real Workshop mods through `start.cmd`.
 - [ ] #370 #371 M3-Release: First Workshop upload of core and pack (maintainer) (~2 min)   fail [ ]
   - also proves #371: M3-Release: A clean dedicated server boots from the Workshop items alone
-  - After the maintainer's first upload (#370): from a worktree run tools\cli workshop boot-check 79636E668EA37AC9 B1E84D5687E11724. Expect SUMMARY workshop-boot-check ok stage=pass. The client-join stage (a client starte...
+  - After the maintainer's first upload (#370): from a worktree run tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724. Expect SUMMARY workshop-boot-check ok stage=pass. The client-join stage (a client starte...
   - Follow docs/release-first-upload.md steps 1 to 5 and record the page URLs and passing line in docs/setup.md.
   - covered: `workshop boot-check` ran on lf-cloud and failed at `stage=mods` exactly as expected before the upload ([#1226](https://github.com/Life-Framework/Life-Framework/pull/1226)).
 

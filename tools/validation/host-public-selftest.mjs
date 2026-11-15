@@ -25,7 +25,7 @@ const { runAtLogon, taskCommand } = await imp("tools/host/autostart.mjs");
 
 const failures = [];
 const fail = (m) => failures.push(m);
-const CORE = "79636E668EA37AC9";
+const CORE = "4550A2B656E1B569";
 const PACKID = "B1E84D5687E11724";
 
 // ---- launch arguments
@@ -44,7 +44,7 @@ if (!reload.includes("-loadSessionSave")) fail("a public boot with a save does n
 if (args.includes("-addr")) fail("a public launch binds -addr (bindPort/publicPort come from server.json)");
 
 // ---- placeholder ids
-for (const id of ["0000000000000000", "FFFFFFFFFFFFFFFF", "0123456789ABCDEF", "PLACEHOLDER00000", "79636E668EA37AC", "", undefined]) {
+for (const id of ["0000000000000000", "FFFFFFFFFFFFFFFF", "0123456789ABCDEF", "PLACEHOLDER00000", "4550A2B656E1B56", "", undefined]) {
   if (!isPlaceholderId(id)) fail(`"${id}" is not seen as a placeholder`);
 }
 for (const id of [CORE, PACKID]) if (isPlaceholderId(id)) fail(`${id} is seen as a placeholder`);

@@ -25,7 +25,7 @@ function put(root, path, text) {
 
 function tree() {
   const root = mkdtempSync(join(tmpdir(), "lf-packnew-"));
-  put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "79636E668EA37AC9"\n}\n');
+  put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "4550A2B656E1B569"\n}\n');
   put(root, "addons/LifeFramework/Scripts/Game/Feature/Packs/LF_PackManifest.c", 'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\n');
   put(root, "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent.meta", 'MetaFileClass {\n Name "{F3AA388E8466788C}Worlds/DebugWorld/DebugWorld.ent"\n}\n');
   put(root, "addons/LifeFramework/Configs/Systems/LifeFrameworkSystems.conf.meta", 'MetaFileClass {\n Name "{2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf"\n}\n');
@@ -54,7 +54,7 @@ try {
     if (b.length) fail(`scaffold passes validate-addon-boundary: ${b.join("; ")}`);
 
     const gproj = readFileSync(join(r.dir, "LF_Test.gproj"), "utf8");
-    if (!gproj.includes('"58D0FB3206B6F859" "79636E668EA37AC9"')) fail("gproj does not depend on the base game and the core");
+    if (!gproj.includes('"58D0FB3206B6F859" "4550A2B656E1B569"')) fail("gproj does not depend on the base game and the core");
     const header = readFileSync(join(r.dir, "Missions/LF_Test.conf"), "utf8");
     const manifestGuid = readFileSync(join(r.dir, "Configs/LF_PackManifest.conf.meta"), "utf8").match(/\{([0-9A-F]{16})\}/)?.[1];
     if (!manifestGuid || !header.includes(`{${manifestGuid}}Configs/LF_PackManifest.conf`)) fail("mission header does not name the manifest by its GUID");

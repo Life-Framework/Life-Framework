@@ -24,7 +24,7 @@ const sa = serverArgs("R");
 expect(sa.includes("-config") && !sa.includes("-addons") && sa[sa.indexOf("-addonsDir") + 1] === "R/addons", "server flags: -config, no -addons, empty addonsDir");
 const ca = clientArgs("R");
 expect(!ca.includes("-addons") && !ca.includes("-noBackend") && ca.includes("-client"), "client flags: no -addons, no -noBackend");
-expect(isHexId("79636E668EA37AC9") && !isHexId("PLACEHOLDER-PACK-ID-AFTER-370") && !isHexId("79636E668EA37AC"), "isHexId");
+expect(isHexId("4550A2B656E1B569") && !isHexId("PLACEHOLDER-PACK-ID-AFTER-370") && !isHexId("4550A2B656E1B56"), "isHexId");
 
 // Real lines from lf-cloud, 2026-11-14, pack id not on the Workshop.
 const notFound = [
@@ -34,7 +34,7 @@ const notFound = [
   "11:54:41.884 BACKEND   (E): 1 addons are not downloadable! Cannot start until they are removed from server config.",
   "11:54:41.982 ENGINE    (E): Unable to initialize the game",
 ].join("\n");
-let r = judgeBootLog(notFound, { wantIds: ["79636E668EA37AC9", "B1E84D5687E11724"] });
+let r = judgeBootLog(notFound, { wantIds: ["4550A2B656E1B569", "B1E84D5687E11724"] });
 expect(r.stage === "mods" && !r.ok && /not found on workshop/.test(r.line), `the Workshop 'not found' log stops at mods: got ${r.stage}`);
 
 const good = "10:00:00.000 SCRIPT       : [LFDebug:Persistence] resolved\n10:00:09.000 NETWORK      : Entered online game state.\n";

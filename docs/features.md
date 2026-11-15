@@ -308,7 +308,7 @@
   `npc/interaction-height` (WORLD).
 - ✅ (2026-11-08) The flagship pack `addons/LF_Everon1989/` exists as a
   skeleton: a `.gproj` that depends on the base game and the core
-  (`79636E668EA37AC9`), empty folders, and a README. Nothing loads it; every
+  (`4550A2B656E1B569`), empty folders, and a README. Nothing loads it; every
   launch passes `-addons LifeFramework` only. Workbench opened with the pack
   `.gproj` mounts and compiles both addons. `validate-addon-boundary.mjs` fails
   when the core names a pack GUID, path, class, or the addon ID, or when the
