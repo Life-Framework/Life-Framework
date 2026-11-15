@@ -96,15 +96,13 @@ inherit it.
 
 ## What a restart does
 
-*(planned, #1302)* The restart behaviour below lands with [#1302](https://github.com/Life-Framework/Life-Framework/issues/1302)
-and is not yet in the game.
+The game's own save keeps the date and time of day ([#1302](https://github.com/Life-Framework/Life-Framework/issues/1302)).
+On a restart that continues the save:
 
-- `accelerated`: the time of day is saved and the clock resumes from it, so a 06:00 restart does not send the
-  world back to `startHour`.
+- `accelerated`: the clock resumes from the save, so a 06:00 restart does not send the world back to
+  `startHour`. `startHour` only applies to a fresh world. The configured `dayLengthMinutes` wins over the
+  one in the save.
 - `realtime`: the real clock wins on load. The saved time of day is not used.
-- `vanilla`: nothing is saved or applied by this section.
-
-Until #1302 merges, do not rely on the time of day surviving a restart; assume an accelerated day begins
-again at `startHour`.
+- `vanilla`: this section applies nothing; the game's own save restores the clock as the base game does.
 
 Changing `dayCycle` takes effect at the next restart. Restart the server after editing the file.

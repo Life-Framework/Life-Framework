@@ -7,6 +7,7 @@
 // red-proof: before tools/host/listing.mjs existed this printed
 // "FAIL cannot load tools/host/listing.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
 // The --remote case (#1734) failed first with "FAIL  commands/listing.mjs does not export listingTarget" (2026-11-16).
+// red-proof: with the password flag still checked this printed "FAIL a listing with the password flag off must not fail" (2026-11-15).
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -66,7 +67,6 @@ check(ok.ok && ok.problems.length === 0, `matching reply failed: ${ok.problems.j
 // Each failure is exactly one line, and names the field.
 const cases = [
   ["wrong name", infoReply({ name: "Life Framework Playtest" }), /name/],
-  ["missing password flag", infoReply({ password: false }), /password/],
   ["64 max players", infoReply({ maxPlayers: 64 }), /max players/],
 ];
 for (const [label, reply, re] of cases) {
@@ -78,9 +78,11 @@ for (const [label, reply, re] of cases) {
 const drift = await run(infoReply({ name: "Something else" }), { expected: { ...expected, name: "Something else" } });
 check(!drift.ok && drift.problems.some((p) => /name/.test(p)), "a name other than the alpha name must fail even if server.json agrees");
 
-// The password is only waived by an explicit option.
-const open = await run(infoReply({ password: false }), { allowOpen: true });
-check(open.ok, `allowOpen should accept no password: ${open.problems.join(" / ")}`);
+// Reforger's A2S never reports the password flag (a wrong password is refused live), so a listing with the
+// flag off is not a failure, and the output says the password is not reported.
+const noFlag = await run(infoReply({ password: false }));
+check(noFlag.ok && noFlag.problems.length === 0, `a listing with the password flag off must not fail: ${noFlag.problems.join(" / ")}`);
+check(typeof listing.passwordLine === "function" && listing.passwordLine() === "password: not reported by A2S", "listing.passwordLine() must be 'password: not reported by A2S'");
 
 // Version and map are checked only when asked for.
 const ver = await run(infoReply({ version: "1.3.0.1" }), { version: "1.4.0.18" });
