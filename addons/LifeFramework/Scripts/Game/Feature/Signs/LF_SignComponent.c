@@ -667,11 +667,19 @@ class LF_SignComponent : ScriptComponent
 		face.GetWorldTransform(mat);
 
 		// A painted face's mesh samples $rendertarget, which the edit view never fills, so it draws
-		// black (or not at all). Cover the front with the sign's own rim and paint.
+		// black (or not at all). Cover the front with the sign's own rim and paint. The face area's
+		// aspect is the board's (115 x 67 plate: 1024 x 596), so the panel is that tall from the top of
+		// the bounds and leaves the legs of a board on posts uncovered.
 		if (HasPaintedFace() && (m_bFaceOnOwner || m_bFaceOnChild))
-			WbDrawPanel(mat, mins, maxs);
+		{
+			float panelHeight = (maxs[0] - mins[0]) * m_vFaceArea[1] / m_vFaceArea[0];
+			if (panelHeight < maxs[1] - mins[1])
+				mins[1] = maxs[1] - panelHeight;
 
-		mat[3] = WbToWorld(mat, Vector((mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, maxs[2] + 0.02));
+			WbDrawPanel(mat, mins, maxs);
+		}
+
+		mat[3] = WbToWorld(mat, Vector((mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, maxs[2] + 0.05));
 
 		vector camera[4];
 		owner.GetWorld().GetCurrentCamera(camera);
@@ -723,7 +731,8 @@ class LF_SignComponent : ScriptComponent
 		tris[3] = a;
 		tris[4] = c;
 		tris[5] = d;
-		Shape.CreateTris(color, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE | ShapeFlags.DOUBLESIDE, tris, 2);
+		// Translucent and no depth write, so the sign's debug text in front of it is not hidden.
+		Shape.CreateTris(color, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE | ShapeFlags.TRANSP | ShapeFlags.NOZWRITE | ShapeFlags.DOUBLESIDE, tris, 2);
 	}
 
 	//------------------------------------------------------------------------------------------------
