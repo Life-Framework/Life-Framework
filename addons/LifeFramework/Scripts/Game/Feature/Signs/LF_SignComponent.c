@@ -667,34 +667,53 @@ class LF_SignComponent : ScriptComponent
 		face.GetWorldTransform(mat);
 
 		// A painted face's mesh samples $rendertarget, which the edit view never fills, so it draws
-		// black (or not at all). Cover the front with the sign's own rim and paint. The face area's
-		// aspect is the board's (115 x 67 plate: 1024 x 596), so the panel is that tall from the top of
-		// the bounds and leaves the legs of a board on posts uncovered.
-		if (HasPaintedFace() && (m_bFaceOnOwner || m_bFaceOnChild))
+		// black. The face area's aspect is the board's (115 x 67 plate: 1024 x 596), so the face is
+		// that tall from the top of the bounds; the legs of a board on posts are not face.
+		bool panel = HasPaintedFace() && (m_bFaceOnOwner || m_bFaceOnChild);
+		if (panel)
 		{
-			float panelHeight = (maxs[0] - mins[0]) * m_vFaceArea[1] / m_vFaceArea[0];
-			if (panelHeight < maxs[1] - mins[1])
-				mins[1] = maxs[1] - panelHeight;
-
-			WbDrawPanel(mat, mins, maxs);
+			float faceHeight = (maxs[0] - mins[0]) * m_vFaceArea[1] / m_vFaceArea[0];
+			if (faceHeight < maxs[1] - mins[1])
+				mins[1] = maxs[1] - faceHeight;
 		}
 
-		mat[3] = WbToWorld(mat, Vector((mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, maxs[2] + 0.05));
+		vector world[4];
+		world[0] = mat[0];
+		world[1] = mat[1];
+		world[2] = mat[2];
+		world[3] = WbToWorld(mat, Vector((mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, maxs[2] + 0.02));
 
 		vector camera[4];
 		owner.GetWorld().GetCurrentCamera(camera);
-		float distance = vector.Distance(camera[3], mat[3]);
+		float distance = vector.Distance(camera[3], world[3]);
 
-		float width = vector.Distance(WbToWorld(mat, Vector(mins[0], 0, 0)), WbToWorld(mat, Vector(maxs[0], 0, 0)));
+		float scaleX = mat[0].Length();
+		float scaleY = mat[1].Length();
+		if (scaleX <= 0)
+			scaleX = 1;
+		if (scaleY <= 0)
+			scaleY = 1;
+
+		float width = (maxs[0] - mins[0]) * scaleX;
 		float size = 0.08;
 		if (!full)
 			size = Math.Clamp(width * 1.3 / Math.Max(text.Length(), 6), 0.04, 0.35);
+
+		// Shapes draw after debug text whatever their flags (lf-cloud 2026-11-16), so the panel leaves
+		// a hole a little smaller than the title's paint-coloured background instead of covering it.
+		// A selected sign shows its whole card over the bare face.
+		if (panel && !full && sign)
+		{
+			float holeX = Math.Min(text.Length() * size * 0.25 / scaleX, (maxs[0] - mins[0]) * 0.45);
+			float holeY = Math.Min(size * 0.4 / scaleY, (maxs[1] - mins[1]) * 0.45);
+			WbDrawPanel(mat, mins, maxs, holeX, holeY);
+		}
 
 		if (distance > 0 && size / distance < 0.004)
 			return;
 
 		int flags = DebugTextFlags.CENTER | DebugTextFlags.ONCE | DebugTextFlags.FACE_CAMERA;
-		DebugTextWorldSpace.CreateInWorld(owner.GetWorld(), text, flags, mat, size, color, background);
+		DebugTextWorldSpace.CreateInWorld(owner.GetWorld(), text, flags, world, size, color, background);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -705,16 +724,33 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The rim colour over the face's front (its local +Z side), and the paint inside it by
-	//! m_fRimWidth (layout units over the face area's width), drawn for this editor frame only.
-	protected void WbDrawPanel(vector mat[4], vector mins, vector maxs)
+	//! The face's front (its local +Z side) in the sign's colours, for this editor frame only: a rim
+	//! ring m_fRimWidth wide (layout units over the face area's width), then paint inside it around
+	//! a hole of half-size holeX x holeY at the centre where the title sits. No two quads overlap, so
+	//! draw order does not matter.
+	protected void WbDrawPanel(vector mat[4], vector mins, vector maxs, float holeX, float holeY)
 	{
 		float rim = 0;
 		if (m_vFaceArea[0] > 0)
 			rim = (maxs[0] - mins[0]) * m_fRimWidth / m_vFaceArea[0];
 
-		WbDrawQuad(mat, mins[0], mins[1], maxs[0], maxs[1], maxs[2] + 0.004, ARGBF(1, m_vRimColor[0], m_vRimColor[1], m_vRimColor[2]));
-		WbDrawQuad(mat, mins[0] + rim, mins[1] + rim, maxs[0] - rim, maxs[1] - rim, maxs[2] + 0.008, ARGBF(1, m_vPaintColor[0], m_vPaintColor[1], m_vPaintColor[2]));
+		float z = maxs[2] + 0.004;
+		float midX = (mins[0] + maxs[0]) * 0.5;
+		float midY = (mins[1] + maxs[1]) * 0.5;
+		int rimColor = ARGBF(1, m_vRimColor[0], m_vRimColor[1], m_vRimColor[2]);
+		int paintColor = ARGBF(1, m_vPaintColor[0], m_vPaintColor[1], m_vPaintColor[2]);
+		WbDrawFrame(mat, mins[0], mins[1], maxs[0], maxs[1], mins[0] + rim, mins[1] + rim, maxs[0] - rim, maxs[1] - rim, z, rimColor);
+		WbDrawFrame(mat, mins[0] + rim, mins[1] + rim, maxs[0] - rim, maxs[1] - rim, midX - holeX, midY - holeY, midX + holeX, midY + holeY, z, paintColor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ring between an outer and an inner rectangle, as four quads.
+	protected void WbDrawFrame(vector mat[4], float l, float b, float r, float t, float il, float ib, float ir, float it, float z, int color)
+	{
+		WbDrawQuad(mat, l, b, r, ib, z, color);
+		WbDrawQuad(mat, l, it, r, t, z, color);
+		WbDrawQuad(mat, l, ib, il, it, z, color);
+		WbDrawQuad(mat, ir, ib, r, it, z, color);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -731,8 +767,7 @@ class LF_SignComponent : ScriptComponent
 		tris[3] = a;
 		tris[4] = c;
 		tris[5] = d;
-		// Translucent and no depth write, so the sign's debug text in front of it is not hidden.
-		Shape.CreateTris(color, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE | ShapeFlags.TRANSP | ShapeFlags.NOZWRITE | ShapeFlags.DOUBLESIDE, tris, 2);
+		Shape.CreateTris(color, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE | ShapeFlags.DOUBLESIDE, tris, 2);
 	}
 
 	//------------------------------------------------------------------------------------------------
