@@ -7,4 +7,4 @@
 #
 # At opening the maintainer is the only administrator. The uid is a human step: replace the next
 # line with "<uid> administrator # Jasper".
-#pending administrator Jasper
+924a6bc9-6bb5-4e58-8119-4ae323ccffc0 administrator # Jasper
