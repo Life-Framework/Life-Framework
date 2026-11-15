@@ -1,0 +1,64 @@
+GenericEntity PoliceStation {
+ coords 48 0 50
+ {
+  GenericEntity PoliceStation_Debug {
+   components {
+    MeshObject "{5A4B0B84C86D7843}" {
+     Object "{85A1902159549DEF}Assets/Props/Services/Police/PoliceControlPanel_01.xob"
+    }
+    RigidBody "{5A4B0B84C86D7844}" {
+     Mass 10
+     ModelGeometry 1
+     Static 1
+    }
+    RplComponent "{5A4B0B84C86D784A}" {
+     Enabled 1
+    }
+   }
+   Flags 0x403 0
+     coords 0 0 0
+  }
+  GenericEntity PoliceTableItems {
+    coords 0 0.95 1.4
+   {
+    $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+     PoliceIDCard_Debug {
+      coords 0 0 0
+     }
+    }
+    $grp GenericEntity : "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et" {
+     ConfiscatedKey_Debug {
+      coords 0.2 0 0.05
+     }
+    }
+   }
+  }
+   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    {
+     coords 0 0 1.4
+   }
+  }
+  LF_NpcBaseEntity PoliceNpc : "{284C8FEA46778B5E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_2.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Police"
+      Surname "Officer"
+     }
+    }
+   }
+   coords 0 0 -1.3
+  }
+
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords 0 0.95 1.4
+  }
+ }
+}

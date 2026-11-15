@@ -384,3 +384,6 @@
   Proof verb `config-stream-proof`. Tests `config/stream-roundtrip`,
   `config/stream-client-only`, `config/stream-reject`, `config/stream-vehicles` (the vehicles section, #285).
 
+### Debug grid world — `Worlds/GridWorld/` (#1803, 2026-11-16)
+- 🧪 (2026-11-16, #1803) `Worlds/GridWorld/GridWorld.ent` is the second of the three worlds (`docs/architecture/three-worlds.md`): the flat debug terrain (its own copy, `GridWorld/GridTerrain/`, because the DebugWorld terrain does not load from another world), sky and light, the debug game mode, one spawn `Spawn_Grid_Gate` just inside the annex north gate, the test runner, and every annex entity copied byte for byte from DebugWorld by `node tools/grid/split-annex.mjs --copy` (Annex, HousesKeys, Jobs, NPCs, PRFeatures, Police, Tests, WhitelistChat whole; 2 of the 9 `Crimes` entities). No town spawns, safe or lawless zones. Mission header `Missions/LF_GridWorld.conf`. DebugWorld is unchanged and nothing boots GridWorld by default yet: `toolscli test --world Worlds/GridWorld/GridWorld.ent` does. `tools/lib/worlds.mjs` names the three worlds. Test `world/grid-boot`; `split-annex-selftest`.
+

@@ -4402,10 +4402,11 @@ function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
-    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 600000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args), warm: !args.includes("--no-warm") });
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 600000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args), warm: !args.includes("--no-warm"), unchecked: args.includes("--unchecked-main") });
     console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""} in ${(r.ms / 1000).toFixed(1)} s (${r.warm ? "warm pool" : "fresh checkout"}; lock ${(r.lockMs / 1000).toFixed(1)} s)`);
     console.log(`  time:   ${Object.entries(r.phases ?? {}).map(([k, v]) => `${k} ${(v / 1000).toFixed(1)}s`).join(", ")}`);
-    console.log(`  base:   origin/${r.base}`);
+    console.log(`  base:   origin/${r.base}${r.pinned ? ` at ${r.pinned}` : ""}`);
+    if (r.pinNote) console.log(`  pin:    ${r.pinNote}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
     console.log(`  ports:  game ${r.ports.gamePort}   a2s ${r.ports.a2sPort}`);
@@ -5049,100 +5050,30 @@ async function wtSyncBaseCmd(args) {
   }
 }
 
-// `wt ship` through the ship queue. Returns at once with a status line (--no-wait), or blocks until the
-// gate passed or failed (--wait; the default when stdout is not a terminal, so an agent's report holds).
-async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }) {
-  const q = await import("./ship-queue.mjs");
-  const sql = await import("./lib/ship-queue.mjs");
+async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const { shipDirect } = await import("./lib/ship-direct.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
-  let body = customBody ?? [
-    `Automated ship from worktree \`${slug}\`.`,
-    "",
-    "Gated by the ship queue: origin/" + base + " merged in, then the gate for the diff's tier (see ## Gate) on pool machines.",
-    "",
-    "## Commits",
-    ...subjects.map((s) => `- ${s}`),
-  ].join("\n");
-  body = refsBody(body, closes);
-  {
-    // The tier as the branch stands now; the queue's `ci --tiered` decides again after main is merged in.
-    const tl = gateTier.tierLine(gateTierOf(wtRoot, flags.includes("--full-gate")));
-    console.log(`=== ship: ${tl} ===`);
-    body = `${body}\n\n## Gate\n\n${tl} (the queue re-checks it after merging origin/${base})`;
-  }
-  // Local preflight (seconds to a few minutes): what would fail the queued gate for a reason the agent must
-  // fix goes here, before the push, while the agent is still in the shell. --no-preflight skips it.
-  if (!flags.includes("--no-preflight")) {
-    const t0 = Date.now();
-    const mt = wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]);
-    if (mt.status === 1) {
-      const paths = sql.conflictPaths(mt.stdout);
-      const human = sql.humanConflicts(paths);
-      if (human.length) {
-        console.log(`FAIL  preflight: origin/${base} conflicts with this branch in ${human.join(", ")}; the merge drivers cannot resolve them.`);
-        console.log(`      merge it here: cd ${wtRoot}; git merge origin/${base}; fix, commit; tools\\cli wt ship ${slug}`);
-        return 1;
-      }
-      console.log(`=== ship: preflight: origin/${base} conflicts only in driver-merged files (${paths.join(", ")}); the queue's merge resolves them ===`);
-    } else if (mt.status !== 0) console.log(`ship: preflight: git merge-tree failed (${(mt.stderr || mt.stdout).trim().slice(0, 200)}); the queue's merge decides`);
-    // The checks whose declared inputs changed (incremental validate, no Workbench compile): a red check costs
-    // seconds here and a whole queue slot there.
-    console.log("=== ship: preflight: validate (changed inputs) ===");
-    const v = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true });
-    if (v.status !== 0) {
-      console.log(`FAIL  preflight: validate failed (exit ${v.status}); fix it, commit, and re-run 'tools\\cli wt ship ${slug}'. Nothing was pushed.`);
-      return 1;
-    }
-    console.log(`ship: preflight ok in ${Math.round((Date.now() - t0) / 1000)} s`);
-  }
-  let pr = wt.findOpenPrGh(wtRoot, e.branch);
-  // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
-  if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
-  console.log("=== ship: push (auto-merge waits for the ship queue's gate) ===");
-  const push = wt.git(wtRoot, ["push", "-u", "origin", e.branch]);
-  if (push.status !== 0) {
-    console.log(`FAIL  push: ${push.stderr || push.stdout}`);
-    return 1;
-  }
-  try {
-    if (!pr) pr = wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base });
-  } catch (err) {
-    console.log(`FAIL  PR creation: ${err.message}`);
-    return 1;
-  }
+  const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
+  const gh = (a) => wt.run(wt.ghBin(), a, { cwd: wtRoot });
+  const r = await shipDirect({
+    log: (l) => console.log(l),
+    mergeTree: () => wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]),
+    mergeBase: () => {
+      wt.git(wtRoot, ["fetch", "origin", "--prune"]);
+      wt.wtSync(ROOT, slug);
+    },
+    validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
+    push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
+    findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
+    createPr: () => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base }),
+    autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
+    mergeState: (n) => String(gh(["pr", "view", String(n), "--json", "mergeStateStatus", "-q", ".mergeStateStatus"]).stdout ?? "").trim(),
+  }, { base, slug, preflight: !flags.includes("--no-preflight") });
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
-  const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
-  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15);
-  const log = join(wt.mainRootOf(ROOT), "tmp", "logs", `ship-${slug}-${stamp}.log`);
-  mkdirSync(dirname(log), { recursive: true });
-  let entry;
-  try {
-    entry = q.withQueue(ROOT, (qq) => sql.enqueue(qq, { slug, branch: e.branch, base, wtPath: wtRoot, pr: pr.number, prUrl: pr.url, head, files, log, fullGate: flags.includes("--full-gate"), pin: pinFlags(flags) }));
-  } catch (err) {
-    console.log(`FAIL  ${err.message}`);
-    return 1;
-  }
-  q.publish(ROOT, entry); // tmp/ship-status.json in the worktree and a pending ship-gate status on the PR head
-  const w = await q.ensureWorker(ROOT);
-  if (w.already) console.log(`ship: ${w.message}`);
-  const qq = q.readQueue(ROOT);
-  const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
-  const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
-  const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
-  console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
-  console.log(`PR: ${pr.url}`);
-  // Async by default (docs/worktrees.md "Async ship"): the gate runs in the worker, auto-merge stays off until
-  // it passes. --wait (or LF_SHIP_WAIT=1) blocks here as before.
-  if (!sql.shipWaits(flags, process.env)) {
-    console.log(`ship: queued, gate running detached; auto-merge is enabled only when it passes. Report "shipped, gate running".`);
-    console.log(`  tools\\cli wt ship-status ${slug}          # one line: queued|running|passed|failed`);
-    console.log(`  tools\\cli wait ship ${slug} --budget 540  # blocks up to 9 min, one SUMMARY line; re-run until it says ok|fail`);
-    return 0;
-  }
-  const code = await q.waitFor(ROOT, slug);
-  if (code === 0) console.log(`ship: gated and auto-merge queued; merged, in-dev once GitHub merges it. Prune after merge: 'cli wt prune ${slug}'`);
-  console.log(`PR ${pr.url}, head ${wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim()}`);
-  return code;
+  console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 ? "on" : "off"}`);
+  if (r.pr) console.log(`PR ${r.pr.url}, head ${head}`);
+  if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  return r.code;
 }
 
 async function wtShipCmd(args) {
@@ -5222,8 +5153,10 @@ async function wtShipCmd(args) {
   // The ship queue (tools/ship-queue.mjs, docs/worktrees.md "Ship queue"): push, open the PR with
   // auto-merge off, enqueue; the queue worker merges main once, gates on the pool, pushes, queues
   // auto-merge. --no-queue (or LF_SHIP_QUEUE=0) is the old local gate below.
-  const useQueue = !flags.includes("--no-queue") && process.env.LF_SHIP_QUEUE !== "0" && !skipGate && !prOnly && wt.ghAvailable();
-  if (useQueue) return shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody });
+  // No pre-merge gate (maintainer decision 2026-11-15): preflight, push, PR, auto-merge on. GitHub's validate
+  // check gates the merge; the main guard checks main after it (docs/worktrees.md "Ship"). The ship queue
+  // (tools/ship-queue.mjs) is retired from the flow; --gate runs the old local gate before the push.
+  if (!prOnly && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
@@ -5337,9 +5270,8 @@ function cmdWt(rest) {
     "sync-base": () => wtSyncBaseCmd(subArgs),
     ship: () => wtShipCmd(subArgs),
     "ship-status": async () => {
-      const slug = wtSlug(subArgs);
-      if (!slug) return 1;
-      return (await import("./ship-queue.mjs")).shipStatus(ROOT, slug);
+      console.log("wt ship-status: retired with the ship queue (2026-11-16). 'wt ship' turns auto-merge on; check the PR with 'gh pr view <N> --json mergeStateStatus,statusCheckRollup'.");
+      return 0;
     },
     prune: () => wtPruneCmd(subArgs),
     open: () => wtOpenCmd(subArgs),

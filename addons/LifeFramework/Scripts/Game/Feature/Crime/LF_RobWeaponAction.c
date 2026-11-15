@@ -81,8 +81,15 @@ class LF_RobWeaponAction : ScriptedUserAction
 			return false;
 
 		SCR_InventoryStorageManagerComponent inventoryManager = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
-		if (!inventoryManager || !LF_InventoryUtils.AddItem(inventoryManager, weaponPrefab))
+		if (!inventoryManager)
 			return false;
+
+		array<IEntity> before = LF_InventoryUtils.FindItemsByPrefab(inventoryManager, weaponPrefab);
+		if (!LF_InventoryUtils.AddItem(inventoryManager, weaponPrefab))
+			return false;
+
+		// The fence buys it back as stolen goods.
+		LF_StolenGoods.MarkNew(user, weaponPrefab, before);
 
 		LF_PlayerAccount account = LF_RobAction.FindAccount(playerUid);
 		if (account)

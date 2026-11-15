@@ -2331,6 +2331,7 @@ class LF_AgentHarness
 		if (LF_Restraint.IsRestrained(character))
 			cuffed = 1;
 		line += string.Format(" cuffed=%1", cuffed);
+		line += " " + BodyToken(character);
 		line += " " + VitalsToken(character);
 		line += string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
 		return line + " " + KeepsToken(uid);
@@ -2658,6 +2659,7 @@ class LF_AgentHarness
 			if (LF_Restraint.IsRestrained(body))
 				peerCuffed = 1;
 			joined += string.Format(" cuffed=%1", peerCuffed);
+			joined += " " + BodyToken(body);
 		}
 
 		// The playtest town's practice patient (an NPC, so not in the player list), read the same way.
@@ -2776,6 +2778,27 @@ class LF_AgentHarness
 
 	//------------------------------------------------------------------------------------------------
 	//! ALIVE, INCAPACITATED (vanilla unconscious), DEAD, or "none" for a body without a controller.
+	//! #1857: whether this machine sees the body ragdolled, and its stance ("ragdoll=1 stance=PRONE").
+	static string BodyToken(IEntity entity)
+	{
+		ChimeraCharacter character = ChimeraCharacter.Cast(entity);
+		if (!character)
+			return "ragdoll=0 stance=none";
+
+		int ragdoll = 0;
+		CharacterAnimationComponent animation = character.GetAnimationComponent();
+		if (animation && animation.IsRagdollActive())
+			ragdoll = 1;
+
+		string stance = "none";
+		CharacterControllerComponent controller = character.GetCharacterController();
+		if (controller)
+			stance = typename.EnumToString(ECharacterStance, controller.GetStance());
+
+		return string.Format("ragdoll=%1 stance=%2", ragdoll, stance);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string LifeStateToken(IEntity entity)
 	{
 		ChimeraCharacter character = ChimeraCharacter.Cast(entity);
@@ -3281,13 +3304,26 @@ class LF_AgentHarness
 
 		if (!Replication.IsServer() && (cmd.Arg1.StartsWith("LF_") || cmd.Arg1.StartsWith("LF_")))
 		{
-			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
+			// "LF_TownBoardCardAction__2" is the third action of that class on the host, as on the
+			// server path (ApplyUse); without this a numbered local-effect action went to the server.
+			string localClass = cmd.Arg1;
+			int localIndex = 0;
+			int localIndexAt = localClass.IndexOf("__");
+			if (localIndexAt > 0)
+			{
+				localIndex = localClass.Substring(localIndexAt + 2, localClass.Length() - localIndexAt - 2).ToInt();
+				localClass = localClass.Substring(0, localIndexAt);
+			}
+
+			IEntity target = FindTarget(character, localClass, cmd.Arg2);
 			// A replicated NPC has no layer name on a client: take the nearest host of the action.
 			if (!target && cmd.Arg2 != "")
-				target = FindTarget(character, cmd.Arg1, "");
+				target = FindTarget(character, localClass, "");
 			ScriptedUserAction localAction;
-			if (target)
-				localAction = FindShownOnEntity(target, cmd.Arg1, character);
+			if (target && localIndex > 0)
+				localAction = FindNthOnEntity(target, localClass, character, localIndex);
+			else if (target)
+				localAction = FindShownOnEntity(target, localClass, character);
 
 			if (localAction && localAction.HasLocalEffectOnlyScript())
 			{

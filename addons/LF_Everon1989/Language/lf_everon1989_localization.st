@@ -1334,6 +1334,181 @@ StringTable {
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
     }
+    CustomStringTableItem "{08E024031EF25E98}" {
+     Id "LF-TownBoard_Title"
+     Target_en_us "Everon town board"
+     Comment "Header printed across the top of the town board on the square."
+    }
+    CustomStringTableItem "{FB1FC150BA9CFE1B}" {
+     Id "LF-TownCard_Bank_Category"
+     Target_en_us "Bank"
+     Comment "Town board card (bank): category."
+    }
+    CustomStringTableItem "{57314E9DCB06DBD0}" {
+     Id "LF-TownCard_Bank_Detail"
+     Target_en_us "Talk to the teller, then *Deposit* or *Withdraw*|Cash you carry stays on your body if you die; money in the bank is safe|A vehicle over $500 is paid from the account"
+     Comment "Town board card (bank): detail sheet text."
+    }
+    CustomStringTableItem "{C1302AEFB910B90A}" {
+     Id "LF-TownCard_Bank_Line"
+     Target_en_us "Bank your pay with the teller. Banked money stays yours."
+     Comment "Town board card (bank): one line on the card."
+    }
+    CustomStringTableItem "{E09CB077B4DDB5CA}" {
+     Id "LF-TownCard_Bank_Place"
+     Target_en_us "Bank teller"
+     Comment "Town board card (bank): name of the place in the where line."
+    }
+    CustomStringTableItem "{1AAD706A70F92792}" {
+     Id "LF-TownCard_Bank_Title"
+     Target_en_us "Keep your money safe"
+     Comment "Town board card (bank): card title."
+    }
+    CustomStringTableItem "{ECE54C3B0636F415}" {
+     Id "LF-TownCard_Cars_Category"
+     Target_en_us "Cars"
+     Comment "Town board card (cars): category."
+    }
+    CustomStringTableItem "{96AE648CE800B877}" {
+     Id "LF-TownCard_Cars_Detail"
+     Target_en_us "*Buy vehicle* at the counter; it waits for you on the lot|S105 $1000, UAZ $2500, van $4000|Anything over $500 is paid from your bank account|Keep it at the garage so it is still yours after a restart"
+     Comment "Town board card (cars): detail sheet text."
+    }
+    CustomStringTableItem "{80A4EACE013653FB}" {
+     Id "LF-TownCard_Cars_Line"
+     Target_en_us "Cars and trucks for sale, each with its own key and plates."
+     Comment "Town board card (cars): one line on the card."
+    }
+    CustomStringTableItem "{3DAF249A70C31274}" {
+     Id "LF-TownCard_Cars_Title"
+     Target_en_us "Vehicle lot"
+     Comment "Town board card (cars): card title."
+    }
+    CustomStringTableItem "{F756D3AE390FEE94}" {
+     Id "LF-TownCard_Hospital_Category"
+     Target_en_us "Hospital"
+     Comment "Town board card (hospital): category."
+    }
+    CustomStringTableItem "{A0F8B368DFFA9091}" {
+     Id "LF-TownCard_Hospital_Detail"
+     Target_en_us "*Clock in* at the duty desk for the medic kit|A medic can *Revive* a downed patient and bring them to a bed|Treatment bills are paid in cash at the desk"
+     Comment "Town board card (hospital): detail sheet text."
+    }
+    CustomStringTableItem "{A054EE91DBE51289}" {
+     Id "LF-TownCard_Hospital_Line"
+     Target_en_us "Clock in as a medic, or pay a treatment bill at the desk."
+     Comment "Town board card (hospital): one line on the card."
+    }
+    CustomStringTableItem "{7FDA4F1CF582AFAA}" {
+     Id "LF-TownCard_Hospital_Place"
+     Target_en_us "Hospital"
+     Comment "Town board card (hospital): name of the place in the where line."
+    }
+    CustomStringTableItem "{E11BF514478D9956}" {
+     Id "LF-TownCard_Hospital_Title"
+     Target_en_us "Medics and treatment"
+     Comment "Town board card (hospital): card title."
+    }
+    CustomStringTableItem "{8BA71674F74C751F}" {
+     Id "LF-TownCard_Orgs_Category"
+     Target_en_us "Organizations"
+     Comment "Town board card (organisations): category."
+    }
+    CustomStringTableItem "{705D5E5AF6A6E2B2}" {
+     Id "LF-TownCard_Orgs_Detail"
+     Target_en_us "At the organization desk: *Found organization*, then invite your members|Keep a shared fund and buy a processing slot|The walled hideout yard up the alley opens for members only"
+     Comment "Town board card (organisations): detail sheet text."
+    }
+    CustomStringTableItem "{1A83AB0AA90B5EC0}" {
+     Id "LF-TownCard_Orgs_Line"
+     Target_en_us "Register an organization, share a fund, open a hideout."
+     Comment "Town board card (organisations): one line on the card."
+    }
+    CustomStringTableItem "{8CBC1F1C256D60B5}" {
+     Id "LF-TownCard_Orgs_Title"
+     Target_en_us "Start a crew"
+     Comment "Town board card (organisations): card title."
+    }
+    CustomStringTableItem "{43D58C6A3657CB6C}" {
+     Id "LF-TownCard_Police_Category"
+     Target_en_us "Police"
+     Comment "Town board card (police): category."
+    }
+    CustomStringTableItem "{1EA2FAD3C5642AC7}" {
+     Id "LF-TownCard_Police_Detail"
+     Target_en_us "At the duty desk: *Apply to the police*|Once you are on the roster, *Clock in* for the uniform and *Draw kit* at the armory|Duty pays $30 a minute|Wanted people go to the jail yard behind the station"
+     Comment "Town board card (police): detail sheet text."
+    }
+    CustomStringTableItem "{D8038010B55B05AE}" {
+     Id "LF-TownCard_Police_Line"
+     Target_en_us "Join the roster, clock in at the station, keep the street safe."
+     Comment "Town board card (police): one line on the card."
+    }
+    CustomStringTableItem "{687B20E68A019E97}" {
+     Id "LF-TownCard_Police_Title"
+     Target_en_us "The police are recruiting"
+     Comment "Town board card (police): card title."
+    }
+    CustomStringTableItem "{6B1F2E88521A7E2A}" {
+     Id "LF-TownCard_Rules_Category"
+     Target_en_us "Rules"
+     Comment "Town board card (rules): category."
+    }
+    CustomStringTableItem "{5746E8387DB640D9}" {
+     Id "LF-TownCard_Rules_Detail"
+     Target_en_us "Hurt someone only for a reason your character has|With a gun on you, comply, then report it|After a death, forget what led to it|The full rules are on the board beside this one"
+     Comment "Town board card (rules): detail sheet text."
+    }
+    CustomStringTableItem "{7375D17098A6DF55}" {
+     Id "LF-TownCard_Rules_Line"
+     Target_en_us "No random violence. Comply at gunpoint. A new life after a death."
+     Comment "Town board card (rules): one line on the card."
+    }
+    CustomStringTableItem "{B4FB395E7706C938}" {
+     Id "LF-TownCard_Rules_Title"
+     Target_en_us "Town rules"
+     Comment "Town board card (rules): card title."
+    }
+    CustomStringTableItem "{80C3470CDDD10B50}" {
+     Id "LF-TownCard_Shops_Category"
+     Target_en_us "Shops"
+     Comment "Town board card (shops): category."
+    }
+    CustomStringTableItem "{1F9B4466F2F38518}" {
+     Id "LF-TownCard_Shops_Detail"
+     Target_en_us "*Buy* or *Sell* at the general store counter|The market stalls next door buy fruit and goods for cash|Apples and plums grow in the farm orchard east of the village"
+     Comment "Town board card (shops): detail sheet text."
+    }
+    CustomStringTableItem "{8FD857354C5AA276}" {
+     Id "LF-TownCard_Shops_Line"
+     Target_en_us "Food and supplies. The market stalls buy what you gather."
+     Comment "Town board card (shops): one line on the card."
+    }
+    CustomStringTableItem "{5F866D445512A0D6}" {
+     Id "LF-TownCard_Shops_Title"
+     Target_en_us "Store and market"
+     Comment "Town board card (shops): card title."
+    }
+    CustomStringTableItem "{C9558D7D09BA4A0A}" {
+     Id "LF-TownCard_Work_Category"
+     Target_en_us "Work"
+     Comment "Town board card (work): category printed in red at the top of the card."
+    }
+    CustomStringTableItem "{DCC13D1E658AD23C}" {
+     Id "LF-TownCard_Work_Detail"
+     Target_en_us "At the counter: *Take courier work*, then *Pick up parcel*|Carry it to the drop and *Complete the run*|A courier run pays $40; fuel and taxi work open at higher work levels|Out of work? *Collect benefit* at the same counter"
+     Comment "Town board card (work): detail sheet text. | separates list items; *word* is printed in the accent colour and names an action the player sees."
+    }
+    CustomStringTableItem "{D5BCB9C32D672356}" {
+     Id "LF-TownCard_Work_Line"
+     Target_en_us "Deliver parcels for the post office. Paid in cash."
+     Comment "Town board card (work): one line on the card."
+    }
+    CustomStringTableItem "{82FD9D6087457BC9}" {
+     Id "LF-TownCard_Work_Title"
+     Target_en_us "Couriers wanted"
+     Comment "Town board card (work): card title; the prompt reads Read: <title>."
+    }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {
      Id "LF_Everon1989_AlphaNotice"
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
