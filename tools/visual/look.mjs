@@ -25,6 +25,7 @@ import { deflateSync, inflateSync } from "node:zlib";
 import { quietSpawn } from "../lib/quiet-launch.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
+import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PLUGIN = join(ROOT, "tools", "visual", "wb", "LF_VisualShotsPlugin.c");
@@ -63,7 +64,22 @@ const r1 = (v) => Math.round(v * 10) / 10;
 const safe = (s) => String(s).replace(/[^A-Za-z0-9_-]/g, "_");
 
 // "hospital" -> the areas.json entry; "262,255" -> an ad-hoc area.
-export function resolveArea(arg, areas, radius) {
+export function resolveArea(arg, areas, radius, { root = ROOT } = {}) {
+  // grid:<slug> is a debug-grid cell (tools/grid/cells/<slug>.json); town:<area> is an areas.json
+  // area that must lie in the town zone (docs/architecture/world-zones.md).
+  const zoned = /^(grid|town):(.+)$/.exec(String(arg));
+  if (zoned && zoned[1] === "grid") {
+    const entry = readCells(root).find((c) => c.slug === zoned[2]);
+    const area = entry && zoneLookArea(entry);
+    if (!area) throw new Error(`no grid cell for "${zoned[2]}" (tools\\cli grid list)`);
+    return { ...area, radius: radius ?? area.radius };
+  }
+  if (zoned) {
+    const town = areas.find((a) => a.name === zoned[2]);
+    if (!town) throw new Error(`unknown town area "${zoned[2]}". Known: ${[...new Set(areas.map((a) => a.name))].join(", ")}`);
+    if (inGrid(town.x, town.z)) throw new Error(`area "${zoned[2]}" is in the debug grid, not the town`);
+    return { ...town, radius: radius ?? town.radius };
+  }
   const hit = areas.find((a) => a.name === arg);
   if (hit) return { ...hit, radius: radius ?? hit.radius };
   const m = /^(-?\d+(?:\.\d+)?)[, ](-?\d+(?:\.\d+)?)$/.exec(String(arg));
@@ -385,6 +401,8 @@ export function workbenchArgs(root, profile, plugin = "LF_VisualShotsPlugin") {
 
 // Starts the hidden Workbench on the plan and resolves when it exits or the budget is spent.
 export async function runWorkbench(exe, profile, budgetS, measure, { plugin = "LF_VisualShotsPlugin" } = {}) {
+  // The one place a look-style run starts Workbench (look, look server, clothing shots): never on a PC without the workbench cap.
+  (await import("../lib/wb-route.mjs")).requireLocalWorkbench(ROOT, `Workbench run (${plugin})`);
   const args = workbenchArgs(ROOT, profile, plugin);
   const il = await import("../lib/interactive-launch.mjs");
   if (il.interactiveNeeded()) return runInteractive(il, exe, args, profile, budgetS);
@@ -807,6 +825,23 @@ export async function selftest() {
   const plan = planText(shots, [area], { hour: 9 });
   ok(/^world Worlds\/(DebugWorld\/DebugWorld|Everon1989Town\/Everon1989Town)\.ent\nmode play\nhour 9\nsettle 350\nfirst 3000\npark -60 40\nshot /.test(plan), `plan head: ${plan.slice(0, 110)}`);
   ok(planText(shots, [area], { edit: true }).includes("\nmode edit\n"), "--edit did not reach the plan");
+  {
+    // Zoned targets (docs/architecture/world-zones.md): town:<area> refuses an area inside the grid; grid:<slug> needs a claim.
+    let refused = false;
+    try {
+      resolveArea("town:annex", [{ name: "annex", x: 50, z: 50, radius: 5 }]);
+    } catch {
+      refused = true;
+    }
+    ok(refused && resolveArea("town:bank", [{ name: "bank", x: 188, z: 260, radius: 18 }]).x === 188, "resolveArea town:");
+    let none = false;
+    try {
+      resolveArea("grid:no-such-cell", [], undefined, { root: join(ROOT, "tmp", "no-such-root") });
+    } catch {
+      none = true;
+    }
+    ok(none, "resolveArea grid: with no claim");
+  }
   ok(resolveArea("12.5,40", []).name === "xz-13-40" && resolveArea("bank", [{ name: "bank", x: 1, z: 2, radius: 5 }], 9).radius === 9, "resolveArea");
   let threw = false;
   try {
@@ -955,26 +990,39 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug> | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);
+  if (args.flags.local) process.env.LF_WB_LOCAL = "1"; // a human's explicit ask for this PC's Workbench
   if (args.pos[0] === "selftest") return selftest();
-  if (args.pos[0] === "serve") return serveMain(args);
+  const route = await import("../lib/wb-route.mjs");
+  if (args.pos[0] === "serve") {
+    // The look server is a long-lived Workbench on this PC: no remote form. --status and --stop start nothing.
+    const pol = route.localWorkbench(ROOT);
+    if (!pol.allowed && !args.flags.status && !args.flags.stop) {
+      console.log(`FAIL  ${route.refusalText("look serve", pol.host)} \`look <area>\` still works: it runs on a pool machine.`);
+      return 2;
+    }
+    return serveMain(args);
+  }
   if (!args.pos.length || args.flags.help) {
     console.log(USAGE);
     return args.flags.help ? 0 : 2;
   }
   const serve = await import("./look-serve.mjs");
-  if (routeMode(args, { serverUp: () => serve.serverUp(ROOT), env: process.env }) === "local") return localLook(args);
+  let mode = routeMode(args, { serverUp: () => serve.serverUp(ROOT), env: process.env });
+  // A PC without the workbench cap never looks locally unless a human passed --local (LF_WB_LOCAL=1).
+  if (mode === "local" && !route.localWorkbench(ROOT).allowed) mode = "route";
+  if (mode === "local") return localLook(args);
   const wt = await import("../wt.mjs");
   if (wt.isMainCheckout(ROOT)) return run(args); // refuses with the worktree hint
   return routeLook(args, argv);
 }
 
-// This PC: one of its Workbench slots for the whole look (tools/lib/wb-lock.mjs), then the run.
+// This PC: one of its Workbench slots for the whole look (tools/lib/wb-lock.mjs, behind the workbench-cap check), then the run.
 async function localLook(args) {
-  const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
+  const { acquireWorkbench } = await import("../lib/wb-route.mjs");
   const wb = await acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
   try {
     return await run(args);
@@ -1032,7 +1080,7 @@ async function routeLook(args, argv) {
     let view;
     let c;
     for (;;) {
-      view = wbGate.workbenchView(ROOT, { mode: "any", machine });
+      view = (await import("../lib/wb-route.mjs")).workbenchMachines(ROOT, { mode: "any", machine }); // this PC only with the workbench cap
       c = wbGate.chooseGate({ ...view, machine, exclude: tried, reserveMb: LOOK_RESERVE_MB, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
       if (c.where !== "wait") break;
       if (Date.now() - t0 > waitS * 1000) {

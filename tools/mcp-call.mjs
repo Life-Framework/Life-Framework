@@ -210,6 +210,19 @@ async function main() {
   // A wb_* call with no Workbench up would make the MCP launch one in front of
   // the user. Start it on the hidden LF-Agents desktop first (LF_SHOW_WINDOWS=1 opts out).
   const calls = batch ? batch.map((c) => c.tool) : toolName ? [toolName] : [];
+  // Every wb_* tool runs against a Workbench (a live one, or a one-shot CLI one) and the MCP starts one by
+  // itself when none is up. A PC without the workbench cap (the maintainer's editor lives on it) refuses
+  // them all: there is no remote form (tools/lib/wb-route.mjs). LF_WB_LOCAL=1 from a human allows it.
+  const wbCall = calls.find((t) => /^wb_/.test(t));
+  if (wbCall) {
+    const route = await import("./lib/wb-route.mjs");
+    const pol = route.localWorkbench(ROOT);
+    if (!pol.allowed) {
+      console.error(route.refusalText(`${wbCall} (a wb_* tool needs a Workbench)`, pol.host));
+      console.error("  no Workbench-free form of this call exists; api_search, game_read, asset_search and `tools\\cli api class <Name>` do not need one");
+      return 2;
+    }
+  }
   if (needsWorkbench(calls)) {
     const status = await ensureQuietWorkbench({ serverDir: cwd, env: { ENFUSION_PROJECT_PATH: join(ROOT, "addons"), ...env } });
     if (!status.startsWith("skip")) console.error(`[quiet-workbench] ${status}`);

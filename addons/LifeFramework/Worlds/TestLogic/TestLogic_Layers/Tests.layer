@@ -1,0 +1,8 @@
+GenericEntity LF_TestRunner {
+ components {
+  LF_TestRunnerComponent "{EDCBDA5507D10512}" {
+   m_bLogicWorld 1
+  }
+ }
+ coords 0 0 0
+}

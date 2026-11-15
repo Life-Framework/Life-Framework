@@ -32,6 +32,7 @@ const pages = {
   "/config": "Build your server config",
   "/config/reference": "Every field of your config",
   "/credits": "Projects we build on and borrow from",
+  "/rules": "These rules hold for everyone in town",
   "/docs": "The paperwork",
   "/docs/direction": "What we are building",
   "/docs/playtest": "Open the playtest",
