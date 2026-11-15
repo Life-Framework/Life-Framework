@@ -1,145 +1,89 @@
-# M5 Flagship Story (outline)
+# M5 Settling in (outline)
 
-M5 gives the 1989 Everon flagship its own identity so it stands out and draws
-new players. The maintainer set the shape on 2026-11-09 in an interview. This
-file is an outline: no sub-issues exist yet, and each workstream gets scope
-cards after M4 is live. The source ideas are in epic #214. Read it with
-[direction](../direction.md), [decisions](../decisions.md), and the
+M5 is the first update after the 1989 Everon flagship goes live (M4). In its
+first weeks every player is new, so M5 deepens the first ten hours: arriving,
+getting kit, policing the roads, the evenings, the town paper, and the first
+part of the relocation story. The issue set was finalised on 2026-11-15. Read
+it with the [roadmap](README.md), [direction](../direction.md) and the
 [M4 outline](m4-outline.md).
 
 **Theme.** You were relocated from the Chernobyl area and are starting life
-again on Everon in 1989.
+again on Everon in 1989. Flagship content is built on framework systems, and
+the core stays era-neutral.
 
-**What M5 is for.** Attracting new players (maintainer, 2026-11-09): a
-distinct identity in the server browser, in trailers, and in a first session.
-It is flagship content built on framework systems; the core stays era-neutral.
+## Chapters
 
-**The hook.** Player drama. Crime, police and the economy produce the stories
-players tell; the arrival and the world frame them. M5 builds texture and a
-strong first hour, not a quest campaign.
+Each chapter is one player story and one 60 to 120 second video; its beat
+sheet is the acceptance test (rules in [README.md](README.md)). Chapters ship
+one at a time to the live server as each passes its playtest, in this order:
 
-**Story shape.** A light guided arc: a short scripted arrival (papers, the
-clerk, a starting room, the first week) that hands off to the open sandbox. No
-ongoing quest lines and no quest-state tooling.
+| Order | Chapter | Framework (core) | Flagship (1989 pack) |
+| --- | --- | --- | --- |
+| 1 | Armed and dressed #1009 | Catalogue and outlets #988 (stock #1064, outlets #1065, armory #1066, search and seizure #1067, conceal flags #1068, licence desk #1069), store previews #583 | Weapon split #989, clothing and equipment #990, police career #797, vanilla period assets #981 |
+| 2 | On patrol #1014 | Spike strips, cones and barriers #646, placement preview #928, breathalyser #634 | Police kit #647, breathalyser #635, an alarm per robbery type #929 |
+| 3 | Evenings in the village #1011 | Emotes and sitting #982, drunk effect #636, race runner #790 | Chess, range and hall #802, drunk effect #637, dirt race #791 |
+| 4 | Arrival #1007 | Onboarding chain #794, NPC bus #203, AI route driver #772, rejoin #640, handbook #642 | Arrival chain #795, Everon bus line #1101, rejoin #641, handbook #643 |
+| 5 | Read all about it #1008 | Gazette #792, event shell #757, board answers #758, nearest place #760 | Town paper #793 |
+| 6 | Story: The relocated #1015 | Event scenes #1754 | Bus at dawn #1755, the clerk's welcome #1756, townspeople #1757, the hostel #1758, radio music #1759 |
 
-## First release
+Why this order: the first three chapters are mostly built already (catalogue,
+clothing, placement and emotes are merged and in playtest). Arrival waits on
+the AI route driver, the paper waits on the event shell, and the story chapter
+needs both, so it comes last and carries the update's trailer.
 
-1. **Arrival and music.**
-   - The arrival frames the player as a relocated citizen: relocation papers,
-     the clerk, a starting room (#214 item 1).
-   - Soviet-era style music from radios, cafes and the square. Source: AI
-     generated in period style (maintainer's choice). Before building, record
-     the tool's licence terms for redistribution in the APL Workshop build, and
-     keep a per-track record; if the terms do not allow it, stop and ask
-     (#214 item 2).
-   - Voiced NPCs for the arrival clerk and a few key recurring characters only
-     (#218); small line count, re-record only when copy changes.
-2. **Food and the state factory.**
-   - Real food items and shops: bread, potatoes, cabbage, beetroot, meat,
-     coffee, with simple seasonal availability (#214 item 5).
-   - The state factory as a steady wage for a real work loop at stations, not a
-     timer, and no passive paycheck (#214 item 4; the decision stands).
-3. **Getting around.**
-   - Bus stops (#203): travel between known stations by fare.
-   - Car upkeep stays light (maintainer, 2026-11-09): fuel and simple repairs
-     only. It is not a focus, because upkeep is boring and adds friction. No
-     parts system and no random breakdowns.
-   - Trash cans (#205) ride along, since they are small and already scoped.
+## Foundation
 
-4. **Illicit chains (flagship content).** The M2 Underworld epic (#410) builds
-   the tiered-chain system, hands-on stations, smoke and searches, and the easy
-   moonshine chain. M5 adds the rest as pack config (maintainer, 2026-11-09):
-   tobacco smuggling (medium), pharmacy diversion, counterfeit papers and cash
-   (hard), and poppy-straw "kompot" (hard). Poppy kompot needs a Bohemia
-   Workshop policy check before anything is built. Details:
-   [illicit chains](scopes/crime/drug-chains.md).
+Plumbing that ships with M5 but has no video of its own:
 
-## Two tracks (maintainer, 2026-11-10)
+- Placement #927: the service, aimed ghost, probes, rules and compositions.
+  #1032 to #1034 are children for M6 and M8.
+- 3D asset pipeline #339: licence gate #664, then the Meshy, Blender and
+  Reforger stages and the one-command harness (#665 to #669). It produces the
+  arrival and factory props #670 and #671.
+- Voice pipeline #343: already voices the Everon clerk; the story chapter uses
+  it.
+- ArchBuilder harness #995: buildings from the maintainer's ArchBuilder add-on.
+  Harness only; its code is never copied.
 
-M5 is built in two tracks, and every roadmap item from M5 on is broken down the
-same way:
+The animation, weapon and vehicle pipelines (#340, #341, #342) moved to
+Development on 2026-11-15, because no M5 chapter needs them. The bus runs on
+the placeholder UAZ-452 until #342 makes a real one.
 
-- **Framework** (epic #632): the underlying systems in the core, era-neutral and
-  configurable.
-- **Flagship** (epic #633): the specific 1989 Everon content in
-  `LF_Everon1989`, built on the Framework track.
+## Decisions (maintainer)
 
-The first-release items above sit on one side or the other: the arrival,
-music, voiced NPCs, food, the factory wage and the chain content are Flagship;
-the systems they need (stations, dialogue, route jobs) are Framework.
-
-## 3D development (maintainer, 2026-11-10)
-
-All 3D asset work is in M5 (epic #339, moved from Development). The harness
-chains three tools into one nearly autonomous pipeline:
-
-1. **Meshy** ([meshy.ai/mcp](https://www.meshy.ai/mcp)) generates a model from a
-   brief.
-2. **Blender** (MCP or CLI, headless) cleans, scales, retopologises, UVs, bakes
-   and exports it.
-3. **Reforger** import registers the files and builds the prefab.
-
-Agents verify and re-verify both visually (turntable, then in-game shots held,
-on the ground and in the inventory) and otherwise (budgets, scale, GUIDs, log).
-One command (`toolscli asset new`) runs it all, with a cost cap, a retry
-limit and an asset ledger. The licence gate comes first: Meshy's terms and
-Bohemia's policy must allow Workshop redistribution, or we stop and ask.
-
-| Framework | Flagship |
-| --- | --- |
-| #339 epic; licence gate #664, Meshy stage #665, Blender stage #666, Reforger stage #667, verification loop #668, one-command harness and ledger #669 | #670 first items (shovel, pickaxe, keys, previews), #671 arrival and factory props |
-
-Base-game assets are still the first choice. From M5, a new mesh is allowed
-only through this harness, with a ledger row.
-
-## Ideas from the Genetic Life review (2026-11-10)
-
-A list of another Reforger life mod's features was sorted into what fits. The
-fits all land in M5, each as a Framework and a Flagship issue:
-
-| Idea | Framework | Flagship |
-| --- | --- | --- |
-| Breathalyser and drug-test kit | #634 | #635 |
-| Timed drunk effect | #636 | #637 |
-| Bank transfer by account number | #638 | #639 |
-| Rejoin where you logged out | #640 | #641 |
-| In-game handbook | #642 | #643 |
-| Money laundering station | #644 | #645 |
-| Spike strips, cones, barriers | #646 | #647 |
-| Repair kit and unflip | #648 | #649 |
-| Pickaxe and shovel gate gathering | #650 | #651 |
-| Medic ranks | #652 | #653 |
-| Staff terminal | #654 | #655 |
-| Prison work | #656 | #657 |
-| Bus and garbage routes | #658 | #659 |
-| Era clothing and fedora | none | #660 |
-| Multi-stage heist (idea only) | #662 | #663 |
-
-Several depend on M2 work (#419, #420, #416, #417, #246, #258). Not a fit:
-custom weapons and vehicles, a custom map, a minimap, dirty-cash balances,
-hard drugs, tasers, speed cameras, air and boat dealers.
+- **Story scope (2026-11-15).** The relocated is voiced (the clerk and three
+  townspeople) and has period radio music. Each music track gets a licence and
+  credit record before it ships; if the tool's terms do not allow Workshop
+  redistribution, stop and ask.
+- **Car upkeep stays light (2026-11-09).** Fuel and simple repairs only, with
+  no parts system and no random breakdowns (repair kit #648 is in M6).
+- **Base-game assets first.** A new mesh only comes through the 3D harness,
+  with a ledger row.
 
 ## Moved out of M5
 
-- **Property, renting, the dacha, and farming** go to a new milestone, **M6
-  Homes and Land** (milestone 7 on GitHub), so M5 stays small and shippable.
-- **The Zone** (the Chernobyl-like PvP area with gas masks) is parked in the
-  idea backlog. Revisit after M5 playtests; it ties to the "one marked lawless
-  area" decision and M2 events.
+- Food, the state factory and the market go to M6 Making a living
+  (story chapter #1021, The market moves #1016).
+- Property, the dacha and farming go to M8 Roots (#747, #1037).
+- The Genetic Life review ideas are spread over M6 and M7 by theme (bank
+  transfer, repair kit, tools, medic ranks, routes in M6; laundering, prison
+  work, heist in M7).
+- The Zone (the Chernobyl-like PvP area) is parked until after the M5
+  playtests.
+- The source idea epics #214 and #218 are closed; every item has a home
+  (see the closing comment on #214).
 
 ## Rules
 
 - Flagship content lives in `LF_Everon1989`, and the core never references it
-  (`validate-addon-boundary`). Framework items are core systems with a reason
-  beyond one era.
-- A new core system needs a Framework issue and a Flagship issue that uses it.
+  (`validate-addon-boundary`). A new core system has a Framework issue and a
+  Flagship issue that uses it.
 - Period copy and art follow the pack's branding brief (#375).
+- Slices are cut per chapter with the roadmap pipeline
+  (`docs/process/roadmap-pipeline.md`).
 
 ## Open questions
 
 - Whether Meshy's plan terms allow Workshop redistribution (#664).
-- How long the arrival arc is, and whether it replays for a new character.
-- Which key NPCs get voices beyond the clerk.
-- Which AI music tool, and whether its licence permits redistribution.
-- Whether food seasons are real-time or tied to the day and night cycle (#129).
-- How the factory wage scales so it does not outpay crime-and-trade play.
+- Whether a new character's spawn can be a hostel bed without a core change
+  (#1758).
