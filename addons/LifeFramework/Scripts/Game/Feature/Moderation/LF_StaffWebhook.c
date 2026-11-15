@@ -13,8 +13,8 @@ class LF_StaffWebhook
 	static const string FEATURE = "Moderation";
 
 	//! Longest line posted; longer text is cut (a chat webhook refuses an oversized message).
-	static const int MAX_TEXT = 1900;
-	static const int TIMEOUT_SECONDS = 10;
+	static const int MAX_TEXT = 1900; // lf-fixed: a chat webhook refuses more than 2000 characters
+	static const int TIMEOUT_SECONDS = 10; // lf-fixed: a protocol bound, not tuning
 
 	//! Test seam: when set, Send appends here instead of posting. Not owned (the test holds it).
 	protected static array<string> s_aCapture;
