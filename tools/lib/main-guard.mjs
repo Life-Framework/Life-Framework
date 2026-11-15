@@ -128,10 +128,18 @@ export function shouldCompile(state, head, now) {
 // The compile gate. compile(sha) -> "ok"|"fail"|"env". A failure is deterministic: no recheck, straight to the
 // bisect over the merges since the last compiled-ok head, and the culprit is reverted (refusal permitting).
 // Returns { verdict: "compiled-ok"|"red"|"env", culprit, refusal, tested }.
-export async function compileGate({ head, merges, state, compile }) {
+// base: the commit the bisect assumes compiles (the last compiled-ok head, else the last green one). When it was
+// never compile-checked (baseChecked false) it is compiled first: red there too means the break predates every
+// candidate, and nothing is blamed.
+export async function compileGate({ head, merges, state, compile, base = null, baseChecked = true }) {
   const first = await compile(head);
   if (first === "ok") return { verdict: "compiled-ok", tested: [] };
   if (first === "env") return { verdict: "env", tested: [] };
+  if (base && !baseChecked) {
+    const b0 = await compile(base);
+    if (b0 === "env") return { verdict: "env", tested: [] };
+    if (b0 === "fail") return { verdict: "red", culprit: null, refusal: `the compile was already red at ${base.slice(0, 8)}, before every candidate merge`, tested: [{ sha: base, failed: true }] };
+  }
   const ENV = Symbol("env");
   try {
     const b = await bisect(candidates(merges), async (c) => {

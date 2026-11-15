@@ -205,7 +205,7 @@ async function compileHead(root, cdir, head) {
     return v;
   };
   const from = state.lastCompiled ?? state.lastGreen ?? state.startHead;
-  const g = await mg.compileGate({ head, merges: mergesSince(cdir, from, head, state.startHead), state, compile });
+  const g = await mg.compileGate({ head, merges: mergesSince(cdir, from, head, state.startHead), state, compile, base: from, baseChecked: !!state.lastCompiled });
   writeState(root, { compiling: null });
   if (g.verdict === "env") { log(root, `${head.slice(0, 8)} compile: no verdict (pool machine), retry next tick`); return; }
   if (g.verdict === "compiled-ok") {
