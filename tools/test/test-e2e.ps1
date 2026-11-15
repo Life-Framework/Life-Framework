@@ -272,6 +272,8 @@ if ($Tier -eq "fast") {
   $args += @("-scrDefine", "LF_TEST_TIER_FAST")
 } elseif ($Tier -eq "persistence") {
   $args += @("-scrDefine", "LF_TEST_TIER_PERSISTENCE")
+} elseif ($Tier -eq "perf") {
+  $args += @("-scrDefine", "LF_TEST_TIER_PERF")
 }
 
 $expectedTier = $Tier
@@ -325,6 +327,26 @@ if ($env:LF_TEST_HANG -eq "boot") {
   $exe = (Get-Command powershell).Source
   $args = @("-NoProfile", "-Command", "Start-Sleep -Seconds 600")
 }
+# The perf tier measures time, so it starts on a quiet machine: wait (bounded) for the CPU to sit under
+# LF_PERF_IDLE_PCT (default 20) for 3 samples in a row, at most LF_PERF_IDLE_WAIT_S (default 60) seconds. The pool's
+# RAM gate already applied (one server per run, a RAM floor); this covers the CPU a neighbour lane or another
+# process uses. A machine that never gets quiet still runs (with a WARN): a loaded run is blunt, not wrong.
+if ($Tier -eq "perf") {
+  $idlePct = 20; if ($env:LF_PERF_IDLE_PCT) { $idlePct = [int]$env:LF_PERF_IDLE_PCT }
+  $idleMax = 60; if ($env:LF_PERF_IDLE_WAIT_S) { $idleMax = [int]$env:LF_PERF_IDLE_WAIT_S }
+  $idleClock = [Diagnostics.Stopwatch]::StartNew()
+  $quiet = 0
+  $cpu = -1
+  while ($idleClock.Elapsed.TotalSeconds -lt $idleMax) {
+    $cpu = [int](Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
+    if ($cpu -le $idlePct) { $quiet++ } else { $quiet = 0 }
+    if ($quiet -ge 3) { break }
+    Start-Sleep -Seconds 1
+  }
+  if ($quiet -ge 3) { Write-Host ("test-e2e: perf idle check: CPU {0}% (limit {1}%), quiet after {2:N0} s" -f $cpu, $idlePct, $idleClock.Elapsed.TotalSeconds) }
+  else { Write-Host ("WARN  test-e2e: perf idle check: CPU still {0}% (limit {1}%) after {2} s; measuring on a busy machine, so a pass is meaningful and a fail may be noise: rerun when idle" -f $cpu, $idlePct, $idleMax) }
+}
+
 Write-Host "test-e2e: launching $exe (tier=$Tier)"
 Write-Host "test-e2e: args $($args -join ' ')"
 # The server runs on the private LF-Agents desktop with no console window, so a

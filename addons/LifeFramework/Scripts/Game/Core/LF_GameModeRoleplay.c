@@ -38,7 +38,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	//------------------------------------------------------------------------------------------------
 	bool IsConvoyNearDrop()
 	{
-		return m_bConvoyNearDrop;
+		return LF_MissionHeader.PlaytestHelper(m_bConvoyNearDrop);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -57,6 +57,13 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		if (Replication.IsServer())
 			LF_ConfigStream.Publish();
 		LF_HostStop.StartIfRequested();
+		// M4 tickers: the scheduled-restart warner (Ops) and the day cycle (Atmosphere), server only.
+		// Both are filled by their own slices; no M4 slice edits this file.
+		if (Replication.IsServer())
+		{
+			LF_RestartWarner.StartIfConfigured();
+			LF_DayCycleApply.ApplyFromConfig();
+		}
 		LF_IncidentLog.Install();
 		LF_AimIntent.Start();
 		LF_DevGameMaster.Install(AreDevToolsEnabled());

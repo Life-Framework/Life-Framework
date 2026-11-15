@@ -9,7 +9,7 @@
 # Contract (mirrored by validate-tests.ps1):
 #   1. Every class matching `class LF_Test_\w+ : LF_Test` in the
 #      top level of
-#      Scripts/Game/Tests/ must declare a `// tier: LOGIC|WORLD|PERSISTENCE`
+#      Scripts/Game/Tests/ must declare a `// tier: LOGIC|WORLD|PERSISTENCE|PERF`
 #      comment above its declaration. The tier drives which suites run it.
 #   2. The generated file LF_TestRegistrations.generated.c registers every such
 #      class through LF_TestManager.Register, in deterministic file order.
@@ -47,7 +47,7 @@ Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedNam
     $cls = $m.Groups[1].Value
 
     $segment = $text.Substring(0, $m.Index)
-    $tierMatch = [regex]::Matches($segment, '//\s*tier:\s*(LOGIC|WORLD|PERSISTENCE)')
+    $tierMatch = [regex]::Matches($segment, '//\s*tier:\s*(LOGIC|WORLD|PERSISTENCE|PERF)')
     if ($tierMatch.Count -eq 0) {
       $violations += "$($file.Name): class $cls has no '// tier:' comment above its declaration"
       continue

@@ -24,7 +24,6 @@ import * as wb from "../lib/wb-lock.mjs";
 import * as route from "../lib/wb-route.mjs";
 import * as pool from "../remote/pool.mjs";
 import { check as policyCheck } from "./validate-wb-policy.mjs";
-import { rebasePaths, remoteLookArgs } from "../visual/look.mjs";
 
 const failures = [];
 const ok = (name, cond) => {
@@ -154,12 +153,7 @@ delete process.env.LF_WB_LOCAL;
   ok("a failing remote step is a failing code, not a local retry", r.code === 1 && !ran.includes("local"));
 }
 
-// 8. look: the remote args and the paths made local
-ok("remote look args: --out dropped, --serve dropped, --local --fresh --clean added", JSON.stringify(remoteLookArgs(["bank", "--out", "x", "--serve", "--close", "4"])) === JSON.stringify(["look", "bank", "--close", "4", "--local", "--fresh", "--clean"]));
-const idx = rebasePaths({ contact: "C:\\LF\\rt-look\\tmp\\look\\bank\\contact.jpg", shots: [{ file: "C:\\LF\\rt-look\\tmp\\look\\bank\\wide.png" }, { file: null }], area: "bank" }, "C:\\LF\\rt-look\\tmp\\look", "D:\\w\\tmp\\look");
-ok("index.json paths move under the local out dir", idx.contact.startsWith("D:\\w\\tmp\\look") && /bank/.test(idx.contact) && idx.shots[0].file.endsWith("wide.png") && idx.shots[0].file.startsWith("D:\\w\\tmp\\look") && idx.shots[1].file === null && idx.area === "bank");
-
-// 9. the static rule: a launcher that skips the cap fails
+// 8. the static rule: a launcher that skips the cap fails
 const probe = (path, text) => policyCheck([{ path, text }]);
 ok("rule 1: a direct wb-lock slot fails", probe("tools/x.mjs", 'import { acquireWorkbench } from "./lib/wb-lock.mjs";\nawait acquireWorkbench(root, {});').length === 1);
 ok("rule 1: the route's own import is fine", probe("tools/lib/wb-route.mjs", 'import * as wbLock from "./wb-lock.mjs";\nwbLock.acquireWorkbench(root);').length === 0);

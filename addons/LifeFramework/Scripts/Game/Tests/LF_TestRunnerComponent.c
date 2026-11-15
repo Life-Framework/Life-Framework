@@ -80,11 +80,15 @@ class LF_TestRunnerComponent : ScriptComponent
 #ifdef LF_TEST_TIER_PERSISTENCE
 		failures = LF_TestManager.GetInstance().RunSuite(LF_TestSuiteMode.PERSISTENCE, reportXml);
 #else
+#ifdef LF_TEST_TIER_PERF
+		failures = LF_TestManager.GetInstance().RunSuite(LF_TestSuiteMode.PERF, reportXml);
+#else
 		bool fast = false;
 #ifdef LF_TEST_TIER_FAST
 		fast = true;
 #endif
 		failures = LF_TestManager.GetInstance().RunAll(fast, reportXml);
+#endif
 #endif
 		string reportFile = LF_TestManager.WriteReport(reportXml);
 		PrintFormat("[LF_Tests] runtime tests done, failures=%1, report=%2", failures, reportFile);

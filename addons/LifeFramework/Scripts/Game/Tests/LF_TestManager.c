@@ -2,7 +2,8 @@ enum LF_TestSuiteMode
 {
 	ALL,
 	FAST,
-	PERSISTENCE
+	PERSISTENCE,
+	PERF
 }
 
 class LF_TestManager
@@ -72,7 +73,7 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Runs every registered test (LOGIC only when fast) and fills reportXml
+	//! Runs every registered test but the PERF tier (LOGIC only when fast) and fills reportXml
 	//! with a JUnit-style report. Prints [LFTEST] markers for the CLI.
 	//! A test that throws is fatal: EnforceScript has no exception handling, so
 	//! the whole suite dies with it. Tests must not deref null.
@@ -88,7 +89,8 @@ class LF_TestManager
 
 	//------------------------------------------------------------------------------------------------
 	//! Runs only the tests of one suite mode. FAST runs LOGIC-tier tests only,
-	//! PERSISTENCE runs PERSISTENCE-tier tests only, ALL runs every test.
+	//! PERSISTENCE runs PERSISTENCE-tier tests only, PERF runs PERF-tier tests only,
+	//! ALL runs every test except the PERF tier (timing gates run on demand, `--tier perf`).
 	//! Markers and XML shape match RunAll.
 	//! \return the number of failed tests.
 	int RunSuite(LF_TestSuiteMode mode, out string reportXml)
@@ -100,6 +102,8 @@ class LF_TestManager
 			tierName = "fast";
 		else if (mode == LF_TestSuiteMode.PERSISTENCE)
 			tierName = "persistence";
+		else if (mode == LF_TestSuiteMode.PERF)
+			tierName = "perf";
 
 		bool filtered = m_aOnly.Count() > 0;
 		array<string> matched = {};
@@ -130,6 +134,10 @@ class LF_TestManager
 				if (mode == LF_TestSuiteMode.FAST && test.Tier() != LF_TestTier.LOGIC)
 					skip = true;
 				else if (mode == LF_TestSuiteMode.PERSISTENCE && test.Tier() != LF_TestTier.PERSISTENCE)
+					skip = true;
+				else if (mode == LF_TestSuiteMode.PERF && test.Tier() != LF_TestTier.PERF)
+					skip = true;
+				else if (mode == LF_TestSuiteMode.ALL && test.Tier() == LF_TestTier.PERF)
 					skip = true;
 
 				if (skip)
@@ -228,6 +236,19 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True in a `tools\cli test --tier perf` run (-scrDefine LF_TEST_TIER_PERF): a PERF test then takes
+	//! its sharp settings (more repeats and windows, a tighter limit). Under --only, --red or any other
+	//! tier it is false, so the same test keeps its lenient settings there.
+	static bool PerfRun()
+	{
+		#ifdef LF_TEST_TIER_PERF
+		return true;
+		#else
+		return false;
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True on a core-only run (-scrDefine LF_CORE_ONLY): only LifeFramework is loaded.
 	static bool CoreOnlyRun()
 	{
@@ -246,6 +267,9 @@ class LF_TestManager
 
 		if (tier == LF_TestTier.PERSISTENCE)
 			return "persistence";
+
+		if (tier == LF_TestTier.PERF)
+			return "perf";
 
 		return "logic";
 	}
