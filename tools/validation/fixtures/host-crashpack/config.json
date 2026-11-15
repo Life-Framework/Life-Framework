@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "staff": {
+    "webhookUrl": "https://discord.com/api/webhooks/333333333333333333/FAKE-WEBHOOK-TOKEN-cccc",
+    "roster": "staff.txt"
+  },
+  "economy": {
+    "startingCash": 500
+  }
+}
