@@ -35,6 +35,12 @@ class LF_ShopComponent : ScriptComponent
 	[Attribute("", UIWidgets.Auto, desc: "Item catalogue outlet id (gun_counter, clothing_rack, ...). Set, the shop sells that outlet's offers at catalogue prices behind their gates")]
 	protected string m_sOutletId;
 
+	//! A stock of LF_ShopStockConfig (core mechanism, pack data). When set, the shop sells that stock
+	//! at its prices and buys back what its buyback takes; the curated list, outlet and price rules
+	//! are not read for what it sells.
+	[Attribute("", UIWidgets.Auto, desc: "Stock id in LF_ShopStockConfig (fence, ...). Set, the shop sells that stock at its prices and buys back per its rules")]
+	protected string m_sStockId;
+
 	//! Server only, world time in ms. Not saved: a raid closes the room for the rest of the session at most.
 	protected int m_iClosedUntilMs;
 
@@ -92,6 +98,19 @@ class LF_ShopComponent : ScriptComponent
 			seized++;
 		}
 
+		LF_ShopStock raided = GetStock();
+		if (raided && raided.m_aItems)
+		{
+			foreach (LF_ShopStockItem line : raided.m_aItems)
+			{
+				if (!line)
+					continue;
+
+				LF_EvidenceLocker.LogSeizure(line.m_Prefab, m_sShopName, officerUid);
+				seized++;
+			}
+		}
+
 		m_iClosedUntilMs = LF_BackRoomRules.ClosedUntil(nowMs);
 		SetShutShown(true);
 		GetGame().GetCallqueue().CallLater(OpenShutter, LF_ShopLimitsConfig.BackRoomShutMs(), false);
@@ -144,6 +163,78 @@ class LF_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	string GetStockId()
+	{
+		return m_sStockId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stock this shop sells, or null for a shop with none (or one the config lacks, logged).
+	LF_ShopStock GetStock()
+	{
+		if (m_sStockId.IsEmpty())
+			return null;
+
+		LF_ShopStock stock = LF_ShopStockConfig.Get().Find(m_sStockId);
+		if (!stock)
+			LF_Debug.Warn(LF_ShopStockRules.FEATURE, string.Format("shop '%1' names stock '%2', which no stock config has; it sells nothing", m_sShopName, m_sStockId));
+
+		return stock;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Price-table buy price of a prefab (what it costs new): the base a buyback pays a share of.
+	static int StreetValue(ResourceName prefab)
+	{
+		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
+		if (!manager)
+			return 0;
+
+		int buyPrice;
+		int sellPrice;
+		bool hidden;
+		if (!manager.GetPrices(prefab, buyPrice, sellPrice, hidden) || hidden)
+			return 0;
+
+		return buyPrice;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stocked shop's rows: what it sells at stock prices, then what its buyback list takes
+	//! (no buy price, the buyback price as the sell price).
+	protected void AddStockRows(LF_ShopStock stock, notnull array<ref LF_ShopCatalogItem> result)
+	{
+		if (stock.m_aItems)
+		{
+			foreach (LF_ShopStockItem line : stock.m_aItems)
+			{
+				if (!line || line.m_Prefab.IsEmpty())
+					continue;
+
+				LF_ShopCatalogItem row = new LF_ShopCatalogItem();
+				row.m_ItemPrefab = line.m_Prefab;
+				row.m_sDisplayName = line.m_sDisplayName;
+				if (row.m_sDisplayName.IsEmpty())
+					row.m_sDisplayName = LF_ShopManagerComponent.ResolveDisplayName(line.m_Prefab);
+				row.m_iBuyPrice = line.m_iPrice;
+				result.Insert(row);
+			}
+		}
+
+		if (!stock.m_Buyback || !stock.m_Buyback.m_aPrefabs)
+			return;
+
+		foreach (ResourceName wanted : stock.m_Buyback.m_aPrefabs)
+		{
+			LF_ShopCatalogItem buyback = new LF_ShopCatalogItem();
+			buyback.m_ItemPrefab = wanted;
+			buyback.m_sDisplayName = LF_ShopManagerComponent.ResolveDisplayName(wanted);
+			buyback.m_iSellPrice = LF_ShopStockRules.BuybackPrice(StreetValue(wanted), stock.m_Buyback.m_fFraction);
+			result.Insert(buyback);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetShopDescription()
 	{
 		return m_sShopDescription;
@@ -155,6 +246,15 @@ class LF_ShopComponent : ScriptComponent
 	array<ref LF_ShopCatalogItem> GetShopItems()
 	{
 		array<ref LF_ShopCatalogItem> result = new array<ref LF_ShopCatalogItem>();
+
+		if (!m_sStockId.IsEmpty())
+		{
+			LF_ShopStock stock = GetStock();
+			if (stock)
+				AddStockRows(stock, result);
+
+			return result;
+		}
 
 		if (!m_sOutletId.IsEmpty())
 		{
@@ -219,6 +319,15 @@ class LF_ShopComponent : ScriptComponent
 		if (prefab.IsEmpty())
 			return false;
 
+		if (!m_sStockId.IsEmpty())
+		{
+			LF_ShopStock stock = GetStock();
+			if (!stock)
+				return false;
+
+			return stock.FindItem(prefab) != null || stock.ListsBuyback(prefab);
+		}
+
 		if (!m_sOutletId.IsEmpty())
 		{
 			LF_CatalogueItem entry;
@@ -247,6 +356,19 @@ class LF_ShopComponent : ScriptComponent
 	//! Buy price this shop charges for one prefab. Zero when the item is not priced.
 	int GetBuyPrice(ResourceName prefab)
 	{
+		if (!m_sStockId.IsEmpty())
+		{
+			LF_ShopStock stock = GetStock();
+			if (!stock)
+				return 0;
+
+			LF_ShopStockItem line = stock.FindItem(prefab);
+			if (!line)
+				return 0;
+
+			return line.m_iPrice;
+		}
+
 		if (!m_sOutletId.IsEmpty())
 		{
 			LF_CatalogueItem entry;
@@ -277,6 +399,20 @@ class LF_ShopComponent : ScriptComponent
 	//! Sell price this shop pays for one prefab. Zero when the item is not priced.
 	int GetSellPrice(ResourceName prefab)
 	{
+		// A stocked shop pays only through its buyback: a share of the street value, for listed goods
+		// and (when it takes them) flagged ones. Its own stock is not bought back.
+		if (!m_sStockId.IsEmpty())
+		{
+			LF_ShopStock stock = GetStock();
+			if (!stock || !stock.m_Buyback)
+				return 0;
+
+			if (!stock.ListsBuyback(prefab) && !stock.m_Buyback.m_bStolen)
+				return 0;
+
+			return LF_ShopStockRules.BuybackPrice(StreetValue(prefab), stock.m_Buyback.m_fFraction);
+		}
+
 		if (!m_sOutletId.IsEmpty())
 		{
 			LF_CatalogueItem entry;
@@ -315,6 +451,16 @@ class LF_ShopComponent : ScriptComponent
 	{
 		if (!m_bFence)
 			return 0;
+
+		LF_ShopStock stock = GetStock();
+		if (stock)
+		{
+			LF_ShopStockItem line = stock.FindItem(prefab);
+			if (line)
+				return line.m_iMinCrimes;
+
+			return 0;
+		}
 
 		LF_ShopItem curated = FindCuratedItem(prefab);
 		if (!curated)
@@ -478,7 +624,23 @@ class LF_ShopComponent : ScriptComponent
 			return LF_EShopRefusal.CLOSED;
 		}
 
-		if (!IsItemSoldHere(prefab))
+		// A stocked shop's buyback: listed goods go the usual way; anything else it takes only as
+		// flagged stolen copies, and only those copies are taken off the seller.
+		LF_ShopStock stock = GetStock();
+		array<IEntity> flagged = {};
+		bool flaggedOnly = false;
+		if (stock && !stock.ListsBuyback(prefab))
+		{
+			LF_StolenGoods.Carried(seller, prefab, flagged);
+			if (!LF_ShopStockRules.Buys(stock, prefab, !flagged.IsEmpty()))
+			{
+				LF_Debug.Info(LF_ShopStockRules.FEATURE, string.Format("sell rejected (stock '%1' does not buy it, flagged copies %2) item=%3", m_sStockId, flagged.Count(), prefab));
+				return LF_EShopRefusal.NOT_SOLD_HERE;
+			}
+
+			flaggedOnly = true;
+		}
+		else if (!IsItemSoldHere(prefab))
 		{
 			LF_Debug.Info("Shop", string.Format("sell rejected (not bought here) item=%1 qty=%2", prefab, quantity));
 			return LF_EShopRefusal.NOT_SOLD_HERE;
@@ -505,6 +667,9 @@ class LF_ShopComponent : ScriptComponent
 		}
 
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
+		if (flaggedOnly && units > flagged.Count())
+			units = flagged.Count();
+
 		int totalPrice = LF_ShopRules.StackTradeTotal(unitPrice, units);
 
 		int paid = LF_MoneyUtils.AddCash(seller, totalPrice, "shop-sell");
@@ -516,7 +681,12 @@ class LF_ShopComponent : ScriptComponent
 			return LF_EShopRefusal.POCKETS_FULL;
 		}
 
-		int removed = LF_InventoryUtils.RemoveAmount(seller, prefab, units);
+		int removed;
+		if (flaggedOnly)
+			removed = LF_StolenGoods.Take(seller, prefab, units);
+		else
+			removed = LF_InventoryUtils.RemoveAmount(seller, prefab, units);
+
 		if (removed <= 0)
 		{
 			LF_MoneyUtils.RemoveCash(seller, paid, "shop-sell-rollback");
@@ -529,7 +699,7 @@ class LF_ShopComponent : ScriptComponent
 			LF_MoneyUtils.RemoveCash(seller, overpaid, "shop-sell-rollback");
 
 		earned = LF_ShopRules.StackTradeTotal(unitPrice, removed);
-		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));
+		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3 stock=%4 flagged=%5", prefab, removed, earned, m_sStockId, flaggedOnly));
 		return LF_EShopRefusal.NONE;
 	}
 

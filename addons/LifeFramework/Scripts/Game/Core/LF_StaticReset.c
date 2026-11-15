@@ -25,6 +25,8 @@ class LF_StaticReset
 		LF_WorkAnim.ResetStatics();
 		LF_Hotwire.ResetStatics();
 		LF_StolenVehicles.ResetStatics();
+		LF_StolenGoods.ResetStatics();
+		LF_ShopStockConfig.ResetStatics();
 		LF_Jail.ResetStatics();
 		LF_JailWork.ResetStatics();
 		LF_JailEscort.ResetStatics();
