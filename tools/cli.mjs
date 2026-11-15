@@ -81,6 +81,7 @@ import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
 import * as worldDiff from "./lib/world-diff.mjs";
 import * as worldChecks from "./lib/world-checks.mjs";
+import * as worldTestJudge from "./lib/world-test-judge.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
@@ -3653,7 +3654,29 @@ async function ciWorldEdit(root, c, tests, opts = {}) {
       if (code !== 0) console.log("WARN  placement audit flagged the touched layers: a warning on a maintainer world edit, listed in the PR body (tmp/place-audit/report.json)");
       return 0;
     }],
-    ...(sel.related.length ? [["test (T1w: layer-named)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: sel.related.join(",") })]] : []),
+    // A failing test is a warning on a maintainer world edit (tools/lib/world-test-judge.mjs): only a compile
+    // error or a run that judged nothing blocks. `world ship` lists the failures in the PR body.
+    ...(sel.related.length ? [["test (T1w: layer-named; failures warn)", async () => {
+      let text = "";
+      const write = process.stdout.write.bind(process.stdout);
+      process.stdout.write = (chunk, ...rest) => {
+        text += typeof chunk === "string" ? chunk : Buffer.from(chunk).toString();
+        return write(chunk, ...rest);
+      };
+      let code;
+      try {
+        code = await cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: sel.related.join(",") });
+      } finally {
+        process.stdout.write = write;
+      }
+      const verdict = worldTestJudge.judgeWorldTests({ status: code, text, fallbackTests: sel.related, tests });
+      if (verdict.blocks) {
+        console.log(`FAIL  T1w tests: ${verdict.blocks}`);
+        return code || 1;
+      }
+      for (const l of worldTestJudge.testWarningLines(verdict.warnings)) console.log(`WARN  test failed on the new layout (a warning on a maintainer world edit, not blocking): ${l}`);
+      return 0;
+    }]] : []),
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
