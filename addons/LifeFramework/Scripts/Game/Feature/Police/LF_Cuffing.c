@@ -528,3 +528,16 @@ modded class SCR_PlayerController
 			LF_Cuffing.Complete(officer, suspect, cuffingKind, 0, true);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Cuffing");
+		if (apply)
+			LF_Cuffing.ResetStatics();
+	}
+}

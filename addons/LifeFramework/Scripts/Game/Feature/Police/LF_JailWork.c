@@ -285,3 +285,16 @@ class LF_JailWorkAction : ScriptedUserAction
 		LF_JailWork.Begin(pOwnerEntity, pUserEntity, m_sJobId, m_fSecondsOff, m_fCooldownSeconds, m_fWorkSeconds, m_eKind);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_JailWork");
+		if (apply)
+			LF_JailWork.ResetStatics();
+	}
+}

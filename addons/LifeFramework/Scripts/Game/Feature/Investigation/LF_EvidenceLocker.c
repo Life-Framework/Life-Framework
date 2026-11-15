@@ -441,3 +441,16 @@ class LF_RaidLockerAction : LF_EvidenceLockerAction
 		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Locker_Title", "#LF-Locker_Raided", 6.0, LF_ENotificationType.INFO, destroyed.ToString());
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_EvidenceLocker");
+		if (apply)
+			LF_EvidenceLocker.ResetStatics();
+	}
+}
