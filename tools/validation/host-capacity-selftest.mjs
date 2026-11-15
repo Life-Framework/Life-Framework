@@ -4,7 +4,7 @@
 // Proves `tools\cli host capacity` (#1499): a fixture perf CSV (#1406's header) and a fixture server
 // log with `[LFDebug:Perf] players=N fps=F frameMs=M entities=E` lines (#1452's format) at 10 players
 // give the expected CPU and upload per player and the estimated player count; a heavier run says the
-// 40-player budget is not met; no perf lines, or no CSV rows, is a clear "no data" with exit code 2.
+// 16-player budget is not met; no perf lines, or no CSV rows, is a clear "no data" with exit code 2.
 // red-proof: before tools/host/capacity.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/capacity.mjs'" (2026-11-15).
 
@@ -24,7 +24,7 @@ const logText = readFileSync(join(FX, "console-10p.log"), "utf8");
 const failures = [];
 const fail = (m) => failures.push(m);
 const near = (a, b) => Math.abs(a - b) < 1e-6;
-const budget = { cpuPct: 80, uploadMbit: 20, targetPlayers: 40 };
+const budget = { cpuPct: 80, uploadMbit: 20, targetPlayers: 16 };
 
 const rows = cap.parseCsv(csvText);
 if (rows.length !== 4) fail(`the CSV has 4 data rows, got ${rows.length}`);
@@ -41,9 +41,9 @@ else {
   if (cap.summaryLine(e, budget) !== want.line) fail(`line differs:\n  got  ${cap.summaryLine(e, budget)}\n  want ${want.line}`);
 }
 
-// Double the per-player cost (a --players override of 5): 25 players, under the 40 budget.
-const heavy = cap.estimate(rows, samples, budget, { players: 5 });
-if (heavy.error || heavy.estimate !== 25) fail(`--players 5 should estimate 25, got ${JSON.stringify(heavy)}`);
+// Five times the per-player cost (a --players override of 2): 10 players, under the 16 budget.
+const heavy = cap.estimate(rows, samples, budget, { players: 2 });
+if (heavy.error || heavy.estimate !== 10) fail(`--players 2 should estimate 10, got ${JSON.stringify(heavy)}`);
 else if (cap.summaryLine(heavy, budget) !== want.overLine) fail(`over line differs:\n  got  ${cap.summaryLine(heavy, budget)}\n  want ${want.overLine}`);
 
 // No data: no perf lines, no CSV rows, and only idle (0-player) lines each say so instead of dividing by 0.

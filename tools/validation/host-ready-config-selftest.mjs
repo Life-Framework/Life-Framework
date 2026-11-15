@@ -6,10 +6,15 @@
 // password is NO-GO, a wrong name is NO-GO naming the expected name, both right is green, a missing or
 // unreadable file is NO-GO, and no output ever contains the password. The check is also in the
 // default list `host ready` runs.
+// #1671 adds two checks that read the live owner config (<host>/profile/profile/LifeFramework/config.json):
+// "day cycle" (accelerated, dayLengthMinutes 120) and "restarts" (exactly 06:00 and 18:00, toast only: no
+// siren or any other key beside times and warningMinutes). The flagship's committed config passes.
+// red-proof (#1671): before dayCycleCheck and restartsCheck existed: "FAIL ready.mjs does not export dayCycleCheck"
+// (2026-11-15).
 // red-proof: before configCheck existed the import found no export:
 // "FAIL ready.mjs does not export configCheck" (2026-11-15).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -108,6 +113,69 @@ try {
   const out = lines.join("\n");
   if (code !== 1 || !/NO-GO config/.test(out)) fail(`a wrong config through host ready must exit 1 with NO-GO config:\n${out}`);
   if (out.includes(SECRET)) fail("host ready output printed the password");
+
+  // 7. the live owner config (#1671): day cycle and restart schedule
+  for (const fn of ["dayCycleCheck", "restartsCheck"]) {
+    if (typeof ready[fn] !== "function") {
+      fail(`ready.mjs does not export ${fn}`);
+      throw new Error(`no ${fn}`);
+    }
+  }
+  const committed = JSON.parse(readFileSync(join(ROOT, "server", "flagship", "config.json"), "utf8"));
+  const liveHost = (cfgBody) => {
+    const dir = join(tmp, `live${n++}`);
+    mkdirSync(join(dir, "profile", "profile", "LifeFramework"), { recursive: true });
+    if (cfgBody !== undefined) writeFileSync(join(dir, "profile", "profile", "LifeFramework", "config.json"), typeof cfgBody === "string" ? cfgBody : JSON.stringify(cfgBody));
+    return dir;
+  };
+  const patched = (fn) => {
+    const c = JSON.parse(JSON.stringify(committed));
+    fn(c);
+    return c;
+  };
+  const dayOf = (body) => ready.dayCycleCheck({ hostDir: liveHost(body), root: ROOT });
+  const restartsOf = (body) => ready.restartsCheck({ hostDir: liveHost(body), root: ROOT });
+
+  r = await dayOf(committed);
+  if (!r.ok) fail(`committed config: day cycle must be ok: ${text(r)}`);
+  r = await restartsOf(committed);
+  if (!r.ok) fail(`committed config: restarts must be ok: ${text(r)}`);
+
+  for (const [label, edit] of [
+    ["a 60-minute day", (c) => { c.dayCycle.dayLengthMinutes = 60; }],
+    ["a realtime day cycle", (c) => { c.dayCycle.mode = "realtime"; }],
+    ["a missing dayCycle", (c) => { delete c.dayCycle; }],
+    ["a string day length", (c) => { c.dayCycle.dayLengthMinutes = "120"; }],
+  ]) {
+    r = await dayOf(patched(edit));
+    if (r.ok) fail(`${label} must fail day cycle`);
+    else if (!/120|accelerated/.test(r.detail)) fail(`${label}: detail does not say what is expected: ${r.detail}`);
+  }
+  for (const [label, edit] of [
+    ["a third restart time", (c) => { c.restarts.times.push("12:00"); }],
+    ["a changed restart time", (c) => { c.restarts.times = ["05:00", "18:00"]; }],
+    ["one restart time", (c) => { c.restarts.times = ["06:00"]; }],
+    ["a siren warning", (c) => { c.restarts.siren = true; }],
+    ["missing restarts", (c) => { delete c.restarts; }],
+  ]) {
+    r = await restartsOf(patched(edit));
+    if (r.ok) fail(`${label} must fail restarts`);
+    else if (!/06:00|toast|siren/.test(r.detail)) fail(`${label}: detail does not say what is expected: ${r.detail}`);
+  }
+  // no live config, bad JSON: NO-GO with a reason, never a throw
+  for (const [label, body] of [["no file", undefined], ["bad json", "{ nope"], ["array", "[]"]]) {
+    for (const [fn, run] of [["day cycle", dayOf], ["restarts", restartsOf]]) {
+      try {
+        r = await run(body);
+      } catch (e) {
+        fail(`${fn} with ${label} threw: ${e.message}`);
+        continue;
+      }
+      if (r.ok || !r.detail) fail(`${fn} with ${label} must be NO-GO with a reason: ${text(r)}`);
+    }
+  }
+  const names2 = ready.defaultChecks().map((c) => c.name);
+  for (const want of ["day cycle", "restarts"]) if (!names2.includes(want)) fail(`defaultChecks has no "${want}" check: ${names2.join(", ")}`);
 } catch (e) {
   if (!failed) fail(`selftest crashed: ${e.stack}`);
 } finally {

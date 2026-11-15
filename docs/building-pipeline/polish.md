@@ -8,6 +8,7 @@ look at, and the patterns that have gone wrong before. The pipeline is in [READM
 ```
 tools\cli building run <slug>                         spec .. generate .. review .. polish .. export .. import .. prefab
 tools\cli building adopt <slug> [<file.blend>]        keep a scene edited by hand as the export source
+tools\cli building review <slug> --shots              Blender review renders and a contact sheet, about 20 s, no game
 ```
 
 ## The loop
@@ -33,7 +34,40 @@ tools\cli building adopt <slug> [<file.blend>]        keep a scene edited by han
    watermark (the repo is public). List each edit in `spec.polish.edits` in one line.
 5. **Rerun `--from polish`.** With a `polished.blend` there, the export uses ArchBuilder's scene export
    (`ab.rf_export_scene`) on it instead of the generated building, so the hand edits reach the game.
-6. **Look in the game** (pictures below), and go round again.
+6. **Look in Blender, every iteration** (`tools\cli building review <slug> --shots`, next section), and
+   go round again from step 2 or 3. **Look in the game only once the Blender pictures are right**: the
+   final proof and the pictures for the PR (pictures below). A game session takes minutes to start;
+   a canopy, a sign, a wall colour or a room's layout is judged from the Blender shots in seconds.
+
+### Review shots (Blender, no game)
+
+`tools\cli building review <slug> --shots` renders the building straight from its `.blend` (the
+`polished.blend` if there is one, else the generated one) in headless Blender 5.3 with the Workbench
+engine: no ArchBuilder, no game, no pool slot. The supermarket takes about 20 s. It writes
+`tmp/buildings/<slug>/review/contact.png` (read this first) and the single shots beside it:
+
+| Shot | What it shows |
+|---|---|
+| `street_front.png` | the front from the street at eye height, the whole width: canopy, sign, windows, roof line |
+| `street_3q.png` | three-quarter view from across the street: depth of the canopy, the side wall, the roof |
+| `entrance.png` | the entrance door close up, canopy and fixtures beside it |
+| `hall.png`, `hall_back.png` | the biggest room at eye height, from the entrance and from the far end |
+| `room1.png` ... | each back room, from its far end looking at the door |
+| `plan.png` | a section 2.2 m above the floor, rooms labelled with their size, the entrance marked |
+
+Where each camera stands comes from the building's bounds, the gap in its front wall (the entrance)
+and the rooms found in a plan slice at 1.2 m (the distance to the nearest wall, partition or frame, with
+door gaps closed), never from numbers kept per building. `shots.json` lists every camera in Blender and
+prefab space (prefab `x z y` is Blender `x y z`, so Blender -Y is the prefab's -Z), so a game picture of
+the same view is `shot world` with the camera in prefab space added to the placement.
+
+What the pictures can and cannot say: shape, proportions, colours, which door opens where, what stands
+in the way of a door, whether the sign is behind the canopy. Colours are the game's (each material's
+Blender colour times the scale the export gives it, `materials.mjs`) lit by Workbench's studio light,
+with the exposure raised for the sunlit shots so a wall reads about as bright as the game's. It does
+not show textures, glass reflections, the game's light or the vanilla door and window sets (they are
+the model's holes here). A ceiling reads darker than in the game. Trust it for form, and use the game
+for the final look.
 
 ### What a scene edit can change
 
@@ -73,8 +107,9 @@ new setting: `git rm tools/buildings/<slug>/polished.blend`, rerun `--from gener
 
 ## Pictures
 
-**Blender**: the `polish` stage renders above. Put `plan`, `street` and `inside` beside the game's in
-the PR.
+**Blender**: `building review --shots` (above) for every iteration; the `polish` stage's renders
+(`plan`, `street`, `inside`) are the older, fixed set. Put the Blender picture of a view beside the
+game's in the PR.
 
 **Game**, always on a full-quality session (`--profile full`; lowspec textures hide materials and
 glass). For a building at `x y z` with its front on -Z (an unrotated placement):

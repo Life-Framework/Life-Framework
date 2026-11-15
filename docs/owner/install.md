@@ -10,6 +10,10 @@ own pack ([add a delivery job](add-job.md) builds one), see [swap the pack out](
 Neither item is on the Workshop until the first upload (`docs/roadmap/m3-plan.md` D3); until then a `-config` server cannot
 download them (see Problems).
 
+Hosting the project's own server, **Life Framework | Everon 1989 (Alpha)**, from a repo worktree with
+`tools\cli host start --public`? Follow [host the flagship](host-the-flagship.md) instead: publish, confirm the
+Workshop IDs, password and admin, ports, start, and the first announcement.
+
 ## 1. Install the server
 
 Install **Arma Reforger Server** (Steam app `1874900`): Steam's **Tools** library on Windows, or:
