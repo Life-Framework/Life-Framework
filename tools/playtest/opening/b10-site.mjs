@@ -20,7 +20,7 @@ const two = (n) => String(n).padStart(2, "0");
 export const utcText = (d) =>
   `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${two(d.getUTCHours())}:${two(d.getUTCMinutes())} UTC`;
 
-export const EMPTY_TEXT = "No session is scheduled";
+export const EMPTY_TEXT = "No session announced yet";
 
 /** The JSON Schema subset sessions.schema.json uses: type (or a list), required, properties, additionalProperties false, enum, minLength, format date-time (with offset). */
 export function checkSchema(value, schema, path = "$") {

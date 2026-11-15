@@ -1,0 +1,109 @@
+02:00:00.000 SCRIPT       : LFPROBE beat=1 top=none dialog=0 world=1
+02:00:00.050 NETWORK      : Total number of players: 0
+02:00:00.100 RPL          : Server L2 authenticating connection (identity=0x00000000, endpoint=127.0.0.1:58000, slots=1/256)
+02:00:00.326 NETWORK      : Player connected: connectionID=0
+02:00:00.326 NETWORK      : ### Connecting player: connectionID=0, Name=
+02:00:00.360   NETWORK      : ### Creating player: PlayerId=1, Name=Anna
+02:00:00.497   SCRIPT       : [LFDebug:Spawn] player 1 has no character yet, waiting for the character-creation flow
+02:00:00.504   NETWORK      : ### Updating player: PlayerId=1, Name=Anna, rplIdentity=0x00000000, IdentityId=a0000001-0000-0000-0000-000000000001
+02:00:00.504   NETWORK      : Players connecting: 0
+02:01:00.100 RPL          : Server L2 authenticating connection (identity=0x00000001, endpoint=127.0.0.1:58001, slots=1/256)
+02:01:00.326 NETWORK      : Player connected: connectionID=1
+02:01:00.326 NETWORK      : ### Connecting player: connectionID=1, Name=
+02:01:00.360   NETWORK      : ### Creating player: PlayerId=2, Name=Ben
+02:01:00.497   SCRIPT       : [LFDebug:Spawn] player 2 has no character yet, waiting for the character-creation flow
+02:01:00.504   NETWORK      : ### Updating player: PlayerId=2, Name=Ben, rplIdentity=0x00000001, IdentityId=b0000002-0000-0000-0000-000000000002
+02:01:00.504   NETWORK      : Players connecting: 0
+02:02:00.100 RPL          : Server L2 authenticating connection (identity=0x00000002, endpoint=127.0.0.1:58002, slots=1/256)
+02:02:00.326 NETWORK      : Player connected: connectionID=2
+02:02:00.326 NETWORK      : ### Connecting player: connectionID=2, Name=
+02:02:00.360   NETWORK      : ### Creating player: PlayerId=3, Name=Cleo
+02:02:00.497   SCRIPT       : [LFDebug:Spawn] player 3 has no character yet, waiting for the character-creation flow
+02:02:00.504   NETWORK      : ### Updating player: PlayerId=3, Name=Cleo, rplIdentity=0x00000002, IdentityId=c0000003-0000-0000-0000-000000000003
+02:02:00.504   NETWORK      : Players connecting: 0
+02:03:00.100 RPL          : Server L2 authenticating connection (identity=0x00000003, endpoint=127.0.0.1:58003, slots=1/256)
+02:03:00.326 NETWORK      : Player connected: connectionID=3
+02:03:00.326 NETWORK      : ### Connecting player: connectionID=3, Name=
+02:03:00.360   NETWORK      : ### Creating player: PlayerId=4, Name=Dan
+02:03:00.497   SCRIPT       : [LFDebug:Spawn] player 4 has no character yet, waiting for the character-creation flow
+02:03:00.504   NETWORK      : ### Updating player: PlayerId=4, Name=Dan, rplIdentity=0x00000003, IdentityId=00000000-0000-0000-0000-000000000000
+02:03:00.504   NETWORK      : Players connecting: 0
+02:04:00.100 RPL          : Server L2 authenticating connection (identity=0x00000004, endpoint=127.0.0.1:58004, slots=1/256)
+02:04:00.326 NETWORK      : Player connected: connectionID=4
+02:04:00.326 NETWORK      : ### Connecting player: connectionID=4, Name=
+02:04:00.360   NETWORK      : ### Creating player: PlayerId=5, Name=Eve
+02:04:00.497   SCRIPT       : [LFDebug:Spawn] player 5 has no character yet, waiting for the character-creation flow
+02:04:00.504   NETWORK      : ### Updating player: PlayerId=5, Name=Eve, rplIdentity=0x00000004, IdentityId=e0000005-0000-0000-0000-000000000005
+02:04:00.504   NETWORK      : Players connecting: 0
+02:05:00.100 RPL          : Server L2 authenticating connection (identity=0x00000005, endpoint=127.0.0.1:58005, slots=1/256)
+02:05:00.326 NETWORK      : Player connected: connectionID=5
+02:05:00.326 NETWORK      : ### Connecting player: connectionID=5, Name=
+02:05:00.360   NETWORK      : ### Creating player: PlayerId=6, Name=Finn
+02:05:00.497   SCRIPT       : [LFDebug:Spawn] player 6 has no character yet, waiting for the character-creation flow
+02:05:00.504   NETWORK      : ### Updating player: PlayerId=6, Name=Finn, rplIdentity=0x00000005, IdentityId=f0000006-0000-0000-0000-000000000006
+02:05:00.504   NETWORK      : Players connecting: 0
+02:05:30.000 SCRIPT       : LFPROBE beat=5 top=none dialog=0 world=1
+02:06:00.094 RPL          : Server L2 recv Disconnect (identity=0x00000000, group=1, reason=9)
+02:06:00.159 NETWORK      : Player disconnected: connectionID=0
+02:06:00.159 SCRIPT       : [LFDebug:Session] disconnect cleanup player=1 escorts=0
+02:06:00.160 NETWORK      : Total number of players: 0
+02:07:00.100 RPL          : Server L2 authenticating connection (identity=0x00000000, endpoint=127.0.0.1:58000, slots=1/256)
+02:07:00.326 NETWORK      : Player connected: connectionID=0
+02:07:00.326 NETWORK      : ### Connecting player: connectionID=0, Name=
+02:07:00.360   NETWORK      : ### Creating player: PlayerId=1, Name=Anna
+02:07:00.497   SCRIPT       : [LFDebug:Spawn] player 1 has no character yet, waiting for the character-creation flow
+02:07:00.504   NETWORK      : ### Updating player: PlayerId=1, Name=Anna, rplIdentity=0x00000000, IdentityId=a0000001-0000-0000-0000-000000000001
+02:07:00.504   NETWORK      : Players connecting: 0
+02:08:00.100 RPL          : Server L2 authenticating connection (identity=0x00000006, endpoint=127.0.0.1:58006, slots=1/256)
+02:08:00.326 NETWORK      : Player connected: connectionID=6
+02:08:00.326 NETWORK      : ### Connecting player: connectionID=6, Name=
+02:08:00.360   NETWORK      : ### Creating player: PlayerId=7, Name=Gus
+02:08:00.497   SCRIPT       : [LFDebug:Spawn] player 7 has no character yet, waiting for the character-creation flow
+02:08:00.504   NETWORK      : ### Updating player: PlayerId=7, Name=Gus, rplIdentity=0x00000006, IdentityId=a0000007-0000-0000-0000-000000000007
+02:08:00.504   NETWORK      : Players connecting: 0
+02:08:30.000 SCRIPT       : LFPROBE beat=8 top=none dialog=0 world=1
+02:08:40.000 SCRIPT       : [LFDebug:Whitelist] join allowed: uuid=a0000007-02:09:00.159 NETWORK      : Player disconnected: connectionID=1
+02:09:00.094 RPL          : Server L2 recv Disconnect (identity=0x00000001, group=1, reason=9)
+02:09:00.159 SCRIPT       : [LFDebug:Session] disconnect cleanup player=2 escorts=0
+02:09:00.160 NETWORK      : Total number of players: 0
+02:10:00.094 RPL          : Server L2 recv Disconnect (identity=0x00000002, group=1, reason=9)
+02:10:00.159 NETWORK      : Player disconnected: connectionID=2
+02:10:00.159 SCRIPT       : [LFDebug:Session] disconnect cleanup player=3 escorts=0
+02:10:00.160 NETWORK      : Total number of players: 0
+02:11:00.100 RPL          : Server L2 authenticating connection (identity=0x00000001, endpoint=127.0.0.1:58001, slots=1/256)
+02:11:00.326 NETWORK      : Player connected: connectionID=1
+02:11:00.326 NETWORK      : ### Connecting player: connectionID=1, Name=
+02:11:00.360   NETWORK      : ### Creating player: PlayerId=10, Name=Ben
+02:11:00.497   SCRIPT       : [LFDebug:Spawn] player 10 has no character yet, waiting for the character-creation flow
+02:11:00.504   NETWORK      : ### Updating player: PlayerId=10, Name=Ben, rplIdentity=0x00000001, IdentityId=b0000002-0000-0000-0000-000000000002
+02:11:00.504   NETWORK      : Players connecting: 0
+02:12:00.100 RPL          : Server L2 authenticating connection (identity=0x00000002, endpoint=127.0.0.1:58002, slots=1/256)
+02:12:00.326 NETWORK      : Player connected: connectionID=2
+02:12:00.326 NETWORK      : ### Connecting player: connectionID=2, Name=
+02:12:00.360   NETWORK      : ### Creating player: PlayerId=8, Name=Hana
+02:12:00.497   SCRIPT       : [LFDebug:Spawn] player 8 has no character yet, waiting for the character-creation flow
+02:12:00.504   NETWORK      : ### Updating player: PlayerId=8, Name=Hana, rplIdentity=0x00000002, IdentityId=a0000008-0000-0000-0000-000000000008
+02:12:00.504   NETWORK      : Players connecting: 0
+02:12:50.000 SCRIPT       : [LFDebug:Whitelist] join allowed: uuid=a0000008-02:13:00.159 NETWORK      : Player disconnected: connectionID=3
+02:13:00.094 RPL          : Server L2 recv Disconnect (identity=0x00000003, group=1, reason=9)
+02:13:00.159 SCRIPT       : [LFDebug:Session] disconnect cleanup player=4 escorts=0
+02:13:00.160 NETWORK      : Total number of players: 0
+02:14:00.094 RPL          : Server L2 recv Disconnect (identity=0x00000004, group=1, reason=9)
+02:14:00.159 NETWORK      : Player disconnected: connectionID=4
+02:14:00.159 SCRIPT       : [LFDebug:Session] disconnect cleanup player=5 escorts=0
+02:14:00.160 NETWORK      : Total number of players: 0
+02:15:00.100 RPL          : Server L2 authenticating connection (identity=0x00000003, endpoint=127.0.0.1:58003, slots=1/256)
+02:15:00.326 NETWORK      : Player connected: connectionID=3
+02:15:00.326 NETWORK      : ### Connecting player: connectionID=3, Name=
+02:15:00.360   NETWORK      : ### Creating player: PlayerId=9, Name=Ivo
+02:15:00.497   SCRIPT       : [LFDebug:Spawn] player 9 has no character yet, waiting for the character-creation flow
+02:15:00.504   NETWORK      : ### Updating player: PlayerId=9, Name=Ivo, rplIdentity=0x00000003, IdentityId=a0000009-0000-0000-0000-000000000009
+02:15:00.504   NETWORK      : Players connecting: 0
+02:16:00.100 RPL          : Server L2 authenticating connection (identity=0x00000004, endpoint=127.0.0.1:58004, slots=1/256)
+02:16:00.326 NETWORK      : Player connected: connectionID=4
+02:16:00.326 NETWORK      : ### Connecting player: connectionID=4, Name=
+02:16:00.360   NETWORK      : ### Creating player: PlayerId=11, Name=Cleo_2
+02:16:00.497   SCRIPT       : [LFDebug:Spawn] player 11 has no character yet, waiting for the character-creation flow
+02:16:00.504   NETWORK      : ### Updating player: PlayerId=11, Name=Cleo_2, rplIdentity=0x00000004, IdentityId=c0000003-0000-0000-0000-000000000003
+02:16:00.504   NETWORK      : Players connecting: 0
+02:30:30.000 SCRIPT       : LFPROBE beat=30 top=none dialog=0 world=1

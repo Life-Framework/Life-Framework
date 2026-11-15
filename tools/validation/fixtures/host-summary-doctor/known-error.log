@@ -1,0 +1,7 @@
+10:08:03.115  DEFAULT      : Initializing engine, version 193322
+10:08:03.116  DEFAULT      : Creating game instance(ArmaReforger), version 1.9.0.37
+10:08:03.902  DEFAULT      : Loaded addons:
+10:08:03.902  DEFAULT      :   gproj: 'addons/data/ArmaReforger.gproj' guid: '58D0FB3206B6F859' version: '1.9.0.37'
+10:08:03.903  DEFAULT      :   gproj: 'addons/LifeFramework/LifeFramework.gproj' guid: '79636E668EA37AC9' version: '0.4.2'
+10:08:07.481  SCRIPT (E)   : Can't find variable 'm_iSlot' in class 'LF_Slots' @ "Scripts/Game/Slots.c,48"
+10:08:09.304  DEFAULT      : Entered online game state.
