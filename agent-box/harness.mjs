@@ -370,7 +370,9 @@ export function sendCommand(spec, timeoutMs = 8000) {
   // client has its own box and a session id, so concurrent sessions in two checkouts (one per
   // session lane) do not share a channel and need no claim.
   const boxes = profileBoxes();
-  const sessionOnly = boxes.length > 0 && boxes.every((b) => sessionDirOfBox(b));
+  // A box set with its own session id (setBoxes(dirs, id): the scratch host client, #1588) is a
+  // private channel too.
+  const sessionOnly = boxes.length > 0 && (boxes.every((b) => sessionDirOfBox(b)) || (!!boxOverride && !!sessionOverride));
   if (!sessionOnly) playClaim = playClaim ?? claimPlay(ROOT);
   if (!sessionOnly && !playClaim.ok) return { id, status: "error", detail: playClaim.reason, line, raw: `${id} error ${playClaim.reason}` };
   for (const dir of profileBoxes()) {
