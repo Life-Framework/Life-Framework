@@ -50,7 +50,7 @@ const page = (panel, extra = "") =>
   `<p>The listen-server host handles about 40 players, and moves to a rented box once sessions fill.</p>${extra}` +
   `</main></body></html>`;
 const timePanel = `<p><time datetime="2026-11-21T19:00:00.000Z">${utcText(new Date("2026-11-21T20:00:00+01:00"))}</time></p><p>Build 0.1.0.</p>`;
-const nonePanel = `<p>No session is scheduled. The next one shows here once it is announced.</p>`;
+const nonePanel = `<p>No session announced yet: watch Discord</p>`;
 
 // 1. good inputs
 expect(utcText(new Date("2026-11-21T20:00:00+01:00")) === "Sat 21 Nov 2026, 19:00 UTC", `utcText: ${utcText(new Date("2026-11-21T20:00:00+01:00"))}`);
@@ -75,6 +75,10 @@ expect(badRun.some((m) => m.includes("sessions.json")), "a schema-invalid file s
 // 3. the page shows the time
 expect(checkPage(page(nonePanel), scheduled).length > 0, "a page with no session time should fail for a scheduled session");
 expect(checkPage(page(timePanel), none).length > 0, "a page showing a time for next: null should fail");
+// #1537: a draft (no announced time) is not shown, like none.
+const { announced: _posted, ...draftNext } = scheduled.next;
+expect(checkPage(page(nonePanel), { next: draftNext }).length === 0, "a draft with the empty-state page should pass");
+expect(checkPage(page(timePanel), { next: draftNext }).length > 0, "a page showing a draft's time should fail");
 const stale = `<p><time>${utcText(new Date("2026-11-22T20:00:00+01:00"))}</time></p>`;
 expect(checkPage(page(stale), scheduled).length > 0, "a different time should fail");
 
