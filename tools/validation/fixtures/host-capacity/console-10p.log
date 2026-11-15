@@ -1,0 +1,8 @@
+20:00:01.000  SCRIPT       : [LFDebug:Host] capacity fixture: 10 players connected
+20:00:05.100  SCRIPT       : [LFDebug:Perf] players=10 fps=40.0 frameMs=22.5 entities=1500
+20:00:05.200  SCRIPT       : [LFDebug:Economy] ledger count=10 total=12000
+20:00:35.100  SCRIPT       : [LFDebug:Perf] players=10 fps=44.0 frameMs=20.0 entities=1510
+20:00:36.300  SCRIPT       : [LFDebug:Persistence] saved 10 players
+20:01:05.100  SCRIPT       : [LFDebug:Perf] players=10 fps=48.0 frameMs=25.0 entities=1520
+20:01:35.100  SCRIPT       : [LFDebug:Perf] players=10 fps=44.0 frameMs=21.0 entities=1505
+20:01:36.400  SCRIPT       : [LFDebug:Persistence] saved 10 players

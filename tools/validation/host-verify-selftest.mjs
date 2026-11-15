@@ -4,7 +4,7 @@
 // Proves `tools\cli host verify` (#1454): on a fixture host with one good, one empty and one
 // tampered backup it reports ok, empty and changed and exits 1; a clean host exits 0; a
 // backup with no build stamp is flagged; --newest N looks at the newest N; the run never
-// deletes or edits a backup.
+// deletes or edits a backup; a save point whose WorldState data is a folder passes (#1636).
 // red-proof: before tools/host/verify.mjs existed this printed
 // "FAIL cannot load tools/host/verify.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
 
@@ -119,6 +119,21 @@ try {
   mkdirSync(join(none, "backups", "2026-11-10_08-00-00-stop", "u"), { recursive: true });
   writeFileSync(join(none, "backups", "2026-11-10_08-00-00-stop", "u", "x.txt"), "hello");
   check(statuses(verify.verifyBackups(join(none, "backups")))["2026-11-10_08-00-00-stop"] === "nosave", "backup with files but no save point is not nosave");
+
+  // The engine's real save point keeps its data in a WorldState entry that can be a folder
+  // (#1636): that is a save point. An empty folder, or meta-info.json alone, is not.
+  const real = join(tmp, "real");
+  const realDir = goodBackup(join(real, "backups"), "2026-11-10_08-00-00-stop");
+  const realSp = join(realDir, ...SP);
+  for (const n of readdirSync(realSp)) if (n !== "meta-info.json") safeRemoveTree(join(realSp, n));
+  mkdirSync(join(realSp, "WorldState", "nested"), { recursive: true });
+  writeFileSync(join(realSp, "WorldState", "nested", "blob.bin"), "state");
+  check(statuses(verify.verifyBackups(join(real, "backups")))["2026-11-10_08-00-00-stop"] === "ok", `backup whose WorldState is a folder is ${statuses(verify.verifyBackups(join(real, "backups")))["2026-11-10_08-00-00-stop"]}`);
+  const hollow = join(tmp, "hollow");
+  const hollowSp = join(goodBackup(join(hollow, "backups"), "2026-11-10_08-00-00-stop"), ...SP);
+  for (const n of readdirSync(hollowSp)) if (n !== "meta-info.json") safeRemoveTree(join(hollowSp, n));
+  mkdirSync(join(hollowSp, "WorldState"));
+  check(statuses(verify.verifyBackups(join(hollow, "backups")))["2026-11-10_08-00-00-stop"] === "nosave", "a save point with only an empty WorldState folder is not nosave");
 
   // Wired through the CLI: exit code 1 on the bad host.
   const p = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "verify"], { encoding: "utf8", env: { ...process.env, LF_HOST_DIR: host }, timeout: 60000, windowsHide: true });
