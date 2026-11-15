@@ -184,12 +184,43 @@ class LF_SoundSlots
 
 	protected static ref map<string, ResourceName> s_mResolved;
 	protected static ref map<string, bool> s_mWarned;
+	//! Emitters that asked for a slot nobody has filled yet (said once, as a count, at the first).
+	protected static int s_iSilentEmitters;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mResolved = null;
 		s_mWarned = null;
+		s_iSilentEmitters = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the slot is a core slot that neither the core nor a pack has a sound for yet. Those
+	//! are expected while pack audio is being made: Resolve() lists them in one warning.
+	static bool IsUnfilled(string slot)
+	{
+		if (!s_mResolved)
+			Resolve();
+
+		ResourceName project;
+		return s_mResolved.Find(slot, project) && project.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An emitter on an unfilled slot stays silent. Only the first one is logged (the slot list is in
+	//! Resolve's summary), so a town full of radios does not print a line each.
+	static void NoteSilentEmitter(string label, string slot)
+	{
+		s_iSilentEmitters++;
+		if (s_iSilentEmitters == 1)
+			LF_Debug.Warn(FEATURE, string.Format("%1 and every other emitter on an unfilled slot stays silent (first: slot '%2'); the slot summary above lists them", label, slot));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int GetSilentEmitterCount()
+	{
+		return s_iSilentEmitters;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -241,6 +272,7 @@ class LF_SoundSlots
 
 		LF_SoundSlotsConfig layered = LF_SoundSlotsConfig.LoadCore();
 		layered.ApplyLayers();
+		array<string> unfilled = {};
 
 		foreach (LF_SoundSlot coreSlot : core.m_aSlots)
 		{
@@ -255,7 +287,8 @@ class LF_SoundSlots
 			{
 				LF_Debug.Error(FEATURE, string.Format("slot '%1': a pack removed it; it keeps the core default %2", slot, coreSlot.m_Project));
 			}
-			else if (!LF_Utils.SamePrefab(packSlot.m_Project, coreSlot.m_Project))
+			// A pack row with no project leaves the slot as the core has it: not a rejection.
+			else if (!packSlot.m_Project.IsEmpty() && !LF_Utils.SamePrefab(packSlot.m_Project, coreSlot.m_Project))
 			{
 				string packWhy = Unusable(packSlot.m_Project);
 				if (packWhy.IsEmpty())
@@ -272,7 +305,7 @@ class LF_SoundSlots
 
 			if (!fromPack && coreSlot.m_Project.IsEmpty())
 			{
-				LF_Debug.Info(FEATURE, string.Format("slot '%1' has no core sound and no pack fills it; it plays nothing", slot));
+				unfilled.Insert(slot);
 				s_mResolved.Set(slot, ResourceName.Empty);
 				continue;
 			}
@@ -287,6 +320,19 @@ class LF_SoundSlots
 			}
 
 			s_mResolved.Set(slot, project);
+		}
+
+		if (!unfilled.IsEmpty())
+		{
+			string names;
+			foreach (int i, string name : unfilled)
+			{
+				if (i > 0)
+					names += ", ";
+				names += name;
+			}
+
+			LF_Debug.Warn(FEATURE, string.Format("%1 slot(s) have no sound yet (no core default, no pack project), so what asks for them plays nothing: %2", unfilled.Count(), names));
 		}
 
 		foreach (LF_SoundSlot extra : layered.m_aSlots)

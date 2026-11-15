@@ -16,6 +16,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as sq from "./lib/ship-queue.mjs";
+import * as gw from "./lib/gate-warnings.mjs";
+import { MAINTAINER_BRANCH } from "./lib/gate-tier.mjs";
 import { sleepSync } from "./lib/atomic-file.mjs";
 
 const SELF = fileURLToPath(import.meta.url);
@@ -324,6 +326,7 @@ async function runJob(root, entry) {
       }
       return fail(root, entry, `gate ${cmd.join(" ")} failed (exit ${code})${env ? `; the pool failed it ${retries} times (${env})` : ""}`);
     }
+    publishGateWarnings(wtPath, entry, say);
     wt.git(wtPath, ["fetch", "origin", "--prune"]);
     const newBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
     const mainFiles = newBase === gatedBase ? [] : wt.git(wtPath, ["diff", "--name-only", gatedBase, newBase]).stdout.split(/\r?\n/).filter(Boolean);
@@ -344,6 +347,23 @@ async function runJob(root, entry) {
   }
   update(root, entry.id, { state: "passed", endedAt: now(), head, why: `gated, pushed ${head.slice(0, 7)}, auto-merge queued` }, "passed", TERMINAL);
   wlog(root, `passed ${slug} (#${entry.pr}) after ${attempts} gate(s)`);
+}
+
+// A maintainer branch's warn-only gate findings (the ci placement audit, layout checks) go into the PR body, in a
+// section that replaces itself on every gate (tools/lib/gate-warnings.mjs). Never fails the gate.
+function publishGateWarnings(wtPath, entry, say) {
+  if (!entry.pr || !MAINTAINER_BRANCH.test(entry.branch || "")) return;
+  try {
+    const md = gw.gateWarningsMarkdown(gw.readGateWarnings(wtPath));
+    const body = wt.prBodyGh(wtPath, entry.pr);
+    if (body === null) return say("gate warnings: could not read the PR body, not listed");
+    const next = gw.applyGateWarnings(body, md);
+    if (next.trim() === body.trim()) return;
+    wt.setPrBodyGh(wtPath, entry.pr, next);
+    say(md ? "gate warnings listed in the PR body (warn-only on a maintainer branch)" : "stale gate warnings removed from the PR body");
+  } catch (e) {
+    say(`gate warnings: PR body not updated: ${e.message}`);
+  }
 }
 
 // The failure goes to the PR (comment with the log tail) and the queue moves on.
