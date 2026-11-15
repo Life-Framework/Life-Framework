@@ -2476,6 +2476,11 @@ function cmdSessionUp(root, dir, flags) {
   }
   // A pack session runs the harness build (LF_HARNESS) like the playtest mission, so proofs can read the client.
   const mission = packArg ? "playtest" : session.parseMission(flags);
+  const harnessProblem = session.harnessFlagProblem(flags, mission, clients);
+  if (harnessProblem) {
+    console.log(`FAIL  ${harnessProblem}`);
+    return 1;
+  }
   const rp = session.parseSessionProfile(flags);
   const res = session.sessionRes(flags, rp);
   const visible = flags.includes("--visible");
@@ -2561,6 +2566,8 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
+    // A fresh session starts without the harness flags an earlier one on this checkout asked for (the seeds below add this one's).
+    for (const f of session.clearHarnessSeeds(paths.server)) slog(`cleared stale ${f}`);
     const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, seeds, marker: /(?:registration form sent to player|spawning player|quiz sent to player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
@@ -3014,7 +3021,7 @@ function cmdSessionRestart(root, dir, flags) {
   }
 }
 
-const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
+const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
 
 function cmdSession(args) {
   const list = args ?? [];
