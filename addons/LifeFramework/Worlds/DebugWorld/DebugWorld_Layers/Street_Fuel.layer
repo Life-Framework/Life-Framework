@@ -1,6 +1,16 @@
-GenericEntity Roadmap_Fuel_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 283.6 0.345 237.65
- angleY 0
+LF_NpcBaseEntity Roadmap_Civilian_2 : "{61550FC3CB30580E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et" {
+ coords 269.353 0.2 243.383
+ angles 0 -160 0
+}
+SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ components {
+  LF_PlaceComponent "{49DB70E0F8C39103}" {
+   m_sKind "DispatchSource"
+   m_sId "Roadmap_Fuel_Payphone"
+  }
+ }
+ coords 256.5 0 237
+ angles 0 90 0
 }
 GenericEntity Roadmap_Fuel_Till : "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et" {
  components {
@@ -11,34 +21,10 @@ GenericEntity Roadmap_Fuel_Till : "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF
  }
  Flags 0x403 0
  coords 283.656 1.384 237.43
- angleY 0
 }
-SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- components {
-  LF_PlaceComponent "{49DB70E0F8C39103}" {
-   m_sKind "DispatchSource"
-   m_sId "Roadmap_Fuel_Payphone"
-  }
- }
- coords 256.5 0 237.0
- angleY 90
-}
-
-LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et" {
- coords 283.6 0.34 238.831
- angleY 180
-}
-
 LF_NpcBaseEntity Roadmap_Civilian_1 : "{A4E499440B4DBBEF}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_1_Civilian.et" {
- coords 258.5 0 243.5
- angleY 90
-}
-LF_NpcBaseEntity Roadmap_Civilian_2 : "{61550FC3CB30580E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et" {
- coords 266 0 244.5
- angleY 200
-}
-GenericEntity Fuel_PumpHum : "{D88D0B05DF83772F}Prefabs/Atmosphere/LF_FuelPumpHum.et" {
- coords 273.2 0 235.3
+ coords 281.482 0.201 243.71
+ angles 0 90 0
 }
 GenericEntity Roadmap_Fuel_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
  components {
@@ -47,5 +33,8 @@ GenericEntity Roadmap_Fuel_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/Buil
   }
  }
  coords 282.1 2.367 236.911
- angleY 180
+ angles 0 180 0
+}
+GenericEntity Fuel_PumpHum : "{D88D0B05DF83772F}Prefabs/Atmosphere/LF_FuelPumpHum.et" {
+ coords 273.2 0 235.3
 }

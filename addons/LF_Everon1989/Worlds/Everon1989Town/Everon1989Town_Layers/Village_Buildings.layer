@@ -141,9 +141,36 @@ $grp SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/
 SCR_DestructibleBuildingEntity Village_Supermarket : "{4338F327E7041386}Prefabs/Buildings/Supermarket/Supermarket_Store.et" {
  coords 76 0.1 96.45
 }
+LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et" {
+ coords 266.839 0.345 237.843
+ angles 0 -8.877 0
+}
 SCR_DestructibleBuildingEntity : "{51F233A0BA73532A}Prefabs/Structures/Industrial/Houses/Office_E_01/Office_E_01.et" {
  coords 288 0 265.38
  angles 0 180 0
+ {
+  GenericEntity {
+   ID "56E4EDAF81F51607"
+   components {
+    DoorComponent "{221C667A9F7D4B69}" {
+     InitialAngle -61.3
+    }
+   }
+  }
+  GenericEntity {
+   ID "5D46D458BBDE829B"
+   {
+    GenericEntity {
+     ID "5A1894A114F74514"
+     components {
+      DoorComponent "{221C667A9F7D4B69}" {
+       InitialAngle 53.5
+      }
+     }
+    }
+   }
+  }
+ }
 }
 $grp SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
  {
@@ -195,8 +222,34 @@ $grp SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/Ne
   angles 0 -90 0
  }
 }
+Vehicle Lot_Display_dana2 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
+ coords 282.03 0.001 245.466
+ angles 0 -89.248 0
+}
 SCR_DestructibleBuildingEntity : "{60333F74EE12B52F}Prefabs/Structures/Houses/Village/House_Village_E_1I05/House_Village_E_1I05s.et" {
  coords 346 0 236.42
+}
+LF_NpcBaseEntity Roadmap_Civilian_3 : "{61550FC3CB30580E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et" {
+ components {
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    SCR_FeetLoadoutSlotInfo Boots {
+     Enabled 1
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Enabled 1
+     Prefab "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et"
+    }
+    LoadoutSlotInfo Pants {
+     Enabled 1
+     Prefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
+    }
+   }
+  }
+ }
+ coords 293.226 1.059 268.55
+ angles 0 -160 0
 }
 GenericEntity Roadmap_Bank_Vault : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
  coords 194.3 0.007 259.6
@@ -205,6 +258,20 @@ GenericEntity Roadmap_Bank_Vault : "{6177818988438527}Prefabs/Props/Roleplay/Ban
 SCR_DestructibleBuildingEntity : "{6841057AF0A8B904}Prefabs/Structures/Houses/Village/House_Village_E_1L01/House_Village_E_1L01.et" {
  coords 343 0 269.87
  angles 0 180 0
+}
+$grp GenericEntity : "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et" {
+ Roadmap_Police_Taser3 {
+  coords 232.556 0.906 240.146
+  angles 0 0 -86.013
+ }
+ Roadmap_Police_Taser4 {
+  coords 232.746 0.906 239.895
+  angles 0 0 -86.013
+ }
+ Roadmap_Police_Taser5 {
+  coords 232.551 0.906 239.906
+  angles 0 0 -86.013
+ }
 }
 GenericEntity Roadmap_Bank_VaultHood : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
  coords 194.4 2.9 259.944
@@ -220,11 +287,16 @@ SCR_DestructibleBuildingEntity : "{8597237EA3C59701}Prefabs/Structures/Houses/Sh
  angles 0 180 0
 }
 SCR_DestructibleBuildingEntity : "{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et" {
- coords 276 0 236
+ coords 274.611 0 242.795
+ angles 0 179.974 0
 }
 SCR_DestructibleBuildingEntity : "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et" {
  coords 468 0 341
  angles 0 180 0
+}
+StaticModelEntity ChopShop_Pave_2 : "{A027B45306A1E311}Prefabs/Structures/Infrastructure/Pavements/AsphaltPavement_01/AsphaltPavement_01_Wide_8m.et" {
+ coords 326.811 0.011 299.937
+ angles 0 50.501 0
 }
 LF_NpcBaseEntity Village_Supermarket_Shopkeeper : "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et" {
  coords 83.831 0.199 96.8
@@ -335,6 +407,16 @@ SCR_DestructibleBuildingEntity : "{CD370ECB385DE67A}Prefabs/Structures/Houses/Fa
 SCR_DestructibleBuildingEntity : "{CFF7F6F7042AFFEF}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main.et" {
  coords 222.153 0.001 279.557
  angles 0 -180 0
+}
+$grp GenericEntity : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
+ Roadmap_Police_Handcuffs2 {
+  coords 232.179 0.921 240.045
+  angles 0 20 0
+ }
+ Roadmap_Police_Handcuffs3 {
+  coords 232.048 0.92 240.048
+  angles 0 20 0
+ }
 }
 SCR_DestructibleBuildingEntity : "{EDBC0E94793BA9F1}Prefabs/Structures/Houses/Village/House_Village_E_1I01/House_Village_E_1I01.et" {
  coords 160 0 235.6
