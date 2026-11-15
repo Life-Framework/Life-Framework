@@ -51,6 +51,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BleedOutRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BreachEvidence(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarriedSerialPersist(), LF_TestTier.PERSISTENCE);
@@ -338,6 +339,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacesOrgHideout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesRegistry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacesUnnamedDoor(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlayFromCamera(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestHelpersOff(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.WORLD);
