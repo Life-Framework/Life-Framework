@@ -3,7 +3,10 @@
 //
 // Template: docs/community/announce-template.md. Placeholders are {{time}}, {{relative}}, {{build}},
 // {{server}}, {{address}}, {{rules}} and the conditional {{wipe}} line.
-// Row shape (the site's next-session record): { at, build, wipe, announced }.
+// Row shape (the site's next-session record): { at, build, wipe } for a draft, plus
+// `announced` (ISO time the post went out) once `--send` posted it (#1537). A draft has no
+// `announced` key, so nothing reads a draft as a posted notice: `host wipe` counts its 24 hours
+// from `announced` and refuses a row without one.
 
 export const SERVER_NAME = "Life Framework | Everon 1989 (Alpha)";
 export const DEFAULT_ADDRESS = "Press **Join the community server** in the launcher: https://life-framework.org/playtest";
@@ -26,9 +29,13 @@ export function checkAt({ at, wipe, now }) {
   return { ok: true, ms };
 }
 
-// The next-session record the site reads. `at` is normalized to UTC.
-export function sessionRow({ at, build, wipe, announced = false }) {
-  return { at: new Date(Date.parse(at)).toISOString(), build, wipe: !!wipe, announced: !!announced };
+// The next-session record the site reads. `at` is normalized to UTC. `announced` is the ISO time the
+// post went out, or absent for a draft; anything that is not a parseable time is treated as a draft.
+export function sessionRow({ at, build, wipe, announced = null }) {
+  const row = { at: new Date(Date.parse(at)).toISOString(), build, wipe: !!wipe };
+  const ms = typeof announced === "string" ? Date.parse(announced) : NaN;
+  if (!Number.isNaN(ms)) row.announced = new Date(ms).toISOString();
+  return row;
 }
 
 // Fills the template. The `{{wipe}}` line is kept only for a wipe session; the rest is replaced everywhere.
