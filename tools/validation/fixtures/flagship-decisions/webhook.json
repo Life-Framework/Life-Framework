@@ -1,0 +1,1 @@
+{ "file": "config.json", "set": { "staff.webhookUrl": "https://discord.com/api/webhooks/1/x" }, "expect": "staff.webhookUrl" }
