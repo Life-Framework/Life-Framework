@@ -1,0 +1,10 @@
+Open applications (4), oldest first:
+  #  Name            Waiting  Availability  Why
+  1  Alan Oldest     6d 22h   weekends      Long time resident
+  2  Bea Sixfield    1d 3h    any time      Old six-field row
+  3  Hal Sevenfield  13h      mornings      Old seven-field row
+  4  Cara Newer      2h       evenings      Wants to help the town
+
+Officers on trial (1):
+  Name       Hours left  Availability  Account
+  Dan Trial  10h         nights        u4
