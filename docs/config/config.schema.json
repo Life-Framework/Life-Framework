@@ -281,7 +281,7 @@
         },
         "nightSpeed": {
           "type": "number",
-          "description": "The clock's speed at night as a multiple of its daytime speed. 1 is no change",
+          "description": "Not supported (#1650): the vanilla time manager has one day duration and no night rate, so a value other than 1 logs a Warn and the night runs at the day's rate. Kept so old configs still load",
           "default": 1,
           "minimum": 0.1,
           "maximum": 10
