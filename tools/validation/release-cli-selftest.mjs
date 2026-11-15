@@ -8,11 +8,12 @@
 // red-proof: see the PR body for the observed failures (dirty-tree check removed,
 // and the push guard removed).
 
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { runRelease, gateSteps } from "../release/release.mjs";
+import { safeRemoveTree } from "../link-safety.mjs";
 
 const failures = [];
 const ok = (cond, msg) => { if (!cond) failures.push(msg); };
@@ -29,8 +30,14 @@ function put(root, path, text) {
 const gproj = (id, guid, title) => `GameProject {\n ID "${id}"\n GUID "${guid}"\n TITLE "${title}"\n Dependencies {\n  "58D0FB3206B6F859"\n }\n}\n`;
 const readme = "| Field | Value |\n|---|---|\n| Version | `0.1.0` |\n| Licence | APL |\n";
 
-function scratch() {
-  const base = mkdtempSync(join(tmpdir(), "lf-relcli-"));
+// The scratch repo and its bare origin are built once (about 14 git processes; every scenario used to repeat
+// them, 11 times: 150 spawns of ~230, which is what stretched this check from 9 s to minutes on a loaded gate)
+// and copied per scenario with plain file copies. The only per-copy fix is the remote URL in .git/config.
+const tmpBases = [];
+let template = null;
+function buildTemplate() {
+  const base = mkdtempSync(join(tmpdir(), "lf-relcli-tpl-"));
+  tmpBases.push(base);
   const origin = join(base, "origin.git");
   const root = join(base, "repo");
   mkdirSync(origin);
@@ -53,6 +60,20 @@ function scratch() {
   sh(root, "commit", "-q", "--allow-empty", "-m", "work");
   sh(root, "checkout", "-q", "main");
   sh(root, "merge", "--no-ff", "-q", "ws/a", "-m", "Merge pull request #7 from x/ws/a", "-m", "Add the thing");
+  return { base, origin, root };
+}
+
+function scratch() {
+  template ??= buildTemplate();
+  const base = mkdtempSync(join(tmpdir(), "lf-relcli-"));
+  tmpBases.push(base);
+  const origin = join(base, "origin.git");
+  const root = join(base, "repo");
+  cpSync(template.origin, origin, { recursive: true });
+  cpSync(template.root, root, { recursive: true });
+  const cfg = join(root, ".git", "config");
+  // git config stores backslashes doubled; the origin URL is the only line that names the template's path.
+  writeFileSync(cfg, readFileSync(cfg, "utf8").replace(/^(\s*url = ).*$/m, (_, k) => k + origin.replace(/\\/g, "\\\\")));
   return { root, origin };
 }
 
@@ -156,6 +177,11 @@ for (const flags of [[], ["--dry-run"]]) {
   ok(/gate "full suite"/.test(l.out.join("\n")), "output names the failed gate");
 }
 
+for (const b of tmpBases) {
+  try {
+    safeRemoveTree(b);
+  } catch {}
+}
 for (const f of failures) console.log(`  FAIL  ${f}`);
 if (failures.length) {
   console.log("release-cli-selftest: FAIL");
