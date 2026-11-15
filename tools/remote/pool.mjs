@@ -615,8 +615,10 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
     }
     return null;
   }
+  // The token lets this holder hand the lane to a child as LF_SERVER_SLOT_HELD=<lock>:<token> (heldSlotFromEnv).
+  const token = meta?.token ?? randomBytes(8).toString("hex");
   try {
-    wt.acquireLock(root, name, { waitMs: 0, meta });
+    wt.acquireLock(root, name, { waitMs: 0, meta: { ...meta, token } });
   } catch {
     return null;
   }
@@ -624,6 +626,7 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
     machine: m,
     index: i,
     lockName: name,
+    token,
     port: lane.port,
     local: true,
     release: () => {
