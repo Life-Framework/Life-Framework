@@ -2644,11 +2644,9 @@ class LF_AgentHarness
 				joined += " | ";
 
 			joined += string.Format("player=%1 downed=%2 life=%3", id, downed, LifeStateToken(body));
-			// #261: who has this body (replicated), whether it sits in a vehicle seat, where it is.
+			// #261: whether this body sits in a vehicle seat and where it is. `carrier` is kept at 0
+			// for the readers' line shape: the drag and carry hold was cut on 2026-11-15.
 			int carrier = 0;
-			SCR_ChimeraCharacter peer = SCR_ChimeraCharacter.Cast(body);
-			if (peer)
-				carrier = peer.LF_GetCarrierPlayerId();
 
 			int seated = 0;
 			if (SCR_CompartmentAccessComponent.GetVehicleIn(body))
@@ -2673,9 +2671,6 @@ class LF_AgentHarness
 				patientDowned = 1;
 
 			int patientCarrier = 0;
-			SCR_ChimeraCharacter patientBody = SCR_ChimeraCharacter.Cast(patient);
-			if (patientBody)
-				patientCarrier = patientBody.LF_GetCarrierPlayerId();
 
 			int patientSeated = 0;
 			if (SCR_CompartmentAccessComponent.GetVehicleIn(patient))
@@ -3309,13 +3304,26 @@ class LF_AgentHarness
 
 		if (!Replication.IsServer() && (cmd.Arg1.StartsWith("LF_") || cmd.Arg1.StartsWith("LF_")))
 		{
-			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
+			// "LF_TownBoardCardAction__2" is the third action of that class on the host, as on the
+			// server path (ApplyUse); without this a numbered local-effect action went to the server.
+			string localClass = cmd.Arg1;
+			int localIndex = 0;
+			int localIndexAt = localClass.IndexOf("__");
+			if (localIndexAt > 0)
+			{
+				localIndex = localClass.Substring(localIndexAt + 2, localClass.Length() - localIndexAt - 2).ToInt();
+				localClass = localClass.Substring(0, localIndexAt);
+			}
+
+			IEntity target = FindTarget(character, localClass, cmd.Arg2);
 			// A replicated NPC has no layer name on a client: take the nearest host of the action.
 			if (!target && cmd.Arg2 != "")
-				target = FindTarget(character, cmd.Arg1, "");
+				target = FindTarget(character, localClass, "");
 			ScriptedUserAction localAction;
-			if (target)
-				localAction = FindShownOnEntity(target, cmd.Arg1, character);
+			if (target && localIndex > 0)
+				localAction = FindNthOnEntity(target, localClass, character, localIndex);
+			else if (target)
+				localAction = FindShownOnEntity(target, localClass, character);
 
 			if (localAction && localAction.HasLocalEffectOnlyScript())
 			{

@@ -37,6 +37,9 @@ class LF_BankVaultComponent : ScriptComponent
 	[Attribute("0.15", UIWidgets.Auto, desc: "Chance 0..1 that the drill jams and stays in the wall.")]
 	protected float m_fJamChance;
 
+	[Attribute("30", UIWidgets.Auto, desc: "Seconds the drill must run, held at the door, before the vault opens. Cancelled earlier pays nothing.")]
+	protected float m_fDrillSeconds;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -68,6 +71,7 @@ class LF_BankVaultComponent : ScriptComponent
 
 		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds);
 		LF_Bank.ConfigureTools(vaultId, m_sRequiredTools, m_fJamChance);
+		LF_Bank.ConfigureDrillSeconds(vaultId, m_fDrillSeconds);
 		LF_Bank.ConfigureAlarmKind(vaultId, m_sAlarmKind);
 		ConfigureHeist(vaultId);
 	}

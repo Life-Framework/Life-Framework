@@ -108,6 +108,8 @@ class LF_CharacterCreationManager : Managed
 	protected static ref LF_CharacterCreationManager s_Instance;
 
 	protected const int FLOW_POLL_DELAY_MS = 100;
+	// lf-fixed: Workbench fast play waits this long for the control hand-over before the ID card
+	protected const int FAST_PLAY_CARD_DELAY_MS = 1000;
 	protected static const ResourceName DEFAULT_CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 
 	//! Players the server sent the character pick and has no answer from yet (#331). A pick from
@@ -223,6 +225,13 @@ class LF_CharacterCreationManager : Managed
 		}
 
 		LF_Debug.Info("CharacterCreation", "flow start for player " + playerId);
+
+		// Workbench "LF Fast Play" only: no quiz, no form, straight into town (LF_WorkbenchPlay).
+		if (LF_WorkbenchPlay.IsFastPlay())
+		{
+			FastPlay(playerId, playerController, account);
+			return;
+		}
 
 		// The rules orientation (#915) comes first, once per account: nobody registers or spawns
 		// before passing it. Its Continue button re-enters here.
@@ -456,6 +465,42 @@ class LF_CharacterCreationManager : Managed
 
 		SpawnPlayer(playerId, controller);
 		GrantTestCars(playerId, playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Workbench LF Fast Play: the account gets the dev character (once), its starting bank, a spawn
+	//! and an ID card. The rules quiz is skipped, not passed: nothing about it is recorded. Reached only
+	//! when LF_WorkbenchPlay.IsFastPlay(), which a non-Workbench build never returns.
+	protected void FastPlay(int playerId, PlayerController playerController, notnull LF_PlayerAccount account)
+	{
+		if (!account.HasCharacters())
+		{
+			LF_PlayerCharacter character = LF_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, LF_WorkbenchPlay.DEV_FIRST_NAME, LF_WorkbenchPlay.DEV_LAST_NAME, LF_WorkbenchPlay.DEV_AGE);
+			account.AddCharacter(character, true);
+			LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
+			LF_AccountReplication.Publish(account);
+			OpenStartingBank(account.GetActiveCharacterKey());
+			LF_Debug.Info(LF_WorkbenchPlay.FEATURE, "fast play: dev character registered for player " + playerId);
+		}
+
+		SpawnPlayer(playerId, playerController);
+		// The hand-over completes after this frame; the card goes on the body once it is controlled.
+		GetGame().GetCallqueue().CallLater(GiveFastPlayCard, FAST_PLAY_CARD_DELAY_MS, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void GiveFastPlayCard(int playerId)
+	{
+		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
+		if (!body || !account)
+		{
+			LF_Debug.Error(LF_WorkbenchPlay.FEATURE, "fast play: player " + playerId + " has no body or account a second after the spawn; no ID card");
+			return;
+		}
+
+		bool handed = LF_QuestRewards.HandIdCard(body, account);
+		LF_Debug.Info(LF_WorkbenchPlay.FEATURE, string.Format("fast play: player %1 is in town (new ID card %2)", playerId, handed));
 	}
 
 	//------------------------------------------------------------------------------------------------

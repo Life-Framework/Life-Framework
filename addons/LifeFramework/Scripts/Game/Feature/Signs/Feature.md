@@ -67,7 +67,7 @@ Each type is a vanilla sign body whose face material is `LF_SignFace.emat` (`$re
 | `LF_Sign_Plate` | `SignWall_01_115x67` | 1024 x 596 | police (blue), post office (yellow, beside the post box), ATM, garage, jail, hospital (beside a red cross), organization office |
 | `LF_Sign_PlateSmall` | `SignWall_01_90x45` | 1024 x 512 | spare; reads only up close |
 | `LF_Sign_Fascia` | `SignCommercial_01` (4.3 m) | 1024 x 213 | bank, general store |
-| `LF_Sign_Posts` | `SignLarge_01` on two posts | 1024 x 700 | town map, market, vehicle lot |
+| `LF_Sign_Posts` | `SignLarge_01` on two posts | 1024 x 700 | market, vehicle lot (the town map is the town board since 2026-11-16, `Feature/TownBoard`) |
 | `LF_Sign_PolePlate` | `SignGeneric_01` on `Sign_Pole_A` (`m_bFaceOnChild`) | 1024 x 733 (the plate shows the top 733 rows; at 1024 the text sat low and the bottom rim was cut) | safe zones, impound, fuel, farm |
 | `LF_Sign_Board` | cork `NoticeBoardCork_01` | turned A4 sheet | notices: wanted board (in the station porch), convoy |
 | `LF_Sign_Pub` | `SignPub_01` A-frame | none (painted body) | general store and market pavement boards |
@@ -79,6 +79,10 @@ facade with the face out; the fascia's origin is its bottom edge. A placement se
 on a 1080p client. Panel widgets do not draw inside a render target: the faces use image widgets. Each vanilla body
 already has an `RplComponent`; a second one breaks the entity ("cannot be combined"). `SCR_DestructionMultiPhaseComponent`
 is disabled so a shot does not take a sign away until restart.
+
+## Places
+
+Every `LF_SignComponent` with an id claims it in `LF_Places` as kind `Sign` (`LF_Places.Claim`: the first prop of an id stands for it, a second, such as the other safe zone sign, is skipped without an error). A reader finds the place a sign stands for by component, never by entity name or coordinates; the town board points its cards at sign ids this way.
 
 ## Tests
 

@@ -69,6 +69,17 @@ export async function cmdPromote(root, args, opts = {}) {
       return 0;
     }
 
+    // --confirm needs the main guard's full check green on this exact commit (tools/lib/guard-pin.mjs): with no
+    // pre-merge gate, the guard's green is what proves a release candidate (docs/worktrees.md "Release gates").
+    {
+      const pin = await import("./lib/guard-pin.mjs");
+      const local = pin.readHeads(wt.hubDirOf(root)).heads[plan.target]?.status;
+      const st = local === "green" ? local : (opts.guardStatus ?? pin.ghStatus)(root, plan.target);
+      if (st !== "green") {
+        console.log(`FAIL  the main guard has not marked ${plan.target.slice(0, 8)} green (status: ${st ?? local ?? "unchecked"}); wait for its full check or pick a green --to. stable not moved.`);
+        return 1;
+      }
+    }
     // --confirm: refuse a failed item whose PR is inside the range, then move stable, then the issues.
     const { issues, manualIssues } = await rg.buildChecklist(gh, plan);
     const inRange = new Set(issues);
