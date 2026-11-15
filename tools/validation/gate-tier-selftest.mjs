@@ -125,10 +125,11 @@ const tests = [
   { file: "LF_Test_Guid.c", text: "// tier: PERSISTENCE\nclass LF_Test_Guid : LF_Test\n{\n  string p = \"{CBD57E33C475D480}\";\n}\n" },
   { file: "LF_Test_Atm.c", text: "// tier: WORLD\nclass LF_Test_Atm : LF_Test\n{\n  string k = \"#EL-ATM_Amount\";\n}\n" },
   { file: "LF_Test_Other.c", text: "// tier: WORLD\nclass LF_Test_Other : LF_Test\n{\n}\n" },
+  { file: "LF_Test_Timing.c", text: "// tier: PERF\nclass LF_Test_Timing : LF_Test\n{\n  // reads LF_CharacterConfig\n}\n" },
 ];
 const sel = selectTests(tests, [...toks, "EL-ATM_Amount"]);
 check(sel.logic.join() === "LF_Test_Fast", `selectTests logic: ${sel.logic}`);
-check(sel.related.sort().join() === "LF_Test_Atm,LF_Test_Chars,LF_Test_Guid", `selectTests related: ${sel.related}`);
+check(sel.related.sort().join() === "LF_Test_Atm,LF_Test_Chars,LF_Test_Guid", `selectTests related (a PERF test is never pulled into a gate): ${sel.related}`);
 
 if (fails.length) {
   for (const f of fails) console.log(`FAIL  ${f}`);

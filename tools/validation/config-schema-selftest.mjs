@@ -2,6 +2,10 @@
 // inputs: tools/**, agent-box/**, .githooks/**
 // goes red on a stale schema or a bad example. Fixture: fixtures/config-schema/Demo/*.c.
 //
+// red-proof (#286): with the positional-description read removed from attrInfo the run printed
+// "FAIL positional description" and "FAIL help text: the fixture is fully described" and exited 1;
+// with descriptionProblems returning [] it printed "FAIL help text: a field without a description must fail". Both restored.
+//
 // red-proof: with the range parse in attrInfo nulled the run printed "FAIL cooldown:
 // type/default/min/max" and "FAIL below minimum must fail" and exited 1. Adding an attribute to
 // LF_ShopPricesConfig without regenerating made validate-config-schema print "FAIL
@@ -10,7 +14,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { rangeProblems, readerProblems, generate, readScripts, render, validateJson, jsonKey, runtimeExample, SERVICE } from "../config/schema.mjs";
+import { descriptionProblems, rangeProblems, readerProblems, generate, readScripts, render, validateJson, jsonKey, runtimeExample, SERVICE } from "../config/schema.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fx = join(here, "fixtures", "config-schema");
@@ -39,6 +43,8 @@ expect(!("key" in rec.properties), "key fields are not record properties");
 expect(example.demo.cooldownSec === 30 && example.demo.records && Object.keys(example.demo.records).length === 0, "example takes the attribute defaults");
 expect(validateJson(example, schema).length === 0, `example validates: ${validateJson(example, schema)}`);
 
+const edit = (from, to) => files.map((f) => ({ ...f, text: f.text.replace(from, to) }));
+
 // Stale: a new attribute changes the generated text, so the committed copy no longer matches.
 const committed = render(schema);
 const grown = files.map((f) => ({ ...f, text: f.text.replace("static const string SECTION", '[Attribute("1", UIWidgets.Auto, desc: "New")]\n\tint m_iAdded;\n\n\tstatic const string SECTION') }));
@@ -55,8 +61,13 @@ expect(bad((e) => { e.demo.nope = 1; return e; }), "unknown key must fail");
 expect(bad((e) => { e.demo.records.a = { amount: "x" }; return e; }), "bad record field must fail");
 expect(bad((e) => { e.schemaVersion = 4; return e; }), "too-new schemaVersion must fail");
 
+// Help text: a field without a description fails, and a positional description is read.
+expect(descriptionProblems(schema).length === 0, `help text: the fixture is fully described, got ${descriptionProblems(schema)}`);
+expect(demo.properties.chance.description === "Success chance", `positional description: got ${demo.properties.chance.description}`);
+const undescribed = generate(edit(', "Success chance"', ', ""'), svc, overrides).schema;
+expect(descriptionProblems(undescribed).some((m) => /demo\.chance: no description/.test(m)), "help text: a field without a description must fail");
+
 // Range agreement: params and the ReadInt limits must say the same numbers.
-const edit = (from, to) => files.map((f) => ({ ...f, text: f.text.replace(from, to) }));
 expect(rangeProblems(files).length === 0, `range: the fixture agrees, got ${rangeProblems(files)}`);
 expect(rangeProblems(edit("COOL_MAX = 600", "COOL_MAX = 900")).some((m) => /checks 5\.\.900/.test(m)), "range: a differing constant must fail");
 expect(rangeProblems(edit(', params: "5 600 1"', "")).some((m) => /no params range/.test(m)), "range: a checked read without params must fail");

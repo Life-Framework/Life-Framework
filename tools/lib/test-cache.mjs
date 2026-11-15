@@ -11,18 +11,20 @@
 //   - this PC's dedicated server build id (the pool only sends a run to a machine with the
 //     same build unless it is pinned);
 //   - KEY_VERSION, bumped when the key's meaning changes.
-// The machine is not in the key: the pool already lets a gate land on any machine, and the
-// one timing test (LF_Test_PerfBudget) is calibrated per machine in reference ops.
+// The machine is not in the key: the pool already lets a gate land on any machine. The timing
+// tests (// tier: PERF, run by `test --tier perf`) are never cached at all (skipReason), and a
+// `--tier all` run does not execute them, so the key needs no machine.
 //
 // Only passes are stored, one file per key under <main>/tmp/test-cache/ (shared by every
 // worktree), written atomically. Anything unreadable is a miss.
 
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { renameRetry } from "./atomic-file.mjs";
 import { join, resolve } from "node:path";
 
-export const KEY_VERSION = 1;
+export const KEY_VERSION = 2; // 2: `all` no longer runs the PERF tier (perf tests are timing gates, `--tier perf`)
 export const KEY_PATHS = ["addons", "tools/test", "tools/lib/addons.mjs"];
 
 function gitOut(root, args, env = {}) {
@@ -97,6 +99,8 @@ export function skipReason({ tier, opts = {}, env = process.env } = {}) {
   if (opts.red) return "red-proof run";
   if (opts.dev) return "dev prints the run's debug lines";
   if (tier === "persistence") return "persistence tier";
+  // A timing measure is the point of this tier: a pass on the same bytes says nothing about this machine, this minute.
+  if (tier === "perf") return "perf tier (a timing measure is never reused)";
   if (env.LF_PLACE_AUDIT_IN) return "placement audit run";
   return null;
 }
@@ -120,7 +124,7 @@ export function store(mainRoot, key, rec) {
     mkdirSync(dir, { recursive: true });
     const tmp = join(dir, `.${key}.${process.pid}.${randomBytes(4).toString("hex")}.tmp`);
     writeFileSync(tmp, JSON.stringify({ ...rec, key }, null, 1) + "\n", "utf8");
-    renameSync(tmp, join(dir, `${key}.json`));
+    renameRetry(tmp, join(dir, `${key}.json`));
     return true;
   } catch {
     return false;

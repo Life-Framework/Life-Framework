@@ -16,6 +16,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as sq from "./lib/ship-queue.mjs";
+import { sleepSync } from "./lib/atomic-file.mjs";
 
 const SELF = fileURLToPath(import.meta.url);
 const JOB_BUDGET_MS = 100 * 60 * 1000; // one gate: ci measured 15-40 min under load; killed past this
@@ -41,20 +42,6 @@ export function withQueue(root, fn) {
 
 export function readQueue(root) {
   return sq.readQueue(hub(root));
-}
-
-function update(root, id, patch, note) {
-  let before = null;
-  const out = withQueue(root, (q) => {
-    const e = q.entries.find((x) => x.id === id);
-    if (!e) return null;
-    before = { state: e.state, machine: e.machine };
-    Object.assign(e, patch);
-    if (note) e.history = [...(e.history ?? []), `${now()} ${note}`].slice(-20);
-    return { ...e };
-  });
-  if (out) publish(root, out, { changed: !before || before.state !== out.state || before.machine !== out.machine });
-  return out;
 }
 
 // The ship status outside the queue file: <worktree>/tmp/ship-status.json (every update; what an agent or a
@@ -90,6 +77,49 @@ export function postCommitStatus(root, e) {
   if (r.status !== 0) wlog(root, `commit status for ${e.slug} (${e.head.slice(0, 7)}) not posted: ${(r.stderr || r.stdout || "").trim().slice(0, 200)}`);
 }
 
+// A poll that must not die on a read that kept failing (the file held open for over a second): null, and
+// the caller tries again next tick.
+function tryReadQueue(root) {
+  try {
+    return readQueue(root);
+  } catch (e) {
+    wlog(root, `queue read failed, trying again next tick: ${e?.code ?? ""} ${e?.message ?? e}`);
+    return null;
+  }
+}
+
+// A queue write is bookkeeping: it records what a gate did, it is never part of the gate. Every attempt
+// reads the queue afresh and retries the rename on a Windows sharing error (tools/lib/atomic-file.mjs), and
+// a write that still fails after `attempts` tries is logged and returns null; it never throws, so a status
+// reader holding the file open cannot fail a PR's gate (the 11-minute gate that died on EPERM).
+// Terminal writes (passed, failed) try longer: the entry stays "pushing" until they land.
+export function update(root, id, patch, note, { attempts = 3, pauseMs = 500, sleep = sleepSync, log = (s) => wlog(root, s) } = {}) {
+  for (let i = 1; ; i++) {
+    try {
+      let before = null;
+      const out = withQueue(root, (q) => {
+        const e = q.entries.find((x) => x.id === id);
+        if (!e) return null;
+        before = { state: e.state, machine: e.machine };
+        Object.assign(e, patch);
+        if (note) e.history = [...(e.history ?? []), `${now()} ${note}`].slice(-20);
+        return { ...e };
+      });
+      // publishing never fails a gate (publish swallows its own errors)
+      if (out) publish(root, out, { changed: !before || before.state !== out.state || before.machine !== out.machine });
+      return out;
+    } catch (err) {
+      if (i >= attempts) {
+        log(`queue write for ${id} failed ${i} times, the gate result is kept: ${err?.code ?? ""} ${err?.message ?? err}${patch?.state ? ` (wanted state ${patch.state})` : ""}`);
+        return null;
+      }
+      sleep(pauseMs * i);
+    }
+  }
+}
+
+const TERMINAL = { attempts: 8, pauseMs: 750 };
+
 // How many Workbench gates run at once, and how many validate-only gates beside them (tools/lib/ship-queue.mjs
 // slotCount / lightCount). Override: "shipQueue": { "parallel": N, "light": N } in pool.json or the "pool" key
 // of lf.local.json; else the sum of the Workbench limits of the ssh machines with the workbench cap, where a
@@ -121,14 +151,42 @@ export function workerLog(root) {
   return join(wt.mainRootOf(root), "tmp", "logs", "ship-queue-worker.log");
 }
 
+// quiet-launch reports a process that ends within 3 s as a failed launch. For the worker, exit 0 in
+// that window is the normal "another worker holds the lock" answer (runWorker returns 0).
+export const FAST_EXIT_OK = /exited within \d+s with code 0/;
+
 // Start the worker when none runs. It runs this file's own copy (the checkout `wt ship` was called from).
-export async function ensureWorker(root) {
-  const pid = workerAlive(root);
-  if (pid) return { pid, started: false };
-  mkdirSync(dirname(workerLog(root)), { recursive: true });
-  const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
-  const child = quietSpawnDetached(process.execPath, [SELF, "worker", wt.mainRootOf(root)], { cwd: dirname(dirname(SELF)), env: process.env });
-  return { pid: child, started: true };
+// A worker that was already up, or that won the lock a moment before this one, is a success:
+// { pid, started: false, already: true }, and the caller prints "worker already running (pid N)".
+// opts.alive / opts.spawn / opts.sleep are for the selftest.
+export async function ensureWorker(root, opts = {}) {
+  const alive = opts.alive ?? (() => workerAlive(root));
+  const pid = alive();
+  if (pid) return { pid, started: false, already: true, message: workerRunningText(pid) };
+  if (!opts.spawn) mkdirSync(dirname(workerLog(root)), { recursive: true });
+  let spawnDetached = opts.spawn;
+  if (!spawnDetached) {
+    const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
+    spawnDetached = quietSpawnDetached;
+  }
+  try {
+    const child = spawnDetached(process.execPath, [SELF, "worker", wt.mainRootOf(root)], { cwd: dirname(dirname(SELF)), env: process.env });
+    return { pid: child, started: true, already: false };
+  } catch (e) {
+    if (!FAST_EXIT_OK.test(String(e?.message ?? e))) throw e;
+    // The new worker saw the lock taken and left: wait for the lock file to show its holder.
+    const sleep = opts.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
+    let holder = alive();
+    for (let i = 0; i < 5 && !holder; i++) {
+      await sleep(400);
+      holder = alive();
+    }
+    return { pid: holder ?? null, started: false, already: true, message: workerRunningText(holder) };
+  }
+}
+
+export function workerRunningText(pid) {
+  return pid ? `worker already running (pid ${pid})` : "worker already running";
 }
 
 function wlog(root, s) {
@@ -150,25 +208,29 @@ export async function runWorker(root) {
   wlog(root, `worker ${process.pid} up`);
   try {
     // Entries a dead worker left running go back to the head of the queue.
-    withQueue(root, (q) => {
-      for (const e of q.entries) {
-        if (sq.RUNNING.includes(e.state) && !(e.workerPid && e.workerPid !== process.pid && wt.pidAlive(e.workerPid))) {
-          e.state = "queued";
-          e.history = [...(e.history ?? []), `${now()} requeued: its worker ${e.workerPid} is gone`];
+    try {
+      withQueue(root, (q) => {
+        for (const e of q.entries) {
+          if (sq.RUNNING.includes(e.state) && !(e.workerPid && e.workerPid !== process.pid && wt.pidAlive(e.workerPid))) {
+            e.state = "queued";
+            e.history = [...(e.history ?? []), `${now()} requeued: its worker ${e.workerPid} is gone`];
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      wlog(root, `startup requeue skipped: ${e?.code ?? ""} ${e?.message ?? e}`);
+    }
     while (Date.now() - t0 < WORKER_LIFE_MS) {
       const { slots, light } = await gateLimits(root);
-      const q = readQueue(root);
-      const { start } = sq.pickRunnable(q.entries, { slots, lightSlots: light });
+      const q = tryReadQueue(root);
+      const { start } = q ? sq.pickRunnable(q.entries, { slots, lightSlots: light }) : { start: [] };
       for (const { entry, why } of start) {
         const claimed = update(root, entry.id, { state: "merging", startedAt: now(), workerPid: process.pid }, `start: ${why}`);
         if (!claimed) continue;
         wlog(root, `start ${entry.slug} (#${entry.pr}): ${why}`);
         jobs.set(entry.id, runJob(root, claimed).catch((e) => fail(root, claimed, `worker error: ${e?.stack ?? e}`)).finally(() => jobs.delete(entry.id)));
       }
-      const live = readQueue(root).entries.filter((e) => !sq.DONE.includes(e.state));
+      const live = (tryReadQueue(root)?.entries ?? [{ state: "unknown" }]).filter((e) => !sq.DONE.includes(e.state));
       if (!live.length && !jobs.size) {
         idleSince ??= Date.now();
         if (Date.now() - idleSince > WORKER_IDLE_MS) break;
@@ -280,7 +342,7 @@ async function runJob(root, entry) {
   } catch (e) {
     return fail(root, entry, `pushed ${head.slice(0, 7)} but auto-merge failed: ${e.message}`);
   }
-  update(root, entry.id, { state: "passed", endedAt: now(), head, why: `gated, pushed ${head.slice(0, 7)}, auto-merge queued` }, "passed");
+  update(root, entry.id, { state: "passed", endedAt: now(), head, why: `gated, pushed ${head.slice(0, 7)}, auto-merge queued` }, "passed", TERMINAL);
   wlog(root, `passed ${slug} (#${entry.pr}) after ${attempts} gate(s)`);
 }
 
@@ -290,7 +352,7 @@ function fail(root, entry, why) {
   try {
     appendFileSync(log, `${now()} ship-queue: FAIL ${why}\n`);
   } catch {}
-  update(root, entry.id, { state: "failed", endedAt: now(), why }, `failed: ${why}`);
+  update(root, entry.id, { state: "failed", endedAt: now(), why }, `failed: ${why}`, TERMINAL);
   wlog(root, `failed ${entry.slug} (#${entry.pr}): ${why}`);
   if (!entry.pr || process.env.LF_SHIP_QUEUE_NO_COMMENT === "1") return;
   let tail = "";
@@ -322,7 +384,22 @@ export async function waitFor(root, slug, { budgetMs = 3 * 60 * 60 * 1000, print
   const t0 = Date.now();
   let last = "";
   for (;;) {
-    const e = sq.entryFor(read(), slug);
+    let q = null;
+    try {
+      q = read();
+    } catch (err) {
+      wlog(root, `queue read failed, trying again next tick: ${err?.code ?? ""} ${err?.message ?? err}`);
+    }
+    if (!q) {
+      // the file stayed locked for over a second: not an answer about the PR, look again
+      if (Date.now() - t0 > budgetMs) {
+        print(`ship-queue: could not read the queue after ${Math.round(budgetMs / 60000)} min; resume with 'tools\\cli ship-queue wait ${slug}'`);
+        return 2;
+      }
+      await new Promise((r) => setTimeout(r, 2000));
+      continue;
+    }
+    const e = sq.entryFor(q, slug);
     if (!e) {
       print(quiet ? `SUMMARY ship fail ${slug}: not in the ship queue (run 'tools\\cli wt ship ${slug}')` : `FAIL  ${slug} is not in the ship queue`);
       return 1;

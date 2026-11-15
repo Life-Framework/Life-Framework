@@ -4,8 +4,9 @@
 // docs/worktrees.md "Ship queue". The rules below are pure; tools/validation/ship-queue-selftest.mjs
 // proves ordering, the parallel/overlap rule and the re-gate decision.
 
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { TRANSIENT, readFileRetry, writeFileAtomic } from "./atomic-file.mjs";
 import { conflictKind } from "../prs.mjs";
 
 export const RUNNING = ["merging", "gating", "pushing"];
@@ -148,24 +149,35 @@ export function statePath(hubDir) {
   return join(hubDir, "ship-queue.json");
 }
 
+// A status reader never sees a torn file (writeQueue renames whole). A read that keeps failing with a
+// transient error (EPERM, EBUSY, EACCES: a writer mid-rename) throws instead of returning an empty queue:
+// withQueue would write that empty queue back over the real one.
 export function readQueue(hubDir) {
   const p = statePath(hubDir);
   if (!existsSync(p)) return { version: 1, seq: 0, entries: [] };
+  let text;
   try {
-    const s = JSON.parse(readFileSync(p, "utf8"));
+    text = readFileRetry(p, "utf8");
+  } catch (e) {
+    if (TRANSIENT.includes(e?.code)) throw e;
+    return { version: 1, seq: 0, entries: [] };
+  }
+  try {
+    const s = JSON.parse(text);
     return { version: 1, seq: s.seq ?? 0, entries: Array.isArray(s.entries) ? s.entries : [] };
   } catch {
     return { version: 1, seq: 0, entries: [] };
   }
 }
 
+// Temp file + rename. On Windows the rename fails with EPERM/EBUSY/EACCES while a status or wait reader has
+// the file open, so it is retried (10 tries over about 1 s, tools/lib/atomic-file.mjs) before it throws.
 export function writeQueue(hubDir, q) {
   mkdirSync(hubDir, { recursive: true });
   const done = q.entries.filter((e) => DONE.includes(e.state)).sort((a, b) => String(b.endedAt).localeCompare(String(a.endedAt))).slice(0, KEEP_DONE);
   const live = q.entries.filter((e) => !DONE.includes(e.state));
   const p = statePath(hubDir);
-  writeFileSync(`${p}.tmp`, JSON.stringify({ ...q, entries: [...live, ...done] }, null, 2) + "\n", "utf8");
-  renameSync(`${p}.tmp`, p);
+  writeFileAtomic(p, JSON.stringify({ ...q, entries: [...live, ...done] }, null, 2) + "\n", { tmp:`${p}.tmp` });
 }
 
 // Add or replace the entry for a slug. A slug still queued is replaced (same seq, so it keeps its place);

@@ -244,6 +244,13 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
+   A queue write is bookkeeping and never fails a gate. On Windows the rename of `ship-queue.json.tmp`
+   throws EPERM/EBUSY/EACCES while a `ship-queue status` or `wait` has the file open, so
+   `tools/lib/atomic-file.mjs` retries it (10 tries over about 1 s); the worker's `update` then retries
+   the whole read-modify-write, and if that still fails it logs `queue write ... the gate result is kept`
+   in the worker log instead of failing the PR. A read that keeps failing throws rather than returning an
+   empty queue. The session lease, test cache, shard history, pool tickets and look-serve state use the
+   same helper. `ship-queue-eperm-selftest.mjs` holds the file open from a child process to prove it.
 
 **Stale rdb refresh when this PC is busy (the fallback).** A stale `resourceDatabase.rdb` is registered by a
 headless Workbench: ~15 s per addon, but it queued 10-50 min behind the hub `build` lock and this PC's one
@@ -741,7 +748,10 @@ it, picks a lane and a budget, and prints one line per outcome.
   `tools/safe-rm.mjs`, so junctions are unlinked, never followed. It then refuses with one line
   when free disk on that volume is under `minFreeDiskGb` (5). Both are settings: `tools/pool.json`,
   the `pool` key of `lf.local.json`, or `LF_POOL_SESSION_KEEP_H` / `LF_POOL_MIN_FREE_DISK_GB`.
-  `pool status` prints the free disk.
+  `pool status` prints the free disk. A test that may run anywhere is not refused: this PC drops out
+  (`pool: this PC refuses tests for now (...); the run goes to lf-testbox or lf-cloud`) and the pool
+  machines take it, each checking its own disk first (`diskRoute` in `tools/remote/pool.mjs`). A run
+  pinned here (`--local`), or with no pool machine, keeps the refusal.
 - **One request per worktree (#542).** A new `session up` from a worktree whose earlier request is
   still queued drops the earlier queue entry (the older process exits with "a newer session request
   replaced this one") and keeps the first request's age. `pool status` marks any leftover
@@ -1367,6 +1377,10 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
+  prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
+  validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
+  that freeze is printed once as `WARN  validate: this process was frozen N s`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
 
 ## Lead view
