@@ -34,12 +34,21 @@
 # server compiles every script at boot and test-e2e fails on `Can't compile`.
 # The pre-commit hook runs validate-repo.ps1 only.
 #
-# Run via: tools\cli validate --full   (or directly for verbose output)
+# Run via: tools\cli validate --full   (or directly for verbose output with LF_WB_LOCAL=1)
+#
+# Where it may run: tools/lib/wb-route.mjs. A PC whose pool caps lack "workbench" (the maintainer's
+# editor lives on Gaming-Box) never starts it: the CLI sends the compile to a pool machine. The CLI marks
+# its own launch with LF_WB_GUARDED=1 after that check; a direct run needs LF_WB_LOCAL=1 (a human's ask).
 
 $ErrorActionPreference = "Stop"
 
 $root = git rev-parse --show-toplevel
 if (-not $root) { Write-Host "ERROR not a git work tree"; exit 1 }
+
+if ($env:LF_WB_GUARDED -ne "1" -and $env:LF_WB_LOCAL -ne "1") {
+  Write-Host "ERROR validate-scripts starts a headless Workbench; run it through 'tools\cli validate --full' (it picks a machine with the workbench cap), or set LF_WB_LOCAL=1 to run it here on purpose"
+  exit 2
+}
 
 $gproj = Join-Path $root "addons\LifeFramework\LifeFramework.gproj"
 $wb = $env:LF_WORKBENCH_EXE
