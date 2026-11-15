@@ -1,0 +1,105 @@
+// Every flagship surface links the run-your-own install guide (#1424, closes #320's "every flagship surface").
+// inputs: docs/marketing/**, website/src/**, addons/LF_Everon1989/Language/lf_everon1989_localization.st, docs/community/**, tools/validation/fixtures/run-your-own/**
+//
+// The flagship surfaces (Workshop copy, the site's join, servers and rules pages, the pack's run-your-own
+// sign string, the Discord rules block) each point a would-be server owner at the install guide
+// (docs/owner/install.md). A surface that does not exist yet is PENDING, not a failure. A surface that
+// exists without the link fails with its path, unless it is listed in KNOWN_GAPS (a card owns the fix):
+// a known gap prints a WARN, and a known gap that now passes fails so the list stays true.
+// Fixtures: fixtures/run-your-own/missing-link.md must fail and has-link.md must pass, every run.
+// red-proof: `node tools/validation/validate-run-your-own.mjs --surface tools/validation/fixtures/run-your-own/missing-link.md`
+// exits 1 with "FAIL ... missing-link.md" (2026-11-15, #1424).
+
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const INSTALL = /docs\/owner\/install\.md/;
+const FIXTURES = join("tools", "validation", "fixtures", "run-your-own");
+
+// A surface: id, files (any one existing file counts; all existing files are checked), and what counts as the link.
+// `sign` reads only the named string rows: a sign cannot hold a GitHub URL, so the site route is the link.
+const SURFACES = [
+  { id: "workshop-flagship", files: ["docs/marketing/workshop/everon-1989/description.bbcode", "docs/marketing/workshop-flagship.md"], link: INSTALL },
+  { id: "site-join", files: ["website/src/pages/Join.tsx"], link: /<RunYourOwn\b|docs\/owner\/install\.md/ },
+  { id: "site-run-your-own-block", files: ["website/src/components/RunYourOwn.tsx"], link: INSTALL },
+  { id: "site-servers", files: ["website/src/pages/Servers.tsx"], link: /<RunYourOwn\b|docs\/owner\/install\.md/ },
+  { id: "site-rules", files: ["website/src/pages/Rules.tsx"], link: /<RunYourOwn\b|docs\/owner\/install\.md/ },
+  { id: "pack-sign", files: ["addons/LF_Everon1989/Language/lf_everon1989_localization.st"], link: /life-framework\.org\/servers/, rows: ["LF-Sign_RunYourOwn_How", "LF-Sign_RunYourOwn_Next"] },
+  // The Discord rules block has no source file in the repo yet (the bot posts it by hand); it is pending until one lands.
+  { id: "discord-rules", files: ["docs/community/discord-rules.md"], link: INSTALL },
+];
+
+// Surfaces that exist today without the link. Each needs a card; remove the entry when its surface is fixed.
+const KNOWN_GAPS = new Set(["workshop-flagship", "site-servers", "site-rules"]);
+
+function read(rel) { return readFileSync(join(ROOT, rel), "utf8"); }
+
+// The text of a surface file that the link may appear in (whole file, or just the named string rows).
+function scope(surface, text) {
+  if (!surface.rows) return text;
+  const out = [];
+  for (const id of surface.rows) {
+    const at = text.indexOf(`Id "${id}"`);
+    if (at < 0) continue;
+    const m = /^\s+Target_en_us "([^"]*)"/.exec(text.slice(at + id.length + 5));
+    if (m) out.push(m[1]);
+  }
+  return out.join("\n");
+}
+
+function check(surface) {
+  const present = surface.files.filter((f) => existsSync(join(ROOT, f)));
+  if (!present.length) return { state: "pending", missing: [] };
+  const missing = present.filter((f) => !surface.link.test(scope(surface, read(f))));
+  return { state: missing.length ? "fail" : "ok", missing };
+}
+
+const errors = [];
+const warns = [];
+const surfaceArg = process.argv.indexOf("--surface");
+
+if (surfaceArg > -1) {
+  // Single-file mode: the file is a surface that must carry the install guide link.
+  const file = process.argv[surfaceArg + 1];
+  if (!file || !existsSync(file)) { console.error(`FAIL no such surface file: ${file}`); process.exit(1); }
+  if (!INSTALL.test(readFileSync(file, "utf8"))) {
+    console.error(`FAIL ${file}: no run-your-own link to the install guide (docs/owner/install.md)`);
+    process.exit(1);
+  }
+  console.log(`validate-run-your-own: OK ${file}`);
+  process.exit(0);
+}
+
+// Self-proof on the committed fixtures.
+for (const [name, expectOk] of [["missing-link.md", false], ["has-link.md", true]]) {
+  const rel = join(FIXTURES, name);
+  if (!existsSync(join(ROOT, rel))) { errors.push(`fixture ${rel} is missing`); continue; }
+  const ok = INSTALL.test(read(rel));
+  if (ok !== expectOk) errors.push(`fixture ${rel} should ${expectOk ? "pass" : "fail"} the link rule`);
+}
+
+const pending = [];
+const passed = [];
+for (const s of SURFACES) {
+  const r = check(s);
+  if (r.state === "pending") { pending.push(s.id); continue; }
+  if (r.state === "ok") {
+    if (KNOWN_GAPS.has(s.id)) errors.push(`${s.id} now has the link: remove it from KNOWN_GAPS`);
+    else passed.push(s.id);
+    continue;
+  }
+  const where = r.missing.map((f) => relative(ROOT, join(ROOT, f)).replaceAll("\\", "/")).join(", ");
+  if (KNOWN_GAPS.has(s.id)) warns.push(`${s.id} (${where}): no run-your-own link to the install guide (known gap, follow-up card)`);
+  else errors.push(`${s.id} (${where}): no run-your-own link to the install guide (docs/owner/install.md)`);
+}
+for (const id of KNOWN_GAPS) if (!SURFACES.some((s) => s.id === id)) errors.push(`KNOWN_GAPS names unknown surface ${id}`);
+
+for (const w of warns) console.warn("WARN " + w);
+if (errors.length) {
+  for (const e of errors) console.error("FAIL " + e);
+  console.error(`validate-run-your-own: ${errors.length} problem(s)`);
+  process.exit(1);
+}
+console.log(`validate-run-your-own: OK (${passed.length} linked: ${passed.join(", ")}; ${warns.length} known gap(s); pending: ${pending.join(", ") || "none"})`);

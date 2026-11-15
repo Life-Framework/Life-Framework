@@ -32,8 +32,10 @@ export function killTreeSync(pid) {
 }
 
 // Pure loop. done(): the job's result is in place (a throw counts as "not yet": a file being written).
-// alive(): the process still runs. Returns { done, exited, timedOut, ms }.
-export function waitUntilDone({ done, alive, timeoutMs, settleMs = 3000, pollMs = 1000, now = Date.now, sleep = sleepSync }) {
+// alive(): the process still runs. stalled() (optional): a reason string once the process is known to be
+// stuck without the job done (a freeze dump, no window); the wait ends then, not at timeoutMs.
+// Returns { done, exited, timedOut, stalled, ms }.
+export function waitUntilDone({ done, alive, stalled, timeoutMs, settleMs = 3000, pollMs = 1000, now = Date.now, sleep = sleepSync }) {
   const started = now();
   let doneAt = 0;
   for (;;) {
@@ -50,6 +52,13 @@ export function waitUntilDone({ done, alive, timeoutMs, settleMs = 3000, pollMs 
         finalOk = !!done();
       } catch {}
       return { done: finalOk, exited: true, timedOut: false, ms: now() - started };
+    }
+    if (!doneAt && stalled) {
+      let why = "";
+      try {
+        why = stalled() || "";
+      } catch {}
+      if (why) return { done: false, exited: false, timedOut: false, stalled: why, ms: now() - started };
     }
     if (now() - started >= timeoutMs) return { done: false, exited: false, timedOut: true, ms: now() - started };
     sleep(pollMs);
