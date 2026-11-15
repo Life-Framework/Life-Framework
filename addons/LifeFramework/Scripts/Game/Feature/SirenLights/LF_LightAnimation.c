@@ -67,6 +67,13 @@ class LF_LightAnimation
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True once every entry has run.
+	bool IsFinished()
+	{
+		return m_EntryIndex >= m_Entries.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	/**
 	\return the time spent in the current loop of the animation
 	**/
