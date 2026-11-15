@@ -341,6 +341,7 @@ modded class SCR_ChimeraCharacter
 	//! 2026-11-12). The owner therefore recomputes on every change of the flag.
 	protected void LF_OnDownedReplicated()
 	{
+		LF_Knockout.Sync(this);
 		RplComponent rpl = RplComponent.Cast(FindComponent(RplComponent));
 		if (!rpl || !rpl.IsOwner())
 			return;
@@ -381,6 +382,7 @@ modded class SCR_ChimeraCharacter
 
 		Replication.BumpMe();
 		LF_StunBuzz.Sync(this);
+		LF_Knockout.Sync(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -401,6 +403,40 @@ modded class SCR_ChimeraCharacter
 	protected void LF_OnStunnedReplicated()
 	{
 		LF_StunBuzz.Sync(this);
+		LF_Knockout.Sync(this);
+	}
+
+	//! Server only: world time (s) the current knockout ends at.
+	protected float m_fLF_StunEndsAt;
+
+	//! Local to the owning machine (LF_Knockout.Sync): the knockout ragdoll is held, or was just
+	//! released and the body is settling before the wake-up animation.
+	protected bool m_bLF_KnockoutRagdoll;
+	protected bool m_bLF_KnockoutSettling;
+
+	//------------------------------------------------------------------------------------------------
+	void LF_SetKnockoutRagdoll(bool held, bool settling)
+	{
+		m_bLF_KnockoutRagdoll = held;
+		m_bLF_KnockoutSettling = settling;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool LF_IsKnockoutRagdollHeld()
+	{
+		return m_bLF_KnockoutRagdoll;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool LF_IsKnockoutSettling()
+	{
+		return m_bLF_KnockoutSettling;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float LF_GetStunEndsAt()
+	{
+		return m_fLF_StunEndsAt;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -413,13 +449,17 @@ modded class SCR_ChimeraCharacter
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: enter the downed state as a stun. \return The token the timed wake must present.
-	int LF_BeginStun()
+	int LF_BeginStun(float seconds)
 	{
 		LF_SetDowned(true, "");
 		m_bLF_Stunned = true;
 		m_iLF_StunToken++;
+		if (GetGame().GetWorld())
+			m_fLF_StunEndsAt = GetGame().GetWorld().GetWorldTime() / 1000 + seconds;
+
 		Replication.BumpMe();
 		LF_StunBuzz.Sync(this);
+		LF_Knockout.Sync(this);
 		return m_iLF_StunToken;
 	}
 
@@ -484,6 +524,11 @@ modded class SCR_CharacterDamageManagerComponent
 	override protected bool ShouldBeUnconscious()
 	{
 		if (LF_Downed.IsDowned(GetOwner()))
+			return true;
+
+		// A released knockout ragdoll settles into the prone pose before the wake-up (LF_Knockout).
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(GetOwner());
+		if (character && character.LF_IsKnockoutSettling())
 			return true;
 
 		return super.ShouldBeUnconscious();
