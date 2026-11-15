@@ -59,6 +59,11 @@
       "match": "^(SquareRegistryParasol|SquareRegistryCounter) ",
       "kind": "clips",
       "why": "The market parasol stands at the back of the registry counter and its canopy reaches over the counter top on purpose: the clerk and the counter are under cover (arrival-desk look, town-arrival-desk). The pole stands clear of the counter; only the canopy box overlaps it."
+    },
+    {
+      "match": "^Roadmap_Vehicle_S105 ",
+      "kind": "clips",
+      "why": "maintainer hand placement (world ship): Roadmap_Vehicle_S105 in Street_Vehicles.layer (clips Sign_LotPrice_t601)"
     }
   ]
 }
