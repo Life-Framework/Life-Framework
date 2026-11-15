@@ -655,19 +655,29 @@ class LF_SignComponent : ScriptComponent
 			text = FaceText(sign);
 		}
 
+		// The text goes on the entity that carries the face: the plate, for a plate on a pole.
+		IEntity face = owner;
+		if (m_bFaceOnChild && owner.GetChildren())
+			face = owner.GetChildren();
+
 		vector mins;
 		vector maxs;
-		owner.GetBounds(mins, maxs);
-		vector centre = Vector((mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, maxs[2] + 0.02);
+		face.GetBounds(mins, maxs);
 		vector mat[4];
-		owner.GetWorldTransform(mat);
-		mat[3] = owner.CoordToParent(centre);
+		face.GetWorldTransform(mat);
+
+		// A painted face's mesh samples $rendertarget, which the edit view never fills, so it draws
+		// black (or not at all). Cover the front with the sign's own rim and paint.
+		if (HasPaintedFace() && (m_bFaceOnOwner || m_bFaceOnChild))
+			WbDrawPanel(mat, mins, maxs);
+
+		mat[3] = WbToWorld(mat, Vector((mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, maxs[2] + 0.02));
 
 		vector camera[4];
 		owner.GetWorld().GetCurrentCamera(camera);
 		float distance = vector.Distance(camera[3], mat[3]);
 
-		float width = (maxs[0] - mins[0]) * owner.GetScale();
+		float width = vector.Distance(WbToWorld(mat, Vector(mins[0], 0, 0)), WbToWorld(mat, Vector(maxs[0], 0, 0)));
 		float size = 0.08;
 		if (!full)
 			size = Math.Clamp(width * 1.3 / Math.Max(text.Length(), 6), 0.04, 0.35);
@@ -677,6 +687,43 @@ class LF_SignComponent : ScriptComponent
 
 		int flags = DebugTextFlags.CENTER | DebugTextFlags.ONCE | DebugTextFlags.FACE_CAMERA;
 		DebugTextWorldSpace.CreateInWorld(owner.GetWorld(), text, flags, mat, size, color, background);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A point in the entity's local space, in world space (mat: the entity's world transform).
+	protected static vector WbToWorld(vector mat[4], vector local)
+	{
+		return mat[0] * local[0] + mat[1] * local[1] + mat[2] * local[2] + mat[3];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rim colour over the face's front (its local +Z side), and the paint inside it by
+	//! m_fRimWidth (layout units over the face area's width), drawn for this editor frame only.
+	protected void WbDrawPanel(vector mat[4], vector mins, vector maxs)
+	{
+		float rim = 0;
+		if (m_vFaceArea[0] > 0)
+			rim = (maxs[0] - mins[0]) * m_fRimWidth / m_vFaceArea[0];
+
+		WbDrawQuad(mat, mins[0], mins[1], maxs[0], maxs[1], maxs[2] + 0.004, ARGBF(1, m_vRimColor[0], m_vRimColor[1], m_vRimColor[2]));
+		WbDrawQuad(mat, mins[0] + rim, mins[1] + rim, maxs[0] - rim, maxs[1] - rim, maxs[2] + 0.008, ARGBF(1, m_vPaintColor[0], m_vPaintColor[1], m_vPaintColor[2]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void WbDrawQuad(vector mat[4], float left, float bottom, float right, float top, float z, int color)
+	{
+		vector a = WbToWorld(mat, Vector(left, bottom, z));
+		vector b = WbToWorld(mat, Vector(right, bottom, z));
+		vector c = WbToWorld(mat, Vector(right, top, z));
+		vector d = WbToWorld(mat, Vector(left, top, z));
+		vector tris[6];
+		tris[0] = a;
+		tris[1] = b;
+		tris[2] = c;
+		tris[3] = a;
+		tris[4] = c;
+		tris[5] = d;
+		Shape.CreateTris(color, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE | ShapeFlags.DOUBLESIDE, tris, 2);
 	}
 
 	//------------------------------------------------------------------------------------------------
