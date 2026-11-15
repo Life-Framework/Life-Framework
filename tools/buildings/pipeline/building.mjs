@@ -3,7 +3,7 @@
 //
 //   building run <slug> [--from <stage>] [--only <stage>] [--force]
 //   building adopt <slug> [<file.blend>]   keep a hand-polished scene (docs/building-pipeline/polish.md)
-//   building status [<slug>]     building doctor     building selftest
+//   building plan <slug>     building proof <slug>     building status [<slug>]     building doctor     building selftest
 //
 // The spec is tools/buildings/<slug>/spec.json (tracked). Every stage writes into
 // tmp/buildings/<slug>/ and a finished stage is skipped until --force or an earlier stage reruns.
@@ -495,6 +495,8 @@ export async function main(flags, { workbench } = {}) {
   const root = ROOT;
   if (sub === "selftest") return (await import("../../validation/building-pipeline-selftest.mjs")).main(rest);
   if (sub === "doctor") return cmdDoctor();
+  if (sub === "plan") return rest[0] ? (await import("./plan.mjs")).cmdPlan(root, rest[0]) : say("usage: tools\\cli building plan <slug>", 2);
+  if (sub === "proof") return rest[0] && !rest[0].startsWith("--") ? (await import("./proof.mjs")).cmdProof(root, rest[0], rest.slice(1)) : say("usage: tools\\cli building proof <slug> [--entity E] [--skip-audit] [--no-session] [--mission debug|playtest]", 2);
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "adopt") return rest[0] ? cmdAdopt(root, rest[0], rest[1]) : say("usage: tools\\cli building adopt <slug> [<file.blend>]", 2);
   if (sub === "run") {
@@ -506,6 +508,8 @@ export async function main(flags, { workbench } = {}) {
   }
   console.log(`usage: tools\\cli building run <slug> [--from <stage>] [--only <stage>] [--force]     stages: ${STAGES.join(", ")}
        tools\\cli building adopt <slug> [<file.blend>]     keep a hand-polished scene
+       tools\\cli building plan <slug>      the facts an agent brief needs (also tmp/buildings/<slug>/plan.md)
+       tools\\cli building proof <slug>     doors, scale, audit, pictures and proof.json on a full session
        tools\\cli building status [<slug>] | doctor | selftest
 playbook: docs/building-pipeline/README.md`);
   return sub ? 2 : 0;
