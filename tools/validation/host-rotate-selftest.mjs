@@ -2,11 +2,14 @@
 // inputs: tools/host/rotate.mjs, tools/host/commands/prune.mjs
 //
 // Proves `tools\cli host prune [--keep N]` keeps the newest N plain backups
-// (<stamp>-start, <stamp>-stop) and never deletes a tagged one (preflight,
-// wipe, crash, replaced-by-restore, manual, anything else). Fixture: 30 dated
-// backup folders of mixed tags in a temp dir.
+// (<stamp>-start, <stamp>-stop, <stamp>-restart: a scheduled restart rotates like a start or
+// stop, #1560) and never deletes a tagged one (preflight, wipe, crash,
+// replaced-by-restore, manual, anything else). Fixture: 30 dated backup folders of mixed tags
+// in a temp dir.
 // red-proof: before tools/host/rotate.mjs existed the import failed:
-// "FAIL rotate.mjs missing (Cannot find module ...)" (2026-11-15).
+// "FAIL rotate.mjs missing (Cannot find module ...)" (2026-11-15). With `restart` not plain
+// (2026-11-15): "FAIL restart not plain", "FAIL restart-2 not plain", "FAIL plan.delete 7, expected 12",
+// "FAIL deleted 7, want 12".
 
 import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -42,11 +45,12 @@ try {
     const stamp = `2026-11-${p(1 + Math.floor(i / 24))}_${p(i % 24)}-00-00`;
     let reason;
     if (i % 3 === 2) reason = tagged[(i / 3 | 0) % tagged.length];
+    else if (i % 6 === 0) reason = "restart"; // a scheduled restart rotates like start and stop
     else reason = i % 2 ? "start" : "stop";
     let name = `${stamp}-${reason}`;
     if (i === 10 || i === 20) name = `${stamp}-${reason}-2`; // twin suffix
     names.push(name);
-    if (/-(start|stop)(-\d+)?$/.test(name)) plain.push(name);
+    if (/-(start|stop|restart)(-\d+)?$/.test(name)) plain.push(name);
     mkdirSync(join(backups, name), { recursive: true });
     writeFileSync(join(backups, name, "x.txt"), "x");
   }
@@ -56,7 +60,9 @@ try {
   // classify
   if (rot.isPlainBackup("2026-11-01_00-00-00-start") !== true) fail("start not plain");
   if (rot.isPlainBackup("2026-11-01_00-00-00-stop-2") !== true) fail("stop-2 not plain");
-  for (const t of ["preflight-a-to-b", "wipe", "crash", "replaced-by-restore", "manual", "start-up", "restart"]) {
+  if (rot.isPlainBackup("2026-11-01_00-00-00-restart") !== true) fail("restart not plain");
+  if (rot.isPlainBackup("2026-11-01_00-00-00-restart-2") !== true) fail("restart-2 not plain");
+  for (const t of ["preflight-a-to-b", "wipe", "crash", "replaced-by-restore", "manual", "start-up", "pre-restart", "restarted"]) {
     if (rot.isPlainBackup(`2026-11-01_00-00-00-${t}`)) fail(`${t} classed plain`);
   }
   if (rot.isPlainBackup("notes")) fail("unstamped folder classed plain");
