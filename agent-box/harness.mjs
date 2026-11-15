@@ -1368,6 +1368,11 @@ function townSelftest() {
   const strings = new Map([["T-A_Title", "Site A"]]);
   if (signCard("a", catalog, strings).blank || signCard("a", catalog, strings).title !== "Site A") throw new Error("a #key title resolves");
   if (!signCard("blank", catalog, strings).blank) throw new Error("a card whose only section is an unknown key is blank");
+  // The pack's signs load beside the core's: an added sign is there, a patch keeps the core fields it does not name.
+  // red-proof 2026-11-16: with the core-only loader, "registry" was missing and this threw.
+  const packCatalog = loadSignCatalog(ROOT);
+  if (!packCatalog.has("registry")) throw new Error("the catalog holds the pack's added sign (registry)");
+  if (!packCatalog.get("hospital")?.m_sTitle || !packCatalog.get("hospital")?.m_sImage) throw new Error("a pack patch keeps the core title and adds its field (hospital)");
   const manifest = {
     requireSigns: false,
     signRadiusM: 8,

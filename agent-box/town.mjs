@@ -5,7 +5,7 @@
 // manifest edit. `checkTown` is the offline half: it runs in selftest and in
 // `tools\cli validate`. `report town` (report.mjs) is the play-mode half.
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { loadWorld } from "./layers.mjs";
 
@@ -36,8 +36,8 @@ export const TOWN = {
     // The civilian town spawn on the square. The other spawn points (mine,
     // police) are elsewhere, and their centre is not a place a player stands.
     { id: "spawn", entity: "Spawn_Town", actions: [], sign: "town_map", step: 4 },
-    // Arrival step 1 on the square (QuestGiver_Clerk, M1-18); the town map board beside him explains it.
-    { id: "clerk", entity: "Quest_Clerk", actions: ["LF_QuestAction"], sign: "town_map", step: 5 },
+    // Arrival step 1 on the square (QuestGiver_Clerk, M1-18): behind the registry counter, the REGISTRY OFFICE board beside him.
+    { id: "clerk", entity: "Quest_Clerk", actions: ["LF_QuestAction"], sign: "registry", step: 5 },
     { id: "post_office", entity: "Roadmap_Job_Depot", actions: ["LF_JobSignUpAction", "LF_JobStartRunAction"], sign: "post_office", step: 6 },
     { id: "job_drop", entity: "Roadmap_Job_Drop", actions: ["LF_JobDropoffAction"], sign: null, step: 7 },
     { id: "traders", entity: "TraderChainCounter", actions: ["LF_OpenTraderAction"], sign: "traders", step: 7 },
@@ -184,7 +184,18 @@ export function parseSignConfig(text) {
 export function loadSignCatalog(root) {
   const file = join(root, "addons", "LifeFramework", "Configs", "Signs", "LF_Signs.conf");
   if (!existsSync(file)) return new Map();
-  return parseSignConfig(readFileSync(file, "utf8"));
+  const catalog = parseSignConfig(readFileSync(file, "utf8"));
+  // The flagship pack loads beside the core (tools/lib/addons.mjs) and adds or patches signs
+  // (`m_sOp "add"|"patch"`); a patch only replaces the fields it names.
+  const packDir = join(root, "addons", "LF_Everon1989", "Configs", "Signs");
+  if (existsSync(packDir)) {
+    for (const name of readdirSync(packDir).filter((n) => n.endsWith(".conf")).sort()) {
+      for (const [id, def] of parseSignConfig(readFileSync(join(packDir, name), "utf8"))) {
+        catalog.set(id, def.m_sOp === "patch" && catalog.has(id) ? { ...catalog.get(id), ...def } : def);
+      }
+    }
+  }
+  return catalog;
 }
 
 // What the Read card shows, resolved the way LF_SignCatalog.Resolve does. A
