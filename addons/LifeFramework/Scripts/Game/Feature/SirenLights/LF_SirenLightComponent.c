@@ -19,7 +19,9 @@ class LF_SirenLightComponent : ScriptComponent
 	[Attribute("2", uiwidget: UIWidgets.Slider, params: "0 1000")]
 	protected int m_EmissiveMultiplier;
 
-	protected bool m_isOn = true;
+	//! A light starts dark: it burns only when the siren's mode turns it on. A bar with no knob to tick
+	//! the default mode's "Turn Off" entry used to stay lit for good (the ambulance's).
+	protected bool m_isOn;
 
 	// Emissive multiplier when on/off
 	const int EMISSIVE_OFF = 0;
@@ -39,8 +41,7 @@ class LF_SirenLightComponent : ScriptComponent
 			return;
 		}
 		if (m_OverrideEmissiveColor) m_Material.SetEmissiveColor(Color.FromVector(m_EmissiveColor.Normalized()).PackToInt());
-		m_Material.SetEmissiveMultiplier(m_EmissiveMultiplier);
-		SpawnLights();
+		m_Material.SetEmissiveMultiplier(EMISSIVE_OFF);
 	}
 
 	//------------------------------------------------------------------------------------------------
