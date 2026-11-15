@@ -3,9 +3,10 @@
 // Registers a Windows scheduled task that starts `host watch --flagship` at logon of this user,
 // hidden, so the PC host returns after a reboot (the watchdog alone covers only a crashed server).
 import { isMainCheckout } from "../../wt.mjs";
+import { boxMode } from "../../lib/host-box.mjs";
 import { currentUser, installTask, queryTask, realRunner, removeTask } from "../autostart.mjs";
 
-export const help = "autostart install|remove|status [--dry-run]   a Windows scheduled task runs `host watch --flagship` hidden at logon for this user, so the host returns after a reboot; status says whether it is registered and when it last ran; --dry-run prints the schtasks arguments and changes nothing; refuses in the main checkout";
+export const help = "autostart install|remove|status [--dry-run]   a Windows scheduled task runs `host watch --flagship` hidden at logon for this user, so the host returns after a reboot; status says whether it is registered and when it last ran; --dry-run prints the schtasks arguments and changes nothing; refuses in the main checkout unless box mode is on (`host box on`, a rented box)";
 
 const say = (m) => console.log(`[LFDebug:HostAutostart] ${m}`);
 
@@ -26,9 +27,9 @@ export async function main(args, ctx) {
     return 1;
   }
   const dry = args.includes("--dry-run");
-  const isMain = ctx.isMain ?? isMainCheckout(ctx.root);
+  const isMain = (ctx.isMain ?? isMainCheckout(ctx.root)) && !boxMode(ctx.root, ctx.env ?? process.env).on;
   if (isMain && sub !== "status") {
-    say("REFUSE: this is the main checkout, the world-editor copy; the task would point at it. Run from a worktree (tools\\cli wt new <slug>).");
+    say("REFUSE: this is the main checkout, the world-editor copy; the task would point at it. Run from a worktree (tools\\cli wt new <slug>), or on a rented box run `tools\\cli host box on` once.");
     return 1;
   }
   if (!ctx.runner && !dry && process.platform !== "win32") {

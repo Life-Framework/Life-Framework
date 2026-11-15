@@ -31,6 +31,12 @@ function listFiles(root) {
   return out.sort((a, b) => (a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0));
 }
 
+// A save point holds data when something besides meta-info.json beside it has a byte in it.
+// The engine's WorldState entry can be a folder, so look inside folders too (#1636).
+function hasSaveData(savePointDir) {
+  return listFiles(savePointDir).some((f) => f.rel !== "meta-info.json" && f.size > 0);
+}
+
 // sha256 over every file's relative path, size and bytes, in path order.
 export function checksumFiles(files) {
   const h = createHash("sha256");
@@ -49,7 +55,7 @@ export function verifyBackup(backups, name) {
   try {
     const files = listFiles(dir);
     if (!files.some((f) => f.size > 0)) return { name, status: "empty", detail: files.length ? "every file is zero bytes" : "no files" };
-    const points = findSavePoints(dir).filter((p) => readdirSync(p.dir).some((n) => n !== "meta-info.json" && statSync(join(p.dir, n)).isFile()));
+    const points = findSavePoints(dir).filter((p) => hasSaveData(p.dir));
     if (!points.length) return { name, status: "nosave", detail: "no save point (meta-info.json with save data beside it): a restore has nothing to load" };
     const meta = readSaveMeta(points[0].dir);
     const build = meta && typeof meta.m_sGameVersion === "string" ? meta.m_sGameVersion : "";
