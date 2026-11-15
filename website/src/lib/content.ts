@@ -191,7 +191,7 @@ export const MILESTONE_PLAN: Record<string, { goal: string; plan: { label: strin
     plan: { label: "M4 outline", to: "/docs/roadmap-m4-outline" },
   },
   M5: {
-    goal: "The first update after launch, for the weeks when every player is new: arrival, gear that fits 1989, police tools, evenings in the village and the town paper.",
+    goal: "The first update after launch, for the weeks when every player is new: gear that fits 1989, evenings in the village, police tools, the arrival and the relocation story.",
     plan: { label: "Roadmap", to: "/docs/roadmap" },
   },
   M6: {

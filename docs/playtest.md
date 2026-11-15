@@ -148,6 +148,10 @@ log that back them stay on the server and invisible.
   It flags the incidents from the last ten minutes that involved you, as either
   party, for admins to see in the Game Master incident view. You get a "Staff
   were told" toast; a second report within two minutes is refused.
+- **Clip stamp (#804).** Press F9 (gamepad: RB + View together): a small tag shows the server name, the last six
+  characters of your player ID and the server's UTC time. Press it again to hide it. Record a clip with it showing,
+  type `/report`, then ask an admin to find the incident row at that time in the Game Master incident view: the
+  stamp time and the row time should match. How to record a clip on each platform: `docs/player-clips.md`.
 - **Spawn square dressing (area 1 polish).** The payphone stands on the square beside the handcart, front to the west, toward the spawn.5, 240.5). The clerk has a desk and chair beside him, and a handcart stands by the benches on the north side.
 - **Spawn hub (#607).** The small table on the spawn square (about 119, 243.5, a few steps from where you spawn) carries a globe: use *Travel to a playtest area* to open a scrollable list (police station, bank, jail, fence, farm, orchard, market, mining, quarry, garage, car lot, chop shop, fuel station, hospital and more) and pick *Go* to be teleported there. The same globe still sets day, night and rain or clear weather (moved here from the test annex), and the survival food and water trees stand at 112, 262. Playtest game mode only: the server refuses it elsewhere. New areas are one row in `Configs/Debug/LF_SpawnHub.conf` plus a `LF-SpawnHub_Pt_<id>` string. Demo: `node agent-box/session.mjs spawn-hub-proof` (add `--shot` for screenshots).
 - **Safe square.** On the spawn square you cannot hurt another player and they

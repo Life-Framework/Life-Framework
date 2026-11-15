@@ -41,6 +41,7 @@ what staff apply. Update this file in the same change.
 | CONTRIBUTORS | #code-review | Contributor, Advisor, staff | Hidden from everyone else |
 | VOICE | Lounge | Everyone | |
 | VOICE | Contributors | Contributor, Advisor, staff | |
+| STAFF | #appeals | Staff, and the player who opens a post | Planned (#315); the maintainer creates it before opening. A private forum: a banned player opens one post from the template in [appeals.md](appeals.md), only staff and that player read it, a different staff member than the banner answers. Update this row and the status line in appeals.md when it exists |
 | STAFF | #mod-log | Staff, Dyno, the bot | AutoMod alerts. System, update, and safety-alert channel |
 
 Read-only channels deny sending, reactions, threads, polls, and voice messages

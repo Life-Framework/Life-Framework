@@ -144,8 +144,9 @@ tools\cli host players <your public IP>:17777
 ```
 
 It prints the server name, map and player count over A2S. Then open the game and look for the server in
-the Server Browser. *(planned, #1461)* `tools\cli host listing` will compare what the browser shows with
-`server/flagship/server.json`.
+the Server Browser. `tools\cli host listing <public IP>:17777` compares what the browser shows (name, map,
+maximum players) with `server/flagship/server.json`; `host listing --remote 0grind` does it for the
+rented box.
 
 ## 8. Your first join, and your admin ID
 
