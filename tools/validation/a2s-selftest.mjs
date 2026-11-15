@@ -7,6 +7,7 @@
 // against a server that never answers.
 // red-proof: before tools/host/a2s.mjs existed this printed
 // "FAIL cannot load tools/host/a2s.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
+// red-proof: with formatInfo printing "set (private)"/"none (public)" this printed "FAIL formatInfo with passworded=true does not say the password is not reported by A2S" (2026-11-15).
 
 import { readFileSync } from "node:fs";
 import { createSocket } from "node:dgram";
@@ -62,7 +63,10 @@ const withVis = (vis) => Buffer.concat([Buffer.from([0xff, 0xff, 0xff, 0xff, 0x4
 check(a2s.parseInfoReply(withVis(1)).passworded === true, "visibility 1 does not parse as passworded");
 check(a2s.parseInfoReply(withVis(0)).passworded === false, "visibility 0 does not parse as public");
 check(a2s.parseInfoReply(withVis(1).subarray(0, withVis(1).length - 4)).passworded === undefined, "a reply that ends at bots does not leave passworded unknown");
-check(players.formatInfo({ name: "n", map: "m", players: 0, maxPlayers: 16, passworded: true }).includes("password: set"), "formatInfo does not show the password flag");
+// Reforger's A2S never reports the password (a wrong password is refused live), so players says so for either flag.
+for (const passworded of [true, false, undefined]) {
+  check(players.formatInfo({ name: "n", map: "m", players: 0, maxPlayers: 16, passworded }).includes("password: not reported by A2S"), `formatInfo with passworded=${passworded} does not say the password is not reported by A2S`);
+}
 
 // Garbage and truncation are errors, never a throw out of the parser's callers' timers.
 for (const [label, buf] of [["empty", Buffer.alloc(0)], ["bad header", Buffer.from("00112233490000", "hex")], ["truncated", hex("info.hex").subarray(0, 12)], ["unknown type", Buffer.from("ffffffff5800", "hex")]]) {
