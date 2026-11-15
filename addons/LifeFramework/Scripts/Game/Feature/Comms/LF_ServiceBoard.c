@@ -393,3 +393,16 @@ modded class SCR_PlayerController
 		LF_WantedBoard.OpenParts(LF_ServiceBoard.BuildParts(service, open, entries));
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_ServiceBoard");
+		if (apply)
+			LF_ServiceBoard.ResetStatics();
+	}
+}

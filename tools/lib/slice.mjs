@@ -14,6 +14,7 @@ export const BUDGET = { minutes: 45, calls: 60 };
 // Files with merge drivers (tools/merge/) or generated tables: any slice may append to them.
 export const SHARED = [
   "docs/features.md",
+  "docs/features/**",
   "docs/debug-log-triage.md",
   "addons/LifeFramework/Language/**",
   "addons/LF_Everon1989/Language/**",
@@ -21,7 +22,6 @@ export const SHARED = [
   "tools/validation/enforce-lint-baseline.json",
   "docs/config/config.schema.json",
   "docs/config/config.example.json",
-  "addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c",
 ];
 // The routing table (docs/process/roadmap-pipeline.md "Model routing"). Risky work goes to Opus whatever its type.
 export const ROUTING = {

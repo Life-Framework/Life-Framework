@@ -63,3 +63,18 @@ update) is how vanilla's `EditorCommentEntity` puts words in the editor view, an
 - The preview is text, not the printed sheet: the painted rim, the wrapping and font fit are what play mode shows.
 - **Edit sign text** opens the config at the top. It cannot jump to the row, so find the row by its `m_sId`.
 - A pack overlay that is not in the mission header the editor loads does not change the preview.
+
+## Black faces (fixed after #1820)
+
+With #1820 merged, the pole-plate safe-zone signs showed **black** in the edit view. A painted face's mesh samples
+`$rendertarget`, and with no render target bound the editor draws it black. #1820's text was anchored on the entity
+that owns the component, which for a plate on a pole (`m_bFaceOnChild`) is the thin pole. So the plate got no text, and
+the label sat out of sight behind it. Now the text goes on the face entity (the plate). A painted face
+(`m_vFaceArea` set, on the owner or child mesh) is covered with its own rim and paint colours, drawn as `Shape`
+triangles for that editor frame. The panel is as tall as the face area's aspect from the top of the bounds, so a
+board on posts keeps its legs. Debug shapes draw after debug text whatever their flags, so the paint leaves a hole
+where the title's paint-coloured background sits. A selected sign shows its card over the bare face.
+
+| Before (main with #1820) | After |
+|---|---|
+| ![plate before](../../website/public/docs-images/1819/safezone-plate-before.png) | ![plate after](../../website/public/docs-images/1819/safezone-plate-after.png) |

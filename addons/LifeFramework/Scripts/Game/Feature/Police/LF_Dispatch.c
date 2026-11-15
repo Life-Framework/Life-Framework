@@ -592,3 +592,16 @@ modded class SCR_PlayerController
 		manager.ShowNotificationToast("#LF-Dispatch_Title", line, 8.0, LF_ENotificationType.POLICE_ALERT);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Dispatch");
+		if (apply)
+			LF_Dispatch.ResetStatics();
+	}
+}

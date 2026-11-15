@@ -6,7 +6,7 @@
 
 export function isSuiteSafePath(file) {
   const path = String(file).replace(/\\/g, "/").replace(/^\.\//, "");
-  if (path === "docs/features.md") return true;
+  if (path === "docs/features.md" || (path.startsWith("docs/features/") && path.endsWith(".md"))) return true;
   if (path.endsWith("/LF_TestRegistrations.generated.c") || path === "LF_TestRegistrations.generated.c") return true;
   const parts = path.split("/");
   if (parts.includes("Language")) return true;
@@ -48,6 +48,7 @@ export function selftestSuiteStamp() {
     "addons/LifeFramework/Language/everonlife_localization.en_us.conf",
     "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c",
     "docs/features.md",
+    "docs/features/money-economy.md",
   ];
   if (suiteValidCode(safe) !== 0) failures.push("safe fixture names should exit 0");
   if (suiteValidCode([]) !== 0) failures.push("no changed paths should exit 0");

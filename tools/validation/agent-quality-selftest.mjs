@@ -25,7 +25,7 @@ function scratchTree() {
   put("addons/LifeFramework/Language/everonlife_localization.st", `StringTable {\n Items {\n  X {\n    CustomStringTableItem "{0000000000000001}" {\n     Id "LF-Old"\n    }${ST_TAIL}`);
   put("addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c", "class LF_StaticReset\n{\n\tstatic void ResetAll()\n\t{\n\t\tLF_Old.ResetStatics();\n\n\t\ts_iRuns = s_iRuns + 1;\n\t}\n}\n");
   put("addons/LifeFramework/Scripts/Game/Feature/Police/Feature.md", "# Police\n\n## Intent\n\nOld text.\n");
-  put("docs/features.md", "# Features\n\n### `LF_Old`\n- ok\n");
+  put("docs/features/police.md", "# Police\n\n### `LF_Old`\n- ok\n");
   put("docs/playtest.md", "# Playtest\n\n### M2 additions\n\n- old line\n\n### Known rough edges\n\n- rough\n");
   return root;
 }
@@ -80,10 +80,11 @@ try {
   const st = read("addons/LifeFramework/Language/everonlife_localization.st");
   check(st.endsWith(ST_TAIL), "the string table no longer ends with its closing braces");
   check(st.includes('Id "LF-RadarGun_Action"') && st.includes('Id "LF-RadarGun_Denied"') && st.includes('Id "LF-Old"'), "the string rows were not appended beside the old ones");
-  check(read(`${game}/Core/LF_StaticReset.c`).includes("\t\tLF_Old.ResetStatics();\n\t\tLF_RadarGun.ResetStatics();\n\n\t\ts_iRuns"), "the ResetStatics call was not added at the end of ResetAll");
+  check(!read(`${game}/Core/LF_StaticReset.c`).includes("LF_RadarGun"), "the scaffold edited the central LF_StaticReset.c");
+  check(/modded class LF_StaticResetHooks[\s\S]*LF_RadarGun\.ResetStatics\(\);/.test(read(`${game}/Feature/Police/LF_RadarGun.c`)), "the scaffold did not register LF_RadarGun's reset hook in its own file");
   const md = read(`${game}/Feature/Police/Feature.md`);
   check(md.startsWith("# Police\n\n## Intent\n\nOld text.") && md.includes("## Radar gun (#901)"), "Feature.md was rewritten instead of appended to");
-  check(read("docs/features.md").includes("### `LF_RadarGun`") && read("docs/features.md").includes("### `LF_Old`"), "docs/features.md lost a row or did not gain one");
+  check(read("docs/features/police.md").includes("### `LF_RadarGun`") && read("docs/features/police.md").includes("### `LF_Old`"), "docs/features/police.md lost a row or did not gain one");
   const play = read("docs/playtest.md");
   check(play.indexOf("**Radar gun (#901).**") > play.indexOf("- old line") && play.indexOf("**Radar gun (#901).**") < play.indexOf("### Known rough edges"), "the playtest line is not at the end of the additions list");
   check(feature.leftovers(root).length >= 5, "feature check found too few TODO(scaffold) markers");

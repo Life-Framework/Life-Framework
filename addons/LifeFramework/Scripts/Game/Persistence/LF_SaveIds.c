@@ -720,3 +720,16 @@ class LF_SaveIds
 		LF_Debug.Log(FEATURE, message, level);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_SaveIds");
+		if (apply)
+			LF_SaveIds.ResetStatics();
+	}
+}
