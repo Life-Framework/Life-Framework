@@ -1,0 +1,213 @@
+{
+  "_about": "Tests that still read the playtest town. tools\\cli test runs them in a second boot on DebugWorld; every other WORLD and PERSISTENCE test boots GridWorld (tools/lib/test-world.mjs, docs/architecture/three-worlds.md). Seeded from the W1 GridWorld failures (#1803) plus the town tests added since (#1804). Remove a pin when its test gains grid fixtures; the list should end empty.",
+  "pins": [
+    {
+      "name": "counter/local-only",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "disconnect/cuffed",
+      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
+    },
+    {
+      "name": "disconnect/jail",
+      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
+    },
+    {
+      "name": "e2e/narrative-loop",
+      "reason": "an end-to-end loop across town places, which are not in GridWorld"
+    },
+    {
+      "name": "e2e/pass1-write-save",
+      "reason": "an end-to-end loop across town places, which are not in GridWorld"
+    },
+    {
+      "name": "e2e/roadmap-contraband",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "e2e/roadmap-jailbreak",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "e2e/roadmap-jailing",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "faction-spawn-points",
+      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
+    },
+    {
+      "name": "farm/plot-loop",
+      "reason": "reads the town farm plots, which are not in GridWorld"
+    },
+    {
+      "name": "incident/holdup",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "jail/online-time",
+      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
+    },
+    {
+      "name": "jail/placed-cell",
+      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
+    },
+    {
+      "name": "jail/slip",
+      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
+    },
+    {
+      "name": "jail/work",
+      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
+    },
+    {
+      "name": "org/registry",
+      "reason": "reads the town organization hideout and sign, which are not in GridWorld"
+    },
+    {
+      "name": "organizations/test-org-sign",
+      "reason": "reads the town organization hideout and sign, which are not in GridWorld"
+    },
+    {
+      "name": "persist/farm-plots-roundtrip",
+      "reason": "reads the town farm plots, which are not in GridWorld"
+    },
+    {
+      "name": "persist/store-stock",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "persist/store-unpaid",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "places/evidence-locker",
+      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
+    },
+    {
+      "name": "places/org-hideout",
+      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
+    },
+    {
+      "name": "playtest/offers",
+      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
+    },
+    {
+      "name": "police/rank-permissions",
+      "reason": "reads the town police station or its spawns, which are not in GridWorld"
+    },
+    {
+      "name": "prefab/moved-path",
+      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
+    },
+    {
+      "name": "quests/arrival-chain",
+      "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
+    },
+    {
+      "name": "respawn/ward",
+      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
+    },
+    {
+      "name": "roadmap/contraband",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "roadmap/escort",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "roadmap/hideout",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "roadmap/jailbreak",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "roadmap/jailing",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "roadmap/jailing-save",
+      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
+    },
+    {
+      "name": "robustness/single-jail-tick",
+      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
+    },
+    {
+      "name": "safezone/blocks",
+      "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
+    },
+    {
+      "name": "security/quest-turnin-takes-items",
+      "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
+    },
+    {
+      "name": "shop/buy-partial-funds",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "shop/fence-stock-trade",
+      "reason": "reads the town fence NPC (FenceNpc) and its shop, which are not in GridWorld"
+    },
+    {
+      "name": "shop/refusal-reasons",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "signs/coverage",
+      "reason": "reads the town signs, which are not in GridWorld"
+    },
+    {
+      "name": "spawnhub/travel",
+      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
+    },
+    {
+      "name": "store/shelf-till",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "store/shoplift",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "store/stack-merge",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "store/staff-react",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
+      "name": "systems/keep-data",
+      "reason": "checks town world gates and places, which are not in GridWorld"
+    },
+    {
+      "name": "systems/world-gates",
+      "reason": "checks town world gates and places, which are not in GridWorld"
+    },
+    {
+      "name": "systems/world-places",
+      "reason": "checks town world gates and places, which are not in GridWorld"
+    },
+    {
+      "name": "townboard/board-world",
+      "reason": "reads the town board and the post office sign through LF_Places, which are not in GridWorld"
+    },
+    {
+      "name": "vehicles/key-inventory",
+      "reason": "reads the town test cars, which are not in GridWorld"
+    },
+    {
+      "name": "vehicles/test-cars",
+      "reason": "reads the town test cars, which are not in GridWorld"
+    },
+    {
+      "name": "zones/quarry",
+      "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
+    }
+  ]
+}

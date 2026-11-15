@@ -2,7 +2,7 @@
 // minimal world Worlds/TestLogic, anything else boots DebugWorld, the tier parser agrees with the
 // generated registry, the TestLogic runner is flagged, and the chosen world changes the pass
 // cache key. Does not boot the game.
-// inputs: tools/lib/test-world.mjs, tools/lib/test-cache.mjs, tools/validation/test-world-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests, addons/LifeFramework/Worlds/TestLogic
+// inputs: tools/lib/test-world.mjs, tools/lib/worlds.mjs, tools/test/world-pins.json, tools/lib/test-cache.mjs, tools/validation/test-world-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests, addons/LifeFramework/Worlds/TestLogic
 //
 // red-proof: 2026-11-14, each break run through LF_TEST_WORLD_MODULE=<broken copy>:
 //   the fast-tier branch never taken        -> FAIL "--tier fast boots TestLogic";
@@ -16,9 +16,12 @@ const here = fileURLToPath(new URL(".", import.meta.url));
 const root = join(here, "..", "..");
 const modPath = process.env.LF_TEST_WORLD_MODULE || join(here, "..", "lib", "test-world.mjs");
 const tw = await import(pathToFileURL(modPath).href);
+const worlds = await import(pathToFileURL(join(here, "..", "lib", "worlds.mjs")).href);
 const tc = await import(pathToFileURL(join(here, "..", "lib", "test-cache.mjs")).href);
 
 const failures = [];
+// A function the module under test lacks reads as a failure of each check that uses it, not a crash.
+const fn = (name) => (typeof tw[name] === "function" ? tw[name] : () => undefined);
 const check = (ok, what) => {
   if (!ok) failures.push(what);
 };
@@ -49,21 +52,76 @@ const t = tw.parseTiers(sample);
 check(t.LF_Test_A === "LOGIC" && t["unit/a"] === "LOGIC", "a LOGIC class and its GetName() parse as LOGIC");
 check(t.LF_Test_B === "WORLD" && t["unit/b"] === "WORLD", "a WORLD class and its GetName() parse as WORLD");
 check(t.LF_Helper === undefined, "a class with no tier line has no tier");
-
-// 2. The routing.
-const tiers = { LF_Test_A: "LOGIC", "unit/a": "LOGIC", LF_Test_B: "WORLD", "unit/b": "WORLD", LF_Test_P: "PERSISTENCE" };
+// 2. The routing: LOGIC to TestLogic, WORLD and PERSISTENCE to GridWorld (#1804), PERF to DebugWorld.
+const tiers = { LF_Test_A: "LOGIC", "unit/a": "LOGIC", LF_Test_B: "WORLD", "unit/b": "WORLD", LF_Test_P: "PERSISTENCE", LF_Test_Q: "WORLD", "unit/q": "WORLD" };
 const env = {};
 const pick = (o) => tw.pickWorld({ tiers, env, ...o }).world;
 check(pick({ tier: "fast" }) === tw.LOGIC_WORLD, "--tier fast boots TestLogic");
-check(pick({ tier: "all" }) === undefined, "--tier all boots DebugWorld");
-check(pick({ tier: "persistence" }) === undefined, "--tier persistence boots DebugWorld");
+check(tw.GRID_WORLD === worlds.GRID_WORLD && tw.PLAYTEST_WORLD === worlds.PLAYTEST_WORLD && tw.LOGIC_WORLD === worlds.TEST_WORLD, "the worlds come from tools/lib/worlds.mjs");
+check(pick({ tier: "all" }) === worlds.GRID_WORLD, "--tier all boots GridWorld");
+check(pick({ tier: "persistence" }) === worlds.GRID_WORLD, "--tier persistence boots GridWorld");
+check(pick({ tier: "perf" }) === undefined, "--tier perf boots DebugWorld");
 check(pick({ tier: "all", only: ["LF_Test_A", "unit/a"] }) === tw.LOGIC_WORLD, "--only with LOGIC classes and names boots TestLogic");
-check(pick({ tier: "all", only: ["LF_Test_A", "LF_Test_B"] }) === undefined, "--only with one WORLD test boots DebugWorld");
-check(pick({ tier: "all", only: ["LF_Test_P"] }) === undefined, "--only with a PERSISTENCE test boots DebugWorld");
-check(pick({ tier: "fast", only: ["unit/b"] }) === undefined, "--tier fast --only <WORLD test> boots DebugWorld");
-check(pick({ tier: "all", only: ["no-such-test"] }) === undefined, "--only with an unknown name boots DebugWorld");
+check(pick({ tier: "all", only: ["LF_Test_A", "LF_Test_B"] }) === worlds.GRID_WORLD, "--only with one WORLD test boots GridWorld");
+check(pick({ tier: "all", only: ["LF_Test_P"] }) === worlds.GRID_WORLD, "--only with a PERSISTENCE test boots GridWorld");
+check(pick({ tier: "fast", only: ["unit/b"] }) === worlds.GRID_WORLD, "--tier fast --only <WORLD test> boots GridWorld");
+check(pick({ tier: "all", only: ["no-such-test"] }) === worlds.GRID_WORLD, "--only with an unknown name boots GridWorld");
 check(pick({ tier: "fast", world: "Worlds/X/X.ent" }) === "Worlds/X/X.ent", "an explicit --world wins");
-check(tw.pickWorld({ tier: "fast", tiers, env: { LF_TEST_LOGIC_WORLD: "0" } }).world === undefined, "LF_TEST_LOGIC_WORLD=0 turns the routing off");
+check(tw.pickWorld({ tier: "fast", tiers, env: { LF_TEST_LOGIC_WORLD: "0" } }).world === undefined, "LF_TEST_LOGIC_WORLD=0 turns the LOGIC routing off");
+const off = { LF_TEST_GRID_WORLD: "0" };
+check(tw.pickWorld({ tier: "all", tiers, env: off }).world === undefined, "LF_TEST_GRID_WORLD=0 sends --tier all back to DebugWorld");
+check(tw.pickWorld({ tier: "all", only: ["LF_Test_B"], tiers, env: off }).world === undefined, "LF_TEST_GRID_WORLD=0 sends a WORLD --only back to DebugWorld");
+check(tw.pickWorld({ tier: "fast", tiers, env: off }).world === tw.LOGIC_WORLD, "LF_TEST_GRID_WORLD=0 leaves the fast tier on TestLogic");
+
+// 2b. The legs: a pinned test runs in a second boot on DebugWorld; the rest stays on GridWorld.
+const registry = [
+  { cls: "LF_Test_A", tier: "LOGIC" },
+  { cls: "LF_Test_B", tier: "WORLD" },
+  { cls: "LF_Test_P", tier: "PERSISTENCE" },
+  { cls: "LF_Test_Q", tier: "WORLD" },
+];
+const names = { "unit/a": "LF_Test_A", "unit/b": "LF_Test_B", "unit/q": "LF_Test_Q" };
+const pins = [{ name: "unit/q", reason: "reads the town" }];
+const legs = (o) => fn("planLegs")({ tiers, names, registry, pins, env, ...o });
+const show = (ls) => JSON.stringify((ls ?? []).map((x) => [x.world ?? "default", x.classes]));
+const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+let l = legs({ tier: "all" });
+check(l?.length === 2 && l[0].world === worlds.GRID_WORLD && eq(l[0].classes, ["LF_Test_A", "LF_Test_B", "LF_Test_P"]) && l[1].world === worlds.PLAYTEST_WORLD && eq(l[1].classes, ["LF_Test_Q"]), `--tier all with a pinned name splits into GridWorld + DebugWorld (got ${show(l)})`);
+l = legs({ tier: "persistence" });
+check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && l[0].classes === null, `--tier persistence with no pinned PERSISTENCE test is one GridWorld boot (got ${show(l)})`);
+l = legs({ tier: "all", only: ["unit/q"] });
+check(l?.length === 1 && l[0].world === worlds.PLAYTEST_WORLD && eq(l[0].classes, ["LF_Test_Q"]), `--only <pinned name> is one DebugWorld boot (got ${show(l)})`);
+l = legs({ tier: "all", only: ["LF_Test_B", "LF_Test_Q"] });
+check(l?.length === 2 && eq(l[0].classes, ["LF_Test_B"]) && eq(l[1].classes, ["LF_Test_Q"]), `--only <WORLD>,<pinned class> splits (got ${show(l)})`);
+l = legs({ tier: "all", pins: [] });
+check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && l[0].classes === null, `no pins: one GridWorld boot of the whole tier (got ${show(l)})`);
+l = legs({ tier: "all", env: off });
+check(l?.length === 1 && l[0].world === undefined && l[0].classes === null, `LF_TEST_GRID_WORLD=0: one DebugWorld boot, no split (got ${show(l)})`);
+l = legs({ tier: "all", world: "Worlds/X/X.ent" });
+check(l?.length === 1 && l[0].world === "Worlds/X/X.ent" && l[0].classes === null, `--world wins over the pins (got ${show(l)})`);
+l = legs({ tier: "fast" });
+check(l?.length === 1 && l[0].world === tw.LOGIC_WORLD && l[0].classes === null, `--tier fast is one TestLogic boot (got ${show(l)})`);
+l = legs({ tier: "perf" });
+check(l?.length === 1 && l[0].world === undefined && l[0].classes === null, `--tier perf is one DebugWorld boot (got ${show(l)})`);
+
+// 2c. One verdict from both boots.
+const v = fn("mergeLegs")([{ code: 0, passed: 10, failed: 0, total: 10 }, { code: 1, passed: 2, failed: 1, total: 3 }]);
+check(v?.code === 1 && v.passed === 12 && v.failed === 1 && v.total === 13, `a failing leg fails the merged verdict (got ${JSON.stringify(v)})`);
+const v2 = fn("mergeLegs")([{ code: 0, passed: 10, failed: 0, total: 10 }, { code: 0, passed: 3, failed: 0, total: 3 }]);
+check(v2?.code === 0 && v2.passed === 13 && v2.total === 13, `two green legs merge green (got ${JSON.stringify(v2)})`);
+check(/^SUMMARY test ok tier=all legs=2 passed=13 failed=0 total=13\b/.test(fn("legsSummaryLine")("all", v2 ?? {}, [{ world: worlds.GRID_WORLD }, { world: worlds.PLAYTEST_WORLD }])), "the merged SUMMARY line reads ok with both counts summed");
+
+// 2d. The real pin list: every pin has a reason and names a registered WORLD or PERSISTENCE test.
+const realPins = fn("readPins")(root);
+const realNames = fn("testNames")(root) ?? {};
+const realTiers = tw.testTiers(root);
+check(Array.isArray(realPins) && realPins.length > 0, "tools/test/world-pins.json reads as a non-empty list");
+for (const p of realPins ?? []) {
+  check(typeof p.reason === "string" && p.reason.length > 5, `pin ${p.name} has a reason`);
+  const cls = realNames[p.name] ?? (realTiers[p.name] ? p.name : undefined);
+  check(!!cls, `pin ${p.name} names a registered test`);
+  check(cls && (realTiers[cls] === "WORLD" || realTiers[cls] === "PERSISTENCE"), `pin ${p.name} is a WORLD or PERSISTENCE test (got ${cls && realTiers[cls]})`);
+}
 
 // 3. The parser agrees with the generated registry on the real tests.
 const real = tw.testTiers(root);
@@ -92,6 +150,7 @@ for (const f of existsSync(layersDir) ? readdirSync(layersDir) : []) {
 // 5. The chosen world is in the pass cache key.
 const keyOf = (world) => tc.cacheKey(tc.keyInputs(root, { tier: "fast", world, build: "b", addons: ["LifeFramework"], trees: { addons: "x" }, rdb: { LifeFramework: "y" } }));
 check(keyOf(tw.LOGIC_WORLD) !== keyOf(undefined), "a TestLogic run and a DebugWorld run have different pass cache keys");
+check(new Set([keyOf(worlds.GRID_WORLD), keyOf(worlds.PLAYTEST_WORLD), keyOf(undefined)]).size === 3, "the GridWorld leg and the DebugWorld leg have their own pass cache keys");
 
 for (const f of failures) console.log(`FAIL  ${f}`);
 console.log(failures.length ? `test-world-selftest: ${failures.length} failure(s)` : "test-world-selftest: OK");

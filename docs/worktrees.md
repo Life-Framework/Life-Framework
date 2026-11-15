@@ -544,7 +544,7 @@ check, so a gate right after a green `--tier all` reuses it.
 - `runs.jsonl` rows of a cacheable run carry `cacheKey` (16 hex), so the hit rate
   can be counted later.
 
-### Test world (LOGIC runs)
+### Test world (LOGIC and GridWorld runs)
 
 A run whose every selected test is LOGIC boots the minimal world
 `Worlds/TestLogic/TestLogic.ent` instead of DebugWorld (`tools/lib/test-world.mjs`):
@@ -557,11 +557,20 @@ LOGIC test never reads (about 2.4 s on lf-cloud, 1.5 s on the laptop).
   `--red` when every name resolves to a LOGIC test (class name or `GetName()`,
   read from the `// tier:` lines). `test` prints `test: world
   Worlds/TestLogic/TestLogic.ent (<reason>)`.
-- **DebugWorld as before**: `--tier all`, `--tier persistence`, an `--only` list
-  with any WORLD, PERSISTENCE or unknown name, `e2e`, `ci`, `wt gate`.
-- **Override**: `--world <path>` always wins (`--world
+- **Routed to GridWorld** (`Worlds/GridWorld/GridWorld.ent`, #1804): `--tier all`,
+  `--tier persistence`, an `--only`/`--red` list with any WORLD, PERSISTENCE or
+  unknown name, and so the suite inside `ci`, `wt gate` and `wt ship`.
+- **Pinned to DebugWorld**: a test listed in `tools/test/world-pins.json` (name and
+  reason) still reads the town. When the selection holds one, the run splits into
+  two boots: GridWorld without the pins, then DebugWorld with only them (`test: leg
+  1/2 ...`). The two results merge into one `SUMMARY test ok|fail tier=... legs=2`
+  line and one exit code; each leg has its own pass cache entry. Remove a pin when
+  its test gains grid fixtures.
+- **DebugWorld as before**: `--tier perf`, `e2e`, `host`, sessions.
+- **Override**: `--world <path>` always wins and never splits (`--world
   Worlds/DebugWorld/DebugWorld.ent` for the old behaviour); `LF_TEST_LOGIC_WORLD=0`
-  turns the routing off.
+  turns the LOGIC routing off, `LF_TEST_GRID_WORLD=0` sends WORLD and PERSISTENCE
+  runs back to DebugWorld with no split.
 - **Mis-tiered tests fail loudly.** In TestLogic a WORLD or PERSISTENCE test fails
   as `FAIL <name> (wrong world)`; a failing LOGIC test prints `hint: <name> ran in
   the minimal LOGIC world ...; if it needs world content, its tier is WORLD`. A
