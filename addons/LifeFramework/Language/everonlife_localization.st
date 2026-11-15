@@ -8963,6 +8963,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
     }
+    CustomStringTableItem "{65D7E4795D634FBD}" {
+     Id "LF-TownBoard_Dir_E"
+     Target_en_us "east"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{4B11C0ECDDCE8189}" {
+     Id "LF-TownBoard_Dir_N"
+     Target_en_us "north"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{80F58ACCD4A1C233}" {
+     Id "LF-TownBoard_Dir_NE"
+     Target_en_us "north-east"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{A38A10DDFC45AF7C}" {
+     Id "LF-TownBoard_Dir_NW"
+     Target_en_us "north-west"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{5168FCB118D8BC18}" {
+     Id "LF-TownBoard_Dir_S"
+     Target_en_us "south"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{7CB6ADB42B55E8EF}" {
+     Id "LF-TownBoard_Dir_SE"
+     Target_en_us "south-east"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{022D42E11871EFF4}" {
+     Id "LF-TownBoard_Dir_SW"
+     Target_en_us "south-west"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{C708215620CD3A47}" {
+     Id "LF-TownBoard_Dir_W"
+     Target_en_us "west"
+     Comment "Compass direction in a town board where line (LF-TownBoard_Where %3)."
+    }
+    CustomStringTableItem "{00286F357D4A57D8}" {
+     Id "LF-TownBoard_Mark"
+     Target_en_us "Set waypoint"
+     Comment "Button on a town board card's sheet: puts a marker over the place on the screen. No travel."
+    }
+    CustomStringTableItem "{5CF22CABB2E8D8C8}" {
+     Id "LF-TownBoard_NoPlace"
+     Target_en_us "Ask around"
+     Comment "Where line of a town board card whose place is not on this map."
+    }
+    CustomStringTableItem "{99C4660CE7F6A41D}" {
+     Id "LF-TownBoard_Title"
+     Target_en_us "Notice board"
+     Comment "Header printed across the top of the town board (the cork board of things to do). A pack overrides it with the town's name."
+    }
+    CustomStringTableItem "{5B0C1BA1D4744F19}" {
+     Id "LF-TownBoard_Unmark"
+     Target_en_us "Clear waypoint"
+     Comment "Button on a town board card's sheet when that card's place is already the waypoint: takes the marker away."
+    }
+    CustomStringTableItem "{FB7DFFA399262048}" {
+     Id "LF-TownBoard_Where"
+     Target_en_us "%1, %2 m %3"
+     Comment "Where a town board card's place is. %1 place name, %2 distance in metres, %3 a compass direction (LF-TownBoard_Dir_*). Example: Post office, 60 m east."
+    }
+    CustomStringTableItem "{2D9C41CAF21653BE}" {
+     Id "LF-TownBoard_WhereLabel"
+     Target_en_us "Where"
+     Comment "Section label on a town board card's sheet, above where the place is."
+    }
+    CustomStringTableItem "{30CA1A24F0A2C32A}" {
+     Id "LF-TownBoard_WhereNear"
+     Target_en_us "%1, right here"
+     Comment "Where a town board card's place is when it stands beside the board. %1 place name."
+    }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"
      Target_en_us "Keep %1"
@@ -9127,6 +9202,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Wanted_Wearing"
      Target_en_us "Wearing %1"
      Comment "Wanted poster description. %1 is a list of clothing names."
+    }
+    CustomStringTableItem "{79517D819FE7FE2B}" {
+     Id "LF-Waypoint_Distance"
+     Target_en_us "%1 m"
+     Comment "Distance under the waypoint marker on the screen. %1 metres."
     }
     CustomStringTableItem "{7AF5414FC3686A70}" {
      Id "LF-Weapon_Taser_Description"

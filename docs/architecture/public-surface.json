@@ -35,6 +35,7 @@
     "LF_SpawnHubConfig",
     "LF_SurvivalConfig",
     "LF_TermsConfig",
+    "LF_TownBoardConfig",
     "LF_UIThemeConfig",
     "LF_VehiclePricesConfig",
     "LF_WantedPostersConfig",

@@ -528,6 +528,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_TestLogicWorld(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestOrgSignWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_TownBoard(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TownBoardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);

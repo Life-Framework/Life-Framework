@@ -120,6 +120,10 @@ class LF_StaticReset
 		LF_ClipStamp.ResetStatics();
 		LF_StaffRelay.Uninstall();
 		LF_Session.ResetStatics();
+		LF_TownBoard.ResetStatics();
+		LF_TownBoardComponent.ResetStatics();
+		LF_TownBoardSheet.ResetStatics();
+		LF_Waypoint.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

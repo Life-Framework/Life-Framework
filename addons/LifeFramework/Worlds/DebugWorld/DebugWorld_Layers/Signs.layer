@@ -1,14 +1,11 @@
-GenericEntity Sign_TownMap : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+GenericEntity Sign_TownMap : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
  components {
-  LF_SignComponent "{C8DC6C24E38F2C19}" {
+  LF_SignComponent "{CB0DD0E500C1A1EE}" {
    m_sSignId "town_map"
-   m_vRimColor 0.92 0.88 0.76
-   m_vPaintColor 0.12 0.3 0.2
-   m_vTextColor 0.95 0.92 0.8
   }
  }
  coords 130.5 0 246.5
- angleY -90
+ angleY 90
 }
 GenericEntity Sign_PostOffice : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
  components {
