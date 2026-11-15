@@ -119,12 +119,19 @@ export function recordCrash(dir, now = new Date(), { keep = DEFAULT_KEEP } = {})
 // the host starts again. The `restart` tag is a plain one like start and stop: rotate.mjs prunes the
 // oldest beyond N (crash, wipe and the other tags never). Returns { backup }, null when no save exists
 // yet. Never throws: a failed backup is logged and the restart goes on.
-export function recordRestart(dir, now = new Date()) {
+export function recordRestart(dir, now = new Date(), { keep = DEFAULT_KEEP } = {}) {
+  const { backups } = hostPaths(dir);
   let backup = null;
   try {
     backup = backupSaves(dir, "restart", now);
   } catch (e) {
     console.log(`[LFDebug:HostWatch] restart backup of the saves failed: ${e.message}`);
+  }
+  // Rotate after the backup, as recordCrash does, so a host that restarts twice a day stays at `keep` plain backups.
+  try {
+    pruneBackups(backups, keep);
+  } catch (e) {
+    console.log(`[LFDebug:HostWatch] backup rotation after the restart failed: ${e.message}`);
   }
   return { backup };
 }

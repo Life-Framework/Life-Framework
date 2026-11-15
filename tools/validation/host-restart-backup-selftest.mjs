@@ -9,6 +9,7 @@
 // wires the seam: its main() takes the restart backup on a scheduled close.
 // red-proof: before watchLoop took an onRestart seam and watchdog.mjs exported recordRestart, this
 // file failed "recordRestart is not exported" and "a scheduled restart took no restart backup" (2026-11-15).
+// Restart prune (2026-11-15, lead decision): recordRestart pruned nothing, so 25 scheduled restarts left 25 backups.
 // Wire and rotation (2026-11-15), watch.mjs without onRestart and `restart` not plain: "host watch took 0 restart
 // backups on a scheduled close", "a restart backup beyond N is not pruned", "the prune plan deletes 7, expected the 10 oldest".
 
@@ -202,6 +203,25 @@ try {
   else if (!findSavePoints(join(w.paths.backups, watched[0])).length) fail("the restart backup host watch took holds no save point");
   if (code !== 1) fail(`host watch returned ${code} after the stubbed start failed, expected 1`);
   if (backupsOf(w.paths, "crash").length) fail("host watch recorded a scheduled close as a crash");
+
+  // 9. Scheduled restarts prune too (lead decision): 25 scheduled restarts leave the newest 20 restart
+  //    backups; the crash, wipe and manual backups are all still there; a failing prune never stops the
+  //    restart backup (it is still taken and returned).
+  const many = fixture("many");
+  const others = ["2026-11-14_09-45-00-crash", "2026-11-14_09-50-00-wipe", "2026-11-14_09-55-00-manual"];
+  for (const n of others) mkdirSync(join(many.paths.backups, n), { recursive: true });
+  let took = 0;
+  for (let i = 0; i < 25; i++) if (wd.recordRestart(many.dir, new Date(T0.getTime() + i * 60000)).backup) took++;
+  if (took !== 25) fail(`25 scheduled restarts took ${took} restart backups, expected 25`);
+  const left = readdirSync(many.paths.backups);
+  const restartsLeft = left.filter((n) => isPlainBackup(n));
+  if (restartsLeft.length !== 20) fail(`after 25 scheduled restarts ${restartsLeft.length} restart or plain backups remain, expected 20`);
+  if (restartsLeft.some((n) => !/-restart$/.test(n))) fail(`a non-restart plain backup was left among the restarts: ${restartsLeft}`);
+  if (left.some((n) => /_12-0[0-4]-00-restart$/.test(n))) fail("the 5 oldest scheduled restart backups were not pruned");
+  if (!left.some((n) => /_12-24-00-restart$/.test(n))) fail("the newest scheduled restart backup was pruned");
+  for (const n of others) if (!existsSync(join(many.paths.backups, n))) fail(`a scheduled restart pruned the ${n} backup`);
+  const broken = wd.recordRestart(fixture("badkeep").dir, T0, { keep: -1 });
+  if (!broken.backup) fail("a failing prune stopped the restart backup from being taken");
 } finally {
   safeRemoveTree(base);
 }
