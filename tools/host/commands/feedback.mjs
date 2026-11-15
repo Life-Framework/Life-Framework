@@ -6,7 +6,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { draftFeedback, ghCreateCommand, parseExport, writeDrafts } from "../feedback.mjs";
+import { draftFeedback, findSessionReport, ghCreateCommand, parseExport, writeDrafts } from "../feedback.mjs";
 
 export const help =
   "feedback <export.txt> [--out <dir>]   draft one issue per report from a copied Discord feedback channel: drops thanks and duplicates, strips Discord ids, writes tmp/feedback/<date>/<n>.md and prints the gh issue create commands (never runs them)";
@@ -35,8 +35,10 @@ export async function main(args, ctx) {
     console.log(`host feedback: no messages found in ${positional[0]} (expected "Name — Today at 8:02 PM" headers or "[time] Name: text" lines)`);
     return 1;
   }
-  const { drafts, thanks, duplicates } = draftFeedback(messages);
-  const dir = outFlag ? resolve(outFlag) : join(ctx.root, "tmp", "feedback", today());
+  const date = today();
+  const session = { date, report: findSessionReport(join(ctx.hostDir, "sessions"), date) };
+  const { drafts, thanks, duplicates } = draftFeedback(messages, { session });
+  const dir = outFlag ? resolve(outFlag) : join(ctx.root, "tmp", "feedback", date);
   const files = writeDrafts(drafts, dir);
   if (drafts.length) {
     console.log(`drafts in ${dir}; nothing is filed. Review each draft, then run from ${ctx.root}:`);

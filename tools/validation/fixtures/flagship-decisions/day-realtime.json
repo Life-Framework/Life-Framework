@@ -1,0 +1,1 @@
+{ "file": "config.json", "set": { "dayCycle.mode": "realtime" }, "expect": "dayCycle.mode" }
