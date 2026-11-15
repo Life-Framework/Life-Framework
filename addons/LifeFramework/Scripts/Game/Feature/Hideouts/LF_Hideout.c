@@ -29,11 +29,63 @@ class LF_HideoutRecord : Managed
 }
 
 //------------------------------------------------------------------------------------------------
+//! Held ground on a hideout (#751, "heldground" payload, docs/architecture/record-shape-held-ground.md).
+//! One row per hideout whose held ground is not the default, keyed by hideout id (a place id). The
+//! holder is always the leasing organization: a row whose holder does not lease the site is dropped
+//! on load (a lapsed lease or a disbanded organization loses its points). The member minimum and the
+//! points per hour are owner config, never saved. A later field is a new payload, never a new member.
+//------------------------------------------------------------------------------------------------
+class LF_HeldGroundRow
+{
+	static const int VERSION = 1;
+
+	int m_iVersion;
+	string m_sHideoutId;
+	string m_sHolderOrgId;
+	int m_iHoldSeconds;
+	int m_iHoldPoints;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_HeldGroundRow Create(string hideoutId, string holderOrgId, int holdSeconds, int holdPoints)
+	{
+		LF_HeldGroundRow row();
+		row.m_iVersion = VERSION;
+		row.m_sHideoutId = hideoutId;
+		row.m_sHolderOrgId = holderOrgId;
+		row.m_iHoldSeconds = holdSeconds;
+		row.m_iHoldPoints = holdPoints;
+		return row;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class LF_HideoutState : Managed
 {
 	string m_sHideoutId;
 	string m_sOrganizationId;
 	bool m_bLocked;
+
+	// Held ground (#751), saved in the "heldground" payload (LF_HeldGroundRow), not in "hideout".
+	//! The organization the hold and points belong to; "" = nobody holds the site.
+	string m_sHolderOrgId;
+	//! Current uninterrupted hold, whole online seconds.
+	int m_iHoldSeconds;
+	//! Banked points, 0 to LF_OrgConfig.HeldGroundMaxPoints().
+	int m_iHoldPoints;
+
+	//------------------------------------------------------------------------------------------------
+	void ResetHeldGround()
+	{
+		m_sHolderOrgId = "";
+		m_iHoldSeconds = 0;
+		m_iHoldPoints = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasDefaultHeldGround()
+	{
+		return m_sHolderOrgId.IsEmpty() && m_iHoldSeconds == 0 && m_iHoldPoints == 0;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -72,6 +124,7 @@ class LF_Hideout
 
 			state.m_sOrganizationId = "";
 			state.m_bLocked = true;
+			state.ResetHeldGround();
 			PushLock(state);
 		}
 	}
@@ -218,6 +271,31 @@ class LF_Hideout
 		state.m_sOrganizationId = organizationId;
 		PushLock(state);
 		LF_Debug.Log("Hideout", string.Format("assigned hideout=%1 org=%2", hideoutId, organizationId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ends a lease (server): the site has no owner, locks, and loses its held ground (#751: points
+	//! are lost when the lease lapses).
+	//! \return False when the site has no lease.
+	static bool Release(string hideoutId)
+	{
+		if (!Server())
+			return false;
+
+		LF_HideoutState state = Find(hideoutId);
+		if (!state || state.m_sOrganizationId.IsEmpty())
+		{
+			Refuse("release refused: hideout not leased");
+			return false;
+		}
+
+		string organizationId = state.m_sOrganizationId;
+		state.m_sOrganizationId = "";
+		state.m_bLocked = true;
+		state.ResetHeldGround();
+		PushLock(state);
+		LF_Debug.Log("Hideout", string.Format("released hideout=%1 org=%2", hideoutId, organizationId));
 		return true;
 	}
 
@@ -372,6 +450,17 @@ class LF_Hideout
 	//------------------------------------------------------------------------------------------------
 	static void ApplyAll(notnull array<ref LF_HideoutRecord> records)
 	{
+		// Every site loads unheld; the "heldground" payload (#751) puts the held ground back. A save
+		// from before it never reaches that payload, so this is what an old save loads with.
+		if (s_mHideouts)
+		{
+			foreach (string heldId, LF_HideoutState held : s_mHideouts)
+			{
+				if (held)
+					held.ResetHeldGround();
+			}
+		}
+
 		foreach (LF_HideoutRecord record : records)
 		{
 			if (!record)
@@ -388,6 +477,128 @@ class LF_Hideout
 			state.m_bLocked = record.m_bLocked;
 			PushLock(state);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The "heldground" payload (#751): one row per hideout whose held ground is not the default.
+	//! An unheld site writes no row.
+	static array<ref LF_HeldGroundRow> ExportHeldGround()
+	{
+		array<ref LF_HeldGroundRow> rows = new array<ref LF_HeldGroundRow>();
+		if (!s_mHideouts)
+			return rows;
+
+		foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+		{
+			if (!state || state.HasDefaultHeldGround())
+				continue;
+
+			rows.Insert(LF_HeldGroundRow.Create(state.m_sHideoutId, state.m_sHolderOrgId, state.m_iHoldSeconds, state.m_iHoldPoints));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces the held ground of every hideout: each starts unheld, then each row is written onto its
+	//! site. Runs after "organizations" and "hideout" in the same load. A row is dropped (logged) when
+	//! its site has no lease, when its organization is gone, or when that organization no longer
+	//! leases the site; bad numbers are corrected; one bad row never stops the others. Idempotent.
+	//! \return The number of rows applied.
+	static int ApplyHeldGround(array<ref LF_HeldGroundRow> rows)
+	{
+		if (s_mHideouts)
+		{
+			foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+			{
+				if (state)
+					state.ResetHeldGround();
+			}
+		}
+
+		if (!rows)
+			return 0;
+
+		int applied = 0;
+		foreach (LF_HeldGroundRow row : rows)
+		{
+			if (!row || row.m_iVersion < 1 || row.m_sHideoutId.IsEmpty())
+			{
+				LF_Debug.Error("Hideout", "held ground load skipped a row with no id or version");
+				continue;
+			}
+
+			if (SetHeldGround(row.m_sHideoutId, row.m_sHolderOrgId, row.m_iHoldSeconds, row.m_iHoldPoints))
+				applied++;
+		}
+
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets one site's held ground (server). The writer is the scoring tick (#751 behaviour); bad
+	//! values are corrected as on load. An empty holder clears the site.
+	//! \return False (the site is left as it was) off the server, or when the holder is gone or does
+	//! not lease the site.
+	static bool SetHeldGround(string hideoutId, string holderOrgId, int holdSeconds, int holdPoints)
+	{
+		if (!Server())
+			return false;
+
+		LF_HideoutState state = Find(hideoutId);
+		if (holderOrgId.IsEmpty())
+		{
+			if (state)
+				state.ResetHeldGround();
+			return true;
+		}
+
+		if (!LF_OrganizationManager.Get(holderOrgId))
+		{
+			LF_Debug.Warn("Hideout", string.Format("held ground at %1 dropped: organization %2 is gone", hideoutId, holderOrgId));
+			return false;
+		}
+
+		if (!state || state.m_sOrganizationId != holderOrgId)
+		{
+			LF_Debug.Warn("Hideout", string.Format("held ground at %1 dropped: organization %2 does not lease it", hideoutId, holderOrgId));
+			return false;
+		}
+
+		if (holdSeconds < 0)
+		{
+			LF_Debug.Error("Hideout", string.Format("held ground at %1: negative hold %2 s reads as 0", hideoutId, holdSeconds));
+			holdSeconds = 0;
+		}
+
+		int maxPoints = LF_OrgConfig.HeldGroundMaxPoints();
+		if (holdPoints < 0)
+		{
+			LF_Debug.Error("Hideout", string.Format("held ground at %1: negative points %2 read as 0", hideoutId, holdPoints));
+			holdPoints = 0;
+		}
+		else if (holdPoints > maxPoints)
+		{
+			// A lowered cap is an owner choice, not damage.
+			LF_Debug.Warn("Hideout", string.Format("held ground at %1: %2 points clamped to the cap %3", hideoutId, holdPoints, maxPoints));
+			holdPoints = maxPoints;
+		}
+
+		state.m_sHolderOrgId = holderOrgId;
+		state.m_iHoldSeconds = holdSeconds;
+		state.m_iHoldPoints = holdPoints;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The site's held ground as a row (a copy), or null when the site is unknown.
+	static LF_HeldGroundRow HeldGroundOf(string hideoutId)
+	{
+		LF_HideoutState state = Find(hideoutId);
+		if (!state)
+			return null;
+
+		return LF_HeldGroundRow.Create(state.m_sHideoutId, state.m_sHolderOrgId, state.m_iHoldSeconds, state.m_iHoldPoints);
 	}
 
 	//------------------------------------------------------------------------------------------------

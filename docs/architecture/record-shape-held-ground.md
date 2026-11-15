@@ -5,7 +5,12 @@ how strongly an organisation has held a site, and the member minimum before a
 site scores. It fixes the saved shape that later behaviour fills: the scoring
 tick and the flag at the site, the org desk read-out, pay-outs into the org
 fund, and organisation conflicts (#858, M5). No behaviour ships with it.
-Status: design, not built.
+Status: built in #1217 (save version 34) with the maintainer defaults on #751: the member
+minimum is owner config only (`m_iMemberMinimum` below is not in the row), the holder is always
+the leasing organisation (a row whose holder does not lease the site is dropped, so a site
+missing from the world keeps its points only while its lease record does), the contest is not
+saved, points are lost when the lease lapses or the organisation disbands, and the points per
+real hour are capped in config (with the scoring behaviour; no window ints in the row).
 
 Rules this follows: `docs/persistence.md` (positional payloads, append only),
 D5 and D6 in `docs/roadmap/m3-plan.md` section 6 (one PR per reshape, its own
