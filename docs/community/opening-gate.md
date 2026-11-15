@@ -15,7 +15,8 @@ merged. Until it does, the line names the check to do by hand.
 ## Opening gate (#555)
 
 - [ ] Sessions at the player target
-      Evidence: several sessions in a row with a peak of about 40 players.
+      Evidence: several sessions in a row with a peak of 16 players, a full server (the
+      alpha runs on 16 slots).
       List them: `tools\cli host history` *(planned, #1409)*; until it merges, open the
       `<host>/sessions/*.md` files that `tools\cli host summary` wrote after each
       session and read the unique-player peak and the perf verdict in each.
