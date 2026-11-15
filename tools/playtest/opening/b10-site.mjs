@@ -20,7 +20,7 @@ const two = (n) => String(n).padStart(2, "0");
 export const utcText = (d) =>
   `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${two(d.getUTCHours())}:${two(d.getUTCMinutes())} UTC`;
 
-export const EMPTY_TEXT = "No session is scheduled";
+export const EMPTY_TEXT = "No session announced yet";
 
 /** The JSON Schema subset sessions.schema.json uses: type (or a list), required, properties, additionalProperties false, enum, minLength, format date-time (with offset). */
 export function checkSchema(value, schema, path = "$") {
@@ -81,7 +81,8 @@ const BANNED_MARKUP = /<[^>]+\b(?:class|id|role|aria-label)\s*=\s*"[^"]*\b(?:sta
 export function checkPage(html, sessions, now = new Date()) {
   const errs = [];
   const text = pageText(html);
-  const at = sessions?.next?.at ? new Date(sessions.next.at) : null;
+  // A draft (no announced time, #1537) is not shown: the page says nothing is scheduled until it is posted.
+  const at = sessions?.next?.at && typeof sessions.next.announced === "string" ? new Date(sessions.next.at) : null;
   const ahead = at && !Number.isNaN(at.getTime()) && at.getTime() >= now.getTime();
   if (ahead) {
     const want = utcText(at);
