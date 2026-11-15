@@ -248,6 +248,14 @@ async function stageExport(ctx) {
   for (const p of problems) console.log(`FAIL  ${p}`);
   if (counts.doors < ctx.spec.budget.min_doors) problems.push(`${counts.doors} door(s); the spec wants at least ${ctx.spec.budget.min_doors}`);
   if (problems.length) throw new Error(`${problems.length} export check(s) failed: what ArchBuilder shows in Blender would not reach the game`);
+  // The lighting preset: ceiling fixtures placed from the room sizes (lighting.mjs). After the prop
+  // checks above, which count only what ArchBuilder recorded.
+  if (ctx.spec.lighting?.off !== true && existsSync(furniture)) {
+    const { applyLighting } = await import("./lighting.mjs");
+    const l = applyLighting(readFileSync(furniture, "utf8"), colours.rooms || [], ctx.slug, ctx.spec.lighting || {});
+    writeFileSync(furniture, l.text);
+    console.log(`        lighting: ${l.fixtures} ceiling fixture(s) in ${(colours.rooms || []).length} room(s), ${l.removed} ArchBuilder ceiling lamp(s) replaced`);
+  }
   const handProps = ctx.spec.polish?.props || [];
   if (handProps.length && existsSync(furniture)) {
     const a = addProps(readFileSync(furniture, "utf8"), handProps, ctx.slug);

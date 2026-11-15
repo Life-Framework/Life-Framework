@@ -329,7 +329,11 @@ def materials():
         n = len(px) // 4
         means[name] = [round(sum(lin(px[i * 4 + c]) for i in range(n)) / n, 4) for c in range(3)]
         bpy.data.images.remove(im)
-    done({"materials": mats, "means": means})
+    # the rooms ride along: the lighting preset (lighting.mjs) places ceiling lights from their sizes
+    src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lf_rooms.py")
+    ns = {}
+    exec(compile(open(src, encoding="utf-8").read(), src, "exec"), ns)
+    done({"materials": mats, "means": means, "rooms": ns["find_rooms"](a, dg)})
 
 
 try:

@@ -91,7 +91,8 @@ export function smallMipDds(buf, want = 64) {
 }
 
 // Rewrites the Color of every AB_*.emat in the staging export. `run` is runArchBuilder; the job reads
-// the Blender colours from building.blend and measures the textures. Returns one row per material.
+// the Blender colours from building.blend and measures the textures. Returns one row per material;
+// `.rooms` on the array is the building's rooms from the same run (blender/lf_rooms.py).
 export async function colourMaterials({ staging, dir, spec, blend, run }) {
   const matDir = join(staging, "Assets", "ArchBuilder", "Materials");
   const emats = existsSync(matDir) ? readdirSync(matDir).filter((f) => /^AB_.*\.emat$/.test(f)) : [];
@@ -125,5 +126,6 @@ export async function colourMaterials({ staging, dir, spec, blend, run }) {
     writeFileSync(join(matDir, f), withColor(text, color));
     rows.push({ name, where, outside: m.outside_share, blender: m.colour, mean, color: color.map((c) => +fmt(c)), capped });
   }
+  rows.rooms = r.rooms || [];
   return rows;
 }
