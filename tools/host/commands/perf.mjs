@@ -1,13 +1,13 @@
 // `tools\cli host perf` (#1406). The logic is tools/host/perf.mjs.
 //
 // Samples the running server's CPU, working set and upload and prints one verdict against the
-// 40-player budget. The rows go to <host>/perf/perf-<stamp>.csv.
+// 16-player budget. The rows go to <host>/perf/perf-<stamp>.csv.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { hostPid } from "../watchdog.mjs";
 import { collect, CPU_BUDGET_PCT, deriveRows, parseArgs, toCsv, verdictLine, windowsSampler } from "../perf.mjs";
 
-export const help = "perf [--every 30] [--for 120] [--upload-mbit 20]   sample the running server CPU, memory and upload (Windows; upload is the machine's adapter total) into <host>/perf/perf-<stamp>.csv and print one verdict against the 40-player budget (CPU under 80% of one core, upload under --upload-mbit or env LF_HOST_UPLOAD_MBIT)";
+export const help = "perf [--every 30] [--for 120] [--upload-mbit 20]   sample the running server CPU, memory and upload (Windows; upload is the machine's adapter total) into <host>/perf/perf-<stamp>.csv and print one verdict against the 16-player budget (CPU under 80% of one core, upload under --upload-mbit or env LF_HOST_UPLOAD_MBIT)";
 
 function sleepMs(ms) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);

@@ -1,14 +1,15 @@
 // `tools\cli host watch` (#1262). The logic is tools/host/watchdog.mjs.
 //
 // Starts the host (or adopts the one running), then supervises it: a crash is restarted with its
-// console log and a save backup kept, a scheduled close (Ops O8 marker) is restarted, and an exit
+// console log and a save backup kept, a scheduled close (Ops O8 marker) is restarted after a
+// `-restart` save backup (#1560), and an exit
 // after `host stop` ends the watch. The host itself is always started through `host start`, so
 // the build gate, the start backup, the lock and -loadSessionSave behave as for a hand start.
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { pidAlive } from "../host.mjs";
 import { crashLoopSettings, sendAlert } from "../crashloop.mjs";
-import { clearFlags, DEFAULT_MAX_CRASHES, hostPid, POLL_MS, readSignals, recordCrash, watchLoop } from "../watchdog.mjs";
+import { clearFlags, DEFAULT_MAX_CRASHES, hostPid, POLL_MS, readSignals, recordCrash, recordRestart, watchLoop } from "../watchdog.mjs";
 
 export const help = "watch [--flagship] [--public] [--force] [--max-restarts N] [--crash-limit N] [--crash-window MIN]   keep the host up: restart a crash (log + save backup kept in backups/<time>-crash) or a scheduled close; ends after `host stop`; N crashes (default 3) inside MIN minutes (default 10) stop the restarts, keep the host down and alert staff (0 = guard off; env LF_CRASHLOOP_LIMIT, LF_CRASHLOOP_WINDOW_MIN)";
 
@@ -66,9 +67,10 @@ export async function main(args, ctx) {
     onCrash: (n) => {
       const c = recordCrash(dir);
       say(`crash ${n}: console log kept in ${c.logDir}${c.backup ? "" : " (no save to back up yet)"}`);
-      if (c.pruned.length) say(`rotated ${c.pruned.length} old start/stop backup(s)`);
+      if (c.pruned.length) say(`rotated ${c.pruned.length} old start/stop/restart backup(s)`);
       return c;
     },
+    onRestart: () => recordRestart(dir),
     afterExit: (d) => {
       clearFlags(dir);
       pid = 0;
