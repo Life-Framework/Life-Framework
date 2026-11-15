@@ -13,6 +13,7 @@ checkout.
 
 | Command | Success looks like |
 |---|---|
+| `tools\cli host config apply` | Writes the profile's `config.json` and `server.json` from `server/flagship/` and the host's `secrets.json`; secrets are not printed; with no `secrets.json` it warns that the join password is empty. Run it first on a new host and after any config change, with the host stopped. Until it has run there is no `server.json`, so `host players` times out and `host ready` says NO-GO. |
 | `tools\cli host drift` *(planned)* | Exit 0: the live `config.json` and `server.json` match `server/flagship/`. A changed field is named; exit 1. |
 | `tools\cli host ready` *(planned)* | One line per check, then `GO`. `NO-GO` means do not open. |
 | `tools\cli host preflight` | After a game update only: it backs up, boots the new build and passes. A failure restores the backup; read [game updates](game-updates.md). |
@@ -35,7 +36,7 @@ checkout.
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host players` | Server name, map, and players over max within 3 seconds. |
+| `tools\cli host players` | Server name, map, and players over max within 3 seconds. A timeout on a host that never ran `host config apply` (Before) is that missing `server.json`, not a dead server. |
 | `tools\cli host say "Hotfix restart in 10 minutes"` *(planned)* | Every player gets one toast within 10 seconds; the server logs `host say:`. |
 | `tools\cli host perf` *(planned)* | A verdict line against the 40-player budget and a CSV in `<host>/perf/`. |
 | `tools\cli host status` | Still `up`. Saves are never touched while it runs. |
