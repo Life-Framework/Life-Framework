@@ -242,18 +242,27 @@ async function compileHead(root, cdir, head) {
   await revert(root, cdir, g.culprit, "Workbench compile", "compile logs under tmp/logs/main-guard-compile-*");
 }
 
+function readDriverNames(dir) {
+  try { return mg.driverNames(readFileSync(join(dir, "tools", "merge", "drivers.gitconfig"), "utf8")); } catch { return []; }
+}
+
 async function revert(root, dir, c, what, failLog) {
   const pr = mg.prOfMerge(c.subject);
   const title = mg.revertTitle(pr, what);
   const branch = `ws/revert-pr${pr}-guard`;
   git(dir, ["fetch", "origin", "--prune"]);
   git(dir, ["checkout", "-q", "-B", branch, "origin/main"]);
-  const rv = git(dir, ["revert", "-m", "1", "--no-edit", c.sha]);
+  // The repo's merge drivers (tools/merge/drivers.gitconfig) need a merge's sides and fail under `git revert`
+  // ("lf-regen: cannot identify the merge sides"; #1847 and #1856 were left unreverted that way). For the revert
+  // each driver keeps ours (`true`); the generated files are then rebuilt from the reverted sources.
+  const rv = git(dir, [...mg.driverOverrides(readDriverNames(dir)), "revert", "-m", "1", "--no-edit", c.sha]);
   if (rv.status !== 0) {
     git(dir, ["revert", "--abort"]);
     log(root, `revert of #${pr} (${c.sha.slice(0, 8)}) does not apply on main: ${(rv.stderr || rv.stdout).trim().slice(0, 200)}; left to a human`);
     return;
   }
+  for (const args of mg.REGEN_AFTER_REVERT) spawnSync(process.execPath, args, { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 300000 });
+  git(dir, ["add", "-A"]);
   git(dir, ["commit", "--amend", "-q", "-m", `${title}\n\nReverts #${pr} (merge ${c.sha}): the main guard saw ${what} fail twice at main and bisected it to this merge.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`]);
   const push = git(dir, ["push", "-u", "origin", `${branch}:${branch}`]);
   if (push.status !== 0) {

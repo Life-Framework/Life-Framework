@@ -179,3 +179,17 @@ export function fixCard(c, step, what, failLog) {
     body: [`The main guard saw **${what}** (${step}) fail twice on main; the bisect points at #${pr} (merge \`${c?.sha}\`).`, "", `It was not reverted: ${fixCardInstead(c, step) ?? "see the guard log"}. Fix forward on a branch.`, "", `Log on the guard machine: \`${failLog}\``, "", "🤖 Generated with [Claude Code](https://claude.com/claude-code)"].join("\n"),
   };
 }
+
+// Reverting a merge with the repo's merge drivers on fails (they need a merge's sides). The guard's revert keeps
+// ours for every driver-merged file (`-c merge.<name>.driver=true`) and regenerates them afterwards.
+export function driverNames(gitconfigText) {
+  return [...String(gitconfigText ?? "").matchAll(/^\s*\[merge "([^"]+)"\]/gm)].map((m) => m[1]);
+}
+export function driverOverrides(names) {
+  return names.flatMap((n) => ["-c", `merge.${n}.driver=true`]);
+}
+export const REGEN_AFTER_REVERT = [
+  ["tools/cli.mjs", "regen-tests"],
+  ["tools/cli.mjs", "regen-localization"],
+  ["tools/config/schema.mjs", "--write"],
+];
