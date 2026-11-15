@@ -7,9 +7,10 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { pidAlive } from "../host.mjs";
+import { crashLoopSettings, sendAlert } from "../crashloop.mjs";
 import { clearFlags, DEFAULT_MAX_CRASHES, hostPid, POLL_MS, readSignals, recordCrash, watchLoop } from "../watchdog.mjs";
 
-export const help = "watch [--flagship] [--force] [--max-restarts N]   keep the host up: restart a crash (log + save backup kept in backups/<time>-crash) or a scheduled close; ends after `host stop`";
+export const help = "watch [--flagship] [--force] [--max-restarts N] [--crash-limit N] [--crash-window MIN]   keep the host up: restart a crash (log + save backup kept in backups/<time>-crash) or a scheduled close; ends after `host stop`; N crashes (default 3) inside MIN minutes (default 10) stop the restarts, keep the host down and alert staff (0 = guard off; env LF_CRASHLOOP_LIMIT, LF_CRASHLOOP_WINDOW_MIN)";
 
 function sleepMs(ms) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
@@ -27,6 +28,11 @@ export async function main(args, ctx) {
   const maxRestarts = rawMax === undefined ? DEFAULT_MAX_CRASHES : Number(rawMax);
   if (!Number.isInteger(maxRestarts) || maxRestarts < 0) {
     console.log(`[LFDebug:HostWatch] --max-restarts must be a whole number >= 0 (got ${rawMax})`);
+    return 1;
+  }
+  const guard = crashLoopSettings({ limit: valueOf(args, "--crash-limit"), windowMin: valueOf(args, "--crash-window") });
+  if (guard.error) {
+    console.log(`[LFDebug:HostWatch] ${guard.error}`);
     return 1;
   }
   const say = (m) => console.log(`[LFDebug:HostWatch] ${m}`);
@@ -61,6 +67,7 @@ export async function main(args, ctx) {
       const c = recordCrash(dir);
       say(`crash ${n}: console log kept in ${c.logDir}${c.backup ? "" : " (no save to back up yet)"}`);
       if (c.pruned.length) say(`rotated ${c.pruned.length} old start/stop backup(s)`);
+      return c;
     },
     afterExit: (d) => {
       clearFlags(dir);
@@ -72,6 +79,11 @@ export async function main(args, ctx) {
     maxRestarts,
     pollMs: POLL_MS,
     restartDelayMs: 2000,
+    crashLoop: guard.limit > 0 ? guard : null,
   });
+  if (result.reason === "crash-loop") {
+    console.log(`[LFDebug:HostWatch] STAFF ALERT\n${result.alert}`);
+    await sendAlert(result.alert, { dir, log: say });
+  }
   return result.reason === "stop" ? 0 : 1;
 }
