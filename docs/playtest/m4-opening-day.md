@@ -15,7 +15,7 @@ checklist` reads this sheet after the run, so keep one line per observation.
 
 | Decision (maintainer) | What it means for a beat |
 |---|---|
-| The alpha is joined with the server password only | No account list. A join without the password is refused (B2). |
+| The alpha is joined with the server password only | No account list. A join without the password is refused, checked by hand because the password check is backend-only (#1520, B2). |
 | Wipes happen with 24 hours' notice | The wipe command refuses without a notice posted 24 hours earlier (B9). |
 | Restarts at 06:00 and 18:00 server time, warnings at 15, 5 and 1 minute | The warning is a toast for every player (B7). |
 | The in-game day is 2 real hours (12x) | One real minute moves the clock 12 minutes (B6). |
@@ -32,8 +32,10 @@ checklist` reads this sheet after the run, so keep one line per observation.
 - Use a scratch host folder (`LF_HOST_DIR`) for anything destructive. Never run the wipe step on the real saves.
 - Do not edit the committed `server/flagship/config.json`. A test restart time goes in the profile's own
   copy of the config.
-- A command name for a slice that has not merged is the name its card gives; `tools\cli host help` is
-  the truth. A name that differs is a doc fix, not a failed beat.
+- A command name for a slice that has not merged is the name its card gives and is marked *(planned)* here
+  with that card; `tools\cli host help` is the truth. A name that differs is a doc fix, not a failed beat.
+  Not on `main` as of 2026-11-15: `host next` (#1416), `host history` (#1409), `host post` (#1414), the
+  proof verbs `day-rate` (#1303) and `restart-cycle` (#1268).
 
 Markers: **[two-player]** needs both clients at once, **[restart]** needs the server to stop and start,
 **[late-join]** needs a client that joins a world already in progress. Times are minutes of work, not of
@@ -60,11 +62,12 @@ Do: `tools\cli host config apply`, `tools\cli staff roster check`, `tools\cli ho
 Proves: #1321 and #1405 (the flagship config and its decisions), #1322, #1291 (the alpha page and its
 password-only gate), #1262 (the watchdog).
 
-Do: `tools\cli host start --flagship --wait`, then client A joins from the server browser.
+Do: `tools\cli host start --flagship --wait`, then client A joins from the server browser. The join password
+check is backend-only (#1520), so the wrong-password join is a manual check that no script proves.
 
 - [ ] The command ends with `host: up (pid N)` and the join lines; the log has `save loaded:` and `Entered online game state.`. #1262
 - [ ] The server is listed as exactly `Life Framework | Everon 1989 (Alpha)`. #1321, #1405
-- [ ] A join with a wrong password is refused with the engine's password message. #1291
+- [ ] **Manual:** a join with a wrong password is refused with the engine's password message. Not scripted (#1520). #1291
 - [ ] A join with the right password reaches the world and the character spawns in town. #1291
 - [ ] `host watch` is running and `host status` says so. #1262
 
@@ -118,26 +121,25 @@ Do: B files an application at the station duty desk. A opens the GM panel.
 Proves: #1300 (day cycle config), #1301 (the server applies it), #1303 (proof verb `day-rate`),
 #1406 (`host perf`).
 
-Do: note the in-game time on A, wait five real minutes, note it again. Run the `day-rate` proof verb (#1303).
+Do: note the in-game time on A, wait five real minutes, note it again. Run the `day-rate` proof verb *(planned)* (#1303).
 Start `tools\cli host perf` for the length of the beat.
 
 - [ ] Five real minutes move the clock by one in-game hour (12x). The start hour is the config's. #1300, #1301
-- [ ] The `day-rate` proof passes on a dedicated server. #1303
+- [ ] The `day-rate` proof *(planned)* (#1303) passes on a dedicated server. #1303
 - [ ] **[late-join]** B leaves and rejoins: the clock reads the same time as A's, within a few seconds. #1301
 - [ ] `host perf` printed CPU, memory and upload samples for the beat. #1406
 
 ## B7 [restart] The 18:00 warnings and the close (9 min)
 
 Proves: #1264 (restart schedule), #1348 (the ticker publishes the warnings), #1265 (the toast),
-#1266 (toast-only fallback), #1267 (save and close), #1344 (the events and tickers start).
+#1267 (save and close), #1344 (the events and tickers start).
 
 Do: in the profile's copy of the config, set the next restart about 16 minutes ahead (do not edit the repo
-file), restart the server once so it reads it, rejoin both clients, then `tools\cli host next`.
+file), restart the server once so it reads it, rejoin both clients, then `tools\cli host next` *(planned)* (#1416).
 
-- [ ] `host next` prints the next restart time and the next session. #1264, #1416
+- [ ] `host next` *(planned)* (#1416) prints the next restart time and the next session. #1264, #1416
 - [ ] A and B each get a toast at 15, 5 and 1 minute before the restart, "Server restart in N minutes". Nothing else
   is required of the player at those times. #1265, #1348
-- [ ] With no warning prop placed in the town, the toast still comes and the log has no error for the missing prop. #1266
 - [ ] At the restart time the server saves and closes by itself: the log shows the shutdown save and a restart marker
   for the watchdog. #1267
 - [ ] Both clients end back at the menu, not frozen in the world.
@@ -154,7 +156,7 @@ password and restart once more.
   `Unable to find` or `Wrong GUID/name`. #1262
 - [ ] A and B rejoin as the same characters with the same cash, items and bank balance (S5 in the smoke list). #1267
 - [ ] The in-game time continues from where it was at the close, not from the start hour. #1302
-- [ ] `restart-cycle` passes: warnings reach a client, the server closes, comes back, loads the save. #1268
+- [ ] `restart-cycle` *(planned)* (#1268) passes: warnings reach a client, the server closes, comes back, loads the save. #1268
 - [ ] After the password rotates, the new password joins and the old one is refused. #1415
 
 ## B9 Wipe with notice (6 min, desk)
@@ -167,7 +169,7 @@ before any notice; then `tools\cli host announce --wipe --at <time at least 24 h
 
 - [ ] The wipe refuses while the host runs, and refuses with no notice, saying a notice 24 hours old is needed. #1413, #1274
 - [ ] The announce draft says the wipe time, "at least 24 hours' notice" and links the
-  [wipe policy](../community/wipe-policy.md); `host post` sends it to the test Discord webhook. #1273, #1414, #1323
+  [wipe policy](../community/wipe-policy.md); `host post` *(planned)* (#1414) sends it to the test Discord webhook. #1273, #1414, #1323
 - [ ] The wipe still refuses until 24 hours after the notice. Once the notice is old enough on the scratch folder it
   writes a `wipe` backup, moves the saves aside (nothing is deleted) and adds a line to `backups/wipes.log`. #1413, #1274
   If the notice cannot be aged on a scratch folder, record "refusal proven, wipe not proven" in the report and
@@ -188,14 +190,14 @@ Do: after B9's announce, build the site (`website/`) and open the servers page.
 Proves: #1269 (`host triage`), #1270 (issue drafts), #1271 and #1272 (`server-doctor`), #1349
 (its config report), #1409 (`host history`).
 
-Do: `tools\cli host triage`, `tools\cli server-doctor`, `tools\cli host history`.
+Do: `tools\cli host triage`, `tools\cli server-doctor`, `tools\cli host history` *(planned)* (#1409).
 
 - [ ] Triage groups the session's log into known and new lines against
   [debug-log-triage](../debug-log-triage.md). Each new group has a drafted issue body and the `gh` command, and the
   run files nothing by itself. #1269, #1270
 - [ ] `server-doctor` lists the mods that loaded, says the server booted, and shows the effective config with the
   fields that fell back to a default. #1271, #1272, #1349
-- [ ] `host history` lists the session this run held, with its start, stop and restart. #1409
+- [ ] `host history` *(planned)* (#1409) lists the session this run held, with its start, stop and restart. #1409
 
 ## Not in this run
 
