@@ -59,7 +59,7 @@ Both items publish at version `0.1.0`. The licence is the Arma Public License (A
    |---|---|
    | Project Name | `Life Framework (Core)` |
    | Working Dir | leave the default (`%USERPROFILE%\Documents\My Games\ArmaReforger\publish\LifeFramework`); never a folder inside the addon |
-   | Preview Image | see "Pictures": the shipped `docs/marketing/workshop/preview.jpg` says "PLAYTEST TOWN" and must not go up as is |
+   | Preview Image | see "Pictures", "Candidates": `release-0.1.0/preview-core-b.jpg` (recommended). The shipped `docs/marketing/workshop/preview.jpg` says "PLAYTEST TOWN" and must not go up as is |
    | Screenshots | none (no neutral art yet) |
    | Category | Game Mode |
    | Tags | see "Tags" |
@@ -85,7 +85,7 @@ Both items publish at version `0.1.0`. The licence is the Arma Public License (A
    |---|---|
    | Project Name | `Life Framework: Everon 1989` (27 of 30 characters) |
    | Working Dir | the default |
-   | Preview Image | see "Pictures" |
+   | Preview Image | see "Pictures", "Candidates": `release-0.1.0/preview-pack-a.jpg` (recommended) |
    | Screenshots | see "Pictures" (1280 px wide, each under 500 KB) |
    | Category | Game Mode, and Scenario too if the dialog offers it |
    | Tags | see "Tags" |
@@ -242,6 +242,53 @@ All are real game frames with no HUD or dialogue box. Paths are under `website/p
 Not usable: the contact-sheet pictures (`look-fixes/bank-after.jpg`, `place-audit/police-facade-after.jpg`) carry yellow
 debug labels and red probe rays. `931/bank-after.png` is a clean bank interior but it is a plain grey lobby; skip it.
 
+### Candidates for the preview and the gallery (2026-11-15)
+
+Made for the maintainer to choose from; nothing here is wired into a kit file yet. Everything is under
+`website/public/docs-images/release-0.1.0/`; the side-by-side sheet is `tmp/previews-contact-sheet.html` in the
+`workshop-previews` worktree (`node website/scripts/make-workshop-previews.mjs` rebuilds the files, `stills.json` holds the
+camera and hour of every frame).
+
+**Preview cards** (1920x1080 JPEG, 127 to 210 KB, brand fonts and tokens from `website/BRAND.md`, text is the name,
+`Version 0.1.0` and `Alpha`):
+
+| Slot | File | What it is |
+|---|---|---|
+| Core | `preview-core-b.jpg` (recommended) | Paper sheet with the host's `config.json` and both real mod IDs: the run-your-own angle |
+| Core | `preview-core-a.jpg` | Night band: the emblem, the name, `ALPHA 0.1.0`. Reads best at thumbnail size |
+| Pack | `preview-pack-a.jpg` (recommended) | The town from above as a photo print beside `EVERON 1989`; the frame is upscaled 1.3x only |
+| Pack | `preview-pack-b.jpg` | Bank frame full bleed with a paper sheet; upscaled 2.4x, so it is soft. Retake at 1920x1080 before using it |
+
+The pack spec (`docs/marketing/workshop/everon-1989/README.md`) asks for no baked text; both pack cards carry the
+name and version because that is what you asked for. If you hold to the spec, use a clean frame (`town-1-vista-dusk` or
+`town-2-vista`, below) as the preview and the title beside it does the job.
+
+**Stills** (1280x720 JPEG, 119 to 153 KB, no HUD, taken with `tools\cli look` on lf-testbox with temporary wide-camera
+areas that were not committed; the cameras are in `stills.json`). A look frame is only 838x447 (Workbench's hidden
+viewport), so these are upscaled 1.5x. Red Workbench probe marks were painted out of six of them (nothing else was
+touched). The native frames are in `source/`.
+
+| Slot | File | Notes |
+|---|---|---|
+| Bank, pack screenshot 2 (recommended) | `bank-1-front.jpg` | Facade, door, bench and vault door from the road, 18:00. The BANK plate is red and is only a few pixels tall at this size |
+| Bank | `bank-2-angle.jpg`, `bank-3-day.jpg` | The same building from the south-west at 18:00, and the front at 17:00 |
+| Police, pack screenshot 3 (recommended) | `police-1-wide.jpg` | The villa from the road with the fuel station beside it, 18:00. The lawn clutter is small at this distance |
+| Police | `police-2-uaz.jpg`, `police-3-side.jpg` | Closer, 17:00; the boards on the lawn and the black plank are plain to see, so use them only after the cleanup |
+| Town wide, pack screenshot 4 (recommended) | `town-1-vista-dusk.jpg` | The street from above, car lot, police villa, fuel station and market stalls, 18:00 |
+| Town wide | `town-2-vista.jpg`, `town-3-street.jpg` | The same view at 17:00; and down the main street at street level (`town-3` is a good screenshot 5) |
+
+The hospital and the little desk outside it are out of frame in every picture (checked by eye). Those that include the police villa
+also show the lawn clutter listed below, because it stands on the main facade.
+
+**Town-cleanup backlog from the shoot** (each one is visible in a player's first look):
+
+1. Police villa lawn: a blue notice board, a green chalkboard and an orange board stand on the grass against the wall (not hung at 1.0 m), two phone booths stand against the wall, a bin and a bench sit on the lawn, and a flat black plank lies on the grass in front (`police-1-wide`, `police-2-uaz`).
+2. Spawn square: a small table with an NPC beside it stands alone in the middle of the cobbles, and a second small table and chairs sit near the phone booth. A desk in the open reads as a test fixture (`docs/style-guide.md`, "Where things go").
+3. An empty walled rectangle on the grass beside the police villa (visible in `town-2-vista`): a footprint with nothing in it.
+4. A white free-standing board with a red frame stands on the verge in front of the bank and a blue-framed one at the car lot; both show a blank back to the street.
+5. The BANK fascia lettering is too small to read from the road; it reads only in the close-up.
+6. The horizon is a flat green plain with no hills or tree line, so every raised shot shows the town as a strip on a lawn.
+
 ### Gaps (no good picture exists)
 
 1. **Pack preview image.** `docs/marketing/workshop/everon-1989/preview.jpg` is a flat dark "DRAFT PLACEHOLDER" card
@@ -249,14 +296,15 @@ debug labels and red probe rays. `931/bank-after.png` is a clean bank interior b
    `docs/marketing/workshop/everon-1989/README.md` (1920x1080 JPEG under 600 KB, late-afternoon, no HUD, no baked
    text). The frames above are 1280x720 and would be upscaled. Fastest honest option: a 1920x1080 retake of the
    square, from the `318/square-after.png` viewpoint, on a `--profile full` session. This is the one picture that
-   blocks an upload that looks right.
+   blocks an upload that looks right. Candidates now exist (see "Candidates" above); a 1920x1080 session retake of
+   the chosen frame is still better than the 838x447 `look` frame, whose camera is in `stills.json`.
 2. **Core preview image.** `docs/marketing/workshop/preview.jpg` (1920x1080) shows the village with the logo and the
    words "LIFE FRAMEWORK / PLAYTEST TOWN" baked in. That name is retired and the core brief wants neutral art, so it
-   should not go up. A logo-only card is enough for a setting-neutral core. `make-images.ps1` builds these.
+   should not go up. A logo-only card is enough for a setting-neutral core: `preview-core-a.jpg` and `preview-core-b.jpg` (see "Candidates") are two. `make-images.ps1` builds the old one.
 3. **The planned bank and police pictures** (`318/bank-after.png`, `318/police-after.png`) were never taken: the
    2026-11-14 session frames carried the clerk's dialogue box, a letterbox and the HUD. `tools\cli look bank` and
    `tools\cli look police-station` give clean frames without a session, and `tools\cli evidence 318 after <area> --name bank`
-   (then `--name police`) keeps them. The stand-ins above are good enough for 0.1.0.
+   (then `--name police`) keeps them. Clean `look` frames of both are now in "Candidates" (`bank-*`, `police-*`); the stand-ins above remain usable.
 4. **No picture of play.** Nothing shows a job, an arrest, a robbery or the form R-89 screen. The Workshop page shows places only.
 5. **The scenario image** the game list shows is `Missions/LF_PlaytestTown_Preview.edds` (the pack's icon, preview and
    loading screen). It is the same "Playtest Town" art as the core preview in gap 2, so check it in the in-game
