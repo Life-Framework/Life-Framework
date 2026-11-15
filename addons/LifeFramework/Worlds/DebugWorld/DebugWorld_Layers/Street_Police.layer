@@ -1,7 +1,3 @@
-GenericEntity Roadmap_Police_Desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
- Flags 0x403 0
- coords 232.9 0 239.6
-}
 GenericEntity Roadmap_Police_Armory {
  components {
   MeshObject "{A7C31A9B04D25011}" {
@@ -48,9 +44,22 @@ GenericEntity Roadmap_Police_Armory {
  Flags 0x403 0
  coords 231.9 0 238.2
 }
+GenericEntity Roadmap_Police_Desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ Flags 0x403 0
+ coords 232.9 0 239.6
+ {
+  GenericEntity {
+   ID "281D3BD880CE964E"
+   coords -1.338 0.215 0.448
+   angles 0 0 0
+  }
+ }
+}
 GenericEntity Roadmap_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
- coords 235.4 0 242.9
- angleY 0
+ coords 236.013 1.121 241.166
+}
+GenericEntity Roadmap_Police_DispatchBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
+ coords 230.666 0.556 241.173
 }
 GenericEntity Roadmap_Police_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
  components {
@@ -60,34 +69,19 @@ GenericEntity Roadmap_Police_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investi
  }
  coords 235.65 0 237.976
 }
-GenericEntity Roadmap_Police_DispatchBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
- coords 237.4 0 242.9
- angleY 0
-}
-SCR_DestructibleBuildingEntity Roadmap_Police_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 239.9 0 242.05
- angleY 180
-}
-GenericEntity Roadmap_Police_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
- coords 243.5 0 246
- angleY 90
-}
-GenericEntity Roadmap_Police_ArmoryStore : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
- coords 231 0 238.184
-}
-SCR_DestructibleEntity Police_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 230.1 0 241.9
-}
 GenericEntity Police_TrashBin_1 : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
  coords 241.411 0 241.28
 }
 GenericEntity Roadmap_Police_Taser : "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et" {
- coords 232.852 0.99 239.959
- angleY 0
+ coords 232.761 0.927 240.158
+ angles 0 0 -86.013
 }
-GenericEntity Roadmap_Police_Handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
- coords 232.451 0.922 239.75
- angleY 20
+GenericEntity Roadmap_Police_ArmoryStore : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
+ coords 231 0 238.184
+}
+SCR_DestructibleBuildingEntity Roadmap_Police_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 239.9 0 242.05
+ angles 0 180 0
 }
 GenericEntity Roadmap_Police_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et" {
  components {
@@ -96,10 +90,21 @@ GenericEntity Roadmap_Police_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Rolep
    m_bArmed 0
   }
  }
- coords 234 0.002 245.4
- angleY 90
+ coords 234.561 0.002 249.975
+ angles 0 -2.458 0
 }
 GenericEntity Roadmap_Police_CaseBoard : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
  coords 234.726 1 239.19
- angleY -90
+ angles 0 -90 0
+}
+GenericEntity Roadmap_Police_Handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
+ coords 232.321 0.922 240.055
+ angles 0 20 0
+}
+Vehicle Roadmap_Police_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
+ coords 234.713 0.001 253.799
+ angles 0 -107.999 0
+}
+SCR_DestructibleEntity Police_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 228.647 0 239.865
 }

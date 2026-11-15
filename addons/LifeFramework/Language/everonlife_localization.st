@@ -8220,6 +8220,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Siren: on"
      Comment "Action on the ambulance's light switch: start the hi-lo siren and the light bar (#923)."
     }
+    CustomStringTableItem "{7A31C0DE5A1E0001}" {
+     Id "LF-Siren_NeedMedic"
+     Target_en_us "Clock in to use the siren"
+     Comment "Greyed reason on the ambulance siren action when the driver is not an on-duty medic."
+    }
+    CustomStringTableItem "{7A31C0DE5A1E0002}" {
+     Id "LF-Siren_NeedPolice"
+     Target_en_us "Clock in to use the siren"
+     Comment "Greyed reason on a police siren action when the driver is not an on-duty officer."
+    }
     CustomStringTableItem "{5EBE8CF2BBC1E139}" {
      Id "LF-Sit_Action"
      Target_en_us "Sit"
