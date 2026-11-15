@@ -2,6 +2,8 @@
 // moved or added world props. docs/placement-audit.md; the trigger is proven offline by
 // tools/validation/placement-gate-selftest.mjs.
 
+import { hardLayersOf } from "./town-findings.mjs";
+
 export const ALLOW_PATH = "agent-box/place-audit-allow.json";
 
 // A changed file that can move or add a placed prop: a layer, a prefab, or the spawn code.
@@ -29,9 +31,12 @@ export async function runPlacementGate(files, audit, log = console.log) {
     log("=== ci: placement audit skipped (no .layer, Prefabs .et or LF_Utils/spawn code changed) ===");
     return 0;
   }
-  log(`=== ci: placement audit --strict (${hit.length} file(s) touch world props, e.g. ${hit[0]}) ===`);
-  const code = await audit(["--strict", "--top", "200"]);
-  if (code !== 0) log(`placement audit FAILED: the entities above are flagged; ${allowHint()}. See docs/placement-audit.md`);
-  else log("placement audit: clean under --strict");
+  // The town is hand-edited and its findings only warn (2026-11-15). What blocks is a flagged entity in a non-town
+  // layer this branch adds or moves, which the audit only measures with --annex.
+  const hard = hardLayersOf(files);
+  log(`=== ci: placement audit --strict (${hit.length} file(s) touch world props, e.g. ${hit[0]}; town findings warn${hard.length ? `, ${hard.join(", ")} must be clean` : ""}) ===`);
+  const code = await audit(["--strict", "--top", "200", ...(hard.length ? ["--annex", "--hard-layer", hard.join(",")] : [])]);
+  if (code !== 0) log(`placement audit FAILED: the FAIL entities above are flagged; ${allowHint()}. See docs/placement-audit.md`);
+  else log("placement audit: no blocking finding under --strict (town findings, if any, are warnings)");
   return code === 0 ? 0 : 1;
 }
