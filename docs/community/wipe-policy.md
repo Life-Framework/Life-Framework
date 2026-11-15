@@ -10,7 +10,7 @@ This page covers the alpha server, "Life Framework | Everon 1989 (Alpha)". It is
 
 ## For staff
 
-The maintainer is the only admin, so the maintainer runs every step below. Run `toolscli host help` to see the flags.
+The maintainer is the only admin, so the maintainer runs every step below. Run `toolsi host help` to see the flags.
 
 **Dry run.** The steps below were run end to end on a scratch host: [wipe dry run](../ops/wipe-dryrun-2026-11.md).
 
