@@ -1,11 +1,11 @@
-// tools\cli grid: one debug-grid cell per feature in the DebugWorld annex (docs/architecture/world-zones.md).
+// tools\cli grid: one debug-grid cell per feature in the GridWorld annex (docs/architecture/world-zones.md).
 //
 //   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify]
 //   grid list
 //   grid free <slug>
 //
 // `place` claims a cell for the feature (deterministic: the first usable cell from a hash of the
-// slug), writes DebugWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
+// slug), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
 // the annex centre) and a label sign reading the slug, records the claim in
 // tools/grid/cells/<slug>.json, then puts the prefabs in a row inside the yard through
 // `tools\cli place arrange row` (offline checks, ground probe, audit). Each later call for the same
@@ -14,14 +14,17 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "
 import { join } from "node:path";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import {
-  CELLS_DIR, DEBUG_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, parseCellId, readCells, rowLine, yardPlan, yawAlong,
+  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, parseCellId, readCells, rowLine, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
 
-export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the DebugWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
+export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
 
 export const FENCE = { cls: "SCR_DestructibleEntity", ref: "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" };
 export const SIGN = { cls: "GenericEntity", ref: "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et", component: "{026619B31213409D}", baseY: 0.505 };
 export const SIGN_PREFIX = "grid:"; // LF_SignCatalog.GridLabel turns grid:<slug> into the plate's title
+
+// Every entity of GridWorld's layers (the legacy annex stations and the grid layers); none when the folder is missing.
+const gridEnts = (root) => (existsSync(join(root, GRID_LAYERS)) ? loadWorld(root, join(root, GRID_LAYERS)) : []);
 
 const num = (v) => {
   const r = Math.round(v * 1000) / 1000;
@@ -90,13 +93,13 @@ function parse(argv) {
 
 function list(root) {
   const claims = readCells(root);
-  const ents = loadWorld(root);
+  const ents = gridEnts(root);
   const free = allCells().filter((c) => !claims.some((x) => x.cell === c.id) && !blockers(c, ents).length).length;
   console.log(`grid: ${claims.length} cell(s) claimed, ${free} free (${CELLS_DIR}/)`);
   claims.forEach((c, i) => {
     const p = parseCellId(c.cell);
     const b = p ? cellBounds(p.col, p.row) : null;
-    const layer = join(root, DEBUG_LAYERS, layerOfSlug(c.slug));
+    const layer = join(root, GRID_LAYERS, layerOfSlug(c.slug));
     const n = existsSync(layer) ? (readFileSync(layer, "utf8").match(/^\S.* : "\{/gm) || []).length : 0;
     console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${String(c.cell).padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${n} entities, ${c.rows ?? 0}/3 rows${c.error ? `  ERROR ${c.error}` : ""}`);
   });
@@ -108,7 +111,7 @@ function list(root) {
 function free(root, slug) {
   if (!slug) return usage();
   const reg = join(root, CELLS_DIR, `${slug}.json`);
-  const layer = join(root, DEBUG_LAYERS, layerOfSlug(slug));
+  const layer = join(root, GRID_LAYERS, layerOfSlug(slug));
   if (!existsSync(reg) && !existsSync(layer)) {
     console.log(`grid: ${slug} has no cell`);
     return 1;
@@ -128,9 +131,9 @@ async function place(root, args, flags) {
   const claims = readCells(root);
   const regFile = join(root, CELLS_DIR, `${slug}.json`);
   const layerName = layerOfSlug(slug);
-  const layerFile = join(root, DEBUG_LAYERS, layerName);
+  const layerFile = join(root, GRID_LAYERS, layerName);
   let entry = claims.find((c) => c.slug === slug) ?? null;
-  const ents = loadWorld(root);
+  const ents = gridEnts(root);
   let fresh = false;
   if (!entry) {
     const taken = new Set(claims.map((c) => c.cell));
@@ -156,7 +159,7 @@ async function place(root, args, flags) {
   const cell = { id: entry.cell, ...p, ...cellBounds(p.col, p.row) };
   console.log(`grid: ${slug} -> cell ${cell.id} (x ${cell.x0}..${cell.x1}, z ${cell.z0}..${cell.z1}, gap ${yardPlan(cell).gap.side})${fresh ? " (new)" : ""}`);
   if (flags.dry) {
-    if (fresh) console.log(`  would write ${layerName} (7 fence runs and the label sign) and ${CELLS_DIR}/${slug}.json`);
+    if (fresh) console.log(`  would write ${GRID_LAYERS}/${layerName} (7 fence runs and the label sign) and ${CELLS_DIR}/${slug}.json`);
     const line = prefabs.length ? rowLine(cell, entry.rows ?? 0) : null;
     if (line) console.log(`  would place ${prefabs.length} prop(s) in row ${entry.rows ?? 0}: ${line.a.join(",")} to ${line.b.join(",")}, facing ${line.facing}`);
     console.log("grid: dry run, nothing written.");
@@ -166,7 +169,7 @@ async function place(root, args, flags) {
   if (fresh) {
     mkdirSync(join(root, CELLS_DIR), { recursive: true });
     writeFileSync(regFile, registryText(entry));
-    console.log(`  wrote ${layerName} (yard and sign ${entityPrefix(slug)}_Sign) and ${CELLS_DIR}/${slug}.json`);
+    console.log(`  wrote ${GRID_LAYERS}/${layerName} (yard and sign ${entityPrefix(slug)}_Sign) and ${CELLS_DIR}/${slug}.json`);
   }
   let code = 0;
   if (prefabs.length) {
