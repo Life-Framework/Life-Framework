@@ -182,8 +182,9 @@ class LF_HoldTuner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The anim graph the item borrows for the hold, or empty
-	static string Graph(BaseContainer anim)
+	//! The anim graph the item borrows for the hold, or empty. Not named Graph: a call to that name inside this
+	//! class fails the WorkbenchGame compile ("Too many parameters for 'Graph' method").
+	static string HoldGraph(BaseContainer anim)
 	{
 		if (!anim)
 			return string.Empty;
@@ -244,7 +245,7 @@ class LF_HoldTuner
 		character.GetWorldTransform(body);
 		vector local[4];
 		string pose;
-		if (PoseFrame(Graph(AnimAttributes(itemSrc)), pose, local))
+		if (PoseFrame(HoldGraph(AnimAttributes(itemSrc)), pose, local))
 		{
 			s_sFrame = "measured " + pose;
 		}
