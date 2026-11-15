@@ -19,10 +19,10 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		ctx.False(LF_Contraband.IsContraband(LF_MoneyUtils.CashPrefab()), "cash is not contraband");
 		ctx.False(LF_Contraband.IsContraband("{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et"), "rowan berries are food again, not contraband");
 
-		vector drop = "131.5 0 284";
-		ctx.True(LF_Contraband.NearDrop("140 0 300", drop), "getting out 18 m from the drop is arriving");
-		ctx.False(LF_Contraband.NearDrop("160 0 284", drop), "getting out 28.5 m from the drop is leaving the vehicle");
-		ctx.True(LF_Contraband.NearDrop("131.5 40 284", drop), "height does not count toward the drop distance");
+		vector drop = "1000 0 1000";
+		ctx.True(LF_Contraband.NearDrop("1008.5 0 1016", drop), "getting out 18 m from the drop is arriving");
+		ctx.False(LF_Contraband.NearDrop("1028.5 0 1000", drop), "getting out 28.5 m from the drop is leaving the vehicle");
+		ctx.True(LF_Contraband.NearDrop("1000 40 1000", drop), "height does not count toward the drop distance");
 
 
 		string founder = "roadmap-contraband-founder";
@@ -169,7 +169,7 @@ class LF_Test_Roadmap_ContrabandWorld : LF_Test
 		ctx.Equal(LF_Contraband.PAYOUT, LF_Contraband.Deliver(arriving, 1, null), "the driver who got out at the drop is paid");
 
 		ctx.True(LF_Contraband.Start(quitting, null), "the quitting driver starts a run");
-		ctx.True(LF_Contraband.LeftVehicleAt(quitting, "300 0 250"), "getting out on the main street fails the run");
+		ctx.True(LF_Contraband.LeftVehicleAt(quitting, dropOrigin + "200 0 0"), "getting out 200 m from the drop fails the run");
 		ctx.Equal(0, LF_Contraband.Deliver(quitting, 1, null), "the driver who got out on the way is not paid");
 
 		LF_OrganizationManager.Reset();

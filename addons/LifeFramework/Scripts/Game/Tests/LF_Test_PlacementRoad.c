@@ -22,7 +22,7 @@ class LF_Test_PlacementRoad : LF_Test
 		{
 			LF_Debug.Info(LF_PlacementService.FEATURE, "across-road test: this world has no AI road network; run it on CoreOnEveron");
 			vector none;
-			ctx.False(LF_PlacementService.NearestRoad("300 0 248", none), "no AI road network finds no road");
+			ctx.False(LF_PlacementService.NearestRoad("1000 0 1000", none), "no AI road network finds no road");
 			return;
 		}
 
