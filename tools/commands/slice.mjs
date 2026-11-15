@@ -2,7 +2,9 @@
 //
 //   slice new <parent> [--plan file] [--dry-run]   no plan: write a template plan to tmp/slices-<parent>.md;
 //                                                  with a plan: check it, then create each card as a sub-issue of
-//                                                  <parent> in dependency order (--dry-run writes tmp/slices-<parent>.cards.md)
+//                                                  <parent> in dependency order (--dry-run writes tmp/slices-<parent>.cards.md);
+//                                                  `depends: #N` names a sub-issue <parent> already has, and the owns
+//                                                  check runs against its live sub-issues too
 //   slice list <parent> [--ready]                  the DAG, which slices are ready, ready ones by critical path
 //   slice brief <issue>                            the agent brief for one card
 //   slice record <issue> --model M --outcome O --gate pass|fail --minutes N [--wait N] [--type T]
@@ -18,7 +20,7 @@ import { TEMPLATE, brief, cardBody, checkPlan, ledgerRow, parseCard, parsePlan, 
 
 export const help = "slice new|list|brief|record|stats   slice cards: scaffold a chapter's slices as sub-issues, show the DAG and the ready queue by critical path, print a slice's agent brief, log and report outcomes per model";
 
-const USAGE = `usage: tools\\cli slice new <parent> [--plan file] [--dry-run]
+const USAGE = `usage: tools\\cli slice new <parent> [--plan file] [--dry-run] [--fixture f.json]
        tools\\cli slice list <parent> [--ready] [--fixture f.json]
        tools\\cli slice brief <issue> [--fixture f.json]
        tools\\cli slice record <issue> --model haiku|sonnet|opus --outcome merged|handoff|split|failed --gate pass|fail --minutes N [--wait N] [--type T]
@@ -139,13 +141,22 @@ function newSlices(root, parent, args) {
   }
   const slices = parsePlan(readFileSync(resolve(planFile), "utf8"));
   if (!slices.length) throw new Error(`${planFile}: no "# Slice <KEY>: <title>" headings`);
-  const problems = checkPlan(slices);
+  // The parent's live sub-issues: `#N` dependencies resolve against them and the owns check covers them.
+  let existing = [];
+  let alone = "";
+  try {
+    existing = subIssues(root, parent, val(args, "--fixture")).map(toSlice).filter((s) => s.card.isCard);
+  } catch (e) {
+    if (slices.some((s) => s.card.depends.some((d) => typeof d === "number"))) throw e;
+    alone = ` (sub-issues of #${parent} unread, plan checked alone: ${e.message.split(":")[0]})`;
+  }
+  const problems = checkPlan(slices, existing);
   for (const s of slices) {
     const want = suggestModel(s.card);
     if (s.card.model && want !== s.card.model && want === "opus") problems.push(`${s.id}: risk ${s.card.risk.join(",")} routes to opus, not ${s.card.model}`);
   }
   if (problems.length) {
-    console.log(`SUMMARY slice new fail ${problems.length} problem(s) in ${planFile}`);
+    console.log(`SUMMARY slice new fail ${problems.length} problem(s) in ${planFile}${alone}`);
     for (const p of problems) console.log(`  ${p}`);
     return 1;
   }
@@ -153,7 +164,7 @@ function newSlices(root, parent, args) {
   if (args.includes("--dry-run")) {
     const out = join(tmp, `slices-${parent}.cards.md`);
     writeFileSync(out, ordered.map((s) => `# ${s.title}\n\n${cardBody(s, parent)}`).join("\n---\n\n"));
-    console.log(`SUMMARY slice new ok dry-run ${ordered.length} card(s) out=${out}`);
+    console.log(`SUMMARY slice new ok dry-run ${ordered.length} card(s) out=${out}${alone}`);
     return 0;
   }
   ghRaw(root, ["label", "create", "slice", "--color", "c5def5", "--description", "A slice card: one 30-45 minute agent job (docs/process/slice-card.md)", "--force"]);
