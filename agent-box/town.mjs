@@ -114,11 +114,23 @@ function samePrefab(a, b) {
 }
 
 // One site against the placed entities. Returns the position the report uses.
+// The entity name is only the preferred anchor: the maintainer renames town entities by hand, so a
+// site whose name is gone resolves to the placed entity that carries all its actions, with a
+// warning. The contract is that the town offers those actions, not what the entity is called.
 export function resolveSite(site, world) {
   const errors = [];
   if (site.entity) {
     const hits = world.filter((entity) => entity.name === site.entity);
-    if (!hits.length) return { ok: false, errors: [`${site.entity} is not in any DebugWorld layer`] };
+    if (!hits.length && site.actions?.length) {
+      const carriers = world.filter((entity) => site.actions.every((action) => entity.actions?.includes(action)));
+      if (carriers.length) {
+        const hit = carriers[0];
+        const more = carriers.length > 1 ? ` (and ${carriers.length - 1} more)` : "";
+        const warnings = [`${site.entity} is not placed; resolved by its actions to ${hit.name || "an unnamed entity"} in ${hit.layer}${more}`];
+        return { ok: true, errors: [], warnings, name: hit.name, layer: hit.layer, x: hit.x, y: hit.y, z: hit.z, count: carriers.length };
+      }
+    }
+    if (!hits.length) return { ok: false, errors: [`${site.entity} is not in any DebugWorld layer and nothing placed carries ${site.actions?.join(", ") || "its actions"}`] };
     if (hits.length > 1) {
       const where = hits.map((hit) => hit.layer).join(", ");
       return { ok: false, errors: [`${site.entity} is placed ${hits.length} times (${where})`] };
@@ -229,19 +241,22 @@ export function nearestSign(signId, point, world) {
 
 // Sign problems for one resolved site. `card` may be the live Read card
 // verdict ("blank" or "ok") from play mode; otherwise the config decides.
+// `far` holds the distance note (a sign farther than radiusM). Where a sign stands is the
+// maintainer's call, so it is a warning everywhere and never joins `issues`.
 export function signIssues(site, point, world, catalog, strings, radiusM, live = {}) {
-  if (!site.sign) return { issues: [], sign: null };
+  if (!site.sign) return { issues: [], far: [], sign: null };
   radiusM = site.signRadiusM ?? radiusM;
   const sign = nearestSign(site.sign, point, world);
   const issues = [];
+  const far = [];
   if (!sign) issues.push(`no ${site.sign} sign placed`);
-  else if (sign.distanceM > radiusM) issues.push(`${site.sign} sign is ${sign.distanceM} m away (max ${radiusM})`);
+  else if (sign.distanceM > radiusM) far.push(`${site.sign} sign is ${sign.distanceM} m away (max ${radiusM})`);
   const card = signCard(site.sign, catalog, strings);
   if (!card.found) issues.push(`${site.sign} is not in LF_Signs.conf`);
   else if (card.blank) issues.push(`${site.sign} Read card is blank`);
   if (live.read === false && sign) issues.push(`look does not offer Read on ${sign.name || "the sign"}`);
   if (live.card === "blank" && card.found && !card.blank) issues.push(`${site.sign} Read card shows blank in play`);
-  return { issues, sign, card };
+  return { issues, far, sign, card };
 }
 
 export function nearestNeighbour(index, points) {
@@ -254,8 +269,9 @@ export function nearestNeighbour(index, points) {
 }
 
 // Offline check: every site resolves to placed entities with the expected
-// actions, sits within neighbourM of another site, and has its sign (or a
-// pending warning while requireSigns is false).
+// actions and has its sign (or a pending warning while requireSigns is false).
+// Distances are layout, which the maintainer owns: a site more than neighbourM from
+// the rest, or a sign farther than its radius, is a warning, never an error.
 export function checkTown(root, { manifest = TOWN, world, catalog, strings } = {}) {
   const errors = [];
   const warnings = [];
@@ -268,16 +284,19 @@ export function checkTown(root, { manifest = TOWN, world, catalog, strings } = {
   const placed = rows.filter((row) => row.place.errors.length === 0 || row.place.x != null);
   for (const row of rows) {
     for (const error of row.place.errors) errors.push(`${row.site.id}: ${error}`);
+    for (const warning of row.place.warnings || []) warnings.push(`${row.site.id}: ${warning}`);
   }
   for (const row of placed) {
     const index = placed.indexOf(row);
     row.neighbourM = nearestNeighbour(index, placed.map((item) => item.place));
     if (row.neighbourM > manifest.neighbourM && !row.site.outskirts) {
-      errors.push(`${row.site.id}: ${row.neighbourM} m from the nearest other site (max ${manifest.neighbourM})`);
+      warnings.push(`${row.site.id}: layout: ${row.neighbourM} m from the nearest other site (max ${manifest.neighbourM})`);
     }
     const signed = signIssues(row.site, row.place, world, catalog, strings, manifest.signRadiusM);
     row.sign = signed.sign;
     row.signIssues = signed.issues;
+    row.signFar = signed.far;
+    for (const note of signed.far) warnings.push(`${row.site.id}: layout: ${note}`);
     for (const issue of signed.issues) {
       if (manifest.requireSigns) errors.push(`${row.site.id}: ${issue}`);
       else warnings.push(`${row.site.id}: sign: pending (${issue})`);
@@ -338,7 +357,8 @@ export function judgeTownRow(row, { requireSigns = TOWN.requireSigns, neighbourM
     if (!widgets || !shot) failures.push("menu is blank");
   }
   if (row.mesh === "white" || row.mesh === "missing") failures.push("site is white or missing");
-  if (Number(row.neighbourM) > neighbourM && !row.outskirts) failures.push(`more than ${neighbourM} m from its nearest neighbour`);
+  if (Number(row.neighbourM) > neighbourM && !row.outskirts) warnings.push(`layout: more than ${neighbourM} m from its nearest neighbour`);
+  for (const note of row.signFar || []) warnings.push(`layout: ${note}`);
   for (const issue of row.signIssues || []) {
     if (requireSigns) failures.push(`sign: ${issue}`);
     else warnings.push(`sign: pending (${issue})`);

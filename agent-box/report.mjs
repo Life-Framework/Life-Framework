@@ -608,6 +608,7 @@ export function runTownReport(deps) {
       }
       const signed = signIssues(site, place, world, deps.catalog, deps.strings, manifest.signRadiusM, live);
       row.signIssues = signed.issues;
+      row.signFar = signed.far;
       if (signed.sign) row.details.push(`Sign ${site.sign}: ${signed.sign.name || "(unnamed)"} ${signed.sign.distanceM} m away.`);
       else if (site.sign) row.details.push(`Sign ${site.sign}: none placed.`);
     } catch (err) {

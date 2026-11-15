@@ -54,7 +54,7 @@ class LF_Test_AimIntent : LF_Test
 		array<ref LF_IncidentRecord> before = LF_IncidentLog.ExportAll();
 		LF_IncidentLog.ResetStatics();
 		LF_IncidentLog.Install();
-		LF_EventBus.Publish(LF_OnAimedAt.Create("actor-1", "target-1", Vector(115, 0, 250)));
+		LF_EventBus.Publish(LF_OnAimedAt.Create("actor-1", "target-1", Vector(1000, 0, 1000)));
 		array<ref LF_IncidentRecord> rows = LF_IncidentLog.Query(vector.Zero, -1, 0, -1, LF_IncidentConfig.KIND_AIM);
 		ctx.Equal(1, rows.Count(), "one aim intent logs one row");
 		if (rows.Count() == 1)

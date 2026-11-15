@@ -68,7 +68,8 @@ Chernarus or a custom map works by placing components, with no script change.
   start it switches off with one line when none is placed (#1047). The jail
   cell registers as `JailCell`. `Worlds/CoreOnEveron` boots the core alone on
   vanilla Everon to prove it (`tools\cli test --tier fast --world ...`).
-- Tests keep their annex fixtures and may look them up by name.
+- Tests keep their annex fixtures and may look them up by name. They never name a town entity
+  or write a town position (`world-zones.md` "Tests do not read the town").
 
 
 1. **Delete the pack.** The core still boots DebugWorld, every test passes,
