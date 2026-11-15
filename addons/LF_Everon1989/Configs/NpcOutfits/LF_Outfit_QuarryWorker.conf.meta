@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{892810E82B39769E}Configs/NpcOutfits/LF_Outfit_QuarryWorker.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

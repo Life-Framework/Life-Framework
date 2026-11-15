@@ -585,7 +585,7 @@ export function runTownReport(deps) {
       }
       const live = {};
       const offline = signIssues(site, place, world, deps.catalog, deps.strings, manifest.signRadiusM);
-      if (offline.sign && offline.sign.name && offline.sign.distanceM <= manifest.signRadiusM) {
+      if (offline.sign && offline.sign.name && offline.sign.distanceM <= (site.signRadiusM ?? manifest.signRadiusM)) {
         const stood = deps.stand(offline.sign.name);
         if (down(stood)) break;
         if (stood.status === "ok") deps.pause(800);
