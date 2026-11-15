@@ -72,6 +72,8 @@ try {
   refused("a session that is not a wipe", {}, /notice/i);
   notice({ ...wipeNotice(30), announced: false });
   refused("a drafted notice not yet posted", {}, /not (been )?posted|draft/i);
+  { const { announced, ...draft } = wipeNotice(30); notice(draft); }
+  refused("a draft with no announced key (what host announce writes)", {}, /not (been )?posted|draft/i);
   notice({ ...wipeNotice(30), announced: true });
   refused("a notice with no time", {}, /no time|time/i);
   notice({ ...wipeNotice(30), announced: "not a date" });

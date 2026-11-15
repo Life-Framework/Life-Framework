@@ -42,7 +42,8 @@ export function checkWipeNotice(file, now = new Date()) {
     if (typeof v === "string" && v !== "") { posted = { f, v }; break; }
   }
   if (!posted) {
-    if (next.announced === false) return { ok: false, reason: `the wipe notice is drafted, not posted (announced=false in ${file}); ${hint}` };
+    // `host announce` leaves `announced` out of a draft; an older file may hold announced=false.
+    if (next.announced === undefined || next.announced === null || next.announced === false) return { ok: false, reason: `the wipe notice is drafted, not posted (no announced time in ${file}); ${hint}` };
     return { ok: false, reason: `the wipe notice has no posting time (${file} has announced=${JSON.stringify(next.announced)}, not an ISO date-time): the 24 hours cannot be counted` };
   }
   const ms = /^\d{4}-\d{2}-\d{2}T/.test(posted.v) ? Date.parse(posted.v) : NaN;
