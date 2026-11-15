@@ -1,0 +1,44 @@
+GenericEntity {
+ ID "B44B3E7E3657590D"
+ components {
+  MeshObject "{47740757903E2F19}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{6AFFD67C3E207BA6}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ShopComponent "{837E80AF6CCDBB47}" {
+   m_sShopName "#LF-Shop_Name_PharmacyCounter"
+   m_sShopDescription "#LF-Shop_Desc_PharmacyCounter"
+   m_sOutletId "pharmacy_counter"
+  }
+  ActionsManagerComponent "{8E8BDFACE7F78D43}" {
+   ActionContexts {
+    UserActionContext "{E3C6450FBA15D7A5}" {
+     ContextName "default"
+     Position PointInfo "{8487B2A047F0522F}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{67CAAF747B2851AC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2CA4496F9CA36EA7}" {
+      Name "#LF-Shop_Open_PharmacyCounter"
+      Description "#LF-Shop_Desc_PharmacyCounter"
+     }
+    }
+   }
+  }
+  RplComponent "{D0F7ABDFFEF21155}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}
