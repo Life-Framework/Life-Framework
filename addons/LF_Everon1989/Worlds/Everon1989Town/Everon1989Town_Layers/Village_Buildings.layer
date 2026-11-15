@@ -341,3 +341,7 @@ GenericEntity Roadmap_Bank_VaultHood : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay
  angleY 180
  scale 1.2
 }
+LF_NpcBaseEntity Village_Supermarket_Shopkeeper : "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et" {
+ coords 83.831 0.199 96.8
+ angleY -90
+}

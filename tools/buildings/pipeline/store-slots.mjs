@@ -101,6 +101,7 @@ export function storePlan(store, furnitureText, fixtures = FIXTURES) {
   const tills = children.filter((c) => c.name === (store.till || "CashierShop_01")).map((c) => [c.at[0], c.at[1] + TILL_CONTEXT_UP, c.at[2]].map((v) => +v.toFixed(3)));
   if (!tills.length) problems.push(`the export placed no ${store.till || "CashierShop_01"} to pay at`);
   if (!store.key) problems.push("store.key is empty: the saved stock is matched by it");
+  alarmProblems(store.alarm, problems);
   return { lines, tills, problems, children };
 }
 
@@ -173,12 +174,46 @@ export function storePrefab(slug, store, plan, buildingRef) {
     "   }",
     "  }",
     " }",
+    ...alarmChild(slug, store.alarm, g),
     "}",
     "",
   ].join("\n");
 }
 
-const META_CONFIGS = ["PC {", "XBOX_ONE : PC {", "XBOX_SERIES : PC {", "PS4 : PC {", "PS5 : PC {", "HEADLESS : PC {"];
+// store.alarm: { "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 180, "offset": [x, y, z], "reach": 10 }.
+// A child entity (a bell box on the shop front) carrying LF_AlarmMountComponent: a walk-out's site
+// alarm (LF_Dispatch at the store's origin) sounds on it instead of on the ground at the site.
+// `reach` must cover the box's distance from the store's origin (capped at 12 by the mount).
+function alarmChild(slug, alarm, g) {
+  if (!alarm) return [];
+  const vec = (v) => v.map(num).join(" ");
+  return [
+    " {",
+    `  GenericEntity : "${alarm.prefab}" {`,
+    `   ID "${hex16(`${slug}|store|alarmbox`)}"`,
+    "   components {",
+    `    LF_AlarmMountComponent "${g("alarmmount")}" {`,
+    `     m_vOffset ${vec(alarm.offset || [0, 0, 0])}`,
+    `     m_fReach ${num(alarm.reach ?? 10)}`,
+    "    }",
+    "   }",
+    `   coords ${vec(alarm.at)}`,
+    ...(alarm.yaw ? [`   angleY ${num(alarm.yaw)}`] : []),
+    "  }",
+    " }",
+  ];
+}
+
+export function alarmProblems(alarm, problems) {
+  if (!alarm) return;
+  if (!/^\{[0-9A-F]{16}\}Prefabs\/[^"]+\.et$/.test(alarm.prefab || "")) problems.push(`store.alarm: prefab must be "{GUID}Prefabs/...et", not ${alarm.prefab}`);
+  if (!Array.isArray(alarm.at) || alarm.at.length !== 3) problems.push("store.alarm: at must be [x, y, z]");
+  const reach = alarm.reach ?? 10;
+  const far = Array.isArray(alarm.at) ? Math.hypot(...alarm.at) : 0;
+  if (reach > 12 || far > reach) problems.push(`store.alarm: reach ${reach} must cover the box's ${far.toFixed(1)} m from the store origin and stay within the mount's 12 m`);
+}
+
+const META_CONFIGS =["PC {", "XBOX_ONE : PC {", "XBOX_SERIES : PC {", "PS4 : PC {", "PS5 : PC {", "HEADLESS : PC {"];
 export const prefabMeta = (guid, path) => `MetaFileClass {\n Name "{${guid}}${path}"\n Configurations {\n${META_CONFIGS.map((c) => `  EntityTemplateResourceClass ${c}\n  }`).join("\n")}\n }\n}\n`;
 
 // The stage: writes <prefab_dir>/<store.prefab>.et (and its .meta, GUID kept) into the building's addon.

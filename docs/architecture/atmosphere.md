@@ -106,7 +106,7 @@ LF_AmbientSwitchComponent       the only replicated state: one bool. SetOn (the 
 - **Not persisted.** A radio switched off is on again after a restart.
 
 To add a sound to a prop, add `LF_AmbientEmitterComponent` to its prefab with a project from
-`Sounds/Atmosphere/`. For the sound of an area, add the component to an entity that is already
+`Sounds/Atmosphere/` (in `addons/LF_Everon1989/` since #323 batch 4; a core prop asks for it by sound slot, which the pack overlay `Configs/SoundSlots/LF_SoundSlots_Everon1989.conf` fills). For the sound of an area, add the component to an entity that is already
 there in the layer (the fountain, the pub) or place `Prefabs/Atmosphere/LF_AmbientEmitter.et` in
 Workbench. A radio is `tools\cli place on <surface> Prefabs/Atmosphere/LF_Radio_Store.et`.
 
@@ -135,7 +135,7 @@ stage's sample maths, WAV writer and `.meta` text (`sound.mjs`).
 
 Files to listen to (about 25 MB in the repo):
 
-| Sound | File under `addons/LifeFramework/Sounds/Atmosphere/Samples/` | Length | Range | Volume |
+| Sound | File under `addons/LF_Everon1989/Sounds/Atmosphere/Samples/` | Length | Range | Volume |
 |---|---|---|---|---|
 | Store radio | `Atmosphere_StoreRadio_LP.wav` | 59.6 s | 2 to 24 m | -8 dB |
 | Pub | `Atmosphere_PubRadio_LP.wav` | 64.9 s | 3 to 34 m | -7 dB |
