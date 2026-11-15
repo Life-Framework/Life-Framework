@@ -120,6 +120,14 @@ agent per area. `tools\cli usage` shows where the tokens went.
 
 Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
 
+**No Workbench on this PC.** The maintainer's world editor lives here, so this PC's pool caps lack
+`workbench` (`lf.local.json`) and no agent starts a headless Workbench on it. `ci`, `validate --full`,
+`build`, `look`, `rdb` and the rdb refresh before `test` and `session up` go to a pool machine with the cap
+(`lf-cloud`, `lf-testbox`) or wait for one within a budget; `pack`, `asset` plugin runs, `ui-image` and
+every `cli call wb_*` tool refuse here (`wb_read_props` too: use `api_search`, `game_read`, `asset_search`,
+`api class`). Never pass `--local` or set `LF_WB_LOCAL=1` to get around it (`docs/worktrees.md` "No
+Workbench on this PC").
+
 **Nothing waits forever.** Every external call has a bounded runtime:
 - `ssh` inherits `ConnectTimeout 8` and `ServerAliveInterval 10` from `~/.ssh/config`, so a dead link fails in about 30 s.
 - Wrap any other probe in `timeout <s>`.
