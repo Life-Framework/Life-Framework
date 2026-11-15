@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import Roadmap from "@/pages/Roadmap";
 import Devlog from "@/pages/Devlog";
 import Servers from "@/pages/Servers";
+import Alpha from "@/pages/Alpha";
 import Contribute from "@/pages/Contribute";
 import Decisions from "@/pages/Decisions";
 import Support from "@/pages/Support";
@@ -56,6 +57,7 @@ const App = () => (
       <Route path="/join/:source" element={<Join />} />
       <Route path="/devlog" element={<Devlog />} />
       <Route path="/servers" element={<Servers />} />
+      <Route path="/alpha" element={<Alpha />} />
       <Route path="/contribute" element={<Contribute />} />
       <Route path="/decisions" element={<Decisions />} />
       <Route path="/support" element={<Support />} />
