@@ -1,6 +1,6 @@
 // Stand-in for tools/cli.mjs in tools/validation/opening-b1-selftest.mjs: it answers the host commands that are
 // not on main yet (`host config apply`, `host ready`) so the beat script's PASS and FAIL paths run without the game.
-// The case is picked by env: FAKE_HELP (a help text file), FAKE_CONFIG ok|nopass|fail, FAKE_READY go|nogo,
+// The case is picked by env: FAKE_HELP (a help text file), FAKE_CONFIG ok|nopass|fail|uid (the roster has no uid yet), FAKE_READY go|nogo,
 // FAKE_PRUNE tagged|clean. It writes only under LF_HOST_DIR.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -23,6 +23,10 @@ if (sub === "host config apply") {
   const mode = process.env.FAKE_CONFIG || "ok";
   if (mode === "fail") {
     console.log("host config apply: secrets.json is missing");
+    process.exit(1);
+  }
+  if (mode === "uid") {
+    console.log("[LFDebug:HostConfig] refused: the staff roster cannot give game.admins: line 10 (Jasper): the administrator has no uid yet, so game.admins cannot be written");
     process.exit(1);
   }
   const profile = join(host, "profile");
