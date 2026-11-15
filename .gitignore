@@ -1,5 +1,7 @@
 # Arma Reforger / Enfusion Engine
 *.log
+# Validator fixtures are test inputs, not run logs.
+!tools/validation/fixtures/**/*.log
 *.cache
 *.tmp
 *.bak
