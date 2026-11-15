@@ -9,7 +9,7 @@ import { measureXob } from "../lib/xob.mjs";
 
 export const help = "measure <prefab|{GUID}path|name|.xob> [more] [--surfaces] [--all] [--json] [--fresh]   model bounds and the horizontal surfaces (shelf boards, counter tops) from the .xob colliders, no game, cached";
 
-const VERSION = 1;
+const VERSION = 2;
 const r3 = (n) => (Math.round(n * 1000) / 1000).toFixed(3);
 const range = (a) => `${r3(a[0])}..${r3(a[1])}`;
 const boxText = (b) => `x ${range([b.min[0], b.max[0]])}  y ${range([b.min[1], b.max[1]])}  z ${range([b.min[2], b.max[2]])}  (${[0, 1, 2].map((k) => (b.max[k] - b.min[k]).toFixed(2)).join(" x ")} m)`;
@@ -44,17 +44,18 @@ export async function measureOne(root, arg, { minSize = 0.05 } = {}) {
   const r = await resolvePrefab(root, arg);
   const vfs = r.vfs ?? (await gameVfs().catch(() => null));
   let mesh = r.path;
+  let meshRef = r.ref;
   let scale = 1;
   let chain = [];
   if (!/\.xob$/i.test(r.path)) {
-    ({ mesh, scale, chain } = meshOf(root, vfs, r.path));
+    ({ mesh, meshRef, scale, chain } = meshOf(root, vfs, r.path));
     if (!mesh) throw new Error(`${r.path} has no MeshObject model in its chain (${chain.join(" <- ") || "unreadable"})`);
   }
   const buf = readBytes(root, vfs, mesh);
   if (!buf) throw new Error(`${mesh} (the model of ${r.path}) is in neither addons/ nor the game's paks`);
   const m = measureXob(buf, { scale, minSize });
   const files = [...chain, mesh].map((p) => addonFile(root, p)).filter(Boolean).map((file) => ({ file, stamp: stamp(file) }));
-  return { arg, path: r.path, ref: r.ref, others: r.others, mesh, scale, ...m, files };
+  return { arg, path: r.path, ref: r.ref, others: r.others, mesh, meshRef, scale, ...m, files };
 }
 
 function print(m, { surfaces }) {
