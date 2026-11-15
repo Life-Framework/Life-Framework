@@ -28,7 +28,7 @@ function put(root, path, text) {
 
 function tree() {
   const root = mkdtempSync(join(tmpdir(), "lf-retheme-"));
-  put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "79636E668EA37AC9"\n}\n');
+  put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "4550A2B656E1B569"\n}\n');
   put(root, "addons/LifeFramework/Scripts/Game/Feature/Packs/LF_PackManifest.c", 'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\n');
   put(root, "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent.meta", 'MetaFileClass {\n Name "{F3AA388E8466788C}Worlds/DebugWorld/DebugWorld.ent"\n}\n');
   put(root, "addons/LifeFramework/Configs/Systems/LifeFrameworkSystems.conf.meta", 'MetaFileClass {\n Name "{2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf"\n}\n');

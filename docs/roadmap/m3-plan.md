@@ -93,7 +93,7 @@ chain, because #300 also needs the client stream (#285).
   `CONFIG_PATH` constants today (perf, comms, chop shop, medic, evidence,
   witness, incident, ledger, zones and more came in M2).
 - **Workshop IDs already exist.** A Reforger Workshop mod ID is the
-  `.gproj` GUID. The core is `79636E668EA37AC9`, which the M1 playtest publish
+  `.gproj` GUID. The core is `4550A2B656E1B569`, which the M1 playtest publish
   (#109, `docs/playtest/workshop-publish.md`) uploads first, with the
   flagship mission header `LF_PlaytestTown.conf` inside it. The pack is
   `B1E84D5687E11724`. #370's premise ("the first upload creates the IDs") is
@@ -294,7 +294,7 @@ only.
 
 **D3. What happens to M1 hosts when the playtest header moves to the pack?**
 #109 publishes the core item with `LF_PlaytestTown.conf` inside. After batch
-1 that header lives in the pack, and a host listing only `79636E668EA37AC9`
+1 that header lives in the pack, and a host listing only `4550A2B656E1B569`
 loses the scenario.
 (a) Publish the pack item in the same release as batch 1; the host doc and
 `playtest-server.json` list both IDs; announce it on Discord one session ahead.

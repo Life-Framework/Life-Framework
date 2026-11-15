@@ -2,7 +2,7 @@
 //
 // Workbench keeps only the LAST of repeated `-addonsDir` flags (pack-move-spike.md
 // section 4), so a project that depends on another repo addon (LF_Everon1989 on
-// LifeFramework) fails with `dependency '79636E668EA37AC9' can't be added`. One
+// LifeFramework) fails with `dependency '4550A2B656E1B569' can't be added`. One
 // flag with comma-separated folders works. Every launcher builds its flag here.
 
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -13,7 +13,7 @@ import { addonResources } from "./rdb-fresh.mjs";
 
 // Core first: it is the one that always participates.
 export const ADDONS = [
-  { name: "LifeFramework", guid: "79636E668EA37AC9" },
+  { name: "LifeFramework", guid: "4550A2B656E1B569" },
   { name: "LF_Everon1989", guid: "B1E84D5687E11724" },
 ];
 // A pack an author scaffolded with `pack new` (addons/LF_<Name>/LF_<Name>.gproj) is a repo addon too: the
@@ -188,7 +188,7 @@ export function selftestAddons() {
   const a = addonsDirArgs(["C:\r\addons", "", "C:\j"]);
   if (a.length !== 2 || a[0] !== "-addonsDir" || a[1] !== "C:\r\addons,C:\j") f.push(`addonsDirArgs is not one comma-separated flag: ${JSON.stringify(a)}`);
   if (resolveAddon("lf_everon1989")?.guid !== "B1E84D5687E11724") f.push("resolveAddon by name");
-  if (resolveAddon("79636e668ea37ac9")?.name !== "LifeFramework") f.push("resolveAddon by GUID");
+  if (resolveAddon("4550a2b656e1b569")?.name !== "LifeFramework") f.push("resolveAddon by GUID");
   if (resolveAddon("Nope") !== null || resolveAddon("") !== null) f.push("resolveAddon accepted an unknown addon");
   if (defaultPackOut("R", "A") === defaultPackOut("R", "B")) f.push("two addons share one default pack folder");
   if (!defaultPackOut("R", "LF_Everon1989").endsWith("LF_Everon1989")) f.push("default pack folder is not named after the addon");

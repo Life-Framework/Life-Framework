@@ -1,7 +1,7 @@
 # Host the playtest town on a dedicated server
 
 For community hosts running the two Workshop items **Life Framework (Core)** (mod ID
-`79636E668EA37AC9`) and **Life Framework: Everon 1989** (mod ID `B1E84D5687E11724`). The pack needs the
+`4550A2B656E1B569`) and **Life Framework: Everon 1989** (mod ID `B1E84D5687E11724`). The pack needs the
 core, and the scenario lives in the pack, so `game.mods` lists both. The server downloads the mods from
 the Workshop; players get them on join.
 
