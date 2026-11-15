@@ -82,6 +82,13 @@ Rules for the whole page:
    It backs the saves up first, continues the latest save, and prints `host: up (pid N)` and the
    join lines. Without `--flagship` it boots the playtest header, which is not the real server.
 
+   Two things to expect that the command does not say:
+   - The first `host start` in a new worktree refreshes the resource database on a pool machine
+     (lf-cloud) before it launches: about 45 seconds of output before `host: up`. Wait for it; it
+     is not a hang.
+   - The server itself runs on **this PC**, not on a test machine, with the game port from the
+     join lines (2001 by default). Nothing else may hold that port; see the table below.
+
 2. Confirm it is up and read the first lines of the log:
 
    ```
@@ -89,8 +96,16 @@ Rules for the whole page:
    Select-String -Path "<log path that host status prints>" -Pattern "LFDebug:Persistence"
    ```
 
-   (The second line is PowerShell.) You want `save loaded:` with the build you expect. `save load damaged` or `saving disabled for
-   this session` means stop and see "When it goes wrong".
+   (The second line is PowerShell.) What you want depends on whether the host has a save:
+
+   - **Continuing a save** (every start after a `host stop`): `save loaded:` with the build you
+     expect.
+   - **A fresh host** (no save yet, or right after a wipe): `save loaded:` does not appear. You
+     want `save present: false` and `fresh session: no save point exists for this mission`; the
+     first `save loaded:` comes on the next start, after a stop wrote the shutdown save.
+
+   `save load damaged` or `saving disabled for this session` means stop and see "When it goes
+   wrong".
 
 3. Keep it alive. *(planned)* `tools\cli host watch` supervises the server: a crash (an exit
    without `host stop`) copies the console log to `backups/<time>-crash/`, backs the saves up and

@@ -26,8 +26,8 @@ checkout.
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host start --flagship --wait` | `host: up (pid N)` and the join lines. |
-| `tools\cli host status` | The log path, then `save loaded:` in the log with the build you expect. `save load damaged` means stop. |
+| `tools\cli host start --flagship --wait` | `host: up (pid N)` and the join lines. The first start in a new worktree spends about 45 s refreshing the resource database first, and the server runs on this PC. |
+| `tools\cli host status` | The log path, then `save loaded:` in the log with the build you expect. On a fresh host (no save yet) it is `save present: false` and `fresh session: no save point exists for this mission` instead. `save load damaged` means stop. |
 | `tools\cli host watch --flagship` | The server restarts after a crash or a scheduled close; it ends after `host stop`. |
 | Join with the server password and walk to the plaza | You spawn in. If you cannot, the session is not open. |
 
