@@ -1,0 +1,4 @@
+[LFDebug:HostWatch] host up (pid 4120)
+[LFDebug:HostWatch] host exited: scheduled restart
+[LFDebug:HostWatch] restarting the host (scheduled restart)
+[LFDebug:HostWatch] host up (pid 5532)
