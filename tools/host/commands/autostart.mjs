@@ -6,7 +6,7 @@ import { isMainCheckout } from "../../wt.mjs";
 import { boxMode } from "../../lib/host-box.mjs";
 import { currentUser, installTask, queryTask, realRunner, removeTask } from "../autostart.mjs";
 
-export const help = "autostart install|remove|status [--dry-run]   a Windows scheduled task runs `host watch --flagship` hidden at logon for this user, so the host returns after a reboot; status says whether it is registered and when it last ran; --dry-run prints the schtasks arguments and changes nothing; refuses in the main checkout unless box mode is on (`host box on`, a rented box)";
+export const help = "autostart install|remove|status [--public] [--dry-run]   a Windows scheduled task runs `host watch --flagship` (install --public: `host watch --flagship --public`, the backend-listed host) hidden at logon for this user, so the host returns after a reboot; status says whether it is registered and when it last ran; --dry-run prints the schtasks arguments and changes nothing; refuses in the main checkout unless box mode is on (`host box on`, a rented box)";
 
 const say = (m) => console.log(`[LFDebug:HostAutostart] ${m}`);
 
@@ -23,7 +23,7 @@ function dryRunner() {
 export async function main(args, ctx) {
   const sub = args[0];
   if (!["install", "remove", "status"].includes(sub)) {
-    say("usage: host autostart install|remove|status [--dry-run]");
+    say("usage: host autostart install|remove|status [--public] [--dry-run]");
     return 1;
   }
   const dry = args.includes("--dry-run");
@@ -41,7 +41,7 @@ export async function main(args, ctx) {
   const user = ctx.user ?? currentUser();
 
   if (sub === "install") {
-    const r = installTask({ run, root: ctx.root, nodePath, user });
+    const r = installTask({ run, root: ctx.root, nodePath, user, public: args.includes("--public") });
     say(dry ? `dry-run, nothing registered: ${r.message}` : r.message);
     return r.ok ? 0 : 1;
   }
