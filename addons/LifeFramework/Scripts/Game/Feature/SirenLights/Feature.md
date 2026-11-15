@@ -50,3 +50,8 @@ for the vehicle's `m_eService` (police or medic); anyone else is refused and log
 - **Owner and side:** `LF_AmbulanceSiren` decides on the server.
 - **Data:** `m_sLoopProject`/`m_sLoopEvent` on the prefab manager (Sounds/Siren/Ambulance/, built by `tools/assets/ambulance-siren/sounds.json`); strings `LF-Siren_AmbulanceOn` / `LF-Siren_AmbulanceOff`. Nothing persists.
 - **Proof:** `sirenlights/ambulance-siren` (LOGIC), `sirenlights/ambulance-siren-world` (WORLD), `node agent-box/session.mjs ambulance-siren-proof`.
+
+## Fix: ambulance siren menu and lit bar
+
+- **Causes:** the siren rows sat in the `light_switch` context (a 10 cm, non-omnidirectional dash point), so a seated driver saw nothing unless aiming at it; the duty gate hid the rows instead of greying them; `LF_SirenLightComponent` started lit and only a knob ticks the light animation, so an ambulance (no knob) never ran the default mode's "Turn Off" and its bar burned for good (the police jeep too, until its knob ticked).
+- **Now:** rows live in the `driver` context; off duty shows them greyed with `LF-Siren_NeedMedic` / `LF-Siren_NeedPolice`; lights start dark; `LF_SirenManagerComponent` ticks the animation on frames when there is no knob and stops once the default mode has turned everything off.

@@ -1,183 +1,192 @@
-GenericEntity Roadmap_Hospital_Till {
- components {
-  MeshObject "{8F3A1C2D4B5E6071}" {
-   Object "{2D6DB9D5AFEAB643}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01.xob"
-  }
-  RigidBody "{8F3A1C2D4B5E6072}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  ActionsManagerComponent "{8F3A1C2D4B5E6073}" {
-   ActionContexts {
-    UserActionContext "{8F3A1C2D4B5E6074}" {
-     ContextName "default"
-     Position PointInfo "{8F3A1C2D4B5E6075}" {
-      Offset 0 1 0
+$grp GenericEntity {
+ Roadmap_Hospital_Till {
+  components {
+   LF_HospitalTillComponent "{8F3A1C2D4B5E6079}" {
+    m_sTargetId "Roadmap_Hospital_Till"
+    m_iPayout 200
+    m_fCooldown 60
+    m_iMinPolice 0
+   }
+   MeshObject "{8F3A1C2D4B5E6071}" {
+    Object "{2D6DB9D5AFEAB643}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01.xob"
+   }
+   RigidBody "{8F3A1C2D4B5E6072}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{8F3A1C2D4B5E6073}" {
+    ActionContexts {
+     UserActionContext "{8F3A1C2D4B5E6074}" {
+      ContextName "default"
+      Position PointInfo "{8F3A1C2D4B5E6075}" {
+       Offset 0 1 0
+      }
+      Radius 3
      }
-     Radius 3
+    }
+    additionalActions {
+     LF_RobAction "{8F3A1C2D4B5E6076}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{8F3A1C2D4B5E6077}" {
+       Name "#EL-Hospital_RobTill"
+      }
+      m_iMoneyAmount 200
+      m_fCooldown 60
+      m_iMinPoliceOnDuty 0
+     }
     }
    }
-   additionalActions {
-    LF_RobAction "{8F3A1C2D4B5E6076}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{8F3A1C2D4B5E6077}" {
-      Name "#EL-Hospital_RobTill"
-     }
-     m_iMoneyAmount 200
-     m_fCooldown 60
-     m_iMinPoliceOnDuty 0
-    }
+   RplComponent "{8F3A1C2D4B5E6078}" {
+    Enabled 1
    }
   }
-  RplComponent "{8F3A1C2D4B5E6078}" {
-   Enabled 1
-  }
-  LF_HospitalTillComponent "{8F3A1C2D4B5E6079}" {
-   m_sTargetId "Roadmap_Hospital_Till"
-   m_iPayout 200
-   m_fCooldown 60
-   m_iMinPolice 0
-  }
+  Flags 0x403 0
+  coords 268.3 0 257.3
+  angles 0 180 0
  }
- Flags 0x403 0
- coords 268.3 0 257.3
- angleY 180
-}
-GenericEntity Roadmap_Hospital_Cabinet {
- components {
-  MeshObject "{91C4E0A7B2D34819}" {
-   Object "{3169A0CB357D3854}Assets/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.xob"
-  }
-  RigidBody "{91C4E0A7B2D3481A}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  LF_LockComponent "{91C4E0A7B2D34810}" {
-   m_bDebugLocked 1
-  }
-  ActionsManagerComponent "{91C4E0A7B2D34811}" {
-   ActionContexts {
-    UserActionContext "{91C4E0A7B2D34812}" {
-     ContextName "default"
-     Position PointInfo "{91C4E0A7B2D34813}" {
-      Offset 0 1 0
-     }
-     Radius 3
+ Roadmap_Hospital_Cabinet {
+  components {
+   LF_BreachTargetComponent "{91C4E0A7B2D34817}" {
+    m_sTargetId "Roadmap_Hospital_Cabinet"
+    m_fFuseSeconds 0
+   }
+   LF_HospitalCabinetComponent "{91C4E0A7B2D34818}" {
+    m_sTargetId "Roadmap_Hospital_Cabinet"
+    m_aLootPrefabs {
+     "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+     "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+     "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
+     "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
     }
    }
-   additionalActions {
-    LF_HospitalCabinetAction "{91C4E0A7B2D34814}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{91C4E0A7B2D34815}" {
-      Name "#EL-Hospital_BreachCabinet"
+   LF_LockComponent "{91C4E0A7B2D34810}" {
+    m_bDebugLocked 1
+   }
+   MeshObject "{91C4E0A7B2D34819}" {
+    Object "{3169A0CB357D3854}Assets/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.xob"
+   }
+   RigidBody "{91C4E0A7B2D3481A}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{91C4E0A7B2D34811}" {
+    ActionContexts {
+     UserActionContext "{91C4E0A7B2D34812}" {
+      ContextName "default"
+      Position PointInfo "{91C4E0A7B2D34813}" {
+       Offset 0 1 0
+      }
+      Radius 3
      }
     }
-    LF_BreachRepairAction "{91C4E0A7B2D34816}" {
-     ParentContextList {
-      "default"
+    additionalActions {
+     LF_HospitalCabinetAction "{91C4E0A7B2D34814}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{91C4E0A7B2D34815}" {
+       Name "#EL-Hospital_BreachCabinet"
+      }
+     }
+     LF_BreachRepairAction "{91C4E0A7B2D34816}" {
+      ParentContextList {
+       "default"
+      }
      }
     }
    }
-  }
-  RplComponent "{91C4E0A7B2D3481B}" {
-   Enabled 1
-  }
-  LF_BreachTargetComponent "{91C4E0A7B2D34817}" {
-   m_sTargetId "Roadmap_Hospital_Cabinet"
-   m_fFuseSeconds 0
-  }
-  LF_HospitalCabinetComponent "{91C4E0A7B2D34818}" {
-   m_sTargetId "Roadmap_Hospital_Cabinet"
-   m_aLootPrefabs {
-    "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
-    "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
-    "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
-    "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+   RplComponent "{91C4E0A7B2D3481B}" {
+    Enabled 1
    }
   }
+  Flags 0x403 0
+  coords 265.3 0 258.2
+  angles 0 180 0
  }
- Flags 0x403 0
- coords 265.3 0 258.2
- angleY 180
 }
-GenericEntity Hospital_Bed_1 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
- coords 270.5 0.19 261.3
- angleY 180
-}
-GenericEntity Hospital_Bed_2 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
- coords 268.6 0.19 261.3
- angleY 180
-}
-GenericEntity Hospital_Bed_3 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
- components {
-  LF_HospitalBedComponent "{B0B0E6A525816A48}" {
-   m_vStandOffset -0.85 0 0
-  }
+$grp GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ Hospital_SupplyCrate_1 {
+  coords 271.6 0 256.3
+  angles 0 175 0
  }
- coords 266.7 0.19 261.3
- angleY 180
+ Hospital_SupplyCrate_2 {
+  coords 272.3 0 256.5
+  angles 0 190 0
+ }
 }
 GenericEntity Roadmap_Hospital_DispatchBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
- coords 264 0 256.4
- angleY 180
-}
-GenericEntity Roadmap_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
- Flags 0x403 0
- coords 259.4 0 256.4
- angleY 180
-}
-SCR_DestructibleBuildingEntity Roadmap_Hospital_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 254.2 0 257.65
- angleY 0
-}
-GenericEntity Roadmap_Hospital_Ambulance : "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et" {
- coords 266 0 250
- angleY 90
-}
-GenericEntity Hospital_BayCone_1 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 262.2 0 247.6
-}
-GenericEntity Hospital_BayCone_2 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 262.2 0 252.4
-}
-GenericEntity Hospital_BayCone_3 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 270.2 0 247.6
-}
-GenericEntity Hospital_BayCone_4 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 270.2 0 252.4
-}
-SCR_DestructibleEntity Hospital_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 257.9 0 258.1
-}
-SCR_DestructibleEntity Hospital_Flowerpot_2 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 263.45 0 258.1
-}
-SCR_DestructibleEntity Hospital_WaitBench : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
- coords 260.1 0 258.0
- angleY 180
-}
-GenericEntity Hospital_SupplyCrate_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 271.6 0 256.3
- angleY 175
-}
-GenericEntity Hospital_SupplyCrate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 272.3 0 256.5
- angleY 190
+ coords 260.525 1.156 258.658
+ angles 0 180 0
 }
 GenericEntity Hospital_Bin : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
  coords 264.9 0 257.6
 }
 SCR_ChimeraCharacter Roadmap_Hospital_Patient : "{686A77317FE9AD1B}Prefabs/Medic/LF_DownedPatient.et" {
  coords 268.2 0 254.596
- angleY 180
+ angles 0 180 0
+}
+SCR_DestructibleBuildingEntity Roadmap_Hospital_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 254.2 0 257.65
+}
+GenericEntity Roadmap_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
+ Flags 0x403 0
+ coords 259.4 0 256.4
+ angles 0 180 0
+}
+$grp GenericEntity : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
+ Hospital_BayCone_1 {
+  coords 262.2 0 247.6
+ }
+ Hospital_BayCone_2 {
+  coords 262.2 0 252.4
+ }
+ Hospital_BayCone_3 {
+  coords 270.2 0 247.6
+ }
+ Hospital_BayCone_4 {
+  coords 270.2 0 252.4
+ }
+}
+$grp GenericEntity : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+ Hospital_Bed_1 {
+  coords 270.5 0.19 261.3
+  angles 0 180 0
+ }
+ Hospital_Bed_2 {
+  coords 268.6 0.19 261.3
+  angles 0 180 0
+ }
+ Hospital_Bed_3 {
+  components {
+   LF_HospitalBedComponent "{B0B0E6A525816A48}" {
+    m_vStandOffset -0.85 0 0
+   }
+  }
+  coords 266.7 0.19 261.3
+  angles 0 180 0
+ }
 }
 LF_NpcBaseEntity Hospital_Doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et" {
- coords 262 -0.005 255.331
- angleY 180
+ coords 260.728 -0.005 257.001
+ angles 0 -180 0
+}
+SCR_DestructibleEntity Hospital_WaitBench : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
+ coords 260.1 0 258
+ angles 0 180 0
+}
+Vehicle Roadmap_Hospital_Ambulance : "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et" {
+ coords 266 0 250
+ angles 0 90 0
+}
+$grp SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ Hospital_Flowerpot_1 {
+  coords 257.9 0 258.1
+ }
+ Hospital_Flowerpot_2 {
+  coords 263.45 0 258.1
+ }
 }
