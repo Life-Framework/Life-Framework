@@ -137,6 +137,8 @@ What logging out does to a cuffed, downed, wanted or jailed player is the `disco
 ([disconnect rules](disconnect-rules.md)).
 Which player state survives a restart (cash on hand, carried gear, hunger and thirst, warrants,
 sentences, licences) is the `persistence` section ([persistence switches](persistence-switches.md)).
+How fast the in-game day runs (the base game's clock, a shorter day, or the real clock) is the
+`dayCycle` section ([day cycle](day-cycle.md)).
 
 Restart the server after changing the file.
 
