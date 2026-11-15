@@ -1,5 +1,9 @@
 {
   "exit": 0,
   "parse": "ok",
-  "problems": []
+  "problems": [],
+  "boot": true,
+  "bootLog": {
+    "has": [ "persistence: owner config read 2 fields, rejected 0", "shops: owner config read 2 fields, rejected 0", "vehicles: owner config read 4 fields, rejected 0", "police: owner config read 1 fields, rejected 0" ]
+  }
 }

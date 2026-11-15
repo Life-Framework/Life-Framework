@@ -12,6 +12,10 @@ import { wavInfo } from "../assets/pipeline/sound.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ADDON = join(ROOT, "addons", "LifeFramework");
+// The town sounds live in the pack (#323 batch 4); the core slots file has no project for them and
+// the pack overlay fills each slot.
+const PACK = join(ROOT, "addons", "LF_Everon1989");
+const PACK_SLOTS = join(PACK, "Configs", "SoundSlots", "LF_SoundSlots_Everon1989.conf");
 const fails = [];
 const check = (ok, msg) => { if (!ok) fails.push(msg); };
 
@@ -31,7 +35,7 @@ export function emittersIn(text, slots = {}) {
   return out;
 }
 
-// slot id -> project path, from the core slots file.
+// slot id -> project path, from a slots file (core, or a pack overlay that patches m_Project).
 export function slotProjects(text) {
   const out = {};
   for (const m of text.matchAll(/m_sSlot "([^"]+)"\s+m_Project "\{[0-9A-F]{16}\}([^"]+)"/g)) out[m[1]] = m[2];
@@ -52,6 +56,7 @@ export function radiusProblems(file, text, rec, slots = {}) {
 }
 
 function walk(dir, out = []) {
+  if (!existsSync(dir)) return out;
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
     if (statSync(p).isDirectory()) walk(p, out);
@@ -91,21 +96,21 @@ for (const s of rec.sounds) {
   const w = rec.wired?.[s.id];
   if (!w) continue;
   wired++;
-  const acp = join(ADDON, projectPath(s));
-  const wav = join(ADDON, samplePath(s));
+  const acp = join(PACK, projectPath(s));
+  const wav = join(PACK, samplePath(s));
   if (!existsSync(acp) || !existsSync(wav)) { fails.push(`${s.id}: wired, and ${existsSync(acp) ? samplePath(s) : projectPath(s)} is missing`); continue; }
   check(readFileSync(acp, "utf8") === ambientAcpText(s, w.sample), `${projectPath(s)} differs from what the spec gives; run: tools\\cli asset ambience --only wire`);
   const bytes = readFileSync(wav);
   const info = { ...wavInfo(bytes), wrap: wrapRatio(new Int16Array(bytes.buffer, bytes.byteOffset + 44, (bytes.length - 44) >> 1)) };
   for (const p of loopProblems(info, s)) fails.push(`${samplePath(s)}: ${p}`);
 }
-const slots = slotProjects(readFileSync(join(ADDON, "Configs", "SoundSlots", "LF_SoundSlots.conf"), "utf8"));
+const slots = { ...slotProjects(readFileSync(join(ADDON, "Configs", "SoundSlots", "LF_SoundSlots.conf"), "utf8")), ...(existsSync(PACK_SLOTS) ? slotProjects(readFileSync(PACK_SLOTS, "utf8")) : {}) };
 let emitters = 0;
-for (const f of walk(join(ADDON, "Prefabs")).concat(walk(join(ADDON, "Worlds")))) {
+for (const base of [ADDON, PACK]) for (const f of walk(join(base, "Prefabs")).concat(walk(join(base, "Worlds")))) {
   const text = readFileSync(f, "utf8");
   if (!text.includes("LF_AmbientEmitterComponent")) continue;
   emitters += emittersIn(text, slots).length;
-  fails.push(...radiusProblems(f.slice(ADDON.length + 1).split("\\").join("/"), text, rec, slots));
+  fails.push(...radiusProblems(f.slice(base.length + 1).split("\\").join("/"), text, rec, slots));
 }
 
 if (fails.length) {

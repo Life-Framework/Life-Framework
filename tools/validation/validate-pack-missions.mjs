@@ -10,9 +10,18 @@
 //     m_bLF_DevToolsOff 1 and m_bLF_HostStopFile 1, a plain-text m_sName and m_sDescription (the
 //     Workshop backend copies them as text), one picture for icon, loading screen and preview,
 //     and m_iPlayerCount > 1;
-//   - a header hidden from Scenarios says m_bShowInScenarioMenu 0 explicitly.
+//   - a listed header runs a real server, so it closes the playtest helpers (m_bLF_PlaytestHelpersOff 1:
+//     test cars, bank top-up, spawn hub) and does not set the playtest-only m_bLF_FirstPlayerPolice or
+//     m_bLF_InstantPoliceApproval; the flagship LF_Everon1989.conf is always listed (#1339);
+//   - a header hidden from Scenarios says m_bShowInScenarioMenu 0 explicitly (the developer playtest);
+//   - a listed header's m_sDetails #Key is a row in a core or pack string table, and no two
+//     listed headers share a World (the scenario list would show the flagship twice, #374).
 // red-proof: 2026-11-14, set m_bLF_DevToolsOff 0 in the pack LF_PlaytestTown.conf; observed
 // "FAIL  LF_PlaytestTown.conf: listed header does not close dev tools (m_bLF_DevToolsOff 1)".
+// red-proof: 2026-11-14 (#374), unhide the pack LF_PlaytestTown.conf; observed
+// "FAIL  LF_PlaytestTown.conf: lists the same World as LF_Everon1989.conf (one scenario entry per world)".
+// red-proof: 2026-11-15, set m_bLF_PlaytestHelpersOff 0 in the pack LF_Everon1989.conf; observed
+// "FAIL  LF_Everon1989.conf: listed header leaves the playtest helpers on (m_bLF_PlaytestHelpersOff 1)".
 // Also: the built-in fixture run below plants each fault and asserts it is reported; it
 // runs before the real check, so a check that stops catching a fault fails validate.
 
@@ -44,8 +53,23 @@ export function metaGuids(dirs) {
   return out;
 }
 
-// One header's text -> list of error strings.
-export function checkHeader(name, text, guids) {
+// Every Id in the .st string tables under the given addon folders.
+export function stringIds(dirs) {
+  const out = new Set();
+  const walk = (d) => {
+    if (!existsSync(d)) return;
+    for (const n of readdirSync(d)) {
+      const p = join(d, n);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (n.endsWith(".st")) for (const m of readFileSync(p, "utf8").matchAll(/^\s*Id\s+"([^"]+)"/gm)) out.add(m[1]);
+    }
+  };
+  dirs.forEach(walk);
+  return out;
+}
+
+// One header's text -> list of error strings. `ids` (optional) is the set of string table Ids.
+export function checkHeader(name, text, guids, ids) {
   const errors = [];
   const world = field(text, "World");
   if (!world || !/\.ent$/.test(world)) errors.push(`${name}: World is not a .ent (${world})`);
@@ -61,28 +85,50 @@ export function checkHeader(name, text, guids) {
     const v = field(text, f);
     if (!v || v.startsWith("#")) errors.push(`${name}: ${f} must be plain text for the Workshop (${v})`);
   }
+  if (field(text, "m_bLF_PlaytestHelpersOff") !== "1") errors.push(`${name}: listed header leaves the playtest helpers on (m_bLF_PlaytestHelpersOff 1)`);
+  for (const f of ["m_bLF_FirstPlayerPolice", "m_bLF_InstantPoliceApproval"]) {
+    if (field(text, f) === "1") errors.push(`${name}: listed header sets the playtest-only ${f} (a real server leaves it off)`);
+  }
   const pics = ["m_sIcon", "m_sLoadingScreen", "m_sPreviewImage"].map((f) => field(text, f));
   if (!pics[0] || pics.some((p) => p !== pics[0])) errors.push(`${name}: icon, loading screen and preview must be one picture`);
   if (!(Number(field(text, "m_iPlayerCount")) > 1)) errors.push(`${name}: a listed header must be multiplayer (m_iPlayerCount > 1)`);
+  const details = field(text, "m_sDetails");
+  if (ids && details && details.startsWith("#") && !ids.has(details.slice(1))) errors.push(`${name}: m_sDetails ${details} is not a string table row in the core or the pack`);
   return errors;
+}
+
+// A listed header's World may be listed once: a second header on the same world is a duplicate entry.
+export function checkWorldOnce(name, text, seen) {
+  const world = field(text, "World");
+  if (!world) return [];
+  if (seen.has(world)) return [`${name}: lists the same World as ${seen.get(world)} (one scenario entry per world)`];
+  seen.set(world, name);
+  return [];
 }
 
 export function checkPackMissions(root) {
   const missions = join(root, "addons", "LF_Everon1989", "Missions");
   if (!existsSync(missions)) return { errors: [], count: 0 };
   const guids = metaGuids([join(root, "addons", "LifeFramework"), join(root, "addons", "LF_Everon1989")]);
+  const ids = stringIds([join(root, "addons", "LifeFramework", "Language"), join(root, "addons", "LF_Everon1989", "Language")]);
   const errors = [];
   let count = 0;
+  const listedWorld = new Map();
+  const flagship = join(missions, "LF_Everon1989.conf");
+  if (!existsSync(flagship)) errors.push("LF_Everon1989.conf: the flagship header is missing");
+  else if (field(readFileSync(flagship, "utf8"), "m_bShowInScenarioMenu") === "0") errors.push("LF_Everon1989.conf: the flagship must be listed in Scenarios (it is the only scenario Workshop players see)");
   for (const n of readdirSync(missions).filter((f) => f.endsWith(".conf"))) {
     count++;
-    errors.push(...checkHeader(n, readFileSync(join(missions, n), "utf8"), guids));
+    const text = readFileSync(join(missions, n), "utf8");
+    errors.push(...checkHeader(n, text, guids, ids));
+    if (field(text, "m_bShowInScenarioMenu") !== "0") errors.push(...checkWorldOnce(n, text, listedWorld));
   }
   return { errors, count };
 }
 
 function selftest() {
   const g = new Map([["F4889B8DF7CF06CC", "w"], ["BA0EB87AB780FD56", "p"]]);
-  const good = `LF_MissionHeader {\n World "{F4889B8DF7CF06CC}Worlds/T/T.ent"\n m_sName "Town"\n m_sDescription "A town"\n m_sIcon "{BA0EB87AB780FD56}M/P.edds"\n m_sLoadingScreen "{BA0EB87AB780FD56}M/P.edds"\n m_sPreviewImage "{BA0EB87AB780FD56}M/P.edds"\n m_iPlayerCount 16\n m_bLF_DevToolsOff 1\n m_bLF_HostStopFile 1\n}\n`;
+  const good = `LF_MissionHeader {\n World "{F4889B8DF7CF06CC}Worlds/T/T.ent"\n m_sName "Town"\n m_sDescription "A town"\n m_sIcon "{BA0EB87AB780FD56}M/P.edds"\n m_sLoadingScreen "{BA0EB87AB780FD56}M/P.edds"\n m_sPreviewImage "{BA0EB87AB780FD56}M/P.edds"\n m_iPlayerCount 16\n m_bLF_DevToolsOff 1\n m_bLF_HostStopFile 1\n m_bLF_PlaytestHelpersOff 1\n}\n`;
   const fails = [];
   if (checkHeader("good", good, g).length) fails.push(`clean header reported: ${checkHeader("good", good, g).join("; ")}`);
   const plant = [
@@ -92,11 +138,21 @@ function selftest() {
     ["mixed pictures", good.replace('m_sIcon "{BA0EB87AB780FD56}M/P.edds"', 'm_sIcon "{F4889B8DF7CF06CC}M/Q.edds"'), /one picture/],
     ["single player", good.replace("m_iPlayerCount 16", "m_iPlayerCount 1"), /multiplayer/],
     ["missing world GUID", good.replace("F4889B8DF7CF06CC", "0000000000000ABC"), /not a resource/],
+    ["playtest helpers on", good.replace(" m_bLF_PlaytestHelpersOff 1\n", ""), /playtest helpers on/],
+    ["first player police", good.replace("m_bLF_PlaytestHelpersOff 1\n", "m_bLF_PlaytestHelpersOff 1\n m_bLF_FirstPlayerPolice 1\n"), /m_bLF_FirstPlayerPolice/],
+    ["instant approval", good.replace("m_bLF_PlaytestHelpersOff 1\n", "m_bLF_PlaytestHelpersOff 1\n m_bLF_InstantPoliceApproval 1\n"), /m_bLF_InstantPoliceApproval/],
     ["SCR header listed", good.replace("LF_MissionHeader {", "SCR_MissionHeader {"), /LF_MissionHeader/],
   ];
   for (const [what, text, re] of plant) {
     if (!checkHeader(what, text, g).some((e) => re.test(e))) fails.push(`planted fault not reported: ${what}`);
   }
+  const ids = new Set(["LF-Details"]);
+  const withDetails = good.replace("m_iPlayerCount 16\n", 'm_iPlayerCount 16\n m_sDetails "#LF-Details"\n');
+  if (checkHeader("details ok", withDetails, g, ids).length) fails.push("a header with a real m_sDetails key was reported");
+  if (!checkHeader("details missing", withDetails.replace("#LF-Details", "#LF-Gone"), g, ids).some((e) => /m_sDetails/.test(e))) fails.push("planted fault not reported: m_sDetails key not in a string table");
+  const seen = new Map();
+  checkWorldOnce("a.conf", good, seen);
+  if (!checkWorldOnce("b.conf", good, seen).length) fails.push("planted fault not reported: two listed headers on one world");
   const hidden = good.replace("m_bLF_DevToolsOff 1", "m_bLF_DevToolsOff 0").replace("}\n", " m_bShowInScenarioMenu 0\n}\n");
   if (checkHeader("hidden", hidden, g).length) fails.push("a hidden header was held to the listed rules");
   return fails;

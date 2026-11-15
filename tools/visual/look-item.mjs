@@ -99,7 +99,7 @@ export function resolvePrefab(root, arg) {
   // A base-game prefab (a full `{GUID}path` with no file under addons/) is passed to the plugin as is,
   // so a vanilla item can stand beside ours; its preview attributes are engine defaults.
   if (!file && /^\{[0-9A-Fa-f]{16}\}.+\.et$/.test(arg)) return { file: null, ref: arg, leaf: rel.split("/").pop().replace(/\.et$/, "") };
-  if (!file) throw new Error(`no prefab for "${arg}" (give {GUID}path, a path under addons/<addon>/, or an asset slug)`);
+  if (!file) throw new Error(`no prefab for "${arg}" (give {GUID}path, a path under addons/<addon>/ or the game's Prefabs/, a prefab name, or an asset slug)`);
   const meta = `${file}.meta`;
   const guid = existsSync(meta) ? /Name "\{([0-9A-F]{16})\}/.exec(readFileSync(meta, "utf8"))?.[1] : null;
   if (!guid) throw new Error(`no GUID in ${meta}`);
@@ -108,6 +108,39 @@ export function resolvePrefab(root, arg) {
 }
 
 const safe = (s) => String(s).replace(/[^A-Za-z0-9_-]/g, "_");
+
+// A game prefab named without its GUID ("Prefabs/Props/X.et" or "X") -> "{GUID}Prefabs/Props/X.et", so
+// look item takes what an agent copies from asset_search or a vanilla file. An addon path, a slug or a
+// full {GUID}path is left as is; a name nothing knows is left for resolvePrefab's own refusal.
+export async function resolveGameNames(root, args, { log = () => {}, resolve } = {}) {
+  const out = [];
+  for (const arg of args) {
+    let keep = /^\{[0-9A-Fa-f]{16}\}/.test(arg) || existsSync(join(root, "tools", "assets", arg, "spec.json"));
+    if (!keep) {
+      try {
+        resolvePrefab(root, arg);
+        keep = true;
+      } catch {}
+    }
+    if (keep) {
+      out.push(arg);
+      continue;
+    }
+    try {
+      const gp = resolve ?? (await import("../lib/game-prefab.mjs")).resolvePrefab;
+      const r = await gp(root, arg, { full: true, log });
+      if (r.ref && !r.local && /\.et$/i.test(r.path)) {
+        log(`${arg} -> ${r.ref} (the game's prefab)`);
+        out.push(r.ref);
+        continue;
+      }
+    } catch (e) {
+      log(`${arg}: ${e.message}`);
+    }
+    out.push(arg);
+  }
+  return out;
+}
 
 // The pseudo-areas and shots look.mjs feeds its normal pipeline (lock, Workbench, sheet, flags, index.json).
 export function itemPlan(root, prefabs, { states = ITEM_STATES, at }) {

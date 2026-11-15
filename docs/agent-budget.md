@@ -51,7 +51,8 @@ Body file: tmp\pr-body-<slug>.md (edit it if a line is wrong; do not rewrite it)
 Already passed: <checks, e.g. validate, test --only LF_Test_X, look pictures kept with evidence, interrogate file ticked>.
 Not done: <checks left; they go under ## Manual testing or become follow-up issues>.
 Run: tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body-<slug>.md
-Fix only what ship's body check or the gate reports. End with the five-line report.
+It returns once queued; then tools\cli wait ship <slug> (540 s chunks, re-run on exit 2) until ok|fail.
+Fix only what ship's body check, preflight or the gate reports. End with the five-line report.
 ```
 
 **Final report: five lines.**

@@ -171,19 +171,19 @@ class LF_JobsConfig
 	[Attribute("1200", UIWidgets.Auto, "Unemployment benefit: seconds between collections for one account", params: "0 86400")]
 	float m_fBenefitCooldownSeconds;
 
-	[Attribute("500", UIWidgets.Auto, "Pre-#749 delivery career: XP from level 1 to 2. Read only to migrate a version 7-27 save's career onto the DELIVERY job; set it to what this server used", params: "1 1000000")]
+	[Attribute("500", UIWidgets.Auto, "Delivery career before job tracks: XP from level 1 to 2. Read only to migrate a version 7-27 save's career onto the DELIVERY job; set it to what this server used", params: "1 1000000")]
 	int m_iJobXpFirstLevel;
 
-	[Attribute("2", UIWidgets.Auto, "Pre-#749 delivery career: each later level needed this many times the XP of the one before. Read only to migrate a version 7-27 save", params: "1 10")]
+	[Attribute("2", UIWidgets.Auto, "Delivery career before job tracks: each later level needed this many times the XP of the one before. Read only to migrate a version 7-27 save", params: "1 10")]
 	float m_fJobXpLevelGrowth;
 
-	[Attribute("", UIWidgets.Object, "Job level ladders: the XP thresholds of each job (#749)")]
+	[Attribute("", UIWidgets.Object, "Job level ladders: the XP thresholds of each job")]
 	ref array<ref LF_JobTrackDef> m_aTracks;
 
-	[Attribute("", UIWidgets.Object, "XP each in-world action awards, the job it feeds and its cooldown (#749)")]
+	[Attribute("", UIWidgets.Object, "XP each in-world action awards, the job it feeds and its cooldown")]
 	ref array<ref LF_JobXpAwardDef> m_aXpAwards;
 
-	[Attribute("", UIWidgets.Object, "Licence gates that differ from the shipped catalog: the job and level a licence needs (#749)")]
+	[Attribute("", UIWidgets.Object, "Licence gates that differ from the shipped catalog: the job and level a licence needs")]
 	ref array<ref LF_JobLicenceGateDef> m_aLicenceGates;
 
 	protected static ref LF_JobsConfig s_Config;
