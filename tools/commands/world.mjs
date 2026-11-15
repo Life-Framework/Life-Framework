@@ -12,7 +12,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import * as wd from "../lib/world-diff.mjs";
-import { selectTests } from "../lib/gate-tier.mjs";
+import { ownBase, selectTests } from "../lib/gate-tier.mjs";
 import { layoutWarnings, MAINTAINER_BRANCH } from "../lib/world-checks.mjs";
 import { judgeWorldTests, testWarningLines, TEST_WARNINGS_HEADING } from "../lib/world-test-judge.mjs";
 
@@ -48,9 +48,9 @@ async function resolveWt(args, root) {
 
 // The .layer files changed against the merge base with origin/<base>, uncommitted and untracked included.
 export function collectLayers(path, base = "main") {
-  const mb = git(path, ["merge-base", `origin/${base}`, "HEAD"]);
-  if (mb.status !== 0) throw new Error(`no merge base with origin/${base}: ${mb.stderr.trim()}`);
-  const ref = mb.stdout.trim();
+  // The newest main the branch merged, not a possibly stale origin/<base> merge base (gate-tier.mjs ownBase).
+  const ref = ownBase((args) => git(path, args), base);
+  if (!ref) throw new Error(`no merge base with origin/${base}`);
   const ns = git(path, ["diff", "--name-status", "--no-renames", ref, "--", "*.layer"]);
   const un = git(path, ["ls-files", "--others", "--exclude-standard", "--", "*.layer"]);
   const files = [];
@@ -115,33 +115,59 @@ export function allowEntries(report, touched, existing = []) {
   return out;
 }
 
-export function prBody(d, { slug, allowed = [], checks = [], warnings = [], testWarnings = [] }) {
-  const L = [];
-  L.push(`Maintainer world edit from \`${slug}\`, shipped with \`tools\\cli world ship\`.`, "", `**${wd.summaryLine(d)}**`, "", "## Changes", "");
-  for (const f of d.files.filter((x) => !x.noiseOnly)) {
-    L.push(`- \`${f.path}\``);
-    for (const c of f.changes) L.push(`  - ${wd.changeLine(c)}`);
-    for (const n of f.noise) L.push(`  - noise: ${n}`);
-  }
+// GitHub rejects a PR body over 65,536 characters. The change list is what grows (a town pass moves hundreds of
+// entities), so it is what gets cut; the other lists are capped on their own.
+export const BODY_LIMIT = 60000;
+const LIST_CAP = 150;
+const LINE_CAP = 500;
+
+const clip = (s) => (s.length > LINE_CAP ? `${s.slice(0, LINE_CAP)}...` : s);
+
+function cappedList(items, noun) {
+  const out = items.slice(0, LIST_CAP).map((x) => `- ${clip(x)}`);
+  if (items.length > LIST_CAP) out.push(`- +${items.length - LIST_CAP} more ${noun}, see the world ship log`);
+  return out;
+}
+
+export function prBody(d, { slug, allowed = [], checks = [], warnings = [], testWarnings = [], limit = BODY_LIMIT }) {
+  const head = [`Maintainer world edit from \`${slug}\`, shipped with \`tools\\cli world ship\`.`, "", `**${wd.summaryLine(d)}**`, "", "## Changes", ""];
+  const tail = [];
   const reverted = d.files.filter((x) => x.noiseOnly);
-  if (reverted.length) L.push("", `Reverted as noise only: ${reverted.map((f) => `\`${f.path}\` (${f.noise.join("; ")})`).join(", ")}.`);
+  if (reverted.length) tail.push("", `Reverted as noise only: ${reverted.map((f) => `\`${f.path}\` (${f.noise.join("; ")})`).join(", ")}.`);
   if (allowed.length) {
-    L.push("", "## Placements allowlisted", "", `The placement audit flagged these; the maintainer placed them by hand, so they went to \`${ALLOW_FILE}\` with the reason "${ALLOW_REASON}":`, "");
-    for (const a of allowed) L.push(`- \`${a.match}\` ${a.kind}: ${a.why}`);
+    tail.push("", "## Placements allowlisted", "", `The placement audit flagged these; the maintainer placed them by hand, so they went to \`${ALLOW_FILE}\` with the reason "${ALLOW_REASON}":`, "");
+    tail.push(...cappedList(allowed.map((a) => `\`${a.match}\` ${a.kind}: ${a.why}`), "placements"));
   }
   if (warnings.length) {
-    L.push("", "## Layout warnings", "", "These judge where things stand, not whether the layer is sound, so they did not block this PR (tools/lib/world-checks.mjs). Look at them when you play the world:", "");
-    for (const w of warnings) L.push(`- ${w}`);
+    tail.push("", "## Layout warnings", "", "These judge where things stand, not whether the layer is sound, so they did not block this PR (tools/lib/world-checks.mjs). Look at them when you play the world:", "");
+    tail.push(...cappedList(warnings, "warnings"));
   }
   if (testWarnings.length) {
-    L.push("", TEST_WARNINGS_HEADING, "", "These tests failed on the new layout. A failing test never blocks a maintainer world edit, so the PR still merges; each one is either a test that pinned the old layout (fix the test) or a real gameplay break (fix the game):", "");
-    for (const t of testWarnings) L.push(`- ${t}`);
+    tail.push("", TEST_WARNINGS_HEADING, "", "These tests failed on the new layout. A failing test never blocks a maintainer world edit, so the PR still merges; each one is either a test that pinned the old layout (fix the test) or a real gameplay break (fix the game):", "");
+    tail.push(...cappedList(testWarnings, "test warnings"));
   }
-  if (checks.length) L.push("", "## Checks", "", ...checks.map((c) => `- ${c}`));
-  L.push("", "No screenshots: the maintainer placed and looked at these entities in Workbench while editing.", "");
-  L.push("## Manual testing", "", "1. Host DebugWorld from `main` after the merge.", "2. Walk to each entity listed under Changes and check it stands where the maintainer put it.", "");
-  L.push("🤖 Generated with [Claude Code](https://claude.com/claude-code)", "");
-  return L.join("\n");
+  if (checks.length) tail.push("", "## Checks", "", ...checks.map((c) => `- ${clip(c)}`));
+  tail.push("", "No screenshots: the maintainer placed and looked at these entities in Workbench while editing.", "");
+  tail.push("## Manual testing", "", "1. Host DebugWorld from `main` after the merge.", "2. Walk to each entity listed under Changes and check it stands where the maintainer put it.", "");
+  tail.push("🤖 Generated with [Claude Code](https://claude.com/claude-code)", "");
+
+  // The change list, one line per change under its file, cut at the line that would pass the budget.
+  const rows = [];
+  for (const f of d.files.filter((x) => !x.noiseOnly)) {
+    rows.push(`- \`${f.path}\``);
+    for (const c of f.changes) rows.push(`  - ${clip(wd.changeLine(c))}`);
+    for (const n of f.noise) rows.push(`  - noise: ${clip(n)}`);
+  }
+  let room = limit - head.join("\n").length - tail.join("\n").length - 300;
+  const listed = [];
+  let i = 0;
+  for (; i < rows.length && room >= rows[i].length + 1; i++) {
+    listed.push(rows[i]);
+    room -= rows[i].length + 1;
+  }
+  const more = rows.slice(i).filter((l) => l.startsWith("  - ")).length;
+  if (i < rows.length) listed.push(`- +${more} more change(s) not listed (a PR body is size-limited), see \`tools\\cli world diff --wt ${slug}\``);
+  return [...head, ...listed, ...tail].join("\n");
 }
 
 function cli(cwd, args, extraEnv = {}) {
