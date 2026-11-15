@@ -69,13 +69,13 @@ export function checkPage(md, known, mode = "missing") {
     }
     const spans = [];
     if (fenced) {
-      if (REF.test(line)) spans.push({ code: line, planned: /\(planned\)/i.test(line) });
+      if (REF.test(line)) spans.push({ code: line, planned: /\(planned(?:, #\d+)?\)/i.test(line) });
     } else {
       for (const m of line.matchAll(/(`+)([^`]*?)\1/g)) {
         if (!REF.test(m[2])) continue;
         const after = line.slice(m.index + m[0].length);
         const before = line.slice(0, m.index);
-        spans.push({ code: m[2], planned: /^\s*\*?_?\(planned\)/i.test(after) || /\(planned\)\*?_?\s*$/i.test(before) });
+        spans.push({ code: m[2], planned: /^\s*\*?_?\(planned(?:, #\d+)?\)/i.test(after) || /\(planned(?:, #\d+)?\)\*?_?\s*$/i.test(before) });
       }
     }
     for (const { code, planned } of spans) {
