@@ -74,6 +74,7 @@ class LF_AgentCommand
 	//!   <id> kit quantity <Part> <Total> <Take>
 	//!   <id> stand <EntityName>
 	//!   <id> look
+	//!   <id> pickup [PrefabName]
 	//!   <id> state
 	//!   <id> ui [text]
 	//!   <id> click <WidgetName> [index]
@@ -161,6 +162,13 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "look")
 			return true;
+		// pickup [PrefabName]: the F-key pickup of the nearest loose item (LF_HarnessPickup).
+		if (cmd.Verb == "pickup")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "state")
 			return true;
 		if (cmd.Verb == "die")
@@ -1322,6 +1330,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "look")
 		{
 			DoLook(cmd);
+			return;
+		}
+		if (cmd.Verb == "pickup")
+		{
+			LF_HarnessPickup.Start(cmd.Id, cmd.Arg1);
 			return;
 		}
 		if (cmd.Verb == "state")
