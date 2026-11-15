@@ -4,6 +4,8 @@
 // reverted for a compile break only, a placement audit red is never reverted (a fix card instead, #1872), and the
 // worker wires compile before stage 2.
 // inputs: tools/lib/main-guard.mjs, tools/main-guard.mjs
+// red-proof 2026-11-16 (4b): before driverNames existed "FAIL driverNames"; the real revert of #1856 failed with
+// "lf-regen: cannot identify the merge sides" and applies with the overrides (10 files).
 // red-proof 2026-11-16: before compileGate existed this printed "FAIL compileGate exported"; with fixCardInstead
 // returning null it printed "FAIL #1867 placement audit: no revert" and "FAIL #1867 suite: fix card, no revert".
 
@@ -64,6 +66,15 @@ const HEAD = "d".repeat(40);
   check(mg.revertRefusal(other, {}, { step: "suite" }) === null, "ordinary PR: suite red reverts");
   const card = mg.fixCard(town, "suite", "LF_Test_X", "log.txt");
   check(/#1867/.test(card.title) && /maintainer/.test(card.body), "fix card names the PR and why");
+}
+// 4b. A revert runs with every merge driver set to keep ours (they fail under git revert; #1847 and #1856 were
+// left unreverted that way), then regenerates the generated files.
+{
+  const names = mg.driverNames('[merge "lf-regen-tests"]\n\tdriver = node x\n[merge "lf-markdown"]\n');
+  check(names.join(",") === "lf-regen-tests,lf-markdown", `driverNames: ${names}`);
+  check(mg.driverOverrides(["lf-regen-tests"]).join(" ") === "-c merge.lf-regen-tests.driver=true", "driverOverrides keep ours");
+  const w = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
+  check(/driverOverrides\(readDriverNames\(dir\)\), "revert"/.test(w) && /REGEN_AFTER_REVERT/.test(w), "revert uses the overrides, then regenerates");
 }
 // 5. Batching and wiring.
 {
