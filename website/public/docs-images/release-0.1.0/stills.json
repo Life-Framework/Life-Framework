@@ -1,0 +1,119 @@
+[
+  {
+    "slot": "bank-1-front",
+    "area": "wp4-bank-b",
+    "hour": 18,
+    "cam": [
+      184.528,
+      2.6,
+      243.965
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the bank facade and vault door from the road, the sign readable",
+    "overlayPixelsRemoved": 0
+  },
+  {
+    "slot": "bank-2-angle",
+    "area": "wp4-bank-d",
+    "hour": 18,
+    "cam": [
+      179.676,
+      3,
+      244.255
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the bank from the south-west, the lane and the car lot behind",
+    "overlayPixelsRemoved": 0
+  },
+  {
+    "slot": "bank-3-day",
+    "area": "wp-bank-b",
+    "hour": 17,
+    "cam": [
+      184.528,
+      2.6,
+      243.965
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the bank facade in full daylight",
+    "overlayPixelsRemoved": 0
+  },
+  {
+    "slot": "police-1-wide",
+    "area": "wp4-pol-f",
+    "hour": 18,
+    "cam": [
+      231.832,
+      7,
+      262.635
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the police villa from the road with the fuel station beside it",
+    "overlayPixelsRemoved": 181
+  },
+  {
+    "slot": "police-2-uaz",
+    "area": "wp-pol-c",
+    "hour": 17,
+    "cam": [
+      241.814,
+      3,
+      254.975
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the police villa, plate and the two blue UAZ jeeps",
+    "overlayPixelsRemoved": 12
+  },
+  {
+    "slot": "police-3-side",
+    "area": "wp2-pol-g",
+    "hour": 17,
+    "cam": [
+      224.686,
+      2.4,
+      250.314
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the police villa from the north-west, red bench and the street",
+    "overlayPixelsRemoved": 277
+  },
+  {
+    "slot": "town-1-vista-dusk",
+    "area": "wp4-vista-d",
+    "hour": 18,
+    "cam": [
+      196.699,
+      14,
+      270
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the street from above: car lot, police villa, fuel station, market stalls",
+    "overlayPixelsRemoved": 155
+  },
+  {
+    "slot": "town-2-vista",
+    "area": "wp3-vista-f",
+    "hour": 17,
+    "cam": [
+      188.317,
+      12,
+      263.811
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "the same view in daylight",
+    "overlayPixelsRemoved": 119
+  },
+  {
+    "slot": "town-3-street",
+    "area": "wp3-street-c",
+    "hour": 17,
+    "cam": [
+      180,
+      8,
+      248
+    ],
+    "size": "838x447 native, 1280x720 here",
+    "note": "down the main street from the bank, market stalls on the right",
+    "overlayPixelsRemoved": 94
+  }
+]

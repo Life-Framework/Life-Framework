@@ -473,6 +473,19 @@ the tests keep their fixtures. What it means for code: M1-25 (#120) builds the
 village and the annex. The town tidy (M1-22, #107) moves dev fixtures into the
 annex instead of deleting them, keeping names so tests still find them.
 
+**2026-11-15 — DebugWorld has two zones: a debug grid and a polished town.**
+The fenced annex becomes the debug grid: one feature per cell, which
+`tools\cli grid place` claims and fills, and the look bar there is low. The
+town is held to the polish bar: NPCs are dressed and stand inside buildings,
+and props sit where they belong. A slice puts its world props in a grid cell
+and never edits a town layer. When a chapter closes, one town-placement pass
+(a worktree whose slug starts with `town-`) places that chapter's systems in
+town properly. Why: slices dumped props in town (a small desk on the lawn
+outside the hospital), which looked bad in playtests and made the videos
+weak. What it means for code: `docs/architecture/world-zones.md`;
+`validate-world-zones` refuses a non-`town-` branch that edits a town layer.
+Branches that existed before the guard are exempt.
+
 **2026-11-07 — Playtests are hosted from the maintainer's PC.** No rented
 hosting yet.
 

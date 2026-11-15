@@ -41,6 +41,20 @@ $packDir = Join-Path $root "addons\LF_Everon1989\Language"
 if (Test-Path -LiteralPath (Join-Path $packDir "lf_everon1989_localization.st")) {
   $tables += @{ Name = "LF_Everon1989"; Dir = $packDir; Prefix = "lf_everon1989_localization" }
 }
+# A pack an author scaffolded with `tools\cli pack new <Name>` keeps its table in
+# addons/LF_<Name>/Language/<name>_localization.st (#1005): its keys need the same runtime tables, or
+# the engine logs "Missing string ID" for every key the pack adds.
+$addonsRoot = Join-Path $root "addons"
+if (Test-Path -LiteralPath $addonsRoot) {
+  foreach ($d in (Get-ChildItem -LiteralPath $addonsRoot -Directory -Filter "LF_*" | Sort-Object Name)) {
+    if ($d.Name -eq "LF_Everon1989") { continue }
+    $langDir = Join-Path $d.FullName "Language"
+    if (-not (Test-Path -LiteralPath $langDir)) { continue }
+    foreach ($st in (Get-ChildItem -LiteralPath $langDir -Filter "*_localization.st" -File)) {
+      $tables += @{ Name = $d.Name; Dir = $langDir; Prefix = $st.BaseName }
+    }
+  }
+}
 
 # Order matters: Ids[] and Texts[] in a StringTableRuntime are position-parallel,
 # so both arrays must be emitted in the same .st item order.

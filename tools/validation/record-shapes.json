@@ -1,5 +1,5 @@
 {
-  "saveVersion": 33,
+  "saveVersion": 34,
   "launched": false,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -35,7 +35,8 @@
     "idcards": "LF_PhotoIdRow",
     "caseboard": "LF_CaseBoardRow",
     "buildstamp": "LF_SaveStampRecord",
-    "vehiclestate": "LF_VehicleStateRow"
+    "vehiclestate": "LF_VehicleStateRow",
+    "heldground": "LF_HeldGroundRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -442,6 +443,16 @@
         "int m_iTowedAt",
         "int m_iInspectedAt",
         "int m_iCompartment"
+      ]
+    },
+    "LF_HeldGroundRow": {
+      "since": 34,
+      "fields": [
+        "int m_iVersion",
+        "string m_sHideoutId",
+        "string m_sHolderOrgId",
+        "int m_iHoldSeconds",
+        "int m_iHoldPoints"
       ]
     }
   }
