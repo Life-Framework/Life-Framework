@@ -5,6 +5,10 @@ works out `coords`, `angleY` and the layer entry from the real mesh bounds and f
 dedicated test server, checks the result, writes the layer, and then runs the placement audit
 (`docs/placement-audit.md`) on what it wrote. A placement the audit flags is rolled back.
 
+A slice places its props in its own debug-grid cell: `tools\cli grid place <slug> <prefab>...` claims
+the cell and runs `arrange row` there. Only a town-placement pass places in town
+(`docs/architecture/world-zones.md`).
+
 Do not type coordinates into a `.layer` for a prop. Every failure in the table below came from a
 typed number that nobody could see.
 

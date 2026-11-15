@@ -368,6 +368,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RestartVehicleNoGroundKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehiclePlatesReserved(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWhitelistUnreadableFileKept(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RestartSirenPrefab(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestraintRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
@@ -452,6 +453,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignCoverage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignFaceClient(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignFaceFit(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SignGridLabel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignImage(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignLocalization(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignMissingId(), LF_TestTier.LOGIC);

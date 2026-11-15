@@ -86,6 +86,11 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
     description: "The projects Life Framework builds on, the music and voice licences, the tools, and the people who have shipped code.",
     og: "home",
   },
+  "/rules": {
+    title: "Server rules",
+    description: "The town rules of the Life Framework Everon 1989 flagship server, the same text as the town board and the Discord pin.",
+    og: "home",
+  },
   "/docs": {
     title: "Docs",
     description: "Direction, decisions, the roadmap scopes, and the community guides, rendered from the repository.",
