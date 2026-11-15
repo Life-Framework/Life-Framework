@@ -9,14 +9,19 @@
 //       (tools/lib/world-diff.mjs). validate (static), the placement audit on the touched layers, and the
 //       tests that name a touched layer or entity (a failing test is a warning here, only a compile error or a
 //       run that judged nothing blocks: tools/lib/world-test-judge.mjs). Reported as tier 1 with `world` set.
-//   T2  everything else: the full gate (Workbench compile + build, the whole suite, core only, config
-//       sessions, placement audit).
+//   T2  everything else. Slim (`slim: true`) unless the diff hits a risk class (tools/lib/gate-risk.mjs:
+//       persistence, money, RPC, GUID/.meta, addon boundary/.gproj, an interrogate file): validate --full with
+//       the Workbench compile, plus the LOGIC tier; the main guard runs the rest after the merge. With a risk
+//       class (`risk` lists them) or --full-gate: the full gate (compile + build, the whole suite, core only,
+//       config sessions, placement audit, pre-move e2e).
 //
 // Conservative by construction: a file is T1 only when its base and head texts have the same number of
 // lines, every line that holds a brace is unchanged (so the block structure is identical), and every
 // changed line keeps its key and changes only a scalar value of the kind its file type allows. Anything
 // else, including any file this module cannot read, makes the whole change T2.
 // Pure functions; proven offline by tools/validation/gate-tier-selftest.mjs.
+
+import { riskClasses, splitPatches } from "./gate-risk.mjs";
 
 const GUID = /\{[0-9A-Fa-f]{16}\}/;
 const NUM = /^-?(\d+(\.\d*)?|\.\d+)(e[-+]?\d+)?$/i;
@@ -94,8 +99,8 @@ export function dataOnlyProblem(path, before, after, ids = []) {
 // `touched` on the result through its second argument.
 export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
 
-export function classify(files, { forceFull = false, branch = null, worldEdit = null } = {}) {
-  if (forceFull) return { tier: 2, reasons: ["--full-gate"], data: [], ids: [] };
+export function classify(files, { forceFull = false, branch = null, worldEdit = null, review = [] } = {}) {
+  if (forceFull) return { tier: 2, slim: false, risk: [], reasons: ["--full-gate"], data: [], ids: [] };
   const game = files.filter((f) => f.path.startsWith("addons/"));
   if (!game.length) return { tier: 0, reasons: ["nothing under addons/ changed"], data: [], ids: [] };
   let refused = null;
@@ -122,7 +127,12 @@ export function classify(files, { forceFull = false, branch = null, worldEdit = 
     if (p) reasons.push(`${f.path}: ${p}`);
     else data.push(f.path);
   }
-  if (reasons.length) return { tier: 2, reasons, data, ids: [...new Set(ids)] };
+  if (reasons.length) {
+    // T2: slim unless a risk class keeps the full gate (tools/lib/gate-risk.mjs).
+    const risk = riskClasses(files, { review });
+    const why = risk.length ? risk.map((r) => `full gate (${r.cls}): ${r.why}`) : ["slim: no persistence, money, RPC, GUID, boundary or interrogate change"];
+    return { tier: 2, slim: risk.length === 0, risk: risk.map((r) => r.cls), reasons: [...why, ...reasons], data, ids: [...new Set(ids)] };
+  }
   return { tier: 1, reasons: [`data only: ${data.length} file(s) change values in place`], data, ids: [...new Set(ids)] };
 }
 
@@ -166,7 +176,7 @@ export function selectTests(tests, tokens) {
 }
 
 export function tierLine(c) {
-  const name = c.world ? "T1w (maintainer world edit)" : ["T0 (no game files)", "T1 (data only)", "T2 (full gate)"][c.tier];
+  const name = c.world ? "T1w (maintainer world edit)" : c.tier === 2 && c.slim ? "T2s (slim: validate --full + LOGIC)" : ["T0 (no game files)", "T1 (data only)", "T2 (full gate)"][c.tier];
   return `gate tier ${name}: ${c.reasons.slice(0, 6).join("; ")}${c.reasons.length > 6 ? `; +${c.reasons.length - 6} more` : ""}`;
 }
 
@@ -202,6 +212,10 @@ export function collectDiff({ git, read, base }) {
   if (!ref) return null;
   const ns = git(["diff", "--name-status", "-M", ref]);
   if (ns.status !== 0) return null;
+  // -U0 patches of the game files, for the slim-gate risk rules (gate-risk.mjs). Unreadable: none, and a
+  // changed script then counts as "unreadable" (full gate).
+  const pd = git(["diff", "-U0", "-M", ref, "--", "addons"]);
+  const patches = pd.status === 0 ? splitPatches(pd.stdout) : {};
   const files = [];
   for (const line of ns.stdout.split(/\r?\n/).filter(Boolean)) {
     const parts = line.split("\t");
@@ -213,10 +227,32 @@ export function collectDiff({ git, read, base }) {
       f.before = s.status === 0 ? s.stdout : null;
       f.after = read(path);
     }
+    if (path.startsWith("addons/")) {
+      if (patches[path] !== undefined) f.patch = patches[path];
+      if (ext(path) === ".c") {
+        if (status !== "A" && f.before === undefined) {
+          const s = git(["show", `${ref}:${parts[1]}`]);
+          f.before = s.status === 0 ? s.stdout : null;
+        }
+        if (status !== "D" && f.after === undefined) f.after = read(path);
+      }
+    }
     files.push(f);
   }
   const un = git(["ls-files", "--others", "--exclude-standard"]);
   if (un.status !== 0) return null;
-  for (const p of un.stdout.split(/\r?\n/).filter(Boolean)) files.push({ path: p, status: "?" });
+  for (const p of un.stdout.split(/\r?\n/).filter(Boolean)) {
+    const f = { path: p, status: "?" };
+    // An untracked script: its whole text is the change.
+    if (p.startsWith("addons/") && ext(p) === ".c") {
+      const t = read(p);
+      if (typeof t === "string") {
+        const ls = t.replace(/\r\n/g, "\n").split("\n");
+        f.after = t;
+        f.patch = [`@@ -0,0 +1,${ls.length} @@`, ...ls.map((l) => `+${l}`)].join("\n");
+      }
+    }
+    files.push(f);
+  }
   return files;
 }
