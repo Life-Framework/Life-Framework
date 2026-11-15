@@ -492,6 +492,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaffWebhookPayload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
