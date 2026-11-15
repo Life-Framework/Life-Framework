@@ -23,7 +23,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { freemem, hostname as osHostname, totalmem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,6 +37,7 @@ import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
 import * as shipQueue from "../lib/ship-queue.mjs";
+import { writeFileAtomic } from "../lib/atomic-file.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -1842,8 +1843,7 @@ export function rewriteTicket(root, f, t) {
   const file = join(queueDir(root), f);
   if (!existsSync(file)) return false;
   try {
-    writeFileSync(`${file}.tmp`, JSON.stringify(t));
-    renameSync(`${file}.tmp`, file);
+    writeFileAtomic(file, JSON.stringify(t), { tmp: `${file}.tmp` });
     return true;
   } catch {
     return false;
@@ -1871,6 +1871,15 @@ export function markDown(root, m, error) {
   markHealth(root, m, { reachable: false, error });
 }
 
+// This PC under its disk floor (hygieneGate threw): a run that may go elsewhere drops this PC and
+// goes to the pool machines (each checks its own disk before a run); a run pinned here, or with no
+// other machine, keeps the refusal. Returns the machines left, or throws the refusal.
+export function diskRoute(machines, err, { pinned = false } = {}) {
+  const others = machines.filter((m) => m.via !== "local");
+  if (pinned || !err?.refusal || !others.length) throw err;
+  return others;
+}
+
 // opts: mode "any"|"local"|"remote", machine (name or ssh host), purpose,
 // waitMs. Returns a slot with .release(), .machine, .waitedMs, and for a
 // remote slot .rDir, .prep, .snap.
@@ -1885,7 +1894,15 @@ export async function acquireSlot(root, opts = {}) {
   }
   let machines = resolveMachines(root, opts);
   if (machines.length === 0) throw new Error(`pool: no machine for --${mode}`);
-  if (machines.some((m) => m.via === "local")) hygieneGate(root);
+  if (machines.some((m) => m.via === "local")) {
+    try {
+      hygieneGate(root);
+    } catch (e) {
+      const kept = diskRoute(machines, e, { pinned: !!opts.machine || mode === "local" });
+      console.log(`pool: this PC refuses tests for now (${e.message.split(";")[0]}); the run goes to ${kept.map((m) => m.name).join(" or ")}`);
+      machines = kept;
+    }
+  }
 
   // Remote runs ship a snapshot; take it once, when a remote first comes into
   // play (what the worktree is when the run was asked for, or when a remote
@@ -2767,6 +2784,48 @@ export async function cmdPoolPruneIdle(root, flags = []) {
     else console.log(`pool prune: ${m.name}: ${r.removed.length} run folder(s) removed, ${r.freeGb.toFixed(1)} GB free`);
   }
   return fail;
+}
+
+// One machine as `tools\cli lead` shows it: health, live RAM against the floor, busy lanes. It does what the
+// machine's block of `pool status` reads, minus the idle-session reaping and the lane rows. `lead` runs one
+// of these per machine in its own process, in parallel, and kills a slow one, so report(snap) is called after
+// the health probe and again with the whole snapshot: a caller that cuts the run short keeps what it had.
+export function poolSnapshot(root, m, report = () => {}) {
+  const settings = poolSettings(root);
+  const rows = m.lanes ? [...lanesFor(m, "session"), ...lanesFor(m, "test")] : lanesFor(m, "test");
+  const gb = (mb) => Math.round((mb / 1024) * 10) / 10;
+  const snap = { name: m.name, health: "?", freeGb: null, totalGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
+  const h = probe(root, m, { fresh: true });
+  snap.health = healthWord(h).replace(/\s*\(.*\)$/, "");
+  report({ ...snap });
+  if (!h.reachable) return snap;
+  if (m.via === "local") {
+    snap.freeGb = gb(Math.round(freemem() / 1048576));
+    snap.totalGb = gb(Math.round(totalmem() / 1048576));
+    snap.busy = rows.filter((l) => {
+      const info = readJson(localLockFile(root, l.lock), null);
+      return info && pidAlive(info.pid);
+    }).length;
+  } else {
+    const st = remoteState(m);
+    if (st) {
+      if (Number.isFinite(st.freeMb)) {
+        snap.freeGb = gb(st.freeMb);
+        snap.totalGb = gb(st.totalMb);
+      }
+      if (Number.isFinite(st.thermalC)) snap.tempC = st.thermalC;
+      snap.busy = rows.filter((l) => st.locks[l.lock]?.alive).length;
+    } else {
+      snap.health = "slow";
+      snap.note = "reachable, but the RAM and lane read failed";
+    }
+  }
+  return snap;
+}
+
+// The last health record `probe` stored for a machine (okAt, fails, ...), or null.
+export function lastHealth(root, name) {
+  return readJson(healthFile(root), {})[name] ?? null;
 }
 
 export function cmdPool(root, args = []) {

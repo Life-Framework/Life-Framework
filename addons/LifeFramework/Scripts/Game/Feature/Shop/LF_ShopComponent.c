@@ -496,6 +496,14 @@ class LF_ShopComponent : ScriptComponent
 		if (gate != LF_EShopRefusal.NONE)
 			return gate;
 
+		// Goods taken off a store's shelf and not paid for are not the seller's to sell: selling them
+		// back would pay out for free stock and delete the evidence of the theft (#1143 review).
+		if (LF_Stores.CarriesHeldApart(seller, prefab))
+		{
+			LF_Debug.Info("Shop", string.Format("sell rejected (carries unpaid store goods) item=%1", prefab));
+			return LF_EShopRefusal.NOT_SOLD_HERE;
+		}
+
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
 		int totalPrice = LF_ShopRules.StackTradeTotal(unitPrice, units);
 

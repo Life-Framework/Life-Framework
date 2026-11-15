@@ -8,19 +8,25 @@
 // hidden LF-Agents desktop with a fresh profile, signs form R-89 through the harness file channel
 // after a delay, prints the identity, account and spawn lines, and closes the game.
 //
-//   node agent-box/listen-host.mjs [--addons <dir>] [--profile <dir>] [--sign-after <s>]
+//   node agent-box/listen-host.mjs [--addons <dir>] [--profile <dir>] [--sign-after <s>] [--shared]
 //
 // --addons defaults to this checkout's addons; point it at an unzipped playtest build's addons to
 // test a release. Exit 0 when the character spawned. It runs outside the pool's session lanes
 // (the pool cannot boot a listen host), so it refuses while any Arma Reforger process is running.
+// --shared (a big pool box such as lf-cloud, which always has lane jobs): refuse only when less than
+// 4 GB of RAM is free instead. Pool servers use their own ports and run -noBackend, so a listen host
+// on 127.0.0.1:2302 does not touch them; the flagship scenario header is what it boots (#374).
 // One client only: a second client on this PC is the same Steam account, so the same identity.
 import { quietSpawnDetached } from "../tools/lib/quiet-launch.mjs";
+import { interactiveNeeded, interactiveSpawnDetached } from "../tools/lib/interactive-launch.mjs";
 import { setBoxes, sendCommand } from "./harness.mjs";
-import { readdirSync, statSync, mkdirSync, existsSync, readFileSync } from "node:fs";
+import { quizAnswers } from "./session.mjs";
+import { readdirSync, statSync, mkdirSync, existsSync, readFileSync, rmSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { addonsArgs, launchAddonsIn, playtestMission } from "../tools/lib/addons.mjs";
+import { addonsArgs, flagshipMission, launchAddonsIn } from "../tools/lib/addons.mjs";
 import { spawnSync } from "node:child_process";
+import { freemem } from "node:os";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const GAME_DIR = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Arma Reforger";
@@ -35,7 +41,12 @@ const profile = resolve(option("--profile", join(ROOT, "tmp", `listen-host-${Dat
 const signAfter = Number(option("--sign-after", "20"));
 
 const running = spawnSync("tasklist", ["/NH", "/FO", "CSV"], { encoding: "utf8", windowsHide: true }).stdout || "";
-if (/"ArmaReforger(Steam|Server|ServerDiag)?\.exe"/i.test(running)) {
+const shared = process.argv.includes("--shared");
+if (shared && freemem() < 4 * 1024 ** 3) {
+  console.error(`listen-host: --shared needs 4 GB of free RAM, this machine has ${(freemem() / 1024 ** 3).toFixed(1)} GB`);
+  process.exit(2);
+}
+if (!shared && /"ArmaReforger(Steam|Server|ServerDiag)?\.exe"/i.test(running)) {
   console.error("listen-host: an Arma Reforger process is already running (a pool session or test); run this when the pool is idle (tools\\cli pool status)");
   process.exit(2);
 }
@@ -43,10 +54,13 @@ if (/"ArmaReforger(Steam|Server|ServerDiag)?\.exe"/i.test(running)) {
 mkdirSync(profile, { recursive: true });
 // #322: the pack loads (and its header boots) when that addons folder holds it.
 const addons = launchAddonsIn(addonsDir);
-const args = ["-addonsDir", addonsDir, ...addonsArgs(addons), "-server", playtestMission(addons), "-addr", "127.0.0.1:2302",
+const args = ["-addonsDir", addonsDir, ...addonsArgs(addons), "-server", flagshipMission(addons), "-addr", "127.0.0.1:2302",
   "-profile", profile, "-window", "-screenWidth", "640", "-screenHeight", "360", "-maxFPS", "20",
   "-noSound", "-noFocus", "-forceUpdate", "-disableCrashReporter", "-scrDefine", "LF_HARNESS"];
-const pid = quietSpawnDetached(join(GAME_DIR, "ArmaReforgerSteam.exe"), args, { cwd: GAME_DIR });
+// Over ssh (a pool box) there is no desktop: the client goes through an interactive scheduled task.
+const pid = interactiveNeeded()
+  ? interactiveSpawnDetached(join(GAME_DIR, "ArmaReforgerSteam.exe"), args, { cwd: GAME_DIR, marker: profile })
+  : quietSpawnDetached(join(GAME_DIR, "ArmaReforgerSteam.exe"), args, { cwd: GAME_DIR });
 const t0 = Date.now();
 const stamp = () => `${((Date.now() - t0) / 1000).toFixed(1)}s`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -72,12 +86,32 @@ async function logShows(re, seconds) {
 
 let spawned = false;
 try {
-  const opened = await logShows(/registration form open/, 150);
+  // The first thing a new account sees on a pack world is the rules quiz (#915), then the form.
+  const seen = await logShows(/quiz sheet open|registration form open/, 150);
+  console.log(stamp(), "first screen open:", seen);
+  if (seen) await sleep(signAfter * 1000);
+  // $profile of a -profile <dir> client is <dir>/profile.
+  setBoxes([join(profile, "profile", "agent-box")]);
+  // One click, then a pause: a slow client (a pool box at 20 fps) took queued clicks out of order and
+  // failed the quiz (1 of 5), so the answers go one at a time and the log says how it scored.
+  let quiz = false;
+  if (seen && sendCommand({ verb: "ui" }, 15000).detail?.includes("QuizOption0Button")) {
+    for (const answer of quizAnswers()) {
+      const r = sendCommand({ verb: "click", widget: `QuizOption${answer}Button` }, 15000);
+      // The client replays the last command file on every rebuild of the screen (the quiz rebuilds it
+      // after each answer), which answered the later questions with the first answer: drop the file.
+      rmSync(join(profile, "profile", "agent-box", "command.txt"), { force: true });
+      console.log(stamp(), "click", `QuizOption${answer}Button`, r.status, r.detail);
+      await sleep(2500);
+    }
+    await sleep(2500);
+    sendCommand({ verb: "click", widget: "QuizContinueButton" }, 15000);
+    quiz = await logShows(/quiz passed by/, 20);
+  }
+  if (seen) console.log(stamp(), "rules quiz passed:", quiz);
+  const opened = seen && (await logShows(/registration form open/, 60));
   console.log(stamp(), "registration form open:", opened);
   if (opened) {
-    await sleep(signAfter * 1000);
-    // $profile of a -profile <dir> client is <dir>/profile.
-    setBoxes([join(profile, "profile", "agent-box")]);
     for (const [widget, text] of [["RegFirstName", "Ada"], ["RegLastName", "Tester"], ["RegAge", "30"]]) {
       const r = sendCommand({ verb: "type", widget, text }, 15000);
       console.log(stamp(), "type", widget, r.status, r.detail);

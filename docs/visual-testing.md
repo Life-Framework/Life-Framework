@@ -26,7 +26,7 @@ session lanes had the longest waits on 2026-11-14: p90 about 6 min, worst 61 min
 
 Ask in this order and stop at the first yes.
 
-1. **Numbers or files are enough?** (a placement, a GUID, a prefab value, a scale) `validate`, `audit placement`, `asset states <slug>`. No picture.
+1. **Numbers or files are enough?** (a placement, a GUID, a prefab value, a scale, a shelf height) `validate`, `measure <prefab> --surfaces`, `audit placement`, `asset states <slug>`. No picture.
 2. **A still of a place, a placed prop, a sign, an NPC standing?** `look <area>`. Close-ups of every placed prop are in the sheet.
 3. **A still of one item: lying on the ground, or as the inventory sees it?** `look item <prefab|slug>` (`--states ground,inventory`, `--at area|x,z`).
 4. **Two or three variants side by side?** `look item a b c`: one sheet each, 3 m apart.
@@ -88,6 +88,20 @@ One hidden Workbench (the `LF-Agents` desktop) opens DebugWorld, enters play mod
 camera, and for each area takes a wide shot from the side players approach, three obliques, a top
 view and up to 12 close-ups (interactables first, then named props, then the rest, nearest first).
 Then it exits. No server, no client, no session lane, nothing shared with another agent.
+
+**Where it runs.** `look` and `look item` run on the machine with the most room for a Workbench, the
+way `ci`'s Workbench steps choose (`tools/lib/wb-gate.mjs` chooseGate: live free RAM less the look's
+2.2 GB, above the pool's 1.5 GB floor, weighted by speed). This PC, lf-testbox or lf-cloud: a pool
+machine gets this worktree's snapshot (uncommitted files too) through the pool's run folders, and the
+pictures are copied back to `tmp/look/<area>/` with `index.json` pointing at them (`machine` says
+where they were taken). With no room anywhere it queues (re-read every 20 s, up to 20 min,
+`LF_LOOK_WAIT_S`) instead of failing. A machine that cannot run it after all (the RAM went, its
+build lock is held, or the Workbench timed out with no shot while short of RAM) hands it back and
+the next machine is tried. `--local` keeps it on this PC, queuing here for RAM and the build lock;
+`--machine <name>` sends it to one pool machine; `--force` runs here with no RAM check. A live
+`look serve` here is always used first. On 2026-11-14, with 0.1 GB free on this PC, `look bank`
+ran on lf-testbox in 297 s the first time (a new run folder: 67 s to sync) and on lf-cloud in 93 s.
+Before this change it failed at once.
 
 ```
 tools\cli look bank                      tmp/look/bank/contact.jpg, index.json and one PNG per shot

@@ -1,6 +1,7 @@
-// Pure logic behind `tools\cli lead` (tools/commands/lead.mjs): no git, no gh, no clock of its own,
-// so tools/validation/lead-selftest.mjs can prove it on fixtures.
+// Logic behind `tools\cli lead` (tools/commands/lead.mjs): no git, no gh, no ssh; the one clock it uses is
+// gatherPool's timers, and its probe is injected, so tools/validation/lead-selftest.mjs proves it on fixtures.
 import { conflictKind } from "../prs.mjs";
+import { DONE, RUNNING } from "./ship-queue.mjs";
 
 export const IDLE_MS = 30 * 60 * 1000;
 
@@ -138,43 +139,93 @@ export function worktreeSummary(rows, orphanDirs) {
 
 // ---------------------------------------------------------------- pool
 
-// Reads the text `tools\cli pool status` prints: machine head lines (no indent), busy lane rows (indented),
-// and the queue line. Returns { machines: [{ name, health, freeGb, totalGb, tempC, lanes, busy }], queue }.
-export function parsePoolStatus(text) {
-  const machines = [];
-  let queue = null;
-  let cur = null;
-  for (const raw of String(text).split(/\r?\n/)) {
-    const q = /^queue:\s*(\d+)\s+waiting/.exec(raw);
-    if (q) { queue = Number(q[1]); cur = null; continue; }
-    if (/^\s+\S/.test(raw)) {
-      if (cur && !/stale/i.test(raw)) cur.busy++;
-      continue;
-    }
-    const health = /\s\s(up|DOWN|slow(?: \([^)]*\))?)(?:\s\s|$)/.exec(raw);
-    if (!health || !/\s\s(this PC|ssh )/.test(raw)) { cur = null; continue; }
-    const ram = /RAM ([\d.]+)\/([\d.]+) GB free/.exec(raw);
-    const temp = /(\d+(?:\.\d+)?) \S{1,2}C \(holds/.exec(raw);
-    const split = /up to (\d+) test \+ (\d+) session/.exec(raw);
-    const shared = /(\d+) shared slot/.exec(raw);
-    cur = {
-      name: raw.split(/\s\s/)[0].trim(),
-      health: health[1].replace(/\s*\(.*\)$/, ""),
-      freeGb: ram ? Number(ram[1]) : null,
-      totalGb: ram ? Number(ram[2]) : null,
-      tempC: temp ? Number(temp[1]) : null,
-      lanes: split ? Number(split[1]) + Number(split[2]) : shared ? Number(shared[1]) : null,
-      busy: 0,
+// A snapshot is { name, health: up|slow|DOWN, freeGb, totalGb, floorGb, tempC, lanes, busy, note?, cut? } (one machine,
+// built by poolSnapshot in tools/remote/pool.mjs). Each machine is read in its own process: a slow ssh answer
+// costs that machine one "slow" row, never the whole section.
+//
+// gatherPool runs probe(m, { report, signal }) for every machine at once. probe reports a partial snapshot after
+// each stage (the health probe, then the RAM and lock read) and resolves with the final one. A machine still silent
+// after machineMs, or any machine when budgetMs of the whole section is spent, is cut off and shows what it had:
+// "slow" when fallback(m) says it answered lately, "DOWN" otherwise, never a missing row.
+// Returns { snaps, exceeded, elapsedMs }; exceeded is true when the section budget (not a machine's own limit) cut someone.
+export async function gatherPool({ machines, probe, machineMs = 9000, budgetMs = 12000, fallback = () => "slow" }) {
+  const t0 = Date.now();
+  const cutters = [];
+  let exceeded = false;
+  const one = (m) => new Promise((resolve) => {
+    let last = null;
+    let done = false;
+    const ac = new AbortController();
+    const timers = [];
+    const finish = (snap) => {
+      if (done) return;
+      done = true;
+      for (const t of timers) clearTimeout(t);
+      ac.abort();
+      resolve(snap);
     };
-    machines.push(cur);
+    const cut = (why, limitMs) => {
+      const secs = Math.round(limitMs / 100) / 10;
+      if (last?.health) finish({ ...last, health: last.health === "DOWN" ? "DOWN" : "slow", freeGb: last.freeGb ?? null, busy: null, note: `no RAM or lane answer in ${secs} s`, cut: why });
+      else finish({ name: m.name, health: fallback(m), freeGb: null, totalGb: null, floorGb: null, tempC: null, lanes: null, busy: null, note: `no answer in ${secs} s`, cut: why });
+    };
+    cutters.push((why, limitMs) => { const open = !done; if (open) cut(why, limitMs); return open; });
+    timers.push(setTimeout(() => cut("machine", machineMs), machineMs));
+    Promise.resolve()
+      .then(() => probe(m, { report: (snap) => { if (!done) last = snap; }, signal: ac.signal }))
+      .then((snap) => finish(snap ?? (last ? { ...last, note: "probe ended early" } : { name: m.name, health: fallback(m), freeGb: null, totalGb: null, floorGb: null, tempC: null, lanes: null, busy: null, note: "probe failed" })))
+      .catch((e) => finish({ name: m.name, health: fallback(m), freeGb: null, totalGb: null, floorGb: null, tempC: null, lanes: null, busy: null, note: `probe failed: ${String(e?.message ?? e).split(/\r?\n/)[0].slice(0, 60)}` }));
+  });
+  const budgetTimer = setTimeout(() => {
+    for (const c of cutters) if (c("budget", budgetMs)) exceeded = true;
+  }, budgetMs);
+  try {
+    const snaps = await Promise.all(machines.map(one));
+    return { snaps, exceeded, elapsedMs: Date.now() - t0 };
+  } finally {
+    clearTimeout(budgetTimer);
   }
-  return { machines, queue };
+}
+
+// What a machine that answered nothing in time is called: "slow" when it answered within recentMs (a busy
+// machine, the lf-cloud 7 s ssh case), "DOWN" when it never did or not lately. entry is its health.json record.
+export function timeoutHealth(entry, now, recentMs) {
+  return Number.isFinite(entry?.okAt) && now - entry.okAt < recentMs ? "slow" : "DOWN";
 }
 
 export function poolLine(m) {
   const ram = m.freeGb === null ? "RAM ?" : `RAM ${m.freeGb}/${m.totalGb} GB free`;
-  const lanes = m.lanes === null ? `${m.busy} busy` : `lanes ${m.busy}/${m.lanes} busy`;
+  const busy = m.busy === null ? "?" : m.busy;
+  const lanes = m.lanes === null ? `${busy} busy` : `lanes ${busy}/${m.lanes} busy`;
   const temp = m.tempC === null ? "" : `  ${m.tempC}C`;
-  const bad = m.health === "up" ? "" : `  ** ${m.health} **`;
+  const bad = m.health === "up" ? "" : `  ** ${m.health}${m.note ? `: ${m.note}` : ""} **`;
   return `${m.name.padEnd(11)} ${ram}  ${lanes}${temp}${bad}`;
+}
+
+// A machine under its free-RAM floor takes no new job (the pool holds it), so the lead is told.
+export function lowRam(snaps) {
+  return snaps.filter((m) => Number.isFinite(m.freeGb) && Number.isFinite(m.floorGb) && m.freeGb < m.floorGb);
+}
+
+export function poolLines({ snaps, queue, exceeded = false, budgetMs = 0, elapsedMs = 0 }) {
+  const lines = [`POOL queue ${queue ?? "?"} waiting`, ...snaps.map((m) => `  ${poolLine(m)}`)];
+  for (const m of lowRam(snaps)) lines.push(`  WARN RAM: ${m.name} has ${m.freeGb} GB free, under its ${m.floorGb} GB floor (it takes no new job until RAM frees)`);
+  if (exceeded) {
+    const cut = snaps.filter((m) => m.cut === "budget").map((m) => `${m.name} (${m.health})`);
+    lines.push(`  pool budget ${Math.round(budgetMs / 100) / 10} s exceeded after ${(elapsedMs / 1000).toFixed(1)} s: partial rows for ${cut.join(", ")}`);
+  }
+  return lines;
+}
+
+// ---------------------------------------------------------------- ship queue
+
+// One line from the ship queue file: how many gates run, how many wait, and the longest wait (queued since).
+// q is { entries: [{ slug, pr, state, enqueuedAt }] }, as tools/lib/ship-queue.mjs readQueue returns it.
+export function shipQueueLine(q, now) {
+  const live = (q?.entries ?? []).filter((e) => !DONE.includes(e.state));
+  const gating = live.filter((e) => RUNNING.includes(e.state)).length;
+  const queued = live.filter((e) => e.state === "queued").sort((a, b) => Date.parse(a.enqueuedAt) - Date.parse(b.enqueuedAt));
+  const oldest = queued.find((e) => Number.isFinite(Date.parse(e.enqueuedAt)));
+  const wait = oldest ? `, oldest wait ${Math.max(0, Math.round((now - Date.parse(oldest.enqueuedAt)) / 60000))} min (${oldest.slug}${oldest.pr ? ` #${oldest.pr}` : ""})` : "";
+  return `SHIP QUEUE ${gating} gating, ${queued.length} queued${wait}`;
 }

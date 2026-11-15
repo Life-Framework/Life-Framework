@@ -244,6 +244,13 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
    is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
    most twice, then fails like any gate.
+   A queue write is bookkeeping and never fails a gate. On Windows the rename of `ship-queue.json.tmp`
+   throws EPERM/EBUSY/EACCES while a `ship-queue status` or `wait` has the file open, so
+   `tools/lib/atomic-file.mjs` retries it (10 tries over about 1 s); the worker's `update` then retries
+   the whole read-modify-write, and if that still fails it logs `queue write ... the gate result is kept`
+   in the worker log instead of failing the PR. A read that keeps failing throws rather than returning an
+   empty queue. The session lease, test cache, shard history, pool tickets and look-serve state use the
+   same helper. `ship-queue-eperm-selftest.mjs` holds the file open from a child process to prove it.
 
 **Stale rdb refresh when this PC is busy (the fallback).** A stale `resourceDatabase.rdb` is registered by a
 headless Workbench: ~15 s per addon, but it queued 10-50 min behind the hub `build` lock and this PC's one
@@ -280,16 +287,59 @@ only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; i
 hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
 sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
 
-**Waiting.** `wt ship` waits until the gate passed or failed and prints
-`SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ... log=<path>` (exit 0 on pass). That is the
-default when stdout is not a terminal, so an agent's report says what really happened; a terminal
-returns once queued (`--no-wait`, `--wait` to force). `tools\cli ship-queue wait <slug>` resumes a wait
-(the wait gives up after 3 h with exit 2, the gate keeps going), `ship-queue status` and `pool status`
+**Waiting.** See "Async ship" below: `wt ship` returns once the PR is queued. `wt ship --wait` blocks
+until the gate passed or failed and prints `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ...
+log=<path>` (exit 0 on pass); `tools\cli ship-queue wait <slug>` does the same for a queued slug (gives
+up after 3 h with exit 2, the gate keeps going). `ship-queue status` and `pool status`
 show what gates, what waits and why, and the last few results; `ship-queue cancel <slug>` drops a
 waiting entry. A re-ship of a waiting slug replaces its entry and keeps its place; one whose gate runs
 is refused until it ends. The worker logs to `tmp/logs/ship-queue-worker.log`, each gate to
 `tmp/logs/ship-<slug>-<stamp>.log`; a gate is killed after 100 min, an idle worker exits after 3 min,
 and a worker that died leaves its running entries to be re-queued by the next one.
+
+### Async ship
+
+A queued gate takes 15-90 min (PR #1250: validate --full about 15 min, the Workbench build on lf-cloud about
+5, the sharded suite, then GitHub; 86 min in all). An agent's shell call is capped at 10 min, so a blocking
+`wt ship` went to the background, the agent sat in wait loops, ended its turn mid-ship and went idle. Now
+`wt ship <slug>` returns in about a minute or two (preflight, push, PR, enqueue) and the gate runs in the queue worker:
+
+1. **Preflight, here, before the push** (`--no-preflight` skips it): the clean-tree and PR-body checks as
+   before, `git merge-tree` against `origin/<base>` (a conflict in a driver-merged file is left to the
+   worker's merge; any other conflicted file stops the ship with the merge command to run), then
+   `validate` of the checks whose inputs changed (incremental, no Workbench compile). A red check costs
+   seconds here instead of a queue slot and a gate.
+2. **Push, PR, enqueue.** Auto-merge is off on the PR (an earlier ship's auto-merge is switched off first).
+   `wt ship` prints `SUMMARY ship queued <slug> PR #N position ... log=<path>` and exits 0.
+3. **The gate runs detached** in the ship-queue worker (the steps above). Its state goes to three places:
+   the queue file, `<worktree>/tmp/ship-status.json` (the status line and the entry, on every change), and
+   a `ship-gate` commit status on the PR head (pending while queued or gating, success on the pushed head,
+   failure with the reason, error when cancelled), so `gh pr checks` and the PR page show it.
+4. **Pass:** the worker pushes and enables auto-merge; GitHub merges once the required `validate` check
+   is green. **Fail:** the PR gets a comment with the failing lines and the log path, `ship-gate` goes
+   red with the reason, auto-merge stays off.
+
+**Why auto-merge, not a required status, guards the merge.** Branch protection on `main` requires only
+the `validate` Actions check. Making `ship-gate` required would block every PR that does not go through the
+queue (`wt sync-base`, `--no-queue`, a human's PR, website-only work). The worker is the only thing that
+turns auto-merge on for a queued PR, and `prs heal` skips any PR with a live ship-queue entry (it would
+otherwise merge main into the same worktree and switch auto-merge on before the gate passed).
+
+**Checking and waiting** (both read the queue in the main checkout, from any worktree):
+
+```sh
+tools\cli wt ship-status <slug>            # one line: ship-status <slug> queued|running|passed|failed PR #N: ... log=<path>
+tools\cli wait ship <slug> [--budget 540]  # blocks up to the budget; one SUMMARY line; exit 0 passed, 1 failed, 2 still going
+```
+
+`wait ship` defaults to 540 s, under the 10 min tool cap: run it in the foreground and run it again on exit 2.
+`wt ship-status` exits 1 only when the gate failed or the slug is unknown. `wt ship --wait` (or
+`LF_SHIP_WAIT=1`) keeps the old blocking ship for a human at a terminal.
+
+**What an agent does while the gate runs.** It may start the next stacked PR (a new worktree from
+`origin/main`, or `--base` on its own branch when it needs the unmerged code). It reports
+"shipped, gate running" with the PR URL, and before its final report runs `wt ship-status` (or
+`wait ship`): passed means "merged, in-dev" once GitHub merges, failed means fix, commit, `wt ship` again.
 
 ## Keeping PRs moving (`prs`)
 
@@ -573,7 +623,8 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   three on this PC and one on the box, all 224/224, against 36 s for the four
   in a row on this PC. The pool pays most when this PC's slot is held by
   something long (`host`, `session`, `e2e`, another agent's gate).
-- **Limits.** A plain `build` and `validate --full` stay on this PC. A pre-pool
+- **Limits.** A plain `build` and `validate --full` stay on this PC while it has
+  the `workbench` cap; without it they go to a pool machine ("No Workbench on this PC"). A pre-pool
   branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
   local only until it merges main.
 
@@ -651,6 +702,41 @@ gate included). Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
 
+### No Workbench on this PC (the `workbench` cap)
+
+The maintainer's world editor lives on this PC (Gaming-Box) and agents never
+run a headless Workbench on it. That is `workbench` missing from this machine's
+caps: `lf.local.json` `pool.machines` entry `{ "name": "local", "caps":
+["server"] }`. A pool machine's own entry (`lf-cloud`, `lf-testbox`) keeps the
+cap and runs what is sent to it. `tools/lib/wb-route.mjs` reads the cap; every
+path that would start a Workbench here asks it first:
+
+| Path | Without the cap on this PC |
+| --- | --- |
+| `ci`, `ci --remote`, `ci --tiered`, `wt gate`, `wt ship` (`chooseGate`) | this PC is never a candidate and never the fallback; no pool machine answering is "wait" (re-check every 30 s, `LF_WB_RAM_WAIT_S`, 1 h), then a pool failure. The retry after an early death never lands here. `LF_TESTBOX_AUTO=0` no longer keeps the gate here |
+| the rdb refresh before `test`, `session up`, `serve`, `e2e` and a gate; `rdb`, `rdb --wait` (`chooseRefresh`) | goes to a machine with the `rdb` cap even when it can only queue there; none yet: waits (`LF_RDB_WAIT_S`, 900 s, `rdb --budget <s>`), then warns and leaves the rdb stale. It never falls back to a local refresh |
+| `validate --full` (the `validate-scripts.ps1` compile) | `ci --wb-only --compile-only` on a pool machine, its transcript streamed here |
+| `build`, and `test` without `--no-build` | `ci --wb-only --build-only [--addon X]` on a pool machine; the exit code is the result |
+| `look <area>`, `look item` | runs on a pool machine (`look ... --local --fresh --clean` in its desktop session); the pictures are copied back to `tmp/look` (or `--out`) with the paths in each `index.json` made local. `look serve` (start) refuses: its Workbench is long-lived and local |
+| `pack`, `asset` plugin runs, `ui-image`, `wt open --workbench` | refuse with the reason: their output is files in this worktree |
+| `cli call wb_*` (and so `agent-box/harness.mjs launch`, `play`) | refuse: every `wb_*` tool needs a Workbench and the MCP starts one itself. `api_search`, `game_read`, `asset_search` and `api class` need none |
+| `validate-scripts.ps1` run by hand | refuses unless the CLI launched it (`LF_WB_GUARDED=1`) or `LF_WB_LOCAL=1` |
+
+The backstop is the Workbench slot itself: `wb-route.acquireWorkbench` throws
+`LocalWorkbenchRefused` before `wb-lock` takes a lock, so a caller that forgot to
+route fails loudly instead of starting Workbench. `validate-wb-policy.mjs`
+fails the repo checks when a file takes a slot from `wb-lock` directly, or names
+the Workbench executable without consulting the cap. A new launcher goes through
+`wb-route` (`routeWorkbench` for a step that can run elsewhere,
+`requireLocalWorkbench` for one that cannot).
+
+An explicit `--local` (or `--machine local`) on `build`, `ci`, `rdb`, `look`,
+`pack`, `asset`, `validate` or `wt` from a human sets `LF_WB_LOCAL=1` and runs
+here anyway; so does exporting `LF_WB_LOCAL=1`. `test`, `session`, `e2e` and
+`serve` take `--local` for the server only and never unlock the Workbench.
+Agents do not pass it. Proven by `tools/validation/wb-policy-selftest.mjs`
+(choice, wait budget, routed run, slot backstop, `--local`).
+
 ### Lanes, priority, leases, budgets (this PC)
 
 You change nothing: run `test`, `e2e`, `session up` as before. The pool queues
@@ -698,7 +784,10 @@ it, picks a lane and a budget, and prints one line per outcome.
   `tools/safe-rm.mjs`, so junctions are unlinked, never followed. It then refuses with one line
   when free disk on that volume is under `minFreeDiskGb` (5). Both are settings: `tools/pool.json`,
   the `pool` key of `lf.local.json`, or `LF_POOL_SESSION_KEEP_H` / `LF_POOL_MIN_FREE_DISK_GB`.
-  `pool status` prints the free disk.
+  `pool status` prints the free disk. A test that may run anywhere is not refused: this PC drops out
+  (`pool: this PC refuses tests for now (...); the run goes to lf-testbox or lf-cloud`) and the pool
+  machines take it, each checking its own disk first (`diskRoute` in `tools/remote/pool.mjs`). A run
+  pinned here (`--local`), or with no pool machine, keeps the refusal.
 - **One request per worktree (#542).** A new `session up` from a worktree whose earlier request is
   still queued drops the earlier queue entry (the older process exits with "a newer session request
   replaced this one") and keeps the first request's age. `pool status` marks any leftover
@@ -1324,6 +1413,10 @@ this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `vali
   `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
   skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
+  prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
+  validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
+  that freeze is printed once as `WARN  validate: this process was frozen N s`.
 - A new check adds the header; `validate-incremental-selftest.mjs` warns about one without.
 
 ## Lead view
@@ -1341,7 +1434,13 @@ parallel, each with its own timeout; one that fails prints one line and the rest
   SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
   Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
   `~N GB (k/n measured)`; the walk never follows a junction.
-- POOL: one line per machine (free RAM, lanes busy/total, temperature, DOWN or slow) and the queue length, read from `pool status`.
+- POOL: one line per machine (free RAM, lanes busy/total, temperature, `up`, `slow` or `DOWN`) and the queue length. Each machine is
+  read in its own process (`lead --pool-worker <name>`), all at once, with a per-machine timeout (9 s, `LF_LEAD_POOL_MACHINE_MS`) inside
+  an overall budget (12 s, `LF_LEAD_POOL_BUDGET_MS`). A machine that has not finished shows what it had: `slow` when it answered within
+  5 min (a busy box, lf-cloud's 7 s ssh), `DOWN` otherwise, with `** slow: no answer in 9 s **`; a slow machine never drops the section.
+  When the budget itself cuts a machine the section ends with `pool budget N s exceeded ... partial rows for ...`. A machine whose
+  free RAM is under the pool floor (`minFreeMb`, 1.5 GB) adds `WARN RAM: <machine> has 0.5 GB free, under its 1.5 GB floor`: it takes no new job.
+- SHIP QUEUE: `SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (<slug> #<pr>)`, from the same file `ship-queue status` prints.
 - ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
 
 `tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:

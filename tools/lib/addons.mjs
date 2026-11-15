@@ -27,9 +27,11 @@ for (const e of readdirSync(join(dirname(fileURLToPath(import.meta.url)), "..", 
 export const CORE = ADDONS[0].name;
 export const PACK = ADDONS[1].name;
 
-// The playtest mission headers, both in the pack since #323 batch 1 (GUIDs unchanged). The old one
-// keeps a save made on it; the pack's own is what `host`, `playtest` and `session --mission playtest`
-// boot (#322). Both load the pack world below.
+// The two mission headers, both in the pack since #323 batch 1 (GUIDs unchanged). Both load the pack
+// world below. LF_PlaytestTown.conf is the developer playtest: the DebugWorld game mode's helpers stay on
+// (test cars, bank and cash top-up, spawn hub, first player police) and the header is hidden from the
+// Scenarios list; `host`, `playtest` and `session --mission playtest` boot it. LF_Everon1989.conf is the
+// flagship, the only listed scenario, with those helpers closed (m_bLF_PlaytestHelpersOff).
 export const CORE_PLAYTEST_MISSION = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
 export const PACK_MISSION = "{C638C03B775C31BB}Missions/LF_Everon1989.conf";
 
@@ -72,14 +74,51 @@ export function launchAddons(root = REPO) {
   return launchAddonsIn(join(root, "addons"));
 }
 
+// `--pack <name>` (session up): a pack author boots THEIR pack, not the flagship. The pack is a
+// folder addons/<name> of this checkout (where `pack new` writes it), so a remote pool machine
+// gets it with the worktree snapshot. The launch loads the core plus that pack, and boots the
+// header `pack new` scaffolds: Missions/<name>.conf, which names the core DebugWorld and lists the
+// pack's config overlays (the same header mechanism the flagship uses).
+// Returns { name, header } or { error }.
+export function packLaunch(root, arg) {
+  const name = String(arg ?? "").trim().replace(/[\\/]+$/, "").split(/[\\/]/).pop();
+  if (!name) return { error: "--pack needs a pack folder under addons/, like --pack LF_DemoPack" };
+  if (name === CORE) return { error: "--pack names a pack; the core always loads" };
+  const dir = addonDir(root, name);
+  if (!existsSync(join(dir, `${name}.gproj`))) return { error: `--pack ${name}: no addons/${name}/${name}.gproj in this checkout (tools\\cli pack new <Name> writes one)` };
+  const meta = join(dir, "Missions", `${name}.conf.meta`);
+  if (!existsSync(join(dir, "Missions", `${name}.conf`)) || !existsSync(meta)) return { error: `--pack ${name}: no Missions/${name}.conf (+ .meta) mission header; 'tools\\cli pack new' writes one` };
+  const guid = readFileSync(meta, "utf8").match(/Name\s+"\{([0-9A-F]{16})\}/)?.[1];
+  if (!guid) return { error: `--pack ${name}: Missions/${name}.conf.meta has no GUID` };
+  return { name, header: `{${guid}}Missions/${name}.conf` };
+}
+
+// `--pack <name>` out of a flag list: undefined when absent, { name, header } or { error }.
+export function parsePackFlag(flags, root = REPO) {
+  const i = flags.indexOf("--pack");
+  if (i === -1) return undefined;
+  return packLaunch(root, flags[i + 1] && !flags[i + 1].startsWith("--") ? flags[i + 1] : "");
+}
+
+// The -addons list of a launch: this checkout's, or the core plus one pack when a session runs `--pack`.
+export function launchAddonsFor(root, pack) {
+  return pack ? [CORE, pack] : launchAddons(root);
+}
+
 // ["-addons", "LifeFramework,LF_Everon1989"]: the one place a launch names its addons.
 // `addons` is a list from launchAddons(); omitted, it is this checkout's.
 export function addonsArgs(addons = launchAddons()) {
   return ["-addons", addons.join(",")];
 }
 
-// The header a playtest boots: the pack's when the pack is loaded, else the core's.
+// The header a developer playtest boots (host, session --mission playtest): LF_PlaytestTown.conf, with
+// the playtest helpers on. `addons` is kept so callers need not change; both headers load with the pack.
 export function playtestMission(addons = launchAddons()) {
+  return CORE_PLAYTEST_MISSION;
+}
+
+// The header a real server runs: the pack's flagship when the pack is loaded, else the playtest one.
+export function flagshipMission(addons = launchAddons()) {
   return addons.includes(PACK) ? PACK_MISSION : CORE_PLAYTEST_MISSION;
 }
 
@@ -175,8 +214,10 @@ export function selftestAddons() {
   }
   const both = addonsArgs(["LifeFramework", "LF_Everon1989"]);
   if (both.length !== 2 || both[0] !== "-addons" || both[1] !== "LifeFramework,LF_Everon1989") f.push(`addonsArgs is not one comma-separated flag: ${JSON.stringify(both)}`);
-  if (playtestMission([CORE]) !== CORE_PLAYTEST_MISSION) f.push("a core-only launch picks the pack's mission header");
-  if (playtestMission([CORE, PACK]) !== PACK_MISSION) f.push("a launch with the pack does not pick the pack's mission header");
+  if (playtestMission([CORE]) !== CORE_PLAYTEST_MISSION) f.push("a core-only developer playtest does not pick LF_PlaytestTown");
+  if (playtestMission([CORE, PACK]) !== CORE_PLAYTEST_MISSION) f.push("a developer playtest with the pack does not pick LF_PlaytestTown (it needs the playtest helpers)");
+  if (flagshipMission([CORE, PACK]) !== PACK_MISSION) f.push("a flagship launch with the pack does not pick LF_Everon1989");
+  if (flagshipMission([CORE]) !== CORE_PLAYTEST_MISSION) f.push("a core-only flagship launch picks the pack's header");
   if (!existsSync(join(REPO, "addons", PACK, PACK_MISSION.replace(/^\{[0-9A-F]{16}\}/, "")))) f.push(`the pack's mission header ${PACK_MISSION} is not in addons/${PACK}`);
   return f;
 }

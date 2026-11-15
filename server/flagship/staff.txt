@@ -1,0 +1,10 @@
+# Flagship staff roster. Copy this file to <server profile>/LifeFramework/staff.txt (the game reads it from there).
+# One account uid per line: <uid> [level] [# display name]. Levels: moderator, operator, administrator.
+# A listed uid is staff for the police application tools (#1287). Only administrators have in-game
+# powers (#313): their uids go in game.admins of server.json (tools/cli staff roster admins prints it).
+# Display names are ones the person agrees to publish; this repo is public, so no contact details.
+# Check it with: tools/cli staff roster check
+#
+# At opening the maintainer is the only administrator. The uid is a human step: replace the next
+# line with "<uid> administrator # Jasper".
+#pending administrator Jasper
