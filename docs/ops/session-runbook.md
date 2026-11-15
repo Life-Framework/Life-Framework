@@ -70,6 +70,10 @@ Rules for the whole page:
 
    It backs the saves up first, continues the latest save, and prints `host: up (pid N)` and the
    join lines. Without `--flagship` it boots the playtest header, which is not the real server.
+   Once 0.1.0 is on the Workshop, the public server is `tools\cli host start --public --wait`
+   (in the Server Browser, with the join password; `--flagship` alone is `-noBackend`, LAN and
+   direct connect only). Use `--public` in every start and restart below then
+   ([host the flagship](../owner/host-the-flagship.md)).
 
 2. Confirm it is up and read the first lines of the log:
 

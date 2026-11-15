@@ -26,9 +26,10 @@ export async function main(args, ctx) {
   console.log(`unique players:  ${r.unique}`);
   console.log(`peak concurrent: ${r.peak ? `${r.peak.count} at ${r.peak.at}` : "0"}`);
   console.log(`joins ${r.joins} (${r.rejoins} rejoins), leaves ${r.leaves}, still on at log end ${r.stillConnected}${r.unmatchedLeaves ? `, leaves with no matching join ${r.unmatchedLeaves}` : ""}`);
+  // The identity is the uid game.admins and staff.txt take (docs/owner/host-the-flagship.md).
   const width = Math.max(4, ...r.players.map((p) => p.names.join("/").length));
   for (const p of [...r.players].sort((a, b) => b.minutes - a.minutes)) {
-    console.log(`  ${p.names.join("/").padEnd(width)}  ${String(p.minutes).padStart(7)} min  ${p.sessions} session${p.sessions === 1 ? "" : "s"}`);
+    console.log(`  ${p.names.join("/").padEnd(width)}  ${String(p.minutes).padStart(7)} min  ${p.sessions} session${p.sessions === 1 ? "" : "s"}  id ${p.identity ?? "(none: a -noBackend host has no real ids)"}`);
   }
   console.log(`SUMMARY host-attendance ok unique=${r.unique} peak=${r.peak ? r.peak.count : 0} log=${logFile}`);
   return 0;
