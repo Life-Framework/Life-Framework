@@ -572,7 +572,11 @@ async function placement(argv) {
   console.log(lines.slice(0, 3 + world.length + top).join("\n"));
   if (res.ranked.length > top) console.log(`  ... ${res.ranked.length - top} more`);
   console.log(`report: ${join(outDir, "report.txt")} (json beside it)`);
-  return testFailed || (flags.strict && (res.ranked.length || world.length)) ? 1 : 0;
+  // --strict holds the town to the bar; with --annex the debug grid is listed but never fails it
+  // (docs/architecture/world-zones.md).
+  const townRanked = res.ranked.filter((r) => !inAnnex(r));
+  if (flags.strict && townRanked.length < res.ranked.length) console.log(`audit placement: ${res.ranked.length - townRanked.length} flagged in the debug grid; --strict counts the town only`);
+  return testFailed || (flags.strict && (townRanked.length || world.length)) ? 1 : 0;
 }
 
 // The fixture layer (agent-box/fixtures/place-budget/Fixture.layer): a crate and its twin 1 cm apart, a barrel

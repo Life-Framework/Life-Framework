@@ -125,7 +125,7 @@ const held = () => {
 // --- the wiring in cli.mjs: the refresh waits through waitForLock, shard children never refresh again
 {
   const cli = readFileSync(join(fileURLToPath(new URL(".", import.meta.url)), "..", "cli.mjs"), "utf8");
-  const ensure = cli.slice(cli.indexOf("function ensureAddonResourceDatabase"), cli.indexOf("function workbenchInDesktopSession"));
+  const ensure = cli.slice(cli.indexOf("function ensureAddonResourceDatabase"), cli.indexOf("// One headless Workbench run of a ResourceManager plugin"));
   check(/waitForLock\(/.test(ensure) && !/acquireLock\(root, "build", \{ waitMs: \d/.test(ensure), "the rdb refresh takes the build lock through waitForLock, not a silent fixed wait");
   check(/LF_RDB_CHECKED === "1"/.test(ensure), "the rdb refresh honours LF_RDB_CHECKED");
   const child = cli.slice(cli.indexOf("function runShardChild"), cli.indexOf("async function runShardedTests"));
