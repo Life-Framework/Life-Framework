@@ -78,7 +78,8 @@ telling players first (step 6).
      until then post the time by hand).
    - Players get an in-game toast at each warning lead time once the owner config lists
      restart times (`restarts` in `config.json`; planned in #1264 and #1265). The flagship
-     sets none yet, so say the time in Discord and restart at it.
+     restarts at 06:00 and 18:00 server time, with warnings at 15, 5 and 1 minute and no
+     siren; for an unscheduled restart say the time in Discord and restart at it.
    - Back up, stop, start, the commands of the session runbook
      (`docs/ops/session-runbook.md` *(planned)*, #1275):
 
