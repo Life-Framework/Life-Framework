@@ -40,6 +40,13 @@ const HEAD = "d".repeat(40);
   check(seen.filter((s) => s === HEAD).length === 1, "red compile: no recheck at the head (deterministic)");
   check(g.refusal === null, `red compile: revert allowed, got ${g.refusal}`);
 }
+// 2b. The base was never compile-checked and is red too: nobody is blamed.
+{
+  const g = await mg.compileGate({ head: HEAD, merges, state: {}, compile: async () => "fail", base: "0".repeat(40), baseChecked: false });
+  check(g.verdict === "red" && g.culprit === null && /already red/.test(g.refusal ?? ""), "unchecked red base: no culprit, no revert");
+  const ok = await mg.compileGate({ head: HEAD, merges, state: {}, compile: async (s) => (s === "0".repeat(40) || s === "a".repeat(40) ? "ok" : "fail"), base: "0".repeat(40), baseChecked: false });
+  check(mg.prOfMerge(ok.culprit?.subject) === 12, "unchecked green base: bisect still runs");
+}
 // 3. Pool failure: no verdict, no bisect.
 {
   const g = await mg.compileGate({ head: HEAD, merges, state: {}, compile: async () => "env" });
