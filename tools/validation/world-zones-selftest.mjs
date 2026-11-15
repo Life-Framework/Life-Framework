@@ -1,5 +1,5 @@
-// tools/validation/grid-selftest.mjs
-// inputs: tools/lib/world-zones.mjs, tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, tools/place/place.mjs
+// tools/validation/world-zones-selftest.mjs
+// inputs: tools/lib/world-zones.mjs, tools/lib/worlds.mjs, tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, tools/place/place.mjs
 //
 // Proves the debug grid and the zone guard (docs/architecture/world-zones.md) on fixtures:
 // allocation is deterministic and skips claimed, reserved and occupied cells; a cell's yard has
@@ -14,9 +14,9 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
-import { yardLayer } from "../commands/grid.mjs";
-import { CELLS_DIR, DEBUG_LAYERS, allCells, allocate, blockers, cellBounds, gapSide, inGrid, layerOfSlug, lookArea, rowLine, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
-import { checkClaims, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
+import { main as gridMain, yardLayer } from "../commands/grid.mjs";
+import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, gapSide, inGrid, layerOfSlug, lookArea, rowLine, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
+import { checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -33,6 +33,8 @@ ok(zoneOfLayer("Annex.layer") === "grid", "the legacy annex is grid");
 ok(zoneOfLayer("Gamemode.layer") === "system", "Gamemode is neither zone");
 ok(zoneOfPath("addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Dressing.layer") === "town", "a pack town layer is town");
 ok(zoneOfPath(`${DEBUG_LAYERS}/Grid_x.layer`) === "grid" && zoneOfPath("tools/x.mjs") === null, "zoneOfPath");
+ok(GRID_LAYERS === "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers", `the grid zone is GridWorld_Layers (got ${GRID_LAYERS})`);
+ok(zoneOfPath(`${GRID_LAYERS}/Grid_x.layer`) === "grid" && zoneOfPath(`${GRID_LAYERS}/Gamemode.layer`) === "system", "zoneOfPath: GridWorld layers are grid, its Gamemode is system");
 ok(inGrid(30, 30) && !inGrid(262, 255), "inGrid: the annex yes, the hospital no");
 
 // ---- allocation
@@ -75,23 +77,44 @@ const claim = (slug, c) => JSON.stringify({ slug, cell: c, layer: layerOfSlug(sl
 const root = mkdtempSync(join(tmpdir(), "lf-grid-"));
 try {
   put(root, `${CELLS_DIR}/alpha.json`, claim("alpha", "c0r6"));
-  put(root, `${DEBUG_LAYERS}/${layerOfSlug("alpha")}`, yardLayer("alpha", cell, P));
+  put(root, `${GRID_LAYERS}/${layerOfSlug("alpha")}`, yardLayer("alpha", cell, P));
   let r = checkClaims(root);
   ok(r.errors.length === 0, `a clean claim passes (${r.errors.join("; ")})`);
   put(root, `${CELLS_DIR}/beta.json`, claim("beta", "c0r6"));
-  put(root, `${DEBUG_LAYERS}/${layerOfSlug("beta")}`, "");
+  put(root, `${GRID_LAYERS}/${layerOfSlug("beta")}`, "");
   r = checkClaims(root);
   ok(r.errors.some((e) => /claimed by/.test(e)), "two claims on one cell are reported");
   rmSync(join(root, CELLS_DIR, "beta.json"));
   r = checkClaims(root);
   ok(r.errors.some((e) => /Grid_beta\.layer: no claim/.test(e)), "a grid layer with no claim is reported");
-  rmSync(join(root, DEBUG_LAYERS, layerOfSlug("beta")));
-  put(root, `${DEBUG_LAYERS}/${layerOfSlug("alpha")}`, `${yardLayer("alpha", cell, P)}GenericEntity Grid_alpha_Stray : "{1111111111111111}Prefabs/Desk.et" {\n coords 262 0 255\n}\n`);
+  rmSync(join(root, GRID_LAYERS, layerOfSlug("beta")));
+  put(root, `${GRID_LAYERS}/${layerOfSlug("alpha")}`, `${yardLayer("alpha", cell, P)}GenericEntity Grid_alpha_Stray : "{1111111111111111}Prefabs/Desk.et" {\n coords 262 0 255\n}\n`);
   r = checkClaims(root);
   ok(r.errors.some((e) => /Grid_alpha_Stray .* outside cell/.test(e)), "a grid prop outside its cell is reported");
   put(root, `${CELLS_DIR}/gamma.json`, claim("gamma", "c1r6"));
   r = checkClaims(root);
   ok(r.errors.some((e) => /gamma\.json: .*missing/.test(e)), "a claim with no layer is reported");
+  ok(r.errors.some((e) => /gamma\.json: .*GridWorld_Layers/.test(e)), "a claim's missing layer is looked for in GridWorld_Layers");
+  // a grid claim resolves to GridWorld: its layer in DebugWorld_Layers does not count, and is itself refused
+  put(root, `${CELLS_DIR}/delta.json`, claim("delta", "c2r6"));
+  put(root, `${DEBUG_LAYERS}/${layerOfSlug("delta")}`, yardLayer("delta", { id: "c2r6", col: 2, row: 6, ...cellBounds(2, 6) }, P));
+  r = checkClaims(root);
+  ok(r.errors.some((e) => /delta\.json: .*missing/.test(e)), "a claim whose layer is only in DebugWorld is missing it");
+  ok(r.errors.some((e) => /DebugWorld_Layers\/Grid_delta\.layer: .*GridWorld_Layers/.test(e)), "a Grid_ layer in DebugWorld is refused, and the message names GridWorld_Layers");
+  // grid place --dry names the GridWorld path (and writes nothing)
+  put(root, `${GRID_LAYERS}/Annex.layer`, "");
+  const lines = [];
+  const realLog = console.log;
+  console.log = (...a) => lines.push(a.join(" "));
+  let code;
+  try {
+    code = await gridMain(["place", "w3-probe", "--dry"], { root });
+  } finally {
+    console.log = realLog;
+  }
+  ok(code === 0 && lines.some((l) => l.includes(`${GRID_LAYERS}/Grid_w3_probe.layer`)), `grid place --dry names ${GRID_LAYERS}/Grid_w3_probe.layer (got ${lines.join(" | ")})`);
+  ok(!lines.some((l) => /DebugWorld_Layers/.test(l)), "grid place --dry does not name DebugWorld_Layers");
+  ok(P.layerPath(root, "Grid_w3_probe.layer") === join(root, GRID_LAYERS, "Grid_w3_probe.layer"), "place --layer Grid_* resolves to GridWorld_Layers");
 } finally {
   rmSync(root, { recursive: true, force: true });
 }
@@ -105,9 +128,29 @@ ok(checkGuard({ branch: "ws/town-m4-ch2", files: [hosp, packTown], baseline: [] 
 ok(checkGuard({ branch: "ws/slice-1200", files: [hosp], baseline: ["ws/slice-1200"] }).errors.length === 0, "a branch from before the guard keeps working");
 ok(checkGuard({ branch: "ws/slice-1500", files: [`${DEBUG_LAYERS}/Grid_slice_1500.layer`, `${DEBUG_LAYERS}/Annex.layer`, "tools/x.mjs"], baseline: [] }).errors.length === 0, "grid and annex layers are free to edit");
 ok(checkGuard({ branch: "main", files: [hosp], baseline: [] }).skipped, "main is not checked");
+ok(checkGuard({ branch: "ws/town-m4-ch2", files: [hosp, `${GRID_LAYERS}/Grid_x.layer`], baseline: [] }).errors.length === 0, "a town change on a town- branch still passes beside a GridWorld edit");
+ok(checkGuard({ branch: "ws/slice-1500", files: [`${GRID_LAYERS}/Grid_slice_1500.layer`, `${GRID_LAYERS}/Annex.layer`], baseline: [] }).errors.length === 0, "GridWorld layers are free to edit");
+
+// ---- the freeze: no new or changed entity inside the annex rectangle in DebugWorld (until W6 deletes it)
+const ent = (name, x, z) => `GenericEntity ${name} : "{1111111111111111}Prefabs/Desk.et" {
+ coords ${x} 0 ${z}
+}
+`;
+const annexEnt = ent("Annex_Desk", 30, 30);
+const townEnt = ent("Street_Lamp", 262, 255);
+const annexLayer = `${DEBUG_LAYERS}/Annex.layer`;
+const freeze = (base, now, file = annexLayer) => checkFreeze({ files: [file], baseText: () => base, nowText: () => now });
+ok(freeze(annexEnt + townEnt, annexEnt + townEnt).errors.length === 0, "an unchanged annex layer passes the freeze");
+ok(freeze(annexEnt, annexEnt + ent("Annex_New", 40, 40)).errors.some((e) => /Annex_New/.test(e)), "a new annex entity in DebugWorld fails");
+ok(freeze(annexEnt, ent("Annex_Desk", 31, 30)).errors.some((e) => /Annex_Desk/.test(e)), "a changed annex entity in DebugWorld fails");
+ok(freeze(null, annexEnt, `${DEBUG_LAYERS}/Annex_More.layer`).errors.length === 1, "a new layer file holding an annex entity fails");
+ok(freeze(annexEnt + townEnt, townEnt).errors.length === 0, "deleting an annex entity passes (W6)");
+ok(freeze(annexEnt + townEnt, annexEnt + ent("Street_Lamp", 270, 255)).errors.length === 0, "a changed town entity outside the annex is not the freeze's business");
+ok(freeze(annexEnt, annexEnt + ent("Edge", 114, 114)).errors.length === 1 && freeze(annexEnt, annexEnt + ent("Edge", 115, 114)).errors.length === 0, "the rectangle is x 18..114, z 18..114");
+ok(checkFreeze({ files: [`${GRID_LAYERS}/Annex.layer`, "tools/x.mjs"], baseText: () => null, nowText: () => annexEnt }).errors.length === 0, "edits in GridWorld are not frozen");
 
 if (failed) {
-  console.log(`grid-selftest: ${failed} FAILED`);
+  console.log(`world-zones-selftest: ${failed} FAILED`);
   process.exit(1);
 }
-console.log("grid-selftest: OK");
+console.log("world-zones-selftest: OK");

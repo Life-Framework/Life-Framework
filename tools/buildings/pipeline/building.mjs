@@ -19,7 +19,7 @@ import { ArchBuilderMissing, archBuilderSetup, closeSession, licenseMarks, openS
 import { safeRemoveTree } from "../../link-safety.mjs";
 import { CORE, addonOf, addonPath, addonProblems } from "../../assets/pipeline/addon.mjs";
 import { addonDir } from "../../lib/addons.mjs";
-import { stageStore } from "./store-slots.mjs";
+import { buildingFiles, stageStore } from "./store-slots.mjs";
 import { readGuid } from "../../assets/pipeline/meta.mjs";
 import { gameDb } from "./gamedb.mjs";
 import { materialsDir } from "./import.mjs";
@@ -49,6 +49,7 @@ export function specProblems(spec) {
   if (!/^[a-z][a-z0-9-]*$/.test(spec.slug || "")) out.push("slug must be lowercase letters, digits and dashes");
   if (!/^[A-Z][A-Za-z0-9]*$/.test(spec.name || "")) out.push("name must be PascalCase letters and digits (it becomes the file names)");
   if (!spec.concept) out.push("concept is empty: one paragraph on what the building is in 1989 Everon and what it is for");
+  if (spec.vanilla) return [...out, ...vanillaProblems(spec)];
   const ab = spec.archbuilder;
   if (!ab || typeof ab !== "object") return [...out, "archbuilder must hold the ArchBuilder settings (scene.ab_gen names)"];
   if (!ab.landmark && !ab.archetype) out.push("archbuilder.archetype (or archbuilder.landmark for a real-plan building) is required");
@@ -78,6 +79,38 @@ export function specProblems(spec) {
   return out;
 }
 
+// A building made from a vanilla one (no ArchBuilder export): our prefab inherits a base-game building
+// (its doors, windows and sign added the way the vanilla variants add them) and the store block fits it out.
+// spec.vanilla: { "base": "{GUID}Prefabs/Structures/...et", "building": "<file name in prefab_dir>",
+//                 "furniture": "<optional file name in prefab_dir, e.g. Furniture/X_furniture_01>" }
+export const VANILLA_SKIPS = new Set(["generate", "review", "polish", "export", "import"]);
+export function vanillaProblems(spec) {
+  const out = [];
+  const v = spec.vanilla;
+  if (typeof v !== "object" || Array.isArray(v)) return ["vanilla must be { base, building, furniture? }"];
+  if (spec.archbuilder) out.push("a spec has archbuilder or vanilla, not both");
+  if (!/^\{[0-9A-F]{16}\}Prefabs\/Structures\/[A-Za-z0-9_/]+\.et$/.test(v.base || "")) out.push('vanilla.base must be the base-game building as "{GUID}Prefabs/Structures/...et"');
+  for (const k of ["building", "furniture"]) {
+    if (v[k] === undefined && k === "furniture") continue;
+    if (!/^[A-Za-z0-9_]+(\/[A-Za-z0-9_]+)*$/.test(v[k] || "")) out.push(`vanilla.${k} must be a file name in prefab_dir without .et`);
+  }
+  if (!/^Prefabs\/Buildings\/[A-Za-z0-9_]+$/.test(spec.prefab_dir || "")) out.push("prefab_dir must be Prefabs/Buildings/<Name>");
+  if (spec.budget?.min_doors !== undefined && !(Number.isInteger(spec.budget.min_doors) && spec.budget.min_doors >= 1)) out.push("budget.min_doors must be 1 or more");
+  if (!["core", "pack"].includes(spec.red_line)) out.push('red_line must be "core" or "pack" (docs/architecture/core-vs-pack.md; a building is the server\'s look, so usually pack)');
+  return out;
+}
+
+// Pure: the checks on a vanilla-based building prefab's text. Its header inherits the base; doors
+// counts the door sets it adds (the vanilla base has its own, so 0 is allowed unless the spec asks).
+export function vanillaPrefabProblems(spec, text) {
+  const out = [];
+  const header = /^\w+ : "(\{[0-9A-F]{16}\}[^"]+)"/.exec(text)?.[1];
+  if (header !== spec.vanilla.base) out.push(`${spec.vanilla.building}.et inherits ${header || "nothing"}, not vanilla.base ${spec.vanilla.base}`);
+  const counts = countOpenings(text);
+  if (spec.budget?.min_doors && counts.doors < spec.budget.min_doors) out.push(`${counts.doors} door set(s) added, the spec wants ${spec.budget.min_doors}`);
+  return { problems: out, counts };
+}
+
 function readState(dir) {
   const f = join(dir, "state.json");
   return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { stages: {} };
@@ -91,6 +124,10 @@ function writeState(dir, state) {
 async function stageSpec(ctx) {
   const problems = [...specProblems(ctx.spec), ...addonProblems(ctx.root, ctx.spec)];
   if (problems.length) throw new Error("spec problems:\n  " + problems.join("\n  "));
+  if (ctx.spec.vanilla) {
+    console.log(`spec ok: ${ctx.spec.name}, ${ctx.spec.vanilla.building} on the vanilla ${ctx.spec.vanilla.base.replace(/^.*\//, "")}, into ${addonOf(ctx.spec)}`);
+    return { addon: addonOf(ctx.spec), vanilla: true };
+  }
   const ab = ctx.spec.archbuilder;
   console.log(`spec ok: ${ctx.spec.name}, ${ab.landmark ? `landmark ${ab.landmark}` : `${ab.archetype} ${ab.region || "AUTO"}`}, seed ${ab.seed}, into ${addonOf(ctx.spec)}`);
   return { addon: addonOf(ctx.spec) };
@@ -312,8 +349,46 @@ export function badGameRefs(refs, db = gameDb()) {
   return out;
 }
 
+// The prefab stage for a vanilla-based building: our prefab inherits vanilla.base, the furniture prefab is
+// there if named, and every base-game reference in them is a real path with its real GUID.
+function stageVanillaPrefab(ctx) {
+  const { root, spec } = ctx;
+  const addon = addonPath(root, spec);
+  const files = buildingFiles(spec);
+  const problems = [];
+  const own = [files.building, files.furniture].filter(Boolean);
+  for (const rel of own) if (!existsSync(join(addon, rel)) || !readGuid(join(addon, `${rel}.meta`))) problems.push(`no ${rel} with its .meta in ${addonOf(spec)}`);
+  if (problems.length) {
+    for (const p of problems) console.log(`FAIL  ${p}`);
+    throw new Error(problems.join("; "));
+  }
+  const text = readFileSync(join(addon, files.building), "utf8");
+  const v = vanillaPrefabProblems(spec, text);
+  problems.push(...v.problems);
+  const external = new Map();
+  for (const rel of own) {
+    for (const m of readFileSync(join(addon, rel), "utf8").matchAll(/\{([0-9A-F]{16})\}([A-Za-z0-9_\-./]+\.(?:et|xob|emat|edds|conf))/g)) {
+      const [, guid, path] = m;
+      const home = [addon, addonDir(root, CORE)].find((a) => existsSync(join(a, path)));
+      if (home) {
+        const g = readGuid(join(home, path + ".meta"));
+        if (g !== guid) problems.push(`${rel} names {${guid}}${path}, but its .meta holds ${g || "no GUID"}`);
+      } else external.set(path, guid);
+    }
+  }
+  const bad = badGameRefs([...external], ctx.gameDb === undefined ? gameDb() : ctx.gameDb);
+  if (bad === null) console.log(`SKIP  base-game check: no game resource database to read (ENFUSION_GAME_PATH); ${external.size} references unchecked`);
+  else problems.push(...bad);
+  for (const p of problems) console.log(`FAIL  ${p}`);
+  const guid = readGuid(join(addon, `${files.building}.meta`));
+  console.log(`prefab: {${guid}}${files.building} on the vanilla ${spec.vanilla.base}; ${v.counts.doors} door set(s), ${v.counts.windows} window(s) added; ${external.size} base-game references${bad && !bad.length ? ", every path and GUID found in the game" : ""}`);
+  if (problems.length) throw new Error(`${problems.length} prefab check(s) failed`);
+  return { prefab: `{${guid}}${files.building}`, ...v.counts, external: external.size, gameChecked: bad !== null, vanilla: true };
+}
+
 async function stagePrefab(ctx) {
   const { root, spec } = ctx;
+  if (spec.vanilla) return stageVanillaPrefab(ctx);
   const addon = addonPath(root, spec);
   const imp = ctx.fullState.stages.import?.result;
   if (!imp) throw new Error("no import result; run the import stage");
@@ -399,6 +474,13 @@ async function runStages(root, slug, { spec, dir, from, only, force, full, workb
     rerun = true;
     const started = Date.now();
     console.log(`--- ${stage}`);
+    if (spec.vanilla && VANILLA_SKIPS.has(stage)) {
+      // Nothing to make: the model, doors and windows are the vanilla building's.
+      console.log(`${stage}: not needed, ${spec.vanilla.building} inherits the vanilla ${spec.vanilla.base.replace(/^.*\//, "")}`);
+      fullState.stages[stage] = { ok: true, vanilla: true, at: new Date().toISOString(), secs: 0 };
+      writeState(dir, fullState);
+      continue;
+    }
     const ctx = { root, slug, spec, dir, fullState, workbench, full, ...hooks };
     try {
       if (NEEDS_ARCHBUILDER.has(stage)) {
@@ -513,7 +595,7 @@ function cmdDoctor() {
 export async function main(flags, { workbench } = {}) {
   const [sub, ...rest] = flags;
   const root = ROOT;
-  if (sub === "selftest") return Math.max(await (await import("../../validation/building-pipeline-selftest.mjs")).main(rest), await (await import("../../validation/building-import-delta-selftest.mjs")).main(rest));
+  if (sub === "selftest") return Math.max(await (await import("../../validation/building-pipeline-selftest.mjs")).main(rest), await (await import("../../validation/building-import-delta-selftest.mjs")).main(rest), await (await import("../../validation/building-vanilla-store-selftest.mjs")).main(rest));
   if (sub === "doctor") return cmdDoctor();
   if (sub === "plan") return rest[0] ? (await import("./plan.mjs")).cmdPlan(root, rest[0]) : say("usage: tools\\cli building plan <slug>", 2);
   if (sub === "proof") return rest[0] && !rest[0].startsWith("--") ? (await import("./proof.mjs")).cmdProof(root, rest[0], rest.slice(1)) : say("usage: tools\\cli building proof <slug> [--entity E] [--skip-audit] [--no-session] [--mission debug|playtest]", 2);

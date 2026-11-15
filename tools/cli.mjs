@@ -3779,6 +3779,12 @@ async function ciWorkbench(root, opts = {}) {
   const stepFlags = [...(opts.compileOnly ? ["--compile-only"] : []), ...(opts.buildOnly ? ["--build-only"] : []), ...(opts.addon ? ["--addon", opts.addon] : [])];
   if (opts.wbOnly && process.platform === "win32" && process.env.SSH_CONNECTION && process.env.LF_WB_INTERACTIVE !== "1") return ciWorkbenchInSession(root, stepFlags);
   const pol = wbRoute.localWorkbench(root);
+  // The main guard's stage 1 (`ci --wb-only --compile-only`, no --local) on a PC without the cap: route the compile
+  // to a pool machine with it, as `validate --full` does. Exit 3 = no machine took it (no verdict).
+  if (!pol.allowed && opts.compileOnly && !opts.local) {
+    const r = await wbRoute.routeWorkbench(root, { purpose: "compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], runLocal: async () => 3 });
+    return r.code === 0 ? 0 : r.code === 3 ? 3 : 1;
+  }
   if (!pol.allowed) {
     console.log(`FAIL  ${wbRoute.refusalText("ci --wb-only", pol.host)}`);
     return 3;

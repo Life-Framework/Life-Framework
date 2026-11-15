@@ -182,8 +182,7 @@ class LF_HoldTuner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The anim graph the item borrows for the hold, or empty. Not named Graph: a call to that name inside this
-	//! class fails the WorkbenchGame compile ("Too many parameters for 'Graph' method").
+	//! The anim graph the item borrows for the hold, or empty
 	static string HoldGraph(BaseContainer anim)
 	{
 		if (!anim)

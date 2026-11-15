@@ -13,11 +13,73 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+//
+// A licensed counter (store.counters, an item catalogue outlet behind a licence) has one more step,
+// expanded into the plain steps and log lines above before anything runs:
+//   { "permit": { "licence": "FIREARM_PERMIT", "look": [x,y,z], "from": [dx,dy,dz], "rows": [0, 3],
+//                 "items": ["Handgun_M9", "Magazine_9x19_M9_15rnd_Ball"], "cash": 3000, "refused": "Not without a" } }
+// A buyer with cash and no licence stands at the counter (look/from), orders the price-list rows and is
+// refused with the slip naming the missing licence; `licence` grants it (the /licence path, dev worlds and
+// harness builds only); the same order is then paid and each item is delivered to the inventory.
 export const scenarioFile = (root, slug) => join(root, "tools", "buildings", slug, "proof.json");
 
 export function loadScenario(root, slug) {
   const f = scenarioFile(root, slug);
-  return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : null;
+  return existsSync(f) ? expandScenario(JSON.parse(readFileSync(f, "utf8"))) : null;
+}
+
+// Pure: one permit step as plain steps and the server-log lines that prove it.
+export function permitSteps(p) {
+  const tag = String(p.licence || "").toLowerCase();
+  const order = (when, expect, why) => [
+    { do: { verb: "use", className: "LF_ShopAction" }, wait: 2000, why: `${when}: the F key opens the counter's price list` },
+    ...(p.rows || []).map((r) => ({ do: { verb: "click", widget: `Item${r}Row_Action` }, wait: 600, why: `${when}: price-list row ${r} on the order` })),
+    { do: { verb: "click", widget: "PayButton" }, wait: 2500, why: `${when}: pay for the order` },
+    { do: { verb: "ui", mode: "text" }, ...(expect ? { expect } : {}), why },
+    { ui: `permit_${tag}_${when.replace(/\W+/g, "_")}` },
+    { do: { verb: "input", action: "MenuBack" }, wait: 1000 },
+  ];
+  const steps = [
+    { do: { verb: "resetplayer", cash: p.cash ?? 3000 }, wait: 1500, why: `a buyer with cash and no ${p.licence}` },
+    { shot: `permit_${tag}_counter`, look: p.look, from: p.from, why: "standing at the counter" },
+    ...order("without the licence", p.refused ?? "Not without a", "the order slip names the missing licence"),
+    { do: { verb: "licence", name: p.licence }, wait: 2000, why: `/licence ${p.licence} grants the licence (dev worlds)` },
+    ...order("with the licence", null, "the order slip after paying"),
+  ];
+  const re = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const log = [
+    { re: "trade refused at outlet \\S+: \\S+ lacks NEEDS_LICENCE", why: `the counter refused the order without the ${p.licence}` },
+    { re: `/licence: player \\d+ granted ${re(p.licence || "")}`, why: `the ${p.licence} was granted` },
+    ...(p.items || []).map((it) => ({ re: `bought item=\\S*/${re(it)}\\.et`, why: `${it} paid for and in the inventory with the ${p.licence}` })),
+  ];
+  return { steps, log };
+}
+
+// Pure: a scenario with every permit step expanded (the file's own log lines first).
+export function expandScenario(sc) {
+  const steps = [];
+  const log = [...(sc.log || [])];
+  for (const s of sc.steps || []) {
+    if (!("permit" in s)) {
+      steps.push(s);
+      continue;
+    }
+    const e = permitSteps(s.permit || {});
+    steps.push(...e.steps);
+    log.push(...e.log);
+  }
+  return { ...sc, steps, log, permits: (sc.steps || []).filter((s) => "permit" in s).map((s) => s.permit) };
+}
+
+// The problems of a permit step's fields (before it is expanded).
+export function permitProblems(p, at = "permit") {
+  const out = [];
+  const v3 = (a) => Array.isArray(a) && a.length === 3 && a.every((n) => typeof n === "number");
+  if (!/^[A-Z][A-Z0-9_]*$/.test(p?.licence || "")) out.push(`${at}: licence must be an LF_ELicenseType name such as FIREARM_PERMIT`);
+  if (!v3(p?.look) || !v3(p?.from)) out.push(`${at}: look [x,y,z] and from [dx,dy,dz] put the buyer at the counter`);
+  if (!Array.isArray(p?.rows) || !p.rows.length || p.rows.some((r) => !Number.isInteger(r) || r < 0)) out.push(`${at}: rows must list the price-list rows to order (0 is the first)`);
+  if (!Array.isArray(p?.items) || !p.items.length || p.items.some((i) => !/^[A-Za-z0-9_]+$/.test(i))) out.push(`${at}: items must name the prefab files (no .et) the order delivers`);
+  return out;
 }
 
 // Building space -> world, for an entity at origin turned by yaw (Enfusion: +90 turns +Z onto +X).
@@ -35,6 +97,7 @@ export function toWorld(place, [x, y, z], offset = false) {
 export function scenarioProblems(sc) {
   const out = [];
   const v3 = (a) => Array.isArray(a) && a.length === 3 && a.every((n) => typeof n === "number");
+  for (const [i, p] of (sc?.permits || []).entries()) out.push(...permitProblems(p, `permit ${i}`));
   for (const [i, s] of (sc?.steps || []).entries()) {
     const at = `steps[${i}]`;
     const kinds = ["shot", "ui", "do", "pickup", "state"].filter((k) => k in s);

@@ -1,13 +1,14 @@
 # World zones: the debug grid and the town
 
-Maintainer decision, 2026-11-15 (`docs/decisions.md`). DebugWorld has two zones, each with its own
-look bar and its own writers. The code is `tools/lib/world-zones.mjs`; the CLI is `tools\cli grid`;
+Maintainer decision, 2026-11-15 (`docs/decisions.md`). The grid and the town have separate look bars
+and writers, and since the three-worlds move (`docs/architecture/three-worlds.md`) separate worlds:
+the grid lives in GridWorld, the town in DebugWorld and the pack world. The code is `tools/lib/world-zones.mjs`; the CLI is `tools\cli grid`;
 the guard is `tools/validation/validate-world-zones.mjs`.
 
 | | Debug grid | Town |
 |---|---|---|
-| Where | The net-fenced annex south-west of the village, x 20..112, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79) | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
-| Layers | `DebugWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and the legacy annex layers (`Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat`, `Shops`) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
+| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..112, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
+| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and the legacy annex layers there (`Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat`, `Shops`) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
 | Who writes | Any slice, through `tools\cli grid place` only, inside its own cell | Only a town-placement pass: a worktree whose slug starts with `town-` |
@@ -46,7 +47,9 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
    per feature, never a central list (golden rule 10).
 4. Puts the prefabs in a row inside the yard, facing the gap, through `tools\cli place arrange row`:
    the same offline checks, ground probe and audit as any placement. A layer needs no registration;
-   DebugWorld loads every file in `DebugWorld_Layers/`.
+   GridWorld loads every file in `GridWorld_Layers/`. `grid list` and the blocked-cell check read
+   GridWorld's layers, and `place --layer Grid_*` and `place on|against|ground` find and write
+   `Grid_*` layers there (`GRID_LAYERS` in `tools/lib/world-zones.mjs`).
 
 Each later `grid place <slug> <prefab>...` adds the next row. A cell has three rows, from the back
 towards the gap. To put a prop on a table, against the yard fence, and so on, use the `place`
@@ -56,8 +59,18 @@ stand inside its own cell.
 `validate-world-zones` checks the claims on every validate. It fails when:
 
 - two claims name one cell (the second slice runs `grid free` and `grid place` again);
-- a claim has no layer, or a `Grid_*.layer` has no claim;
-- a grid layer places anything outside its cell.
+- a claim has no layer in `GridWorld_Layers/`, or a `Grid_*.layer` there has no claim;
+- a grid layer places anything outside its cell;
+- a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
+
+## The annex freeze
+
+The legacy annex exists in both worlds until slice W6 deletes it from DebugWorld. To keep the two
+copies from drifting, `validate-world-zones` also fails a branch that adds or changes an entity inside
+the annex rectangle (x 18..114, z 18..114) in any DebugWorld layer. It compares each entity's text
+with the merge base with `origin/main`; deleting is allowed, which is what W6 does. The edit belongs
+in the copy in `GridWorld_Layers/`. The freeze applies to every branch, `town-` passes included; the
+town guard below is unchanged.
 
 ## The guard
 
