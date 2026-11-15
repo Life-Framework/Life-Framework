@@ -1,0 +1,4 @@
+09:00:01.100  DEFAULT      : Engine start, not a triage line
+09:00:02.200  SCRIPT (E): [LFDebug:Persistence] save point FAILED id=12
+09:00:03.300  SCRIPT (E): [LFDebug:Persistence] save point FAILED id=47
+09:00:04.400  SCRIPT (E): VME: NULL pointer to instance in LF_BarComponent.OnInit (Scripts/Game/Feature/Bar/LF_BarComponent.c:140)
