@@ -27,6 +27,12 @@
 // "lane ports collide: 2011 session 2 / test 10"; with the escape-less /sfrees*$/ of main back "pool status does not fold free and
 // stale lanes (one row per lane on a big machine)".
 // red-proof 2026-11-14 (pool-ram-select), each rule broken alone: with the rank sort disabled "a starved local was still tried before a roomy remote (local,lf-testbox)"; with the old first-server rule "the first test server on a starved machine (0.4 GB free) was admitted"; without the budgetMultiplier weight "a local machine with ample RAM lost to the slower laptop"; without the pinned hint "pool status does not say the other machine has room"; with rewriteTicket writing a dropped ticket "a replaced request came back when its waiter rewrote the ticket (one worktree queued twice)"; with pool.json sessionIdleMaxMin 30 "a session idle 6 min with nobody waiting was kept (limit 5)"; with acquireSlot in cmdCi "a lane is taken outside the suite run in: cmdCi"; with --local in auditTestArgs "the placement audit pins its test run to this PC"; without the cache "the remote RAM read was not cached for its ttl (3 reads for 3 decisions over 9 s)"; with pinWarning off "no queue-time warning for a pin onto a starved machine (null)"; without the upload step "a remote audit run does not carry its input and output".
+// red-proof 2026-11-15 (pool-selftest-load, #1439): 5 copies at once beside 16 CPU hogs and 2 processes churning 1 GB of
+// RAM each: the file before this change failed 1 of 5 with "the holder's gate let a burst start overshoot the floor"
+// (free RAM read in one PowerShell process, the gate run in the next, seconds apart); after it 10 of 10 passed (67-97 s).
+// The two other load failures seen in gate logs are fixed on the same reasoning but not provoked here: "EBUSY ... lf-lockrace-b-*\result-*"
+// (the racer's result file was read while still open; it now renames into place and the read retries) and the fixed
+// 400/1500/1800 ms sleeps of the priority/promotion checks (they now wait on the queue tickets).
 // red-proof 2026-11-14 (pool-throughput), each rule broken alone: with the old early return
 // (machines.length < 2) in chooseSessionMachine "a 2-client request that started while the laptop was
 // down did not move to it when it came back (local after 80 ms)"; with a starved RAM head always
@@ -375,10 +381,19 @@ try {
       await new Promise((r) => setTimeout(r, 300));
       slot.release();
     };
+    // Wait on the queue tickets, not on fixed sleeps: under load a request can take longer than any fixed delay to
+    // write its ticket, and the order assertions assume the tickets are there (and, below, how old they are).
+    const ticketsAtLeast = async (n) => {
+      const end = Date.now() + 60000;
+      while (pool.liveTickets(rdir).length < n) {
+        if (Date.now() > end) throw new Error(`queue: ${n} ticket(s) never appeared`);
+        await new Promise((r) => setTimeout(r, 25));
+      }
+    };
     const pLow = run("low", "low");
-    await new Promise((r) => setTimeout(r, 400));
+    await ticketsAtLeast(1);
     const pNormal = run("normal", "normal");
-    await new Promise((r) => setTimeout(r, 1500));
+    await ticketsAtLeast(2);
     rmSync(join(rLockDir, "server-test-1.lock"), { force: true });
     await Promise.all([pLow, pNormal]);
     check(order.join() === "normal,low", `priority: a queued low went before a later normal (${order.join()})`);
@@ -388,9 +403,10 @@ try {
     hold("server-test-1", { purpose: "test only" });
     order.length = 0;
     const pLow2 = run("low", "low");
-    await new Promise((r) => setTimeout(r, 1800));
+    await ticketsAtLeast(1);
+    await new Promise((r) => setTimeout(r, 1800)); // from a ticket that exists: the promote limit is 1.2 s
     const pNormal2 = run("normal", "normal");
-    await new Promise((r) => setTimeout(r, 1500));
+    await ticketsAtLeast(2);
     rmSync(join(rLockDir, "server-test-1.lock"), { force: true });
     await Promise.all([pLow2, pNormal2]);
     check(order.join() === "low,normal", `promotion: a low job past the promote limit was overtaken (${order.join()})`);
@@ -893,17 +909,16 @@ const dir0 = () => {
     const gate = (aheadMb, booting) => {
       for (const n of ["server-test-1"]) rmSync(join(ld, n + ".lock"), { force: true });
       if (booting) writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test fast", at: new Date().toISOString() }));
-      const os = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", "[int]((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1024)"], { encoding: "utf8", windowsHide: true, timeout: 60000 });
-      const free = Number((os.stdout ?? "").trim());
-      // Floor 1.5 GB under what is free now (a margin for RAM that moves between the reading and the gate on a loaded
-      // machine): passes alone, fails with 2 GB more to find.
-      const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb: Math.max(1, free - 1500), reserveMb: 0, serverMb: 600, clientMb: 850, testMb: booting ? 2048 : 0, testBootS: 60, aheadMb } };
-      const ps = ["$cfg = '" + JSON.stringify(cfg) + "' | ConvertFrom-Json", "$ld = '" + ld + "'", "$slots = @($cfg.slots)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", pool.PS_RAM_GATE, "Write-Host 'lf-pool: pass'"].join(String.fromCharCode(10));
+      // The floor is set inside the gate's own PowerShell process, 4 GB under the free RAM read there a moment before the
+      // gate reads it again, and "more to find" is 8 GB. A separate process reading free RAM first took seconds under load,
+      // long enough for RAM to move past the old 1.5 GB margin (the pass case failed or the fail case passed).
+      const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb: 1, reserveMb: 0, serverMb: 600, clientMb: 850, testMb: booting ? 8192 : 0, testBootS: 60, aheadMb } };
+      const ps = ["$cfg = '" + JSON.stringify(cfg) + "' | ConvertFrom-Json", "$ld = '" + ld + "'", "$slots = @($cfg.slots)", "$cfg.ram.floorMb = [int]((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1024) - 4000", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", pool.PS_RAM_GATE, "Write-Host 'lf-pool: pass'"].join(String.fromCharCode(10));
       const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { encoding: "utf8", windowsHide: true, timeout: 60000 });
       return (r.stdout ?? "") + (r.stderr ?? "");
     };
     check(/lf-pool: pass/.test(gate(0, false)), "the holder's gate refused a start with room (no starts in flight)");
-    check(/lf-pool: ram /.test(gate(2048, false)), "the holder's gate let a burst start overshoot the floor (2 GB of starts in flight ahead ignored)");
+    check(/lf-pool: ram /.test(gate(8192, false)), "the holder's gate let a burst start overshoot the floor (8 GB of starts in flight ahead ignored)");
     check(/lf-pool: ram /.test(gate(0, true)), "the holder's gate ignored a test server still booting there");
     rmSync(ld, { recursive: true, force: true });
     // Old and new code share the lock dirs: both take a lane with an atomic create (the holder's
@@ -918,7 +933,7 @@ const dir0 = () => {
     // one: 4 winners). Each racer reports ready, waits for `go`, races, writes its result, and stays alive (so its
     // lock is not reclaimable) until `done`.
     const rb = mkdtempSync(join(tmpdir(), "lf-lockrace-b-"));
-    const racer = ["$ld = '" + rd + "'", "$rb = '" + rb + "'", "$enc = New-Object System.Text.UTF8Encoding($false)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", "function Stop-Under($d) {}", "function Test-Server($d) { return $false }", "$cfg = [pscustomobject]@{ token = 'x'; slug = 's'; purpose = 'test'; origin = 'h'; originPid = 1 }", "$got = -1", "$slots = @(@{ lock = 'server-test-1'; dir = 'a' }, @{ lock = 'server-test-2'; dir = 'b' }, @{ lock = 'server-test-3'; dir = 'c' })", "Set-Content -LiteralPath (Join-Path $rb ('ready-' + $PID)) -Value 1", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'go'))) { Start-Sleep -Milliseconds 10 }", loop, "if ($got -ge 0) { Set-Content -LiteralPath (Join-Path $rb ('result-' + $PID)) -Value ('won ' + $slots[$got].lock) } else { Set-Content -LiteralPath (Join-Path $rb ('result-' + $PID)) -Value 'lost' }", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'done'))) { Start-Sleep -Milliseconds 20 }"].join(String.fromCharCode(10));
+    const racer = ["$ld = '" + rd + "'", "$rb = '" + rb + "'", "$enc = New-Object System.Text.UTF8Encoding($false)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", "function Stop-Under($d) {}", "function Test-Server($d) { return $false }", "$cfg = [pscustomobject]@{ token = 'x'; slug = 's'; purpose = 'test'; origin = 'h'; originPid = 1 }", "$got = -1", "$slots = @(@{ lock = 'server-test-1'; dir = 'a' }, @{ lock = 'server-test-2'; dir = 'b' }, @{ lock = 'server-test-3'; dir = 'c' })", "Set-Content -LiteralPath (Join-Path $rb ('ready-' + $PID)) -Value 1", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'go'))) { Start-Sleep -Milliseconds 10 }", loop, "$tmpf = Join-Path $rb ('tmp-' + $PID)", "if ($got -ge 0) { Set-Content -LiteralPath $tmpf -Value ('won ' + $slots[$got].lock) } else { Set-Content -LiteralPath $tmpf -Value 'lost' }", "Move-Item -LiteralPath $tmpf -Destination (Join-Path $rb ('result-' + $PID))", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'done'))) { Start-Sleep -Milliseconds 20 }"].join(String.fromCharCode(10));
     const racerFiles = (prefix) => readdirSync(rb).filter((f) => f.startsWith(prefix));
     const until = async (what, fn) => {
       const end = Date.now() + 180000;
@@ -934,7 +949,18 @@ const dir0 = () => {
     await until("six racers ready", () => racerFiles("ready-").length === 6);
     writeFileSync(join(rb, "go"), "1");
     await until("six racer results", () => racerFiles("result-").length === 6);
-    const wins = racerFiles("result-").map((f) => /won (\S+)/.exec(readFileSync(join(rb, f), "utf8"))?.[1]).filter(Boolean);
+    // A scanner can still hold a file for a moment after the rename: retry a busy read instead of dying on EBUSY.
+    const readBusy = async (p) => {
+      for (let i = 0; ; i++) {
+        try {
+          return readFileSync(p, "utf8");
+        } catch (e) {
+          if (i >= 200 || !/^(EBUSY|EPERM|EACCES)$/.test(e.code)) throw e;
+          await new Promise((r) => setTimeout(r, 50));
+        }
+      }
+    };
+    const wins = (await Promise.all(racerFiles("result-").map((f) => readBusy(join(rb, f))))).map((s) => /won (\S+)/.exec(s)?.[1]).filter(Boolean);
     writeFileSync(join(rb, "done"), "1");
     await Promise.all(kids);
     check(wins.length === 3 && new Set(wins).size === 3, "holders racing for 3 lanes did not end with one owner per lane (" + wins.join(",") + ")");
