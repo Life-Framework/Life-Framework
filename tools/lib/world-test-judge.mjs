@@ -9,7 +9,7 @@
 // validate --world and world ship's own diff, not here.
 
 const COMPILE = /Can't compile|scripts do not compile|SCRIPT\s+\(E\):\s*Compile/i;
-const SUMMARY = /SUMMARY tier=\w+ passed=(\d+) failed=(\d+) total=(\d+)/;
+const SUMMARY = /SUMMARY tier=[\w-]+ passed=(\d+) failed=(\d+) total=(\d+)/g;
 const FAIL = /\[LFTEST\]\s+FAIL\s+(\S+)(.*)$/;
 const ASSERT = /\[LFTEST\]\s+-\s+(.+?)\s*$/;
 
@@ -22,9 +22,11 @@ export function judgeWorldTests({ status = 0, text = "", fallbackTests = [], tes
   const t = String(text);
   if (status === 0) return { blocks: null, warnings: [], failed: 0 };
   if (COMPILE.test(t)) return { blocks: "a script does not compile", warnings: [], failed: 0 };
-  const sum = SUMMARY.exec(t);
-  if (!sum) return { blocks: "the test run printed no SUMMARY (timeout, crash or environment failure), so it judged nothing", warnings: [], failed: 0 };
-  const failed = Number(sum[2]);
+  // A sharded or two-pass run prints one SUMMARY per pass (tier=all, tier=all-core): any pass with a failure counts;
+  // the largest count stands (a remote run prints each line twice).
+  const sums = [...t.matchAll(SUMMARY)];
+  if (!sums.length) return { blocks: "the test run printed no SUMMARY (timeout, crash or environment failure), so it judged nothing", warnings: [], failed: 0 };
+  const failed = Math.max(...sums.map((s) => Number(s[2])));
   if (failed === 0) return { blocks: `the test run exited ${status} with no failing test`, warnings: [], failed: 0 };
 
   const warnings = [];
