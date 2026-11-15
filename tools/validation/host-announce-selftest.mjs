@@ -12,7 +12,7 @@
 // want: \"2026-11-20T12:00:00.000Z\"" and "FAIL wipe allowed 25 h after the post got: false want: true"
 // (11 case(s) failed, exit 1). The wipe guard comes from #1538.
 
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -56,7 +56,14 @@ for (const want of [`<t:${epoch}:F>`, `<t:${epoch}:R>`, BUILD, "Life Framework |
   if (!post.includes(want)) fail(`plain post lacks ${JSON.stringify(want)}:\n${post}`);
 }
 if (/\{\{|\}\}/.test(post)) fail(`plain post has an unfilled placeholder:\n${post}`);
-if (/wipe/i.test(post)) fail(`plain post mentions a wipe:\n${post}`);
+// The alpha post says "expect bugs and wipes" in general; it must not carry the wipe notice of a wipe session.
+if (/WIPE:|24 hours/.test(post)) fail(`plain post carries the wipe notice:\n${post}`);
+// The first session post (2026-11-21): server name, both join routes, the Workshop links, the alpha
+// warning, the weekly schedule; and never a password.
+for (const want of ["Server Browser", "0412780561", "The password is in Discord", "https://reforger.armaplatform.com/workshop/4550A2B656E1B569", "https://reforger.armaplatform.com/workshop/B1E84D5687E11724", "early alpha", "expect bugs and wipes", "every Saturday at 19:00 UK"]) {
+  if (!post.includes(want)) fail(`plain post lacks ${JSON.stringify(want)}:\n${post}`);
+}
+if (post.length >= 2000) fail(`plain post is ${post.length} characters, Discord takes under 2000`);
 
 // 3. --wipe adds the wipe line, in the words of the policy
 const wipePost = lib.buildPost({ template, at: AT, build: BUILD, wipe: true, now: NOW });
@@ -100,7 +107,8 @@ try {
       encoding: "utf8",
       timeout: 60000,
       windowsHide: true,
-      env: { ...process.env, LF_ANNOUNCE_NOW: String(NOW), LF_ANNOUNCE_SESSIONS: sessions, ...extra },
+      // LF_HOST_DIR points at an empty folder so no case can find the real announcements webhook.
+      env: { ...process.env, LF_ANNOUNCE_NOW: String(NOW), LF_ANNOUNCE_SESSIONS: sessions, LF_HOST_DIR: join(dir, "no-host"), ...extra },
     });
   const out = (r) => `${r.stdout ?? ""}${r.stderr ?? ""}`;
 
@@ -122,6 +130,48 @@ try {
   // --send with no channel must fail before it posts anything
   const r4 = run(["--at", AT, "--build", BUILD, "--send"], { LF_ANNOUNCE_CHANNEL: "" });
   if (r4.status === 0) fail(`announce --send without a channel must exit non-zero: ${out(r4)}`);
+
+  // --send with no channel posts to the announcements webhook in secrets.json through ctx.send (no network):
+  // one post, the URL never printed, `announced` written only after it succeeds.
+  {
+    const cmd = await import(pathToFileURL(join(ROOT, "tools", "host", "commands", "announce.mjs")).href);
+    const hostDir = join(dir, "host");
+    mkdirSync(hostDir, { recursive: true });
+    writeFileSync(join(hostDir, "secrets.json"), JSON.stringify({ announceWebhookUrl: "https://discord.com/api/webhooks/1/SELFTEST-TOKEN" }));
+    const runCmd = async (sendFn) => {
+      const sent = [];
+      const lines = [];
+      const log = console.log;
+      console.log = (...a) => lines.push(a.join(" "));
+      const prev = { n: process.env.LF_ANNOUNCE_NOW, s: process.env.LF_ANNOUNCE_SESSIONS, c: process.env.LF_ANNOUNCE_CHANNEL };
+      process.env.LF_ANNOUNCE_NOW = String(NOW);
+      process.env.LF_ANNOUNCE_SESSIONS = sessions;
+      delete process.env.LF_ANNOUNCE_CHANNEL;
+      let code;
+      try {
+        const send = sendFn || (async (url, content) => { sent.push({ url, content }); return { ok: true, status: 204 }; });
+        code = await cmd.main(["--at", AT, "--build", BUILD, "--send"], { root: ROOT, hostDir, send });
+      } finally {
+        console.log = log;
+        for (const [k, v] of [["LF_ANNOUNCE_NOW", prev.n], ["LF_ANNOUNCE_SESSIONS", prev.s], ["LF_ANNOUNCE_CHANNEL", prev.c]]) {
+          if (v === undefined) delete process.env[k]; else process.env[k] = v;
+        }
+      }
+      return { code, sent, out: lines.join("\n") };
+    };
+    const readRow = () => JSON.parse(readFileSync(sessions, "utf8")).next;
+    const failed500 = await runCmd(async () => ({ ok: false, status: 500, error: "HTTP 500" }));
+    eq("failed webhook post exits 1", failed500.code, 1);
+    eq("failed webhook post leaves a draft", "announced" in readRow(), false);
+    const good = await runCmd();
+    eq("webhook --send exits 0", good.code, 0);
+    eq("webhook --send posts once", good.sent.length, 1);
+    eq("webhook --send uses the secrets.json URL", good.sent[0]?.url, "https://discord.com/api/webhooks/1/SELFTEST-TOKEN");
+    if (!(good.sent[0]?.content ?? "").includes("0412780561")) fail(`webhook post lacks the direct join code:\n${good.sent[0]?.content}`);
+    eq("webhook --send records the post time", readRow().announced, POSTED);
+    if (good.out.includes("SELFTEST-TOKEN") || good.out.includes("/api/webhooks/")) fail(`the output shows the webhook URL:\n${good.out}`);
+    writeFileSync(sessions, '{ "next": null }\n');
+  }
 
   // #1537: a draft carries no `announced`; only a posted notice records the ISO post time, and
   // `host wipe` counts its 24 hours from that time. A fake say.mjs stands in for Discord.
