@@ -122,10 +122,12 @@ Stop the server before the copy, so the shutdown save is written. The log shows
   `-loadSessionSave`. *Unverified until #378.*
 - **Ports.** `tools\cli host ports` checks the game and A2S ports are free, or held by the server, and
   prints the router rules to forward.
-- **Box check.** `tools\cli host boxcheck` (planned) will check the box in one run. Until it merges, use
-  `host ports` and the success lines above.
-- **Listing.** `tools\cli host listing` (planned) will check that the server appears in the server
-  browser. Until it merges, join from a machine off your network.
+- **Box check.** `tools\cli host boxcheck` measures a machine you control against the box spec in one
+  run. A panel host has no shell, so use `host ports` where you have one and the success lines above.
+- **Listing.** `tools\cli host listing <address>:<a2s port>` asks the running server what the server
+  browser shows (name, map, maximum players) and compares it with `server/flagship/server.json`;
+  `host listing --remote 0grind` does it for the rented flagship. Then join from a machine off your
+  network.
 
 ## 7. 0grind steps, one line each
 
