@@ -5,7 +5,7 @@
 // the Workshop page and Discord are all stubs, and the build worktree is a temp folder. Covers the dry run
 // touching nothing, the real run's order (core published before the pack, push, restart, verify, post, tag),
 // the deferred restart with players on, --now, and each refusal stopping before anything later runs.
-// red-proof: three mutations made it fail, then were restored (PR body): publishing the pack before the
+// red-proof: the --published cases were written first and failed against the unchanged command (7 failures). Earlier, three mutations made it fail, then were restored (PR body): publishing the pack before the
 // core ("core published before the pack"), dropping the players check ("no restart with players on"), and
 // accepting a Workshop version equal to the release ("refuses a version not newer than the Workshop").
 
@@ -98,7 +98,9 @@ function world(over = {}) {
     },
     fetchText: async (url) => {
       calls.push(`fetch ${url.slice(-16)}`);
-      const published = calls.some((c) => c.startsWith(`publish ${url.includes("4550A2B6") ? "LifeFramework" : "LF_Everon1989"}`));
+      const core = url.includes("4550A2B6");
+      if (over.pages) return PAGE(over.pages[core ? "core" : "pack"]);
+      const published = calls.some((c) => c.startsWith(`publish ${core ? "LifeFramework" : "LF_Everon1989"}`));
       return PAGE(published ? "0.1.1" : over.published ?? "0.1.0");
     },
     publish: async (o) => {
@@ -192,6 +194,48 @@ ok(post.length < 2000 && /more\.$/.test(post), "a long changelog is cut under Di
   const w = world({ players: 3 });
   await runChapter(w.root, ["0.1.1", "--now"], w.deps);
   ok(has(w.calls, "cli host remote 0grind restart --yes"), "--now restarts with players on");
+}
+
+// ---- --published: the maintainer published both items in the Workbench GUI (Visibility Public). No build and
+// no publish run; both pages must already show the version; the server, verify, post and tag steps still run,
+// and the tag lands on the origin/main commit itself (nothing was stamped here).
+{
+  const w = world({ pages: { core: "0.1.1", pack: "0.1.1" } });
+  const code = await runChapter(w.root, ["0.1.1", "--published"], w.deps);
+  ok(code === 0, `--published run passes (${summary(w.calls)})`);
+  for (const p of ["cli wt", "cli pack", "publish"]) ok(!has(w.calls, p), `--published never runs "${p}"`);
+  const order = ["cli host remote 0grind config push --yes", "cli host remote 0grind restart --yes", "cli host remote 0grind logs pull", "cli server-doctor", "send", `git -c user.name=release -c user.email=release@localhost tag -a v0.1.1 ${SHA}`, "git push origin refs/tags/v0.1.1"];
+  const at = order.map((p) => idx(w.calls, p));
+  ok(at.every((x) => x >= 0), `--published ran every later step (missing: ${order.filter((_, i) => at[i] < 0).join(", ")})`);
+  ok(at.every((x, i) => i === 0 || x > at[i - 1]), "--published steps ran in order");
+  ok(has(w.calls, "fetch ") && w.calls.filter((c) => c.startsWith("fetch ")).length >= 2, "--published reads both Workshop pages");
+}
+{
+  const w = world({ pages: { core: "0.1.1", pack: "0.1.1" }, players: 3 });
+  const code = await runChapter(w.root, ["0.1.1", "--published"], w.deps);
+  ok(code === 0 && !has(w.calls, "cli host remote 0grind restart") && has(w.calls, "git push origin refs/tags/v0.1.1"), "--published with players on: no restart, still announced and tagged");
+}
+{
+  const w = world({ pages: { core: "0.1.1", pack: "0.1.1" } });
+  const code = await runChapter(w.root, ["0.1.1", "--published", "--dry-run"], w.deps);
+  ok(code === 0, `--published dry run passes (${summary(w.calls)})`);
+  for (const p of ["cli wt", "cli pack", "publish", "send", "git push", "git -c"]) ok(!has(w.calls, p), `--published dry run never runs "${p}"`);
+  ok(w.calls.some((c) => /skipped: --published/.test(c)), "--published dry run says build and publish are skipped");
+}
+for (const [name, pages] of [
+  ["core page still on the old version", { core: "0.1.0", pack: "0.1.1" }],
+  ["pack page still on the old version", { core: "0.1.1", pack: "0.1.0" }],
+  ["a page already past the version", { core: "0.1.2", pack: "0.1.1" }],
+]) {
+  const w = world({ pages });
+  const code = await runChapter(w.root, ["0.1.1", "--published"], w.deps);
+  ok(code === 1, `--published refuses: ${name} (exit ${code})`);
+  ok(!has(w.calls, "cli host") && !has(w.calls, "send") && !has(w.calls, "git push"), `--published ${name}: nothing after preflight runs`);
+  ok(/SUMMARY release-chapter fail step=1/.test(summary(w.calls)), `--published ${name}: fails in step 1`);
+}
+{
+  const w = world({ pages: { core: "0.1.1", pack: "0.1.1" }, tagExists: true });
+  ok((await runChapter(w.root, ["0.1.1", "--published"], w.deps)) === 1 && !has(w.calls, "cli host"), "--published still refuses an existing tag");
 }
 
 // ---- refusals stop before anything later runs

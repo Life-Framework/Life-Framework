@@ -3967,8 +3967,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
                                 runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
-  release chapter <x.y.z> [--notes f] [--dry-run] [--now] [--verify]  LEAD step: preflight, pack, publish core then pack
-                                to the Workshop, config push + restart 0grind, verify, Discord post, tag (docs/release/chapter-release.md)
+  release chapter <x.y.z> [--notes f] [--dry-run] [--now] [--published] [--verify]  LEAD step: preflight, pack, publish core then pack
+                                to the Workshop, config push + restart 0grind, verify, Discord post, tag; --published skips build and
+                                publish (both Workshop pages must already show x.y.z, published by hand) (docs/release/chapter-release.md)
   promote [--to sha] [--confirm]  stable branch: list PRs merged since stable and write the checklist;
                                 --confirm fast-forwards stable, verifies and closes their issues (cli promote --help)
   prs status|heal [--dry-run] [<n>...]

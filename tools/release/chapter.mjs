@@ -5,6 +5,10 @@
 //   tools\cli release chapter 0.1.1 --dry-run            every check against the real environment, writes nothing
 //   tools\cli release chapter 0.1.1 [--notes <file>]     the real release (lead only)
 //   tools\cli release chapter 0.1.1 --now                restart the server even with players on
+//   tools\cli release chapter 0.1.1 --published          both items already published by hand in the Workbench
+//                                                        GUI (Visibility Public): skips build and publish after
+//                                                        checking both Workshop pages show exactly 0.1.1, then
+//                                                        server, verify, announce, tag (on the origin/main commit)
 //   tools\cli release chapter 0.1.1 --verify             step 5 alone, after a scheduled restart
 //
 // Steps, refusing at the first failure: 1 preflight, 2 build (a clean worktree at the commit, versions
@@ -171,10 +175,11 @@ function parseArgs(args) {
     now: args.includes("--now"),
     verifyOnly: args.includes("--verify"),
     noStamp: args.includes("--no-gproj-stamp"),
+    published: args.includes("--published"),
   };
 }
 
-export const USAGE = "usage: tools\\cli release chapter <x.y.z> [--notes <file>] [--dry-run] [--now] [--at <sha>] [--since <ref>] [--verify]";
+export const USAGE = "usage: tools\\cli release chapter <x.y.z> [--notes <file>] [--dry-run] [--now] [--at <sha>] [--since <ref>] [--published] [--verify]";
 
 export async function runChapter(root, args, deps) {
   const log = deps.log ?? ((s) => console.log(s));
@@ -223,6 +228,12 @@ export async function runChapter(root, args, deps) {
     }
     const pub = parseWorkshopVersion(html);
     if (!pub) return fail(`no version on the Workshop page of ${it.title} (${workshopUrl(it.id)})`);
+    if (o.published) {
+      // Published by hand (Workbench GUI): the page must already show exactly this version.
+      if (pub !== v) return fail(`--published: the Workshop page of ${it.title} (${workshopUrl(it.id)}) shows ${pub}, not ${v}; publish it in Workbench first`);
+      say(`${it.title} ${it.id}: Workshop shows ${pub}`);
+      continue;
+    }
     if (cmpSemver(v, pub) <= 0) return fail(`${v} is not newer than the published ${it.title} ${pub}`);
     say(`${it.title} ${it.id}: published ${pub}, releasing ${v}`);
   }
@@ -230,7 +241,9 @@ export async function runChapter(root, args, deps) {
   if (!inRange(v, range)) {
     return fail(`the pack manifest (${PACK_MANIFEST_FILE}) accepts core ${range.min || "any"} to below ${range.below || "any"}; ${v} is outside it, so the pack would refuse the core. Move m_sCoreBelow in a PR first`);
   }
-  if (stampCoreVersion(g(["show", `${sha}:${CORE_VERSION_FILE}`]).out, v) === null) return fail(`no CORE_VERSION constant in ${CORE_VERSION_FILE}`);
+  const coreText = g(["show", `${sha}:${CORE_VERSION_FILE}`]).out;
+  if (stampCoreVersion(coreText, v) === null) return fail(`no CORE_VERSION constant in ${CORE_VERSION_FILE}`);
+  if (o.published && stampCoreVersion(coreText, v) !== coreText) say(`WARNING: CORE_VERSION at ${sha.slice(0, 10)} is not ${v}; nothing is stamped with --published, so verify only passes if the upload was built from a commit that says ${v}`);
   const checks = deps.gh(["api", `repos/{owner}/{repo}/commits/${sha}/check-runs`, "--jq", "[.check_runs[] | {name, status, conclusion}]"]);
   const statuses = deps.gh(["api", `repos/{owner}/{repo}/commits/${sha}/status`, "--jq", "[.statuses[] | {context, state}]"]);
   if (checks.code !== 0 || statuses.code !== 0) return fail(`gh api: ${checks.err || statuses.err}`);
@@ -268,13 +281,14 @@ export async function runChapter(root, args, deps) {
   // ---- 2. build
   step(2, "build");
   const slug = slugFor(v);
-  if (o.dry) {
+  if (o.published) say("skipped: --published (both Workshop pages already show the version)");
+  else if (o.dry) {
     say(`would run: tools\\cli wt new ${slug}, then git checkout --detach ${sha.slice(0, 10)} in it`);
     say(`would stamp ${v} into ${STAMPED_FILES.join(", ")}${o.noStamp ? " (gproj stamps skipped)" : ""}`);
     for (const it of ITEMS) say(`would pack ${it.addon}: tools\\cli pack ${it.addon} --wait --out <worktree>\\tmp\\release\\pack\\${it.addon} (this PC's Workbench, LF_WB_LOCAL=1)`);
   }
   let build = null;
-  if (!o.dry) {
+  if (!o.dry && !o.published) {
     const made = deps.cli(["wt", "new", slug], { cwd: root });
     const path = (made.out.match(/path:\s+(.+)/) ?? [])[1]?.trim();
     if (made.code !== 0 || !path) return fail(`wt new ${slug}: ${made.out.split("\n").slice(-3).join(" ")} (an old one? tools\\cli wt prune ${slug})`);
@@ -306,7 +320,8 @@ export async function runChapter(root, args, deps) {
 
   // ---- 3. publish
   step(3, "publish");
-  for (const it of ITEMS) {
+  if (o.published) say("skipped: --published (published by hand in Workbench)");
+  for (const it of o.published ? [] : ITEMS) {
     const dir = it.packed ?? `<worktree>\\tmp\\release\\pack\\${it.addon}`;
     const flags = publishFlags({ gproj: `${build?.path ?? "<worktree>"}\\addons\\${it.addon}\\${it.addon}.gproj`, dir, version: v, notesFile: changeNote });
     if (o.dry) {
@@ -362,7 +377,8 @@ export async function runChapter(root, args, deps) {
   if (o.dry) {
     say(`would post ${post.length} characters to the announcements webhook (URL found, not printed):`);
     for (const l of post.split("\n")) log(`    ${l}`);
-    say(`would tag v${v} on the release commit (${sha.slice(0, 10)} plus the version stamps) and push refs/tags/v${v}`);
+    if (o.published) say(`would tag v${v} on ${sha.slice(0, 10)} (nothing is stamped with --published) and push refs/tags/v${v}`);
+    else say(`would tag v${v} on the release commit (${sha.slice(0, 10)} plus the version stamps) and push refs/tags/v${v}`);
     say("dry run OK: nothing was built, published, pushed, restarted, posted or tagged");
     log(`SUMMARY release-chapter ok dry-run version=${v} commit=${sha.slice(0, 10)}`);
     return 0;
@@ -371,12 +387,15 @@ export async function runChapter(root, args, deps) {
   if (!sent?.ok) return fail(`Discord post: ${sent?.error ?? "failed"}`);
   say(`posted the changelog (${post.length} characters)`);
   const ident = ["-c", "user.name=release", "-c", "user.email=release@localhost"];
-  const tag = g([...ident, "tag", "-a", `v${v}`, build.commit, "-m", `Life Framework ${v}`], build.path);
+  // With --published nothing was stamped here, so the tag goes on the origin/main commit itself.
+  const tagAt = build?.commit ?? sha;
+  const tagCwd = build?.path ?? root;
+  const tag = g([...ident, "tag", "-a", `v${v}`, tagAt, "-m", `Life Framework ${v}`], tagCwd);
   if (tag.code !== 0) return fail(`tag: ${tag.err}`);
-  const pushed = g(["push", "origin", `refs/tags/v${v}`], build.path);
+  const pushed = g(["push", "origin", `refs/tags/v${v}`], tagCwd);
   if (pushed.code !== 0) return fail(`push tag: ${pushed.err}`);
-  say(`tagged v${v} at ${build.commit.slice(0, 10)} and pushed it`);
-  say(`tell the maintainer; then tools\\cli wt prune ${slug}`);
+  say(`tagged v${v} at ${tagAt.slice(0, 10)} and pushed it`);
+  say(build ? `tell the maintainer; then tools\\cli wt prune ${slug}` : "tell the maintainer");
   log(`SUMMARY release-chapter ok version=${v} commit=${sha.slice(0, 10)} restart=${restartNow ? "now" : "scheduled"}`);
   return 0;
 }

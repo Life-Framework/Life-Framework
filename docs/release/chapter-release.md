@@ -21,7 +21,18 @@ tools\cli release chapter <x.y.z> --dry-run          always first: every check, 
 tools\cli release chapter <x.y.z> [--notes <file>]   the release
 tools\cli release chapter <x.y.z> --now              restart the server even with players on
 tools\cli release chapter <x.y.z> --verify           step 5 alone, after a scheduled restart
+tools\cli release chapter <x.y.z> --published        both items already published by hand: skip build and publish
 ```
+
+`--published` is for a release the maintainer publishes through the Workbench GUI, where Visibility can be set to
+Public (the headless `-publishAddon` run keeps the item's last visibility). Publish core, then pack, at version
+`<x.y.z>` in Workbench first. With the flag, preflight requires **both** Workshop pages to show exactly `<x.y.z>`
+(a lower or higher version is refused, so a half-finished publish stops here). Steps 2 and 3 are skipped: no
+worktree is made, nothing is packed or stamped, nothing is uploaded. Steps 4 to 6 run as usual: config push and
+restart (or deferral with players on), verify, the Discord post, then the tag. The tag goes on the `origin/main`
+commit itself (`--at <sha>`), since no release commit with version stamps exists, and the command runs from the
+current clean worktree. Verify only passes if the uploaded build says `<x.y.z>` in `LF_PackManifest.CORE_VERSION`;
+the preflight warns when the commit does not. Add `--dry-run` first, as always.
 
 Other flags: `--at <sha>` releases a commit on `origin/main` other than its tip. `--since <ref>` sets where the
 generated notes start. `--no-gproj-stamp` leaves the `.gproj` files unstamped (see "Open questions").
