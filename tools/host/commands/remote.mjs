@@ -6,6 +6,21 @@
 import { get as httpsGet } from "node:https";
 import { join } from "node:path";
 import { queryInfo } from "../a2s.mjs";
+import { isMainCheckout } from "../../wt.mjs";
+import { boxMode } from "../../lib/host-box.mjs";
+import {
+  DEFAULT_EVERY_HOURS,
+  DEFAULT_KEEP,
+  MAX_EVERY_HOURS,
+  currentUser,
+  pruneRemotePulls,
+  queryTask,
+  readSchedule,
+  realRunner,
+  scheduleTask,
+  unscheduleTask,
+  wholeNumber,
+} from "../remote-schedule.mjs";
 import {
   FLAGSHIP_0GRIND,
   API_BASE,
@@ -27,9 +42,9 @@ import {
 } from "../remote-0grind.mjs";
 
 export const help =
-  "remote 0grind status|start|stop|restart|system fix|config show|config push|logs pull|saves pull|rcon <cmd> [--yes] [--verbose]   the flagship on the rented 0grind server through its API: status (API + A2S), config show (secrets masked), config push (server/flagship + secrets.json onto ServerConfig.json and server_settings; a diff unless --yes; ports, bind address and rcon kept; --only name,password,passwordAdmin pushes just those server_settings fields and leaves the scenario, mods and files alone), logs pull (newest console.log for host triage/summary/attendance), saves pull (/profile/.save to backups/<stamp>-remote); system fix (the System-page settings the flagship needs: restart on failure, session save loading, A2S on, the save-deleting options off; a diff unless --yes); start, stop, restart, system fix, push and non-read-only rcon need --yes";
+  "remote 0grind status|start|stop|restart|system fix|config show|config push|logs pull|saves pull [--prune] [--keep N]|saves pull --schedule [--every H] [--keep N]|rcon <cmd> [--yes] [--verbose]   the flagship on the rented 0grind server through its API: status (API + A2S), config show (secrets masked), config push (server/flagship + secrets.json onto ServerConfig.json and server_settings; a diff unless --yes; ports, bind address and rcon kept; --only name,password,passwordAdmin pushes just those server_settings fields and leaves the scenario, mods and files alone), logs pull (newest console.log for host triage/summary/attendance), saves pull (/profile/.save to backups/<stamp>-remote; --prune then deletes the plain -remote pulls beyond the newest --keep N, default 20, never a tagged or local backup), saves pull --schedule (a Windows scheduled task on this PC pulls every --every H hours, default 6, hidden, and prunes; --unschedule removes it, --schedule-status says whether it is registered and when it last ran, --dry-run prints the schtask without running it); system fix (the System-page settings the flagship needs: restart on failure, session save loading, A2S on, the save-deleting options off; a diff unless --yes); start, stop, restart, system fix, push and non-read-only rcon need --yes";
 
-const USAGE = "usage: tools\\cli host remote 0grind status | start|stop|restart --yes | system fix [--yes] | config show | config push [--yes] [--admins-pending] [--only name,password,passwordAdmin] | logs pull [--all] | saves pull | rcon <command> [--yes]";
+const USAGE = "usage: tools\\cli host remote 0grind status | start|stop|restart --yes | system fix [--yes] | config show | config push [--yes] [--admins-pending] [--only name,password,passwordAdmin] | logs pull [--all] | saves pull [--prune] [--keep N] [--schedule [--every H] [--keep N] [--dry-run] | --unschedule | --schedule-status] | rcon <command> [--yes]";
 const say = (m) => console.log(`[LFDebug:Host0grind] ${m}`);
 
 // node:https with no agent, not fetch: a second fetch origin left open at process.exit trips a libuv
@@ -56,12 +71,77 @@ async function failed(r, ctx) {
   return 1;
 }
 
+// --dry-run: reads as "not scheduled", prints what a real run would send, never starts schtasks.
+function dryRunner() {
+  return (a) => {
+    if (a[0] === "/Query") return { status: 1, stdout: "", stderr: "" };
+    say(`dry-run: schtasks ${a.map((x) => (/\s/.test(x) ? `"${x}"` : x)).join(" ")}`);
+    return { status: 0, stdout: "", stderr: "" };
+  };
+}
+
+// The value after a flag, or undefined when the flag is absent.
+function flagValue(rest, flag) {
+  const i = rest.indexOf(flag);
+  return i < 0 ? undefined : String(rest[i + 1] ?? "");
+}
+
+// `saves pull --schedule|--unschedule|--schedule-status` (#1725): the Windows task that keeps an off-site copy.
+// Needs no 0grind token: the task runs the pull later. ctx.runner, ctx.isMain, ctx.nodePath, ctx.user are injected by the selftest.
+function schedule(rest, ctx) {
+  const dry = rest.includes("--dry-run");
+  const isMain = (ctx.isMain ?? isMainCheckout(ctx.root)) && !boxMode(ctx.root, ctx.env ?? process.env).on;
+  const status = rest.includes("--schedule-status");
+  if (isMain && !status) {
+    say("REFUSE: this is the main checkout, the world-editor copy; the task would point at it. Run from a worktree (tools\\cli wt new <slug>), or on a rented box run `tools\\cli host box on` once.");
+    return 1;
+  }
+  if (!ctx.runner && !dry && process.platform !== "win32") {
+    say("scheduling needs Windows (schtasks)");
+    return 1;
+  }
+  const run = dry ? dryRunner() : ctx.runner ?? realRunner;
+  if (rest.includes("--unschedule")) {
+    const r = unscheduleTask({ run });
+    say(r.message);
+    return r.ok ? 0 : 1;
+  }
+  if (status) {
+    const q = queryTask(run);
+    if (q.error) {
+      say(q.error);
+      return 1;
+    }
+    const i = q.info;
+    if (!i.registered) {
+      say("not scheduled; `host remote 0grind saves pull --schedule` registers it");
+      return 1;
+    }
+    const sch = readSchedule(i.command);
+    say(`scheduled: ${sch ? `every ${sch.everyHours} h, keeps the newest ${sch.keep} -remote pulls` : "(interval not readable from the task)"}, as ${i.user || "?"}, status ${i.status || "?"}`);
+    say(i.ran ? `last run ${i.lastRun}, result ${i.lastResult}` : "never ran since it was scheduled");
+    return 0;
+  }
+  const everyText = flagValue(rest, "--every");
+  const keepText = flagValue(rest, "--keep");
+  const everyHours = everyText === undefined ? DEFAULT_EVERY_HOURS : wholeNumber(everyText, 1, MAX_EVERY_HOURS);
+  const keep = keepText === undefined ? DEFAULT_KEEP : wholeNumber(keepText, 1, 1000);
+  if (everyHours === null || keep === null) {
+    say(`usage: saves pull --schedule [--every <1-${MAX_EVERY_HOURS} hours>] [--keep <1-1000 pulls>] [--dry-run]`);
+    return 1;
+  }
+  const r = scheduleTask({ run, root: ctx.root, nodePath: ctx.nodePath ?? process.execPath, user: ctx.user ?? currentUser(), everyHours, keep });
+  say(dry ? `dry-run, nothing registered: ${r.message}` : r.message);
+  return r.ok ? 0 : 1;
+}
+
 export async function main(args, ctx) {
   const [provider, sub, ...rest] = args;
   if (provider !== "0grind") {
     say(provider ? `unknown remote '${provider}' (only 0grind)` : USAGE);
     return 1;
   }
+  if (sub === "saves" && rest[0] === "pull" && ["--schedule", "--unschedule", "--schedule-status"].some((f) => rest.includes(f))) return schedule(rest.slice(1), ctx);
   const yes = rest.includes("--yes");
   const verbose = rest.includes("--verbose");
   const env = ctx.env ?? process.env;
@@ -189,10 +269,20 @@ export async function main(args, ctx) {
   }
 
   if (sub === "saves" && rest[0] === "pull") {
-    const r = await savesPull(client, { dir });
+    const keepText = flagValue(rest, "--keep");
+    const keep = keepText === undefined ? DEFAULT_KEEP : wholeNumber(keepText, 1, 1000);
+    if (keep === null) {
+      say("usage: saves pull [--prune] [--keep <1-1000 pulls>]");
+      return 1;
+    }
+    const r = await (ctx.savesPull ?? savesPull)(client, { dir });
     if (!r.ok) return failed(r, ctx);
     for (const w of r.warnings) say(`WARNING ${w}`);
     say(`saves: /profile/.save -> ${r.dest} (${r.files} files, ${r.bytes} bytes, sizes checked)`);
+    if (rest.includes("--prune")) {
+      const p = pruneRemotePulls(join(dir, "backups"), keep);
+      say(`prune: kept the newest ${p.kept.length} -remote pulls, deleted ${p.deleted.length}${p.deleted.length ? ` (${p.deleted.join(", ")})` : ""}; tagged and local backups untouched`);
+    }
     return 0;
   }
 
