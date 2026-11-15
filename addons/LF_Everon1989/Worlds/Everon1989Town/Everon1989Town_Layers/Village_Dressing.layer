@@ -735,7 +735,7 @@ $grp SCR_DestructibleEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowe
  }
 }
 GenericEntity : "{8592F599B94DC833}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V1.et" {
- coords 137.6 0 257.4
+ coords 129.4 0 257.4
  angles 0 180 0
 }
 GenericEntity SquareRegistry_FileStack : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {

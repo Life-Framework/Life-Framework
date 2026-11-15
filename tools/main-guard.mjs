@@ -203,8 +203,18 @@ async function compileRouted(root, cdir, sha) {
 `); } catch {} };
   process.env.LF_PRIORITY = "high";
   try {
-    const r = await wbRoute.routeWorkbench(cdir, { purpose: "main guard compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], log: say, runLocal: async () => runCli(root, cdir, ["ci", "--wb-only", "--compile-only", "--local"], `compile-${sha.slice(0, 8)}`).then((y) => y.code) });
-    return { code: r.code, log: file };
+    // The remote transcript is printed to stdout by the pool sync; tee it into the log to judge the verdict.
+    const orig = process.stdout.write.bind(process.stdout);
+    process.stdout.write = (chunk, ...rest) => { try { appendFileSync(file, chunk); } catch {} return orig(chunk, ...rest); };
+    let r;
+    try {
+      r = await wbRoute.routeWorkbench(cdir, { purpose: "main guard compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], log: say, runLocal: async () => runCli(root, cdir, ["ci", "--wb-only", "--compile-only", "--local"], `compile-${sha.slice(0, 8)}`).then((y) => y.code) });
+    } finally {
+      process.stdout.write = orig;
+    }
+    let text = "";
+    try { text = readFileSync(file, "utf8"); } catch {}
+    return { code: r.code, log: file, text };
   } catch (e) {
     say(`route failed: ${e?.message ?? e}`);
     return { code: 3, log: file };
@@ -221,7 +231,7 @@ async function compileHead(root, cdir, head) {
     // The guard's own routing (not the checked-out commit's cli, which may predate it): send the compile to a pool
     // machine with the workbench cap; the remote runs that commit's `ci --wb-only --compile-only --local`.
     const x = await compileRouted(root, cdir, sha);
-    const v = mg.compileVerdict(x.code);
+    const v = mg.compileVerdict(x.code, x.text ?? null);
     log(root, `  compile ${sha.slice(0, 8)}: ${v} (exit ${x.code}, ${x.log})`);
     return v;
   };
@@ -341,6 +351,22 @@ export async function runWorker(root) {
     try {
       git(dir, ["fetch", "origin", "--prune"]);
       const head = git(dir, ["rev-parse", "origin/main"]).stdout.trim();
+      // A requested check (`main-guard check <sha>`, e.g. a release candidate) goes first: its compile, then stage 2
+      // on exactly that commit, whatever main's head is.
+      const req = readState(root).request;
+      if (req && !stage2) {
+        writeState(root, { request: null });
+        log(root, `requested check of ${req.slice(0, 8)}`);
+        checkout(cdir, req);
+        const x = await compileRouted(root, cdir, req);
+        const v = mg.compileVerdict(x.code, x.text ?? null);
+        log(root, `  compile ${req.slice(0, 8)}: ${v} (exit ${x.code}, ${x.log})`);
+        if (v === "ok") {
+          mark(root, cdir, req, "compiled-ok");
+          stage2 = checkHead(root, dir, req).catch((e) => { log(root, `stage 2 failed: ${e?.message ?? e}`); writeState(root, { running: null }); }).finally(() => { stage2 = null; });
+        } else if (v === "fail") mark(root, cdir, req, "red", { step: "compile" });
+        else { log(root, `${req.slice(0, 8)}: no compile verdict; request kept`); writeState(root, { request: req }); }
+      }
       // Stage 1 first: compile the newest head.
       const c = mg.shouldCompile(readState(root), head, Date.now());
       if (c.run) await compileHead(root, cdir, head);
@@ -385,6 +411,16 @@ export async function main(args, { root }) {
     for (let i = 0; i < 20 && !workerAlive(root); i++) await new Promise((r) => setTimeout(r, 500));
     console.log(mg.statusLine(readState(root), { alive: workerAlive(root) }));
     return workerAlive(root) ? 0 : 1;
+  }
+  if (sub === "check") {
+    const want = args[1];
+    if (!want) { console.log("usage: tools\cli main-guard check <sha>   compile, then the full check, on exactly that main commit"); return 1; }
+    wt.git(mainRoot(root), ["fetch", "origin", "--prune"]);
+    const sha = wt.git(mainRoot(root), ["rev-parse", `${want}^{commit}`]).stdout.trim();
+    if (!sha || wt.git(mainRoot(root), ["merge-base", "--is-ancestor", sha, "origin/main"]).status !== 0) { console.log(`FAIL  ${want} is not a commit on origin/main`); return 1; }
+    writeState(root, { request: sha });
+    console.log(`main-guard: check of ${sha.slice(0, 8)} requested; it runs next (${workerAlive(root) ? "worker running" : "start the guard"}). Statuses: main-guard/compile, main-guard/suite on ${sha.slice(0, 8)}`);
+    return 0;
   }
   if (sub === "stop") {
     const pid = workerAlive(root);

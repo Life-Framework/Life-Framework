@@ -15,10 +15,10 @@
 // no client, no session lane. tools/visual/wb/LF_VisualShotsPlugin.c does the engine side;
 // docs/visual-testing.md says what this does and does not prove.
 
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { freemem } from "node:os";
+import { freemem, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { deflateSync, inflateSync } from "node:zlib";
@@ -26,6 +26,7 @@ import { quietSpawn } from "../lib/quiet-launch.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
+import { GRID_WORLD, gridLayersDir } from "../lib/worlds.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PLUGIN = join(ROOT, "tools", "visual", "wb", "LF_VisualShotsPlugin.c");
@@ -63,16 +64,22 @@ const num = (v, d) => (v === undefined || Number.isNaN(Number(v)) ? d : Number(v
 const r1 = (v) => Math.round(v * 10) / 10;
 const safe = (s) => String(s).replace(/[^A-Za-z0-9_-]/g, "_");
 
-// "hospital" -> the areas.json entry; "262,255" -> an ad-hoc area.
+// A place in GridWorld that is not a claimed cell, as grid:<name>. The annex gate is the gap in the north fence
+// (x 69..79, z 112; docs/architecture/world-zones.md); front 0 sees it from the village side, looking down +z.
+export const GRID_PLACES = {
+  "annex-gate": { name: "grid-annex-gate", x: 74, y: 0, z: 108, radius: 10, front: 0 },
+};
+
+// "hospital" -> the areas.json entry; "262,255" -> an ad-hoc area. A grid: area carries world "grid" (GridWorld).
 export function resolveArea(arg, areas, radius, { root = ROOT } = {}) {
-  // grid:<slug> is a debug-grid cell (tools/grid/cells/<slug>.json); town:<area> is an areas.json
-  // area that must lie in the town zone (docs/architecture/world-zones.md).
+  // grid:<slug> is a debug-grid cell (tools/grid/cells/<slug>.json) or a named GridWorld place; town:<area> is an
+  // areas.json area that must lie in the town zone (docs/architecture/world-zones.md).
   const zoned = /^(grid|town):(.+)$/.exec(String(arg));
   if (zoned && zoned[1] === "grid") {
     const entry = readCells(root).find((c) => c.slug === zoned[2]);
-    const area = entry && zoneLookArea(entry);
-    if (!area) throw new Error(`no grid cell for "${zoned[2]}" (tools\\cli grid list)`);
-    return { ...area, radius: radius ?? area.radius };
+    const area = (entry && zoneLookArea(entry)) || GRID_PLACES[zoned[2]];
+    if (!area) throw new Error(`no grid cell for "${zoned[2]}" (tools\\cli grid list; places: ${Object.keys(GRID_PLACES).join(", ")})`);
+    return { ...area, world: "grid", radius: radius ?? area.radius };
   }
   if (zoned) {
     const town = areas.find((a) => a.name === zoned[2]);
@@ -87,6 +94,21 @@ export function resolveArea(arg, areas, radius, { root = ROOT } = {}) {
   const x = Number(m[1]);
   const z = Number(m[2]);
   return { name: `xz-${Math.round(x)}-${Math.round(z)}`, x, y: 0, z, radius: radius ?? 20, front: 180 };
+}
+
+// grid:all: a contact sheet of every claimed cell, each resolved like grid:<slug>.
+export function resolveGridAll(areas, radius, { root = ROOT } = {}) {
+  const cells = readCells(root).filter((c) => c.slug && !c.error);
+  if (!cells.length) throw new Error("grid:all found no claimed cell (tools\\cli grid list)");
+  return cells.map((c) => resolveArea(`grid:${c.slug}`, areas, radius, { root }));
+}
+
+// The one world a look opens (docs/architecture/three-worlds.md): GridWorld for grid: areas, the playtest world
+// (the pack town when the pack is here) for every town area. A run opens one world, so the two cannot mix.
+export function worldOfAreas(areas) {
+  const grid = areas.filter((a) => a.world === "grid").length;
+  if (grid && grid !== areas.length) throw new Error("a look opens one world: grid: targets (GridWorld) and town areas (the playtest world) need separate runs");
+  return grid ? GRID_WORLD : WORLD;
 }
 
 // ------------------------------------------------------------------ plan
@@ -156,7 +178,7 @@ export function planText(shots, areas, opts = {}) {
   const minX = Math.min(...areas.map((a) => a.x - a.radius));
   const minZ = Math.min(...areas.map((a) => a.z - a.radius));
   const lines = [
-    `world ${opts.world || WORLD}`,
+    `world ${opts.world || worldOfAreas(areas)}`,
     `mode ${opts.edit ? "edit" : "play"}`,
     `hour ${opts.hour ?? DEFAULTS.hour}`,
     `settle ${opts.settle ?? DEFAULTS.settle}`,
@@ -570,13 +592,14 @@ async function run(args) {
       itemPerArea = plan.perArea;
       itemNotes = plan.notes;
     } else {
-      areas = args.pos[0] === "all" ? all.map((a) => ({ ...a })) : args.pos.map((p) => resolveArea(p, all, radius));
+      areas = args.pos[0] === "all" ? all.map((a) => ({ ...a })) : args.pos.flatMap((p) => (p === "grid:all" ? resolveGridAll(all, radius) : [resolveArea(p, all, radius)]));
+      worldOfAreas(areas); // refuses grid: and town targets in one run before anything starts
     }
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
     return 2;
   }
-  const world = itemPerArea ? null : loadWorld(ROOT);
+  const world = itemPerArea ? null : loadWorld(ROOT, worldOfAreas(areas) === GRID_WORLD ? gridLayersDir(ROOT) : undefined);
   const opts = { world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
   const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
   for (const n of itemNotes) console.log(`look: ${n}`);
@@ -640,7 +663,7 @@ async function run(args) {
         parseStatus,
       }).catch((e) => ({ ok: false, why: `look server error: ${e.message}` }));
       // A served answer on the wrong world (#1147: a default scene) is a broken server, not a failed look.
-      const wrongWorld = r.ok ? worldProblem(parseStatus(r.statusText), opts.world || WORLD) : null;
+      const wrongWorld = r.ok ? worldProblem(parseStatus(r.statusText), opts.world || worldOfAreas(areas)) : null;
       if (wrongWorld) {
         serve.killServer(ROOT, serve.readServeState(ROOT));
         r.ok = false;
@@ -687,7 +710,7 @@ async function run(args) {
     console.log(`look: not here: ${starved}`);
     return ENV_SHORT_CODE;
   }
-  const wantedWorld = opts.world || WORLD;
+  const wantedWorld = opts.world || worldOfAreas(areas);
   const wp = worldProblem(status, wantedWorld);
   if (wp) {
     const log = latestLog(profile);
@@ -825,6 +848,44 @@ export async function selftest() {
   const plan = planText(shots, [area], { hour: 9 });
   ok(/^world Worlds\/(DebugWorld\/DebugWorld|Everon1989Town\/Everon1989Town)\.ent\nmode play\nhour 9\nsettle 350\nfirst 3000\npark -60 40\nshot /.test(plan), `plan head: ${plan.slice(0, 110)}`);
   ok(planText(shots, [area], { edit: true }).includes("\nmode edit\n"), "--edit did not reach the plan");
+  {
+    // Three worlds (docs/architecture/three-worlds.md): grid: opens GridWorld, a town area the playtest world.
+    // red-proof: 2026-11-16 written before worldOfAreas existed: planText named the town world for a grid: plan and
+    // look grid:annex-gate threw "no grid cell"; both failed, then passed.
+    const gate = resolveArea("grid:annex-gate", [], undefined, { root: join(ROOT, "tmp", "no-such-root") });
+    ok(gate.world === "grid" && gate.x > 60 && gate.x < 90 && gate.z > 100 && gate.z < 125, `grid:annex-gate resolved to ${JSON.stringify(gate)}`);
+    const gridPlan = planText(shotsFor(gate, [], { close: 0 }), [gate]);
+    ok(gridPlan.startsWith("world Worlds/GridWorld/GridWorld.ent\n"), `a grid: plan names ${gridPlan.split("\n")[0]}`);
+    const townPlan = planText(shotsFor(area, world, { close: 0 }), [area]);
+    ok(/^world Worlds\/(DebugWorld\/DebugWorld|Everon1989Town\/Everon1989Town)\.ent\n/.test(townPlan), `a town plan names ${townPlan.split("\n")[0]}`);
+    ok(planText([], [gate], { world: "Worlds/Bad/Bad.ent" }).startsWith("world Worlds/Bad/Bad.ent\n"), "--world did not beat the grid world");
+    ok(worldOfAreas([gate]) === "Worlds/GridWorld/GridWorld.ent" && /DebugWorld|Everon1989Town/.test(worldOfAreas([area])), "worldOfAreas");
+    let mixed = false;
+    try {
+      worldOfAreas([gate, area]);
+    } catch (e) {
+      mixed = /one world/.test(e.message);
+    }
+    ok(mixed, "a grid: and a town area in one look were not refused");
+    // grid:all is every claimed cell; with no claim it is an error, not an empty run.
+    const root = mkdtempSync(join(tmpdir(), "look-grid-"));
+    try {
+      mkdirSync(join(root, "tools", "grid", "cells"), { recursive: true });
+      writeFileSync(join(root, "tools", "grid", "cells", "a-shop.json"), JSON.stringify({ slug: "a-shop", cell: "c1r4" }));
+      writeFileSync(join(root, "tools", "grid", "cells", "b-bar.json"), JSON.stringify({ slug: "b-bar", cell: "c2r1" }));
+      const every = resolveGridAll([], undefined, { root });
+      ok(every.length === 2 && every.every((a) => a.world === "grid") && every[0].name === "grid-a-shop", `grid:all gave ${every.map((a) => a.name)}`);
+      let empty = false;
+      try {
+        resolveGridAll([], undefined, { root: join(root, "none") });
+      } catch {
+        empty = true;
+      }
+      ok(empty, "grid:all with no claim did not throw");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }
   {
     // Zoned targets (docs/architecture/world-zones.md): town:<area> refuses an area inside the grid; grid:<slug> needs a claim.
     let refused = false;
@@ -990,7 +1051,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug> | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);

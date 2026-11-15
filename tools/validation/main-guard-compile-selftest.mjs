@@ -67,6 +67,10 @@ const HEAD = "d".repeat(40);
   const card = mg.fixCard(town, "suite", "LF_Test_X", "log.txt");
   check(/#1867/.test(card.title) && /maintainer/.test(card.body), "fix card names the PR and why");
 }
+// 3b. Exit 1 without the compiler's words (2026-11-15: 11 s on lf-cloud, a false red that bisected to an already
+// fixed PR) is no verdict; with "does not compile" it is red.
+check(mg.compileVerdict(1, "main guard compile: lf-cloud finished (exit 1) in 11 s") === "env", "exit 1 without a compile error: env");
+check(mg.compileVerdict(1, "validate-scripts: FAILED - Enforce Script does not compile [LifeFramework]") === "fail", "exit 1 with a compile error: fail");
 // 4b. A revert runs with every merge driver set to keep ours (they fail under git revert; #1847 and #1856 were
 // left unreverted that way), then regenerates the generated files.
 {
@@ -82,8 +86,10 @@ const HEAD = "d".repeat(40);
   check(mg.shouldCompile({ lastCompileAt: new Date(1000).toISOString() }, HEAD, 1000 + mg.COMPILE_BATCH_MS + 1).run === true, "compile runs after 3 min");
   const w = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
   const loop = w.slice(w.indexOf("export async function runWorker"));
-  check(loop.indexOf("compileHead(") > 0 && loop.indexOf("compileHead(") < loop.indexOf("checkHead("), "worker: compile before stage 2");
+  check(loop.indexOf("compileHead(") > 0 && loop.indexOf("compileHead(") < loop.indexOf("checkHead(root, dir, s.lastCompiled)"), "worker: compile before stage 2");
   check(/shouldRun\(s, s\.lastCompiled/.test(loop), "worker: stage 2 only on a compiled-ok head");
+  check(loop.indexOf("readState(root).request") > 0 && loop.indexOf("readState(root).request") < loop.indexOf("compileHead("), "worker: a requested check (main-guard check <sha>) runs before the head's compile");
+  check(loop.includes("checkHead(root, dir, req)"), "worker: the requested commit gets stage 2 on exactly that sha");
   check(/revertRefusal\(b\.culprit, readState\(root\), \{ step: step\.name \}\)/.test(w), "worker: stage 2 refusal knows the step");
 }
 

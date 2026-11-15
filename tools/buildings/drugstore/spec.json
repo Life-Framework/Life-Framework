@@ -1,0 +1,145 @@
+{
+  "slug": "drugstore",
+  "name": "Drugstore",
+  "concept": "The village pharmacy of 1989 Everon: a chemist on the ground floor of a two-storey town shop house, the pharmacist living in the flat above. The base-game ShopHouse_E_2I01t with the vanilla drugstore variant's doors, windows and Drugstore fascia sign, and our own copy of its furniture: self-serve gondolas of gauze, aspirin and tourniquets paid at the till, and a dispensary counter where morphine and saline are sold to licensed medics only (MEDIC_ACCESS). A pharmacist in a white coat stands behind the counter. The shelves stay thin until the supermarket card's package pipeline can make 1989 pharmacy packages (pill boxes, plasters, cough syrup).",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/Drugstore",
+  "vanilla": {
+    "base": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et",
+    "building": "ShopHouse_E_2I01t_drugstore_lf",
+    "furniture": "Furniture/ShopHouse_E_2I01t_furniture_drugstore_lf_01"
+  },
+  "budget": {
+    "min_doors": 1
+  },
+  "store": {
+    "prefab": "Drugstore_Store",
+    "key": "everon_drugstore",
+    "boundary": {
+      "center": [
+        2.08,
+        0,
+        -0.45
+      ],
+      "half": [
+        3.75,
+        0,
+        7.9
+      ]
+    },
+    "restock_seconds": 300,
+    "till": "CashierShop_01",
+    "fixtures": [
+      {
+        "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+        "at": [
+          1.57,
+          0.199,
+          -0.323
+        ],
+        "why": "the till counter, where the vanilla counter stood"
+      },
+      {
+        "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+        "at": [
+          1.16,
+          1.238,
+          -0.325
+        ],
+        "yaw": -180,
+        "why": "the till on it: shelf goods are paid here"
+      }
+    ],
+    "counters": [
+      {
+        "prefab": "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et",
+        "at": [
+          3.4,
+          0.199,
+          -0.323
+        ],
+        "outlet": "pharmacy_counter",
+        "why": "the dispensary beside the till: morphine and saline behind MEDIC_ACCESS; the order slip names the missing licence"
+      }
+    ],
+    "alarm": {
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "at": [
+        4.9,
+        2.6,
+        8.08
+      ],
+      "yaw": 0,
+      "offset": [
+        0,
+        0.167,
+        0.065
+      ],
+      "reach": 10,
+      "why": "TODO(look): the bell box on the shop front beside the window; check x and the wall depth against a picture"
+    },
+    "lines": [
+      {
+        "item": "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et",
+        "fixture": "ShelfShop_01",
+        "pick": [
+          2
+        ],
+        "boards": [
+          2,
+          3
+        ],
+        "per_board": 10
+      },
+      {
+        "item": "{CDCC313B2FB76FE7}Prefabs/Items/Medicine/FieldDressing_01/Gauze_01.et",
+        "fixture": "ShelfShop_01",
+        "pick": [
+          1
+        ],
+        "boards": [
+          2,
+          3
+        ],
+        "per_board": 10
+      },
+      {
+        "item": "{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et",
+        "fixture": "ShelfShop_01",
+        "pick": [
+          4
+        ],
+        "boards": [
+          2,
+          3
+        ],
+        "per_board": 10
+      },
+      {
+        "item": "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et",
+        "fixture": "ShelfShop_01",
+        "pick": [
+          3
+        ],
+        "boards": [
+          1,
+          2
+        ],
+        "per_board": 10
+      },
+      {
+        "item": "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et",
+        "fixture": "ShelfShop_01",
+        "pick": [
+          5
+        ],
+        "boards": [
+          1,
+          2
+        ],
+        "per_board": 10
+      }
+    ]
+  }
+}

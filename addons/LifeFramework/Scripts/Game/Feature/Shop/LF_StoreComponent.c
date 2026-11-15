@@ -7,6 +7,10 @@ class LF_StoreLineState : Managed
 	int m_iMax;
 	int m_iRestock;
 	ref array<vector> m_aSlots = {};
+	//! Yaw of each slot relative to the store, LF_StoreRules.NO_YAW for an unturned copy.
+	ref array<float> m_aYaws = {};
+	//! Copies per folded pile (LF_StoreLine.m_iStack); 0 or 1 is no piles.
+	int m_iStack;
 	//! The shelf entity at each slot, EntityID.INVALID for an empty slot. Same length as m_aSlots.
 	ref array<EntityID> m_aShelf = {};
 
@@ -78,6 +82,7 @@ class LF_StoreComponent : ScriptComponent
 	protected static ref array<EntityID> s_aStrays;
 	protected static ResourceName s_StrayPrefab;
 	protected static vector s_vStrayPoint;
+	protected static float s_fStrayHeight;
 
 	protected ref array<ref LF_StoreLineState> m_aState = {};
 	protected float m_fLastRestockMs;
@@ -145,13 +150,21 @@ class LF_StoreComponent : ScriptComponent
 			state.m_iMax = Math.Max(line.m_iMaxStock, 0);
 			state.m_iStock = LF_StoreRules.StartStock(line.m_iStartStock, state.m_iMax);
 			state.m_iRestock = line.m_iRestockAmount;
-			LF_StoreRules.ParseSlots(line.m_sSlots, state.m_aSlots);
-			foreach (vector slot : state.m_aSlots)
-			{
-				state.m_aShelf.Insert(EntityID.INVALID);
-			}
-
+			state.m_iStack = line.m_iStack;
+			FillSlots(state, line.m_sSlots);
 			m_aState.Insert(state);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void FillSlots(LF_StoreLineState state, string slots)
+	{
+		LF_StoreRules.ParseSlots(slots, state.m_aSlots);
+		LF_StoreRules.ParseSlotYaws(slots, state.m_aYaws);
+		state.m_aShelf.Clear();
+		foreach (vector slot : state.m_aSlots)
+		{
+			state.m_aShelf.Insert(EntityID.INVALID);
 		}
 	}
 
@@ -352,7 +365,72 @@ class LF_StoreComponent : ScriptComponent
 			}
 		}
 
+		if (found > 0)
+			CompactStacks();
+
 		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the copy of a slot stands. A lone slot, or the bottom of a pile, rests on the surface
+	//! under its point; a copy higher in a pile keeps its written height above the bottom one, so the
+	//! whole pile stands on the board its bottom copy found.
+	protected vector SpawnPoint(LF_StoreLineState line, int index)
+	{
+		int base = LF_StoreRules.StackBase(index, line.m_iStack);
+		vector bottom = SnapToSurface(SlotWorld(line, base));
+		return bottom + (SlotWorld(line, index) - SlotWorld(line, base)) + "0 0.02 0";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected IEntity SpawnShelfCopy(LF_StoreLineState line, int index)
+	{
+		vector angles = "0 0 0";
+		if (index < line.m_aYaws.Count() && line.m_aYaws[index] != LF_StoreRules.NO_YAW)
+			angles = Vector(GetOwner().GetYawPitchRoll()[0] + line.m_aYaws[index], 0, 0);
+
+		return LF_Utils.SpawnEntityPrefab(line.m_Prefab, SpawnPoint(line, index), angles);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Closes the gap a copy taken from the middle of a pile left: folded clothes do not float. Each
+	//! copy above the gap is put back one place lower (spawned there, the old one deleted). The stock
+	//! is untouched.
+	protected void CompactStacks()
+	{
+		foreach (LF_StoreLineState line : m_aState)
+		{
+			if (line.m_iStack <= 1)
+				continue;
+
+			array<bool> occupied = {};
+			foreach (EntityID id : line.m_aShelf)
+			{
+				occupied.Insert(id != EntityID.INVALID);
+			}
+
+			array<int> from = {};
+			array<int> to = {};
+			LF_StoreRules.StackMoves(occupied, line.m_iStack, from, to);
+			for (int m = 0; m < from.Count(); m++)
+			{
+				IEntity old = GetGame().GetWorld().FindEntityByID(line.m_aShelf[from[m]]);
+				IEntity moved = SpawnShelfCopy(line, to[m]);
+				if (!moved)
+				{
+					LF_Debug.Error(LF_Stores.FEATURE, string.Format("store %1: a pile copy of %2 did not respawn lower; left where it was", m_sStoreKey, line.m_Prefab));
+					break;
+				}
+
+				line.m_aShelf[to[m]] = moved.GetID();
+				line.m_aShelf[from[m]] = EntityID.INVALID;
+				if (old)
+					SCR_EntityHelper.DeleteEntityAndChildren(old);
+			}
+
+			if (!from.IsEmpty())
+				LF_Debug.Info(LF_Stores.FEATURE, string.Format("store %1: a %2 pile closed up, %3 copies moved down", m_sStoreKey, line.m_Prefab, from.Count()));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -492,6 +570,8 @@ class LF_StoreComponent : ScriptComponent
 		if (allowSpawn)
 			AdoptStrays();
 
+		CompactStacks();
+
 		foreach (LF_StoreLineState line : m_aState)
 		{
 			int want = LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count());
@@ -516,7 +596,7 @@ class LF_StoreComponent : ScriptComponent
 				if (line.m_aShelf[s] != EntityID.INVALID)
 					continue;
 
-				IEntity item = LF_Utils.SpawnEntityPrefab(line.m_Prefab, SnapToSurface(SlotWorld(line, s)) + "0 0.02 0");
+				IEntity item = SpawnShelfCopy(line, s);
 				if (!item)
 				{
 					LF_Debug.Error(LF_Stores.FEATURE, string.Format("store %1: shelf item did not spawn: %2", m_sStoreKey, line.m_Prefab));
@@ -541,6 +621,15 @@ class LF_StoreComponent : ScriptComponent
 			for (int i = 0; i < line.m_aShelf.Count(); i++)
 			{
 				vector point = SlotWorld(line, i);
+				s_fStrayHeight = STRAY_HEIGHT;
+				if (line.m_iStack > 1)
+				{
+					// The copies of a pile are a few centimetres apart: each slot owns only the copy at
+					// its own height, or the bottom one would adopt the whole pile and delete the rest.
+					point = SpawnPoint(line, i);
+					s_fStrayHeight = Math.Min(STRAY_HEIGHT, StackStep(line, i) * 0.5);
+				}
+
 				if (!s_aStrays)
 					s_aStrays = new array<EntityID>();
 
@@ -568,6 +657,27 @@ class LF_StoreComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The height between a pile slot and its nearest neighbour in the same pile; twice
+	//! STRAY_HEIGHT for a pile of one.
+	protected float StackStep(LF_StoreLineState line, int index)
+	{
+		float step = STRAY_HEIGHT * 2;
+		int base = LF_StoreRules.StackBase(index, line.m_iStack);
+		int end = Math.Min(base + line.m_iStack, line.m_aSlots.Count());
+		for (int k = base; k < end; k++)
+		{
+			if (k == index)
+				continue;
+
+			float rise = Math.AbsFloat(line.m_aSlots[k][1] - line.m_aSlots[index][1]);
+			if (rise > 0.001)
+				step = Math.Min(step, rise);
+		}
+
+		return step;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool CollectStray(IEntity entity)
 	{
 		if (!entity || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), s_StrayPrefab))
@@ -581,7 +691,7 @@ class LF_StoreComponent : ScriptComponent
 		vector flat = entity.GetOrigin() - s_vStrayPoint;
 		float rise = Math.AbsFloat(flat[1]);
 		flat[1] = 0;
-		if (flat.Length() <= STRAY_RADIUS && rise <= STRAY_HEIGHT)
+		if (flat.Length() <= STRAY_RADIUS && rise <= s_fStrayHeight)
 			s_aStrays.Insert(entity.GetID());
 
 		return true;
@@ -624,6 +734,56 @@ class LF_StoreComponent : ScriptComponent
 
 		line.m_iStock = LF_StoreRules.ClampStock(stock, line.m_iMax);
 		Sync(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: adds a full line at run time (a store built in script has no attributes) and fills it.
+	void AddTestLine(ResourceName prefab, int maxStock, int stock, string slots, int stack)
+	{
+		if (prefab.IsEmpty() || FindLine(prefab))
+			return;
+
+		LF_StoreLineState state = new LF_StoreLineState();
+		state.m_Prefab = prefab;
+		state.m_iMax = Math.Max(maxStock, 0);
+		state.m_iStock = LF_StoreRules.ClampStock(stock, state.m_iMax);
+		state.m_iStack = stack;
+		FillSlots(state, slots);
+		m_aState.Insert(state);
+		Sync(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: drops a line added by AddTestLine and deletes its display copies.
+	void RemoveTestLine(ResourceName prefab)
+	{
+		LF_StoreLineState line = FindLine(prefab);
+		if (!line)
+			return;
+
+		foreach (EntityID id : line.m_aShelf)
+		{
+			IEntity item = GetGame().GetWorld().FindEntityByID(id);
+			if (item && LF_InventoryUtils.GetStorageHierachyRoot(item) == item)
+				SCR_EntityHelper.DeleteEntityAndChildren(item);
+		}
+
+		m_aState.RemoveItem(line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: the store forgets which entity stands at each slot of a line and leaves the copies
+	//! in the world, the way a restart finds the copies the engine restored.
+	void ForgetShelf(ResourceName prefab)
+	{
+		LF_StoreLineState line = FindLine(prefab);
+		if (!line)
+			return;
+
+		for (int i = 0; i < line.m_aShelf.Count(); i++)
+		{
+			line.m_aShelf[i] = EntityID.INVALID;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

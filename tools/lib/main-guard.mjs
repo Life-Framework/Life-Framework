@@ -112,9 +112,13 @@ export const COMPILE = ["ci", "--wb-only", "--compile-only"];
 
 // `ci --wb-only --compile-only` exit code -> ok | fail | env. 3 = no pool machine took it, 4 = Workbench died
 // short of RAM (tools/lib/wb-gate.mjs ENV_SHORT_CODE): the machine failed, not the scripts.
-export function compileVerdict(code) {
+// A red verdict needs the compiler's own words in the transcript: any other non-zero exit (a sync that failed, a
+// Workbench that never started; 2026-11-15 an 11 s "exit 1" on lf-cloud) is no verdict, never a revert.
+export const COMPILE_ERROR = /does not compile|Can't compile|SCRIPTs*(E)/i;
+export function compileVerdict(code, text = null) {
   if (code === 0) return "ok";
   if (code === 3 || code === 4 || code == null) return "env";
+  if (text !== null && !COMPILE_ERROR.test(String(text))) return "env";
   return "fail";
 }
 

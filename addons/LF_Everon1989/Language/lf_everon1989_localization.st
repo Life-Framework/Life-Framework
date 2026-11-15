@@ -299,10 +299,25 @@ StringTable {
      Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
      Comment "Pack override of the core gun counter description (price list subtitle) for the Everon 1989 gun store."
     }
+    CustomStringTableItem "{88A40BFFEF7CB897}" {
+     Id "LF-Shop_Desc_PharmacyCounter"
+     Target_en_us "Morphine and saline, for licensed medics only."
+     Comment "Shop description of the drug store pharmacy counter (outlet pharmacy_counter)."
+    }
+    CustomStringTableItem "{B1BC977506FDDA48}" {
+     Id "LF-Shop_Name_PharmacyCounter"
+     Target_en_us "Dispensary"
+     Comment "Shop name of the drug store pharmacy counter: the item catalogue outlet pharmacy_counter, morphine and saline behind the medic licence."
+    }
     CustomStringTableItem "{53F9E5EEA5C98E4E}" {
      Id "LF-Shop_Open_GunCounter"
      Target_en_us "Buy guns and ammunition"
      Comment "Pack override of the core gun counter action: in the Everon 1989 gun store the counter sells rifles, pistols, magazines, scopes, holsters and pouches, not only a handgun."
+    }
+    CustomStringTableItem "{7729AC333C1E6567}" {
+     Id "LF-Shop_Open_PharmacyCounter"
+     Target_en_us "Ask the pharmacist"
+     Comment "Action prompt at the drug store pharmacy counter: opens the price list of the restricted medicines."
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
