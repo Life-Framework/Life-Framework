@@ -61,7 +61,7 @@ restart by hand, say it in Discord first, then:
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host logs archive` *(planned)* | The finished session's logs moved to `<host>/logs/<session-stamp>/`; the live folder untouched. |
+| `tools\cli host logs archive` | The finished session's logs moved to `<host>/logs/<session-stamp>/`; the live folder untouched. |
 | `tools\cli host triage` | Error groups counted, each `known` or `new` against [debug-log-triage](../debug-log-triage.md). A `new` group becomes an issue. |
 | `tools\cli host attendance` | Unique players, the peak and when it was, minutes per player. |
 | `tools\cli host offsite <dir>` | Every backup copied to the second drive and checked by size and hash. |
