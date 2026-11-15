@@ -20,6 +20,9 @@ absent, classify it, fix or file it, and add the row here.
   (a row below matches) or new. Run it first; only the `NEW` groups need a verdict. The first
   cell of a row is the pattern: `...`, `<x>` and `N` are wildcards, and a row that is only a
   `[LFDebug:Tag] ...` does not vouch for errors or warnings (`tools/lib/log-triage.mjs`).
+  `host triage --draft` also writes `tmp/triage/<date>/<n>.md` per `NEW` group (excerpt, count,
+  first time, suspected feature from the `[LFDebug:<Feature>]` tag) and prints a
+  `gh issue create` line for each; it never files them, a person runs the ones worth filing.
 - Grep for real failures: `( E )`, `SCRIPT (E)`, `VME:`, `Unable to find`,
   `Missing string ID`, `Virtual Machine Exception`. Judge by specific patterns,
   never by total error counts (vanilla noise below produces dozens of lines
