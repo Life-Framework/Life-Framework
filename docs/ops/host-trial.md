@@ -125,7 +125,7 @@ so write which source you used. The 16-player budget (the alpha's full server) i
 
 | Check | How to check in the trial | Proof | Result |
 |---|---|---|---|
-| One-run box check | `toolsi host boxcheck`: cores, clock, RAM, disk and the server install against the spec (`host ports` and the success lines in section 5 cover the rest) | One summary line per check | [ ] Pass [ ] Fail [ ] Gap |
+| One-run box check | `tools\cli host boxcheck`: cores, clock, RAM, disk and the server install against the spec (`host ports` and the success lines in section 5 cover the rest) | One summary line per check | [ ] Pass [ ] Fail [ ] Gap |
 
 ## The decision
 
