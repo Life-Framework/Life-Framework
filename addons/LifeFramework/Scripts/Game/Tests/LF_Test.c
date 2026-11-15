@@ -2,11 +2,15 @@
 //! world = needs the DebugWorld loaded (prefabs, layouts, spawning).
 //! persistence = reserved for the public-API save/reload round trips
 //! (roadmap Phase 1); runs in the all tier until the first suite lands.
+//! perf = a timing gate. It has no place in fast or all (a timing measure is only sharp on an idle
+//! machine, and it flakes under load); `tools\cli test --tier perf` runs these alone, with more
+//! repeats (LF_TestManager.PerfRun()).
 enum LF_TestTier
 {
 	LOGIC,
 	WORLD,
-	PERSISTENCE
+	PERSISTENCE,
+	PERF
 }
 
 class LF_Test

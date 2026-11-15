@@ -17,6 +17,8 @@ const root = join(here, "..", "..");
 const real = s.readRegistry(root);
 check(real.length > 100, `the registry parses (${real.length} tests)`);
 check(new Set(real.map((t) => t.cls)).size === real.length, "registry class names are unique");
+check(!real.some((t) => t.tier === "PERF"), "a PERF test is not in the shard registry (`--tier all` does not run it, and a slice would run it at the lenient settings)");
+check(s.parseRegistry("manager.Register(new LF_Test_P(), LF_TestTier.PERF);\nmanager.Register(new LF_Test_Q(), LF_TestTier.LOGIC);").length === 2, "parseRegistry reads the PERF tier");
 {
   const plan = s.planShards(real, 4, {});
   check(plan.flat().length === real.length && new Set(plan.flat()).size === real.length, "the real registry splits into 4 slices covering every test once");

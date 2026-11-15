@@ -44,7 +44,7 @@ import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync,
 import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
 import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
 import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
@@ -56,7 +56,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
-import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
+import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -73,8 +73,9 @@ import * as pool from "./remote/pool.mjs";
 import * as shards from "./lib/test-shards.mjs";
 import * as testCache from "./lib/test-cache.mjs";
 import * as testWorld from "./lib/test-world.mjs";
-import * as wbLock from "./lib/wb-lock.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
+import * as wbRoute from "./lib/wb-route.mjs";
+import * as gateTier from "./lib/gate-tier.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
@@ -82,6 +83,10 @@ import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
+import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
+import { helpRequest, usageText } from "./lib/help-guard.mjs";
+import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
+import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -644,16 +649,34 @@ function invokeScriptAsync(full, opts = {}) {
   if (full.endsWith(".ps1")) [cmd, args] = [PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full]];
   else if (full.endsWith(".cmd") || full.endsWith(".bat")) [cmd, args] = ["cmd", ["/c", full]];
   else if (full.endsWith(".sh")) [cmd, args] = ["bash", [full]];
-  return new Promise((done) => {
+  const { onSpawn, ...spawnOpts } = opts;
+  return new Promise((resolveRun) => {
     let stdout = "";
     let stderr = "";
-    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...opts });
+    let settled = false;
+    const done = (r) => {
+      if (!settled) {
+        settled = true;
+        resolveRun(r);
+      }
+    };
+    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...spawnOpts });
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
     child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+    // kill(why): end the check and its children now and settle with a failure (the budget ran out).
+    // Settles without waiting for `close`: a grandchild holding the pipes open must not hold the run.
+    onSpawn?.({
+      pid: child.pid,
+      kill(why) {
+        killTreeSync(child.pid);
+        done({ status: 124, stdout, stderr: `${stderr}${stderr && !stderr.endsWith("\n") ? "\n" : ""}${why}\n`, timedOut: true });
+      },
+    });
   });
 }
+
 
 async function cmdRunArea(area, root = ROOT, opts = {}) {
   // Worktree checks must use the target checkout's scripts. Using the main
@@ -695,20 +718,41 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const lastSecs = (j) => state?.checks[j.s]?.secs ?? 0;
   const queue = jobs.filter((j) => !j.skipped).sort((a, b) => lastSecs(b) - lastSecs(a));
   const env = toolEnv();
+  // Per-check budget (tools/lib/check-budget.mjs): a check over it is killed and fails by name. Times
+  // leave out any freeze of this process, which is reported once below instead of blamed on a check.
+  const handles = new Map();
+  const dog = createWatchdog({
+    onTimeout: (s, ms) => {
+      console.log(`TIMEOUT ${area}/${s}: over its ${Math.round(ms / 1000)} s budget (LF_VALIDATE_CHECK_BUDGET_S); killing it`);
+      handles.get(s)?.kill(`TIMEOUT ${area}/${s}: killed after ${Math.round(ms / 1000)} s, over the per-check budget (LF_VALIDATE_CHECK_BUDGET_S, default ${checkBudgetMs({}) / 1000} s)`);
+    },
+  });
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
       const started = Date.now();
-      // The Workbench compile takes one of this PC's Workbench slots first (tools/lib/wb-lock.mjs).
-      const wb = FULL_ONLY.has(job.s) ? await wbLock.acquireWorkbench(root, { purpose: job.s }) : null;
-      try {
-        job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
-      } finally {
-        wb?.release();
+      // The Workbench compile takes one of this PC's Workbench slots first (tools/lib/wb-lock.mjs). A PC
+      // without the workbench cap sends it to a pool machine instead (tools/lib/wb-route.mjs): `ci
+      // --wb-only --compile-only` in a synced run folder, its transcript streaming here.
+      if (FULL_ONLY.has(job.s) && !wbRoute.localWorkbench(root).allowed) {
+        const r = await wbRoute.routeWorkbench(root, { purpose: `validate ${job.s} (compile)`, suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"] });
+        job.res = { status: r.code === 0 ? 0 : 1, stdout: "", stderr: r.code === 0 ? "" : `compile did not pass on a pool machine (exit ${r.code}; 3 = no machine took it)\n` };
+      } else {
+        const wb = FULL_ONLY.has(job.s) ? await wbRoute.acquireWorkbench(root, { purpose: job.s }) : null;
+        try {
+          // LF_WB_GUARDED: validate-scripts.ps1 refuses to start Workbench unless the CLI passed the cap check above.
+          dog.start(job.s, checkBudgetMs(process.env, FULL_ONLY.has(job.s) ? 1200 : null));
+          job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env: FULL_ONLY.has(job.s) ? { ...env, LF_WB_GUARDED: "1" } : env, onSpawn: (h) => handles.set(job.s, h) });
+        } finally {
+          wb?.release();
+        }
       }
-      job.secs = (Date.now() - started) / 1000;
+      const own = dog.end(job.s);
+      job.secs = own ? own.ownMs / 1000 : (Date.now() - started) / 1000;
+      job.frozen = own ? own.frozenMs / 1000 : 0;
     }
   };
   await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
+  dog.stop();
   let failed = 0;
   let skippedIncr = 0;
   for (const job of jobs) {
@@ -719,7 +763,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     }
     const { res } = job;
     const ok = res.status === 0;
-    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s)`);
+    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok) failed++;
@@ -739,6 +783,9 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
       console.log(`slowest: ${slow}`);
     }
     if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+  }
+  if (dog.frozenMs() >= 5000) {
+    console.log(`WARN  ${area}: this process was frozen ${(dog.frozenMs() / 1000).toFixed(0)} s (longest ${(dog.longestFreezeMs() / 1000).toFixed(0)} s) by a synchronous call beside the checks (a lock wait or spawnSync in the same process); check times above leave it out`);
   }
   console.log(`${area}: ${ran.length} check(s) run, ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
   return failed ? 1 : 0;
@@ -935,8 +982,14 @@ function latestWorkbenchLog(profile) {
 // builds just that one.
 async function cmdBuild(root = ROOT, opts = {}) {
   guardHeavy(root, "build", opts.force);
+  // A PC without the workbench cap builds on a pool machine (`ci --wb-only --build-only`, desktop session
+  // there): the build is a compile check, its exit code is what a caller needs (tools/lib/wb-route.mjs).
+  if (!wbRoute.localWorkbench(root).allowed) {
+    const r = await wbRoute.routeWorkbench(root, { purpose: "build", suffix: "-build", args: ["ci", "--wb-only", "--build-only", "--local", ...(opts.addon ? ["--addon", opts.addon] : [])] });
+    return r.code === 0 ? 0 : r.code === 3 ? 3 : 1;
+  }
   // One of this PC's Workbench slots for the whole build (tools/lib/wb-lock.mjs).
-  const wb = await wbLock.acquireWorkbench(root, { purpose: "build" });
+  const wb = await wbRoute.acquireWorkbench(root, { purpose: "build" });
   try {
     if (opts.addon) return await buildAddon(root, opts);
     for (const addon of launchAddons(root)) {
@@ -949,7 +1002,7 @@ async function cmdBuild(root = ROOT, opts = {}) {
   }
 }
 
-function buildAddon(root, opts) {
+async function buildAddon(root, opts) {
   const exe = workbenchExe();
   if (!existsSync(exe)) {
     console.log(`FAIL  workbench not found: ${exe}`);
@@ -959,9 +1012,16 @@ function buildAddon(root, opts) {
   // One Workbench build at a time across ALL worktrees: concurrent instances
   // fight over the shared shader cache and can corrupt the user's editor
   // session. The fast dev loop (cli dev) skips the build, so this rarely blocks.
+  // The async wait: `ci` runs validate --full beside this build in one process (tools/wt.mjs acquireLockAsync).
   let lock;
   try {
-    lock = wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
+    try {
+      lock = wt.acquireLock(root, "build", { waitMs: 0 });
+    } catch (e) {
+      if (!opts.wait || !/is held/.test(e.message)) throw e;
+      console.log(`build: waiting up to 900 s for the build lock, held by ${describeHolder(join(wt.ensureHub(root), "locks", "build.lock"))}`);
+      lock = await wt.acquireLockAsync(root, "build", { waitMs: 900000 });
+    }
   } catch (e) {
     console.log(`FAIL  ${e.message} (a headless Workbench build is running in another worktree)`);
     return Promise.resolve(1);
@@ -1093,6 +1153,11 @@ function buildAddon(root, opts) {
 // loads like a Workshop download: -addonsDir <out-parent> -addons <GUID> (docs/playtest/workshop-host.md).
 function cmdPack(root = ROOT, opts = {}) {
   guardHeavy(root, "pack", opts.force);
+  const polPack = wbRoute.localWorkbench(root);
+  if (!polPack.allowed) {
+    console.log(`FAIL  ${wbRoute.refusalText("pack", polPack.host)}`);
+    return 1;
+  }
   const exe = workbenchExe();
   if (!existsSync(exe)) {
     console.log(`FAIL  workbench not found: ${exe}`);
@@ -1165,14 +1230,185 @@ function cmdPack(root = ROOT, opts = {}) {
 // inventory operations that never complete). When stale, a headless Workbench
 // opens the project, which registers the new metas and rewrites the file.
 // The main checkout's rdb is the human's editor copy: only warn there.
-// LF_RDB_REFRESH=0 turns the refresh off (warn only).
+// LF_RDB_REFRESH=0 turns the refresh off (warn only). LF_RDB_CHECKED=1 (set for shard children) means the
+// parent run already refreshed or tried to, so the child never waits on the build lock a second time.
+// The wait for the hub `build` lock is LF_RDB_WAIT_S (900 s) for the whole process, every addon together,
+// and prints the holder (tools/lib/lock-wait.mjs).
 const RDB_REFRESH_TYPICAL_S = 15;
+let rdbLockBudget = null;
+function rdbBudget() {
+  if (!rdbLockBudget) rdbLockBudget = new Budget(Number(process.env.LF_RDB_WAIT_S || 900) * 1000);
+  return rdbLockBudget;
+}
 function ensureResourceDatabase(root) {
   wt.copyResourceDatabase(root);
+  refreshOnPool(root);
   // The core always; another addon once it declares a resource (tools/lib/addons.mjs rdbAddons).
   let worst = 0;
   for (const name of rdbAddons(root)) worst = Math.max(worst, ensureAddonResourceDatabase(root, name));
   return worst;
+}
+
+// The fallback for a refresh that has to run on THIS PC (a local run: build, serve, session up, `rdb`,
+// a gate; or a run headed for a machine without the "rdb" cap: prepareResourceDatabase/rdbForSlot below
+// keep the rdb-cap rule of #1256, a machine with the cap refreshes in its own run and never gets here).
+// A headless Workbench is ~15 s per addon but queued 10-50 min behind the hub build lock and this PC's
+// one Workbench slot (2026-11-14: a session waited 20 min, ship proofs 30-50 min). When this PC is busy,
+// short of RAM, or its build lock is held, the refresh runs on a pool machine with the "rdb" cap and a
+// free Workbench slot AND RAM instead (tools/lib/wb-gate.mjs chooseRefresh): the run folder gets this
+// worktree's snapshot, `rdb --local` refreshes there, and pullRemoteRdb copies the rdb home. Any failure
+// leaves the rdb stale and the local refresh below takes over. LF_RDB_REFRESH_WHERE=local|pool|auto
+// (default auto); `pool` tries an rdb-cap machine first. Sync callers cannot await syncAndRun, so
+// `rdb --pool-run` does it in a child process. Never inside a pool run folder (tmp/pool-owner.json): the
+// box refreshes its own copy and must not route onward.
+function buildLockHeld(root) {
+  try {
+    wt.acquireLock(root, "build", { waitMs: 0 });
+  } catch {
+    return true;
+  }
+  wt.releaseLock(root, "build");
+  return false;
+}
+
+function refreshOnPool(root, force = false) {
+  const mode = force ? "pool" : (process.env.LF_RDB_REFRESH_WHERE || "auto").toLowerCase();
+  if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0" || process.env.LF_RDB_POOL === "0" || mode === "local") return;
+  if (existsSync(join(root, "tmp", "pool-owner.json"))) return;
+  const stale = rdbAddons(root).filter((name) => rdbFreshness(addonDir(root, name)).missing.length > 0);
+  if (!stale.length) return;
+  // The same live view `ci` ranks machines by (workbenchMachines: slots and free RAM, here and over ssh),
+  // narrowed to machines whose refresh is known to register resources (the "rdb" cap, #1256).
+  const settings = pool.poolSettings(root);
+  const choose = () => {
+    const view = wbRoute.workbenchMachines(root, { mode: "any", machine: null });
+    return wbGate.chooseRefresh({ local: { ...view.local, buildLocked: buildLockHeld(root) }, remotes: view.remotes, mode: mode === "pool" ? "pool" : "auto", minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
+  };
+  let c = choose();
+  // This PC has no workbench cap: never "here". No pool machine with the rdb cap and room yet means wait
+  // for one (re-checked every 30 s, LF_RDB_WAIT_S in all, 900 s) and then leave the rdb stale with a clear
+  // line; the local refresh below refuses too (ensureAddonResourceDatabase).
+  if (c.where === "wait") {
+    const budgetS = Number(process.env.LF_RDB_WAIT_S || 900);
+    console.log(`rdb: ${stale.length} addon(s) stale (${stale.join(", ")}); waiting for a pool machine to refresh it: ${c.why}; re-checking every 30 s for up to ${Math.round(budgetS / 60)} min`);
+    const t0w = Date.now();
+    while (c.where === "wait" && Date.now() - t0w < budgetS * 1000) {
+      sleepSync(30000);
+      c = choose();
+    }
+    if (c.where === "wait") {
+      console.log(`WARN  rdb: no pool machine with the rdb cap could refresh it within ${Math.round((Date.now() - t0w) / 1000)} s (${c.why}); the resource database stays stale and no Workbench starts on this PC`);
+      return;
+    }
+  }
+  console.log(`rdb: ${stale.length} addon(s) stale (${stale.join(", ")}); refresh on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
+  if (c.where === "local") return;
+  const t0 = Date.now();
+  const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "rdb", "--pool-run", c.where], { cwd: root, stdio: "inherit", windowsHide: true, timeout: 2100000, env: { ...process.env, LF_RDB_POOL: "0" } });
+  const left = stale.filter((name) => rdbFreshness(addonDir(root, name)).missing.length > 0);
+  const secs = Math.round((Date.now() - t0) / 1000);
+  if (!left.length) console.log(`rdb: refreshed on ${c.where} in ${secs} s (${stale.length} addon(s), no wait for this PC's Workbench)`);
+  else console.log(`rdb: ${c.where} left ${left.join(", ")} stale after ${secs} s (exit ${r.status ?? r.error?.code ?? "?"}); ${wbRoute.localWorkbench(root).allowed ? "refreshing here" : "this PC has no workbench cap, so it stays stale (no Workbench starts here)"}`);
+}
+
+const sleepSync = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+// `rdb --pool-run <machine>`: the async half of refreshOnPool, run in a child process.
+async function cmdRdbPoolRun(root, machine) {
+  const m = pool.loadMachines(root).find((x) => x.name === machine && x.via === "ssh");
+  if (!m) {
+    console.log(`FAIL  rdb: no ssh pool machine '${machine}'`);
+    return 1;
+  }
+  const t0 = Date.now();
+  const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["rdb", "--local"], suffix: "-rdb", purpose: "rdb refresh" });
+  console.log(`rdb: ${m.name} finished the refresh run (exit ${r.code}) in ${Math.round((Date.now() - t0) / 1000)} s`);
+  if (r.rDir) pullRemoteRdb(root, m, r.rDir, "rdb");
+  return r.code === 0 ? 0 : 1;
+}
+
+function cmdRdb(root, flags) {
+  const i = flags.indexOf("--pool-run");
+  if (i >= 0) return cmdRdbPoolRun(root, flags[i + 1]);
+  if (flags.includes("--local")) process.env.LF_RDB_POOL = "0";
+  // `--wait` is the default (the local refresh queues for the slot and the build lock); `--budget <s>` bounds that queue.
+  const b = flags.indexOf("--budget");
+  if (b >= 0 && Number(flags[b + 1]) > 0) process.env.LF_RDB_WAIT_S = String(Number(flags[b + 1]));
+  return ensureResourceDatabase(root);
+}
+
+// Before a pool run (test, e2e), whose machine is not known yet: copy main's rdb when it is the better
+// copy, but leave a stale one alone unless the run can only land on this PC (pinned, LF_TESTBOX_AUTO=0)
+// or this is the main checkout (warn only, as before). rdbForSlot decides once the slot is known.
+// Before this, every run refreshed here first: a headless Workbench (~17 s, ~2 GB on the RAM-starved
+// PC) behind the build lock that every worktree here shares, so a run headed for a pool machine waited
+// up to 10 min behind other worktrees' refreshes (2026-11-14).
+// rdbHandled: roots whose rdb this process already refreshed (or tried to), so a run on a pool machine
+// (`test --local`, which refreshes before its queue) does not start Workbench a second time in rdbForSlot.
+const rdbHandled = new Set();
+function prepareResourceDatabase(root, opts = {}) {
+  if (wt.isMainCheckout(root) || poolMode(root, opts).mode === "local") {
+    rdbHandled.add(root);
+    return ensureResourceDatabase(root);
+  }
+  wt.copyResourceDatabase(root);
+  return 0;
+}
+
+// The slot is known: a run here, or on a machine without the "rdb" cap, refreshes this PC's rdb as
+// before. A pool machine with it (testbox.refreshesRdb) refreshes in the run itself (its `test --local` / `e2e --local` runs
+// ensureResourceDatabase in the run folder, in its desktop session since #1158), and syncToSlot does
+// not send it the stale copy, so the folder keeps the rdb it refreshed.
+function rdbForSlot(root, slot) {
+  if (rdbHandled.has(root)) return 0;
+  if (slot.local || !testbox.refreshesRdb(slot.machine)) {
+    rdbHandled.add(root);
+    return ensureResourceDatabase(root);
+  }
+  const stale = testbox.staleRdbAddons(root);
+  if (stale.length) console.log(`resource database stale here (${stale.join(", ")}): ${slot.machine.name} refreshes it in its run folder; this PC's Workbench is not started`);
+  return 0;
+}
+
+// A run that got a lane on this PC with a stale rdb gives the lane back, refreshes (the build lock may
+// queue it behind other worktrees for minutes), and asks again: a held lane keeps everyone else out
+// (cmdSessionUp refreshes before its queue for the same reason). Once per process; true = requeue.
+function releaseLaneForRdb(root, slot) {
+  if (!slot.local || slot.inherited || wt.isMainCheckout(root) || rdbHandled.has(root)) return false;
+  const stale = testbox.staleRdbAddons(root);
+  if (!stale.length) return false;
+  rdbHandled.add(root);
+  slot.release();
+  console.log(`resource database stale here (${stale.join(", ")}): gave this PC's lane back to refresh it, then queuing again`);
+  ensureResourceDatabase(root);
+  return true;
+}
+
+// The refresh Workbench, stopped once the rdb is complete and has stopped changing for 3 s
+// (tools/lib/wb-until.mjs): on this PC it writes the rdb in ~2 s and then freezes until the 600 s
+// timeout. Shape of the spawnSync result the caller reads ({ status, error }).
+function refreshUntilFresh(exe, args, gameDir, addon, tag) {
+  let pid;
+  try {
+    pid = quietSpawnDetached(exe, args, { cwd: gameDir });
+  } catch (e) {
+    return { status: null, error: e };
+  }
+  let lastMtime = null;
+  const r = waitUntilDone({
+    timeoutMs: 600000,
+    alive: () => wbPidAlive(pid),
+    done: () => {
+      const f = rdbFreshness(addon);
+      const steady = f.mtimeMs !== undefined && f.mtimeMs === lastMtime;
+      lastMtime = f.mtimeMs;
+      return f.missing.length === 0 && steady;
+    },
+  });
+  if (!r.exited) killTreeSync(pid);
+  if (r.done && !r.exited) console.log(`resource database${tag}: rdb complete after ${(r.ms / 1000).toFixed(0)} s; stopped Workbench instead of waiting for it to exit`);
+  if (r.timedOut) console.log(`WARN  resource database refresh${tag}: Workbench ran the full 600 s without a complete rdb; stopped it`);
+  return { status: r.exited ? 0 : r.done ? 0 : null, error: r.timedOut ? { code: "ETIMEDOUT" } : undefined };
 }
 
 function ensureAddonResourceDatabase(root, name) {
@@ -1181,9 +1417,21 @@ function ensureAddonResourceDatabase(root, name) {
   const before = rdbFreshness(addon);
   if (before.missing.length === 0) return 0;
   const what = `${before.missing.length} unregistered resource(s): ${describeMissing(before.missing)}`;
+  if (process.env.LF_RDB_CHECKED === "1") {
+    console.log(`WARN  resource database stale${tag}: ${what}; the parent run already tried the refresh, not waiting on the build lock again`);
+    return 1;
+  }
   if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0") {
     console.log(`WARN  resource database stale${tag}: ${what}`);
     console.log("      open Workbench on this checkout once (it rewrites resourceDatabase.rdb), or run from a worktree");
+    return 1;
+  }
+  // No workbench cap on this PC: the refresh above went to a pool machine (or waited for one); a headless
+  // Workbench never starts here (tools/lib/wb-route.mjs). `rdb --local` / LF_WB_LOCAL=1 from a human does.
+  const polHere = wbRoute.localWorkbench(root);
+  if (!polHere.allowed) {
+    console.log(`WARN  resource database stale${tag}: ${what}`);
+    console.log(`      ${wbRoute.refusalText("rdb refresh", polHere.host)}`);
     return 1;
   }
   const exe = workbenchExe();
@@ -1193,8 +1441,20 @@ function ensureAddonResourceDatabase(root, name) {
   }
   console.log(`resource database stale${tag}: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
   let locked = false;
+  let wbSlot = null;
+  const queuedAt = Date.now();
   try {
-    wt.acquireLock(root, "build", { waitMs: 900000 });
+    // One of this machine's Workbench slots, so a pool machine running this refresh shows busy to the
+    // next chooseRefresh/chooseGate (tools/lib/wb-lock.mjs); the order matches cmdBuild (slot, then lock).
+    // Its wait is drawn from the same budget as the build lock's (rdbBudget, lock-wait.mjs).
+    wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
+    const lockFile = join(wt.ensureHub(root), "locks", "build.lock");
+    waitForLock({
+      what: `the build lock for the rdb refresh${tag}`,
+      budget: rdbBudget(),
+      holder: () => describeHolder(lockFile),
+      acquire: (waitMs) => wt.acquireLock(root, "build", { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
+    });
     locked = true;
     const started = Date.now();
     const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
@@ -1209,20 +1469,26 @@ function ensureAddonResourceDatabase(root, name) {
       "-profile", profile,
       ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ];
-    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
+    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : refreshUntilFresh(exe, args, gameDir, addon, tag);
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
-      console.log(`resource database${tag} refreshed in ${secs}s (${after.total} resources registered)`);
+      console.log(`resource database${tag} refreshed on ${os.hostname()} in ${secs}s, ${started - queuedAt > 1000 ? `${Math.round((started - queuedAt) / 1000)}s queued first, ` : ""}(${after.total} resources registered)`);
       return 0;
     }
     console.log(`WARN  resource database still stale${tag} after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${after.missing.length} unregistered: ${describeMissing(after.missing)}`);
     return 1;
   } catch (e) {
     console.log(`WARN  resource database refresh failed: ${e.message}`);
+    // The wait for this PC's Workbench slot or build lock ran out: last resort is a pool machine.
+    if (/is held|no free Workbench slot/.test(e.message) && process.env.LF_RDB_POOL !== "0" && process.env.LF_RDB_REFRESH_WHERE !== "local" && !wt.isMainCheckout(root)) {
+      refreshOnPool(root, true);
+      if (rdbFreshness(addon).missing.length === 0) return 0;
+    }
     return 1;
   } finally {
     if (locked) wt.releaseLock(root, "build");
+    wbSlot?.release();
   }
 }
 
@@ -1251,6 +1517,9 @@ function workbenchInDesktopSession(root, exe, args, cwd, waitSec) {
 // is still writing the collider surfaces and the .meta and .xob keep only the first few
 // (tools\cli building, docs/architecture/building-pipeline-spike.md).
 function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addon = CORE, doneWhen, settleMs = 3000 }) {
+  // The plugin writes its output into this worktree, so it cannot run on a pool machine: without the
+  // workbench cap on this PC it refuses (tools/lib/wb-route.mjs); --local from a human allows it.
+  wbRoute.requireLocalWorkbench(root, `asset plugin ${plugin}`);
   if (doneWhen) return runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, logFile, addon, doneWhen, settleMs });
   const addonInfo = resolveAddon(addon);
   if (!addonInfo) throw new Error(`unknown addon "${addon}"; known: LifeFramework, LF_Everon1989`);
@@ -1275,6 +1544,7 @@ function runWorkbenchPlugin(root, plugin, pluginArgs, { timeoutMs, logFile, addo
 }
 
 async function runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, logFile, addon, doneWhen, settleMs }) {
+  wbRoute.requireLocalWorkbench(root, `asset plugin ${plugin}`);
   const addonInfo = resolveAddon(addon);
   if (!addonInfo) throw new Error(`unknown addon "${addon}"; known: LifeFramework, LF_Everon1989`);
   const exe = workbenchExe();
@@ -1335,6 +1605,8 @@ async function cmdUiImage(flags) {
   const png = await ui.writeSource(root, resolve(src), name, size);
   const dir = join(root, "addons", "LifeFramework", ui.ILLUSTRATION_DIR);
   const edds = join(dir, name + ".edds");
+  const polUi = wbRoute.localWorkbench(root);
+  if (!polUi.allowed) { console.log(`FAIL  ${wbRoute.refusalText("ui-image import", polUi.host)}`); return 1; }
   const exe = workbenchExe();
   if (!existsSync(exe)) { console.log("FAIL  Workbench not found: " + exe); return 1; }
   let locked = false;
@@ -1439,7 +1711,7 @@ function cmdServe(root = ROOT, opts = {}) {
 
 // ----------------------------------------------------------------- playtest host
 // `host start|stop|status|backup`: the playtest dedicated server on
-// the pack header Missions/LF_Everon1989.conf (core-only: LF_PlaytestTown.conf) with a stable profile outside every worktree
+// the pack header Missions/LF_PlaytestTown.conf (the flagship LF_Everon1989.conf has the playtest helpers closed) with a stable profile outside every worktree
 // (tools/host/host.mjs). The server runs detached and owns the server-2001
 // lock while it lives; `host stop` asks for a graceful close so the engine
 // writes its SHUTDOWN save, then backs the saves up.
@@ -1527,7 +1799,7 @@ function cmdHostStart(root, dir, opts) {
     const saves = host.findSavePoints(p.profile);
     // #322: the pack loads when it is in the checkout; a save keeps the header it was made on.
     const addons = launchAddons(root);
-    const { mission, loadSave } = host.hostMission(p.profile, addons);
+    const { mission, loadSave } = host.hostMission(p.profile, addons, opts.flagship ? flagshipMission(addons) : undefined);
     if (saves.length) {
       const b = host.backupSaves(dir, "start");
       console.log(`host: backed up saves -> ${b}`);
@@ -1687,12 +1959,40 @@ function cmdHostRestore(dir, name) {
   }
 }
 
+// Host subcommands that live one file each in tools/host/commands/ (export `help` and
+// `main(args, { root, hostDir })`), the way tools/commands/ works for top-level commands.
+// Add a host subcommand there, not to cmdHost: this file is not edited for it.
+// LF_HOST_COMMANDS_DIR points at another folder (the selftest uses a temp one).
+function hostCommandsDir() {
+  return process.env.LF_HOST_COMMANDS_DIR || join(ROOT, "tools", "host", "commands");
+}
+
+function hostCommandFile(name) {
+  if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) return null;
+  const file = join(hostCommandsDir(), `${name}.mjs`);
+  return existsSync(file) ? file : null;
+}
+
+async function hostCommandsHelp() {
+  const dir = hostCommandsDir();
+  if (!existsSync(dir)) return;
+  const names = readdirSync(dir).filter((n) => /^[a-z][a-z0-9-]*\.mjs$/.test(n)).sort();
+  if (!names.length) return;
+  console.log("\nMore host commands (tools/host/commands/, one file each):");
+  for (const f of names) {
+    const mod = await import(pathToFileURL(join(dir, f)).href);
+    if (mod.help) console.log(`  ${mod.help}`);
+  }
+}
+
+const HOST_USAGE = "usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force] [--flagship]";
+
 function cmdHost(args) {
   const list = args ?? [];
   const sub = list[0];
   const dir = host.hostDir();
   const timeout = argValue(list, "--timeout");
-  const opts = { force: list.includes("--force"), wait: list.includes("--wait"), timeoutSec: timeout ? Number(timeout) : undefined };
+  const opts = { force: list.includes("--force"), wait: list.includes("--wait"), flagship: list.includes("--flagship"), timeoutSec: timeout ? Number(timeout) : undefined };
   if (sub === "start") return cmdHostStart(ROOT, dir, opts);
   if (sub === "stop") return cmdHostStop(dir, opts);
   if (sub === "status") return cmdHostStatus(dir);
@@ -1703,7 +2003,10 @@ function cmdHost(args) {
     console.log(b ? `host: backed up saves -> ${b}` : "host: no save to back up");
     return 0;
   }
-  console.log("usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force]");
+  const file = hostCommandFile(sub);
+  if (file) return import(pathToFileURL(file).href).then((m) => m.main(list.slice(1), { root: ROOT, hostDir: dir }));
+  console.log(HOST_USAGE);
+  if (sub === "help") return hostCommandsHelp().then(() => 0);
   return sub ? 1 : 0;
 }
 
@@ -2149,7 +2452,14 @@ function cmdSessionUp(root, dir, flags) {
   // --roster / --seed fixtures are written into the server profile by sessionLaunch, right before the server boots.
   const seeds = session.parseSeeds(flags);
   const clients = session.parseClients(flags);
-  const mission = session.parseMission(flags);
+  // --pack <LF_Name>: boot that pack (addons/<name>, header Missions/<name>.conf) on the core instead of the flagship.
+  const packArg = parsePackFlag(flags, root);
+  if (packArg?.error) {
+    console.log(`FAIL  ${packArg.error}`);
+    return 1;
+  }
+  // A pack session runs the harness build (LF_HARNESS) like the playtest mission, so proofs can read the client.
+  const mission = packArg ? "playtest" : session.parseMission(flags);
   const rp = session.parseSessionProfile(flags);
   const res = session.sessionRes(flags, rp);
   const visible = flags.includes("--visible");
@@ -2220,7 +2530,7 @@ function cmdSessionUp(root, dir, flags) {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, pack: packArg?.name, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
     // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
     holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
   if (hold.note) console.log(hold.note);
@@ -2244,7 +2554,7 @@ function cmdSessionUp(root, dir, flags) {
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
     recordIdentities(dir, state);
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
-    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${playtestMission(launchAddons(ROOT)).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? ` (${(packArg?.header ?? playtestMission(launchAddons(ROOT))).split("/").pop().replace(".conf", "")}, LF_HARNESS)` : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
     sessionCapNote(root, settings, hold.min);
     console.log(`session: full log ${sessionLog}`);
     return 0;
@@ -2383,7 +2693,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     copyFileSync(join(root, "server", "example", "config.json"), join(owner, "config.json"));
     slog(`template: config.json copied to ${owner}`);
   }
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddons(root) });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddonsFor(root, state.pack), header: state.pack ? parsePackFlag(["--pack", state.pack], root)?.header : "" });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
@@ -2449,7 +2759,7 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
   session.applyClientSettings(c.profile, rp);
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddons(root) });
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddonsFor(root, state.pack) });
   slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
@@ -2704,6 +3014,12 @@ function cmdSession(args) {
     return r.status ?? 1;
   }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  // A session that `up` put on a pool machine is recorded only by agent-box/session.mjs
+  // (tmp/session-remote.json); it routes down/status/restart/wait there (cliSessionForwards).
+  if (session.cliSessionForwards(list[0], list.slice(1), session.readRemotePointer())) {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...list], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
   if ((list[0] === "restart" || list[0] === "down") && !list.includes("--force")) {
@@ -2722,13 +3038,19 @@ function cmdSession(args) {
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
   if (list[0] === "wait") return cmdSessionWait(dir, list.slice(1));
+  // A proof verb (agent-box/proofs/<verb>.mjs) runs through the router, as the owner docs and the PR
+  // templates write it: `tools\cli session config-harness-proof --only walkthrough`.
+  if (list[0] && /^[a-z][a-z0-9-]*$/.test(list[0]) && existsSync(join(ROOT, "agent-box", "proofs", `${list[0]}.mjs`))) {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...list], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   console.log(SESSION_USAGE);
   return list[0] ? 1 : 0;
 }
 
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
-  if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
-    console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
+  if (tier !== "fast" && tier !== "all" && tier !== "persistence" && tier !== "perf") {
+    console.log(`unknown tier: ${tier} (expected fast, all, persistence, or perf)`);
     return 2;
   }
   let only = [];
@@ -2766,8 +3088,8 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // The test pool (tools/remote/pool.mjs) picks the machine: the first free
   // slot on this PC or any reachable remote (--local / --remote [name] narrow
   // it); when all are busy the run queues FIFO for whichever frees first.
-  // A remote run ships this worktree's rdb, so refresh it before the choice.
-  ensureResourceDatabase(root);
+  // The rdb is refreshed once the machine is known (rdbForSlot in testOnce).
+  prepareResourceDatabase(root, opts);
   // --shards N|auto: the registry split into balanced slices, each its own pool job, run together (tools/lib/test-shards.mjs).
   if (opts.shards !== undefined && !only.length && !opts.world && tier === "all") {
     // A pass the cache already holds (identical inputs) is not run again.
@@ -2866,6 +3188,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     console.log(`FAIL  ${e.message}`);
     return { code: 3 };
   }
+  if (releaseLaneForRdb(root, slot)) return { code: 3, requeue: true };
   let code = 3;
   let extra = {};
   let tookLocal = false;
@@ -2878,6 +3201,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     tookLocal = true;
   }
   try {
+    rdbForSlot(root, slot);
     if (!slot.local) {
       // --no-cache: the box runs what it was sent; this side owns the cache.
       const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? [red ? "--red" : exact ? "--only-classes" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
@@ -2963,13 +3287,34 @@ function runShardChild(root, job) {
   const logPath = join(logDir, name);
   const args = [process.argv[1], "test", "--no-build", "--tier", "all", ...(job.full ? [] : ["--only-classes", job.classes.join(",")]), ...(job.pass.coreOnly ? ["--core-only"] : []), ...shardPassThrough(job.pass.opts)];
   const t0 = Date.now();
+  const label = `${job.pass.name} ${job.index}/${job.count}`;
+  // The parent's ensureResourceDatabase already refreshed the rdb or tried to: a child never waits on the
+  // build lock again (LF_RDB_CHECKED), nor sends the refresh to the pool (LF_RDB_REFRESH=0).
+  const env = { ...toolEnv(), LF_QUIET_CHILD: "1", LF_SHARD_GROUP: root, LF_RDB_CHECKED: "1", LF_RDB_REFRESH: "0" };
+  const beatMs = Number(process.env.LF_SHARD_HEARTBEAT_S || 120) * 1000;
+  const limitMs = Number(process.env.LF_SHARD_TIMEOUT_S || 2700) * 1000;
   return new Promise((resolveP) => {
-    const child = spawn(process.execPath, args, { cwd: root, windowsHide: true, env: { ...toolEnv(), LF_QUIET_CHILD: "1", LF_SHARD_GROUP: root }, stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(process.execPath, args, { cwd: root, windowsHide: true, env, stdio: ["ignore", "pipe", "pipe"] });
     let text = "";
+    const lastLine = () => text.trimEnd().split(/\r?\n/).pop()?.slice(0, 200) || "(no output yet)";
+    // Every wait says what it waits on: the slice's own last line while it runs, and a hard stop at the budget.
+    const beat = setInterval(() => console.log(`shards: ${label} still running after ${Math.round((Date.now() - t0) / 1000)} s: ${lastLine()}`), beatMs);
+    const stop = setTimeout(() => {
+      text += `\nFAIL  shard ${label} timed out after ${Math.round(limitMs / 1000)} s (LF_SHARD_TIMEOUT_S); last line: ${lastLine()}\n`;
+      console.log(`shards: ${label} timed out after ${Math.round(limitMs / 1000)} s; stopping it (last line: ${lastLine()})`);
+      if (process.platform === "win32") spawnSync("taskkill", ["/T", "/F", "/PID", String(child.pid)], { windowsHide: true, timeout: 30000 });
+      else child.kill("SIGKILL");
+    }, limitMs);
     child.stdout.on("data", (c) => (text += c.toString("utf8")));
     child.stderr.on("data", (c) => (text += c.toString("utf8")));
-    child.on("error", (e) => resolveP({ code: 3, text: `FAIL  could not start a shard: ${e.message}`, seconds: 0 }));
+    child.on("error", (e) => {
+      clearInterval(beat);
+      clearTimeout(stop);
+      resolveP({ code: 3, text: `FAIL  could not start a shard: ${e.message}`, seconds: 0 });
+    });
     child.on("close", (code) => {
+      clearInterval(beat);
+      clearTimeout(stop);
       try {
         writeFileSync(logPath, text);
       } catch {}
@@ -3101,6 +3446,12 @@ async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
   // `ci --wb-only`: just the Workbench steps, here (what a pool machine runs for a remote gate).
   if (opts.wbOnly) return ciWorkbench(root, opts);
+  // `ci --tiered` (what wt gate / wt ship pass for a data-only diff): classify again here, run T1 only when it still holds.
+  if (opts.tiered) {
+    const c = gateTierOf(root);
+    console.log(`ci: ${gateTier.tierLine(c)}`);
+    if (c.tier === 1) return ciDataOnly(root, c, opts);
+  }
   const steps = [
     // The cheap checks run here while the Workbench compile and build run wherever there is room
     // (this PC or a pool machine, tools/lib/wb-gate.mjs). The gate starts first, so its snapshot is
@@ -3145,19 +3496,63 @@ async function cmdCi(root = ROOT, opts = {}) {
   return failed === 0 ? 0 : 1;
 }
 
+// T1 (tools/lib/gate-tier.mjs): no Workbench compile or build (`test --no-build` loads the addons from
+// source), no full suite, no core-only pass, no config sessions. One boot runs every LOGIC test plus every
+// test whose source names a touched file, its GUID, its config class or a changed string key.
+async function ciDataOnly(root, c, opts = {}) {
+  const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  const tests = readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") }));
+  const tokens = [...c.ids];
+  for (const p of c.data) {
+    let text = null;
+    let meta = null;
+    try { text = readFileSync(join(root, p), "utf8"); } catch { /* no tokens from the text */ }
+    try { meta = readFileSync(join(root, `${p}.meta`), "utf8"); } catch { /* no GUID token */ }
+    tokens.push(...gateTier.fileTokens(p, text, meta));
+  }
+  const sel = gateTier.selectTests(tests, [...new Set(tokens)]);
+  const classes = [...new Set([...sel.logic, ...sel.related])];
+  const extra = sel.related.filter((x) => !sel.logic.includes(x));
+  console.log(`ci: T1 tests: ${sel.logic.length} LOGIC + ${extra.length} more that name ${tokens.length ? tokens.slice(0, 5).join(", ") : "nothing"}${extra.length ? ` (${extra.slice(0, 8).join(", ")}${extra.length > 8 ? ", ..." : ""})` : ""}`);
+  const steps = [
+    ["validate (static)", () => cmdRunArea("validate", root, {})],
+    ["config harness (static)", async () => (await import("./commands/config-gate.mjs")).runStatic(root)],
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    ["test (T1: LOGIC + related)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") })],
+  ];
+  let failed = 0;
+  for (const [name, fn] of steps) {
+    console.log(`\n=== ci: ${name} ===`);
+    const code = await Promise.resolve(fn());
+    if (code !== 0) failed++;
+  }
+  console.log(failed === 0 ? "\nci: ALL PASSED (T1)" : `\nci: ${failed} step(s) failed (T1)`);
+  return failed === 0 ? 0 : 1;
+}
+
 // The Workbench compile (validate-scripts.ps1) and the build, on this PC, under one Workbench slot.
 async function ciWorkbench(root, opts = {}) {
   // Over ssh (a pool machine's remote gate) this is session 0, which has no GPU device: Workbench
   // dies with "Couldn't build device list for any adapter". Rerun in the signed-in desktop session.
-  if (opts.wbOnly && process.platform === "win32" && process.env.SSH_CONNECTION && process.env.LF_WB_INTERACTIVE !== "1") return ciWorkbenchInSession(root);
-  const wb = await wbLock.acquireWorkbench(root, { purpose: "ci compile+build" });
+  // `--compile-only` / `--build-only` are the halves a PC without the workbench cap sends to a pool machine
+  // for `validate --full` and `build` (tools/lib/wb-route.mjs); neither one alone is a gate.
+  const stepFlags = [...(opts.compileOnly ? ["--compile-only"] : []), ...(opts.buildOnly ? ["--build-only"] : []), ...(opts.addon ? ["--addon", opts.addon] : [])];
+  if (opts.wbOnly && process.platform === "win32" && process.env.SSH_CONNECTION && process.env.LF_WB_INTERACTIVE !== "1") return ciWorkbenchInSession(root, stepFlags);
+  const pol = wbRoute.localWorkbench(root);
+  if (!pol.allowed) {
+    console.log(`FAIL  ${wbRoute.refusalText("ci --wb-only", pol.host)}`);
+    return 3;
+  }
+  const wb = await wbRoute.acquireWorkbench(root, { purpose: "ci compile+build" });
   try {
     let ok = true;
     const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()));
-    if (skip.has("validate-scripts.ps1")) console.log("SKIP  validate/validate-scripts.ps1 (LF_VALIDATE_SKIP)");
+    if (opts.buildOnly) {
+      // build only: the compile step is not this call's
+    } else if (skip.has("validate-scripts.ps1")) console.log("SKIP  validate/validate-scripts.ps1 (LF_VALIDATE_SKIP)");
     else {
       const t0 = Date.now();
-      const res = await invokeScriptAsync(join(root, "tools", "validation", "validate-scripts.ps1"), { cwd: root, env: toolEnv() });
+      const res = await invokeScriptAsync(join(root, "tools", "validation", "validate-scripts.ps1"), { cwd: root, env: { ...toolEnv(), LF_WB_GUARDED: "1" } });
       const seconds = (Date.now() - t0) / 1000;
       // Workbench died within seconds with no verdict on a machine short of RAM: the machine failed, not
       // the scripts. Say so and skip the build (it would die or hang the same way); the caller retries
@@ -3171,8 +3566,9 @@ async function ciWorkbench(root, opts = {}) {
       console.log(`${res.status === 0 ? "PASS" : "FAIL"}  validate/validate-scripts.ps1 (${seconds.toFixed(1)} s)`);
       ok = res.status === 0;
     }
+    if (opts.compileOnly) return ok ? 0 : 1;
     console.log("--- ci: build ---");
-    const b = await cmdBuild(root, { wait: true, force: opts.force });
+    const b = await cmdBuild(root, { wait: true, force: opts.force, addon: opts.addon });
     return ok && b === 0 ? 0 : 1;
   } finally {
     wb.release();
@@ -3182,7 +3578,7 @@ async function ciWorkbench(root, opts = {}) {
 // `ci --wb-only` again, in the signed-in session through a one-shot scheduled task
 // (tools/remote/desktop/run-interactive.ps1); its transcript and exit code come back through files.
 // No one signed in, or no exit code: 3, so the caller runs the steps on its own machine.
-function ciWorkbenchInSession(root) {
+function ciWorkbenchInSession(root, stepFlags = []) {
   const dir = join(root, "tmp", "wb-session");
   mkdirSync(dir, { recursive: true });
   const [log, codeFile, ps1, pidFile] = ["ci.log", "ci.code", "ci.ps1", "ci.pid"].map((n) => join(dir, n));
@@ -3193,7 +3589,7 @@ function ciWorkbenchInSession(root) {
     `Set-Content -LiteralPath ${q(pidFile)} -Value $PID`,
     "$env:LF_WB_INTERACTIVE = '1'",
     `Set-Location -LiteralPath ${q(root)}`,
-    `& ${q(process.execPath)} tools\\cli.mjs ci --wb-only --local *> ${q(log)}`,
+    `& ${q(process.execPath)} tools\\cli.mjs ci --wb-only --local ${stepFlags.map(q).join(" ")} *> ${q(log)}`,
     `Set-Content -LiteralPath ${q(codeFile)} -Value $LASTEXITCODE`,
   ].join("\n"));
   console.log("ci: running the Workbench steps in this machine's signed-in desktop session (ssh has no GPU device)");
@@ -3224,19 +3620,6 @@ function ciWorkbenchInSession(root) {
   return code === 3 ? 1 : code;
 }
 
-// The live view of every machine with the workbench cap, for wbGate.chooseGate: this PC's Workbench
-// slots and free RAM, each pool machine's over one ssh round trip (null when it does not answer).
-function workbenchMachines(root, { mode, machine }) {
-  const machines = pool.loadMachines(root).filter((m) => !m.disabled && (m.caps ?? []).includes("workbench"));
-  const limit = wbLock.wbLimit(root);
-  const localM = machines.find((m) => m.via === "local");
-  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, freeMb: Math.round(os.freemem() / 1048576), multiplier: localM?.budgetMultiplier ?? 1 };
-  const remotes = mode === "local" || machine === "local" ? [] : machines
-    .filter((m) => m.via === "ssh" && (!machine || m.name === machine))
-    .map((m) => ({ name: m.name, caps: m.caps, multiplier: m.budgetMultiplier ?? 1, m, state: wbGate.remoteWbState(m) }));
-  return { local, remotes };
-}
-
 // Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine
 // gets this worktree's snapshot, uncommitted state included, through pool.syncAndRun. Nobody with
 // the RAM: wait (re-read every 30 s) up to the Workbench queue's budget (LF_WB_RAM_WAIT_S, 1 h). A
@@ -3246,7 +3629,9 @@ async function workbenchGate(root, opts = {}) {
   let mode = "any";
   if (opts.local) mode = "local";
   else if (opts.remote !== undefined || machine) mode = "remote";
-  else if (!opts.any && envOf().LF_TESTBOX_AUTO === "0") mode = "local";
+  // LF_TESTBOX_AUTO=0 keeps the gate on this PC, unless this PC has no workbench cap (wb-route.mjs): that setting
+  // is about where tests run, and a headless Workbench never starts here without an explicit --local.
+  else if (!opts.any && envOf().LF_TESTBOX_AUTO === "0" && wbRoute.localWorkbench(root).allowed) mode = "local";
   const settings = pool.poolSettings(root);
   const waitS = Number(process.env.LF_WB_RAM_WAIT_S) > 0 ? Number(process.env.LF_WB_RAM_WAIT_S) : 3600;
   const tried = [];
@@ -3254,7 +3639,7 @@ async function workbenchGate(root, opts = {}) {
     // A retry after an early death is not pinned and may use this PC: whatever has the RAM now.
     const retry = attempt > 1;
     const choose = () => {
-      const view = workbenchMachines(root, { mode: retry ? "any" : mode, machine: retry ? null : machine });
+      const view = wbRoute.workbenchMachines(root, { mode: retry ? "any" : mode, machine: retry ? null : machine });
       return { ...view, c: wbGate.chooseGate({ ...view, mode: retry ? "any" : mode, machine: retry ? null : machine, exclude: tried, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb }) };
     };
     let pick = choose();
@@ -3270,7 +3655,7 @@ async function workbenchGate(root, opts = {}) {
       return 3;
     }
     if (c.where === "wait") {
-      console.log(`FAIL  pool: no reachable machine has the RAM for a Workbench after ${Math.round((Date.now() - t0w) / 1000)} s (${c.why})`);
+      console.log(`FAIL  pool: no pool machine could take the Workbench steps after ${Math.round((Date.now() - t0w) / 1000)} s (${c.why}); raise LF_WB_RAM_WAIT_S to wait longer`);
       return 3;
     }
     console.log(`ci: Workbench compile + build on ${c.where === "local" ? "this PC" : c.where}: ${c.why}${retry ? " (retry)" : ""}`);
@@ -3306,7 +3691,7 @@ async function workbenchGate(root, opts = {}) {
 // stale (a fresh worktree: main's rdb predates new resources) would make the suite refresh it with a
 // headless Workbench on this PC, behind the hub build lock. Take the remote copy instead when it
 // registers more; keep the local one otherwise. Ship-queue gates hit this on every new worktree.
-function pullRemoteRdb(root, m, rDir) {
+function pullRemoteRdb(root, m, rDir, tag = "ci") {
   for (const name of rdbAddons(root)) {
     const addon = addonDir(root, name);
     const local = join(addon, "resourceDatabase.rdb");
@@ -3315,17 +3700,17 @@ function pullRemoteRdb(root, m, rDir) {
     const got = `${local}.remote`;
     const down = testbox.scp([`${m.host}:${rDir.replace(/\\/g, "/")}/addons/${name}/resourceDatabase.rdb`, got]);
     if (down.status !== 0 || !existsSync(got)) {
-      console.log(`ci: could not fetch ${name}'s resource database from ${m.name}; the suite refreshes it here`);
+      console.log(`${tag}: could not fetch ${name}'s resource database from ${m.name}; it is refreshed here`);
       continue;
     }
     const keep = `${local}.local`;
     if (existsSync(local)) copyFileSync(local, keep);
     copyFileSync(got, local);
     const after = rdbFreshness(addon);
-    if (after.missing.length < before.missing.length) console.log(`ci: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
+    if (after.missing.length < before.missing.length) console.log(`${tag}: took ${name}'s resource database from ${m.name} (${before.missing.length} -> ${after.missing.length} unregistered); no local Workbench refresh`);
     else if (existsSync(keep)) {
       copyFileSync(keep, local);
-      console.log(`ci: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
+      console.log(`${tag}: ${m.name}'s resource database for ${name} is no fresher; kept the local one`);
     }
     rmSync(got, { force: true });
     rmSync(keep, { force: true });
@@ -3433,7 +3818,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 website/public/playtest-server.json, tools/release/playtest-server.mjs)
                                 release [--tag playtest-m2-N]: refresh the rdb, attach it to a pre-release,
                                 start the playtest-release workflow (worktree at origin/main)
-  host start|stop|status|backup  playtest dedicated server on the pack header Missions/LF_Everon1989.conf (an LF_PlaytestTown save keeps its header);
+  host start|stop|status|backup  playtest dedicated server on the pack header Missions/LF_PlaytestTown.conf (a save made on LF_Everon1989 keeps its header; start --flagship boots LF_Everon1989, the real-server values);
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout).
                                 start refuses a save from another game build until a preflight passes
@@ -3441,7 +3826,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence|perf] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --core-only boots with -addons LifeFramework only (the pack folder is not
                                 on -addonsDir) and skips tests whose NeedsPack() names a reason.
@@ -3449,6 +3834,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 boots the minimal Worlds/TestLogic; --world overrides (docs/worktrees.md "Test world").
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
+                                --tier perf runs only the PERF-tier timing gates (perf/budget-128), with more repeats and windows, on
+                                the pool's RAM gate and after a bounded wait for an idle CPU; never sharded, never
+                                cached, and not part of --tier all (so gates cannot flake on it). tools\\cli perf runs it.
                                 --shards N|auto (tier all): the registry split into N balanced slices run as
                                 separate pool jobs at once, one merged SUMMARY and exit code (auto: free
                                 test lanes, at most 4; tools/lib/test-shards.mjs). --only-classes <A,B>
@@ -3472,9 +3860,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 prune removes remote run folders of gone worktrees;
                                 prune --idle <min> removes every remote run folder idle that long
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
-  dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
+  dev [--tier fast|all|persistence|perf]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
-  ci [--skip-core-only] [--shards N|auto|1]  validate --full + build + test + test --core-only, both passes at once, each sharded
+  ci [--skip-core-only] [--shards N|auto|1] [--tiered]  validate --full + build + test + test --core-only, both passes at once, each sharded;
+                                --tiered runs the T1 data-only gate when the diff still is one
                                 (default auto; 1 = one after the other, whole) (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
@@ -3533,6 +3922,14 @@ servers: ${Object.keys(SERVERS).join(", ")}
 // ------------------------------------------------------------------- main
 
 const [cmd, ...rest] = process.argv.slice(2);
+
+// This PC has no "workbench" cap (the maintainer's editor lives on it, tools/lib/wb-route.mjs): a command
+// that starts a headless Workbench routes to a pool machine, or refuses. An explicit `--local` (or
+// `--machine local`) on one of them is a human asking for this PC's Workbench anyway; it sets LF_WB_LOCAL=1
+// for this process and its children. `test`, `session`, `e2e` and `serve` take --local for the SERVER only
+// and never unlock it.
+const WB_LOCAL_CMDS = new Set(["build", "pack", "ci", "rdb", "look", "validate", "asset", "ui-image", "wt"]);
+if (WB_LOCAL_CMDS.has(cmd) && (rest.includes("--local") || (argValue(rest, "--machine") ?? "") === "local")) process.env.LF_WB_LOCAL = "1";
 
 // First argument that is neither a flag nor the value of one of `valueFlags`.
 function firstPositional(flags, valueFlags = []) {
@@ -3705,7 +4102,7 @@ function wtHelpFull() {
   tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
                                        'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
-  tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
+  tools\\cli wt test <slug> [--tier fast|all|persistence|perf] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids] [--cash-swap]
                                        two-boot save-state E2E: persistence save boot ended by the
@@ -3723,17 +4120,20 @@ function wtHelpFull() {
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
                                        grep that worktree's newest console.log (from anywhere)
-  tools\\cli wt gate <slug> [--wait]   validate --full + build + test (tier=all) in that worktree
+  tools\\cli wt gate <slug> [--wait] [--full-gate]   the gate for the diff's tier: T0 validate, T1 data-only (no compile, build or full suite), T2 full (docs/worktrees.md "Gate tiers")
   tools\\cli wt sync <slug>            merge the worktree's base (origin/main by default) into the branch
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local]
-                                       clean-tree and PR-body checks -> push -> PR (auto-merge off) -> ship queue:
-                                       merge origin/<base> once, ci --remote on a pool machine, push, auto-merge
-                                       (docs/worktrees.md "Ship queue"); waits until gated unless --no-wait
-                                       (a terminal defaults to --no-wait); --no-queue gates here the old way;
-                                       a machine pin (humans and the lead only) goes to the gate's ci
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
+                                       clean-tree and PR-body checks, preflight (merge-tree conflicts, validate of changed
+                                       inputs) -> push -> PR (auto-merge off) -> ship queue: merge origin/<base> once,
+                                       ci --remote on a pool machine, push, auto-merge (docs/worktrees.md "Async ship").
+                                       Returns once queued; --wait blocks until gated (old behaviour); --no-queue gates
+                                       here the old way; a machine pin (humans and the lead only) goes to the gate's ci
+  tools\\cli wt ship-status <slug>     one line: queued|running|passed|failed, PR, why, log (exit 1 when failed)
+  tools\\cli wait ship <slug> [--budget s]   block until the gate ends or the budget (default 540 s) runs out;
+                                       one SUMMARY line, exit 0 passed, 1 failed, 2 still going (re-run it)
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
   tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
@@ -3950,6 +4350,11 @@ function wtOpenCmd(args) {
   try {
     const e = wt.requireWorktree(ROOT, slug);
     if (args.includes("--workbench")) {
+      const polOpen = wbRoute.localWorkbench(ROOT);
+      if (!polOpen.allowed) {
+        console.log(`FAIL  ${wbRoute.refusalText("wt open --workbench", polOpen.host)}`);
+        return 1;
+      }
       const gproj = join(e.path, "addons", "LifeFramework", "LifeFramework.gproj");
       if (!existsSync(gproj)) {
         console.log(`FAIL  LifeFramework.gproj not found in ${e.path}`);
@@ -4069,7 +4474,7 @@ async function wtE2eCmd(args) {
 // The two-boot save/restart proof in one pool slot: both boots run on the same
 // machine, back to back, with nothing else on that slot in between.
 async function runE2e(root, opts = {}) {
-  ensureResourceDatabase(root);
+  prepareResourceDatabase(root, opts);
   for (let attempt = 1; ; attempt++) {
     const r = await e2eOnce(root, opts, attempt >= pool.FAILOVER_ATTEMPTS);
     if (!r.requeue) return r.code;
@@ -4084,9 +4489,11 @@ async function e2eOnce(root, opts, lastTry) {
     console.log(`FAIL  ${err.message}`);
     return { code: 3 };
   }
+  if (releaseLaneForRdb(root, slot)) return { code: 3, requeue: true };
   let code = 3;
   let extra = {};
   try {
+    rdbForSlot(root, slot);
     if (!slot.local) {
       const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(opts.oldBuild ? ["--old-build"] : []), ...(opts.contentIds ? ["--content-ids"] : []), ...(opts.cashSwap ? ["--cash-swap"] : []), ...(opts.preMove ? ["--pre-move", opts.preMove] : []), ...(opts.mission ? ["--mission", opts.mission] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
@@ -4279,20 +4686,32 @@ function changedFiles(wtRoot) {
   return [...out];
 }
 
-function gameChanged(wtRoot) {
-  const r = wt.git(wtRoot, ["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`]);
-  if (r.status !== 0) return true;
-  const files = r.stdout.split(/\r?\n/).filter(Boolean);
-  return files.some((f) => f.startsWith("addons/"));
+// The gate tier (tools/lib/gate-tier.mjs, docs/worktrees.md "Gate tiers"): T0 no addons/ change,
+// T1 values changed in place in data files, T2 everything else. Unreadable diff: T2.
+function gateTierOf(wtRoot, forceFull = false) {
+  if (forceFull) return gateTier.classify([], { forceFull: true });
+  const git = (args) => spawnSync("git", ["-C", wtRoot, ...args], { encoding: "utf8", windowsHide: true, maxBuffer: 256 * 1024 * 1024 });
+  const read = (p) => {
+    try { return readFileSync(join(wtRoot, p), "utf8"); } catch { return null; }
+  };
+  const files = gateTier.collectDiff({ git, read, base: wt.baseOfRoot(wtRoot) });
+  if (!files) return { tier: 2, reasons: ["could not read the diff against the base"], data: [], ids: [] };
+  return gateTier.classify(files);
 }
 
 function gateArgs(wtRoot, flags) {
-  if (flags.includes("--full-gate") || gameChanged(wtRoot)) {
-    console.log("=== gate: addons/ changed; validate --full + build + test tier=all ===");
-    return ["ci", ...flags.filter((f) => f !== "--full-gate")];
-  }
-  console.log("=== gate: no addons/ changes; validate only (pass --full-gate to force the in-game gate) ===");
-  return ["validate", "--all"];
+  const full = flags.includes("--full-gate");
+  const c = gateTierOf(wtRoot, full);
+  const line = gateTier.tierLine(c);
+  try {
+    mkdirSync(join(wtRoot, "tmp"), { recursive: true });
+    writeFileSync(join(wtRoot, "tmp", "gate-tier.txt"), `${line}\n`);
+  } catch { /* the line is printed below either way */ }
+  console.log(`=== gate: ${line} ===`);
+  const rest = flags.filter((f) => f !== "--full-gate");
+  if (c.tier === 0) return ["validate", "--all"];
+  if (c.tier === 1) return ["ci", "--tiered", ...rest];
+  return ["ci", ...rest];
 }
 
 async function wtGateCmd(args) {
@@ -4373,12 +4792,43 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
   let body = customBody ?? [
     `Automated ship from worktree \`${slug}\`.`,
     "",
-    "Gated by the ship queue: origin/" + base + " merged in, then `ci --remote` (validate --full, build, test tier=all on pool machines).",
+    "Gated by the ship queue: origin/" + base + " merged in, then the gate for the diff's tier (see ## Gate) on pool machines.",
     "",
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
   body = refsBody(body, closes);
+  {
+    // The tier as the branch stands now; the queue's `ci --tiered` decides again after main is merged in.
+    const tl = gateTier.tierLine(gateTierOf(wtRoot, flags.includes("--full-gate")));
+    console.log(`=== ship: ${tl} ===`);
+    body = `${body}\n\n## Gate\n\n${tl} (the queue re-checks it after merging origin/${base})`;
+  }
+  // Local preflight (seconds to a few minutes): what would fail the queued gate for a reason the agent must
+  // fix goes here, before the push, while the agent is still in the shell. --no-preflight skips it.
+  if (!flags.includes("--no-preflight")) {
+    const t0 = Date.now();
+    const mt = wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]);
+    if (mt.status === 1) {
+      const paths = sql.conflictPaths(mt.stdout);
+      const human = sql.humanConflicts(paths);
+      if (human.length) {
+        console.log(`FAIL  preflight: origin/${base} conflicts with this branch in ${human.join(", ")}; the merge drivers cannot resolve them.`);
+        console.log(`      merge it here: cd ${wtRoot}; git merge origin/${base}; fix, commit; tools\\cli wt ship ${slug}`);
+        return 1;
+      }
+      console.log(`=== ship: preflight: origin/${base} conflicts only in driver-merged files (${paths.join(", ")}); the queue's merge resolves them ===`);
+    } else if (mt.status !== 0) console.log(`ship: preflight: git merge-tree failed (${(mt.stderr || mt.stdout).trim().slice(0, 200)}); the queue's merge decides`);
+    // The checks whose declared inputs changed (incremental validate, no Workbench compile): a red check costs
+    // seconds here and a whole queue slot there.
+    console.log("=== ship: preflight: validate (changed inputs) ===");
+    const v = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true });
+    if (v.status !== 0) {
+      console.log(`FAIL  preflight: validate failed (exit ${v.status}); fix it, commit, and re-run 'tools\\cli wt ship ${slug}'. Nothing was pushed.`);
+      return 1;
+    }
+    console.log(`ship: preflight ok in ${Math.round((Date.now() - t0) / 1000)} s`);
+  }
   let pr = wt.findOpenPrGh(wtRoot, e.branch);
   // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
   if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
@@ -4406,16 +4856,21 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
+  q.publish(ROOT, entry); // tmp/ship-status.json in the worktree and a pending ship-gate status on the PR head
   const w = await q.ensureWorker(ROOT);
+  if (w.already) console.log(`ship: ${w.message}`);
   const qq = q.readQueue(ROOT);
   const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
   const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
   const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
   console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
   console.log(`PR: ${pr.url}`);
-  const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
-  if (!wait) {
-    console.log(`ship: queued. 'tools\\cli ship-queue wait ${slug}' blocks until it is gated; 'tools\\cli pool status' shows the queue.`);
+  // Async by default (docs/worktrees.md "Async ship"): the gate runs in the worker, auto-merge stays off until
+  // it passes. --wait (or LF_SHIP_WAIT=1) blocks here as before.
+  if (!sql.shipWaits(flags, process.env)) {
+    console.log(`ship: queued, gate running detached; auto-merge is enabled only when it passes. Report "shipped, gate running".`);
+    console.log(`  tools\\cli wt ship-status ${slug}          # one line: queued|running|passed|failed`);
+    console.log(`  tools\\cli wait ship ${slug} --budget 540  # blocks up to 9 min, one SUMMARY line; re-run until it says ok|fail`);
     return 0;
   }
   const code = await q.waitFor(ROOT, slug);
@@ -4545,12 +5000,17 @@ async function wtShipCmd(args) {
   let body = customBody ?? [
     `Automated ship from worktree \`${slug}\`.`,
     "",
-    "Gate passed locally: `validate --full` + headless `build` + `test` (tier=all).",
+    "Gate passed locally (the tier and why are under ## Gate).",
     "",
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
   body = refsBody(body, closes);
+  {
+    const tf = join(wtRoot, "tmp", "gate-tier.txt");
+    const tl = !skipGate && existsSync(tf) ? readFileSync(tf, "utf8").trim() : "";
+    if (tl) body = `${body}\n\n## Gate\n\n${tl}`;
+  }
   let pr;
   try {
     if (wt.ghAvailable()) {
@@ -4610,6 +5070,11 @@ function cmdWt(rest) {
     sync: () => wtSyncCmd(subArgs),
     "sync-base": () => wtSyncBaseCmd(subArgs),
     ship: () => wtShipCmd(subArgs),
+    "ship-status": async () => {
+      const slug = wtSlug(subArgs);
+      if (!slug) return 1;
+      return (await import("./ship-queue.mjs")).shipStatus(ROOT, slug);
+    },
     prune: () => wtPruneCmd(subArgs),
     open: () => wtOpenCmd(subArgs),
     main: () => {
@@ -4664,7 +5129,7 @@ const cmds = {
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), only, onlyClasses, shards: shardsFlag, both: list.includes("--both"), red, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), noCache: (flags ?? []).includes("--no-cache"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), shards: (flags ?? []).includes("--shards") ? (argValue(flags ?? [], "--shards") ?? "auto") : "auto", ...remoteFlags(flags ?? []) }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), noCache: (flags ?? []).includes("--no-cache"), skipCoreOnly: (flags ?? []).includes("--skip-core-only"), wait: (flags ?? []).includes("--wait"), wbOnly: (flags ?? []).includes("--wb-only"), compileOnly: (flags ?? []).includes("--compile-only"), buildOnly: (flags ?? []).includes("--build-only"), addon: argValue(flags ?? [], "--addon") ?? undefined, tiered: (flags ?? []).includes("--tiered"), shards: (flags ?? []).includes("--shards") ? (argValue(flags ?? [], "--shards") ?? "auto") : "auto", ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
     return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save"), oldBuild: (flags ?? []).includes("--old-build"), contentIds: (flags ?? []).includes("--content-ids"), cashSwap: (flags ?? []).includes("--cash-swap"), ...e2eMoveFlags(ROOT, flags ?? []) });
@@ -4702,7 +5167,7 @@ const cmds = {
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
-  rdb: () => ensureResourceDatabase(ROOT),
+  rdb: () => cmdRdb(ROOT, rest),
   "ui-image": () => cmdUiImage(rest),
   help: () => cmdHelp(),
 };
@@ -4796,9 +5261,32 @@ async function discoveredHelp() {
 const [a, b] = rest;
 const HEAVY = ["build", "pack", "serve", "dev", "test", "ci", "e2e"];
 
+// `<heavy command> --help` / `-h` prints that command's usage and stops (tools/lib/help-guard.mjs).
+// It is asked before any dispatch, so nothing below (lock, build, boot, pool ticket) can start.
+function printUsage(req) {
+  if (req.cmd === "session") {
+    console.log(SESSION_USAGE);
+    return 0;
+  }
+  const keep = console.log;
+  let text = "";
+  console.log = (...a) => { text += `${a.join(" ")}
+`; };
+  try {
+    (req.cmd === "wt" ? wtHelpFull : cmdHelpFull)();
+  } finally {
+    console.log = keep;
+  }
+  console.log(usageText(text, req));
+  return 0;
+}
+
 let code;
 try {
-  if (cmd === "mcp") {
+  const helpReq = helpRequest(cmd, rest);
+  if (helpReq) {
+    code = printUsage(helpReq);
+  } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {

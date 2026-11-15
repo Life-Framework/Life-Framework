@@ -25,7 +25,7 @@ mod's owner config):
 
 - **The example server download** (`LifeFramework-ExampleServer.zip`, or the folder
   [`server/example/`](../../server/example/README.md)): `server.json`, `config.json`, `start.cmd` and
-  `start.sh`. Unzip it anywhere, for example `C:LFServer`.
+  `start.sh`. Unzip it anywhere, for example `C:\LFServer`.
 - **The config generator** at [life-framework.org/config](https://life-framework.org/config): pick a preset,
   change prices, set the server name, ports and admin password, then **Download both files**. Put the two files
   in a folder; the start line (step 4) is on the same page.
@@ -65,13 +65,16 @@ firewall. Change the numbers in `server.json` if they are taken, and forward the
 
 With the example server folder, run `start.cmd` (Windows) or `./start.sh` (Linux). It copies `config.json` to
 where the mod reads it (step 6) and runs the line below. Set `LF_REFORGER_SERVER` first when the server is not in
-the default Steam folder. With the generator's two files, run the line yourself:
+the default Steam folder. With the generator's two files, copy `config.json` to the place step 6 names (create the
+folders; the generator's own start line, `-profile ./profile`, puts it at `profile/profile/LifeFramework/config.json`
+beside `server.json`), then run the line yourself. `ArmaReforgerServer.exe` is not on the path, so give its full path
+(Windows, default Steam folder):
 
 ```
-ArmaReforgerServer.exe -config server.json -profile C:\LFServer\profile -maxFPS 60
+"%ProgramFiles(x86)%\Steam\steamapps\common\Arma Reforger Server\ArmaReforgerServer.exe" -config C:\LFServer\server.json -profile C:\LFServer\profile -maxFPS 60
 ```
 
-Linux: `./ArmaReforgerServer -config server.json -profile ~/lfserver/profile -maxFPS 60`.
+Linux, from the server folder: `./ArmaReforgerServer -config ~/lfserver/server.json -profile ~/lfserver/profile -maxFPS 60`.
 
 The first boot downloads the mod and logs `[LFDebug:...]` lines as the town comes up. Wait for:
 
@@ -129,7 +132,7 @@ Restart the server after changing the file.
 2. Open the server browser and join your server by its `game.name`.
 3. A new player first sees the rules quiz (the rules are explained on a wrong answer; `rulesQuiz.enabled` in the config turns it off), then registration form R-89. Your character is keyed to your Steam name.
 
-The first player to join an empty police roster is put on it.
+The first player to join while the police roster is empty is put on the roster, so the owner can clock in. That makes them *eligible*, not on duty: they stay a civilian until they clock in at the duty desk in the police station. The server log confirms it with `[LFDebug:Whitelist] first player <uid> put on the empty police roster`. 
 
 ## 8. Keep the save across restarts
 
@@ -137,7 +140,7 @@ Stop the server normally (Ctrl+C in its console, or `tools\cli host stop` if you
 then add `-loadSessionSave` to the command:
 
 ```
-ArmaReforgerServer.exe -config server.json -profile C:\LFServer\profile -maxFPS 60 -loadSessionSave
+"%ProgramFiles(x86)%\Steam\steamapps\common\Arma Reforger Server\ArmaReforgerServer.exe" -config C:\LFServer\server.json -profile C:\LFServer\profile -maxFPS 60 -loadSessionSave
 ```
 
 Without the flag the town starts fresh. Do not delete the profile folder between runs.
@@ -156,7 +159,7 @@ first boots; the full list is in [debug log triage](../debug-log-triage.md).
 | `Wrong GUID` / `INVENTORY (W): Item ... not found in replication` | The server's mod download is incomplete; restart it and let the Workshop download finish |
 | `[LFDebug:Config] no owner config at $profile:LifeFramework/config.json` | Expected on a first boot; the server uses the shipped values |
 | `[LFDebug:Config] <path>.<key> is not <kind>` | The named field in `config.json` is the wrong type; that value falls back |
-| `[LFDebug:Whitelist] whitelist file missing, police faction closed` | Expected on a fresh server; the roster file is created on the first join |
+| `[LFDebug:Whitelist] whitelist file missing, police faction closed` | Expected on a fresh server. It is logged as an error at the first join, just before `first player ... put on the empty police roster` creates the file |
 | `[LFDebug:Whitelist] no whitelist file yet: ...` | Expected before anyone has joined |
 | `Unable to start replication` | Another server already holds the port; end `ArmaReforgerServer.exe` and start again |
 | A save from another game build | After a game update, back up and test the save before keeping it; a different build may refuse it |

@@ -10,8 +10,11 @@
 // uncommitted state. chooseGate and earlyDeath are pure; tools/validation/wb-gate-selftest.mjs
 // proves them.
 
+import { freemem } from "node:os";
+import { loadMachines as poolLoad } from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { DEFAULTS, rankMachines } from "./pool-queue.mjs";
+import * as wbLock from "./wb-lock.mjs";
 
 // One headless Workbench compile or build at its peak (measured about 2 GB; 2026-11-14 it died after
 // 6 s with 1.5 GB free). The floor (minFreeMb) comes on top: need = reserve + floor.
@@ -22,23 +25,30 @@ export const EARLY_DEATH_S = 60;
 // environment failure, retried on another machine once, never counted as a compile failure.
 export const ENV_SHORT_CODE = 4;
 
-// local: { busy, queued, limit, freeMb, multiplier } (this PC; freeMb null skips the RAM rule).
+// local: { busy, queued, limit, freeMb, multiplier, hasWb } (this PC; freeMb null skips the RAM rule).
+// hasWb false = this PC's pool caps lack "workbench" (the maintainer's editor lives there, agents never
+// start a headless Workbench on it): it is never a candidate and no fallback lands on it, so "nobody
+// answers" is "wait" (the caller re-checks within a budget), never "run here". Only an explicit
+// `mode: "local"` / `machine: "local"` (--local from a human, which sets hasWb true via LF_WB_LOCAL)
+// still returns it. Unset hasWb means true, as before.
 // remotes: [{ name, caps, multiplier, state: { freeMb, wbAlive, wbLimit } | null }].
 // opts: mode "any" | "local" | "remote" (remote: pool machines only, this PC only when none answers),
 // machine (a pin), exclude (names already tried), reserveMb, minFreeMb, roomyMb.
 // Returns { where: "local" | <name> | "wait" | "none" (nothing left to try), why, queue?: true }.
 export function chooseGate({ local, remotes = [], mode = "any", machine = null, exclude = [], reserveMb = WB_RESERVE_MB, minFreeMb = DEFAULTS.minFreeMb, roomyMb = DEFAULTS.roomyMb }) {
   const gb = (mb) => (mb / 1024).toFixed(1);
+  const localOk = local?.hasWb !== false;
   if (mode === "local" || machine === "local") return { where: "local", why: mode === "local" ? "--local" : "pinned to this PC" };
   const wb = remotes.filter((r) => (r.caps ?? []).includes("workbench") && (!machine || r.name === machine));
   const reachable = wb.filter((r) => r.state);
   if (machine) {
     const pick = reachable[0];
     if (pick) return { where: pick.name, why: `pinned (--remote/--machine ${machine}); ${pick.state.freeMb ?? "?"} MB free there` };
+    if (!localOk) return { where: "wait", why: `${machine} with the workbench cap does not answer, and this PC has no workbench cap to fall back on` };
     return { where: "local", why: `${machine} with the workbench cap does not answer; running here` };
   }
   const cands = [];
-  if (mode !== "remote" && !exclude.includes("local")) {
+  if (mode !== "remote" && !exclude.includes("local") && localOk) {
     cands.push({ name: "local", freeMb: local.freeMb, multiplier: local.multiplier, slot: local.busy + local.queued < local.limit, slotText: `${local.busy}/${local.limit} busy, ${local.queued} queued` });
   }
   for (const r of reachable) {
@@ -46,6 +56,10 @@ export function chooseGate({ local, remotes = [], mode = "any", machine = null, 
     cands.push({ name: r.name, freeMb: r.state.freeMb, multiplier: r.multiplier, slot: (r.state.wbAlive ?? 0) < (r.state.wbLimit ?? 1), slotText: `${r.state.wbAlive ?? 0}/${r.state.wbLimit ?? 1} busy` });
   }
   if (!cands.length) {
+    if (!localOk) {
+      if (exclude.filter((n) => n !== "local").length) return { where: "none", why: `no other machine with the workbench cap answers (tried ${exclude.join(", ")}), and this PC has no workbench cap` };
+      return { where: "wait", why: "no pool machine with the workbench cap answers, and this PC has no workbench cap to run it on" };
+    }
     if (!exclude.includes("local")) return { where: "local", why: "no pool machine with the workbench cap answers; running here" };
     return { where: "none", why: `no other machine with the workbench cap answers (tried ${exclude.join(", ")})` };
   }
@@ -74,6 +88,40 @@ export function earlyDeath({ status, seconds, text, freeMb, reserveMb = WB_RESER
   return `Workbench exited after ${Math.round(seconds)} s with no verdict and ${(freeMb / 1024).toFixed(1)} GB free (needs ${((reserveMb + minFreeMb) / 1024).toFixed(1)})`;
 }
 
+// Where a stale resourceDatabase.rdb is refreshed (a headless Workbench, ~15 s per addon, but it queued
+// 10-50 min behind the hub `build` lock and this PC's one Workbench slot). Built on chooseGate's rule
+// (free Workbench slot AND RAM for a Workbench, ranked by free RAM and speed): this PC when it has a
+// free slot, no live `build` lock (local.buildLocked) and the RAM; else a pool machine that chooseGate
+// finds with a free slot and the RAM (never one it would only queue on); else this PC again, which
+// waits for its slot as before. Only a machine with the `rdb` cap (needCap) is a candidate: its refresh
+// is known to register resources (lf-cloud's Workbench exits 0 and registers none, 2026-11-14). mode
+// "auto" (default), "local", or "pool" (a pool machine first even when this PC is free). Pure;
+// tools/validation/rdb-refresh-where-selftest.mjs proves it.
+// A PC without the workbench cap (local.hasWb false, tools/lib/wb-route.mjs) never refreshes: the rdb goes
+// to the best pool machine with the rdb cap even when it can only queue there (its Workbench lock queues
+// FIFO), and with none reachable the answer is "wait" (the caller re-checks within a budget). The one way
+// to a local refresh is mode "local", which a human reaches with `rdb --local` or LF_WB_LOCAL=1 (hasWb true).
+export function chooseRefresh({ local, remotes = [], mode = "auto", needCap = "rdb", reserveMb = WB_RESERVE_MB, minFreeMb = DEFAULTS.minFreeMb, roomyMb = DEFAULTS.roomyMb }) {
+  if (mode === "local" && local?.hasWb !== false) return { where: "local", why: "LF_RDB_REFRESH_WHERE=local" };
+  remotes = remotes.filter((r) => (r.caps ?? []).includes(needCap));
+  const need = reserveMb + minFreeMb;
+  if (local?.hasWb === false) {
+    const c = chooseGate({ local, remotes, mode: "remote", reserveMb, minFreeMb, roomyMb });
+    const nocap = "this PC has no workbench cap, so the refresh goes to a pool machine with the rdb cap";
+    if (c.where !== "local" && c.where !== "wait" && c.where !== "none") return { where: c.where, queue: c.queue, why: `${nocap}; ${c.why}` };
+    return { where: "wait", why: `${nocap}, and none is available (${c.why})` };
+  }
+  const slotFree = !local.buildLocked && local.busy + local.queued < local.limit;
+  const ramOk = local.freeMb == null || local.freeMb >= need;
+  if (mode === "auto" && slotFree && ramOk) return { where: "local", why: `this PC has a free Workbench slot (${local.busy}/${local.limit} busy) and ${local.freeMb ?? "?"} MB free` };
+  const c = chooseGate({ local, remotes, mode: "remote", reserveMb, minFreeMb, roomyMb });
+  if (c.where !== "local" && c.where !== "wait" && c.where !== "none" && !c.queue) {
+    const here = local.buildLocked ? "this PC's build lock is held" : !slotFree ? `this PC is busy (${local.busy}/${local.limit}, ${local.queued} queued)` : !ramOk ? `this PC has ${local.freeMb} MB free (needs ${need})` : "asked for a pool machine";
+    return { where: c.where, why: `${here}; ${c.why}` };
+  }
+  return { where: "local", why: `no pool machine has a free Workbench slot and the RAM (${c.why}); refreshing here` };
+}
+
 // One ssh round trip: the box's live Workbench locks and free RAM. null when it does not answer.
 export function remoteWbState(m) {
   const ps = [
@@ -91,4 +139,19 @@ export function parseWbState(text, limit) {
   const mm = /lf-wb: (\d+) (\d+)/.exec(String(text));
   if (!mm) return null;
   return { wbAlive: Number(mm[1]), freeMb: Number(mm[2]), wbLimit: Number(limit) > 0 ? Number(limit) : 1 };
+}
+
+// The live view of every machine with the workbench cap, for chooseGate: this PC's Workbench slots and
+// free RAM, each pool machine's over one ssh round trip (state null when it does not answer). Used by
+// `ci`'s Workbench steps and by `look`.
+export function workbenchView(root, { mode = "any", machine = null } = {}, { loadMachines, remoteState = remoteWbState, freeMb = () => Math.round(freemem() / 1048576) } = {}) {
+  const load = loadMachines ?? poolLoad;
+  const machines = load(root).filter((m) => !m.disabled && (m.caps ?? []).includes("workbench"));
+  const limit = wbLock.wbLimit(root);
+  const localM = machines.find((m) => m.via === "local");
+  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, freeMb: freeMb(), multiplier: localM?.budgetMultiplier ?? 1 };
+  const remotes = mode === "local" || machine === "local" ? [] : machines
+    .filter((m) => m.via === "ssh" && (!machine || m.name === machine))
+    .map((m) => ({ name: m.name, caps: m.caps, multiplier: m.budgetMultiplier ?? 1, m, state: remoteState(m) }));
+  return { local, remotes };
 }

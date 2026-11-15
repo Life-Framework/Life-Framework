@@ -1,0 +1,10 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "boot": true,
+  "bootLog": {
+    "has": [ "shops: owner config read 1 fields, rejected 0", "police: owner config read 1 fields, rejected 0", "persistence: owner config read 1 fields, rejected 0", "autosave scheduled every 60", "ATM is off" ],
+    "absent": [ "autosave scheduled every 600" ]
+  }
+}

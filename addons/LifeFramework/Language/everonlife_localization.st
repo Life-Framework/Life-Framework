@@ -3315,6 +3315,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Confirm: skip    Back: leave"
      Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
     }
+    CustomStringTableItem "{BC6FD589CFCCD2F2}" {
+     Id "LF-Dialogue_Shopkeeper_Bye"
+     Target_en_us "Good day to you."
+     Comment "Dialogue caption, spoken by the shopkeeper NPC (text only; tools/assets/dialogue/shopkeeper). Changing it needs: tools\\cli asset dialogue shopkeeper"
+    }
+    CustomStringTableItem "{BEEB7BF6DB95C0F4}" {
+     Id "LF-Dialogue_Shopkeeper_Greet"
+     Target_en_us "Good day. Take what you need from the shelves and pay at the till."
+     Comment "Dialogue caption, spoken by the shopkeeper NPC (text only; tools/assets/dialogue/shopkeeper). Changing it needs: tools\\cli asset dialogue shopkeeper"
+    }
+    CustomStringTableItem "{A0B028391EADDA2B}" {
+     Id "LF-Dialogue_Shopkeeper_HowToPay"
+     Target_en_us "Pick the goods up yourself, then pay at any till before you leave. You get a receipt. Walk out without paying and the alarm goes off."
+     Comment "Dialogue caption, spoken by the shopkeeper NPC (text only; tools/assets/dialogue/shopkeeper). Changing it needs: tools\\cli asset dialogue shopkeeper"
+    }
+    CustomStringTableItem "{D49BC0984F3395E4}" {
+     Id "LF-Dialogue_Shopkeeper_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the shopkeeper NPC."
+    }
+    CustomStringTableItem "{16D8E0E89EE9DE1A}" {
+     Id "LF-Dialogue_Shopkeeper_SayPay"
+     Target_en_us "How do I pay?"
+     Comment "Dialogue reply the player can pick when talking to the shopkeeper NPC."
+    }
+    CustomStringTableItem "{88EC22D25AF36768}" {
+     Id "LF-Dialogue_Shopkeeper_SayStock"
+     Target_en_us "What do you sell?"
+     Comment "Dialogue reply the player can pick when talking to the shopkeeper NPC."
+    }
+    CustomStringTableItem "{E91C527F0E5B5487}" {
+     Id "LF-Dialogue_Shopkeeper_Stock"
+     Target_en_us "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes."
+     Comment "Dialogue caption, spoken by the shopkeeper NPC (text only; tools/assets/dialogue/shopkeeper). Changing it needs: tools\\cli asset dialogue shopkeeper"
+    }
+    CustomStringTableItem "{90674ED1955BD20D}" {
+     Id "LF-Dialogue_Shopkeeper_Thief"
+     Target_en_us "Stop! You did not pay for that! Come back here!"
+     Comment "Dialogue caption, spoken by the shopkeeper NPC (text only; tools/assets/dialogue/shopkeeper). Changing it needs: tools\\cli asset dialogue shopkeeper"
+    }
     CustomStringTableItem "{123EFB6232FAF7F2}" {
      Id "LF-Dispatch_BoardHeading"
      Target_en_us "DISPATCH LOG - newest first"
@@ -4522,6 +4562,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Charge_Name"
      Target_en_us "Breaching charge"
      Comment "Item name of the fence charge."
+    }
+    CustomStringTableItem "{DAB831471E8878CE}" {
+     Id "LF-Item_Crackers"
+     Target_en_us "Crackers"
+     Comment "Item name: a packet of dry crackers (#1143)."
+    }
+    CustomStringTableItem "{BD823BCC5158CF32}" {
+     Id "LF-Item_CrackersDesc"
+     Target_en_us "A packet of dry crackers. Keeps for months."
+     Comment "Item description: crackers (#1143)."
+    }
+    CustomStringTableItem "{8D5931803863C15C}" {
+     Id "LF-Item_DriedMeat"
+     Target_en_us "Dried sausage"
+     Comment "Item name: a dried sausage (#1143)."
+    }
+    CustomStringTableItem "{19716E0DDC033FA9}" {
+     Id "LF-Item_DriedMeatDesc"
+     Target_en_us "A hard dried sausage. Filling, and it keeps."
+     Comment "Item description: dried sausage (#1143)."
     }
     CustomStringTableItem "{39F1DED905C80D73}" {
      Id "LF-Item_Drill_Description"
@@ -8035,6 +8095,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "At the till ..."
      Comment "Shop slip line while the server handles the order."
     }
+    CustomStringTableItem "{9A17358E79382816}" {
+     Id "LF-Shopkeeper_Name"
+     Target_en_us "Shopkeeper"
+     Comment "Speaker name of a store's shopkeeper in a conversation (#1143)."
+    }
+    CustomStringTableItem "{D10D43C9BEB02467}" {
+     Id "LF-Shopkeeper_Talk"
+     Target_en_us "Talk to the shopkeeper"
+     Comment "Action on a store's shopkeeper: opens the conversation (#1143)."
+    }
     CustomStringTableItem "{62312EEA2BF57769}" {
      Id "LF-Sign_Close"
      Target_en_us "Put it back"
@@ -8379,6 +8449,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Stolen_Title"
      Target_en_us "Stolen car"
      Comment "Toast title (#414)."
+    }
+    CustomStringTableItem "{23BA6EE5AB3BA9D3}" {
+     Id "LF-Store_ClerkThief"
+     Target_en_us "Stop! You did not pay for that!"
+     Comment "Key a store's staff say a line for when a shopper walks out with unpaid goods; the dialogue's own line is the caption (#1143)."
     }
     CustomStringTableItem "{E76A90141796C076}" {
      Id "LF-Store_NoStore"

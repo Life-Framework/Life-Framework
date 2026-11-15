@@ -155,6 +155,8 @@ prefab brings the punch clock with the clock-in action, the place registration a
 slot, so a pack needs no hand-wired actions and no script. A job id that is not a duty job
 (`POLICE`, `MEDIC`) still registers its place; it shows no clock-in.
 
+The header names the core `DebugWorld` and `SystemsConfig`, so `toolscli session up --pack LF_<Name>` boots the pack in a test session with its overlays applied and the harness on (`docs/owner/pack-session.md`).
+
 ### Swapping a model (prefab slots)
 
 A pack swaps a core item or prop by prefab slot, with no script (#964, #1128). Add `Configs/PrefabSlots.conf`

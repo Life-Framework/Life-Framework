@@ -43,7 +43,8 @@
       "caps": [
         "server",
         "clients",
-        "workbench"
+        "workbench",
+        "rdb"
       ],
       "budgetMultiplier": 2,
       "thermalLog": "C:/LF/thermal-log",

@@ -125,7 +125,8 @@ function docBefore(text, idx) {
     else break;
   }
   const first = /^.*?[.!?](?=\s|$)/.exec(out.join(" ").trim());
-  return first ? first[0] : out.join(" ").trim();
+  const line = first ? first[0] : out.join(" ").trim();
+  return line.replace(/ \((?:#\d+|M\d+-\d+)\)/g, ""); // an issue number means nothing to a server owner
 }
 
 function attrInfo(args) {
@@ -137,7 +138,8 @@ function attrInfo(args) {
     if (named) {
       if (named[1] === "desc") info.desc = unquote(named[2]) ?? "";
       else if (named[1] === "params") params = unquote(named[2]);
-    } else if (i === 1 && params === null) params = unquote(a);
+    } else if (i === 0 && !info.desc) info.desc = unquote(a) ?? "";
+    else if (i === 1 && params === null) params = unquote(a);
   });
   // "min max [step]" on a numeric widget; a resource picker's params ("et") are not a range.
   if (params && /Slider|Spin|Edit|Auto/.test(widget)) {
@@ -153,7 +155,8 @@ function attrInfo(args) {
 const SCALAR = { int: "integer", float: "number", bool: "boolean", string: "string", ResourceName: "string" };
 
 function scalarDefault(type, def) {
-  if (type === "bool") return def === "true" ? true : def === "false" ? false : undefined;
+  // [Attribute("1")] is how most checkboxes spell "on"; reading only true/false left 39 booleans without a default (#286).
+  if (type === "bool") return def === "true" || def === "1" ? true : def === "false" || def === "0" ? false : undefined;
   if (type === "int" || type === "float") return /^-?\d+(\.\d+)?$/.test(def) ? Number(def) : undefined;
   return def;
 }
@@ -197,6 +200,23 @@ function fieldSchema(classes, m, overrides, owner) {
   }
   if (!s.description) delete s.description;
   return s;
+}
+
+/**
+ * Help text (#286): the generated form shows each field's description, so every field, record
+ * field and section must carry one. A field is documented by the third argument of its
+ * `[Attribute(default, widget, "description", ...)]`. Returns one message per field without it.
+ */
+export function descriptionProblems(schema) {
+  const msgs = [];
+  const walkNode = (node, path) => {
+    if (!node.description || !node.description.trim()) msgs.push(`${path}: no description; add one as the third argument of its [Attribute(...)]`);
+    for (const [k, v] of Object.entries(node.properties || {})) walkNode(v, `${path}.${k}`);
+    const rec = node.additionalProperties && node.additionalProperties.properties;
+    for (const [k, v] of Object.entries(rec || {})) walkNode(v, `${path}[].${k}`);
+  };
+  for (const [k, v] of Object.entries(schema.properties || {})) walkNode(v, k);
+  return msgs;
 }
 
 /** The runtime schema version, read from the config service so the two cannot drift. */

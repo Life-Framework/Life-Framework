@@ -161,6 +161,17 @@ export function analyze(accounts, { now = Date.now(), windowMs = 5 * HOUR } = {}
     const baseline = [...rel].reverse().find((g) => g.usage > 0) || null;
     const lastHit = groups.length ? groups.reduce((x, y) => (y.last > x.last ? y : x)) : null;
     const open = groups.filter((g) => g.resetsAt > now).sort((x, y) => y.resetsAt - x.resetsAt)[0] || null;
+    // Usage right after a hit is low because the account is blocked, not because it has room, so the last
+    // 5-hour hit keeps the account out of the pick until its logged reset, or hit + 5 h when no reset was
+    // logged. A turn logged in a later minute than the hit proves the window reopened: not limited from then on.
+    const lastFive = groups.filter((g) => g.type === "five_hour").reduce((x, y) => (!x || y.last > x.last ? y : x), null);
+    let limitedUntil = 0;
+    if (lastFive) {
+      const until = lastFive.resetsAt || lastFive.last + 5 * HOUR;
+      const hitMinute = Math.floor(lastFive.last / 60000) * 60000;
+      const reopened = Object.keys(a.minutes).some((k) => Number(k) > hitMinute);
+      if (until > now && !reopened) limitedUntil = until;
+    }
     return {
       label: a.label,
       email: a.email,
@@ -172,6 +183,7 @@ export function analyze(accounts, { now = Date.now(), windowMs = 5 * HOUR } = {}
       active: a.sources.reduce((s, x) => s + (x.active || 0), 0),
       lastHit,
       blocked: open ? { type: open.type, until: open.resetsAt } : null,
+      limitedUntil,
       hits: groups.length,
       baseline: baseline ? baseline.usage : 0,
       baselineAt: baseline ? baseline.first : 0,
@@ -195,11 +207,25 @@ export function analyze(accounts, { now = Date.now(), windowMs = 5 * HOUR } = {}
   return rows;
 }
 
-// The account the next agent should use: not blocked, most headroom (whole percent), then fewest active sessions.
+// When an account can take work again: 0 when it can now, else the later of an open block and a 5-hour hit + 5 h.
+export const availableAt = (r) => Math.max((r.blocked && r.blocked.until) || 0, r.limitedUntil || 0);
+
+// What an account has left to give the next agent: headroom x plan weight (max_20x counts 20, max_5x 5, so
+// Personal has 4 x Gaming's capacity), shared among the agents already on it plus the new one.
+export function pickScore(r) {
+  const weight = tierWeight(r.tier) || 1;
+  const headroom = Number.isFinite(r.headroom) ? r.headroom : 100;
+  const active = r.active || 0;
+  return { weight, headroom, active, score: (headroom / 100) * weight / (active + 1) };
+}
+
+// The account the next agent should use: not blocked and not inside a 5-hour limit, then the highest pickScore.
+// When every account is out, the one that comes back first.
 export function pickAccount(rows) {
-  const live = rows.filter((r) => !r.blocked);
-  const pool = live.length ? live : rows;
-  return [...pool].sort((a, b) => Math.round(b.headroom) - Math.round(a.headroom) || a.active - b.active)[0] || null;
+  const live = rows.filter((r) => !availableAt(r));
+  const byScore = (a, b) => pickScore(b).score - pickScore(a).score;
+  if (live.length) return [...live].sort(byScore)[0];
+  return [...rows].sort((a, b) => availableAt(a) - availableAt(b) || byScore(a, b))[0] || null;
 }
 
 // ---- output -------------------------------------------------------------------------------------
@@ -222,20 +248,25 @@ const typeName = (t) => (t === "five_hour" ? "5h limit" : t === "seven_day" ? "w
 export function accountLine(r, { now = Date.now(), windowLabel = "5h" } = {}) {
   const who = `${r.label}${r.email ? ` ${r.email}` : ""}${r.tier ? ` ${r.tier.replace(/^default_claude_/, "")}` : ""}`;
   const split = r.sources.length > 1 ? ` (${r.sources.map((s) => `${s.machine} ${s.active}`).join(", ")})` : "";
-  const hit = r.lastHit ? `last ${typeName(r.lastHit.type)} hit ${clock(r.lastHit.last, now)} (${ago(now - r.lastHit.last)})` : "no limit hit in the logs";
+  const hit0 = r.lastHit ? `last ${typeName(r.lastHit.type)} hit ${clock(r.lastHit.last, now)} (${ago(now - r.lastHit.last)})` : "no limit hit in the logs";
+  const hit = r.limitedUntil ? `${hit0}; limited until ${clock(r.limitedUntil, now)}` : hit0;
   let est;
   if (r.blocked) est = `BLOCKED by ${typeName(r.blocked.type)} until ${clock(r.blocked.until, now)}`;
   else if (r.pct === null) est = "no observed limit to compare, headroom unknown (counted as full)";
-  else est = `â‰ˆ${Math.round(r.pct)}% of last observed limit (${M(r.baseline)}${r.baselineFrom ? `, ${r.baselineFrom}` : ` at ${clock(r.baselineAt, now)}`}; estimate)`;
+  else est = `≈${Math.round(r.pct)}% of last observed limit (${M(r.baseline)}${r.baselineFrom ? `, ${r.baselineFrom}` : ` at ${clock(r.baselineAt, now)}`}; estimate)`;
   return `${who}: ${M(r.usage)} tok/${windowLabel}, ${r.messages} msgs, ${r.active} active${split}; ${hit}; ${est}`;
 }
 
-export function pickLine(r) {
+export function pickLine(r, { rows = [], now = Date.now() } = {}) {
   if (!r) return "pick: none (no account found)";
   const ids = r.ids.map((i) => (i === LAPTOP.id ? `"laptop"` : i));
   const where = r.ids.length > 1 ? ids.join(" (this PC) or ") : ids[0];
-  const why = r.blocked ? "all accounts blocked, soonest listed" : r.pct === null ? "headroom unknown" : `â‰ˆ${Math.round(r.headroom)}% headroom, estimate`;
-  return `pick: ${where}  [${r.label}: ${why}, ${r.active} active]`;
+  const s = pickScore(r);
+  const skipped = rows.filter((o) => o !== r && availableAt(o) > now).map((o) => `${o.label} limited until ${clock(availableAt(o), now)}`);
+  const skip = skipped.length ? `; skipped ${skipped.join(", ")}` : "";
+  if (availableAt(r) > now) return `pick: ${where}  [${r.label}: every account is limited, this one is back first at ${clock(availableAt(r), now)}, ${r.active} active${skip}]`;
+  const why = r.blocked ? "all accounts blocked, soonest listed" : r.pct === null ? "headroom unknown" : `≈${Math.round(r.headroom)}% headroom, estimate`;
+  return `pick: ${where}  [${r.label}: ${why}, plan x${s.weight}, ${r.active} active, score ${s.score.toFixed(2)} = headroom x plan / (active + 1)${skip}]`;
 }
 
 // ---- the command --------------------------------------------------------------------------------
@@ -244,8 +275,10 @@ const HELP = `usage: tools\\cli usage --accounts [--window 5h|7d|90m] [--history
        tools\\cli usage --pick [same options]
   Usage per Claude account (Personal = ~/.claude, Gaming = ~/.claude-gaming + the laptop) over the rolling window:
   cost-weighted tokens, messages, active sessions (a log written in the last 10 min), the last rate-limit hit, and
-  â‰ˆ% of the last observed limit (an estimate from the usage before each past hit). --pick prints the provider
-  instance id for the next agent: most headroom, then fewest active sessions.`;
+  ≈% of the last observed limit (an estimate from the usage before each past hit). --pick prints the provider
+  instance id for the next agent: the highest headroom x plan weight (max_20x counts 4 x max_5x) / (active sessions + 1).
+  An account is skipped ("limited until HH:MM") from its last 5h limit hit until the logged reset (hit + 5 h when none was
+  logged), unless turns logged after the hit show the window reopened; its usage looks low while it is blocked.`;
 
 export async function main(args) {
   const opt = { windowMs: 5 * HOUR, windowLabel: "5h", history: HISTORY, laptop: LAPTOP.host, timeout: 90, json: false, pick: false, home: homedir(), ssh: process.env.LF_USAGE_SSH || "ssh" };
@@ -300,11 +333,11 @@ export async function main(args) {
   }
   if (opt.pick) {
     for (const n of notes) console.error(n);
-    console.log(pickLine(pick));
+    console.log(pickLine(pick, { rows, now }));
     return 0;
   }
   for (const r of rows) console.log(accountLine(r, { now, windowLabel: opt.windowLabel }));
   for (const n of notes) console.log(n);
-  console.log(pickLine(pick));
+  console.log(pickLine(pick, { rows, now }));
   return 0;
 }

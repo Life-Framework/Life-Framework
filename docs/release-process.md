@@ -20,7 +20,7 @@ run from tooling. It is maintainer-only, by hand in Workbench (#370).
 | `tools\cli release <x.y.z> --confirm [--push]` | Never | Yes |
 | `tools\cli playtest release` | Never | Yes |
 | Workshop upload of core and pack | Never. **Not yet: maintainer-only.** | Yes, by hand (#370), following [release-first-upload.md](release-first-upload.md) |
-| `toolscli workshop boot-check <coreId> <packId>` (clean server from Workshop ids, #371) | Yes, once the ids are real | Yes |
+| `tools\cli workshop boot-check <coreId> <packId>` (clean server from Workshop ids, #371) | Yes, once the ids are real | Yes |
 | `tools\cli example-zip` (draft zip) | Yes | Yes |
 | Set the confirmed Workshop ids in `tools/release/example-zip.json`, then the `--final` zip | Never | Yes (after #370) |
 | Host `preflight` and `restore` after a game update | Never | Yes (the server owner too) |
@@ -59,6 +59,8 @@ Two Workshop items (decision 2026-11-09, #367 and #375):
 
 - Versions are semver, `x.y.z`. While both items are 0.x, `tools\cli release <version>` stamps one
   number into both `.gproj` files and both kit READMEs, so they publish together.
+- The first release is `0.1.0` for both items (the maintainer's choice, 2026-11-14). Its upgrade
+  page is [upgrades/0.1.0.md](upgrades/0.1.0.md).
 - The pack's kit README states the core version it needs in its `Requires` row.
 - A schema or save-format bump is a major version. A change that keeps saves and configs readable
   is a minor or patch.
@@ -81,26 +83,26 @@ Two Workshop items (decision 2026-11-09, #367 and #375):
    `origin/main` or `origin/stable`:
 
    ```
-   tools\cli release 0.2.0
+   tools\cli release 0.1.0
    ```
 
    The default is a dry run. It prints the plan, names every refusal (dirty tree,
    wrong branch, version not `x.y.z`, tag taken), and runs the cheap
    `release-ready --strict` check. Nothing changes.
-4. **Cut it (maintainer).** `tools\cli release 0.2.0 --confirm` does this in
+4. **Cut it (maintainer).** `tools\cli release 0.1.0 --confirm` does this in
    order:
    - stamps the version in `addons/LifeFramework/LifeFramework.gproj`,
      `addons/LF_Everon1989/LF_Everon1989.gproj`, and both Workshop kit READMEs;
    - runs the gates: `validate --full`, `release-ready --strict`, the full suite,
      the config harness with its game sessions (`config-gate --full`),
      `audit placement --strict`, and a `pack` of each addon;
-   - writes `tmp/release/notes-0.2.0.md` from the PR titles merged since the
+   - writes `tmp/release/notes-0.1.0.md` from the PR titles merged since the
      previous `v*` tag;
-   - tags `v0.2.0` on a release commit that no branch points at, and restores the
+   - tags `v0.1.0` on a release commit that no branch points at, and restores the
      stamped files.
 
    A failed gate restores the files and tags nothing. `--push` also pushes that
-   one tag (`refs/tags/v0.2.0`). Without it nothing leaves the machine.
+   one tag (`refs/tags/v0.1.0`). Without it nothing leaves the machine.
 5. **Promote the commit (maintainer).** `tools\cli promote --to <sha> --confirm`
    fast-forwards `origin/stable` to the commit that passed step 4, tags it
    `stable-<yyyymmdd>-<sha8>`, and marks the issues `verified`. It refuses a

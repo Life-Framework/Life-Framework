@@ -9,14 +9,22 @@
 //   4. the window counts only what was spent since the last reset, the observed limit is what was spent
 //      in the block behind the last hit, the percentage and headroom are hand-worked, an account that
 //      never hit a limit borrows the other's limit scaled by plan tier;
-//   5. pick takes the most headroom, a tie the fewer active sessions, and never a blocked account;
+//   5. pick scores headroom x plan weight / (active + 1), so Personal (max_20x) counts 4 x Gaming (max_5x) and
+//      busy accounts lose; never a blocked account, nor one inside its last 5h limit: until the logged reset, or
+//      hit + 5 h when none was logged, and not at all once a turn is logged after the hit (hit 20:09, reset 20:10,
+//      turn 20:11 is back in the pool). A limited account prints "limited until HH:MM"; the pick line says why;
 //   6. an unreachable laptop is said plainly and the PC accounts still print: one line each plus the pick.
 // red-proof: 2026-11-14, with the clip at the last reset removed the window counted the 14:30 turn and it
-// printed "FAIL usage-accounts: gaming window usage: 12300 != 2300".
+// printed "FAIL usage-accounts: gaming window usage: 12300 != 2300". Pick, same day: with the 5h rule set to 0
+// it printed "FAIL usage-accounts: no reset logged: limited until the hit plus 5 h: 0 != ..."; with the plan weight forced to 1,
+// "FAIL usage-accounts: plan weight: 50% of a max_20x beats 100% of a max_5x: Gaming != Personal"; with the
+// active count dropped from the score, "FAIL usage-accounts: same plan, same headroom: fewer active agents wins: a != b". Later turns, same day: with the reopened check forced false it printed "FAIL usage-accounts: no reset
+// logged, but a turn after the hit: reopened: ... != 0"; with hit + 5 h used even when a reset is logged, "FAIL
+// usage-accounts: logged reset passed, no turn after: not limited: ... != 0".
 import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { analyze, accountLine, clusterHits, main, mergeAccounts, parseWindow, pickAccount, pickLine, scanRemote } from "../agents/usage-accounts.mjs";
+import { analyze, accountLine, availableAt, clusterHits, main, mergeAccounts, parseWindow, pickAccount, pickLine, scanRemote } from "../agents/usage-accounts.mjs";
 import { cost, maskEmail, scanConfigDir } from "../agents/usage-scan.mjs";
 
 const failures = [];
@@ -134,14 +142,64 @@ eq(open[0].headroom, 0, "blocked headroom is 0");
 eq(parseWindow("90m"), 5400e3, "window 90m");
 eq(parseWindow("7d"), 7 * 86400e3, "window 7d");
 const line = accountLine(G, { now: NOW });
-if (!/â‰ˆ28% of last observed limit/.test(line) || !/estimate/.test(line) || !/pc 1, laptop 3/.test(line)) failures.push(`account line: ${line}`);
+if (!/≈28% of last observed limit/.test(line) || !/estimate/.test(line) || !/pc 1, laptop 3/.test(line)) failures.push(`account line: ${line}`);
 
 // 5: pick
-const mk = (label, headroom, active, blocked = null) => ({ label, ids: [label], headroom, active, blocked, pct: 100 - headroom });
-eq(pickAccount([mk("a", 40, 2), mk("b", 60, 9)]).label, "b", "most headroom wins");
-eq(pickAccount([mk("a", 60.2, 5), mk("b", 59.8, 2)]).label, "b", "a tie (whole percent) goes to fewer active sessions");
-eq(pickAccount([mk("a", 0, 1, { type: "five_hour", until: 1 }), mk("b", 5, 9)]).label, "b", "blocked is skipped");
-eq(pickAccount([mk("a", 0, 1, { type: "five_hour", until: 1 }), mk("b", 0, 9, { type: "five_hour", until: 1 })]).label, "a", "all blocked still names one");
+const M5 = "default_claude_max_5x";
+const M20 = "default_claude_max_20x";
+const mk = (label, headroom, active, o = {}) => ({ label, ids: [label], headroom, active, blocked: null, limitedUntil: 0, tier: M5, pct: 100 - headroom, ...o });
+eq(pickAccount([mk("a", 40, 2), mk("b", 60, 2)]).label, "b", "same plan, same load: most headroom wins");
+eq(pickAccount([mk("a", 60, 5), mk("b", 60, 2)]).label, "b", "same plan, same headroom: fewer active agents wins");
+// plan size: Personal (max_20x) has 4 x Gaming's capacity, so half-used Personal still beats an empty Gaming
+eq(pickAccount([mk("Gaming", 100, 0, { tier: M5 }), mk("Personal", 50, 0, { tier: M20 })]).label, "Personal", "plan weight: 50% of a max_20x beats 100% of a max_5x");
+eq(pickAccount([mk("Gaming", 100, 0, { tier: M5 }), mk("Personal", 20, 0, { tier: M20 })]).label, "Gaming", "plan weight: 20% of a max_20x loses to 100% of a max_5x");
+// active agents share the capacity
+eq(pickAccount([mk("Gaming", 100, 0, { tier: M5 }), mk("Personal", 100, 12, { tier: M20 })]).label, "Gaming", "twelve agents on Personal leave an idle Gaming the larger share");
+eq(pickAccount([mk("Gaming", 100, 5, { tier: M5 }), mk("Personal", 100, 12, { tier: M20 })]).label, "Personal", "but five on Gaming and twelve on Personal is Personal");
+// limits
+const lim = { type: "five_hour", until: 1 };
+eq(pickAccount([mk("a", 0, 1, { blocked: lim }), mk("b", 5, 9)]).label, "b", "blocked is skipped");
+eq(pickAccount([mk("a", 100, 0, { limitedUntil: NOW + 3 * 3600e3 }), mk("b", 5, 9)]).label, "b", "an account inside its 5h limit is skipped whatever its headroom says");
+eq(pickAccount([mk("a", 0, 1, { blocked: lim }), mk("b", 0, 9, { blocked: lim })]).label, "a", "all blocked still names one");
+eq(pickAccount([mk("a", 100, 0, { limitedUntil: NOW + 3 * 3600e3 }), mk("b", 100, 0, { limitedUntil: NOW + 1 * 3600e3 })]).label, "b", "all limited: the one that is back first");
+// A 5h hit holds an account out until its logged reset, or hit + 5 h when none was logged; a turn logged after
+// the hit shows the window reopened. Usage right after a hit is low because the account was blocked.
+const A = (hhmm) => Date.parse(`2026-11-14T${hhmm}Z`);
+const gamingWith = (hit, minutes) => ({ label: "Gaming", email: "", tier: M5, ids: ["claudeAgent_claude_gaming"], sources: [{ machine: "pc", active: 2, files: 2 }], minutes, hits: [hit] });
+const idle = { label: "Personal", email: "", tier: M20, ids: ["claudeAgent"], sources: [{ machine: "pc", active: 9, files: 9 }], minutes: { [A("20:00")]: [20000, 4] }, hits: [] };
+const win = { windowMs: 5 * 3600e3 };
+// the Gaming situation: hit 20:09, reset 20:10, turns at 20:11, now 20:12 -> back in the pool
+const hit2009 = { ts: A("20:09:25"), type: "five_hour", resetsAt: A("20:10") };
+const back = analyze([gamingWith(hit2009, { [A("20:03")]: [90000, 12], [A("20:11")]: [67700, 3] }), idle], { now: A("20:12"), ...win });
+const bg = back.find((r) => r.label === "Gaming");
+eq(bg.limitedUntil, 0, "hit 20:09, reset 20:10, turn 20:11: no longer limited at 20:12");
+eq(bg.blocked, null, "and not blocked");
+eq(availableAt(bg), 0, "available now");
+eq(pickAccount([bg, { ...back[1], active: 100 }]).label, "Gaming", "Gaming is back in the pool: Personal with 100 agents loses to it");
+eq(/skipped/.test(pickLine(bg, { rows: back, now: A("20:12") })), false, "the pick line does not skip it");
+eq(/limited until/.test(accountLine(bg, { now: A("20:12") })), false, "the account line does not say limited");
+// the same hit with no turn after it: limited only until the logged reset, which has passed
+eq(analyze([gamingWith(hit2009, { [A("20:03")]: [90000, 12] })], { now: A("20:12"), ...win })[0].limitedUntil, 0, "logged reset passed, no turn after: not limited");
+// before that reset, no turn after the hit: limited until the logged reset (not hit + 5 h)
+const early = analyze([gamingWith(hit2009, { [A("20:03")]: [90000, 12] })], { now: A("20:09:40"), ...win })[0];
+eq(early.limitedUntil, A("20:10"), "before the logged reset: limited until the reset");
+// no reset logged: hit + 5 h, cleared by a later turn or by the 5 h passing
+const noReset = { ts: A("20:09:25"), type: "five_hour", resetsAt: 0 };
+const real = analyze([gamingWith(noReset, {}), idle], { now: A("20:12"), ...win });
+const rg = real.find((r) => r.label === "Gaming");
+const rp = real.find((r) => r.label === "Personal");
+eq(rg.limitedUntil, noReset.ts + 5 * 3600e3, "no reset logged: limited until the hit plus 5 h");
+eq(rg.blocked, null, "no logged reset to block on, so only the 5 h rule holds it");
+eq(rg.headroom, 100, "and its headroom looks full, which is the bug");
+eq(rp.limitedUntil, 0, "an account with no hit is not limited");
+eq(pickAccount(real).label, "Personal", "the pick skips the account hit 2 min ago");
+if (!/limited until \d\d:\d\d|limited until \d+\/\d+ \d\d:\d\d/.test(accountLine(rg, { now: A("20:12") }))) failures.push(`account line has no "limited until": ${accountLine(rg, { now: A("20:12") })}`);
+const reason = pickLine(pickAccount(real), { rows: real, now: A("20:12") });
+if (!/plan x20/.test(reason) || !/9 active/.test(reason) || !/score/.test(reason) || !/skipped Gaming limited until/.test(reason)) failures.push(`pick reason: ${reason}`);
+eq(analyze([gamingWith(noReset, { [A("20:11")]: [500, 1] })], { now: A("20:12"), ...win })[0].limitedUntil, 0, "no reset logged, but a turn after the hit: reopened");
+eq(analyze([gamingWith(noReset, { [A("20:09")]: [500, 1] })], { now: A("20:12"), ...win })[0].limitedUntil, noReset.ts + 5 * 3600e3, "a turn in the hit's own minute proves nothing");
+eq(analyze([gamingWith(noReset, {})], { now: noReset.ts + 5 * 3600e3 + 1000, ...win })[0].limitedUntil, 0, "5 h after the hit the account is available again");
+eq(analyze([gamingWith({ ...noReset, type: "seven_day" }, {})], { now: A("20:12"), ...win })[0].limitedUntil, 0, "only a 5-hour hit sets the 5 h rule");
 eq(pickLine(G.ids ? G : null).startsWith('pick: claudeAgent_claude_gaming (this PC) or "laptop"'), true, "pick shows the PC provider id and laptop for Gaming");
 eq(pickLine(P).startsWith("pick: claudeAgent "), true, "pick shows the Personal provider id");
 

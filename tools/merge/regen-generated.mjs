@@ -3,11 +3,18 @@
 // LF_TestRegistrations.generated.c resolves by tools\cli regen-tests.
 // The driver runs those commands. It does not hand-edit the generated text.
 //
+// The driver runs mid-merge, so it must never write into the worktree: a test file that only the
+// incoming side has would land as an untracked file and git would then refuse to write its own copy
+// ("untracked working tree files would be overwritten by merge"). The inputs are materialised in a
+// scratch git repo under os.tmpdir(), the generator runs there, and only %A is written.
+//
 //   node tools/merge/regen-generated.mjs %O %A %B %P
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { mergeStringTables } from "./union-string-table.mjs";
 
 // The core's string table and each pack's (#325): the driver unions every one, then regenerates all confs.
@@ -15,6 +22,7 @@ const ST_PATHS = [
   "addons/LifeFramework/Language/everonlife_localization.st",
   "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
 ];
+const TOOLS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const TESTS_PREFIX = "addons/LifeFramework/Scripts/Game/Tests";
 const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 
@@ -127,76 +135,64 @@ function pickThree(base, ours, theirs) {
   return { ok: false };
 }
 
-function repoRoot() {
-  const result = git(["rev-parse", "--show-toplevel"]);
-  if (result.status !== 0) return process.cwd();
-  return result.stdout.trim();
+function writeInto(root, rel, text) {
+  const full = join(root, rel);
+  if (text == null) {
+    if (existsSync(full)) rmSync(full);
+    return;
+  }
+  mkdirSync(dirname(full), { recursive: true });
+  writeFileSync(full, text);
 }
 
-function runPowershell(root, script, args) {
+// The generators ask git for the work tree root, so run them in a scratch repo with a clean git env.
+function runPowershell(scratch, script, args) {
   const powershell = process.platform === "win32" ? "powershell.exe" : "pwsh";
+  const env = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (!/^GIT_(DIR|WORK_TREE|INDEX_FILE|PREFIX|COMMON_DIR|OBJECT_DIRECTORY|ALTERNATE_OBJECT_DIRECTORIES|NAMESPACE)$/i.test(key)) env[key] = value;
+  }
+  const init = spawnSync("git", ["init", "-q"], { windowsHide: true, cwd: scratch, encoding: "utf8", env });
+  if (init.status !== 0) return init;
   return spawnSync(
     powershell,
-    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, script), ...args],
-    { windowsHide: true, cwd: root, encoding: "utf8" },
+    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(TOOLS_ROOT, script), ...args],
+    { windowsHide: true, cwd: scratch, encoding: "utf8", env },
   );
 }
 
-function snapshotWrite(root, rel, text) {
-  const full = join(root, rel);
-  const existed = existsSync(full);
-  const previous = existed ? readFileSync(full) : null;
-  if (text == null) {
-    if (existed) rmSync(full);
-  } else {
-    mkdirSync(dirname(full), { recursive: true });
-    writeFileSync(full, text);
+function materializeStringTable(scratch, sides) {
+  // regen-localization.ps1 sorts the .st files with tools/merge/sort-string-table.mjs (and its imports) under its root.
+  mkdirSync(join(scratch, "tools", "merge"), { recursive: true });
+  for (const name of readdirSync(join(TOOLS_ROOT, "tools", "merge")).filter((entry) => entry.endsWith(".mjs"))) {
+    copyFileSync(join(TOOLS_ROOT, "tools", "merge", name), join(scratch, "tools", "merge", name));
   }
-  return { full, existed, previous };
-}
-
-function restoreAll(saved) {
-  for (const item of saved.reverse()) {
-    if (!item.existed) {
-      if (existsSync(item.full)) rmSync(item.full);
-    } else {
-      writeFileSync(item.full, item.previous);
-    }
-  }
-}
-
-function materializeStringTable(root, sides) {
-  const saved = [];
   for (const stPath of ST_PATHS) {
     const base = showPath(sides.base, stPath) ?? "";
     const ours = showPath(sides.ours, stPath) ?? "";
     const theirs = showPath(sides.theirs, stPath) ?? "";
     if (!base && !ours && !theirs) continue;
     const merged = mergeStringTables(base, ours, theirs);
-    if (!merged.ok) {
-      restoreAll(saved);
-      return merged;
-    }
-    saved.push(snapshotWrite(root, stPath, merged.text));
+    if (!merged.ok) return merged;
+    writeInto(scratch, stPath, merged.text);
   }
-  return { ok: true, saved };
+  return { ok: true };
 }
 
-function materializeTests(root, sides) {
+function materializeTests(scratch, sides) {
   const paths = new Set([
     ...listTestSources(sides.base),
     ...listTestSources(sides.ours),
     ...listTestSources(sides.theirs),
   ]);
-  const saved = [];
   for (const path of paths) {
     const picked = pickThree(showPath(sides.base, path), showPath(sides.ours, path), showPath(sides.theirs, path));
     if (!picked.ok) {
       return { ok: false, error: `lf-regen-tests: ${path} conflicts; resolve that test file, then tools\\cli regen-tests` };
     }
-    saved.push(snapshotWrite(root, path, picked.text));
+    writeInto(scratch, path, picked.text);
   }
-  return { ok: true, saved };
+  return { ok: true };
 }
 
 function runDriver() {
@@ -216,28 +212,27 @@ function runDriver() {
     writeFileSync(oursPath, `regen:${plan.kind}\n`);
     process.exit(0);
   }
-  const root = repoRoot();
-  const prepared = plan.kind === "tests" ? materializeTests(root, sides) : materializeStringTable(root, sides);
-  if (!prepared.ok) {
-    console.error(prepared.error);
-    process.exit(1);
-  }
-  const registryRel = `${TESTS_PREFIX}/${REGISTRY_NAME}`;
-  if (plan.kind === "tests") prepared.saved.push(snapshotWrite(root, registryRel, showPath(sides.ours, registryRel) ?? ""));
+  const scratch = mkdtempSync(join(tmpdir(), "lf-regen-"));
   try {
-    const result = runPowershell(root, plan.script, plan.args);
+    const prepared = plan.kind === "tests" ? materializeTests(scratch, sides) : materializeStringTable(scratch, sides);
+    if (!prepared.ok) {
+      console.error(prepared.error);
+      process.exitCode = 1;
+      return;
+    }
+    const result = runPowershell(scratch, plan.script, plan.args);
     if (result.status !== 0) {
       if (result.stdout) process.stderr.write(result.stdout);
       if (result.stderr) process.stderr.write(result.stderr);
-      process.exit(result.status || 1);
+      process.exitCode = result.status || 1;
+      return;
     }
-    const outputRel = plan.kind === "tests" ? registryRel : pathname.replace(/\\/g, "/").replace(/^\.\//, "");
-    const outputPath = plan.kind === "tests"
-      ? join(root, registryRel)
-      : join(root, outputRel);
-    writeFileSync(oursPath, readFileSync(outputPath));
+    const outputRel = plan.kind === "tests"
+      ? `${TESTS_PREFIX}/${REGISTRY_NAME}`
+      : pathname.replace(/\\/g, "/").replace(/^\.\//, "");
+    writeFileSync(oursPath, readFileSync(join(scratch, outputRel)));
   } finally {
-    restoreAll(prepared.saved);
+    rmSync(scratch, { recursive: true, force: true });
   }
 }
 

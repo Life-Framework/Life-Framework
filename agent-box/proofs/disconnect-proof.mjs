@@ -4,11 +4,13 @@ import { spawnSync } from "node:child_process";
 import { arrive, clientBox, newestLog, parseState, readSession, sessionDir, sessionPaths } from "../session.mjs";
 
 // #691 disconnect rules on a running local `up --clients 2 --profile full --machine local` session,
-// client 1 on the police roster (`session.mjs roster 1` before `up`). Client 1 clocks in, downs
+// client 1 on the police roster (`up ... --roster 1`). Client 1 clocks in, downs
 // client 2 and cuffs them (the cuffing hold). Client 2's game is then closed (a logout), so the
 // server applies the rules to a cuffed and downed player: the custody rule jails them with one more
 // wanted level, the downed rule kills them, the cuffs go back to the officer, and one incident row
-// is written. Client 2 then joins again (`session join 2`) under a new session identity.
+// is written. Client 2 then joins again (`session join 2`). Since #1159 a rejoin keeps its session
+// slot, so it is the same identity: the leaver comes back into the cell (#691: "a cuffed suspect
+// rejoins in jail") with the sentence it left with, which did not run while it was away.
 async function runDisconnectProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
@@ -62,6 +64,7 @@ async function runDisconnectProof() {
   // The logout: client 2's game closes.
   const s = readSession(dir);
   const c2 = (s?.clients ?? []).find((c) => c.n === 2);
+  const identityBefore = c2?.identity?.uid;
   need(!!c2, "no client 2 in the session record");
   if (c2) {
     try { process.kill(c2.pid); } catch (e) { fails.push(`could not close client 2 (pid ${c2.pid}): ${e.message}`); }
@@ -80,24 +83,34 @@ async function runDisconnectProof() {
   need(joined.status === 0, `session join 2 exited ${joined.status}`);
   arrive(on, 2, wait);
   wait(10000);
-  // A harness session keys a client by its player id for one server run (LF_Utils.BuildSessionIdentity),
-  // so the rejoined client is a NEW player, not the one who left: the rejoin into the cell stays a
-  // manual step (two real Steam accounts). What this checks: the new player is not caught by the
-  // leaver's sentence, and the server kept the leaver's sentence (the jail tick pauses it offline).
+  // #1159: a rejoin takes the lowest free session slot, so client 2 is the same identity as the
+  // leaver. The logout sentence starts paused (LF_Jail.ImprisonOnReturn), so there is no
+  // `sentence paused ... (offline)` transition to log; what proves the clock waited offline is the
+  // resume on the rejoin with the full sentence left, and no `served offline` line.
   const back = state(2);
   const log = serverLog();
   need(back.cuffed === "0", "the rejoined client is cuffed");
+  const identityAfter = (readSession(dir)?.clients ?? []).find((c) => c.n === 2)?.identity?.uid;
+  if (identityBefore && identityAfter) need(identityAfter === identityBefore, `client 2 rejoined as ${identityAfter}, was ${identityBefore} (#1159 keeps the slot)`);
   const leaver = (/\[LFDebug:Disconnect\] (\S+) left cuffed/.exec(log) ?? [])[1];
   need(!!leaver, "no uid for the player who left cuffed");
   if (leaver) {
+    const esc = leaver.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     need(log.includes(`${leaver} wanted ${wantedBefore} -> ${Math.min(wantedBefore + 1, 5)} for logging out`), `no \`${leaver} wanted ${wantedBefore} -> ${wantedBefore + 1} for logging out\` line`);
-    need(log.includes(`sentence paused ${leaver} (offline)`), `the leaver's sentence is not kept paused offline (\`sentence paused ${leaver} (offline)\`)`);
     need(log.includes(`logout: ${leaver}`), `no incident row of kind logout for ${leaver} (\`[LFDebug:Incident] #N logout: ${leaver} ...\`)`);
+    const started = Number((new RegExp(`sentence started on logout ${esc} seconds=(\\d+)`).exec(log) ?? [])[1]);
+    const resumed = Number((new RegExp(`sentence resumed ${esc} remaining=([\\d.]+)`).exec(log) ?? [])[1]);
+    need(started > 0, `no \`sentence started on logout ${leaver} seconds=N\` line`);
+    need(!log.includes(`sentence served offline ${leaver}`), "the leaver's sentence ran out offline (jailClockOffline is off by default)");
+    need(resumed > 0, `the leaver's sentence did not resume on the rejoin (\`sentence resumed ${leaver} remaining=N\`)`);
+    if (started > 0 && resumed > 0) need(Math.abs(resumed - started) < 1, `the sentence moved while the leaver was offline: started ${started} s, resumed with ${resumed} s`);
+    need(new RegExp(`spawned prisoner ${esc} returned to the cell`).test(log), "the leaver's rejoin was not returned to the cell (#691: a cuffed suspect rejoins in jail)");
   }
-  need(!/spawned prisoner \S+ returned to the cell/.test(log), "a player was sent to the cell on a spawn: only the leaver's own rejoin may be");
+  const sent = [...log.matchAll(/spawned prisoner (\S+) returned to the cell/g)].map((m) => m[1]);
+  need(sent.every((u) => u === leaver), `a player other than the leaver was sent to the cell on a spawn: ${sent.filter((u) => u !== leaver).join(", ")}`);
   console.log("");
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "disconnect proof: FAIL" : "disconnect proof: PASS (cuffed and downed client 2 closed its game: jailed with wanted+1, died, cuffs back with the officer; the sentence waits offline; a rejoin from a new identity is free)");
+  console.log(fails.length ? "disconnect proof: FAIL" : "disconnect proof: PASS (cuffed and downed client 2 closed its game: jailed with wanted+1, died, cuffs back with the officer; the sentence waited offline; the rejoin as the same identity went back to the cell)");
   return fails.length ? 1 : 0;
 }
 

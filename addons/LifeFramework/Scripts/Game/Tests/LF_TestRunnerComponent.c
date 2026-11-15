@@ -5,8 +5,18 @@ class LF_TestRunnerComponentClass : ScriptComponentClass
 
 class LF_TestRunnerComponent : ScriptComponent
 {
-	protected static const int RUN_DELAY_MS = 3000;
+	//! The suite starts SETTLE_MS after the game mode is running (SCR_BaseGameMode.IsRunning(): state
+	//! GAME, which StartGameMode sets on the first frame after pregame), checked every READY_POLL_MS.
+	//! The settle is for what the first frames still spawn (NPC loadouts, vehicle cargo crates are in
+	//! the world untraceable for a moment; debugworld/entity-collision fails on frame 1). A world
+	//! without an SCR_BaseGameMode, or one that never gets there, starts at RUN_FALLBACK_MS, the fixed
+	//! delay every run used before.
+	protected static const int READY_POLL_MS = 100;
+	protected static const int SETTLE_MS = 500;
+	protected static const int RUN_FALLBACK_MS = 3000;
 	protected static const int CLOSE_DELAY_MS = 5000;
+	protected int m_iWaitedMs;
+	protected bool m_bStarted;
 	//! Written by tools/test/test-e2e.ps1 -Only (tools\cli test --only, and --red, which adds LF_TEST_RED), read only under LF_TEST_ONLY.
 	protected static const string ONLY_PATH = "$profile:LF_TestOnly.txt";
 	//! Written by tools/test/test-e2e.ps1 under LF_TEST_HANG=run: the suite never starts, so the pool's runtime budget (tools/remote/pool.mjs) has a hang to kill.
@@ -21,8 +31,35 @@ class LF_TestRunnerComponent : ScriptComponent
 		super.OnPostInit(owner);
 
 #ifdef LF_AUTOTEST
-		GetGame().GetCallqueue().CallLater(Run, RUN_DELAY_MS, false);
+		GetGame().GetCallqueue().CallLater(WaitForGameMode, READY_POLL_MS, false);
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void WaitForGameMode()
+	{
+		if (m_bStarted)
+			return;
+
+		m_iWaitedMs += READY_POLL_MS;
+		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
+		bool running = gameMode && gameMode.IsRunning();
+		if (!running && m_iWaitedMs < RUN_FALLBACK_MS)
+		{
+			GetGame().GetCallqueue().CallLater(WaitForGameMode, READY_POLL_MS, false);
+			return;
+		}
+
+		m_bStarted = true;
+		if (!running)
+		{
+			Print(string.Format("[LF_Tests] game mode not running after %1 ms; starting the suite anyway", m_iWaitedMs), LogLevel.WARNING);
+			Run();
+			return;
+		}
+
+		PrintFormat("[LF_Tests] game mode running after %1 ms; starting the suite in %2 ms", m_iWaitedMs, SETTLE_MS);
+		GetGame().GetCallqueue().CallLater(Run, SETTLE_MS, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -49,11 +86,15 @@ class LF_TestRunnerComponent : ScriptComponent
 #ifdef LF_TEST_TIER_PERSISTENCE
 		failures = LF_TestManager.GetInstance().RunSuite(LF_TestSuiteMode.PERSISTENCE, reportXml);
 #else
+#ifdef LF_TEST_TIER_PERF
+		failures = LF_TestManager.GetInstance().RunSuite(LF_TestSuiteMode.PERF, reportXml);
+#else
 		bool fast = false;
 #ifdef LF_TEST_TIER_FAST
 		fast = true;
 #endif
 		failures = LF_TestManager.GetInstance().RunAll(fast, reportXml);
+#endif
 #endif
 		string reportFile = LF_TestManager.WriteReport(reportXml);
 		PrintFormat("[LF_Tests] runtime tests done, failures=%1, report=%2", failures, reportFile);

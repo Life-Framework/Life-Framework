@@ -1,5 +1,6 @@
 {
   "_note": "Spec and credit record of the town's music and background loops. toolscli asset ambience reads it; docs/architecture/atmosphere.md explains it. Prompts never name an artist, a song or a label.",
+  "addon": "LF_Everon1989",
   "budget": {
     "credits": 12000
   },
