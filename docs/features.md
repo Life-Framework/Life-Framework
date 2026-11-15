@@ -1244,7 +1244,14 @@
   (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
   `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
   in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
-  hands were empty on a client). Test: `items/carry-meshes`. A hand-carried item stays in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop and `LF_HandInventoryStorageComponent` takes it back to the hands when the engine lowers it (sprint), so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920). A parcel that lands on the ground gets a small faint warm marker light at its foot (`LF_ParcelComponent`, every machine; visible at night, barely by day), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`. Fuel cargo is
+  hands were empty on a client). The mesh is `PostParcel.xob`, 0.26 x 0.14 x 0.38 m (a shoebox; every vanilla
+  cardboard box is about 0.4 x 0.43 x 0.67 m, and a script spawn overrides a prefab `scale`, so none can be
+  shrunk). Its body sits on the `PropFireView` layer, the layer of a vanilla box prop (the old
+  `ItemFireView` body let a walking player through it); test `jobs/parcel-collision` compares the
+  parcel's layer with a spawned `BoxWooden_01` and its size. Pickup and drop use the paper sound set
+  (`Items_PickUp_Map.acp`) and the carry is `player_carry`, not the jerrycan graph, so no canister
+  sounds. The mesh's own collider (`UBX_PostParcel`, `ItemFireView` in `PostParcel.xob.meta`) still
+  needs a Workbench reimport to match. Test: `items/carry-meshes`. A hand-carried item stays in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop and `LF_HandInventoryStorageComponent` takes it back to the hands when the engine lowers it (sprint), so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920). A parcel that lands on the ground gets a small faint warm marker light at its foot (`LF_ParcelComponent`, every machine; visible at night, barely by day), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
@@ -1272,7 +1279,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
-- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619): the parcel uses the vanilla jerrycan carry (`Assets/Items/Fuel/workspaces/Jerrycan.agr` / `Jerrycan_player.asi`, both arms low in front, box at the waist) instead of `player_carry`, which put the arms across the chest with the box floating beside the character.
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619, reworked in the parcel fix): the jerrycan graph hung the parcel 0.44 m below the hand (its grip point is at the canister's handle, the parcel mesh is centred on its origin), so it dangled at knee height through the legs, and it played canister sounds. The parcel is back on `player_carry` (box in front of the body, arms on it, clear of the legs). Weapon-slot hand-tool equip is the follow-up slice #1846.
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
