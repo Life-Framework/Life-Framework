@@ -1,0 +1,1 @@
+{ "file": "server.json", "set": { "game.name": "Life Framework Everon" }, "expect": "game.name" }

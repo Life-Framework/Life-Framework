@@ -1,13 +1,14 @@
 // `tools\cli host summary [<console.log>] [--perf <csv>] [--triage <file>] [--out <dir>] [--target N]
 // [--json]` (#1501): reads a server console.log (default: the newest one of the host profile) and
 // writes <host>/sessions/<stamp>.md: length, unique players and peak, restarts and crashes, the
-// triage counts (known and new) and the perf verdict. The perf file is --perf or the newest
+// triage counts (known and new) and the perf verdict, under server-doctor's verdict on the same log
+// (booted or not, mods loaded, the server name from server.json, the known lines it marked; #1605). The perf file is --perf or the newest
 // <host>/perf/perf-*.csv. The logic is tools/host/summary.mjs.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { hostPaths, newestConsoleLog, stamp } from "../host.mjs";
 import { loadTriageRows } from "../../lib/log-triage.mjs";
-import { crashFolders, DEFAULT_TARGET, newestPerfCsv, renderMarkdown, stampFromPath, summarize } from "../summary.mjs";
+import { crashFolders, DEFAULT_TARGET, newestPerfCsv, renderMarkdown, serverNameOf, stampFromPath, summarize } from "../summary.mjs";
 
 export const help =
   "summary [<console.log>] [--perf <csv>] [--triage <file>] [--out <dir>] [--target 40] [--json]   write <host>/sessions/<stamp>.md after a session: length, unique players and peak, restarts and crashes, triage known/new, the perf verdict";
@@ -61,6 +62,10 @@ export async function main(args, ctx) {
     logText,
     logName: startStamp ? `${basename(dirname(logFile))}/${basename(logFile)}` : basename(logFile),
     triageRows: loadTriageRows(triageFile),
+    triageText: readFileSync(triageFile, "utf8"),
+    // the doctor's effective-config check reads the host profile only for a log that came from it
+    profile: startStamp && existsSync(paths.profile) ? paths.profile : null,
+    serverName: serverNameOf(ctx.root),
     perfCsv: perfFile && existsSync(perfFile) ? readFileSync(perfFile, "utf8") : null,
     crash,
     target,

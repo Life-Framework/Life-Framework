@@ -4,6 +4,7 @@ import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server";
 import App from "@/App";
 import { prime } from "@/lib/data";
+import { serversOgDescription } from "@/pages/Servers";
 import { SITE_NAME, SITE_URL, allRoutes, fullTitle, metaFor } from "@/lib/meta";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -18,6 +19,7 @@ export function render(url: string) {
   );
   const m = metaFor(url);
   const title = fullTitle(m);
+  const ogDescription = m.path === "/servers" ? serversOgDescription(m.description, Date.now()) : m.description;
   const canonical = `${SITE_URL}${m.path === "/" ? "/" : m.path}`;
   const image = `${SITE_URL}/og/${m.og}.jpg`;
   const head = [
@@ -27,7 +29,7 @@ export function render(url: string) {
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:title" content="${esc(m.title)}" />`,
-    `<meta property="og:description" content="${esc(m.description)}" />`,
+    `<meta property="og:description" content="${esc(ogDescription)}" />`,
     `<meta property="og:url" content="${canonical}" />`,
     `<meta property="og:image" content="${image}" />`,
     `<meta property="og:image:width" content="1200" />`,

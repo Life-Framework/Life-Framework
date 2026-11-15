@@ -1,7 +1,7 @@
 // `host ready` (#1408): one go / no-go before a session. Calls the existing pieces and reimplements none:
 // the build gate (tools/host/host.mjs buildGate), the staff roster check (tools/commands/staff.mjs), the
-// newest backup's age, the last restore drill's result (tools/host/drill.mjs drillVerdict) and the disk
-// report (tools/host/disk.mjs). Every check is { name, run(ctx) -> { ok, detail } } so a test injects its own;
+// newest backup's age, the last restore drill's result (tools/host/drill.mjs drillVerdict), the disk
+// report (tools/host/disk.mjs) and the live server.json's name and password (#1559). Every check is { name, run(ctx) -> { ok, detail } } so a test injects its own;
 // a check that throws is red with the message. Read only: nothing is started, copied or deleted.
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -10,6 +10,8 @@ import { buildGate, exeBuild, findSavePoints, hostPaths, newestSaveBuild } from 
 import { diskReport, fmtBytes, FLOOR_BYTES } from "./disk.mjs";
 import { DRILL_RESULT_FILE, drillVerdict, readDrillResult } from "./drill.mjs";
 import { localSetting } from "../lib/local-config.mjs";
+import { SERVER_NAME } from "./announce.mjs";
+import { serverJsonPath } from "./config-apply.mjs";
 
 export const MAX_BACKUP_HOURS = 12; // the flagship restarts every 12 h; a backup older than a restart gap is stale
 export const MAX_DRILL_DAYS = 7;
@@ -89,6 +91,26 @@ export async function diskCheck({ hostDir, freeBytes }) {
   return { ok: true, detail: `${fmtBytes(r.freeBytes)} free, ${fits}` };
 }
 
+// The live profile's server.json (what `host config apply` wrote, which the game reads): the alpha gate is a
+// game password and nothing else, and the listing name is the flagship's exact name (runbook step 4). The
+// password is only tested for being non-empty; no detail ever carries it.
+export async function configCheck({ hostDir }) {
+  const file = serverJsonPath(hostDir);
+  if (!existsSync(file)) return { ok: false, detail: `no live server.json at ${file}; run \`tools\\cli host config apply\`` };
+  let game;
+  try {
+    const json = JSON.parse(readFileSync(file, "utf8"));
+    game = json && typeof json === "object" && !Array.isArray(json) ? json.game : undefined;
+  } catch {
+    return { ok: false, detail: `the live server.json is not valid JSON (${file}); run \`tools\\cli host config apply\`` };
+  }
+  const problems = [];
+  if (typeof game?.name !== "string" || game.name !== SERVER_NAME) problems.push(`server name is not exactly "${SERVER_NAME}"`);
+  if (typeof game?.password !== "string" || !game.password.trim()) problems.push("game password is empty (the alpha gate is a password; run `tools\\cli host rotate`)");
+  if (problems.length) return { ok: false, detail: problems.join("; ") };
+  return { ok: true, detail: `name "${SERVER_NAME}", password set` };
+}
+
 export function defaultChecks() {
   return [
     { name: "build", run: buildCheck },
@@ -96,6 +118,7 @@ export function defaultChecks() {
     { name: "backup", run: backupCheck },
     { name: "drill", run: drillCheck },
     { name: "disk", run: diskCheck },
+    { name: "config", run: configCheck },
   ];
 }
 
