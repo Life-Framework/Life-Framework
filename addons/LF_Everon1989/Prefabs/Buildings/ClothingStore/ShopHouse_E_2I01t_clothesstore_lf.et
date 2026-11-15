@@ -50,6 +50,14 @@ SCR_DestructibleBuildingEntity : "{9064E65F34097C8F}Prefabs/Structures/Commercia
   GenericEntity : "{134DBD739E0790EC}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_ClothesStore.et" {
    ID "56F2E0BBBA12DDA0"
    components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{69FEF814A5823511}" {
+       SourceMaterial "MLOD"
+       AssignedMaterial "{188819439D7B8C7D}Assets/Structures/BuildingsParts/Signs/SignCommercial_01/Data/SignCommercial_01_ClothesStore.emat"
+      }
+     }
+    }
     Hierarchy "{612AE78C95E98EEB}" {
      PivotID "socket_win_420x275_01"
     }

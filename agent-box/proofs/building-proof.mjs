@@ -118,6 +118,8 @@ async function runSlug(args) {
   const [fw, fd] = spec.budget?.footprint_m || [12, 10];
   const [x0, x1, z0, z1, ht] = box.length === 5 && box.every((v) => !Number.isNaN(v)) ? box : [-fw / 2, fw / 2, -fd / 2, fd / 2, spec.budget?.height_m || 5];
   const out = resolve(flag(args, "--out", join(ROOT, "tmp", "buildings", slug, "proof")));
+  // A capture name takes letters, digits and underscores only; a slug can have dashes (gun-store).
+  const prefix = `bp_${slug.replace(/\W/g, "_")}`;
   mkdirSync(out, { recursive: true });
   const scenario = args.includes("--no-scenario") ? null : loadScenario(ROOT, slug);
   if (scenario) {
@@ -155,7 +157,7 @@ async function runSlug(args) {
   const capture = (name, look, from) => {
     const [x, y, z] = toWorld(place, look);
     const [ox, oy, oz] = toWorld(place, from, true);
-    const r = on({ verb: "capture", mode: "world", name: `bp_${slug}_${name}`, x, y, z, ox, oy, oz }, 30000);
+    const r = on({ verb: "capture", mode: "world", name: `${prefix}_${name}`, x, y, z, ox, oy, oz }, 30000);
     keep(name, r);
     return r;
   };
@@ -226,7 +228,7 @@ async function runSlug(args) {
       const f = newestLog(join(sessionPaths(dir).server, "logs"));
       return f ? readFileSync(f, "utf8") : "";
     };
-    scen = runScenario(scenario, { on, wait, parseState, serverLog, shot: keep, place, entity, prefix: `bp_${slug}` });
+    scen = runScenario(scenario, { on, wait, parseState, serverLog, shot: keep, place, entity, prefix });
     fails.push(...scen.fails);
   }
 

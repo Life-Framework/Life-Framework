@@ -1,0 +1,374 @@
+SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/GunStore.et" {
+ ID "800BA0B1E539DD4B"
+ components {
+  LF_ShopComponent "{592454AC60CB1016}" {
+   m_aShopItems {
+    LF_ShopItem "{D30C842BF7C2645E}" {
+     m_ItemPrefab "{A22C976003AA5BA3}Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{7C6C230896EFD4BD}" {
+     m_ItemPrefab "{D8D9EE7F3966589E}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{99BF4529623F1128}" {
+     m_ItemPrefab "{B9687B8829272E14}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_brown.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{65143C4D49FD1C0B}" {
+     m_ItemPrefab "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{1115314DD4486E85}" {
+     m_ItemPrefab "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{3FFB1EFC53B27BA4}" {
+     m_ItemPrefab "{243948B23D90BECB}Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{56DA55AE1DB13DE7}" {
+     m_ItemPrefab "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+   }
+  }
+  LF_StoreComponent "{AF09A210E57C4628}" {
+   m_sStoreKey "everon_gunstore"
+   m_aLines {
+    LF_StoreLine "{0F0E7A194A184C5B}" {
+     m_ItemPrefab "{A22C976003AA5BA3}Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et"
+     m_iMaxStock 4
+     m_iRestockAmount 1
+     m_sSlots "-1.377 0.331 4.816 | -1.377 0.331 3.637 | -1.151 0.331 4.816 | -1.151 0.331 3.637"
+    }
+    LF_StoreLine "{F24D1F3D42CB9383}" {
+     m_ItemPrefab "{D8D9EE7F3966589E}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et"
+     m_iMaxStock 6
+     m_iRestockAmount 1
+     m_sSlots "-1.304 1.049 5.164 | -1.304 1.049 4.786 | -1.304 1.049 4.408 | -1.304 1.049 4.029 | -1.304 1.049 3.651 | -1.304 1.049 3.273"
+    }
+    LF_StoreLine "{977C17E25B897875}" {
+     m_ItemPrefab "{B9687B8829272E14}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_brown.et"
+     m_iMaxStock 6
+     m_iRestockAmount 1
+     m_sSlots "-1.258 0.657 5.164 | -1.258 0.657 4.786 | -1.258 0.657 4.408 | -1.258 0.657 4.029 | -1.258 0.657 3.651 | -1.258 0.657 3.273"
+    }
+    LF_StoreLine "{B152536A59A5F8B7}" {
+     m_ItemPrefab "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et"
+     m_iMaxStock 6
+     m_iRestockAmount 1
+     m_sSlots "-1.328 1.406 5.168 | -1.328 1.406 4.79 | -1.328 1.406 4.412 | -1.328 1.406 4.033 | -1.328 1.406 3.655 | -1.328 1.406 3.277"
+    }
+    LF_StoreLine "{8D543192FA4D5E82}" {
+     m_ItemPrefab "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et"
+     m_iMaxStock 10
+     m_iRestockAmount 2
+     m_sSlots "5.595 0.657 2.479 | 5.595 0.657 2.933 | 5.595 0.657 3.387 | 5.595 0.657 3.84 | 5.595 0.657 4.294 | 5.375 0.657 2.479 | 5.375 0.657 2.933 | 5.375 0.657 3.387 | 5.375 0.657 3.84 | 5.375 0.657 4.294"
+    }
+    LF_StoreLine "{7AD194A7758B29FD}" {
+     m_ItemPrefab "{243948B23D90BECB}Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et"
+     m_iMaxStock 6
+     m_iRestockAmount 1
+     m_sSlots "5.531 1.049 2.449 | 5.531 1.049 2.827 | 5.531 1.049 3.205 | 5.531 1.049 3.584 | 5.531 1.049 3.962 | 5.531 1.049 4.34"
+    }
+    LF_StoreLine "{76141D984953A20F}" {
+     m_ItemPrefab "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et"
+     m_iMaxStock 8
+     m_iRestockAmount 1
+     m_sSlots "5.603 1.406 2.538 | 5.603 1.406 3.105 | 5.603 1.406 3.672 | 5.603 1.406 4.239 | 5.518 1.406 2.538 | 5.518 1.406 3.105 | 5.518 1.406 3.672 | 5.518 1.406 4.239"
+    }
+   }
+   m_vBoundaryCenter 0.1 0 -0.15
+   m_vBoundaryHalf 6.1 0 7.75
+   m_iRestockSeconds 300
+  }
+  ActionsManagerComponent "{F5FC26E3A25E36CF}" {
+   ActionContexts {
+    UserActionContext "{93A8D63DCAC4200D}" {
+     ContextName "till1"
+     Position PointInfo "{AA23671445CB11E9}" {
+      Offset 2.55 1.488 -0.6
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{9629299B140AB99A}" {
+     ParentContextList {
+      "till1"
+     }
+     UIInfo UIInfo "{BC482FAD677BE58C}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+   ID "E8D85AD569947B73"
+   components {
+    LF_AlarmMountComponent "{11746D992348D6FB}" {
+     m_vOffset 0 0.167 0.065
+     m_fReach 10
+    }
+   }
+   coords -0.9 2.6 7.65
+  }
+  GenericEntity : "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et" {
+   ID "BA300BAF92B5692D"
+   coords 5.75 0.199 0.6
+   angleY -90
+  }
+  GenericEntity : "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et" {
+   ID "08AA0F9519FFAB34"
+   coords 3 0.199 6.7
+  }
+  GenericEntity : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+   ID "CADF21A02A4576DD"
+   coords -1.52 0.199 4.25
+   angleY 90
+  }
+  GenericEntity : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+   ID "9294BF1F157FB372"
+   coords 2.55 1.238 -0.6
+  }
+  GenericEntity {
+   ID "185B22F241F039EA"
+   components {
+    MeshObject "{8AD980FD8F2FECDE}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 5.484 0.864 0.157
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "E88510F15BCCABB3"
+   components {
+    MeshObject "{7D92E881442F487F}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 5.484 0.864 0.32
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "F0A768D9140CCB32"
+   components {
+    MeshObject "{358E9687EA186543}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 5.484 0.864 0.463
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "539CD67D9BEB8D45"
+   components {
+    MeshObject "{F59EEEE0065D9253}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 5.484 0.864 0.624
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "DEA03AF63A48ADA7"
+   components {
+    MeshObject "{54408D93646C598D}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 5.484 0.864 0.775
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "6F3716506FCCF483"
+   components {
+    MeshObject "{C79110E3632E065F}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 5.484 0.864 0.929
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "865829CB3E05A49A"
+   components {
+    MeshObject "{335900E036C3587F}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 5.484 0.864 1.083
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "D57BA9FA800238AD"
+   components {
+    MeshObject "{FD872D43AF090A65}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 5.484 0.864 1.233
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "0EA8D125245CA846"
+   components {
+    MeshObject "{A25F3EAC6223C822}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 5.484 0.864 1.39
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "EE2065540AFF1D1C"
+   components {
+    MeshObject "{814FB75DBDB9D451}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 5.484 0.864 1.547
+   angles 80 90 180
+  }
+  GenericEntity {
+   ID "9A2371FF59929A3C"
+   components {
+    MeshObject "{60114C6C6049EA8D}" {
+     Object "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
+    }
+   }
+   coords 5.534 1.368 -0.423
+   angles 0 -60 90
+  }
+  GenericEntity {
+   ID "5227F5E1873AF4B4"
+   components {
+    MeshObject "{0DA9EAC6D16D1258}" {
+     Object "{6F3FF53AF2AB04B3}Assets/Weapons/Handguns/PM/PM_body.xob"
+    }
+   }
+   coords 5.497 1.368 -0.078
+   angles 0 -60 90
+  }
+  GenericEntity {
+   ID "DE8FAF07FEA8F163"
+   components {
+    MeshObject "{151B918C01C3F27F}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 2.237 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "F17A7514DEDDF923"
+   components {
+    MeshObject "{EB46EC88A5A46FF6}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 2.578 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "A66B70E63B6F418A"
+   components {
+    MeshObject "{9B1D3EA8708C628A}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 2.922 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "27A87971F34CFBF6"
+   components {
+    MeshObject "{B1F9157E4EBD154D}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 3.242 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "81C8CC83AA876ECF"
+   components {
+    MeshObject "{E93701729AAAC0C9}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 3.587 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "7B5702F833EE27B0"
+   components {
+    MeshObject "{7B117905B53D9278}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 2.409 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "F03E322965A286FB"
+   components {
+    MeshObject "{4D89401FF4373D02}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 2.748 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "735FBD15C951DB4B"
+   components {
+    MeshObject "{9359E5BA84815528}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 3.084 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "5AE90F3D44E80568"
+   components {
+    MeshObject "{85335B082C8F6A64}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 3.417 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "6B7DEF8C20F16BF4"
+   components {
+    MeshObject "{FD68741F175892B1}" {
+     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    }
+   }
+   coords 3.749 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+   ID "B9C79E66EFB96EA3"
+   components {
+    LF_ShopComponent "{6EA70364DEB62E72}" {
+     m_sOutletId "gun_counter"
+    }
+   }
+   coords 3 0.199 -0.5
+  }
+ }
+}
