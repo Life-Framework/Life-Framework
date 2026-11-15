@@ -13,7 +13,8 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join, resolve } from "node:path";
 import * as wd from "../lib/world-diff.mjs";
 import { selectTests } from "../lib/gate-tier.mjs";
-import { layoutWarnings } from "../lib/world-checks.mjs";
+import { layoutWarnings, MAINTAINER_BRANCH } from "../lib/world-checks.mjs";
+import { judgeWorldTests, testWarningLines, TEST_WARNINGS_HEADING } from "../lib/world-test-judge.mjs";
 
 export const help = "world diff|ship [--wt <slug>] [--json|--dry-run]   semantic diff of .layer edits / commit, check and ship a maintainer world edit";
 
@@ -114,7 +115,7 @@ export function allowEntries(report, touched, existing = []) {
   return out;
 }
 
-export function prBody(d, { slug, allowed = [], checks = [], warnings = [] }) {
+export function prBody(d, { slug, allowed = [], checks = [], warnings = [], testWarnings = [] }) {
   const L = [];
   L.push(`Maintainer world edit from \`${slug}\`, shipped with \`tools\\cli world ship\`.`, "", `**${wd.summaryLine(d)}**`, "", "## Changes", "");
   for (const f of d.files.filter((x) => !x.noiseOnly)) {
@@ -131,6 +132,10 @@ export function prBody(d, { slug, allowed = [], checks = [], warnings = [] }) {
   if (warnings.length) {
     L.push("", "## Layout warnings", "", "These judge where things stand, not whether the layer is sound, so they did not block this PR (tools/lib/world-checks.mjs). Look at them when you play the world:", "");
     for (const w of warnings) L.push(`- ${w}`);
+  }
+  if (testWarnings.length) {
+    L.push("", TEST_WARNINGS_HEADING, "", "These tests failed on the new layout. A failing test never blocks a maintainer world edit, so the PR still merges; each one is either a test that pinned the old layout (fix the test) or a real gameplay break (fix the game):", "");
+    for (const t of testWarnings) L.push(`- ${t}`);
   }
   if (checks.length) L.push("", "## Checks", "", ...checks.map((c) => `- ${c}`));
   L.push("", "No screenshots: the maintainer placed and looked at these entities in Workbench while editing.", "");
@@ -236,6 +241,7 @@ async function cmdShip(args, root) {
   const checks = [];
   // Only the checks that read .layer files run (validate --world); a layout check that fails is a warning.
   const warnings = [];
+  const testWarnings = [];
   const v = cli(w.path, ["validate", "--world"]);
   note(v.out);
   for (const lw of layoutWarnings(v.out)) warnings.push(`validate/${lw.check}: ${lw.text || "failed"}`);
@@ -267,16 +273,22 @@ async function cmdShip(args, root) {
   if (related.length) {
     const t = cli(w.path, ["test", "--no-build", "--only", related.join(",")]);
     note(t.out);
-    checks.push(`test --only ${related.join(",")}: ${t.status === 0 ? "pass" : "FAIL"}`);
-    if (t.status !== 0) {
-      console.log(`FAIL  layer-named tests: ${lastSummary(t.out) || "see log"}`);
-      return done(false, "layer-named tests failed");
+    // A failing test is a warning on a town-maintainer-* branch; only a run that judged nothing blocks.
+    const maintainer = MAINTAINER_BRANCH.test(w.branch || `ws/${w.slug}`);
+    const verdict = maintainer ? judgeWorldTests({ status: t.status, text: t.out, fallbackTests: related, tests: tests.map((x) => ({ file: x.file, text: x.text })) }) : { blocks: t.status === 0 ? null : "layer-named tests failed", warnings: [] };
+    if (verdict.blocks) {
+      checks.push(`test --only ${related.join(",")}: FAIL`);
+      console.log(`FAIL  layer-named tests: ${verdict.blocks}: ${lastSummary(t.out) || "see log"}`);
+      return done(false, "layer-named tests blocked");
     }
+    for (const x of verdict.warnings) testWarnings.push(...testWarningLines([x]));
+    for (const x of testWarningLines(verdict.warnings)) console.log(`WARN  test failed on the new layout (not blocking): ${x}`);
+    checks.push(`test --only ${related.join(",")}: ${t.status === 0 ? "pass" : `${verdict.failed} failing, listed as warnings`}`);
   } else checks.push("no test names a touched layer or entity");
 
   // 5. Push, PR, queue (wt ship classifies the branch T1w: static validate, audit, layer-named tests).
   const bodyFile = join(w.path, "tmp", `pr-body-world-${w.slug}.md`);
-  writeFileSync(bodyFile, prBody(d, { slug: w.slug, allowed: added, checks, warnings }));
+  writeFileSync(bodyFile, prBody(d, { slug: w.slug, allowed: added, checks, warnings, testWarnings }));
   const mainRoot = root;
   const s = cli(mainRoot, ["wt", "ship", w.slug, "--body-file", bodyFile]);
   note(s.out);
