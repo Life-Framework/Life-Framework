@@ -722,7 +722,7 @@ $grp SCR_DestructibleEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowe
   coords 152.8 0 257.6
  }
  {
-  coords 290.676 0.001 258.2
+  coords 283.2 0 257.6
  }
  {
   coords 315 0 242.6
@@ -979,7 +979,7 @@ $grp Tree : "{DE7FC095F656695C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abi
   coords 372 0 205
  }
 }
-Vehicle "6ADEF2BE6C61A45A" : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
@@ -988,7 +988,7 @@ Vehicle "6ADEF2BE6C61A45A" : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL
  coords 337.5 0 255.3
  angles 0 270 0
 }
-Vehicle "6ADEF2BE6C61B8F1" : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
+Vehicle : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
@@ -997,7 +997,7 @@ Vehicle "6ADEF2BE6C61B8F1" : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/E
  coords 324 0 244.8
  angles 0 90 0
 }
-Vehicle "6ADEF2BE6C614ADD" : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
+Vehicle : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1

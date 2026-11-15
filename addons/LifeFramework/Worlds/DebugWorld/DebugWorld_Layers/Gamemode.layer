@@ -32,11 +32,11 @@ $grp SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
   m_sFaction "CIVILIAN"
  }
  {
-  coords 233.233 0 242.805
+  coords 232.4 0 245.5
   m_sFaction "POLICE"
  }
  {
-  coords 235.368 0 243.02
+  coords 234 0 245.5
   m_sFaction "POLICE"
  }
 }

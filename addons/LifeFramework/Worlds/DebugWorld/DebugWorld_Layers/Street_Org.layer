@@ -1,74 +1,3 @@
-$grp GenericEntity {
- Roadmap_Org_Desk_Phone {
-  components {
-   MeshObject "{6ADEF2BE6C6B8B5F}" {
-    Object "{8709DD4724365C41}Assets/Props/Furniture/PhoneTable_01/PhoneTable_01.xob"
-   }
-   RigidBody "{6ADEF2BE6C6B8B48}" {
-    ModelGeometry 1
-    Static 1
-   }
-  }
-  Flags 0x403 0
-  coords 292.897 1.953 267.629
-  angles 0 90 0
- }
- Roadmap_Org_Desk_Files {
-  components {
-   MeshObject "{6ADEF2BE6C6B8B3F}" {
-    Object "{95560BAA1C54BC9C}Assets/Props/Civilian/FileOffice_01/FileOffice_01_Stack.xob"
-   }
-   RigidBody "{6ADEF2BE6C6B8B29}" {
-    ModelGeometry 1
-    Static 1
-   }
-  }
-  Flags 0x403 0
-  coords 292.297 1.954 267.579
-  angles 0 15 0
- }
- Roadmap_Org_Desk_Notebooks {
-  components {
-   MeshObject "{6ADEF2BE6C6B8B22}" {
-    Object "{18C18306E74F0F50}Assets/Props/Civilian/Notebook_01/Notebook_01_Stack.xob"
-   }
-   RigidBody "{6ADEF2BE6C6B8BFE}" {
-    ModelGeometry 1
-    Static 1
-   }
-  }
-  Flags 0x403 0
-  coords 292.597 1.954 267.729
-  angles 0 -20 0
- }
- Roadmap_Org_Desk_Clock {
-  components {
-   MeshObject "{6ADEF2BE6C6B8BE9}" {
-    Object "{1F73126FB0FD4549}Assets/Props/Furniture/ClockTable_01/ClockTable_01.xob"
-   }
-   RigidBody "{6ADEF2BE6C6B8BDB}" {
-    ModelGeometry 1
-    Static 1
-   }
-  }
-  Flags 0x403 0
-  coords 291.828 1.953 267.368
- }
- Roadmap_Org_Desk_Chair {
-  components {
-   MeshObject "{6ADEF2BE6C6B8BD2}" {
-    Object "{C215E3788A672644}Assets/Props/Furniture/ChairOffice_01/ChairOffice_01.xob"
-   }
-   RigidBody "{6ADEF2BE6C6B8BCD}" {
-    ModelGeometry 1
-    Static 1
-   }
-  }
-  Flags 0x403 0
-  coords 292.297 1.047 268.429
-  angles 0 180 0
- }
-}
 GenericEntity Roadmap_Org_Desk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
  components {
   ActionsManagerComponent "{84F263DF01236A06}" {
@@ -94,5 +23,74 @@ GenericEntity Roadmap_Org_Desk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk
   }
  }
  Flags 0x403 0
- coords 293.197 1.047 267.229
+ coords 288.9 0 255.7
+}
+GenericEntity Roadmap_Org_Desk_Phone {
+ components {
+  MeshObject {
+   Object "{8709DD4724365C41}Assets/Props/Furniture/PhoneTable_01/PhoneTable_01.xob"
+  }
+  RigidBody {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 288.6 0.907 256.1
+ angleY 90
+}
+GenericEntity Roadmap_Org_Desk_Files {
+ components {
+  MeshObject {
+   Object "{95560BAA1C54BC9C}Assets/Props/Civilian/FileOffice_01/FileOffice_01_Stack.xob"
+  }
+  RigidBody {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 288.0 0.907 256.05
+ angleY 15
+}
+GenericEntity Roadmap_Org_Desk_Notebooks {
+ components {
+  MeshObject {
+   Object "{18C18306E74F0F50}Assets/Props/Civilian/Notebook_01/Notebook_01_Stack.xob"
+  }
+  RigidBody {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 288.3 0.907 256.2
+ angleY -20
+}
+GenericEntity Roadmap_Org_Desk_Clock {
+ components {
+  MeshObject {
+   Object "{1F73126FB0FD4549}Assets/Props/Furniture/ClockTable_01/ClockTable_01.xob"
+  }
+  RigidBody {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 287.53 0.906 255.839
+}
+GenericEntity Roadmap_Org_Desk_Chair {
+ components {
+  MeshObject {
+   Object "{C215E3788A672644}Assets/Props/Furniture/ChairOffice_01/ChairOffice_01.xob"
+  }
+  RigidBody {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 288.0 0 256.9
+ angleY 180
 }

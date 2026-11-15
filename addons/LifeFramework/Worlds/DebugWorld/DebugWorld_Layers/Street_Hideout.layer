@@ -1,97 +1,22 @@
-$grp GenericEntity {
- Roadmap_Hideout_Workbench {
-  components {
-   MeshObject "{5E1A0001A0B0C001}" {
-    Object "{583D24495FE15DD2}Assets/Props/Industrial/Workbench_01/Workbench_01.xob"
-   }
-   RigidBody "{5E1A0001A0B0C002}" {
-    ModelGeometry 1
-    Static 1
-   }
+GenericEntity Roadmap_Hideout_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
   }
-  coords 307 0 308.9
- }
- Roadmap_Hideout_BenchCarton {
-  components {
-   MeshObject "{5E1A0001A0B0C012}" {
-    Object "{C23DD228F7317429}Assets/Props/Crates/CardboardBox_03.xob"
-   }
-   RigidBody "{5E1A0001A0B0C013}" {
-    ModelGeometry 1
-    Static 1
-   }
+  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
+   m_sHideoutId "Roadmap_Hideout"
+   m_bOrganizationHideout 1
   }
-  coords 307.5 1.015 308.9
-  angles 0 20 0
  }
-}
-GenericEntity Roadmap_Hideout_PalletPile : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
- coords 296 0 298.6
- angles 0 90 0
-}
-GenericEntity Roadmap_Hideout_BenchJerrycan : "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et" {
- coords 306.9 1.02 308.9
-}
-$grp GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- Roadmap_Hideout_Crate_3 {
-  coords 313.3 0 290.5
-  angles 0 25 0
- }
- Roadmap_Hideout_BenchBox {
-  coords 306 1.02 308.9
-  angles 0 10 0
- }
- Roadmap_Hideout_Stack_1 {
-  coords 314.5 0 294
- }
- Roadmap_Hideout_Stack_2 {
-  coords 314.5 0.281 294
-  angles 0 15 0
- }
- Roadmap_Hideout_Stack_3 {
-  coords 314.5 0.562 294
-  angles 0 -10 0
- }
- Roadmap_Hideout_Crate_6 {
-  coords 313.9 0 307.6
-  angles 0 60 0
- }
-}
-$grp GenericEntity : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- Roadmap_Hideout_Pallet_1 {
-  coords 295.7 0 293.2
- }
- Roadmap_Hideout_Pallet_2 {
-  coords 295.7 0 294.8
- }
- Roadmap_Hideout_Pallet_3 {
-  coords 314.4 0 298.4
- }
-}
-GenericEntity Roadmap_Hideout_Tires : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
- coords 296.6 0 307.6
-}
-$grp GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- Roadmap_Hideout_Barrel_1 {
-  coords 295.6 0 290.4
- }
- Roadmap_Hideout_Barrel_2 {
-  coords 296.5 0 290.2
- }
- Roadmap_Hideout_Barrel_3 {
-  coords 302.9 0 305.4
- }
- Roadmap_Hideout_Barrel_4 {
-  coords 302.9 0 306.6
- }
+ coords 302.4 0 288
 }
 GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
  components {
-  LF_HideoutMachineComponent "{724A0A6E41985D0F}" {
-   m_sHideoutId "Roadmap_Hideout"
-  }
   MeshObject "{598F21A867C4015C}" {
    Object "{8CCFA9079E967BB2}Assets/Props/Commercial/CoffeeGrinderShop_01/CoffeeGrinderShop_01.xob"
+  }
+  LF_HideoutMachineComponent "{724A0A6E41985D0F}" {
+   m_sHideoutId "Roadmap_Hideout"
   }
   ActionsManagerComponent "{598F21A8710B89C1}" {
    ActionContexts {
@@ -105,7 +30,8 @@ GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/Ite
    }
    additionalActions {
     LF_ProcessAction "{598F21A877BE6DEE}" {
-     ParentContextList +{
+     ParentContextList {
+      "default"
      }
      UIInfo UIInfo "{A5AA4F6D4DB83652}" {
       Name "#EL-Hideout_Process"
@@ -128,53 +54,116 @@ GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/Ite
  }
  coords 298 0 302
 }
-Vehicle Roadmap_Hideout_Van : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
- coords 300 0 306.4
- angles 0 8 0
-}
-GenericEntity Roadmap_Hideout_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
- components {
-  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
-   m_sHideoutId "Roadmap_Hideout"
-   m_bOrganizationHideout 1
-  }
-  LF_LockComponent "{5AC29970429B33BB}" {
-   m_bDebugLocked 1
-  }
- }
- coords 302.185 0.001 287.88
-}
-GenericEntity Roadmap_Hideout_Cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
- coords 314.2 0 305.4
- angles 0 90 0
-}
-$grp GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- Roadmap_Hideout_Crate_2 {
-  coords 314.6 0 291.7
-  angles 0 10 0
- }
- Roadmap_Hideout_Crate_4 {
-  coords 313.4 0 308.8
-  angles 0 20 0
- }
-}
-$grp GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- Roadmap_Hideout_Crate_1 {
-  coords 314.6 0 290.4
- }
- Roadmap_Hideout_Crate_5 {
-  coords 314.2 0 308.4
-  angles 0 -30 0
- }
-}
 GenericEntity Roadmap_Hideout_Stash : "{FD1CCD705B12BBCB}Prefabs/Props/Hideouts/LF_HideoutStash.et" {
  components {
-  LF_PersistentStorageComponent "{DFF89A3BB63551AE}" {
-   m_sStorageKey "hideout:Roadmap_Hideout"
-  }
   LF_HideoutStashStorageManagerComponent "{E7B14A09000C5EB1}" {
    m_sHideoutId "Roadmap_Hideout"
   }
+  LF_PersistentStorageComponent "{DFF89A3BB63551AE}" {
+   m_sStorageKey "hideout:Roadmap_Hideout"
+  }
  }
  coords 312 0 296
+}
+GenericEntity Roadmap_Hideout_Workbench {
+ components {
+  MeshObject "{5E1A0001A0B0C001}" {
+   Object "{583D24495FE15DD2}Assets/Props/Industrial/Workbench_01/Workbench_01.xob"
+  }
+  RigidBody "{5E1A0001A0B0C002}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 307 0 308.9
+}
+GenericEntity Roadmap_Hideout_Van : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
+ coords 300 0 306.4
+ angleY 8
+}
+GenericEntity Roadmap_Hideout_Crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 314.6 0 290.4
+}
+GenericEntity Roadmap_Hideout_Crate_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 314.6 0 291.7
+ angleY 10
+}
+GenericEntity Roadmap_Hideout_Crate_3 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 313.3 0 290.5
+ angleY 25
+}
+GenericEntity Roadmap_Hideout_Barrel_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 295.6 0 290.4
+}
+GenericEntity Roadmap_Hideout_Barrel_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 296.5 0 290.2
+}
+GenericEntity Roadmap_Hideout_Tires : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords 296.6 0 307.6
+}
+GenericEntity Roadmap_Hideout_BenchBox : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 306 1.02 308.9
+ angleY 10
+}
+GenericEntity Roadmap_Hideout_BenchJerrycan : "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et" {
+ coords 306.9 1.02 308.9
+}
+GenericEntity Roadmap_Hideout_BenchCarton {
+ components {
+  MeshObject "{5E1A0001A0B0C012}" {
+   Object "{C23DD228F7317429}Assets/Props/Crates/CardboardBox_03.xob"
+  }
+  RigidBody "{5E1A0001A0B0C013}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 307.5 1.015 308.9
+ angleY 20
+}
+GenericEntity Roadmap_Hideout_Barrel_3 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 302.9 0 305.4
+}
+GenericEntity Roadmap_Hideout_Barrel_4 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 302.9 0 306.6
+}
+GenericEntity Roadmap_Hideout_Pallet_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 295.7 0 293.2
+}
+GenericEntity Roadmap_Hideout_Pallet_2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 295.7 0 294.8
+}
+GenericEntity Roadmap_Hideout_PalletPile : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+ coords 296.0 0 298.6
+ angleY 90
+}
+GenericEntity Roadmap_Hideout_Stack_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 314.5 0 294.0
+}
+GenericEntity Roadmap_Hideout_Stack_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 314.5 0.281 294.0
+ angleY 15
+}
+GenericEntity Roadmap_Hideout_Stack_3 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 314.5 0.562 294.0
+ angleY -10
+}
+GenericEntity Roadmap_Hideout_Pallet_3 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 314.4 0 298.4
+}
+GenericEntity Roadmap_Hideout_Cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 314.2 0 305.4
+ angleY 90
+}
+GenericEntity Roadmap_Hideout_Crate_4 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 313.4 0 308.8
+ angleY 20
+}
+GenericEntity Roadmap_Hideout_Crate_5 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 314.2 0 308.4
+ angleY -30
+}
+GenericEntity Roadmap_Hideout_Crate_6 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 313.9 0 307.6
+ angleY 60
 }
