@@ -247,6 +247,7 @@ its save.
 | `Factions`, `Shops` | core | Empty layers |
 | `Quests` | split | One giver in the annex, the clerk on the square |
 | `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack, moved (batch 1) | Vanilla buildings, props, and roads; no test names them. Now in the pack world `Everon1989Town` (SubScene of DebugWorld), with `Village_Signs` |
+| `Village_PhotoScenes` | pack, town | Set dressing shot for the Workshop pictures (2026-11-15), static NPCs with no scripts: `PhotoScene_Police_Officer` (LF_Npc_Police_2, beside the police car), `PhotoScene_Hospital_Doctor` (LF_Npc_Medic_1, south of the ambulance), `PhotoScene_Bank_Robber` (LF_Npc_Robber_1, facing the vault door) and `PhotoScene_Bank_Drill` (LF_Drill on the rob-kit chest). Enfusion layers hold no comments, so the entity names and this row are the comment |
 | `Street_*` (13, with `Street_SpawnHub`) | split | Village sites that hold test-named fixtures |
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
