@@ -1,6 +1,9 @@
 # opening-b11 fixture
 
-`console.log` is a real server console log (2026-11-15, a TestLogic run of `harness/staff-approve`): the engine
-header with the addon list, the world-ready line and the script tail with warnings and one error. Secrets stripped:
-the checkout path became `C:/lf/host`, the CPU and machine lines were dropped. `triage.md` knows the Police
-warnings (BY DESIGN) and not the Whitelist error, so the beat sees 4 known groups and 1 new one.
+`console.log` is a server console log in the shape of a TestLogic run of `harness/staff-approve` (2026-11-15):
+the engine header with the addon list and the mounted addon directories, the ready line and the script tail
+with four Police warnings and one Whitelist warning. The checkout path is `C:\lf\host`. The first capture was
+never committed (the `*.log` ignore kept it out of the PR), so this file was rebuilt from the same shape;
+`.gitignore` now tracks `tools/validation/fixtures/**/*.log`. `triage.md` knows the Police warnings
+(BY DESIGN) and not the Whitelist one, so the beat sees 4 known groups and 1 new one. The tail holds no
+`SCRIPT (E)` line, because `server-doctor` fails a boot that has one and the beat judges the real doctor.

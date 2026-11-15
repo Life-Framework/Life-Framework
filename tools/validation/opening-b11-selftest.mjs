@@ -94,7 +94,10 @@ const dead = await runBeat({ root: ROOT, log: LOG, triage: TRIAGE, has: present,
 expectStatus(dead, "triage-groups", "FAIL");
 
 // 5. The standalone script: one `BEAT B11 <id> PASS|FAIL|BLOCKED <reason>` line per check, exit 1 only on a FAIL.
-const run = spawnSync(process.execPath, [BEAT, "--log", LOG, "--triage", TRIAGE], { cwd: ROOT, encoding: "utf8", timeout: 120000, windowsHide: true });
+// The real doctor and history run here, so the host dir is a seeded temp one (a restart, then a stop), never this machine's.
+const hostDir = join(tmp, "host");
+for (const name of ["2026-11-15_19-33-52-start", "2026-11-15_19-34-10-start", "2026-11-15_19-35-00-stop"]) mkdirSync(join(hostDir, "backups", name), { recursive: true });
+const run = spawnSync(process.execPath, [BEAT, "--log", LOG, "--triage", TRIAGE], { cwd: ROOT, encoding: "utf8", timeout: 120000, windowsHide: true, env: { ...process.env, LF_HOST_DIR: hostDir } });
 const lines = `${run.stdout ?? ""}`.split(/\r?\n/).filter((l) => l.startsWith("BEAT "));
 if (lines.length !== 6 || lines.some((l) => !/^BEAT B11 [a-z-]+ (PASS|FAIL|BLOCKED) \S/.test(l))) fail(`standalone output is not 6 well-formed BEAT lines: ${run.stdout}${run.stderr}`);
 if (!/^BEAT B11 triage-groups PASS /m.test(run.stdout ?? "")) fail(`standalone triage-groups is not PASS: ${run.stdout}${run.stderr}`);
