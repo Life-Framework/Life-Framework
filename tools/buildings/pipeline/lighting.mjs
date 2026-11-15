@@ -6,13 +6,12 @@
 // ArchBuilder's furniture rules put them, two in a 17 x 9 m hall. This preset swaps them for fixtures
 // placed from the room sizes: the rooms come from the building's geometry (blender/lf_rooms.py), each
 // gets a grid of fixtures about `spacing` metres apart, every fixture is the base game's ceiling panel
-// plus a base-game light entity under it.
+// plus a spot LightEntity under it (an inline one: the base game's Lamp_LightEntity_base is off by day and by default).
 import { createHash } from "node:crypto";
 
 // Base-game resources only; the prefab stage checks each GUID against the game's resource database.
 export const LIGHTING = {
   fixture: "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et",
-  light: "{C274EE54AB618B04}Prefabs/Structures/Core/Lamp_LightEntity_base.et",
   spacing: 4.5, // metres between fixtures in a room
   max: 12, // fixtures per room
   drop: 0.2, // the light hangs this far under the ceiling
@@ -48,8 +47,8 @@ export function fixturePlan(rooms, opts = {}) {
 // The furniture prefab with ArchBuilder's ceiling lamps taken out and the preset's fixtures added.
 export function applyLighting(text, rooms, slug = "", opts = {}) {
   const o = { ...LIGHTING, ...opts };
-  const close = text.lastIndexOf("\n }\n}");
-  if (close < 0) throw new Error("the furniture prefab has no child list to add ceiling lights to");
+  if (!rooms.length) return { text, fixtures: 0, removed: 0 }; // no rooms found: leave ArchBuilder's lamps
+  if (text.lastIndexOf("\n }\n}") < 0) throw new Error("the furniture prefab has no child list to add ceiling lights to");
   let removed = 0;
   const kept = text.replace(CEILING_LAMP, () => {
     removed++;
@@ -59,7 +58,7 @@ export function applyLighting(text, rooms, slug = "", opts = {}) {
   const id = (i, kind) => createHash("sha1").update(`${slug}|light|${i}|${kind}`).digest("hex").slice(0, 16).toUpperCase();
   const rows = plan.flatMap((f, i) => [
     `  GenericEntity : "${o.fixture}" {\n   ID "${id(i, "lamp")}"\n   coords ${f.x} ${+(f.y - 0.001).toFixed(3)} ${f.z}\n  }`,
-    `  LightEntity : "${o.light}" {\n   ID "${id(i, "light")}"\n   coords ${f.x} ${+(f.y - o.drop).toFixed(3)} ${f.z}\n   angles -90 0 0\n   Color ${o.color}\n   LV ${o.lv}\n   Type Spot\n   Radius ${o.radius}\n   NearPlane 0.2\n   SpotAngle ${o.angle}\n  }`,
+    `  LightEntity {\n   ID "${id(i, "light")}"\n   coords ${f.x} ${+(f.y - o.drop).toFixed(3)} ${f.z}\n   angles -90 0 0\n   Color ${o.color}\n   LV ${o.lv}\n   ClipEV -10\n   Type Spot\n   Radius ${o.radius}\n   NearPlane 0.3\n   SpotAngle ${o.angle}\n   LensFlareType Disabled\n  }`,
   ]);
   const at = kept.lastIndexOf("\n }\n}");
   return { text: `${kept.slice(0, at)}\n${rows.join("\n")}${kept.slice(at)}`, fixtures: plan.length, removed };

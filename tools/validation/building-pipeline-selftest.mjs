@@ -26,6 +26,8 @@ import { STAGES, addProps, badGameRefs, countOpenings, countProps, doorRows, exp
 import { zstdCompressSync } from "node:zlib";
 import { archBuilderSetup, licenseMarks, scanForMarks } from "../buildings/pipeline/archbuilder.mjs";
 import { guidIn, rdbRecord } from "../buildings/pipeline/gamedb.mjs";
+import { applyLighting, fixturePlan } from "../buildings/pipeline/lighting.mjs";
+import { ROOM_TINT, surfaceOf } from "../buildings/pipeline/materials.mjs";
 import { FIXTURES, storePlan, storePrefab, toBuilding } from "../buildings/pipeline/store-slots.mjs";
 
 const ROOT = join(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..", "..");
@@ -275,6 +277,17 @@ export async function main() {
     ok(settingsDrift({ archbuilder: { seed: 1989, width: 18, archetype: "SUPERMARKET" } }, { seed: 7, width: 18.0000001, archetype: "SUPERMARKET" }).join() === "seed 7 (spec 1989)", "polish: a polished blend made with other settings is named, setting by setting");
     const frames = Buffer.concat([zstdCompressSync(Buffer.from("BLENDER-head-")), zstdCompressSync(Buffer.from(`made for ${FAKE_BUYER}`)), Buffer.from([0x5e, 0x2a, 0x4d, 0x18, 2, 0, 0, 0, 9, 9])]);
     ok(unzstd(frames).toString() === `BLENDER-head-made for ${FAKE_BUYER}`, "polish: every zstd frame of a compressed .blend is read (a watermark past the first frame is seen)");
+
+    // ---- lighting preset (tools/buildings/pipeline/lighting.mjs)
+    const hall = { x0: -8.1, x1: 8.2, y0: -6.5, y1: 2, z: 3.65 };
+    const wc = { x0: 6.3, x1: 8.2, y0: 2.7, y1: 6.2, z: 3.65 };
+    ok(fixturePlan([hall]).length === 8 && fixturePlan([wc]).length === 1, "lighting: a 16 x 8.5 m hall gets a 4 x 2 grid of ceiling fixtures and a small room one");
+    ok(fixturePlan([{ x0: 0, x1: 60, y0: 0, y1: 60, z: 3 }]).length <= 12, "lighting: one room never gets more fixtures than the cap");
+    const lampText = furnText.replace("\n }\n}\n", '\n  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {\n   ID "00000000000000AA"\n   coords 1 3.649 1\n  }\n }\n}\n');
+    const lit = applyLighting(lampText, [hall, wc], "shop");
+    ok(lit.removed === 1 && lit.fixtures === 9 && !lit.text.includes("00000000000000AA") && (lit.text.match(/^ {2}LightEntity \{/gm) || []).length === 9 && lit.text.includes("SignCommercial_01_GroceryStore"), "lighting: ArchBuilder's ceiling lamp is replaced by the fixtures, everything else stays");
+    ok(lit.text === applyLighting(lampText, [hall, wc], "shop").text && applyLighting(lampText, [], "shop").text === lampText, "lighting: the same rooms give the same entity IDs, and no rooms leaves ArchBuilder's lamps alone");
+    ok(surfaceOf({ outside_share: 0, up_share: 0.05, colour: [0.9, 0.9, 0.9] }) === "room" && surfaceOf({ outside_share: 0, up_share: 0.9, colour: [0.9, 0.9, 0.9] }) === "interior" && surfaceOf({ outside_share: 0, up_share: 0, colour: [0.1, 0.2, 0.5] }) === "interior" && surfaceOf({ outside_share: 0.6, up_share: 0, colour: [0.9, 0.9, 0.9] }) === "exterior" && ROOM_TINT.length === 3, "materials: a light finish on walls and ceiling is a room white; a floor, a dark finish and an outside wall are not");
 
     // ---- store (tools/buildings/pipeline/store-slots.mjs, #1143)
     const child = (name, at, yaw) => `  GenericEntity : "{AAAAAAAAAAAAAAAA}Prefabs/Props/Commercial/${name}.et" {\n   ID "0000000000000003"\n   coords ${at.join(" ")}\n${yaw ? `   angleY ${yaw}\n` : ""}  }\n`;

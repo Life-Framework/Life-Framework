@@ -32,14 +32,33 @@ import { eddsInfo, gameData, lz4Block } from "../../assets/pipeline/clothing-van
 // kitchen ceiling at 141. So the interior white is calibrated on the picture, not the albedo: half
 // the base game's interior plaster albedo brings our hall to about the window-lit vanilla room
 // (docs/building-pipeline/polish.md "Interior brightness").
-export const GAME_WHITE = { exterior: 0.367, interior: 0.30 };
-export const BLENDER_WHITE = { exterior: 0.849, interior: 0.888 };
+//
+// The room whites (a light finish on the walls and ceiling of a room: plaster, cream paint) go lower
+// still, 2026-11-15 (docs/building-pipeline/polish.md "Interior brightness"). Probe settings and
+// ceiling lights change nothing in a full-profile picture at noon: the room is lit by flat sky
+// ambient, so albedo is the only lever, and at 0.30 the ceiling still read 204 and the walls 160 of
+// 255 where the base game's read about 105 and 98. At 0.10 with a warm tint (the ambient is blue) a hall
+// ceiling reads 134 and the walls sit in the base game's range. Floors, tiles and dark finishes keep
+// the interior scale above.
+export const GAME_WHITE = { exterior: 0.367, interior: 0.30, room: 0.10 };
+export const BLENDER_WHITE = { exterior: 0.849, interior: 0.888, room: 0.888 };
+export const ROOM_TINT = [1, 0.93, 0.8];
+// A room white: faces looking mostly sideways or down, and a light Blender colour (luminance).
+export const ROOM_UP_SHARE = 0.3;
+export const ROOM_LIGHT = 0.6;
+export const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+export function surfaceOf(m, outsideShare = OUTSIDE_SHARE) {
+  if (m.outside_share >= outsideShare) return "exterior";
+  if ((m.up_share ?? 1) <= ROOM_UP_SHARE && lum(m.colour) >= ROOM_LIGHT) return "room";
+  return "interior";
+}
 // A material is an outside one when at least this share of its area looks out of the building (the
 // job casts a ray along each face's normal). Sunlit faces are where an over-bright albedo reads white.
 export const OUTSIDE_SHARE = 0.25;
 export const ALBEDO_SCALE = {
   exterior: GAME_WHITE.exterior / BLENDER_WHITE.exterior,
   interior: GAME_WHITE.interior / BLENDER_WHITE.interior,
+  room: GAME_WHITE.room / BLENDER_WHITE.room,
 };
 
 const fmt = (v) => {
@@ -51,7 +70,7 @@ const fmt = (v) => {
 // Color is the albedo). Returns { color, capped }.
 export function gameColor(colour, mean, where) {
   const k = ALBEDO_SCALE[where];
-  const target = colour.map((c) => c * k);
+  const target = colour.map((c, i) => c * k * (where === "room" ? ROOM_TINT[i] : 1));
   let ratio = mean ? target.map((t, i) => t / Math.max(0.02, mean[i])) : target;
   const top = Math.max(...ratio);
   const capped = top > 1;
@@ -121,7 +140,7 @@ export async function colourMaterials({ staging, dir, spec, blend, run }) {
     const bcr = bcrOf(text);
     const mean = bcr ? r.means[bcr] : null;
     if (bcr && !mean) throw new Error(`no measured mean for ${bcr}`);
-    const where = m.outside_share >= OUTSIDE_SHARE ? "exterior" : "interior";
+    const where = surfaceOf(m);
     const { color, capped } = gameColor(m.colour, mean, where);
     writeFileSync(join(matDir, f), withColor(text, color));
     rows.push({ name, where, outside: m.outside_share, blender: m.colour, mean, color: color.map((c) => +fmt(c)), capped });
