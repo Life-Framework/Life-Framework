@@ -117,9 +117,11 @@ if (!readFileSync(join(ROOT, "tools", "merge", "drivers.gitconfig"), "utf8").inc
   fail("drivers.gitconfig does not define lf-regen-config-schema");
 }
 const { SHARED } = await import("../lib/slice.mjs");
-for (const f of ["docs/config/config.schema.json", "docs/config/config.example.json", "addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c"]) {
+for (const f of ["docs/config/config.schema.json", "docs/config/config.example.json"]) {
   if (!SHARED.includes(f)) fail(`slice.mjs SHARED does not list ${f}`);
 }
+// LF_StaticReset.c is no longer shared: each feature registers its reset in its own file (AGENTS.md rule 10).
+if (SHARED.includes("addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c")) fail("slice.mjs SHARED still lists LF_StaticReset.c; resets are per-feature hooks now");
 
 if (failures.length) {
   for (const f of failures) console.log(`FAIL ${f}`);

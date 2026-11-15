@@ -136,3 +136,16 @@ class LF_EvidenceConfig
 		return config.m_iExpirySeconds;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_EvidenceConfig");
+		if (apply)
+			LF_EvidenceConfig.ResetStatics();
+	}
+}
