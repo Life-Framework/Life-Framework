@@ -87,8 +87,10 @@ class LF_WantedReports
 	//------------------------------------------------------------------------------------------------
 	//! Server: records a crime. Describes the suspect's body as it is now; a missing body still
 	//! records the offence with an empty description.
+	//! \param deferPieces The caller leaves the physical evidence itself, later (a charge on its fuse:
+	//! LF_Breach). The scene still opens; the footprint card does not lie until the caller says.
 	//! \return The stored report, or null when the uid is empty.
-	static LF_WantedReportRecord Report(string playerUid, IEntity suspect, string offence)
+	static LF_WantedReportRecord Report(string playerUid, IEntity suspect, string offence, bool deferPieces = false)
 	{
 		if (playerUid.IsEmpty())
 		{
@@ -116,7 +118,9 @@ class LF_WantedReports
 		if (suspect)
 		{
 			LF_Evidence.OpenScene(record.m_iSequence, playerUid, offence, place, suspect.GetOrigin(), System.GetTickCount());
-			LF_ScenePieces.OnReport(record, suspect, System.GetTickCount());
+			if (!deferPieces)
+				LF_ScenePieces.OnReport(record, suspect, System.GetTickCount());
+
 			LF_Witness.RecordCrime(record.m_iSequence, playerUid, offence, suspect, clothing, vehicle, place);
 		}
 

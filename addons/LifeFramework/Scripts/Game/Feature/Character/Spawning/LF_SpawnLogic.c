@@ -17,6 +17,10 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! the lot, so a new player can drive on day one; docs/decisions.md). Paid once, at registration.
 	[Attribute("1000", desc: "Bank balance a newly registered character starts with. Paid once, when the registration form is signed.", category: "New character defaults")]
 	protected int m_iStartingBank;
+	//! Workbench play from camera: the pose of the editor body the first spawn replaced (LF_PlayFromCamera).
+	protected vector m_vReplacedBodyPos;
+	protected vector m_vReplacedBodyYpr;
+	protected bool m_bReplacedBody;
 
 	//------------------------------------------------------------------------------------------------
 	int GetStartingBank()
@@ -314,6 +318,10 @@ class LF_SpawnLogic : SCR_SpawnLogic
 					ResourceName existingPrefab = LF_Utils.GetPrefabName(controlled);
 					if (!existingCharacter || !LF_Utils.SamePrefab(existingPrefab, activeCharacter.GetPrefab()))
 					{
+						// Play from camera: the new character takes this body's place (LF_PlayFromCamera).
+						m_vReplacedBodyPos = controlled.GetOrigin();
+						m_vReplacedBodyYpr = controlled.GetYawPitchRoll();
+						m_bReplacedBody = true;
 						LF_Debug.Warn("Spawn", "replacing Workbench controlled entity with the account character");
 						SCR_EntityHelper.DeleteEntityAndChildren(controlled);
 					}
@@ -370,6 +378,17 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	{
 		position = "0 0 0";
 		yawPitchRoll = "0 0 0";
+
+		// Workbench play from camera: spawn where the replaced editor body stood, once.
+		bool useCamera = LF_PlayFromCamera.UseCameraPose(LF_PlayFromCamera.IsWorkbench(), m_bReplacedBody, m_vReplacedBodyPos);
+		m_bReplacedBody = false;
+		if (useCamera)
+		{
+			position = m_vReplacedBodyPos;
+			yawPitchRoll = m_vReplacedBodyYpr;
+			LF_Debug.Info("Spawn", "Workbench play from camera: player " + playerId + " spawns at the camera " + position.ToString());
+			return true;
+		}
 
 		if (LF_HospitalRespawn.ResolveWake(playerId, LF_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
 			return true;
