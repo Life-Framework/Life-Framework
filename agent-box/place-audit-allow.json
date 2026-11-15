@@ -69,6 +69,41 @@
       "match": "^Market_(Tarp|Post)_",
       "kind": "overlaps",
       "why": "maintainer hand placement (world ship): each market tarp rests on its own two posts, so tarp and posts overlap by about 0.2 m by design (Village_Dressing.layer market stalls)."
+    },
+    {
+      "match": "^Roadmap_Civilian_3 ",
+      "kind": "overlaps",
+      "why": "maintainer hand placement (world ship): Roadmap_Civilian_3 in Village_Buildings.layer (overlaps Roadmap_Org_Desk_Chair by 0.03 m)"
+    },
+    {
+      "match": "^Roadmap_Police_Taser3 ",
+      "kind": "tilted",
+      "why": "maintainer hand placement (world ship): Roadmap_Police_Taser3 in Village_Buildings.layer (tilted 86 deg)"
+    },
+    {
+      "match": "^Roadmap_Police_Taser4 ",
+      "kind": "tilted",
+      "why": "maintainer hand placement (world ship): Roadmap_Police_Taser4 in Village_Buildings.layer (tilted 86 deg)"
+    },
+    {
+      "match": "^Roadmap_Police_Taser5 ",
+      "kind": "tilted",
+      "why": "maintainer hand placement (world ship): Roadmap_Police_Taser5 in Village_Buildings.layer (tilted 86 deg)"
+    },
+    {
+      "match": "^Sign_FuelStation ",
+      "kind": "sunk",
+      "why": "maintainer hand placement (world ship): Sign_FuelStation in Signs.layer (sunk 0.2 m into terrain)"
+    },
+    {
+      "match": "^Roadmap_Org_Desk_Chair ",
+      "kind": "overlaps",
+      "why": "maintainer hand placement (world ship): Roadmap_Org_Desk_Chair in Street_Org.layer (overlaps Roadmap_Civilian_3 by 0.03 m)"
+    },
+    {
+      "match": "^Roadmap_Police_Taser ",
+      "kind": "tilted",
+      "why": "maintainer hand placement (world ship): Roadmap_Police_Taser in Street_Police.layer (tilted 86 deg)"
     }
   ]
 }
