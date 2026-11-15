@@ -10,6 +10,11 @@ class LF_CreditsSheet
 	static const string PART_PREV = "CreditsPrev";
 	static const string PART_NEXT = "CreditsNext";
 	static const float SHEET_WIDTH = 760;
+	//! Body lines one page may hold so Previous, Next and Close stay inside the 900-high frame at
+	//! 720p (#1738); a long section continues on another page under the same heading.
+	static const int MAX_BODY_LINES = 18;
+	//! Characters that fit one wrapped body line at the sheet width (measured, with a margin).
+	static const int LINE_CHARS = 78;
 
 	protected static ref LF_UIScreen s_Screen;
 	protected static ref LF_CreditsSheet s_Sheet;
@@ -29,6 +34,8 @@ class LF_CreditsSheet
 		m_aHeads.Clear();
 		m_aBodies.Clear();
 		int read = 0;
+		int used = 0;
+		string heading = string.Empty;
 		foreach (string row : rows)
 		{
 			array<string> cells = {};
@@ -44,6 +51,8 @@ class LF_CreditsSheet
 			string label = WidgetManager.Translate(cells[1]);
 			if (cells[0] == "H")
 			{
+				heading = label;
+				used = 0;
 				m_aHeads.Insert(label);
 				m_aBodies.Insert(string.Empty);
 				continue;
@@ -62,8 +71,21 @@ class LF_CreditsSheet
 				line = label + " (" + WidgetManager.Translate(cells[2]) + ")";
 			}
 
+			int need = (line.Length() + LINE_CHARS - 1) / LINE_CHARS;
+			if (need < 1)
+				need = 1;
+
 			int last = m_aBodies.Count() - 1;
-			m_aBodies.Set(last, m_aBodies[last] + line + "<br/><br/>");
+			if (used > 0 && used + need > MAX_BODY_LINES)
+			{
+				m_aHeads.Insert(heading);
+				m_aBodies.Insert(string.Empty);
+				last++;
+				used = 0;
+			}
+
+			used += need;
+			m_aBodies.Set(last, m_aBodies[last] + line + "<br/>");
 		}
 
 		return read;
