@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "defaultSellPrice": -5,
+    "bogus": true
+  }
+}
