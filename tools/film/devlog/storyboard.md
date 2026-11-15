@@ -1,4 +1,4 @@
-# Dev log 01: storyboard and script (for sign-off)
+# Life Framework Dev Log 01: storyboard and script (for sign-off)
 
 Status: **paper only.** Nothing is filmed, rendered, recorded or downloaded. The maintainer signs off
 this file (the board, every line of the script, the slides and the music) before anyone runs
@@ -57,6 +57,7 @@ From `addons/LifeFramework/Scripts/Game/Feature/Film/LF_FilmCameraPath.c`, `tool
 | | |
 |---|---|
 | Length | about 2:50 |
+| Series | Life Framework Dev Log 01, posted on YouTube and Discord. Later chapters get their own episodes in the same format. |
 | Shape | title slide, intro orbit, six segments (orbit, then slide), closing orbit, roadmap slide, end slide |
 | Output | 1920x1080, 30 fps, 16:9, H.264 and AAC, captions burned in plus an `.srt` |
 | Light | 17.9 local, Clear, frozen day (the `trailer-*` presets); interior 14.0; closing orbit at dusk |
@@ -120,7 +121,7 @@ test town: Everon, nineteen eighty-nine. Here is what we built, what is still ro
 | Light | `trailer-store` with the hour overridden to 14.0 (daylight through the glazed front) |
 | Staged | The fully stocked shelves (nine lines, 248 shelf copies), the shopkeeper behind the till, no customers |
 
-**Needs town pass:** the supermarket stands beside the annex test area (open question 1). Inside: every
+**Needs town pass:** interior only. Inside: every
 shelf copy seated on its board, the checkout counters clear, the stockroom door shut. Outside is not
 filmed.
 
@@ -352,8 +353,8 @@ Red and yellow are spice, as on the site: one stamp per slide and at most one ye
 
 ### Title slide
 
-- Left 55%: kicker `DEV LOG 01 · ARMA REFORGER` (Plex Mono 500, 28 px, 0.08em tracking, `--ink-2`);
-  title `LIFE FRAMEWORK` (Barlow 700, 168 px, line height 0.93); line under it in Plex Sans 400, 44 px:
+- Left 55%: kicker `ARMA REFORGER` (Plex Mono 500, 28 px, 0.08em tracking, `--ink-2`);
+  title `LIFE FRAMEWORK` over `DEV LOG 01` (Barlow 700, 168 px, line height 0.93, two lines); line under it in Plex Sans 400, 44 px:
   "Open-source roleplay. Test town: Everon, 1989."
 - Right 45%: the first frame of the intro orbit in a 4 px ink border, saturation 0.85, with the stamp
   `ALPHA` on its top-left corner.
@@ -386,6 +387,7 @@ from `docs/roadmap/README.md` and are re-checked the day the slides render.
 ### End slide
 
 - Background `--green`, text `--on-green`. The logo centred at the top.
+- Left half, top: `LIFE FRAMEWORK DEV LOG 01` (Plex Mono 500, 28 px, 0.08em tracking, `--on-green`), the series name as on the title slide.
 - Left half: `JOIN LIFE FRAMEWORK | EVERON 1989 (ALPHA)` (Barlow 700, 88 px, two lines), then
   `discord.gg/MjMexJteqz` in Plex Mono 500, 34 px.
 - Right half: the one yellow plate (`--sign` fill, `--on-sign` text, 4 px ink border): `RUN YOUR OWN`
@@ -413,16 +415,14 @@ the maintainer wants it.
 ## Music and voice
 
 **Music:** one calm, steady instrumental bed under the whole cut, at -18 dB, ducked a further 10 dB
-under the voice, with a 2 s fade in and a 3 s fade out. Proposed: **"Wallpaper" by Kevin MacLeod**
-(incompetech.com, CC BY 4.0). It is not in `docs/credits.md` yet; its row and the attribution text go
-in before the file is downloaded to `video/music/`. The fallback is **"Carefree"** (Kevin MacLeod, CC BY
-4.0), which is already credited but brighter than a dev log wants. Only CC BY 4.0, Pixabay licence or
+under the voice, with a 2 s fade in and a 3 s fade out. Chosen: **"Hitman" by Kevin MacLeod**
+(incompetech.com, CC BY 4.0), already in `docs/credits.md`. Only CC BY 4.0, Pixabay licence or
 CC0 music (`docs/credits.md` "Music"); never the YouTube Audio Library.
 
 Description text:
 
 ```
-Music: "Wallpaper" by Kevin MacLeod (incompetech.com)
+Music: "Hitman" by Kevin MacLeod (incompetech.com)
 Licensed under Creative Commons: By Attribution 4.0 License
 http://creativecommons.org/licenses/by/4.0/
 Voice: Piper en_US-ljspeech (LJ Speech, public domain)
@@ -451,7 +451,7 @@ the debug grid.
 | Segment | Place | Needs town pass |
 |---|---|---|
 | I, O | Town square (126, 246) | Clean from 30 m up and at 6 m: no test signs or stray props, NPCs dressed by role at their posts, lamps that light at dusk; the grid and annex out of frame on a north-facing arc |
-| 1 | Supermarket (76, 96.5) | Shelf copies seated, counters clear, stockroom door shut, shopkeeper behind the till. Its place beside the annex is open question 1 |
+| 1 | Supermarket (76, 96.5), interior only | Shelf copies seated, counters clear, stockroom door shut, shopkeeper behind the till |
 | 2 | Cash van at the bank (196, 252.4) | Strongbox at the van's rear doors on the kerb, verge paper cleared, the bank front's vault hood, rob-kit stand and alarm box neat |
 | 3 | Police station (234, 234) | Duty desk, case board, armory, armory store, evidence locker, handcuffs and taser inside; dispatch and wanted boards on the front wall; spike strip off the road; a uniformed officer NPC at the door |
 | 4 | Hospital (262, 264) | Duty desk inside (called out by the maintainer), with the dispatch board, waiting bench, cabinet, till and supply crates; the downed-patient prop on a bed inside or removed; the beds inside; the doctor at the door |
@@ -504,11 +504,15 @@ still per orbit and the slides as PNGs for a second look before the full render.
 1. **The supermarket's place.** It stands at (76, 96.5), next to the annex test area, not on the town
    streets. In the two-zone DebugWorld is it part of the polished town? If not, the board films only its
    interior (as written), or the town pass moves it (a large job).
+   [x] answered 2026-11-15: film the interior only, with no move.
 2. **Segment 6 is not an orbit.** It is a 14 s screen recording of the config generator. Keep it, or
    make segment 6 a slide only (a still of the page) and add 7 s to another orbit?
-3. **Music.** "Wallpaper" (calm, needs a new credits row) or "Carefree" (credited, brighter)?
+   [x] answered 2026-11-15: keep the screen recording for segment 6.
+3. **Music.** "Hitman" (already in credits) or "Carefree" (credited, brighter)?
+   [x] answered 2026-11-15: "Hitman" by Kevin MacLeod, already in `docs/credits.md`. No new credits row.
 4. **The website on the end slide.** The end slide shows Discord and GitHub only, because
    life-framework.org expires on 2026-11-29 and its transfer is pending. Add the site once the transfer
    is done?
 5. **Series name.** Is this "Dev log 01" of a series, posted on YouTube and in Discord, or a one-off
    with another title?
+   [x] answered 2026-11-15: a series. This is "Life Framework Dev Log 01", posted on YouTube and Discord.
