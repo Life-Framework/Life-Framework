@@ -377,6 +377,20 @@ class LF_SaveIds
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Held-ground rows (#751) are keyed by the same place id as the hideout records.
+	static void ResolveHeldGround(array<ref LF_HeldGroundRow> rows)
+	{
+		if (!rows)
+			return;
+
+		foreach (LF_HeldGroundRow row : rows)
+		{
+			if (row)
+				row.m_sHideoutId = Resolve(KIND_PLACE, row.m_sHideoutId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResolveVehicles(array<ref LF_VehicleRecord> records)
 	{
 		if (!records)

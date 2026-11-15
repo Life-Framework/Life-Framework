@@ -210,6 +210,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessStandClear(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessStandSide(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HaulTidy(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HeldGroundBadRow(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HeldGroundLegacy(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_HeldGroundRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
@@ -364,12 +367,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RestartClose(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartBankSurvivesConnect(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartJailSerializerRoundtrip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehicleNoGroundKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehiclePlatesReserved(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWhitelistUnreadableFileKept(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartSirenPrefab(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RestartWarnings(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestraintRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
@@ -474,6 +479,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStrip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenVehicleLookPlacedCar(), LF_TestTier.WORLD);
