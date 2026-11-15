@@ -708,6 +708,14 @@
   `host history` (#1409) and `host gate` (#1410) read. It handles a leave glued
   mid-line onto another line, a missing leave, and midnight. `tools/host/attendance.mjs`;
   selftest `tools/validation/host-attendance-selftest.mjs`.
+  `host summary [<console.log>] [--perf <csv>] [--triage <file>] [--out <dir>]
+  [--target 40] [--json]` (#1501, merged, in-dev) is the runbook's "after" step: it writes
+  `<host>/sessions/<stamp>.md` with the session length, unique players and peak against
+  the player target (the evidence for "sessions at the player target"), scheduled
+  restarts, host stops and crash backups inside the session, the triage groups known and
+  new, and the perf verdict of the newest `<host>/perf` file. It calls the attendance,
+  perf and log-triage functions, not their CLI text. `tools/host/summary.mjs`; selftest
+  `tools/validation/host-summary-selftest.mjs`.
   Joining: the host runs `-noBackend`, so every player has the NULL platform
   identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
   failed with `#EL-CC_Error_NoAccount` (nobody could join).
