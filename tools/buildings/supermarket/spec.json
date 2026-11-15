@@ -64,15 +64,15 @@
     "till": "CashierShop_01",
     "alarm": { "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et", "at": [-2.4, 2.3, -7], "yaw": 180, "offset": [0, 0.167, 0.065], "reach": 10, "why": "the alarm bell box on the shop front, under the canopy left of the door: a walk-out's beacon and siren sound where the shopper leaves" },
     "lines": [
-      { "item": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "fixture": "ShelfShop_01", "pick": [0, 1], "boards": [1, 2], "per_board": 9, "max": 54, "restock": 12 },
-      { "item": "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et", "fixture": "ShelfShop_01", "pick": [2, 3], "boards": [1, 2], "per_board": 9, "max": 54, "restock": 12 },
-      { "item": "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et", "fixture": "ShelfShop_01", "pick": [6, 7], "boards": [1, 2], "per_board": 8, "max": 48, "restock": 10 },
-      { "item": "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et", "fixture": "ShelfShop_01", "pick": [8, 9], "boards": [1, 2], "per_board": 8, "max": 48, "restock": 10 },
-      { "item": "{486317A3719FD166}Prefabs/Items/Food/LF_DriedMeat.et", "fixture": "ShelfShop_01", "pick": [10, 11], "boards": [1, 2], "per_board": 6, "max": 36, "restock": 8 },
-      { "item": "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et", "fixture": "ShelfShop_01", "pick": [12, 13], "boards": [2, 3], "per_board": 8, "max": 48, "restock": 10 },
-      { "item": "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et", "fixture": "ShelfShop_01", "pick": [14, 15], "boards": [1, 2], "per_board": 6, "max": 30, "restock": 6 },
-      { "item": "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et", "fixture": "CoolingBoxShop_01", "pick": [0, 1], "boards": [0], "per_board": 8, "max": 32, "restock": 8 },
-      { "item": "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et", "fixture": "CoolingBoxShop_01", "pick": [2, 3], "boards": [0], "per_board": 8, "max": 32, "restock": 8 }
+      { "item": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "fixture": "ShelfShop_01", "pick": [0, 1], "boards": [1, 2] },
+      { "item": "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et", "fixture": "ShelfShop_01", "pick": [2, 3], "boards": [1, 2] },
+      { "item": "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et", "fixture": "ShelfShop_01", "pick": [6, 7], "boards": [1, 2] },
+      { "item": "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et", "fixture": "ShelfShop_01", "pick": [8, 9], "boards": [1, 2] },
+      { "item": "{486317A3719FD166}Prefabs/Items/Food/LF_DriedMeat.et", "fixture": "ShelfShop_01", "pick": [10, 11], "boards": [1, 2] },
+      { "item": "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et", "fixture": "ShelfShop_01", "pick": [12, 13], "boards": [2, 3] },
+      { "item": "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et", "fixture": "ShelfShop_01", "pick": [14, 15], "boards": [1, 2] },
+      { "item": "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et", "fixture": "CoolingBoxShop_01", "pick": [0, 1], "boards": [0] },
+      { "item": "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et", "fixture": "CoolingBoxShop_01", "pick": [2, 3], "boards": [0] }
     ]
   },
   "addon": "LF_Everon1989",
