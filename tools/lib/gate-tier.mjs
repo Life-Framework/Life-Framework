@@ -4,6 +4,10 @@
 //   T1  data only: existing values changed in place in a .conf, .st, .layout or a number in an .et.
 //       validate (static), the config harness static stage, the placement gate, and ONE boot of the
 //       LOGIC tests plus every test whose source names the touched file, config class, GUID or string key.
+//   T1w a maintainer hand edit (docs/worktrees.md "Maintainer world edits"): on a town-maintainer-* branch,
+//       only modified .layer files whose entities were moved, or added / removed from prefabs already in use
+//       (tools/lib/world-diff.mjs). validate (static), the placement audit on the touched layers, and the
+//       tests that name a touched layer or entity. Reported as tier 1 with `world` set.
 //   T2  everything else: the full gate (Workbench compile + build, the whole suite, core only, config
 //       sessions, placement audit).
 //
@@ -84,10 +88,20 @@ export function dataOnlyProblem(path, before, after, ids = []) {
 
 // files: [{ path, status: "M"|"A"|"D"|"R"|"?"..., before, after }]. Returns
 // { tier: 0|1|2, reasons: [string], data: [paths], ids: [string-table Ids] }.
-export function classify(files, { forceFull = false } = {}) {
+// `branch` and `worldEdit` enable T1w: worldEdit(layerFiles) returns null when the layer changes are a hand
+// edit the fast tier may take (tools/lib/world-diff.mjs handEditProblem), else the reason; it may also set
+// `touched` on the result through its second argument.
+export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
+
+export function classify(files, { forceFull = false, branch = null, worldEdit = null } = {}) {
   if (forceFull) return { tier: 2, reasons: ["--full-gate"], data: [], ids: [] };
   const game = files.filter((f) => f.path.startsWith("addons/"));
   if (!game.length) return { tier: 0, reasons: ["nothing under addons/ changed"], data: [], ids: [] };
+  if (branch && MAINTAINER_BRANCH.test(branch) && worldEdit && game.every((f) => f.status === "M" && f.path.endsWith(".layer"))) {
+    const extra = {};
+    const why = worldEdit(game, extra);
+    if (!why) return { tier: 1, world: true, reasons: [`maintainer hand edit: ${game.length} layer(s), moved / added / removed entities of existing prefabs only`], data: game.map((f) => f.path), ids: [], touched: extra.touched ?? [] };
+  }
   const reasons = [];
   const data = [];
   const ids = [];
@@ -149,7 +163,7 @@ export function selectTests(tests, tokens) {
 }
 
 export function tierLine(c) {
-  const name = ["T0 (no game files)", "T1 (data only)", "T2 (full gate)"][c.tier];
+  const name = c.world ? "T1w (maintainer world edit)" : ["T0 (no game files)", "T1 (data only)", "T2 (full gate)"][c.tier];
   return `gate tier ${name}: ${c.reasons.slice(0, 6).join("; ")}${c.reasons.length > 6 ? `; +${c.reasons.length - 6} more` : ""}`;
 }
 
@@ -167,7 +181,7 @@ export function collectDiff({ git, read, base }) {
     const status = parts[0][0];
     const path = parts[parts.length - 1];
     const f = { path, status };
-    if (status === "M" && path.startsWith("addons/") && T1_EXT.includes(ext(path))) {
+    if (status === "M" && path.startsWith("addons/") && (T1_EXT.includes(ext(path)) || ext(path) === ".layer")) {
       const s = git(["show", `${ref}:${path}`]);
       f.before = s.status === 0 ? s.stdout : null;
       f.after = read(path);

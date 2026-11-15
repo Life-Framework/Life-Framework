@@ -138,6 +138,7 @@ against the merge base with `origin/<base>`, uncommitted and untracked files inc
 |---|---|---|
 | T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
 | T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
+| T1w | a maintainer hand edit: the branch is `town-maintainer-*` and every changed `addons/` file is a modified `.layer` whose entities were only moved, or added / removed from prefabs already in use ("Maintainer world edits") | `validate` (static), `audit placement --strict --layer <touched>`, the tests that name a touched layer or entity |
 | T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
 
 T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
@@ -1384,6 +1385,34 @@ untracked files under `addons/` or `tools/`.
 **One-time setup**: GitHub CLI must be authenticated once per machine
 (`gh auth login`). The REST API fallback works with a `GITHUB_TOKEN` env var
 instead.
+
+## Maintainer world edits
+
+The maintainer edits DebugWorld by hand in Workbench in his own worktree (`Life-Framework-ws-town-maintainer-edits`,
+branch `ws/town-maintainer-edits`). When he says done, the lead runs, from the main checkout on that PC:
+
+```sh
+toolscli world diff --wt town-maintainer-edits          # what changed, one line per entity, NOISE apart (under 3 s)
+toolscli world ship --wt town-maintainer-edits --dry-run
+toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then toolscli wt ship-status town-maintainer-edits
+```
+
+- **diff** (`tools/lib/world-diff.mjs`) matches entities by name, or by prefab plus parent path when unnamed, children
+  included, and prints MOVED (old -> new coords and angles, metres), ADDED, REMOVED or PROP CHANGED (the property).
+  NOISE is what a Workbench save rewrites without changing anything: the BSP line in `default.layer`, a block at
+  another file position, `angleY 180` written as `angles 0 180 0`, an explicit `GenericEntity` prefix dropped,
+  whitespace. `--json` for tools.
+- **ship** refuses while Workbench's window title shows unsaved changes (`*`; Workbench keeps no lock file per
+  unsaved edit) and warns while it runs. It refuses `addons/` changes other than layers, restores noise-only
+  layers to the merge base, commits the rest (the worktree's git identity, or `--author`), runs `validate`,
+  `audit placement --layer <touched>` and the tests that name a touched layer or entity, adds each audit finding
+  on an entity the maintainer touched to `agent-box/place-audit-allow.json` with the reason "maintainer hand
+  placement (world ship)" (listed in the PR body), then runs `wt ship` with a body generated from the diff.
+- **Gate tier T1w** ("Gate tiers"): the queue gates such a branch with static validate, the placement audit on the
+  touched layers and the layer-named tests. A property or component change, a new layer, a prefab no layer used
+  before or any other `addons/` file makes it T2.
+- `toolscli world sync` is the other half (`tools/lib/world-sync.mjs`, a separate change).
+- Agents never touch the maintainer's worktree; the proofs run on fixtures (`tools/test/fixtures/world-diff/`).
 
 ## Keeping your world editor safe
 
