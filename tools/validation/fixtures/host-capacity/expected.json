@@ -1,0 +1,15 @@
+{
+  "players": 10,
+  "cpuAvg": 16,
+  "upAvg": 2.5,
+  "cpuPerPlayer": 1.6,
+  "upPerPlayer": 0.25,
+  "fpsAvg": 44,
+  "frameMsMax": 25,
+  "entitiesMax": 1520,
+  "estimate": 50,
+  "limit": "cpu",
+  "upEstimate": 80,
+  "line": "[LFDebug:HostCapacity] estimate 50 players (cpu is the limit: 80% of one core at 1.60% per player; upload would carry 80 at 0.250 Mbit/s per player of 20 Mbit/s); the 40-player budget fits",
+  "overLine": "[LFDebug:HostCapacity] estimate 25 players (cpu is the limit: 80% of one core at 3.20% per player; upload would carry 40 at 0.500 Mbit/s per player of 20 Mbit/s); the 40-player budget is NOT met"
+}
