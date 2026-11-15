@@ -427,6 +427,17 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (LF_HarnessStaff.IsVerb(tool))
+		{
+			// The staff approve of a police application: the staff API decides (an administrator or staff.txt only).
+			string staffResult = LF_HarnessStaff.Run(this, tool);
+			if (staffResult.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", staffResult.Substring(3, staffResult.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", staffResult.Substring(6, staffResult.Length() - 6));
+			return;
+		}
+
 		if (LF_QuizHarness.IsVerb(tool))
 		{
 			// Forget this account's rules-quiz pass (#1567); the verb refuses outside a LF_HARNESS build.
