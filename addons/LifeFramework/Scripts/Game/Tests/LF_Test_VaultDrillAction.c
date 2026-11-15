@@ -1,4 +1,4 @@
-// red-proof: 2026-11-15 `tools/cli test --no-build --red LF_Test_HandToolEquip,LF_Test_VaultDrillAction,LF_Test_VaultDrillCancel,LF_Test_VaultDrillPayOnce` RED-OK, hook on failed `- drill in the hands: Drill the vault door`, `- drill in the hands: the gate passes`.
+// red-proof: 2026-11-15 `tools/cli test --no-build --red LF_Test_HandToolEquip,LF_Test_VaultDrillAction,LF_Test_VaultDrillCancel,LF_Test_VaultDrillPayOnce` RED-OK, hook on failed `- drill in the hands: Drill the vault door`, `- drill in the hands: the gate passes`. 2026-11-16: also failed in the full suite only (`- drill in the pack: hold it first`) after an earlier test left the annex vault robbed; the test now restocks and shuts it first and the suite ran 597/597.
 // tier: WORLD
 //! The vault door offers the drill while it is held: on the annex vault the rob action is listed,
 //! reads "Drill the vault door" with the drill in the hands and passes its gate; with the drill
@@ -39,6 +39,10 @@ class LF_Test_VaultDrillAction : LF_Test
 			return;
 
 		string uid = "vault-drill-action";
+		// An earlier suite test may have robbed or opened the annex vault: start from a stocked, shut one.
+		LF_VaultDrill.Cancel(vault.GetVaultId(), "test start");
+		LF_Bank.Restock(vault.GetVaultId());
+		LF_Breach.Reset(vault.GetVaultId());
 		ctx.True(action.CanBeShownScript(robber), "the action shows on the door");
 		ctx.True(LF_BankRobAction.NameFor(vault, robber) == vault.GetActionName(), "drill in the pack: the plain rob name");
 		ctx.True(LF_Bank.GateReason(vault.GetVaultId(), uid, robber) == "#LF-Bank_HoldDrill", "drill in the pack: hold it first");
