@@ -140,6 +140,8 @@ What each payload stores (audit, 2026-11-14):
 | wantedlooks, idcards | look | prefab GUIDs (`LF_WantedLook`) | no: a missing GUID only drops that piece of the portrait |
 | organizations, orgranks | rank id | organization-local rank id | no: made by players, not pack content |
 
+A car's colour is its spawn prefab (epic #1826): the colour prefab is the `vehicles` record's `m_sSpawnPrefab`, so colours add no field and the save version stays 34. A respawn whose saved colour no longer loads falls back to the model's base colour.
+
 Apart from the police rank, no payload stores pack content by index or by a bare path.
 
 ## Layer 1: data (serializers and config)
@@ -488,7 +490,8 @@ after it. That is a standing guarantee, not a one-off check of #323:
   `Missions/` file, a `.gproj`, the pack/core boundary (`tools/lib/addons.mjs`,
   `validate-addon-boundary.mjs`) or the e2e harness. Other diffs skip it with one line. The trigger
   is `tools/validation/pre-move-gate-selftest.mjs`, offline.
-- **Newer-than-ref assertions:** pass 2 compiles with `LF_E2E_PRE_MOVE`. An e2e assertion about state the ref build never wrote (a record, flag or owner file added after `PRE_MOVE_REF`) goes inside `#ifndef LF_E2E_PRE_MOVE`; without that the gate fails on the test, not on the save. Today: the rules quiz flag (`LF_Test_E2E_SaveState`) and the switches reload boot (`LF_Test_PersistSwitchesRestart`).
+- **Newer-than-ref assertions:** pass 2 compiles with `LF_E2E_PRE_MOVE`. An e2e assertion about state the ref build never wrote (a record, flag or owner file added after `PRE_MOVE_REF`) goes inside `#ifndef LF_E2E_PRE_MOVE`; without that the gate fails on the test, not on the save. Today: the rules quiz flag (`LF_Test_E2E_SaveState`), the switches reload boot (`LF_Test_PersistSwitchesRestart`) and the saved 03:00 clock (`LF_Test_DayCycleSave`, #1302).
+- **Not a save failure:** pass 2 logs `save load damaged: 34 payload(s) failed to read (save version 32 ...)` once, from `persist/save-build-stamp` loading a deliberately empty version 32 save. The real load is the `save loaded: version 32` line before `session continued from a save point`.
 - **Failure reading:** a load that resolves a prefab by path instead of GUID shows as a missing
   marker value in `pass2-verify-load` or an `Unable to find` line in the second boot. Fix the loader
   to compare GUIDs (`LF_SaveIds`), never re-point the ref.

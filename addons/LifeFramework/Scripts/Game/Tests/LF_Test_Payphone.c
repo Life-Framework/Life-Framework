@@ -28,7 +28,7 @@ class LF_Test_Payphone : LF_Test
 
 		array<ref LF_ServiceCandidate> officer = {};
 		officer.Insert(LF_ServiceCandidate.Make(1, true, LF_EJobType.UNEMPLOYED));
-		vector phone = "96.5 0 263";
+		vector phone = "1000 0 1000";
 		string summary = "#LF-Payphone_Summary_Crime";
 		array<string> board = {};
 

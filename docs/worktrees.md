@@ -1409,7 +1409,7 @@ toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then
   on an entity the maintainer touched to `agent-box/place-audit-allow.json` with the reason "maintainer hand
   placement (world ship)" (listed in the PR body), then runs `wt ship` with a body generated from the diff.
 - **Gate tier T1w** ("Gate tiers"): the queue gates such a branch with static validate, the placement audit on the
-  touched layers and the layer-named tests. A property or component change, a new layer, a prefab no layer used
+  touched layers and the layer-named tests (a failing test warns, it does not block). A property or component change, a new layer, a prefab no layer used
   before or any other `addons/` file makes it T2.
 - `toolscli world sync` is the other half (`tools/lib/world-sync.mjs`, a separate change).
 - Agents never touch the maintainer's worktree; the proofs run on fixtures (`tools/test/fixtures/world-diff/`).
@@ -1434,7 +1434,7 @@ or mangling them. (Other tools for this workflow add their own `###` subsections
 
 ### What blocks a world ship, what warns
 
-`world ship` and the T1w gate run `validate --world`: only the checks that read `.layer` files (`tools/lib/world-checks.mjs`, about a dozen, a few seconds), not all of them. **Blocks:** a layer parse error, a missing or unknown prefab GUID, a duplicate GUID, `validate-world-zones` (an edit outside town layers), a failed layer-named test. **Warns** (listed under `## Layout warnings` in the PR body, never blocking): the town manifest's sign distances and neighbour rule, the village-name and fixture checks, the player-props and road-id checks, and the placement audit's findings. On a `town-maintainer-*` branch a plain `validate` (CI's included) demotes the same layout checks to `WARN`. Selftest: `tools/validation/world-checks-selftest.mjs`.
+`world ship` and the T1w gate run `validate --world`: only the checks that read `.layer` files (`tools/lib/world-checks.mjs`, about a dozen, a few seconds), not all of them. **Blocks:** a layer parse error, a missing or unknown prefab GUID, a duplicate GUID, `validate-world-zones` (an edit outside town layers), a script compile error (or a test run that printed no SUMMARY and so judged nothing). **Warns** (listed under `## Layout warnings` in the PR body, never blocking): a failing layer-named test (each failing assertion and its test, under `## Test warnings (maintainer layout)`; a maintainer's edit is never blocked by a test, `tools/lib/world-test-judge.mjs`), the town manifest's sign distances and neighbour rule, the village-name and fixture checks, the player-props and road-id checks, and the placement audit's findings. On a `town-maintainer-*` branch a plain `validate` (CI's included) demotes the same layout checks to `WARN`. Selftests: `tools/validation/world-checks-selftest.mjs`, `tools/validation/world-test-judge-selftest.mjs`.
 
 ### Keeping it level with main (`world-sync`)
 

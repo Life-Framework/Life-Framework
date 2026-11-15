@@ -31,7 +31,7 @@ class LF_Test_ServiceBoard : LF_Test
 		int now = System.GetTickCount();
 		array<string> entries = {};
 
-		LF_ServiceRoute route = LF_ServiceCalls.Place("caller-uid", "medic", "Village payphone", "#LF-Payphone_Summary_Emergency", "96.5 0 263", everyone);
+		LF_ServiceRoute route = LF_ServiceCalls.Place("caller-uid", "medic", "Village payphone", "#LF-Payphone_Summary_Emergency", "1000 0 1000", everyone);
 		ctx.True(route && route.IsAnswered(), "the medic call is answered");
 		ctx.Equal(1, LF_ServiceBoard.BuildEntries("medic", now, 10, entries), "the medic call is on the medic board");
 		ctx.Equal(0, LF_ServiceBoard.BuildEntries("police", now, 10, entries), "the medic call is not on the police board");
@@ -53,7 +53,7 @@ class LF_Test_ServiceBoard : LF_Test
 		ctx.Equal(0, LF_ServiceBoard.BuildEntries("medic", now + (expiry + 1) * 1000, 10, entries), "an expired call leaves the board");
 
 		// A payphone call to the police reaches the police board and the radio log.
-		LF_ServiceCalls.Place("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "96.5 0 263", everyone);
+		LF_ServiceCalls.Place("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "1000 0 1000", everyone);
 		ctx.Equal(1, LF_ServiceBoard.BuildEntries("police", now, 10, entries), "the payphone call is on the police board");
 		ctx.Equal(1, LF_Dispatch.CallCount(), "the payphone call is also a police dispatch");
 

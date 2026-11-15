@@ -7,7 +7,8 @@
 //   T1w a maintainer hand edit (docs/worktrees.md "Maintainer world edits"): on a town-maintainer-* branch,
 //       only modified .layer files whose entities were moved, or added / removed from prefabs already in use
 //       (tools/lib/world-diff.mjs). validate (static), the placement audit on the touched layers, and the
-//       tests that name a touched layer or entity. Reported as tier 1 with `world` set.
+//       tests that name a touched layer or entity (a failing test is a warning here, only a compile error or a
+//       run that judged nothing blocks: tools/lib/world-test-judge.mjs). Reported as tier 1 with `world` set.
 //   T2  everything else: the full gate (Workbench compile + build, the whole suite, core only, config
 //       sessions, placement audit).
 //
