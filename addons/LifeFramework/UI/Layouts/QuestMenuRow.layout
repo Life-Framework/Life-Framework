@@ -30,7 +30,7 @@ FrameWidgetClass "{CE14CB47B66299DC}" {
      }
      "Font Size" 14
      "Min Font Size" 14
-     "Horizontal alignment" Center
+     "Horizontal Alignment" Center
     }
     ButtonWidgetClass "{9638FBCD7AB547BD}" {
      Name "ActionButton"
