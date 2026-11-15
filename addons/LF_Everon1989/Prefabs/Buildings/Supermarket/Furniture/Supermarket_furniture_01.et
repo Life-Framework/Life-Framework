@@ -273,10 +273,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -6.063 3.45 -4.375
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -290,10 +290,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -6.063 3.45 -0.125
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -307,10 +307,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.988 3.45 -4.375
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -324,10 +324,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.988 3.45 -0.125
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -341,10 +341,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.087 3.45 -4.375
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -358,10 +358,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.087 3.45 -0.125
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -375,10 +375,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 6.162 3.45 -4.375
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -392,10 +392,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 6.162 3.45 -0.125
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -409,10 +409,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -6.85 3.45 4.45
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -426,10 +426,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -2.175 3.45 4.45
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -443,10 +443,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.875 3.45 4.45
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -460,10 +460,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 7.25 3.45 4.45
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 3.5
+   LV 6
    ClipEV -10
    Type Spot
-   Radius 6
+   Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled

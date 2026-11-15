@@ -46,10 +46,15 @@ export const ROOM_TINT = [1, 0.93, 0.8];
 // A room white: faces looking mostly sideways or down, and a light Blender colour (luminance).
 export const ROOM_UP_SHARE = 0.3;
 export const ROOM_LIGHT = 0.6;
+// ... on a plaster-like texture (a tile or granite texture is dark and needs its Color near 1) ...
+export const ROOM_TEXTURE = 0.5;
+// ... and the warm tint goes on near-neutral whites only: a cream or blue paint already has its hue.
+export const ROOM_NEUTRAL = 0.15;
+export const saturation = (c) => (Math.max(...c) ? (Math.max(...c) - Math.min(...c)) / Math.max(...c) : 0);
 export const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 export function surfaceOf(m, outsideShare = OUTSIDE_SHARE) {
   if (m.outside_share >= outsideShare) return "exterior";
-  if ((m.up_share ?? 1) <= ROOM_UP_SHARE && lum(m.colour) >= ROOM_LIGHT) return "room";
+  if ((m.up_share ?? 1) <= ROOM_UP_SHARE && lum(m.colour) >= ROOM_LIGHT && m.mean && Math.min(...m.mean) >= ROOM_TEXTURE) return "room";
   return "interior";
 }
 // A material is an outside one when at least this share of its area looks out of the building (the
@@ -70,7 +75,7 @@ const fmt = (v) => {
 // Color is the albedo). Returns { color, capped }.
 export function gameColor(colour, mean, where) {
   const k = ALBEDO_SCALE[where];
-  const target = colour.map((c, i) => c * k * (where === "room" ? ROOM_TINT[i] : 1));
+  const target = colour.map((c, i) => c * k * (where === "room" && saturation(colour) < ROOM_NEUTRAL ? ROOM_TINT[i] : 1));
   let ratio = mean ? target.map((t, i) => t / Math.max(0.02, mean[i])) : target;
   const top = Math.max(...ratio);
   const capped = top > 1;
@@ -140,7 +145,7 @@ export async function colourMaterials({ staging, dir, spec, blend, run }) {
     const bcr = bcrOf(text);
     const mean = bcr ? r.means[bcr] : null;
     if (bcr && !mean) throw new Error(`no measured mean for ${bcr}`);
-    const where = surfaceOf(m);
+    const where = surfaceOf({ ...m, mean });
     const { color, capped } = gameColor(m.colour, mean, where);
     writeFileSync(join(matDir, f), withColor(text, color));
     rows.push({ name, where, outside: m.outside_share, blender: m.colour, mean, color: color.map((c) => +fmt(c)), capped });

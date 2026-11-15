@@ -16,8 +16,8 @@ export const LIGHTING = {
   max: 12, // fixtures per room
   drop: 0.2, // the light hangs this far under the ceiling
   color: "1 0.96 0.88 1",
-  lv: 3.5,
-  radius: 6,
+  lv: 6,
+  radius: 7,
   angle: 140,
 };
 

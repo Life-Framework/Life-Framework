@@ -155,6 +155,7 @@ Blender colour is brighter than the base game's own walls (spike: "Why the walls
 each material's `Color` so it reads like Blender: the material's Blender viewport colour, scaled so ArchBuilder's white
 plaster lands on the base game's white plaster (one factor for a material that faces outside, one for inside), divided by
 the texture's linear mean, measured from the game's own `.edds`. It prints one line per material. `tools/buildings/pipeline/materials.mjs`.
+A light finish on a room's walls and ceiling (a "room white") is calibrated lower still, with a warm tint on neutral whites, and the export adds ceiling fixtures with lights placed from the room sizes (polish.md "Interior brightness"; `lighting.mjs`, `blender/lf_rooms.py`; a spec `lighting` block tunes it, `{ "off": true }` skips it).
 A material another building's model uses is never changed by a re-export; one only this building uses is.
 
 **GUIDs.** ArchBuilder derives its GUIDs from the path and a fixed salt, so everyone who exports a building of the same
