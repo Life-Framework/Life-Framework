@@ -376,6 +376,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RestartWhitelistUnreadableFileKept(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartSirenPrefab(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartToast(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RestartWarnerFires(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWarnings(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestraintRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
