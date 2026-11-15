@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { NextSessionPanel } from "@/components/NextSession";
+import { NextSessionPanel, upcoming, utcText } from "@/components/NextSession";
 import { Figure, GoLink, PageHeader, Section, Stamp } from "@/components/ui";
 import { CORE_VS_PACK_URL, DISCORD_URL, blob, milestone, milestoneName, siteData, still } from "@/lib/content";
 
@@ -20,6 +20,16 @@ const configs = [
   ["Configs/Vehicles/VehicleSettings.conf", "Vehicle lot and ownership"],
   ["Configs/Signs/LF_Signs.conf", "What each sign in town says"],
 ];
+
+// The og:description of /servers, which entry-server.tsx writes into the prerendered page (#1615). A link
+// preview (Discord) says the next session time or that none is announced: no player count, no status
+// (decision 2026-11-14). The prerender is as old as the build, so a session that has passed is dropped at the
+// next build, by the same rule as the panel.
+// eslint-disable-next-line react-refresh/only-export-components
+export const serversOgDescription = (base: string, now: number) => {
+  const next = upcoming(now);
+  return `${next ? `Next session: ${utcText(next.when)}.` : "No session announced."} ${base}`;
+};
 
 const Servers = () => {
   const m3 = milestone("M3");

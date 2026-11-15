@@ -1,0 +1,1 @@
+{ "file": "config.json", "set": { "dayCycle.dayLengthMinutes": 60 }, "expect": "dayCycle.dayLengthMinutes" }
