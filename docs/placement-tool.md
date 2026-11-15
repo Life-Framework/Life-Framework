@@ -6,7 +6,9 @@ dedicated test server, checks the result, writes the layer, and then runs the pl
 (`docs/placement-audit.md`) on what it wrote. A placement the audit flags is rolled back.
 
 A slice places its props in its own debug-grid cell: `tools\cli grid place <slug> <prefab>...` claims
-the cell and runs `arrange row` there. Only a town-placement pass places in town
+the cell, writes `GridWorld_Layers/Grid_<slug>.layer` and runs `arrange row` there. A `--layer Grid_*.layer`
+argument, and `place on|against|ground` aimed at a grid entity, resolve to GridWorld's layer folder; every
+other layer name is a DebugWorld or pack-town layer. Only a town-placement pass places in town
 (`docs/architecture/world-zones.md`).
 
 Do not type coordinates into a `.layer` for a prop. Every failure in the table below came from a

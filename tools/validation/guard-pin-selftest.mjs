@@ -28,8 +28,21 @@ try {
   const p = pin.pickChecked(["h3", "h2", "h1", "h0"], (s) => st[s]);
   check(p?.sha === "h1" && p.behind === 2 && p.head === "h3", `pick: newest compiled-ok h1, 2 behind; got ${JSON.stringify(p)}`);
   check(pin.pickChecked(["h1", "h0"], () => null) === null, "pick: nothing checked -> null");
-  check(pin.ghToGuard({ context: "main-guard", state: "pending", description: pin.guardToGh("compiled-ok").description }) === "compiled-ok", "gh status round trip compiled-ok");
-  check(pin.ghToGuard({ context: "main-guard", state: "success" }) === "green" && pin.ghToGuard({ context: "validate", state: "success" }) === null, "gh status mapping");
+  const post = (st, step) => pin.guardToGh(st, step).map((g, i) => ({ ...g, created_at: `2026-11-16T00:00:0${i}Z` }));
+  check(pin.guardFromStatuses(post("compiled-ok")) === "compiled-ok" && post("compiled-ok")[0].context === "main-guard/compile", "compiled-ok -> main-guard/compile success");
+  check(pin.guardFromStatuses([...post("compiled-ok"), ...post("green").map((g) => ({ ...g, created_at: "2026-11-16T01:00:00Z" }))]) === "green", "compile + suite success -> green");
+  check(pin.guardFromStatuses([...post("compiled-ok"), ...post("red", "suite").map((g) => ({ ...g, created_at: "2026-11-16T01:00:00Z" }))]) === "red", "suite failure -> red");
+  check(pin.guardFromStatuses(post("red", "compile")) === "red" && post("red", "compile")[0].context === "main-guard/compile", "compile failure -> red on main-guard/compile");
+  check(pin.guardFromStatuses([{ context: "main-guard", state: "pending", description: "compiled-ok: x" }]) === "compiled-ok" && pin.guardFromStatuses([{ context: "validate", state: "success" }]) === null, "legacy context read; other contexts ignored");
+  // GitHub is the truth, the hub file a cache: a gh answer wins over the cache; the cache only when gh fails.
+  // (resolveChecked is exercised against real repos below.)
+  const L = pin.leaseDecision;
+  const fresh = { state: "held", host: "LEAD-PC", pid: 9, at: new Date().toISOString() };
+  check(!L(fresh, "LAPTOP").ok && /LEAD-PC/.test(L(fresh, "LAPTOP").why), "lease: a second machine refuses while another holds it");
+  check(L(fresh, "LEAD-PC").ok, "lease: the holder may renew");
+  check(L({ ...fresh, at: new Date(Date.now() - pin.LEASE_TTL_MS - 1000).toISOString() }, "LAPTOP").ok, "lease: a stale lease can be taken");
+  check(L({ state: "released", host: "LEAD-PC" }, "LAPTOP").ok && L(null, "LAPTOP").ok, "lease: released or none is free");
+  check(pin.parseLease({ description: "held LAPTOP 123 2026-11-16T00:00:00.000Z" })?.pid === 123, "lease description parses");
 }
 
 const tmp = mkdtempSync(join(tmpdir(), "lf-guard-pin-"));
@@ -68,6 +81,15 @@ try {
   git(up, "push", "-q", "origin", "HEAD:main");
   git(me, "fetch", "-q", "origin");
   pin.recordHead(hub, A, "compiled-ok");
+  const B = git(up, "rev-parse", "HEAD");
+  const viaGh = pin.resolveChecked(me, { hub, gh: (d, sha) => (sha === B ? "red" : sha === A ? "compiled-ok" : null) });
+  check(viaGh?.sha === A, "gh answer used");
+  pin.recordHead(hub, B, "compiled-ok");
+  const ghWins = pin.resolveChecked(me, { hub, gh: (d, sha) => (sha === B ? "red" : sha === A ? "compiled-ok" : null) });
+  check(ghWins?.sha === A, "gh red beats a stale compiled-ok in the cache");
+  const cacheOnly = pin.resolveChecked(me, { hub, gh: () => undefined });
+  check(cacheOnly?.sha === B, "gh unavailable: the cache answers");
+  pin.recordHead(hub, B, "red");
   const p = pin.resolveChecked(me, { hub, gh: () => null });
   check(p?.sha === A && p.behind === 1, `resolveChecked: A, 1 behind; got ${JSON.stringify(p)}`);
   const r = ws.syncWorktree(me, { target: p?.sha, listProcesses: () => [] });

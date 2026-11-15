@@ -1,7 +1,9 @@
-// tools/lib/world-zones.mjs: the two DebugWorld zones (docs/architecture/world-zones.md).
+// tools/lib/world-zones.mjs: the two world zones (docs/architecture/world-zones.md).
 //
-// Grid: the net-fenced annex south-west of the village (x 20..112, z 20..112). One feature per
-// cell, low look bar, written by `tools\cli grid`. Town: every other layer the playtest town loads
+// Grid: the net-fenced annex (x 20..112, z 20..112), which lives in GridWorld
+// (Worlds/GridWorld/GridWorld_Layers, docs/architecture/three-worlds.md); until slice W6 deletes
+// it, the legacy annex layers also sit in DebugWorld. One feature per cell, low look bar, written
+// by `tools\cli grid`. Town: every other layer the playtest town loads
 // (the DebugWorld village layers and the pack world Everon1989Town). Polished; written only by a
 // town-placement pass (a `town-` worktree slug).
 //
@@ -10,13 +12,18 @@
 // tools/validation/validate-player-props.mjs and tools/visual/look.mjs.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
 
-export const DEBUG_LAYERS = "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers";
+export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
+// Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
+export const GRID_LAYERS = `addons/${CORE_ADDON}/${layersOf(GRID_WORLD)}`;
 export const PACK_TOWN_LAYERS = "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers";
 export const CELLS_DIR = "tools/grid/cells";
 
 // The annex fence (Annex.layer): the grid zone.
 export const GRID = { x0: 20, z0: 20, x1: 112, z1: 112 };
+// The rectangle the DebugWorld freeze watches: the fence plus 2 m (three-worlds.md "What counts as grid").
+export const ANNEX_RECT = { x0: 18, z0: 18, x1: 114, z1: 114 };
 // Cells: a 7 x 7 lattice of 12 m squares from 22,22 (2 m inside the annex fence). Each cell holds a
 // 10 m fenced yard (1 m in from its edges) with a 5 m gap on the side facing the annex centre.
 export const CELL = { size: 12, origin: 22, cols: 7, rows: 7, inset: 1, fence: 5 };
@@ -59,12 +66,13 @@ export function zoneOfPath(path) {
   const p = String(path).replace(/\\/g, "/");
   if (!p.endsWith(".layer")) return null;
   const base = p.slice(p.lastIndexOf("/") + 1);
-  if (p.startsWith(`${DEBUG_LAYERS}/`)) return zoneOfLayer(base, "debug");
+  if (p.startsWith(`${DEBUG_LAYERS}/`) || p.startsWith(`${GRID_LAYERS}/`)) return zoneOfLayer(base, "debug");
   if (p.startsWith(`${PACK_TOWN_LAYERS}/`)) return zoneOfLayer(base, "pack");
   return null;
 }
 
 export const inGrid = (x, z) => x >= GRID.x0 && x <= GRID.x1 && z >= GRID.z0 && z <= GRID.z1;
+export const inAnnexRect = (x, z) => x >= ANNEX_RECT.x0 && x <= ANNEX_RECT.x1 && z >= ANNEX_RECT.z0 && z <= ANNEX_RECT.z1;
 
 // ------------------------------------------------------------------ cells
 

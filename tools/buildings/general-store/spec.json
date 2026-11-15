@@ -1,0 +1,34 @@
+{
+  "slug": "general-store",
+  "name": "GeneralStore",
+  "concept": "The village general store of 1989 Everon: the vanilla ShopHouse_E_2I01t (a shop on the ground floor, the shopkeeper's flat upstairs and a stockroom behind the counter), fitted out as a self-serve village shop. The shop room keeps the vanilla food store's gondola, wall shelves and cooler; the shopkeeper's counter (with the price list, where farmers sell their cabbages) and the till stand where the vanilla counter stood. It sells what a village shop sells: fruit, crackers, dried meat, water and juice, field dressings, a torch and a canteen. Tools and work gear belong to the hardware store, medicine beyond a field dressing to the drug store, maps, compasses and binoculars to the gun store.",
+  "red_line": "pack",
+  "vanilla": {
+    "base": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et",
+    "building": "GeneralStore",
+    "furniture": "Furniture/GeneralStore_furniture_01"
+  },
+  "budget": { "min_doors": 1 },
+  "layer_store": {
+    "why": "The store is the core DebugWorld entity Shop_GeneralStore_Debug (key general_store), not a store prefab: the in-game suite boots the core world without the pack, and the store, shelf, shoplifting, staff, moved-prefab and e2e save tests, the store proof and the journey all find it there. tools/buildings/general-store/slots.mjs fills its lines from the furniture below with the pipeline's own storePlan and writes them into the layer in the counter's space.",
+    "layer": "Shops.layer",
+    "entity": "Shop_GeneralStore_Debug",
+    "key": "general_store",
+    "counter_at": [1.57, 0.199, -0.323],
+    "boundary": { "center": [0, 0, -0.2], "half": [6.1, 0, 7.8] },
+    "lines": [
+      { "item": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "fixture": "ShelfShop_01", "pick": [1], "boards": [1, 2], "per_board": 12 },
+      { "item": "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et", "fixture": "ShelfShop_01", "pick": [2], "boards": [1, 2], "per_board": 12 },
+      { "item": "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et", "fixture": "ShelfShop_01", "pick": [3], "boards": [1, 2], "per_board": 12 },
+      { "item": "{486317A3719FD166}Prefabs/Items/Food/LF_DriedMeat.et", "fixture": "ShelfShop_01", "pick": [4], "boards": [0, 1, 2], "per_board": 8 },
+      { "item": "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et", "fixture": "ShelfShop_01", "pick": [1, 2, 3, 4], "boards": [3], "per_board": 6 },
+      { "item": "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et", "fixture": "ShelfShop_01", "pick": [5], "boards": [1, 2], "per_board": 10 },
+      { "item": "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et", "fixture": "ShelfShop_01", "pick": [5], "boards": [3], "per_board": 8 },
+      { "item": "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et", "fixture": "CoolingBoxShop_01", "pick": [0], "boards": [0], "per_board": 14 },
+      { "item": "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et", "fixture": "ShelfUniversal_01_wide", "pick": [0, 4], "boards": [1, 2], "per_board": 8 },
+      { "item": "{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et", "fixture": "ShelfUniversal_01_wide", "pick": [1], "boards": [1, 2], "per_board": 6 }
+    ]
+  },
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/GeneralStore"
+}

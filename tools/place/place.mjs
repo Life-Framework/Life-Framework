@@ -24,7 +24,8 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { layerFile, worldLayerDirs } from "../lib/addons.mjs";
+import { layerFile as townLayerFile, worldLayerDirs } from "../lib/addons.mjs";
+import { GRID_LAYERS } from "../lib/world-zones.mjs";
 import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
@@ -32,7 +33,25 @@ import { LIMITS, analyse, auditRecords, doorZone, insideFraction, isKind, measur
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ADDON = join(ROOT, "addons", "LifeFramework");
-const LAYERS_DIR = join(ADDON, "Worlds", "DebugWorld", "DebugWorld_Layers");
+
+// A Grid_*.layer lives in GridWorld_Layers (the debug grid, docs/architecture/world-zones.md); every
+// other layer is the playtest world's (DebugWorld, then the pack town).
+const isGridLayer = (name) => /^Grid_.*.layer$/.test(String(name));
+export function layerPath(root, name) {
+  return isGridLayer(name) ? join(root, GRID_LAYERS, name) : townLayerFile(root, name);
+}
+const layerFile = layerPath;
+// Every layer file the model and the prefab scan read: the playtest world's, plus GridWorld's own Grid_*
+// layers (its annex copy repeats names the playtest world still holds, so only the new layers are added).
+function modelLayerPaths(root) {
+  const dirs = worldLayerDirs(root);
+  const out = dirs.flatMap((d) => readdirSync(d).filter((f) => f.endsWith(".layer")).map((f) => ({ file: f, path: join(d, f) })));
+  const grid = join(root, GRID_LAYERS);
+  if (existsSync(grid)) {
+    for (const f of readdirSync(grid)) if (isGridLayer(f)) out.push({ file: f, path: join(grid, f) });
+  }
+  return out;
+}
 export const CACHE_FILE = join(ROOT, "tools", "place", "surface-cache.json");
 const TMP = join(ROOT, "tmp", "place");
 
@@ -296,11 +315,7 @@ function safeBounds(root, mesh) {
 
 export function loadModel(root = ROOT) {
   const ents = [];
-  for (const dir of worldLayerDirs(root)) {
-    for (const file of readdirSync(dir)) {
-      if (file.endsWith(".layer")) ents.push(...modelOf(root, readFileSync(join(dir, file), "utf8"), file));
-    }
-  }
+  for (const { file, path } of modelLayerPaths(root)) ents.push(...modelOf(root, readFileSync(path, "utf8"), file));
   return ents;
 }
 
@@ -931,7 +946,7 @@ function itemsOf(ctx, prefabArgs, flags) {
   if (!prefabArgs.length) throw new PlaceError("give a prefab to place, or --move <Entity>");
   if (ctx.prefabFile) throw new PlaceError("--in re-places a prefab's existing children: use --move <Child>");
   if (!flags.layer) throw new PlaceError("--layer <File.layer> says which layer gets the new entity");
-  if (!existsSync(layerFile(ROOT, String(flags.layer)))) throw new PlaceError(`no layer ${flags.layer} in DebugWorld_Layers or the pack world's layers`);
+  if (!existsSync(layerFile(ROOT, String(flags.layer)))) throw new PlaceError(`no layer ${flags.layer} in DebugWorld_Layers, the pack world's layers or GridWorld_Layers (Grid_*)`);
   const count = Number(flags.count ?? 1);
   const list = prefabArgs.length === 1 && count > 1 ? Array(count).fill(prefabArgs[0]) : prefabArgs;
   const names = flags.name ? String(flags.name).split(",") : [];
@@ -1264,8 +1279,8 @@ function cmdAgainst(args, flags) {
 // .xob headers. A loadout-slot or inventory prefab is not a placed prop (tools/lib/layer-prefabs.mjs).
 export function vanillaPrefabs(root = ROOT) {
   const set = new Set();
-  for (const file of worldLayerDirs(root).flatMap((d) => readdirSync(d).filter((f) => f.endsWith(".layer")).map((f) => join(d, f)))) {
-    for (const p of layerEntityPrefabs(readFileSync(file, "utf8"))) {
+  for (const { path } of modelLayerPaths(root)) {
+    for (const p of layerEntityPrefabs(readFileSync(path, "utf8"))) {
       if (!existsSync(join(ADDON, p)) && !existsSync(join(root, "addons", "LF_Everon1989", p))) set.add(p);
     }
   }

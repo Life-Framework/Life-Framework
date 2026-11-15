@@ -3168,7 +3168,9 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     console.log("test: pass --red <tests> or --only <tests>, not both");
     return 2;
   }
-  const red = opts.red !== undefined;
+  // redLeg: one leg of a split --red run (planLegs), which carries its classes in onlyClasses.
+  const red = opts.red !== undefined || !!opts.redLeg;
+  lastTestCounts = null;
   // --only-classes <A,B>: exact registered class names, no file-name expansion (what a shard passes).
   const exact = opts.onlyClasses !== undefined;
   const onlyFlag = red ? "--red" : "--only";
@@ -3187,9 +3189,29 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   guardHeavy(root, "test", opts.force);
   // A LOGIC-only selection boots the minimal world (tools/lib/test-world.mjs). It is decided here,
   // before the pass cache key, so a TestLogic pass is never reused for a DebugWorld request.
-  const picked = testWorld.pickWorld({ tier, only, world: opts.world, tiers: testWorld.testTiers(root) });
-  if (picked.world && !opts.world) console.log(`test: world ${picked.world} (${picked.reason}; --world Worlds/DebugWorld/DebugWorld.ent overrides)`);
-  opts = { ...opts, world: picked.world };
+  // WORLD and PERSISTENCE boot GridWorld; a test in tools/test/world-pins.json runs in a second boot
+  // on DebugWorld (planLegs). A sharded --tier all leaves the split to each slice.
+  const sharded = opts.shards !== undefined && !only.length && !opts.world && tier === "all";
+  const tiers = testWorld.testTiers(root);
+  const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root) });
+  if (legs && legs.length > 1) {
+    if (!noBuild) {
+      const b = await cmdBuild(root, { wait: opts.wait });
+      if (b !== 0) return b;
+    }
+    const results = [];
+    for (const leg of legs) {
+      console.log(`test: leg ${results.length + 1}/${legs.length} world ${leg.world} (${leg.reason}), ${leg.classes.length} test(s)`);
+      const code = await cmdTest(true, tier, root, { ...opts, only: undefined, red: undefined, redLeg: red, onlyClasses: leg.classes.join(","), world: leg.world, shards: undefined });
+      results.push({ code, ...(lastTestCounts ?? {}) });
+    }
+    const v = testWorld.mergeLegs(results);
+    console.log(testWorld.legsSummaryLine(red ? "red" : tier, v, legs));
+    return v.code;
+  }
+  const picked = testWorld.pickWorld({ tier, only, world: opts.world, tiers });
+  if (picked.world && !opts.world) console.log(`test: world ${picked.world} (${picked.reason}; --world ${testWorld.PLAYTEST_WORLD} or LF_TEST_GRID_WORLD=0 overrides)`);
+  opts = { ...opts, world: sharded ? opts.world : picked.world };
   if (!noBuild) {
     const b = await cmdBuild(root, { wait: opts.wait });
     if (b !== 0) return b;
@@ -3210,7 +3232,10 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
   // key) and before the pool is asked for a slot. Only a pass is stored or reused.
   const cache = passCacheCheck(root, { tier, only, opts: { ...opts, red } });
-  if (cache?.hit) return 0;
+  if (cache?.hit) {
+    lastTestCounts = { passed: cache.rec?.passed, failed: 0, total: cache.rec?.total };
+    return 0;
+  }
   // A pool machine that disappears mid-run (the laptop shuts down) is a normal case: it is marked
   // down and the run queues again for another machine (pool.machineGone).
   let avoidLocal = false;
@@ -3231,11 +3256,15 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     }
     avoidLocal = false;
     if (r.requeue) continue;
+    lastTestCounts = { passed: r.passed, failed: r.failed, total: r.total };
     if (cache?.key && r.code === 0) passCacheStore(root, cache, { tier, only, opts, run: r });
     return r.code;
   }
 }
 
+
+// The counts of the last cmdTest run, for the merged verdict of a split run (testWorld.planLegs).
+let lastTestCounts = null;
 
 // { hit, key, inputs } for a run that may use the cache, null when it may not or the key fails.
 function passCacheCheck(root, { tier, only, opts }) {
@@ -3266,7 +3295,7 @@ function passCacheCheck(root, { tier, only, opts }) {
     const sha = wt.git(root, ["rev-parse", "HEAD"]).stdout.trim();
     appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha, as)) + "\n", "utf8");
   } catch {}
-  return { hit: true, key: found.key, inputs, mainRoot };
+  return { hit: true, key: found.key, inputs, mainRoot, rec };
 }
 
 function passCacheStore(root, cache, { tier, only, opts, run }) {
@@ -3779,6 +3808,12 @@ async function ciWorkbench(root, opts = {}) {
   const stepFlags = [...(opts.compileOnly ? ["--compile-only"] : []), ...(opts.buildOnly ? ["--build-only"] : []), ...(opts.addon ? ["--addon", opts.addon] : [])];
   if (opts.wbOnly && process.platform === "win32" && process.env.SSH_CONNECTION && process.env.LF_WB_INTERACTIVE !== "1") return ciWorkbenchInSession(root, stepFlags);
   const pol = wbRoute.localWorkbench(root);
+  // The main guard's stage 1 (`ci --wb-only --compile-only`, no --local) on a PC without the cap: route the compile
+  // to a pool machine with it, as `validate --full` does. Exit 3 = no machine took it (no verdict).
+  if (!pol.allowed && opts.compileOnly && !opts.local) {
+    const r = await wbRoute.routeWorkbench(root, { purpose: "compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], runLocal: async () => 3 });
+    return r.code === 0 ? 0 : r.code === 3 ? 3 : 1;
+  }
   if (!pol.allowed) {
     console.log(`FAIL  ${wbRoute.refusalText("ci --wb-only", pol.host)}`);
     return 3;

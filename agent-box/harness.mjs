@@ -176,6 +176,13 @@ export function buildLine(id, spec) {
     if (spec.channel && !/^(admin|global|local|ooc)$/.test(spec.channel)) throw new Error(`chat channel must be admin, global, local or ooc: ${spec.channel}`);
     return `${id} chat ${spec.channel ? `${spec.channel} ` : ""}${text}`;
   }
+  if (spec.verb === "licence") {
+    // licence <NAME>: this client asks for one licence by its LF_ELicenseType name, the request the
+    // /licence chat command sends (LF_AskLicenceGrant). The server's dev gate decides; the verdict is the
+    // server log line `/licence: player N granted NAME`.
+    if (!/^[A-Z][A-Z0-9_]{1,63}$/.test(spec.name ?? "")) throw new Error(`licence needs an LF_ELicenseType name such as FIREARM_PERMIT: ${spec.name}`);
+    return `${id} licence ${spec.name}`;
+  }
   if (spec.verb === "staffapprove") {
     // staffapprove <uid>: approve that account's open police application through LF_PoliceApplicationStaff.ApproveByUid
     // (LF_HarnessStaff). The uid is the same test as the staff API's (1..64 of letters, digits, - and _).
@@ -1018,8 +1025,8 @@ function selftest() {
   const shop = findPad(list, "Shop_GeneralStore_Debug");
   if (!shop || shop.actions[0] !== "LF_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
   // $grp members carry world coords; children add their parent's (village layout,
-  // docs/roadmap/m1-25-village.md).
-  if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
+  // docs/roadmap/m1-25-village.md). The general store counter stands inside the village shop house (general-store).
+  if (shop.x !== 180.57 || shop.z !== 233.627) throw new Error(`shop coords ${shop.x} ${shop.z}`);
   const apple = findPad(list, "AppleTradeContainer");
   // AppleTrader 206.359 0 233.467 (the fruit stall, #924) plus the container's -0.29 1.027 -0.478.
   if (!apple || Math.abs(apple.x - 206.069) > 0.001 || Math.abs(apple.z - 232.989) > 0.001) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);

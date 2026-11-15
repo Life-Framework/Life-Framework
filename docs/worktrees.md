@@ -169,9 +169,14 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
-3. **Verdicts.** Each head's `compiled-ok`, `green` or `red` goes to `<hub>/main-guard-state.json` (`tmp/wt/` on the
-   guard machine) and to a GitHub commit status, context `main-guard` (pending "compiled-ok", success "green", failure
-   "red"), so every machine can read it (`tools/lib/guard-pin.mjs`).
+3. **Verdicts, on GitHub.** Each head gets commit statuses every machine reads through `gh`: `main-guard/compile`
+   (success = `compiled-ok`, failure = compile red) and `main-guard/suite` (success = `green`, failure = red).
+   `<hub>/main-guard-state.json` on the guard machine is only a cache, used when GitHub has no verdict or `gh` fails
+   (`tools/lib/guard-pin.mjs`). `main-guard status` on any machine prints who runs the guard, main's head verdict
+   and the newest checked commit, all from GitHub.
+   **One guard:** the worker holds a lease, the `main-guard/lease` status on the repository's root commit ("held
+   <host> <pid> <time>", renewed every 5 min, stale after 30). `start` and the worker refuse while another machine
+   holds a fresh lease; `stop` releases it.
 4. **Reverts.** `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR `Revert #N (main guard: <what>)` with auto-merge, a
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
@@ -539,7 +544,7 @@ check, so a gate right after a green `--tier all` reuses it.
 - `runs.jsonl` rows of a cacheable run carry `cacheKey` (16 hex), so the hit rate
   can be counted later.
 
-### Test world (LOGIC runs)
+### Test world (LOGIC and GridWorld runs)
 
 A run whose every selected test is LOGIC boots the minimal world
 `Worlds/TestLogic/TestLogic.ent` instead of DebugWorld (`tools/lib/test-world.mjs`):
@@ -552,11 +557,20 @@ LOGIC test never reads (about 2.4 s on lf-cloud, 1.5 s on the laptop).
   `--red` when every name resolves to a LOGIC test (class name or `GetName()`,
   read from the `// tier:` lines). `test` prints `test: world
   Worlds/TestLogic/TestLogic.ent (<reason>)`.
-- **DebugWorld as before**: `--tier all`, `--tier persistence`, an `--only` list
-  with any WORLD, PERSISTENCE or unknown name, `e2e`, `ci`, `wt gate`.
-- **Override**: `--world <path>` always wins (`--world
+- **Routed to GridWorld** (`Worlds/GridWorld/GridWorld.ent`, #1804): `--tier all`,
+  `--tier persistence`, an `--only`/`--red` list with any WORLD, PERSISTENCE or
+  unknown name, and so the suite inside `ci`, `wt gate` and `wt ship`.
+- **Pinned to DebugWorld**: a test listed in `tools/test/world-pins.json` (name and
+  reason) still reads the town. When the selection holds one, the run splits into
+  two boots: GridWorld without the pins, then DebugWorld with only them (`test: leg
+  1/2 ...`). The two results merge into one `SUMMARY test ok|fail tier=... legs=2`
+  line and one exit code; each leg has its own pass cache entry. Remove a pin when
+  its test gains grid fixtures.
+- **DebugWorld as before**: `--tier perf`, `e2e`, `host`, sessions.
+- **Override**: `--world <path>` always wins and never splits (`--world
   Worlds/DebugWorld/DebugWorld.ent` for the old behaviour); `LF_TEST_LOGIC_WORLD=0`
-  turns the routing off.
+  turns the LOGIC routing off, `LF_TEST_GRID_WORLD=0` sends WORLD and PERSISTENCE
+  runs back to DebugWorld with no split.
 - **Mis-tiered tests fail loudly.** In TestLogic a WORLD or PERSISTENCE test fails
   as `FAIL <name> (wrong world)`; a failing LOGIC test prints `hint: <name> ran in
   the minimal LOGIC world ...; if it needs world content, its tier is WORLD`. A

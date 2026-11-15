@@ -128,10 +128,18 @@ export function shouldCompile(state, head, now) {
 // The compile gate. compile(sha) -> "ok"|"fail"|"env". A failure is deterministic: no recheck, straight to the
 // bisect over the merges since the last compiled-ok head, and the culprit is reverted (refusal permitting).
 // Returns { verdict: "compiled-ok"|"red"|"env", culprit, refusal, tested }.
-export async function compileGate({ head, merges, state, compile }) {
+// base: the commit the bisect assumes compiles (the last compiled-ok head, else the last green one). When it was
+// never compile-checked (baseChecked false) it is compiled first: red there too means the break predates every
+// candidate, and nothing is blamed.
+export async function compileGate({ head, merges, state, compile, base = null, baseChecked = true }) {
   const first = await compile(head);
   if (first === "ok") return { verdict: "compiled-ok", tested: [] };
   if (first === "env") return { verdict: "env", tested: [] };
+  if (base && !baseChecked) {
+    const b0 = await compile(base);
+    if (b0 === "env") return { verdict: "env", tested: [] };
+    if (b0 === "fail") return { verdict: "red", culprit: null, refusal: `the compile was already red at ${base.slice(0, 8)}, before every candidate merge`, tested: [{ sha: base, failed: true }] };
+  }
   const ENV = Symbol("env");
   try {
     const b = await bisect(candidates(merges), async (c) => {
@@ -171,3 +179,17 @@ export function fixCard(c, step, what, failLog) {
     body: [`The main guard saw **${what}** (${step}) fail twice on main; the bisect points at #${pr} (merge \`${c?.sha}\`).`, "", `It was not reverted: ${fixCardInstead(c, step) ?? "see the guard log"}. Fix forward on a branch.`, "", `Log on the guard machine: \`${failLog}\``, "", "🤖 Generated with [Claude Code](https://claude.com/claude-code)"].join("\n"),
   };
 }
+
+// Reverting a merge with the repo's merge drivers on fails (they need a merge's sides). The guard's revert keeps
+// ours for every driver-merged file (`-c merge.<name>.driver=true`) and regenerates them afterwards.
+export function driverNames(gitconfigText) {
+  return [...String(gitconfigText ?? "").matchAll(/^\s*\[merge "([^"]+)"\]/gm)].map((m) => m[1]);
+}
+export function driverOverrides(names) {
+  return names.flatMap((n) => ["-c", `merge.${n}.driver=true`]);
+}
+export const REGEN_AFTER_REVERT = [
+  ["tools/cli.mjs", "regen-tests"],
+  ["tools/cli.mjs", "regen-localization"],
+  ["tools/config/schema.mjs", "--write"],
+];

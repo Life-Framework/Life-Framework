@@ -7,7 +7,12 @@
 //
 //   fixtures[name].boards[]  { y: top of the board, z: [front-back extent], x: [left-right extent],
 //                              clear: height to the next surface above (null = open) }, lowest first
-//   items[path]              { size: [x, y, z] of the model's bounds, center: [x, z] of its footprint }
+//   items[path]              { size: [x, y, z] of the model's bounds, center: [x, z] of its footprint,
+//                              mesh: the {GUID}path model it shows (a display copy shows that model) }
+//   racks[name]              a display weapon rack (our copy of a vanilla arsenal rack, no arsenal component):
+//                              { prefab, from: the vanilla rack the slots are read from,
+//                                slots: [{ at, angles, kind: long|pistol|other }] }, the vanilla
+//                              SCR_WeaponRackSlotEntity children in the rack's own space
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -57,6 +62,61 @@ export function itemOf(bounds) {
   return { size, center: [r3((bounds.max[0] + bounds.min[0]) / 2), r3((bounds.max[2] + bounds.min[2]) / 2)] };
 }
 
+// SCR_EArsenalItemType bits (scripts/Game/Components/Arsenal/SCR_EArsenalItemType.c): a slot that takes a
+// rifle, sniper rifle, machine gun or launcher holds a long gun upright; a PISTOL slot a handgun.
+export const ARSENAL_BITS = { RIFLE: 1 << 1, PISTOL: 1 << 2, LETHAL_THROWABLE: 1 << 3, ROCKET_LAUNCHER: 1 << 4, MACHINE_GUN: 1 << 5, SNIPER_RIFLE: 1 << 8, NON_LETHAL_THROWABLE: 1 << 9 };
+const LONG = ARSENAL_BITS.RIFLE | ARSENAL_BITS.SNIPER_RIFLE | ARSENAL_BITS.MACHINE_GUN | ARSENAL_BITS.ROCKET_LAUNCHER;
+
+// "306" or "PISTOL" or "RIFLE | PISTOL" -> the bit mask.
+export function arsenalMask(value) {
+  const v = String(value ?? "").trim();
+  if (/^\d+$/.test(v)) return Number(v);
+  return v.split(/[\s|]+/).filter(Boolean).reduce((m, n) => m | (ARSENAL_BITS[n] ?? 0), 0);
+}
+
+export const slotKind = (mask) => (mask & LONG ? "long" : mask & ARSENAL_BITS.PISTOL ? "pistol" : "other");
+
+// Pure: the weapon slots of a vanilla rack prefab's text, in the rack's own space, long guns first and
+// each kind left to right. Reads the SCR_WeaponRackSlotEntity children, grouped ($grp) or one by one.
+export function rackSlotsOf(text) {
+  const blocks = [];
+  const grp = /\$grp SCR_WeaponRackSlotEntity \{\n([\s\S]*?)\n {2}\}\n/.exec(text)?.[1] ?? "";
+  for (const m of grp.matchAll(/^ {3}\{\n([\s\S]*?)^ {3}\}$/gm)) blocks.push(m[1]);
+  for (const m of text.matchAll(/^ {2}SCR_WeaponRackSlotEntity(?: : "[^"]*")? \{\n([\s\S]*?)^ {2}\}$/gm)) blocks.push(m[1]);
+  const out = [];
+  for (const b of blocks) {
+    const c = /^\s*coords (\S+) (\S+) (\S+)$/m.exec(b);
+    if (!c) continue;
+    const a = /^\s*angles (\S+) (\S+) (\S+)$/m.exec(b);
+    const mask = arsenalMask(/^\s*m_eSupportedItemTypes (.+)$/m.exec(b)?.[1]);
+    out.push({ at: [1, 2, 3].map((i) => r3(Number(c[i]))), angles: a ? [1, 2, 3].map((i) => r3(Number(a[i]))) : [0, 0, 0], kind: slotKind(mask) });
+  }
+  const order = { long: 0, pistol: 1, other: 2 };
+  return out.sort((p, q) => order[p.kind] - order[q.kind] || p.at[0] - q.at[0] || p.at[1] - q.at[1]);
+}
+
+// The slots of the first prefab in a rack's inheritance chain that has any (the FIA racks inherit the Base's).
+export function rackSlotsFrom(root, vfs, path, readText) {
+  const seen = new Set();
+  for (let p = path; p && !seen.has(p); ) {
+    seen.add(p);
+    const text = readText(root, vfs, p);
+    if (!text) return [];
+    const slots = rackSlotsOf(text);
+    if (slots.length) return slots;
+    p = /^[^\n]*?:\s*"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/.exec(text)?.[1] ?? null;
+  }
+  return [];
+}
+
+// Our display racks (core prefabs without the arsenal and service point components, so they hand out
+// nothing) and the vanilla arsenal rack each copies. The slots are measured from the vanilla one.
+export const DISPLAY_RACKS = {
+  "Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackCabinetArsenal_FIA.et",
+  "Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackStandArsenal_FIA.et",
+};
+export const rackName = (path) => path.split("/").pop().replace(/\.et$/, "");
+
 // "{GUID}Prefabs/Items/Food/Apple.et" -> "Prefabs/Items/Food/Apple.et"
 export const itemKey = (ref) => String(ref).replace(/^\{[0-9A-Fa-f]{16}\}/, "");
 
@@ -73,7 +133,7 @@ export function wanted(root) {
     if (!d.isDirectory() || !existsSync(f)) continue;
     const store = JSON.parse(readFileSync(f, "utf8")).store;
     for (const l of store?.lines ?? []) {
-      fixtures.add(l.fixture);
+      if (!l.display) fixtures.add(l.fixture); // a display line stands in a rack's slots (racks), not on a board
       items.add(l.item);
     }
   }
@@ -85,7 +145,7 @@ export async function measureAll(root) {
   const { measureOne } = await import("../../commands/measure.mjs");
   const { buildStamp } = await import("../../lib/install-api.mjs");
   const want = wanted(root);
-  const out = { _generated: "tools\\cli fixtures: boards and footprints measured from the .xob colliders (tools\\cli measure). Do not edit; rerun it when a spec's store block names a new fixture or item", _build: String(buildStamp().buildid), fixtures: {}, items: {} };
+  const out = { _generated: "tools\\cli fixtures: boards and footprints measured from the .xob colliders (tools\\cli measure), rack slots read from the vanilla racks. Do not edit; rerun it when a spec's store block names a new fixture or item", _build: String(buildStamp().buildid), fixtures: {}, items: {}, racks: {} };
   for (const name of want.fixtures) {
     const m = await measureOne(root, name, { minSize: 0.05 });
     const boards = boardsOf(m.surfaces);
@@ -95,7 +155,17 @@ export async function measureAll(root) {
   for (const ref of want.items) {
     const m = await measureOne(root, ref, { minSize: 0.05 });
     if (!m.bounds) throw new Error(`${ref}: no bounds`);
-    out.items[itemKey(ref)] = itemOf(m.bounds);
+    out.items[itemKey(ref)] = { ...itemOf(m.bounds), mesh: m.meshRef };
+  }
+  const { gameVfs, readText, resolvePrefab } = await import("../../lib/game-prefab.mjs");
+  const vfs = await gameVfs();
+  for (const [ours, from] of Object.entries(DISPLAY_RACKS)) {
+    const slots = rackSlotsFrom(root, vfs, from, readText);
+    if (!slots.length) throw new Error(`${from}: no SCR_WeaponRackSlotEntity in its chain`);
+    // `from` is the plain path: the game's GUID for it is found only when the GUID index is warm.
+    // Our copy may not be written yet (a pack adds it with its first rack): the path stands in until then.
+    const own = await resolvePrefab(root, ours).catch(() => null);
+    out.racks[rackName(ours)] = { prefab: own?.ref ?? ours, from, slots };
   }
   return out;
 }
@@ -103,7 +173,7 @@ export async function measureAll(root) {
 // Differences between two fixtures.json objects, as lines (empty = same). Ignores _generated and _build.
 export function diffFixtures(a, b) {
   const out = [];
-  for (const sect of ["fixtures", "items"]) {
+  for (const sect of ["fixtures", "items", "racks"]) {
     for (const k of new Set([...Object.keys(a[sect] ?? {}), ...Object.keys(b[sect] ?? {})])) {
       if (JSON.stringify(a[sect]?.[k]) !== JSON.stringify(b[sect]?.[k])) out.push(`${sect}.${k}: ${JSON.stringify(a[sect]?.[k])} != ${JSON.stringify(b[sect]?.[k])}`);
     }
