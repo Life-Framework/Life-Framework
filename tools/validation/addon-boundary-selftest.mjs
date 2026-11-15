@@ -16,7 +16,7 @@ import { checkBoundary, CORE, PACK } from "./validate-addon-boundary.mjs";
 
 const PACK_PREFAB_GUID = "AB12CD34EF567890";
 const PACK_PROJECT_GUID = "B1E84D5687E11724";
-const CORE_PROJECT_GUID = "79636E668EA37AC9";
+const CORE_PROJECT_GUID = "4550A2B656E1B569";
 
 function put(root, path, text) {
   const full = join(root, path);

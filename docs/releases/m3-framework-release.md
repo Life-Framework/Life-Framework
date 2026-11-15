@@ -11,7 +11,7 @@ and a server folder you can start. You do not need Workbench or a checkout.
 
 ## What you get
 
-**Two Workshop items.** The core (`Life Framework (Core)`, `LifeFramework`, `79636E668EA37AC9`) is the
+**Two Workshop items.** The core (`Life Framework (Core)`, `LifeFramework`, `4550A2B656E1B569`) is the
 framework and has no map of its own. The pack (`Life Framework: Everon 1989`, `LF_Everon1989`,
 `B1E84D5687E11724`) is the flagship town and needs the core. Both are APL; the source stays MIT.
 Names and versions: [release-process.md](../release-process.md#names-and-versions).
@@ -59,7 +59,7 @@ Nothing below can be done by an agent.
 | Item | What you do |
 |---|---|
 | **#370** First Workshop upload of core and pack | Publish the core, then the pack, from Workbench with your Bohemia account. Steps: [release-first-upload.md](../release-first-upload.md). Record both page URLs and fix the ids in `docs/setup.md` and `tools/release/example-zip.json`. Labels: `needs-human`, `needs-playtest`. |
-| **#371** A clean server boots from the Workshop items alone | After #370, run `tools\cli workshop boot-check 79636E668EA37AC9 B1E84D5687E11724` and record the passing line. If the client-join stage fails on a ready server, join by hand and keep the server log. Labels: `needs-human`, `needs-playtest`. |
+| **#371** A clean server boots from the Workshop items alone | After #370, run `tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724` and record the passing line. If the client-join stage fails on a ready server, join by hand and keep the server log. Labels: `needs-human`, `needs-playtest`. |
 | Sign-off playtest | [playtest/m3-signoff.md](../playtest/m3-signoff.md), then `tools\cli playtest verdicts` and your own `gh` run; `promote` only after. |
 | The `.gproj` Version field (#369) | The version is `0.1.0`. `.gproj` has no version field today. `tools\cli release 0.1.0 --confirm` adds `Version "0.1.0"` after `TITLE` itself, so there is nothing to stamp by hand. Check once that Workbench opens a `.gproj` with that line before the real release. |
 | Branding and art (#375) | Sign off the premise and voice rules in [branding](../branding/core.md), and replace the two placeholder `preview.jpg` files. |

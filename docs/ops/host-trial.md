@@ -10,7 +10,7 @@ The public site does not promise anything about 0grind; a row here is a question
 
 ## Before you start
 
-- [ ] The two Workshop items are published: core `79636E668EA37AC9` and pack `B1E84D5687E11724`. A missing item
+- [ ] The two Workshop items are published: core `4550A2B656E1B569` and pack `B1E84D5687E11724`. A missing item
       fails the first boot with `Addon <id> - Addon was not found on workshop`; that is a row 1 failure, not a
       host failure.
 - [ ] You have the trial's control panel and its file manager, or SFTP, open in one window.
@@ -28,8 +28,8 @@ The public site does not promise anything about 0grind; a row here is a question
 
 | Check | How to check in the trial | Proof | Result |
 |---|---|---|---|
-| Install both items by ID | Enter `79636E668EA37AC9` then `B1E84D5687E11724` in the panel's mods field (or `game.mods` in `server.json`), core first | First boot downloads both; no `was not found on workshop` line | [ ] Pass [ ] Fail [ ] Gap |
-| Load order is the core first | Read the mod list the panel shows, or the boot log's addon list | Core `79636E668EA37AC9` listed before the pack | [ ] Pass [ ] Fail [ ] Gap |
+| Install both items by ID | Enter `4550A2B656E1B569` then `B1E84D5687E11724` in the panel's mods field (or `game.mods` in `server.json`), core first | First boot downloads both; no `was not found on workshop` line | [ ] Pass [ ] Fail [ ] Gap |
+| Load order is the core first | Read the mod list the panel shows, or the boot log's addon list | Core `4550A2B656E1B569` listed before the pack | [ ] Pass [ ] Fail [ ] Gap |
 | Pin a version | Look for a version field or a "lock" option per item; note what it offers | The panel's own screen, saved as evidence | [ ] Pass [ ] Fail [ ] Gap |
 
 ## 2. File access

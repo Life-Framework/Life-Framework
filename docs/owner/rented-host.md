@@ -18,7 +18,7 @@ repeat the install steps or the log lines; it links them.
 ## What you need from the host
 
 - A dedicated server for Arma Reforger with 16 player slots (the base game's server, Steam app `1874900`).
-- The two Workshop items. The core is `79636E668EA37AC9` (Life Framework) and the pack is
+- The two Workshop items. The core is `4550A2B656E1B569` (Life Framework) and the pack is
   `B1E84D5687E11724` (Life Framework: Everon 1989). The core goes first. The pack depends on it.
 - UDP `2001` (game) and UDP `17777` (the A2S query the server browser uses) open to players.
 - A way to edit files: the panel's file manager, or FTP or SFTP. *Unverified until #378.*
@@ -54,7 +54,7 @@ On the panel, add the two IDs to the mods list, core first. Some panels take the
 instead, and some read them from `game.mods` in `server.json`. Either way the mods must match the list
 above. *Unverified until #378.*
 
-- [ ] The panel shows `79636E668EA37AC9` and then `B1E84D5687E11724`, in that order.
+- [ ] The panel shows `4550A2B656E1B569` and then `B1E84D5687E11724`, in that order.
 - [ ] The first start downloads both. Players get them on join; they install nothing.
 
 ## 3. Startup parameters

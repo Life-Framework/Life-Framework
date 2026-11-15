@@ -11,7 +11,7 @@ committed. The current tree is classified in
 
 | Addon | Folder | Project |
 | --- | --- | --- |
-| Core | `addons/LifeFramework/` | `LifeFramework.gproj`, GUID `79636E668EA37AC9` |
+| Core | `addons/LifeFramework/` | `LifeFramework.gproj`, GUID `4550A2B656E1B569` |
 | Pack | `addons/LF_Everon1989/` | `LF_Everon1989.gproj`, GUID `B1E84D5687E11724`, depends on the core |
 
 **Until the move.** The pack is a skeleton and nothing loads it: `build`,
