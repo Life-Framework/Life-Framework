@@ -704,7 +704,7 @@ class LF_SignComponent : ScriptComponent
 		// A selected sign shows its whole card over the bare face.
 		if (panel && !full && sign)
 		{
-			float holeX = Math.Min(text.Length() * size * 0.25 / scaleX, (maxs[0] - mins[0]) * 0.45);
+			float holeX = Math.Min(text.Length() * size * 0.33 / scaleX, (maxs[0] - mins[0]) * 0.45);
 			float holeY = Math.Min(size * 0.4 / scaleY, (maxs[1] - mins[1]) * 0.45);
 			WbDrawPanel(mat, mins, maxs, holeX, holeY);
 		}
