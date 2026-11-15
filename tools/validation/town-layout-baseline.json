@@ -1,0 +1,489 @@
+{
+ "addons/LifeFramework/Scripts/Game/Tests/LF_Test_ArrivalChain.c": [
+  "coord:134,243"
+ ],
+ "addons/LifeFramework/Scripts/Game/Tests/LF_Test_DialogueClerk.c": [
+  "coord:134,243",
+  "coord:135,243"
+ ],
+ "addons/LifeFramework/Scripts/Game/Tests/LF_Test_PlacementConfirm.c": [
+  "coord:300,246"
+ ],
+ "addons/LifeFramework/Scripts/Game/Tests/LF_Test_SpikeStrip.c": [
+  "coord:300,246"
+ ],
+ "agent-box/proofs/_reset.mjs": [
+  "name:Roadmap_Hospital_Duty_Desk",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/account-publish-proof.mjs": [
+  "name:Bank_Teller",
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/ambulance-siren-proof.mjs": [
+  "name:Roadmap_Hospital_Ambulance",
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/armory-proof.mjs": [
+  "name:Roadmap_Police_ArmoryStore",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/asset-states-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/atmosphere-proof.mjs": [
+  "name:FarmPlot_2",
+  "name:Furnace",
+  "name:Lot_Display_uaz469",
+  "name:MiningArea_Debug",
+  "name:Moonshine_Still",
+  "name:Roadmap_ChopShop",
+  "name:Roadmap_Police_Desk",
+  "name:Sawmill_Debug",
+  "name:Sign_PubHanging"
+ ],
+ "agent-box/proofs/atmosphere-town-proof.mjs": [
+  "name:Bank_Counter_East",
+  "name:Bank_Counter_West",
+  "name:Fuel_PumpHum",
+  "name:Hospital_Bed_1",
+  "name:Lot_Display_uaz469",
+  "name:Pub_Terrace_Radio",
+  "name:Roadmap_Cash_Van",
+  "name:Roadmap_Cash_Van_Box",
+  "name:Roadmap_Dispatch_Phone",
+  "name:Roadmap_Hospital_Duty_Desk",
+  "name:Roadmap_Hospital_Payphone",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/backroom-police-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/bank-kit-proof.mjs": [
+  "name:Roadmap_Bank_RobKit",
+  "name:Roadmap_Bank_Vault"
+ ],
+ "agent-box/proofs/bank-teller-proof.mjs": [
+  "coord:175,264",
+  "name:Bank_Teller"
+ ],
+ "agent-box/proofs/bed-proof.mjs": [
+  "coord:269,261",
+  "name:Hospital_Bed_2",
+  "name:Roadmap_Hospital_Ambulance",
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/bill-proof.mjs": [
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/building-proof.mjs": [
+  "name:Village_Supermarket"
+ ],
+ "agent-box/proofs/case-board-proof.mjs": [
+  "coord:235,239",
+  "name:Roadmap_Fuel_Clerk",
+  "name:Roadmap_Police_ArmoryStore",
+  "name:Roadmap_Police_CaseBoard",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/cash-van-proof.mjs": [
+  "name:Roadmap_Cash_Van_Box",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/chain-proof.mjs": [
+  "name:Chains_Barrel_1"
+ ],
+ "agent-box/proofs/chop-proof.mjs": [
+  "name:Roadmap_ChopShop",
+  "name:Roadmap_Garage",
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_WantedBoard"
+ ],
+ "agent-box/proofs/chop-solo-proof.mjs": [
+  "name:Lot_Display_uaz469",
+  "name:Roadmap_ChopShop",
+  "name:Roadmap_Lockpick_Car"
+ ],
+ "agent-box/proofs/convoy-proof.mjs": [
+  "name:Roadmap_Convoy_Drop",
+  "name:Roadmap_Convoy_Drop_Near",
+  "name:Roadmap_Convoy_Start",
+  "name:Roadmap_Org_Desk"
+ ],
+ "agent-box/proofs/cuffs-held-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/cuffs-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/dialogue-proof.mjs": [
+  "name:Quest_Clerk"
+ ],
+ "agent-box/proofs/disconnect-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/dispatch-proof.mjs": [
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_WantedBoard"
+ ],
+ "agent-box/proofs/downed-patient-proof.mjs": [
+  "coord:267,250",
+  "name:Hospital_Bed_2",
+  "name:Roadmap_Hospital_Ambulance",
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/downed-proof.mjs": [
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/drill-scene-proof.mjs": [
+  "name:Roadmap_Bank_RobKit",
+  "name:Roadmap_Bank_Vault"
+ ],
+ "agent-box/proofs/duty-order-proof.mjs": [
+  "name:Roadmap_Hospital_Duty_Desk",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/farm-proof.mjs": [
+  "coord:142,297",
+  "coord:144,297",
+  "coord:145,300",
+  "coord:149,300",
+  "name:FarmPlot_1",
+  "name:Farm_SeedCrate"
+ ],
+ "agent-box/proofs/fuel-robbery-proof.mjs": [
+  "name:Fuel_PumpHum",
+  "name:Roadmap_Fuel_Clerk",
+  "name:Roadmap_Fuel_Till"
+ ],
+ "agent-box/proofs/hotwire-proof.mjs": [
+  "name:Roadmap_Lockpick_Car"
+ ],
+ "agent-box/proofs/jail-work-proof.mjs": [
+  "name:Roadmap_Jail_LaundryBasket",
+  "name:Roadmap_Jail_ScrubBucket",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/jailbreak-proof.mjs": [
+  "name:Roadmap_Jail_Door",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/live-reload-proof.mjs": [
+  "name:Quest_Clerk"
+ ],
+ "agent-box/proofs/lockpick-proof.mjs": [
+  "name:Roadmap_Lockpick_Door"
+ ],
+ "agent-box/proofs/market-proof.mjs": [
+  "coord:197,234",
+  "coord:205,237",
+  "coord:206,234",
+  "coord:215,234",
+  "name:AppleProcessor",
+  "name:AppleTradeContainer",
+  "name:AppleTradeContainer3",
+  "name:PlumTradeContainer",
+  "name:TraderChainCounter"
+ ],
+ "agent-box/proofs/medic-proof.mjs": [
+  "coord:259,256",
+  "name:Roadmap_Hospital_DispatchBoard",
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/mining-proof.mjs": [
+  "coord:170,172",
+  "coord:182,172",
+  "name:Furnace",
+  "name:IronOre_Debug",
+  "name:Pickaxe_Debug"
+ ],
+ "agent-box/proofs/moonshine-proof.mjs": [
+  "name:Moonshine_Barrel_2",
+  "name:Moonshine_Barrel_3",
+  "name:Moonshine_Still",
+  "name:Roadmap_Hideout_Door",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/mp-robbery-proof.mjs": [
+  "name:CarLot_Mechanic",
+  "name:Fuel_PumpHum",
+  "name:Hospital_Doctor",
+  "name:Roadmap_Bank_Vault",
+  "name:Roadmap_Hospital_Duty_Desk",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/murder-proof.mjs": [
+  "coord:131,250",
+  "coord:146,258",
+  "name:Roadmap_Police_WantedBoard",
+  "name:Sign_SafeZone_Spawn",
+  "name:Sign_TownMap"
+ ],
+ "agent-box/proofs/nlr-proof.mjs": [
+  "name:Roadmap_Convoy_Drop"
+ ],
+ "agent-box/proofs/npc-stun-proof.mjs": [
+  "coord:258,244",
+  "name:Roadmap_Civilian_1",
+  "name:Roadmap_Fuel_Clerk",
+  "name:Roadmap_Police_Taser"
+ ],
+ "agent-box/proofs/npc-witness-proof.mjs": [
+  "name:Roadmap_Civilian_1",
+  "name:Roadmap_Civilian_2",
+  "name:Roadmap_Fuel_Clerk",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/org.mjs": [
+  "name:Roadmap_Org_Desk"
+ ],
+ "agent-box/proofs/paper-ground-proof.mjs": [
+  "name:Roadmap_Fuel_Counter",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/parcel-drop-proof.mjs": [
+  "name:Roadmap_Job_Depot"
+ ],
+ "agent-box/proofs/parcel-proof.mjs": [
+  "name:Roadmap_Job_Depot"
+ ],
+ "agent-box/proofs/phone-proof.mjs": [
+  "name:Roadmap_Dispatch_Phone",
+  "name:Roadmap_Fuel_Payphone",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/photo-id-card-proof.mjs": [
+  "name:Quest_Clerk"
+ ],
+ "agent-box/proofs/placement-aim-proof.mjs": [
+  "name:Roadmap_Police_Armory",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/placement-confirm-proof.mjs": [
+  "coord:300,248",
+  "name:Roadmap_Police_Armory",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/placement-preview-proof.mjs": [
+  "coord:300,248",
+  "name:Roadmap_Police_Armory",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/police-application-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/police-proof.mjs": [
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_WantedBoard"
+ ],
+ "agent-box/proofs/quarry-proof.mjs": [
+  "coord:172,207",
+  "name:Sign_Lawless_Entry",
+  "name:Sign_Lawless_Pit",
+  "name:Sign_SafeZone_Spawn"
+ ],
+ "agent-box/proofs/radio-proof.mjs": [
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/recruit-uniform-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/rejoin-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/restore-roundtrip-proof.mjs": [
+  "name:Bank_Teller"
+ ],
+ "agent-box/proofs/retheme-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/revive-anim-proof.mjs": [
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/revive-proof.mjs": [
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/roles-proof.mjs": [
+  "name:CarLot_Mechanic",
+  "name:FarmerNpc",
+  "name:Hospital_Doctor",
+  "name:Roadmap_Fuel_Clerk",
+  "name:TraderChainNpc"
+ ],
+ "agent-box/proofs/scanner-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/search-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/siren-late-proof.mjs": [
+  "name:Roadmap_Hospital_Ambulance",
+  "name:Roadmap_Hospital_Duty_Desk"
+ ],
+ "agent-box/proofs/siren-proof.mjs": [
+  "name:Roadmap_Hospital_Ambulance",
+  "name:Roadmap_Hospital_Duty_Desk",
+  "name:Roadmap_Police_Car"
+ ],
+ "agent-box/proofs/sit-proof.mjs": [
+  "name:Market_Bench_E",
+  "name:Market_Bench_W"
+ ],
+ "agent-box/proofs/spawn-hub-proof.mjs": [
+  "coord:119,244",
+  "coord:150,296",
+  "coord:182,255",
+  "coord:232,229",
+  "name:SpawnHub_Globe"
+ ],
+ "agent-box/proofs/spike-strip-proof.mjs": [
+  "coord:300,248",
+  "name:Roadmap_Police_Armory",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/staff-approve-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/stolen-poster-proof.mjs": [
+  "coord:235,243",
+  "name:Roadmap_Garage",
+  "name:Roadmap_Police_EvidenceLocker",
+  "name:Roadmap_Police_WantedBoard"
+ ],
+ "agent-box/proofs/stolen-proof.mjs": [
+  "name:Roadmap_Garage",
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_WantedBoard"
+ ],
+ "agent-box/proofs/taser-proof.mjs": [
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_Taser"
+ ],
+ "agent-box/proofs/taser-sound-proof.mjs": [
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_Taser"
+ ],
+ "agent-box/proofs/test-org-sign-proof.mjs": [
+  "name:Roadmap_Hideout_Door",
+  "name:Sign_TestOrg"
+ ],
+ "agent-box/proofs/ticket-proof.mjs": [
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/proofs/vault-proof.mjs": [
+  "name:Roadmap_Bank_Vault",
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_EvidenceLocker"
+ ],
+ "agent-box/proofs/vehicle-hud-proof.mjs": [
+  "name:Lot_Display_uaz469"
+ ],
+ "agent-box/proofs/village-proof.mjs": [
+  "name:Roadmap_Bank_Vault",
+  "name:Roadmap_Cash_Van_Box",
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_EvidenceLocker"
+ ],
+ "agent-box/proofs/wanted-posters-look-proof.mjs": [
+  "coord:235,243",
+  "name:Roadmap_Police_EvidenceLocker",
+  "name:Roadmap_Police_WantedBoard"
+ ],
+ "agent-box/proofs/wanted-posters-proof.mjs": [
+  "coord:235,243",
+  "name:Roadmap_Police_EvidenceLocker",
+  "name:Roadmap_Police_WantedBoard"
+ ],
+ "agent-box/proofs/witness-proof.mjs": [
+  "name:Roadmap_Fuel_Clerk",
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_WantedBoard",
+  "name:Village_Payphone"
+ ],
+ "agent-box/proofs/work-anim-proof.mjs": [
+  "name:Roadmap_Bank_Vault",
+  "name:Roadmap_Cash_Van_Box",
+  "name:Roadmap_Lockpick_Car",
+  "name:Roadmap_Lockpick_Door"
+ ],
+ "agent-box/flows/arrival-chain.txt": [
+  "name:ATM_Debug",
+  "name:Quest_Clerk",
+  "name:Roadmap_Job_Depot",
+  "name:Roadmap_Job_Drop",
+  "name:Sign_TownMap"
+ ],
+ "agent-box/flows/chain-apple.txt": [
+  "name:AppleGatherTree",
+  "name:AppleTradeContainer"
+ ],
+ "agent-box/flows/film-debugworld.txt": [
+  "name:ATM_Debug",
+  "name:AppleGatherTree",
+  "name:Roadmap_Bank_Vault",
+  "name:Roadmap_Police_Desk"
+ ],
+ "agent-box/flows/roadmap-resources.txt": [
+  "name:AppleProcessor",
+  "name:Furnace",
+  "name:Sawmill_Debug"
+ ],
+ "agent-box/flows/ui-paper.txt": [
+  "name:ATM_Debug",
+  "name:LF_MiningSign_Debug"
+ ],
+ "agent-box/flows/world-atm.txt": [
+  "name:ATM_Debug"
+ ],
+ "agent-box/town.mjs": [
+  "name:ATM_Debug",
+  "name:FarmPlot_1",
+  "name:Furnace",
+  "name:Quest_Clerk",
+  "name:Roadmap_Bank_Vault",
+  "name:Roadmap_Cash_Van_Box",
+  "name:Roadmap_ChopShop",
+  "name:Roadmap_Convoy_Drop",
+  "name:Roadmap_Convoy_Start",
+  "name:Roadmap_Escort_Car",
+  "name:Roadmap_Fuel_Clerk",
+  "name:Roadmap_Garage",
+  "name:Roadmap_Hideout_Machine",
+  "name:Roadmap_Hospital_Cabinet",
+  "name:Roadmap_Hospital_Till",
+  "name:Roadmap_Impound_Desk",
+  "name:Roadmap_Jail_Cell",
+  "name:Roadmap_Job_Depot",
+  "name:Roadmap_Job_Drop",
+  "name:Roadmap_Lockpick_Car",
+  "name:Roadmap_Lockpick_Door",
+  "name:Roadmap_Org_Desk",
+  "name:Roadmap_Police_Armory",
+  "name:Roadmap_Police_ArmoryStore",
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Police_EvidenceLocker",
+  "name:Roadmap_Police_WantedBoard",
+  "name:Roadmap_Vehicle_Lot",
+  "name:TraderChainCounter"
+ ],
+ "agent-box/harness.mjs": [
+  "coord:466,331",
+  "name:ATM_Debug",
+  "name:AppleTradeContainer",
+  "name:CementPile_Debug",
+  "name:Hospital_Bed_1",
+  "name:IronOre_Debug",
+  "name:Roadmap_Bank_Bag_Cash",
+  "name:Roadmap_Breach_Charge",
+  "name:Roadmap_Breach_Door",
+  "name:Roadmap_Convoy_Start",
+  "name:Roadmap_Escort_Car",
+  "name:Roadmap_Garage",
+  "name:Roadmap_Jail_Cell",
+  "name:Roadmap_Jail_Door",
+  "name:Roadmap_Police_Desk",
+  "name:Roadmap_Vehicle_Lot",
+  "name:Sawmill_Debug",
+  "name:TraderChainCounter"
+ ]
+}
