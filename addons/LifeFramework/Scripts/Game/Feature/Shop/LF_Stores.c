@@ -1230,3 +1230,16 @@ class LF_ReceiptReadAction : ScriptedUserAction
 		LF_Utils.NotifyEntity(pUserEntity, "#LF-Store_ReceiptText", "#LF-Store_ReceiptTitle", 5.0, receipt.Describe());
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Stores");
+		if (apply)
+			LF_Stores.ResetStatics();
+	}
+}
