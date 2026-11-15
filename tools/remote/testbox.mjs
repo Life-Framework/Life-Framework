@@ -30,7 +30,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
-import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import * as wt from "../wt.mjs";
 import { ADDONS, CORE } from "../lib/addons.mjs";
@@ -399,6 +399,32 @@ export function psCleanShared() {
   ];
 }
 
+// One ssh command line holds about 7.8 KB of gzipped script, and the bulk test shard's --only-classes list
+// (566 class names, 13 KB) overflowed it: "remote script too long for one ssh command" failed that shard on
+// every gate. An argument longer than BIG_ARG travels as a file under the run folder's tmp/remote-in and the
+// box reads it back, so the command line stays short however long the list grows. Pure.
+// Returns { args, uploads: [{ content, to }] }: args as the remote command line takes them (psArg), uploads
+// the files to write locally and scp to the box. The file name is the hash of the content.
+export const BIG_ARG = 1000;
+const FILE_ARG = "(Get-Content -Raw -LiteralPath ";
+export function remoteArgPlan(rDir, args) {
+  const base = String(rDir).replace(/\\/g, "/").replace(/\/+$/, "");
+  const uploads = [];
+  const out = args.map((a) => {
+    const text = String(a);
+    if (text.length <= BIG_ARG) return text;
+    const to = `${base}/tmp/remote-in/arg-${createHash("sha256").update(text).digest("hex").slice(0, 16)}.txt`;
+    if (!uploads.some((u) => u.to === to)) uploads.push({ content: text, to });
+    return `${FILE_ARG}${psQuote(to.replace(/\//g, "\\"))}).Trim()`;
+  });
+  return { args: out, uploads };
+}
+
+// An argument of the remote command line: a planned file read stays an expression, the rest is quoted.
+export function psArg(a) {
+  return String(a).startsWith(FILE_ARG) ? String(a) : psQuote(a);
+}
+
 // Files a run takes to the box and brings back (the placement audit: its input list goes up through an
 // env var, its out.txt comes down), as the scp pairs and the env lines to run with. files:
 // { env: { NAME: localFile }, down: [{ from: path under the run folder, to: local path }] }. Pure.
@@ -433,6 +459,13 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
     const quiet = "$env:LF_QUIET_CHILD = '1'"; // this run is parsed here, so the box prints the full transcript
     const env0 = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
     const plan = remoteFilePlan(slot.rDir, files);
+    const bigArgs = remoteArgPlan(slot.rDir, args);
+    for (const u of bigArgs.uploads) {
+      const local = join(root, "tmp", "remote-args", basename(u.to));
+      mkdirSync(dirname(local), { recursive: true });
+      writeFileSync(local, u.content);
+      plan.uploads.push({ from: local, to: u.to });
+    }
     for (const u of plan.uploads) {
       const up = scp([u.from, `${m.host}:${u.to}`]);
       if (up.status !== 0) {
@@ -445,7 +478,7 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
       quiet,
       env0,
       ...plan.env,
-      `& node ${psQuote(script)} ${args.map(psQuote).join(" ")}`,
+      `& node ${psQuote(script)} ${bigArgs.args.map(psArg).join(" ")}`,
       "$code = $LASTEXITCODE",
       "$ld = Get-ChildItem -LiteralPath (Join-Path $dir 'server\\profile\\test\\logs') -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1",
       "if ($ld -and (Test-Path -LiteralPath (Join-Path $ld.FullName 'console.log'))) { Write-Host \"lf-remote: console.log $($ld.FullName)\\console.log\" }",
