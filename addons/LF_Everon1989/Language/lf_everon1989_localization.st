@@ -1129,6 +1129,26 @@ StringTable {
      Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
      Comment "Quarry info board, What section."
     }
+    CustomStringTableItem "{6FE6312861E955B2}" {
+     Id "LF-Sign_Registry_How"
+     Target_en_us "Talk to the clerk at the counter. New in town: say so, and you are handed your card. A lost card is replaced for a fee."
+     Comment "Sign card for the registry office, How section."
+    }
+    CustomStringTableItem "{0BBD169F316A1F68}" {
+     Id "LF-Sign_Registry_Next"
+     Target_en_us "The town board on the square shows the shops, the post office and the bank."
+     Comment "Sign card for the registry office, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{42E4A0CDC7A4C7CC}" {
+     Id "LF-Sign_Registry_Title"
+     Target_en_us "Registry office"
+     Comment "Title of the sign beside the town clerk's counter on the spawn square. Printed on the plate and shown in the prompt as Read: Registry office."
+    }
+    CustomStringTableItem "{A76A30792191E10C}" {
+     Id "LF-Sign_Registry_What"
+     Target_en_us "The town clerk registers new arrivals and issues the identity card."
+     Comment "Sign card for the registry office (the town clerk, arrival chain), What section."
+    }
     CustomStringTableItem "{2AFCEED3736DE810}" {
      Id "LF-Sign_Rules_Next"
      Target_en_us "Take a complaint to staff after the scene, not during it. This is an alpha: the world can be wiped, with 24 hours' notice."

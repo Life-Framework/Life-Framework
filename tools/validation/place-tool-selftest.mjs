@@ -15,6 +15,8 @@
 //   excludeOf returning item.name only  -> FAIL exclude: an unnamed moved entity is excluded by prefab and spot
 //   onGround raising a tree by its roots (2026-11-14, #924) -> FAIL ground: a tree's pivot stands on the ground, its roots below
 //   judge resting a tree on its bounds base (2026-11-14, #924) -> FAIL judge: a tree whose roots go 0.51 m below the ground
+//   onGround raising a building by its foundation (2026-11-16, town-arrival-desk; the code before the fix)
+//     -> FAIL ground: a building's pivot (its floor) stands on the ground, its foundation below
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { obbPenetration } from "../../agent-box/place-audit.mjs";
 import { PlaceError, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
@@ -127,6 +129,8 @@ const flatFloor = Array.from({ length: 31 }, (_, k) => ({ dist: k * 0.2, y: 0 })
   ok(near(g.y, 2.6), "ground: the mesh base, not the pivot, stands on the ground");
   const rowan = { name: "Market_Tree_1", prefab: "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et", bounds: { min: [-2, -0.394, -2.4], max: [2.3, 6, 2] }, scale: 1.3 };
   ok(near(onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }], prop: rowan }).y, 0), "ground: a tree's pivot stands on the ground, its roots below (#924)");
+  const booth = { name: "SquareRegistryBooth", prefab: "{DD59BEBA94390C10}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_grey.et", bounds: { min: [-2.21, -1.059, -2.641], max: [1.922, 3.07, 2.36] }, scale: 1 };
+  ok(near(onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }], prop: booth }).y, 0), "ground: a building's pivot (its floor) stands on the ground, its foundation below");
   refuses(() => onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0.4 }, { y: 0 }, { y: 0.4 }], prop: tree }), /not level/, "ground: a kerb under the footprint is refused");
 }
 

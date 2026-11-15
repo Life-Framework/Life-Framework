@@ -73,7 +73,7 @@ changed here and in the JSON together. Orbit azimuth: 0 is the +z side, 90 +x, 1
 
 - **On screen:** a fresh character at the clerk's desk; the rules quiz screen with one question and a chosen answer, then the register form R-89 behind it.
 - **Camera:** `firstPerson`, client 1, HUD on (the screen is the picture). The UI sits high in the frame so the caption band stays clear.
-- **Location:** the clerk `Quest_Clerk` and desk at (134, 0, 243.5). Scene `trailer-square`.
+- **Location:** the clerk `Quest_Clerk` behind the registry counter at (137.06, 0, 240.91). Scene `trailer-square`.
 - **Props and NPCs:** the clerk; the quiz from `LF_Quiz_Everon.conf`. Needs a fresh account each take (a returning one skips the quiz), so the take is scripted with `quiz-proof` and the typed answers are timed (see "Production notes").
 - **Fallback:** still of the quiz screen from `tools\cli look`.
 

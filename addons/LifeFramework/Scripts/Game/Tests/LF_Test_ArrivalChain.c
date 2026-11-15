@@ -8,7 +8,9 @@
 //! the ID card is handed over once.
 class LF_Test_ArrivalChain : LF_Test
 {
-	// Quests.layer: Quest_Clerk stands at 134 0 243.5; the test bodies spawn a meter from him.
+	// Quests.layer: Quest_Clerk stands behind the registry counter at 137.058 0 240.907. The test bodies
+	// spawn at 134 0 242.5, between his counter and the town board: 3.5 m from him (GIVER_RADIUS 5)
+	// and 5.3 m from the board (SIGN_READ_RADIUS 6).
 
 	override string GetName()
 	{
