@@ -8,7 +8,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { buildGate, exeBuild, findSavePoints, hostPaths, newestSaveBuild } from "./host.mjs";
 import { diskReport, fmtBytes, FLOOR_BYTES } from "./disk.mjs";
-import { drillVerdict } from "./drill.mjs";
+import { DRILL_RESULT_FILE, drillVerdict, readDrillResult } from "./drill.mjs";
 import { localSetting } from "../lib/local-config.mjs";
 
 export const MAX_BACKUP_HOURS = 12; // the flagship restarts every 12 h; a backup older than a restart gap is stale
@@ -58,9 +58,19 @@ export async function backupCheck({ hostDir, now = new Date(), maxBackupHours = 
   return { ok: true, detail: `${newest}, ${hoursLabel(Math.max(hours, 0))} old` };
 }
 
-// `host drill` keeps its console log as tmp/logs/host-drill-<stamp>.log; the newest one is the last result,
-// judged by the drill's own verdict. A drill whose log is gone counts as no drill.
-export async function drillCheck({ root, now = new Date(), maxDrillDays = MAX_DRILL_DAYS }) {
+// The last result is <host dir>/drill-last.json, which `host drill` writes after every run, including one on a
+// pool machine (#1558). With no readable file, `host drill`'s local console log tmp/logs/host-drill-<stamp>.log is
+// the fallback: the newest one, judged by the drill's own verdict. No file and no log counts as no drill.
+export async function drillCheck({ root, hostDir, now = new Date(), maxDrillDays = MAX_DRILL_DAYS }) {
+  const last = readDrillResult(hostDir);
+  if (last) {
+    if (!last.ok) return { ok: false, detail: `the last restore drill failed: ${last.reason || "no reason recorded"} (${DRILL_RESULT_FILE}${last.machine ? `, ${last.machine}` : ""})` };
+    const at = Date.parse(last.at ?? "");
+    if (!Number.isFinite(at)) return { ok: false, detail: `${DRILL_RESULT_FILE} has no valid time; run \`tools\\cli host drill\`` };
+    const days = (now.getTime() - at) / 86400e3;
+    if (days > maxDrillDays) return { ok: false, detail: `the last passing restore drill is ${Math.round(days)} days old (limit ${maxDrillDays}); run \`tools\\cli host drill\`` };
+    return { ok: true, detail: `passed, ${last.accounts} account(s), ${hoursLabel(Math.max(days * 24, 0))} ago${last.machine ? ` on ${last.machine}` : ""}` };
+  }
   const dir = join(root, "tmp", "logs");
   const logs = existsSync(dir) ? readdirSync(dir).filter((n) => /^host-drill-.*\.log$/.test(n)) : [];
   if (!logs.length) return { ok: false, detail: "no restore drill on record; run `tools\\cli host drill`" };
