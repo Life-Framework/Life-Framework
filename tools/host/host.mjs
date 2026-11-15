@@ -11,6 +11,7 @@ import { networkInterfaces, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, PACK, PACK_MISSION, playtestMission } from "../lib/addons.mjs";
+import { sessionA2sPort } from "../lib/pool-queue.mjs";
 
 // The core's playtest header. A fresh host boots the pack's (hostMission).
 export const PLAYTEST_MISSION = CORE_PLAYTEST_MISSION;
@@ -39,7 +40,10 @@ export function hostPaths(dir) {
 // LF_AUTOTEST the DebugWorld test runner stays idle.
 // `addons` is the -addons list (tools/lib/addons.mjs launchAddons); the mission defaults to
 // the playtest header for those addons.
-export function hostArgs({ addons = launchAddons(), mission = playtestMission(addons), addonsDir, profile, loadSave }) {
+// `port` (#1588): a scratch host on a pool session lane other than 2001 listens on 127.0.0.1:<port>
+// through -addr (the one flag a -server boot honours, tools/cli.mjs serverArgs) with the lane's A2S
+// port. A network flag, never a script define: the checksum stays a plain client's.
+export function hostArgs({ addons = launchAddons(), mission = playtestMission(addons), addonsDir, profile, loadSave, port = GAME_PORT }) {
   const args = [
     "-server", mission,
     "-addonsDir", addonsDir,
@@ -51,6 +55,10 @@ export function hostArgs({ addons = launchAddons(), mission = playtestMission(ad
     "-noBackend",
   ];
   if (loadSave) args.push("-loadSessionSave");
+  if (port && port !== GAME_PORT) {
+    const a2s = sessionA2sPort(port);
+    args.push("-addr", `127.0.0.1:${port}`, ...(a2s ? ["-a2sPort", String(a2s)] : []));
+  }
   return args;
 }
 
@@ -309,6 +317,11 @@ export function selftestHost() {
     if (has(args, "-config")) failures.push("host args pass -config (fatal with -addons)");
     if (args[args.indexOf("-profile") + 1] !== "P") failures.push("host args do not use the host profile");
   }
+  // #1588: a scratch host on a session lane binds that lane's port and still carries no define.
+  const lane = hostArgs({ addonsDir: "A", profile: "P", loadSave: false, port: 2011 });
+  if (lane[lane.indexOf("-addr") + 1] !== "127.0.0.1:2011" || lane[lane.indexOf("-a2sPort") + 1] !== "17877") failures.push("a lane host does not bind its lane port and A2S port");
+  if (lane.includes("-scrDefine")) failures.push("a lane host passes -scrDefine (a plain client would be refused)");
+  if (fresh.includes("-addr")) failures.push("the default host binds -addr (it listens on 2001 for players)");
   if (!/Missions\/LF_PlaytestTown\.conf$/.test(PLAYTEST_MISSION)) failures.push("mission constant is not LF_PlaytestTown.conf");
   // #322: the pack loads beside the core when it is in the checkout.
   if (fresh[fresh.indexOf("-addons") + 1] !== "LifeFramework,LF_Everon1989") failures.push(`host loads ${fresh[fresh.indexOf("-addons") + 1]}, not the core and the pack`);
