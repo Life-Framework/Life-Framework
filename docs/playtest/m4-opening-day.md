@@ -88,7 +88,7 @@ Proves: #1421 (every quiz question tests a published rule), #1279 and #1281 (the
 #1291 (the join), #1280 (the board the player reads).
 
 Do: client A stays at the plaza. Client B joins with the password and a fresh profile, while A is mid-action
-(holding an item, standing at the board).
+(holding an item, standing at the board). Run the `quiz-proof` proof verb, then the `quiz-rejoin-proof` proof verb (#1490).
 
 - [ ] B gets the rules quiz before the registration form. Every question has a rule on the board it can be
   answered from. #1421
@@ -103,7 +103,7 @@ Do: client A stays at the plaza. Client B joins with the password and a fresh pr
 Proves: #1287 (staff API for applications), #1288 (the Game Master panel), #1289 (the application relay
 to staff), #1283 and #1346 (the staff webhook), #1320 (who is staff).
 
-Do: B files an application at the station duty desk. A opens the GM panel.
+Do: B files an application at the station duty desk. A opens the GM panel. Run the `police-application-proof` proof verb.
 
 - [ ] The desk takes B's application and B gets a receipt toast. The server log has an `[LFDebug:Police]` line for it.
 - [ ] A's GM panel lists B's application with the oldest open one first. #1288
