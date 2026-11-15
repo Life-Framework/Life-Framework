@@ -12,7 +12,7 @@ Players `/report` their recent incidents; flags (`LF_IncidentFlags`, saved as `i
 
 ## Staff relay (#1284)
 
-`LF_StaffRelay` (server only, no state saved) sends `LF_OnAdminAction` and `LF_OnIncidentFlagged` to the staff channel through `LF_StaffWebhook.Send`. Events of one kind collect for 5 s from the first, then one line goes out: the event's own line, or a count when there were more. `LF_IncidentFlags.Report` publishes the flag event after inserting the rows. `Install()` subscribes and starts a 1 s flush tick; the game mode must call it (not yet wired).
+`LF_StaffRelay` (server only, no state saved) sends `LF_OnAdminAction` and `LF_OnIncidentFlagged` to the staff channel through `LF_StaffWebhook.Send`. Events of one kind collect for 5 s from the first, then one line goes out: the event's own line, or a count when there were more. `LF_IncidentFlags.Report` publishes the flag event after inserting the rows. `Install()` subscribes and starts a 1 s flush tick. A `modded class LF_GameModeRoleplay` in the same file calls it from `OnGameStart` (server only; a client does nothing; calling twice changes nothing), and `LF_StaticReset.ResetAll` calls `Uninstall()` when the world ends.
 
 ## Clip stamp (#1173)
 
