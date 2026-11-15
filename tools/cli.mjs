@@ -56,7 +56,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
-import { addonsArgs, addonsDirArgs, addonDir, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
+import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -83,6 +83,7 @@ import * as measure from "./lib/session-measure.mjs";
 import { CONNECT_TRY, CONNECTED, firstClientVerdict, overlapPlan } from "./lib/session-overlap.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
+import { helpRequest, usageText } from "./lib/help-guard.mjs";
 import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 
@@ -1655,7 +1656,7 @@ function cmdServe(root = ROOT, opts = {}) {
 
 // ----------------------------------------------------------------- playtest host
 // `host start|stop|status|backup`: the playtest dedicated server on
-// the pack header Missions/LF_Everon1989.conf (core-only: LF_PlaytestTown.conf) with a stable profile outside every worktree
+// the pack header Missions/LF_PlaytestTown.conf (the flagship LF_Everon1989.conf has the playtest helpers closed) with a stable profile outside every worktree
 // (tools/host/host.mjs). The server runs detached and owns the server-2001
 // lock while it lives; `host stop` asks for a graceful close so the engine
 // writes its SHUTDOWN save, then backs the saves up.
@@ -1743,7 +1744,7 @@ function cmdHostStart(root, dir, opts) {
     const saves = host.findSavePoints(p.profile);
     // #322: the pack loads when it is in the checkout; a save keeps the header it was made on.
     const addons = launchAddons(root);
-    const { mission, loadSave } = host.hostMission(p.profile, addons);
+    const { mission, loadSave } = host.hostMission(p.profile, addons, opts.flagship ? flagshipMission(addons) : undefined);
     if (saves.length) {
       const b = host.backupSaves(dir, "start");
       console.log(`host: backed up saves -> ${b}`);
@@ -1929,14 +1930,14 @@ async function hostCommandsHelp() {
   }
 }
 
-const HOST_USAGE = "usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force]";
+const HOST_USAGE = "usage: tools\\cli host start|stop|status|backup|preflight|restore [<backup>] [--wait] [--timeout <s>] [--force] [--flagship]";
 
 function cmdHost(args) {
   const list = args ?? [];
   const sub = list[0];
   const dir = host.hostDir();
   const timeout = argValue(list, "--timeout");
-  const opts = { force: list.includes("--force"), wait: list.includes("--wait"), timeoutSec: timeout ? Number(timeout) : undefined };
+  const opts = { force: list.includes("--force"), wait: list.includes("--wait"), flagship: list.includes("--flagship"), timeoutSec: timeout ? Number(timeout) : undefined };
   if (sub === "start") return cmdHostStart(ROOT, dir, opts);
   if (sub === "stop") return cmdHostStop(dir, opts);
   if (sub === "status") return cmdHostStatus(dir);
@@ -2958,6 +2959,12 @@ function cmdSession(args) {
     return r.status ?? 1;
   }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  // A session that `up` put on a pool machine is recorded only by agent-box/session.mjs
+  // (tmp/session-remote.json); it routes down/status/restart/wait there (cliSessionForwards).
+  if (session.cliSessionForwards(list[0], list.slice(1), session.readRemotePointer())) {
+    const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...list], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
+    return r.status ?? 1;
+  }
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
   if ((list[0] === "restart" || list[0] === "down") && !list.includes("--force")) {
@@ -2987,8 +2994,8 @@ function cmdSession(args) {
 }
 
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
-  if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
-    console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
+  if (tier !== "fast" && tier !== "all" && tier !== "persistence" && tier !== "perf") {
+    console.log(`unknown tier: ${tier} (expected fast, all, persistence, or perf)`);
     return 2;
   }
   let only = [];
@@ -3545,14 +3552,7 @@ function ciWorkbenchInSession(root) {
 // The live view of every machine with the workbench cap, for wbGate.chooseGate: this PC's Workbench
 // slots and free RAM, each pool machine's over one ssh round trip (null when it does not answer).
 function workbenchMachines(root, { mode, machine }) {
-  const machines = pool.loadMachines(root).filter((m) => !m.disabled && (m.caps ?? []).includes("workbench"));
-  const limit = wbLock.wbLimit(root);
-  const localM = machines.find((m) => m.via === "local");
-  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, freeMb: Math.round(os.freemem() / 1048576), multiplier: localM?.budgetMultiplier ?? 1 };
-  const remotes = mode === "local" || machine === "local" ? [] : machines
-    .filter((m) => m.via === "ssh" && (!machine || m.name === machine))
-    .map((m) => ({ name: m.name, caps: m.caps, multiplier: m.budgetMultiplier ?? 1, m, state: wbGate.remoteWbState(m) }));
-  return { local, remotes };
+  return wbGate.workbenchView(root, { mode, machine });
 }
 
 // Picks where the Workbench steps run (tools/lib/wb-gate.mjs) and runs them there. A pool machine
@@ -3751,7 +3751,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 website/public/playtest-server.json, tools/release/playtest-server.mjs)
                                 release [--tag playtest-m2-N]: refresh the rdb, attach it to a pre-release,
                                 start the playtest-release workflow (worktree at origin/main)
-  host start|stop|status|backup  playtest dedicated server on the pack header Missions/LF_Everon1989.conf (an LF_PlaytestTown save keeps its header);
+  host start|stop|status|backup  playtest dedicated server on the pack header Missions/LF_PlaytestTown.conf (a save made on LF_Everon1989 keeps its header; start --flagship boots LF_Everon1989, the real-server values);
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout).
                                 start refuses a save from another game build until a preflight passes
@@ -3759,12 +3759,15 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 the installed build, stop; restores the backup on any failure
                                 (docs/ops/game-updates.md)
   host restore [<backup>]       put the newest (or named) backup back; the replaced saves are kept
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
+  test [--no-build] [--tier fast|all|persistence|perf] [--only <name>[,<name>...]] [--world <path.ent>] [--core-only] [--no-cache] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse LFTEST results (worktree only).
                                 --core-only boots with -addons LifeFramework only (the pack folder is not
                                 on -addonsDir) and skips tests whose NeedsPack() names a reason.
                                 --only runs just those tests (class, GetName(), or test file
                                 name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
+                                --tier perf runs only the PERF-tier timing gates (perf/budget-128), with more repeats and windows, on
+                                the pool's RAM gate and after a bounded wait for an idle CPU; never sharded, never
+                                cached, and not part of --tier all (so gates cannot flake on it). tools\\cli perf runs it.
                                 --shards N|auto (tier all): the registry split into N balanced slices run as
                                 separate pool jobs at once, one merged SUMMARY and exit code (auto: free
                                 test lanes, at most 4; tools/lib/test-shards.mjs). --only-classes <A,B>
@@ -3788,7 +3791,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 prune removes remote run folders of gone worktrees;
                                 prune --idle <min> removes every remote run folder idle that long
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
-  dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
+  dev [--tier fast|all|persistence|perf]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
   ci [--skip-core-only] [--shards N|auto|1] [--tiered]  validate --full + build + test + test --core-only, both passes at once, each sharded;
                                 --tiered runs the T1 data-only gate when the diff still is one
@@ -4022,7 +4025,7 @@ function wtHelpFull() {
   tools\\cli wt warm [status|fill|drain]  the warm pool: K checkouts on detached origin/main kept ready for
                                        'wt new' (LF_WT_WARM, default 3; LF_WT_WARM_MIN_FREE_GB, default 12)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
-  tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
+  tools\\cli wt test <slug> [--tier fast|all|persistence|perf] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug> [--legacy-save] [--old-build] [--content-ids] [--cash-swap]
                                        two-boot save-state E2E: persistence save boot ended by the
@@ -4045,12 +4048,15 @@ function wtHelpFull() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local]
-                                       clean-tree and PR-body checks -> push -> PR (auto-merge off) -> ship queue:
-                                       merge origin/<base> once, ci --remote on a pool machine, push, auto-merge
-                                       (docs/worktrees.md "Ship queue"); waits until gated unless --no-wait
-                                       (a terminal defaults to --no-wait); --no-queue gates here the old way;
-                                       a machine pin (humans and the lead only) goes to the gate's ci
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
+                                       clean-tree and PR-body checks, preflight (merge-tree conflicts, validate of changed
+                                       inputs) -> push -> PR (auto-merge off) -> ship queue: merge origin/<base> once,
+                                       ci --remote on a pool machine, push, auto-merge (docs/worktrees.md "Async ship").
+                                       Returns once queued; --wait blocks until gated (old behaviour); --no-queue gates
+                                       here the old way; a machine pin (humans and the lead only) goes to the gate's ci
+  tools\\cli wt ship-status <slug>     one line: queued|running|passed|failed, PR, why, log (exit 1 when failed)
+  tools\\cli wait ship <slug> [--budget s]   block until the gate ends or the budget (default 540 s) runs out;
+                                       one SUMMARY line, exit 0 passed, 1 failed, 2 still going (re-run it)
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
   tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
@@ -4716,6 +4722,31 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
     console.log(`=== ship: ${tl} ===`);
     body = `${body}\n\n## Gate\n\n${tl} (the queue re-checks it after merging origin/${base})`;
   }
+  // Local preflight (seconds to a few minutes): what would fail the queued gate for a reason the agent must
+  // fix goes here, before the push, while the agent is still in the shell. --no-preflight skips it.
+  if (!flags.includes("--no-preflight")) {
+    const t0 = Date.now();
+    const mt = wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]);
+    if (mt.status === 1) {
+      const paths = sql.conflictPaths(mt.stdout);
+      const human = sql.humanConflicts(paths);
+      if (human.length) {
+        console.log(`FAIL  preflight: origin/${base} conflicts with this branch in ${human.join(", ")}; the merge drivers cannot resolve them.`);
+        console.log(`      merge it here: cd ${wtRoot}; git merge origin/${base}; fix, commit; tools\\cli wt ship ${slug}`);
+        return 1;
+      }
+      console.log(`=== ship: preflight: origin/${base} conflicts only in driver-merged files (${paths.join(", ")}); the queue's merge resolves them ===`);
+    } else if (mt.status !== 0) console.log(`ship: preflight: git merge-tree failed (${(mt.stderr || mt.stdout).trim().slice(0, 200)}); the queue's merge decides`);
+    // The checks whose declared inputs changed (incremental validate, no Workbench compile): a red check costs
+    // seconds here and a whole queue slot there.
+    console.log("=== ship: preflight: validate (changed inputs) ===");
+    const v = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true });
+    if (v.status !== 0) {
+      console.log(`FAIL  preflight: validate failed (exit ${v.status}); fix it, commit, and re-run 'tools\\cli wt ship ${slug}'. Nothing was pushed.`);
+      return 1;
+    }
+    console.log(`ship: preflight ok in ${Math.round((Date.now() - t0) / 1000)} s`);
+  }
   let pr = wt.findOpenPrGh(wtRoot, e.branch);
   // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
   if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
@@ -4743,16 +4774,21 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
+  q.publish(ROOT, entry); // tmp/ship-status.json in the worktree and a pending ship-gate status on the PR head
   const w = await q.ensureWorker(ROOT);
+  if (w.already) console.log(`ship: ${w.message}`);
   const qq = q.readQueue(ROOT);
   const pos = sql.ordered(qq.entries).findIndex((x) => x.id === entry.id) + 1;
   const gating = qq.entries.filter((x) => sql.RUNNING.includes(x.state)).length;
   const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
   console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
   console.log(`PR: ${pr.url}`);
-  const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
-  if (!wait) {
-    console.log(`ship: queued. 'tools\\cli ship-queue wait ${slug}' blocks until it is gated; 'tools\\cli pool status' shows the queue.`);
+  // Async by default (docs/worktrees.md "Async ship"): the gate runs in the worker, auto-merge stays off until
+  // it passes. --wait (or LF_SHIP_WAIT=1) blocks here as before.
+  if (!sql.shipWaits(flags, process.env)) {
+    console.log(`ship: queued, gate running detached; auto-merge is enabled only when it passes. Report "shipped, gate running".`);
+    console.log(`  tools\\cli wt ship-status ${slug}          # one line: queued|running|passed|failed`);
+    console.log(`  tools\\cli wait ship ${slug} --budget 540  # blocks up to 9 min, one SUMMARY line; re-run until it says ok|fail`);
     return 0;
   }
   const code = await q.waitFor(ROOT, slug);
@@ -4952,6 +4988,11 @@ function cmdWt(rest) {
     sync: () => wtSyncCmd(subArgs),
     "sync-base": () => wtSyncBaseCmd(subArgs),
     ship: () => wtShipCmd(subArgs),
+    "ship-status": async () => {
+      const slug = wtSlug(subArgs);
+      if (!slug) return 1;
+      return (await import("./ship-queue.mjs")).shipStatus(ROOT, slug);
+    },
     prune: () => wtPruneCmd(subArgs),
     open: () => wtOpenCmd(subArgs),
     main: () => {
@@ -5138,9 +5179,32 @@ async function discoveredHelp() {
 const [a, b] = rest;
 const HEAVY = ["build", "pack", "serve", "dev", "test", "ci", "e2e"];
 
+// `<heavy command> --help` / `-h` prints that command's usage and stops (tools/lib/help-guard.mjs).
+// It is asked before any dispatch, so nothing below (lock, build, boot, pool ticket) can start.
+function printUsage(req) {
+  if (req.cmd === "session") {
+    console.log(SESSION_USAGE);
+    return 0;
+  }
+  const keep = console.log;
+  let text = "";
+  console.log = (...a) => { text += `${a.join(" ")}
+`; };
+  try {
+    (req.cmd === "wt" ? wtHelpFull : cmdHelpFull)();
+  } finally {
+    console.log = keep;
+  }
+  console.log(usageText(text, req));
+  return 0;
+}
+
 let code;
 try {
-  if (cmd === "mcp") {
+  const helpReq = helpRequest(cmd, rest);
+  if (helpReq) {
+    code = printUsage(helpReq);
+  } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {

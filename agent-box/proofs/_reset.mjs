@@ -82,7 +82,7 @@ export function resetClient(on, wait, n, phase = "all") {
   // The server-side stores (till, vault and search cooldowns) are not on the state line, and one
   // client's call clears them for the whole session, so client 1 always asks (#867).
   if (phase === "rest" && n === 1 && !steps.includes("crime")) steps.push("crime");
-  // `resetplayer` (a dev-gated harness verb, #496) does duty, faction, cuffs, any sentence and the crime
+  // `resetplayer` (a dev-gated harness verb, #496) does duty, faction, cuffs, any sentence, the inventory (emptied, civilian kit issued) and the crime
   // state in one server-side call; the desk walk and the debug menu below are the fallback when it is
   // refused (a build without the verb, or a closed dev gate).
   let serverSide = false;

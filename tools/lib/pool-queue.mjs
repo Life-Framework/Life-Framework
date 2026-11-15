@@ -426,7 +426,7 @@ export const BUDGET_MIN_RUNS = 5;
 export const TIMEOUT_RATE_RAISE = 0.02;
 export const BOOT_BUDGET_S = 30;
 // Starting budgets (seconds) until a kind has history. e2e is per pass.
-export const DEFAULT_BUDGET_S = { "test only": 30, "test fast": 45, "test all": 90, "test all core-only": 90, "test persistence": 120, e2e: 120 };
+export const DEFAULT_BUDGET_S = { "test only": 30, "test fast": 45, "test all": 90, "test all core-only": 90, "test persistence": 120, "test perf": 120, e2e: 120 };
 
 // The run-log label of a test run (runs.jsonl "purpose", the budget key, the pool status column).
 // `ci`'s core-only suite (the pack hidden, #326) is its own kind: its budget, count and history

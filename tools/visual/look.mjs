@@ -32,6 +32,13 @@ const WORLD = townWorld(); // the pack world (a SubScene of DebugWorld that hold
 const WORKBENCH_MB = 1900; // peak working set of the run, measured 2026-11-11 (docs/visual-testing.md)
 const RAM_MARGIN_MB = 300;
 const BOOT_BUDGET_S = 90;
+// What a look needs free on a machine to start a Workbench; the pool floor (minFreeMb) comes on top when it chooses one.
+export const LOOK_RESERVE_MB = WORKBENCH_MB + RAM_MARGIN_MB;
+// run() returns this when this machine could not run the look (RAM, the build lock, a starved Workbench),
+// so the router (routeLook) tries another machine. Never a verdict about the pictures.
+export const ENV_SHORT_CODE = 4;
+// How long a look queues for a machine (RAM or a Workbench slot) before it gives up: LF_LOOK_WAIT_S.
+const waitBudgetS = () => (Number(process.env.LF_LOOK_WAIT_S) > 0 ? Number(process.env.LF_LOOK_WAIT_S) : 1200);
 const SERVE_BUDGET_S = 150;
 
 export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
@@ -41,7 +48,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["world", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget"]);
+  const valued = new Set(["world", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -440,16 +447,31 @@ export function compileErrors(logFile) {
 }
 
 // null when a Workbench fits in free RAM now (idle sessions are trimmed first), else the reason.
-async function ramShort(force) {
+// waitS > 0: queue for the RAM (re-read every 15 s) instead of refusing at once.
+async function ramShort(force, waitS = 0) {
   if (force) return null;
-  const need = WORKBENCH_MB + RAM_MARGIN_MB;
+  const need = LOOK_RESERVE_MB;
   const freeMb = () => Math.round(freemem() / 1048576);
-  if (freeMb() < need) {
-    const pool = await import("../remote/pool.mjs");
-    pool.trimIfShort(ROOT, need);
+  const t0 = Date.now();
+  let said = false;
+  for (;;) {
+    if (freeMb() < need) {
+      const pool = await import("../remote/pool.mjs");
+      pool.trimIfShort(ROOT, need);
+    }
+    if (freeMb() >= need) return null;
+    if (Date.now() - t0 >= waitS * 1000) break;
+    if (!said) console.log(`look: ${freeMb()} MB of RAM free here, a Workbench needs about ${need} MB; waiting for it (re-checked every 15 s, up to ${Math.round(waitS / 60)} min)`);
+    said = true;
+    await new Promise((r) => setTimeout(r, 15000));
   }
-  if (freeMb() >= need) return null;
   return `look: ${freeMb()} MB of RAM free, a Workbench needs about ${need} MB. Wait for whatever holds it (a session, an encode), or pass --force.`;
+}
+
+// Pure: why a timed-out run with no shot counts as a machine short of RAM, or null.
+export function starvedRun({ timedOut, written, freeMb, needMb = LOOK_RESERVE_MB }) {
+  if (!timedOut || written > 0 || !Number.isFinite(freeMb) || freeMb >= needMb) return null;
+  return `the Workbench wrote no shot before its budget with ${freeMb} MB free (needs about ${needMb} MB)`;
 }
 
 // null when this process holds the machine-wide build lock, else why not.
@@ -545,7 +567,10 @@ async function run(args) {
   // RAM: Workbench peaks at about 1.9 GB for the 20 s it lives. It has to fit in free RAM with a margin; it is
   // not held against the pool's 1.5 GB floor the way a session's lasting reserve is. Idle sessions are trimmed first.
   // Asked only when a Workbench is about to start (a request to a live server needs none).
-  const ramGate = () => ramShort(args.flags.force === true);
+  // Routed here by routeLook: a short machine hands the look back at once (ENV_SHORT_CODE) so another is tried.
+  // Pinned here (--local, or the pool machine a router sent it to): queue for the RAM instead of refusing.
+  const envFail = args.routed ? ENV_SHORT_CODE : 3;
+  const ramGate = () => ramShort(args.flags.force === true, args.routed ? 0 : waitBudgetS());
 
   // A live look server (tools\cli look serve) takes the plan; `look item` stays on the fresh path (its spawned
   // prefabs are not proven through the server). --serve starts one when none is up; --fresh never uses it.
@@ -554,17 +579,18 @@ async function run(args) {
   if (!useServer) {
     const ram = await ramGate();
     if (ram) {
-      console.log(`FAIL  ${ram}`);
-      return 3;
+      console.log(`${args.routed ? "look: not here:" : "FAIL "} ${ram}`);
+      return envFail;
     }
   }
 
   // One Workbench at a time beside the headless build and the rdb refresh (shared shader cache). A server request
   // takes the lock too; it lasts seconds, so look queues behind a server for up to 2 minutes without --wait.
-  const lockErr = takeBuildLock(wt, args.flags.wait ? 600000 : useServer ? 120000 : 0);
+  // Routed here: a held lock hands the look to another machine. Pinned here: queue for it (10 min).
+  const lockErr = takeBuildLock(wt, args.flags.wait || !args.routed ? 600000 : useServer ? 120000 : 0);
   if (lockErr) {
-    console.log(`FAIL  look: ${lockErr}`);
-    return 3;
+    console.log(`${args.routed ? "look: not here:" : "FAIL "} look: ${lockErr}`);
+    return envFail;
   }
 
   const outRoot = resolve(ROOT, args.flags.out || join("tmp", "look"));
@@ -612,16 +638,18 @@ async function run(args) {
       } else {
         console.log(`look: the look server did not take it (${r.why}); a fresh Workbench instead`);
         if (ramMsg) {
-          console.log(`FAIL  ${ramMsg}`);
-          return 3;
+          console.log(`${args.routed ? "look: not here:" : "FAIL "} ${ramMsg}`);
+          wt.releaseLock(ROOT, "build");
+          return envFail;
         }
       }
     }
     if (!raw) {
       const ram = useServer ? await ramGate() : null;
       if (ram) {
-        console.log(`FAIL  ${ram}`);
-        return 3;
+        console.log(`${args.routed ? "look: not here:" : "FAIL "} ${ram}`);
+        wt.releaseLock(ROOT, "build");
+        return envFail;
       }
       sha = snapshotSha();
       raw = join(profile, "profile", "lf-visual");
@@ -634,6 +662,13 @@ async function run(args) {
   }
 
   if (res.timedOut) console.log(`TIMEOUT after ${Math.round(res.seconds)}s: Workbench was killed; ${Object.keys(status.shots).length}/${shots.length} shot(s) written`);
+  // A Workbench killed with nothing written on a machine short of RAM starved (2026-11-14: a --force run on
+  // 2 GB free, 0/6 shots after 100 s). That is the machine, not the world: another machine is tried.
+  const starved = starvedRun({ timedOut: res.timedOut, written: Object.keys(status.shots).length, freeMb: Math.round(freemem() / 1048576) });
+  if (starved && args.routed) {
+    console.log(`look: not here: ${starved}`);
+    return ENV_SHORT_CODE;
+  }
   const wantedWorld = opts.world || WORLD;
   const wp = worldProblem(status, wantedWorld);
   if (wp) {
@@ -920,7 +955,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);
@@ -930,7 +965,15 @@ export async function main(argv) {
     console.log(USAGE);
     return args.flags.help ? 0 : 2;
   }
-  // One of this PC's Workbench slots for the whole look (tools/lib/wb-lock.mjs).
+  const serve = await import("./look-serve.mjs");
+  if (routeMode(args, { serverUp: () => serve.serverUp(ROOT), env: process.env }) === "local") return localLook(args);
+  const wt = await import("../wt.mjs");
+  if (wt.isMainCheckout(ROOT)) return run(args); // refuses with the worktree hint
+  return routeLook(args, argv);
+}
+
+// This PC: one of its Workbench slots for the whole look (tools/lib/wb-lock.mjs), then the run.
+async function localLook(args) {
   const { acquireWorkbench } = await import("../lib/wb-lock.mjs");
   const wb = await acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
   try {
@@ -938,6 +981,148 @@ export async function main(argv) {
   } finally {
     wb.release();
   }
+}
+
+// ------------------------------------------------------------------ routing (the pool)
+
+// Pure: "local" runs here as before; "route" lets routeLook pick the machine. --local / --force pin this
+// PC (a pool machine running a routed look gets --local), and a live look server here is the cheapest
+// look there is.
+export function routeMode(args, { serverUp = () => false, env = {} } = {}) {
+  if (args.flags.local || args.flags.force || args.flags.serve || env.LF_TESTBOX_AUTO === "0") return "local";
+  if (!args.flags.fresh && args.pos[0] !== "item" && !args.flags.machine && serverUp()) return "local";
+  return "route";
+}
+
+// Pure: the argv a pool machine runs: ours without --out/--machine/--local, pinned there, writing to outRel.
+export function remoteLookArgs(argv, outRel) {
+  const out = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--out" || argv[i] === "--machine") {
+      i++;
+      continue;
+    }
+    if (argv[i] === "--local") continue;
+    out.push(argv[i]);
+  }
+  return ["look", ...out, "--local", "--out", outRel];
+}
+
+// Pure: an index.json written on another machine, its paths moved to the folder it now lives in.
+export function rehomeIndex(index, dir) {
+  const leaf = (p) => (p ? join(dir, String(p).split(/[\\/]/).pop()) : p);
+  return { ...index, contact: leaf(index.contact), shots: (index.shots ?? []).map((sh) => ({ ...sh, file: leaf(sh.file) })) };
+}
+
+// Picks the machine with room for a Workbench (tools/lib/wb-gate.mjs chooseGate, the ranking `ci`'s
+// Workbench steps use: live free RAM less the look's reserve, above the pool floor, weighted by speed),
+// runs the look there and brings the pictures back to tmp/look/<area>/. Nobody has the room: queue
+// (re-read every 20 s, up to LF_LOOK_WAIT_S, 20 min). A machine that cannot run it after all (RAM gone,
+// the build lock, a starved Workbench: ENV_SHORT_CODE; a remote that does not take it) is skipped.
+async function routeLook(args, argv) {
+  const wbGate = await import("../lib/wb-gate.mjs");
+  const pool = await import("../remote/pool.mjs");
+  const settings = pool.poolSettings(ROOT);
+  const machine = typeof args.flags.machine === "string" ? args.flags.machine : null;
+  const waitS = waitBudgetS();
+  const tried = [];
+  const t0 = Date.now();
+  let saidWait = false;
+  for (let attempt = 0; attempt < 6; attempt++) {
+    let view;
+    let c;
+    for (;;) {
+      view = wbGate.workbenchView(ROOT, { mode: "any", machine });
+      c = wbGate.chooseGate({ ...view, machine, exclude: tried, reserveMb: LOOK_RESERVE_MB, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
+      if (c.where !== "wait") break;
+      if (Date.now() - t0 > waitS * 1000) {
+        console.log(`FAIL  look: no machine had the RAM for a Workbench in ${Math.round((Date.now() - t0) / 1000)} s (${c.why})`);
+        return 3;
+      }
+      if (!saidWait) console.log(`look: queued: ${c.why}; re-checking every 20 s for up to ${Math.round(waitS / 60)} min`);
+      saidWait = true;
+      await new Promise((r) => setTimeout(r, 20000));
+    }
+    if (c.where === "none") {
+      console.log(`FAIL  look: no machine left to try (${c.why})`);
+      return 3;
+    }
+    console.log(`look: on ${c.where === "local" ? "this PC" : c.where}: ${c.why}`);
+    tried.push(c.where);
+    if (c.where === "local") {
+      const code = await localLook({ ...args, routed: true });
+      if (code === ENV_SHORT_CODE) continue;
+      return code;
+    }
+    const m = view.remotes.find((r) => r.name === c.where).m;
+    const code = await remoteLook(m, args, argv, pool);
+    if (code === ENV_SHORT_CODE || code === null) continue;
+    return code;
+  }
+  console.log(`FAIL  look: tried ${tried.join(", ")}; none could run the Workbench`);
+  return 3;
+}
+
+// One look on a pool machine through the pool's run-folder sync (this worktree's snapshot, uncommitted
+// state included), its pictures copied back. null: the machine did not take it (sync, ssh); try another.
+async function remoteLook(m, args, argv, pool) {
+  const id = `${Date.now().toString(36)}${process.pid.toString(36)}`;
+  const outRel = `tmp/look-routed/${id}`;
+  const t0 = Date.now();
+  const r = await pool.syncAndRun(ROOT, m, { script: "tools\\cli.mjs", args: remoteLookArgs(argv, outRel), suffix: "-look", purpose: "look" });
+  if (!r.rDir || r.code === 255) {
+    console.log(`look: ${m.name} did not take it (exit ${r.code})`);
+    return null;
+  }
+  if (r.code === ENV_SHORT_CODE) return ENV_SHORT_CODE;
+  const pulled = pullPictures(m, r.rDir, outRel, resolve(ROOT, args.flags.out || join("tmp", "look")));
+  const s = Math.round((Date.now() - t0) / 1000);
+  if (!pulled.areas.length) {
+    console.log(`FAIL  look: ${m.name} exit ${r.code} after ${s} s and no pictures came back${pulled.error ? ` (${pulled.error})` : ""}`);
+    return r.code || 1;
+  }
+  console.log(`look: ran on ${m.name} in ${s} s (sync, Workbench, copy back); the pictures are here:`);
+  for (const a of pulled.areas) console.log(`  ${a.name}: ${a.contact}`);
+  if (pulled.overview) console.log(`  overview: ${pulled.overview}`);
+  return r.code;
+}
+
+// Copies <rDir>/<outRel>/ back and moves each area folder into outRoot, the paths in index.json rewritten.
+function pullPictures(m, rDir, outRel, outRoot) {
+  const stageParent = join(ROOT, "tmp", "look-routed");
+  mkdirSync(stageParent, { recursive: true });
+  const stage = join(stageParent, outRel.split("/").pop());
+  const down = tb.scp(["-r", `${m.host}:${rDir.replace(/\\/g, "/")}/${outRel}`, stageParent]);
+  if (down.status !== 0 || !existsSync(stage)) return { areas: [], error: (down.stderr || down.stdout || "scp failed").trim().split("\n")[0] };
+  mkdirSync(outRoot, { recursive: true });
+  const areas = [];
+  let overview = null;
+  for (const e of readdirSync(stage, { withFileTypes: true })) {
+    const from = join(stage, e.name);
+    if (!e.isDirectory()) {
+      if (e.name === "overview.jpg") {
+        overview = join(outRoot, e.name);
+        cpSync(from, overview);
+      }
+      continue;
+    }
+    const dir = join(outRoot, e.name);
+    mkdirSync(dir, { recursive: true });
+    for (const f of readdirSync(dir)) if (/\.(png|jpg|json)$/.test(f)) rmSync(join(dir, f), { force: true });
+    for (const f of readdirSync(from)) cpSync(join(from, f), join(dir, f));
+    const idx = join(dir, "index.json");
+    let contact = join(dir, "contact.jpg");
+    if (existsSync(idx)) {
+      try {
+        const moved = rehomeIndex({ ...JSON.parse(readFileSync(idx, "utf8")), machine: m.name }, dir);
+        writeFileSync(idx, JSON.stringify(moved, null, 2) + "\n");
+        contact = moved.contact ?? contact;
+      } catch {}
+    }
+    areas.push({ name: e.name, contact });
+  }
+  rmSync(stage, { recursive: true, force: true });
+  return { areas, overview };
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {

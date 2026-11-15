@@ -3,10 +3,11 @@
 // and config.example.json from the config classes' [Attribute] declarations and
 // fails when either committed file differs; validates the example, and the
 // example LF_ConfigService writes at runtime, against the schema.
+// Also fails when a field has no description (the form's help text, #286).
 // Also fails when an attribute's params range and the limits the apply step passes to ReadInt disagree.
 // Fix: node tools/config/schema.mjs --write
 import { existsSync, readFileSync } from "node:fs";
-import { build, render, rangeProblems, readerProblems, readScripts, validateJson, runtimeExample, SCHEMA_PATH, EXAMPLE_PATH, SERVICE } from "../config/schema.mjs";
+import { build, render, descriptionProblems, rangeProblems, readerProblems, readScripts, validateJson, runtimeExample, SCHEMA_PATH, EXAMPLE_PATH, SERVICE } from "../config/schema.mjs";
 
 const fails = [];
 let gen;
@@ -17,6 +18,7 @@ for (const [p, obj, name] of [[SCHEMA_PATH, gen.schema, "config.schema.json"], [
   else if (readFileSync(p, "utf8") !== render(obj)) fails.push(`docs/config/${name} is stale against the config classes`);
 }
 
+for (const m of descriptionProblems(gen.schema)) fails.push(`help text: ${m}`);
 for (const m of rangeProblems(readScripts())) fails.push(`range: ${m}`);
 for (const m of readerProblems(readScripts(), gen.schema)) fails.push(`reader: ${m}`);
 

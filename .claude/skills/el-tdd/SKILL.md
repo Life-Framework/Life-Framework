@@ -6,7 +6,7 @@ description: "Use for a Life Framework bug or logic change with a cheap LF_Test 
 # EL Test First
 
 - Create `addons/LifeFramework/Scripts/Game/Tests/LF_Test_<Area>.c` extending
-  `LF_Test` with `GetName()` and `Run(ctx)`. Add a `// tier: LOGIC|WORLD|PERSISTENCE`
+  `LF_Test` with `GetName()` and `Run(ctx)`. Add a `// tier: LOGIC|WORLD|PERSISTENCE|PERF`
   comment above the class and a `// red-proof:` comment.
 - Express the defect as an assertion and run it red before the fix. For a bug
   fix that run, red on the unfixed code and then green on the fixed code, IS the
