@@ -261,3 +261,19 @@ class LF_PayphoneAction : ScriptedUserAction
 		LF_Utils.NotifyEntity(pUserEntity, "#LF-Payphone_Connected", "#LF-Payphone_Title", 4.0);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Payphone");
+		if (apply)
+			LF_Payphone.ResetStatics();
+		done.Insert("LF_ServiceCallDispatch");
+		if (apply)
+			LF_ServiceCallDispatch.ResetStatics();
+	}
+}

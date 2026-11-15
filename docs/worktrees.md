@@ -325,10 +325,13 @@ tries a machine first even when this PC is free; `LF_RDB_REFRESH=0` turns the re
 `pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
 limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
 `pool.machines` entry (1 when unset; lf-cloud has 2). This PC is not counted. A queued PR starts only when
-no running gate and no earlier waiting PR changes a file it changes. Driver-merged docs and any
-`docs/**/*.md` do not count (two PRs that edit `docs/worktrees.md` gate side by side; a text conflict
-shows at the merge of main, in GitHub's mergeable state, or in `prs heal`), so PRs on disjoint files
-gate side by side on different machines and overlapping ones keep their order.
+no running gate and no earlier waiting PR changes a file it changes. Driver-merged files (the string
+table, language confs, test registry, lint baseline) and any `*.md` (docs, `Feature/<Area>/Feature.md`,
+READMEs) do not count: two PRs that edit `docs/worktrees.md` or one `Feature.md` gate side by side, and a
+text conflict shows at the merge of main, in GitHub's mergeable state, or in `prs heal`. Only a shared
+code or resource file serializes. The old shared lists are per-feature files now (`Core/LF_StaticReset.c`
+hooks, `docs/features/<area>.md`, harness verbs; AGENTS.md rule 10), so two feature PRs rarely share
+one. PRs on disjoint files gate side by side on different machines and overlapping ones keep their order.
 
 **Gates with no Workbench take no slot.** A PR that changes nothing under `addons/` runs `validate --all`
 only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; it counts against

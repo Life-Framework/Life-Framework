@@ -503,6 +503,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookPayload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaticResetHooks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenVehicleLookPlacedCar(), LF_TestTier.WORLD);

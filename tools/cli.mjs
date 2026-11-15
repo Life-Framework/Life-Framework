@@ -701,6 +701,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   // `validate --world`: only the checks that read .layer files (tools/lib/world-checks.mjs). On a maintainer
   // world branch (any validate, CI included) a failing LAYOUT check is a warning, not a blocker.
   if (area === "validate" && opts.world) scripts = worldChecks.worldScripts(scripts);
+  // The town-only layout checks (TOWN_LAYOUT_CHECKS) warn on every branch whatever this says.
   const demote = area === "validate" && (!!opts.world || worldChecks.MAINTAINER_BRANCH.test(process.env.GITHUB_HEAD_REF || wt.currentBranch(root) || ""));
   if (scripts.length === 0) {
     console.log(`No ${area} checks defined. Add scripts to tools/${TOOL_DIRS[area]}/ and they run automatically.`);
@@ -775,8 +776,8 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     }
     const { res } = job;
     const ok = res.status === 0;
-    const warnOnly = !ok && demote && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
-    console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on a maintainer world edit: a warning, listed in the PR body" : ""}`);
+    const warnOnly = !ok && area === "validate" && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
+    console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on the town (hand-edited): a warning, never blocking" : ""}`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok && !warnOnly) failed++;

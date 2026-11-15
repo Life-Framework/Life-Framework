@@ -31,7 +31,8 @@ for (const f of Object.keys(LAYER_READERS_KEPT_HARD)) check(existsSync(join(here
 
 const results = [{ s: "validate-town-manifest.mjs", status: 1 }, { s: "validate-core-village-names.mjs", status: 1 }];
 check(judgeChecks(results, { demote: true }).failed.length === 0 && judgeChecks(results, { demote: true }).warned.length === 2, "a failing layout check warns, it does not block");
-check(judgeChecks(results, { demote: false }).failed.length === 2, "off a maintainer world edit a layout check still blocks");
+// town-manifest reads only town layers and warns on every branch (town-warn-selftest.mjs); core-village-names reads core scripts and still blocks.
+check(judgeChecks(results, { demote: false }).failed.join() === "validate-core-village-names.mjs", "off a maintainer world edit a non-town layout check still blocks");
 const hard = [{ s: "validate-world-zones.mjs", status: 1 }, { s: "validate-repo.ps1", status: 1 }, { s: "validate-guid-paths.mjs", status: 1 }];
 check(judgeChecks(hard, { demote: true }).failed.length === 3, "zones, duplicate GUID and unknown GUID checks still block on a world edit");
 check(judgeChecks([{ s: "validate-town-manifest.mjs", status: 0 }, { s: "validate-world-zones.mjs", status: 1 }], { demote: true }).failed.join() === "validate-world-zones.mjs", "one hard failure blocks beside a warning");

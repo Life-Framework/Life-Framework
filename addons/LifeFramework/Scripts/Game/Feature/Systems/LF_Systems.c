@@ -996,3 +996,16 @@ class LF_Systems
 		s_bResolved = false;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Systems");
+		if (apply)
+			LF_Systems.ResetStatics();
+	}
+}
