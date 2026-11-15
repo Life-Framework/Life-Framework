@@ -459,6 +459,41 @@ export function selftestSession() {
     if (a.clients[1].identity.uid !== uid(2) || a.clients[1].identity.playerId !== 3) failures.push(`a rejoined client keeps its slot: ${JSON.stringify(a.clients[1])}`);
     if (a.clients[0].identity.slot !== 1) failures.push("a client that did not rejoin lost its identity");
   }
+  {
+    // #1450 harness prerequisites. red-proof 2026-11-15: with the --admin-client branch of parseSeeds disabled,
+    // `session.mjs selftest` died here ("Cannot read properties of undefined (reading 'text')"), restored.
+    const s = parseSeeds(["--clients", "2", "--admin-client", "1", "--no-instant-approval", "--skip-playtime-gate", "--roster", "2"]);
+    const byName = (n) => s.find((x) => x.name === n);
+    if (byName("harness-admins.txt")?.text !== `${sessionUid(1)}\n`) failures.push(`--admin-client 1 seeded ${JSON.stringify(byName("harness-admins.txt"))}`);
+    if (byName("harness-flags.txt")?.text !== "no-instant-approval\nskip-playtime-gate\n") failures.push(`the flags seeded ${JSON.stringify(byName("harness-flags.txt"))}`);
+    if (byName("whitelist.txt")?.text !== rosterText([2])) failures.push("the new flags disturbed the roster seed");
+    if (parseSeeds(["--clients", "2"]).length !== 0) failures.push("a plain up seeded a harness file");
+    if (parseSeeds(["--admin-client", "1,2"])[0].text !== `${sessionUid(1)}\n${sessionUid(2)}\n`) failures.push("--admin-client 1,2 did not list both");
+    if (parseSeeds(["--no-instant-approval", "--no-instant-approval"])[0].text !== "no-instant-approval\n") failures.push("a repeated flag was written twice");
+    try {
+      parseSeeds(["--admin-client", "x"]);
+      failures.push("--admin-client x was accepted");
+    } catch {}
+    // The seeds travel to a pool machine as plain flags and are parsed again there.
+    const sent = inlineSeedFlags(["--admin-client", "1", "--no-instant-approval", "--clients", "1"]);
+    if (JSON.stringify(parseSeeds(sent)) !== JSON.stringify(parseSeeds(["--admin-client", "1", "--no-instant-approval"]))) failures.push("the harness flags changed on the way to a pool machine");
+    if (harnessFlagProblem(["--admin-client", "1"], "debug", 1) === "") failures.push("--admin-client was accepted on the bare DebugWorld, where it does nothing");
+    if (harnessFlagProblem(["--no-instant-approval"], "debug", 1) === "") failures.push("--no-instant-approval was accepted on the bare DebugWorld");
+    if (harnessFlagProblem(["--admin-client", "1", "--no-instant-approval", "--skip-playtime-gate"], "playtest", 1) !== "") failures.push("the flags were refused on the playtest mission");
+    if (harnessFlagProblem(["--admin-client", "2"], "playtest", 1) === "") failures.push("--admin-client 2 was accepted with one client");
+    if (harnessFlagProblem(["--clients", "1"], "debug", 1) !== "") failures.push("a plain up was refused");
+    const dir = mkdtempSync(join(tmpdir(), "lf-seed-"));
+    try {
+      const files = seedProfile(dir, s).map((f) => f.replaceAll("\\", "/").split("/").pop());
+      if (!files.includes("harness-admins.txt") || !files.includes("harness-flags.txt")) failures.push(`seedProfile wrote ${files.join(", ")}`);
+      // A later plain `up` must not inherit them; the roster stays.
+      const cleared = clearHarnessSeeds(dir).map((f) => f.replaceAll("\\", "/").split("/").pop());
+      if (cleared.join() !== "harness-admins.txt,harness-flags.txt") failures.push(`clearHarnessSeeds removed ${cleared.join()}`);
+      if (existsSync(join(fixtureDir(dir), "harness-flags.txt")) || !existsSync(join(fixtureDir(dir), "whitelist.txt"))) failures.push("clearHarnessSeeds left a harness file or took the roster");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
   const p = sessionPaths("S", 2);
   if (p.clients.length !== 2) failures.push("sessionPaths did not list 2 clients");
   if (p.clients[1].box !== join("S", "client2", "profile", "agent-box")) failures.push(`client 2 box is ${p.clients[1].box}`);
@@ -736,9 +771,18 @@ export function fixtureDir(serverDir) {
 // Pure but for the file read, which is passed in. Returns [{ name, text }].
 export function parseSeeds(flags, readText = (f) => readFileSync(f, "utf8")) {
   const seeds = [];
+  const harnessFlags = [];
   for (let i = 0; i < flags.length; i++) {
     const v = flags[i + 1];
-    if (flags[i] === "--roster") {
+    if (flags[i] === "--admin-client") {
+      // The engine administrator role for those clients (harness build only, LF_HarnessStaff.GrantAdminIfListed).
+      // A `-server` boot has no server.json to carry game.admins, so the account list is a seed file.
+      const ids = String(v ?? "").split(",").map(Number).filter((n) => Number.isInteger(n) && n > 0);
+      if (!ids.length) throw new Error("--admin-client needs client numbers, like --admin-client 1");
+      seeds.push({ name: "harness-admins.txt", text: ids.map(sessionUid).join("\n") + "\n" });
+    } else if (flags[i] === "--no-instant-approval") harnessFlags.push("no-instant-approval");
+    else if (flags[i] === "--skip-playtime-gate") harnessFlags.push("skip-playtime-gate");
+    else if (flags[i] === "--roster") {
       const ids = String(v ?? "").split(",").map(Number).filter((n) => Number.isInteger(n) && n > 0);
       if (!ids.length) throw new Error("--roster needs player ids, like --roster 2,3");
       seeds.push({ name: "whitelist.txt", text: rosterText(ids) });
@@ -751,7 +795,25 @@ export function parseSeeds(flags, readText = (f) => readFileSync(f, "utf8")) {
       seeds.push({ name: basename(v.slice(0, eq)), text: Buffer.from(v.slice(eq + 1), "base64").toString("utf8") });
     }
   }
+  // One flags file for both: LF_HarnessStaff reads it only in a harness build.
+  if (harnessFlags.length) seeds.push({ name: "harness-flags.txt", text: [...new Set(harnessFlags)].join("\n") + "\n" });
   return seeds;
+}
+
+// The harness-only `up` flags (--admin-client, --no-instant-approval, --skip-playtime-gate) work only in a harness
+// build, which is the playtest, pack and template missions (-scrDefine LF_HARNESS); on the bare DebugWorld
+// they would silently do nothing. Returns an error message, or "" when the flags are fine.
+export function harnessFlagProblem(flags, mission, clients) {
+  const used = ["--admin-client", "--no-instant-approval", "--skip-playtime-gate"].filter((f) => flags.includes(f));
+  if (!used.length) return "";
+  if (mission !== "playtest" && !isTemplateMission(mission)) return `${used.join(", ")} need a harness build: add --mission playtest`;
+  const i = flags.indexOf("--admin-client");
+  if (i !== -1) {
+    for (const n of String(flags[i + 1] ?? "").split(",").map(Number)) {
+      if (!Number.isInteger(n) || n < 1 || n > clients) return `--admin-client ${flags[i + 1]}: client ${n} is not one of the ${clients} client(s) this session starts`;
+    }
+  }
+  return "";
 }
 
 // Pure but for the file read: the flags with each --seed <file> turned into --seed-b64 <name>=<base64>,
@@ -777,6 +839,22 @@ export function seedProfile(serverDir, seeds) {
     writeFileSync(f, s.text);
     return f;
   });
+}
+
+// The harness-only seed files (--admin-client, --no-instant-approval, --skip-playtime-gate) live in the server
+// profile, which a checkout keeps from one session to the next. A fresh `up` removes them first, so a flag asked
+// for once never leaks into a later session; `restart` keeps them (same session). Returns the files removed.
+export const HARNESS_SEED_FILES = ["harness-admins.txt", "harness-flags.txt"];
+export function clearHarnessSeeds(serverDir) {
+  const dir = fixtureDir(serverDir);
+  const gone = [];
+  for (const name of HARNESS_SEED_FILES) {
+    const f = join(dir, name);
+    if (!existsSync(f)) continue;
+    rmSync(f, { force: true });
+    gone.push(f);
+  }
+  return gone;
 }
 
 // The server logs `session slot S for player P: <uid>` when a harness client first resolves an
@@ -1326,7 +1404,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {

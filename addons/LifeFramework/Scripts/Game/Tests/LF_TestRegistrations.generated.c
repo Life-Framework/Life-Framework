@@ -206,6 +206,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessResetInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessScreenText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessSessionScope(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HarnessStaff(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessStandClear(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessStandSide(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HaulTidy(), LF_TestTier.WORLD);

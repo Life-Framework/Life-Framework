@@ -259,6 +259,33 @@ class LF_AgentCommand
 			cmd.Arg1 = parts[2];
 			return true;
 		}
+		if (cmd.Verb == "chat")
+		{
+			// chat [admin|global|local|ooc] <text>: one chat line through the real send path (LF_HarnessChat).
+			array<string> chatWords = {};
+			for (int w = 2; w < parts.Count(); w++)
+				chatWords.Insert(parts[w]);
+
+			if (!LF_HarnessChat.Split(chatWords, cmd.Arg1, cmd.Arg2))
+			{
+				cmd.Error = "need_chat_text";
+				return false;
+			}
+
+			return true;
+		}
+		if (cmd.Verb == "staffapprove")
+		{
+			// staffapprove <uid>: approve that account's open police application through the staff API (LF_HarnessStaff).
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_uid";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "hold")
 		{
 			if (parts.Count() < 3)
@@ -1407,6 +1434,24 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", "no_character");
 			else
 				itemCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb + " " + cmd.Arg1);
+			return;
+		}
+		if (cmd.Verb == "chat")
+		{
+			string chatResult = LF_HarnessChat.Send(cmd.Arg1, cmd.Arg2);
+			if (chatResult.StartsWith("ok "))
+				WriteResult(cmd.Id, "ok", chatResult.Substring(3, chatResult.Length() - 3));
+			else
+				WriteResult(cmd.Id, "error", chatResult.Substring(6, chatResult.Length() - 6));
+			return;
+		}
+		if (cmd.Verb == "staffapprove")
+		{
+			SCR_ChimeraCharacter staffCharacter = LF_Utils.GetLocalCharacter();
+			if (!staffCharacter)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				staffCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb + " " + cmd.Arg1);
 			return;
 		}
 		if (cmd.Verb == "animseen")
