@@ -55,7 +55,7 @@ entities by name, and leaves one loose S105 for the engine save.
 4. Restored the pre-move save; pass 2 with `-addons LifeFramework,LF_Everon1989`
    from repo folders.
 5. Packed both addons; restored the save again; pass 2 from the packed folders
-   with `-addons 79636E668EA37AC9,B1E84D5687E11724`.
+   with `-addons 4550A2B656E1B569,B1E84D5687E11724`.
 6. Subscene world: `test --only` booted on the pack world.
 7. Header save: on the pre-move tree, pass 1 booted on the playtest header
    (core only). Back on the moved tree, pass 2 on the header, which now lives in
@@ -247,7 +247,7 @@ Both build and pack once the tooling is fixed. Timings on Gaming-Box:
 | rdb rewrite (headless Workbench) | 7 s, 453 resources, moved entries gone | 7 s, 5 resources |
 | `build` (`-buildData PC`) | 8 s, OK | 8 s, OK |
 | `pack` | 8 s, 49.4 MB `data.pak` | 8 s, 2.6 MB `data.pak` |
-| boot from packed (`-addons 79636E668EA37AC9,B1E84D5687E11724`) | pass 2 29/29, client joined | |
+| boot from packed (`-addons 4550A2B656E1B569,B1E84D5687E11724`) | pass 2 29/29, client joined | |
 
 What the tooling needs (none of it is in `main` yet):
 
@@ -255,7 +255,7 @@ What the tooling needs (none of it is in `main` yet):
    `cmdPack` and `ensureResourceDatabase` pass the repo `addons` folder and the
    game junction as two flags. Workbench keeps the gproj's own folder and the
    last flag, which works for the core and fails for the pack:
-   `ENGINE (E): Addon 'LF_Everon1989' dependency '79636E668EA37AC9' can't be added`,
+   `ENGINE (E): Addon 'LF_Everon1989' dependency '4550A2B656E1B569' can't be added`,
    and no pack rdb is written. One comma-separated `-addonsDir` fixes it.
 2. **`tools\cli pack` gets only its first argument.** `pack` is missing from the
    dispatch list in `tools/cli.mjs` that passes all flags, so `--out` is

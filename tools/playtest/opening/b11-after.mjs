@@ -1,3 +1,4 @@
+// opening-run: host=log
 // tools/playtest/opening/b11-after.mjs - opening-day beat B11 "After: the log and the session record"
 // (docs/playtest/m4-opening-day.md). Runs standalone:
 //   node tools/playtest/opening/b11-after.mjs [--log <console.log>] [--triage <table>] [--root <repo>]

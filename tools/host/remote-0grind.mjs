@@ -175,11 +175,13 @@ export function createClient({ token, serviceId = FLAGSHIP_0GRIND.serviceId, bas
     action: (name) => request("POST", `/armareforger/${svc}/${name}`),
     systemSettings: () => request("GET", `/armareforger/${svc}/system_settings`),
     serverSettings: () => request("GET", `/armareforger/${svc}/server_settings`),
+    patchSystemSettings: (changes) => request("PATCH", `/armareforger/${svc}/system_settings`, { json: changes }),
     patchServerSettings: (changes) => request("PATCH", `/armareforger/${svc}/server_settings`, { json: changes }),
     rcon: (command) => request("POST", `/armareforger/${svc}/rcon`, { json: { command } }),
     list: (path) => request("GET", fs("/files"), { query: { path } }),
     get: (path) => request("GET", fs("/file"), { query: { path }, raw: true }),
-    put: (path, bytes) => request("PUT", fs("/file"), { query: { path }, body: bytes }),
+    // Upload is PUT /filesystem/upload, as the panel does it; the KB page's PUT /filesystem/file is a 405.
+    put: (path, bytes) => request("PUT", fs("/upload"), { query: { path }, body: bytes }),
   };
 }
 
@@ -236,6 +238,7 @@ export function toServerSettings(server) {
   const out = {};
   const g = server?.game ?? {};
   for (const [from, to] of GAME_MAP) if (g[from] !== undefined) out[to] = g[from];
+  if (Array.isArray(out.mods)) out.mods = withModVersion(out.mods);
   const gp = g.gameProperties ?? {};
   for (const [from, to] of PROPS_MAP) if (gp[from] !== undefined) out[to] = gp[from];
   const op = server?.operating ?? {};
@@ -244,12 +247,27 @@ export function toServerSettings(server) {
   return out;
 }
 
-// Their ServerConfig.json with our game and operating blocks; their ports, addresses and RCON kept.
-// game.maxPlayers stays theirs: the slot count is what 0grind rents.
+// 0grind stores a mod without a version as version "" (the latest); ours says the same, so it
+// does not show as a change on every push.
+export function withModVersion(mods) {
+  return mods.map((m) => (m && typeof m === "object" && m.version === undefined ? { ...m, version: "" } : m));
+}
+
+// Their ServerConfig.json with our game and operating blocks over it; their ports, addresses and RCON
+// kept. 0grind writes the file again from server_settings on every start, with its own defaults
+// (missionHeader, VONCanTransmitCrossFaction, modsRequiredByDefault), so the keys ours does not set stay
+// theirs and a second push is clean. game.maxPlayers stays theirs: the slot count is what 0grind rents.
+// gameProperties.persistence stays theirs too: the panel's System page writes it (load and keep session
+// save, hive, storages), and dropping it would start every boot on a fresh world.
 export function mergeServerConfig(theirs, ours) {
   const out = structuredClone(theirs ?? {});
-  out.game = structuredClone(ours.game ?? {});
-  if (theirs?.game?.maxPlayers !== undefined) out.game.maxPlayers = theirs.game.maxPlayers;
+  const tg = theirs?.game ?? {};
+  const og = structuredClone(ours.game ?? {});
+  out.game = { ...structuredClone(tg), ...og };
+  if (tg.gameProperties || og.gameProperties) out.game.gameProperties = { ...structuredClone(tg.gameProperties ?? {}), ...(og.gameProperties ?? {}) };
+  if (tg.gameProperties?.persistence !== undefined) out.game.gameProperties.persistence = structuredClone(tg.gameProperties.persistence);
+  if (Array.isArray(out.game.mods)) out.game.mods = withModVersion(out.game.mods);
+  if (tg.maxPlayers !== undefined) out.game.maxPlayers = tg.maxPlayers;
   if (ours.operating !== undefined) out.operating = { ...(theirs?.operating ?? {}), ...structuredClone(ours.operating) };
   for (const k of KEPT_TOP_LEVEL) {
     if (theirs && k in theirs) out[k] = structuredClone(theirs[k]);
@@ -316,7 +334,21 @@ export const OWNER_CONFIG_PATH = "/profile/LifeFramework/config.json";
 export const STAFF_PATH = "/profile/LifeFramework/staff.txt";
 
 // The plan and, with yes, the write. Returns { ok, reason?, lines, warnings }.
-export async function configPush(client, { dir, repoDir, adminsPending = false, yes = false } = {}) {
+// only: a list of server.json game fields (name, password, passwordAdmin, ...). It limits the push to
+// those server_settings keys: ServerConfig.json and the mod's own files are not read or written, so the
+// scenario and the mods list stay as the box has them (the vanilla scenario before the mods are published).
+export function onlySettings(wanted, only) {
+  const keys = new Set();
+  for (const f of only) {
+    const hit = GAME_MAP.find(([from]) => from === f);
+    if (!hit) return { error: `--only ${f}: not a game field config push knows (${GAME_MAP.map(([a]) => a).join(", ")})` };
+    keys.add(hit[1]);
+  }
+  return { wanted: Object.fromEntries(Object.entries(wanted).filter(([k]) => keys.has(k))) };
+}
+
+export async function configPush(client, { dir, repoDir, adminsPending = false, yes = false, only = null } = {}) {
+  if (only?.length) return configPushOnly(client, { dir, repoDir, adminsPending, yes, only });
   const staged = stageServerJson(dir, { repoDir, adminsPending });
   if (!staged.ok) return { ok: false, reason: staged.reason, lines: [], warnings: [] };
   const ours = staged.server;
@@ -381,6 +413,34 @@ export async function configPush(client, { dir, repoDir, adminsPending = false, 
   }
   lines.push(written.length ? `written: ${written.join(", ")}; restart to apply (host 0grind restart --yes)` : "nothing to write");
   return { ok: true, lines: lines.map(allSecrets), warnings: staged.warnings.map(redact), written };
+}
+
+async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }) {
+  // The roster's admins matter only when admins is one of the pushed fields; a pending administrator uid
+  // must not block a name or password push.
+  const staged = stageServerJson(dir, { repoDir, adminsPending: adminsPending || !only.includes("admins") });
+  if (!staged.ok) return { ok: false, reason: staged.reason, lines: [], warnings: [] };
+  const ours = staged.server;
+  const sel = onlySettings(toServerSettings(ours), only);
+  if (sel.error) return { ok: false, reason: sel.error, lines: [], warnings: [] };
+  const cur = await client.serverSettings();
+  if (!cur.ok) return { ok: false, reason: cur.reason, status: cur.status, lines: [], warnings: [] };
+  const current = cur.data?.settings ?? {};
+  const allSecrets = makeRedactor([...secretValues(ours), ...secretValues(current)]);
+  const { changes, lines: settingLines } = diffSettings(current, sel.wanted);
+  const lines = [settingLines.length ? `server_settings (only ${only.join(", ")}): ${settingLines.length} to change` : `server_settings (only ${only.join(", ")}): unchanged`, ...settingLines];
+  if (!yes) {
+    lines.push("dry run: nothing written; add --yes to write (the change applies on the next restart)");
+    return { ok: true, lines: lines.map(allSecrets), warnings: staged.warnings.map(allSecrets), written: [] };
+  }
+  const written = [];
+  if (Object.keys(changes).length) {
+    const p = await client.patchServerSettings(changes);
+    if (!p.ok) return { ok: false, reason: allSecrets(p.reason), lines: lines.map(allSecrets), warnings: [] };
+    written.push(`server_settings (${Object.keys(changes).length})`);
+  }
+  lines.push(written.length ? `written: ${written.join(", ")}; restart to apply` : "nothing to write");
+  return { ok: true, lines: lines.map(allSecrets), warnings: staged.warnings.map(allSecrets), written };
 }
 
 // ---------------------------------------------------------------- logs and saves
@@ -471,6 +531,29 @@ export function systemSettingsWarnings(settings) {
   if (s.armareforger_hack_autorecover_sessions_crash === true) out.push("System: Attempt Auto-Recovering from Max Sessions Bug is on; it deletes ALL saves on that crash");
   if (s.armareforger_a2s_enabled === false) out.push("System: Enable Public A2S Access is off; the Server Browser and host players cannot query it");
   return out;
+}
+
+// The System-page values the flagship needs. armareforger_load_session_save is the real "Enable Loading
+// Session Save" (the launch flag); server_settings.load_session_save is the Server Settings page's own
+// toggle (2026-11-15: that one was already on while this was off, and the saves were not loaded).
+export const FLAGSHIP_SYSTEM_SETTINGS = {
+  restart_on_failure: true,
+  armareforger_load_session_save: true,
+  armareforger_hack_postgame_session_clear: false,
+  armareforger_hack_autorecover_sessions_crash: false,
+  armareforger_a2s_enabled: true,
+};
+
+// The keys of FLAGSHIP_SYSTEM_SETTINGS that differ from the box, and the diff lines.
+export function systemSettingsPlan(current) {
+  const changes = {};
+  const lines = [];
+  for (const [k, v] of Object.entries(FLAGSHIP_SYSTEM_SETTINGS)) {
+    if (current?.[k] === v) continue;
+    changes[k] = v;
+    lines.push(`  ~ ${k}: ${JSON.stringify(current?.[k])} -> ${JSON.stringify(v)}`);
+  }
+  return { changes, lines };
 }
 
 export function isReadOnlyRcon(command) {

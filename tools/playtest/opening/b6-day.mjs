@@ -1,3 +1,4 @@
+// opening-run: host=outside
 // Beat B6 of the opening-day script (#1602): the desk half of the 2-hour day (docs/playtest/m4-opening-day.md "B6").
 //
 //   node tools/playtest/opening/b6-day.mjs --host <scratch dir> [--config <file>] [--proofs <dir>]
@@ -12,7 +13,9 @@
 //
 //   day-config    the config's `dayCycle` is accelerated with a 120-minute day (12x: one real minute is 12 game minutes).
 //   perf-samples  the newest <host>/perf/perf-*.csv (`tools\cli host perf`, #1406) holds at least one sample row, and
-//                 every row has a CPU, a memory and an upload number.
+//                 every row has a CPU, a memory and an upload number. No csv at all is BLOCKED (nothing has sampled this
+//                 host yet, #1693); an empty or broken csv is FAIL. Under `tools\cli opening` the host is the beat's own
+//                 folder (it prints it), so run `host perf` with LF_HOST_DIR set to that folder.
 //   clock-rate    five real minutes move the clock one in-game hour. Only a game session can read the clock, so the
 //   late-join     desk check is whether the `day-rate` proof verb (#1303) is on main: BLOCKED by #1301 and #1303 while it
 //                 is not, then PASS naming the verb to run on the session (and B's rejoin, read by eye, for late-join).
@@ -96,7 +99,7 @@ export function runB6({ host, config, proofs }) {
 
   // perf-samples
   const file = newestPerf(host);
-  if (!file) check("perf-samples", "FAIL", `no perf-*.csv under ${join(host, "perf")}: run \`tools\\cli host perf\` for the length of the beat`);
+  if (!file) check("perf-samples", "BLOCKED", `no perf csv yet under ${join(host, "perf")}: run \`tools\\cli host perf\` for the length of the beat (a fresh host has sampled nothing)`);
   else {
     const p = judgePerfCsv(readFileSync(file, "utf8"));
     check("perf-samples", p.ok ? "PASS" : "FAIL", `${p.reason} (${file.split(/[\\/]/).pop()})`);

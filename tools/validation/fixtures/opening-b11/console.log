@@ -6,7 +6,7 @@
 19:33:52.211  ENGINE       : FileSystem: Adding relative directory 'C:\lf\host\addons\LF_Everon1989' to filesystem under name LF_Everon1989
 19:33:52.380  DEFAULT      : Loaded addons:
 19:33:52.380  DEFAULT      :   gproj: 'addons/data/ArmaReforger.gproj' guid: '58D0FB3206B6F859' version: '1.9.0.37'
-19:33:52.381  DEFAULT      :   gproj: 'addons/LifeFramework/LifeFramework.gproj' guid: '79636E668EA37AC9' version: '0.4.2'
+19:33:52.381  DEFAULT      :   gproj: 'addons/LifeFramework/LifeFramework.gproj' guid: '4550A2B656E1B569' version: '0.4.2'
 19:33:52.381  DEFAULT      :   gproj: 'addons/LF_Everon1989/LF_Everon1989.gproj' guid: '7A1C0D4B93E52F68' version: '0.4.1'
 19:33:54.870  SCRIPT       : [LFDebug:Core] game mode ready, components initialized
 19:33:54.912  DEFAULT      : Entered online game state.

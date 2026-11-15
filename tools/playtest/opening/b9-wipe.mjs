@@ -1,3 +1,4 @@
+// opening-run: host=tmp
 // Opening-day beat B9, wipe with notice (#1492; docs/playtest/m4-opening-day.md "B9").
 //
 //   node tools/playtest/opening/b9-wipe.mjs [--host <dir under tmp/>] [--keep]
@@ -9,12 +10,13 @@
 // the copy (LF_ANNOUNCE_SESSIONS), so website/content/sessions.json is never touched. The copy is
 // removed at the end unless --keep.
 //
-// One `CHECK <id> PASS|BLOCKED|FAIL <detail>` line per step, then
+// One `BEAT B9 <id> PASS|BLOCKED|FAIL <detail>` line per step (the form `toolscli opening` reads), then
 // `SUMMARY b9-wipe ok|blocked|fail pass=N blocked=N fail=N`. BLOCKED always names the open issue:
 // #1413 is the wipe notice gate (`host wipe` refuses without a notice 24 h old). While it is not
 // on main, `host wipe` wipes a stopped host with no notice, so the script probes that on a second
 // throwaway copy and marks the notice steps BLOCKED instead of wiping the main copy early.
-// Exit 1 only on FAIL (or a refused --host); BLOCKED exits 0.
+// A host with no save point has nothing to wipe: one `BEAT B9 wipe BLOCKED no save yet ...` line, exit 0, no copy made (#1693).
+// Any other crash prints a `BEAT B9 run FAIL` line, never a bare stack trace. Exit 1 only on FAIL (or a refused --host); BLOCKED exits 0.
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -33,7 +35,12 @@ const NOTICE_FIELDS = ["announcedAt", "noticeAt", "postedAt", "announced"];
 // Stands in for `host announce --send` in the scratch sessions.json (agents never post to Discord):
 // stamps `announced` with the post time, as the real send does (#1537). Scratch files only.
 export function simulatePost(file, now = new Date()) {
-  const data = JSON.parse(readFileSync(file, "utf8"));
+  let data;
+  try {
+    data = JSON.parse(readFileSync(file, "utf8"));
+  } catch {
+    return false; // no sessions.json: the announce step failed and has already said so
+  }
   if (!data?.next || typeof data.next !== "object") return false;
   data.next.announced = now.toISOString();
   writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
@@ -77,7 +84,7 @@ export function checkScratchSource(host, root = ROOT) {
 const results = [];
 const check = (id, status, detail = "") => {
   results.push({ id, status, detail });
-  console.log(`CHECK ${id} ${status}${detail ? ` ${detail}` : ""}`);
+  console.log(`BEAT B9 ${id} ${status}${detail ? ` ${detail}` : ""}`);
 };
 
 function cli(args, hostDir, extraEnv = {}) {
@@ -94,6 +101,11 @@ function cli(args, hostDir, extraEnv = {}) {
 const saves = (dir) => findSavePoints(hostPaths(dir).profile).length;
 
 export async function runB9({ source = FIXTURE, keep = false } = {}) {
+  if (!saves(source)) {
+    check("wipe", "BLOCKED", `no save yet: ${source} holds no save point, so there is nothing to wipe (run the host once, or give a host that has saved)`);
+    console.log("SUMMARY b9-wipe blocked pass=0 blocked=1 fail=0");
+    return 0;
+  }
   const stamp = new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14) + "-" + process.pid;
   const runDir = join(ROOT, "tmp", "opening-b9", `run-${stamp}`);
   const name = basename(source);
@@ -205,5 +217,11 @@ if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.m
     }
     source = resolve(host);
   }
-  process.exit(await runB9({ source, keep: args.includes("--keep") }));
+  try {
+    process.exit(await runB9({ source, keep: args.includes("--keep") }));
+  } catch (e) {
+    console.log(`BEAT B9 run FAIL ${String(e.message).replace(/s+/g, " ").slice(0, 300)}`);
+    console.log("SUMMARY b9-wipe fail pass=0 blocked=0 fail=1");
+    process.exit(1);
+  }
 }

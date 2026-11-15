@@ -1,11 +1,6 @@
 GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {
  ID "F76972565B1C64E5"
  {
-  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
-   ID "5444245AE36BBA30"
-   coords -6.8625 3.653 4.454
-   angleY -90
-  }
   GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
    ID "1D80E8ECA9494EAC"
    coords -5.268 1.225 4.463
@@ -44,11 +39,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -5.267 2.258 4.761
    angleY -90
   }
-  GenericEntity : "{526989AF84C08006}Prefabs/Props/Furniture/LightRectangle_01/LightRectangle_01.et" {
-   ID "182583C660823C82"
-   coords 7.2 3.544 4.454
-   angleY -90
-  }
   GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
    ID "CF04631B47073C49"
    coords 5.943 1.225 4.463
@@ -66,10 +56,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   GenericEntity : "{1C20BA47C3F9CFF4}Prefabs/Structures/BuildingParts/Eletrical/SocketElectrical_01.et" {
    ID "8D3379B74FD07E99"
    coords 7.2 0.454 2.45
-  }
-  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
-   ID "BE76DCE19BFA66C3"
-   coords 0.3375 3.653 4.454
   }
   GenericEntity : "{FCD5B0DE50F886B7}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_04.et" {
    ID "FB5E0CFE3AD91126"
@@ -105,14 +91,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "3113C57D2E8C386C"
    coords 0.3375 0.454 6.548
    angleY 180
-  }
-  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
-   ID "2D5E3EB4F290F205"
-   coords -4.275 3.649 -3.275
-  }
-  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
-   ID "B7CD1213071590EE"
-   coords 4.275 3.649 -3.275
   }
   GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
    ID "FFDE52893A633168"
@@ -285,6 +263,210 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "2CB7F53CEB3B3AC9"
    coords -7.4326 0.101 6.448
    angleY 180
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "6002062CE4D7774A"
+   coords -6.063 3.649 -4.375
+  }
+  LightEntity {
+   ID "BBB5E43E56DA3B0B"
+   coords -6.063 3.45 -4.375
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "D1ACA126230509D8"
+   coords -6.063 3.649 -0.125
+  }
+  LightEntity {
+   ID "AD470BA2B733EE67"
+   coords -6.063 3.45 -0.125
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "3B6F1DEFB65A8117"
+   coords -1.988 3.649 -4.375
+  }
+  LightEntity {
+   ID "C049B0121A9C6122"
+   coords -1.988 3.45 -4.375
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "4A05E596E0DFC70D"
+   coords -1.988 3.649 -0.125
+  }
+  LightEntity {
+   ID "B01B40160F330DA3"
+   coords -1.988 3.45 -0.125
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "4D6243969914A59E"
+   coords 2.087 3.649 -4.375
+  }
+  LightEntity {
+   ID "A07B6FE576AD6FA1"
+   coords 2.087 3.45 -4.375
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "7182C6D98415F02E"
+   coords 2.087 3.649 -0.125
+  }
+  LightEntity {
+   ID "227FDD45B72D1813"
+   coords 2.087 3.45 -0.125
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "FE23011350620EBE"
+   coords 6.162 3.649 -4.375
+  }
+  LightEntity {
+   ID "37BE371E20DEBAC2"
+   coords 6.162 3.45 -4.375
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "668353533E5A342E"
+   coords 6.162 3.649 -0.125
+  }
+  LightEntity {
+   ID "A4DD8BE96C6F7AF7"
+   coords 6.162 3.45 -0.125
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "804219CD41ECF8C0"
+   coords -6.85 3.649 4.45
+  }
+  LightEntity {
+   ID "35F71B9DCD3541D7"
+   coords -6.85 3.45 4.45
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "1B2E3D74DEFBAFDE"
+   coords -2.175 3.649 4.45
+  }
+  LightEntity {
+   ID "B67870C7C180358F"
+   coords -2.175 3.45 4.45
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "72AF20F7B5E40A31"
+   coords 2.875 3.649 4.45
+  }
+  LightEntity {
+   ID "0F360A372E682590"
+   coords 2.875 3.45 4.45
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "2BBDB41B8EAB9641"
+   coords 7.25 3.649 4.45
+  }
+  LightEntity {
+   ID "3404ECAA4DC262A0"
+   coords 7.25 3.45 4.45
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
   }
   GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
    ID "7F40350A7E30EF7B"
