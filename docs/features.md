@@ -694,6 +694,11 @@
   The server owns the machine-wide `server-2001` lock while it runs. The
   no-shutdown-save error now fires at teardown, not on the SHUTDOWN state change
   that comes before the save. Selftest: `tools/validation/host-selftest.mjs`.
+  `host players [address:a2sport]` (#1297, merged, in-dev) sends an A2S_INFO query
+  (challenge step included, 3 s timeout, default `127.0.0.1:17777`) and prints the
+  server name, map and players/max. Operator tool for the session runbook and the
+  opening gate's player target; nothing publishes it. `tools/host/a2s.mjs`; selftest
+  `tools/validation/a2s-selftest.mjs`.
   Joining: the host runs `-noBackend`, so every player has the NULL platform
   identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
   failed with `#EL-CC_Error_NoAccount` (nobody could join).
@@ -2159,6 +2164,7 @@
 - ✅ (2026-11-09) List rows span the sheet. A row sized to its text and sat centred in the scroll, so on the 900-wide price list the car lot cut "needs $2,500" to "needs $2," and "$1,000" to "$1,00". `AddListRow` sets each row to the sheet width less `LIST_ROW_INSET` (list and row padding, scrollbar). Seen on a laptop session client at 1920x1080: the lot and the general store.
 
 ### Signs — `Scripts/Game/Feature/Signs/`
+- 🧪 **Grid cell label plates** (2026-11-15; LOGIC `signs/grid-label`). A sign id `grid:<slug>` is a debug-grid cell label (`docs/architecture/world-zones.md`). `LF_SignCatalog.Find` answers it from `GridLabel` without reading the config. The title is the slug with spaces (`grid:police-gates` prints POLICE GATES), and Read shows a card with the title only. `tools\cli grid place` writes one beside each cell's gap. Grid zone only; town signs stay string-table keys.
 - ✅ **Picture on a sign card** (#579 spike, LOGIC `signs/image`). `LF_SignDef.m_sImage` (an imageset) and `m_sImageName` (default `full`) add an `LF_EUIPartKind.IMAGE` part under the title; `LF_UIScreen` loads it into an `ImageWidget` (`UI/Layouts/UIKit/LF_UIImage.layout`) with `LoadImageFromSet`, and logs `[LFDebug:UIKit]` when the imageset does not load. The hospital card shows `Assets/UI/Illustrations/medic_flow.imageset`, which the 1989 pack sets through a signs overlay (below). `tools\cli ui-image <svg|png> <name>` makes the texture and imageset headless; route and limits in `docs/research/ui-illustration-pipeline.md`.
 - ✅ **Signs take pack overlays** (#323 batch 3, 2026-11-14; LOGIC `signs/overlay`). `LF_SignDef` is an override-model record keyed by sign id: each `LF_SignConfig` file the mission header lists in `m_aLF_ConfigOverlays` adds, replaces, patches or removes a sign (`LF_SignCatalog` logs `[LFDebug:Signs] pack overlay <file> changed <n> signs`). The core `LF_Signs.conf` names no pack resource; `LF_Everon1989/Configs/Signs/LF_Signs_Everon1989.conf` gives the `hospital` sign its `medic_flow` picture, listed in both pack headers. A core-only server shows the hospital card without the picture.
 - 🧪 **Rules and Run your own cards** (#1279, 2026-11-14; offline check `validate-pack-sign-cards.mjs`; a core test cannot name the pack). The 1989 pack's `LF_Signs_Everon1989.conf` adds two sign ids, `rules` ("Town rules": server name, the five orientation-quiz rules as one line each, and the alpha wipe notice) and `run_your_own` (the framework, install guide and config generator on life-framework.org). Text is pack keys `LF-Sign_Rules_*` and `LF-Sign_RunYourOwn_*`; rules wording is held for Q1. Neither card is placed in a world yet, so no board shows them.

@@ -9,7 +9,9 @@
 //                                                  <parent> (an epic), when <parent> is at GitHub's 100 sub-issue cap
 //   slice list <parent> [--ready]                  the DAG, which slices are ready, ready ones by critical path
 //   slice brief <issue>                            the agent brief for one card
-//   slice record <issue> --model M --outcome O --gate pass|fail --minutes N [--wait N] [--type T]
+//   slice record <issue> --model M --outcome O --gate pass|fail --minutes N [--wait N] [--type T] [--force]
+//                                                  --outcome merged is refused unless gh shows a merged PR for the slice (ws/slice-<N> or a body that
+//                                                  refs it); --force records it anyway; --pr-fixture <json> { prs: [...] } stands in for gh
 //   slice stats                                    first-pass rate, rework and median minutes per model and slice type
 //
 // `--fixture <json>` (list, brief) reads { issues: [...] } instead of gh; `--ledger <file>` moves the ledger, which
@@ -18,14 +20,14 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { gitCommonDir, ghBin, run } from "../wt.mjs";
-import { TEMPLATE, brief, cardBody, checkPlan, ledgerRow, parseCard, parsePlan, renderList, renderStats, suggestModel, topo } from "../lib/slice.mjs";
+import { TEMPLATE, brief, cardBody, checkPlan, ledgerRow, mergeVerdict, parseCard, parsePlan, renderList, renderStats, suggestModel, topo } from "../lib/slice.mjs";
 
 export const help = "slice new|list|brief|record|stats   slice cards: scaffold a chapter's slices as sub-issues, show the DAG and the ready queue by critical path, print a slice's agent brief, log and report outcomes per model";
 
 const USAGE = `usage: tools\\cli slice new <parent> [--plan file] [--dry-run] [--attach <epic>] [--fixture f.json]
        tools\\cli slice list <parent> [--ready] [--fixture f.json]
        tools\\cli slice brief <issue> [--fixture f.json]
-       tools\\cli slice record <issue> --model haiku|sonnet|opus --outcome merged|handoff|split|failed --gate pass|fail --minutes N [--wait N] [--type T]
+       tools\\cli slice record <issue> --model haiku|sonnet|opus --outcome merged|handoff|split|failed --gate pass|fail --minutes N [--wait N] [--type T] [--force]
        tools\\cli slice stats [--json]`;
 
 const val = (args, name) => {
@@ -126,6 +128,14 @@ export async function main(args, ctx) {
       };
       const p = [...(row.issue ? [] : ["<issue>"]), ...ledgerRow(row)];
       if (p.length) throw new Error(`slice record needs ${p.join(", ")}`);
+      if (row.outcome === "merged" && !args.includes("--force")) {
+        const prFixture = val(args, "--pr-fixture");
+        const prs = prFixture
+          ? JSON.parse(readFileSync(resolve(prFixture), "utf8")).prs
+          : [["--head", `ws/slice-${row.issue}`], ["--search", `${row.issue} in:body`]].flatMap((q) => JSON.parse(ghRaw(root, ["pr", "list", "--state", "all", ...q, "--limit", "100", "--json", "number,state,mergedAt,headRefName,body"])));
+        const v = mergeVerdict(prs, row.issue);
+        if (!v.ok) throw new Error(`refusing --outcome merged: ${v.reason}`);
+      }
       const file = ledgerPath(root, args);
       mkdirSync(dirname(file), { recursive: true });
       appendFileSync(file, JSON.stringify(row) + "\n");
