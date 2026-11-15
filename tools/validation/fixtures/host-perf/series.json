@@ -1,0 +1,20 @@
+{
+  "note": "Raw samples as the sampler seam returns them: t epoch ms, cpuSec cumulative CPU seconds of the server process, wsMb working set, sentBytes cumulative bytes sent. 30 s apart.",
+  "samples": [
+    { "t": 1794744000000, "cpuSec": 100, "wsMb": 2048, "sentBytes": 0 },
+    { "t": 1794744030000, "cpuSec": 112, "wsMb": 2100, "sentBytes": 3750000 },
+    { "t": 1794744060000, "cpuSec": 130, "wsMb": 2150, "sentBytes": 11250000 },
+    { "t": 1794744090000, "cpuSec": 142, "wsMb": 2200, "sentBytes": 15000000 }
+  ],
+  "budgets": {
+    "ok": { "cpuPct": 80, "uploadMbit": 10 },
+    "overUpload": { "cpuPct": 80, "uploadMbit": 1.2 },
+    "overCpu": { "cpuPct": 40, "uploadMbit": 10 }
+  },
+  "expectedCsv": "time,cpu_pct,ws_mb,up_mbit,players\n2026-11-15T12:00:30.000Z,40.0,2100,1.00,\n2026-11-15T12:01:00.000Z,60.0,2150,2.00,\n2026-11-15T12:01:30.000Z,40.0,2200,1.00,\n",
+  "expectedVerdict": {
+    "ok": "[LFDebug:HostPerf] verdict ok: cpu avg 46.7% (peak 60.0%) of 80% budget, upload avg 1.33 Mbit/s (peak 2.00) of 10 Mbit/s budget, working set peak 2200 MB, 3 samples over 90 s",
+    "overUpload": "[LFDebug:HostPerf] verdict OVER BUDGET (upload): cpu avg 46.7% (peak 60.0%) of 80% budget, upload avg 1.33 Mbit/s (peak 2.00) of 1.2 Mbit/s budget, working set peak 2200 MB, 3 samples over 90 s",
+    "overCpu": "[LFDebug:HostPerf] verdict OVER BUDGET (cpu): cpu avg 46.7% (peak 60.0%) of 40% budget, upload avg 1.33 Mbit/s (peak 2.00) of 10 Mbit/s budget, working set peak 2200 MB, 3 samples over 90 s"
+  }
+}

@@ -100,7 +100,7 @@ class LF_Test_SaveStampPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the save parses" + tag);
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(33, version, "the save is written at version 33 (buildstamp is payload 32)" + tag);
+			ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written at the current version (buildstamp is payload 32)" + tag);
 
 			JsonLoadContext fullLoad = new JsonLoadContext(false);
 			fullLoad.LoadFromString(saved);
@@ -108,7 +108,7 @@ class LF_Test_SaveStampPersist : LF_Test
 			ctx.Equal(420, Bank(UID), "the bank balance from the old build is back" + tag);
 			ctx.True(LF_SaveStamp.WasLoaded(), "the stamp was read" + tag);
 			ctx.EqualStr(LF_SaveStamp.FAKE_OLD_BUILD, LF_SaveStamp.LoadedGameBuild(), "the stamp names the build that wrote the save" + tag);
-			ctx.Equal(33, LF_SaveStamp.LoadedSaveVersion(), "the stamp names the save version" + tag);
+			ctx.Equal(LF_TestSaveVersion.CURRENT, LF_SaveStamp.LoadedSaveVersion(), "the stamp names the save version" + tag);
 			ctx.True(LF_SaveStamp.IsFromOtherBuild(), "the save is from another build than the running one" + tag);
 			ctx.Equal(0, LF_PersistenceComponentSerializer.GetReadFailures(), "every payload read" + tag);
 			ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "the load is not damaged, autosave runs" + tag);

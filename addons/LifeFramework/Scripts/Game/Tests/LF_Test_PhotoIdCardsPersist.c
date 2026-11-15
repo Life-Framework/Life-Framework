@@ -50,7 +50,7 @@ class LF_Test_PhotoIdCardsPersist : LF_Test
 			ctx.True(loadContext.LoadFromString(saved), "the save parses");
 			int version;
 			loadContext.ReadValue("version", version);
-			ctx.Equal(33, version, "the save is written at version 33 (idcards is payload 30)");
+			ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written at the current version (idcards is payload 30)");
 			ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, loadContext), "the save loads");
 			string tag = string.Format(" (load %1)", pass);
 			ctx.Equal(3, LF_PhotoIdCard.Count(), "the three cards are back" + tag);
