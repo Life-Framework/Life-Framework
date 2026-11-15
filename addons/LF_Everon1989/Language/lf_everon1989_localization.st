@@ -294,6 +294,21 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{88A40BFFEF7CB897}" {
+     Id "LF-Shop_Desc_PharmacyCounter"
+     Target_en_us "Morphine and saline, for licensed medics only."
+     Comment "Shop description of the drug store pharmacy counter (outlet pharmacy_counter)."
+    }
+    CustomStringTableItem "{B1BC977506FDDA48}" {
+     Id "LF-Shop_Name_PharmacyCounter"
+     Target_en_us "Dispensary"
+     Comment "Shop name of the drug store pharmacy counter: the item catalogue outlet pharmacy_counter, morphine and saline behind the medic licence."
+    }
+    CustomStringTableItem "{7729AC333C1E6567}" {
+     Id "LF-Shop_Open_PharmacyCounter"
+     Target_en_us "Ask the pharmacist"
+     Comment "Action prompt at the drug store pharmacy counter: opens the price list of the restricted medicines."
+    }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
      Target_en_us "Talk to the teller, then Deposit or Withdraw."

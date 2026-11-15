@@ -95,12 +95,13 @@ export function walkable(laneResults) {
 async function runSlug(args) {
   const h = await import("../harness.mjs");
   const { loadWorld } = await import("../layers.mjs");
-  const { readChildren } = await import("../../tools/buildings/pipeline/store-slots.mjs");
+  const { buildingFiles, readChildren } = await import("../../tools/buildings/pipeline/store-slots.mjs");
   const { loadScenario, runScenario, scenarioProblems, toWorld } = await import("../../tools/buildings/pipeline/scenario.mjs");
   const slug = flag(args, "--slug");
   const spec = JSON.parse(readFileSync(join(ROOT, "tools", "buildings", slug, "spec.json"), "utf8"));
   const addonDir = join(ROOT, "addons", spec.addon || "LifeFramework");
-  const prefabs = [spec.store?.prefab, spec.name].filter(Boolean).map((n) => `${spec.prefab_dir}/${n}.et`);
+  const files = buildingFiles(spec);
+  const prefabs = [files.store, files.building].filter(Boolean);
   const world = loadWorld(ROOT);
   const named = flag(args, "--entity");
   const place = world.find((e) => (named ? e.name === named : prefabs.some((p) => (e.prefab || "").endsWith(p))));
@@ -109,7 +110,10 @@ async function runSlug(args) {
     return 1;
   }
   const entity = place.name;
-  const doors = readChildren(readFileSync(join(addonDir, spec.prefab_dir, `${spec.name}_Base.et`), "utf8")).filter((c) => /^DoorSet/.test(c.name));
+  // A building made from a vanilla one (spec.vanilla) hangs its door sets on the model's sockets, with no
+  // coords to walk to; they are the base game's own doors, so the door walk is skipped and the scenario proves the rest.
+  if (spec.vanilla) console.log(`doors: skipped, ${basename(files.building)} keeps the vanilla door sets on their sockets`);
+  const doors = spec.vanilla ? [] : readChildren(readFileSync(join(addonDir, files.base), "utf8")).filter((c) => /^DoorSet/.test(c.name));
   const box = (flag(args, "--box") || "").split(",").map(Number);
   const [fw, fd] = spec.budget?.footprint_m || [12, 10];
   const [x0, x1, z0, z1, ht] = box.length === 5 && box.every((v) => !Number.isNaN(v)) ? box : [-fw / 2, fw / 2, -fd / 2, fd / 2, spec.budget?.height_m || 5];
@@ -229,7 +233,7 @@ async function runSlug(args) {
   console.log(`doors: ${results.map((r) => `${r.door} offered=${+r.offered} open=${+r.opened} walkable=${+r.walkable} close=${+r.closed}`).join("; ") || "none in the base prefab"}`);
   console.log(`pictures (${pictures.length}) in ${out}: ${pictures.map((p) => basename(p)).join(", ")}`);
   if (scenario) console.log(`scenario: ${scenario.steps.length} step(s), ${(scenario.checks || []).length} check(s), ${(scenario.log || []).length} log line(s)`);
-  if (!doors.length) fails.push(`${spec.name}_Base.et has no door sets`);
+  if (!doors.length && !spec.vanilla) fails.push(`${basename(files.base)} has no door sets`);
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "building-proof: FAIL" : `building-proof: PASS (${doors.length} door(s) open and walkable, ${pictures.length} pictures${scenario ? ", the scenario passed" : ""})`);
   return fails.length ? 1 : 0;
