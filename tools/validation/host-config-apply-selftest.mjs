@@ -28,7 +28,8 @@ const ADMIN_PASSWORD = "adm-Beta-9942";
 const WEBHOOK = "https://discord.com/api/webhooks/123456/SECRETTOKEN-xyz";
 const ADMIN_UID = "a1b2c3d4-0000-4000-8000-000000000001";
 const MOD_UID = "modmodmod-2";
-const SECRETS = [PASSWORD, ADMIN_PASSWORD, WEBHOOK, "SECRETTOKEN-xyz"];
+const ANNOUNCE = "https://discord.com/api/webhooks/777/ANNOUNCE-TOKEN-qq";
+const SECRETS = [PASSWORD, ADMIN_PASSWORD, WEBHOOK, "SECRETTOKEN-xyz", ANNOUNCE, "ANNOUNCE-TOKEN-qq"];
 
 const base = mkdtempSync(join(tmpdir(), "lf-host-config-apply-"));
 const repo = join(base, "repo");
@@ -159,6 +160,17 @@ try {
     cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true, env: { ...process.env, LF_HOST_DIR: join(base, "unused") },
   });
   if (cliBad.status === 0 || !/apply/.test(`${cliBad.stdout}${cliBad.stderr}`)) fail("host config without a subcommand did not print the usage");
+
+  // 10. announceWebhookUrl (read by `host post`, #1414) is a known host secret: no "not used" warning,
+  // and its value never prints.
+  const announce = freshHost({ game: { password: PASSWORD, passwordAdmin: ADMIN_PASSWORD }, announceWebhookUrl: ANNOUNCE });
+  const ar = applyConfig(announce, { repoDir: repo });
+  if (!ar.ok) fail(`apply with announceWebhookUrl was refused: ${ar.reason}`);
+  else {
+    const aw = [...(ar.lines ?? []), ...(ar.warnings ?? [])].join("\n");
+    if (/announceWebhookUrl/.test(aw)) fail(`a secrets.json with announceWebhookUrl was warned about: ${aw}`);
+    for (const l of leaks(aw)) fail(`the summary for announceWebhookUrl holds a secret: ${l.slice(0, 4)}...`);
+  }
 } finally {
   safeRemoveTree(base);
 }
