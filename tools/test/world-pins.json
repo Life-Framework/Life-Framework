@@ -166,6 +166,10 @@
       "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
     },
     {
+      "name": "store/folded-stack",
+      "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
+    },
+    {
       "name": "store/shelf-till",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
