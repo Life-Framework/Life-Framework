@@ -50,6 +50,30 @@ section, **Maintainer only**, and is not shown to the moderator.
 Agents can drive the same incident with `proof incident-handled` (#1451). That
 proof is planned and not on main yet.
 
+Runs: [November 2026, desk run](./moderator-drill-run-2026-11.md) (#1677): the guide
+read alone against the incident text below, the key read after the ruling.
+
+## Desk run: the incident text
+
+A desk run replaces steps 1 to 4 with this text; the reader then does step 5 and
+proposes the ruling in writing. The reader gets this section and the guide, and
+reads the scoring sheet only after the ruling is written.
+
+The reporter's ticket, from Tomas Reil: "About 21:14 UTC outside the Morton general
+store. I walked out and Mara Voss shot me until I went down. We had not spoken.
+My clip has the F9 stamp, which reads 21:14:31 UTC."
+
+The administrator reads the panel at 21:20:40 UTC and tells the moderator:
+
+```
+REPORTED #43 Downed, 6 min ago: Tomas Reil / Mara Voss (type !handled 43 when done)
+REPORTED #42 Damage, 6 min ago: Tomas Reil / Mara Voss (type !handled 42 when done)
+REPORTED #41 Damage, 6 min ago: Tomas Reil / Mara Voss (type !handled 41 when done)
+```
+
+The administrator adds: no other rows for the pair in the last hour, and no
+Hold-up, Cash or Weapon aimed row among them.
+
 ## Maintainer only: scoring sheet
 
 Mark each line from the moderator's ticket and the log. A correct ruling logs the
