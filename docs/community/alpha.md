@@ -67,7 +67,7 @@ What to expect:
 The alpha opens to the public when all four hold:
 
 - [ ] **Sessions at the player target.** Several sessions in a row reach the
-  player target (about 40 players).
+  player target (16 players, a full server: the alpha runs on 16 slots).
 - [ ] **No save loss.** No session in the alpha lost or corrupted a save, and a
   restart brought every player's progress back.
 - [ ] **No blocking regression.** No open issue labelled `regression` stops a
