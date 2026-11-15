@@ -1,5 +1,5 @@
 {
-  "_about": "Tests that still read the playtest town. tools\\cli test runs them in a second boot on DebugWorld; every other WORLD and PERSISTENCE test boots GridWorld (tools/lib/test-world.mjs, docs/architecture/three-worlds.md). Seeded from the W1 GridWorld failures (#1803). Remove a pin when its test gains grid fixtures; the list should end empty.",
+  "_about": "Tests that still read the playtest town. tools\\cli test runs them in a second boot on DebugWorld; every other WORLD and PERSISTENCE test boots GridWorld (tools/lib/test-world.mjs, docs/architecture/three-worlds.md). Seeded from the W1 GridWorld failures (#1803) plus the town tests added since (#1804). Remove a pin when its test gains grid fixtures; the list should end empty.",
   "pins": [
     {
       "name": "counter/local-only",
@@ -150,6 +150,10 @@
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
     {
+      "name": "shop/fence-stock-trade",
+      "reason": "reads the town fence NPC (FenceNpc) and its shop, which are not in GridWorld"
+    },
+    {
       "name": "shop/refusal-reasons",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
@@ -188,6 +192,10 @@
     {
       "name": "systems/world-places",
       "reason": "checks town world gates and places, which are not in GridWorld"
+    },
+    {
+      "name": "townboard/board-world",
+      "reason": "reads the town board and the post office sign through LF_Places, which are not in GridWorld"
     },
     {
       "name": "vehicles/key-inventory",
