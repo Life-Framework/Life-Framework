@@ -136,21 +136,7 @@ class LF_BanRecord
 	//! INCIDENT_MAX, oldest first.
 	static array<int> RecentIncidentIds(string uid)
 	{
-		array<int> ids = {};
-		if (uid.IsEmpty())
-			return ids;
-
-		array<ref LF_IncidentRecord> records = LF_IncidentLog.Query(vector.Zero, -1, 0, -1, "");
-		foreach (LF_IncidentRecord record : records)
-		{
-			if (record.m_sSubjectUid == uid || record.m_sOtherUid == uid)
-				ids.Insert(record.m_iNumber);
-		}
-
-		while (ids.Count() > INCIDENT_MAX)
-			ids.RemoveOrdered(0);
-
-		return ids;
+		return LF_IncidentLog.RecentNumbersFor(uid, INCIDENT_MAX);
 	}
 
 	//------------------------------------------------------------------------------------------------
