@@ -75,8 +75,9 @@ export function failingTests(text) {
 
 // May the guard revert this merge? Never a revert, never a merge from before the guard started, never one with
 // no PR number, never twice.
-export function revertRefusal(c, state) {
+export function revertRefusal(c, state, { step } = {}) {
   if (!c) return "no culprit";
+  if (step && fixCardInstead(c, step)) return fixCardInstead(c, step);
   if (c.beforeStart) return `merge ${c.sha.slice(0, 8)} was on main before the guard started`;
   if (isRevert(c.subject, c.branch)) return `merge ${c.sha.slice(0, 8)} is a revert; the guard never reverts a revert`;
   const pr = prOfMerge(c.subject);
@@ -103,4 +104,70 @@ export function statusLine(state, { alive, now = Date.now(), off = false } = {})
   const last = state.lastResult ? `, last ${state.lastResult.verdict} at ${String(state.lastResult.head ?? "").slice(0, 8)} ${ago(state.lastResult.at)}` : "";
   const rev = state.reverted?.length ? `, ${state.reverted.length} revert(s)` : "";
   return `MAIN GUARD ${what} (pid ${alive}); green ${state.lastGreen ? state.lastGreen.slice(0, 8) : "none yet"}${last}${rev}`;
+}
+
+// ---- Stage 1: the Workbench compile, first, on every new main head (batched to one run per ~3 min).
+export const COMPILE_BATCH_MS = 3 * 60 * 1000;
+export const COMPILE = ["ci", "--wb-only", "--compile-only"];
+
+// `ci --wb-only --compile-only` exit code -> ok | fail | env. 3 = no pool machine took it, 4 = Workbench died
+// short of RAM (tools/lib/wb-gate.mjs ENV_SHORT_CODE): the machine failed, not the scripts.
+export function compileVerdict(code) {
+  if (code === 0) return "ok";
+  if (code === 3 || code === 4 || code == null) return "env";
+  return "fail";
+}
+
+export function shouldCompile(state, head, now) {
+  if (!head || head === state.lastCompiled || head === state.lastCompileRed) return { run: false, why: "main unchanged" };
+  const last = Date.parse(state.lastCompileAt ?? "");
+  if (Number.isFinite(last) && now - last < COMPILE_BATCH_MS) return { run: false, why: "batching compile" };
+  return { run: true, why: `compile ${head.slice(0, 8)}` };
+}
+
+// The compile gate. compile(sha) -> "ok"|"fail"|"env". A failure is deterministic: no recheck, straight to the
+// bisect over the merges since the last compiled-ok head, and the culprit is reverted (refusal permitting).
+// Returns { verdict: "compiled-ok"|"red"|"env", culprit, refusal, tested }.
+export async function compileGate({ head, merges, state, compile }) {
+  const first = await compile(head);
+  if (first === "ok") return { verdict: "compiled-ok", tested: [] };
+  if (first === "env") return { verdict: "env", tested: [] };
+  const ENV = Symbol("env");
+  try {
+    const b = await bisect(candidates(merges), async (c) => {
+      const v = await compile(c.sha);
+      if (v === "env") throw ENV;
+      return v === "fail";
+    });
+    return { verdict: "red", culprit: b.culprit, refusal: revertRefusal(b.culprit, state, { step: "compile" }), tested: b.tested };
+  } catch (e) {
+    if (e === ENV) return { verdict: "env", tested: [] };
+    throw e;
+  }
+}
+
+// "Merge pull request #1867 from Life-Framework/ws/town-maintainer-edits" -> "ws/town-maintainer-edits".
+export function branchOfMerge(subject) {
+  const m = /^Merge pull request #\d+ from [^/\s]+\/(\S+)/.exec(String(subject ?? ""));
+  return m ? m[1] : "";
+}
+export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
+
+// Never revert over town layout (#1872: town findings warn on every branch; a placement audit red is a fix card,
+// not a revert) and never auto-revert the maintainer's town edits for anything but a compile break.
+// Returns the reason when the guard must open a fix card instead, or null.
+export function fixCardInstead(c, step) {
+  if (!c || step === "compile") return null;
+  if (step === "placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
+  const br = c.branch || branchOfMerge(c.subject);
+  if (MAINTAINER_BRANCH.test(br)) return `#${prOfMerge(c.subject)} is the maintainer's town edit (${br}); only a compile break reverts it`;
+  return null;
+}
+
+export function fixCard(c, step, what, failLog) {
+  const pr = prOfMerge(c?.subject);
+  return {
+    title: `Main guard: ${step} red on main after #${pr} (${String(what).slice(0, 60)})`,
+    body: [`The main guard saw **${what}** (${step}) fail twice on main; the bisect points at #${pr} (merge \`${c?.sha}\`).`, "", `It was not reverted: ${fixCardInstead(c, step) ?? "see the guard log"}. Fix forward on a branch.`, "", `Log on the guard machine: \`${failLog}\``, "", "🤖 Generated with [Claude Code](https://claude.com/claude-code)"].join("\n"),
+  };
 }

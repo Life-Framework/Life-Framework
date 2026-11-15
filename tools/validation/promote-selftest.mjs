@@ -148,7 +148,7 @@ try {
 
   // ---- 1/2. listing
   const stableBefore = sh(origin, "rev-parse", "stable");
-  let res = await mute(() => cmdPromote(work, [], { gh }));
+  let res = await mute(() => cmdPromote(work, [], { gh, guardStatus: () => "green" }));
   check(res.code === 0, `list failed: ${res.out}`);
   check(/#11 /.test(res.out) && /#12 /.test(res.out) && /#13 /.test(res.out), `list missed a PR: ${res.out}`);
   check(sh(origin, "rev-parse", "stable") === stableBefore, "listing moved stable");
@@ -167,7 +167,7 @@ try {
   sh(work, "checkout", "-q", "main");
 
   // ---- 5. a failed issue whose PR is in range blocks --confirm
-  res = await mute(() => cmdPromote(work, ["--to", m12.slice(0, 12), "--confirm", "--fail", "102"], { gh }));
+  res = await mute(() => cmdPromote(work, ["--to", m12.slice(0, 12), "--confirm", "--fail", "102"], { gh, guardStatus: () => "green" }));
   check(res.code === 1 && /stable not moved/.test(res.out), `confirm with an in-range failure: ${res.out}`);
   check(sh(origin, "rev-parse", "stable") === stableBefore, "stable moved despite an in-range failure");
   check(issues[102].labels.includes("regression"), "failed issue lacks regression");
@@ -176,7 +176,7 @@ try {
   issues[102].labels.push("needs-playtest");
 
   // ---- 3. confirm up to #12: stable moves, tag, 102 verified+closed; 101 also refs PR 13 (after range) so it stays
-  res = await mute(() => cmdPromote(work, ["--to", m12.slice(0, 12), "--confirm"], { gh }));
+  res = await mute(() => cmdPromote(work, ["--to", m12.slice(0, 12), "--confirm"], { gh, guardStatus: () => "green" }));
   check(res.code === 0, `confirm failed: ${res.out}`);
   check(sh(origin, "rev-parse", "stable") === m12, "stable not at #12 after confirm");
   check(/^stable-\d{8}-/.test(sh(origin, "tag", "--list", "stable-*")), "no stable tag pushed");
@@ -188,23 +188,23 @@ try {
   check(issues[102].state === "closed", "a verified issue was reopened by a re-run");
 
   // ---- 2. refusals: side commit, and moving back
-  res = await mute(() => cmdPromote(work, ["--to", side, "--confirm"], { gh }));
+  res = await mute(() => cmdPromote(work, ["--to", side, "--confirm"], { gh, guardStatus: () => "green" }));
   check(res.code === 1 && /not a fast-forward/.test(res.out), `non-ff target was accepted: ${res.out}`);
-  res = await mute(() => cmdPromote(work, ["--to", m11, "--confirm"], { gh }));
+  res = await mute(() => cmdPromote(work, ["--to", m11, "--confirm"], { gh, guardStatus: () => "green" }));
   check(res.code === 1 && /not a fast-forward/.test(res.out), `moving stable backwards was accepted: ${res.out}`);
   check(sh(origin, "rev-parse", "stable") === m12, "stable moved on a refusal");
   const direct = spawnSync("git", ["push", "origin", `${side}:refs/heads/stable`], { cwd: work, encoding: "utf8", windowsHide: true });
   check(direct.status === 0 ? false : true, "git accepted a raw non-ff push (bare repo should refuse with denyNonFastForwards)") ;
 
   // ---- 3b. second promotion to main: PR 13's issues verified, 101 now verified too
-  res = await mute(() => cmdPromote(work, ["--confirm"], { gh }));
+  res = await mute(() => cmdPromote(work, ["--confirm"], { gh, guardStatus: () => "green" }));
   check(res.code === 0 && sh(origin, "rev-parse", "stable") === m13, `second confirm: ${res.out}`);
   check(issues[101].state === "closed" && issues[103].state === "closed" && issues[101].labels.includes("verified"), "second promotion did not verify 101/103");
-  res = await mute(() => cmdPromote(work, ["--confirm"], { gh }));
+  res = await mute(() => cmdPromote(work, ["--confirm"], { gh, guardStatus: () => "green" }));
   check(res.code === 0 && /nothing to promote/.test(res.out), `promote with nothing new: ${res.out}`);
 
   // ---- 5b. fail after the fact
-  res = await mute(() => cmdPromote(work, ["--fail", "103"], { gh }));
+  res = await mute(() => cmdPromote(work, ["--fail", "103"], { gh, guardStatus: () => "green" }));
   check(issues[103].state === "open" && issues[103].labels.includes("regression") && !issues[103].labels.includes("verified"), `--fail: ${issues[103].state} ${issues[103].labels}`);
 
   // ---- 6. revert one merge on main
