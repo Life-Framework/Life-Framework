@@ -1,0 +1,5 @@
+10:00:01.000  SCRIPT       : [LFDebug:Boot] game mode up
+10:00:02.000  SCRIPT       : [LFDebug:Config] owner config loaded from $profile:config.json (schemaVersion 1, this build reads 1)
+10:00:02.100  SCRIPT (W): [LFDebug:Config] shops.bogus is not a known key; ignored
+10:00:02.200  SCRIPT (E): [LFDebug:Config] shops.defaultSellPrice = -5 is below the minimum 0; keeping the shipped value
+10:00:02.300  SCRIPT (E): [LFDebug:Config] vehicles.fleet is not a record (an object); record skipped
