@@ -399,7 +399,9 @@ export async function configPush(client, { dir, repoDir, adminsPending = false, 
 }
 
 async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }) {
-  const staged = stageServerJson(dir, { repoDir, adminsPending });
+  // The roster's admins matter only when admins is one of the pushed fields; a pending administrator uid
+  // must not block a name or password push.
+  const staged = stageServerJson(dir, { repoDir, adminsPending: adminsPending || !only.includes("admins") });
   if (!staged.ok) return { ok: false, reason: staged.reason, lines: [], warnings: [] };
   const ours = staged.server;
   const sel = onlySettings(toServerSettings(ours), only);
