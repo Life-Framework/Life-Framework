@@ -63,6 +63,16 @@ class LF_VehicleOffer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! False when an override removed this vehicle from the price list: the lot neither shows nor sells it.
+	bool IsOfferedIn(LF_VehiclePricesConfig config)
+	{
+		if (!config)
+			return true;
+
+		return !config.IsRemoved(m_sPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetNameKey()
 	{
 		return m_sNameKey;
@@ -212,16 +222,39 @@ class LF_VehicleLotComponent : ScriptComponent
 		if (!m_aOffers)
 			return 0;
 
-		return m_aOffers.Count();
+		LF_VehiclePricesConfig config = LF_VehiclePricesConfig.Get();
+		int count;
+		foreach (LF_VehicleOffer offer : m_aOffers)
+		{
+			if (offer && offer.IsOfferedIn(config))
+				count++;
+		}
+
+		return count;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The index-th offer still on sale: a vehicle an override removed is skipped, so the sheet rows
+	//! and the Buy index agree (#1741).
 	LF_VehicleOffer GetOfferAt(int index)
 	{
-		if (!m_aOffers || index < 0 || index >= m_aOffers.Count())
+		if (!m_aOffers || index < 0)
 			return null;
 
-		return m_aOffers.Get(index);
+		LF_VehiclePricesConfig config = LF_VehiclePricesConfig.Get();
+		int seen;
+		foreach (LF_VehicleOffer offer : m_aOffers)
+		{
+			if (!offer || !offer.IsOfferedIn(config))
+				continue;
+
+			if (seen == index)
+				return offer;
+
+			seen++;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -282,6 +315,10 @@ class LF_VehicleLotComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected LF_VehicleOffer FindOffer(ResourceName prefab)
 	{
-		return OfferIn(m_aOffers, prefab);
+		LF_VehicleOffer offer = OfferIn(m_aOffers, prefab);
+		if (offer && !offer.IsOfferedIn(LF_VehiclePricesConfig.Get()))
+			return null;
+
+		return offer;
 	}
 }
