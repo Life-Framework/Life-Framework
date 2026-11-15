@@ -11,6 +11,16 @@
 export const SERVER_NAME = "Life Framework | Everon 1989 (Alpha)";
 export const DEFAULT_ADDRESS = "Press **Join the community server** in the launcher: https://life-framework.org/playtest";
 export const DEFAULT_RULES = "https://life-framework.org/docs/player-faq";
+// The join block of a session post (`host announce`, `host post session`). The opening post keeps
+// DEFAULT_ADDRESS: it says the password is gone, which this block does not. The password itself is
+// never posted; players get it in Discord.
+export const WORKSHOP_CORE = "https://reforger.armaplatform.com/workshop/4550A2B656E1B569";
+export const WORKSHOP_PACK = "https://reforger.armaplatform.com/workshop/B1E84D5687E11724";
+export const DEFAULT_SESSION_JOIN = [
+  "- In-game **Server Browser**: search `Life Framework | Everon 1989 (Alpha)`, or direct join with code `0412780561`.",
+  "- The password is in Discord.",
+  `- Mods (Workshop): Life Framework <${WORKSHOP_CORE}> and Everon 1989 <${WORKSHOP_PACK}>`,
+].join("\n");
 export const WIPE_NOTICE_MS = 24 * 60 * 60 * 1000;
 
 export const WIPE_LINE =
@@ -39,7 +49,7 @@ export function sessionRow({ at, build, wipe, announced = null }) {
 }
 
 // Fills the template. The `{{wipe}}` line is kept only for a wipe session; the rest is replaced everywhere.
-export function buildPost({ template, at, build, wipe, address = DEFAULT_ADDRESS, rules = DEFAULT_RULES }) {
+export function buildPost({ template, at, build, wipe, address = DEFAULT_SESSION_JOIN, rules = DEFAULT_RULES }) {
   const epoch = Math.floor(Date.parse(at) / 1000);
   const vars = {
     time: `<t:${epoch}:F>`,
