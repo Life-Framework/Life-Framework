@@ -17,6 +17,7 @@ class LF_StaticReset
 		LF_Places.ResetStatics();
 		LF_DayCycleSave.ResetStatics();
 		LF_PrefabSlots.ResetStatics();
+		LF_VehicleColoursConfig.Reload();
 		LF_SoundSlots.ResetStatics();
 		LF_Breach.ResetStatics();
 		LF_PlayerIdentity.ResetStatics();
