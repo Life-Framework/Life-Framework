@@ -81,6 +81,7 @@ import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
 import * as worldDiff from "./lib/world-diff.mjs";
 import * as worldChecks from "./lib/world-checks.mjs";
+import * as gateWarnings from "./lib/gate-warnings.mjs";
 import * as worldTestJudge from "./lib/world-test-judge.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
@@ -700,6 +701,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   // `validate --world`: only the checks that read .layer files (tools/lib/world-checks.mjs). On a maintainer
   // world branch (any validate, CI included) a failing LAYOUT check is a warning, not a blocker.
   if (area === "validate" && opts.world) scripts = worldChecks.worldScripts(scripts);
+  // The town-only layout checks (TOWN_LAYOUT_CHECKS) warn on every branch whatever this says.
   const demote = area === "validate" && (!!opts.world || worldChecks.MAINTAINER_BRANCH.test(process.env.GITHUB_HEAD_REF || wt.currentBranch(root) || ""));
   if (scripts.length === 0) {
     console.log(`No ${area} checks defined. Add scripts to tools/${TOOL_DIRS[area]}/ and they run automatically.`);
@@ -774,8 +776,8 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     }
     const { res } = job;
     const ok = res.status === 0;
-    const warnOnly = !ok && demote && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
-    console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on a maintainer world edit: a warning, listed in the PR body" : ""}`);
+    const warnOnly = !ok && area === "validate" && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
+    console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on the town (hand-edited): a warning, never blocking" : ""}`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok && !warnOnly) failed++;
@@ -3199,10 +3201,8 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   prepareResourceDatabase(root, opts);
   // --shards N|auto: the registry split into balanced slices, each its own pool job, run together (tools/lib/test-shards.mjs).
   if (opts.shards !== undefined && !only.length && !opts.world && tier === "all") {
-    // A pass the cache already holds (identical inputs) is not run again.
-    const wanted = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
-    const specs = wanted.filter((sp) => !passCacheCheck(root, { tier, only, opts: { ...opts, coreOnly: sp.coreOnly, red } })?.hit);
-    if (!specs.length) return 0;
+    // A pass the cache already holds (identical inputs) is not run again (runShardedTests checks each pass).
+    const specs = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
     const r = await runShardedTests(root, specs, opts);
     if (r !== null) return r;
   }
@@ -3253,16 +3253,20 @@ function passCacheCheck(root, { tier, only, opts }) {
   }
   const key = testCache.cacheKey(inputs);
   const mainRoot = wt.mainRootOf(root);
-  const rec = testCache.lookup(mainRoot, key);
-  if (!rec) return { hit: false, key, inputs, mainRoot };
-  console.log(testCache.reuseLine(rec));
+  // The exact key, or (for a slim gate's LOGIC need) the agent's own `--tier all` pass of this very tree.
+  const found = testCache.lookupCovering(mainRoot, inputs);
+  if (!found) return { hit: false, key, inputs, mainRoot };
+  const { rec } = found;
+  const as = found.via === "exact" ? null : tier;
+  console.log(testCache.reuseNote(rec, found.key, as));
+  console.log(testCache.reuseLine({ ...rec, key: found.key }));
   try {
     const dir = join(root, "tmp", "test-results");
     mkdirSync(dir, { recursive: true });
     const sha = wt.git(root, ["rev-parse", "HEAD"]).stdout.trim();
-    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha)) + "\n", "utf8");
+    appendFileSync(join(dir, "summaries.jsonl"), JSON.stringify(testCache.cachedSummary(rec, sha, as)) + "\n", "utf8");
   } catch {}
-  return { hit: true, key, inputs, mainRoot };
+  return { hit: true, key: found.key, inputs, mainRoot };
 }
 
 function passCacheStore(root, cache, { tier, only, opts, run }) {
@@ -3280,6 +3284,9 @@ function passCacheStore(root, cache, { tier, only, opts, run }) {
     worktree: pool.slugFor(root),
     consoleLog: run.consoleLog ?? "",
     inputs: cache.inputs,
+    // who ran it: a queue gate (LF_SHIP_QUEUE_JOB) or an agent by hand; a gate logs "reused agent pass" for the latter
+    by: process.env.LF_SHIP_QUEUE_JOB ? "gate" : "agent",
+    red: false,
   };
   if (testCache.store(cache.mainRoot, cache.key, rec)) console.log(`test: pass cached (key ${cache.key.slice(0, 12)}); an identical run reuses it`);
 }
@@ -3433,6 +3440,16 @@ function runShardChild(root, job) {
 // `test --shards` and `ci`: every pass (normal, core-only) split into slices, all slices running at once.
 // Returns the exit code, or null when there is nothing to gain (one slice, one pass): the caller runs as before.
 async function runShardedTests(root, specs, opts) {
+  // A pass the cache holds for this exact tree (the agent's own `--tier all` run, or an earlier gate) is not run
+  // again; each pass that misses keeps its key to be stored under once it passes.
+  const cacheOf = new Map();
+  specs = specs.filter((sp) => {
+    const c = passCacheCheck(root, { tier: "all", only: [], opts: { ...opts, coreOnly: sp.coreOnly } });
+    if (c?.hit) return false;
+    if (c) cacheOf.set(!!sp.coreOnly, c);
+    return true;
+  });
+  if (!specs.length) return 0;
   const tests = shards.readRegistry(root);
   if (!tests.length) return null;
   let lanes = [];
@@ -3471,6 +3488,8 @@ async function runShardedTests(root, specs, opts) {
     console.log(`=== tests ${pass.name}${pass.coreOnly ? " (core only)" : ""}, ${merged.shards} shard(s) ===`);
     for (const l of shards.mergedLines(merged, { tier, label: pass.name })) console.log(l);
     if (merged.code === 0) stampMergedSuite(root, tier, merged);
+    const cache = cacheOf.get(!!pass.coreOnly);
+    if (merged.code === 0 && cache?.key) passCacheStore(root, cache, { tier: "all", only: [], opts: { ...opts, coreOnly: pass.coreOnly }, run: { passed: merged.passed, total: merged.total, machine: null, consoleLog: "" } });
     if (merged.code !== 0 && code === 0) code = merged.code;
   }
   console.log(`shards: ${((Date.now() - t0) / 1000).toFixed(1)} s wall for ${passes.length} pass(es)`);
@@ -3549,15 +3568,49 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   return cmdTest(true, tier, root, { ...opts, dev: true }); // dev: no pass cache, it wants this run's lines
 }
 
+// On a town-maintainer-* branch the ci placement audit and the layout checks are warn-only, whatever the gate tier
+// (docs/worktrees.md "Maintainer world edits"): they run, print WARN, and record their findings in
+// tmp/gate-warnings.json, which the ship queue lists in the PR body. Any other branch gets the plain checks.
+// The test sources ({ file, text }) that name an assertion's owner when a transcript has no FAIL header.
+function sourceTests(root) {
+  const dir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  return () => {
+    try { return readdirSync(dir).filter((f) => /^LF_Test_w+.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
+  };
+}
+
+function maintainerGate(root, opts = {}) {
+  const branch = process.env.GITHUB_HEAD_REF || wt.currentBranch(root) || "";
+  const on = worldChecks.MAINTAINER_BRANCH.test(branch);
+  if (on) gateWarnings.clearGateWarnings(root);
+  const record = (e) => gateWarnings.recordGateWarning(root, e);
+  return {
+    on,
+    audit: gateWarnings.demotePlacement(branch, (a) => placementAudit(root, a, opts), record),
+    // A failing test is a warning too, at every tier (a compile error or a run with no SUMMARY still blocks).
+    test: (run, fallbackTests = []) => gateWarnings.demoteTests(branch, run, record, { fallbackTests, tests: sourceTests(root) })(),
+    validate: async (o = {}) => {
+      if (!on) return cmdRunArea("validate", root, o);
+      const { code, text } = await gateWarnings.captureStdout(() => cmdRunArea("validate", root, o));
+      const lw = worldChecks.layoutWarnings(text);
+      if (lw.length) record({ check: "layout checks (validate)", lines: lw.map((w) => `validate/${w.check}: ${w.text || "failed"}`), code: 1 });
+      return code;
+    },
+  };
+}
+
 async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
   // `ci --wb-only`: just the Workbench steps, here (what a pool machine runs for a remote gate).
   if (opts.wbOnly) return ciWorkbench(root, opts);
+  const maint = maintainerGate(root, opts);
   // `ci --tiered` (what wt gate / wt ship pass for a data-only diff): classify again here, run T1 only when it still holds.
   if (opts.tiered) {
     const c = gateTierOf(root);
     console.log(`ci: ${gateTier.tierLine(c)}`);
-    if (c.tier === 1) return ciDataOnly(root, c, opts);
+    if (c.tier === 1) return ciDataOnly(root, c, opts, maint);
+    // T2s: a normal code change gets validate --full + LOGIC; the main guard runs the rest after the merge.
+    if (c.tier === 2 && c.slim && process.env.LF_SLIM_GATE !== "0") return ciSlim(root, opts, maint);
   }
   const steps = [
     // The cheap checks run here while the Workbench compile and build run wherever there is room
@@ -3565,26 +3618,27 @@ async function cmdCi(root = ROOT, opts = {}) {
     // taken before any generator check rewrites a file.
     ["validate --full + build", async () => {
       const gate = workbenchGate(root, opts);
-      const v = await cmdRunArea("validate", root, {});
+      const v = await maint.validate();
       const g = await gate;
       return v !== 0 || g !== 0 ? 1 : 0;
     }],
     // Both passes at once, each split over the free pool lanes (`--shards 1` runs them one after the other, whole).
-    ...(opts.shards !== undefined && String(opts.shards) !== "1" ? [["test (sharded)", async () => {
+    // maint.test: a failing test is a warning on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits").
+    ...(opts.shards !== undefined && String(opts.shards) !== "1" ? [["test (sharded)", () => maint.test(async () => {
       const core = launchAddons(root).length > 1 && !opts.skipCoreOnly;
       ensureResourceDatabase(root);
       const r = await runShardedTests(root, [{ coreOnly: false }, ...(core ? [{ coreOnly: true }] : [])], opts);
       if (r !== null) return r;
       const a = await cmdTest(true, "all", root, { ...opts, shards: undefined });
       return core ? (await cmdTest(true, "all", root, { ...opts, shards: undefined, coreOnly: true })) || a : a;
-    }]] : [
-      ["test", () => cmdTest(true, "all", root, opts)],
+    })]] : [
+      ["test", () => maint.test(() => cmdTest(true, "all", root, opts))],
       // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
-      ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
+      ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => maint.test(() => cmdTest(true, "all", root, { ...opts, coreOnly: true }))]] : []),
     ]),
     // After the suite: a branch that moved or added world props must pass the placement audit. It
     // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
-    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), maint.audit)],
     // The config harness (#301): static always (a second, ~1 s), the game-session parts only when config code, a .conf, the schema or a config fixture changed.
     ["config harness", async () => {
       const cg = await import("./commands/config-gate.mjs");
@@ -3603,13 +3657,42 @@ async function cmdCi(root = ROOT, opts = {}) {
   return failed === 0 ? 0 : 1;
 }
 
+// T2s, the slim gate (tools/lib/gate-tier.mjs + gate-risk.mjs, docs/worktrees.md "Gate tiers"): validate --full
+// (the cheap checks here, the Workbench compile on a pool machine with the workbench cap, no build) and the
+// LOGIC tier. No build, full suite, core-only pass, placement audit, config sessions or pre-move e2e: the main
+// guard (tools/main-guard.mjs) runs those on main after the merge and reverts the PR that breaks them.
+async function ciSlim(root, opts = {}, maint = maintainerGate(root, opts)) {
+  const t0 = Date.now();
+  const steps = [
+    ["validate --full (compile, no build)", async () => {
+      const gate = workbenchGate(root, { ...opts, compileOnly: true });
+      const v = await maint.validate();
+      const g = await gate;
+      return v !== 0 || g !== 0 ? 1 : 0;
+    }],
+    ["test (LOGIC tier)", () => maint.test(() => cmdTest(true, "fast", root, { ...opts, shards: undefined }))],
+  ];
+  let failed = 0;
+  for (const [name, fn] of steps) {
+    console.log(`
+=== ci: ${name} ===`);
+    const code = await Promise.resolve(fn());
+    if (code !== 0) failed++;
+  }
+  const secs = Math.round((Date.now() - t0) / 1000);
+  console.log(failed === 0 ? `
+ci: ALL PASSED (T2s slim, ${secs} s)` : `
+ci: ${failed} step(s) failed (T2s slim, ${secs} s)`);
+  return failed === 0 ? 0 : 1;
+}
+
 // T1 (tools/lib/gate-tier.mjs): no Workbench compile or build (`test --no-build` loads the addons from
 // source), no full suite, no core-only pass, no config sessions. One boot runs every LOGIC test plus every
 // test whose source names a touched file, its GUID, its config class or a changed string key.
-async function ciDataOnly(root, c, opts = {}) {
+async function ciDataOnly(root, c, opts = {}, maint = maintainerGate(root, opts)) {
   const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
   const tests = readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") }));
-  if (c.world) return ciWorldEdit(root, c, tests, opts);
+  if (c.world) return ciWorldEdit(root, c, tests, opts, maint);
   const tokens = [...c.ids];
   for (const p of c.data) {
     let text = null;
@@ -3623,10 +3706,10 @@ async function ciDataOnly(root, c, opts = {}) {
   const extra = sel.related.filter((x) => !sel.logic.includes(x));
   console.log(`ci: T1 tests: ${sel.logic.length} LOGIC + ${extra.length} more that name ${tokens.length ? tokens.slice(0, 5).join(", ") : "nothing"}${extra.length ? ` (${extra.slice(0, 8).join(", ")}${extra.length > 8 ? ", ..." : ""})` : ""}`);
   const steps = [
-    ["validate (static)", () => cmdRunArea("validate", root, {})],
+    ["validate (static)", () => maint.validate()],
     ["config harness (static)", async () => (await import("./commands/config-gate.mjs")).runStatic(root)],
-    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
-    ["test (T1: LOGIC + related)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") })],
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), maint.audit)],
+    ["test (T1: LOGIC + related)", () => maint.test(() => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") }), classes)],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -3641,18 +3724,17 @@ async function ciDataOnly(root, c, opts = {}) {
 // T1w, a maintainer hand edit of .layer files (docs/worktrees.md "Maintainer world edits"): static validate,
 // the placement audit on the touched layers (flagged entities the maintainer placed are allowlisted by
 // `world ship`), and only the tests that name a touched layer or entity. No build, no LOGIC sweep.
-async function ciWorldEdit(root, c, tests, opts = {}) {
+async function ciWorldEdit(root, c, tests, opts = {}, maint = maintainerGate(root, opts)) {
   const layers = c.data.map((p) => p.split("/").pop());
   const sel = gateTier.selectTests(tests, worldDiff.testTokens(layers, c.touched || []));
   console.log(`ci: T1w tests: ${sel.related.length} that name a touched layer or entity${sel.related.length ? ` (${sel.related.slice(0, 8).join(", ")})` : ""}`);
   const steps = [
     // Hard checks block; layout checks (town manifest distances, village names) and placement-audit findings warn
     // (tools/lib/world-checks.mjs). Only the checks that read .layer files run.
-    ["validate (world checks)", () => cmdRunArea("validate", root, { world: true })],
+    ["validate (world checks)", () => maint.validate({ world: true })],
     ["placement audit (touched layers; findings warn)", async () => {
-      const code = await Promise.resolve(placementAudit(root, ["--strict", "--top", "200", "--layer", layers.join(",")], opts));
-      if (code !== 0) console.log("WARN  placement audit flagged the touched layers: a warning on a maintainer world edit, listed in the PR body (tmp/place-audit/report.json)");
-      return 0;
+      // maint.audit is warn-only on a town-maintainer-* branch: it logs the WARN and records the findings for the PR body.
+      return maint.audit(["--strict", "--top", "200", "--layer", layers.join(",")]);
     }],
     // A failing test is a warning on a maintainer world edit (tools/lib/world-test-judge.mjs): only a compile
     // error or a run that judged nothing blocks. `world ship` lists the failures in the PR body.
@@ -3823,7 +3905,7 @@ async function workbenchGate(root, opts = {}) {
     else {
       const m = remotes.find((r) => r.name === c.where).m;
       const t0 = Date.now();
-      const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local"], suffix: "-gate", purpose: "gate" });
+      const r = await pool.syncAndRun(root, m, { script: "tools\\cli.mjs", args: ["ci", "--wb-only", "--local", ...(opts.compileOnly ? ["--compile-only"] : [])], suffix: "-gate", purpose: "gate" });
       console.log(`ci: Workbench compile + build on ${m.name}: exit ${r.code} in ${Math.round((Date.now() - t0) / 1000)} s`);
       if (r.code === 0 && r.rDir) pullRemoteRdb(root, m, r.rDir);
       if (r.code === 3 && !retry) {
@@ -4840,7 +4922,9 @@ async function wtLogsCmd(args) {
 // compile, build, or in-game suite, so it never queues for a pool slot.
 function changedFiles(wtRoot) {
   const out = new Set();
-  for (const args of [["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`], ["diff", "--name-only", "HEAD"]]) {
+  // The branch's own change: against the newest main it merged, not a possibly stale origin/<base> (gate-tier.mjs ownBase).
+  const own = gateTier.ownBase((a) => wt.git(wtRoot, a), wt.baseOfRoot(wtRoot));
+  for (const args of [own ? ["diff", "--name-only", own, "HEAD"] : ["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`], ["diff", "--name-only", "HEAD"]]) {
     const r = wt.git(wtRoot, args);
     if (r.status === 0) for (const f of r.stdout.split(/\r?\n/)) if (f.trim()) out.add(f.trim());
   }
@@ -4860,7 +4944,7 @@ function gateTierOf(wtRoot, forceFull = false) {
   if (!files) return { tier: 2, reasons: ["could not read the diff against the base"], data: [], ids: [] };
   // T1w: a maintainer hand edit on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits").
   const branch = git(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
-  const mb = git(["merge-base", `origin/${base}`, "HEAD"]).stdout.trim();
+  const mb = gateTier.ownBase(git, base) || "";
   const worldEdit = (layers, extra) => {
     const d = worldDiff.diffFiles(layers.map((f) => ({ path: f.path, before: f.before, after: f.after })));
     extra.touched = worldDiff.touchedNames(d);
@@ -4869,7 +4953,16 @@ function gateTierOf(wtRoot, forceFull = false) {
       return !!g && !!mb && git(["grep", "-q", "-F", g[0], mb, "--", "addons"]).status === 0;
     });
   };
-  return gateTier.classify(files, { branch, worldEdit });
+  return gateTier.classify(files, { branch, worldEdit, review: reviewFiles(wtRoot) });
+}
+
+// An interrogate file (tmp/review-<slug>.md) keeps the full gate (gate-risk.mjs "review").
+function reviewFiles(wtRoot) {
+  try {
+    return readdirSync(join(wtRoot, "tmp")).filter((f) => /^review-.+.md$/.test(f)).map((f) => `tmp/${f}`);
+  } catch {
+    return [];
+  }
 }
 
 function gateArgs(wtRoot, flags) {
@@ -4883,7 +4976,7 @@ function gateArgs(wtRoot, flags) {
   console.log(`=== gate: ${line} ===`);
   const rest = flags.filter((f) => f !== "--full-gate");
   if (c.tier === 0) return ["validate", "--all"];
-  if (c.tier === 1) return ["ci", "--tiered", ...rest];
+  if (c.tier === 1 || (c.tier === 2 && c.slim)) return ["ci", "--tiered", ...rest];
   return ["ci", ...rest];
 }
 

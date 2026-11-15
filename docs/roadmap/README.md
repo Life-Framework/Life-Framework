@@ -1,8 +1,9 @@
 # Roadmap
 
 The gameplay and release plan. Milestones are the one plan: each ends with a
-public build and a filmed showcase, and a milestone's features do not start
-before the previous milestone is done ([direction](../direction.md)).
+public build, and they run in the order below ([direction](../direction.md)). The next
+milestone starts once the one before it is code-complete and only playtest and
+sign-off are left (M5 started on 2026-11-15 while M4 finished).
 
 A **scope** is one bounded plan: the player loop, the assets it may use, the
 first slice, and how to prove it. Scope cards live in [scopes/](scopes/README.md)
@@ -28,20 +29,20 @@ After launch (M4), each update deepens the stage of a player's life most of the
 community has reached, and carries one **story chapter** that moves the 1989
 relocation arc on (ideas: #214).
 
-Listed in the order they run (restructured 2026-11-14).
+Listed in the order they run (restructured 2026-11-14; status as of 2026-11-16).
 
 | # | Milestone | Status | Chapters |
 | --- | --- | --- | --- |
 | M1 | Playtest Town | **Closed** 2026-11-14. The Workshop publish (#109) moved to M3 | [m1-playtest-town.md](m1-playtest-town.md) |
-| M2 | Living Town | **Current.** Built; a few fixes, then a playtest pass ([m2-outline.md](m2-outline.md)) | Cops and robbers #1003 · The investigation #148 · Downed, not dead #146 · Crime pays #410. Foundation: moderation #145 |
-| M3 | Framework Release | Next. Nothing is published until the whole addon move is done ([m3-outline.md](m3-outline.md), [m3-plan.md](m3-plan.md)) | Your town in five minutes #1004 · Make it yours #1005. Foundation: two addons #223, upgrade path #229, Workshop release #366, record shapes #746, patterns #684 |
-| M2.5 | Showcase and Outreach | After M3, before M4, so outreach points at a build people can get ([m2-5-outline.md](m2-5-outline.md)) | The showcase #566 |
-| M4 | Flagship Live | The public 1989 server ([m4-outline.md](m4-outline.md)) | Opening day #1006 |
-| M5 | Settling in | Started 2026-11-15. First weeks after launch: every player is new ([m5-outline.md](m5-outline.md)) | Armed and dressed · Evenings in the village · On patrol · Arrival · story: The relocated |
-| M6 | Making a living | Players with jobs and money want more from them | The market moves · Getting better at the job · Catch the bus · Working the routes · Scrap and salvage · The bank · story: The state factory |
+| M2 | Living Town | **Built, in playtest.** Most open issues wait on a playtest verdict ([m2-outline.md](m2-outline.md)) | Cops and robbers #1003 · The investigation #148 · Downed, not dead #146 · Crime pays #410. Foundation: moderation #145 |
+| M3 | Framework Release | **Published as 0.1.0, in sign-off.** Both Workshop items are up (core `4550A2B656E1B569`, pack `B1E84D5687E11724`) and a clean server boots from them ([m3-outline.md](m3-outline.md), [release notes](../releases/m3-framework-release.md)) | Your town in five minutes #1004 · Make it yours #1005. Foundation: two addons #223, upgrade path #229, Workshop release #366, record shapes #746, patterns #684 |
+| M2.5 | Showcase and Outreach | **Running alongside M4 and M5** now that there is a build to point at: weekly playtests, recruiting posts, contributor docs ([m2-5-outline.md](m2-5-outline.md)) | The showcase #566 |
+| M4 | Flagship Live | **Finishing.** The alpha server is up behind a password; the first alpha session is Saturday 2026-11-21, 19:00 UK, then every Saturday ([m4-outline.md](m4-outline.md)) | Opening day #1006 |
+| M5 | Settling in | **In development** since 2026-11-15, released chapter by chapter. First weeks after launch: every player is new ([m5-outline.md](m5-outline.md)) | Armed and dressed · Evenings in the village · On patrol · Arrival · story: The relocated |
+| M6 | Making a living | Players with jobs and money want more from them | The market moves · The supermarket ([card](scopes/later/supermarket.md)) · Getting better at the job · Working the routes · Scrap and salvage · The bank · story: The state factory |
 | M7 | Power and turf | Organisations form and crime escalates | Gang war · The convoy job · The big heist · Dirty money · Behind bars · Making detective · story: The shipment |
 | M8 | Roots | Long-term players want something of their own | A place of your own · Working the land · Garages and lockers · Neighbours (pull forward if launch is quiet) · story: The anniversary |
-| Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | GitHub milestone "Backlog" |
+| Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | Catch the bus #1793 · GitHub milestone "Backlog" |
 
 Beside them runs **Development** (tooling and pipelines), which is not a release.
 The asset pipelines (#339 to #343) and the ArchBuilder harness (#995) are
@@ -50,7 +51,7 @@ foundation epics in M5.
 Foundation designs that span milestones: [building-foundation.md](building-foundation.md), placing
 items and props with a preview (epic #927).
 
-Each outline is planned in full only after the milestone before it closes.
+Each milestone is planned in full when the one before it is code-complete.
 
 ## Rules for every scope
 
@@ -102,13 +103,14 @@ Each outline is planned in full only after the milestone before it closes.
 | [Private housing](scopes/later/housing.md) | Buy, rent, and furnish a home; the dacha | M5 |
 | [Crafting](scopes/later/crafting.md) | A general bench; cooking and food | M5 |
 | [Tasks](scopes/later/tasks.md) | Workplace tasks; the state factory | M5 |
+| [The supermarket](scopes/later/supermarket.md) | Full shelves of 1989 groceries, paid at the till | M6 |
 | [Events](scopes/later/events.md) | World events | Parked |
 
 "In the tree" means the system exists; [features.md](../features.md) is the
 ground truth for its behaviour, and the card is kept as design intent. Revive
 folded into the M2 medic theme (#146). Other placed issues: police application
-#128 and jail work #127 (M2), day and night #129 (M4), bus stops #203 and trash
-cans #205 (M5).
+#128 and jail work #127 (M2), day and night #129 (M4), trash cans #205 (M6), bus stops #203
+(Backlog).
 
 ## How to add a scope
 

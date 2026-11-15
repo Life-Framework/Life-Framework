@@ -1,10 +1,13 @@
 // Shared registries are per-feature files; never append to a central list.
-// inputs: addons/**, agent-box/**
+// inputs: addons/**, agent-box/**, tools/lib/static-reset-hooks.mjs
 //
 // Two lists used to be conflict hotspots that every feature PR appended to:
 //   - agent-box/session.mjs: the usage line and the switch of proof verbs. Each verb is now
 //     agent-box/proofs/<verb>.mjs (default export { name, usage, run(ctx) }); session.mjs
 //     discovers the folder and builds its usage text from it.
+//   - Core/LF_StaticReset.c: every feature's world-end ResetStatics call. Each owning file now adds a
+//     `modded class LF_StaticResetHooks` (tools/lib/static-reset-hooks.mjs); `tools\cli heal-hotspots`
+//     moves an old branch's central entry there.
 //   - Core/Events/LF_Events.c: every feature's bus events. Each event class now lives in its
 //     feature, Feature/<Area>/LF_<Area>Events.c. Enforce Script compiles every file, so no include.
 // This check fails a new proof verb inside session.mjs, a proof module with the wrong shape, and an
@@ -17,6 +20,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CENTRAL, centralCalls, staticResetProblems } from "../lib/static-reset-hooks.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const bad = [];
@@ -51,9 +55,34 @@ for (const f of files) {
   });
 }
 
+// World-end static resets: nothing in the central file; every hook block chains super.Run.
+let hooks = 0;
+if (existsSync(join(root, CENTRAL))) {
+  for (const c of centralCalls(readFileSync(join(root, CENTRAL), "utf8")))
+    bad.push(`FAIL ${CENTRAL}:${c.line} ${c.cls}.${c.method}(): register it in ${c.cls}'s own file with a modded class LF_StaticResetHooks (tools\\cli heal-hotspots does it)`);
+}
+for (const f of files) {
+  const text = readFileSync(join(root, f), "utf8");
+  if (!text.includes("LF_StaticResetHooks")) continue;
+  const r = staticResetProblems(text);
+  hooks += r.hooks;
+  for (const msg of r.problems) bad.push(`FAIL ${f}: ${msg}`);
+}
+
+// Harness verbs: LF_AgentHarness.Dispatch's own list is frozen at this many `cmd.Verb == "` tests (code
+// lines); a new verb is a `modded class LF_AgentHarnessVerbs` in its feature's file. Only ever lower it.
+const HARNESS = "addons/LifeFramework/Scripts/Game/Feature/AgentHarness/LF_AgentHarness.c";
+const HARNESS_VERB_TESTS = 135;
+let harnessVerbs = 0;
+if (existsSync(join(root, HARNESS))) {
+  for (const l of readFileSync(join(root, HARNESS), "utf8").split("\n")) if (!/^\s*\/\//.test(l)) harnessVerbs += l.split('cmd.Verb == "').length - 1;
+  if (harnessVerbs > HARNESS_VERB_TESTS)
+    bad.push(`FAIL ${HARNESS}: ${harnessVerbs} cmd.Verb tests, the frozen list has ${HARNESS_VERB_TESTS}; add the verb with a modded class LF_AgentHarnessVerbs in its feature's file`);
+}
+
 if (bad.length) {
   console.log(bad.slice(0, 40).join("\n"));
   console.log(`validate-registries: ${bad.length} problem(s). Shared registries are per-feature files; never append to a central list.`);
   process.exit(1);
 }
-console.log(`validate-registries: OK (${events} event class(es) in feature files; proofs discovered from agent-box/proofs)`);
+console.log(`validate-registries: OK (${events} event class(es) in feature files; ${hooks} static-reset hook(s) in their own files; proofs discovered from agent-box/proofs)`);

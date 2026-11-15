@@ -5,8 +5,9 @@
 //   1. merges origin/<base> into the worktree once (prs.mjs healMerge: merge drivers + regeneration);
 //   2. runs `ci --remote` there (Workbench steps and the suite on pool machines; a branch with no
 //      addons/ change runs `validate --all`, as `wt gate` does);
-//   3. if main moved meanwhile, re-gates only when the new main commits change a file the PR changes
-//      or a generated file (regateDecision), else pushes the gated head;
+//   3. if main moved meanwhile (after the gate, or "Base branch was modified" from auto-merge), re-gates only when
+//      the new main commits overlap the PR's files or what depends on them (tools/lib/regate-overlap.mjs,
+//      regateDecision), else pushes the gated head or the head with main merged in, without a second gate;
 //   4. pushes and queues auto-merge, or comments the failure and the log tail on the PR and moves on.
 // docs/worktrees.md "Ship queue". Every wait here is bounded (job budget, worker lifetime, wait budget).
 
@@ -16,6 +17,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as sq from "./lib/ship-queue.mjs";
+import * as gw from "./lib/gate-warnings.mjs";
+import { dependentOverlap } from "./lib/regate-overlap.mjs";
+import { MAINTAINER_BRANCH } from "./lib/gate-tier.mjs";
 import { sleepSync } from "./lib/atomic-file.mjs";
 
 const SELF = fileURLToPath(import.meta.url);
@@ -293,6 +297,8 @@ async function runJob(root, entry) {
   say(`gate for ${slug} (PR #${entry.pr}) starts`);
   let attempts = entry.attempts ?? 0;
   const { healMerge } = await import("./prs.mjs");
+  let lastPass = null; // { gatedBase }: main as the passed gate saw it
+  let busy = 0; // "Base branch was modified" answers from auto-merge
   for (;;) {
     wt.git(wtPath, ["fetch", "origin", "--prune"]);
     if (wt.currentBranch(wtPath) !== entry.branch) return fail(root, entry, `worktree is on '${wt.currentBranch(wtPath)}', not ${entry.branch}`);
@@ -302,48 +308,106 @@ async function runJob(root, entry) {
     say(`merged ${baseRef}: ${m.status}${m.resolved?.length ? ` (resolved ${m.resolved.join(", ")})` : ""}`);
     const gatedBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
     const files = changedFiles(wtPath, baseRef);
-    const cmd = gateCommand(files, entry.fullGate, entry.pin ?? []);
-    attempts++;
-    update(root, entry.id, { state: "gating", attempts, files, gatedBase }, `gate ${attempts}: ${cmd.join(" ")} on main ${gatedBase.slice(0, 7)}`);
-    const t0 = Date.now();
-    const startAt = readFileSync(log, "utf8").length;
-    const code = await runLogged(log, process.execPath, [join(wtPath, "tools", "cli.mjs"), ...cmd], { cwd: wtPath, env: { ...process.env, LF_SHIP_QUEUE_JOB: entry.id } });
-    const text = readFileSync(log, "utf8").slice(startAt);
-    const machine = [...text.matchAll(/ci: Workbench compile \+ build on ([\w.-]+)/g)].map((x) => x[1]).pop() ?? (cmd[0] === "ci" ? null : "this PC (validate)");
-    update(root, entry.id, { machine, gateS: Math.round((Date.now() - t0) / 1000) }, `gate ${attempts} exit ${code} in ${Math.round((Date.now() - t0) / 1000)} s`);
-    if (code !== 0) {
-      // The pool, not the PR: no machine answered, or a shard was placed nowhere. Back in the queue at its
-      // old place, at most MAX_ENV_RETRIES times; then it fails like any gate.
-      const env = sq.environmentFailure(text);
-      const retries = (entry.envRetries ?? 0) + 1;
-      if (env && retries <= sq.MAX_ENV_RETRIES) {
-        say(`gate ${attempts} failed on the pool, not the PR (${env}); back in the queue (retry ${retries} of ${sq.MAX_ENV_RETRIES})`);
-        update(root, entry.id, { state: "queued", envRetries: retries, attempts: attempts - 1, notBefore: new Date(Date.now() + 3 * 60 * 1000).toISOString() }, `requeued: ${env}`);
-        wlog(root, `requeued ${slug} (#${entry.pr}): ${env}`);
-        return;
-      }
-      return fail(root, entry, `gate ${cmd.join(" ")} failed (exit ${code})${env ? `; the pool failed it ${retries} times (${env})` : ""}`);
+    // A gate already passed and main moved since (auto-merge said "Base branch was modified"): gate again only
+    // when the new main commits overlap this PR's files or their dependents (tools/lib/regate-overlap.mjs).
+    let reused = false;
+    if (lastPass) {
+      const d = regateOn(wtPath, { fromBase: lastPass.gatedBase, toBase: gatedBase, prFiles: files, attempts });
+      say(`main moved after the passed gate: ${d.why}`);
+      update(root, entry.id, { files }, d.regate ? `re-gate: ${d.why}` : `gate pass reused: ${d.why}`);
+      reused = !d.regate;
     }
-    wt.git(wtPath, ["fetch", "origin", "--prune"]);
-    const newBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
-    const mainFiles = newBase === gatedBase ? [] : wt.git(wtPath, ["diff", "--name-only", gatedBase, newBase]).stdout.split(/\r?\n/).filter(Boolean);
-    const d = sq.regateDecision({ prFiles: changedFiles(wtPath, gatedBase), mainFiles, attempts });
-    say(`after the gate: ${d.why}`);
-    update(root, entry.id, {}, d.regate ? `re-gate: ${d.why}` : d.why);
-    if (!d.regate) break;
+    if (!reused) {
+      const cmd = gateCommand(files, entry.fullGate, entry.pin ?? []);
+      attempts++;
+      update(root, entry.id, { state: "gating", attempts, files, gatedBase }, `gate ${attempts}: ${cmd.join(" ")} on main ${gatedBase.slice(0, 7)}`);
+      const t0 = Date.now();
+      const startAt = readFileSync(log, "utf8").length;
+      const code = await runLogged(log, process.execPath, [join(wtPath, "tools", "cli.mjs"), ...cmd], { cwd: wtPath, env: { ...process.env, LF_SHIP_QUEUE_JOB: entry.id } });
+      const text = readFileSync(log, "utf8").slice(startAt);
+      const machine = [...text.matchAll(/ci: Workbench compile \+ build on ([\w.-]+)/g)].map((x) => x[1]).pop() ?? (cmd[0] === "ci" ? null : "this PC (validate)");
+      update(root, entry.id, { machine, gateS: Math.round((Date.now() - t0) / 1000) }, `gate ${attempts} exit ${code} in ${Math.round((Date.now() - t0) / 1000)} s`);
+      if (code !== 0) {
+        // The pool, not the PR: no machine answered, or a shard was placed nowhere. Back in the queue at its
+        // old place, at most MAX_ENV_RETRIES times; then it fails like any gate.
+        const env = sq.environmentFailure(text);
+        const retries = (entry.envRetries ?? 0) + 1;
+        if (env && retries <= sq.MAX_ENV_RETRIES) {
+          say(`gate ${attempts} failed on the pool, not the PR (${env}); back in the queue (retry ${retries} of ${sq.MAX_ENV_RETRIES})`);
+          update(root, entry.id, { state: "queued", envRetries: retries, attempts: attempts - 1, notBefore: new Date(Date.now() + 3 * 60 * 1000).toISOString() }, `requeued: ${env}`);
+          wlog(root, `requeued ${slug} (#${entry.pr}): ${env}`);
+          return;
+        }
+        return fail(root, entry, `gate ${cmd.join(" ")} failed (exit ${code})${env ? `; the pool failed it ${retries} times (${env})` : ""}`);
+      }
+      lastPass = { gatedBase };
+      publishGateWarnings(wtPath, entry, say);
+      wt.git(wtPath, ["fetch", "origin", "--prune"]);
+      const newBase = wt.git(wtPath, ["rev-parse", baseRef]).stdout.trim();
+      const d = regateOn(wtPath, { fromBase: gatedBase, toBase: newBase, prFiles: changedFiles(wtPath, gatedBase), attempts });
+      say(`after the gate: ${d.why}`);
+      update(root, entry.id, {}, d.regate ? `re-gate: ${d.why}` : d.why);
+      if (d.regate) continue;
+    }
+    update(root, entry.id, { state: "pushing" });
+    const push = wt.git(wtPath, ["push", "-u", "origin", entry.branch]);
+    if (push.status !== 0) return fail(root, entry, `push failed: ${(push.stderr || push.stdout).trim()}`);
+    const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
+    try {
+      const out = wt.autoMergePrGh(wtPath, entry.pr);
+      say(`pushed ${head.slice(0, 7)}; auto-merge queued${out ? ` (${out})` : ""}`);
+    } catch (e) {
+      // Main moved between the push and the merge request: merge it in and decide again (top of the loop).
+      if (BASE_MODIFIED.test(e.message) && ++busy <= MAX_BASE_RETRIES) {
+        say(`auto-merge answered "Base branch was modified" (${busy} of ${MAX_BASE_RETRIES}); merging ${baseRef} and deciding whether the gate must run again`);
+        continue;
+      }
+      return fail(root, entry, `pushed ${head.slice(0, 7)} but auto-merge failed: ${e.message}`);
+    }
+    update(root, entry.id, { state: "passed", endedAt: now(), head, why: `${reused ? "gate pass reused" : "gated"}, pushed ${head.slice(0, 7)}, auto-merge queued` }, "passed", TERMINAL);
+    wlog(root, `passed ${slug} (#${entry.pr}) after ${attempts} gate(s)${reused ? " (last one reused after main moved)" : ""}`);
+    return;
   }
-  update(root, entry.id, { state: "pushing" });
-  const push = wt.git(wtPath, ["push", "-u", "origin", entry.branch]);
-  if (push.status !== 0) return fail(root, entry, `push failed: ${(push.stderr || push.stdout).trim()}`);
-  const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
+}
+
+const BASE_MODIFIED = /base branch was modified/i;
+const MAX_BASE_RETRIES = 3;
+
+// The re-gate decision for a PR whose gate passed on main `fromBase` while main is now `toBase`: the files main
+// changed in between against the PR's files and what depends on them (tools/lib/regate-overlap.mjs). When the
+// file texts cannot be read the decision falls back to the file-level rule (ship-queue regateDecision, deps null).
+export function regateOn(wtPath, { fromBase, toBase, prFiles, attempts, maxAttempts = 3 }) {
+  const mainFiles = fromBase === toBase ? [] : wt.git(wtPath, ["diff", "--name-only", fromBase, toBase]).stdout.split(/\r?\n/).filter(Boolean);
+  let deps = null;
+  if (mainFiles.length) {
+    try {
+      const show = (ref, p) => {
+        const r = wt.run("git", ["-C", wtPath, "show", `${ref}:${p}`], { maxBuffer: 64 * 1024 * 1024 });
+        return r.status === 0 ? r.stdout : null;
+      };
+      deps = dependentOverlap({ prFiles, mainFiles, readPr: (p) => show("HEAD", p), readMain: (p, side = "after") => show(side === "before" ? fromBase : toBase, p) });
+    } catch {
+      deps = null;
+    }
+  }
+  return sq.regateDecision({ prFiles, mainFiles, attempts, maxAttempts, deps });
+}
+
+// A maintainer branch's warn-only gate findings (the ci placement audit, layout checks) go into the PR body, in a
+// section that replaces itself on every gate (tools/lib/gate-warnings.mjs). Never fails the gate.
+function publishGateWarnings(wtPath, entry, say) {
+  if (!entry.pr || !MAINTAINER_BRANCH.test(entry.branch || "")) return;
   try {
-    const out = wt.autoMergePrGh(wtPath, entry.pr);
-    say(`pushed ${head.slice(0, 7)}; auto-merge queued${out ? ` (${out})` : ""}`);
+    const md = gw.gateWarningsMarkdown(gw.readGateWarnings(wtPath));
+    const body = wt.prBodyGh(wtPath, entry.pr);
+    if (body === null) return say("gate warnings: could not read the PR body, not listed");
+    const next = gw.applyGateWarnings(body, md);
+    if (next.trim() === body.trim()) return;
+    wt.setPrBodyGh(wtPath, entry.pr, next);
+    say(md ? "gate warnings listed in the PR body (warn-only on a maintainer branch)" : "stale gate warnings removed from the PR body");
   } catch (e) {
-    return fail(root, entry, `pushed ${head.slice(0, 7)} but auto-merge failed: ${e.message}`);
+    say(`gate warnings: PR body not updated: ${e.message}`);
   }
-  update(root, entry.id, { state: "passed", endedAt: now(), head, why: `gated, pushed ${head.slice(0, 7)}, auto-merge queued` }, "passed", TERMINAL);
-  wlog(root, `passed ${slug} (#${entry.pr}) after ${attempts} gate(s)`);
 }
 
 // The failure goes to the PR (comment with the log tail) and the queue moves on.
