@@ -699,6 +699,12 @@
   server name, map and players/max. Operator tool for the session runbook and the
   opening gate's player target; nothing publishes it. `tools/host/a2s.mjs`; selftest
   `tools/validation/a2s-selftest.mjs`.
+  `host listing [address:a2sport] [--version V] [--map M] [--open]` (#1461, in-dev) asks the
+  running server what the browser shows over A2S_INFO and compares name, max players and
+  the password flag with `server/flagship/server.json`. It fails when the name is not exactly
+  `Life Framework | Everon 1989 (Alpha)` or the password flag is off (`--open` waives the
+  password after the alpha); `--version` and `--map` add those checks, since server.json holds
+  neither. `tools/host/listing.mjs`; selftest `tools/validation/host-listing-selftest.mjs`.
   Joining: the host runs `-noBackend`, so every player has the NULL platform
   identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
   failed with `#EL-CC_Error_NoAccount` (nobody could join).
