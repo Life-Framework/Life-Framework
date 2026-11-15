@@ -74,7 +74,7 @@
       "picture": "First person: a new account at the clerk's desk reads a rules question and answers it (#915)",
       "camera": { "mode": "firstPerson", "client": 1, "pending": "needs a fresh account and the quiz-proof session flow to open the quiz; the client's own view is the picture" },
       "actors": [{ "id": "newcomer", "kind": "client", "client": 1, "do": "fresh character; quiz-proof opens the rules quiz before form R-89" }],
-      "location": { "area": "spawn-square", "point": [134, 0, 243.5], "note": "Quest_Clerk and his desk" },
+      "location": { "area": "spawn-square", "point": [137.06, 0, 240.91], "note": "Quest_Clerk behind the registry counter" },
       "reuse": { "from": "video/trailer-571.json S06", "holdsUp": "layout yes (form R-89 desk), the quiz screen is new" },
       "status": "build",
       "fallback": "still of the quiz screen from tools\\cli look"

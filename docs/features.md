@@ -2263,7 +2263,7 @@
   scripts may still call `AcceptQuest`/`TurnInQuest` directly. Pin test
   `security/quest-turnin-takes-items`.
 - ✅ **Guided arrival chain** (M1-18, 2026-11-08): `QuestGiver_Clerk.et`
-  (`Quest_Clerk` on the square, 134 0 243.5) runs five steps: `arrival_register`
+  (`Quest_Clerk` behind the registry counter on the square, 137.06 0 240.91, under a parasol beside the REGISTRY OFFICE sign) runs five steps: `arrival_register`
   (talk; hands over the ID card), `arrival_board` (`SIGNAL sign.read:town_map`),
   `arrival_work` (`SIGNAL job.run_complete:parcel`), `arrival_bank`
   (`SIGNAL atm.deposit`), `arrival_done` (talk; $250 and "the town is yours" with
