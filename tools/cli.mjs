@@ -4048,12 +4048,15 @@ function wtHelpFull() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local]
-                                       clean-tree and PR-body checks -> push -> PR (auto-merge off) -> ship queue:
-                                       merge origin/<base> once, ci --remote on a pool machine, push, auto-merge
-                                       (docs/worktrees.md "Ship queue"); waits until gated unless --no-wait
-                                       (a terminal defaults to --no-wait); --no-queue gates here the old way;
-                                       a machine pin (humans and the lead only) goes to the gate's ci
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
+                                       clean-tree and PR-body checks, preflight (merge-tree conflicts, validate of changed
+                                       inputs) -> push -> PR (auto-merge off) -> ship queue: merge origin/<base> once,
+                                       ci --remote on a pool machine, push, auto-merge (docs/worktrees.md "Async ship").
+                                       Returns once queued; --wait blocks until gated (old behaviour); --no-queue gates
+                                       here the old way; a machine pin (humans and the lead only) goes to the gate's ci
+  tools\\cli wt ship-status <slug>     one line: queued|running|passed|failed, PR, why, log (exit 1 when failed)
+  tools\\cli wait ship <slug> [--budget s]   block until the gate ends or the budget (default 540 s) runs out;
+                                       one SUMMARY line, exit 0 passed, 1 failed, 2 still going (re-run it)
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
   tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt open <slug>            open a terminal in the worktree
@@ -4719,6 +4722,31 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
     console.log(`=== ship: ${tl} ===`);
     body = `${body}\n\n## Gate\n\n${tl} (the queue re-checks it after merging origin/${base})`;
   }
+  // Local preflight (seconds to a few minutes): what would fail the queued gate for a reason the agent must
+  // fix goes here, before the push, while the agent is still in the shell. --no-preflight skips it.
+  if (!flags.includes("--no-preflight")) {
+    const t0 = Date.now();
+    const mt = wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]);
+    if (mt.status === 1) {
+      const paths = sql.conflictPaths(mt.stdout);
+      const human = sql.humanConflicts(paths);
+      if (human.length) {
+        console.log(`FAIL  preflight: origin/${base} conflicts with this branch in ${human.join(", ")}; the merge drivers cannot resolve them.`);
+        console.log(`      merge it here: cd ${wtRoot}; git merge origin/${base}; fix, commit; tools\\cli wt ship ${slug}`);
+        return 1;
+      }
+      console.log(`=== ship: preflight: origin/${base} conflicts only in driver-merged files (${paths.join(", ")}); the queue's merge resolves them ===`);
+    } else if (mt.status !== 0) console.log(`ship: preflight: git merge-tree failed (${(mt.stderr || mt.stdout).trim().slice(0, 200)}); the queue's merge decides`);
+    // The checks whose declared inputs changed (incremental validate, no Workbench compile): a red check costs
+    // seconds here and a whole queue slot there.
+    console.log("=== ship: preflight: validate (changed inputs) ===");
+    const v = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true });
+    if (v.status !== 0) {
+      console.log(`FAIL  preflight: validate failed (exit ${v.status}); fix it, commit, and re-run 'tools\\cli wt ship ${slug}'. Nothing was pushed.`);
+      return 1;
+    }
+    console.log(`ship: preflight ok in ${Math.round((Date.now() - t0) / 1000)} s`);
+  }
   let pr = wt.findOpenPrGh(wtRoot, e.branch);
   // A PR left with auto-merge on from an earlier ship would merge this push ungated: switch it off first.
   if (pr) wt.run(wt.ghBin(), ["pr", "merge", String(pr.number), "--disable-auto"], { cwd: wtRoot });
@@ -4746,6 +4774,7 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
+  q.publish(ROOT, entry); // tmp/ship-status.json in the worktree and a pending ship-gate status on the PR head
   const w = await q.ensureWorker(ROOT);
   if (w.already) console.log(`ship: ${w.message}`);
   const qq = q.readQueue(ROOT);
@@ -4754,9 +4783,12 @@ async function shipViaQueue({ slug, flags, e, base, wtRoot, closes, customBody }
   const where = pos > 0 ? `position ${pos} (${gating} gating)` : "gating now";
   console.log(`SUMMARY ship queued ${slug} PR #${pr.number} ${where} worker ${w.started ? "started" : "running"} log=${log}`);
   console.log(`PR: ${pr.url}`);
-  const wait = flags.includes("--wait") || (!flags.includes("--no-wait") && !process.stdout.isTTY);
-  if (!wait) {
-    console.log(`ship: queued. 'tools\\cli ship-queue wait ${slug}' blocks until it is gated; 'tools\\cli pool status' shows the queue.`);
+  // Async by default (docs/worktrees.md "Async ship"): the gate runs in the worker, auto-merge stays off until
+  // it passes. --wait (or LF_SHIP_WAIT=1) blocks here as before.
+  if (!sql.shipWaits(flags, process.env)) {
+    console.log(`ship: queued, gate running detached; auto-merge is enabled only when it passes. Report "shipped, gate running".`);
+    console.log(`  tools\\cli wt ship-status ${slug}          # one line: queued|running|passed|failed`);
+    console.log(`  tools\\cli wait ship ${slug} --budget 540  # blocks up to 9 min, one SUMMARY line; re-run until it says ok|fail`);
     return 0;
   }
   const code = await q.waitFor(ROOT, slug);
@@ -4956,6 +4988,11 @@ function cmdWt(rest) {
     sync: () => wtSyncCmd(subArgs),
     "sync-base": () => wtSyncBaseCmd(subArgs),
     ship: () => wtShipCmd(subArgs),
+    "ship-status": async () => {
+      const slug = wtSlug(subArgs);
+      if (!slug) return 1;
+      return (await import("./ship-queue.mjs")).shipStatus(ROOT, slug);
+    },
     prune: () => wtPruneCmd(subArgs),
     open: () => wtOpenCmd(subArgs),
     main: () => {
