@@ -1,23 +1,25 @@
-# M3 sign-off playtest: 2026-11-14
+# M3 sign-off playtest: 2026-11-15
 
-89 issue(s) on 83 line(s). About 166 min including the 6 smoke checks (was about 321). 35 issue(s) need a person (about 114 min with smoke); 54 are agent-proven and get a one-minute spot-check from the appendix (about 52 min).
+91 issue(s) on 85 line(s). About 170 min including the 6 smoke checks (was about 321 before the trim). 36 issue(s) need a person (about 117 min with smoke); 55 are agent-proven and get a one-minute spot-check from the appendix (about 53 min).
+
+**Lands before you play.** [#1361](https://github.com/Life-Framework/Life-Framework/pull/1361) (heldground sidecar payload, save version 34, `Refs #1217`) is in the ship gate and not yet on `main`. It adds no line of its own: it is a save-version bump with no player-visible change, and smoke S3 to S5 plus the vehicle-state spot-check below cover its restart path. Once it merges, play from `main` so the console says `save loaded: version 34`, and read the version in step 1 of #1216 as 34. Its own manual steps (host an existing v33 save: `save loaded: version 33`, lease a hideout, restart, the gate is still leased and locked, `applied 0 of 0 held-ground row(s)`) take 3 minutes and fit inside S4 and S5.
 
 Tick `[x]` at the front when the check passes; tick `fail [x]` at the end when it does not, and put the reason on a `> note:` line under it.
 Leave a box empty to skip: nothing happens to that issue. Then `tools\cli playtest verdicts <this file>` prints the `gh` commands for review; it does not run them.
 Tags: `[2P]` needs a second client, `[DEDICATED]` needs the dedicated server, `[RESTART]` needs a server restart, `[JIP]` needs a late joiner, `[LOOK]` is a visual or audio check only a person can judge.
 
-**Scope.** The 89 open issues in the "M3 Framework Release" milestone that are `needs-playtest` or `in-dev` (100 are open in all; the other 11 carry neither label: epics #224, #225, #227, #228, #229 and #366, plus #374, #381 and #1216 to #1218, covered in [the release notes](../releases/m3-framework-release.md#needs-the-maintainer)). Made on main at `abd31b49` with `tools\cli playtest checklist --all --from-json`, then re-sorted by what automation already proves.
+**Scope.** The 91 open issues in the "M3 Framework Release" milestone that are `needs-playtest` or `in-dev` and have a line here, plus the two epics #224 and #229 that now carry `needs-playtest` and are signed off by their child lines (93 carry a label in all). Added since the 2026-11-14 revision: #374 (flagship listed once, [#1327](https://github.com/Life-Framework/Life-Framework/pull/1327) and [#1372](https://github.com/Life-Framework/Life-Framework/pull/1372)) and #1216 (vehiclestate payload, [#1309](https://github.com/Life-Framework/Life-Framework/pull/1309)); #1217 follows when #1361 merges. Epics #225, #227, #228, #366, #381, #1218 carry no label; see [the release notes](../releases/m3-framework-release.md#needs-the-maintainer). The 2026-11-14 revision was made on main at `abd31b49` with `tools\cli playtest checklist --all --from-json`, then re-sorted by what automation already proves. This revision re-ran `tools\cli playtest checklist` on `main` at `eaacf589` (254 open `needs-playtest`/`in-dev` issues across all milestones, 898 min unsorted) and kept the M3 scope and the sorting.
 
 **How the lines were sorted.** Each line was checked against its merged PR (body and proof output) for automated in-game evidence of the same behaviour: a harness proof verb in `agent-box/proofs`, a config-harness client or boot fixture, an e2e restart run, or an `LF_Test` at WORLD or PERSISTENCE tier. A LOGIC-tier test counts for tooling, validators and pure data; it does not count for what a player sees.
 
 - **Human-only (the sections below, first).** Feel, looks, audio, two real players, a late joiner, or a step the evidence does not reach. A line the evidence only partly reaches keeps just the steps it does not reach, under `do:`, and lists the rest under `already proven:`.
 - **Agent-proven (the appendix, last).** The PR already carries the evidence, or it was run for this revision (named on each line). One minute each, to look once and tick. Their restart evidence is a real stop, `-loadSessionSave` and reload (`wt e2e`); the smoke list's S3 to S5 is the one human restart pass that covers them all.
-- **Run for this revision.** One boot-stage run on fresh dedicated servers (7 fixtures PASS), one one-client session (`config-harness-proof` 11 fixtures PASS, `credits-proof` PASS, `quarry-proof` PASS), a two-client session (`disconnect-proof`, FAIL, see #691), and the offline tool runs. Three boot fixtures and one client fixture were added for this (`tools/test/config-fixtures`).
+- **Run for this revision.** One boot-stage run on fresh dedicated servers (7 fixtures PASS), one one-client session (`config-harness-proof` 11 fixtures PASS, `credits-proof` PASS, `quarry-proof` PASS), a two-client session (`disconnect-proof`, FAIL that day; fixed as proof drift in [#1318](https://github.com/Life-Framework/Life-Framework/pull/1318) and PASS since, see #691), and the offline tool runs. Three boot fixtures and one client fixture were added for this (`tools/test/config-fixtures`).
 
-**Time.** Smoke 15, solo walk 28, two players 13, dedicated server 17, desk 18, blocked on the Workshop upload 23, spot-check appendix 52: about 166 min. If one sitting must be shorter: the smoke list, then the solo walk, two players and the dedicated block (73 min). The desk and blocked blocks can wait for the Workshop upload; #370 and #371 cannot pass before it.
+**Time.** Smoke 15, solo walk 31, two players 13, dedicated server 17, desk 18, blocked on the Workshop upload 23, spot-check appendix 53: about 170 min. If one sitting must be shorter: the smoke list, then the solo walk, two players and the dedicated block (76 min). The desk and blocked blocks can wait for the Workshop upload; #370 and #371 cannot pass before it.
 
 **Findings from this revision.**
-- `session disconnect-proof` fails two checks (reproduced twice); #691 stays human-only. See its line.
+- `session disconnect-proof` failed two checks on 2026-11-14. [#1318](https://github.com/Life-Framework/Life-Framework/pull/1318) found proof drift (a rejoin is now the same identity since #1159; a logout sentence is created already paused), not a regression, and the proof passes on a two-client full-profile session. #691 stays human-only for the two real Steam accounts and the restart. See its line.
 - A config section can be read the first time it is used rather than at server start: `jobs` and `zones` lines are absent from a freshly booted server's log until a gather, a zone check or the like. The old #1106 and #1108 steps said "start the server and expect" them; the lines below say where to look.
 - The pack section range line (#553) is not logged at boot either; `config-check` is where it shows.
 
@@ -32,7 +34,12 @@ After ticking: `tools\cli playtest verdicts docs/playtest/m3-signoff.md` prints 
 - [ ] S5 Reload. Rejoin after the restart: same character, same cash, same item and bank balance as before the restart.   fail [ ]
 - [ ] S6 Late joiner. With the first player mid-action (a half-grown plot, a downed or wanted player), a second client joins late and sees the same state, not a blank or default one.   fail [ ]
 
-## Solo walk, in route order (~28 min)
+## Solo walk, in route order (~31 min)
+
+- [ ] #374 M3-Release: Flagship mission is hostable and playable solo as a local game (~3 min) [LOOK]   fail [ ]
+  - do: Main menu, Play, Scenarios: exactly one Life Framework entry, "Life Framework: Everon 1989", with the Everon picture, 16 players and a details text ending "A local game is a preview...". No "Playtest Town" entry.
+  - do: Host it as a local game (no dedicated server, core and pack loaded). Pass the rules quiz, sign form R-89 and spawn (no "account is still loading"). The console has no `SCRIPT (E)` or `VME:` and shows `platform identity of player 1 arrived` then `character registered`. Smoke S1 and S2 can ride on this run.
+  - already proven: listen-host on the flagship header, lf-cloud, no backend, fresh profile: PASS, no `VME`; `validate-pack-missions` rejects two listed headers on one world ([#1327](https://github.com/Life-Framework/Life-Framework/pull/1327), [#1372](https://github.com/Life-Framework/Life-Framework/pull/1372)). The harness boots straight into `-server`, so the menu list entry is only checked here.
 
 - [ ] #325 M3-Addons: Split the string table into core keys and pack flavour (~2 min)   fail [ ]
   - do: Boot the playtest (`tools\cli playtest`): the town board on the square reads "Welcome to Everon, Town Board"; a new character's form reads "Civil Registry of Everon, Form R-89".
@@ -134,7 +141,7 @@ After ticking: `tools\cli playtest verdicts docs/playtest/m3-signoff.md` prints 
   - Set "disconnect": {"cuffedRule": "fine"} and repeat: B's bank drops by 1000 and B spawns free.
   - (+2 more steps: PR #1154, PR #1159, or `--steps`)
   - covered: LOGIC `disconnect/rules`, WORLD `disconnect/jail`, PERSISTENCE `disconnect/cuffed`, `wt e2e disconnect-rules` 41/41 on both boots, and a live downed logout ([#1154](https://github.com/Life-Framework/Life-Framework/pull/1154)).
-  - NOT proven by a green proof: `session disconnect-proof` run in this revision (2 clients, full profile, police roster) FAILED twice with the same two checks: `the leaver's sentence is not kept paused offline` and `a player was sent to the cell on a spawn: only the leaver's own rejoin may be`. It may be proof drift after [#1159](https://github.com/Life-Framework/Life-Framework/pull/1159) (client identity now follows a session slot), or a real regression; either way do this line by hand.
+  - already proven: `session disconnect-proof` (2 clients, full profile, police roster) PASS after [#1318](https://github.com/Life-Framework/Life-Framework/pull/1318): the leaver's sentence waits offline (no `sentence served offline`, `sentence resumed` equals `sentence started on logout`) and the rejoin as the same identity goes back to the cell. The two failures of 2026-11-14 were proof drift after [#1159](https://github.com/Life-Framework/Life-Framework/pull/1159), not a regression. Still by hand: two real Steam accounts and the restart pass.
 
 ## Desk, no game needed (~18 min)
 
@@ -171,7 +178,7 @@ After ticking: `tools\cli playtest verdicts docs/playtest/m3-signoff.md` prints 
   - Before Publish: read the kit in docs/marketing/workshop/ (description, summary, preview, screenshots) and sign it off. Nothing has been posted to Discord, the website, or the Workshop. Then follow docs/playtest/worksh...
   - After pressing Publish (Unlisted), on a normal game install:
   - Workshop: subscribe to "Life Framework" and wait for the download.
-  - Scenarios: "Life Framework: Playtest Town" is listed with 16 players and the town picture. Press Play and sign form R-89. You should stand on the square with cash.
+  - Scenarios: "Life Framework: Everon 1989" is listed (once; the Playtest Town entry is hidden since #1372) with 16 players and the Everon picture. Press Play and sign form R-89. You should stand on the square with cash.
   - (+3 more steps: PR #711, or `--steps`)
   - covered: a dedicated server plus one client from the packed addon came up clean and reached form R-89 ([#711](https://github.com/Life-Framework/Life-Framework/pull/711)); only the Workshop download and the Publish are untested.
 - [ ] #1004 M3 chapter: Your town in five minutes (~3 min) [LOOK] [chapter #1004]   fail [ ]
@@ -197,9 +204,13 @@ After ticking: `tools\cli playtest verdicts docs/playtest/m3-signoff.md` prints 
   - Follow docs/release-first-upload.md steps 1 to 5 and record the page URLs and passing line in docs/setup.md.
   - covered: `workshop boot-check` ran on lf-cloud and failed at `stage=mods` exactly as expected before the upload ([#1226](https://github.com/Life-Framework/Life-Framework/pull/1226)).
 
-## Appendix: agent-proven, spot-check only (~52 min)
+## Appendix: agent-proven, spot-check only (~53 min)
 
 Each line names the proof. Tick it from that evidence; do the one named spot-check only if you are standing there anyway.
+
+- [ ] #1216 M3-Reshape: vehiclestate sidecar payload (#752a build) (~1 min) [RESTART]   fail [ ]
+  - agent-proven: PERSISTENCE `persist/vehicle-state`, `persist/vehicle-state-legacy`, LOGIC `vehicles/state-bad-row`; `wt e2e vehiclestate` over a real restart: the garaged car comes back TOWED with its tow and inspection stamps and compartment 1 (`applied 1 of 1 vehicle state row(s)`) ([#1309](https://github.com/Life-Framework/Life-Framework/pull/1309)). No player-visible change.
+  - spot-check: inside the S4 and S5 restart pass, buy a car at the lot and leave it on the street before the restart: after it, the car is at the impound desk with the same fee and text as before, and the server log shows `save loaded: version 33` (34 once #1361 is in).
 
 - [ ] #1045 M3-Packs: Map independence: cash van route, money bag and dispatch console find places by component (~1 min)   fail [ ]
   - agent-proven: WORLD `places/cash-van`, `places/bank-bag`, `places/dispatch`, each red-proofed with the old name lookup ([#1058](https://github.com/Life-Framework/Life-Framework/pull/1058)).
