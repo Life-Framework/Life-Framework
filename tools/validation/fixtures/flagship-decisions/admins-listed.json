@@ -1,0 +1,1 @@
+{ "file": "server.json", "set": { "game.admins": ["0123456789abcdef"] }, "expect": "game.admins" }

@@ -1,4 +1,4 @@
-// tools\cli opening [--beats B1,B9] [--host <scratch dir>]   run the opening-day beat scripts and write the report (#1495)
+// tools\cli opening [--beats B1,B9] [--host <scratch dir>] [--game]   run the opening-day beat scripts and write the report (#1495)
 //
 // The agent-runnable half of the M4 integration run (docs/playtest/m4-opening-day.md, chapter #1006). Every
 // tools/playtest/opening/*.mjs is one beat script: found by glob, so a new beat needs no list, run standalone with
@@ -16,6 +16,12 @@
 //                         `node agent-box/harness.mjs proof <verb>` line to run on the two-client session; the others are walked by hand
 // Exit 1 only when a beat has a FAIL. Output is one SUMMARY line plus the failing beats; the report has the rest.
 //
+//   --game           also run the proof verb each game beat names (the sheet's "Run the `<verb>` proof verb" lines) on the session
+//                    that is up, and turn each result into a `BEAT <Bn> <verb> PASS|FAIL|BLOCKED` line in the report: exit 0 is
+//                    PASS, anything else FAIL with the proof's own last failure line, a verb not on main BLOCKED by its card (#N).
+//                    It never runs `session up`: with no session it prints the line to run and marks every verb BLOCKED (#1599).
+//   --session-file f session.json to read instead of this checkout's session; --runner <script> run `node <script> <verb>`
+//                    instead of the real proof command; --proof-timeout <s> per verb, default 900
 //   --beats B1,B9    only these beats (scripts and sheet lines)
 //   --host <dir>     scratch host folder, passed to every script as `--host <dir>` and as LF_HOST_DIR
 //   --dir <dir>      beat scripts folder (default tools/playtest/opening)
@@ -23,12 +29,12 @@
 //   --proofs <dir>   where proof verbs live (default agent-box/proofs); a verb is found by its `name:`
 //   --out <file>     report file (default tmp/playtest/opening-<date>.md)
 //   --date YYYY-MM-DD, --timeout <seconds per script, default 600>
-// The proof is tools/validation/opening-run-selftest.mjs.
+// The proofs are tools/validation/opening-run-selftest.mjs and opening-game-selftest.mjs (--game).
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 
-export const help = "opening [--beats B1,B9] [--host <scratch>]   run every tools/playtest/opening/*.mjs beat script, write tmp/playtest/opening-<date>.md (one line per beat: pass, fail, blocked by #N) and list the proof verbs to run for the game beats";
+export const help = "opening [--beats B1,B9] [--host <scratch>] [--game]   run every tools/playtest/opening/*.mjs beat script, write tmp/playtest/opening-<date>.md (one line per beat: pass, fail, blocked by #N); --game runs the game beats' proof verbs on the session that is up, otherwise they are listed";
 
 const val = (args, name) => {
   const i = args.indexOf(name);
@@ -83,9 +89,26 @@ export function sheetBeats(text) {
     const body = b.body.join("\n");
     for (const m of body.matchAll(/`([a-z][a-z0-9]*(?:-[a-z0-9]+)+)`\s+proof/g)) if (!b.verbs.includes(m[1])) b.verbs.push(m[1]);
     for (const m of body.matchAll(/proof(?: verb)?\s+`([a-z][a-z0-9-]*)`/g)) if (!b.verbs.includes(m[1])) b.verbs.push(m[1]);
+    b.verbs.sort((x, y) => body.indexOf(`\`${x}\``) - body.indexOf(`\`${y}\``));
+    b.cards = {};
+    for (const v of b.verbs) b.cards[v] = verbCard(body, v);
     delete b.body;
   }
   return out;
+}
+
+// the card that owns a proof verb: the `(#N)` right after its first mention on the sheet, else the nearest #N before it
+// on that line ("#1268 (proof verb `restart-cycle`)"); null when the line names none
+export function verbCard(body, verb) {
+  for (const raw of String(body).split(/\r?\n/)) {
+    const i = raw.indexOf(`\`${verb}\``);
+    if (i === -1) continue;
+    const after = /^[^#`]{0,30}\(#(\d+)\)/.exec(raw.slice(i + verb.length + 2));
+    if (after) return Number(after[1]);
+    const before = [...raw.slice(0, i).matchAll(/#(\d+)/g)].pop();
+    return before ? Number(before[1]) : null;
+  }
+  return null;
 }
 
 // "[restart] The clean restart and the reload (7 min)" -> "The clean restart and the reload"
@@ -98,7 +121,9 @@ function proofVerbs(dir) {
   if (!existsSync(dir)) return verbs;
   for (const f of readdirSync(dir)) {
     if (!f.endsWith(".mjs")) continue;
-    const m = /\bname:\s*["']([^"']+)["']/.exec(readFileSync(join(dir, f), "utf8"));
+    const text = readFileSync(join(dir, f), "utf8");
+    // the verb is the default export's name; a proof's own `name:` keys (shot names) come earlier in the file
+    const m = /export default\s*\{\s*name:\s*["']([^"']+)["']/.exec(text) || /\bname:\s*["']([^"']+)["']/.exec(text);
     if (m) verbs.add(m[1]);
   }
   return verbs;
@@ -127,6 +152,52 @@ function runScript(root, dir, file, host, timeoutSec) {
   return lines;
 }
 
+const SESSION_UP = "tools\\cli session up --clients 2 --pack LF_Everon1989 --mission playtest --wait";
+
+const pidAlive = (pid) => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return e.code === "EPERM";
+  }
+};
+
+// is a session recorded and not stopped (a recorded server pid must be alive)
+async function sessionIsUp(root, file) {
+  let s = null;
+  try {
+    if (file) s = JSON.parse(readFileSync(file, "utf8"));
+    else {
+      const m = await import("../../agent-box/session.mjs");
+      s = m.readSession(m.sessionDir(process.env, root));
+    }
+  } catch {
+    s = null;
+  }
+  return !!s && !s.stoppedAt && (!s.serverPid || pidAlive(s.serverPid));
+}
+
+// the command that runs one proof verb: the harness's `proof <verb>` when it has one, else the session's verb dispatch
+function proofCommand(root, verb, runner) {
+  if (runner) return [process.execPath, [resolve(root, runner), verb]];
+  const h = join(root, "agent-box", "harness.mjs");
+  if (existsSync(h) && /cmd === "proof"/.test(readFileSync(h, "utf8"))) return [process.execPath, [h, "proof", verb]];
+  return [process.execPath, [join(root, "agent-box", "session.mjs"), verb]];
+}
+
+// one proof run -> its BEAT line; the reason of a FAIL is the proof's own last line that says what broke
+function runGameVerb(root, beat, verb, runner, timeoutSec) {
+  const [cmd, argv] = proofCommand(root, verb, runner);
+  const r = spawnSync(cmd, argv, { cwd: root, encoding: "utf8", timeout: timeoutSec * 1000, windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
+  if (r.error) return { beat, id: verb, status: "FAIL", reason: r.error.code === "ETIMEDOUT" ? `timed out after ${timeoutSec}s` : r.error.message };
+  if (r.status === 0) return { beat, id: verb, status: "PASS", reason: "" };
+  const all = `${r.stdout || ""}\n${r.stderr || ""}`.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const named = all.filter((l) => /\b(fail(ed|ure)?|error|refused|missing|timed out)\b/i.test(l)).pop();
+  const why = (named || all.pop() || "").replace(/^(BEAT\s+\S+\s+\S+\s+)?FAIL:?\s*/i, "");
+  return { beat, id: verb, status: "FAIL", reason: `exited ${r.status}${why ? `: ${why}` : ""}` };
+}
+
 const isoDay = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -144,6 +215,8 @@ export async function main(args, ctx) {
   const timeoutSec = Number(val(args, "--timeout")) || 600;
   const only = val(args, "--beats") ? new Set(val(args, "--beats").split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)) : null;
   const wanted = (b) => !only || only.has(b);
+  const game = args.includes("--game");
+  const gameLines = [];
 
   // run the scripts
   const byBeat = new Map();
@@ -161,6 +234,24 @@ export async function main(args, ctx) {
   const beats = new Map(sheet.filter((b) => wanted(b.beat)).map((b) => [b.beat, b]));
   for (const b of byBeat.keys()) if (!beats.has(b)) beats.set(b, { beat: b, title: "", verbs: [] });
   const onMain = proofVerbs(proofsDir);
+
+  // --game: run each game beat's verbs on the session that is up (beats in sheet order, a beat's verbs in sheet order)
+  if (game) {
+    const up = await sessionIsUp(root, val(args, "--session-file"));
+    if (!up) console.log(`opening --game: no session is up; run: ${SESSION_UP}`);
+    for (const b of [...beats.values()].sort((x, y) => beatNum(x.beat) - beatNum(y.beat))) {
+      for (const v of b.verbs) {
+        const card = b.cards?.[v];
+        let line;
+        if (!onMain.has(v)) line = { beat: b.beat, id: v, status: "BLOCKED", reason: `proof verb not on main${card ? `, card #${card}` : ""}` };
+        else if (!up) line = { beat: b.beat, id: v, status: "BLOCKED", reason: `no session up: ${SESSION_UP}` };
+        else line = runGameVerb(root, b.beat, v, val(args, "--runner"), Number(val(args, "--proof-timeout")) || 900);
+        if (!byBeat.has(b.beat)) byBeat.set(b.beat, []);
+        byBeat.get(b.beat).push(line);
+        gameLines.push(`BEAT ${line.beat} ${line.id} ${line.status}${line.reason ? ` ${line.reason}` : ""}`);
+      }
+    }
+  }
 
   const rows = [];
   const detail = (b, extra) => `- ${b.beat}${b.title ? ` ${b.title}` : ""}: ${extra}`;
@@ -183,7 +274,7 @@ export async function main(args, ctx) {
     } else if (a.status === "BLOCKED") {
       tally.blocked++;
       const nums = blockedBy(lines);
-      const why = nums.length ? `by ${nums.map((n) => `#${n}`).join(", ")}` : `: ${lines.find((l) => l.status === "BLOCKED").reason}`;
+      const why = nums.length ? `by ${nums.map((n) => `#${n}`).join(", ")}` : lines.find((l) => l.status === "BLOCKED").reason;
       row = detail(b, `BLOCKED ${why} (${a.pass} of ${a.total} checks passed, ${a.blocked} blocked)`);
     } else {
       tally.fail++;
@@ -192,7 +283,7 @@ export async function main(args, ctx) {
       failing.push(row);
     }
     rows.push(row);
-    if (b.verbs.length) rows.push(`  - game proof${b.verbs.length > 1 ? "s" : ""} for this beat, on the session:`, ...proofLines(b).map((l) => `  ${l}`));
+    if (b.verbs.length && !game) rows.push(`  - game proof${b.verbs.length > 1 ? "s" : ""} for this beat, on the session:`, ...proofLines(b).map((l) => `  ${l}`));
   }
 
   const total = rows.filter((r) => r.startsWith("- ")).length;
@@ -204,6 +295,7 @@ export async function main(args, ctx) {
     "",
     ...rows,
     "",
+    ...(gameLines.length ? ["Game proofs (`--game`):", "", ...gameLines.map((l) => `    ${l}`), ""] : []),
     "A FAIL gets a card: `tools\\cli slice new 1006 --plan <file>`; nothing is fixed inside the run. A beat blocked by a slice is",
     "not a failure. Fill the run's row in docs/playtest/session-playbook.md.",
     "",

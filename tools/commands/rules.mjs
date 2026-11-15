@@ -2,17 +2,21 @@
 //
 // Reads the pack's `LF-Sign_Rules_*` strings (English), the keys the rules sign card shows (#1279), and writes
 //   website/content/rules.json   the /rules page reads this
-//   tmp/rules-discord.md         the Discord-ready block (also on stdout with --print); pinning it is the maintainer's step
+//   docs/community/discord-rules.md  the committed Discord block the maintainer pins (#1613); written on a default run only
+//   tmp/rules-discord.md         the same block (also on stdout with --print)
 // Only those keys are read. The orientation quiz (`LF-QuizEveron_*`) is a separate subset written by hand
 // (decision 2026-11-14) and is never read or generated here. The proof is tools/validation/rules-export-selftest.mjs.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
-export const help = "rules export [--table f] [--json f] [--md f] [--print]   write website/content/rules.json and a Discord-ready markdown block from the pack's published-rules strings";
+export const help = "rules export [--table f] [--json f] [--md f] [--print]   write website/content/rules.json, tmp/rules-discord.md and the committed docs/community/discord-rules.md (the Discord block, ending with the run-your-own line) from the pack's published-rules strings";
 
 export const DEFAULT_TABLE = "addons/LF_Everon1989/Language/lf_everon1989_localization.st";
 export const DEFAULT_JSON = "website/content/rules.json";
 export const DEFAULT_MD = "tmp/rules-discord.md";
+export const COMMUNITY_MD = "docs/community/discord-rules.md";
+// The line that ends the pinned block (validate-run-your-own checks the link, #320).
+export const RUN_YOUR_OWN = "Want your own server? Install guide: https://github.com/Life-Framework/Life-Framework/blob/main/docs/owner/install.md";
 
 const KEYS = {
   title: "LF-Sign_Rules_Title",
@@ -53,6 +57,11 @@ export function renderMarkdown(r) {
   return lines.join("\n") + "\n";
 }
 
+// The pinned Discord block: the rules block plus the run-your-own line.
+export function renderDiscord(r) {
+  return renderMarkdown(r) + "\n" + RUN_YOUR_OWN + "\n";
+}
+
 const val = (args, name) => {
   const i = args.indexOf(name);
   return i === -1 || i + 1 >= args.length ? null : args[i + 1];
@@ -81,9 +90,11 @@ export async function main(args, ctx) {
     console.error(`SUMMARY rules export fail ${built.error}`);
     return 1;
   }
-  const md = renderMarkdown(built.rules);
+  const md = renderDiscord(built.rules);
   write(jsonFile, JSON.stringify(built.rules, null, 2) + "\n");
   write(mdFile, md);
+  // The committed copy is written only when --md is not given, so a check that passes --md never touches the tree.
+  if (!val(args, "--md")) write(resolve(root, COMMUNITY_MD), md);
   if (args.includes("--print")) process.stdout.write(md);
   const warn = md.length > 2000 ? ` WARNING discord block is ${md.length} chars, over one 2000-character message` : "";
   console.log(`SUMMARY rules export ok rules=${built.rules.rules.length} json=${jsonFile} discord=${mdFile} (${md.length} chars)${warn}`);
