@@ -390,8 +390,25 @@ class LF_AgentCommand
 		if (cmd.Verb == "scene" || cmd.Verb == "camera")
 			return ParseFilmDirect(parts, cmd);
 
-		cmd.Error = "unknown_verb";
-		return false;
+		// Any other verb may be a feature's own (LF_AgentHarnessVerbs): its words after the verb are
+		// Arg1..Arg5, and Dispatch answers unknown_verb when no feature handles it.
+		if (!IsClassToken(cmd.Verb))
+		{
+			cmd.Error = "unknown_verb";
+			return false;
+		}
+
+		if (parts.Count() > 2)
+			cmd.Arg1 = parts[2];
+		if (parts.Count() > 3)
+			cmd.Arg2 = parts[3];
+		if (parts.Count() > 4)
+			cmd.Arg3 = parts[4];
+		if (parts.Count() > 5)
+			cmd.Arg4 = parts[5];
+		if (parts.Count() > 6)
+			cmd.Arg5 = parts[6];
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

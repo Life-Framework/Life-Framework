@@ -1,5 +1,5 @@
 {
- "_generated": "tools\\cli fixtures: boards and footprints measured from the .xob colliders (tools\\cli measure). Do not edit; rerun it when a spec's store block names a new fixture or item",
+ "_generated": "tools\\cli fixtures: boards and footprints measured from the .xob colliders (tools\\cli measure), rack slots read from the vanilla racks. Do not edit; rerun it when a spec's store block names a new fixture or item",
  "_build": "26266485",
  "fixtures": {
   "CoolingBoxShop_01": {
@@ -81,39 +81,212 @@
  "items": {
   "Prefabs/Items/Drinks/AppleJuice.et": {
    "size": [0.083, 0.259, 0.081],
-   "center": [-0.002, 0]
+   "center": [-0.002, 0],
+   "mesh": "{240D853DBB045D05}Assets/Props/Civilian/BeerBottle_01/BeerBottle_01.xob"
   },
   "Prefabs/Items/Food/LF_DriedMeat.et": {
    "size": [0.258, 0.048, 0.301],
-   "center": [-0.019, -0.002]
+   "center": [-0.019, -0.002],
+   "mesh": "{6073CC0058821B73}Assets/Items/Food/Meat_01_Dry.xob"
   },
   "Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et": {
    "size": [0.07, 0.107, 0.042],
-   "center": [-0.001, 0.003]
+   "center": [-0.001, 0.003],
+   "mesh": "{30664C42D09E1831}Assets/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.xob"
   },
   "Prefabs/Items/Food/RowanBerries.et": {
    "size": [0.067, 0.043, 0.059],
-   "center": [0.002, -0.002]
+   "center": [0.002, -0.002],
+   "mesh": "{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/RowanBerries.xob"
   },
   "Prefabs/Items/Food/LF_Crackers.et": {
    "size": [0.171, 0.03, 0.088],
-   "center": [0.001, 0]
+   "center": [0.001, 0],
+   "mesh": "{A47ED22E6647430A}Assets/Items/Food/ArmyCrackers_Soviet_01.xob"
   },
   "Prefabs/Items/Drinks/WaterBottle.et": {
    "size": [0.063, 0.215, 0.063],
-   "center": [0, 0]
+   "center": [0, 0],
+   "mesh": "{1F941A15AF4D93BF}Assets/Items/Drinks/WaterBottle/Bottle.xob"
   },
   "Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et": {
    "size": [0.065, 0.024, 0.082],
-   "center": [-0.001, 0.001]
+   "center": [-0.001, 0.001],
+   "mesh": "{4B7F315DD3774443}Assets/Items/Medicine/FieldDressing_01/FieldDressing_US_01/FieldDressing_US_01.xob"
   },
   "Prefabs/Items/Food/Plum.et": {
    "size": [0.046, 0.063, 0.044],
-   "center": [0.001, 0.002]
+   "center": [0.001, 0.002],
+   "mesh": "{3EB653D9ECE9E4E9}Assets/Items/Food/Plum/Plum.xob"
   },
   "Prefabs/Items/Food/Apple.et": {
    "size": [0.082, 0.067, 0.082],
-   "center": [0, 0]
+   "center": [0, 0],
+   "mesh": "{D0566D3CAE967F4D}Assets/Items/Food/Apple/Apple.xob"
+  }
+ },
+ "racks": {
+  "LF_WeaponRackCabinet_Display": {
+   "prefab": "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et",
+   "from": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackCabinetArsenal_FIA.et",
+   "slots": [
+    {
+     "at": [-0.443, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-0.28, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-0.137, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.024, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.175, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.329, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.483, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.633, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.79, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.947, 0.665, 0.266],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-1.023, 1.169, 0.216],
+     "angles": [0, 30, 90],
+     "kind": "pistol"
+    },
+    {
+     "at": [-0.678, 1.169, 0.253],
+     "angles": [0, 30, 90],
+     "kind": "pistol"
+    },
+    {
+     "at": [-1.023, 0.139, 0.216],
+     "angles": [0, 30, 90],
+     "kind": "other"
+    },
+    {
+     "at": [-1.023, 0.467, 0.216],
+     "angles": [0, 30, 90],
+     "kind": "other"
+    },
+    {
+     "at": [-1.023, 0.829, 0.216],
+     "angles": [0, 30, 90],
+     "kind": "other"
+    },
+    {
+     "at": [-0.678, 0.139, 0.253],
+     "angles": [0, 30, 90],
+     "kind": "other"
+    },
+    {
+     "at": [-0.678, 0.467, 0.253],
+     "angles": [0, 30, 90],
+     "kind": "other"
+    },
+    {
+     "at": [-0.678, 0.829, 0.253],
+     "angles": [0, 30, 90],
+     "kind": "other"
+    }
+   ]
+  },
+  "LF_WeaponRackStand_Display": {
+   "prefab": "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et",
+   "from": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackStandArsenal_FIA.et",
+   "slots": [
+    {
+     "at": [-0.763, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-0.591, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-0.422, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-0.252, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-0.078, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.084, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.242, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.417, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.587, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [0.749, 0.665, 0.235],
+     "angles": [80, 180, 180],
+     "kind": "long"
+    },
+    {
+     "at": [-0.5, 0.135, 0.3],
+     "angles": [0, -60, -90],
+     "kind": "pistol"
+    },
+    {
+     "at": [0.5, 0.135, 0.3],
+     "angles": [0, -60, -90],
+     "kind": "pistol"
+    }
+   ]
   }
  }
 }
