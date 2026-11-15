@@ -93,7 +93,7 @@ On the new box:
 
 5. [ ] Put the backup under the new host dir's `backups/`, and run `tools\cli host restore <folder name>` to
        lay it into the profile. `restore` keeps what it replaces under `backups/<time>-replaced-by-restore`.
-6. [ ] **Drill before opening:** `tools\cli host drill <folder name>` *(planned)* boots a throwaway copy with
+6. [ ] **Drill before opening:** `tools\cli host drill <folder name>` boots a throwaway copy with
        `-loadSessionSave` and passes only on a `save loaded:` line and at least one applied account record. Without
        `host drill`, start the box once without announcing it and read the console log
        (`tools\cli logs "save loaded:"`): it must show `[LFDebug:Persistence] save loaded: version N, game build X,
@@ -111,9 +111,9 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
 - [ ] Windows: `tools\cli host start --flagship`, or the start script in the flagship folder. Linux:
       `LF_REFORGER_SERVER=~/reforger-server ./start.sh -loadSessionSave`. Both pass `-maxFPS 60` and keep the
       owner `config.json` in the profile.
-- [ ] **Watchdog.** `tools\cli host watch` *(planned)* supervises the process: an exit without the stop file
+- [ ] **Watchdog.** `tools\cli host watch` supervises the process: an exit without the stop file
       is a crash, so it keeps the crash log under `backups/<time>-crash/`, backs the saves up, and restarts with
-      `-loadSessionSave` within a minute. Until it merges, or on Linux, use the OS: a Windows scheduled task
+      `-loadSessionSave` within a minute. On Linux, or where it is not used, use the OS: a Windows scheduled task
       (trigger "at startup", restart on failure every minute) or a systemd unit with `Restart=on-failure`. Both
       must pass `-loadSessionSave`, and a stop through `host stop` must not trigger a restart.
 - [ ] Kill the server process by hand once. It is back, with the crash backup, inside a minute, and the log
@@ -131,9 +131,9 @@ The live `config.json` is public in this repo, so no password or webhook goes in
 
 - [ ] Write `secrets.json` in the host dir on the box only: the join password, the admin password and the staff
       webhook URL.
-- [ ] `tools\cli host config apply` *(planned)* writes the profile's `config.json` and `server.json` from the
-      repo files plus `secrets.json`. Until it merges, copy `config.json` to
-      `profile/profile/LifeFramework/config.json` and fill the passwords in `server.json` by hand on the box.
+- [ ] `tools\cli host config apply` writes the profile's `config.json` and `server.json` from the
+      repo files plus `secrets.json`. If it cannot run on the box (a Linux host without Node), copy `config.json` to
+      `profile/profile/LifeFramework/config.json` and fill the passwords in `server.json` by hand there.
 - [ ] `secrets.json` is in no backup that leaves the box, and in no commit.
 
 ## 8. DNS and the address
@@ -160,7 +160,7 @@ The dry run is the manual check of #311, on `lf-testbox` (the LAN laptop) or on 
 
 ## 10. After the move
 
-- [ ] Run `tools\cli host triage` *(planned)* on the first full session's console log; file what is new.
+- [ ] Run `tools\cli host triage` on the first full session's console log; file what is new.
 - [ ] Add the box's one-off facts (below) and the monthly cost to `website/content/costs.json`.
 - [ ] Open a follow-up issue for anything this checklist got wrong, and fix this page the same day.
 
