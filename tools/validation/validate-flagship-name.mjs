@@ -33,9 +33,9 @@ export function findNames(text) {
     const lineStart = text.lastIndexOf("\n", m.index - 1) + 1;
     const before = text.slice(lineStart, m.index);
     const endsAlpha = /alpha[ \t]*[)\]]?$/i.test(m[0]);
-    const afterBrowser = /server browser/i.test(before);
+    const afterBrowser = /server browser[^.;]{0,60}$/i.test(before);
     if (!endsAlpha && !afterBrowser) continue;
-    out.push({ line: text.slice(0, m.index).split("\n").length, found: m[0].replace(/[ \t]*\r?\n[ \t>]*/g, " ") });
+    out.push({ line: text.slice(0, m.index).split("\n").length, found: m[0].replace(/[ \t]*\r?\n[ \t>]*/g, " ").trim() });
   }
   return out;
 }
