@@ -1,101 +1,151 @@
 # Contributing to Life Framework
 
-Welcome. Join the community, choose a piece of work, build it with the team,
-then raise a pull request. You can contribute code, playtest reports, world
-building, UI, 3D art, sound, or documentation.
+Thanks for looking. We need more people testing and more people writing code, and
+you do not have to be a programmer to help: docs, tooling scripts, the website,
+world building, UI, art, sound and clear playtest reports all count.
 
-## 1. Join the Discord
+## What this is
 
-[Join the Life Framework Discord](https://discord.gg/MjMexJteqz). Say hello in
-`#general`, ask questions, and tell us what you would like to work on. The team
-can help match your interests to an issue.
+Life Framework is an open-source life and roleplay framework for Arma Reforger,
+plus a 1989 Everon server built on it to prove it works. It is early alpha. Most
+of the code is EnforceScript (the game's script language) in `addons/`; the dev
+tools are Node.js scripts in `tools/`; the website in `website/` is a small
+Vite and React project. Two addons:
 
-## 2. Pick an issue
+- **`LifeFramework`** (the core) decides what the game can do: systems, rules,
+  config, persistence, the UI kit.
+- **`LF_Everon1989`** (the pack) decides what our server is: places, names,
+  prices, the period look, the story.
 
-Start with a [good first issue](https://github.com/Life-Framework/Life-Framework/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22)
-or an open branch on the [Tree of Life](https://life-framework.org/roadmap), the
-roadmap map of every issue. Each open issue also has a discussion thread in the
-#roadmap forum on Discord. Issues
-are the source of truth for the files, boundaries, and proof expected.
+[docs/architecture/core-vs-pack.md](docs/architecture/core-vs-pack.md) says which
+side a change belongs on. The core never references the pack.
 
-Comment `/claim` on the issue to take it; a bot adds you as an assignee. Others
-can `/claim` the same issue to join you (up to ten), and `/unclaim` steps you
-back. The website and Discord update from the assignee list. Then coordinate
-with the team on Discord.
+## Licence
 
-## 3. Build and playtest
+The source in this repository is **MIT**. The build we publish on the Arma
+Reforger Workshop is licensed under the **Arma Public License (APL)**, because the
+Workshop's terms require it for uploaded content ([decision of
+2026-11-08](docs/decisions.md)). Your contribution is licensed as MIT in the repo.
 
-Read [AGENTS.md](AGENTS.md), the [setup guide](docs/setup.md), and the
-[playtest guide](docs/playtest.md). The guides cover the toolchain, local paths,
-and how to open the M1 town.
+The 1989 pack (`addons/LF_Everon1989/`) is MIT today, but the project may license
+future versions of it differently. By contributing to the pack you agree that we
+may relicense your contribution for those future versions. Releases already
+published stay MIT. The core stays MIT.
 
-Keep code changes in a worktree, not `main`:
+## Set up in about 15 minutes
 
-```powershell
-tools\cli wt new <short-name>
-cd ..\Life-Framework-ws-<short-name>
-tools\cli status
-tools\cli validate
+The full guide is [docs/setup.md](docs/setup.md). The short version:
+
+```sh
+git clone https://github.com/Life-Framework/Life-Framework.git
+cd Life-Framework
+git config core.hooksPath .githooks
+node tools/cli.mjs status      # shows what it found and what is missing
+node tools/cli.mjs validate    # the cheap repo checks
 ```
 
-Follow the issue's proof requirements. For script behavior, write a regression
-test and prove it fails before the fix. Run the focused test while iterating,
-then verify the player path in DebugWorld or the playtest town when the issue
-touches in-game behavior.
+- **You need:** Git, Node.js 20+, PowerShell 7+ (`pwsh`, for `validate`). For game
+  changes also Arma Reforger and **Arma Reforger Tools** (Workbench) from Steam.
+  The in-game tests also want **Arma Reforger Server** (Steam app 1874900).
+- **You do not need:** pool or remote test machines, the MCP servers, or a coding
+  agent. They are optional and described in
+  [docs/dev-tooling.md](docs/dev-tooling.md) and setup.md section 6.
+- A docs, tooling or website change needs only Git, Node and `pwsh`, not the game.
 
-To open the local M1 playtest, check whether it is already running, then launch
-it if needed:
+Not sure it works on your machine? Ask in Discord `#dev` and say what
+`node tools/cli.mjs status` printed.
 
-```powershell
-tools\cli playtest status
-tools\cli playtest
-```
+## How a change flows
 
-Stop it with `tools\cli playtest stop` when you are done. Do not change or
-commit machine-specific paths or generated files.
+1. **Find or file an issue.** The work is tracked as
+   [GitHub issues](https://github.com/Life-Framework/Life-Framework/issues). Start
+   with a [good first issue](https://github.com/Life-Framework/Life-Framework/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22)
+   or an open branch on the [roadmap](https://life-framework.org/roadmap). Have an
+   idea that is not there? Raise it in `#dev` or open an issue first, so nobody
+   builds something we would turn down.
+2. **Take it.** See "Slice cards and claiming" below.
+3. **Branch in a worktree.** `node tools/cli.mjs wt new <short-name>` makes a
+   sibling folder on its own branch `ws/<short-name>`. Never commit to `main`, and
+   build, test and run only in the worktree (the folder you cloned stays clean).
+4. **Build it and prove it.** For script behavior, write a test
+   (`Scripts/Game/Tests/LF_Test_*.c`) that fails without your change, then make it
+   pass: `node tools/cli.mjs test --no-build --only LF_Test_<Name>`. For tools and
+   docs, `node tools/cli.mjs validate` is the check. For anything a player sees,
+   take a before and after picture first (`tools\cli look`, see
+   [docs/visual-testing.md](docs/visual-testing.md)).
+5. **Open a pull request** against `main`. If you have push access,
+   `node tools/cli.mjs wt ship <short-name>` runs the gate, pushes and opens it.
+   If not, fork, push your branch, and open the PR from your fork. Fill in the PR
+   template: what changed, how you proved it, and a `## Manual testing` section
+   for anything that needs a person to check it in the game.
+6. **CI and review.** GitHub Actions runs the `validate` check on every PR; it must
+   be green. A maintainer reviews with you and merges. Merging is not "done": a
+   person plays the change on `main` and signs the issue off.
 
-## 4. Raise a pull request
+## Slice cards and claiming
 
-Use `tools\cli wt ship <short-name> --refs <issue-number>` when the worktree
-is ready. Merging does not close the issue; a maintainer verifies it first. It runs the project's checks and opens a pull request. In the PR,
-describe the change, list the test and in-game proof, and name anything that
-still needs a manual check.
+Big features are cut into **slice cards**: small issues, labelled `slice`, sized
+for one person or agent in 30 to 45 minutes. A card names the files it owns, what
+it depends on, and the check that proves it
+([docs/process/slice-card.md](docs/process/slice-card.md)). Cards that own
+different files can be built at the same time without conflicts, so please stay
+inside the files a card owns.
 
-The team reviews the PR with you, helps resolve feedback, and merges it when it
-is ready. Stay in the conversation until the checks are green and it lands.
+To take one:
 
-## 5. Grow into an approver
+- Check it is open, has no assignee, and nobody has an open PR for it. Read what
+  its `depends` line waits on: those should already be merged.
+- On a roadmap issue (one with an `M<n>` milestone) comment `/claim`; a bot adds
+  you as an assignee, and `/unclaim` steps you back. Slice cards sit outside the
+  milestones, so the bot does not answer there: comment that you are taking it and
+  post the number in `#dev`, and a maintainer assigns you.
+- If a card turns out bigger than its budget, say so on the issue. We split it,
+  we do not stretch it.
 
-We want contributors to take on review responsibility quickly. After a few
-solid PRs have landed and the team has seen your reviews, maintainers can grant
-approval and merge access. Trusted approvers review other contributors' work
-and help good changes ship without a long wait. Your own PR still gets an
-independent review.
+## Code style, in plain terms
+
+The full list is [AGENTS.md](AGENTS.md); the rules people trip on first:
+
+- Class names start with `LF_`, and tests are `LF_Test_*`. Never use `EL_`: the
+  older EveronLife mod can load on the same server.
+- Never commit generated files: `resourceDatabase.rdb`, `*.rdb.lock`, the addon
+  `log`, `*.gproj.user`, `node_modules/`. The pre-commit hook catches them.
+- A resource's GUID (in its `.meta`) is unique and permanent. Never copy one, and
+  never rename or move a resource without checking what refers to it.
+- Text players read goes through the localization table, not into the code or
+  layouts. Place names and flavour text belong in the pack.
+- Core code never holds a map coordinate, an entity name or a layer name.
+- If you change a feature, update its row in `docs/features.md` in the same PR.
+- EnforceScript is not C#: there is no `cond ? a : b` operator, managed objects need
+  `ref`, and you store `EntityID`, not `IEntity`. Look an API up
+  (`node tools/cli.mjs api class <Name>`), never guess it.
+- Log a state change or a refusal with `LF_Debug` so it can be found in the log; a
+  silent failure is a bug.
 
 ## Working with coding agents
 
-Coding agents are welcome. Start at the repository root and ask the agent to
-read [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md),
-[docs/setup.md](docs/setup.md), and [docs/playtest.md](docs/playtest.md). The
+Coding agents are welcome. Ask yours to read [AGENTS.md](AGENTS.md), this file and
+[docs/setup.md](docs/setup.md) first. Claude Code reads `CLAUDE.md`, which points
+at `AGENTS.md`; opencode, Codex and Cursor read `AGENTS.md` directly. The
 [contribution page](https://life-framework.org/contribute) has a ready-to-paste
-prompt that checks local setup and opens the playtest before you choose an
-issue.
+prompt. Agents follow the issue's scope, work in a named worktree, and leave the PR
+ready for review. You stay responsible for what you submit.
 
-Agents must follow the issue scope, research Enfusion APIs before using them,
-work in a named worktree, verify their changes, and leave the PR ready for team
-review. The human contributor remains responsible for the result.
+## Where to ask
 
-## More ways to help
+- **Discord `#dev`** for setup problems, "is this the right place for my change",
+  and picking or claiming an issue. Join:
+  [discord.gg/MjMexJteqz](https://discord.gg/MjMexJteqz).
+- **The issue itself** for questions about what a card wants.
+- **`#feedback` or `#playtest-feedback`** if you only want to play and report.
 
-- Play a session and send a clear report through the Discord `#feedback` forum.
-- Help with mapping, world building, UI, 3D models, sound, testing, or docs.
-- Share an idea or ask for a first issue on Discord.
+Playing counts. Join a weekly playtest session (the server is invite-only; ask in
+Discord) and send a clear report: where you were, what you pressed, what you
+expected, what happened.
 
-All contributions follow the [Code of Conduct](CODE_OF_CONDUCT.md). Source code
-contributions are licensed under the repository's MIT licence.
+## Growing into an approver
 
-The flagship pack (`addons/LF_Everon1989/`) is MIT today, but the project may
-license future versions of the pack differently. By contributing to the pack you
-agree that the project may relicense your contribution for those future
-versions. Releases already published stay MIT. The core (`addons/LifeFramework/`)
-stays MIT.
+After a few solid PRs and some reviews of other people's work, maintainers can
+give you approval and merge access. Your own PR still gets an independent review.
+
+All contributions follow the [Code of Conduct](CODE_OF_CONDUCT.md).
