@@ -73,7 +73,7 @@ class LF_VehicleLot
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the reader pressed Buy on row index. The lot decides; the sheet comes back refreshed.
-	static void Buy(IEntity buyer, IEntity lotEntity, int index)
+	static void Buy(IEntity buyer, IEntity lotEntity, int index, int colour)
 	{
 		if (!Replication.IsServer() || !buyer || !lotEntity)
 			return;
@@ -105,7 +105,7 @@ class LF_VehicleLot
 		string vehicleId;
 		int cashCharged;
 		string reasonKey;
-		bool bought = lot.Buy(uid, offer.GetPrefab(), buyer, vehicleId, cashCharged, reasonKey);
+		bool bought = lot.BuyColour(uid, offer.GetPrefab(), colour, buyer, vehicleId, cashCharged, reasonKey);
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(buyer);
 		if (!reasonKey.IsEmpty() && playerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Vehicle_Buy", reasonKey);
@@ -223,7 +223,7 @@ class LF_VehicleLotSheet
 		}
 
 		LF_Debug.Info(LF_VehicleLot.FEATURE, string.Format("buy asked for row %1", index));
-		controller.LF_AskBuyVehicle(s_LotId, index);
+		controller.LF_AskBuyVehicle(s_LotId, index, 0);
 	}
 }
 
@@ -254,21 +254,21 @@ modded class SCR_PlayerController
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void LF_AskBuyVehicle(RplId lot, int index)
+	void LF_AskBuyVehicle(RplId lot, int index, int colour)
 	{
 		if (Replication.IsServer())
-			RpcAsk_LF_BuyVehicle(lot, index);
+			RpcAsk_LF_BuyVehicle(lot, index, colour);
 		else
-			Rpc(RpcAsk_LF_BuyVehicle, lot, index);
+			Rpc(RpcAsk_LF_BuyVehicle, lot, index, colour);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_BuyVehicle(RplId lot, int index)
+	protected void RpcAsk_LF_BuyVehicle(RplId lot, int index, int colour)
 	{
 		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.PURCHASE, "vehicle purchase"))
 			return;
 
-		LF_VehicleLot.Buy(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(lot), index);
+		LF_VehicleLot.Buy(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(lot), index, colour);
 	}
 }
