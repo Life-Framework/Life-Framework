@@ -1,0 +1,12 @@
+OPEN|u3|Cara Newer|Wants to help the town|evenings|1699990000|0|0
+OPEN|u1|Alan Oldest|Long time resident|weekends|1699400000|0|0
+OPEN|u2|Bea Sixfield|Old six-field row|any time|1699900000
+APPROVED|u4|Dan Trial|Steady hands|nights|1699000000|0|1700036000
+APPROVED|u5|Eve Promoted|Already promoted|any time|1698000000|0|0
+REJECTED|u6|Fay Refused|Too new|any time|1699500000|1699600000|0
+EXPIRED|u7|Gus Lapsed|Trial ran out|mornings|1690000000|0|0
+OPEN|u8|Hal Sevenfield|Old seven-field row|mornings|1699950000|0
+this row is malformed
+OPEN|u9|Ivy Badtime|unix field is not a number|any time|soon|0|0
+BOGUS|u10|Jon Unknown|status is not one of the four|any time|1|0|0
+
