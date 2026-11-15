@@ -2932,7 +2932,9 @@ function cmdSessionWait(dir, flags) {
 function cmdSessionRestart(root, dir, flags) {
   guardHeavy(root, "session restart", flags.includes("--force"));
   const prev = session.readSession(dir);
-  if (!prev || prev.stoppedAt || !host.pidAlive(prev.serverPid)) {
+  // --after-close: the server already closed itself (a scheduled restart); boot it again from its save (restart-cycle proof).
+  const afterClose = flags.includes("--after-close");
+  if (!prev || prev.stoppedAt || (!afterClose && !host.pidAlive(prev.serverPid))) {
     console.log("session: no running session to restart; 'node agent-box/session.mjs up --mission playtest' first");
     return 1;
   }
@@ -2953,7 +2955,7 @@ function cmdSessionRestart(root, dir, flags) {
   }
   const stopFile = join(prev.serverProfile, ...host.STOP_FILE);
   mkdirSync(dirname(stopFile), { recursive: true });
-  writeFileSync(stopFile, new Date().toISOString());
+  if (!afterClose) writeFileSync(stopFile, new Date().toISOString());
   console.log(`session: stop requested (server pid ${prev.serverPid}); waiting for the shutdown save`);
   const deadline = Date.now() + 180000;
   while (Date.now() < deadline && host.pidAlive(prev.serverPid)) sleepMs(1000);
