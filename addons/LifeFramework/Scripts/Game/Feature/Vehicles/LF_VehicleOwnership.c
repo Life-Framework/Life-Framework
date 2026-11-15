@@ -1360,6 +1360,35 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The prefab a respawn uses. The saved spawn prefab is the car's colour (epic #1826); when a
+	//! pack dropped that colour it no longer loads, so the car comes back in the model's base colour
+	//! (the colours config's first, else the locked child the prices config lists) with a warning.
+	//! With nothing better to offer it returns the saved name, so the failure stays the spawn's own.
+	static string RespawnNameFor(string spawnName, string catalogPrefab, bool savedLoads, LF_VehicleColoursConfig colours, LF_VehiclePricesConfig prices)
+	{
+		if (savedLoads)
+			return spawnName;
+
+		string pricesSpawn;
+		if (prices)
+		{
+			LF_VehiclePriceEntry entry = prices.Find(catalogPrefab);
+			if (entry)
+				pricesSpawn = entry.m_SpawnPrefab;
+		}
+
+		string fallback = pricesSpawn;
+		if (colours)
+			fallback = colours.RespawnFallback(catalogPrefab, pricesSpawn);
+
+		if (fallback.IsEmpty() || fallback == spawnName)
+			return spawnName;
+
+		LF_Debug.Warn("Vehicle", string.Format("saved spawn prefab does not load (%1); respawning %2 in its base colour %3", spawnName, catalogPrefab, fallback));
+		return fallback;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Spawns the owner's vehicle at a garage or impound pad, in the owner's presence. When the
 	//! owner holds no live key (a restart unbinds carried keys), a fresh one bound to the same id
 	//! goes into keyHolder's inventory, or onto the pad when there is no holder.
@@ -1369,6 +1398,9 @@ class LF_VehicleOwnership
 		if (spawnName.IsEmpty())
 			spawnName = record.m_sPrefab;
 
+		Resource saved = Resource.Load(spawnName);
+		bool savedLoads = saved && saved.IsValid();
+		spawnName = RespawnNameFor(spawnName, record.m_sPrefab, savedLoads, LF_VehicleColoursConfig.Get(), LF_VehiclePricesConfig.Get());
 		IEntity vehicle = LF_Utils.SpawnEntityPrefab(spawnName, origin, angles);
 		if (!vehicle)
 			return false;

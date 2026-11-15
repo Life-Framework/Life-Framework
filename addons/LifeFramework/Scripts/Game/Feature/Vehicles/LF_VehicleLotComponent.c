@@ -29,6 +29,15 @@ class LF_VehicleOffer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Make with the locked child the buyer gets (a test seam, like Make).
+	static LF_VehicleOffer MakeWithSpawn(ResourceName prefab, ResourceName spawnPrefab, int price, string nameKey)
+	{
+		LF_VehicleOffer offer = Make(prefab, price, nameKey);
+		offer.m_sSpawnPrefab = spawnPrefab;
+		return offer;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	ResourceName GetPrefab()
 	{
 		return m_sPrefab;
@@ -76,6 +85,77 @@ class LF_VehicleOffer
 	string GetNameKey()
 	{
 		return m_sNameKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many colours this model sells in (epic #1826): its colour row's length, or 1 with no row.
+	int ColourCount()
+	{
+		return ColourCountIn(LF_VehicleColoursConfig.Get());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int ColourCountIn(LF_VehicleColoursConfig colours)
+	{
+		if (!colours)
+			return 1;
+
+		return colours.CountFor(m_sPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when colour is one this offer sells. A model with no colour row sells colour 0 only.
+	bool ColourValid(int colour)
+	{
+		return ColourValidIn(LF_VehicleColoursConfig.Get(), colour);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool ColourValidIn(LF_VehicleColoursConfig colours, int colour)
+	{
+		return colour >= 0 && colour < ColourCountIn(colours);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The locked child that spawns for this colour. No colour row, or a colour with no prefab,
+	//! gives the offer's own spawn prefab (today's car).
+	ResourceName SpawnPrefabFor(int colour)
+	{
+		return SpawnPrefabForIn(LF_VehicleColoursConfig.Get(), colour);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName SpawnPrefabForIn(LF_VehicleColoursConfig colours, int colour)
+	{
+		if (colours)
+		{
+			LF_VehicleColour entry = colours.ColourAt(m_sPrefab, colour);
+			if (entry && !entry.m_SpawnPrefab.IsEmpty())
+				return entry.m_SpawnPrefab;
+		}
+
+		return m_sSpawnPrefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the lot charges for this colour: the model's price plus the colour's delta.
+	int PriceFor(int colour)
+	{
+		return PriceForIn(LF_VehiclePricesConfig.Get(), LF_VehicleColoursConfig.Get(), colour);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int PriceForIn(LF_VehiclePricesConfig prices, LF_VehicleColoursConfig colours, int colour)
+	{
+		int price = PriceIn(prices);
+		if (colours)
+		{
+			LF_VehicleColour entry = colours.ColourAt(m_sPrefab, colour);
+			if (entry)
+				price += entry.m_iPriceDelta;
+		}
+
+		return price;
 	}
 }
 
@@ -270,6 +350,14 @@ class LF_VehicleLotComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	bool Buy(string buyerUid, ResourceName prefab, IEntity buyer, out string vehicleId, out int cashCharged, out string reasonKey)
 	{
+		return BuyColour(buyerUid, prefab, 0, buyer, vehicleId, cashCharged, reasonKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Buy in a colour (epic #1826). The server checks the index, whatever the client sent: a colour
+	//! the model does not sell is refused and logged, and nothing is charged.
+	bool BuyColour(string buyerUid, ResourceName prefab, int colour, IEntity buyer, out string vehicleId, out int cashCharged, out string reasonKey)
+	{
 		vehicleId = "";
 		cashCharged = 0;
 		reasonKey = "#EL-Vehicle_NotSold";
@@ -281,6 +369,12 @@ class LF_VehicleLotComponent : ScriptComponent
 			return false;
 		}
 
+		if (!offer.ColourValid(colour))
+		{
+			LF_Debug.Error("Vehicle", string.Format("purchase refused: colour %1 is not sold for %2 (%3 colour(s))", colour, prefab, offer.ColourCount()));
+			return false;
+		}
+
 		vector origin;
 		if (!LF_VehicleSpawnPointComponent.FindFreeOrigin(m_sShopId, origin))
 		{
@@ -288,7 +382,7 @@ class LF_VehicleLotComponent : ScriptComponent
 			return false;
 		}
 
-		return LF_VehicleOwnership.Buy(buyerUid, offer.GetPrefab(), offer.GetSpawnPrefab(), offer.GetPrice(), m_iCashCeiling, m_sShopId, offer.GetNameKey(), origin, buyer, vehicleId, cashCharged, reasonKey);
+		return LF_VehicleOwnership.Buy(buyerUid, offer.GetPrefab(), offer.SpawnPrefabFor(colour), offer.PriceFor(colour), m_iCashCeiling, m_sShopId, offer.GetNameKey(), origin, buyer, vehicleId, cashCharged, reasonKey);
 	}
 
 	//------------------------------------------------------------------------------------------------
