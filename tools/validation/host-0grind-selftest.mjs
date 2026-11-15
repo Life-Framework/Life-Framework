@@ -10,6 +10,7 @@
 // "start without --yes reached the API (POST /armareforger/298627/start)" and exited 1 (2026-11-15).
 // red-proof: with createClient's redact() dropped from the error reason this printed
 // "the token was printed" and exited 1 (2026-11-15).
+// red-proof: before `--only staff` existed this printed "FAILED --only staff: not a game field config push knows" and 5 failure(s) (2026-11-15).
 import { createServer } from "node:http";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -221,6 +222,28 @@ try {
   if (r.code !== 0 || !/only name, password/.test(r.out)) fail(`config push --only needs --admins-pending for fields that are not admins: ${r.out}`);
   r = await run(["0grind", "config", "push", "--admins-pending", "--only", "bogus"]);
   if (r.code === 0 || !/not a game field/.test(r.out)) fail("config push --only accepted an unknown field");
+
+  // ---- config push --only staff: only the mod's staff.txt, nothing else
+  state.files.set("/profile/LifeFramework/staff.txt", Buffer.from("# stale roster\n", "utf8"));
+  state.files.set("/profile/LifeFramework/config.json", Buffer.from("{}\n", "utf8"));
+  Object.assign(state.settings, { server_name: "0grind default", mods: ["keep"] });
+  const cfgBefore = state.files.get("/ServerConfig.json").toString("utf8");
+  const ownerBefore = state.files.get("/profile/LifeFramework/config.json").toString("utf8");
+  const wS1 = writes().length;
+  r = await run(["0grind", "config", "push", "--only", "staff"]);
+  if (r.code !== 0 || writes().length !== wS1 || !/staff\.txt: differs, to upload/.test(r.out) || !/dry run/.test(r.out)) fail(`config push --only staff dry run wrote or did not show the upload: ${r.out}`);
+  r = await run(["0grind", "config", "push", "--only", "staff", "--yes"]);
+  const staffWrites = writes().slice(wS1);
+  if (r.code !== 0 || staffWrites.length !== 1 || staffWrites[0].method !== "PUT" || staffWrites[0].query !== "/profile/LifeFramework/staff.txt") fail(`config push --only staff wrote ${JSON.stringify(staffWrites.map((c) => `${c.method} ${c.query ?? c.path}`))} instead of just staff.txt: ${r.out}`);
+  if (!state.files.get("/profile/LifeFramework/staff.txt")?.toString("utf8").includes("administrator # Jasper")) fail("config push --only staff did not upload the roster");
+  if (state.files.get("/ServerConfig.json").toString("utf8") !== cfgBefore || state.files.get("/profile/LifeFramework/config.json").toString("utf8") !== ownerBefore) fail("config push --only staff changed ServerConfig.json or the owner config");
+  if (state.settings.server_name !== "0grind default" || state.settings.mods[0] !== "keep") fail("config push --only staff changed server_settings");
+  const wS2 = writes().length;
+  r = await run(["0grind", "config", "push", "--only", "staff", "--yes"]);
+  if (r.code !== 0 || writes().length !== wS2 || !/staff\.txt: unchanged/.test(r.out)) fail(`a second config push --only staff is not a no-op: ${r.out}`);
+  // staff beside a settings field pushes both and still leaves the other files alone
+  r = await run(["0grind", "config", "push", "--admins-pending", "--only", "name,staff"]);
+  if (r.code !== 0 || !/only name/.test(r.out) || !/staff\.txt: unchanged/.test(r.out)) fail(`config push --only name,staff: ${r.out}`);
 
   // ---- system fix: the flagship's System-page settings
   const w3 = writes().length;

@@ -97,7 +97,8 @@ unless the row says otherwise. How the ladder continues is under
 ## Warnings
 
 Until now the guide listed only in-game responses (`#kick`, `#ban`, `!wadd`) and never
-said a warning exists. This section says what one is.
+said a warning exists. This section says what one is. The warning policy below was
+decided on 2026-11-15.
 
 ### What a written warning is
 
@@ -120,11 +121,9 @@ Use the in-game name from the rows and keep the account uid in the ticket only
 ([Privacy](./moderator-guide.md#privacy)). The ticket is the record, as it is the
 ban record until #1285 lands.
 
-**Not decided: how long a warning counts.** Ticket evidence is kept a week by
-default, so a warning older than a week may no longer be findable. A moderator who
-needs to know whether a player was warned before asks the maintainer, and the
-maintainer decides whether the ticket stays. Until that is decided, write a warning's
-date in the ticket and ask before deleting a ticket that holds one.
+**A warning counts for 30 days** from its date in the ticket. Ticket evidence is kept a
+week by default, so keep a ticket that holds a warning for the full 30 days, and ask
+before deleting one.
 
 ### How it is delivered
 
@@ -139,8 +138,11 @@ Discord name is theirs, and do not trust a Discord tag to match an in-game name
 
 Put a line in the ticket: sent, by whom, when. A warning not sent has not been given.
 
-**Not decided: a set template.** The maintainer decides whether a fixed text goes
-out. Until then the three things above are the minimum.
+**Use this fixed warning text**, naming the rule:
+
+```
+Warning: you broke rule <N> (<rule title>). This stays on your record for 30 days.
+```
 
 ### The ladder
 
@@ -157,9 +159,8 @@ One level at a time, and say why in the ticket.
   alone: the proposal goes to an administrator.
 - **A ban** needs the uid, the date, the reason and the staff member's name in the
   ticket, and it opens the appeal path ([appeals](./appeals.md)).
-- **Not decided:** how many warnings come before a kick, and over what time. The
-  maintainer sets the count; until then a repeat of the same rule after a written
-  warning is a proposal for step 2, and the ticket links the first warning.
+- **A third warning within 30 days means a kick.** After the kick, the moderator logs
+  it and the maintainer reviews whether a ban is needed.
 
 ## When damage between players breaks a rule
 

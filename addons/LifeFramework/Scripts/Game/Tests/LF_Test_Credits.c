@@ -48,9 +48,11 @@ class LF_Test_Credits : LF_Test
 			return;
 
 		ctx.True(screen.IsOpen(), "the credits screen is open");
+		ctx.True(LF_UIScreen.IsActionPromptSuppressed(), "an open sheet holds the world interaction prompt off (#1738)");
 		ctx.Equal(rows.Count(), LF_CreditsSheet.RowCount(), "the sheet read every credits row");
 		ctx.True(LF_CreditsSheet.Pages() > 3, "the credits are paged by section: " + LF_CreditsSheet.Pages().ToString());
 		LF_CreditsSheet.Hide();
 		ctx.False(screen.IsOpen(), "Close removes the credits screen");
+		ctx.False(LF_UIScreen.IsActionPromptSuppressed(), "closing the last sheet lets the prompt back (#1738)");
 	}
 }

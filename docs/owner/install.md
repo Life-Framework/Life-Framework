@@ -13,6 +13,9 @@ download them (see Problems).
 Tried on a fresh host: [the November 2026 dry run](../ops/selfhost-dryrun-2026-11.md) (what a first boot printed, and
 each stumble this page was changed for).
 
+Renting a server with a control panel instead (0grind or another game-server host)? The steps are the
+same, with the panel's own screens: [run on a rented host](rented-host.md).
+
 Hosting the project's own server, **Life Framework | Everon 1989 (Alpha)**, from a repo worktree with
 `tools\cli host start --public`? Follow [host the flagship](host-the-flagship.md) instead: publish, confirm the
 Workshop IDs, password and admin, ports, start, and the first announcement.

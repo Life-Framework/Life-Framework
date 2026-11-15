@@ -144,6 +144,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AccountReplicationWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DialogueClerk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DialogueFlow(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DialogueFocusStep(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueMouth(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueOverrideVerbs(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialoguePackOverlay(), LF_TestTier.LOGIC);
