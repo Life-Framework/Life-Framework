@@ -437,3 +437,11 @@ LF_NpcBaseEntity Village_Drugstore_Pharmacist : "{87E1270978227F3A}Prefabs/Chara
  coords 136.9 0.199 267.3
  angleY 180
 }
+SCR_DestructibleBuildingEntity Village_GunStore : "{1902DB32C6DE05E6}Prefabs/Buildings/GunStore/GunStore_Store.et" {
+ coords 378 0 266
+ angleY 180
+}
+LF_NpcBaseEntity Village_GunStore_Clerk : "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et" {
+ coords 375 0.199 267.6
+ angleY 180
+}

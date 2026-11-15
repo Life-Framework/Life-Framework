@@ -1,0 +1,54 @@
+{
+  "slug": "gun-store",
+  "name": "GunStore",
+  "concept": "The gunsmith of 1989 Everon: the vanilla ShopHouse_E_2I01t (a shop on the ground floor, the owner's flat upstairs, a stockroom behind) at the east end of the main street, fitted out as a licensed civilian gun shop. Sporting rifles and pistols stand in a display cabinet on the shop wall and in a rack in the shop window, where the street sees them; they are sold, with their magazines, scopes, holsters and pouches, over the gun counter, and only to a buyer with a firearm permit. Binoculars, compasses, maps, hunters' hats are self-serve off the wall shelves and paid at the till on the counter. Medicine belongs to the drug store, food to the general store.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/GunStore",
+  "vanilla": {
+    "base": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et",
+    "building": "GunStore",
+    "furniture": "Furniture/GunStore_furniture_01"
+  },
+  "budget": { "min_doors": 1 },
+  "store": {
+    "prefab": "GunStore_Store",
+    "key": "everon_gunstore",
+    "boundary": { "center": [0.1, 0, -0.15], "half": [6.1, 0, 7.75] },
+    "restock_seconds": 300,
+    "till": "CashierShop_01",
+    "alarm": {
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "at": [-0.9, 2.6, 7.65],
+      "yaw": 0,
+      "offset": [0, 0.167, 0.065],
+      "reach": 10,
+      "why": "the alarm bell box on the shop front between the shop window and the door: a walk-out's beacon and siren sound where the shopper leaves"
+    },
+    "fixtures": [
+      { "prefab": "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et", "at": [5.75, 0.199, 0.6], "yaw": -90, "why": "the rifle and pistol cabinet on the shop wall, beside the counter" },
+      { "prefab": "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et", "at": [3.0, 0.199, 6.7], "yaw": 0, "why": "long guns in the shop window, facing the street" },
+      { "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et", "at": [-1.52, 0.199, 4.25], "yaw": 90, "why": "hunting clothes on the wall opposite the cabinet" },
+      { "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et", "at": [2.55, 1.238, -0.6], "yaw": 0, "why": "the till on the gun counter, for the self-serve shelves" }
+    ],
+    "counters": [
+      { "prefab": "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et", "at": [3.0, 0.199, -0.5], "yaw": 0, "outlet": "gun_counter" }
+    ],
+    "lines": [
+      { "item": "{B31929F65F0D0279}Prefabs/Weapons/Rifles/M14/Rifle_M21.et", "display": true, "fixture": "LF_WeaponRackCabinet_Display", "pick": [0], "kind": "long", "slots": [0, 1, 2, 3, 4] },
+      { "item": "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et", "display": true, "fixture": "LF_WeaponRackCabinet_Display", "pick": [0], "kind": "long", "slots": [5, 6, 7, 8, 9] },
+      { "item": "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et", "display": true, "fixture": "LF_WeaponRackCabinet_Display", "pick": [0], "kind": "pistol", "slots": [0] },
+      { "item": "{C0F7DD85A86B2900}Prefabs/Weapons/Handguns/PM/Handgun_PM.et", "display": true, "fixture": "LF_WeaponRackCabinet_Display", "pick": [0], "kind": "pistol", "slots": [1] },
+      { "item": "{B31929F65F0D0279}Prefabs/Weapons/Rifles/M14/Rifle_M21.et", "display": true, "fixture": "LF_WeaponRackStand_Display", "pick": [0], "kind": "long", "slots": [0, 2, 4, 6, 8] },
+      { "item": "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et", "display": true, "fixture": "LF_WeaponRackStand_Display", "pick": [0], "kind": "long", "slots": [1, 3, 5, 7, 9] },
+
+      { "item": "{A22C976003AA5BA3}Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et", "fixture": "ShelfShop_01", "pick": [1], "boards": [0], "per_board": 4 },
+      { "item": "{D8D9EE7F3966589E}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et", "fixture": "ShelfShop_01", "pick": [1], "boards": [2], "per_board": 6 },
+      { "item": "{B9687B8829272E14}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_brown.et", "fixture": "ShelfShop_01", "pick": [1], "boards": [1], "per_board": 6 },
+      { "item": "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et", "fixture": "ShelfShop_01", "pick": [1], "boards": [3], "per_board": 6 },
+      { "item": "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et", "fixture": "ShelfShop_01", "pick": [2], "boards": [1], "per_board": 10 },
+      { "item": "{243948B23D90BECB}Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et", "fixture": "ShelfShop_01", "pick": [2], "boards": [2], "per_board": 6 },
+      { "item": "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et", "fixture": "ShelfShop_01", "pick": [2], "boards": [3], "per_board": 8 }
+    ]
+  }
+}

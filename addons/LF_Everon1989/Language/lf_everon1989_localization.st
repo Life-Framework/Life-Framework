@@ -294,6 +294,11 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{0238B801ABD1D07C}" {
+     Id "LF-Shop_Desc_GunCounter"
+     Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
+     Comment "Pack override of the core gun counter description (price list subtitle) for the Everon 1989 gun store."
+    }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
      Target_en_us "Morphine and saline, for licensed medics only."
@@ -303,6 +308,11 @@ StringTable {
      Id "LF-Shop_Name_PharmacyCounter"
      Target_en_us "Dispensary"
      Comment "Shop name of the drug store pharmacy counter: the item catalogue outlet pharmacy_counter, morphine and saline behind the medic licence."
+    }
+    CustomStringTableItem "{53F9E5EEA5C98E4E}" {
+     Id "LF-Shop_Open_GunCounter"
+     Target_en_us "Buy guns and ammunition"
+     Comment "Pack override of the core gun counter action: in the Everon 1989 gun store the counter sells rifles, pistols, magazines, scopes, holsters and pouches, not only a handgun."
     }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"
@@ -748,6 +758,31 @@ StringTable {
      Id "LF-Sign_GeneralStore_What"
      Target_en_us "Food and supplies."
      Comment "Sign card for the general store counter, What section."
+    }
+    CustomStringTableItem "{E78F26E6B9E7D646}" {
+     Id "LF-Sign_GunStore_How"
+     Target_en_us "Guns, magazines, scopes and holsters: *Buy guns and ammunition* at the gun counter|Hats and field gear: take them off the wall shelves and *Pay for goods* at the till on the counter"
+     Comment "Sign card for the gun store, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{FED7197CFC22F228}" {
+     Id "LF-Sign_GunStore_Needs"
+     Target_en_us "A firearm permit for guns and ammunition. The counter refuses the order without one."
+     Comment "Sign card for the gun store, You need section."
+    }
+    CustomStringTableItem "{7B2783518336052C}" {
+     Id "LF-Sign_GunStore_Next"
+     Target_en_us "The rifles in the cabinet and the window are for show: order them at the counter."
+     Comment "Sign card for the gun store, Next section."
+    }
+    CustomStringTableItem "{F7A24BC184133EB5}" {
+     Id "LF-Sign_GunStore_Title"
+     Target_en_us "Gunsmith"
+     Comment "Title of the fascia sign over the gun store window on the main street (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Gunsmith."
+    }
+    CustomStringTableItem "{DDD223CF06D5D4AC}" {
+     Id "LF-Sign_GunStore_What"
+     Target_en_us "Sporting rifles, pistols and ammunition for permit holders. Binoculars, compasses, maps and hunters' hats for anyone."
+     Comment "Sign card for the gun store, What section."
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
