@@ -1,3 +1,4 @@
+// opening-run: host=outside timeout=1200
 // tools/playtest/opening/b2-start.mjs
 // Beat B2 of docs/playtest/m4-opening-day.md: the flagship start and the password gate, the desk half, on a scratch host.
 //
@@ -17,8 +18,12 @@
 //   password              the live server.json has a join password (only tested for being set; never printed).
 //   join-wrong-password   BLOCKED by #1520: a client join is manual.
 //   join-right-password   BLOCKED by #1520: a client join is manual.
-//   watch                 `host watch` is started and says it adopted the running host, and its process is still up. It is left
-//                         running: it is what the beat checks. End it with `tools\cli host stop`.
+//   watch                 `host watch` is started and says it adopted the running host, and its process is still up.
+//
+// The beat stops what it started before it returns, by pid, on every path (#1692): the watcher it recorded, then the host
+// through `host stop`, then a forced kill of what is left (tools/playtest/opening/_scratch.mjs reapHost). A host with no
+// save point before the start is "no save yet" (#1693): a start that never reaches its ready line, no console.log or no live
+// server.json is BLOCKED there, not FAIL; on a host that has saved before the same findings are FAIL.
 // The name and password checks are `configCheck` of tools/host/ready.mjs, split by what it reports.
 // Proof: tools/validation/opening-b2-selftest.mjs.
 
@@ -26,8 +31,9 @@ import { closeSync, existsSync, mkdirSync, openSync, readFileSync } from "node:f
 import { spawn, spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { READY_LINE, hostDir, hostPaths, newestConsoleLog, pidAlive } from "../../host/host.mjs";
+import { READY_LINE, findSavePoints, hostDir, hostPaths, newestConsoleLog, pidAlive } from "../../host/host.mjs";
 import { configCheck } from "../../host/ready.mjs";
+import { reapHost, recordPid } from "./_scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
@@ -45,17 +51,35 @@ const sleepMs = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0
 const firstLine = (t) => (String(t).split(/\r?\n/).find((l) => l.trim()) || "no output").trim();
 
 export async function runB2(opts) {
+  const { host, cli } = opts;
+  const out = [];
+  try {
+    await runChecks(opts, out);
+  } finally {
+    // stops the watcher, then the host, by pid, whatever happened above (a timed-out start leaves its server up too)
+    const done = reapHost({ host, cli, say: (m) => console.error(`[b2] ${m}`) });
+    if (done.leftover.length) console.error(`[b2] still running: ${done.leftover.map((p) => `${p.role} pid ${p.pid}`).join(", ")}`);
+  }
+  return out;
+}
+
+async function runChecks(opts, out) {
   const { host, cli, timeoutMs, watchWaitMs } = opts;
   const env = { ...process.env, LF_HOST_DIR: host };
-  const out = [];
   const line = (id, verdict, reason) => out.push({ id, verdict, reason: String(reason).replace(/\s+/g, " ").trim() });
+  // "no save yet": no save point under the host's profile before the start (a fresh scratch host).
+  const freshHost = findSavePoints(hostPaths(host).profile).length === 0;
+  const NO_SAVE = "no save yet on this host";
 
   // start
   const r = spawnSync(process.execPath, [cli, "host", "start", "--flagship", "--wait"], { cwd: ROOT, env, encoding: "utf8", timeout: timeoutMs, maxBuffer: 16 * 1024 * 1024, windowsHide: true });
   const text = `${r.stdout || ""}${r.stderr || ""}`;
   const up = /^host: up \(pid (\d+)\)/m.exec(text);
   let started = false;
-  if (r.error && r.error.code === "ETIMEDOUT") line("start", "FAIL", `host start --flagship --wait timed out after ${timeoutMs / 1000}s`);
+  if (r.error && r.error.code === "ETIMEDOUT") {
+    const why = `host start --flagship --wait timed out after ${timeoutMs / 1000}s`;
+    line("start", freshHost ? "BLOCKED" : "FAIL", freshHost ? `${NO_SAVE}: ${why}; the server never printed its ready line on a first boot` : why);
+  }
   else if (r.status !== 0) line("start", "FAIL", `host start --flagship --wait exited ${r.status}: ${firstLine(text)}`);
   else if (!up) line("start", "FAIL", `host start --flagship --wait printed no \`host: up (pid N)\` line: ${firstLine(text)}`);
   else {
@@ -65,14 +89,15 @@ export async function runB2(opts) {
 
   // save-loaded
   const log = newestConsoleLog(hostPaths(host).profile);
-  if (!log) line("save-loaded", "FAIL", "the host has no console.log yet");
+  if (!log) line("save-loaded", freshHost ? "BLOCKED" : "FAIL", freshHost ? `${NO_SAVE}: the host has no console.log yet` : "the host has no console.log yet");
   else {
     const body = readFileSync(log, "utf8");
     const missing = [];
     if (!/save loaded:/.test(body)) missing.push("`save loaded:`");
     if (!body.includes(READY_LINE)) missing.push(`\`${READY_LINE}\``);
     const fresh = missing.length === 1 && missing[0].startsWith("`save") ? " (a host with no save yet loads none: stop it once, or use the maintainer's host, so a save exists)" : "";
-    if (missing.length) line("save-loaded", "FAIL", `the console log has no ${missing.join(" and no ")}${fresh}`);
+    if (missing.length === 1 && missing[0].startsWith("`save") && freshHost) line("save-loaded", "BLOCKED", `${NO_SAVE}: the console log has no \`save loaded:\`, and a host with no save loads none${fresh}`);
+    else if (missing.length) line("save-loaded", "FAIL", `the console log has no ${missing.join(" and no ")}${fresh}`);
     else line("save-loaded", "PASS", "the console log has `save loaded:` and `Entered online game state.`");
   }
 
@@ -86,9 +111,12 @@ export async function runB2(opts) {
     const nameProblem = problems.find((p) => /server name/.test(p));
     const passProblem = problems.find((p) => /password/.test(p));
     const whole = !nameProblem && !passProblem; // no server.json, or not JSON: both are unreadable
-    if (nameProblem || whole) line("server-name", "FAIL", nameProblem || cfg.detail);
+    const noJson = whole && /^no live server\.json/.test(cfg.detail);
+    const wholeVerdict = noJson && freshHost ? "BLOCKED" : "FAIL";
+    const wholeWhy = wholeVerdict === "BLOCKED" ? `${NO_SAVE}: ${cfg.detail}` : cfg.detail;
+    if (nameProblem || whole) line("server-name", nameProblem ? "FAIL" : wholeVerdict, nameProblem || wholeWhy);
     else line("server-name", "PASS", "the live server.json names the server exactly");
-    if (passProblem || whole) line("password", "FAIL", passProblem || cfg.detail);
+    if (passProblem || whole) line("password", passProblem ? "FAIL" : wholeVerdict, passProblem || wholeWhy);
     else line("password", "PASS", "the live server.json has a join password set");
   }
 
@@ -97,7 +125,10 @@ export async function runB2(opts) {
   line("join-right-password", "BLOCKED", "blocked by #1520 (manual): a join with the right password must reach the world and spawn the character in town");
 
   // watch
-  if (!started) line("watch", "FAIL", "no host is up, so there is nothing for `host watch` to adopt");
+  if (!started) {
+    const blocked = out.find((o) => o.id === "start")?.verdict === "BLOCKED";
+    line("watch", blocked ? "BLOCKED" : "FAIL", "no host is up, so there is nothing for `host watch` to adopt");
+  }
   else {
     const logDir = join(host, "logs");
     mkdirSync(logDir, { recursive: true });
@@ -111,6 +142,7 @@ export async function runB2(opts) {
     }
     child.unref();
     const pid = child.pid;
+    recordPid(host, "host watch", pid); // reapHost stops it before this script returns
     let exited = false;
     child.on("exit", () => {
       exited = true;
@@ -131,7 +163,6 @@ export async function runB2(opts) {
     } else if (!pidAlive(pid)) line("watch", "FAIL", `host watch (pid ${pid}) exited right after it adopted the host; log ${logFile}`);
     else line("watch", "PASS", `host watch is running (pid ${pid}); log ${logFile}`);
   }
-  return out;
 }
 
 async function main(args) {

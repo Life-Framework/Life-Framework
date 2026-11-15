@@ -62,7 +62,7 @@ const report = existsSync(reportPath) ? readFileSync(reportPath, "utf8") : "";
 check(/^- B1 Desk: go or no-go before opening: PASS/m.test(report), `B1 is a PASS line (report: ${report})`);
 check(/^- B9 Wipe with notice: BLOCKED by #1413, #1274/m.test(report), "B9 is blocked by #1413, #1274");
 check(!/^- B9 .*FAIL/m.test(report), "a blocked beat is not reported as a failure");
-check(report.includes("Host folder: scratch-host") && /^- B1 .*PASS \(2 checks\)/m.test(report), "--host reaches the beat script, as the flag and as LF_HOST_DIR (the fixture fails otherwise)");
+check(/Host folders[\s\S]*B1 .*scratch-host/.test(report) && /^- B1 .*PASS \(2 checks\)/m.test(report), "--host reaches the beat script, as the flag and as LF_HOST_DIR (the fixture fails otherwise)");
 check(!/chatter/.test(report), "lines that are not BEAT lines stay out of the report");
 check(/^- B6 The 2-hour day: NOT RUN/m.test(report) && report.includes("node agent-box/harness.mjs proof day-rate"), "B6, a game beat, lists its proof line");
 check(!/proof day-rate.*not on main/.test(report), "day-rate is on main in the fixture, no note");
