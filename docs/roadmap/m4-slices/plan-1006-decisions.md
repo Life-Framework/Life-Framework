@@ -41,13 +41,13 @@ Decision 2026-11-14: only the maintainer is an administrator at opening; the sta
 - release-blocker: no
 
 ## Capability
-The flagship's two live files are committed in `server/flagship/`, so every change is a PR. `config.json` carries the owner overrides, including `dayCycle` accelerated with a 120-minute day (12x); `server.json` carries the listing name `Life Framework | Everon 1989 (Alpha)`, the `LF_Everon1989.conf` scenario and the mod list. Both are free of secrets, and the README says which values are host-only.
+The flagship's two live files are committed in `server/flagship/`, so every change is a PR. `config.json` carries the owner overrides, including `dayCycle` accelerated with a 120-minute day (12x) and `restarts` at 06:00 and 18:00; `server.json` carries the listing name `Life Framework | Everon 1989 (Alpha)`, the `LF_Everon1989.conf` scenario and the mod list. Both are free of secrets, and the README says which values are host-only.
 
 ## Acceptance
-Selftest: `config.json` passes the config schema check (`docs/config/config.schema.json`); `server.json` has the exact name above and the same scenario and mod list as `server/example/server.json`; `game.password`, `game.passwordAdmin` and `game.admins` are empty, and no webhook URL or password-like value appears in either file. Red first: add a secret and see it fail.
+Selftest: `config.json` passes the config schema check (`docs/config/config.schema.json`), its `restarts.times` is exactly `["06:00", "18:00"]` and `warningMinutes` is unset or `[15, 5, 1]`; `server.json` has the exact name above and the same scenario and mod list as `server/example/server.json`; `game.password`, `game.passwordAdmin` and `game.admins` are empty, and no webhook URL or password-like value appears in either file. Red first: add a secret and see it fail.
 
 ## Notes
-Decisions 2026-11-14: the live `config.json` lives in this repo under `server/`; the alpha gate is a server password only (host-only, set by C2, never committed); the in-game day is 2 real hours (12x); the name is as above. Start from `server/example/` and `docs/config/owner-config.md`. The host's profile copy is written by C2 only. Webhook URLs (`staffWebhookUrl`, S4) are host-only too. The `dayCycle` field exists once X1 has merged; do not start before. Restart times (open question 1 of the plan) stay unset: no `restarts` list until the maintainer answers.
+Decisions 2026-11-14: the live `config.json` lives in this repo under `server/`; the alpha gate is a server password only (host-only, set by C2, never committed); the in-game day is 2 real hours (12x); the name is as above. Start from `server/example/` and `docs/config/owner-config.md`. The host's profile copy is written by C2 only. Webhook URLs (`staffWebhookUrl`, S4) are host-only too. The `dayCycle` field exists once X1 has merged; do not start before. Decision 2026-11-15: the flagship restarts twice a day, so `config.json` sets `restarts.times` to `["06:00", "18:00"]` (server time) and leaves `warningMinutes` at the shipped 15, 5, 1. The flagship has no plaza siren (the toast alone is enough); the config sets nothing for it.
 
 Re-cut 2026-11-14 (widen, docs/roadmap/m4-slice-plan.md "Widening the graph"): the `dayCycle` field exists once CF has merged, so this slice waits for CF instead of X1.
 
