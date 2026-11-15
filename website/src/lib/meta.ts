@@ -56,6 +56,11 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
     description: "What the framework gives a server owner, what the 1989 Everon flagship adds, how it is configured, and the licences.",
     og: "servers",
   },
+  "/alpha": {
+    title: "Join the alpha",
+    description: "How to ask for an invite to Life Framework | Everon 1989 (Alpha): the password gate, announced sessions, 24 hour wipe notice, and when it opens to everyone.",
+    og: "servers",
+  },
   "/contribute": {
     title: "Contribute",
     description: "How to pick up a scope: read AGENTS.md, take an issue, prove it in the world, open a pull request. Agents and people welcome.",
