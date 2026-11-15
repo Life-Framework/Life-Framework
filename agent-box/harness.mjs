@@ -64,6 +64,16 @@ export function setBoxes(dirs, sessionId) {
 // The session a command to these boxes is addressed to: { id } (empty id for
 // Workbench and default profiles), or { error } when the live session in the
 // shared session dir belongs to another checkout or is not running.
+// Three worlds (docs/architecture/three-worlds.md): a proof that walks to an annex fixture (an Annex_* entity) runs
+// on GridWorld, so it asks for `session up --mission grid`; town proofs keep the default. Returns "" when the
+// running session booted the wanted mission, else the one line the proof prints before it fails.
+export function missionProblem(session, want) {
+  if (!session || session.stoppedAt) return `no running session: \`tools\\cli session up --mission ${want}\` first`;
+  const have = session.mission || "debug";
+  if (have === want) return "";
+  return `this proof needs \`session up --mission ${want}\` (its fixtures are in that world); the running session is --mission ${have}`;
+}
+
 export function addressFor(boxes, root = ROOT, lookup = sessionForBox) {
   if (!boxes) return { id: "" };
   if (sessionOverride !== undefined) return { id: sessionOverride || "" };
@@ -1317,6 +1327,13 @@ function selftest() {
   if (wideStreet.oz <= 0) throw new Error("the release street wide shot stays on +Z");
   // The live village is not asserted here: the maintainer places the town by hand, so where a site
   // stands is his call (validate-no-town-layout-asserts). judgeStreet is covered on fixture rows above.
+  // Three worlds (W5, #1807): a proof that walks to an annex fixture asks for the grid mission and says so when the session booted another world.
+  // red-proof: 2026-11-16 written before missionProblem existed: the selftest threw "missionProblem is not defined", then these cases passed.
+  if (missionProblem({ mission: "grid" }, "grid") !== "") throw new Error("a grid session was refused for a grid proof");
+  if (!/session up --mission grid/.test(missionProblem({ mission: "debug" }, "grid"))) throw new Error("a town session was accepted for a grid proof");
+  if (!/session up --mission grid/.test(missionProblem({}, "grid"))) throw new Error("a session record with no mission (the town default) was accepted for a grid proof");
+  if (!/no running session/.test(missionProblem(null, "grid"))) throw new Error("no session was accepted");
+  if (!/no running session/.test(missionProblem({ mission: "grid", stoppedAt: "2026-11-16T00:00:00Z" }, "grid"))) throw new Error("a stopped session was accepted");
   townSelftest();
   console.log("selftest ok");
   return 0;

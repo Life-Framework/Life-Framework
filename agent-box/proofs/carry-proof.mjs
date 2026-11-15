@@ -1,14 +1,20 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { ROOT, arrive, clientBox, clientSeesPeer, parseState, sessionDir } from "../session.mjs";
+import { ROOT, arrive, clientBox, clientSeesPeer, parseState, readSession, sessionDir } from "../session.mjs";
 
 // #261, load only (drag and carry were cut 2026-11-15): player 1 downs player 2 beside the annex
 // escort car and loads the body straight into a cargo seat. Both clients, and a late joiner, read
 // the body seated; a world shot at the car shows the seated body (its head included) for the PR.
+// The annex escort car stands in GridWorld, so this runs on `session up --clients 2 --mission grid` (#1807).
 async function runCarryProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
+  const wrong = h.missionProblem(readSession(dir), "grid");
+  if (wrong) {
+    console.log(`FAIL  ${wrong}`);
+    return 1;
+  }
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
@@ -75,6 +81,6 @@ async function runCarryProof() {
 
 export default {
   name: "carry-proof",
-  usage: "carry-proof [--no-late-join]",
+  usage: "carry-proof [--no-late-join]   (up --clients 2 --mission grid)",
   run: (ctx) => runCarryProof(),
 };
