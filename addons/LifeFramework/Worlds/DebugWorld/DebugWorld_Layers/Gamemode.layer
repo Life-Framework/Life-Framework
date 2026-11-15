@@ -1,42 +1,44 @@
 LF_GameModeRoleplay : "{7F729501AA82DA9A}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay_Debug.et" {
 }
-SCR_SpawnPoint Spawn_Town : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
- m_sFaction "CIVILIAN"
- coords 126 0 246
- angleY 90
-}
-SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
- m_sFaction "CIVILIAN"
- coords 121 0 253
- angleY 90
-}
-SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
- m_sFaction "POLICE"
- coords 232.4 0 245.5
- angleY 0
-}
-SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
- m_sFaction "POLICE"
- coords 234 0 245.5
- angleY 0
-}
-GenericEntity LF_SafeZone_Square {
- components {
-  LF_ZoneComponent "{EBAFCFFFF653DC56}" {
-   m_eRule 1
-   m_fRadius 30
+$grp GenericEntity {
+ LF_SafeZone_Square {
+  components {
+   LF_ZoneComponent "{EBAFCFFFF653DC56}" {
+    m_eRule SAFE
+    m_fRadius 30
+   }
   }
+  coords 115 0 250
  }
- coords 115 0 250
-}
-GenericEntity LF_LawlessZone_Quarry {
- components {
-  LF_ZoneComponent "{CB40CBA4BF483E6B}" {
-   m_eRule 2
-   m_fRadius 32
+ LF_LawlessZone_Quarry {
+  components {
+   LF_ZoneComponent "{CB40CBA4BF483E6B}" {
+    m_eRule LAWLESS
+    m_fRadius 32
+   }
   }
+  coords 178 0 172
  }
- coords 178 0 172
+}
+$grp SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
+ Spawn_Town {
+  coords 116.931 0.001 248.567
+  angles 0 90 0
+  m_sFaction "CIVILIAN"
+ }
+ {
+  coords 116.753 0.001 251.742
+  angles 0 90 0
+  m_sFaction "CIVILIAN"
+ }
+ {
+  coords 232.4 0 245.5
+  m_sFaction "POLICE"
+ }
+ {
+  coords 234 0 245.5
+  m_sFaction "POLICE"
+ }
 }
 SCR_MPDestructionManager MPDestructionManager : "{9BB369F2803C6F71}Prefabs/MP/MPDestructionManager.et" {
  coords 0 0 0
