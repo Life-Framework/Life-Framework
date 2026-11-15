@@ -10,6 +10,7 @@ import Contribute from "@/pages/Contribute";
 import Decisions from "@/pages/Decisions";
 import Support from "@/pages/Support";
 import Credits from "@/pages/Credits";
+import Rules from "@/pages/Rules";
 import Config from "@/pages/Config";
 import ConfigReference from "@/pages/ConfigReference";
 import Features from "@/pages/Features";
@@ -59,6 +60,7 @@ const App = () => (
       <Route path="/decisions" element={<Decisions />} />
       <Route path="/support" element={<Support />} />
       <Route path="/credits" element={<Credits />} />
+      <Route path="/rules" element={<Rules />} />
       <Route path="/config" element={<Config />} />
       <Route path="/config/reference" element={<ConfigReference />} />
       <Route path="/docs/credits" element={<Navigate to="/credits" replace />} />
