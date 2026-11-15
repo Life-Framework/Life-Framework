@@ -35,6 +35,9 @@ tools\cli pack LF_Everon1989      # the pack, same check
 git status                         # must be clean
 ```
 
+The field values, page text, pictures and gap list for the two Publish dialogs are on one page:
+[release/workshop-upload-0.1.0.md](release/workshop-upload-0.1.0.md).
+
 The version is `0.1.0` for both items (the maintainer's choice). The core item already exists on the
 Workshop (the boot check found its ID on 2026-11-14). If the Publish dialog shows a version at or above
 `0.1.0` for it, stop and ask: every publish takes a higher number, even a text-only change. The pack is
@@ -52,7 +55,7 @@ The release's upgrade page is [upgrades/0.1.0.md](upgrades/0.1.0.md).
 2. **Workbench > Publish Project**. Fill it from `docs/marketing/workshop/README.md`:
    Project Name `Life Framework (Core)`; Working Dir default; Preview Image `docs/marketing/workshop/preview.jpg`;
    Screenshots the nine files in `docs/marketing/workshop/screenshots/`; Category Game Mode (+ Scenario);
-   Tags `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989`; License **Arma Public
+   Tags `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Framework`; License **Arma Public
    License (APL)**; Version (step 1); Visibility **Unlisted** for the first round; Summary `summary.txt`;
    Description `description.bbcode` (page text names APL, links the repo and the install guide, lists the
    Workshop dependencies from `docs/ecosystem.md`); Change Notes from `changelog.md`.

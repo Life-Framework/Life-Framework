@@ -14,4 +14,6 @@ if (-not $NoWait) {
   do { Start-Sleep -Milliseconds 500; $st = (Get-ScheduledTask -TaskName $name).State } while ($st -eq 'Running' -and ((Get-Date) - $t0).TotalSeconds -lt $WaitSec)
   "task $name state=$st result=$((Get-ScheduledTaskInfo -TaskName $name).LastTaskResult)"
 }
+# Unregistering a running task leaves its process behind (four frozen Workbenches piled up on lf-cloud, 2026-11-15).
+if (-not $NoWait) { Stop-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue }
 Unregister-ScheduledTask -TaskName $name -Confirm:$false
