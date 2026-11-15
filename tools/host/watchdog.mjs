@@ -116,15 +116,22 @@ export function recordCrash(dir, now = new Date(), { keep = DEFAULT_KEEP } = {})
 }
 
 // A scheduled restart (#1560, refs #306): back the closing save up as backups/<time>-restart/ before
-// the host starts again. The `restart` tag is not a plain one: rotate.mjs deletes only start and
-// stop backups, so a restart backup is never pruned. Returns { backup }, null when no save exists
+// the host starts again. The `restart` tag is a plain one like start and stop: rotate.mjs prunes the
+// oldest beyond N (crash, wipe and the other tags never). Returns { backup }, null when no save exists
 // yet. Never throws: a failed backup is logged and the restart goes on.
-export function recordRestart(dir, now = new Date()) {
+export function recordRestart(dir, now = new Date(), { keep = DEFAULT_KEEP } = {}) {
+  const { backups } = hostPaths(dir);
   let backup = null;
   try {
     backup = backupSaves(dir, "restart", now);
   } catch (e) {
     console.log(`[LFDebug:HostWatch] restart backup of the saves failed: ${e.message}`);
+  }
+  // Rotate after the backup, as recordCrash does, so a host that restarts twice a day stays at `keep` plain backups.
+  try {
+    pruneBackups(backups, keep);
+  } catch (e) {
+    console.log(`[LFDebug:HostWatch] backup rotation after the restart failed: ${e.message}`);
   }
   return { backup };
 }

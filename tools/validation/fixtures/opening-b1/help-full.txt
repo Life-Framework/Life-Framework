@@ -5,7 +5,7 @@ More host commands (tools/host/commands/, one file each):
   crashpack [--session <stamp>] [--out <dir>] [--lines N]   one zip of the newest (or named) crash: dump, log tail, build stamp, mods, server.json and config.json with passwords and webhooks <redacted>, plus an issue body draft; prints the gh command, never runs it
   disk   save and backup sizes, growth over the last 5 backups, free space, sessions that fit before 5 GB free; exits 1 under 5 GB
   drill [<backup>] [--timeout <s>] [--keep]   boot a backup on a scratch profile on a pool machine; pass only if the save loads with its accounts
-  perf [--every 30] [--for 120] [--upload-mbit 20]   sample the running server CPU, memory and upload (Windows; upload is the machine's adapter total) into <host>/perf/perf-<stamp>.csv and print one verdict against the 40-player budget (CPU under 80% of one core, upload under --upload-mbit or env LF_HOST_UPLOAD_MBIT)
+  perf [--every 30] [--for 120] [--upload-mbit 20]   sample the running server CPU, memory and upload (Windows; upload is the machine's adapter total) into <host>/perf/perf-<stamp>.csv and print one verdict against the 16-player budget (CPU under 80% of one core, upload under --upload-mbit or env LF_HOST_UPLOAD_MBIT)
   players [address:a2sport]   A2S query: server name, map, players and max players (default 127.0.0.1:17777)
   ports [--config server.json] [--external host:a2sport]   check game/A2S/RCON ports are free or held by the server, print router forward rules
   prune [--keep N] [--dry-run]   delete the oldest start/stop backups beyond N (default 20); tagged backups are never deleted
