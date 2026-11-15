@@ -64,6 +64,11 @@
       "match": "^Roadmap_Vehicle_S105 ",
       "kind": "clips",
       "why": "maintainer hand placement (world ship): Roadmap_Vehicle_S105 in Street_Vehicles.layer (clips Sign_LotPrice_t601)"
+    },
+    {
+      "match": "^Market_(Tarp|Post)_",
+      "kind": "overlaps",
+      "why": "maintainer hand placement (world ship): each market tarp rests on its own two posts, so tarp and posts overlap by about 0.2 m by design (Village_Dressing.layer market stalls)."
     }
   ]
 }
