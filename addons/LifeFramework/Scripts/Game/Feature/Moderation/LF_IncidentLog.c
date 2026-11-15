@@ -259,6 +259,26 @@ class LF_IncidentLog
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The numbers of the newest max records naming this uid as subject or other party, oldest
+	//! first. Walks back from the newest record and stops at max, copying nothing.
+	static array<int> RecentNumbersFor(string uid, int max)
+	{
+		array<int> numbers = {};
+		if (uid.IsEmpty() || max <= 0)
+			return numbers;
+
+		array<ref LF_IncidentRecord> records = Records();
+		for (int i = records.Count() - 1; i >= 0 && numbers.Count() < max; i--)
+		{
+			LF_IncidentRecord record = records[i];
+			if (record && (record.m_sSubjectUid == uid || record.m_sOtherUid == uid))
+				numbers.InsertAt(record.m_iNumber, 0);
+		}
+
+		return numbers;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A copy of the record with this number, or null when it is gone (trimmed or never there).
 	static LF_IncidentRecord Find(int number)
 	{
