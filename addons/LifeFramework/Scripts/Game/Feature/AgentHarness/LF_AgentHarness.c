@@ -10,6 +10,31 @@
 // Results land in $profile:agent-box/result.txt. A headless dedicated server
 // never starts the poll: EnsureLoop() runs only for the local player.
 
+//------------------------------------------------------------------------------------------------
+//! Per-feature harness verbs. LF_AgentHarness.Dispatch asks this after its own (frozen) list. A feature
+//! adds verbs in its own file, so two PRs adding verbs never touch the same file:
+//!   modded class LF_AgentHarnessVerbs
+//!   {
+//!   	override bool Handle(LF_AgentCommand cmd)
+//!   	{
+//!   		if (cmd.Verb == "myverb")
+//!   		{
+//!   			LF_AgentHarness.Answer(cmd.Id, "ok", "done");
+//!   			return true;
+//!   		}
+//!   		return super.Handle(cmd);
+//!   	}
+//!   }
+class LF_AgentHarnessVerbs : Managed
+{
+	//! True when this verb was handled (a result is written or on its way).
+	bool Handle(LF_AgentCommand cmd)
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class LF_AgentCommand
 {
 	int Id;
@@ -1636,7 +1661,20 @@ class LF_AgentHarness
 			return;
 		}
 
+		// New verbs live in their feature: a `modded class LF_AgentHarnessVerbs` (below). This list is
+		// frozen; validate-registries.mjs fails a new `cmd.Verb == "..."` here.
+		LF_AgentHarnessVerbs verbs = new LF_AgentHarnessVerbs();
+		if (verbs.Handle(cmd))
+			return;
+
 		WriteResult(cmd.Id, "error", "unknown_verb");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The result line for a command, for verb handlers outside this class (LF_AgentHarnessVerbs).
+	static void Answer(int id, string status, string detail)
+	{
+		WriteResult(id, status, detail);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2605,11 +2643,9 @@ class LF_AgentHarness
 				joined += " | ";
 
 			joined += string.Format("player=%1 downed=%2 life=%3", id, downed, LifeStateToken(body));
-			// #261: who has this body (replicated), whether it sits in a vehicle seat, where it is.
+			// #261: whether this body sits in a vehicle seat and where it is. `carrier` is kept at 0
+			// for the readers' line shape: the drag and carry hold was cut on 2026-11-15.
 			int carrier = 0;
-			SCR_ChimeraCharacter peer = SCR_ChimeraCharacter.Cast(body);
-			if (peer)
-				carrier = peer.LF_GetCarrierPlayerId();
 
 			int seated = 0;
 			if (SCR_CompartmentAccessComponent.GetVehicleIn(body))
@@ -2633,9 +2669,6 @@ class LF_AgentHarness
 				patientDowned = 1;
 
 			int patientCarrier = 0;
-			SCR_ChimeraCharacter patientBody = SCR_ChimeraCharacter.Cast(patient);
-			if (patientBody)
-				patientCarrier = patientBody.LF_GetCarrierPlayerId();
 
 			int patientSeated = 0;
 			if (SCR_CompartmentAccessComponent.GetVehicleIn(patient))

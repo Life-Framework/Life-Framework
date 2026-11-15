@@ -33,6 +33,8 @@ class LF_ShopPriceList
 	protected ResourceName m_Selected;
 	protected string m_sSelectedName;
 	protected int m_iSelectedPrice;
+	//! What the counter pays for one of the selected line (a buyback line has no buy price).
+	protected int m_iSelectedSell;
 	protected int m_iQuantity = 1;
 	protected bool m_bWaiting;
 	protected string m_sKeySound;
@@ -197,7 +199,8 @@ class LF_ShopPriceList
 		int total = 0;
 		foreach (LF_ShopCatalogItem item : m_Shop.GetShopItems())
 		{
-			if (!item || item.m_iBuyPrice <= 0)
+			// A line the counter only buys (a fence's buyback) shows what it pays instead.
+			if (!item || (item.m_iBuyPrice <= 0 && item.m_iSellPrice <= 0))
 				continue;
 
 			string shownName = WidgetManager.Translate(item.m_sDisplayName);
@@ -209,7 +212,10 @@ class LF_ShopPriceList
 				continue;
 
 			m_aShown.Insert(item);
-			m_Screen.AddListRow("Prices", RowName(m_aShown.Count() - 1), shownName, LF_MoneyFormat.FormatMoney(item.m_iBuyPrice), "#LF-Shop_Order");
+			if (item.m_iBuyPrice > 0)
+				m_Screen.AddListRow("Prices", RowName(m_aShown.Count() - 1), shownName, LF_MoneyFormat.FormatMoney(item.m_iBuyPrice), "#LF-Shop_Order");
+			else
+				m_Screen.AddListRow("Prices", RowName(m_aShown.Count() - 1), shownName, WidgetManager.Translate("#LF-Shop_WePay", LF_MoneyFormat.FormatMoney(item.m_iSellPrice)), "#LF-Shop_Offer");
 		}
 
 		if (total > m_aShown.Count())
@@ -282,6 +288,7 @@ class LF_ShopPriceList
 		m_Selected = item.m_ItemPrefab;
 		m_sSelectedName = WidgetManager.Translate(item.m_sDisplayName);
 		m_iSelectedPrice = item.m_iBuyPrice;
+		m_iSelectedSell = item.m_iSellPrice;
 		m_iQuantity = 1;
 		LF_UISound.Play(m_sKeySound);
 		SetReceipt("");
@@ -301,9 +308,18 @@ class LF_ShopPriceList
 			return;
 		}
 
-		int total = LF_ShopRules.StackTradeTotal(m_iSelectedPrice, m_iQuantity);
 		m_Screen.SetLine("Order", WidgetManager.Translate("#LF-Shop_SlipLine", m_iQuantity, m_sSelectedName));
+		if (m_iSelectedPrice <= 0 && m_iSelectedSell > 0)
+		{
+			int paid = LF_ShopRules.StackTradeTotal(m_iSelectedSell, m_iQuantity);
+			m_Screen.SetButtonText(PAY, "#LF-Shop_Pay");
+			m_Screen.SetButtonText(SELL, WidgetManager.Translate("#LF-Shop_SellTotal", LF_MoneyFormat.FormatMoney(paid)));
+			return;
+		}
+
+		int total = LF_ShopRules.StackTradeTotal(m_iSelectedPrice, m_iQuantity);
 		m_Screen.SetButtonText(PAY, WidgetManager.Translate("#LF-Shop_PayTotal", LF_MoneyFormat.FormatMoney(total)));
+		m_Screen.SetButtonText(SELL, "#LF-Shop_SellBack");
 	}
 
 	//------------------------------------------------------------------------------------------------

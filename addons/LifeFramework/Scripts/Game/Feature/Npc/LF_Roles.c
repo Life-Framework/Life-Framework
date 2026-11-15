@@ -196,6 +196,9 @@ class LF_Roles
 		for (int i = 0; i < answers.Count(); i++)
 		{
 			LF_DialogueNode answer = NewNode(answers[i], Key(roleId, parts[i]));
+			// Any role NPC that keeps a shop offers its goods after saying what it does.
+			if (answers[i] == "what")
+				answer.m_aOptions.Insert(LF_ShopkeeperTalk.BrowseOption());
 			answer.m_aOptions.Insert(NewOption("#LF-NpcTalk_More", "menu"));
 			answer.m_aOptions.Insert(NewOption("#LF-NpcTalk_Bye", "bye"));
 			config.m_aNodes.Insert(answer);
@@ -240,5 +243,18 @@ class LF_Roles
 			return null;
 
 		return DialogueFor(roleId);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Roles");
+		if (apply)
+			LF_Roles.ResetStatics();
 	}
 }

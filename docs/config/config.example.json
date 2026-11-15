@@ -62,6 +62,7 @@
     "benefitCooldownSeconds": 1200,
     "jobXpFirstLevel": 500,
     "jobXpLevelGrowth": 2,
+    "testUnlockAll": false,
     "tracks": {
       "FARMER": {
         "dailyXpCap": 3000

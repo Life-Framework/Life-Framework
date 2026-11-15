@@ -30,7 +30,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
 | `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
-| `docs/` | `features.md` (what each system does), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
+| `docs/` | `features/<area>.md` (what each system does; `features.md` is the generated index), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
 | `website/` | life-framework.org: Vite + React site built from `docs/` and GitHub issues; own `package.json`; deploys from `main` to Cloudflare Pages (`website/README.md`) |
 
 ## Golden rules
@@ -58,7 +58,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
    `tools\cli regen-localization`, which sorts it by Id so string PRs merge on GitHub). Layouts reference `#Key`. Core text is neutral: place
    names and flavour copy go in the pack table (`LF_Everon1989/Language/`), and a pack key
    with the same Id overrides the core row (`validate-core-place-names`).
-8. **Update `docs/features.md` in the same change** that alters a feature.
+8. **Update the area's `docs/features/<area>.md` in the same change** that alters a feature. `docs/features.md` is a generated index (`tools\cli regen-features`); never add rows to it.
    Append or edit only your rows; the merge driver keeps rows both sides
    append and stops with conflict markers when both edit the same line.
 9. **Classify every new resource core or pack with the red line**
@@ -72,8 +72,13 @@ agent per area. `tools\cli usage` shows where the tokens went.
    `LF_Places` (core-vs-pack.md "Map independence"). Tests keep annex names.
 10. **Shared registries are per-feature files; never append to a central list.**
     A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
-    `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both); a
-    new CLI command is `tools/commands/<name>.mjs`.
+    `Feature/<Area>/LF_<Area>Events.c`; a world-end static reset is a
+    `modded class LF_StaticResetHooks` in the owning class's file (`Core/LF_StaticReset.c`
+    lists nothing); a harness verb is a `modded class LF_AgentHarnessVerbs` in its
+    feature (`LF_AgentHarness.Dispatch` is frozen). `validate-registries` enforces all
+    four; `tools\cli heal-hotspots <slug>` moves an old branch's StaticReset and
+    `docs/features.md` edits to their new files. A new CLI command is
+    `tools/commands/<name>.mjs`.
 11. **What a player sees is looked at before it ships.** `tools\cli look <area>`
     (`look item <prefab>`, or `wb_preview` for one resource) before and after, the
     `polish` checklist against the pictures, and the pair embedded in the PR
@@ -160,7 +165,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   cover the rest. Each extra merge re-runs validate and the suite for nothing.
   `wt ship` merges main only when `git merge-tree` reports a conflict. The
   generated and append-only files (string table, language confs, test
-  registry, `features.md`, `debug-log-triage.md`, the enforce-lint baseline)
+  registry, `docs/features/*.md`, `debug-log-triage.md`, the enforce-lint baseline)
   have merge drivers in `tools/merge/`, so they do not count as conflicts.
 - After your PR is up, `tools\cli prs status`; the maintainer/lead runs `prs heal`.
 

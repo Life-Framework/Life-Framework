@@ -4,7 +4,8 @@
 // validators expect, so an agent starts from a skeleton that compiles and already
 // fails the right checks until the real work is done:
 //
-//   Feature/<Area>/LF_<Name>.c          the rule, one logging path, ResetStatics
+//   Feature/<Area>/LF_<Name>.c          the rule, one logging path, ResetStatics and its own
+//                                       modded class LF_StaticResetHooks (no central list)
 //   Feature/<Area>/LF_<Name>Action.c    world, item: the F-key action
 //   Feature/<Area>/LF_<Name>Sheet.c     ui: a paper sheet built from UI kit parts
 //   Feature/<Area>/Feature.md           created, or a section appended
@@ -12,7 +13,6 @@
 //   Tests/LF_Test_<Name>World.c         world, ui, item: WORLD, fails until written
 //   agent-box/proofs/<name>-proof.mjs   world, ui, item: the session proof and its shots
 //   Language/everonlife_localization.st rows appended (then regen-localization)
-//   Core/LF_StaticReset.c               the ResetStatics call
 //   docs/features.md, docs/playtest.md  the row and the "what to try" line
 //   tmp/pr-body-<slug>.md               the PR body `wt ship` checks (tools/lib/pr-quality.mjs)
 //   tmp/feature-<name>.md               the ordered checklist for this kind
@@ -26,13 +26,14 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { renderIndex } from "../lib/features-index.mjs";
+import { addHooks } from "../lib/static-reset-hooks.mjs";
 
 export const KINDS = ["logic", "world", "ui", "item"];
 export const MARK = "TODO(scaffold)";
 const ADDON = "addons/LifeFramework";
 const GAME = `${ADDON}/Scripts/Game`;
 const ST = `${ADDON}/Language/everonlife_localization.st`;
-const STATIC_RESET = `${GAME}/Core/LF_StaticReset.c`;
 const CLI = join(dirname(fileURLToPath(import.meta.url)), "..", "cli.mjs");
 
 const USAGE = `usage: tools\\cli feature new <Area> <Name> [--kind logic|world|ui|item] [--issue N] [--dry-run]
@@ -376,6 +377,11 @@ function stRows(id) {
     .join("\n");
 }
 
+// The area's rows file: docs/features/<area-lowercase>.md (the index docs/features.md is generated).
+export function featuresDoc(id) {
+  return `docs/features/${String(id.area).toLowerCase()}.md`;
+}
+
 function featuresRow(id) {
   const today = new Date().toISOString().slice(0, 10);
   return `
@@ -470,7 +476,8 @@ export function plan(root, id) {
   const slug = slugOf(root);
   const dir = `${GAME}/Feature/${id.area}`;
 
-  create(`${dir}/${id.cls}.c`, scriptFile(id));
+  // The world-end reset registers itself in the feature's own file (tools/lib/static-reset-hooks.mjs).
+  create(`${dir}/${id.cls}.c`, addHooks(scriptFile(id), [{ cls: id.cls, method: "ResetStatics" }]));
   if (id.kind === "world" || id.kind === "item") create(`${dir}/${id.cls}Action.c`, actionFile(id));
   if (id.kind === "ui") create(`${dir}/${id.cls}Sheet.c`, sheetFile(id));
   if (has(`${dir}/Feature.md`)) edit(`${dir}/Feature.md`, `${read(`${dir}/Feature.md`).replace(/\n*$/, "\n")}\n${featureMdSection(id)}`);
@@ -486,11 +493,12 @@ export function plan(root, id) {
   if (st.includes(`"LF-${id.name}_Action"`)) throw new Error(`string table already has LF-${id.name}_Action`);
   edit(ST, insertBefore(st, "\n  }\n }\n}", `\n${stRows(id)}`, ST));
 
-  if (has(STATIC_RESET)) {
-    edit(STATIC_RESET, insertBefore(read(STATIC_RESET), "\n\n\t\ts_iRuns = s_iRuns + 1;", `\n\t\t${id.cls}.ResetStatics();`, STATIC_RESET));
+  const areaDoc = featuresDoc(id);
+  if (has(areaDoc)) edit(areaDoc, `${read(areaDoc).replace(/\n*$/, "\n")}${featuresRow(id)}`);
+  else {
+    edit(areaDoc, `# ${id.area}\n${featuresRow(id)}`);
+    edit("docs/features.md", renderIndex(root, [{ file: basename(areaDoc), title: id.area }]));
   }
-
-  edit("docs/features.md", `${read("docs/features.md").replace(/\n*$/, "\n")}${featuresRow(id)}`);
   if (id.visible && has("docs/playtest.md")) {
     edit("docs/playtest.md", insertBefore(read("docs/playtest.md"), "\n### Known rough edges", `${playtestLine(id)}\n`, "docs/playtest.md"));
   }
@@ -527,7 +535,8 @@ export function leftovers(root) {
     }
   };
   for (const top of [`${GAME}/Feature`, `${GAME}/Tests`, "agent-box/proofs", `${ADDON}/Language`]) walk(top);
-  for (const doc of ["docs/features.md", "docs/playtest.md"]) {
+  const featureDocs = existsSync(join(root, "docs", "features")) ? readdirSync(join(root, "docs", "features")).filter((f) => f.endsWith(".md")).map((f) => `docs/features/${f}`) : [];
+  for (const doc of [...featureDocs, "docs/playtest.md"]) {
     if (!existsSync(join(root, doc))) continue;
     readFileSync(join(root, doc), "utf8").split("\n").forEach((l, i) => {
       if (l.includes(MARK)) hits.push(`${doc}:${i + 1}: ${l.trim().slice(0, 140)}`);

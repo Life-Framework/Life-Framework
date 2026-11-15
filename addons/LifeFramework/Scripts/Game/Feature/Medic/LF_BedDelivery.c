@@ -9,9 +9,9 @@ enum LF_EDeliveryRefusal
 }
 
 //------------------------------------------------------------------------------------------------
-//! The ambulance run ends at a hospital bed (#262). A medic carries a downed patient (LF_Carry) to
-//! a bed, or loads them into a stretcher vehicle (a prefab in `LF_MedicConfig.m_aStretcherVehicles`,
-//! the flagship ambulance) and drives to the hospital; the Put in bed action on the bed
+//! The ambulance run ends at a hospital bed (#262). A medic loads a downed patient (LF_Carry) into
+//! a stretcher vehicle (a prefab in `LF_MedicConfig.m_aStretcherVehicles`, the flagship ambulance)
+//! and drives to the hospital, or finds the body downed beside a bed; the Put in bed action on the bed
 //! (`LF_BedDeliveryAction`) finds the patient, moves them onto the mattress and brings them back
 //! through the revive path: `LF_Downed.Clear`, the reduced revive bill (`LF_TreatmentBills.
 //! IssueForRevive`, `m_iReviveBillAmount`, against the wake bill of a death), and the events
@@ -102,13 +102,29 @@ class LF_BedDelivery
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The patient this medic can put in `bed`: the body they hold, else a downed occupant of a
-	//! stretcher vehicle parked within `m_fBedVehicleRange` of the bed.
+	//! The patient this medic can put in `bed`: the nearest downed body lying within `m_fCarryRange`
+	//! of the medic, else a downed occupant of a stretcher vehicle parked within
+	//! `m_fBedVehicleRange` of the bed.
 	static IEntity FindPatient(IEntity medic, IEntity bed)
 	{
-		IEntity held = LF_Carry.HeldPatient(medic);
-		if (held)
-			return held;
+		IEntity nearest;
+		float nearestDistance = 100000;
+		array<IEntity> bodies = LF_Utils.GetNearbyCharacters(medic.GetOrigin(), LF_MedicConfig.Get().m_fCarryRange);
+		foreach (IEntity body : bodies)
+		{
+			if (!body || body == medic || !LF_Downed.IsDowned(body) || LF_Carry.IsSeatedIn(body))
+				continue;
+
+			float distance = vector.Distance(medic.GetOrigin(), body.GetOrigin());
+			if (distance < nearestDistance)
+			{
+				nearestDistance = distance;
+				nearest = body;
+			}
+		}
+
+		if (nearest)
+			return nearest;
 
 		array<IEntity> vehicles = LF_Utils.GetNearbyVehicles(bed.GetOrigin(), LF_MedicConfig.Get().m_fBedVehicleRange);
 		foreach (IEntity vehicle : vehicles)
@@ -156,7 +172,6 @@ class LF_BedDelivery
 			return refusal;
 		}
 
-		LF_Carry.EndForDelivery(medic);
 		vector transform[4];
 		bedComponent.GetWakeTransform(transform);
 		bool seated = IsLoaded(patient) || LF_Carry.IsSeatedIn(patient);
@@ -280,5 +295,18 @@ class LF_BedDeliveryAction : ScriptedUserAction
 			return;
 
 		LF_BedDelivery.Perform(pUserEntity, pOwnerEntity);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_BedDelivery");
+		if (apply)
+			LF_BedDelivery.ResetStatics();
 	}
 }
