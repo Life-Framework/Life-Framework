@@ -1,0 +1,7 @@
+12:00:01.100  DEFAULT      : Game successfully created.
+12:00:05.100  RESOURCES (E): Wrong GUID/name for resource @"{F54981E40A49B531}worlds/Rally_Arland_AirportRun.ent" in property "World"
+12:00:05.200  RESOURCES (E): Wrong GUID/name for resource @"{D1B2C3D4E5F60718}Configs/Systems/RallySystems.conf" in property "SystemsConfig"
+12:00:09.400  SCRIPT      : [LFDebug:Persistence] session continued from a save point (-loadSessionSave)
+12:00:12.700  SCRIPT       : [LFDebug:Persistence] save loaded: version 32, game build 1.9.0.37, running 1.9.0.37
+12:00:12.800  SCRIPT       : [LFDebug:Persistence] applied 2 account record(s)
+12:00:14.000  DEFAULT      : Entered online game state.
