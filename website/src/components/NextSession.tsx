@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- upcoming and utcText are shared with the servers page link preview (#1615) */
 import { useEffect, useState } from "react";
 import { GoLink } from "@/components/ui";
 import { DISCORD_URL } from "@/lib/content";
@@ -17,7 +18,7 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const two = (n: number) => String(n).padStart(2, "0");
 
 // The server's zone is UTC. Fixed text, so the prerendered page and the first client render agree.
-const utcText = (d: Date) =>
+export const utcText = (d: Date) =>
   `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${two(d.getUTCHours())}:${two(d.getUTCMinutes())} UTC`;
 
 // The visitor's own zone, with its name (CET, GMT+1, ...); only known in the browser, so it is set in an effect.
@@ -26,7 +27,7 @@ const localText = (d: Date) =>
 
 // The announced session, or null when none is announced, it is only a draft (no announced time), the file is
 // missing or unreadable, or the time has passed.
-const upcoming = (now: number): { when: Date; session: NextSession } | null => {
+export const upcoming = (now: number): { when: Date; session: NextSession } | null => {
   const session = sessionFile?.next;
   if (!session || typeof session.at !== "string" || typeof session.announced !== "string") return null;
   const when = new Date(session.at);
