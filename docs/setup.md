@@ -1,83 +1,90 @@
 # Development setup
 
-Everything you need to clone Life Framework, build the mod, run checks, and
-(optionally) wire up AI tooling. For contribution norms see
+Everything you need to clone Life Framework, open the mod, run the checks, and
+send a pull request. For how a change flows see
 [CONTRIBUTING.md](../CONTRIBUTING.md); for engineering rules see
-[AGENTS.md](../AGENTS.md).
+[AGENTS.md](../AGENTS.md). Agent, pool-machine and maintainer tooling is in
+[dev-tooling.md](dev-tooling.md); you do not need it to start.
 
-## Prerequisites
+## The fastest path
 
-| Requirement | Purpose | Notes |
+1. Install what is under "What you need" below.
+2. Clone, and point git at the repo's hooks:
+
+   ```sh
+   git clone https://github.com/Life-Framework/Life-Framework.git
+   cd Life-Framework
+   git config core.hooksPath .githooks
+   ```
+
+3. Check that your tools are found: `node tools/cli.mjs status`. It prints what
+   it found and what is missing.
+4. Run the cheap repo checks: `node tools/cli.mjs validate`. Docs, tooling and
+   website changes need nothing more than this and Node.
+5. Start your change in its own worktree (see [section 3](#3-work-in-a-worktree)):
+   `node tools/cli.mjs wt new <short-name>`.
+6. For game changes, open `addons/LifeFramework/LifeFramework.gproj` in
+   Workbench (see [section 4](#4-open-the-mod-in-workbench)).
+
+On Windows `tools\cli` is the same as `node tools/cli.mjs`; this page uses the
+`node` form because it works everywhere.
+
+## What you need
+
+| Requirement | For | Notes |
 | --- | --- | --- |
-| **Arma Reforger** | Play / host | Base game (Steam) |
-| **Arma Reforger Tools** | Build in Workbench | Includes Workbench IDE |
-| **Arma Reforger Server** | Automated tests | Steam app **1874900**; required for `tools/cli test` |
-| **Node.js 18+** | Dev CLI & MCP | Ships with npm; no extra deps for the CLI itself |
-| **Git** | Clone & hooks | Pre-commit validator wired via `.githooks/` |
-| **PowerShell 7+** | Validation scripts | Required for `validate` checks today (Windows or cross-platform `pwsh`) |
+| **Git** | Everything | The pre-commit hook in `.githooks/` runs the repo checks on staged files |
+| **Node.js 20+** | The dev CLI, the website | Ships with npm; the CLI itself has no dependencies to install |
+| **PowerShell 7+ (`pwsh`)** | `validate` | Some checks are PowerShell scripts. Windows or cross-platform `pwsh` |
+| **Arma Reforger** (Steam) | Playing, Workbench | The base game |
+| **Arma Reforger Tools** (Steam) | Opening and building the mod | Includes Workbench |
+| **Arma Reforger Server** (Steam app **1874900**) | `test` and `serve` | Only for the in-game test suite |
 
-> **Platform note:** Workbench build and the validation scripts are Windows-first
-> today. Linux/macOS contributors can edit docs, scripts, and EnforceScript, and
-> can point `ENFUSION_SERVER_PATH` at a Linux server build once paths
-> are configured — but `node tools/cli.mjs build` and `validate` expect Windows
-> Toolchain paths unless you set the `ENFUSION_*` env vars above.
+Optional, and not needed for a first change: the GitHub CLI (`gh auth login`,
+needed by `wt ship`), the MCP servers that give a coding agent API search
+([section 6](#6-ai-tooling-optional)), and pool or remote test machines (they
+are in [dev-tooling.md](dev-tooling.md)).
+
+> **Platform note:** Workbench and the validation scripts are Windows-first
+> today. On Linux or macOS you can edit docs, scripts, EnforceScript and the
+> website, and `validate` runs under `pwsh`. `build` and `test` expect Windows
+> toolchain paths unless you set the `ENFUSION_*` variables from section 2.
 
 ## 1. Clone the repository
 
-```sh
-git clone https://github.com/Life-Framework/Life-Framework.git
-cd Life-Framework
-git config core.hooksPath .githooks
-```
-
-The pre-commit hook runs `tools/validation/validate-repo.ps1` on staged files.
-It blocks generated artifacts, duplicate GUIDs, and other repo hygiene issues.
+The commands are in "The fastest path". The pre-commit hook runs
+`tools/validation/validate-repo.ps1` on staged files. It blocks generated
+artifacts, duplicate GUIDs, and other repo hygiene issues; fix what it flags
+rather than skipping it.
 
 ## 2. Toolchain paths
 
-The committed [`opencode.json`](../opencode.json) is portable — MCP servers are
-launched by relative path from the checkout, and the CLI, test harness, and MCP
-servers all fall back to the standard Steam install locations:
+The CLI looks for the game, the tools and the server in the standard Steam
+install folders:
 
 - `...\Steam\steamapps\common\Arma Reforger Tools`
 - `...\Steam\steamapps\common\Arma Reforger`
-- `...\Steam\steamapps\common\Arma Reforger Server` (only needed for `test`/`serve`)
+- `...\Steam\steamapps\common\Arma Reforger Server` (only for `test` and `serve`)
 
-Resolution order for every tool path: **OS environment variable →
-`opencode.json` → standard Steam install locations.** Machine-specific paths
-go in your environment or your global opencode config, never in the repo.
-
-If you installed outside Steam or want custom locations, set any of these OS
-environment variables (they win over everything):
+If you installed somewhere else, set any of these OS environment variables (they
+win over everything):
 
 ```sh
 ENFUSION_WORKBENCH_PATH=C:/path/to/Arma Reforger Tools
 ENFUSION_GAME_PATH=C:/path/to/Arma Reforger
 ENFUSION_SERVER_PATH=C:/path/to/Arma Reforger Server
-ENFUSION_PROJECT_PATH=C:/path/to/your/addons/folder   # MCP authoring tools
+ENFUSION_PROJECT_PATH=C:/path/to/your/addons/folder   # only for the MCP authoring tools
 ```
 
-For opencode users, machine-specific env can also live in your **global**
-config at `~/.config/opencode/opencode.json` (deep-merged over the repo's) —
-that keeps machine paths out of the repo entirely:
+Resolution order for every path: **OS environment variable, then
+`lf.local.json`, then `opencode.json`, then the Steam defaults.** Machine paths
+go in your environment or in `lf.local.json`, never in committed files.
 
-```json
-{
-  "mcp": {
-    "enfusion-mcp": {
-      "type": "local",
-      "command": ["node", "dist/index.js"],
-      "cwd": "tools/mcp/enfusion-mcp-bk",
-      "enabled": true,
-      "environment": {
-        "ENFUSION_WORKBENCH_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools",
-        "ENFUSION_GAME_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger",
-        "ENFUSION_PROJECT_PATH": "C:/Users/you/Documents/My Games/ArmaReforgerWorkbench/addons"
-      }
-    }
-  }
-}
-```
+`lf.local.json` is an optional, git-ignored file in your clone's top folder. It
+takes the same `ENFUSION_*_PATH` keys, and `LF_GAME_ADDONS` (the folder with the
+base game's `core/` and `data/` projects, if it is not the server install's
+`addons` folder). The rest of its keys are for test machines
+([dev-tooling.md](dev-tooling.md)).
 
 Check that everything resolves:
 
@@ -85,278 +92,166 @@ Check that everything resolves:
 node tools/cli.mjs status
 ```
 
-### Machine-local settings (`lf.local.json`)
+## 3. Work in a worktree
 
-A gitignored `lf.local.json` in the main checkout holds one machine's
-settings for the CLI and every worktree of that checkout
-(`tools/lib/local-config.mjs`). Precedence: OS env > `lf.local.json` >
-`opencode.json` > the Steam defaults. Without the file nothing changes.
+Heavy commands (`build`, `test`, `dev`, `serve`, `ci`) refuse to run in the
+checkout you cloned, because that folder is kept clean as the place you open in
+the world editor. Do each change in its own worktree, a second folder with its
+own branch:
 
-| Key | Meaning |
-| --- | --- |
-| `ENFUSION_*_PATH` | Same as the env vars above |
-| `LF_GAME_ADDONS` | Folder with the base-game `core/` and `data/` projects the test server loads through the `game-addons` junction. Default: the server install's `addons`, else the game client's |
-| `LF_TESTBOX` | ssh host of a second test machine; added to the pool when `tools/pool.json` lacks it (`docs/worktrees.md` "Test pool") |
-| `LF_TESTBOX_ROOT` | Main checkout on that machine (default `C:/LF/Life-Framework`) |
-| `LF_TESTBOX_AUTO` | `0` keeps `test` on this machine by default (`--remote` and `--machine` still work) |
-| `pool` | Object: `{ "machines": [ { "name": "lf-testbox", "slots": 2 } ] }` merges by name over `tools/pool.json`; `"disabled": true` drops a machine, a new name adds one (`docs/worktrees.md` "Test pool") |
-
-## 3. Open the mod in Workbench
-
-The mod project is:
-
-```
-addons/LifeFramework/LifeFramework.gproj
+```sh
+node tools/cli.mjs wt new <short-name>    # creates ../Life-Framework-ws-<short-name> on branch ws/<short-name>
+cd ../Life-Framework-ws-<short-name>
+node tools/cli.mjs wt list                # your worktrees, ports, merged state
 ```
 
-**Playable scenarios**
+Run every command below from inside the worktree. `validate` and `status` work in
+either place. When the change has merged, `node tools/cli.mjs wt prune
+<short-name>` removes the worktree. Never delete a worktree folder by hand; the
+reasons are in [AGENTS.md](../AGENTS.md) and [worktrees.md](worktrees.md).
 
-| Scenario | World | Use |
+## 4. Open the mod in Workbench
+
+The core project is `addons/LifeFramework/LifeFramework.gproj`. The 1989 Everon
+town is a second project, `addons/LF_Everon1989/LF_Everon1989.gproj`, that
+depends on the core (`addons/README.md`, `docs/architecture/core-vs-pack.md`).
+
+| Scenario | Project | Use |
 | --- | --- | --- |
-| `Missions/EveronLifeGameMode.conf` | MainWorld | Normal play / feature demo |
-| `Missions/EL_DebugTest.conf` | DebugWorld | Automated `LF_Test*` suite + per-feature layers |
+| `Missions/EL_DebugTest.conf` | core, DebugWorld | The `LF_Test*` suite and the per-feature test layers |
+| `Missions/EveronLifeGameMode.conf` | pack, MainWorld | Normal play, the 1989 town |
+| `Missions/LF_PlaytestTown.conf` | pack | The small playtest town |
 
-**Typical loop**
+Typical loop:
 
-1. Open `LifeFramework.gproj` in Workbench.
+1. Open the `.gproj` in Workbench.
 2. Build (PC).
-3. Play DebugWorld or MainWorld from the scenario picker.
+3. Play the scenario from the picker.
 
-Playtesters start at [Playtest](playtest.md). Workbench play of DebugWorld is for developers; it is not the automated suite.
+Playtesters start at [Playtest](playtest.md). Workbench play of DebugWorld is for
+developers; it is not the automated suite.
 
-**Optional — symlink for faster iteration**
-
-Link the mod into your Reforger profile instead of copying:
+**Optional: link the mod into your Reforger profile** instead of copying it:
 
 ```powershell
 New-Item -ItemType SymbolicLink `
   -Path "$env:USERPROFILE\Documents\My Games\ArmaReforger\profile\addons\LifeFramework" `
-  -Target "C:\path\to\Life-Framework\addons\LifeFramework"
+  -Target "C:\path\to\your\Life-Framework\addons\LifeFramework"
 ```
 
-See [addons/README.md](../addons/README.md) for layout details.
+## 5. Dev CLI (build, validate, test)
 
-## 4. Dev CLI (build, validate, test)
-
-Cross-platform entry point (Windows shim: `tools\cli`):
+Run these from your worktree:
 
 ```sh
-node tools/cli.mjs status              # toolchain + MCP state
-node tools/cli.mjs validate            # repo hygiene (GUIDs, metas, artifacts)
-node tools/cli.mjs build               # headless Workbench build → server/build/
+node tools/cli.mjs status              # toolchain state
+node tools/cli.mjs validate            # repo checks: GUIDs, metas, artifacts, links
+node tools/cli.mjs validate --full     # adds the Workbench compile
+node tools/cli.mjs build               # headless Workbench build into server/build/
 node tools/cli.mjs test --tier fast    # LOGIC-tier in-game tests only
-node tools/cli.mjs test                # full LF_Test* suite on DebugWorld
+node tools/cli.mjs test                # the full LF_Test* suite on DebugWorld
 node tools/cli.mjs ci                  # validate + build + test
 ```
 
-The test pipeline boots a dedicated server on DebugWorld, runs the `LF_Test*`
-suite, parses `[LFTEST] SUMMARY`, and exits nonzero on failure. Details:
-[server/README.md](../server/README.md) and [AGENTS.md](../AGENTS.md).
+`test` boots a dedicated server on DebugWorld, runs the `LF_Test*` suite, reads
+the `[LFTEST] SUMMARY` line, and exits nonzero on failure. While you iterate,
+run only your test: `node tools/cli.mjs test --no-build --only LF_Test_<Name>`.
+Details: [server/README.md](../server/README.md) and [AGENTS.md](../AGENTS.md).
 
-- `build` needs Arma Reforger Tools (Workbench) and the game installed.
+- `build` needs Arma Reforger Tools (Workbench) and the game.
 - `test` and `serve` need Arma Reforger Server (Steam app 1874900).
-- Server config (scenario + RCON): `server/configs/test-server.json`.
+- Server config (scenario and RCON): `server/configs/test-server.json`.
 
-### Tool windows stay off your screen
+The long list of commands is in `node tools/cli.mjs help`. A change that only
+touches docs, tools or the website needs `validate`, not the game.
 
-Agents run Workbench and the server many times an hour. Those runs start on a
-private Win32 desktop named `LF-Agents` (`tools/lib/quiet-launch.ps1`), so they
-never draw a window on your monitor and never take focus:
+## 6. AI tooling (optional)
 
-| Run | Where it goes |
-| --- | --- |
-| `validate --full` (Workbench `-validate` in `validate-scripts.ps1`), `cli build` | `LF-Agents` desktop; exit code and console.log as before. On a PC whose pool caps lack `workbench` (Gaming-Box) neither starts a Workbench: both run on a pool machine (`docs/worktrees.md` "No Workbench on this PC") |
-| `cli test` / `wt e2e` dedicated server | `LF-Agents`, no console window |
-| `agent-box/session.mjs up` game clients | `LF-Agents`; the server runs detached with no console |
-| `cli call wb_*`, `agent-box/harness.mjs play` | When no Workbench serves NET API port 5775, `tools/lib/quiet-workbench.mjs` starts one on `LF-Agents` first, so the MCP never launches a visible one. Refused on a PC without the `workbench` cap |
-| every node-spawned console tool | `windowsHide: true` |
+Coding agents are welcome. Claude Code reads [`CLAUDE.md`](../CLAUDE.md),
+which points at [`AGENTS.md`](../AGENTS.md); opencode, Codex and Cursor read
+`AGENTS.md` directly. Skills and playbooks live in `.claude/skills/` and
+[`.opencode/`](../.opencode/README.md).
 
-Workbench play mode and a game client both render on `LF-Agents`: harness
-screenshots (`LF_ScreenshotCapture`) come back as the real 3D world. Screen
-recording (`tools/film`) cannot see that desktop; film a game client you start
-yourself on a visible monitor. `film.mjs` no longer brings that window to the
-front; on a second monitor it lifts it without activating it.
-
-### Workbench window capture (`wb-shot`)
-
-`System.MakeScreenshot` grabs only the 3D framebuffer. `tools\cli wb-shot --pid <Workbench pid>
-[--title "World Editor"] [--crop x,y,w,h] [--max-px N] [--out f.png]` captures the whole Qt window
-(Log Console, Resource Browser, Object Properties, menus) with Win32 `PrintWindow`
-(`PW_RENDERFULLCONTENT`, fallback 0), `GetDIBits` 24-bit top-down, BGR to RGB, optional crop and
-downscale, PNG. `--list` shows the pid's windows, `--find` the Workbench pids, `--wait <s>` blocks
-(bounded) until the pid has a visible window. Code: `tools/lib/wb-window-capture.{ps1,mjs}`.
-
-- **It works on `LF-Agents`**, but only because the capture thread attaches to that desktop first
-  (`SetThreadDesktop`, which never switches the visible desktop). Without it `PrintWindow` returns
-  false there. A Workbench on `LF-Agents` is a live, rendered session, so the spec's constraint holds.
-- It needs the window visible and not minimised, and a pid: only that process's windows are listed
-  or captured. It sends no input, never focuses a window and never reads the screen.
-- The main window of an ultrawide Workbench is 5136x1456; use `--crop` for one panel at full
-  resolution (`--crop 0,0,1000,1456` is the Log Console + Resource Browser column) or `--max-px`
-  for an overview. A frame with under 16 colours is reported as blank (exit 1).
-- `System.MakeScreenshot` stays the tool for the 3D view; this one is for panels and dialogs.
-
-- `tools\cli hidden` lists processes with a window on `LF-Agents`;
-  `tools\cli hidden --close` ends them (a hidden Workbench stays up between agent
-  calls, as the visible one used to).
-- `LF_SHOW_WINDOWS=1` turns all of this off for debugging: every run starts on
-  your desktop again.
-- `wt open --workbench` and `wt open` are for you, so they still open visibly.
-
-**Modal dialogs on the hidden desktop.** `RegisterResourceFile` on a new
-`.fbx` opens "Register Resource File(s)" (as Model / as Animation), and the
-first restricted script call can open "Script Authorization Required". On
-`LF-Agents` nobody can click them, so the NET API call hangs. Set
-`LF_WB_DIALOG_WATCHER=1` (or pass `dialogWatcher: true` to
-`ensureQuietWorkbench`; `startDialogWatcher({ workbenchPid, log })` for a
-Workbench you launched yourself) and `tools/lib/wb-dialog-watcher.ps1` runs
-beside that Workbench on `LF-Agents`. It answers only those two titles, only
-on windows owned by that one Workbench pid, by `BM_CLICK` on a Button child,
-then a posted Alt mnemonic, then a click posted at a fixed offset from the
-dialog's bottom-right corner ("as Model" for the FBX prompt). It never moves
-the cursor or injects input, and it exits 3 without looking at a window when
-its thread is not on `LF-Agents`. Each answer is one JSON line in
-`<checkout>/tmp/wb-dialog-watcher.jsonl`, with a PNG of the dialog in
-`tmp/wb-dialog-snaps/`; it exits with the Workbench.
-
-### Video post-production (optional, `film-make`)
-
-`tools\cli film-make video/<name>.json` joins footage into a trailer with cards, crossfades, captions, voice-over and a
-music bed (`video/README.md`, `docs/film-pipeline.md`). It needs the portable ffmpeg (`node tools/film/film.mjs fetch`) and,
-for voice-over, Piper (MIT, offline) in a tools-local folder: `tools\cli film-make --setup` downloads the Windows Piper
-release and the `en_US-ljspeech-high` voice (public domain) into `tools/film/.tts/` (git-ignored). Nothing is installed globally and no
-Python is needed. Licences of the voice and music: `docs/credits.md`.
-
-## 5. AI tooling (optional)
-
-We encourage AI-assisted contributions. MCP servers are configured in
-[`opencode.json`](../opencode.json); their clones live git-ignored under
-`tools/mcp/`. `enfusion-mcp` (API search, vanilla source, assets, prefabs) is
-enabled; `enfusion-workbench` (live Workbench bridge, `wb_*` tools) is also
-enabled in the committed `opencode.json` and only works while Workbench is
-open. Manage them with:
+For Enfusion API search, base-game source and asset lookups, the repo has two
+MCP servers configured in [`opencode.json`](../opencode.json) (their clones live
+git-ignored under `tools/mcp/`):
 
 ```sh
 node tools/cli.mjs mcp install [name]   # clone if missing, npm ci, build
-node tools/cli.mjs mcp update [name]    # git pull --ff-only, npm ci, build
 node tools/cli.mjs mcp verify [name]    # boot briefly to prove it starts
-node tools/cli.mjs mcp enable <name>    # enabled=true in opencode.json
-node tools/cli.mjs mcp disable <name>   # enabled=false in opencode.json
-```
-
-`[name]` is `enfusion-mcp` or `enfusion-workbench`; omitted means all.
-
-`enfusion-workbench` carries a native addon (`better-sqlite3`) compiled for one
-Node ABI. After a Node upgrade the server dies at startup with "compiled
-against a different Node.js version". `toolscli status` names the addon and
-exits 1; `toolscli mcp install` (or `update`) runs `npm rebuild` on it and
-checks it loads. A new worktree has no `tools/mcp/` clones of its own; the CLI
-and `toolscli call` use the main checkout's clones.
-
-Call any server tool from a plain terminal, no opencode session or restart
-needed (see `tools/mcp-call.mjs`):
-
-```sh
-node tools/cli.mjs call list
 node tools/cli.mjs call api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
-node tools/cli.mjs call game_read @tmp/args.json     # file args: PowerShell mangles inline JSON
-node tools/cli.mjs call --batch @tmp/wb-session.json # several calls in ONE server process
 ```
 
-The Workbench bridge caches the editor mode per process, so a fresh process
-starts in an "unknown" mode and mode-gated tools refuse. Run `wb_state` and
-`wb_play` in one `--batch` session.
-
-Each `call` starts its own server and stops it when the call returns (about
-2.5 s and 200 MB for that time), so calls leave no process behind. A shared,
-always-on server would hold that memory permanently and mix per-process state
-(the Workbench mode cache, `--env` overrides that point at a worktree), so
-there is none.
-
-**Memory under many agents.** Claude Code starts every stdio MCP server in
-its config once per agent. Register only what most agents use; a rarely used
-server costs one Node process (at least 25 MB) per running agent. The Discord
-connector (`tools/discord-mcp`) connects to the Discord Gateway on the first
-`get_new_events` or `wait_for_events` call rather than at startup
-(`DISCORD_GATEWAY=eager` restores the old behaviour).
-
-For [opencode](https://opencode.ai) users: skills and playbooks live in
-[`.opencode/`](../.opencode/README.md). Restart opencode after changing MCP
-settings.
-
-Full agent workflow: [CONTRIBUTING.md, Working with coding agents](../CONTRIBUTING.md#working-with-coding-agents).
-
-### Parallel agents (worktrees)
-
-Heavy commands (`build`/`test`/`dev`/`serve`/`ci`) refuse to run in the main
-checkout — it is reserved for the world editor. Agents work in per-feature
-worktrees:
-
-```sh
-node tools/cli.mjs wt new <feature>     # create Life-Framework-ws-<feature> @ ws/<feature>
-node tools/cli.mjs wt list              # worktrees, ports, merged state
-node tools/cli.mjs wt ship <feature>    # gate, PR, auto-merge into main
-```
-
-`wt ship` needs the GitHub CLI authenticated once (`gh auth login`), or a
-`GITHUB_TOKEN` env var. Full detail: [worktrees.md](worktrees.md).
-
-## 6. Agent box (GPU or remote machine)
-
-Clone, then install the Workbench MCP servers and the player harness:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File agent-box\setup.ps1
-node agent-box/harness.mjs selftest
-```
-
-That writes `.cursor/mcp.json` for this checkout (gitignored; it contains
-absolute paths). Restart the agent session so the servers load. The three
-pillars and the player-key hooks are in [agent-box/README.md](../agent-box/README.md).
-
-On a T3 server, register the clone as a project and use the scripts in
-`agent-box/t3-project.json`. Threads should use worktrees so the main checkout
-stays the world-editor copy.
+`[name]` is `enfusion-mcp` or `enfusion-workbench`; leave it out for both. With
+no MCP set up you can still read the real declarations from the installed game
+with `node tools/cli.mjs api class <Name>`. More commands (`mcp update`,
+`enable`, `disable`, batch calls, the Node ABI note) are in
+[dev-tooling.md](dev-tooling.md). The full agent workflow is in
+[CONTRIBUTING.md](../CONTRIBUTING.md#working-with-coding-agents).
 
 ## 7. Before you open a PR
 
-1. Run `validate` and the appropriate `test` tier.
+1. Run `validate`, and the `test` tier that fits (`--tier fast` for script
+   logic).
 2. Fill in [`.github/PULL_REQUEST_TEMPLATE.md`](../.github/PULL_REQUEST_TEMPLATE.md).
-3. Document manual steps for UI, multiplayer, JIP, or save/restart if your
-   change touches those paths.
+3. Write the manual steps for UI, multiplayer, join-in-progress, or save and
+   restart changes.
 4. Open a PR against `main`.
+
+If you have push access to the repo, `node tools/cli.mjs wt ship <short-name>`
+runs the gate, pushes the branch, opens the PR and queues auto-merge. It needs
+the GitHub CLI signed in once (`gh auth login`). If you do not, fork the repo,
+push your branch to your fork, and open the PR from there (`gh pr create` or the
+GitHub page); the same `validate` check runs on it.
 
 ## Troubleshooting
 
 | Problem | Fix |
 | --- | --- |
 | `validate` fails with `spawn powershell ENOENT` | Install PowerShell 7 (`pwsh`) or run validation on Windows |
-| Workbench not found | Set `ENFUSION_WORKBENCH_PATH` (OS env or global opencode config); run `status` |
-| Workbench: *Arma Reforger base game project not found* / game: *Unable to initialize Enfusion* | The game install is missing `addons\data\ArmaReforger.gproj` + `addons\core\*` (partial Steam update). Run `tools\cli status` for the exact missing file, then Steam → **Arma Reforger (the GAME, app 1874880)** → Properties → Installed Files → **Verify integrity of game files**. Verifying only *Arma Reforger Tools* does not restore these. Relaunch the game once afterward. |
-| Workbench: *Missing Addon* for game GUID `58D0FB3206B6F859` | `powershell -ExecutionPolicy Bypass -File tools\utilities\repair-base-addons.ps1`. It restores only a missing loose `ArmaReforger.gproj` from the installed Server package; it never overwrites a manifest with the wrong GUID. |
+| Workbench not found | Set `ENFUSION_WORKBENCH_PATH` (environment or `lf.local.json`); run `status` |
+| Workbench: *Arma Reforger base game project not found* / game: *Unable to initialize Enfusion* | The game install is missing `addons\data\ArmaReforger.gproj` and `addons\core\*` (a partial Steam update). Run `node tools/cli.mjs status` for the exact missing file, then Steam, **Arma Reforger (the game, app 1874880)**, Properties, Installed Files, **Verify integrity of game files**. Verifying only *Arma Reforger Tools* does not restore these. Relaunch the game once afterward |
+| Workbench: *Missing Addon* for game GUID `58D0FB3206B6F859` | `powershell -ExecutionPolicy Bypass -File tools\utilities\repair-base-addons.ps1`. It restores only a missing loose `ArmaReforger.gproj` from the installed Server package; it never overwrites a manifest with the wrong GUID |
 | Server not found | Install Arma Reforger Server (1874900) or set `ENFUSION_SERVER_PATH` |
-| `cli build/test/dev` refuses in the main checkout | Create a worktree: `cli wt new <feature>`, then work there |
-| Pre-commit blocks `.rdb` / `log` / `.gproj.user` | Unstage generated Workbench artifacts; never commit them |
-| Duplicate GUID error | Every resource needs a unique 16-hex GUID in its `.meta` |
+| `build`, `test` or `dev` refuses to run | You are in the folder you cloned. Create a worktree (section 3) and run it there |
+| Pre-commit blocks `.rdb`, `log` or `.gproj.user` | Unstage generated Workbench artifacts; never commit them |
+| Duplicate GUID error | Every resource needs a unique 16-hex GUID in its `.meta`; never copy one |
 | MCP `installed=false` | Run `node tools/cli.mjs mcp install` |
 
-Logs: `server/logs/` (test server), Workbench console under
+Logs: `server/logs/` (test server), and the Workbench console under
 `Documents/My Games/ArmaReforger/logs/<date>/`.
 
-## Workshop items and the clean-server check
+## Workshop items
 
-The two Workshop items are the core `LifeFramework` (`4550A2B656E1B569`) and the pack `LF_Everon1989`
-(`B1E84D5687E11724`). A server owner lists both ids in `game.mods` (`server/example/server.json`) and the server
-downloads them on first boot. The maintainer's upload steps are [release-first-upload.md](release-first-upload.md);
-the proof that a stranger's server boots from the Workshop alone is
-`toolscli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724` (#371). It boots a clean dedicated server on lf-cloud
-with no local addons and an empty cache, then joins a client. **Status:** the tool is proven up to the server's
-`Addon <id> - Addon was not found on workshop.` line; the passing run, its log lines and the Workshop page URLs are
-recorded here after the first upload (#370).
+The two Workshop items are the core `LifeFramework`
+([`4550A2B656E1B569`](https://reforger.armaplatform.com/workshop/4550A2B656E1B569))
+and the 1989 Everon pack `LF_Everon1989`
+([`B1E84D5687E11724`](https://reforger.armaplatform.com/workshop/B1E84D5687E11724)).
+A server owner lists both ids in `game.mods` (`server/example/server.json`) and
+the server downloads them on first boot. Running your own server is covered by
+[owner/install.md](owner/install.md).
+
+**Prove a published build boots from the Workshop alone (#371).** From a worktree:
+
+```
+tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724 [--no-client]
+```
+
+It boots a clean dedicated server on a pool machine from those two ids only (no local addons, empty cache), waits
+for the engine to say it is online, and joins a client unless you pass `--no-client`. A pass prints
+`SUMMARY workshop-boot-check ok stage=pass ... line="Entered online game state."`; a failure names the stage
+(`ids`, `clean`, `mods`, `scripts`, `ready`, `join`). The full log is `tmp\boot-check\console-<stamp>.log`. The
+boot log shows `Downloading 4550A2B656E1B569 version <v>`, then `Downloading B1E84D5687E11724 version <v>`, then
+`Required addons are ready to use.`, `Entered online game state.` and
+`[LFDebug:Persistence] fresh session: no save point exists for this mission`, with no `SCRIPT (E)`.
+First recorded pass, 0.1.0 Unlisted, 2026-11-16 (`--no-client`):
+[selfhost-dryrun-2026-11.md](ops/selfhost-dryrun-2026-11.md), "Re-run after the first upload". The `join` stage needs a
+pool machine with a signed-in client; on `lf-cloud` it timed out at the client authentication.
 
 ## Next steps
 
-- [Roadmap](roadmap/README.md) — the live plan
-- [Features](features.md) — implemented behavior contracts
-- [Testing plan](roadmap/testing/README.md) — how we prove features
-- [Feature design files](../addons/LifeFramework/Scripts/Game/Feature/README.md) — per-feature `Feature.md` index
+- [Roadmap](roadmap/README.md): the live plan
+- [Features](features.md): implemented behavior contracts
+- [Testing plan](roadmap/testing/README.md): how we prove features
+- [Feature design files](../addons/LifeFramework/Scripts/Game/Feature/README.md): per-feature `Feature.md` index
+- [Developer tooling](dev-tooling.md): pool machines, hidden windows, MCP details, agent box

@@ -3,6 +3,7 @@
 Everything the maintainer needs to post about Life Framework in other
 communities, ready to paste. Issues: #572 (the kit), #573 ([FAQ](faq.md)),
 #574 ([tracker](tracker.md)), #570 (the [pictures](#pictures)). Epic: #566.
+Newer drafts for Reddit, the Bohemia forums, other Discords and our own announcement are in [../recruiting/](../recruiting/README.md).
 Why this exists: our Discord is small and the release gates need testers
 ([M2.5 outline](../../roadmap/m2-5-outline.md)).
 

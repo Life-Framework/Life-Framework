@@ -11,8 +11,8 @@
 //!   one, shifted by `clockOffsetMinutes`).
 //! - `dayLengthMinutes` (m_iDayLengthMinutes): real minutes one in-game day lasts under
 //!   `accelerated`, 1 to 10080. Ignored by the other modes.
-//! - `nightSpeed` (m_fNightSpeed): the clock's speed at night as a multiple of its daytime speed,
-//!   0.1 to 10; 1 is no change.
+//! - `nightSpeed` (m_fNightSpeed): not supported (#1650): the vanilla time manager has no
+//!   night rate, so a value other than 1 logs a Warn. Accepted 0.1 to 10 so old configs load.
 //! - `startHour` (m_fStartHour): the in-game hour (0 to 24) a fresh world starts at.
 //! - `clockOffsetMinutes` (m_iClockOffsetMinutes): minutes added to the in-game clock, -1440 to 1440.
 //!
@@ -49,7 +49,7 @@ class LF_DayCycleConfig
 	[Attribute("1440", UIWidgets.Auto, "Real minutes one in-game day lasts under accelerated mode. Ignored by the other modes", params: "1 10080")]
 	int m_iDayLengthMinutes;
 
-	[Attribute("1", UIWidgets.Auto, "The clock's speed at night as a multiple of its daytime speed. 1 is no change", params: "0.1 10")]
+	[Attribute("1", UIWidgets.Auto, "Not supported (#1650): the vanilla time manager has one day duration and no night rate, so a value other than 1 logs a Warn and the night runs at the day's rate. Kept so old configs still load", params: "0.1 10")]
 	float m_fNightSpeed;
 
 	[Attribute("8", UIWidgets.Auto, "The in-game hour a fresh world starts at", params: "0 24")]

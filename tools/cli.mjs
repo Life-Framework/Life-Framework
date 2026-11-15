@@ -79,6 +79,7 @@ import * as testWorld from "./lib/test-world.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
+import * as worldDiff from "./lib/world-diff.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
@@ -1223,6 +1224,37 @@ function cmdPack(root = ROOT, opts = {}) {
   } catch (e) {
     console.log(`FAIL  pack: ${e.message}`);
     return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
+// Publish a packed addon as an update of its existing Workshop item (`release chapter`, docs/release/chapter-release.md):
+// -wbModule=ResourceManager -publishAddon -publishAddonDir <packed> -publishAddonVersion <v> -publishAddonChangeNoteFile <f>
+// (BIKI Arma_Reforger:Startup_Parameters; the flags are in the Workbench exe). No -profile, so Workbench uses its
+// default profile, where the Bohemia login it saved on this PC lives; never -wbBackendLogin or a password. This
+// PC has no "workbench" pool cap, and publishing is the one Workbench run that must happen here (the login is
+// here): the maintainer's 2026-11-15 release decision. Returns { ok, line, log }.
+async function publishAddon({ root, addon, dir, version, notesFile }) {
+  const exe = workbenchExe();
+  if (!existsSync(exe)) return { ok: false, line: `workbench not found: ${exe}` };
+  const info = resolveAddon(addon);
+  if (!info) return { ok: false, line: `unknown addon ${addon}` };
+  const { publishFlags, judgePublishLog } = await import("./release/chapter.mjs");
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(os.homedir(), "Documents", "My Games", "ArmaReforgerWorkbench");
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const args = [...publishFlags({ gproj: gprojOf(root, info.name), dir, version, notesFile }), ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "publish")])];
+    const started = Date.now();
+    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 1800000 });
+    const log = latestWorkbenchLog(profile);
+    if (!log || statSync(log).mtimeMs < started) return { ok: false, line: `no Workbench log written by this run (exit ${res.status ?? res.error?.code ?? "?"})` };
+    return { ...judgePublishLog(readFileSync(log, "utf8")), log };
+  } catch (e) {
+    return { ok: false, line: e.message };
   } finally {
     if (locked) wt.releaseLock(root, "build");
   }
@@ -3570,6 +3602,7 @@ async function cmdCi(root = ROOT, opts = {}) {
 async function ciDataOnly(root, c, opts = {}) {
   const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
   const tests = readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") }));
+  if (c.world) return ciWorldEdit(root, c, tests, opts);
   const tokens = [...c.ids];
   for (const p of c.data) {
     let text = null;
@@ -3595,6 +3628,28 @@ async function ciDataOnly(root, c, opts = {}) {
     if (code !== 0) failed++;
   }
   console.log(failed === 0 ? "\nci: ALL PASSED (T1)" : `\nci: ${failed} step(s) failed (T1)`);
+  return failed === 0 ? 0 : 1;
+}
+
+// T1w, a maintainer hand edit of .layer files (docs/worktrees.md "Maintainer world edits"): static validate,
+// the placement audit on the touched layers (flagged entities the maintainer placed are allowlisted by
+// `world ship`), and only the tests that name a touched layer or entity. No build, no LOGIC sweep.
+async function ciWorldEdit(root, c, tests, opts = {}) {
+  const layers = c.data.map((p) => p.split("/").pop());
+  const sel = gateTier.selectTests(tests, worldDiff.testTokens(layers, c.touched || []));
+  console.log(`ci: T1w tests: ${sel.related.length} that name a touched layer or entity${sel.related.length ? ` (${sel.related.slice(0, 8).join(", ")})` : ""}`);
+  const steps = [
+    ["validate (static)", () => cmdRunArea("validate", root, {})],
+    ["placement audit (touched layers)", () => placementAudit(root, ["--strict", "--top", "200", "--layer", layers.join(",")], opts)],
+    ...(sel.related.length ? [["test (T1w: layer-named)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: sel.related.join(",") })]] : []),
+  ];
+  let failed = 0;
+  for (const [name, fn] of steps) {
+    console.log(`\n=== ci: ${name} ===`);
+    const code = await Promise.resolve(fn());
+    if (code !== 0) failed++;
+  }
+  console.log(failed === 0 ? "\nci: ALL PASSED (T1w)" : `\nci: ${failed} step(s) failed (T1w)`);
   return failed === 0 ? 0 : 1;
 }
 
@@ -3936,6 +3991,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
                                 runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
+  release chapter <x.y.z> [--notes f] [--dry-run] [--now] [--published] [--verify]  LEAD step: preflight, pack, publish core then pack
+                                to the Workshop, config push + restart 0grind, verify, Discord post, tag; --published skips build and
+                                publish (both Workshop pages must already show x.y.z, published by hand) (docs/release/chapter-release.md)
   promote [--to sha] [--confirm]  stable branch: list PRs merged since stable and write the checklist;
                                 --confirm fast-forwards stable, verifies and closes their issues (cli promote --help)
   prs status|heal [--dry-run] [<n>...]
@@ -4762,9 +4820,21 @@ function gateTierOf(wtRoot, forceFull = false) {
   const read = (p) => {
     try { return readFileSync(join(wtRoot, p), "utf8"); } catch { return null; }
   };
-  const files = gateTier.collectDiff({ git, read, base: wt.baseOfRoot(wtRoot) });
+  const base = wt.baseOfRoot(wtRoot);
+  const files = gateTier.collectDiff({ git, read, base });
   if (!files) return { tier: 2, reasons: ["could not read the diff against the base"], data: [], ids: [] };
-  return gateTier.classify(files);
+  // T1w: a maintainer hand edit on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits").
+  const branch = git(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
+  const mb = git(["merge-base", `origin/${base}`, "HEAD"]).stdout.trim();
+  const worldEdit = (layers, extra) => {
+    const d = worldDiff.diffFiles(layers.map((f) => ({ path: f.path, before: f.before, after: f.after })));
+    extra.touched = worldDiff.touchedNames(d);
+    return worldDiff.handEditProblem(d, (ref) => {
+      const g = /\{[0-9A-Fa-f]{16}\}/.exec(ref);
+      return !!g && !!mb && git(["grep", "-q", "-F", g[0], mb, "--", "addons"]).status === 0;
+    });
+  };
+  return gateTier.classify(files, { branch, worldEdit });
 }
 
 function gateArgs(wtRoot, flags) {
@@ -5363,6 +5433,10 @@ try {
     code = cmdPrs(ROOT, rest);
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
+  } else if (cmd === "release" && rest[0] === "chapter") {
+    // `release chapter <v>`: publish both Workshop items and roll the live 0grind server (tools/release/chapter.mjs).
+    const chapter = await import("./release/chapter.mjs");
+    code = await chapter.runChapter(ROOT, rest.slice(1), chapter.realDeps(ROOT, { publish: publishAddon, isMain: wt.isMainCheckout }));
   } else if (cmd === "release") {
     code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {

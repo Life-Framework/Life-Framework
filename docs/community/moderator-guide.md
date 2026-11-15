@@ -187,11 +187,12 @@ the administrator acts.
 
 ### Rulings without in-game power
 
-Until a staff relay exists, a moderator reads incidents through an administrator
-as in step 2, or from the staff channel's pasted rows. The staff webhook (#1283)
-and the relay of admin actions and flags to it (#1284) are **coming**; when they
-land, they send only a case number and a place, never names. Until then, never
-paste a row with account uids into a public channel.
+A moderator reads incidents through an administrator as in step 2, or from the
+staff channel's pasted rows. The staff webhook (#1283) is built: when the host has
+set it, admin actions and `/report` flags post to the staff channel (#1284), and
+a filed police application posts there too (#1289). Those lines can carry account
+uids (an application line carries only the last four characters), so the staff
+channel is staff-only. Never paste a row with account uids into a public channel.
 
 ## Evidence
 
@@ -216,11 +217,13 @@ paste a row with account uids into a public channel.
   row today.
 - A banned player appeals through the appeals path. The appeal is reviewed by a
   different staff member than the one who banned.
-- **Coming (#1285):** a ban record file keyed by account uid, written by `#ban`
-  and `#unban` with the reason, the staff uid and the target's recent incident
-  numbers, and a `!banrecord <uid>` admin command to read it. Until it ships,
-  the ticket is the ban record. Do not invent the command.
-- **Coming (#315):** the appeals channel and its template.
+- **The ban record (#1285)** is written by `#ban` and `#unban` with the reason,
+  the staff uid and the target's recent incident numbers. An administrator reads
+  it with `#banrecord <uid>`; on the host, `toolscli host bans` lists it. Keep
+  the ticket too: it holds the player's account of events.
+- **Appeals (#315):** the player fills the template in [appeals.md](appeals.md) in
+  the appeals channel. The channel is created by the maintainer before opening;
+  until then appeals come by a staff direct message and go in the ticket.
 
 ## Privacy
 

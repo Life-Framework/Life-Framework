@@ -29,6 +29,7 @@ class LF_MissionConfigPackSource : LF_ConfigPackSource
 	protected ref LF_PackManifest m_Manifest;
 	protected string m_sCoreVersion = LF_PackManifest.CORE_VERSION;
 	protected bool m_bRefusalLogged;
+	protected bool m_bAcceptLogged;
 
 	//------------------------------------------------------------------------------------------------
 	void SetManifest(LF_PackManifest manifest, string coreVersion = LF_PackManifest.CORE_VERSION)
@@ -36,6 +37,7 @@ class LF_MissionConfigPackSource : LF_ConfigPackSource
 		m_Manifest = manifest;
 		m_sCoreVersion = coreVersion;
 		m_bRefusalLogged = false;
+		m_bAcceptLogged = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -61,7 +63,13 @@ class LF_MissionConfigPackSource : LF_ConfigPackSource
 		if (!manifest)
 			return true;
 		if (manifest.Supports(m_sCoreVersion))
+		{
+			// `toolscli release chapter --verify` reads this line to prove the server runs the released core.
+			if (!m_bAcceptLogged)
+				LF_Debug.Info(LF_PackManifest.FEATURE, string.Format("core %1 accepted by pack %2", m_sCoreVersion, manifest.m_sPackId));
+			m_bAcceptLogged = true;
 			return true;
+		}
 
 		if (!m_bRefusalLogged)
 			LF_Debug.Error(LF_PackManifest.FEATURE, manifest.RefusalLine(m_sCoreVersion));

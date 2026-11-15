@@ -128,6 +128,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DayCycleApply(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DayCycleConfig(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DayCycleSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugDispatch(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugJailMe(), LF_TestTier.LOGIC);
@@ -143,6 +144,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AccountReplicationWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DialogueClerk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DialogueFlow(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DialogueFocusStep(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueMouth(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueOverrideVerbs(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialoguePackOverlay(), LF_TestTier.LOGIC);
@@ -259,6 +261,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobsOverrideModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobsPackOverlay(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JoinNotice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
@@ -351,6 +354,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceRosterNotice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceDeathOnDuty(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceWantedBoard(), LF_TestTier.LOGIC);
@@ -558,6 +562,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleOverrideVerbs(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleRemoveByBaseGuid(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateBadRow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_VehicleStateRoundTrip(), LF_TestTier.PERSISTENCE);

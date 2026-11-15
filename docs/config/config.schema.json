@@ -281,7 +281,7 @@
         },
         "nightSpeed": {
           "type": "number",
-          "description": "The clock's speed at night as a multiple of its daytime speed. 1 is no change",
+          "description": "Not supported (#1650): the vanilla time manager has one day duration and no night rate, so a value other than 1 logs a Warn and the night runs at the day's rate. Kept so old configs still load",
           "default": 1,
           "minimum": 0.1,
           "maximum": 10
@@ -555,6 +555,24 @@
       },
       "additionalProperties": false,
       "x-class": "LF_JobsConfig"
+    },
+    "joinNotice": {
+      "type": "object",
+      "description": "The `joinNotice` owner section: one toast at each player's first spawn of the session.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Show the join notice toast at each player's first spawn of the session. Off in the core",
+          "default": false
+        },
+        "key": {
+          "type": "string",
+          "description": "Localization key of the notice text, with or without the leading #. Empty shows nothing and logs a warning",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_JoinNoticeConfig"
     },
     "licences": {
       "type": "object",

@@ -138,6 +138,7 @@ against the merge base with `origin/<base>`, uncommitted and untracked files inc
 |---|---|---|
 | T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
 | T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
+| T1w | a maintainer hand edit: the branch is `town-maintainer-*` and every changed `addons/` file is a modified `.layer` whose entities were only moved, or added / removed from prefabs already in use ("Maintainer world edits") | `validate` (static), `audit placement --strict --layer <touched>`, the tests that name a touched layer or entity |
 | T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
 
 T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
@@ -1385,6 +1386,34 @@ untracked files under `addons/` or `tools/`.
 (`gh auth login`). The REST API fallback works with a `GITHUB_TOKEN` env var
 instead.
 
+## Maintainer world edits
+
+The maintainer edits DebugWorld by hand in Workbench in his own worktree (`Life-Framework-ws-town-maintainer-edits`,
+branch `ws/town-maintainer-edits`). When he says done, the lead runs, from the main checkout on that PC:
+
+```sh
+toolscli world diff --wt town-maintainer-edits          # what changed, one line per entity, NOISE apart (under 3 s)
+toolscli world ship --wt town-maintainer-edits --dry-run
+toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then toolscli wt ship-status town-maintainer-edits
+```
+
+- **diff** (`tools/lib/world-diff.mjs`) matches entities by name, or by prefab plus parent path when unnamed, children
+  included, and prints MOVED (old -> new coords and angles, metres), ADDED, REMOVED or PROP CHANGED (the property).
+  NOISE is what a Workbench save rewrites without changing anything: the BSP line in `default.layer`, a block at
+  another file position, `angleY 180` written as `angles 0 180 0`, an explicit `GenericEntity` prefix dropped,
+  whitespace. `--json` for tools.
+- **ship** refuses while Workbench's window title shows unsaved changes (`*`; Workbench keeps no lock file per
+  unsaved edit) and warns while it runs. It refuses `addons/` changes other than layers, restores noise-only
+  layers to the merge base, commits the rest (the worktree's git identity, or `--author`), runs `validate`,
+  `audit placement --layer <touched>` and the tests that name a touched layer or entity, adds each audit finding
+  on an entity the maintainer touched to `agent-box/place-audit-allow.json` with the reason "maintainer hand
+  placement (world ship)" (listed in the PR body), then runs `wt ship` with a body generated from the diff.
+- **Gate tier T1w** ("Gate tiers"): the queue gates such a branch with static validate, the placement audit on the
+  touched layers and the layer-named tests. A property or component change, a new layer, a prefab no layer used
+  before or any other `addons/` file makes it T2.
+- `toolscli world sync` is the other half (`tools/lib/world-sync.mjs`, a separate change).
+- Agents never touch the maintainer's worktree; the proofs run on fixtures (`tools/test/fixtures/world-diff/`).
+
 ## Keeping your world editor safe
 
 - The main checkout stays clean; agents never run heavy commands there (CLI
@@ -1396,6 +1425,45 @@ instead.
 - Merge your own local `main` work first: agent worktrees branch from
   `origin/main`, so uncommitted or unpushed changes in your checkout are not
   visible to agents until you push.
+
+## Maintainer world edits
+
+The maintainer hand-edits DebugWorld in Workbench, in his own worktree (`ws/town-maintainer-edits`) on the lead's PC, with
+uncommitted `.layer` edits at any time. `toolscli world-sync` keeps that worktree level with `origin/main` without losing
+or mangling them. (Other tools for this workflow add their own `###` subsections under this heading.)
+
+### Keeping it level with main (`world-sync`)
+
+```sh
+toolscli world-sync [--wt <slug>] [--dry-run] [--force]     # default --wt town-maintainer-edits; run on the PC that has it
+toolscli world-sync --watch-hint                            # prints the line the lead runs at each check-in (no daemon)
+```
+
+Engine: `tools/lib/world-sync.mjs` (`syncWorktree(dir, { dryRun, force })`); the CLI entry is `tools/commands/world-sync.mjs`.
+Selftest: `tools/validation/world-sync-selftest.mjs` (temp repos). Never run it against his worktree from another machine.
+
+1. Fetches `origin main`, lists what main changed since the merge base and what he changed locally (staged, unstaged,
+   untracked, and committed but not on main).
+2. **No overlap:** fast-forward, or a merge commit when he has commits main lacks. The working tree and index move with
+   `git read-tree -m -u` (the engine under a fast-forward), so every local edit is carried across; afterwards the unstaged
+   and staged diffs and every dirty file must be byte-identical or the run counts as failed.
+3. **Both sides changed a `.layer`:** that file is *held* (`held: you and main both changed X`) and stays exactly as it is.
+   If main renamed it, the other half of the rename is held too, so the world never gets two copies. Everything else main
+   changed is pulled into the working tree and **staged, with HEAD unmoved** (history is never told the held file was
+   merged; a rerun is stable and reports `pulled=0` until he commits the layer and a normal merge settles it).
+4. **Both sides changed any other file:** *blocked*, nothing changes, exit 2. Commit or set that file aside, then run again.
+5. **Workbench open on that worktree** (a process whose command line holds the worktree path): still syncs, then prints one
+   line to reload the world (File > Reload, or reopen it). `reload-workbench=yes` in the summary.
+6. Never `reset --hard`, `--force`, `checkout --` on a modified file, or a stash. Before the first write the dirty files are
+   copied under the git dir; any error after that puts HEAD, the index and the files back, deletes the copy and exits 1
+   (`state-restored=yes`). If the restore itself cannot be proven, the copy is kept and the message names it.
+
+```
+SUMMARY world-sync ok pulled=12 files held=1 (Street_Jobs.layer) reload-workbench=yes
+SUMMARY world-sync blocked pulled=0 files held=0 blocked=1 (notes.md) reload-workbench=no
+```
+
+Exit 0 ok (held files still count as ok), 2 blocked, 1 error. `--force` only lets it sync a branch that is not `ws/*`.
 
 ## Cleanup
 

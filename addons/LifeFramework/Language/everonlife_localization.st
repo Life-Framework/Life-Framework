@@ -7027,6 +7027,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Why you want to serve"
      Comment "Police application blank: reason."
     }
+    CustomStringTableItem "{57D1AD3E97B72422}" {
+     Id "LF-PoliceRoster_Approved"
+     Target_en_us "You are on the {Police} roster: go on duty at the station locker."
+     Comment "Toast at the first spawn after an application was approved while offline (#1447)."
+    }
+    CustomStringTableItem "{D26550CD20582ACD}" {
+     Id "LF-PoliceRoster_Expired"
+     Target_en_us "Your {Police} trial ran out and you are off the roster."
+     Comment "Toast at the first spawn after a trial ended unpromoted (#1447)."
+    }
     CustomStringTableItem "{4781500A4B2C8282}" {
      Id "LF-Police_Alert_Murder"
      Target_en_us "Crime Alert: a person was killed"

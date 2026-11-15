@@ -111,3 +111,41 @@ DebugWorld, which the guide does not tell them; with the guide's own `server.jso
 That is known and waits on the first Workshop upload (m3-plan D3). Run this again once both items are up: it is the
 check that "joinable server from the guide alone" holds. The times above are the baseline: 36 s from start to
 `Entered online game state.` with the core only.
+
+## Re-run after the first upload, 2026-11-16 (#1711, #371)
+
+Stumble 3 is closed. The core id in the run above, `79636E668EA37AC9`, belonged to an unrelated Workshop item (see
+[workshop-publish.md](../playtest/workshop-publish.md)); the core is `4550A2B656E1B569` and the pack
+`B1E84D5687E11724`, both published as 0.1.0 and Unlisted. The guide's `server.json` already lists those two ids.
+
+This re-run used `tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724 --no-client` on the pool machine
+`lf-cloud` (a clean run folder, no local addons, empty cache), not the by-hand steps of the first run. It is a check of
+what the Workshop serves, not of the guide's prose, so the by-hand run (steps 1 to 3, the start line) was not repeated.
+
+```
+BACKEND : Downloading 4550A2B656E1B569 version 0.1.0
+BACKEND : Downloading B1E84D5687E11724 version 0.1.0
+BACKEND : Required addons are ready to use.
+DEFAULT : Entered online game state.
+SCRIPT  : [LFDebug:Persistence] fresh session: no save point exists for this mission
+SUMMARY workshop-boot-check ok stage=pass host=lf-cloud ...
+```
+
+- Both items download by id from the Workshop, core first, and the server reaches `Entered online game state.` on the
+  1989 pack's scenario. The log has 0 `SCRIPT (E)` lines and no `[ELDebug:...]` line, so the core is a post-rename
+  build.
+- Two of step 4's success lines appear: `Entered online game state.` and `fresh session: no save point exists for this
+  mission`. The `no owner config` line is absent because the run folder holds no `config.json` (step 6).
+- `RESOURCES (E): Wrong GUID/name` lines for the base game's `Rally_*` worlds are the known ones in
+  [debug-log-triage.md](../debug-log-triage.md). Two more name `Language/everonlife_localization.st` and
+  `Language/lf_everon1989_localization.st` (`StringTableSource`): the Workshop build ships the runtime `.conf` tables but not the
+  `.st` source, so the engine cannot resolve the source the `.gproj` names. By design, also in
+  [debug-log-triage.md](../debug-log-triage.md); the runtime table loads and the boot reached `Entered online game state.`.
+  A client reading the strings was not checked.
+- A first run with a game client on the same box failed at `join`: the server logged `authentication timeout
+  (identity=0x00000000)` for the box's client, which had no signed-in identity. That is the box, not the mod, and it
+  leaves #371's "a client joins" line unproven by this tool. A player joining the live flagship on 0grind proves it.
+
+Still to do: run `workshop boot-check` again when 0.1.1 is Public (the build the owners will get), and have one
+player join from a clean install. The by-hand run of the guide, start to finish, is worth repeating once with a
+person who has not read the repo.

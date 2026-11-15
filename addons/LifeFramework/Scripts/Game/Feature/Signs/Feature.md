@@ -100,3 +100,14 @@ picture under the title. Made with `tools\cli ui-image`; see
 
 `Worlds/DebugWorld/DebugWorld_Layers/Signs.layer`, one per town manifest site
 (`agent-box/town.mjs`, `requireSigns` true), within 8 m and facing the street.
+
+## World Editor preview (#1819)
+
+The edit view never draws the face's render target, so a sign there was blank. Under
+`#ifdef WORKBENCH`, `LF_SignComponent` writes the printed title on the face as world-space
+debug text every editor frame while the sign is in view (`_WB_AfterWorldUpdate`,
+`CALL_WHEN_ENTITY_VISIBLE`); a selected sign shows its whole card, an unknown id shows red.
+`m_sSignId` is a combo box of catalog ids, a changed attribute reprints, and the entity's
+right-click menu has Edit sign text (opens `LF_Signs.conf`) and Reload sign text. BuildFace
+does run in edit mode, but the faces still draw blank there, so the editor does not build them.
+Guide: `docs/tooling/sign-editing.md`.

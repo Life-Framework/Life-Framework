@@ -15,6 +15,7 @@ class LF_StaticReset
 	static void ResetAll()
 	{
 		LF_Places.ResetStatics();
+		LF_DayCycleSave.ResetStatics();
 		LF_PrefabSlots.ResetStatics();
 		LF_SoundSlots.ResetStatics();
 		LF_Breach.ResetStatics();
@@ -124,6 +125,7 @@ class LF_StaticReset
 		LF_TownBoardComponent.ResetStatics();
 		LF_TownBoardSheet.ResetStatics();
 		LF_Waypoint.ResetStatics();
+		LF_PoliceRosterNotice.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));
