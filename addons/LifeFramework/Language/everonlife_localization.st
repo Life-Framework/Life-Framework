@@ -8187,12 +8187,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7A31C0DE5A1E0001}" {
      Id "LF-Siren_NeedMedic"
-     Target_en_us "Clock in as a medic"
+     Target_en_us "Clock in to use the siren"
      Comment "Greyed reason on the ambulance siren action when the driver is not an on-duty medic."
     }
     CustomStringTableItem "{7A31C0DE5A1E0002}" {
      Id "LF-Siren_NeedPolice"
-     Target_en_us "Clock in as police"
+     Target_en_us "Clock in to use the siren"
      Comment "Greyed reason on a police siren action when the driver is not an on-duty officer."
     }
     CustomStringTableItem "{5EBE8CF2BBC1E139}" {
