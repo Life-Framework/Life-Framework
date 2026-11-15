@@ -76,10 +76,28 @@ export function isThanks(text) {
 const FEATURE =
   /\b(?:would be (?:nice|cool|great|good|awesome)|it'?d be (?:nice|cool|great)|please add|can we (?:get|have|add)|could we (?:get|have|add)|could you add|suggest\w*|feature request|i wish|wish (?:we|there|you)|should (?:have|add)|add an? )\b/i;
 
-/** "feature" for a suggestion, otherwise "bug". */
+// A playtest report names itself at the start ("Playtest report: ...", "playtest notes").
+const PLAYTEST = /^\s*(?:play[- ]?test(?:ing)?|test session)\b(?:\s+(?:report|notes|results|feedback))?\s*[:,-]?/i;
+const QUESTION = /\?|^\s*(?:how (?:do|can|to|does)|where (?:do|can|is|are)|what (?:do|is|are)|is there (?:a|any)|can i|do i|who (?:do|can))\b/i;
+// Words that make a question a bug report ("why is the door stuck?").
+const FAILURE =
+  /\b(?:stuck|broken|broke|bug\w*|crash\w*|error\w*|glitch\w*|freez\w*|lag\w*|lost|missing|disappear\w*|fail\w*|not working|doesn'?t work|won'?t|can'?t|cannot|nobody can|no one can|empty|wrong)\b/i;
+
+/** The kind of a report: "playtest", "feature" (a suggestion), "question" (a question with no failure words) or "bug". */
 export function classify(text) {
-  return FEATURE.test(text) ? "feature" : "bug";
+  if (PLAYTEST.test(text)) return "playtest";
+  if (FEATURE.test(text)) return "feature";
+  if (QUESTION.test(text) && !FAILURE.test(text)) return "question";
+  return "bug";
 }
+
+// Per kind: the issue label (all exist on the repo) and the title prefix of the repo's templates.
+export const KINDS = {
+  bug: { label: "bug", prefix: "[Bug]: " },
+  feature: { label: "enhancement", prefix: "[Feature]: " },
+  question: { label: "question", prefix: "[Question]: " },
+  playtest: { label: "playtest", prefix: "[Playtest]: " },
+};
 
 const STOP = new Set(
   ("this that with from have been were what when they them then than there their about after before into just also very much some more only over only " +
@@ -163,6 +181,32 @@ function bodyFor(kind, reports, reporters, links = []) {
     `Reported by ${players(reporters)} in the session's feedback channel. Drafted by \`tools\\cli host feedback\`; no author names or Discord ids are kept. Check it against the session's server log before filing (\`tools\\cli host triage\`).`,
     "",
   ].join("\n");
+  if (kind === "question") {
+    return [
+      "### Question",
+      "",
+      asked,
+      "",
+      "### What to do",
+      "",
+      "Answer in the channel. File this only if the answer shows a gap in the docs or the game.",
+      "",
+      foot,
+    ].join("\n");
+  }
+  if (kind === "playtest") {
+    return [
+      "### Findings",
+      "",
+      asked,
+      "",
+      "### What to do",
+      "",
+      "Split the findings above into one issue each before filing; a finding that is already an issue gets a comment there instead.",
+      "",
+      foot,
+    ].join("\n");
+  }
   if (kind === "feature") {
     return [
       "### Problem or opportunity",
@@ -239,13 +283,13 @@ export function draftFeedback(messages, { session = null } = {}) {
       groups.push({ head: entry, reports: [text], authors: new Set([m.author]) });
     }
   }
-  const titles = groups.map((g) => `${g.head.kind === "feature" ? "[Feature]: " : "[Bug]: "}${firstSentence(g.reports[0])}`);
+  const titles = groups.map((g) => `${KINDS[g.head.kind].prefix}${firstSentence(g.reports[0])}`);
   const drafts = groups.map((g, i) => {
     const kind = g.head.kind;
     const links = linkLines(session, titles.filter((_, j) => j !== i));
     return {
       kind,
-      label: kind === "feature" ? "enhancement" : "bug",
+      label: KINDS[kind].label,
       title: titles[i],
       reporters: g.authors.size,
       reports: g.reports,
@@ -263,6 +307,11 @@ export function ghCreateCommand(draft, bodyPath) {
     .replace(/\\/g, "/")
     .replace(/[$`]/g, " ");
   return `gh issue create --title "${title}" --body-file "${bodyPath}" --label ${draft.label}`;
+}
+
+/** The line printed for a question draft instead of a `gh issue create` line: questions are answered, not filed. */
+export function answerLine(draft, bodyPath) {
+  return `answer in the channel: ${draft.title.replace(/[\r\n]+/g, " ")} (draft ${bodyPath}; file it with --label ${draft.label} only if the answer shows a gap)`;
 }
 
 /** Write `<n>.md` per draft into `dir`, first removing the numbered drafts of an earlier run. Returns the written file names. */

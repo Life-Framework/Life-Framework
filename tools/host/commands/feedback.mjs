@@ -6,10 +6,10 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { draftFeedback, findSessionReport, ghCreateCommand, parseExport, writeDrafts } from "../feedback.mjs";
+import { answerLine, draftFeedback, findSessionReport, ghCreateCommand, parseExport, writeDrafts } from "../feedback.mjs";
 
 export const help =
-  "feedback <export.txt> [--out <dir>]   draft one issue per report from a copied Discord feedback channel: drops thanks and duplicates, strips Discord ids, writes tmp/feedback/<date>/<n>.md and prints the gh issue create commands (never runs them)";
+  "feedback <export.txt> [--out <dir>]   draft one issue per report from a copied Discord feedback channel: drops thanks and duplicates, strips Discord ids, labels each draft bug, enhancement, question or playtest, writes tmp/feedback/<date>/<n>.md and prints the gh issue create commands (never runs them); a question prints 'answer in the channel' instead";
 
 function today() {
   const d = new Date();
@@ -45,11 +45,15 @@ export async function main(args, ctx) {
     drafts.forEach((d, i) => {
       const abs = join(dir, files[i]);
       const rel = relative(ctx.root, abs).replace(/\\/g, "/");
-      console.log(ghCreateCommand(d, rel.startsWith("..") ? abs.replace(/\\/g, "/") : rel));
+      const path = rel.startsWith("..") ? abs.replace(/\\/g, "/") : rel;
+      console.log(d.kind === "question" ? answerLine(d, path) : ghCreateCommand(d, path));
     });
   } else {
     console.log("host feedback: nothing to draft (every message was thanks)");
   }
-  console.log(`SUMMARY host-feedback ok messages=${messages.length} thanks=${thanks} duplicates=${duplicates} drafts=${drafts.length} out=${dir}`);
+  const count = (k) => drafts.filter((d) => d.kind === k).length;
+  console.log(
+    `SUMMARY host-feedback ok messages=${messages.length} thanks=${thanks} duplicates=${duplicates} drafts=${drafts.length} questions=${count("question")} playtest=${count("playtest")} out=${dir}`,
+  );
   return 0;
 }

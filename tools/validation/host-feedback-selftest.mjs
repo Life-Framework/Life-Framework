@@ -7,6 +7,8 @@
 // and nothing filed (neither module can start a process). No game, no network.
 // red-proof: before tools/host/feedback.mjs existed this failed at its first check:
 // "FAIL  tools/host/feedback.mjs is missing" (2026-11-15, #1511).
+// Case 9 (#1728, question and playtest labels) failed before classify() knew them: "FAIL  dry-run kinds
+//   got: \"bug,feature,bug,bug\" want: \"bug,feature,question,playtest\"" (2026-11-16).
 
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -112,6 +114,36 @@ try {
   if (none.status === 0) fail("an export with no messages must exit non-zero");
 } finally {
   rmSync(out, { recursive: true, force: true });
+}
+
+// 9. four kinds (#1728): the dry run's five posts (docs/community/feedback-dryrun-2026-11.md) give a bug (the
+// duplicate folded in), an idea, a question and a playtest report, each with its own label and title prefix.
+eq("kind question", lib.classify("how do I get a driver licence? the clerk only says come back later"), "question");
+eq("a question with failure words is a bug", lib.classify("why is the bank door stuck? nobody can open it"), "bug");
+eq("a suggestion with a question mark stays a feature", lib.classify("can we get a taxi job?"), "feature");
+eq("kind playtest", lib.classify("Playtest report: 4 players, 45 min. The radio cut out twice."), "playtest");
+const dry = lib.draftFeedback(lib.parseExport(readFileSync(join(FIX, "dryrun-export.txt"), "utf8")));
+eq("dry-run duplicates", dry.duplicates, 1);
+eq("dry-run kinds", dry.drafts.map((d) => d.kind).join(","), "bug,feature,question,playtest");
+eq("dry-run labels", dry.drafts.map((d) => d.label).join(","), "bug,enhancement,question,playtest");
+eq("dry-run title prefixes", dry.drafts.map((d) => /^\[(\w+)\]: /.exec(d.title)?.[1]).join(","), "Bug,Feature,Question,Playtest");
+const q = dry.drafts.find((d) => d.kind === "question");
+if (q && !/answer in the channel/i.test(q.body)) fail("the question draft does not say to answer in the channel");
+if (q && lib.answerLine && !/answer in the channel/i.test(lib.answerLine(q, "tmp/feedback/d/3.md"))) fail("answerLine does not say to answer in the channel");
+if (!lib.answerLine) fail("feedback.mjs does not export answerLine for question drafts");
+const pt = dry.drafts.find((d) => d.kind === "playtest");
+if (pt && !pt.body.includes("### Findings")) fail("the playtest draft lacks a Findings section");
+for (const d of dry.drafts) if (/\b(Rook|Mara|Dex|Ivy|Tomas)\b|\d{17,20}/.test(d.title + d.body)) fail(`dry-run draft "${d.title}" carries a name or id`);
+const dryOut = mkdtempSync(join(tmpdir(), "lf-host-feedback-dry-"));
+try {
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "feedback", join(FIX, "dryrun-export.txt"), "--out", dryOut], { cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true });
+  const o = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+  eq("dry-run gh lines", o.split(/\r?\n/).filter((l) => /^gh issue create /.test(l)).length, 3);
+  if (!/^answer in the channel: /m.test(o)) fail(`the question is not printed as answer in the channel: ${o.trim()}`);
+  if (!/--label playtest/.test(o)) fail("no gh line carries --label playtest");
+  if (!/SUMMARY host-feedback ok .*questions=1/.test(o)) fail(`summary does not count the question: ${o.trim()}`);
+} finally {
+  rmSync(dryOut, { recursive: true, force: true });
 }
 
 // 8. it only prints: neither module can start a process
