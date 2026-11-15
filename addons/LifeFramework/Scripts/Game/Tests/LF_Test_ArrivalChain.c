@@ -1,6 +1,10 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_ArrivalChain`: made
 // LF_QuestManager.ReportSignal route a TALK event; got `[LFTEST] FAIL quests/arrival-chain`,
 // `- step 2 turns in on its own`, `- step 3 starts on its own`, `- a deposit moves step 4`. Restored; green.
+// red-proof: Observed 2026-11-15 with the maintainer's town layers (Sign_TownMap at 128.039 0 249.884, 9.5 m
+// from the 134 0 242.5 spawn) and the old fixed-spawn test: `reading the town board beside the clerk counts`
+// failed, then the cascade to `the welcome cash lands in the pockets (expected 250, got 0)`. With the reader
+// walking to the board found by sign id, the same layers go green.
 // tier: WORLD
 //! The town clerk in Quests.layer runs the arrival chain end to end through the public quest
 //! API: talk and register, read the town board, deliver a parcel, bank cash, return. Each
@@ -9,8 +13,8 @@
 class LF_Test_ArrivalChain : LF_Test
 {
 	// Quests.layer: Quest_Clerk stands behind the registry counter at 137.058 0 240.907. The test bodies
-	// spawn at 134 0 242.5, between his counter and the town board: 3.5 m from him (GIVER_RADIUS 5)
-	// and 5.3 m from the board (SIGN_READ_RADIUS 6).
+	// spawn at 134 0 242.5, 3.5 m from him (GIVER_RADIUS 5). The town board is found by its sign id
+	// (not by distance to the clerk) and the reader walks to it for the read (SIGN_READ_RADIUS 6).
 
 	override string GetName()
 	{
@@ -65,8 +69,19 @@ class LF_Test_ArrivalChain : LF_Test
 		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "and leaves step 2 running");
 
 		// Step 2 -> 3 -> 4 -> 5, each on its own signal, in order, with no trip back to the clerk.
-		// Signs.layer: Sign_TownMap stands at 130.5 0 246.5, about 5 m from the clerk.
-		ctx.True(tracker.RequestSignRead("town_map"), "reading the town board beside the clerk counts");
+		// The read is checked against the reader, not the clerk (SIGN_READ_RADIUS): the player walks
+		// to the board wherever the town puts it, reads, and walks back for step 5.
+		vector boardOrigin;
+		if (!FindSignOrigin("town_map", boardOrigin))
+		{
+			ctx.Fail("the town places a town_map sign");
+			return;
+		}
+
+		vector clerkSide = player.GetOrigin();
+		player.SetOrigin(boardOrigin);
+		ctx.True(tracker.RequestSignRead("town_map"), "reading the town board standing at it counts");
+		player.SetOrigin(clerkSide);
 		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.TURNED_IN, "step 2 turns in on its own");
 		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.ACTIVE, "step 3 starts on its own");
 
@@ -94,6 +109,34 @@ class LF_Test_ArrivalChain : LF_Test
 		{
 			ctx.True(state.GetStatus() == LF_EQuestStatus.TURNED_IN, "nothing runs after the chain: " + questId);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string m_sWantedSign;
+	protected bool m_bSignFound;
+	protected vector m_vSignOrigin;
+
+	//! Where the placed sign with this id stands, found by its LF_SignComponent, not by a coordinate.
+	protected bool FindSignOrigin(string signId, out vector origin)
+	{
+		m_sWantedSign = signId;
+		m_bSignFound = false;
+		GetGame().GetWorld().QueryEntitiesBySphere("200 0 250", 400, CollectSign);
+		origin = m_vSignOrigin;
+		return m_bSignFound;
+	}
+
+	protected bool CollectSign(IEntity entity)
+	{
+		LF_SignComponent sign = LF_SignComponent.Cast(entity.FindComponent(LF_SignComponent));
+		if (sign && sign.GetSignId() == m_sWantedSign)
+		{
+			m_bSignFound = true;
+			m_vSignOrigin = entity.GetOrigin();
+			return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
