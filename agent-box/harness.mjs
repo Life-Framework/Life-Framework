@@ -1018,8 +1018,8 @@ function selftest() {
   const shop = findPad(list, "Shop_GeneralStore_Debug");
   if (!shop || shop.actions[0] !== "LF_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
   // $grp members carry world coords; children add their parent's (village layout,
-  // docs/roadmap/m1-25-village.md).
-  if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
+  // docs/roadmap/m1-25-village.md). The general store counter stands inside the village shop house (general-store).
+  if (shop.x !== 180.57 || shop.z !== 233.627) throw new Error(`shop coords ${shop.x} ${shop.z}`);
   const apple = findPad(list, "AppleTradeContainer");
   // AppleTrader 206.359 0 233.467 (the fruit stall, #924) plus the container's -0.29 1.027 -0.478.
   if (!apple || Math.abs(apple.x - 206.069) > 0.001 || Math.abs(apple.z - 232.989) > 0.001) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);

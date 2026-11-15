@@ -711,7 +711,7 @@ StringTable {
     }
     CustomStringTableItem "{9A2459E811183285}" {
      Id "LF-Sign_GeneralStore_How"
-     Target_en_us "Browse the store at the counter|Then *Buy* or *Sell*"
+     Target_en_us "Take what you want off the shelves and *Pay* at the till|Or buy and sell over the counter"
      Comment "Sign card for the general store counter, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{E011AD948E4F1AAC}" {

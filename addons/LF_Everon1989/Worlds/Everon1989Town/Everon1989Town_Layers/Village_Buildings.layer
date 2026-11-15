@@ -23,7 +23,7 @@ SCR_DestructibleBuildingEntity : "{1B68F3EE279C97A1}Prefabs/Structures/Commercia
 SCR_DestructibleBuildingEntity : "{2A0D72C46FDCD368}Prefabs/Structures/Houses/Village/House_Village_E_1I04/House_Village_E_1I04t.et" {
  coords 118 0 224.64
 }
-SCR_DestructibleBuildingEntity : "{2F830B9B3A7D4855}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_foodstore.et" {
+SCR_DestructibleBuildingEntity Village_GeneralStore : "{5ED335114B9E795B}Prefabs/Buildings/GeneralStore/GeneralStore.et" {
  coords 179 0 233.95
 }
 SCR_DestructibleBuildingEntity : "{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et" {

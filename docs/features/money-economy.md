@@ -116,6 +116,23 @@
   starting with an SVD magazine pouch and two "!BASE KIT!" rows. Prices still come from
   `ShopPrices.conf`. The UI kit status row gives its action button more width (label 1.5,
   status 1, button 1.5), so "Order" is no longer cut to "Orde".
+- ✅ **The general store is a walk-in village shop** (2026-11-15, town-general-store): the village's
+  shop house at 179, 233.95 is our pack prefab `LF_Everon1989/Prefabs/Buildings/GeneralStore/GeneralStore.et`
+  (inherits the vanilla `ShopHouse_E_2I01t_Base.et` with the food store variant's doors, windows and
+  FoodStore sign; its furniture is the vanilla food store's, flattened into
+  `Furniture/GeneralStore_furniture_01.et`, without the counter and till). `Shop_GeneralStore_Debug` (the
+  counter with the price list, the store key `general_store`), its till, radio and clerk stand where the
+  vanilla counter stood, inside the shop room; the boundary is the ground floor (counter space centre
+  -1.57 0 0.123, half 6.1 0 7.8), and the alarm sounds on `Shop_GeneralStore_AlarmBox`, a bell box on the
+  shop front (`LF_AlarmMountComponent`, reach 10). Ten self-serve lines, 201 shelf points: apple, plum,
+  rowan berries, dried meat, crackers, field dressing and a torch on the `ShelfShop_01` gondola and wall
+  unit, water in the cooler, apple juice and a canteen (new; price in the pack overlay
+  `Configs/Shop/LF_ShopPrices_GeneralStore.conf`) on the wall shelves. Tools and work gear are left to the
+  hardware store, other medicine to the drug store, navigation gear to the gun store. The counter's price list
+  (cabbage, backpack, ...) is unchanged. The points come from `tools/buildings/general-store/slots.mjs`
+  (the building pipeline's `storePlan` over the furniture prefab, `--check` to compare); the store stays on the
+  core counter entity because the suite boots the core world without the pack. ⚠️ In the core-only test world
+  the shelves are not there (the copies settle on the floor) and the canteen has no price.
 
 ### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `LF_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
