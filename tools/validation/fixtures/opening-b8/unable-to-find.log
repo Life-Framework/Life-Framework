@@ -1,0 +1,4 @@
+12:00:01.100  DEFAULT      : Game successfully created.
+12:00:08.000  RESOURCES (E): Unable to find resource '{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et'
+12:00:12.700  SCRIPT       : [LFDebug:Persistence] save loaded: version 32, game build 1.9.0.37, running 1.9.0.37
+12:00:14.000  DEFAULT      : Entered online game state.

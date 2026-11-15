@@ -18,8 +18,9 @@ import { ROOT, arrive, clientBox, clientSeesPeer, newestLog, parseState, readSes
 //
 // The server log is the judge. `judgeQuizRejoin` is pure; `--selftest` feeds it a good log and the
 // log a cleared quiz-passed flag leaves (the rejoin is sent the quiz again): that one fails at
-// "no second quiz". The flag lives in the server's memory and progression store, so a live run
-// cannot clear it from here; the selftest is the red run.
+// "no second quiz". The flag lives in the server's memory and progression store; `--clear-pass` sends
+// the harness verb `quizclear` (#1567) for client 2 before the rejoin, so the live run is the red run
+// too: the plain run passes, `--clear-pass` fails at "no second quiz" (#1568).
 const NO_SECOND_QUIZ = "no second quiz";
 const RECEIPT = "{3E8A5C1D7B2F4096}Prefabs/Items/Roleplay/LF_Receipt.et";
 
@@ -69,6 +70,7 @@ async function runQuizRejoinProof(ctx) {
     console.log(f.length ? "quiz-rejoin selftest: FAIL" : "quiz-rejoin selftest: OK");
     return f.length ? 1 : 0;
   }
+  const clearPass = !!ctx?.args?.includes("--clear-pass");
   const h = await import("../harness.mjs");
   const dir = sessionDir();
   const on = (n, spec, timeout) => {
@@ -120,6 +122,16 @@ async function runQuizRejoinProof(ctx) {
   const was = s0?.clients?.find((c) => c.n === 2)?.identity;
   if (!was) fails.push("client 2 has no recorded identity before the rejoin");
 
+  // --clear-pass is the live red run (#1568): the server forgets client 2's quiz pass first (`quizclear`,
+  // #1567, LF_HARNESS build only), so the rejoin must be asked the quiz again and the judge fails at
+  // "no second quiz". Without it the proof is the green run.
+  if (clearPass) {
+    const cleared = on(2, { verb: "quizclear" }, 10000);
+    if (cleared.status !== "ok") fails.push(`quizclear was refused for client 2: ${cleared.status} ${cleared.detail}`);
+    else if (!/had=1\b/.test(cleared.detail)) fails.push(`quizclear found no quiz pass to forget for client 2: ${cleared.detail}`);
+    wait(1500);
+  }
+
   // Client 2 leaves and rejoins: same account, new player id.
   const re = cli("rejoin", "2");
   process.stdout.write(re.stdout ?? "");
@@ -143,13 +155,14 @@ async function runQuizRejoinProof(ctx) {
 
   console.log(`quiz-rejoin proof: client 2 player ${was?.playerId} -> ${now?.playerId}`);
   for (const f of fails) console.log(`FAIL  ${f}`);
+  if (clearPass) console.log(fails.some((x) => x.startsWith(NO_SECOND_QUIZ)) ? `quiz-rejoin --clear-pass: red at "${NO_SECOND_QUIZ}", as the cleared pass should` : `quiz-rejoin --clear-pass: NOT red at "${NO_SECOND_QUIZ}": the cleared pass did not bring the quiz back`);
   console.log(fails.length ? "quiz-rejoin proof: FAIL" : "quiz-rejoin proof: PASS (quiz, form and spawn once; the rejoin spawned with no second quiz)");
   return fails.length ? 1 : 0;
 }
 
 export default {
   name: "quiz-rejoin-proof",
-  usage: "quiz-rejoin-proof [--selftest]   (session up --pack LF_Everon1989 --mission playtest --clients 1)",
+  usage: "quiz-rejoin-proof [--selftest] [--clear-pass]   (session up --pack LF_Everon1989 --mission playtest --clients 1; --clear-pass sends quizclear before the rejoin and must fail at \"no second quiz\")",
   run: (ctx) => runQuizRejoinProof(ctx),
 };
 
