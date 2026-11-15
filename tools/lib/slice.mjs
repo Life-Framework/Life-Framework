@@ -8,6 +8,8 @@ export const TYPES = ["capability", "system", "data", "visual", "tooling", "docs
 export const RISKS = ["persistence", "replication", "money", "inventory"];
 export const DONE_LABELS = ["in-dev", "needs-playtest", "verified"];
 export const RUNNING_LABEL = "agent:working";
+// A maintainer hold (a decision pending, e.g. no filming before sign-off): never ready, never dispatched.
+export const HOLD_LABEL = "hold";
 export const BUDGET = { minutes: 45, calls: 60 };
 // Files with merge drivers (tools/merge/) or generated tables: any slice may append to them.
 export const SHARED = [
@@ -102,6 +104,7 @@ export function checkCard(card) {
 export function statusOf(s) {
   if (s.state === "closed" || s.labels.some((l) => DONE_LABELS.includes(l))) return "merged";
   if (s.labels.includes(RUNNING_LABEL)) return "running";
+  if (s.labels.includes(HOLD_LABEL)) return "held";
   return "open";
 }
 
@@ -169,7 +172,8 @@ export function globsOverlap(a, b) {
 }
 
 // Pairs of slices that may run at once (neither depends on the other) and claim the same files. Merged slices are skipped.
-export function conflicts(slices) {
+// `only`, when given, keeps the pairs where at least one slice is in it (a new plan checked against the live sub-issues).
+export function conflicts(slices, only = null) {
   const { byId } = graph(slices);
   const live = slices.filter((s) => statusOf(s) !== "merged");
   const out = [];
@@ -177,6 +181,7 @@ export function conflicts(slices) {
     for (let j = i + 1; j < live.length; j++) {
       const a = live[i];
       const b = live[j];
+      if (only && !only.has(a.id) && !only.has(b.id)) continue;
       if (ancestors(a.id, byId).has(b.id) || ancestors(b.id, byId).has(a.id)) continue;
       for (const ga of a.card.owns.filter((g) => !isShared(g))) {
         const gb = b.card.owns.find((g) => !isShared(g) && globsOverlap(ga, g));
@@ -283,14 +288,18 @@ export function parsePlan(text) {
   });
 }
 
-export function checkPlan(slices) {
+// `existing` are the parent's sub-issues already created (ids are issue numbers): a plan may depend on them as `#N`, and
+// its slices must be file-disjoint from the live ones. Problems among the existing slices alone are not reported.
+export function checkPlan(slices, existing = []) {
   const problems = [];
   for (const s of slices) for (const p of checkCard(s.card)) problems.push(`${label(s)}: ${p}`);
-  const { missing } = graph(slices);
-  problems.push(...missing);
-  const cyc = findCycle(slices);
+  const fresh = new Set(slices.map((s) => s.id));
+  const all = [...existing.filter((e) => !fresh.has(e.id)), ...slices];
+  const { missing } = graph(all);
+  problems.push(...missing.filter((m) => [...fresh].some((id) => m.startsWith(`${label({ id })} depends`))));
+  const cyc = findCycle(all);
   if (cyc) problems.push(`dependency cycle: ${cyc.join(" -> ")}`);
-  else problems.push(...conflicts(slices));
+  else problems.push(...conflicts(all, existing.length ? fresh : null));
   return problems;
 }
 
