@@ -98,12 +98,14 @@ export function classify(files, { forceFull = false, branch = null, worldEdit = 
   if (forceFull) return { tier: 2, reasons: ["--full-gate"], data: [], ids: [] };
   const game = files.filter((f) => f.path.startsWith("addons/"));
   if (!game.length) return { tier: 0, reasons: ["nothing under addons/ changed"], data: [], ids: [] };
+  let refused = null;
   if (branch && MAINTAINER_BRANCH.test(branch) && worldEdit && game.every((f) => f.status === "M" && f.path.endsWith(".layer"))) {
     const extra = {};
     const why = worldEdit(game, extra);
     if (!why) return { tier: 1, world: true, reasons: [`maintainer hand edit: ${game.length} layer(s), moved / added / removed entities of existing prefabs only`], data: game.map((f) => f.path), ids: [], touched: extra.touched ?? [] };
+    refused = `not a T1w hand edit: ${why}`;
   }
-  const reasons = [];
+  const reasons = refused ? [refused] : [];
   const data = [];
   const ids = [];
   for (const f of game) {
@@ -168,12 +170,36 @@ export function tierLine(c) {
   return `gate tier ${name}: ${c.reasons.slice(0, 6).join("; ")}${c.reasons.length > 6 ? `; +${c.reasons.length - 6} more` : ""}`;
 }
 
-// Reads the change set of a worktree against the merge base with origin/<base>, uncommitted and
-// untracked files included. `git(args)` returns { status, stdout }; `read(path)` the working file or null.
-export function collectDiff({ git, read, base }) {
+// What the branch's own change is measured against: the merge base with origin/<base>, moved up to the newest
+// <base> commit the branch has merged in. A synced branch (world-sync, wt ship) carries merges of main; when the
+// local origin/<base> ref is older than the main it last merged, the plain merge base is behind that merge and
+// everything main changed since leaks into the "branch diff" (docs, scripts), so a maintainer's layer edit stops
+// being T1w. The tree diff against the newest merged main commit is exactly the branch's own delta.
+// `git(args)` returns { status, stdout }. Null when there is no merge base.
+const MAIN_MERGE = /^Merge (?:remote-tracking branch '|branch '|origin\/|tag ')?(?:origin\/)?(main|master|m\d+)\b/i;
+export function ownBase(git, base) {
   const mb = git(["merge-base", `origin/${base}`, "HEAD"]);
   if (mb.status !== 0) return null;
-  const ref = mb.stdout.trim();
+  let ref = mb.stdout.trim();
+  const log = git(["log", "--first-parent", "--merges", "-n", "40", "--format=%H%x09%P%x09%s", "HEAD"]);
+  if (log.status !== 0) return ref;
+  for (const line of log.stdout.split(/\r?\n/).filter(Boolean)) {
+    const [, parents, subject] = line.split("\t");
+    const second = (parents || "").split(" ")[1];
+    if (!second || !MAIN_MERGE.test(subject || "")) continue;
+    // Newest main merge wins; it only counts when it is ahead of the plain merge base.
+    if (second !== ref && git(["merge-base", "--is-ancestor", ref, second]).status === 0) ref = second;
+    break;
+  }
+  return ref;
+}
+
+// Reads the change set of a worktree against ownBase (the merge base with origin/<base>, up to the main the
+// branch last merged), uncommitted and untracked files included. `git(args)` returns { status, stdout };
+// `read(path)` the working file or null.
+export function collectDiff({ git, read, base }) {
+  const ref = ownBase(git, base);
+  if (!ref) return null;
   const ns = git(["diff", "--name-status", "-M", ref]);
   if (ns.status !== 0) return null;
   const files = [];
