@@ -31,7 +31,7 @@ class LF_Test_Pager : LF_Test
 			array<int> receivers = {};
 			receivers.Insert(1);
 			receivers.Insert(2);
-			LF_OnServiceCall call = LF_OnServiceCall.Create("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "radio,board,pager", "96.5 0 263", receivers);
+			LF_OnServiceCall call = LF_OnServiceCall.Create("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "radio,board,pager", "1000 0 1000", receivers);
 
 			ctx.True(LF_Pager.HasPagerChannel(call.m_sChannels), "a call listing the pager channel pages");
 			ctx.False(LF_Pager.HasPagerChannel("radio,board"), "a call without the pager channel does not");

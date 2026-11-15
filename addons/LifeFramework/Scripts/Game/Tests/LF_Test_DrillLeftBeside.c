@@ -17,7 +17,7 @@ class LF_Test_DrillLeftBeside : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
-		vector robber = "198.6 0 252.4";
+		vector robber = "1000 0 1000";
 		vector spot = LF_Bank.ToolRestSpot(robber, "0 0 1");
 		float flat = vector.Distance(Vector(spot[0], 0, spot[2]), Vector(robber[0], 0, robber[2]));
 		ctx.True(flat >= 0.9, string.Format("the drill rests clear of the robber (%1 m away, want 0.9 m or more)", flat));

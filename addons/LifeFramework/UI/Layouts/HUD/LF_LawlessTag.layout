@@ -12,7 +12,7 @@ FrameWidgetClass "{728A29EBF1E03C8A}" {
     OffsetTop 24
     SizeToContent 1
    }
-   Visible 0
+   "Is Visible" 0
    Pivot 0.5 0
    Color 0.86 0.16 0.14 0.95
    Text "#LF-LawlessHud_Tag"
