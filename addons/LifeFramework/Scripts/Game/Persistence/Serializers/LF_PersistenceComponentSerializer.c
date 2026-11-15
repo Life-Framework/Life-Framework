@@ -29,11 +29,13 @@
 //! The money ledger (every cash and bank change, trimmed by LF_LedgerConfig) lives in LF_Ledger.
 //! Vehicle state (tow state, towed-at, inspected-at, compartment level; #752a) rides beside the
 //! vehicle records in LF_VehicleOwnership as [NonSerialized()] fields, keyed by vehicle id.
+//! Held ground (holder, hold seconds, banked points per hideout; #751) rides beside the hideout
+//! leases on LF_HideoutState, keyed by hideout id.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate. The written version is that list's length (33). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground. The written version is that list's length (34). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -82,6 +84,8 @@
 //! (meta-info.json m_sGameVersion) before a boot either way.
 //! A version 32 save includes the build stamp and has no vehicle state rows (#752a): every vehicle
 //! loads untowed, uninspected and with no compartment, which is what that build had.
+//! A version 33 save includes the vehicle state and has no held-ground rows (#751): every site loads
+//! with no holder, no hold time and no points, which is exact (nobody held ground before #751).
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -142,7 +146,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when a save payload was read into the stores this boot.
+	//! \return True when a save payload was read into the stores this boot.
 	static bool WasStoreLoaded()
 	{
 		return s_bStoreLoaded;
@@ -153,6 +157,16 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	override static typename GetTargetType()
 	{
 		return LF_PersistenceComponent;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The save version a payload first appears in: its place in RegisterPersistencePayloads, from 1.
+	//! A save at a lower version never wrote it. 0 for an unknown payload.
+	static int PayloadSinceVersion(string payload)
+	{
+		array<string> order = new array<string>();
+		RegisterPersistencePayloads(order);
+		return order.Find(payload) + 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -194,6 +208,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("caseboard");
 		order.Insert("buildstamp");
 		order.Insert("vehiclestate");
+		order.Insert("heldground");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -227,7 +242,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 33);
+		context.WriteValue("version", 34);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -658,6 +673,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_VehicleStateRow> vehicleStateRows = LF_VehicleOwnership.ExportState();
 			context.Write(vehicleStateRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 vehicle state row(s)", vehicleStateRows.Count()));
+		}
+		else if (payload == "heldground")
+		{
+			// Holder, hold seconds and banked points per hideout (#751); an unheld site writes no row.
+			array<ref LF_HeldGroundRow> heldGroundRows = LF_Hideout.ExportHeldGround();
+			context.Write(heldGroundRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 held-ground row(s)", heldGroundRows.Count()));
 		}
 		else
 		{
@@ -1163,6 +1185,22 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("vehicle state rows failed to read, every vehicle keeps the default state");
+			}
+		}
+		else if (payload == "heldground")
+		{
+			// Runs after "organizations" and "hideout" in the same load; "hideout" left every site unheld.
+			// A version 1-33 save never reaches this payload and every site stays unheld.
+			array<ref LF_HeldGroundRow> heldGroundRows = new array<ref LF_HeldGroundRow>();
+			if (context.Read(heldGroundRows))
+			{
+				LF_SaveIds.ResolveHeldGround(heldGroundRows);
+				int heldGroundApplied = LF_Hideout.ApplyHeldGround(heldGroundRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 held-ground row(s)", heldGroundApplied, heldGroundRows.Count()));
+			}
+			else
+			{
+				ReadFailed("held-ground rows failed to read, every site stays unheld");
 			}
 		}
 		else
