@@ -263,6 +263,47 @@
       "additionalProperties": false,
       "x-class": "LF_CrimeCatalogConfig"
     },
+    "dayCycle": {
+      "type": "object",
+      "description": "The `dayCycle` owner section (M4, #1343): how fast the in-game clock runs.",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "description": "How the in-game clock runs: vanilla (the base game's), accelerated (a day lasts dayLengthMinutes real minutes) or realtime (follows the real clock plus clockOffsetMinutes)",
+          "default": "vanilla"
+        },
+        "dayLengthMinutes": {
+          "type": "integer",
+          "description": "Real minutes one in-game day lasts under accelerated mode. Ignored by the other modes",
+          "default": 1440,
+          "minimum": 1,
+          "maximum": 10080
+        },
+        "nightSpeed": {
+          "type": "number",
+          "description": "The clock's speed at night as a multiple of its daytime speed. 1 is no change",
+          "default": 1,
+          "minimum": 0.1,
+          "maximum": 10
+        },
+        "startHour": {
+          "type": "number",
+          "description": "The in-game hour a fresh world starts at",
+          "default": 8,
+          "minimum": 0,
+          "maximum": 24
+        },
+        "clockOffsetMinutes": {
+          "type": "integer",
+          "description": "Minutes added to the in-game clock",
+          "default": 0,
+          "minimum": -1440,
+          "maximum": 1440
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_DayCycleConfig"
+    },
     "disconnect": {
       "type": "object",
       "description": "Disconnect rules: what logging out does to a player who is cuffed, escorted, downed, wanted or jailed, so leaving never escapes an arrest, a death or a sentence.",
@@ -1028,6 +1069,30 @@
       "additionalProperties": false,
       "x-class": "LF_PoliceConfig"
     },
+    "restarts": {
+      "type": "object",
+      "description": "The `restarts` owner section (M4, #1343): when the server restarts each day and how far ahead players are warned.",
+      "properties": {
+        "times": {
+          "type": "array",
+          "description": "Daily restart times, 24-hour HH:MM in the server's local time (for example 04:00). Empty means no scheduled restarts",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "warningMinutes": {
+          "type": "array",
+          "description": "Minutes before a restart at which players are warned, each 1 to 120. The shipped leads are 15, 5 and 1",
+          "items": {
+            "type": "integer"
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_RestartConfig"
+    },
     "rulesQuiz": {
       "type": "object",
       "description": "The rules orientation quiz switches: Configs/Rules/LF_Quiz.conf, then each pack overlay of this class, then the owner's `rulesQuiz` section.",
@@ -1135,6 +1200,19 @@
       },
       "additionalProperties": false,
       "x-class": "LF_ShopPricesConfig"
+    },
+    "staff": {
+      "type": "object",
+      "description": "The `staff` owner section (M4, #1343): where staff notifications are posted.",
+      "properties": {
+        "webhookUrl": {
+          "type": "string",
+          "description": "Webhook URL staff notifications are posted to. A secret: set it only in the host's own config.json. Empty means no notifications",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_StaffWebhookConfig"
     },
     "systems": {
       "type": "object",

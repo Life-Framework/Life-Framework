@@ -95,6 +95,8 @@ export async function shoot(root, { garments, outDir, budgetS, mannequin, poses,
   const look = await import("../../visual/look.mjs");
   const wt = await import("../../wt.mjs");
   if (wt.isMainCheckout(root)) throw new Error("clothing shots run only in a worktree (they open a second Workbench on the project)");
+  // The plugin is injected into this worktree and the pictures land here, so there is no remote form: refuse without the workbench cap (tools/lib/wb-route.mjs).
+  (await import("../../lib/wb-route.mjs")).requireLocalWorkbench(root, "clothing shots");
   const exe = look.workbenchExe();
   if (!exe) throw new Error("Workbench not found (set ENFUSION_WORKBENCH_PATH)");
   const profile = join(root, "server", "profile", "clothing");

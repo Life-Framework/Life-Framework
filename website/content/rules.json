@@ -1,0 +1,12 @@
+{
+  "title": "Town rules",
+  "intro": "Life Framework | Everon 1989 (Alpha). You are a person with a life here, not a soldier. These rules hold for everyone in town.",
+  "rules": [
+    "No random violence: hurt someone only for a reason your character has.",
+    "Fear for your life: with a gun on you, comply, then report it.",
+    "New life: after a death, forget what led to it. Do not hunt the killer.",
+    "Keep disputes out of the streets. No stalking, no harassing.",
+    "No combat logging: play out an arrest, a robbery or a fight."
+  ],
+  "next": "Take a complaint to staff after the scene, not during it. This is an alpha: the world can be wiped, with 24 hours' notice."
+}

@@ -200,6 +200,14 @@
           "removed": true
         }
       }
+    },
+    "restarts": {
+      "times": [],
+      "warningMinutes": [
+        15,
+        5,
+        1
+      ]
     }
   }
 }
