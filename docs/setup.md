@@ -231,6 +231,23 @@ A server owner lists both ids in `game.mods` (`server/example/server.json`) and
 the server downloads them on first boot. Running your own server is covered by
 [owner/install.md](owner/install.md).
 
+**Prove a published build boots from the Workshop alone (#371).** From a worktree:
+
+```
+tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724 [--no-client]
+```
+
+It boots a clean dedicated server on a pool machine from those two ids only (no local addons, empty cache), waits
+for the engine to say it is online, and joins a client unless you pass `--no-client`. A pass prints
+`SUMMARY workshop-boot-check ok stage=pass ... line="Entered online game state."`; a failure names the stage
+(`ids`, `clean`, `mods`, `scripts`, `ready`, `join`). The full log is `tmp\boot-check\console-<stamp>.log`. The
+boot log shows `Downloading 4550A2B656E1B569 version <v>`, then `Downloading B1E84D5687E11724 version <v>`, then
+`Required addons are ready to use.`, `Entered online game state.` and
+`[LFDebug:Persistence] fresh session: no save point exists for this mission`, with no `SCRIPT (E)`.
+First recorded pass, 0.1.0 Unlisted, 2026-11-16 (`--no-client`):
+[selfhost-dryrun-2026-11.md](ops/selfhost-dryrun-2026-11.md), "Re-run after the first upload". The `join` stage needs a
+pool machine with a signed-in client; on `lf-cloud` it timed out at the client authentication.
+
 ## Next steps
 
 - [Roadmap](roadmap/README.md): the live plan
