@@ -4,7 +4,7 @@ The maintainer runs this with one trial moderator, to check the moderator can ru
 from [moderator-guide.md](./moderator-guide.md) alone. It is the acceptance from #313
 as a script, built for slice #1509. About 30 minutes.
 
-The moderator is given the guide and nothing else. The answer key is the last
+The moderator is given the guide and the rulings page and nothing else. The answer key is the last
 section, **Maintainer only**, and is not shown to the moderator.
 
 ## Who does what
@@ -39,7 +39,10 @@ section, **Maintainer only**, and is not shown to the moderator.
    of [From report to ruling](./moderator-guide.md#from-report-to-ruling): in-game
    names, time, place, what happened, the clip with its F9 stamp if there is one,
    and the incident numbers. Then the moderator proposes a written warning, naming
-   the rule and the response.
+   the rule and the response. The rule text, what a written warning is and where it
+   is recorded and delivered, and when damage between players breaks a rule are in
+   [moderator-rulings.md](./moderator-rulings.md) (the November desk run lost points
+   on exactly these, gaps 1 to 3).
 6. The administrator does the in-game part (none for a written warning). For each
    REPORTED number the ruling covers, the administrator types `!handled <number>`
    in admin chat. The `!!` clears within 4 seconds and an Admin action row
@@ -112,6 +115,7 @@ admin action row are live on main.
 
 ## Source
 
-- [moderator-guide.md](./moderator-guide.md): the only document the moderator reads.
+- [moderator-guide.md](./moderator-guide.md): the only document the moderator reads, with
+  [moderator-rulings.md](./moderator-rulings.md) for the rule, the warning and the damage call.
 - [Moderation design notes](../../addons/LifeFramework/Scripts/Game/Feature/Moderation/Feature.md).
 - #313 (the drill's source), #1285 (ban record, open), #1373 (ban record PR, open), #1451 (`proof incident-handled`, planned).

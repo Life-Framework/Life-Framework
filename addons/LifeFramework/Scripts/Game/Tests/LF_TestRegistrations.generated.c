@@ -456,6 +456,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceTake(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SessionSlots(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SessionSpawnEvent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMAmountGuard(), LF_TestTier.LOGIC);
@@ -492,6 +493,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookPayload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
