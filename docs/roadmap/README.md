@@ -38,10 +38,10 @@ Listed in the order they run (restructured 2026-11-14).
 | M2.5 | Showcase and Outreach | After M3, before M4, so outreach points at a build people can get ([m2-5-outline.md](m2-5-outline.md)) | The showcase #566 |
 | M4 | Flagship Live | The public 1989 server ([m4-outline.md](m4-outline.md)) | Opening day #1006 |
 | M5 | Settling in | Started 2026-11-15. First weeks after launch: every player is new ([m5-outline.md](m5-outline.md)) | Armed and dressed · Evenings in the village · On patrol · Arrival · story: The relocated |
-| M6 | Making a living | Players with jobs and money want more from them | The market moves · Getting better at the job · Catch the bus · Working the routes · Scrap and salvage · The bank · story: The state factory |
+| M6 | Making a living | Players with jobs and money want more from them | The market moves · Getting better at the job · Working the routes · Scrap and salvage · The bank · story: The state factory |
 | M7 | Power and turf | Organisations form and crime escalates | Gang war · The convoy job · The big heist · Dirty money · Behind bars · Making detective · story: The shipment |
 | M8 | Roots | Long-term players want something of their own | A place of your own · Working the land · Garages and lockers · Neighbours (pull forward if launch is quiet) · story: The anniversary |
-| Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | GitHub milestone "Backlog" |
+| Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | Catch the bus #1793 · GitHub milestone "Backlog" |
 
 Beside them runs **Development** (tooling and pipelines), which is not a release.
 The asset pipelines (#339 to #343) and the ArchBuilder harness (#995) are
@@ -107,8 +107,8 @@ Each outline is planned in full only after the milestone before it closes.
 "In the tree" means the system exists; [features.md](../features.md) is the
 ground truth for its behaviour, and the card is kept as design intent. Revive
 folded into the M2 medic theme (#146). Other placed issues: police application
-#128 and jail work #127 (M2), day and night #129 (M4), bus stops #203 and trash
-cans #205 (M5).
+#128 and jail work #127 (M2), day and night #129 (M4), trash cans #205 (M6), bus stops #203
+(Backlog).
 
 ## How to add a scope
 
