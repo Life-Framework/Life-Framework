@@ -9,15 +9,15 @@ import { arrive, clientBox, clientSees, sessionDir } from "../session.mjs";
 //   node agent-box/session.mjs up --profile full --wait
 //   node agent-box/session.mjs town-board-proof
 //   node agent-box/session.mjs down
-const SITE = "Sign_TownMap";
+const SITE = "Sign_TownMap"; // town-layout-ok: this proof films the one town board, a town-bound session proof (#1801)
 const ACTION = "LF_TownBoardCardAction";
-// Signs.layer: Sign_TownMap at 130.5 0 246.5, the cork's centre 1.555 m up, reading toward +x (east, the street).
-const BOARD_AT = { x: 130.5, y: 1.6, z: 246.5 };
+// Signs.layer: Sign_TownMap at 128.039 0 249.884, the cork's centre 1.555 m up, reading toward +x (east, the street).
+const BOARD_AT = { x: 128.039, y: 1.6, z: 249.884 }; // town-layout-ok: camera framing of the one town board
 const FACING = { x: 1, z: 0 };
 // Where the character waits out of the close-up: the clerk, a few steps from the board.
-const AWAY = "Quest_Clerk";
+const AWAY = "Quest_Clerk"; // town-layout-ok: the character steps aside to a neighbouring town fixture for the close-up
 // Sign_PostOffice in Signs.layer: the work card's place, for the marker shot.
-const POST_OFFICE = { x: 152.5, y: 2.5, z: 258.49 };
+const POST_OFFICE = { x: 152.5, y: 2.5, z: 258.49 }; // town-layout-ok: camera target for the marker shot
 
 export function boardOf(line) {
   const board = /\btownboard=(\d+)\/(\w+)/.exec(String(line ?? ""));
