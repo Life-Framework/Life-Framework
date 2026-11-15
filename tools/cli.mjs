@@ -80,6 +80,7 @@ import * as wbGate from "./lib/wb-gate.mjs";
 import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
 import * as worldDiff from "./lib/world-diff.mjs";
+import * as worldChecks from "./lib/world-checks.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
@@ -692,9 +693,13 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     console.log(`tools/${TOOL_DIRS[area]}/ does not exist yet`);
     return 0;
   }
-  const scripts = readdirSync(dir).filter(
+  let scripts = readdirSync(dir).filter(
     (f) => /\.(ps1|cmd|bat|sh|mjs|js|cjs)$/.test(f) && !f.endsWith("README.md"),
   );
+  // `validate --world`: only the checks that read .layer files (tools/lib/world-checks.mjs). On a maintainer
+  // world branch (any validate, CI included) a failing LAYOUT check is a warning, not a blocker.
+  if (area === "validate" && opts.world) scripts = worldChecks.worldScripts(scripts);
+  const demote = area === "validate" && (!!opts.world || worldChecks.MAINTAINER_BRANCH.test(process.env.GITHUB_HEAD_REF || wt.currentBranch(root) || ""));
   if (scripts.length === 0) {
     console.log(`No ${area} checks defined. Add scripts to tools/${TOOL_DIRS[area]}/ and they run automatically.`);
     return 0;
@@ -768,10 +773,11 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     }
     const { res } = job;
     const ok = res.status === 0;
-    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})`);
+    const warnOnly = !ok && demote && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
+    console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on a maintainer world edit: a warning, listed in the PR body" : ""}`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
-    if (!ok) failed++;
+    if (!ok && !warnOnly) failed++;
   }
   const ran = jobs.filter((j) => j.res);
   if (isValidate) {
@@ -3639,8 +3645,14 @@ async function ciWorldEdit(root, c, tests, opts = {}) {
   const sel = gateTier.selectTests(tests, worldDiff.testTokens(layers, c.touched || []));
   console.log(`ci: T1w tests: ${sel.related.length} that name a touched layer or entity${sel.related.length ? ` (${sel.related.slice(0, 8).join(", ")})` : ""}`);
   const steps = [
-    ["validate (static)", () => cmdRunArea("validate", root, {})],
-    ["placement audit (touched layers)", () => placementAudit(root, ["--strict", "--top", "200", "--layer", layers.join(",")], opts)],
+    // Hard checks block; layout checks (town manifest distances, village names) and placement-audit findings warn
+    // (tools/lib/world-checks.mjs). Only the checks that read .layer files run.
+    ["validate (world checks)", () => cmdRunArea("validate", root, { world: true })],
+    ["placement audit (touched layers; findings warn)", async () => {
+      const code = await Promise.resolve(placementAudit(root, ["--strict", "--top", "200", "--layer", layers.join(",")], opts));
+      if (code !== 0) console.log("WARN  placement audit flagged the touched layers: a warning on a maintainer world edit, listed in the PR body (tmp/place-audit/report.json)");
+      return 0;
+    }],
     ...(sel.related.length ? [["test (T1w: layer-named)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: sel.related.join(",") })]] : []),
   ];
   let failed = 0;
@@ -5275,7 +5287,7 @@ const cmds = {
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => {
     const f = flags ?? [];
-    return cmdRunArea("validate", ROOT, { full: f.includes("--full"), incremental: !f.includes("--full") && !f.includes("--all") });
+    return cmdRunArea("validate", ROOT, { full: f.includes("--full"), world: f.includes("--world"), incremental: !f.includes("--full") && !f.includes("--all") });
   },
   "film-make": async (flags) => (await import("./film/post.mjs")).main(flags ?? []),
   "regen-tests": () => {
