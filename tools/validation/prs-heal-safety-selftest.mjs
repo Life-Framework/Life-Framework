@@ -80,22 +80,26 @@ try {
   const seed = join(temp, "seed");
   must(temp, ["init", "-q", "--bare", "-b", "main", origin]);
   must(temp, ["clone", "-q", origin, seed]);
-  for (const [k, v] of [["user.email", "heal@example.com"], ["user.name", "heal"], ["core.autocrlf", "false"], ["commit.gpgsign", "false"], ["core.hooksPath", join(temp, "no-hooks")]]) {
-    must(seed, ["config", k, v]);
-  }
+  // Settings by environment, not `git config` (five processes) and not repo config: every git this test and
+  // healMerge start inherits them, in the seed and in the worktrees.
+  const settings = [["user.email", "heal@example.com"], ["user.name", "heal"], ["core.autocrlf", "false"], ["commit.gpgsign", "false"], ["core.hooksPath", join(temp, "no-hooks")]];
+  process.env.GIT_CONFIG_COUNT = String(settings.length);
+  settings.forEach(([k, v], i) => {
+    process.env[`GIT_CONFIG_KEY_${i}`] = k;
+    process.env[`GIT_CONFIG_VALUE_${i}`] = v;
+  });
   must(seed, ["checkout", "-q", "-b", "main"]);
   write(seed, ST, stText(["K1", "K2"]));
   regenConf(seed);
   write(seed, FEATURES, featuresText(["Base"]));
   write(seed, SCRIPT, "void Foo()\n{\n\tint x = 1;\n}\n");
   commit(seed, "base");
-  must(seed, ["push", "-q", "origin", "main"]);
 
+  // One push at the end publishes main and every branch (it was a push after each: seven processes).
   const branch = (name, fn) => {
     must(seed, ["checkout", "-q", "-b", name, "main"]);
     fn();
     commit(seed, name);
-    must(seed, ["push", "-q", "origin", name]);
   };
   branch("ws/gen-only", () => addFeature(seed, "KB"));
   branch("ws/real", () => {
@@ -112,15 +116,15 @@ try {
   addFeature(seed, "KC");
   write(seed, SCRIPT, "void Foo()\n{\n\tint x = 3;\n}\n");
   commit(seed, "main moves");
-  must(seed, ["push", "-q", "origin", "main"]);
-  must(seed, ["fetch", "-q", "origin"]);
+  must(seed, ["push", "-q", "origin", "--all"]); // also leaves the origin/* tracking refs current: no fetch
 
   const wtOf = (name) => {
     const dir = join(temp, name.replace("/", "-"));
     must(seed, ["worktree", "add", "-q", dir, name]);
     return dir;
   };
-  const remote = (name) => must(seed, ["ls-remote", origin, `refs/heads/${name}`]);
+  // The bare origin's branch tip, read from its ref file (a push writes it loose): no ls-remote process.
+  const remote = (name) => readFileSync(join(origin, "refs", "heads", ...name.split("/")), "utf8").trim();
 
   // Generated-only conflict heals; keys and rows are exactly main's plus the branch's.
   {

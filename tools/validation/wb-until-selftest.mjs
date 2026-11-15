@@ -1,7 +1,8 @@
 // Proves the rdb refresh stops Workbench once its rdb is complete (tools/lib/wb-until.mjs) instead of
 // waiting for an exit that never comes (supermarket-shop, 2026-11-14: the rdb was written ~2 s in,
 // Workbench froze, and each refresh ran its full 600 s). Fake clock, then a real process that writes a
-// file and never exits. About 4 s.
+// file and never exits. About 3 s.
+// 2026-11-15: failed 8/8 beside 100 busy processes (a 6 s wall bound on a real spawn, a fixed 300 ms wait on taskkill); both gone.
 // red-proof: waitUntilDone ignoring done() (looping until alive() is false or the timeout) -> "returns
 //   once done held for settleMs" fails (600 s, the old behaviour).
 // inputs: tools/lib/wb-until.mjs, tools/validation/wb-until-selftest.mjs, tools/cli.mjs
@@ -58,13 +59,19 @@ const fake = () => {
   const rdb = join(dir, "resourceDatabase.rdb");
   try {
     const child = spawn(process.execPath, ["-e", `setTimeout(() => require("fs").writeFileSync(${JSON.stringify(rdb)}, "x"), 500); setInterval(() => {}, 1000)`], { stdio: "ignore", windowsHide: true });
-    const t0 = Date.now();
-    const r = waitUntilDone({ done: () => existsSync(rdb), alive: () => pidAlive(child.pid), timeoutMs: 20000, settleMs: 1000, pollMs: 200 });
+    // No wall-clock bound: spawning the child took 3-8 s beside 100 busy processes, so a "returns within 6 s"
+    // check failed for a reason that is not the bug. The bug (ignoring done() and waiting for an exit that never
+    // comes) ends in the TIMEOUT, so the timeout is large and the check is that it was not what ended the wait.
+    const r = waitUntilDone({ done: () => existsSync(rdb), alive: () => pidAlive(child.pid), timeoutMs: 120000, settleMs: 1000, pollMs: 200 });
     killTreeSync(child.pid);
-    const ms = Date.now() - t0;
-    check(r.done && !r.exited && ms < 6000, `real hang: returns within seconds of the file (${ms} ms, ${JSON.stringify(r)})`);
-    await new Promise((res) => setTimeout(res, 300));
-    check(!pidAlive(child.pid), "real hang: the process is stopped");
+    check(r.done && !r.exited && !r.timedOut && r.ms < 120000, `real hang: returns on the file, not on the timeout (${JSON.stringify(r)})`);
+    // The kill is asynchronous on Windows (taskkill): wait for the pid to go, bounded.
+    let gone = !pidAlive(child.pid);
+    for (let i = 0; i < 300 && !gone; i++) {
+      await new Promise((res) => setTimeout(res, 100));
+      gone = !pidAlive(child.pid);
+    }
+    check(gone, "real hang: the process is stopped");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

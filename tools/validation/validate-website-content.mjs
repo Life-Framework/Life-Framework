@@ -6,9 +6,11 @@
 // `build` check covers it there). Proof: tools/validation/website-content-selftest.mjs
 // inputs: addons/**, docs/**, tools/test/config-fixtures/presets/**, website/**
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { safeRemoveTree } from "../link-safety.mjs";
 
 // Returns { skipped: "<why>" } or { problems: [..] } (empty when the step ran clean).
 export function websiteContent(root, run = spawnSync) {
@@ -17,12 +19,22 @@ export function websiteContent(root, run = spawnSync) {
   if (!existsSync(join(site, "node_modules"))) {
     return { skipped: "website/node_modules is missing; run `npm ci` in website/ and then `tools\cli validate --all` to check it" };
   }
-  const r = run(process.execPath, ["scripts/build-content.mjs"], {
-    cwd: site,
-    env: { ...process.env, LF_SITE_OFFLINE: "1" },
-    encoding: "utf8",
-    timeout: 120000,
-  });
+  // A per-run output dir: the step rmSyncs and rewrites src/generated/data, so two runs in one worktree
+  // (this check and its selftest under a parallel gate) used the same dir and failed with ENOTEMPTY.
+  const out = mkdtempSync(join(tmpdir(), "lf-site-out-"));
+  let r;
+  try {
+    r = run(process.execPath, ["scripts/build-content.mjs"], {
+      cwd: site,
+      env: { ...process.env, LF_SITE_OFFLINE: "1", LF_SITE_OUT: out },
+      encoding: "utf8",
+      timeout: 120000,
+    });
+  } finally {
+    try {
+      safeRemoveTree(out);
+    } catch {}
+  }
   if (r.status === 0) return { problems: [] };
   const text = `${r.stderr || ""}\n${r.stdout || ""}`;
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);

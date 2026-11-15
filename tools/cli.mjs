@@ -66,7 +66,7 @@ import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
-import { interactiveNeeded, interactiveSpawnDetached, winQuote } from "./lib/interactive-launch.mjs";
+import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -87,6 +87,7 @@ import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
 import { helpRequest, usageText } from "./lib/help-guard.mjs";
 import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
+import { findFreezeDump, stallReason, steamSignedIn } from "./lib/wb-launch-health.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -1386,12 +1387,18 @@ function releaseLaneForRdb(root, slot) {
 
 // The refresh Workbench, stopped once the rdb is complete and has stopped changing for 3 s
 // (tools/lib/wb-until.mjs): on this PC it writes the rdb in ~2 s and then freezes until the 600 s
-// timeout. Shape of the spawnSync result the caller reads ({ status, error }).
-function refreshUntilFresh(exe, args, gameDir, addon, tag) {
+// timeout. Over ssh (a pool machine's run) it starts on the signed-in desktop through the interactive
+// task (session 0 has no GPU device) and is watched the same way by pid; before 2026-11-15 that path waited
+// for the exit and every addon cost the full 600 s with the build lock held. A Workbench that never starts,
+// dies, or leaves a freeze dump without a complete rdb fails within ~65 s with the reason
+// (tools/lib/wb-launch-health.mjs). Shape of the spawnSync result the caller reads ({ status, error }).
+function refreshUntilFresh(exe, args, gameDir, addon, tag, profile) {
+  const started = Date.now();
   let pid;
   try {
-    pid = quietSpawnDetached(exe, args, { cwd: gameDir });
+    pid = interactiveNeeded() ? interactiveSpawnDetached(exe, args, { cwd: gameDir, marker: profile, timeoutSec: 45 }) : quietSpawnDetached(exe, args, { cwd: gameDir });
   } catch (e) {
+    console.log(`WARN  resource database refresh${tag}: Workbench did not start on ${os.hostname()}: ${e.message}`);
     return { status: null, error: e };
   }
   let lastMtime = null;
@@ -1404,9 +1411,12 @@ function refreshUntilFresh(exe, args, gameDir, addon, tag) {
       lastMtime = f.mtimeMs;
       return f.missing.length === 0 && steady;
     },
+    stalled: () => stallReason({ freezeDump: findFreezeDump(profile, started - 2000), steam: steamSignedIn(), host: os.hostname() }),
   });
   if (!r.exited) killTreeSync(pid);
   if (r.done && !r.exited) console.log(`resource database${tag}: rdb complete after ${(r.ms / 1000).toFixed(0)} s; stopped Workbench instead of waiting for it to exit`);
+  if (r.stalled) console.log(`WARN  resource database refresh${tag} gave up after ${(r.ms / 1000).toFixed(0)} s: ${r.stalled}`);
+  if (r.exited && !r.done) console.log(`WARN  resource database refresh${tag}: Workbench exited after ${(r.ms / 1000).toFixed(0)} s without a complete rdb`);
   if (r.timedOut) console.log(`WARN  resource database refresh${tag}: Workbench ran the full 600 s without a complete rdb; stopped it`);
   return { status: r.exited ? 0 : r.done ? 0 : null, error: r.timedOut ? { code: "ETIMEDOUT" } : undefined };
 }
@@ -1469,7 +1479,7 @@ function ensureAddonResourceDatabase(root, name) {
       "-profile", profile,
       ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ];
-    const res = interactiveNeeded() ? workbenchInDesktopSession(root, exe, args, gameDir, 600) : refreshUntilFresh(exe, args, gameDir, addon, tag);
+    const res = refreshUntilFresh(exe, args, gameDir, addon, tag, profile);
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
@@ -1492,20 +1502,6 @@ function ensureAddonResourceDatabase(root, name) {
   }
 }
 
-
-// Over ssh (a pool machine running a remote test or e2e) this is session 0, which has no GPU device:
-// Workbench logs "Couldn't build device list for any adapter", fails engine init and then hangs
-// ("Application hangs (generated dump and waiting)") until the timeout kills it, so every refresh
-// there took the full 600 s. Run it in the signed-in desktop session instead, through a one-shot
-// scheduled task (tools/remote/desktop/run-interactive.ps1, as ci --wb-only does since #1158).
-function workbenchInDesktopSession(root, exe, args, cwd, waitSec) {
-  const r = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, "tools", "remote", "desktop", "run-interactive.ps1"),
-    "-Exe", exe, "-WorkDir", cwd, "-WaitSec", String(waitSec), "-Arguments", args.map(winQuote).join(" ")], { cwd: root });
-  const out = `${r.stdout || ""}${r.stderr || ""}`;
-  const m = /state=(\w+) result=(-?\d+)/.exec(out);
-  if (!m) console.log(`WARN  desktop-session Workbench: ${out.trim().split(/\r?\n/).pop() || "no output"}`);
-  return { status: m ? Number(m[2]) : r.status };
-}
 
 // One headless Workbench run of a ResourceManager plugin under the build lock, bounded by
 // timeoutMs (a hung Workbench is killed with its job). Used by tools\cli asset (stage import).
