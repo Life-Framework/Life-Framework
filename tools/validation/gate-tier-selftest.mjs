@@ -1,9 +1,14 @@
 // Proves the gate-tier classifier (tools/lib/gate-tier.mjs, docs/worktrees.md "Gate tiers") on diff
 // fixtures cut from real repo files: what is T0, what is data-only T1, and what must stay T2.
-// inputs: tools/lib/gate-tier.mjs
+// inputs: tools/lib/gate-tier.mjs, tools/lib/world-diff.mjs, tools/test/fixtures/world-diff/
 // red-proof: with the GUID checks in dataOnlyProblem off this printed "conf: prefab reference swapped: expected T2,
 //   got T1"; with the Ids-block check off, "language conf: an Id changed: expected T2, got T1".
+//   T1w: with MAINTAINER_BRANCH never matching this printed "maintainer layer move: expected T1w, got gate tier T2".
 import { classify, fileTokens, selectTests, tierLine } from "../lib/gate-tier.mjs";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { diffFiles, handEditProblem, touchedNames } from "../lib/world-diff.mjs";
 
 const fails = [];
 const check = (ok, msg) => { if (!ok) fails.push(msg); };
@@ -131,8 +136,38 @@ const sel = selectTests(tests, [...toks, "EL-ATM_Amount"]);
 check(sel.logic.join() === "LF_Test_Fast", `selectTests logic: ${sel.logic}`);
 check(sel.related.sort().join() === "LF_Test_Atm,LF_Test_Chars,LF_Test_Guid", `selectTests related (a PERF test is never pulled into a gate): ${sel.related}`);
 
+// T1w: a maintainer hand edit on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits"),
+// on the real Workbench save in tools/test/fixtures/world-diff/.
+{
+  const fx = (f) => readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "test", "fixtures", "world-diff", f), "utf8");
+  const SJ = "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_Jobs.layer";
+  const DF = "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/default.layer";
+  const sjB = fx("Street_Jobs.before.layer");
+  const sjA = fx("Street_Jobs.after.layer");
+  const known = (ref) => /S105_beige|Jerrycan_01_item|CounterPostOffice/.test(ref);
+  const worldEdit = (layers, extra) => {
+    const d = diffFiles(layers.map((f) => ({ path: f.path, before: f.before, after: f.after })));
+    extra.touched = touchedNames(d);
+    return handEditProblem(d, known);
+  };
+  const real = [M(SJ, sjB, sjA), M(DF, fx("default.before.layer"), fx("default.after.layer"))];
+  const w = classify(real, { branch: "ws/town-maintainer-edits", worldEdit });
+  check(w.tier === 1 && w.world === true, `maintainer layer move: expected T1w, got ${tierLine(w)}`);
+  check(/T1w/.test(tierLine(w)), `T1w tier line: ${tierLine(w)}`);
+  check(w.touched?.length === 1 && w.data.length === 2, `T1w touched/data: ${JSON.stringify(w.touched)} ${w.data}`);
+  check(classify(real, { branch: "ws/some-slice", worldEdit }).tier === 2, "a layer move on a non-maintainer branch must stay T2");
+  check(classify(real, { branch: "ws/town-maintainer-edits" }).tier === 2, "without the world-edit check a layer change must stay T2");
+  const prop = [M(SJ, sjB, sjA.replace("m_eSite DEPOT", "m_eSite DROP"))];
+  check(classify(prop, { branch: "ws/town-maintainer-edits", worldEdit }).tier === 2, "a component value change in a layer must stay T2");
+  const unknownAdd = [M(SJ, sjB, `${sjB}GenericEntity Hand_New : "{0123456789ABCDEF}Prefabs/New.et" {\n coords 1 0 1\n}\n`)];
+  check(classify(unknownAdd, { branch: "ws/town-maintainer-edits", worldEdit }).tier === 2, "an add of a never-used prefab must stay T2");
+  const mixed = [...real, M(CONF, CHAR_CONF, sub(CHAR_CONF, " 1\n", " 2\n"))];
+  check(classify(mixed, { branch: "ws/town-maintainer-edits", worldEdit }).tier === 2, "a layer edit plus a .conf change must not be T1w");
+  check(classify([{ path: "addons/X/New.layer", status: "?" }], { branch: "ws/town-maintainer-edits", worldEdit }).tier === 2, "a new layer file must stay T2");
+}
+
 if (fails.length) {
   for (const f of fails) console.log(`FAIL  ${f}`);
   process.exit(1);
 }
-console.log(`PASS  gate-tier: ${cases.length} diff cases, --full-gate, string keys, test mapping`);
+console.log(`PASS  gate-tier: ${cases.length} diff cases, --full-gate, string keys, test mapping, T1w maintainer world edits`);
