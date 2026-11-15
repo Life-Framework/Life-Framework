@@ -192,6 +192,22 @@ function openFixCard(root, dir, c, stepName, what, failLog) {
   log(root, `fix card: ${r.status === 0 ? (r.stdout || "").trim() : `create failed: ${(r.stderr || "").trim().slice(0, 200)}`}`);
 }
 
+async function compileRouted(root, cdir, sha) {
+  const file = join(mainRoot(root), "tmp", "logs", `main-guard-compile-${sha.slice(0, 8)}-${Date.now()}.log`);
+  mkdirSync(dirname(file), { recursive: true });
+  const wbRoute = await import("./lib/wb-route.mjs");
+  const say = (l) => { try { appendFileSync(file, `${l}
+`); } catch {} };
+  process.env.LF_PRIORITY = "high";
+  try {
+    const r = await wbRoute.routeWorkbench(cdir, { purpose: "main guard compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], log: say, runLocal: async () => runCli(root, cdir, ["ci", "--wb-only", "--compile-only", "--local"], `compile-${sha.slice(0, 8)}`).then((y) => y.code) });
+    return { code: r.code, log: file };
+  } catch (e) {
+    say(`route failed: ${e?.message ?? e}`);
+    return { code: 3, log: file };
+  }
+}
+
 // Stage 1: the Workbench compile on a new head, in its own worktree, before anything else. A red compile is
 // deterministic: bisect at once (no recheck) and revert the culprit.
 async function compileHead(root, cdir, head) {
@@ -199,7 +215,9 @@ async function compileHead(root, cdir, head) {
   writeState(root, { lastCompileAt: now(), compiling: { head, at: now() } });
   const compile = async (sha) => {
     checkout(cdir, sha);
-    const x = await runCli(root, cdir, mg.COMPILE, `compile-${sha.slice(0, 8)}`);
+    // The guard's own routing (not the checked-out commit's cli, which may predate it): send the compile to a pool
+    // machine with the workbench cap; the remote runs that commit's `ci --wb-only --compile-only --local`.
+    const x = await compileRouted(root, cdir, sha);
     const v = mg.compileVerdict(x.code);
     log(root, `  compile ${sha.slice(0, 8)}: ${v} (exit ${x.code}, ${x.log})`);
     return v;
