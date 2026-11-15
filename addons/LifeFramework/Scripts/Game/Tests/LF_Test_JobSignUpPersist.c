@@ -58,7 +58,7 @@ class LF_Test_JobSignUpPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(33, version, "the save is written at version 33 (job sign-ups are payload 11)");
+		ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written at the current version (job sign-ups are payload 11)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "introductions");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "jobsignups");

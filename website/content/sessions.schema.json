@@ -9,7 +9,7 @@
     "next": {
       "description": "The next scheduled session, or null when none is scheduled.",
       "type": ["object", "null"],
-      "required": ["at", "build", "wipe", "announced"],
+      "required": ["at", "build", "wipe"],
       "additionalProperties": false,
       "properties": {
         "at": {
@@ -27,7 +27,7 @@
           "type": "boolean"
         },
         "announced": {
-          "description": "When the host announced this session: ISO 8601 date-time with an offset.",
+          "description": "When the announcement was posted to Discord (`host announce --send`): ISO 8601 date-time with an offset. Absent on a draft that was not posted; the servers page shows only a session that has it, and `host wipe` counts its 24 hours of notice from it.",
           "type": "string",
           "format": "date-time"
         }
