@@ -2,7 +2,7 @@
 #   powershell -NoProfile -File shots-image.ps1 <spec.json>
 # spec.op:
 #   norm   { in, out, width }                 png (or bmp) -> png scaled to `width`; prints "stats <mean> <sd> <skyFrac>"
-#   sheet  { tiles:[{file,label,marks:[{name,x,y}]}], out, cols, maxWidth, quality }   contact sheet jpeg
+#   sheet  { tiles:[{file,label,marks:[{name,x,y}]}], out, cols, maxWidth, quality }   contact sheet jpeg (png when `out` ends in .png)
 #   crop   { in, out, x, y, w, h, maxSide }   native-resolution crop, scaled down only if over maxSide
 Add-Type -AssemblyName System.Drawing
 $spec = Get-Content -Raw -LiteralPath $args[0] | ConvertFrom-Json
@@ -102,7 +102,7 @@ if ($spec.op -eq 'sheet') {
     }
     $g.DrawString([string]$t.label, $font, $white, [single]$ox, [single]($oy + $th + 3))
   }
-  Save-Jpeg $c[0] $spec.out ([int]$spec.quality)
+  if ($spec.out -match '\.png$') { $c[0].Save($spec.out, [System.Drawing.Imaging.ImageFormat]::Png) } else { Save-Jpeg $c[0] $spec.out ([int]$spec.quality) }
   $g.Dispose(); $c[0].Dispose()
   Write-Output "ok ${W}x${H}"
   exit 0
