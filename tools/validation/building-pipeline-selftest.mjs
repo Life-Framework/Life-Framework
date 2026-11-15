@@ -16,6 +16,7 @@
 //   toBuilding with the yaw sign flipped (2026-11-14, #1143)      -> FAIL store: yaw 90 turns a fixture's front (+Z) onto +X
 //   storePrefab without the m_aShopItems allowlist (review)    -> FAIL store: the shop sells only the store's own lines (an empty allowlist sells every priced item)
 //   alarmChild written inside the components block (#1143 PR 2) -> FAIL store: the alarm bell box is a child entity carrying the alarm mount, after the components
+//   slotsOf without the clearance check (2026-11-15, #1143)      -> FAIL store: goods taller than the gap above a board are refused
 //   addProps inserting before the children's opening brace       -> FAIL polish: a hand-placed prop lands at the end of the furniture child list
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -26,7 +27,7 @@ import { STAGES, addProps, badGameRefs, countOpenings, countProps, doorRows, exp
 import { zstdCompressSync } from "node:zlib";
 import { archBuilderSetup, licenseMarks, scanForMarks } from "../buildings/pipeline/archbuilder.mjs";
 import { guidIn, rdbRecord } from "../buildings/pipeline/gamedb.mjs";
-import { FIXTURES, storePlan, storePrefab, toBuilding } from "../buildings/pipeline/store-slots.mjs";
+import { storePlan, storePrefab, toBuilding } from "../buildings/pipeline/store-slots.mjs";
 
 const ROOT = join(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..", "..");
 const FAKE_BUYER = "Test.Buyer@example.invalid";
@@ -281,21 +282,34 @@ export async function main() {
     const storeFurn = `GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {\n {\n${child("ShelfShop_01", [-2.5, 0.1, -2.8], -90)}${child("ShelfShop_01", [-2.5, 0.1, -2.8], 90)}${child("CashierShop_01", [8, 1.1, -5], -90)} }\n}\n`;
     const front = toBuilding({ at: [1, 0, 2], yaw: 90 }, [0, 0, 0.5]);
     ok(front.join() === "1.5,0,2", `store: yaw 90 turns a fixture's front (+Z) onto +X (${front.join()})`);
-    const storeSpec = { key: "test_store", till: "CashierShop_01", lines: [{ item: "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", fixture: "ShelfShop_01", pick: [0, 1], boards: [2], per_board: 3, max: 9 }] };
-    const sp = storePlan(storeSpec, storeFurn);
-    ok(!sp.problems.length && sp.lines[0].slots.length === 6 && sp.tills.length === 1, `store: two picked gondola sides, one board, three each: six shelf points and one till (${JSON.stringify(sp.problems)})`);
-    const xs = new Set(sp.lines[0].slots.map((s) => s[0]));
-    ok(xs.has(-2.7) && xs.has(-2.3) && sp.lines[0].slots.every((s) => Math.abs(s[1] - (0.1 + FIXTURES.ShelfShop_01.boards[2].y + 0.03)) < 1e-6), `store: both sides get points on their own front, at the board height (${[...xs].join(", ")})`);
-    ok(storePlan({ ...storeSpec, lines: [{ ...storeSpec.lines[0], pick: [5] }] }, storeFurn).problems.some((p) => /pick 5/.test(p)), "store: a pick past the fixtures the export placed is refused");
-    ok(storePlan({ ...storeSpec, lines: [{ ...storeSpec.lines[0], fixture: "Fridge_01" }] }, storeFurn).problems.some((p) => /fixtures\.json/.test(p)), "store: a fixture with no board measurements is refused");
+    // Measured data in a fixed shape, so the layout rules are tested apart from the models: a gondola board 2.39 m wide and 0.35 m deep, a 7 cm item.
+    const FX = { ShelfShop_01: { boards: [{ y: 0.428, x: [-1.2, 1.2], z: [0.05, 0.49], clear: 0.39 }, { y: 0.82, x: [-1.2, 1.2], z: [0.05, 0.39], clear: 0.36 }, { y: 1.177, x: [-1.2, 1.2], z: [0.05, 0.33], clear: null }] } };
+    const IT = { "Prefabs/Items/Food/Apple.et": { size: [0.08, 0.07, 0.08], center: [0, 0] }, "Prefabs/Items/Drinks/Tall.et": { size: [0.06, 0.4, 0.06], center: [0, 0] }, "Prefabs/Items/Food/Slab.et": { size: [0.2, 0.05, 0.5], center: [0, 0.02] } };
+    const apple = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+    const storeSpec = { key: "test_store", till: "CashierShop_01", lines: [{ item: apple, fixture: "ShelfShop_01", pick: [0, 1], boards: [1], per_board: 6 }] };
+    const sp = storePlan(storeSpec, storeFurn, FX, IT);
+    ok(!sp.problems.length && sp.lines[0].slots.length === 12 && sp.tills.length === 1, `store: two picked gondola sides, one board, per_board 6 (two rows of three): twelve shelf points and one till (${JSON.stringify(sp.problems)})`);
+    const sl = sp.lines[0].slots;
+    ok(sl.every((s) => Math.abs(s[1] - (0.1 + 0.82 + 0.03)) < 1e-6), "store: every point stands at its board's measured height");
+    ok(sl.slice(0, 6).every((s) => s[0] < -2.5) && sl.slice(6).every((s) => s[0] > -2.5), "store: each gondola side gets points on its own front");
+    const along = sl.slice(0, 3).map((s) => s[2]);
+    ok(Math.abs(along[1] - along[0] - (along[2] - along[1])) < 1e-3 && Math.abs(along[1] - along[0]) > 0.08, `store: copies in a row are evenly spaced, wider than the item (${along.join(", ")})`);
+    ok(sp.lines[0].max === 12 && sp.lines[0].restock === 2, "store: max is one copy per shelf point and restock a sixth of it when the spec gives none");
+    const full = storePlan({ ...storeSpec, lines: [{ item: apple, fixture: "ShelfShop_01", pick: [0], boards: [0] }] }, storeFurn, FX, IT).lines[0].slots;
+    ok(full.length === 20, `store: a long board of small goods takes the per-board cap, two rows of ten (${full.length})`);
+    ok(storePlan({ ...storeSpec, lines: [{ item: "{C9D661E5B0714711}Prefabs/Items/Drinks/Tall.et", fixture: "ShelfShop_01", pick: [0], boards: [1] }] }, storeFurn, FX, IT).problems.some((p) => /does not fit board 1/.test(p)), "store: goods taller than the gap above a board are refused");
+    ok(storePlan({ ...storeSpec, lines: [{ item: "{C9D661E5B0714711}Prefabs/Items/Food/Slab.et", fixture: "ShelfShop_01", pick: [0], boards: [1] }] }, storeFurn, FX, IT).lines[0].slots.length === 4, "store: a wide item gets fewer per row and one row");
+    ok(storePlan({ ...storeSpec, lines: [{ ...storeSpec.lines[0], item: "{C9D661E5B0714711}Prefabs/Items/Food/Nope.et" }] }, storeFurn, FX, IT).problems.some((p) => /no measured footprint/.test(p)), "store: goods with no measured footprint are refused");
+    ok(storePlan({ ...storeSpec, lines: [{ ...storeSpec.lines[0], pick: [5] }] }, storeFurn, FX, IT).problems.some((p) => /pick 5/.test(p)), "store: a pick past the fixtures the export placed is refused");
+    ok(storePlan({ ...storeSpec, lines: [{ ...storeSpec.lines[0], fixture: "Fridge_01" }] }, storeFurn, FX, IT).problems.some((p) => /fixtures.json/.test(p)), "store: a fixture with no board measurements is refused");
     const prefabA = storePrefab("shop", storeSpec, sp, "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et");
-    ok(prefabA === storePrefab("shop", storeSpec, storePlan(storeSpec, storeFurn), "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et") && /m_sSlots "-2\.7 /.test(prefabA) && (prefabA.match(/LF_StoreTillAction "/g) || []).length === 1 && prefabA.includes('m_sStoreKey "test_store"'), "store: the store prefab is the same text on every run, with the slots, the key and a till per register");
+    ok(prefabA === storePrefab("shop", storeSpec, storePlan(storeSpec, storeFurn, FX, IT), "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et") && /m_sSlots "-2\.665 0\.95 -3\.56 \| /.test(prefabA) && (prefabA.match(/LF_StoreTillAction "/g) || []).length === 1 && prefabA.includes('m_sStoreKey "test_store"'), "store: the store prefab is the same text on every run, with the slots, the key and a till per register");
     const allowlist = /m_aShopItems \{\n((?: {4}[^\n]*\n)+) {3}\}/.exec(prefabA)?.[1] || "";
     ok(allowlist.includes('m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"') && (allowlist.match(/LF_ShopItem "/g) || []).length === storeSpec.lines.length, "store: the shop sells only the store's own lines (an empty allowlist sells every priced item)");
     const alarmSpec = { ...storeSpec, alarm: { prefab: "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et", at: [2.6, 4.2, -7], yaw: 180, offset: [0, 0.167, 0.065], reach: 10 } };
-    const withAlarm = storePrefab("shop", alarmSpec, storePlan(alarmSpec, storeFurn), "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et");
+    const withAlarm = storePrefab("shop", alarmSpec, storePlan(alarmSpec, storeFurn, FX, IT), "{BD5FE43FC26CAF21}Prefabs/Buildings/Shop/Shop.et");
     ok(/\n \}\n \{\n  GenericEntity : "\{CDE4035B661F9555\}[^\n]*\n   ID "[0-9A-F]{16}"\n   components \{\n    LF_AlarmMountComponent "\{[0-9A-F]{16}\}" \{\n     m_vOffset 0 0\.167 0\.065\n     m_fReach 10\n/.test(withAlarm) && withAlarm.endsWith("   angleY 180\n  }\n }\n}\n"), "store: the alarm bell box is a child entity carrying the alarm mount, after the components");
-    ok(storePlan({ ...alarmSpec, alarm: { ...alarmSpec.alarm, reach: 6 } }, storeFurn).problems.some((p) => /store\.alarm: reach 6/.test(p)), "store: an alarm mount whose reach does not cover the store origin is refused");
+    ok(storePlan({ ...alarmSpec, alarm: { ...alarmSpec.alarm, reach: 6 } }, storeFurn, FX, IT).problems.some((p) => /store\.alarm: reach 6/.test(p)), "store: an alarm mount whose reach does not cover the store origin is refused");
   } finally {
     for (const k of Object.keys(process.env)) if (!(k in savedEnv)) delete process.env[k];
     Object.assign(process.env, savedEnv);

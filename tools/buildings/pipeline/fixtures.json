@@ -1,28 +1,119 @@
 {
-  "_measured": "2026-11-14, #1143: vertical traces through each vanilla prefab spawned alone (a throwaway LF_Test, TraceMove with Include = the fixture), every 0.1-0.15 m across its footprint. Prefab space: +Z is the front, y up from the origin. A board is { y: top of the board, z: the depth the goods stand at }. The store spawns each copy a short trace above y, so a few centimetres off still lands on the board (LF_StoreComponent.SnapToSurface).",
-  "ShelfShop_01": {
-    "what": "one-sided shop gondola shelf, 2.48 m long, back at z 0; stepped boards, deepest at the bottom. Two back to back make a gondola",
-    "x": [-1.05, 1.1],
-    "boards": [
-      { "y": 0.102, "z": 0.3 },
-      { "y": 0.428, "z": 0.27 },
-      { "y": 0.82, "z": 0.2 },
-      { "y": 1.177, "z": 0.2 }
-    ]
-  },
+ "_generated": "tools\\cli fixtures: boards and footprints measured from the .xob colliders (tools\\cli measure). Do not edit; rerun it when a spec's store block names a new fixture or item",
+ "_build": "26266485",
+ "fixtures": {
   "CoolingBoxShop_01": {
-    "what": "chilled display counter, 1.93 m long: a glass front (top 0.874 at z -0.6) over a deck at 0.66 open from above between z -0.3 and 0, and a top shelf at 1.21 behind it (z 0.15 to 0.3)",
-    "x": [-0.8, 0.8],
-    "boards": [
-      { "y": 0.66, "z": -0.15 },
-      { "y": 1.209, "z": 0.22 }
-    ]
+   "prefab": "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et",
+   "boards": [
+    {
+     "y": 0.646,
+     "x": [-0.9, 0.9],
+     "z": [-0.381, 0.418],
+     "clear": 0.562
+    },
+    {
+     "y": 0.874,
+     "x": [-0.9, 0.9],
+     "z": [-0.635, -0.356],
+     "clear": null
+    },
+    {
+     "y": 1.212,
+     "x": [-0.895, 0.894],
+     "z": [-0.003, 0.304],
+     "clear": null
+    }
+   ]
   },
   "CounterShop_01": {
-    "what": "shop counter, 1.5 m long; top at 1.039 from z -0.52 to 0.2",
-    "x": [-0.6, 0.6],
-    "boards": [
-      { "y": 1.039, "z": -0.15 }
-    ]
+   "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+   "boards": [
+    {
+     "y": 0.198,
+     "x": [-0.749, 0.749],
+     "z": [-0.524, 0.449],
+     "clear": 0.503
+    },
+    {
+     "y": 0.701,
+     "x": [-0.721, 0.72],
+     "z": [-0.521, 0.423],
+     "clear": 0.338
+    },
+    {
+     "y": 1.039,
+     "x": [-0.749, 0.749],
+     "z": [-0.524, 0.449],
+     "clear": null
+    }
+   ]
+  },
+  "ShelfShop_01": {
+   "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+   "boards": [
+    {
+     "y": 0.102,
+     "x": [-1.214, 1.264],
+     "z": [-0.005, 0.522],
+     "clear": 0.326
+    },
+    {
+     "y": 0.428,
+     "x": [-1.167, 1.222],
+     "z": [0.048, 0.486],
+     "clear": 0.393
+    },
+    {
+     "y": 0.82,
+     "x": [-1.167, 1.222],
+     "z": [0.048, 0.394],
+     "clear": 0.357
+    },
+    {
+     "y": 1.177,
+     "x": [-1.167, 1.222],
+     "z": [0.05, 0.334],
+     "clear": null
+    }
+   ]
   }
+ },
+ "items": {
+  "Prefabs/Items/Drinks/AppleJuice.et": {
+   "size": [0.083, 0.259, 0.081],
+   "center": [-0.002, 0]
+  },
+  "Prefabs/Items/Food/LF_DriedMeat.et": {
+   "size": [0.258, 0.048, 0.301],
+   "center": [-0.019, -0.002]
+  },
+  "Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et": {
+   "size": [0.07, 0.107, 0.042],
+   "center": [-0.001, 0.003]
+  },
+  "Prefabs/Items/Food/RowanBerries.et": {
+   "size": [0.067, 0.043, 0.059],
+   "center": [0.002, -0.002]
+  },
+  "Prefabs/Items/Food/LF_Crackers.et": {
+   "size": [0.171, 0.03, 0.088],
+   "center": [0.001, 0]
+  },
+  "Prefabs/Items/Drinks/WaterBottle.et": {
+   "size": [0.063, 0.215, 0.063],
+   "center": [0, 0]
+  },
+  "Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et": {
+   "size": [0.065, 0.024, 0.082],
+   "center": [-0.001, 0.001]
+  },
+  "Prefabs/Items/Food/Plum.et": {
+   "size": [0.046, 0.063, 0.044],
+   "center": [0.001, 0.002]
+  },
+  "Prefabs/Items/Food/Apple.et": {
+   "size": [0.082, 0.067, 0.082],
+   "center": [0, 0]
+  }
+ }
 }
