@@ -12,6 +12,7 @@
 //!   evidence=<prefab>:d=M                         one entry per scene-evidence entity (an LF_Evidence* prefab: marker, casing, bag) within the radius, nearest first: the prefab this client's copy was spawned from, so a pack's slot swap is read on the client
 //!   chop=P                                        the chop shop's replicated percent, -2 with no yard in range
 //!   toast=last toast shown, dispatches=N and lastdispatch=radio calls this client heard
+//!   clock=<game hour>/<day seconds>               this client's in-game clock and the day length it was told (day-rate proof, #1303)
 //! A value is what this client's copy of the entity says; a broken RplProp or a missed BumpMe shows here.
 class LF_HarnessSeen
 {
@@ -255,6 +256,18 @@ class LF_HarnessSeen
 		string dispatch = SCR_PlayerController.LF_GetLastDispatch();
 		dispatch.Replace(" ", "_");
 		string seen = string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
-		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " breach=" + Join(s_aBreachText) + " npc=" + Join(s_aNpcText) + " evidence=" + Join(s_aEvidenceText);
+		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " breach=" + Join(s_aBreachText) + " npc=" + Join(s_aNpcText) + " evidence=" + Join(s_aEvidenceText) + " clock=" + ClockToken();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This client's in-game clock: `<game hour>/<day seconds>` (the day-rate proof reads it twice), -1/-1 with no manager.
+	protected static string ClockToken()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world || !world.GetTimeAndWeatherManager())
+			return "-1/-1";
+
+		TimeAndWeatherManagerEntity clock = world.GetTimeAndWeatherManager();
+		return string.Format("%1/%2", clock.GetTimeOfTheDay(), clock.GetDayDuration());
 	}
 }
