@@ -1,0 +1,19 @@
+19:33:52.101  DEFAULT      : Initializing engine, version 193322
+19:33:52.102  DEFAULT      : Creating game instance(ArmaReforger), version 1.9.0.37
+19:33:52.200  ENGINE       : FileSystem: Adding relative directory 'C:\lf\host\profile\logs' to filesystem under name logs
+19:33:52.201  ENGINE       : FileSystem: Adding relative directory 'C:\lf\host\profile' to filesystem under name profile
+19:33:52.210  ENGINE       : FileSystem: Adding relative directory 'C:\lf\host\addons\LifeFramework' to filesystem under name LifeFramework
+19:33:52.211  ENGINE       : FileSystem: Adding relative directory 'C:\lf\host\addons\LF_Everon1989' to filesystem under name LF_Everon1989
+19:33:52.380  DEFAULT      : Loaded addons:
+19:33:52.380  DEFAULT      :   gproj: 'addons/data/ArmaReforger.gproj' guid: '58D0FB3206B6F859' version: '1.9.0.37'
+19:33:52.381  DEFAULT      :   gproj: 'addons/LifeFramework/LifeFramework.gproj' guid: '79636E668EA37AC9' version: '0.4.2'
+19:33:52.381  DEFAULT      :   gproj: 'addons/LF_Everon1989/LF_Everon1989.gproj' guid: '7A1C0D4B93E52F68' version: '0.4.1'
+19:33:54.870  SCRIPT       : [LFDebug:Core] game mode ready, components initialized
+19:33:54.912  DEFAULT      : Entered online game state.
+19:33:56.004  SCRIPT       : [LFDebug:Boot] world ready, no owner config; every section uses the default
+19:34:01.250  SCRIPT (W): [LFDebug:Police] staff approve refused: caller is not on the staff roster
+19:34:02.310  SCRIPT (W): [LFDebug:Police] staff approve by Mara refused: request id 7 is not pending
+19:34:03.420  SCRIPT (W): [LFDebug:Police] staff approve refused: the request has already been decided
+19:34:04.530  SCRIPT (W): [LFDebug:Police] staff approve by Tobias refused: roster entry is disabled
+19:34:06.640  SCRIPT (W): [LFDebug:Whitelist] roster entry for slot 3 has no identity, entry skipped
+19:34:10.700  DEFAULT      : Server shutdown

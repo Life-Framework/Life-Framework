@@ -126,6 +126,7 @@ class LF_IncidentFlags
 
 		s_mLastReport.Set(reporterUid, now);
 		LF_Debug.Info(FEATURE, string.Format("report from %1 flagged %2 incident(s)", reporterUid, flagged));
+		LF_EventBus.Publish(LF_OnIncidentFlagged.Create(reporterUid, flagged));
 		return REPORT_OK;
 	}
 
