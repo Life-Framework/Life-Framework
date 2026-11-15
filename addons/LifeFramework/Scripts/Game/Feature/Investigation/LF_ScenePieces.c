@@ -1,4 +1,17 @@
 //------------------------------------------------------------------------------------------------
+//! A footprint card planned but not yet laid: the report it belongs to, where it will lie and what it
+//! says. LF_Breach holds one from the charge until the detonation. Plain values, never saved.
+class LF_PendingFootprint : Managed
+{
+	int m_iReport;
+	string m_sOffence;
+	string m_sPlace;
+	vector m_vAt;
+	float m_fYaw;
+	string m_sFootwear;
+}
+
+//------------------------------------------------------------------------------------------------
 //! The physical evidence a crime leaves besides casings (#148), and where every piece lies. Server
 //! only. A robber on foot leaves a footprint card where they stood (LF_EvidenceConfig.LeavesFootprint);
 //! a witness who tells an officer what they saw leaves a written statement on the ground beside them.
@@ -62,9 +75,23 @@ class LF_ScenePieces
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: a crime report was filed (LF_WantedReports.Report). A robber on foot leaves one
-	//! footprint card behind where they stood.
+	//! footprint card behind where they stood. A forced entry does not come here: LF_Breach plans
+	//! its card at the charge and leaves it at the detonation (PlanFootprint, LeaveFootprint).
 	//! \return The card, or null (not that offence, in a vehicle, already one for this report).
 	static IEntity OnReport(LF_WantedReportRecord report, IEntity suspect, int nowMs)
+	{
+		LF_PendingFootprint plan = PlanFootprint(report, suspect);
+		if (!plan)
+			return null;
+
+		return LeaveFootprint(plan, nowMs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the suspect's footprint card would lie for this report, and what it says: a stride behind
+	//! them, with the footwear they wear now. Nothing is spawned.
+	//! \return The plan, or null (server only; not that offence; the suspect sat in a vehicle).
+	static LF_PendingFootprint PlanFootprint(LF_WantedReportRecord report, IEntity suspect)
 	{
 		if (!Replication.IsServer() || !report || !suspect)
 			return null;
@@ -78,15 +105,31 @@ class LF_ScenePieces
 			return null;
 		}
 
-		if (LF_Evidence.CountFor(report.m_iSequence, LF_Evidence.KIND_FOOTPRINT) > 0)
-			return null;
-
 		vector forward = suspect.GetTransformAxis(2);
 		forward[1] = 0;
 		forward.Normalize();
-		vector at = suspect.GetOrigin() - forward * FOOTPRINT_BACK;
-		float yaw = suspect.GetYawPitchRoll()[0];
-		return LF_Evidence.LeavePiece(LF_Evidence.FootprintPrefab(), GroundSpot(at, PAPER_BASE), Vector(yaw, 0, 0), report.m_iSequence, report.m_sOffence, report.m_sPlace, LF_Evidence.KIND_FOOTPRINT, NoteFootwear(suspect), nowMs);
+		LF_PendingFootprint plan = new LF_PendingFootprint();
+		plan.m_iReport = report.m_iSequence;
+		plan.m_sOffence = report.m_sOffence;
+		plan.m_sPlace = report.m_sPlace;
+		plan.m_vAt = suspect.GetOrigin() - forward * FOOTPRINT_BACK;
+		plan.m_fYaw = suspect.GetYawPitchRoll()[0];
+		plan.m_sFootwear = NoteFootwear(suspect);
+		return plan;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: spawns a planned footprint card on the ground under its spot. One per report.
+	//! \return The card, or null (already one for this report, spawn failed).
+	static IEntity LeaveFootprint(LF_PendingFootprint plan, int nowMs)
+	{
+		if (!Replication.IsServer() || !plan)
+			return null;
+
+		if (LF_Evidence.CountFor(plan.m_iReport, LF_Evidence.KIND_FOOTPRINT) > 0)
+			return null;
+
+		return LF_Evidence.LeavePiece(LF_Evidence.FootprintPrefab(), GroundSpot(plan.m_vAt, PAPER_BASE), Vector(plan.m_fYaw, 0, 0), plan.m_iReport, plan.m_sOffence, plan.m_sPlace, LF_Evidence.KIND_FOOTPRINT, plan.m_sFootwear, nowMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -196,5 +239,18 @@ class LF_ScenePieces
 	//! Called from LF_StaticReset.ResetAll when a world ends. The pieces live in LF_Evidence.
 	static void ResetStatics()
 	{
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_ScenePieces");
+		if (apply)
+			LF_ScenePieces.ResetStatics();
 	}
 }

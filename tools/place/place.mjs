@@ -25,6 +25,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { layerFile, worldLayerDirs } from "../lib/addons.mjs";
+import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
 import { LIMITS, analyse, auditRecords, doorZone, insideFraction, isKind, measureTown, obbAabb, obbPenetration, parseDoor, parseKv, parseRoads, parseRow, polylineDistance, readJson } from "../../agent-box/place-audit.mjs";
@@ -557,6 +558,8 @@ export function faceNormal(target, { near, face }) {
 //                           height, distance to the first surface (Infinity when clear)
 //   floors: [{ dist, y }]   floor heights along the centre line, by distance from the start toward the face
 // Returns the pivot as (along: metres from the start toward the face, lat: metres sideways, y).
+const WALL_EDGE = 0.08; // floor samples this close to the face are the wall's own ledge
+const WALL_CLUSTER = 0.1; // consecutive probe hits this close belong to one surface
 export function againstWall({ rays, floors, prop, yaw, n, hang = null, gap = TOL.wallGap, allowUneven = false }) {
   const t = [n[1], -n[0]];
   const corners = footprintCorners(prop.bounds, prop.scale, yaw);
@@ -566,17 +569,39 @@ export function againstWall({ rays, floors, prop, yaw, n, hang = null, gap = TOL
   const depth = Math.max(...pn) - back;
   const latMid = (Math.min(...pt) + Math.max(...pt)) / 2;
   const height = (prop.bounds.max[1] - prop.bounds.min[1]) * prop.scale;
-  const floorAt = (dist) => {
+  // A floor sample within WALL_EDGE of the face lands on the wall's own plinth or ledge (the east wall of
+  // House_Town_E_2I01 has one 0.66 m high at its plane), not on the floor in front of it: leave those out.
+  const floorAt = (dist, face = Infinity) => {
     const ok = floors.filter((f) => Number.isFinite(f.y));
     if (!ok.length) throw new PlaceError("no floor found in front of that face");
-    return ok.reduce((a, b) => (Math.abs(b.dist - dist) < Math.abs(a.dist - dist) ? b : a));
+    const clear = ok.filter((f) => f.dist <= face - WALL_EDGE);
+    const pool = clear.length ? clear : ok;
+    return pool.reduce((a, b) => (Math.abs(b.dist - dist) < Math.abs(a.dist - dist) ? b : a));
   };
   if (!rays.some((r) => Number.isFinite(r.d))) throw new PlaceError("no surface within reach on that side: the rays hit nothing. Start nearer (--near) or pick another face");
   // The face is the farthest surface the rays reach. A hit nearer than the prop's own front is something
   // standing in front of where the prop goes; a hit inside the prop's depth is a part of the face that
   // sticks out (a plinth, a post, a frame), and a ray that reaches nothing is an opening.
+  // `own` marks a ray that hit the target itself. When any did, the face is the largest cluster of those
+  // hits: a door or window set back from the wall, or a ray through it to the room, no longer pulls the face
+  // behind the wall and turns the wall into "something in front" (House_Town_E_2I01, a door 0.22 m back).
+  // The recess is then refused as uneven below. Rays without the flag keep the farthest-hit rule.
+  const faceOf = (set) => {
+    const hit = set.filter((r) => Number.isFinite(r.d));
+    const own = hit.filter((r) => r.own);
+    if (!own.length) return Math.max(...hit.map((r) => r.d));
+    const ds = own.map((r) => r.d).sort((a, b) => a - b);
+    const groups = [[ds[0]]];
+    for (const v of ds.slice(1)) {
+      const g = groups[groups.length - 1];
+      if (v - g[g.length - 1] <= WALL_CLUSTER) g.push(v);
+      else groups.push([v]);
+    }
+    const best = groups.reduce((a, b) => (b.length >= a.length ? b : a));
+    return best[best.length - 1];
+  };
   const split = (set) => {
-    const far = Math.max(...set.filter((r) => Number.isFinite(r.d)).map((r) => r.d));
+    const far = faceOf(set);
     const front = far - gap - depth - 0.05;
     return { far, inFront: set.filter((r) => r.d < front), behind: set.filter((r) => r.d >= front) };
   };
@@ -585,7 +610,7 @@ export function againstWall({ rays, floors, prop, yaw, n, hang = null, gap = TOL
   let floor = null;
   let parts = null;
   for (let pass = 0; pass < 3; pass++) {
-    floor = floorAt(d - gap - depth / 2);
+    floor = floorAt(d - gap - depth / 2, d);
     const bottom = floor.y + (hang ?? 0);
     const level = rays.filter((r) => r.h >= bottom + 0.05 && r.h <= bottom + height - 0.05);
     if (!level.length) throw new PlaceError(`the floor there is at ${r2(floor.y)} m, outside the probed heights; pass --floor ${r2(floor.y)}`);
@@ -606,14 +631,15 @@ export function againstWall({ rays, floors, prop, yaw, n, hang = null, gap = TOL
   if (parts.inFront.length) notes.push(`in front of it: ${describe(parts.inFront)} from the start`);
   const near = Math.min(...parts.behind.map((r) => r.d));
   const open = parts.behind.some((r) => !Number.isFinite(r.d));
-  if (d - near > TOL.wallFlat || open) {
+  const deepest = Math.max(...parts.behind.filter((r) => Number.isFinite(r.d)).map((r) => r.d));
+  if (d - near > TOL.wallFlat || deepest - d > TOL.wallFlat || open) {
     const what = describe(parts.behind);
     if (!allowUneven) throw new PlaceError(`the face is not flat behind the prop (${what}): a window, a door, a plinth or a post. Move along the face (--near / --along), raise it (--hang), or pass --allow-uneven to stand off the nearest part`);
     notes.push(`uneven face (${what}): standing off the nearest part`);
     d = near;
   }
   if (hang == null) {
-    const span = floors.filter((f) => Number.isFinite(f.y) && f.dist >= d - gap - depth - 0.05 && f.dist <= d - gap + 0.05);
+    const span = floors.filter((f) => Number.isFinite(f.y) && f.dist >= d - gap - depth - 0.05 && f.dist <= d - WALL_EDGE);
     const ys = span.map((f) => f.y);
     if (ys.length && Math.max(...ys) - Math.min(...ys) > TOL.wallFlat && !allowUneven) throw new PlaceError(`the floor under the prop is not level (${r2(Math.min(...ys))} to ${r2(Math.max(...ys))} m): a step, a kerb or something standing there`);
   }
@@ -1214,7 +1240,8 @@ function cmdAgainst(args, flags) {
   ctx.doors = run.doors;
   const seen = (ray) => ray.d < ray.len - 0.001;
   const nameOfHit = (ray) => (ray.root && ray.root !== "GenericEntity" && ray.root !== "none" ? ray.root : ray.hit);
-  const rays = meta.map((m) => ({ lat: m.lat, h: m.h, d: seen(run.rays.get(m.id)) ? run.rays.get(m.id).d : Infinity, label: nameOfHit(run.rays.get(m.id)) }));
+  const own = new Set([target.name, target.prefab ? baseOf(target.prefab) : null].filter(Boolean));
+  const rays = meta.map((m) => ({ lat: m.lat, h: m.h, d: seen(run.rays.get(m.id)) ? run.rays.get(m.id).d : Infinity, label: nameOfHit(run.rays.get(m.id)), own: own.has(run.rays.get(m.id).root) }));
   const floors = [];
   for (let k = 0; k <= steps; k++) {
     const ray = run.rays.get(`f${k}`);
@@ -1233,12 +1260,13 @@ function cmdAgainst(args, flags) {
   return commit(ctx, [plan], flags);
 }
 
-// Every vanilla prefab (one the addon does not hold) the layers reference, measured once from the .xob headers.
+// Every vanilla prefab (one the addon does not hold) an entity in the layers is placed from, measured once from the
+// .xob headers. A loadout-slot or inventory prefab is not a placed prop (tools/lib/layer-prefabs.mjs).
 export function vanillaPrefabs(root = ROOT) {
   const set = new Set();
   for (const file of worldLayerDirs(root).flatMap((d) => readdirSync(d).filter((f) => f.endsWith(".layer")).map((f) => join(d, f)))) {
-    for (const m of readFileSync(file, "utf8").matchAll(/"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/g)) {
-      if (!existsSync(join(ADDON, m[1])) && !existsSync(join(root, "addons", "LF_Everon1989", m[1]))) set.add(m[1]);
+    for (const p of layerEntityPrefabs(readFileSync(file, "utf8"))) {
+      if (!existsSync(join(ADDON, p)) && !existsSync(join(root, "addons", "LF_Everon1989", p))) set.add(p);
     }
   }
   return [...set].sort();

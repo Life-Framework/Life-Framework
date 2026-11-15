@@ -28,6 +28,7 @@ class LF_DialogueScene
 	protected static int s_iFocus;
 	//! MenuUp or MenuDown was down last tick: a held key (the harness holds one 300 ms) steps once.
 	protected static bool s_bStepHeld;
+	protected static bool s_bBackListening;
 	protected static bool s_bChoosing;
 	protected static bool s_bWaiting;
 	protected static int s_iLineEndMs;
@@ -190,10 +191,64 @@ class LF_DialogueScene
 		if (!LF_DialogueCamera.Start(npc))
 			LF_Debug.Warn(LF_Dialogue.FEATURE, "the conversation runs without its camera");
 
+
 		LF_DialogueVoice.Attend(npc, true);
 		GetGame().GetCallqueue().CallLater(Tick, 0, true);
+		BindBack();
 		LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("scene open with '%1'", config.m_sId));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: Back (MenuBack: Escape, Backspace, gamepad B) leaves the talk. The same Back path as
+	//! every kit sheet: the MenuBack action listener and the Tick poll both land here, and LF_UIBack
+	//! refuses the second report of one press. Inside the input guard the press is ignored.
+	//! \return true when this call left the conversation.
+	static bool Back()
+	{
+		if (!IsOpen() || System.GetTickCount() < s_iGuardUntilMs || !LF_UIBack.Fresh())
+			return false;
+
+		Close("the player left", true);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while the scene holds its MenuBack listener.
+	static bool HasBackHandler()
+	{
+		return s_bBackListening;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void BindBack()
+	{
+		InputManager input = GetGame().GetInputManager();
+		if (!input || s_bBackListening)
+			return;
+
+		input.AddActionListener(LF_UIBack.ACTION, EActionTrigger.DOWN, OnBackAction);
+		s_bBackListening = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removed one tick after Close, never inside the listener's own call.
+	protected static void UnbindBack()
+	{
+		// A new conversation opened in the same tick keeps the listener the old one bound.
+		if (!s_bBackListening || IsOpen())
+			return;
+
+		s_bBackListening = false;
+		InputManager input = GetGame().GetInputManager();
+		if (input)
+			input.RemoveActionListener(LF_UIBack.ACTION, EActionTrigger.DOWN, OnBackAction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void OnBackAction()
+	{
+		Back();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -429,9 +484,9 @@ class LF_DialogueScene
 		if (now < s_iGuardUntilMs)
 			return;
 
-		if (input.GetActionTriggered("MenuBack"))
+		if (input.GetActionTriggered(LF_UIBack.ACTION))
 		{
-			Close("the player left", true);
+			Back();
 			return;
 		}
 
@@ -494,6 +549,7 @@ class LF_DialogueScene
 			return;
 
 		GetGame().GetCallqueue().Remove(Tick);
+		GetGame().GetCallqueue().CallLater(UnbindBack, 0, false);
 		BaseWorld world = GetGame().GetWorld();
 		if (world)
 		{
@@ -518,5 +574,18 @@ class LF_DialogueScene
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (controller)
 			controller.LF_AskDialogueLeave();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_DialogueScene");
+		if (apply)
+			LF_DialogueScene.ResetStatics();
 	}
 }

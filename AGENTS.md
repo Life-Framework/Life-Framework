@@ -30,7 +30,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
 | `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
-| `docs/` | `features.md` (what each system does), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
+| `docs/` | `features/<area>.md` (what each system does; `features.md` is the generated index), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
 | `website/` | life-framework.org: Vite + React site built from `docs/` and GitHub issues; own `package.json`; deploys from `main` to Cloudflare Pages (`website/README.md`) |
 
 ## Golden rules
@@ -58,7 +58,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
    `tools\cli regen-localization`, which sorts it by Id so string PRs merge on GitHub). Layouts reference `#Key`. Core text is neutral: place
    names and flavour copy go in the pack table (`LF_Everon1989/Language/`), and a pack key
    with the same Id overrides the core row (`validate-core-place-names`).
-8. **Update `docs/features.md` in the same change** that alters a feature.
+8. **Update the area's `docs/features/<area>.md` in the same change** that alters a feature. `docs/features.md` is a generated index (`tools\cli regen-features`); never add rows to it.
    Append or edit only your rows; the merge driver keeps rows both sides
    append and stops with conflict markers when both edit the same line.
 9. **Classify every new resource core or pack with the red line**
@@ -72,8 +72,13 @@ agent per area. `tools\cli usage` shows where the tokens went.
    `LF_Places` (core-vs-pack.md "Map independence"). Tests keep annex names.
 10. **Shared registries are per-feature files; never append to a central list.**
     A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
-    `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both); a
-    new CLI command is `tools/commands/<name>.mjs`.
+    `Feature/<Area>/LF_<Area>Events.c`; a world-end static reset is a
+    `modded class LF_StaticResetHooks` in the owning class's file (`Core/LF_StaticReset.c`
+    lists nothing); a harness verb is a `modded class LF_AgentHarnessVerbs` in its
+    feature (`LF_AgentHarness.Dispatch` is frozen). `validate-registries` enforces all
+    four; `tools\cli heal-hotspots <slug>` moves an old branch's StaticReset and
+    `docs/features.md` edits to their new files. A new CLI command is
+    `tools/commands/<name>.mjs`.
 11. **What a player sees is looked at before it ships.** `tools\cli look <area>`
     (`look item <prefab>`, or `wb_preview` for one resource) before and after, the
     `polish` checklist against the pictures, and the pair embedded in the PR
@@ -106,7 +111,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | The gate for the diff's tier / push, PR, then the ship queue: main merged once, the tiered `ci --remote` on a pool machine, auto-merge only on a pass. Ship runs a preflight (merge-tree, `validate` of changed inputs), pushes and **returns once queued**; `wt ship-status <slug>` is one line, `wait ship <slug>` blocks up to 540 s with one SUMMARY line (exit 2: run again), `--wait` blocks the old way (docs/worktrees.md "Async ship"). Tiers (`docs/worktrees.md` "Gate tiers"): T0 no `addons/` change, `validate --all`; T1 values changed in place in a `.conf`, `.st`, `.layout` or a number in an `.et`, static validate, config static, LOGIC tests plus the tests naming the touched files, no compile, build or full suite; T2 anything else or `--full-gate`, validate --full + build + full suite. Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
+| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | The gate for the diff's tier / push, PR, then the ship queue: main merged once, the tiered `ci --remote` on a pool machine, auto-merge only on a pass. Ship runs a preflight (merge-tree, `validate` of changed inputs), pushes and **returns once queued**; `wt ship-status <slug>` is one line, `wait ship <slug>` blocks up to 540 s with one SUMMARY line (exit 2: run again), `--wait` blocks the old way (docs/worktrees.md "Async ship"). Tiers (`docs/worktrees.md` "Gate tiers"): T0 no `addons/` change, `validate --all`; T1 values changed in place in a `.conf`, `.st`, `.layout` or a number in an `.et`, static validate, config static, LOGIC tests plus the tests naming the touched files, no compile, build or full suite; T2s any other code change, validate --full + LOGIC tier (the main guard runs build, full suite and e2e on main after the merge and reverts what broke it); T2 a persistence, money, RPC, GUID/.meta, boundary or interrogated change, or `--full-gate`, validate --full + build + full suite. Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
 | `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour: open M2 chapter and epic work first, then big player flows, polish last; one line can cover several issues. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
@@ -158,7 +163,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   cover the rest. Each extra merge re-runs validate and the suite for nothing.
   `wt ship` merges main only when `git merge-tree` reports a conflict. The
   generated and append-only files (string table, language confs, test
-  registry, `features.md`, `debug-log-triage.md`, the enforce-lint baseline)
+  registry, `docs/features/*.md`, `debug-log-triage.md`, the enforce-lint baseline)
   have merge drivers in `tools/merge/`, so they do not count as conflicts.
 - After your PR is up, `tools\cli prs status`; the maintainer/lead runs `prs heal`.
 

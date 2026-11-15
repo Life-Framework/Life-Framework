@@ -58,12 +58,12 @@ class LF_Dispatch
 	//! cabinet); a zero vector sounds no alarm (a murder in the street, the logic-tier seam).
 	//! \param officersOnDuty On-duty police when the crime started; negative counts them now.
 	//! \return The dispatch record, or null when the crime report was refused (no player uid).
-	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false, string alarmKind = "")
+	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false, string alarmKind = "", bool deferPieces = false)
 	{
 		if (LF_Systems.Refuses("Police", "dispatch report"))
 			return null;
 
-		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence);
+		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence, deferPieces);
 		if (!report)
 		{
 			LF_Debug.Error(FEATURE, string.Format("dispatch dropped: no crime report for %1 (%2)", playerUid, offence));
@@ -590,5 +590,18 @@ modded class SCR_PlayerController
 		s_sLF_LastToast = LF_Dispatch.RADIO_KEY;
 		LF_Debug.Info(LF_Dispatch.FEATURE, string.Format("dispatch line shown: %1", line));
 		manager.ShowNotificationToast("#LF-Dispatch_Title", line, 8.0, LF_ENotificationType.POLICE_ALERT);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Dispatch");
+		if (apply)
+			LF_Dispatch.ResetStatics();
 	}
 }

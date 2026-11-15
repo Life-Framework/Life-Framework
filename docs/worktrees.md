@@ -139,7 +139,19 @@ against the merge base with `origin/<base>`, uncommitted and untracked files inc
 | T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
 | T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
 | T1w | a maintainer hand edit: the branch is `town-maintainer-*` and every changed `addons/` file is a modified `.layer` whose entities were only moved, or added / removed from prefabs already in use ("Maintainer world edits") | `validate --world` (hard checks block, layout checks warn), `audit placement --strict --layer <touched>` (findings warn), the tests that name a touched layer or entity |
-| T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
+| T2s | anything else (a normal code change), unless a risk class below hits | slim: `validate --full` (the Workbench compile on a pool machine with the `workbench` cap, no build) and the LOGIC tier (`--tier fast`). The main guard runs the rest on main after the merge |
+| T2 | a risk class, or `--full-gate` | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate, the pre-move e2e |
+
+**Risk classes keep the full T2 gate** (`tools/lib/gate-risk.mjs`, proven by `tools/validation/gate-risk-selftest.mjs`):
+persistence (a `Persistence/` folder, a `*Persist*`/`*Serializ*`/`*Save*`/`*Record*.c` file, a changed line that registers a
+payload or touches a save/load context); money (Shop, ATM, Money, Banking, Trader, the bank, robbery, fence, cash-van and
+chop-shop scripts, vehicle lot/prices/ownership, or a changed line that moves cash); RPC (a changed line naming `RplRpc`,
+`RpcAsk_` or `RpcDo_`, or one inside an RPC handler's body); GUID (any `.meta` added, changed or removed, or a hunk that
+swaps one `{GUID}` reference for another); the addon boundary (a `.gproj`, a mission header, `tools/lib/addons.mjs`,
+`validate-addon-boundary`); any `tmp/review-*.md` interrogate file in the worktree; a changed script whose diff cannot be
+read. The gate prints which class hit (`gate tier T2 (full gate): full gate (money): ...`). `LF_SLIM_GATE=0` turns T2s back
+into T2. The rules apply to a gate that starts after they merged: the queue merges main into the worktree before it gates,
+and the gate runs the worktree's own `tools/cli.mjs`.
 
 T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
 head have the same line count, every line holding a brace is unchanged (same blocks, same
@@ -154,12 +166,39 @@ a `.layer`/`.ent`, a binary asset, a changed resource reference, a `.conf` that 
 a key** (the key can switch on a code path its default never ran, and an equal line count is how the
 classifier knows the blocks did not move), and a `.et` string value or component change.
 
+Measured 2026-11-16 over the last 40 merges on main: 22 T0, 12 T2s, 6 kept the full gate (guid 3, persistence 2, money 2, rpc 1).
+
 T1 skips the build because `test --no-build` loads the addons from source; the build only
 packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
 diff is no longer data-only. Measured 2026-11-14 on a one-value `.conf` change (`m_iPrice 500 -> 505`), same worktree, warm rdb:
 T2 (`--full-gate`) 630 s (compile + build 390 s on lf-cloud, both suite passes about 2 min, config
 sessions about 2 min); T1 112 s (validate 49 s, one boot of 267 tests 57 s); T0 44 s. Both T1 runs in
 that measurement failed on the related test that asserts the changed value.
+
+### Main guard
+
+The slim gate leaves the build, the full suite, the placement audit and the pre-move e2e to one worker on main
+(`tools/main-guard.mjs`, rules in `tools/lib/main-guard.mjs`, proven by `main-guard-selftest.mjs`). It lives on one machine
+(the laptop) and sends its heavy runs through the pool at `--priority high`, so it goes ahead of agent work in the queue.
+
+```sh
+toolscli main-guard start | stop | status   # status is also a line in `toolscli lead`
+```
+
+1. On a new `origin/main` head, batched to one run per 10 min, it checks the head out in its own worktree
+   (`Life-Framework-ws-main-guard-run`, detached) and runs `build`, `test --no-build --tier all`, `audit placement --strict`
+   and `e2e --pre-move 502ebf39 --mission playtest`. All green: that head is the last green head.
+2. A red step reruns at the same head (only the failing tests). Green on the rerun is a flake: one line in
+   `tmp/logs/main-guard-flakes.log`, nothing reverted.
+3. Red twice: it bisects the first-parent PR merges since the last green head, rerunning only what failed at each.
+4. The culprit is reverted with `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR titled `Revert #N (main guard: <what
+   failed>)` with auto-merge (only GitHub's `validate` check gates it), a comment on #N, its issues reopened as
+   `regression`, and one line to the staff webhook when `LF_STAFF_WEBHOOK_URL` or `"mainGuard": { "webhookUrl" }` in
+   `lf.local.json` names one (the URL is never printed).
+
+Safety: it never reverts a revert, never blames a merge that was on main when it first started (`startHead` in
+`<hub>/main-guard.json`), reverts a PR at most once, never pushes `main`. `LF_MAIN_GUARD=0` stops the worker and
+refuses `start`. Log: `tmp/logs/main-guard.log`, one file per step beside it.
 
 ## Release gates (`stable`, `promote`)
 
@@ -235,11 +274,20 @@ agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules
    build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
    so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
    one worktree at a time behind the hub build lock, in the first queue run).
-3. **Re-gate rule.** When the gate passes, the worker fetches again. If main moved, it re-gates only
-   when the new main commits change a file the PR changes, or a generated file (the test registry, a
-   language conf, the string table). Driver-merged docs (`docs/features.md`, `docs/debug-log-triage.md`,
-   the lint baseline) do not count. Otherwise it pushes the gated head as is, and GitHub's required
-   `validate` check covers the combination. After three gates it pushes regardless.
+3. **Re-gate only on overlap** (`tools/lib/regate-overlap.mjs`). A passed gate stands unless main moved in a way
+   that can change its result. When the gate passes the worker fetches again, and when auto-merge answers
+   "Base branch was modified" it merges main in and asks the same question against the main the gate saw. The new
+   main commits **overlap** the PR when they touch: a file the PR changes; a file in the same feature folder
+   (`Scripts/Game/Feature/<Area>`, `Prefabs/<Area>`, `Configs/<Area>`); shared Core (`Scripts/Game/Core`) while the
+   PR changes a script, or the other way round; a prefab or config whose `.meta` GUID the PR's files reference
+   (or main's files reference a GUID the PR changes); a class or file stem one side declares and the other
+   names as a whole word; or the same generated file (test registry, language conf, string table) the PR also
+   changes. Docs prose and driver-merged docs (`docs/features.md`, `docs/debug-log-triage.md`, the lint baseline)
+   do not count, and a generated file main alone changed does not either. A text that cannot be read, or more
+   than 400 changed files to compare, counts as overlap. Overlap: the gate runs again as before. No overlap:
+   the gated head (or the head with main merged in) is pushed and auto-merge is queued with no second gate, and
+   the log says `gate pass reused: main moved (N file(s)), no overlap ...`. GitHub's required `validate` check and the
+   main guard cover what this misses. After three gates it pushes regardless.
 4. Pass: push, `gh pr merge --auto --merge`. Fail: a PR comment with the failing lines of the log and
    its path, the entry is marked failed, and the queue moves on. Fix, commit, `wt ship` again.
    A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
@@ -277,10 +325,13 @@ tries a machine first even when this PC is free; `LF_RDB_REFRESH=0` turns the re
 `pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
 limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
 `pool.machines` entry (1 when unset; lf-cloud has 2). This PC is not counted. A queued PR starts only when
-no running gate and no earlier waiting PR changes a file it changes. Driver-merged docs and any
-`docs/**/*.md` do not count (two PRs that edit `docs/worktrees.md` gate side by side; a text conflict
-shows at the merge of main, in GitHub's mergeable state, or in `prs heal`), so PRs on disjoint files
-gate side by side on different machines and overlapping ones keep their order.
+no running gate and no earlier waiting PR changes a file it changes. Driver-merged files (the string
+table, language confs, test registry, lint baseline) and any `*.md` (docs, `Feature/<Area>/Feature.md`,
+READMEs) do not count: two PRs that edit `docs/worktrees.md` or one `Feature.md` gate side by side, and a
+text conflict shows at the merge of main, in GitHub's mergeable state, or in `prs heal`. Only a shared
+code or resource file serializes. The old shared lists are per-feature files now (`Core/LF_StaticReset.c`
+hooks, `docs/features/<area>.md`, harness verbs; AGENTS.md rule 10), so two feature PRs rarely share
+one. PRs on disjoint files gate side by side on different machines and overlapping ones keep their order.
 
 **Gates with no Workbench take no slot.** A PR that changes nothing under `addons/` runs `validate --all`
 only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; it counts against
@@ -649,6 +700,15 @@ check, so a gate right after a green `--tier all` reuses it.
   machine with that build). The machine is not in it: a gate already accepts a
   pass from any pool machine, and `LF_Test_PerfBudget` is calibrated per
   machine. Docs and the rest of `tools/` are not in it.
+- **The gate trusts the agent's own run.** The gate's test step asks the cache for the pass its own run would
+  produce, so an agent that ran `toolscli test --no-build --tier all` on the exact tree being gated
+  (same addons incl. untracked, rdb, `tools/test`, addon list and server build; main not moved over them) is not run
+  again: the gate prints `test: reused agent pass <key>` and the usual `CACHED pass` line. `ci`'s sharded suite
+  checks the cache per pass (normal and core-only; it did not before) and stores a merged pass under the
+  whole-run key. The slim gate's LOGIC step (`--tier fast`) is also answered by an `all` pass of the same tree
+  (`lookupCovering` in `tools/lib/test-cache.mjs`); never the other way round, never an `--only` or core-only
+  pass for a different selection, never a failure, a timeout or a `--red` run. A stored record whose own inputs
+  differ from the ones asked for is not trusted. A pass a queue gate recorded is called a `gate pass` in the line.
 - **What is stored**: passes only (exit 0, `failed=0`), written to a temp file
   and renamed. A failure, a timeout or a no-verdict run is never stored; a
   corrupt or unreadable file is a miss.
@@ -1436,9 +1496,11 @@ or mangling them. (Other tools for this workflow add their own `###` subsections
 
 `world ship` and the T1w gate run `validate --world`: only the checks that read `.layer` files (`tools/lib/world-checks.mjs`, about a dozen, a few seconds), not all of them. **Blocks:** a layer parse error, a missing or unknown prefab GUID, a duplicate GUID, `validate-world-zones` (an edit outside town layers), a script compile error (or a test run that printed no SUMMARY and so judged nothing). **Warns** (listed under `## Layout warnings` in the PR body, never blocking): a failing layer-named test (each failing assertion and its test, under `## Test warnings (maintainer layout)`; a maintainer's edit is never blocked by a test, `tools/lib/world-test-judge.mjs`), the town manifest's sign distances and neighbour rule, the village-name and fixture checks, the player-props and road-id checks, and the placement audit's findings. On a `town-maintainer-*` branch a plain `validate` (CI's included) demotes the same layout checks to `WARN`. Selftests: `tools/validation/world-checks-selftest.mjs`, `tools/validation/world-test-judge-selftest.mjs`.
 
+Every check that reads `.layer` files is classified in `tools/lib/world-checks.mjs` (`HARD_CHECKS`, `LAYOUT_CHECKS`, or `LAYER_READERS_KEPT_HARD` with its reason); `world-checks-selftest` fails on a new layer-reading check that is none of them. The placement-audit part of `agent-box-selftest` (every vanilla prefab a layer places has a row in `tools/place/prefab-bounds.json`) counts only prefabs an entity is declared from (`Class Name : "{GUID}path.et" {`), never a `Prefab` property such as an NPC's loadout-slot clothing, and on a `town-maintainer-*` branch a missing row prints `WARN` instead of failing (`tools/lib/layer-prefabs.mjs`).
+
 ### Warn-only gate and the tier of a synced branch
 
-On any `town-maintainer-*` branch the `ci` placement audit (full gate, T1 and T1w) and the layout checks of `validate` are warn-only: they print `WARN`, record their findings in `tmp/gate-warnings.json`, and the ship queue replaces a `## Gate warnings (maintainer layout)` section in the PR body after each passing gate (`tools/lib/gate-warnings.mjs`). A hard check (parse, GUIDs, world zones, compile) still blocks. The tier is judged on the branch's own change: `ownBase` (`tools/lib/gate-tier.mjs`) is the merge base with `origin/main`, moved up to the newest main the branch merged (`world-sync`, `wt ship`), so main's files never count as the maintainer's, even with a stale local ref. When a hand edit is refused as T1w (a property change, a prefab no layer used), the tier line says so ("not a T1w hand edit: ..."), and that edit takes the full gate with the audit still warn-only. A `world ship` body is cut at 60 KB with a "+N more" line (the whole list is `world diff`); `gh pr create` and `gh pr edit` always read the body from `--body-file`. Proof: `tools/validation/maintainer-gate-selftest.mjs`.
+On any `town-maintainer-*` branch the `ci` placement audit (full gate, T1 and T1w) and the layout checks of `validate` are warn-only: they print `WARN`, record their findings in `tmp/gate-warnings.json`, and the ship queue replaces a `## Gate warnings (maintainer layout)` section in the PR body after each passing gate (`tools/lib/gate-warnings.mjs`). The ci test step (full, sharded, core-only, T2s slim and T1) is warn-only too: a failing test prints `WARN`, is recorded under the `tests` check in `tmp/gate-warnings.json` and listed in the PR body (`demoteTests`, judged by `tools/lib/world-test-judge.mjs`); a script compile error or a run with no `SUMMARY` line still blocks. A hard check (parse, GUIDs, world zones, compile) still blocks. The tier is judged on the branch's own change: `ownBase` (`tools/lib/gate-tier.mjs`) is the merge base with `origin/main`, moved up to the newest main the branch merged (`world-sync`, `wt ship`), so main's files never count as the maintainer's, even with a stale local ref. When a hand edit is refused as T1w (a property change, a prefab no layer used), the tier line says so ("not a T1w hand edit: ..."), and that edit takes the full gate with the audit still warn-only. A `world ship` body is cut at 60 KB with a "+N more" line (the whole list is `world diff`); `gh pr create` and `gh pr edit` always read the body from `--body-file`. Proof: `tools/validation/maintainer-gate-selftest.mjs`.
 
 ### Keeping it level with main (`world-sync`)
 
