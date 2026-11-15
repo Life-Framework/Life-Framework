@@ -730,7 +730,11 @@
   restarts, host stops and crash backups inside the session, the triage groups known and
   new, and the perf verdict of the newest `<host>/perf` file. It calls the attendance,
   perf and log-triage functions, not their CLI text. `tools/host/summary.mjs`; selftest
-  `tools/validation/host-summary-selftest.mjs`.
+  `tools/validation/host-summary-selftest.mjs`. The page opens with a "Server doctor"
+  section (#1605, merged, in-dev): server-doctor's verdict on the same log (booted, or the
+  stage it stopped at with the doctor's fix line), the mods loaded, the server name from
+  `server.json`, and the known triage lines it marked with their advice. A log with no
+  engine header gets no such section. Selftest `tools/validation/host-summary-doctor-selftest.mjs`.
   Joining: the host runs `-noBackend`, so every player has the NULL platform
   identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
   failed with `#EL-CC_Error_NoAccount` (nobody could join).
