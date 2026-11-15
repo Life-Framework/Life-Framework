@@ -18,7 +18,7 @@ checkout.
 | `tools\cli host preflight` | After a game update only: it backs up, boots the new build and passes. A failure restores the backup; read [game updates](game-updates.md). |
 | `tools\cli host backup` | `host: backed up saves -> <folder>`. |
 | `tools\cli host verify` *(planned)* | Every backup `ok`, none `empty` or `changed`; exit 0. |
-| `tools\cli host drill` | The newest backup boots on a scratch profile and the log shows `save loaded:`. Weekly and after a preflight. |
+| `tools\cli host drill` | The newest backup boots on a scratch profile and the log shows `save loaded:`. Weekly and after a preflight. It queues for a pool lane by itself (no `--wait`) and may run on a pool machine. |
 | `tools\cli host applications` *(planned)* | The open police applications, oldest first, then the officers on trial. Read only; approve in game. |
 | `tools\cli host announce --at <time> --build <build>` | The post is printed and the next session is written to `website/content/sessions.json` (a tracked file: `git checkout -- website/content/sessions.json` after a dry run, commit it for a real one). `--build` is the installed game build, e.g. `1.9.0.37`; needed until the host has a save. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
 
