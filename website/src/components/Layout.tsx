@@ -194,6 +194,7 @@ function Footer() {
       title: "Take part",
       links: [
         { label: "Join the playtest", href: "/playtest" },
+        { label: "Server rules", href: "/rules" },
         { label: "Server owners", href: "/servers" },
         { label: "Config generator", href: "/config" },
         { label: "Config reference", href: "/config/reference" },
