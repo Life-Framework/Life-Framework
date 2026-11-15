@@ -75,7 +75,17 @@ export function parseInfoReply(buf) {
   const players = r.byte();
   const maxPlayers = r.byte();
   const bots = r.byte();
-  return { kind: "info", protocol, name, map, folder, game, appId, players, maxPlayers, bots };
+  // After bots: server type, environment, visibility (1 = password set), VAC. A short reply leaves
+  // passworded undefined rather than failing the query.
+  let passworded;
+  try {
+    r.byte();
+    r.byte();
+    passworded = r.byte() === 1;
+  } catch {
+    passworded = undefined;
+  }
+  return { kind: "info", protocol, name, map, folder, game, appId, players, maxPlayers, bots, passworded };
 }
 
 // One UDP query with the challenge step: the whole exchange shares one timeoutMs budget.
