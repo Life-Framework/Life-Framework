@@ -4063,6 +4063,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hospital"
      Comment "Toast title when a player wakes up in hospital."
     }
+    CustomStringTableItem "{7A3E91C4D5B20F68}" {
+     Id "LF-HostSay_Message"
+     Target_en_us "%1"
+     Comment "Toast body for an operator message sent with tools cli host say; %1 is the operator's text."
+    }
+    CustomStringTableItem "{2D84B6E0A91C5F37}" {
+     Id "LF-HostSay_Title"
+     Target_en_us "Message from the server"
+     Comment "Toast title for an operator message sent with tools cli host say."
+    }
     CustomStringTableItem "{106F4441F054E715}" {
      Id "LF-Hotwire_Action"
      Target_en_us "Hotwire the ignition"

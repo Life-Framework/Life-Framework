@@ -6,8 +6,8 @@
 //   1. the committed flagship config (accelerated, 120-minute day) and a perf CSV with samples: day-config and
 //      perf-samples PASS, and the run exits 0;
 //   2. a 60-minute day, a realtime day and a missing config FAIL day-config, exit 1;
-//   3. a perf CSV with a header and no rows FAILs perf-samples, and so does a host with no perf folder, a CSV
-//      with a bad number, and a CSV without the cpu/memory/upload columns;
+//   3. a perf CSV with a header and no rows FAILs perf-samples, and so does a CSV with a bad number and a CSV without the
+//      cpu/memory/upload columns; a host with no perf csv at all is BLOCKED (nothing has sampled it yet, #1693);
 //   4. clock-rate and late-join print BLOCKED naming #1301 and #1303 while the day-rate proof verb is not on main,
 //      and PASS naming `day-rate` once a proofs folder has it;
 //   5. no --host is a usage error (exit 2, no BEAT line); the script writes nothing under the host folder.
@@ -77,7 +77,6 @@ try {
   // 3. Perf samples missing or broken.
   const badRuns = {
     "a header with no rows": join(FIX, "host-empty"),
-    "a host with no perf folder": join(FIX, "host-none"),
   };
   const mk = (name, text) => {
     const h = join(scratch, name);
@@ -93,6 +92,9 @@ try {
     expect(r.status === 1 && state(r, "perf-samples") === "FAIL", `${what}: perf-samples must FAIL and exit 1, got ${state(r, "perf-samples")} exit ${r.status}`);
     expect(state(r, "day-config") === "PASS", `${what}: the config line is judged on its own, got ${state(r, "day-config")}`);
   }
+  // No perf csv at all: BLOCKED, not FAIL (a fresh host has sampled nothing), and the run still exits 0 (#1693).
+  const noPerf = run(["--host", join(FIX, "host-none"), "--proofs", withoutVerb]);
+  expect(state(noPerf, "perf-samples") === "BLOCKED" && noPerf.status === 0, `a host with no perf folder: perf-samples must be BLOCKED and exit 0, got ${state(noPerf, "perf-samples")} exit ${noPerf.status}`);
   // The newest perf file is the one judged: an old good file under an empty newer one still FAILs.
   const two = join(scratch, "two");
   cpSync(join(good, "perf"), join(two, "perf"), { recursive: true });

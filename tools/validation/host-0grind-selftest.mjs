@@ -103,7 +103,9 @@ const server = createServer((req, res) => {
       res.writeHead(200, { "Content-Type": "application/octet-stream" });
       return res.end(f);
     }
-    if (p === `/service/${SID}/filesystem/file` && req.method === "PUT") {
+    // The panel uploads with PUT /filesystem/upload; PUT /filesystem/file (the KB page) is 405 on the real API.
+    if (p === `/service/${SID}/filesystem/file` && req.method === "PUT") return json(405, { success: false, reason: "Method PUT not allowed" });
+    if (p === `/service/${SID}/filesystem/upload` && req.method === "PUT") {
       state.files.set(url.searchParams.get("path"), body);
       return json(200, { success: true, data: url.searchParams.get("path") });
     }
@@ -215,6 +217,8 @@ try {
   if (r.code !== 0 || Object.keys(onlySent).sort().join() !== "password,server_name") fail(`config push --only sent ${Object.keys(onlySent).join(",")} instead of server_name and password: ${r.out}`);
   if (state.settings.scenario_id !== "{X}Missions/Default.conf" || state.settings.mods[0] !== "keep") fail("config push --only changed the scenario or the mods");
   if (writes().filter((c) => c.method === "PUT").length !== putsBefore) fail("config push --only wrote a file to the box");
+  r = await run(["0grind", "config", "push", "--only", "name,password"]);
+  if (r.code !== 0 || !/only name, password/.test(r.out)) fail(`config push --only needs --admins-pending for fields that are not admins: ${r.out}`);
   r = await run(["0grind", "config", "push", "--admins-pending", "--only", "bogus"]);
   if (r.code === 0 || !/not a game field/.test(r.out)) fail("config push --only accepted an unknown field");
 
@@ -270,6 +274,13 @@ try {
   if (s.enable_battleye !== true || s.von_disable_ui !== false || s.lobby_player_synchronise !== true || s.join_queue_max_size !== 4) fail("toServerSettings does not map gameProperties and operating");
   const mm = mergeServerConfig({ game: { maxPlayers: 16 } }, { bindPort: 2001, a2s: { port: 17777 }, game: { maxPlayers: 40 } });
   if ("bindPort" in mm || "a2s" in mm || mm.game.maxPlayers !== 16) fail("mergeServerConfig pushes our ports or slot count onto a box that has none");
+  const regen = { game: { maxPlayers: 16, modsRequiredByDefault: true, mods: [{ modId: "AAAA", name: "Core", version: "" }], gameProperties: { missionHeader: {}, serverMaxViewDistance: 2500 } } };
+  const again = mergeServerConfig(regen, { game: { mods: [{ modId: "AAAA", name: "Core" }], gameProperties: { serverMaxViewDistance: 2500 } } });
+  if (JSON.stringify(again) !== JSON.stringify(regen)) fail("a second config push is not clean against the ServerConfig.json 0grind regenerated (defaults removed or version \"\" changed)");
+  if (toServerSettings({ game: { mods: [{ modId: "AAAA" }] } }).mods[0].version !== "") fail("server_settings mods without a version differ from 0grind's stored version \"\" on every push");
+  const pers = { loadSessionSave: true, keepSessionSave: false, hiveId: 0 };
+  const mp = mergeServerConfig({ game: { gameProperties: { persistence: pers, serverMaxViewDistance: 1600 } } }, { game: { gameProperties: { serverMaxViewDistance: 2500 } } });
+  if (JSON.stringify(mp.game.gameProperties.persistence) !== JSON.stringify(pers) || mp.game.gameProperties.serverMaxViewDistance !== 2500) fail("mergeServerConfig drops the box's gameProperties.persistence block (session save loading)");
 
   if (printed.includes(TOKEN)) fail("the token was printed");
   for (const v of [PASSWORD, ADMIN_PW, RCON_PW]) if (printed.includes(v)) fail("a password was printed");

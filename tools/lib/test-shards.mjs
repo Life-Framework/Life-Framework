@@ -159,6 +159,15 @@ export function parseShardOutput(text) {
       cur = null;
       continue;
     }
+    // A slice the pass cache answered boots nothing and prints no [LFTEST] SUMMARY, only this line (a re-queued gate re-runs identical inputs).
+    const c = /^test: CACHED pass\b.*\((\d+)\/(\d+) passed, tier=/.exec(line.trim());
+    if (c) {
+      out.passed = +c[1];
+      out.total = +c[2];
+      out.failed = out.total - out.passed;
+      out.summary = true;
+      continue;
+    }
     const t = /test-e2e: SUMMARY .*\((\d+) s\)/.exec(line);
     if (t) out.seconds = +t[1];
     const w = /^pool: \w+(?: \w+)* runs on (.+?)(?:,| \()/.exec(line.trim());

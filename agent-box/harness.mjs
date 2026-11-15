@@ -119,6 +119,10 @@ export function buildLine(id, spec) {
   if (spec.verb === "look") {
     return `${id} look`;
   }
+  if (spec.verb === "pickup") {
+    // pickup [item]: the F-key pickup (vanilla SCR_PickUpItemAction on this client) of the nearest loose item whose prefab name contains item.
+    return spec.item ? `${id} pickup ${token(spec.item, "item")}` : `${id} pickup`;
+  }
   if (spec.verb === "state") {
     return `${id} state`;
   }
@@ -1002,6 +1006,7 @@ function selftest() {
   if (profileBoxes().length !== 2) throw new Error("setBoxes(null) did not restore the default boxes");
   if (buildLine(30, { verb: "click", widget: "SignButton", session: "ab12" }) !== "30 s:ab12 click SignButton") throw new Error("session token goes after the id");
   if (buildLine(31, { verb: "look", session: "" }) !== "31 look") throw new Error("no session, no token");
+  if (buildLine(32, { verb: "pickup", item: "LF_Crackers" }) !== "32 pickup LF_Crackers" || buildLine(33, { verb: "pickup" }) !== "33 pickup") throw new Error("pickup [item]");
   const mine = (box) => (box === "B1" ? { id: "ab12" } : null);
   const theirs = () => ({ error: "session_owned_by_other_checkout C:/other" });
   if (addressFor(["B1"], "R", mine).id !== "ab12") throw new Error("a box in the caller's session is addressed to it");
@@ -1567,6 +1572,9 @@ function main(argv) {
     }
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));
+    }
+    if (cmd === "pickup") {
+      return printResult(sendCommand({ verb: "pickup", item: rest[0] }, 15000));
     }
     if (cmd === "scene" || cmd === "camera") {
       // scene start <name> [hour|-] [weather] | stop | reset | status; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
