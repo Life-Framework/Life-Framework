@@ -28,6 +28,13 @@ import { mergeLines } from "./merge/merge-markdown.mjs";
 import { mergeLintBaselines } from "./merge/union-lint-baseline.mjs";
 import { safetyCheck } from "./prs-safety.mjs";
 import { cmdSchedule } from "./prs-schedule.mjs";
+import * as shipQ from "./lib/ship-queue.mjs";
+
+// The live ship-queue entry for a branch, or null. heal leaves such a PR to the worker: both would merge main
+// in the same worktree, and heal would switch auto-merge on before the queue's gate passed.
+export function liveShipEntry(queue, branch) {
+  return (queue?.entries ?? []).find((e) => e.branch === branch && !shipQ.DONE.includes(e.state)) ?? null;
+}
 
 export const LIVE_MS = 15 * 60 * 1000;
 export const STUCK_MS = 10 * 60 * 1000;
@@ -505,13 +512,19 @@ export function healPass(root, { dryRun = false, only = [], conflictsOnly = fals
   if (only.length) prs = prs.filter((p) => only.includes(p.number));
   const now = Date.now();
   const results = [];
+  const queue = shipQ.readQueue(wt.ensureHub(root));
   for (const pr of prs) {
     refreshUnknown(root, pr);
     const c = checksOf(pr);
     const tag = `#${pr.number} ${pr.headRefName} [${pr.mergeStateStatus}]`;
     let r;
     const dirty = pr.mergeStateStatus === "DIRTY" || pr.mergeable === "CONFLICTING";
+    const live = liveShipEntry(queue, pr.headRefName);
     if (pr.isDraft) r = { kind: "skip", msg: "draft" };
+    else if (live) {
+      if (conflictsOnly) continue;
+      r = { kind: "skip", msg: `in the ship queue (${live.state}); its worker merges main and gates it` };
+    }
     else if (conflictsOnly && !dirty) continue;
     else if (dirty || pr.mergeStateStatus === "BEHIND") {
       log(`${tag}: ${dryRun ? "checking" : "healing"}`);

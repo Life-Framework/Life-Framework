@@ -264,6 +264,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LockpickVehicle(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickVehicleWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LoggingChain(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MedicDutyDesk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MiningAreaWeightedSpawns(), LF_TestTier.LOGIC);
@@ -324,6 +325,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacesOrgHideout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesRegistry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacesUnnamedDoor(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlaytestHelpersOff(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytimePersist(), LF_TestTier.PERSISTENCE);
@@ -498,6 +500,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Terms(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_TestLogicWorld(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestOrgSignWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
