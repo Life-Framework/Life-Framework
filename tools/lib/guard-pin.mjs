@@ -39,19 +39,44 @@ export function recordHead(hub, sha, status, extra = {}) {
   return s.heads[sha];
 }
 
-// GitHub commit status <-> guard status.
-export function guardToGh(status) {
-  if (status === "green") return { state: "success", description: "green: full post-merge check passed" };
-  if (status === "red") return { state: "failure", description: "red: post-merge check failed" };
-  return { state: "pending", description: "compiled-ok: Workbench compile passed; full check pending" };
+// GitHub commit statuses are the source of truth (every machine reads them through gh); the hub file is a cache.
+// main-guard/compile: success = compiled-ok, failure = compile red. main-guard/suite: success = green (build, full
+// suite, placement audit, pre-move e2e), failure = red. The legacy single context "main-guard" is still read.
+export const COMPILE_CTX = "main-guard/compile";
+export const SUITE_CTX = "main-guard/suite";
+export const LEASE_CTX = "main-guard/lease";
+export const LEASE_TTL_MS = 30 * 60 * 1000;
+
+// What to post for a verdict: [{ context, state, description }].
+export function guardToGh(status, step = "") {
+  if (status === "compiled-ok") return [{ context: COMPILE_CTX, state: "success", description: "compiled-ok: Workbench compile passed" }];
+  if (status === "green") return [{ context: SUITE_CTX, state: "success", description: "green: build, full suite, placement audit, pre-move e2e" }];
+  if (step === "compile") return [{ context: COMPILE_CTX, state: "failure", description: "red: Workbench compile failed" }];
+  return [{ context: SUITE_CTX, state: "failure", description: ("red: " + (step || "post-merge check") + " failed").slice(0, 140) }];
 }
-export function ghToGuard(st) {
-  if (!st || st.context !== CONTEXT) return null;
-  if (st.state === "success") return "green";
-  if (st.state === "failure" || st.state === "error") return "red";
-  if (st.state === "pending" && /^compiled-ok/.test(st.description ?? "")) return "compiled-ok";
+
+// Pure: a commit's statuses (any order; GitHub lists newest first) -> compiled-ok | green | red | null.
+export function guardFromStatuses(list) {
+  const newest = new Map();
+  for (const st of list ?? []) {
+    if (!st?.context) continue;
+    const prev = newest.get(st.context);
+    if (!prev || String(st.created_at ?? st.updated_at ?? "") > String(prev.created_at ?? prev.updated_at ?? "")) newest.set(st.context, st);
+  }
+  const c = newest.get(COMPILE_CTX)?.state;
+  const t = newest.get(SUITE_CTX)?.state;
+  if (c === "failure" || c === "error" || t === "failure" || t === "error") return "red";
+  if (t === "success") return "green";
+  if (c === "success") return "compiled-ok";
+  const legacy = newest.get(CONTEXT);
+  if (legacy) {
+    if (legacy.state === "success") return "green";
+    if (legacy.state === "failure" || legacy.state === "error") return "red";
+    if (legacy.state === "pending" && /^compiled-ok/.test(legacy.description ?? "")) return "compiled-ok";
+  }
   return null;
 }
+export const ghToGuard = (st) => guardFromStatuses([st]);
 
 // Pure: shas newest first (first-parent of origin/main); statusOf(sha) -> status or null. The newest checked
 // one, and how many commits it sits behind the head. null when none in the list is checked.
@@ -63,34 +88,78 @@ export function pickChecked(shas, statusOf) {
   return null;
 }
 
-export function ghStatus(dir, sha) {
-  const r = spawnSync("gh", ["api", `repos/{owner}/{repo}/commits/${sha}/statuses?per_page=30`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
-  if (r.status !== 0) return null;
-  try {
-    for (const st of JSON.parse(r.stdout)) {
-      const g = ghToGuard(st);
-      if (g) return g;
-    }
-  } catch {}
-  return null;
+function ghStatuses(dir, sha) {
+  const r = spawnSync("gh", ["api", `repos/{owner}/{repo}/commits/${sha}/statuses?per_page=100`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
+  if (r.status !== 0) return undefined; // gh unavailable: the caller falls back to the cache
+  try { return JSON.parse(r.stdout); } catch { return undefined; }
 }
 
-// The newest checked commit of origin/<base> as seen from `dir` (fetched by the caller). The local state file
-// first (the guard machine), then GitHub statuses for at most `remoteLookups` commits.
+// The guard verdict of one commit from GitHub: a status, null (none posted) or undefined (gh failed).
+export function ghStatus(dir, sha) {
+  const list = ghStatuses(dir, sha);
+  return list === undefined ? undefined : guardFromStatuses(list);
+}
+
+// The newest checked commit of origin/<base> as seen from `dir` (fetched by the caller): a GitHub verdict first
+// for at most `remoteLookups` commits; the local hub file only when gh cannot answer.
 export function resolveChecked(dir, { hub, base = "main", limit = 200, remoteLookups = 40, gh = ghStatus } = {}) {
   const r = spawnSync("git", ["-C", dir, "rev-list", "--first-parent", `-n${limit}`, `refs/remotes/origin/${base}`], { encoding: "utf8", windowsHide: true });
   const shas = String(r.stdout ?? "").split(/\r?\n/).filter(Boolean);
   const local = hub && existsSync(statePathOf(hub)) ? readHeads(hub).heads : {};
   let asked = 0;
   return pickChecked(shas, (sha) => {
-    if (local[sha]) return local[sha].status;
-    if (asked++ >= remoteLookups) return null;
-    return gh(dir, sha);
+    if (asked++ < remoteLookups) {
+      const g = gh(dir, sha);
+      if (g !== undefined && g !== null) return g; // a GitHub verdict wins; none posted or gh down: the cache
+    }
+    return local[sha]?.status ?? null;
   });
 }
 
-// Post a status for a head (the guard). Failures are logged by the caller, never fatal.
-export function postStatus(dir, sha, status) {
-  const g = guardToGh(status);
-  return spawnSync("gh", ["api", "-X", "POST", `repos/{owner}/{repo}/statuses/${sha}`, "-f", `state=${g.state}`, "-f", `context=${CONTEXT}`, "-f", `description=${g.description}`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
+// Post a verdict on a commit (the guard). Returns the last spawn result; failures are logged by the caller.
+export function postStatus(dir, sha, status, step = "") {
+  let r = { status: 0 };
+  for (const g of guardToGh(status, step)) {
+    r = spawnSync("gh", ["api", "-X", "POST", `repos/{owner}/{repo}/statuses/${sha}`, "-f", `state=${g.state}`, "-f", `context=${g.context}`, "-f", `description=${g.description}`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
+  }
+  return r;
+}
+
+// ---- One guard for the repo: a lease in the main-guard/lease status on the repository's root commit, which never
+// moves. Description "held <host> <pid> <iso>" or "released <host>". Newest status wins.
+export function parseLease(st) {
+  if (!st) return null;
+  const m = /^(held|released) (\S+)(?: (\d+) (\S+))?/.exec(st.description ?? "");
+  if (!m) return null;
+  return { state: m[1], host: m[2], pid: m[3] ? Number(m[3]) : null, at: m[4] ?? st.created_at ?? null };
+}
+
+// Pure: may `host` take the lease? { ok, holder, why }.
+export function leaseDecision(lease, host, now = Date.now(), ttl = LEASE_TTL_MS) {
+  if (!lease || lease.state !== "held") return { ok: true, why: "free" };
+  if (lease.host === host) return { ok: true, holder: lease, why: "ours" };
+  const age = now - Date.parse(lease.at ?? "");
+  if (!Number.isFinite(age) || age > ttl) return { ok: true, holder: lease, why: `stale lease of ${lease.host}` };
+  return { ok: false, holder: lease, why: `the main guard runs on ${lease.host} (pid ${lease.pid}, lease renewed ${Math.round(age / 60000)} min ago)` };
+}
+
+export function rootCommit(dir) {
+  const r = spawnSync("git", ["-C", dir, "rev-list", "--max-parents=0", "refs/remotes/origin/main"], { encoding: "utf8", windowsHide: true });
+  return String(r.stdout ?? "").split(/\r?\n/).filter(Boolean).pop() ?? null;
+}
+
+export function readLease(dir) {
+  const root = rootCommit(dir);
+  if (!root) return undefined;
+  const list = ghStatuses(dir, root);
+  if (list === undefined) return undefined;
+  const mine = list.filter((s) => s.context === LEASE_CTX).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+  return parseLease(mine[0]) ?? null;
+}
+
+export function writeLease(dir, state, host, pid) {
+  const root = rootCommit(dir);
+  if (!root) return { status: 1, stderr: "no root commit" };
+  const description = state === "held" ? `held ${host} ${pid} ${new Date().toISOString()}` : `released ${host}`;
+  return spawnSync("gh", ["api", "-X", "POST", `repos/{owner}/{repo}/statuses/${root}`, "-f", `state=${state === "held" ? "pending" : "success"}`, "-f", `context=${LEASE_CTX}`, "-f", `description=${description}`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
 }

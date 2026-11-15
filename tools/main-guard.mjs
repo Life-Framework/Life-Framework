@@ -20,6 +20,9 @@ import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as mg from "./lib/main-guard.mjs";
 import * as pin from "./lib/guard-pin.mjs";
+import { hostname } from "node:os";
+
+const HOST = (process.env.LF_MACHINE_NAME || hostname()).replace(/s+/g, "-");
 
 const SELF = fileURLToPath(import.meta.url);
 const TICK_MS = 60 * 1000;
@@ -83,7 +86,7 @@ function runDir(root, slug = RUN_SLUG) {
 // wt new pin to on any machine).
 function mark(root, dir, sha, status, extra) {
   try { pin.recordHead(hub(root), sha, status, extra); } catch (e) { log(root, `state write failed: ${e.message}`); }
-  const r = pin.postStatus(dir, sha, status);
+  const r = pin.postStatus(dir, sha, status, extra?.step);
   if (r.status !== 0) log(root, `commit status ${status} on ${sha.slice(0, 8)} not posted: ${String(r.stderr || "").trim().slice(0, 160)}`);
 }
 
@@ -192,6 +195,22 @@ function openFixCard(root, dir, c, stepName, what, failLog) {
   log(root, `fix card: ${r.status === 0 ? (r.stdout || "").trim() : `create failed: ${(r.stderr || "").trim().slice(0, 200)}`}`);
 }
 
+async function compileRouted(root, cdir, sha) {
+  const file = join(mainRoot(root), "tmp", "logs", `main-guard-compile-${sha.slice(0, 8)}-${Date.now()}.log`);
+  mkdirSync(dirname(file), { recursive: true });
+  const wbRoute = await import("./lib/wb-route.mjs");
+  const say = (l) => { try { appendFileSync(file, `${l}
+`); } catch {} };
+  process.env.LF_PRIORITY = "high";
+  try {
+    const r = await wbRoute.routeWorkbench(cdir, { purpose: "main guard compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], log: say, runLocal: async () => runCli(root, cdir, ["ci", "--wb-only", "--compile-only", "--local"], `compile-${sha.slice(0, 8)}`).then((y) => y.code) });
+    return { code: r.code, log: file };
+  } catch (e) {
+    say(`route failed: ${e?.message ?? e}`);
+    return { code: 3, log: file };
+  }
+}
+
 // Stage 1: the Workbench compile on a new head, in its own worktree, before anything else. A red compile is
 // deterministic: bisect at once (no recheck) and revert the culprit.
 async function compileHead(root, cdir, head) {
@@ -199,7 +218,9 @@ async function compileHead(root, cdir, head) {
   writeState(root, { lastCompileAt: now(), compiling: { head, at: now() } });
   const compile = async (sha) => {
     checkout(cdir, sha);
-    const x = await runCli(root, cdir, mg.COMPILE, `compile-${sha.slice(0, 8)}`);
+    // The guard's own routing (not the checked-out commit's cli, which may predate it): send the compile to a pool
+    // machine with the workbench cap; the remote runs that commit's `ci --wb-only --compile-only --local`.
+    const x = await compileRouted(root, cdir, sha);
     const v = mg.compileVerdict(x.code);
     log(root, `  compile ${sha.slice(0, 8)}: ${v} (exit ${x.code}, ${x.log})`);
     return v;
@@ -291,8 +312,21 @@ export async function runWorker(root) {
   // The first start pins the start head: merges on main before it are never blamed. The guard has not
   // checked it, so the first run proves it (lastGreen) before anything can be bisected.
   if (!st.startHead) writeState(root, { startedAt: now(), startHead: head0, lastChecked: null, lastGreen: null, reverted: st.reverted ?? [] });
+  // One guard for the repo: the lease (main-guard/lease status on the root commit) must be free, stale or ours.
+  const lease = pin.readLease(dir);
+  const ld = pin.leaseDecision(lease, HOST);
+  if (lease === undefined) log(root, "lease: gh could not read it; starting on the local lock only");
+  else if (!ld.ok) { log(root, `lease refused: ${ld.why}; worker exits`); try { unlinkSync(lockPath(root)); } catch {} return 1; }
+  pin.writeLease(dir, "held", HOST, process.pid);
+  let leaseAt = Date.now();
   writeState(root, { running: null, pid: process.pid });
   for (;;) {
+    if (Date.now() - leaseAt > 5 * 60 * 1000) {
+      const cur = pin.readLease(dir);
+      if (cur && cur.state === "held" && cur.host !== HOST) { log(root, `lease taken by ${cur.host}; worker exits`); break; }
+      pin.writeLease(dir, "held", HOST, process.pid);
+      leaseAt = Date.now();
+    }
     if (off()) { log(root, "LF_MAIN_GUARD=0: worker exits"); break; }
     if (readState(root).stop) { writeState(root, { stop: false }); log(root, "stop requested: worker exits"); break; }
     try {
@@ -314,6 +348,7 @@ export async function runWorker(root) {
     }
     await new Promise((r) => setTimeout(r, TICK_MS));
   }
+  pin.writeLease(dir, "released", HOST);
   try { unlinkSync(lockPath(root)); } catch {}
   return 0;
 }
@@ -326,6 +361,11 @@ export async function main(args, { root }) {
     const pid = workerAlive(root);
     if (pid) { console.log(`main-guard: already running (pid ${pid})`); return 0; }
     if (readState(root).stop) writeState(root, { stop: false });
+    {
+      wt.git(mainRoot(root), ["fetch", "origin", "--prune"]);
+      const ld = pin.leaseDecision(pin.readLease(mainRoot(root)), HOST);
+      if (!ld.ok) { console.log(`FAIL  main-guard: ${ld.why}. Only one guard runs; stop that one first.`); return 1; }
+    }
     const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
     try {
       quietSpawnDetached(process.execPath, [SELF, "worker", mainRoot(root)], { cwd: dirname(dirname(SELF)), env: process.env });
@@ -344,11 +384,24 @@ export async function main(args, { root }) {
     try { process.kill(pid); } catch {}
     try { unlinkSync(lockPath(root)); } catch {}
     writeState(root, { stop: false, running: null });
+    if (pin.readLease(mainRoot(root))?.host === HOST) pin.writeLease(mainRoot(root), "released", HOST);
     console.log(`main-guard: stopped (pid ${pid})`);
     return 0;
   }
   if (sub === "status" || !sub) {
-    console.log(mg.statusLine(readState(root), { alive: workerAlive(root), off: off() }));
+    const alive = workerAlive(root);
+    if (alive) console.log(mg.statusLine(readState(root), { alive, off: off() }));
+    // From GitHub, so every machine sees the same guard: who holds the lease, main's head, the newest checked commit.
+    const mr = mainRoot(root);
+    wt.git(mr, ["fetch", "origin", "--prune"]);
+    const lease = pin.readLease(mr);
+    const head = wt.git(mr, ["rev-parse", "origin/main"]).stdout.trim();
+    const hs = pin.ghStatus(mr, head);
+    const ck = pin.resolveChecked(mr, { hub: wt.hubDirOf(mr), remoteLookups: 30 });
+    const who = lease === undefined ? "lease unknown (gh failed)" : !lease || lease.state !== "held" ? "no guard holds the lease" : `running on ${lease.host} (pid ${lease.pid}, lease renewed ${Math.round((Date.now() - Date.parse(lease.at)) / 60000)} min ago)`;
+    if (!alive) console.log(`MAIN GUARD ${who}`);
+    else console.log(`  github: ${who}`);
+    console.log(`  main ${head.slice(0, 8)}: ${hs ?? "unchecked"}; newest compiled-ok or better: ${ck ? `${ck.sha.slice(0, 8)} (${ck.status}, ${ck.behind} behind)` : "none"}`);
     console.log(`  log ${logPath(root)}; flakes ${flakeLog(root)}`);
     return 0;
   }
