@@ -263,6 +263,9 @@ const Servers = () => {
           </p>
           <ul className="space-y-2">
             <li>
+              <GoLink to={blob("docs/owner/install.md")}>Run your own server: install guide</GoLink>
+            </li>
+            <li>
               <GoLink to={blob("docs/setup.md")}>Development setup</GoLink>
             </li>
             <li>
