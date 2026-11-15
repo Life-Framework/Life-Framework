@@ -53,6 +53,9 @@ class LF_BreachTarget : Managed
 	bool m_bLoud;
 	//! The robbery type's alarm (an LF_AlarmKind id). Empty takes the offence's kind, else the plain siren.
 	string m_sAlarmKind;
+	//! The footprint card the arm planned. It lies when the charge detonates (Open), never before;
+	//! a cancelled, repaired or reset charge drops it.
+	ref LF_PendingFootprint m_Footprint;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -113,6 +116,7 @@ class LF_Breach
 		// with the old entity. The open flag is kept; Apply/Repair own it.
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
+		target.m_Footprint = null;
 		LF_Debug.Log("Breach", string.Format("configured %1 fuse=%2", targetId, fuseSeconds));
 	}
 
@@ -168,6 +172,7 @@ class LF_Breach
 		target.m_bOpen = false;
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
+		target.m_Footprint = null;
 		WriteLock(targetId, true);
 		SyncTarget(target);
 	}
@@ -265,7 +270,12 @@ class LF_Breach
 		if (!suspect)
 			suspect = chargeCarrier;
 
-		LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId), -1, target.m_bLoud, target.m_sAlarmKind);
+		// The report, the scene and the alarm are the placement; the evidence is the detonation. The
+		// footprint card is planned here (who stood where, in what boots) and laid by Open.
+		target.m_Footprint = null;
+		LF_DispatchRecord dispatched = LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId), -1, target.m_bLoud, target.m_sAlarmKind, true);
+		if (dispatched)
+			target.m_Footprint = PlanEvidence(playerUid, suspect, offence);
 		LF_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
 
 		target.m_bChargeArmed = true;
@@ -309,6 +319,7 @@ class LF_Breach
 
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
+		target.m_Footprint = null;
 		SyncTarget(target);
 		LF_Debug.Error("Breach", string.Format("charge cancelled on %1: %2", targetId, reason));
 	}
@@ -362,6 +373,7 @@ class LF_Breach
 		target.m_bOpen = false;
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
+		target.m_Footprint = null;
 		WriteLock(targetId, true);
 		SyncTarget(target);
 		LF_Debug.Log("Breach", string.Format("repaired %1 by %2", targetId, playerUid));
@@ -442,6 +454,7 @@ class LF_Breach
 		target.m_bOpen = record.m_bOpen;
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
+		target.m_Footprint = null;
 		WriteLock(target.m_sTargetId, !record.m_bOpen);
 		SyncTarget(target);
 		LF_Debug.Log("Breach", string.Format("apply-save %1 open=%2", target.m_sTargetId, record.m_bOpen));
@@ -472,6 +485,40 @@ class LF_Breach
 		WriteLock(target.m_sTargetId, false);
 		SyncTarget(target);
 		LF_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
+		LeaveEvidence(target);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The footprint card the robber would leave at this charge, from the report Arm just filed. Null
+	//! when the offence leaves none, the robber sat in a vehicle, or there is no body (script arm).
+	protected static LF_PendingFootprint PlanEvidence(string playerUid, IEntity suspect, string offence)
+	{
+		if (!suspect)
+			return null;
+
+		array<ref LF_WantedReportRecord> reports = LF_WantedReports.GetFor(playerUid);
+		if (!reports || reports.IsEmpty())
+			return null;
+
+		LF_WantedReportRecord report = reports[reports.Count() - 1];
+		if (!report || report.m_sOffence != offence)
+			return null;
+
+		return LF_ScenePieces.PlanFootprint(report, suspect);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The detonation: the planned evidence lies at the blast site, once. Nothing planned, nothing lies.
+	protected static void LeaveEvidence(LF_BreachTarget target)
+	{
+		LF_PendingFootprint plan = target.m_Footprint;
+		target.m_Footprint = null;
+		if (!plan)
+			return;
+
+		IEntity card = LF_ScenePieces.LeaveFootprint(plan, System.GetTickCount());
+		if (card)
+			LF_Debug.Info("Breach", string.Format("evidence left at %1: report #%2", target.m_sTargetId, plan.m_iReport));
 	}
 
 	//------------------------------------------------------------------------------------------------
