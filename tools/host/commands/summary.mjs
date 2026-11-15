@@ -11,7 +11,7 @@ import { loadTriageRows } from "../../lib/log-triage.mjs";
 import { crashFolders, DEFAULT_TARGET, newestPerfCsv, renderMarkdown, serverNameOf, stampFromPath, summarize } from "../summary.mjs";
 
 export const help =
-  "summary [<console.log>] [--perf <csv>] [--triage <file>] [--out <dir>] [--target 40] [--json]   write <host>/sessions/<stamp>.md after a session: length, unique players and peak, restarts and crashes, triage known/new, the perf verdict";
+  "summary [<console.log>] [--perf <csv>] [--triage <file>] [--out <dir>] [--target 16] [--json]   write <host>/sessions/<stamp>.md after a session: length, unique players and peak, restarts and crashes, triage known/new, the perf verdict";
 
 const VALUE_FLAGS = ["--perf", "--triage", "--out", "--target"];
 

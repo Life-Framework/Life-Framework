@@ -101,24 +101,24 @@ Record this even when it is a gap: in-world warnings before a restart need one o
 | Server appears in the browser | `tools\cli host listing` *(planned, #1461)*; until it merges, join from a machine off your network and look in the in-game browser | The server name in the browser and a join | [ ] Pass [ ] Fail [ ] Gap |
 | Players can query A2S | `tools\cli host players <address>:17777` | Server name, map and the player count | [ ] Pass [ ] Fail [ ] Gap |
 
-## 9. 40 players: CPU, memory and upload
+## 9. 16 players: CPU, memory and upload
 
 | Check | How to check in the trial | Proof | Result |
 |---|---|---|---|
 | Measure CPU, memory and upload | `tools\cli host perf --every 30 --for 120` on a Windows box you control, with the server as the only busy network user. On a Linux panel, use its CPU and network graphs for the same window and write the figures down | `host perf` prints one `[LFDebug:HostPerf] verdict` line; the CSV is in `<host>/perf/` | [ ] Pass [ ] Fail [ ] Gap |
 | Mean CPU under 80% of one core | Read the verdict's CPU figure | Verdict names mean CPU | [ ] Pass [ ] Fail [ ] Gap |
 | Mean upload under the budget | Read the verdict's upload figure against `--upload-mbit` (default 20) | Verdict names mean upload | [ ] Pass [ ] Fail [ ] Gap |
-| Forty players, the real count | Join with the players you have; note the count when `host players` reads it | `host players` lists the count | [ ] Pass [ ] Fail [ ] Gap |
+| Sixteen players, the real count (a full server) | Join with the players you have; note the count when `host players` reads it | `host players` lists the count | [ ] Pass [ ] Fail [ ] Gap |
 
 `host perf` is Windows only. A panel that runs Linux gives you the figures from its graphs, not from the script,
-so write which source you used. The 40-player budget is the one in [rented-box](rented-box.md) section 2.
+so write which source you used. The 16-player budget (the alpha's full server) is the one in [rented-box](rented-box.md) section 2.
 
 ## 10. Panel access and cost
 
 | Check | How to check in the trial | Proof | Result |
 |---|---|---|---|
 | Second admin account | Add a second login for a second person | The second login signs in and sees the server | [ ] Pass [ ] Fail [ ] Gap |
-| Price for 40 player slots | Read the plan that covers 40 slots | The monthly price as shown on the host's own page | [ ] Pass [ ] Fail [ ] Gap |
+| Price for 16 player slots | Read the plan that covers 16 slots | The monthly price as shown on the host's own page | [ ] Pass [ ] Fail [ ] Gap |
 | Price written down | Put the figure in `website/content/costs.json` only if the host's page shows it | The `costs.json` row with its date | [ ] Pass [ ] Fail [ ] Gap |
 
 ## 11. Box check
