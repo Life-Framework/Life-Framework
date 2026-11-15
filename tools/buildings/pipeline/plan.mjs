@@ -7,7 +7,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { FIXTURES, fixturesOf, readChildren, storePlan } from "./store-slots.mjs";
+import { FIXTURES, RACKS, buildingFiles, fixturesOf, placedFixtures, readChildren, storePlan } from "./store-slots.mjs";
 import { loadScenario } from "./scenario.mjs";
 
 export const ROOM_KINDS = [
@@ -99,17 +99,13 @@ export function buildPlan(root, slug, { measure = (refs) => measureAll(root, ref
   const addon = spec.addon || "LifeFramework";
   const ad = join(root, "addons", addon);
   const pd = spec.prefab_dir;
-  const files = {
-    building: `${pd}/${spec.name}.et`,
-    base: `${pd}/${spec.name}_Base.et`,
-    furniture: `${pd}/Furniture/${spec.name}_furniture_01.et`,
-    store: spec.store ? `${pd}/${spec.store.prefab}.et` : null,
-    model: `${spec.asset_dir}/${spec.name}.xob`,
-  };
+  const files = { ...buildingFiles(spec), model: spec.vanilla ? `the vanilla ${spec.vanilla.base}` : `${spec.asset_dir}/${spec.name}.xob` };
   const read = (rel) => (rel && existsSync(join(ad, rel)) ? readFileSync(join(ad, rel), "utf8") : "");
   const furnText = read(files.furniture);
-  const baseText = read(files.base);
-  const furniture = readChildren(furnText);
+  // A vanilla-based building adds its doors and windows in our prefab; the base's own are the game's.
+  const baseText = read(spec.vanilla ? files.building : files.base);
+  // The shop fittings the store block places are children too (store.fixtures).
+  const furniture = [...readChildren(furnText), ...(spec.store ? placedFixtures(spec.store) : [])];
   const shell = readChildren(baseText);
   const props = (spec.polish?.props || []).map((p) => ({ name: p.prefab.split("/").pop().replace(/\.et$/, ""), ref: p.prefab, at: p.at, yaw: p.yaw ?? 0, why: p.why }));
   const refs = [...new Set([files.building, ...furniture.map((c) => c.ref), ...props.map((p) => p.ref)])];
@@ -134,8 +130,8 @@ export function buildPlan(root, slug, { measure = (refs) => measureAll(root, ref
   line("|---|---|");
   line(`| Place this | \`${files.store ? metaRef(join(ad, files.store), files.store) : metaRef(join(ad, files.building), files.building)}\` |`);
   line(`| Building (shell + furniture) | \`${metaRef(join(ad, files.building), files.building)}\` |`);
-  line(`| Shell (model, doors, windows) | \`${metaRef(join(ad, files.base), files.base)}\` |`);
-  line(`| Furniture (every prop a vanilla child) | \`${metaRef(join(ad, files.furniture), files.furniture)}\` |`);
+  line(`| Shell (model, doors, windows) | \`${spec.vanilla ? `${files.base} (vanilla; our prefab adds the doors, windows and sign)` : metaRef(join(ad, files.base), files.base)}\` |`);
+  line(`| Furniture (every prop a vanilla child) | \`${files.furniture ? metaRef(join(ad, files.furniture), files.furniture) : "none: the store block places the fittings"}\` |`);
   line(`| Model | \`${files.model}\` |`);
   line();
   line("Generated files: `building run` rewrites them from the spec. Never edit them by hand.");
@@ -202,11 +198,23 @@ export function buildPlan(root, slug, { measure = (refs) => measureAll(root, ref
       if (!list.length) continue;
       line(`- \`${name}\` (${list.length}, boards y ${FIXTURES[name].boards.map((b) => f2(b.y)).join(", ")}): ${list.map((f, i) => `${i} ${pt(f.at)} yaw ${f.yaw}`).join("; ")}`);
     }
+    for (const name of Object.keys(RACKS)) {
+      const list = fixturesOf(furniture, name);
+      if (!list.length) continue;
+      const kinds = RACKS[name].slots.reduce((m, s) => ({ ...m, [s.kind]: (m[s.kind] || 0) + 1 }), {});
+      line(`- \`${name}\` (${list.length}, display rack, slots ${Object.entries(kinds).map(([k, n]) => `${n} ${k}`).join(", ")}): ${list.map((f, i) => `${i} ${pt(f.at)} yaw ${f.yaw}`).join("; ")}`);
+    }
     line();
-    line("| Item | Fixture | Pick | Boards | Points | Max | Restock |");
+    line("| Item | Fixture | Pick | Boards / slots | Points | Max | Restock |");
     line("|---|---|---|---|---|---|---|");
-    for (const [i, l] of (spec.store.lines || []).entries()) line(`| \`${l.item}\` | ${l.fixture} | ${(l.pick || []).join(", ")} | ${(l.boards || []).join(", ")} | ${plan.lines[i]?.slots.length ?? "?"} | ${l.max ?? "-"} | ${l.restock ?? "-"} |`);
+    let shelf = 0;
+    let shown = 0;
+    for (const l of spec.store.lines || []) {
+      if (l.display) line(`| \`${l.item}\` | ${l.fixture} (display only) | ${(l.pick || []).join(", ")} | ${l.kind || "long"} ${(l.slots || ["all"]).join(", ")} | ${plan.display[shown++]?.points.length ?? "?"} | - | - |`);
+      else line(`| \`${l.item}\` | ${l.fixture} | ${(l.pick || []).join(", ")} | ${(l.boards || []).join(", ")} | ${plan.lines[shelf++]?.slots.length ?? "?"} | ${l.max ?? "-"} | ${l.restock ?? "-"} |`);
+    }
     line();
+    for (const c of plan.counters) line(`- Counter \`${c.prefab}\` at ${pt(c.at)} yaw ${c.yaw}: sells outlet \`${c.outlet}\` over the counter, behind its catalogue gates.`);
     line(`Tills (${plan.tills.length}): ${plan.tills.map(pt).join("; ") || "none"}. Alarm: ${spec.store.alarm ? `\`${spec.store.alarm.prefab}\` at ${pt(spec.store.alarm.at)}, reach ${spec.store.alarm.reach} m` : "none"}.${plan.problems.length ? ` Problems: ${plan.problems.join("; ")}` : ""}`);
     line();
   }

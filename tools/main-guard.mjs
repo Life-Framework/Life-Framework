@@ -20,6 +20,9 @@ import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as mg from "./lib/main-guard.mjs";
 import * as pin from "./lib/guard-pin.mjs";
+import { hostname } from "node:os";
+
+const HOST = (process.env.LF_MACHINE_NAME || hostname()).replace(/s+/g, "-");
 
 const SELF = fileURLToPath(import.meta.url);
 const TICK_MS = 60 * 1000;
@@ -83,7 +86,7 @@ function runDir(root, slug = RUN_SLUG) {
 // wt new pin to on any machine).
 function mark(root, dir, sha, status, extra) {
   try { pin.recordHead(hub(root), sha, status, extra); } catch (e) { log(root, `state write failed: ${e.message}`); }
-  const r = pin.postStatus(dir, sha, status);
+  const r = pin.postStatus(dir, sha, status, extra?.step);
   if (r.status !== 0) log(root, `commit status ${status} on ${sha.slice(0, 8)} not posted: ${String(r.stderr || "").trim().slice(0, 160)}`);
 }
 
@@ -239,18 +242,27 @@ async function compileHead(root, cdir, head) {
   await revert(root, cdir, g.culprit, "Workbench compile", "compile logs under tmp/logs/main-guard-compile-*");
 }
 
+function readDriverNames(dir) {
+  try { return mg.driverNames(readFileSync(join(dir, "tools", "merge", "drivers.gitconfig"), "utf8")); } catch { return []; }
+}
+
 async function revert(root, dir, c, what, failLog) {
   const pr = mg.prOfMerge(c.subject);
   const title = mg.revertTitle(pr, what);
   const branch = `ws/revert-pr${pr}-guard`;
   git(dir, ["fetch", "origin", "--prune"]);
   git(dir, ["checkout", "-q", "-B", branch, "origin/main"]);
-  const rv = git(dir, ["revert", "-m", "1", "--no-edit", c.sha]);
+  // The repo's merge drivers (tools/merge/drivers.gitconfig) need a merge's sides and fail under `git revert`
+  // ("lf-regen: cannot identify the merge sides"; #1847 and #1856 were left unreverted that way). For the revert
+  // each driver keeps ours (`true`); the generated files are then rebuilt from the reverted sources.
+  const rv = git(dir, [...mg.driverOverrides(readDriverNames(dir)), "revert", "-m", "1", "--no-edit", c.sha]);
   if (rv.status !== 0) {
     git(dir, ["revert", "--abort"]);
     log(root, `revert of #${pr} (${c.sha.slice(0, 8)}) does not apply on main: ${(rv.stderr || rv.stdout).trim().slice(0, 200)}; left to a human`);
     return;
   }
+  for (const args of mg.REGEN_AFTER_REVERT) spawnSync(process.execPath, args, { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 300000 });
+  git(dir, ["add", "-A"]);
   git(dir, ["commit", "--amend", "-q", "-m", `${title}\n\nReverts #${pr} (merge ${c.sha}): the main guard saw ${what} fail twice at main and bisected it to this merge.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`]);
   const push = git(dir, ["push", "-u", "origin", `${branch}:${branch}`]);
   if (push.status !== 0) {
@@ -309,8 +321,21 @@ export async function runWorker(root) {
   // The first start pins the start head: merges on main before it are never blamed. The guard has not
   // checked it, so the first run proves it (lastGreen) before anything can be bisected.
   if (!st.startHead) writeState(root, { startedAt: now(), startHead: head0, lastChecked: null, lastGreen: null, reverted: st.reverted ?? [] });
+  // One guard for the repo: the lease (main-guard/lease status on the root commit) must be free, stale or ours.
+  const lease = pin.readLease(dir);
+  const ld = pin.leaseDecision(lease, HOST);
+  if (lease === undefined) log(root, "lease: gh could not read it; starting on the local lock only");
+  else if (!ld.ok) { log(root, `lease refused: ${ld.why}; worker exits`); try { unlinkSync(lockPath(root)); } catch {} return 1; }
+  pin.writeLease(dir, "held", HOST, process.pid);
+  let leaseAt = Date.now();
   writeState(root, { running: null, pid: process.pid });
   for (;;) {
+    if (Date.now() - leaseAt > 5 * 60 * 1000) {
+      const cur = pin.readLease(dir);
+      if (cur && cur.state === "held" && cur.host !== HOST) { log(root, `lease taken by ${cur.host}; worker exits`); break; }
+      pin.writeLease(dir, "held", HOST, process.pid);
+      leaseAt = Date.now();
+    }
     if (off()) { log(root, "LF_MAIN_GUARD=0: worker exits"); break; }
     if (readState(root).stop) { writeState(root, { stop: false }); log(root, "stop requested: worker exits"); break; }
     try {
@@ -332,6 +357,7 @@ export async function runWorker(root) {
     }
     await new Promise((r) => setTimeout(r, TICK_MS));
   }
+  pin.writeLease(dir, "released", HOST);
   try { unlinkSync(lockPath(root)); } catch {}
   return 0;
 }
@@ -344,6 +370,11 @@ export async function main(args, { root }) {
     const pid = workerAlive(root);
     if (pid) { console.log(`main-guard: already running (pid ${pid})`); return 0; }
     if (readState(root).stop) writeState(root, { stop: false });
+    {
+      wt.git(mainRoot(root), ["fetch", "origin", "--prune"]);
+      const ld = pin.leaseDecision(pin.readLease(mainRoot(root)), HOST);
+      if (!ld.ok) { console.log(`FAIL  main-guard: ${ld.why}. Only one guard runs; stop that one first.`); return 1; }
+    }
     const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
     try {
       quietSpawnDetached(process.execPath, [SELF, "worker", mainRoot(root)], { cwd: dirname(dirname(SELF)), env: process.env });
@@ -362,11 +393,24 @@ export async function main(args, { root }) {
     try { process.kill(pid); } catch {}
     try { unlinkSync(lockPath(root)); } catch {}
     writeState(root, { stop: false, running: null });
+    if (pin.readLease(mainRoot(root))?.host === HOST) pin.writeLease(mainRoot(root), "released", HOST);
     console.log(`main-guard: stopped (pid ${pid})`);
     return 0;
   }
   if (sub === "status" || !sub) {
-    console.log(mg.statusLine(readState(root), { alive: workerAlive(root), off: off() }));
+    const alive = workerAlive(root);
+    if (alive) console.log(mg.statusLine(readState(root), { alive, off: off() }));
+    // From GitHub, so every machine sees the same guard: who holds the lease, main's head, the newest checked commit.
+    const mr = mainRoot(root);
+    wt.git(mr, ["fetch", "origin", "--prune"]);
+    const lease = pin.readLease(mr);
+    const head = wt.git(mr, ["rev-parse", "origin/main"]).stdout.trim();
+    const hs = pin.ghStatus(mr, head);
+    const ck = pin.resolveChecked(mr, { hub: wt.hubDirOf(mr), remoteLookups: 30 });
+    const who = lease === undefined ? "lease unknown (gh failed)" : !lease || lease.state !== "held" ? "no guard holds the lease" : `running on ${lease.host} (pid ${lease.pid}, lease renewed ${Math.round((Date.now() - Date.parse(lease.at)) / 60000)} min ago)`;
+    if (!alive) console.log(`MAIN GUARD ${who}`);
+    else console.log(`  github: ${who}`);
+    console.log(`  main ${head.slice(0, 8)}: ${hs ?? "unchecked"}; newest compiled-ok or better: ${ck ? `${ck.sha.slice(0, 8)} (${ck.status}, ${ck.behind} behind)` : "none"}`);
     console.log(`  log ${logPath(root)}; flakes ${flakeLog(root)}`);
     return 0;
   }
