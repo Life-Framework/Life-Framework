@@ -51,6 +51,10 @@ Optional: pointers, `path:line` places, decisions already made.
 | `risk` | none, persistence, replication, money, inventory | Needs T2 and an independent reviewer |
 | `release-blocker` | yes, no | Flags the slice and every slice it depends on in the queue |
 
+GitHub caps a parent at 100 sub-issues. A chapter past the cap files new cards under one of its epics with
+`slice new <chapter> --plan <file> --attach <epic>`; the card still names the chapter as its parent, and `slice list
+<chapter>` reads cards one level down.
+
 A card labelled `hold` (a maintainer decision pending, such as filming before a sign-off) is never ready.
 
 ## Agent brief
