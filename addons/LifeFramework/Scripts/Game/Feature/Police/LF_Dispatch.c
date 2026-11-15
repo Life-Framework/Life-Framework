@@ -58,12 +58,12 @@ class LF_Dispatch
 	//! cabinet); a zero vector sounds no alarm (a murder in the street, the logic-tier seam).
 	//! \param officersOnDuty On-duty police when the crime started; negative counts them now.
 	//! \return The dispatch record, or null when the crime report was refused (no player uid).
-	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false, string alarmKind = "")
+	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false, string alarmKind = "", bool deferPieces = false)
 	{
 		if (LF_Systems.Refuses("Police", "dispatch report"))
 			return null;
 
-		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence);
+		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence, deferPieces);
 		if (!report)
 		{
 			LF_Debug.Error(FEATURE, string.Format("dispatch dropped: no crime report for %1 (%2)", playerUid, offence));
