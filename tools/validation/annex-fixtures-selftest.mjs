@@ -4,6 +4,8 @@
 // Proves validate-annex-fixtures lets a baselined village reference pass, fails
 // a new one (new file, or a new name in a baselined file), ignores annex names,
 // spawned prefabs and comments, and reports a retired baseline row as stale.
+// red-proof: before the class-aware reader, the "unnamed 'Class : prefab {' entity" case printed 'got: LF_Test_Car.c: names
+// village entity "Vehicle"' and exited 1 (2026-11-15; Workbench began saving unnamed entities without a name).
 // red-proof: with the nested-entity line in declaredNames (the `if (nested) names.push(...)` one) removed this printed
 // "FAIL a new test names a village entity inside a $grp" and "... a village child entity" with "(no errors)" and
 // exited 1 (2026-11-12); restored, it passes.
@@ -48,9 +50,28 @@ const NESTED = `$grp GenericEntity : "{4444444444444444}Prefabs/Counter.et" {
  }
 }
 `;
+// Workbench saves an unnamed entity as `Class : "prefab" {` (no name), top level and nested.
+const UNNAMED = `Vehicle : "{6666666666666666}Prefabs/Car.et" {
+ coords 0 0 0
+}
+GenericEntity Roadmap_Car_Lot : "{7777777777777777}Prefabs/Lot.et" {
+ {
+  Vehicle : "{6666666666666667}Prefabs/Car.et" {
+   coords 1 0 0
+  }
+  Vehicle {
+   coords 2 0 0
+  }
+  Roadmap_Lot_Kid : "{6666666666666668}Prefabs/Kid.et" {
+  }
+ }
+}
+`;
 const BASELINE = { "LF_Test_Old.c": ["Roadmap_Bank_Bag"] };
 
 const cases = [
+  { name: "an unnamed 'Class : prefab {' entity is not named after its class", plant: (r) => { put(r, `${LAYERS}/Street_Cars.layer`, UNNAMED); put(r, `${TESTS}/LF_Test_Car.c`, test(find("Vehicle"))); }, expect: /^$/, none: true },
+  { name: "a named child beside unnamed ones is still a village entity", plant: (r) => { put(r, `${LAYERS}/Street_Cars.layer`, UNNAMED); put(r, `${TESTS}/LF_Test_Kid2.c`, test(find("Roadmap_Lot_Kid"))); }, expect: /LF_Test_Kid2.c: names village entity "Roadmap_Lot_Kid"/ },
   { name: "a new test names a village entity inside a $grp", plant: (r) => { put(r, `${LAYERS}/Street_Nested.layer`, NESTED); put(r, `${TESTS}/LF_Test_Nest.c`, test(find("Roadmap_Nested_Depot"))); }, expect: /LF_Test_Nest.c: names village entity "Roadmap_Nested_Depot"/ },
   { name: "a new test names a village child entity", plant: (r) => { put(r, `${LAYERS}/Street_Nested.layer`, NESTED); put(r, `${TESTS}/LF_Test_Kid.c`, test(find("Roadmap_Nested_Child"))); }, expect: /LF_Test_Kid.c: names village entity "Roadmap_Nested_Child"/ },
   { name: "a component override name is not an entity", plant: (r) => { put(r, `${LAYERS}/Street_Nested.layer`, NESTED); put(r, `${TESTS}/LF_Test_Comp.c`, test('		ctx.True(c.GetClassName() == "MeshObject", "x");')); }, expect: /^$/ , none: true },

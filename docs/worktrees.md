@@ -138,7 +138,7 @@ against the merge base with `origin/<base>`, uncommitted and untracked files inc
 |---|---|---|
 | T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
 | T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
-| T1w | a maintainer hand edit: the branch is `town-maintainer-*` and every changed `addons/` file is a modified `.layer` whose entities were only moved, or added / removed from prefabs already in use ("Maintainer world edits") | `validate` (static), `audit placement --strict --layer <touched>`, the tests that name a touched layer or entity |
+| T1w | a maintainer hand edit: the branch is `town-maintainer-*` and every changed `addons/` file is a modified `.layer` whose entities were only moved, or added / removed from prefabs already in use ("Maintainer world edits") | `validate --world` (hard checks block, layout checks warn), `audit placement --strict --layer <touched>` (findings warn), the tests that name a touched layer or entity |
 | T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
 
 T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
@@ -1431,6 +1431,10 @@ toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then
 The maintainer hand-edits DebugWorld in Workbench, in his own worktree (`ws/town-maintainer-edits`) on the lead's PC, with
 uncommitted `.layer` edits at any time. `toolscli world-sync` keeps that worktree level with `origin/main` without losing
 or mangling them. (Other tools for this workflow add their own `###` subsections under this heading.)
+
+### What blocks a world ship, what warns
+
+`world ship` and the T1w gate run `validate --world`: only the checks that read `.layer` files (`tools/lib/world-checks.mjs`, about a dozen, a few seconds), not all of them. **Blocks:** a layer parse error, a missing or unknown prefab GUID, a duplicate GUID, `validate-world-zones` (an edit outside town layers), a failed layer-named test. **Warns** (listed under `## Layout warnings` in the PR body, never blocking): the town manifest's sign distances and neighbour rule, the village-name and fixture checks, the player-props and road-id checks, and the placement audit's findings. On a `town-maintainer-*` branch a plain `validate` (CI's included) demotes the same layout checks to `WARN`. Selftest: `tools/validation/world-checks-selftest.mjs`.
 
 ### Keeping it level with main (`world-sync`)
 
