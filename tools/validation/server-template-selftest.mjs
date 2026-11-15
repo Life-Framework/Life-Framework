@@ -54,7 +54,7 @@ const variantMutate = (fn, want) => {
 variantMutate((t) => t, null);
 variantMutate((t) => t.replace('"maxPlayers": 16', '"maxPlayers": 32'), /more than game\.mods and game\.scenarioId/);
 variantMutate((t) => t.replace('{5A1E5A1E5A1E0002}', '{0000000000000000}'), /does not match/);
-variantMutate((t) => t.replace('"modId": "79636E668EA37AC9"', '"modId": "B1E84D5687E11724"'), /must start with the core/);
+variantMutate((t) => t.replace('"modId": "4550A2B656E1B569"', '"modId": "B1E84D5687E11724"'), /must start with the core/);
 // A `pack new` scaffold swaps in by those two entries alone.
 {
   const root = copy();

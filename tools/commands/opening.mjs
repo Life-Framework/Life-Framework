@@ -6,7 +6,22 @@
 //   BEAT <Bn> <check-id> PASS|FAIL|BLOCKED <reason>
 // (BLOCKED when the command or slice it needs is not on main; a script exits 1 only on a FAIL). Lines that are not BEAT
 // lines are ignored. Files starting with `_` and `*-setup.mjs` are helpers (b7-restart-setup.mjs needs --profile), not beats,
-// and are not run. A script that dies, times out, or exits non-zero without a FAIL line counts as a FAIL for its beat.
+// and are not run. A script that dies, times out, or exits non-zero without a FAIL line counts as a FAIL for its beat, except
+// exit 2: that is "cannot run here" (B10 with the site not built) and counts as BLOCKED, with the script's BLOCKED line or
+// last stderr line as the reason (#1693). A beat that runs out of time on a host with no save point yet is BLOCKED "no save yet"
+// too (a first boot is slow); on a host that has saved it stays a FAIL.
+//
+// Host folders (#1691). Every beat gets a host folder of its own, passed as `--host <dir>` and LF_HOST_DIR, because the beats
+// disagree about where a host may live: `host config apply` and `host password` (B1, B2, B8) refuse a folder inside the
+// repo, B7 and B9 only run on a folder under <repo>/tmp/. A beat says which it needs in a header line,
+// `// opening-run: host=outside|tmp|log [timeout=<s>]` (default outside; `log` is B11: the folder of the latest earlier beat
+// that left a console.log). `--host <dir>` is the base: when it already suits the beat the folder is <dir>/<beat>, else it is
+// <repo>/tmp/opening-hosts/<name>/<beat> (tmp) or <os tmp>/lf-opening-hosts/<name>/<beat> (outside), <name> being the base
+// folder's name (run-<stamp> with no --host). The report lists every folder. Details: tools/playtest/opening/_scratch.mjs.
+//
+// Stopping what a beat started (#1692). After every script the runner stops, by pid, whatever it left running in that beat's
+// host folder (a watcher the beat recorded, the server in host.json) and reports a FAIL `cleanup` line for the leak; a pid it
+// cannot stop is a FAIL too. A beat stops its own processes first (b2-start.mjs, b7-restart.mjs, b8-reload.mjs).
 //
 // The report is tmp/playtest/opening-<date>.md in the shape the sheet's "After the run" asks for: one line per beat.
 //   PASS                  every check passed
@@ -23,16 +38,21 @@
 //   --session-file f session.json to read instead of this checkout's session; --runner <script> run `node <script> <verb>`
 //                    instead of the real proof command; --proof-timeout <s> per verb, default 900
 //   --beats B1,B9    only these beats (scripts and sheet lines)
-//   --host <dir>     scratch host folder, passed to every script as `--host <dir>` and as LF_HOST_DIR
+//   --host <dir>     the base of the per-beat scratch host folders (see "Host folders"); each script gets its own, as `--host` and LF_HOST_DIR
 //   --dir <dir>      beat scripts folder (default tools/playtest/opening)
 //   --sheet <file>   the beat sheet (default docs/playtest/m4-opening-day.md)
 //   --proofs <dir>   where proof verbs live (default agent-box/proofs); a verb is found by its `name:`
 //   --out <file>     report file (default tmp/playtest/opening-<date>.md)
-//   --date YYYY-MM-DD, --timeout <seconds per script, default 600>
+//   --date YYYY-MM-DD, --timeout <seconds per script; default: the beat's header timeout=, else 600>
 // The proofs are tools/validation/opening-run-selftest.mjs and opening-game-selftest.mjs (--game).
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { findSavePoints, hostPaths } from "../host/host.mjs";
+import { beatHostDir, readDirective, reapHost, runName } from "../playtest/opening/_scratch.mjs";
+
+const REPO_CLI = join(dirname(fileURLToPath(import.meta.url)), "..", "cli.mjs");
 
 export const help = "opening [--beats B1,B9] [--host <scratch>] [--game]   run every tools/playtest/opening/*.mjs beat script, write tmp/playtest/opening-<date>.md (one line per beat: pass, fail, blocked by #N); --game runs the game beats' proof verbs on the session that is up, otherwise they are listed";
 
@@ -140,15 +160,30 @@ function runScript(root, dir, file, host, timeoutSec) {
   const args = [join(dir, file)];
   if (host) args.push("--host", host);
   const env = host ? { ...process.env, LF_HOST_DIR: host } : process.env;
+  // a host with no save point when the beat starts: a beat that then runs out of time never saw a first boot finish (#1693)
+  const freshHost = !!host && findSavePoints(hostPaths(host).profile).length === 0;
   const r = spawnSync(process.execPath, args, { cwd: root, env, encoding: "utf8", timeout: timeoutSec * 1000, windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
   const lines = parseBeatLines(r.stdout || "");
   const fallbackBeat = (/^b(\d+)/i.exec(file) || [])[1];
   const beat = fallbackBeat ? `B${fallbackBeat}` : file.replace(/\.mjs$/, "");
-  if (r.error) lines.push({ beat: lines[0]?.beat || beat, id: "run", status: "FAIL", reason: `${file} did not finish: ${r.error.code === "ETIMEDOUT" ? `timed out after ${timeoutSec}s` : r.error.message}` });
-  else if (r.status !== 0 && !lines.some((l) => l.status === "FAIL")) {
+  if (r.error) {
+    const timedOut = r.error.code === "ETIMEDOUT";
+    const why = `${file} did not finish: ${timedOut ? `timed out after ${timeoutSec}s` : r.error.message}`;
+    if (timedOut && freshHost && !lines.some((l) => l.status === "FAIL")) lines.push({ beat: lines[0]?.beat || beat, id: "run", status: "BLOCKED", reason: `no save yet: ${why} (a first boot on a host with no save is slow; pass --timeout <s> or a host that has saved)` });
+    else lines.push({ beat: lines[0]?.beat || beat, id: "run", status: "FAIL", reason: why });
+  }
+  else if (r.status === 2 && !lines.some((l) => l.status === "FAIL")) {
+    // exit 2 is "cannot run here": BLOCKED, never a FAIL (#1693). A BEAT BLOCKED line the script printed already says why.
+    if (!lines.some((l) => l.status === "BLOCKED")) {
+      const said = (String(r.stdout || "").split(/\r?\n/).map((l) => l.trim()).find((l) => /^BLOCKED\b/.test(l)) || "").replace(/^BLOCKED\s*/, "");
+      const tail = String(r.stderr || "").trim().split(/\r?\n/).pop() || "";
+      lines.push({ beat: lines[0]?.beat || beat, id: "run", status: "BLOCKED", reason: said || tail || `${file} exited 2` });
+    }
+  } else if (r.status !== 0 && !lines.some((l) => l.status === "FAIL")) {
     const tail = String(r.stderr || "").trim().split(/\r?\n/).pop() || "";
     lines.push({ beat: lines[0]?.beat || beat, id: "run", status: "FAIL", reason: `${file} exited ${r.status}${tail ? `: ${tail}` : ""}` });
   } else if (!lines.length) lines.push({ beat, id: "run", status: "FAIL", reason: `${file} printed no BEAT line` });
+  lines.killed = !!r.error; // the runner ended the script (timeout): it never reached its own cleanup
   return lines;
 }
 
@@ -211,8 +246,10 @@ export async function main(args, ctx) {
   const proofsDir = pick("--proofs", "agent-box/proofs");
   const date = val(args, "--date") || isoDay();
   const outFile = pick("--out", join("tmp", "playtest", `opening-${date}.md`));
-  const host = val(args, "--host");
-  const timeoutSec = Number(val(args, "--timeout")) || 600;
+  const hostArg = val(args, "--host");
+  const base = hostArg ? resolve(root, hostArg) : null;
+  const name = runName(base);
+  const timeoutFlag = Number(val(args, "--timeout")) || 0;
   const only = val(args, "--beats") ? new Set(val(args, "--beats").split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)) : null;
   const wanted = (b) => !only || only.has(b);
   const game = args.includes("--game");
@@ -220,8 +257,22 @@ export async function main(args, ctx) {
 
   // run the scripts
   const byBeat = new Map();
+  const hosts = []; // [beat, folder] in run order
   for (const file of beatScripts(dir)) {
-    const lines = runScript(root, dir, file, host, timeoutSec);
+    const stem = (/^b(\d+)/i.exec(file) || [])[1];
+    const beatName = stem ? `B${stem}` : file.replace(/\.mjs$/, "");
+    if (!wanted(beatName)) continue;
+    const dirv = readDirective(join(dir, file));
+    const beatHost = beatHostDir({ root, base, name, beat: beatName, placement: dirv.host, earlier: hosts.map((h) => h[1]) });
+    mkdirSync(beatHost, { recursive: true });
+    hosts.push([beatName, beatHost]);
+    const lines = runScript(root, dir, file, beatHost, timeoutFlag || dirv.timeout || 600);
+    // whatever the beat left running is stopped by pid; a leak is the beat's FAIL
+    const reaped = reapHost({ host: beatHost, cli: REPO_CLI, say: (m) => console.log(`opening: ${beatName}: ${m}`) });
+    const owner = lines[0]?.beat || beatName;
+    // a script the runner killed could not stop its own server: that is the timeout's doing, not a second FAIL (it is still said above)
+    for (const p of reaped.stopped) if (!lines.killed) lines.push({ beat: owner, id: "cleanup", status: "FAIL", reason: `the beat left ${p.role} (pid ${p.pid}) running; the runner stopped it` });
+    for (const p of reaped.leftover) lines.push({ beat: owner, id: "cleanup", status: "FAIL", reason: `${p.role} (pid ${p.pid}) is still running and could not be stopped` });
     for (const l of lines) {
       if (!wanted(l.beat)) continue;
       if (!byBeat.has(l.beat)) byBeat.set(l.beat, []);
@@ -290,11 +341,12 @@ export async function main(args, ctx) {
   const report = [
     `# Opening-day run ${date}`,
     "",
-    `Beat sheet: ${sheetFile.startsWith(root) ? sheetFile.slice(root.length + 1).replace(/\\/g, "/") : sheetFile}. Host folder: ${host || "none given"}. ` +
+    `Beat sheet: ${sheetFile.startsWith(root) ? sheetFile.slice(root.length + 1).replace(/\\/g, "/") : sheetFile}. ` +
       `${tally.pass} pass, ${tally.fail} fail, ${tally.blocked} blocked, ${tally.notrun} not run.`,
     "",
     ...rows,
     "",
+    ...(hosts.length ? ["Host folders (one per beat; `--host` is their base, see the header of tools/commands/opening.mjs):", "", ...hosts.map(([b, h]) => `    ${b} ${h}`), ""] : []),
     ...(gameLines.length ? ["Game proofs (`--game`):", "", ...gameLines.map((l) => `    ${l}`), ""] : []),
     "A FAIL gets a card: `tools\\cli slice new 1006 --plan <file>`; nothing is fixed inside the run. A beat blocked by a slice is",
     "not a failure. Fill the run's row in docs/playtest/session-playbook.md.",

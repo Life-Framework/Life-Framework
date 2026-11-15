@@ -180,7 +180,8 @@ export function createClient({ token, serviceId = FLAGSHIP_0GRIND.serviceId, bas
     rcon: (command) => request("POST", `/armareforger/${svc}/rcon`, { json: { command } }),
     list: (path) => request("GET", fs("/files"), { query: { path } }),
     get: (path) => request("GET", fs("/file"), { query: { path }, raw: true }),
-    put: (path, bytes) => request("PUT", fs("/file"), { query: { path }, body: bytes }),
+    // Upload is PUT /filesystem/upload, as the panel does it; the KB page's PUT /filesystem/file is a 405.
+    put: (path, bytes) => request("PUT", fs("/upload"), { query: { path }, body: bytes }),
   };
 }
 
@@ -237,6 +238,7 @@ export function toServerSettings(server) {
   const out = {};
   const g = server?.game ?? {};
   for (const [from, to] of GAME_MAP) if (g[from] !== undefined) out[to] = g[from];
+  if (Array.isArray(out.mods)) out.mods = withModVersion(out.mods);
   const gp = g.gameProperties ?? {};
   for (const [from, to] of PROPS_MAP) if (gp[from] !== undefined) out[to] = gp[from];
   const op = server?.operating ?? {};
@@ -245,12 +247,27 @@ export function toServerSettings(server) {
   return out;
 }
 
-// Their ServerConfig.json with our game and operating blocks; their ports, addresses and RCON kept.
-// game.maxPlayers stays theirs: the slot count is what 0grind rents.
+// 0grind stores a mod without a version as version "" (the latest); ours says the same, so it
+// does not show as a change on every push.
+export function withModVersion(mods) {
+  return mods.map((m) => (m && typeof m === "object" && m.version === undefined ? { ...m, version: "" } : m));
+}
+
+// Their ServerConfig.json with our game and operating blocks over it; their ports, addresses and RCON
+// kept. 0grind writes the file again from server_settings on every start, with its own defaults
+// (missionHeader, VONCanTransmitCrossFaction, modsRequiredByDefault), so the keys ours does not set stay
+// theirs and a second push is clean. game.maxPlayers stays theirs: the slot count is what 0grind rents.
+// gameProperties.persistence stays theirs too: the panel's System page writes it (load and keep session
+// save, hive, storages), and dropping it would start every boot on a fresh world.
 export function mergeServerConfig(theirs, ours) {
   const out = structuredClone(theirs ?? {});
-  out.game = structuredClone(ours.game ?? {});
-  if (theirs?.game?.maxPlayers !== undefined) out.game.maxPlayers = theirs.game.maxPlayers;
+  const tg = theirs?.game ?? {};
+  const og = structuredClone(ours.game ?? {});
+  out.game = { ...structuredClone(tg), ...og };
+  if (tg.gameProperties || og.gameProperties) out.game.gameProperties = { ...structuredClone(tg.gameProperties ?? {}), ...(og.gameProperties ?? {}) };
+  if (tg.gameProperties?.persistence !== undefined) out.game.gameProperties.persistence = structuredClone(tg.gameProperties.persistence);
+  if (Array.isArray(out.game.mods)) out.game.mods = withModVersion(out.game.mods);
+  if (tg.maxPlayers !== undefined) out.game.maxPlayers = tg.maxPlayers;
   if (ours.operating !== undefined) out.operating = { ...(theirs?.operating ?? {}), ...structuredClone(ours.operating) };
   for (const k of KEPT_TOP_LEVEL) {
     if (theirs && k in theirs) out[k] = structuredClone(theirs[k]);

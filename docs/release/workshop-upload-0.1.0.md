@@ -9,8 +9,8 @@ the server-browser text). Where those and this page differ, this page is newer (
 
 | Item | Addon | Workshop ID (the `.gproj` GUID) | Depends on |
 |---|---|---|---|
-| Core, **Life Framework (Core)** | `LifeFramework` | `79636E668EA37AC9` | the base game |
-| Pack, **Life Framework: Everon 1989** | `LF_Everon1989` | `B1E84D5687E11724` | the core (`79636E668EA37AC9`) |
+| Core, **Life Framework (Core)** | `LifeFramework` | `4550A2B656E1B569` | the base game |
+| Pack, **Life Framework: Everon 1989** | `LF_Everon1989` | `B1E84D5687E11724` | the core (`4550A2B656E1B569`) |
 
 Scenario for the pack and the server config: `{C638C03B775C31BB}Missions/LF_Everon1989.conf`, listed in the
 game as "Life Framework: Everon 1989". Server name for the project's own server: `Life Framework | Everon 1989 (Alpha)`.
@@ -73,12 +73,12 @@ Both items publish at version `0.1.0`. The licence is the Arma Public License (A
    The core item already exists on the Workshop (the boot check found its ID on 2026-11-14). If the dialog already
    shows a version at or above `0.1.0` for it, stop: every publish takes a higher number, even a text-only change.
 4. **Publish**, check the upload size, wait for it to finish. Copy the page address
-   (`https://reforger.armaplatform.com/workshop/79636E668EA37AC9`) and open it once.
+   (`https://reforger.armaplatform.com/workshop/4550A2B656E1B569`) and open it once.
 
 ### 2. Then the pack
 
 1. **Add Existing** > `addons\LF_Everon1989\LF_Everon1989.gproj` in the same worktree. Compile with no errors.
-   The pack's dependency list shows the core (`79636E668EA37AC9`); it must resolve to the item you just published.
+   The pack's dependency list shows the core (`4550A2B656E1B569`); it must resolve to the item you just published.
 2. **Publish Project**:
 
    | Field | Value |
@@ -276,7 +276,7 @@ From the worktree, after both items are published:
 1. **Workshop boot check** (#371). It boots a clean dedicated server on lf-cloud with no local addons and only the
    Workshop IDs, then a client with no local addons:
    ```
-   tools\cli workshop boot-check 79636E668EA37AC9 B1E84D5687E11724
+   tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724
    ```
    Pass is `SUMMARY workshop-boot-check ok stage=pass`. A failure names the stage: `ids` (a placeholder), `clean`
    (a local LifeFramework addon on the box, or UDP 2399 busy), `mods` (the server could not get a mod: a wrong ID,
