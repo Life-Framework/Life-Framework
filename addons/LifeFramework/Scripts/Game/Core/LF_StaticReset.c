@@ -18,6 +18,7 @@ class LF_StaticReset
 		LF_DayCycleSave.ResetStatics();
 		LF_PrefabSlots.ResetStatics();
 		LF_SoundSlots.ResetStatics();
+		LF_WorkbenchPlay.ResetStatics();
 		LF_Breach.ResetStatics();
 		LF_PlayerIdentity.ResetStatics();
 		LF_Lockpick.ResetStatics();

@@ -22,7 +22,13 @@ class LF_MissionConfigPackSource : LF_ConfigPackSource
 	{
 		if (m_Header)
 			return m_Header;
-		return LF_MissionHeader.GetCurrent();
+
+		LF_MissionHeader current = LF_MissionHeader.GetCurrent();
+		// Workbench play has no mission header: the open world's header lists the pack overlays.
+		if (!current && GetGame() && !GetGame().GetMissionHeader())
+			current = LF_WorkbenchPlay.FallbackHeader();
+
+		return current;
 	}
 
 	//! Tests set a manifest here; null reads the header's m_LF_PackManifest.
