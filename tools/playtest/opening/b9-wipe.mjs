@@ -28,7 +28,17 @@ export const GATE_ISSUE = "#1413";
 export const WIPE_POLICY_URL = "https://life-framework.org/docs/community/wipe-policy";
 // Fields a notice timestamp may live in inside the next-session row (`host announce` records the
 // session time `at`; the #1413 gate reads when the notice was posted).
-const NOTICE_FIELDS = ["announcedAt", "noticeAt", "postedAt"];
+const NOTICE_FIELDS = ["announcedAt", "noticeAt", "postedAt", "announced"];
+
+// Stands in for `host announce --send` in the scratch sessions.json (agents never post to Discord):
+// stamps `announced` with the post time, as the real send does (#1537). Scratch files only.
+export function simulatePost(file, now = new Date()) {
+  const data = JSON.parse(readFileSync(file, "utf8"));
+  if (!data?.next || typeof data.next !== "object") return false;
+  data.next.announced = now.toISOString();
+  writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
+  return true;
+}
 
 // Moves the notice timestamp back `hours` in a scratch sessions file; the session time `at` stays.
 // Returns { aged, fields }. Only ever call it on a file inside the scratch copy.
@@ -96,8 +106,12 @@ export async function runB9({ source = FIXTURE, keep = false } = {}) {
   cpSync(source, probe, { recursive: true });
   try {
     // 1. The host runs (this process stands in for it): the wipe refuses and touches nothing.
+    // The notice gate (#1413) runs before the running check, so this step gets a notice posted 25 h ago
+    // in its own file: the only thing left to refuse the wipe is the running host.
+    const runningNotice = join(runDir, "sessions-running.json");
+    writeFileSync(runningNotice, JSON.stringify({ next: { at: new Date(Date.now() + 24 * 3600000).toISOString(), build: "0.0.0", wipe: true, announced: new Date(Date.now() - 25 * 3600000).toISOString() } }));
     writeHostState(main, { pid: process.pid });
-    const running = cli(["wipe", "--confirm", name], main, env);
+    const running = cli(["wipe", "--confirm", name], main, { LF_ANNOUNCE_SESSIONS: runningNotice });
     if (running.status !== 0 && /running/i.test(running.out) && saves(main) > 0) check("refuses-while-running", "PASS", "exit " + running.status + ", saves untouched");
     else check("refuses-while-running", "FAIL", `exit ${running.status}, saves=${saves(main)}: ${running.out.trim().slice(0, 300)}`);
     writeHostState(main, { pid: 0 });
@@ -122,8 +136,11 @@ export async function runB9({ source = FIXTURE, keep = false } = {}) {
       row = JSON.parse(readFileSync(sessions, "utf8")).next;
     } catch {}
     const okDraft = ann.status === 0 && ann.out.includes(WIPE_POLICY_URL) && /24 hours/.test(ann.out) && /<t:\d+:F>/.test(ann.out) && /WIPE/.test(ann.out);
-    if (okDraft && row && row.wipe === true && row.announced === false) check("announce-draft", "PASS", "draft has the wipe time, 24 hours and the wipe-policy link; recorded in the scratch sessions.json");
+    if (okDraft && row && row.wipe === true && !("announced" in row)) check("announce-draft", "PASS", "draft has the wipe time, 24 hours and the wipe-policy link; recorded in the scratch sessions.json with no announced time");
     else check("announce-draft", "FAIL", `exit ${ann.status}, row=${JSON.stringify(row)}: ${ann.out.trim().slice(0, 300)}`);
+    // The post itself is the maintainer's `--send`, which agents never run; the scratch copy gets the
+    // post time stamped by hand so the notice steps below can run.
+    if (!gateAbsent) simulatePost(sessions);
 
     // 4. A notice posted just now is not 24 hours old: the wipe still refuses. Skipped when the
     // gate is absent, because the wipe would go through.
