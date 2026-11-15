@@ -1430,6 +1430,13 @@
   schedule). `CanArmForOffer` / `CanRepairForOffer` ask `LF_Breach` on the
   server and the mirror on a client. A client offers repair to police and, on an
   organization door, to anyone; the server decides membership.
+- 🧪 **Evidence at the detonation, not the placement** (2026-11-16): placing a charge (`Arm`) files the crime
+  report, opens the scene and sounds the alarm, but the footprint card the report would leave is only
+  planned (`LF_ScenePieces.PlanFootprint`, held on the target as `LF_PendingFootprint`; `deferPieces` on
+  `LF_Dispatch.Report` and `LF_WantedReports.Report`). `Open` lays it (`LF_ScenePieces.LeaveFootprint`):
+  exactly one card per report, where the robber stood at the charge. `CancelCharge`, `Repair`, `Reset`,
+  `Apply` and `Configure` drop the plan, so a defused charge leaves nothing. Bank vault, hospital cabinet
+  and door charges all go through `Arm`, so they follow the same rule. Test `crime/breach-evidence`.
 - ✅ **Charge lifetime** (2026-11-08): a charge whose fuse cannot
   fire is dropped with `LF_Debug.Error` (`CancelCharge`) instead of leaving the
   target armed forever: no world, a placed door without
@@ -2358,6 +2365,7 @@
 ## DebugWorld coverage
 
 - 🧪 **Maintainer world edits: `toolscli world diff|ship`** (2026-11-16; proof `tools/validation/world-diff-selftest.mjs`, `gate-tier-selftest.mjs`). `world diff` reads a worktree's `.layer` changes against its merge base as MOVED / ADDED / REMOVED / PROP CHANGED per entity (by name, or prefab plus parent path) and marks what Workbench rewrites on save as NOISE (the `default.layer` BSP line, re-ordered blocks, `angleY` vs `angles`, a dropped class prefix, whitespace). `world ship` reverts noise-only layers, commits, runs validate, the placement audit on the touched layers (allowlisting the maintainer's flagged placements) and the layer-named tests (a failing test is a warning listed under `## Test warnings (maintainer layout)` in the PR body, never a block; `world-test-judge-selftest.mjs`), then `wt ship`s; a `town-maintainer-*` branch with only such edits gates as T1w (no build, no full suite). `docs/worktrees.md` "Maintainer world edits".
+- 🧪 **Maintainer gate: warn-only placement audit, own-change tier, `--body-file` PRs** (2026-11-15; proof `tools/validation/maintainer-gate-selftest.mjs`). On a `town-maintainer-*` branch the `ci` placement audit and the layout checks are warn-only at every gate tier (T1w, T1 and the full gate): they print `WARN`, write `tmp/gate-warnings.json`, and the ship queue lists them in the PR body under `## Gate warnings (maintainer layout)`. The tier is judged on the branch's own change (the newest main it merged), so a stale local `origin/main` no longer leaks main's files into a synced branch's diff; a refused hand edit now says why in the tier line. `world ship` caps its PR body at 60 KB with a `+N more, see world diff` line and `createPrGh` always passes `--body-file` (a 33 KB body failed with `ENAMETOOLONG`). Merged, in-dev.
  - ℹ️ **`Worlds/DebugWorld/DebugWorld.ent` is intentionally 0 bytes.** All
   DebugWorld content lives in `Worlds/DebugWorld/DebugWorld_Layers/*.layer`;
   `default.layer` carries the `GenericWorldEntity world` BSP and terrain
@@ -2538,8 +2546,11 @@
   layers, so a site can move layers without a manifest edit.
   `node agent-box/harness.mjs town` and `validate-town-manifest.mjs` check it
   offline; `report town [site-id...]` walks it in play mode and writes
-  `agent-box/reports/town.html`. Sign problems (none within 8 m, blank Read
+  `agent-box/reports/town.html`. Sign problems (none placed, blank Read
   card) fail the row: `requireSigns` is true since M1-09 placed the signs.
+  Distances are the maintainer's layout and only warn, on every branch: a sign
+  farther than its radius, a site more than 30 m from the rest. A site whose
+  entity was renamed resolves by the actions it carries, with a warning.
   The spawn site is the named civilian town spawn `Spawn_Town`; the clerk
   (`QuestGiver_Start`, prefab mode) is a site so the square meets the 30 m
   neighbour rule.
@@ -3125,5 +3136,18 @@
 - 🧪 (2026-11-16, #1741) A vehicles override `{"op":"remove"}` (keyed by the lot prefab or locked child GUID) now takes the car off the lot: `LF_VehiclePricesConfig` records the removed GUIDs, `LF_VehicleOffer.IsOfferedIn` is false for them, and `LF_VehicleLotComponent.GetOfferCount/GetOfferAt/FindOffer` skip them, so the sheet lists and the server sells only what remains (before, the unpriced offer fell back to its own lot price). A client's price board still shows the lot's own price for a removed car (the removed set is not streamed). Test `config/vehicle-remove-by-base-guid`.
 - 🟡 **Police roster notice (#1447, M4 slice).** `LF_PoliceRosterNotice` (`Feature/Police/`) listens to `LF_OnPlayerSpawnedEvent` on the server. At a player's first spawn of the session, an application approved while they were away toasts `#LF-PoliceRoster_Approved` ("You are on the {Police} roster: go on duty at the station locker."), and a trial that ran out unpromoted toasts `#LF-PoliceRoster_Expired`; a respawn, a civilian, an open or rejected application hear nothing. Each roster row is told once: told rows are kept in `$profile:LifeFramework/police_roster_told.txt` (`STATUS|uid|applicationTime`), so a restart or a promoted officer is not told again. Reads the rows through `LF_PoliceApplications.FindRosterRow` (a `modded class` in the same file; the applications file format is unchanged). Test `police/roster-notice`; logs `[LFDebug:Police]`. Merged, in-dev.
 - 🧪 (2026-11-16, #1448) Join notice: the owner section `joinNotice` (`enabled`, `key`; off by default in the core) shows one toast at each account uid's first spawn of the session, from `LF_OnPlayerSpawnedEvent`. `key` is a localization key with or without `#`; the pack ships `LF_Everon1989_AlphaNotice` ("Alpha: progress can be wiped, with 24 hours' notice on Discord"). Enabled with an empty key logs one `LF_Debug.Warn` for the session and shows nothing. `server/flagship/config.json` does not turn it on yet (JNCFG). Test `rules/join-notice`. Merged, in-dev.
+
+## Workbench play (wb-fast-play, 2026-11-16)
+
+### `LF_PlayFromCamera` — `Feature/Character/Spawning/LF_PlayFromCamera.c`
+- ✅ Workbench "Play from camera" keeps the player at the camera: the first spawn takes the pose of
+  the editor body it replaces (vanilla `SCR_SpawnLogic` does the same). `#ifdef WORKBENCH` only;
+  normal Play, dedicated servers and published builds use spawn points as before.
+  `LF_Test_PlayFromCamera` (LOGIC).
+- ✅ HUD root layout carries every vanilla HUD slot (screen effects, 2D optics, chat, VON,
+  notifications, hints, game version): no screen-effect VME on Play (`validate-hud-root-slots`).
+- ✅ Layout keywords are checked against the vanilla list (`validate-layout-keywords`).
+- ✅ Sound slots with no sound yet are one summary warning, not an error per slot and per emitter.
 - 🧪 (2026-11-16, #1827, epic #1826) Car colours, mechanism only: `LF_VehicleColoursConfig` (`Configs/Vehicles/LF_VehicleColours.conf`, empty in core, a pack overlay fills it by catalog prefab) lists each model's colours (name key, swatch, locked child, price delta). A colour is a thin child of our locked prefab, so the colour is the record's `m_sSpawnPrefab`: no new save data (version stays 34), no RplProp. `LF_AskBuyVehicle` and `RpcAsk_LF_BuyVehicle` carry a colour index; the server refuses one the model does not sell (`LF_Debug.Error`, nothing charged); the price is the model's plus the colour's delta before the cash-ceiling rule; the chop shop pays a colour child as its model; a respawn whose saved colour no longer loads falls back to the base colour. The sheet still sends colour 0 (the colour page is cc-3). Tests `vehicles/colours`, `vehicles/colours-overlay`.
 - 🧪 (2026-11-16) **LF NPC Dresser (World Editor plugin).** `Scripts/WorkbenchGame/LFTools/LF_NpcDresserPlugin.c` (Workbench-only, never in the game module): select NPCs, Plugins > Life Framework > LF NPC Dresser (Ctrl+Shift+D), pick an outfit preset and/or a clothing prefab per slot (head, torso, legs, feet, vest, backpack), Dress. It overrides each slot's `Prefab` in the NPC's `BaseLoadoutManagerComponent` through `WorldEditorAPI.SetVariableValue` inside one `BeginEntityAction`, so Ctrl+Z undoes it; "Back to prefab" clears the overrides; a non-garment pick (no `BaseLoadoutClothComponent`) is refused. Presets are `LF_NpcOutfitPreset` confs in `Configs/NpcOutfits/`: police and doctor in the core, thirteen 1989 Everon locals in the pack. `tools\cli npc dress` runs the same code head-less (`--proof` reads back, undoes, redoes). Proof 2026-11-16 on lf-cloud: Bank_Teller dressed with the Mechanic preset, all 4 slots read back, undo restored the suit, redo re-applied, play-mode picture shows it. Guide: `docs/tooling/npc-dresser.md`. Merged, in-dev.
+- 🧪 (2026-11-16) **Tests do not read the town.** `validate-no-town-layout-asserts` fails a new test, harness proof or flow, the town manifest, the harness selftest or a validator that quotes a town entity name or writes a position within 6 m of a placed town entity (outside the annex). Today's debt is `tools/validation/town-layout-baseline.json`, which only shrinks (`--write-baseline` refuses to add); a new row in a file the branch did not change only warns, so moving things in the town never fails it. `town-layout-ok: <reason>` on a line marks a whole-world sweep. The town manifest's distance rules are warn-only everywhere; the harness selftest no longer asserts where live sites stand. Ten tests lost arbitrary town coordinates, `LF_Test_HoldUp` registers its own safe zone and `LF_Test_Roadmap_Contraband` measures from the drop it finds. Tests and tooling only.
