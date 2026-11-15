@@ -4,7 +4,7 @@
 // website/dist/servers/index.html shows that session's time (the page's own UTC text), and that the page holds no
 // player count and no live status words (decision 2026-11-14: the site shows the next session time only).
 // It reads the built page and never builds the site: no dist page prints "BLOCKED site not built" and exits 2.
-// Exit: 0 pass, 1 fail, 2 blocked.
+// Exit: 0 pass, 1 fail, 2 blocked. It also prints one `BEAT B10 site PASS|FAIL|BLOCKED <reason>` line, the form `tools\cli opening` reads.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -121,10 +121,12 @@ function main(argv) {
   const errs = checkB10({ sessions, schema, html });
   if (errs.length === 1 && errs[0].startsWith("BLOCKED")) {
     console.log(errs[0]);
+    console.log(`BEAT B10 site BLOCKED ${errs[0].replace(/^BLOCKED\s*/, "")}`);
     console.log("SUMMARY b10-site blocked");
     return 2;
   }
   for (const e of errs) console.log(`FAIL ${e}`);
+  console.log(errs.length ? `BEAT B10 site FAIL ${errs[0]}${errs.length > 1 ? ` (and ${errs.length - 1} more)` : ""}` : "BEAT B10 site PASS the servers page shows the next session time and no player count or live status");
   console.log(errs.length ? `SUMMARY b10-site fail ${errs.length}` : "SUMMARY b10-site ok");
   return errs.length ? 1 : 0;
 }

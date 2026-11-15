@@ -37,7 +37,7 @@ checkout.
 | Command | Success looks like |
 |---|---|
 | `tools\cli host players` | Server name, map, and players over max within 3 seconds. A timeout on a host that never ran `host config apply` (Before) is that missing `server.json`, not a dead server. |
-| `tools\cli host say "Hotfix restart in 10 minutes"` *(planned)* | Every player gets one toast within 10 seconds; the server logs `host say:`. |
+| `tools\cli host say "Hotfix restart in 10 minutes"` | Every player gets one toast within 10 seconds; the server logs `host say:`. |
 | `tools\cli host perf` | A verdict line against the 16-player budget and a CSV in `<host>/perf/`. |
 | `tools\cli host status` | Still `up`. Saves are never touched while it runs. |
 
