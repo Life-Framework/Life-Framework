@@ -701,6 +701,13 @@
   server name, map and players/max. Operator tool for the session runbook and the
   opening gate's player target; nothing publishes it. `tools/host/a2s.mjs`; selftest
   `tools/validation/a2s-selftest.mjs`.
+  `host applications [--all]` (#1458, in-dev) reads the host profile's
+  `LifeFramework/police_applications.txt` and prints the open police applications
+  oldest first (name, age, availability, why), then the officers on trial with the
+  hours left; `--all` adds rejected, expired and trial-free approved rows. Rows with
+  six or seven fields (older files) read; a malformed row is skipped with a warning
+  naming its line. Read only: approving stays in the game. `tools/host/applications.mjs`;
+  selftest `tools/validation/host-applications-selftest.mjs`.
   `host attendance [<console.log>] [--json]` (#1459, merged, in-dev) reads the
   engine's `Creating player` and `Player disconnected` lines from the newest host log
   (or a path) and prints the unique players (one `IdentityId`, else the name, so a
