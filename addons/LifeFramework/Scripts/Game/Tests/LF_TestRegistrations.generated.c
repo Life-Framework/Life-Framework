@@ -535,6 +535,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_UIBackPath(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UIKitInitialFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitButtonInvoker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_NotificationToastTiming(), LF_TestTier.LOGIC);
