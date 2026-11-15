@@ -5,8 +5,10 @@ Use the cheapest tool that can see the problem; a game session is the last step,
 
 ```
 tools\cli audit placement [--area a]     numbers, no pixels, test server, about 10 s      (docs/placement-audit.md)
+tools\cli audit placement --grid         the same on GridWorld at the grid bar: on the ground and reachable, nothing else
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
-tools\cli look grid:<slug>              a debug-grid cell; town:<area> is an area that must lie in the town (docs/architecture/world-zones.md)
+tools\cli look grid:<slug>              a debug-grid cell, or grid:annex-gate: opens GridWorld; town:<area> is an area that must lie in the town (docs/architecture/world-zones.md)
+tools\cli look grid:all                 every claimed grid cell in one run on GridWorld, plus overview.jpg
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
 tools\cli look serve                     one Workbench that stays up and takes every look in turn: a few seconds a look
@@ -89,6 +91,16 @@ One hidden Workbench (the `LF-Agents` desktop) opens DebugWorld, enters play mod
 camera, and for each area takes a wide shot from the side players approach, three obliques, a top
 view and up to 12 close-ups (interactables first, then named props, then the rest, nearest first).
 Then it exits. No server, no client, no session lane, nothing shared with another agent.
+
+**Which world.** A run opens one world (`docs/architecture/three-worlds.md`): `grid:<slug>`, `grid:annex-gate`
+and `grid:all` open `Worlds/GridWorld/GridWorld.ent`; `<area>`, `town:<area>`, `x,z`, `all` and `look item`
+open the playtest world (DebugWorld, with the pack town on top when the pack is here). One command cannot mix
+the two (`a look opens one world`); run them one after the other. `--world <path>` still wins. A grid look takes
+its close-ups from `GridWorld_Layers/`, and the plan's `world` line is checked against what Workbench opened
+(`worldProblem`), so a fallback scene is never taken for GridWorld. `audit placement --grid` measures the same
+world at the grid bar (`floating`, `sunk`, `unreachable`; the polish kinds are the town's), and
+`session up --mission grid` boots it as a server (`LF_GridWorld.conf`, no harness build). The default
+`--mission debug` still boots the town.
 
 **Where it runs.** `look` and `look item` run on the machine with the most room for a Workbench, the
 way `ci`'s Workbench steps choose (`tools/lib/wb-gate.mjs` chooseGate: live free RAM less the look's

@@ -3107,7 +3107,7 @@ function cmdSessionRestart(root, dir, flags) {
   }
 }
 
-const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
+const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
 
 function cmdSession(args) {
   const list = args ?? [];
