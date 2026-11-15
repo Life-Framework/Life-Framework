@@ -52,8 +52,8 @@ $grp GenericEntity : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostO
     m_eSite DEPOT
    }
   }
-  coords 155.2 0 256.3
-  angleY 180
+  coords 160.005 0.2 260.646
+  angleY -90
  }
 }
 GenericEntity Roadmap_Job_Drop {
