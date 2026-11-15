@@ -38,7 +38,7 @@ Listed in the order they run (restructured 2026-11-14).
 | M2.5 | Showcase and Outreach | After M3, before M4, so outreach points at a build people can get ([m2-5-outline.md](m2-5-outline.md)) | The showcase #566 |
 | M4 | Flagship Live | The public 1989 server ([m4-outline.md](m4-outline.md)) | Opening day #1006 |
 | M5 | Settling in | Started 2026-11-15. First weeks after launch: every player is new ([m5-outline.md](m5-outline.md)) | Armed and dressed · Evenings in the village · On patrol · Arrival · story: The relocated |
-| M6 | Making a living | Players with jobs and money want more from them | The market moves · Getting better at the job · Working the routes · Scrap and salvage · The bank · story: The state factory |
+| M6 | Making a living | Players with jobs and money want more from them | The market moves · The supermarket ([card](scopes/later/supermarket.md)) · Getting better at the job · Working the routes · Scrap and salvage · The bank · story: The state factory |
 | M7 | Power and turf | Organisations form and crime escalates | Gang war · The convoy job · The big heist · Dirty money · Behind bars · Making detective · story: The shipment |
 | M8 | Roots | Long-term players want something of their own | A place of your own · Working the land · Garages and lockers · Neighbours (pull forward if launch is quiet) · story: The anniversary |
 | Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | Catch the bus #1793 · GitHub milestone "Backlog" |
@@ -102,6 +102,7 @@ Each outline is planned in full only after the milestone before it closes.
 | [Private housing](scopes/later/housing.md) | Buy, rent, and furnish a home; the dacha | M5 |
 | [Crafting](scopes/later/crafting.md) | A general bench; cooking and food | M5 |
 | [Tasks](scopes/later/tasks.md) | Workplace tasks; the state factory | M5 |
+| [The supermarket](scopes/later/supermarket.md) | Full shelves of 1989 groceries, paid at the till | M6 |
 | [Events](scopes/later/events.md) | World events | Parked |
 
 "In the tree" means the system exists; [features.md](../features.md) is the

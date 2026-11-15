@@ -81,6 +81,7 @@ import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
 import * as worldDiff from "./lib/world-diff.mjs";
 import * as worldChecks from "./lib/world-checks.mjs";
+import * as gateWarnings from "./lib/gate-warnings.mjs";
 import * as worldTestJudge from "./lib/world-test-judge.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
@@ -3549,15 +3550,37 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   return cmdTest(true, tier, root, { ...opts, dev: true }); // dev: no pass cache, it wants this run's lines
 }
 
+// On a town-maintainer-* branch the ci placement audit and the layout checks are warn-only, whatever the gate tier
+// (docs/worktrees.md "Maintainer world edits"): they run, print WARN, and record their findings in
+// tmp/gate-warnings.json, which the ship queue lists in the PR body. Any other branch gets the plain checks.
+function maintainerGate(root, opts = {}) {
+  const branch = process.env.GITHUB_HEAD_REF || wt.currentBranch(root) || "";
+  const on = worldChecks.MAINTAINER_BRANCH.test(branch);
+  if (on) gateWarnings.clearGateWarnings(root);
+  const record = (e) => gateWarnings.recordGateWarning(root, e);
+  return {
+    on,
+    audit: gateWarnings.demotePlacement(branch, (a) => placementAudit(root, a, opts), record),
+    validate: async (o = {}) => {
+      if (!on) return cmdRunArea("validate", root, o);
+      const { code, text } = await gateWarnings.captureStdout(() => cmdRunArea("validate", root, o));
+      const lw = worldChecks.layoutWarnings(text);
+      if (lw.length) record({ check: "layout checks (validate)", lines: lw.map((w) => `validate/${w.check}: ${w.text || "failed"}`), code: 1 });
+      return code;
+    },
+  };
+}
+
 async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
   // `ci --wb-only`: just the Workbench steps, here (what a pool machine runs for a remote gate).
   if (opts.wbOnly) return ciWorkbench(root, opts);
+  const maint = maintainerGate(root, opts);
   // `ci --tiered` (what wt gate / wt ship pass for a data-only diff): classify again here, run T1 only when it still holds.
   if (opts.tiered) {
     const c = gateTierOf(root);
     console.log(`ci: ${gateTier.tierLine(c)}`);
-    if (c.tier === 1) return ciDataOnly(root, c, opts);
+    if (c.tier === 1) return ciDataOnly(root, c, opts, maint);
   }
   const steps = [
     // The cheap checks run here while the Workbench compile and build run wherever there is room
@@ -3565,7 +3588,7 @@ async function cmdCi(root = ROOT, opts = {}) {
     // taken before any generator check rewrites a file.
     ["validate --full + build", async () => {
       const gate = workbenchGate(root, opts);
-      const v = await cmdRunArea("validate", root, {});
+      const v = await maint.validate();
       const g = await gate;
       return v !== 0 || g !== 0 ? 1 : 0;
     }],
@@ -3584,7 +3607,7 @@ async function cmdCi(root = ROOT, opts = {}) {
     ]),
     // After the suite: a branch that moved or added world props must pass the placement audit. It
     // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
-    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), maint.audit)],
     // The config harness (#301): static always (a second, ~1 s), the game-session parts only when config code, a .conf, the schema or a config fixture changed.
     ["config harness", async () => {
       const cg = await import("./commands/config-gate.mjs");
@@ -3606,10 +3629,10 @@ async function cmdCi(root = ROOT, opts = {}) {
 // T1 (tools/lib/gate-tier.mjs): no Workbench compile or build (`test --no-build` loads the addons from
 // source), no full suite, no core-only pass, no config sessions. One boot runs every LOGIC test plus every
 // test whose source names a touched file, its GUID, its config class or a changed string key.
-async function ciDataOnly(root, c, opts = {}) {
+async function ciDataOnly(root, c, opts = {}, maint = maintainerGate(root, opts)) {
   const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
   const tests = readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") }));
-  if (c.world) return ciWorldEdit(root, c, tests, opts);
+  if (c.world) return ciWorldEdit(root, c, tests, opts, maint);
   const tokens = [...c.ids];
   for (const p of c.data) {
     let text = null;
@@ -3623,9 +3646,9 @@ async function ciDataOnly(root, c, opts = {}) {
   const extra = sel.related.filter((x) => !sel.logic.includes(x));
   console.log(`ci: T1 tests: ${sel.logic.length} LOGIC + ${extra.length} more that name ${tokens.length ? tokens.slice(0, 5).join(", ") : "nothing"}${extra.length ? ` (${extra.slice(0, 8).join(", ")}${extra.length > 8 ? ", ..." : ""})` : ""}`);
   const steps = [
-    ["validate (static)", () => cmdRunArea("validate", root, {})],
+    ["validate (static)", () => maint.validate()],
     ["config harness (static)", async () => (await import("./commands/config-gate.mjs")).runStatic(root)],
-    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), (a) => placementAudit(root, a, opts))],
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), maint.audit)],
     ["test (T1: LOGIC + related)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") })],
   ];
   let failed = 0;
@@ -3641,18 +3664,17 @@ async function ciDataOnly(root, c, opts = {}) {
 // T1w, a maintainer hand edit of .layer files (docs/worktrees.md "Maintainer world edits"): static validate,
 // the placement audit on the touched layers (flagged entities the maintainer placed are allowlisted by
 // `world ship`), and only the tests that name a touched layer or entity. No build, no LOGIC sweep.
-async function ciWorldEdit(root, c, tests, opts = {}) {
+async function ciWorldEdit(root, c, tests, opts = {}, maint = maintainerGate(root, opts)) {
   const layers = c.data.map((p) => p.split("/").pop());
   const sel = gateTier.selectTests(tests, worldDiff.testTokens(layers, c.touched || []));
   console.log(`ci: T1w tests: ${sel.related.length} that name a touched layer or entity${sel.related.length ? ` (${sel.related.slice(0, 8).join(", ")})` : ""}`);
   const steps = [
     // Hard checks block; layout checks (town manifest distances, village names) and placement-audit findings warn
     // (tools/lib/world-checks.mjs). Only the checks that read .layer files run.
-    ["validate (world checks)", () => cmdRunArea("validate", root, { world: true })],
+    ["validate (world checks)", () => maint.validate({ world: true })],
     ["placement audit (touched layers; findings warn)", async () => {
-      const code = await Promise.resolve(placementAudit(root, ["--strict", "--top", "200", "--layer", layers.join(",")], opts));
-      if (code !== 0) console.log("WARN  placement audit flagged the touched layers: a warning on a maintainer world edit, listed in the PR body (tmp/place-audit/report.json)");
-      return 0;
+      // maint.audit is warn-only on a town-maintainer-* branch: it logs the WARN and records the findings for the PR body.
+      return maint.audit(["--strict", "--top", "200", "--layer", layers.join(",")]);
     }],
     // A failing test is a warning on a maintainer world edit (tools/lib/world-test-judge.mjs): only a compile
     // error or a run that judged nothing blocks. `world ship` lists the failures in the PR body.
@@ -4840,7 +4862,9 @@ async function wtLogsCmd(args) {
 // compile, build, or in-game suite, so it never queues for a pool slot.
 function changedFiles(wtRoot) {
   const out = new Set();
-  for (const args of [["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`], ["diff", "--name-only", "HEAD"]]) {
+  // The branch's own change: against the newest main it merged, not a possibly stale origin/<base> (gate-tier.mjs ownBase).
+  const own = gateTier.ownBase((a) => wt.git(wtRoot, a), wt.baseOfRoot(wtRoot));
+  for (const args of [own ? ["diff", "--name-only", own, "HEAD"] : ["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`], ["diff", "--name-only", "HEAD"]]) {
     const r = wt.git(wtRoot, args);
     if (r.status === 0) for (const f of r.stdout.split(/\r?\n/)) if (f.trim()) out.add(f.trim());
   }
@@ -4860,7 +4884,7 @@ function gateTierOf(wtRoot, forceFull = false) {
   if (!files) return { tier: 2, reasons: ["could not read the diff against the base"], data: [], ids: [] };
   // T1w: a maintainer hand edit on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits").
   const branch = git(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
-  const mb = git(["merge-base", `origin/${base}`, "HEAD"]).stdout.trim();
+  const mb = gateTier.ownBase(git, base) || "";
   const worldEdit = (layers, extra) => {
     const d = worldDiff.diffFiles(layers.map((f) => ({ path: f.path, before: f.before, after: f.after })));
     extra.touched = worldDiff.touchedNames(d);
