@@ -68,6 +68,8 @@ class LF_BankVaultState : Managed
 	int m_iMinPolice;
 	string m_sTools;
 	float m_fJamChance;
+	//! Seconds the drill must run, held at the door, before the vault opens (LF_VaultDrill).
+	float m_fDrillSeconds = LF_VaultDrill.DEFAULT_SECONDS;
 	bool m_bSpawnPending;
 	//! Heist (#274, #275): what the open target leaves lying. Empty keeps the bank pattern.
 	string m_sLootKind;
@@ -398,7 +400,11 @@ class LF_Bank
 			array<IEntity> drills = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
 			if (!drills.IsEmpty())
 			{
-				toolItem = drills[0];
+				// The drill in the hands is the one that works; a spare in the pack is not it.
+				toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
+				if (!toolItem)
+					toolItem = drills[0];
+
 				return TOOL_DRILL;
 			}
 		}
@@ -675,6 +681,21 @@ class LF_Bank
 
 		if (tool == TOOL_DRILL)
 		{
+			// The drill works from the hands (LF_HandTool), timed by LF_VaultDrill; nothing opens or
+			// pays here. A drill only carried in the pack is refused with a hint.
+			if (!LF_HandTool.Holds(robber, LF_VaultDrill.TOOL_ID))
+			{
+				LF_Debug.Info("Bank", string.Format("rob refused: %1 carries a drill but does not hold it (%2)", playerUid, vaultId));
+				LF_Utils.NotifyEntity(robber, "#LF-Bank_HoldDrill", "#EL-Bank_Rob", 4.0);
+				return false;
+			}
+
+			if (!LF_Breach.CanArm(vaultId) || LF_VaultDrill.IsDrilling(vaultId))
+			{
+				LF_Debug.Info("Bank", string.Format("drill refused: %1 is open, armed or already being drilled", vaultId));
+				return false;
+			}
+
 			charger = null;
 			float roll = jamRoll;
 			if (roll < 0)
@@ -695,19 +716,13 @@ class LF_Bank
 			}
 		}
 
+		if (tool == TOOL_DRILL)
+			return LF_VaultDrill.Begin(vaultId, playerUid, robber, toolItem, VaultOrigin(vaultId), vault.m_fDrillSeconds);
+
 		if (!LF_Breach.Arm(vaultId, playerUid, charger, robber))
 		{
 			LF_Debug.Log("Bank", string.Format("rob refused: breach did not arm %1", vaultId));
 			return false;
-		}
-
-		if (tool == TOOL_DRILL)
-		{
-			IEntity leftDrill = LeaveTool(vaultId, robber, toolItem);
-			// The drill shows (#513, #340): the robber pushes it into the wall, the bit spins and sparks
-			// fly; when the work ends the drill is back where LeaveTool laid it.
-			if (LF_WorkAnim.Begin(robber, VaultOrigin(vaultId), LF_EWorkAnimKind.DRILL, LF_WorkAnim.DRILL_SECONDS, true))
-				LF_DrillScene.Begin(robber, leftDrill);
 		}
 
 		if (!tool.IsEmpty())
@@ -727,6 +742,82 @@ class LF_Bank
 		vault.m_bSpawnPending = false;
 		SpawnWave(vault);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: LF_VaultDrill calls this once, when the drill ran its full time held at the door. The
+	//! gates are read again (another robber may have opened it meanwhile; Arm refuses an open or armed
+	//! vault), then the vault opens, the drill is left at the door as evidence and the haul spawns.
+	static bool FinishDrill(string vaultId, string playerUid, IEntity robber, IEntity drill)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+		{
+			LF_Debug.Error("Bank", string.Format("drill finish refused: vault %1 is not configured", vaultId));
+			return false;
+		}
+
+		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "vault drill of " + vaultId))
+			return false;
+
+		if (!GatesPass(vault, playerUid))
+			return false;
+
+		if (!LF_Breach.Arm(vaultId, playerUid, null, robber))
+		{
+			LF_Debug.Info("Bank", string.Format("drill finish refused: breach did not arm %1", vaultId));
+			return false;
+		}
+
+		vault.m_sLooterUid = playerUid;
+		if (robber)
+			vault.m_vLooterAt = robber.GetOrigin();
+
+		string serial = SerialOf(drill);
+		if (robber && drill)
+			LeaveTool(vaultId, robber, drill);
+
+		LF_Debug.Info("Bank", string.Format("%1 breached %2 with a %3 (serial %4)", playerUid, vaultId, TOOL_DRILL, serial));
+		LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, TOOL_DRILL, serial, "opened"));
+		if (LF_Breach.IsLocked(vaultId))
+		{
+			vault.m_bSpawnPending = true;
+			return true;
+		}
+
+		vault.m_bSpawnPending = false;
+		SpawnWave(vault);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds the drill must run on this vault (LF_BankVaultComponent.m_fDrillSeconds).
+	static void ConfigureDrillSeconds(string vaultId, float seconds)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+		{
+			LF_Debug.Error("Bank", string.Format("drill seconds refused: vault %1 is not configured", vaultId));
+			return;
+		}
+
+		if (seconds <= 0)
+		{
+			LF_Debug.Error("Bank", string.Format("drill seconds %1 on %2 is not positive; keeping %3", seconds, vaultId, vault.m_fDrillSeconds));
+			return;
+		}
+
+		vault.m_fDrillSeconds = seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float GetDrillSeconds(string vaultId)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+			return 0;
+
+		return vault.m_fDrillSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -859,6 +950,14 @@ class LF_Bank
 
 		if (robber && !HasTool(vaultId, robber))
 			return "#LF-Bank_NeedTool";
+
+		// The drill works only from the hands (LF_HandTool); a pack drill points the robber there.
+		IEntity toolItem;
+		if (robber && PickTool(vault, robber, toolItem) == TOOL_DRILL && !LF_HandTool.Holds(robber, LF_VaultDrill.TOOL_ID))
+			return "#LF-Bank_HoldDrill";
+
+		if (LF_VaultDrill.IsDrilling(vaultId))
+			return "#LF-Bank_DrillBusy";
 
 		return "";
 	}
