@@ -298,8 +298,12 @@ class LF_PersistenceManagerComponent : ScriptComponent
 		if (!m_PersistenceSystem)
 		{
 			// The world systems config lacks SCR_PersistenceSystem. Nothing will
-			// serialize; saving is broken for this server, say so loudly.
-			LF_Debug.Error("Persistence", "no SCR_PersistenceSystem at game start - the world systems config is missing the SCR_PersistenceSystem entry");
+			// serialize; saving is broken for this server, say so loudly. Workbench play with no
+			// mission header always runs the engine default config, which has none (LF_WorkbenchPlay).
+			if (LF_WorkbenchPlay.PersistenceMissingExpected(LF_WorkbenchPlay.IsWorkbench(), GetGame().GetMissionHeader() != null))
+				LF_Debug.Warn("Persistence", "no SCR_PersistenceSystem in Workbench play without a mission header (the default systems config has none); nothing saves this session");
+			else
+				LF_Debug.Error("Persistence", "no SCR_PersistenceSystem at game start - the world systems config is missing the SCR_PersistenceSystem entry");
 		}
 
 		StartAutosaves();
