@@ -50,7 +50,7 @@ const page = (panel, extra = "") =>
   `<p>The listen-server host handles about 40 players, and moves to a rented box once sessions fill.</p>${extra}` +
   `</main></body></html>`;
 const timePanel = `<p><time datetime="2026-11-21T19:00:00.000Z">${utcText(new Date("2026-11-21T20:00:00+01:00"))}</time></p><p>Build 0.1.0.</p>`;
-const nonePanel = `<p>No session is scheduled. The next one shows here once it is announced.</p>`;
+const nonePanel = `<p>No session announced yet: watch Discord</p>`;
 
 // 1. good inputs
 expect(utcText(new Date("2026-11-21T20:00:00+01:00")) === "Sat 21 Nov 2026, 19:00 UTC", `utcText: ${utcText(new Date("2026-11-21T20:00:00+01:00"))}`);
