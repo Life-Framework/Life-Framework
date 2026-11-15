@@ -702,6 +702,12 @@
   server name, map and players/max. Operator tool for the session runbook and the
   opening gate's player target; nothing publishes it. `tools/host/a2s.mjs`; selftest
   `tools/validation/a2s-selftest.mjs`.
+  `host listing [address:a2sport] [--version V] [--map M] [--open]` (#1461, in-dev) asks the
+  running server what the browser shows over A2S_INFO and compares name, max players and
+  the password flag with `server/flagship/server.json`. It fails when the name is not exactly
+  `Life Framework | Everon 1989 (Alpha)` or the password flag is off (`--open` waives the
+  password after the alpha); `--version` and `--map` add those checks, since server.json holds
+  neither. `tools/host/listing.mjs`; selftest `tools/validation/host-listing-selftest.mjs`.
   `host verify [--newest N]` (#1454, merged, in-dev) opens each backup and checks it is not
   empty, holds a save point a restore can load (`meta-info.json` plus save data), and has a
   readable build stamp (`m_sGameVersion`). A good backup gets a sha256 recorded beside it
