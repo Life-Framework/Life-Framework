@@ -35,7 +35,7 @@ The lead dispatches every ready slice up to account headroom (`tools\cli usage
 --pick`, in progress on another branch) and lets the test pool spread tests
 and sessions. `tools\cli slice list <parent> --ready` is the dispatch queue:
 
-- **ready** means open, not `agent:working`, and every dependency merged
+- **ready** means open, not `agent:working`, not `hold`, and every dependency merged
   (`in-dev`, `needs-playtest`, `verified` or closed: merging is enough, the
   playtest is not waited for);
 - the queue is sorted by **critical path**: the longest chain of unmerged

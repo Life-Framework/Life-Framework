@@ -65,6 +65,7 @@ const live = issues.map((i) => ({ ...i, id: i.number, card: parseCard(i.body), s
 live[1].labels = ["in-dev"]; // S2 merged
 live[0].labels = ["agent:working"]; // S1 running
 check(statusOf(live[1]) === "merged" && statusOf(live[0]) === "running", "in-dev is merged, agent:working is running");
+check(readyOrder(live.map((s, i) => (i === 2 ? { ...s, labels: ["hold"] } : s))).every((s) => s.card.key !== "S3"), "a held slice is never ready");
 const order = readyOrder(live).map((s) => s.card.key);
 check(order.includes("S3"), "S3 is ready once S2 is in-dev");
 check(!order.includes("S6") && !order.includes("S1") && !order.includes("S2"), `blocked, running and merged slices are not ready (got ${order})`);
@@ -125,6 +126,19 @@ const tplCheck = await capture(["new", "1005", "--plan", join(tmp, "tmp", "slice
 check(tplCheck.code === 0, `the template itself passes the plan check (got ${tplCheck.text})`);
 const nb = await capture(["new", "1005", "--plan", join(FIX, "plan-bad.md"), "--dry-run"]);
 check(nb.code === 1 && nb.text.startsWith("SUMMARY slice new fail"), "a bad plan exits 1 on one SUMMARY line");
+// a later wave: `depends: #N` names a live sub-issue, and owns is checked against the running ones
+const wave = (key, owns, depends) =>
+  `# Slice ${key}: Wave card ${key}\n## Card\n- type: tooling\n- tier: T0\n- model: sonnet\n- machines: none\n- budget: 30 min / 40 calls\n- owns: \`${owns}\`\n- depends: ${depends}\n- acceptance: test LF_Test_Wave${key}\n- risk: none\n- release-blocker: no\n\n## Capability\nOne wave card.\n`;
+const waveRun = async (name, text) => {
+  writeFileSync(join(tmp, name), text);
+  return capture(["new", "1005", "--plan", join(tmp, name), "--dry-run", "--fixture", fixture]);
+};
+const wOk = await waveRun("wave-ok.md", wave("N1", "tools/wave/n1.mjs", "#102"));
+check(wOk.code === 0, `a wave card may depend on a live sub-issue by number (got ${wOk.text})`);
+const wClash = await waveRun("wave-clash.md", wave("N2", "addons/LifeFramework/Scripts/Game/Feature/Robbery/LF_RobberySystemToggle.c", "none"));
+check(wClash.code === 1 && /#101 and N2|N2 and #101/.test(wClash.text), `a wave card owning a running slice's file is refused (got ${wClash.text})`);
+const wGone = await waveRun("wave-gone.md", wave("N3", "tools/wave/n3.mjs", "#999"));
+check(wGone.code === 1 && wGone.text.includes("N3 depends on #999"), `a dependency on an unknown issue is refused (got ${wGone.text})`);
 const ledger = join(tmp, "ledger.jsonl");
 const r1 = await capture(["record", "105", "--model", "opus", "--outcome", "merged", "--gate", "pass", "--minutes", "41", "--type", "system", "--ledger", ledger]);
 const r2 = await capture(["record", "103", "--model", "sonnet", "--ledger", ledger]);

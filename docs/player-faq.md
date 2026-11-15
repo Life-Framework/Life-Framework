@@ -11,13 +11,22 @@ Press **Download the playtest** on [life-framework.org/playtest](https://life-fr
 No. The Life Framework download holds the whole mod. See [Do I need other mods?](#do-i-need-other-mods) below.
 
 **Why is the server not listed?**
-The community server runs on one PC, not around the clock. It is up only in announced sessions. Session times are posted on [Discord](https://discord.gg/MjMexJteqz). The server may also be full.
+The community server runs on one PC, not around the clock. It is up only in announced sessions. The next session time is on the [servers page](https://life-framework.org/servers) and on [Discord](https://discord.gg/MjMexJteqz). The page shows the time only: it does not show whether the server is up or how many people are on it. The server may also be full.
+
+**How do I get the server password?**
+The alpha server, "Life Framework | Everon 1989 (Alpha)", is joined with a server password and nothing else: no account or allowlist. Ask for the password on [Discord](https://discord.gg/MjMexJteqz). Do not share it outside the alpha.
+
+**When does the server restart?**
+Twice a day, at 06:00 and 18:00 server time. An in-game toast warns you at 15, 5 and 1 minute before, so finish what you are doing and get somewhere safe.
+
+**How long is a day in the game?**
+An in-game day is 2 real hours, so the sun moves about 12 times faster than the clock.
 
 **What is my character?**
 You start as a civilian. On your first join, fill in form R-89 with your name and age. Your character uses your Steam name. Join with the same name and you keep your cash, bank balance, job, organization, and cars.
 
 **Will my progress be wiped?**
-Maybe. The server can be wiped after a milestone. Staff announce a wipe a session ahead and back up the save first.
+Maybe. Until the public launch, the server can be wiped at any time. Every wipe is announced on [Discord](https://discord.gg/MjMexJteqz) at least 24 hours ahead, and a wipe clears everything in your save. Progress made from the public launch onward is kept. The rules are on the [wipe policy](community/wipe-policy.md) page.
 
 ## Controls
 

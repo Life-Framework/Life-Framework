@@ -1287,6 +1287,7 @@ password or repo credential.
    It asks for the auth key and then does the rest: power never sleeps, OpenSSH with key login only and port 22
    open to Tailscale addresses only, Tailscale, Git, Node 22 and Steam. Steam opens with the Arma Reforger and Tools
    installs queued. The one manual step is the Steam sign-in.
+   After a reboot Steam can come back signed out (`HKCU\Software\Valve\Steam\ActiveProcess\ActiveUser` is 0, `Clearing in-memory token ... cached creds not available` in Steam's `logs\connection_log.txt`); sign in again by hand. Workbench then still writes the rdb in ~3 s but freezes instead of exiting; the refresh stops it once the rdb is complete, and gives up within ~65 s with "Steam is not signed in" if a freeze dump appears with no complete rdb.
 3. **Steam window.** On a cloud GPU box Steam's window stays blank unless its web views run without the GPU.
    The setup script starts it with `-cef-disable-gpu -cef-disable-gpu-compositing`; restart it the same way.
 4. **ssh.** Add a `Host lf-cloud` entry to `~/.ssh/config` on this PC (the box's Tailscale address, user, key).
