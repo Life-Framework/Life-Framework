@@ -12,7 +12,7 @@ import { CPU_BUDGET_PCT, DEFAULT_UPLOAD_MBIT, verdict, verdictLine } from "./per
 import { triageLog } from "../lib/log-triage.mjs";
 import { diagnose } from "../lib/server-doctor.mjs";
 
-export const DEFAULT_TARGET = 40;
+export const DEFAULT_TARGET = 16;
 
 // A stamp starts a log line, as in attendance.mjs (never preceded by a digit or colon).
 const STAMP = /(?<![\d:])(\d{2}):(\d{2}):(\d{2})\.(\d{3})(?!\d)/g;

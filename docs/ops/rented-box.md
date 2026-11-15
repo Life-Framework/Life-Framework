@@ -9,11 +9,19 @@ card names it and marked *(planned)*; when it merges, drop the mark. Run the ste
 box when the step's check passes. Sessions on the live server follow [game-updates](game-updates.md) for
 builds and the session runbook (O16, #1275) for a normal session.
 
+## Decision: the alpha box
+
+Decision 2026-11-15: the flagship alpha runs on a rented **0grind** server with **16 player slots**
+(Ryzen 9 7950X3D, 16 GB RAM). `server/flagship/server.json` sets `game.maxPlayers` to 16, and the player
+target for the opening gate is 16, a full server. The 40-player spec in step 2 is the later full launch
+(about 40 players, [m4-outline](../roadmap/m4-outline.md)), not the alpha.
+
 ## 1. The trigger
 
 Rent a box only when both hold (decision 2026-11-08, [m4-outline](../roadmap/m4-outline.md)):
 
-- [ ] Several sessions in a row reached the player target (about 40). Count them from the Discord announcements
+- [ ] Several sessions in a row reached the player target (16 for the alpha box, about 40 for the full-launch
+      box). Count them from the Discord announcements
       and the session notes; there is no automatic count.
 - [ ] Donations cover three months of the box. Read the cost from `website/content/costs.json`: the
       `Game server` row's `amount` (USD) and `period`. Three months is `amount` times 3 for a `month` period.
@@ -23,7 +31,10 @@ Rent a box only when both hold (decision 2026-11-08, [m4-outline](../roadmap/m4-
 When both are true, fill the `Game server` row's `amount`, set its `status` to `paying`, and set `updated`, in
 the same PR as the move. Never type an estimate as a real amount (the file's own rule).
 
-## 2. Box spec for 40 players
+## 2. Box spec
+
+The alpha box is the 0grind server above: 16 slots on a Ryzen 9 7950X3D with 16 GB RAM. The table is the
+working spec for the full launch at **40 players**, kept for when sessions outgrow 16 slots.
 
 A working spec, not a measurement. The 128-player budget in [performance](../architecture/performance.md) says
 the LF script cost is small and linear, so the engine and the network set the size, not our scripts. Confirm it
@@ -34,7 +45,7 @@ at the dry run (step 9) and write the real figures here.
 | CPU | 4 or more cores, fast single-thread (the game loop is one hot thread) | Server FPS is the limit; core count past 4 helps little |
 | RAM | 16 GB | The server, the OS, and headroom for the save at its cap (about 6 MB, performance.md) and the backups' disk cache |
 | Disk | 60 GB SSD | The server install, two Workshop mods, 20 rolling backups (`host prune` keeps 20), logs |
-| Network | 100 Mbit up, unmetered or 2 TB a month or more | 40 players of replication; check the host's cap before paying |
+| Network | 100 Mbit up, unmetered or 2 TB a month or more | 40 players of replication (the full launch; the 16-slot alpha needs well under half); check the host's cap before paying |
 | OS | Windows Server 2022 or later, or Ubuntu 22.04 or later | The `tools\cli host` commands are Windows; Linux runs `server/example/start.sh` (step 6) |
 | Address | A fixed public IPv4 | Players and DNS point at it |
 | Access | Remote Desktop or ssh with a key | Nothing in the checklist needs the host's web panel except what step 10 records |
@@ -78,7 +89,7 @@ The game listens on UDP 2001 and the A2S query on UDP 17777 (`server/example/ser
 - [ ] Copy the flagship folder: `server/flagship/` from the repo at `stable` (the live branch,
       [release-process](../release-process.md)). It holds `server.json` and `config.json` once C1 (#1321)
       merges; until then start from `server/example/`.
-- [ ] In `server.json` set `game.maxPlayers` to 40 and the server name; the join password and admin password
+- [ ] In `server.json` set `game.maxPlayers` to 16 (the alpha's slots; 40 only at the full launch) and the server name; the join password and admin password
       go in the host-only `secrets.json`, never in the repo (`host config apply`, below).
 - [ ] `tools\cli server-template check` passes on the folder: the core mod first, then the pack, the scenario
       a header inside a listed addon.
@@ -105,7 +116,7 @@ On the new box:
 
 5. [ ] Put the backup under the new host dir's `backups/`, and run `tools\cli host restore <folder name>` to
        lay it into the profile. `restore` keeps what it replaces under `backups/<time>-replaced-by-restore`.
-6. [ ] **Drill before opening:** `tools\cli host drill <folder name>` *(planned)* boots a throwaway copy with
+6. [ ] **Drill before opening:** `tools\cli host drill <folder name>` boots a throwaway copy with
        `-loadSessionSave` and passes only on a `save loaded:` line and at least one applied account record. Without
        `host drill`, start the box once without announcing it and read the console log
        (`tools\cli logs "save loaded:"`): it must show `[LFDebug:Persistence] save loaded: version N, game build X,
@@ -123,9 +134,9 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
 - [ ] Windows: `tools\cli host start --flagship`, or the start script in the flagship folder. Linux:
       `LF_REFORGER_SERVER=~/reforger-server ./start.sh -loadSessionSave`. Both pass `-maxFPS 60` and keep the
       owner `config.json` in the profile.
-- [ ] **Watchdog.** `tools\cli host watch` *(planned)* supervises the process: an exit without the stop file
+- [ ] **Watchdog.** `tools\cli host watch` supervises the process: an exit without the stop file
       is a crash, so it keeps the crash log under `backups/<time>-crash/`, backs the saves up, and restarts with
-      `-loadSessionSave` within a minute. Until it merges, or on Linux, use the OS: a Windows scheduled task
+      `-loadSessionSave` within a minute. On Linux, or where it is not used, use the OS: a Windows scheduled task
       (trigger "at startup", restart on failure every minute) or a systemd unit with `Restart=on-failure`. Both
       must pass `-loadSessionSave`, and a stop through `host stop` must not trigger a restart.
 - [ ] Kill the server process by hand once. It is back, with the crash backup, inside a minute, and the log
@@ -145,9 +156,9 @@ The live `config.json` is public in this repo, so no password or webhook goes in
 
 - [ ] Write `secrets.json` in the host dir on the box only: the join password, the admin password and the staff
       webhook URL.
-- [ ] `tools\cli host config apply` *(planned)* writes the profile's `config.json` and `server.json` from the
-      repo files plus `secrets.json`. Until it merges, copy `config.json` to
-      `profile/profile/LifeFramework/config.json` and fill the passwords in `server.json` by hand on the box.
+- [ ] `tools\cli host config apply` writes the profile's `config.json` and `server.json` from the
+      repo files plus `secrets.json`. If it cannot run on the box (a Linux host without Node), copy `config.json` to
+      `profile/profile/LifeFramework/config.json` and fill the passwords in `server.json` by hand there.
 - [ ] `secrets.json` is in no backup that leaves the box, and in no commit.
 
 ## 8. DNS and the address
@@ -164,7 +175,7 @@ The live `config.json` is public in this repo, so no password or webhook goes in
 
 The dry run is the manual check of #311, on `lf-testbox` (the LAN laptop) or on the box before the town moves.
 
-- [ ] Run steps 4 to 6 on `lf-testbox` or an empty profile on the new box, with `maxPlayers` at 40.
+- [ ] Run steps 4 to 6 on `lf-testbox` or an empty profile on the new box, with `maxPlayers` at 16.
 - [ ] Join with two clients, one after the other, save, `host stop`, `host start -loadSessionSave`, and see the
       same four load lines [dedicated-session](../dedicated-session.md) lists.
 - [ ] Note server FPS and RAM at the player count reached, and replace the working spec in step 2 with them.
@@ -174,7 +185,7 @@ The dry run is the manual check of #311, on `lf-testbox` (the LAN laptop) or on 
 
 ## 10. After the move
 
-- [ ] Run `tools\cli host triage` *(planned)* on the first full session's console log; file what is new.
+- [ ] Run `tools\cli host triage` on the first full session's console log; file what is new.
 - [ ] Add the box's one-off facts (below) and the monthly cost to `website/content/costs.json`.
 - [ ] Open a follow-up issue for anything this checklist got wrong, and fix this page the same day.
 
