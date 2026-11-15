@@ -75,6 +75,10 @@ expect(badRun.some((m) => m.includes("sessions.json")), "a schema-invalid file s
 // 3. the page shows the time
 expect(checkPage(page(nonePanel), scheduled).length > 0, "a page with no session time should fail for a scheduled session");
 expect(checkPage(page(timePanel), none).length > 0, "a page showing a time for next: null should fail");
+// #1537: a draft (no announced time) is not shown, like none.
+const { announced: _posted, ...draftNext } = scheduled.next;
+expect(checkPage(page(nonePanel), { next: draftNext }).length === 0, "a draft with the empty-state page should pass");
+expect(checkPage(page(timePanel), { next: draftNext }).length > 0, "a page showing a draft's time should fail");
 const stale = `<p><time>${utcText(new Date("2026-11-22T20:00:00+01:00"))}</time></p>`;
 expect(checkPage(page(stale), scheduled).length > 0, "a different time should fail");
 
