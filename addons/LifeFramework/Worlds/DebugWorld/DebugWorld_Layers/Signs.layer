@@ -1,433 +1,445 @@
+$grp GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ Sign_ConvoyDrop {
+  components {
+   LF_SignComponent "{44FC6FF960E3CDE5}" {
+    m_sSignId "convoy_drop"
+   }
+  }
+  coords 127.03 0.9 282.5
+  angles 0 90 0
+ }
+ Sign_ConvoyPickup {
+  components {
+   LF_SignComponent "{44FC6FF960E3CDE5}" {
+    m_sSignId "convoy_pickup"
+   }
+  }
+  coords 463 1 336.11
+  angles 0 180 0
+ }
+ Sign_Quarry_Info {
+  components {
+   LF_SignComponent "{44FC6FF960E3CDE5}" {
+    m_sSignId "quarry_info"
+   }
+  }
+  coords 184 0 189.8
+ }
+}
+GenericEntity Sign_PubHanging : "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_02_Pub_V1.et" {
+ coords 116.5 2.8 270.6
+ angles 0 180 0
+}
+GenericEntity Sign_HospitalCross : "{238A10113E311A73}Prefabs/Props/Fabric/RedCrossCloth/RedCrossClothTemper_01_big_front.et" {
+ coords 266.5 2.3 259.88
+ angles 0 180 0
+}
+GenericEntity Sign_TestOrg : "{256EE1573D428340}Prefabs/Props/Signs/LF_Sign_TestOrg.et" {
+ coords 285.301 0 255.515
+ angles 0 180 0
+}
+$grp GenericEntity : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ Sign_Bank {
+  components {
+   LF_SignComponent "{6E3FF3980D87CACE}" {
+    m_sSignId "bank"
+    m_vRimColor 0.85 0.68 0.3
+    m_vPaintColor 0.42 0.07 0.07
+    m_vTextColor 0.92 0.78 0.42
+   }
+  }
+  coords 190 3.3 259.71
+  angles 0 180 0
+ }
+ Sign_GeneralStore {
+  components {
+   LF_SignComponent "{6E3FF3980D87CACE}" {
+    m_sSignId "general_store"
+    m_vRimColor 0.92 0.88 0.76
+    m_vPaintColor 0.1 0.33 0.2
+    m_vTextColor 0.95 0.92 0.8
+   }
+  }
+  coords 181.5 3.05 241.58
+ }
+}
 GenericEntity Sign_TownMap : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
  components {
   LF_SignComponent "{CB0DD0E500C1A1EE}" {
    m_sSignId "town_map"
   }
  }
- coords 130.5 0 246.5
- angleY 90
+ coords 128.039 0 249.884
+ angles 0 90 0
 }
-GenericEntity Sign_PostOffice : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
- components {
-  LF_SignComponent "{0F52A6E4DA40DB6F}" {
-   m_sSignId "post_office"
-   m_vRimColor 0.06 0.18 0.5
-   m_vPaintColor 0.95 0.72 0.08
-   m_vTextColor 0.06 0.18 0.5
+$grp GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+ Sign_Market {
+  components {
+   LF_SignComponent "{C8DC6C24E38F2C19}" {
+    m_sSignId "traders"
+    m_vRimColor 0.7 0.12 0.1
+    m_vPaintColor 0.95 0.9 0.78
+    m_vTextColor 0.7 0.12 0.1
+   }
   }
+  coords 193.5 0 245.3
  }
- coords 152.5 2.5 258.49
- angleY 180
- scale 1.4
+ Sign_VehicleLot {
+  components {
+   LF_SignComponent "{C8DC6C24E38F2C19}" {
+    m_sSignId "vehicle_lot"
+    m_vRimColor 1 1 1
+    m_vPaintColor 0.12 0.3 0.55
+    m_vTextColor 1 1 1
+   }
+  }
+  coords 199.777 0.001 256.201
+  angles 0 -169.701 0
+ }
 }
-GenericEntity Sign_Atm : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
- components {
-  LF_SignComponent "{0F52A6E4DA40DB6F}" {
-   m_sSignId "atm"
-   m_vRimColor 0.1 0.3 0.15
-   m_vPaintColor 0.95 0.95 0.92
-   m_vTextColor 0.1 0.3 0.15
+$grp SCR_DestructibleEntity : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ Sign_StoreChalk {
+  components {
+   LF_SignComponent "{DF6A14A1AD2B41F0}" {
+    m_sSignId "general_store"
+   }
   }
+  coords 177.4 0 243.2
  }
- coords 175.4 2.438 265.916
- angleY 180
- scale 0.7
+ Sign_MarketChalk {
+  components {
+   LF_SignComponent "{DF6A14A1AD2B41F0}" {
+    m_sSignId "traders"
+   }
+  }
+  coords 194.922 0.007 234.102
+ }
 }
-GenericEntity Sign_Bank : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
- components {
-  LF_SignComponent "{6E3FF3980D87CACE}" {
-   m_sSignId "bank"
-   m_vRimColor 0.85 0.68 0.3
-   m_vPaintColor 0.42 0.07 0.07
-   m_vTextColor 0.92 0.78 0.42
+$grp GenericEntity : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
+ Sign_PostOffice {
+  components {
+   LF_SignComponent "{0F52A6E4DA40DB6F}" {
+    m_sSignId "post_office"
+    m_vRimColor 0.06 0.18 0.5
+    m_vPaintColor 0.95 0.72 0.08
+    m_vTextColor 0.06 0.18 0.5
+   }
   }
+  coords 152.5 2.5 258.49
+  angles 0 180 0
+  scale 1.4
  }
- coords 190 3.3 259.71
- angleY 180
+ Sign_Atm {
+  components {
+   LF_SignComponent "{0F52A6E4DA40DB6F}" {
+    m_sSignId "atm"
+    m_vRimColor 0.1 0.3 0.15
+    m_vPaintColor 0.95 0.95 0.92
+    m_vTextColor 0.1 0.3 0.15
+   }
+  }
+  coords 175.4 2.438 265.916
+  angles 0 180 0
+  scale 0.7
+ }
+ Sign_Garage {
+  components {
+   LF_SignComponent "{0F52A6E4DA40DB6F}" {
+    m_sSignId "garage"
+    m_vRimColor 0.1 0.1 0.1
+    m_vPaintColor 0.95 0.95 0.92
+    m_vTextColor 0.1 0.1 0.1
+   }
+  }
+  coords 240.41 2 260.6
+  angles 0 90 0
+  scale 1.2
+ }
+ Sign_PoliceStation {
+  components {
+   LF_SignComponent "{0F52A6E4DA40DB6F}" {
+    m_sSignId "police_station"
+    m_vRimColor 1 1 1
+    m_vPaintColor 0.06 0.18 0.5
+    m_vTextColor 1 1 1
+   }
+  }
+  coords 236.6 2.15 241.16
+  scale 1.3
+ }
+ Sign_Jail {
+  components {
+   LF_SignComponent "{0F52A6E4DA40DB6F}" {
+    m_sSignId "jail"
+    m_vRimColor 0.9 0.9 0.9
+    m_vPaintColor 0.28 0.29 0.31
+    m_vTextColor 0.95 0.95 0.95
+   }
+  }
+  coords 234.9 1.308 226.228
+  scale 1.2
+ }
+ Sign_Hospital {
+  components {
+   LF_SignComponent "{0F52A6E4DA40DB6F}" {
+    m_sSignId "hospital"
+    m_vRimColor 0.75 0.08 0.08
+    m_vPaintColor 0.97 0.97 0.97
+    m_vTextColor 0.75 0.08 0.08
+   }
+  }
+  coords 264 2.3 258.67
+  angles 0 180 0
+  scale 1.5
+ }
+ Sign_OrgRegistry {
+  components {
+   LF_SignComponent "{0F52A6E4DA40DB6F}" {
+    m_sSignId "org_registry"
+    m_vRimColor 0.75 0.66 0.45
+    m_vPaintColor 0.14 0.16 0.2
+    m_vTextColor 0.85 0.76 0.52
+   }
+  }
+  coords 286.5 2.3 258.79
+  angles 0 180 0
+  scale 1.5
+ }
 }
-GenericEntity Sign_GeneralStore : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
- components {
-  LF_SignComponent "{6E3FF3980D87CACE}" {
-   m_sSignId "general_store"
-   m_vRimColor 0.92 0.88 0.76
-   m_vPaintColor 0.1 0.33 0.2
-   m_vTextColor 0.95 0.92 0.8
+$grp GenericEntity : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ Sign_Impound {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "impound"
+    m_vRimColor 0.1 0.1 0.1
+    m_vPaintColor 0.95 0.78 0.1
+    m_vTextColor 0.1 0.1 0.1
+   }
   }
+  coords 243 0 268.5
+  angles 0 180 0
  }
- coords 181.5 3.05 241.58
-}
-GenericEntity Sign_Market : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
- components {
-  LF_SignComponent "{C8DC6C24E38F2C19}" {
-   m_sSignId "traders"
-   m_vRimColor 0.7 0.12 0.1
-   m_vPaintColor 0.95 0.9 0.78
-   m_vTextColor 0.7 0.12 0.1
+ Sign_FuelStation {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "fuel_station"
+    m_vRimColor 1 1 1
+    m_vPaintColor 0.75 0.1 0.08
+    m_vTextColor 1 1 1
+   }
   }
+  coords 280.5 0 243.5
+  angles 0 -50 0
  }
- coords 193.5 0 245.3
-}
-GenericEntity Sign_VehicleLot : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
- components {
-  LF_SignComponent "{C8DC6C24E38F2C19}" {
-   m_sSignId "vehicle_lot"
-   m_vRimColor 1 1 1
-   m_vPaintColor 0.12 0.3 0.55
-   m_vTextColor 1 1 1
+ Sign_Farm {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "farm"
+    m_vRimColor 0.85 0.75 0.5
+    m_vPaintColor 0.36 0.22 0.1
+    m_vTextColor 0.95 0.88 0.65
+   }
   }
+  coords 141.8 0 293
+  angles 0 180 0
  }
- coords 211 0 256.2
- angleY 180
-}
-GenericEntity Sign_Garage : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
- components {
-  LF_SignComponent "{0F52A6E4DA40DB6F}" {
-   m_sSignId "garage"
-   m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.95 0.95 0.92
-   m_vTextColor 0.1 0.1 0.1
+ Sign_SafeZone_Spawn {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "safe_zone"
+    m_vRimColor 0.1 0.45 0.2
+    m_vPaintColor 0.97 0.97 0.97
+    m_vTextColor 0.1 0.45 0.2
+   }
   }
+  coords 134.799 0.001 253.486
+  angles 0 -90 0
  }
- coords 240.41 2.0 260.6
- angleY 90
- scale 1.2
-}
-GenericEntity Sign_Impound : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "impound"
-   m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.95 0.78 0.1
-   m_vTextColor 0.1 0.1 0.1
+ Sign_SafeZone_East {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "safe_zone"
+    m_vRimColor 0.1 0.45 0.2
+    m_vPaintColor 0.97 0.97 0.97
+    m_vTextColor 0.1 0.45 0.2
+   }
   }
+  coords 145.5 0 258
+  angles 0 90 0
  }
- coords 243 0 268.5
- angleY 180
-}
-GenericEntity Sign_PoliceStation : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
- components {
-  LF_SignComponent "{0F52A6E4DA40DB6F}" {
-   m_sSignId "police_station"
-   m_vRimColor 1 1 1
-   m_vPaintColor 0.06 0.18 0.5
-   m_vTextColor 1 1 1
+ Sign_Lawless_Entry {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "lawless_zone"
+    m_vRimColor 0.65 0.1 0.1
+    m_vPaintColor 0.97 0.97 0.97
+    m_vTextColor 0.65 0.1 0.1
+   }
   }
+  coords 171.2 0 205
  }
- coords 236.6 2.15 241.16
- scale 1.3
-}
-GenericEntity Sign_Jail : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
- components {
-  LF_SignComponent "{0F52A6E4DA40DB6F}" {
-   m_sSignId "jail"
-   m_vRimColor 0.9 0.9 0.9
-   m_vPaintColor 0.28 0.29 0.31
-   m_vTextColor 0.95 0.95 0.95
+ Sign_Lawless_Pit {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "lawless_zone"
+    m_vRimColor 0.65 0.1 0.1
+    m_vPaintColor 0.97 0.97 0.97
+    m_vTextColor 0.65 0.1 0.1
+   }
   }
+  coords 206 0 172
+  angles 0 90 0
  }
- coords 234.9 1.308 226.228
- scale 1.2
-}
-GenericEntity Sign_FuelStation : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "fuel_station"
-   m_vRimColor 1 1 1
-   m_vPaintColor 0.75 0.1 0.08
-   m_vTextColor 1 1 1
+ Sign_HospitalBay {
+  components {
+   LF_SignComponent "{026619B31213409D}" {
+    m_sSignId "hospital_bay"
+    m_vRimColor 0.75 0.08 0.08
+    m_vPaintColor 0.97 0.97 0.97
+    m_vTextColor 0.75 0.08 0.08
+   }
   }
+  coords 261 0 254.2
+  angles 0 270 0
  }
- coords 280.5 0 243.5
- angleY -50
-}
-GenericEntity Sign_Hospital : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
- components {
-  LF_SignComponent "{0F52A6E4DA40DB6F}" {
-   m_sSignId "hospital"
-   m_vRimColor 0.75 0.08 0.08
-   m_vPaintColor 0.97 0.97 0.97
-   m_vTextColor 0.75 0.08 0.08
-  }
- }
- coords 264 2.3 258.67
- angleY 180
- scale 1.5
-}
-GenericEntity Sign_OrgRegistry : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
- components {
-  LF_SignComponent "{0F52A6E4DA40DB6F}" {
-   m_sSignId "org_registry"
-   m_vRimColor 0.75 0.66 0.45
-   m_vPaintColor 0.14 0.16 0.2
-   m_vTextColor 0.85 0.76 0.52
-  }
- }
- coords 286.5 2.3 258.79
- angleY 180
- scale 1.5
-}
-GenericEntity Sign_Farm : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "farm"
-   m_vRimColor 0.85 0.75 0.5
-   m_vPaintColor 0.36 0.22 0.1
-   m_vTextColor 0.95 0.88 0.65
-  }
- }
- coords 141.8 0 293
- angleY 180
-}
-GenericEntity Sign_FarmPlots : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "farm_plots"
-  }
- }
- coords 142.4 0 297
- angleY 180
-}
-GenericEntity Sign_SafeZone_Spawn : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "safe_zone"
-   m_vRimColor 0.1 0.45 0.2
-   m_vPaintColor 0.97 0.97 0.97
-   m_vTextColor 0.1 0.45 0.2
-  }
- }
- coords 130.5 0 250
- angleY -90
-}
-GenericEntity Sign_SafeZone_East : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "safe_zone"
-   m_vRimColor 0.1 0.45 0.2
-   m_vPaintColor 0.97 0.97 0.97
-   m_vTextColor 0.1 0.45 0.2
-  }
- }
- coords 145.5 0 258
- angleY 90
 }
 GenericEntity Sign_PoliceWhitelist : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
  coords 236.6 1.7 241.2
 }
-GenericEntity Sign_BackRoom : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "black_market"
+$grp GenericEntity : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ Sign_FarmPlots {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "farm_plots"
+   }
   }
+  coords 142.4 0 297
+  angles 0 180 0
  }
- coords 306.8 0 281.4
- angleY 180
-}
-GenericEntity Sign_Hideout : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "hideout"
+ Sign_BackRoom {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "black_market"
+   }
   }
+  coords 306.8 0 281.4
+  angles 0 180 0
  }
- coords 301.6 0 297.6
- angleY 180
-}
-GenericEntity Sign_StoreChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
- components {
-  LF_SignComponent "{DF6A14A1AD2B41F0}" {
-   m_sSignId "general_store"
+ Sign_Hideout {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "hideout"
+   }
   }
+  coords 301.6 0 297.6
+  angles 0 180 0
  }
- coords 177.4 0 243.2
-}
-GenericEntity Sign_MarketChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
- components {
-  LF_SignComponent "{DF6A14A1AD2B41F0}" {
-   m_sSignId "traders"
+ Sign_LotPrice_s105 {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "lot_price_s105"
+    m_sPriceLotShopId "roadmap-lot"
+    m_PriceVehicle "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+   }
   }
+  coords 201.776 0.001 261.473
+  angles 0 132.767 0
+  scale 0.65
  }
- coords 194.999 0.006 235.6
-}
-GenericEntity Sign_PubHanging : "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_02_Pub_V1.et" {
- coords 116.5 2.8 270.6
- angleY 180
-}
-GenericEntity Sign_HospitalCross : "{238A10113E311A73}Prefabs/Props/Fabric/RedCrossCloth/RedCrossClothTemper_01_big_front.et" {
- coords 266.5 2.3 259.88
- angleY 180
-}
-GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
- components {
-  LF_SignComponent "{44FC6FF960E3CDE5}" {
-   m_sSignId "convoy_drop"
+ Sign_LotPrice_uaz469 {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "lot_price_uaz469"
+    m_sPriceLotShopId "roadmap-lot"
+    m_PriceVehicle "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+   }
   }
+  coords 207.631 0.001 269.873
+  angles 0 133.421 0
+  scale 0.65
  }
- coords 127.03 0.9 282.5
- angleY 90
-}
-GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
- components {
-  LF_SignComponent "{44FC6FF960E3CDE5}" {
-   m_sSignId "convoy_pickup"
+ Sign_LotPrice_s1203 {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "lot_price_s1203"
+    m_sPriceLotShopId "roadmap-lot"
+    m_PriceVehicle "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+   }
   }
+  coords 215.368 0.001 269.81
+  angles 0 -134.462 0
+  scale 0.65
  }
- coords 463 1 336.11
- angleY 180
-}
-GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "lawless_zone"
-   m_vRimColor 0.65 0.1 0.1
-   m_vPaintColor 0.97 0.97 0.97
-   m_vTextColor 0.65 0.1 0.1
+ Sign_LotPrice_uaz452 {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "lot_price_uaz452"
+    m_sPriceLotShopId "roadmap-lot"
+    m_PriceVehicle "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+   }
   }
+  coords 218.523 0.001 266.306
+  angles 0 -135.686 0
+  scale 0.65
  }
- coords 171.2 0 205
- angleY 0
-}
-GenericEntity Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "lawless_zone"
-   m_vRimColor 0.65 0.1 0.1
-   m_vPaintColor 0.97 0.97 0.97
-   m_vTextColor 0.65 0.1 0.1
+ Sign_LotPrice_dana2101 {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "lot_price_dana2101"
+    m_sPriceLotShopId "roadmap-lot"
+    m_PriceVehicle "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
+   }
   }
+  coords 222.385 0.001 262.872
+  angles 0 -138.874 0
+  scale 0.65
  }
- coords 206 0 172
- angleY 90
-}
-GenericEntity Sign_HospitalBay : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "hospital_bay"
-   m_vRimColor 0.75 0.08 0.08
-   m_vPaintColor 0.97 0.97 0.97
-   m_vTextColor 0.75 0.08 0.08
+ Sign_LotPrice_t601 {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "lot_price_t601"
+    m_sPriceLotShopId "roadmap-lot"
+    m_PriceVehicle "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
+   }
   }
+  coords 203.156 0.001 266.765
+  angles 0 140.688 0
+  scale 0.65
  }
- coords 261 0 254.2
- angleY 270
-}
-GenericEntity Sign_LotPrice_s105 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "lot_price_s105"
-   m_sPriceLotShopId "roadmap-lot"
-   m_PriceVehicle "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+ Sign_crime_safe {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "crime_safe"
+   }
   }
+  coords 28.6 0 48.3
+  angles 0 180 0
  }
- coords 214.8 0 258.4
- angleY 180
- scale 0.65
-}
-GenericEntity Sign_LotPrice_uaz469 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "lot_price_uaz469"
-   m_sPriceLotShopId "roadmap-lot"
-   m_PriceVehicle "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+ Sign_crime_rack {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "crime_rack"
+   }
   }
+  coords 32.6 0 48.3
+  angles 0 180 0
  }
- coords 219.3 0 258.4
- angleY 180
- scale 0.65
-}
-GenericEntity Sign_LotPrice_s1203 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "lot_price_s1203"
-   m_sPriceLotShopId "roadmap-lot"
-   m_PriceVehicle "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+ Sign_crime_car {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "crime_car"
+   }
   }
+  coords 36.6 0 48.3
+  angles 0 180 0
  }
- coords 223.8 0 258.4
- angleY 180
- scale 0.65
-}
-GenericEntity Sign_LotPrice_uaz452 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "lot_price_uaz452"
-   m_sPriceLotShopId "roadmap-lot"
-   m_PriceVehicle "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+ Sign_crime_police {
+  components {
+   LF_SignComponent "{82B1E805004F28DE}" {
+    m_sSignId "crime_police"
+   }
   }
+  coords 45.6 0 48.3
+  angles 0 180 0
  }
- coords 228.3 0 258.4
- angleY 180
- scale 0.65
-}
-GenericEntity Sign_LotPrice_dana2101 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "lot_price_dana2101"
-   m_sPriceLotShopId "roadmap-lot"
-   m_PriceVehicle "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
-  }
- }
- coords 231.9 0 258.4
- angleY 180
- scale 0.65
-}
-GenericEntity Sign_LotPrice_t601 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "lot_price_t601"
-   m_sPriceLotShopId "roadmap-lot"
-   m_PriceVehicle "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
-  }
- }
- coords 205.2 0 258.4
- angleY 180
- scale 0.65
-}
-GenericEntity Sign_crime_safe : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "crime_safe"
-  }
- }
- coords 28.6 0 48.3
- angleY 180
-}
-GenericEntity Sign_crime_rack : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "crime_rack"
-  }
- }
- coords 32.6 0 48.3
- angleY 180
-}
-GenericEntity Sign_crime_car : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "crime_car"
-  }
- }
- coords 36.6 0 48.3
- angleY 180
-}
-GenericEntity Sign_crime_police : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
- components {
-  LF_SignComponent "{82B1E805004F28DE}" {
-   m_sSignId "crime_police"
-  }
- }
- coords 45.6 0 48.3
- angleY 180
-}
-GenericEntity Sign_Quarry_Info : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
- components {
-  LF_SignComponent "{44FC6FF960E3CDE5}" {
-   m_sSignId "quarry_info"
-  }
- }
- coords 184 0 189.8
- angleY 0
-}
-GenericEntity Sign_TestOrg : "{256EE1573D428340}Prefabs/Props/Signs/LF_Sign_TestOrg.et" {
- coords 285.301 0 255.515
- angleY 180
 }
