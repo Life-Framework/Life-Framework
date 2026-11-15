@@ -2,6 +2,7 @@
   "_note": "Named areas for the shots area command. n is the order in docs/agent-area-polish.md; x,y,z is the centre (y is looked up in-game); radius in metres; front is the compass heading (0 = +z, 90 = +x) from the centre to the side players approach from and the main facade faces: the wide shot is taken from there. Centres come from the DebugWorld layers.",
   "areas": [
     { "n": 1, "name": "spawn-square", "front": 270, "avoid": [[115, 224, 9]], "x": 125, "y": 0, "z": 252, "radius": 30 },
+    { "n": 1, "name": "arrival-desk", "front": 293, "focus": ["Quest_Clerk", "Sign_Registry"], "x": 137, "y": 0, "z": 241.2, "radius": 6, "note": "the registry counter on the spawn square: the wide is the view from the civilian spawn (126, 246), then a customer at the counter", "wideCands": [{ "az": 293, "dist": 11.9, "up": 1.7 }, { "az": 293, "dist": 2.6, "up": 1.6 }, { "az": 275, "dist": 7, "up": 2 }] },
     { "n": 18, "name": "pub", "front": 0, "x": 118, "y": 0, "z": 283, "radius": 10, "note": "the Hostinec pub from its front lawn; the terrace radio stands by the door", "wideCands": [{ "az": 0, "dist": 11, "up": 2.6 }, { "az": 25, "dist": 11, "up": 2.6 }, { "az": -25, "dist": 11, "up": 2.6 }] },
     { "n": 2, "name": "bank", "front": 180, "x": 188, "y": 0, "z": 260, "radius": 18 },
     { "n": 3, "name": "general-store", "front": 0, "x": 182, "y": 0, "z": 246, "radius": 20 },

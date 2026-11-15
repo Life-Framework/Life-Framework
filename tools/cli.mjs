@@ -79,6 +79,7 @@ import * as testWorld from "./lib/test-world.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
+import * as worldDiff from "./lib/world-diff.mjs";
 import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import * as e2eContentIds from "./test/e2e-content-ids.mjs";
 import * as e2eCashSwap from "./test/e2e-cash-swap.mjs";
@@ -3601,6 +3602,7 @@ async function cmdCi(root = ROOT, opts = {}) {
 async function ciDataOnly(root, c, opts = {}) {
   const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
   const tests = readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") }));
+  if (c.world) return ciWorldEdit(root, c, tests, opts);
   const tokens = [...c.ids];
   for (const p of c.data) {
     let text = null;
@@ -3626,6 +3628,28 @@ async function ciDataOnly(root, c, opts = {}) {
     if (code !== 0) failed++;
   }
   console.log(failed === 0 ? "\nci: ALL PASSED (T1)" : `\nci: ${failed} step(s) failed (T1)`);
+  return failed === 0 ? 0 : 1;
+}
+
+// T1w, a maintainer hand edit of .layer files (docs/worktrees.md "Maintainer world edits"): static validate,
+// the placement audit on the touched layers (flagged entities the maintainer placed are allowlisted by
+// `world ship`), and only the tests that name a touched layer or entity. No build, no LOGIC sweep.
+async function ciWorldEdit(root, c, tests, opts = {}) {
+  const layers = c.data.map((p) => p.split("/").pop());
+  const sel = gateTier.selectTests(tests, worldDiff.testTokens(layers, c.touched || []));
+  console.log(`ci: T1w tests: ${sel.related.length} that name a touched layer or entity${sel.related.length ? ` (${sel.related.slice(0, 8).join(", ")})` : ""}`);
+  const steps = [
+    ["validate (static)", () => cmdRunArea("validate", root, {})],
+    ["placement audit (touched layers)", () => placementAudit(root, ["--strict", "--top", "200", "--layer", layers.join(",")], opts)],
+    ...(sel.related.length ? [["test (T1w: layer-named)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: sel.related.join(",") })]] : []),
+  ];
+  let failed = 0;
+  for (const [name, fn] of steps) {
+    console.log(`\n=== ci: ${name} ===`);
+    const code = await Promise.resolve(fn());
+    if (code !== 0) failed++;
+  }
+  console.log(failed === 0 ? "\nci: ALL PASSED (T1w)" : `\nci: ${failed} step(s) failed (T1w)`);
   return failed === 0 ? 0 : 1;
 }
 
@@ -4796,9 +4820,21 @@ function gateTierOf(wtRoot, forceFull = false) {
   const read = (p) => {
     try { return readFileSync(join(wtRoot, p), "utf8"); } catch { return null; }
   };
-  const files = gateTier.collectDiff({ git, read, base: wt.baseOfRoot(wtRoot) });
+  const base = wt.baseOfRoot(wtRoot);
+  const files = gateTier.collectDiff({ git, read, base });
   if (!files) return { tier: 2, reasons: ["could not read the diff against the base"], data: [], ids: [] };
-  return gateTier.classify(files);
+  // T1w: a maintainer hand edit on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits").
+  const branch = git(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
+  const mb = git(["merge-base", `origin/${base}`, "HEAD"]).stdout.trim();
+  const worldEdit = (layers, extra) => {
+    const d = worldDiff.diffFiles(layers.map((f) => ({ path: f.path, before: f.before, after: f.after })));
+    extra.touched = worldDiff.touchedNames(d);
+    return worldDiff.handEditProblem(d, (ref) => {
+      const g = /\{[0-9A-Fa-f]{16}\}/.exec(ref);
+      return !!g && !!mb && git(["grep", "-q", "-F", g[0], mb, "--", "addons"]).status === 0;
+    });
+  };
+  return gateTier.classify(files, { branch, worldEdit });
 }
 
 function gateArgs(wtRoot, flags) {

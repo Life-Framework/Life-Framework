@@ -54,6 +54,11 @@
     {
       "match": "^Roadmap_Bank_Vault(Hood|Light)?[ ]",
       "why": "The door hood and the bulkhead light are fixed to the vault front: their backs stand in the concrete face, as wall-mounted fittings do (polish-vault-market)."
+    },
+    {
+      "match": "^(SquareRegistryParasol|SquareRegistryCounter) ",
+      "kind": "clips",
+      "why": "The market parasol stands at the back of the registry counter and its canopy reaches over the counter top on purpose: the clerk and the counter are under cover (arrival-desk look, town-arrival-desk). The pole stands clear of the counter; only the canopy box overlaps it."
     }
   ]
 }

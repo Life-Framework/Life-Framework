@@ -550,14 +550,6 @@ Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_au
 Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
  coords 300 0 245.3
 }
-GenericEntity SquareClerkDesk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
- coords 136 0 243.5
- angleY 90
-}
-GenericEntity SquareClerkChair : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
- coords 137.4 0 243.5
- angleY 270
-}
 GenericEntity SquareLuggageCart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
  coords 124.5 0 240.5
  angleY 20
@@ -967,4 +959,24 @@ StaticModelEntity Market_Post_North2_F2 {
  }
  coords 213.209 1.314 239.717
  scale 0.9
+}
+GenericEntity SquareRegistryCounter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 136.167 0 241.315
+ angleY 114.8
+}
+SCR_DestructibleEntity SquareRegistryParasol : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
+ coords 136.777 -0.001 240.257
+ angleY 114.8
+}
+GenericEntity SquareRegistry_OpenFile : "{B3C782D689A52412}Prefabs/Props/Civilian/FileOffice_01_Open.et" {
+ coords 136.272 1.039 241.669
+ angleY 114.8
+}
+GenericEntity SquareRegistry_Typewriter : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+ coords 136.053 1.037 241.17
+ angleY 114.8
+}
+GenericEntity SquareRegistry_FileStack : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+ coords 135.886 1.04 240.849
+ angleY 114.8
 }
