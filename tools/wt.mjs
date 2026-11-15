@@ -1041,14 +1041,42 @@ export function commitSubjects(root, range) {
   return res.status === 0 ? res.stdout.split(/\r?\n/).filter(Boolean) : [];
 }
 
-export function createPrGh(root, { head, title, body, base = "main" }) {
-  const gh = ghBin();
-  const res = run(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body", body], { cwd: root });
+// The body always goes through a file: a generated body (a world ship's change list) runs to tens of KB, and as a
+// command-line argument it fails with spawnSync ENAMETOOLONG on Windows (~32 KB limit). The file lives in
+// <root>/tmp (scratch, gitignored) under a unique name and is removed afterwards. `deps` is for the selftest.
+export function withBodyFile(root, body, fn, tag = "pr-body-gh") {
+  const dir = join(root, "tmp");
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, `${tag}-${process.pid}-${Date.now()}.md`);
+  writeFileSync(file, String(body ?? ""), "utf8");
+  try {
+    return fn(file);
+  } finally {
+    rmSync(file, { force: true });
+  }
+}
+
+export function createPrGh(root, { head, title, body, base = "main" }, deps = {}) {
+  const gh = deps.gh ?? ghBin();
+  const exec = deps.run ?? run;
+  const res = withBodyFile(root, body, (file) => exec(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body-file", file], { cwd: root }));
   if (res.status !== 0) throw new Error(`gh pr create failed: ${res.stderr || res.stdout}`);
   const out = res.stdout.trim();
   const url = (out.match(/https?:\/\/\S+/i) || [])[0] || out.split(/\r?\n/).pop();
   const number = parseInt((url.match(/\/pull\/(\d+)/) || [])[1], 10);
   return { url, number };
+}
+
+// The body of PR #number, or null when gh cannot read it.
+export function prBodyGh(root, number) {
+  const res = run(ghBin(), ["pr", "view", String(number), "--json", "body", "--jq", ".body"], { cwd: root });
+  return res.status === 0 ? res.stdout.replace(/\r?\n$/, "") : null;
+}
+
+// Replaces the body of PR #number (through --body-file, like createPrGh).
+export function setPrBodyGh(root, number, body) {
+  const res = withBodyFile(root, body, (file) => run(ghBin(), ["pr", "edit", String(number), "--body-file", file], { cwd: root }));
+  if (res.status !== 0) throw new Error(`gh pr edit failed: ${res.stderr || res.stdout}`);
 }
 
 // The open PR for a head branch, or null. Lets a re-run of `wt ship` reuse it.

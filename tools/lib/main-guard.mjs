@@ -1,0 +1,106 @@
+// Pure rules of the main guard (tools/main-guard.mjs, docs/worktrees.md "Main guard"): when to run, which merges
+// may be blamed, the bisect, the flake rule, what may be reverted, and the status line. Proven offline by
+// tools/validation/main-guard-selftest.mjs.
+
+export const BATCH_MS = 10 * 60 * 1000; // a burst of merges is checked once, at most every 10 min
+export const PRE_MOVE = ["e2e", "--pre-move", "502ebf39", "--mission", "playtest"];
+
+// The full post-merge check, one step per entry. `recheck(failing)` is the cheap command that reruns only what failed.
+export const STEPS = [
+  { name: "build", args: ["build"], recheck: () => ["build"] },
+  { name: "suite", args: ["test", "--no-build", "--tier", "all"], recheck: (failing) => (failing.length ? ["test", "--no-build", "--no-cache", "--only", failing.join(",")] : ["test", "--no-build", "--no-cache", "--tier", "all"]) },
+  { name: "placement audit", args: ["audit", "placement", "--strict"], recheck: () => ["audit", "placement", "--strict"] },
+  { name: "pre-move e2e", args: PRE_MOVE, recheck: () => PRE_MOVE },
+];
+
+// Run now? On a new main head, but a burst is batched: no new run until BATCH_MS after the last one started.
+export function shouldRun(state, head, now) {
+  if (!head || head === state.lastChecked) return { run: false, why: "main unchanged" };
+  const last = Date.parse(state.lastRunAt ?? "");
+  if (Number.isFinite(last) && now - last < BATCH_MS) return { run: false, why: `batching: next run in ${Math.ceil((BATCH_MS - (now - last)) / 60000)} min` };
+  return { run: true, why: `main moved to ${head.slice(0, 8)}` };
+}
+
+// "Merge pull request #1590 from Life-Framework/ws/x" -> 1590.
+export function prOfMerge(subject) {
+  const m = /^Merge pull request #(\d+)\b/.exec(String(subject ?? ""));
+  return m ? Number(m[1]) : null;
+}
+
+// A revert PR or a revert commit: never reverted again.
+export function isRevert(subject, branch = "") {
+  return /^Revert\b/i.test(String(subject ?? "")) || /(^|\/)(ws\/)?revert-/i.test(String(branch ?? "")) || /\/revert-pr\d+/i.test(String(subject ?? ""));
+}
+
+// The merges the guard may blame, oldest first. merges: [{ sha, subject, beforeStart }] from
+// `git log --first-parent --merges lastGreen..head` (any order); beforeStart is true when the merge was
+// already on main when the guard started (never acted on).
+export function candidates(merges) {
+  return [...merges].filter((m) => !m.beforeStart).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+// The earliest candidate where `fails(c)` is true, by binary search, assuming the last one fails (main's head
+// was red twice) and everything before the first candidate was green. `fails` is async; returns
+// { culprit, tested: [{ sha, failed }] }, culprit null when the list is empty.
+export async function bisect(list, fails) {
+  const tested = [];
+  if (!list.length) return { culprit: null, tested };
+  let lo = 0;
+  let hi = list.length - 1; // known (assumed) failing
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    const f = await fails(list[mid]);
+    tested.push({ sha: list[mid].sha, failed: f });
+    if (f) hi = mid;
+    else lo = mid + 1;
+  }
+  return { culprit: list[lo], tested };
+}
+
+// After a red run: a failure counts only when the recheck at the same head fails too.
+export function judgeRecheck(firstFailed, recheckFailed) {
+  if (!firstFailed) return "green";
+  return recheckFailed ? "red" : "flake";
+}
+
+// Failing test names from a test run's output ([LFTEST] FAIL <name> ..., or the CLI's FAIL lines).
+export function failingTests(text) {
+  const out = new Set();
+  for (const line of String(text ?? "").split(/\r?\n/)) {
+    const m = /\[LFTEST\] FAIL (\S+)/.exec(line) || /^\s*FAIL\s+(LF_Test_\w+)/.exec(line);
+    if (m) out.add(m[1].replace(/[:,]$/, ""));
+  }
+  return [...out];
+}
+
+// May the guard revert this merge? Never a revert, never a merge from before the guard started, never one with
+// no PR number, never twice.
+export function revertRefusal(c, state) {
+  if (!c) return "no culprit";
+  if (c.beforeStart) return `merge ${c.sha.slice(0, 8)} was on main before the guard started`;
+  if (isRevert(c.subject, c.branch)) return `merge ${c.sha.slice(0, 8)} is a revert; the guard never reverts a revert`;
+  const pr = prOfMerge(c.subject);
+  if (!pr) return `merge ${c.sha.slice(0, 8)} is not a PR merge (${String(c.subject).slice(0, 60)})`;
+  if ((state.reverted ?? []).some((r) => r.pr === pr)) return `PR #${pr} was already reverted`;
+  return null;
+}
+
+export function revertTitle(pr, what) {
+  return `Revert #${pr} (main guard: ${String(what).slice(0, 80)})`;
+}
+
+// The issues a PR body refs (Refs/Closes/Fixes/Resolves #N).
+export function issuesOf(body) {
+  return [...new Set([...String(body ?? "").matchAll(/\b(?:Refs|Closes|Fixes|Resolves|Closed|Fixed|Resolved)\s+#(\d+)/gi)].map((m) => Number(m[1])))];
+}
+
+// One line for `main-guard status` and `lead`.
+export function statusLine(state, { alive, now = Date.now(), off = false } = {}) {
+  if (off) return "MAIN GUARD off (LF_MAIN_GUARD=0)";
+  if (!alive) return `MAIN GUARD not running${state?.lastGreen ? `; last green ${state.lastGreen.slice(0, 8)}` : ""} (tools\\cli main-guard start)`;
+  const ago = (t) => (t ? `${Math.max(0, Math.round((now - Date.parse(t)) / 60000))} min ago` : "never");
+  const what = state.running ? `running ${state.running.step ?? "check"} at ${String(state.running.head ?? "").slice(0, 8)}` : "watching";
+  const last = state.lastResult ? `, last ${state.lastResult.verdict} at ${String(state.lastResult.head ?? "").slice(0, 8)} ${ago(state.lastResult.at)}` : "";
+  const rev = state.reverted?.length ? `, ${state.reverted.length} revert(s)` : "";
+  return `MAIN GUARD ${what} (pid ${alive}); green ${state.lastGreen ? state.lastGreen.slice(0, 8) : "none yet"}${last}${rev}`;
+}
