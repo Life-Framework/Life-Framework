@@ -93,7 +93,7 @@ For those:
   ```
   `at` is building space like a nudge, `yaw` optional; the prefab is named with its `{GUID}` (`toolscli call
   asset_search` finds the path, the game's resource database the GUID) and the prefab stage checks it. Floor is
-  y 0.1. Heights on shelves come from the model: `tools/buildings/pipeline/fixtures.json` for the shop fixtures; a
+  y 0.1. Heights on shelves come from the model: `tools\cli measure <prefab> --surfaces` (the shop fixtures' are cached by `tools\cli fixtures` in `tools/buildings/pipeline/fixtures.json`); a
   `look item` picture for the rest, then the game picture.
 - **Plan decisions** (which rooms, where doors go) are ArchBuilder settings, or a small change to
   ArchBuilder itself, listed in [README.md "Changes to ArchBuilder"](README.md#changes-to-archbuilder).

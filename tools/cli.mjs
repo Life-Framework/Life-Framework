@@ -1839,7 +1839,13 @@ function cmdHostStart(root, dir, opts) {
     console.log(`host: on the caller's pool lane ${held.lockName} (port ${held.port})`);
   } else {
     try {
-      wt.acquireLock(root, SERVER_SLOT, { waitMs: opts.wait ? 1800000 : 0 });
+      // #1667: a --wait start queued here silently (a pool session holds server-2001 on a test box) and
+      // looked like a server that wrote no console.log. Say who holds the port before queueing.
+      try { wt.acquireLock(root, SERVER_SLOT); } catch (e) {
+        if (!opts.wait) throw e;
+        console.log(`host: port 2001 is held by ${describeHolder(join(wt.ensureHub(root), "locks", `${SERVER_SLOT}.lock`))} (${e.message}); nothing launched yet, queued up to ${opts.timeoutSec ?? 1800} s`);
+        wt.acquireLock(root, SERVER_SLOT, { waitMs: (opts.timeoutSec ?? 1800) * 1000 });
+      }
     } catch (e) {
       console.log(`FAIL  ${e.message}`);
       console.log("      a test or server run holds port 2001; retry when it ends, or pass --wait");
@@ -1883,26 +1889,13 @@ function cmdHostStart(root, dir, opts) {
 
     // Wait for the world: "Entered online game state." in the new console.log. A public first boot
     // downloads both Workshop items first, so it gets longer.
+    // #1667: the wait lives in host.mjs and stops 60 s after launch with no console.log, naming why.
     const deadline = Date.now() + (opts.timeoutSec ?? (opts.public ? 900 : 300)) * 1000;
-    let log = null;
-    while (Date.now() < deadline) {
-      sleepMs(2000);
-      if (!host.pidAlive(pid)) break;
-      const f = host.newestConsoleLog(p.profile);
-      if (f && !before.has(basenameOfLogDir(f))) log = f;
-      if (log && readFileSync(log, "utf8").includes(host.READY_LINE)) break;
-    }
-    if (!host.pidAlive(pid)) {
-      console.log("FAIL  the server exited during startup");
-      hostPrintLines(log);
-      return 1;
-    }
-    const ready = log && readFileSync(log, "utf8").includes(host.READY_LINE);
-    if (!ready) {
-      console.log(`WARN  no '${host.READY_LINE}' within the timeout; the server is still running (pid ${pid})`);
-      if (log) console.log(`      log: ${log}`);
-      return 1;
-    }
+    const w = host.waitForHostLog({ pid, profile: p.profile, before, deadlineMs: deadline, args, exitWatch: host.startExitWatch(pid, join(dir, "host-exit.txt")) });
+    for (const l of w.lines) console.log(l);
+    if (w.status === "exited") hostPrintLines(w.log);
+    if (w.status !== "ready") return 1;
+    const log = w.log;
     sleepMs(3000); // the session-start check logs just after the game state.
     console.log(`host: up (pid ${pid}); log ${log}`);
     hostPrintLines(log);
