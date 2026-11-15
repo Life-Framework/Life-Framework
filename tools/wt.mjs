@@ -18,7 +18,7 @@
 // stable no matter where a command is invoked.
 
 import { spawn, spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, rmSync, statfsSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { closeSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, rmSync, statfsSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } from "./link-safety.mjs";
@@ -357,13 +357,28 @@ export async function acquireLockAsync(root, name, { waitMs = 0, stealMs = 12000
 }
 
 // One attempt: true when this process now holds the lock. A lock whose owner is gone is removed first.
+// On Windows an exclusive create of a name another process is deleting (a stale lock being stolen, a
+// holder releasing) fails with EPERM, EACCES or EBUSY until the delete finishes, a few milliseconds: that
+// is contention, not an error. It used to be thrown: four processes churning one lock got 5400 EPERM throws
+// against 880 acquisitions (the machine-wide server, build and Workbench locks).
+const LOCK_TRANSIENT = ["EPERM", "EACCES", "EBUSY"];
+
 function tryTakeLock(lockFile, name, meta, stealMs) {
+  let transient = 0;
   for (;;) {
     try {
-      openSync(lockFile, "wx");
-      writeFileSync(lockFile, JSON.stringify({ ...meta, pid: process.pid, at: new Date().toISOString(), name }));
+      const fd = openSync(lockFile, "wx");
+      try {
+        writeFileSync(fd, JSON.stringify({ ...meta, pid: process.pid, at: new Date().toISOString(), name }));
+      } finally {
+        closeSync(fd);
+      }
       return true;
     } catch (e) {
+      if (LOCK_TRANSIENT.includes(e.code) && transient++ < 400) {
+        sleep(5);
+        continue;
+      }
       if (e.code !== "EEXIST") throw e;
       try {
         const st = statSync(lockFile);
