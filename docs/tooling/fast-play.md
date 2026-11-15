@@ -42,6 +42,8 @@ Workbench play loads the world with no mission header. Two consequences are hand
 - **Pack overlays:** signs, dialogue, quiz and sound slots come from the mission header's
   `m_aLF_ConfigOverlays`. With no header, `LF_MissionConfigPackSource` uses the header for the open
   world that lists the most overlays (`LF_WorkbenchPlay.FallbackHeader`), so the pack's signs
-  (`rules`, `registry`, ...) read.
+  (`rules`, `registry`, ...) read and the clerk speaks (the core clerk is text only; its voice is the
+  pack's dialogue patch). DebugWorld has no header that lists overlays (the village is a SubScene of
+  it), so there the pack's header with the most overlays stands in.
 - **Persistence:** the engine's default systems config has no `SCR_PersistenceSystem`, and the World
   Editor cannot name one, so nothing saves in Workbench play. That line is a warning there, not an error.

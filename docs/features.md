@@ -3126,3 +3126,4 @@
   the full onboarding. `#ifdef WORKBENCH` only (`docs/tooling/fast-play.md`).
 - ✅ Workbench play with no mission header loads the pack overlays from the open world's header,
   and its missing persistence system is a warning, not an error. `LF_Test_WorkbenchPlay` (LOGIC).
+- 🔧 Voiced dialogue lines (the arrival clerk) were silent in Workbench play of DebugWorld: the clerk is text only in the core and the pack's patch gives it the voice, but the patch loads only through a mission header's overlay list, and no header for DebugWorld lists one (the village is a SubScene of it). With no header for the open world that lists overlays, `PickFallbackHeader` now takes the pack's header with the most overlays. A dedicated server with the mission header already played the line (`line 'clerk/greet' plays`). LOGIC `workbench/play-decisions`.
