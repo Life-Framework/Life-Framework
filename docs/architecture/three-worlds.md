@@ -18,8 +18,9 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 | User | World |
 |---|---|
 | `test --tier fast`, `--only`/`--red` of LOGIC tests | 1 (as today, `tools/lib/test-world.mjs`) |
-| `test --tier all`, `--only`/`--red` with any WORLD or PERSISTENCE test | 2. Tests named in `tools/test/world-pins.json` boot 3 in a second run until that list is empty |
-| `ci`, `wt gate`, `wt ship` suite | as `--tier all` |
+| `test --tier all`, `--only`/`--red` with any WORLD or PERSISTENCE test | 2. Tests named in `tools/test/world-pins.json` boot 3 in a second run until that list is empty. The town tests (`tools/test/town-tests.json`) are in no tier run |
+| `test --town` | 3, one boot, the 12 town tests only (below). `--only <town test>` boots 3 too |
+| `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests |
 | `e2e`, `--pre-move`, `host` | 3 (the playtest mission) |
 | `session up` (default `--mission debug`) | 3, as today. `--mission grid` boots 2 |
 | `grid place`, `grid list`, `grid free`, `place --layer Grid_*` | 2 |
@@ -31,6 +32,31 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 
 PERSISTENCE goes to world 2 with WORLD: its tests read annex fixtures, which stop existing in world 3
 when the move ends. The real restart proof (`e2e`) stays on the playtest mission.
+
+## Town tests: out of the suite, in one playtest run (#1895)
+
+A test about the town itself needs no fixture, only the town, so it does not belong in a gate that boots
+the grid. Twelve are named in `tools/test/town-tests.json`: `signs/coverage` and the roadmap and e2e
+scenarios (`roadmap/contraband|escort|hideout|jailbreak|jailing|jailing-save`, `e2e/narrative-loop`,
+`e2e/pass1-write-save`, `e2e/roadmap-contraband|jailbreak|jailing`). They stay registered (`regen-tests`
+is unchanged); only where they run changes:
+
+- `tools\cli test --no-build --town` boots the playtest world once (DebugWorld, mission 3) and runs
+  exactly that list. `--tier all`, `--tier persistence`, `ci`, `wt gate` and `wt ship` skip it:
+  `planLegs` leaves the tests out of the GridWorld leg, and `readRegistry` (`tools/lib/test-shards.mjs`)
+  leaves them out of every shard plan. `LF_TEST_GRID_WORLD=0` is still the rollback: one DebugWorld boot
+  of everything.
+- **Who runs it.** The main guard runs `test --town` as its own warn-only stage after the suite goes
+  green and posts a `main-guard/town` commit status; a red town stage never reverts and never changes
+  `main-guard/suite` (`docs/worktrees.md` "Main guard"). The lead also runs it before `promote`. The
+  guard wiring is a follow-up (#1901); until it lands the lead's run is the only one.
+- **`e2e/pass1-write-save` and `roadmap/jailing-save` are PERSISTENCE tests.** `wt e2e` (and `e2e`) runs
+  the whole persistence tier on the playtest mission through its own two-boot script, not through `test`,
+  so it still runs them (and the reload boot checks `e2e/pass2-verify-load`). The `--town` entry is the
+  single-boot run. The WORLD tests, `e2e/narrative-loop` among them, are covered only by `--town`.
+- **Pins.** Their 12 entries left `tools/test/world-pins.json`; a test is a pin or a town test, never both
+  (`test-world-selftest`). Every other pin ends in the grid-fixture cards P1 to P4; the list is empty
+  when the last of them lands, and this page then says so.
 
 One table of world paths, `tools/lib/worlds.mjs` (`TEST_WORLD`, `GRID_WORLD`, `PLAYTEST_WORLD`,
 `gridLayersDir()`), replaces the paths each tool spells out on its own today (`addons.mjs`
