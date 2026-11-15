@@ -67,6 +67,15 @@ is merged, **one** integration agent runs the chapter's beat sheet end to end
 on `main`. Each failed beat becomes a new slice card under the chapter, not a
 fix inside the integration run.
 
+**Town placement.** Slices put their world props in debug-grid cells and never
+edit a town layer (`docs/architecture/world-zones.md`; `validate-world-zones`
+enforces it). So the plan's last slice before the integration run is a **town
+placement** card (`type: town`, `docs/process/slice-card.md` "Town placement
+card"). It depends on every other slice and runs in a `town-<N>` worktree. One
+agent places the chapter's systems in town to the polish bar and clears the
+cleanup backlog rows they touch. The integration run and the chapter's video
+then use the town; the grid cells stay as test spots.
+
 ## 5. Risk-weighted review
 
 | Tier | What | Gate |
@@ -78,7 +87,8 @@ fix inside the integration run.
 
 Today `wt ship` still runs the full gate for any `addons/` change, T1
 included; a T1 ship mode is a follow-up. Visible work gets one `look` picture
-in the PR. Polish nitpicks become
+in the PR: `look grid:<slug>` for a slice at the grid's low bar, `look <area>`
+before and after for the town pass, at the full polish bar. Polish nitpicks become
 follow-up issues; they never block the merge.
 
 ## 6. The human loop
