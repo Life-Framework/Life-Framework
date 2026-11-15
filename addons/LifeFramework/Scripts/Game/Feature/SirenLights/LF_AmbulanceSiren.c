@@ -24,3 +24,30 @@ class LF_AmbulanceSiren
 		return hasOwnLoop && modeName != MODE_OFF;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! What a siren action looks like to one user.
+enum LF_ESirenActionView
+{
+	HIDDEN,
+	SHOWN,
+	NEEDS_DUTY
+}
+
+//------------------------------------------------------------------------------------------------
+//! Pure rule for the siren action's menu row, shared by LF_SirenModeAction and the LOGIC test.
+class LF_SirenActionRules
+{
+	//! A user who is not seated where the action applies, or whose mode already runs, sees nothing; a
+	//! seated user who may not run the siren sees the row greyed with the reason, never an empty menu.
+	static LF_ESirenActionView View(bool seatAllows, bool mayOperate, bool modeRunning)
+	{
+		if (!seatAllows || modeRunning)
+			return LF_ESirenActionView.HIDDEN;
+
+		if (!mayOperate)
+			return LF_ESirenActionView.NEEDS_DUTY;
+
+		return LF_ESirenActionView.SHOWN;
+	}
+}
