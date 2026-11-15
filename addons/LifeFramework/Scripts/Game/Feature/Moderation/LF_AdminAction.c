@@ -120,14 +120,39 @@ modded class KickCommand
 }
 
 //------------------------------------------------------------------------------------------------
-//! The vanilla #ban chat command.
+//! The vanilla #ban chat and RCON command. A `create` or `remove` (the unban) the backend confirms
+//! also writes a ban record row (LF_BanRecord, #1285): the request is held when vanilla sends it
+//! (PENDING) and recorded from OnUpdate only when the final answer is OK.
 modded class BanCommand
 {
+	protected ref LF_BanPending m_LF_BanPending;
+
 	//------------------------------------------------------------------------------------------------
 	override ref ScrServerCmdResult OnChatServerExecution(array<string> argv, int playerId)
 	{
 		ref ScrServerCmdResult result = super.OnChatServerExecution(argv, playerId);
+		m_LF_BanPending = LF_BanRecord.Prepare(argv, LF_AdminAction.UidOfPlayer(playerId), result);
 		LF_AdminAction.ReportCommand("#ban", argv, playerId);
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override ref ScrServerCmdResult OnRCONExecution(array<string> argv)
+	{
+		ref ScrServerCmdResult result = super.OnRCONExecution(argv);
+		m_LF_BanPending = LF_BanRecord.Prepare(argv, LF_BanRecord.STAFF_RCON, result);
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override ref ScrServerCmdResult OnUpdate()
+	{
+		ref ScrServerCmdResult result = super.OnUpdate();
+		if (!m_LF_BanPending || !result || result.m_eResultType == EServerCmdResultType.PENDING)
+			return result;
+
+		LF_BanRecord.Complete(m_LF_BanPending, m_eSubcommandArg, result.m_eResultType, System.GetUnixTime());
+		m_LF_BanPending = null;
 		return result;
 	}
 }
