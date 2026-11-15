@@ -12,6 +12,66 @@ FrameWidgetClass {
   OffsetBottom 0
  }
  {
+  FrameWidgetClass "{004FBD83417FAC14}" {
+   Name "Layer_Background"
+   Slot FrameWidgetSlot "{51C3545CD288533B}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Clipping False
+   {
+    FrameWidgetClass "{D7115C4110414B74}" {
+     Name "Slot_2DOptics"
+     Slot FrameWidgetSlot "{44255586197A7C5B}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+    }
+    FrameWidgetClass "{BEA4020E02B83D66}" {
+     Name "Slot_2DOpticsInfo"
+     Slot FrameWidgetSlot "{2CCBB781E411E935}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+    }
+    FrameWidgetClass "{C5899038B9CBB246}" {
+     Name "Slot_ScreenEffects"
+     Slot FrameWidgetSlot "{09838B9A3BB55F2B}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+    }
+   }
+  }
   FrameWidgetClass "{B96C0BEBC5DCED57}" {
    Name "Layer_Slots"
    Slot FrameWidgetSlot "{A6335D816C8C6242}" {
@@ -92,6 +152,39 @@ FrameWidgetClass {
       }
      }
      {
+      FrameWidgetClass "{28CBD8C118692E68}" {
+       Name "Slot_Chat"
+       Slot LayoutSlot {
+       }
+       components {
+        SCR_HUDSlotUIComponent "{6C5C73FB6EC4346D}" {
+         m_iPriority 1
+         m_aHeightSteps {
+          100 200 300
+         }
+         m_aWidthSteps {
+          600
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{9D491295BC4F2221}" {
+       Name "Slot_VON"
+       Slot LayoutSlot {
+        Padding 0 0 0 0
+       }
+       components {
+        SCR_HUDSlotUIComponent "{10A2447024A9E9A8}" {
+         m_iPriority 1
+         m_aHeightSteps {
+          100 200
+         }
+         m_aWidthSteps {
+          600
+         }
+        }
+       }
+      }
       FrameWidgetClass "{6FEBC1709DE1AB00}" {
        Name "Filler"
        Slot LayoutSlot {
@@ -134,6 +227,92 @@ FrameWidgetClass {
       }
      }
     }
+    VerticalLayoutWidgetClass "{FB1E15E6AB5C86B5}" {
+     Name "Group_Right"
+     Slot FrameWidgetSlot "{89213B1AD54A0840}" {
+      Anchor 1 0 1 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 1920
+      OffsetRight -1920
+      SizeY 1080
+      OffsetBottom -1080
+      Alignment 1 0
+     }
+     Clipping False
+     components {
+      SCR_HUDGroupUIComponent "{53B60D9DB1761AC4}" {
+      }
+     }
+     {
+      FrameWidgetClass "{4B61166E74A7D6D3}" {
+       Name "Slot_GameVersion"
+       Slot LayoutSlot {
+        HorizontalAlign 2
+       }
+       components {
+        SCR_HUDSlotUIComponent "{42F5718FE428BE91}" {
+         m_iPriority 2
+         m_aHeightSteps {
+          50 100
+         }
+         m_aWidthSteps {
+          600
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{049659660DF8158E}" {
+       Name "Slot_Notifications"
+       Slot LayoutSlot {
+        HorizontalAlign 2
+       }
+       components {
+        SCR_HUDSlotUIComponent "{1CBAE2B602FC4BEF}" {
+         m_iPriority 2
+         m_aHeightSteps {
+          100 150 200 300
+         }
+         m_aWidthSteps {
+          600
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{17AEF141B075A54C}" {
+       Name "Slot_Hints"
+       Slot LayoutSlot {
+        HorizontalAlign 2
+       }
+       components {
+        SCR_HUDSlotUIComponent "{A6C0061652AB94E2}" {
+         m_iPriority 3
+         m_aHeightSteps {
+          300 400 500 600 700 800
+         }
+         m_aWidthSteps {
+          600
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{2AC7816BF9FF97F4}" {
+   Name "Layer_Foreground"
+   Slot FrameWidgetSlot "{EDADA756A563B4E7}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
    }
   }
  }
