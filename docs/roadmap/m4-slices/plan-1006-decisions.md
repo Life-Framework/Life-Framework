@@ -2,8 +2,8 @@
 # O17 was held on Q4; R1, C1, C2 and W1 are the slices the answers to Q1 to Q9 need and no card covered.
 # Create with: tools\cli slice new 1006 --plan docs/roadmap/m4-slices/plan-1006-decisions.md
 # Cross-plan dependencies the tool cannot express are added to the issue bodies after creation:
-#   C1 needs X1 (#1300, the `dayCycle` schema field) merged; C2 needs K2 (#1259);
-#   W1 needs O14 (#1273) and O15 (#1274); O17 needs O16 (#1275) and O9 (#1268).
+#   C2 needs K2 (#1259). Since the widening re-cut (plan-1006-widen.md) C1 needs CF (#1343, the `dayCycle` section)
+#   instead of X1, and W1 and O17 are written from the plan with no dependency; O16R (#1350) reconciles O17.
 
 # Slice R1: Staff roster file with a checker; the maintainer is the only administrator at opening
 ## Card
@@ -35,7 +35,7 @@ Decision 2026-11-14: only the maintainer is an administrator at opening; the sta
 - machines: none
 - budget: 35 min / 50 calls
 - owns: `server/flagship/config.json`, `server/flagship/server.json`, `server/flagship/README.md`, `tools/validation/flagship-config-selftest.mjs`
-- depends: none
+- depends: CF
 - acceptance: fixture tools/validation/flagship-config-selftest.mjs
 - risk: none
 - release-blocker: no
@@ -48,6 +48,8 @@ Selftest: `config.json` passes the config schema check (`docs/config/config.sche
 
 ## Notes
 Decisions 2026-11-14: the live `config.json` lives in this repo under `server/`; the alpha gate is a server password only (host-only, set by C2, never committed); the in-game day is 2 real hours (12x); the name is as above. Start from `server/example/` and `docs/config/owner-config.md`. The host's profile copy is written by C2 only. Webhook URLs (`staffWebhookUrl`, S4) are host-only too. The `dayCycle` field exists once X1 has merged; do not start before. Restart times (open question 1 of the plan) stay unset: no `restarts` list until the maintainer answers.
+
+Re-cut 2026-11-14 (widen, docs/roadmap/m4-slice-plan.md "Widening the graph"): the `dayCycle` field exists once CF has merged, so this slice waits for CF instead of X1.
 
 # Slice C2: host config apply writes the profile's config.json and server.json from the repo plus the host's secrets
 ## Card
@@ -93,6 +95,8 @@ The page states the three rules above in one short paragraph each, names the com
 ## Notes
 Decision 2026-11-14. This is the policy text #556 asked for. The commands land in O14 and O15; if either has not merged, name the command as planned in code font and do not link it. The rules page and the Discord copy link here.
 
+Re-cut 2026-11-14 (widen, docs/roadmap/m4-slice-plan.md "Widening the graph"): no longer waits for O14 and O15; the card already names the planned commands in code font.
+
 # Slice O17: Config-only hotfix path in the runbook
 ## Card
 - type: docs
@@ -101,7 +105,7 @@ Decision 2026-11-14. This is the policy text #556 asked for. The commands land i
 - machines: none
 - budget: 30 min / 45 calls
 - owns: `docs/ops/hotfix.md`
-- depends: C2
+- depends: none
 - acceptance: proof validate (docs links) and the checklist in Acceptance
 - risk: none
 - release-blocker: no
@@ -110,7 +114,10 @@ Decision 2026-11-14. This is the policy text #556 asked for. The commands land i
 A page for a live config fix: edit `server/flagship/config.json` in a PR, merge, `host config apply` on the host, `config-check`, backup, warned restart, verify with `server-doctor`; and when a fix needs a script change instead (PR and pack release).
 
 ## Acceptance
-The page's commands exist; it says the flagship's `config.json` lives in this repo under `server/flagship/` (decision 2026-11-14) and that secrets live only in the host's `secrets.json`; `validate` passes. Manual (#310): a price fix goes live in one warned restart.
+It says the flagship's `config.json` lives in this repo under `server/flagship/` (decision 2026-11-14) and that secrets live only in the host's `secrets.json`; a command that has not merged yet is in code font as its card names it and marked *(planned)*; `validate` passes. Manual (#310): a price fix goes live in one warned restart.
 
 ## Notes
 Link `docs/ops/session-runbook.md` (O16) rather than repeating it.
+
+Re-cut 2026-11-14 (widen, docs/roadmap/m4-slice-plan.md "Widening the graph"): written from the plan now; it no longer waits for C2, O16 and O9. O16R reconciles the commands. Link `docs/ops/session-runbook.md` in code font if O16 has not merged.
+
