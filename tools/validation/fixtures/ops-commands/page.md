@@ -19,3 +19,10 @@ tools\cli validate
 tools\cli zz-fixture-missing --flag
 tools\cli host start (planned)
 ```
+
+Run `tools\cli host zz-numbered-after` *(planned, #1461)* to list the server: a missing command with a numbered marker after it.
+
+*(planned, #1462)* `tools\cli host zz-numbered-before` has a numbered marker first: missing, marked planned.
+
+Run `tools\cli host zz-numbered-split` *(planned,
+#1463)* and the marker wraps to the next line: missing, marked planned.

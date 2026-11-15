@@ -10,6 +10,9 @@ own pack ([add a delivery job](add-job.md) builds one), see [swap the pack out](
 Neither item is on the Workshop until the first upload (`docs/roadmap/m3-plan.md` D3); until then a `-config` server cannot
 download them (see Problems).
 
+Tried on a fresh host: [the November 2026 dry run](../ops/selfhost-dryrun-2026-11.md) (what a first boot printed, and
+each stumble this page was changed for).
+
 Hosting the project's own server, **Life Framework | Everon 1989 (Alpha)**, from a repo worktree with
 `tools\cli host start --public`? Follow [host the flagship](host-the-flagship.md) instead: publish, confirm the
 Workshop IDs, password and admin, ports, start, and the first announcement.
@@ -67,12 +70,14 @@ firewall. Change the numbers in `server.json` if they are taken, and forward the
 
 ## 4. Start it
 
-With the example server folder, run `start.cmd` (Windows) or `./start.sh` (Linux). It copies `config.json` to
+With the example server folder, run `.\start.cmd` (Windows; a bare `start.cmd` in Command Prompt runs the built-in
+`start` and fails) or `./start.sh` (Linux). It copies `config.json` to
 where the mod reads it (step 6) and runs the line below. Set `LF_REFORGER_SERVER` first when the server is not in
 the default Steam folder. With the generator's two files, copy `config.json` to the place step 6 names (create the
 folders; the generator's own start line, `-profile ./profile`, puts it at `profile/profile/LifeFramework/config.json`
 beside `server.json`), then run the line yourself. `ArmaReforgerServer.exe` is not on the path, so give its full path
-(Windows, default Steam folder):
+(Windows, default Steam folder). Run it with the server's install folder as the current folder: the server reads
+`./addons` from there, and from any other folder it stops with `Game addon '58D0FB3206B6F859' not found`:
 
 ```
 "%ProgramFiles(x86)%\Steam\steamapps\common\Arma Reforger Server\ArmaReforgerServer.exe" -config C:\LFServer\server.json -profile C:\LFServer\profile -maxFPS 60
@@ -230,7 +235,7 @@ first boots; the full list is in [debug log triage](../debug-log-triage.md).
 | The browser does not list the server | UDP `2001` or `17777` is not forwarded, or `game.visible` is `false` |
 | `Addon <id> - Addon was not found on workshop`, `Cannot start until they are removed from server config` | A mod id in `game.mods` is not published. Use the ids above; a checkout's local addons cannot stand in for them on a `-config` server |
 | `Unable to read the mission header` | `game.scenarioId` is in an addon that is not in `game.mods`: the 1989 mission needs both items, core first |
-| `Game addon '58D0FB3206B6F859' not found` | A custom `-addonsDir` hides the base game; list the server's own `addons` folder in it too |
+| `Game addon '58D0FB3206B6F859' not found` | The server was started from a folder that is not its install folder (it reads `./addons` there), or a custom `-addonsDir` hides the base game; start from the install folder, or list the server's own `addons` folder in `-addonsDir` |
 | `Wrong GUID` / `INVENTORY (W): Item ... not found in replication` | The server's mod download is incomplete; restart it and let the Workshop download finish |
 | `[LFDebug:Config] no owner config at $profile:LifeFramework/config.json` | Expected on a first boot; the server uses the shipped values |
 | `[LFDebug:Config] <path>.<key> is not <kind>` | The named field in `config.json` is the wrong type; that value falls back |
