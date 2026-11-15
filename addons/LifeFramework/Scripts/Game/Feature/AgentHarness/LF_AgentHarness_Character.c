@@ -438,6 +438,17 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (LF_QuizHarness.IsVerb(tool))
+		{
+			// Forget this account's rules-quiz pass (#1567); the verb refuses outside a LF_HARNESS build.
+			string quizResult = LF_QuizHarness.Run(this, tool);
+			if (quizResult.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", quizResult.Substring(3, quizResult.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", quizResult.Substring(6, quizResult.Length() - 6));
+			return;
+		}
+
 		if (tool == "apples")
 		{
 			// Raw goods for the chain stations (#417): eight apples, two loads of the example chain.
