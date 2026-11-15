@@ -100,25 +100,27 @@ export function prepareScratch(backup, scratchDir) {
 }
 
 // Runs `host <args>` in a child on the scratch host dir. The child is bounded by timeoutMs.
-function hostCli(root, scratchDir, args, timeoutMs) {
+// slotEnv is the pool lane this drill holds as "<lock>:<token>" (LF_SERVER_SLOT_HELD, #1637): the host
+// boots on that lane's port and never takes server-2001 beside a live session.
+function hostCli(root, scratchDir, args, timeoutMs, slotEnv) {
   const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "host", ...args], {
     cwd: root, encoding: "utf8", timeout: timeoutMs, windowsHide: true,
-    env: { ...process.env, LF_HOST_DIR: scratchDir, LF_QUIET_CHILD: "1" },
+    env: { ...process.env, LF_HOST_DIR: scratchDir, LF_QUIET_CHILD: "1", ...(slotEnv ? { LF_SERVER_SLOT_HELD: slotEnv } : {}) },
   });
   return { code: r.status ?? 1, out: `${r.stdout ?? ""}${r.stderr ?? ""}` };
 }
 
 // Boots the scratch profile on this machine, stops it, judges the log. Returns { ok, reason, accounts, log }.
-export function runDrillHere({ root, scratchDir, timeoutSec = 300, log = console.log }) {
-  const started = hostCli(root, scratchDir, ["start", "--force", "--timeout", String(timeoutSec)], (timeoutSec + 120) * 1000);
+export function runDrillHere({ root, scratchDir, timeoutSec = 300, log = console.log, slotEnv = "" }) {
+  const started = hostCli(root, scratchDir, ["start", "--force", "--timeout", String(timeoutSec)], (timeoutSec + 120) * 1000, slotEnv);
   const tail = started.out.trim().split(/\r?\n/).slice(-6).join("\n  ");
   const consoleLog = newestConsoleLog(hostPaths(scratchDir).profile);
   if (started.code !== 0) {
     // A server that came up but missed the ready line still needs closing; for a dead one stop is a no-op.
-    hostCli(root, scratchDir, ["stop"], 240000);
+    hostCli(root, scratchDir, ["stop"], 240000, slotEnv);
     return { ok: false, reason: `the server did not start: ${tail}`, accounts: 0, log: consoleLog };
   }
-  const stopped = hostCli(root, scratchDir, ["stop"], 240000);
+  const stopped = hostCli(root, scratchDir, ["stop"], 240000, slotEnv);
   const text = consoleLog && existsSync(consoleLog) ? readFileSync(consoleLog, "utf8") : "";
   if (stopped.code !== 0) log("drill: the server did not stop cleanly; judging the log anyway");
   return { ...drillVerdict(text), log: consoleLog };

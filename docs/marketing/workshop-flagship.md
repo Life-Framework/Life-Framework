@@ -75,7 +75,7 @@ Tell us what broke, what confused you and what you liked. One report per problem
 [/list]
 
 [h2]Run your own server[/h2]
-Mod IDs [b]79636E668EA37AC9[/b] (the core) and [b]B1E84D5687E11724[/b] (this pack), scenario [b]{C638C03B775C31BB}Missions/LF_Everon1989.conf[/b]. The example server folder has a ready config and a start script, and the host guide walks through it:
+Mod IDs [b]4550A2B656E1B569[/b] (the core) and [b]B1E84D5687E11724[/b] (this pack), scenario [b]{C638C03B775C31BB}Missions/LF_Everon1989.conf[/b]. The example server folder has a ready config and a start script, and the host guide walks through it:
 [url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/owner/install.md]Install guide: run your own server from zero[/url]
 [url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/playtest/workshop-host.md]Host guide[/url]
 [url=https://github.com/Life-Framework/Life-Framework/tree/main/server/example]Example server[/url]
@@ -100,7 +100,7 @@ Before publishing:
 | Join password (`game.password`) | Set. The alpha is invite-only; staff send the password on Discord. |
 | Restarts | 06:00 and 18:00 server time (`restarts.times` in `server/flagship/config.json`) |
 | Day length | 2 real hours (`dayCycle`: `accelerated`, `dayLengthMinutes` 120) |
-| Mods (`game.mods`) | `79636E668EA37AC9` Life Framework (Core), then `B1E84D5687E11724` Life Framework: Everon 1989 |
+| Mods (`game.mods`) | `4550A2B656E1B569` Life Framework (Core), then `B1E84D5687E11724` Life Framework: Everon 1989 |
 
 The scenario's own line in the browser is `m_sDescription` in
 `addons/LF_Everon1989/Missions/LF_Everon1989.conf`:

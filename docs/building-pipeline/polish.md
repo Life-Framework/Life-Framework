@@ -8,6 +8,7 @@ look at, and the patterns that have gone wrong before. The pipeline is in [READM
 ```
 tools\cli building run <slug>                         spec .. generate .. review .. polish .. export .. import .. prefab
 tools\cli building adopt <slug> [<file.blend>]        keep a scene edited by hand as the export source
+tools\cli building review <slug> --shots              Blender review renders and a contact sheet, about 20 s, no game
 ```
 
 ## The loop
@@ -33,7 +34,40 @@ tools\cli building adopt <slug> [<file.blend>]        keep a scene edited by han
    watermark (the repo is public). List each edit in `spec.polish.edits` in one line.
 5. **Rerun `--from polish`.** With a `polished.blend` there, the export uses ArchBuilder's scene export
    (`ab.rf_export_scene`) on it instead of the generated building, so the hand edits reach the game.
-6. **Look in the game** (pictures below), and go round again.
+6. **Look in Blender, every iteration** (`tools\cli building review <slug> --shots`, next section), and
+   go round again from step 2 or 3. **Look in the game only once the Blender pictures are right**: the
+   final proof and the pictures for the PR (pictures below). A game session takes minutes to start;
+   a canopy, a sign, a wall colour or a room's layout is judged from the Blender shots in seconds.
+
+### Review shots (Blender, no game)
+
+`tools\cli building review <slug> --shots` renders the building straight from its `.blend` (the
+`polished.blend` if there is one, else the generated one) in headless Blender 5.3 with the Workbench
+engine: no ArchBuilder, no game, no pool slot. The supermarket takes about 20 s. It writes
+`tmp/buildings/<slug>/review/contact.png` (read this first) and the single shots beside it:
+
+| Shot | What it shows |
+|---|---|
+| `street_front.png` | the front from the street at eye height, the whole width: canopy, sign, windows, roof line |
+| `street_3q.png` | three-quarter view from across the street: depth of the canopy, the side wall, the roof |
+| `entrance.png` | the entrance door close up, canopy and fixtures beside it |
+| `hall.png`, `hall_back.png` | the biggest room at eye height, from the entrance and from the far end |
+| `room1.png` ... | each back room, from its far end looking at the door |
+| `plan.png` | a section 2.2 m above the floor, rooms labelled with their size, the entrance marked |
+
+Where each camera stands comes from the building's bounds, the gap in its front wall (the entrance)
+and the rooms found in a plan slice at 1.2 m (the distance to the nearest wall, partition or frame, with
+door gaps closed), never from numbers kept per building. `shots.json` lists every camera in Blender and
+prefab space (prefab `x z y` is Blender `x y z`, so Blender -Y is the prefab's -Z), so a game picture of
+the same view is `shot world` with the camera in prefab space added to the placement.
+
+What the pictures can and cannot say: shape, proportions, colours, which door opens where, what stands
+in the way of a door, whether the sign is behind the canopy. Colours are the game's (each material's
+Blender colour times the scale the export gives it, `materials.mjs`) lit by Workbench's studio light,
+with the exposure raised for the sunlit shots so a wall reads about as bright as the game's. It does
+not show textures, glass reflections, the game's light or the vanilla door and window sets (they are
+the model's holes here). A ceiling reads darker than in the game. Trust it for form, and use the game
+for the final look.
 
 ### What a scene edit can change
 
@@ -59,7 +93,7 @@ For those:
   ```
   `at` is building space like a nudge, `yaw` optional; the prefab is named with its `{GUID}` (`toolscli call
   asset_search` finds the path, the game's resource database the GUID) and the prefab stage checks it. Floor is
-  y 0.1. Heights on shelves come from the model: `tools/buildings/pipeline/fixtures.json` for the shop fixtures; a
+  y 0.1. Heights on shelves come from the model: `tools\cli measure <prefab> --surfaces` (the shop fixtures' are cached by `tools\cli fixtures` in `tools/buildings/pipeline/fixtures.json`); a
   `look item` picture for the rest, then the game picture.
 - **Plan decisions** (which rooms, where doors go) are ArchBuilder settings, or a small change to
   ArchBuilder itself, listed in [README.md "Changes to ArchBuilder"](README.md#changes-to-archbuilder).
@@ -73,8 +107,9 @@ new setting: `git rm tools/buildings/<slug>/polished.blend`, rerun `--from gener
 
 ## Pictures
 
-**Blender**: the `polish` stage renders above. Put `plan`, `street` and `inside` beside the game's in
-the PR.
+**Blender**: `building review --shots` (above) for every iteration; the `polish` stage's renders
+(`plan`, `street`, `inside`) are the older, fixed set. Put the Blender picture of a view beside the
+game's in the PR.
 
 **Game**, always on a full-quality session (`--profile full`; lowspec textures hide materials and
 glass). For a building at `x y z` with its front on -Z (an unrotated placement):
@@ -120,14 +155,52 @@ Things that went wrong on a real building. Check each against the pictures; none
 
 ### Interior brightness
 
-Our exported interiors are lit much more than the base game's at the same albedo: with BSP, portals
-and a probe on, the supermarket hall wall (albedo 0.57) rendered at sRGB 181 and its ceiling (0.61)
-at 233, where the white plaster of the vanilla `House_Town_E_2I01` rendered at 93 and 74 and a
-window-lit vanilla kitchen ceiling at 141 (one full-profile session, noon). The export now calibrates
-interior materials to half the base game's interior white (`tools/buildings/pipeline/materials.mjs`),
-which brought the hall to 153 (wall) and 204 (ceiling). The rest is lighting, not tint: halving the
-albedo moved the picture by a third, because exposure adapts. Measure with the `b_inside` and
-`b_ref` shots in the same session (mean luminance of a wall patch) before changing the number again.
+What was wrong (#1143, 2026-11-15, full profile, noon): every supermarket interior picture had a near-white
+ceiling (204 of 255) and walls at 160, flat, with no light falloff; the base game's interiors read about 105
+and 98 (a vanilla food store, `d_food2`). What it is not, each tried in a session with the variants placed
+side by side:
+
+- **Not the probe.** The building's `ProbeHouse` (`GameEnvironmentProbeEntity`) has no visible effect here: the
+  vanilla-house settings, `LVDiffuseBrightness -6.5` and `-12`, `InteriorProbe 0` and no probe at all all gave
+  the same ceiling (204.3 +- 0.2). The base game's own shop uses the same default probe and reads dark, so the
+  room is lit by something the probe does not control; tuning probe numbers is wasted time.
+- **Not the lamps.** ArchBuilder's ceiling lamps (`LampFluorescent_*`, `LightRectangle_01`) are meshes with no
+  light in the base game too, so the hall had no light of its own: two dead panels in a 17 x 9 m hall. A
+  `LightEntity` added by day changes nothing in the picture (ceiling 139 with and without), because the sky
+  ambient is far brighter than an interior lamp; at night the same lights give a lit floor and pools on the
+  walls (`LV 6`, below), where the old hall was black.
+- **Albedo is the one lever that works by day.** The first calibration (interior white 0.30) left the
+  ceiling at 204. Halving again (0.15) read 162, 0.10 with a warm tint reads 134 (the ambient is blue, so a
+  neutral albedo reads blue-grey).
+
+What the export does now (`tools/buildings/pipeline/materials.mjs`, `lighting.mjs`):
+
+- A **room white**, a light finish (Blender luminance 0.6 or more) on a plaster-like texture (mean 0.5 or more)
+  whose faces look sideways or down (not a floor, not an outside wall), is calibrated to albedo 0.10 instead of
+  0.30. A near-neutral one (saturation under 0.15, the plaster) also gets a warm tint (`1 0.93 0.8`); cream and
+  blue paint keep their hue. A tile, a floor or a dark finish keeps the interior scale. The export prints
+  `room` on those lines.
+- **Ceiling fixtures from the room sizes.** The materials job also returns the building's rooms
+  (`blender/lf_rooms.py`: ArchBuilder keeps no room list, so it flood-fills the free floor inside the ceiling
+  slab behind the partitions, splits it at the doors and takes each blob's box). Each room gets a grid of
+  fixtures about 4.5 m apart (at most 12): the vanilla `LampFluorescent_02` panel plus a spot `LightEntity`
+  (`LV 6`, radius 7, 140 degrees, warm white) 0.2 m under the ceiling. They replace ArchBuilder's own ceiling
+  lamps. The base game's `Lamp_LightEntity_base` is not used: it is switched off (`Visualization Disabled`).
+  A building changes them with a `lighting` block in its spec (`spacing`, `max`, `lv`, `radius`, `angle`,
+  `color`, `drop`) or turns the preset off with `"lighting": { "off": true }`.
+
+Supermarket, same cameras (hall from the entrance, entrance from the hall, back room), noon, ceiling / wall luminance:
+
+| | Before | After | Vanilla food store |
+|---|---|---|---|
+| Hall | 204 / 161 | 139 / 101 | 105 / 98 |
+| Entrance | 204 / 181 | 131 / 130 | |
+| Back room | 182 / 163 | 115 / 99 | |
+
+Pictures: `website/public/docs-images/1143/lighting-*-before|after.jpg`, `lighting-vanilla-shop-ref.jpg`,
+`lighting-*-night-after.jpg`. A night picture: `harness.mjs scene start street 22 Clear`, then `shot world`.
+What is still flat: by day the whole room is lit by one even sky ambient, so there is no falloff to see. The
+lights are what give a room shape at night (and a power cut something to switch off, later).
 
 ## Everon reference
 

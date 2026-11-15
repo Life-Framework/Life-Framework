@@ -1,7 +1,8 @@
 // Host backup rotation (#1260). `backupSaves` (tools/host/host.mjs) writes
-// backups/<stamp>-<reason>[-N]. Only the plain ones (reason start or stop) are
-// rotated; a preflight, wipe, crash, replaced-by-restore or manual backup, and
-// any folder this does not recognise, is never deleted.
+// backups/<stamp>-<reason>[-N]. Only the plain ones (reason start, stop or restart) are
+// rotated; a scheduled restart (06:00, 18:00) would otherwise grow without limit (#1560).
+// A preflight, wipe, crash, replaced-by-restore or manual backup, and any folder this
+// does not recognise, is never deleted.
 
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -9,8 +10,8 @@ import { safeRemoveTree } from "../link-safety.mjs";
 
 export const DEFAULT_KEEP = 20;
 
-// <yyyy-mm-dd_hh-mm-ss>-(start|stop)[-<n>]; the stamp sorts by time.
-const PLAIN = /^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-(start|stop)(-\d+)?$/;
+// <yyyy-mm-dd_hh-mm-ss>-(start|stop|restart)[-<n>]; the stamp sorts by time.
+const PLAIN = /^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-(start|stop|restart)(-\d+)?$/;
 
 export function isPlainBackup(name) {
   return PLAIN.test(name);

@@ -14,7 +14,8 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { adminIds, parseRoster } from "../commands/staff.mjs";
-import { hostPaths, pidAlive, readHostState } from "./host.mjs";
+import { hostDir as realHostDir, hostPaths, pidAlive, readHostState } from "./host.mjs";
+import { readWorkshopConfirm, writeWorkshopConfirm } from "./public.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SECRET_KEY = /password|passwd|secret|token|webhook|apikey|api_key|credential/i;
@@ -97,11 +98,26 @@ function writeAtomic(path, obj) {
 // Applies the flagship config to a host dir. Returns { ok, reason, lines, warnings, written }.
 // `repoDir` (default server/flagship) holds config.json, server.json and staff.txt.
 // `dryRun` prints the changes and writes nothing.
-export function applyConfig(dir, { repoDir = join(ROOT, "server", "flagship"), dryRun = false } = {}) {
+// `mods` (`--mods <core>,<pack>`, after publishing): the Workshop IDs read off the two item pages. They must
+// equal game.mods of the repo server.json (the repo is the live config); a match is recorded in
+// <host>/workshop.json, which `host start --public` requires (tools/host/public.mjs).
+// `rosterFile` (`--roster <file>`, #1672): read the roster from this file instead of <repoDir>/staff.txt, so a
+// rehearsal on a scratch host applies the flagship config while the committed administrator is still #pending.
+// Refused on the real host folder (the beat scripts refuse it the same way): the real host takes the committed roster.
+// `adminsPending` (`--admins-pending`): an administrator still #pending in the roster does not refuse; game.admins
+// gets only the known uids. That is the first public boot, the one where the maintainer learns his uid: a
+// -noBackend join logs the all-zero identity, so the real one appears only on a backend-listed server.
+export function applyConfig(dir, { repoDir = join(ROOT, "server", "flagship"), dryRun = false, mods = null, adminsPending = false, rosterFile = null } = {}) {
   const host = resolve(dir);
   const rel = relative(ROOT, host);
   if (rel === "" || (!rel.startsWith("..") && !isAbsolute(rel))) {
     return refuse(`the host dir ${host} is inside the repo checkout; a secret there could be committed. Use the host folder outside the repo (LF_HOST_DIR)`);
+  }
+  if (rosterFile) {
+    const real = resolve(realHostDir({ ...process.env, LF_HOST_DIR: "" }));
+    if (process.platform === "win32" ? host.toLowerCase() === real.toLowerCase() : host === real) {
+      return refuse(`--roster is for a scratch host; ${host} is the real host folder, which takes the committed staff roster`);
+    }
   }
   const state = readHostState(host);
   if (state && pidAlive(state.pid)) return refuse(`the host is running (pid ${state.pid}): stop it first (tools\\cli host stop)`);
@@ -119,11 +135,24 @@ export function applyConfig(dir, { repoDir = join(ROOT, "server", "flagship"), d
     return refuse(`a secret is in a repo file: ${found.join("; ")}. Move it to the host's secrets.json and remove it from server/flagship (treat it as leaked if it was pushed)`);
   }
 
+  // The publish confirmation.
+  if (mods) {
+    const repoIds = (Array.isArray(server.value?.game?.mods) ? server.value.game.mods : []).map((m) => String(m?.modId ?? "").toUpperCase());
+    if (JSON.stringify(repoIds) !== JSON.stringify(mods)) {
+      return refuse(`--mods ${mods.join(",")} is not server/flagship/server.json game.mods (${repoIds.join(",") || "none"}). The repo is the live config: change the IDs there in a PR (docs/ops/hotfix.md), core first, then apply again`);
+    }
+  }
+
   // The roster's administrators (R1).
-  const rosterPath = join(repoDir, "staff.txt");
+  const rosterPath = rosterFile ? resolve(rosterFile) : join(repoDir, "staff.txt");
   if (!existsSync(rosterPath)) return refuse(`the staff roster is missing (${rosterPath})`);
   const roster = adminIds(parseRoster(readFileSync(rosterPath, "utf8")));
-  if (roster.errors.length) return refuse(`the staff roster cannot give game.admins: ${roster.errors.join("; ")}`);
+  const pendingAdmin = (m) => /has no uid yet/.test(m);
+  const rosterErrors = adminsPending ? roster.errors.filter((m) => !pendingAdmin(m)) : roster.errors;
+  if (rosterErrors.length) {
+    const hint = roster.errors.some(pendingAdmin) && !adminsPending ? ". For the first public boot (to read your uid off the server log) apply with --admins-pending" : "";
+    return refuse(`the staff roster cannot give game.admins: ${rosterErrors.join("; ")}${hint}`);
+  }
 
   // The host's secrets.
   const warnings = [];
@@ -165,13 +194,17 @@ export function applyConfig(dir, { repoDir = join(ROOT, "server", "flagship"), d
     ...describe(`config.json (${cPath})`, readJsonFile(cPath).value, newConfig),
     `game.admins: ${roster.ids.length} from the staff roster`,
   ];
+  if (mods) lines.push(`Workshop IDs confirmed for host start --public: ${mods.join(",")}`);
+  else if (!readWorkshopConfirm(host)) lines.push("Workshop IDs not confirmed yet: after publishing, apply with --mods <core-id>,<pack-id> before host start --public");
   for (const w of roster.warnings) warnings.push(`staff roster: ${w}`);
+  if (adminsPending && roster.errors.some(pendingAdmin)) warnings.push("--admins-pending: an administrator has no uid yet, so they have no admin powers on this boot. After the first join: tools\\cli host attendance, tools\\cli staff roster promote <name> <uid>, then apply again");
 
   const written = [];
   if (!dryRun) {
     writeAtomic(sPath, newServer);
     writeAtomic(cPath, newConfig);
     written.push(sPath, cPath);
+    if (mods) written.push(writeWorkshopConfirm(host, mods));
   } else lines.push("dry run: nothing written");
 
   // Last line of defence: no secret value survives into the summary.

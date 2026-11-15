@@ -10,8 +10,11 @@ headless Blender, then moving its export into the addon and compiling it in a hi
 taught us is in [`docs/architecture/building-pipeline-spike.md`](../architecture/building-pipeline-spike.md).
 
 ```
-tools\cli building run <slug> [--from <stage>] [--only <stage>] [--force]
+tools\cli building run <slug> [--from <stage>] [--only <stage>] [--force] [--full]   --full: compile every model again
 tools\cli building adopt <slug> [<file.blend>]   keep a scene polished by hand as the export source
+tools\cli building plan <slug>      the facts an agent brief needs: prefabs, sizes, rooms, doors, store slots, parallel parts
+tools\cli building proof <slug>     doors, scale, audit, pictures and the building's proof.json on a full session
+tools\cli building review <slug> --shots   Blender review renders and a contact sheet, no game (polish.md "Review shots")
 tools\cli building status [<slug>]
 tools\cli building doctor      Blender, the add-on, its licence, one headless generate
 tools\cli building selftest    the offline checks (also part of tools\cli validate)
@@ -48,15 +51,50 @@ neither.
 | `review` | Front, side, top and three-quarter renders in `review/`, and `review/stats.json`: triangles per part, storeys, footprint and height in metres. Over the spec's budget fails | The agent reads the pictures (Review below) |
 | `polish` | Renders what a player sees into `polish/`: a plan section, the four sides and the street corner from eye height, the hall from inside. Lists the spec's hand edits; warns when a hand-polished `polished.blend` was made with other settings than the spec. Never fails | The human or agent polishing it by hand: [polish.md](polish.md) |
 | `export` | ArchBuilder's Reforger export (its scene export of `tools/buildings/<slug>/polished.blend` when there is one) into a staging addon, `tmp/buildings/<slug>/export/`, with its Workbench step off. Gives every `AB_*` material its game colour (Materials below). Fails on any export warning, any furniture ArchBuilder left out of the game, no vanilla props with furniture on, and fewer doors than `budget.min_doors`. Applies `spec.polish.entities` and warns about three or more door sets in a row on one wall | The tool |
-| `import` | Refuses any file carrying the licence watermark, moves the export into the addon with new GUIDs, compiles the model in a hidden Workbench and reads the `.xob` back | The tool |
+| `import` | Refuses any file carrying the licence watermark, moves the export into the addon with new GUIDs, writes only the files that changed, compiles a changed model in a hidden Workbench (on a pool machine when this PC has no Workbench) and reads the `.xob` back (Fast polish iterations below) | The tool |
 | `prefab` | Every reference in the building's files resolves: our own by `.meta` (in the building's addon or the core), the base game's by path and GUID in the game's resource database. Door sets, windows, the model and its collider surfaces are there | The tool; then a placement and a look |
 | `store` | Only with a `store` block: writes `<prefab_dir>/<store.prefab>.et`, the building as one of our physical stores (Store below). Prints each fixture with the index `pick` uses | The tool; then a session: take, pay, walk out |
 
 A finished stage is skipped on the next `run`. `--only review` reruns one stage, `--from export` reruns it and everything
-after it, and `--force` reruns from the start.
+after it, and `--force` reruns from the start (and compiles every model again, like `--full`).
 
-- **A failed import** can leave new files beside old ones in the addon. Rerun `--from import`: it rewrites every file and
-  keeps every GUID. Commit only after the `prefab` stage passes.
+- **A failed import** can leave new files beside old ones in the addon. Rerun `--from import`: it writes every file that
+  differs from the plan and keeps every GUID. Commit only after the `prefab` stage passes.
+
+## Fast polish iterations
+
+A polish iteration is an edit to `polished.blend` (or the spec's `polish` block) and `tools\cli building run <slug> --from polish`.
+Two things keep it short:
+
+- **One Blender per run.** Every Blender stage of a run (generate, review, polish, export and the export's materials job)
+  goes to one headless Blender (`archbuilder_job.py --serve`, `BlenderSession` in `archbuilder.mjs`): each job opens its
+  own `.blend` there, its log is still `tmp/buildings/<slug>/<stage>-blender.log`, and the whole session's log is
+  `tmp/buildings/<slug>/blender-session/blender.log`. Blender's start-up was most of each stage (ArchBuilder's generate
+  and export take under a second). The Enfusion Blender Tools add-on prints the same `ar_mqa` and `object_visualization`
+  import errors on every start; they stay in the log and are left out of what a failed stage prints.
+- **Only what changed is imported.** The export runs Blender with `PYTHONHASHSEED=0`, so the same scene gives the same
+  `.fbx` byte for byte apart from its creation time stamp (Blender's FBX writer derived each object's id from Python's
+  per-process salted `hash()`). The import hashes every planned file against what is in the addon and writes only those
+  that differ, and it compiles a model in Workbench only when its `.fbx` or planned `.xob.meta` changed since the last
+  import, or the `.xob` in the addon is not the one that import made (a `git checkout`). The record is
+  `tmp/buildings/<slug>/import-manifest.json`, written only after a good import. With nothing changed the import says
+  `nothing changed since the last import ... Workbench skipped` and takes a second. `--full` compiles every model again.
+- **Where Workbench runs.** This PC has no `workbench` cap (agents never start a headless Workbench here,
+  `tools/lib/wb-route.mjs`), so the compile goes to a pool machine that has one: the pool syncs the worktree (the planned
+  `.fbx` and `.xob.meta` included), runs `tools\cli building compile <slug> <model.fbx>` there in its signed-in desktop
+  session (ssh has no GPU device), and copies the `.xob`, its re-saved `.meta` and the `.txo` back. Keeping one Workbench
+  open between runs is not possible with the plugin runner: Workbench runs its plugin once, at start-up.
+
+Measured on the supermarket, 2026-11-15, this PC under load (0.5 GB RAM free), Workbench on lf-cloud:
+
+| Case | Before | After |
+|---|---|---|
+| Full run, `--force` | Blender stages 39 s (17 + 9 + 5 + 8), then the import refuses here; 72 to 136 s of Workbench where one may run | 97 s: Blender stages 16 s (11 + 2 + 1 + 2), import 80 s (compile 38 s, sync and copy back the rest) |
+| One mesh changed, `--from polish` | polish and export 67 s, import refused here | 103 s: polish and export 33 s, import 69 s (compile 41 s) |
+| Nothing changed, `--from polish` | polish and export 32 s, import refused here | 14 s: polish 10 s, export 2 s, import 1 s with no Workbench |
+
+The Blender times vary a lot on this PC (one polish stage took 4 s on one run and 26 s on the next); the first Blender job
+of a run carries the start-up.
 - **Renaming a building** (`name`) makes a new building with new GUIDs; saved worlds keep naming the old ones. The old
   `Assets/Buildings/<Old>/` and `Prefabs/Buildings/<Old>/` stay until you delete them, once nothing references them.
 - **The import refuses** a machine with no ArchBuilder licence file (it could not check the watermark), any file the add-on
@@ -117,6 +155,7 @@ Blender colour is brighter than the base game's own walls (spike: "Why the walls
 each material's `Color` so it reads like Blender: the material's Blender viewport colour, scaled so ArchBuilder's white
 plaster lands on the base game's white plaster (one factor for a material that faces outside, one for inside), divided by
 the texture's linear mean, measured from the game's own `.edds`. It prints one line per material. `tools/buildings/pipeline/materials.mjs`.
+A light finish on a room's walls and ceiling (a "room white") is calibrated lower still, with a warm tint on neutral whites, and the export adds ceiling fixtures with lights placed from the room sizes (polish.md "Interior brightness"; `lighting.mjs`, `blender/lf_rooms.py`; a spec `lighting` block tunes it, `{ "off": true }` skips it).
 A material another building's model uses is never changed by a re-export; one only this building uses is.
 
 **GUIDs.** ArchBuilder derives its GUIDs from the path and a fixed salt, so everyone who exports a building of the same
@@ -148,17 +187,49 @@ ArchBuilder's own material colours, not the game's textures: the game look is ch
 2. `tools\cli look <x,z> --close 14` for a first look. Its `white` flag on a building usually means an untinted
    material: the base game's `_SharedData` plaster and bitumen textures are near-white and expect a `Color` tint.
    Pick a coloured material (`AB_Stucco_Beige`, not `AB_Stucco_White`) rather than trusting the flag.
-3. The door and the PR pictures on a **full-quality** session, never lowspec: what a building's check looks at is its
-   materials, glass, LODs and doors, which the lowspec profile's lowest textures hide.
-   ```
-   node agent-box/session.mjs up --profile full
-   node agent-box/session.mjs building-proof --entity <Entity> --side s --shot
-   tools\cli shots area <x,z>
-   node agent-box/session.mjs down
-   ```
-   `building-proof` stands on the street side, checks the F key offers the vanilla door, and has the server open and
-   close it (`agent-box/proofs/building-proof.mjs`).
+3. `tools\cli building proof <slug>`: one command, on a **full-quality** session (never lowspec: a building's check
+   looks at its materials, glass, LODs and doors, which the lowspec profile's lowest textures hide). It finds the
+   placed entity in the world layers and checks, in order:
+   - the prefab resolves to its model, with colliders (`measure`);
+   - its height against the Everon buildings standing within 150 m (0.4 to 2.5 times their median);
+   - `tools\cli audit placement --strict` on its layer (the dedicated server loads the prefab);
+   - in one `session up --profile full`: every door set of `<Name>_Base.et` is offered by the F key, opens, leaves a
+     doorway a character wide clear at 0.5, 1.0 and 1.6 m (traces), and closes, with a picture shut and open; the four
+     sides, the street corner and the hall from inside;
+   - the building's own scenario, `tools/buildings/<slug>/proof.json`, in the same session.
+
+   Pictures land in `tmp/buildings/<slug>/proof/`; the last line is `SUMMARY building-proof ok|fail`. `--no-session`
+   runs the offline checks only, `--skip-audit` skips the audit, `--entity <Name>` picks one of several placements.
 4. Walking through the rooms and a second player seeing the door move stay manual (the PR's `## Manual testing`).
+
+### The scenario file
+
+`tools/buildings/<slug>/proof.json` is what this building is for, as player steps (`tools/buildings/pipeline/scenario.mjs`
+has the format). Points are building space, so it survives moving the building. A step is one of:
+
+| Step | Does |
+|---|---|
+| `{ "shot": "street", "look": [x,y,z], "from": [dx,dy,dz] }` | stands at `look + from` (the feet) facing `look`, takes a picture |
+| `{ "ui": "talk" }` | a picture of the screen |
+| `{ "pickup": "LF_Crackers" }` | the F-key pickup of the nearest copy (harness `pickup`: the vanilla `SCR_PickUpItemAction` on the client, as the key performs it) |
+| `{ "do": { "verb": "use", "className": "LF_StoreTillAction", "entityName": "$entity" } }` | any harness verb; `$entity` is the placed building's name |
+| `{ "state": "paid" }` | keeps the server's `state` fields as `paid.cash`, `paid.wanted`, ... |
+
+Any step takes `expect` (a regex on the reply), `wait` (ms after it) and `why` (printed when it fails). Then `checks`
+compare kept values (`{ "lt": ["paid.cash", "before.cash"] }`, `gt`, `eq`, `ne`, `in`) and `log` reads the server log
+(`{ "re": "paid \\d+ for 3 item" }`, or `{ "last": "alarm sounding at <([^>]+)>", "near": [x,y,z], "within": 1.5 }`).
+The supermarket's file talks to the shopkeeper, picks a torch, crackers and a water, pays, leaves clean, then walks out
+with a dressing and checks the alarm on the shop-front box.
+
+## Planning a building's work
+
+`tools\cli building plan <slug>` prints, as markdown (also `tmp/buildings/<slug>/plan.md`), what an agent brief needs
+from the spec and the export: the prefabs to place and edit as `{GUID}path`; every furniture and fixture prefab with its
+count, `measure` size and the heights things stand on; the hand-placed props; the rooms (ArchBuilder exports no room
+outlines, so a room is the span of the furniture that names it: toilet and basin a WC, desk an office, racks and pallets
+storage, gondolas and tills the sales hall) and the doors near each; every door and window with its wall; the store's
+fixtures by `pick` index, its lines, tills and alarm; which parts can go to parallel agents and which are one agent's at
+a time (`polished.blend` is a binary); and the proof list. Paste the sections a brief needs instead of retyping values.
 
 ## Changes to ArchBuilder
 
@@ -196,19 +267,29 @@ run; never edit it by hand.
 "store": {
   "prefab": "Supermarket_Store", "key": "everon_supermarket",
   "boundary": { "center": [0, 0, 0], "half": [8.6, 0, 6.6] }, "restock_seconds": 120, "till": "CashierShop_01",
-  "lines": [ { "item": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "fixture": "ShelfShop_01", "pick": [4, 5],
-               "boards": [2], "per_board": 3, "max": 12, "restock": 4 } ]
+  "lines": [ { "item": "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", "fixture": "ShelfShop_01", "pick": [4, 5], "boards": [2] } ]
 }
 ```
 
 - `key` is the store's saved-stock key (`storestock`); keep it when the building changes.
 - `boundary` is store space (the building's): leaving it with unpaid goods is shoplifting. The supermarket's is the
   whole building, so the stockroom is inside.
-- A line takes the fixtures `pick` names (the stage prints each fixture with its index, position and front),
-  `per_board` points on each of `boards`, spread along the fixture. A point is the fixture's position plus the board
-  point turned by its yaw. The boards are measured once per vanilla prefab in `tools/buildings/pipeline/fixtures.json`
-  (traces through the model); a fixture not in it is refused. The store spawns each copy on the surface found a short
-  trace under the point, so a few centimetres off still lands on the board.
+- A line takes the fixtures `pick` names (the stage prints each fixture with its index, position and front) and the
+  `boards` of each (the stage prints those too, lowest first). Each board is filled from measured data: its width and
+  depth and the height of the surface above it, and the item's footprint. One or two rows by the board's depth, as many
+  copies per row as the width takes, evenly spread, at most 20 on a board. A point is the fixture's position plus the
+  board point turned by its yaw. `max` is one copy per shelf point and `restock` a sixth of it, unless the line gives
+  them; `per_board` and `rows` lower the fill. An item too tall for the gap above a board is refused.
+- **Nothing in the layout is typed by hand.** `tools/buildings/pipeline/fixtures.json` is generated by
+  `tools\cli fixtures` from `tools\cli measure` (collider surfaces of the vanilla models: a gondola's boards, a
+  cooler's deck, a counter top; the bounds of every item a spec sells). Rerun it when a spec names a new fixture or item;
+  `fixtures --check` compares the file to a fresh measure, as does `measure-selftest` where the game is installed.
+  `store-fixtures-selftest` checks the script constants that depend on it (`LF_StoreComponent`'s snap and stray
+  distances against the smallest gap between boards, the heights in `LF_Test_StoreSnapToBoard` against the boards).
+  The store spawns each copy on the surface found a short trace under the point, so a few centimetres off still lands
+  on the board.
+- Saved stock is keyed by the store key and the item prefab, not by slot, so a new layout (or a new `max`) loads from
+  an old save: the count is kept and the shelf shows as many copies as it has points (`docs/persistence.md` item 15).
 - The item needs a price in `ShopPrices.conf`.
 - `alarm` (optional): `{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 180, "offset": [x, y, z], "reach": 10 }`,
   a child entity (a bell box on the shop front) with `LF_AlarmMountComponent`: a walk-out's site alarm, raised at the

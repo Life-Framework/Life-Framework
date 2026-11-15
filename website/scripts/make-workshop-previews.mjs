@@ -182,7 +182,7 @@ body{background:var(--band);color:var(--nink)}
 <div class="lede">Run your own roleplay server.</div><span class="plate">Version 0.1.0</span></div>
 <div class="term"><div class="h">server config.json</div><pre><span class="q">"mods"</span>: [
   {
-    <span class="q">"modId"</span>: <span class="n">"79636E668EA37AC9"</span>,
+    <span class="q">"modId"</span>: <span class="n">"4550A2B656E1B569"</span>,
     <span class="q">"name"</span>: "Life Framework (Core)"
   },
   {

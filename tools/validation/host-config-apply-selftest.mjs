@@ -5,7 +5,11 @@
 // server.json has the host's secrets and the roster's administrators, the written config.json has
 // the webhook URL, the printed summary holds no secret, a secret found in a repo file refuses the
 // run, a missing secrets.json leaves the password empty and says so, a running host refuses, and
-// nothing is written on a refusal.
+// nothing is written on a refusal. `--roster <file>` (#1672) swaps in a roster for a scratch host: a filled uid
+// applies while the committed roster is #pending, the repo roster alone still refuses, and the real host folder
+// refuses `--roster`.
+// red-proof (#1672): before `rosterFile` existed, with the repo roster #pending:
+// "FAIL --roster with a filled uid was refused: the staff roster cannot give game.admins: ..." (2026-11-15).
 // red-proof: before tools/host/config-apply.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/config-apply.mjs'" (2026-11-15).
 
@@ -18,7 +22,7 @@ import { safeRemoveTree } from "../link-safety.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const { applyConfig } = await import(pathToFileURL(join(ROOT, "tools", "host", "config-apply.mjs")).href);
-const { hostPaths, writeHostState } = await import(pathToFileURL(join(ROOT, "tools", "host", "host.mjs")).href);
+const { hostDir, hostPaths, writeHostState } = await import(pathToFileURL(join(ROOT, "tools", "host", "host.mjs")).href);
 
 const failures = [];
 const fail = (m) => failures.push(m);
@@ -139,6 +143,31 @@ try {
   const pd = freshHost(goodSecrets);
   const pr = applyConfig(pd, { repoDir: repo });
   if (pr.ok || !/admin/i.test(pr.reason ?? "")) fail(`a roster with a pending administrator was applied: ${JSON.stringify(pr.reason)}`);
+  // 7b. `--roster <file>` (#1672) replaces <repo>/staff.txt for a scratch host: the repo roster stays #pending, the
+  // given file has a uid, and the apply goes through with that uid. Without it the same repo still refuses (7).
+  const rosterFile = join(base, "scratch-roster.txt");
+  writeFileSync(rosterFile, `${ADMIN_UID} administrator # Rehearsal Admin\n`);
+  const rd = freshHost(goodSecrets);
+  const rr = applyConfig(rd, { repoDir: repo, rosterFile });
+  if (!rr.ok) fail(`--roster with a filled uid was refused: ${rr.reason}`);
+  else if (JSON.stringify(read(outServer(rd)).game?.admins) !== JSON.stringify([ADMIN_UID])) fail("--roster did not put its administrator into game.admins");
+  const rm = applyConfig(freshHost(goodSecrets), { repoDir: repo, rosterFile: join(base, "no-such-roster.txt") });
+  if (rm.ok || !/roster/i.test(rm.reason ?? "")) fail(`a missing --roster file was accepted or has no reason: ${JSON.stringify(rm.reason)}`);
+  const rp = applyConfig(freshHost(goodSecrets), { repoDir: repo });
+  if (rp.ok || !/admin/i.test(rp.reason ?? "")) fail(`the repo roster (#pending) must still refuse without --roster: ${JSON.stringify(rp.reason)}`);
+  // --roster on the real host folder refuses, as the beat scripts refuse it. dryRun: if this ever passed, nothing is written.
+  const realHost = hostDir({ ...process.env, LF_HOST_DIR: "" });
+  const rh = applyConfig(realHost, { repoDir: repo, rosterFile, dryRun: true });
+  if (rh.ok || !/real host/i.test(rh.reason ?? "")) fail(`--roster on the real host folder was accepted or the reason is missing: ${JSON.stringify(rh.reason)}`);
+  // through the CLI: the flag is parsed, and the real host folder refuses there too
+  const cliRoster = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "config", "apply", freshHost(goodSecrets), "--repo", repo, "--roster", rosterFile], {
+    cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true, env: { ...process.env, LF_HOST_DIR: join(base, "unused") },
+  });
+  if (cliRoster.status !== 0) fail(`host config apply --roster exited ${cliRoster.status}: ${`${cliRoster.stdout}${cliRoster.stderr}`.slice(0, 300)}`);
+  const cliReal = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "config", "apply", realHost, "--repo", repo, "--roster", rosterFile, "--dry-run"], {
+    cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true, env: { ...process.env, LF_HOST_DIR: "" },
+  });
+  if (cliReal.status === 0 || !/real host/i.test(`${cliReal.stdout}${cliReal.stderr}`)) fail(`the CLI accepted --roster on the real host folder: ${`${cliReal.stdout}${cliReal.stderr}`.slice(0, 300)}`);
   writeFileSync(join(repo, "staff.txt"), `${ADMIN_UID} administrator # Fixture Admin\n`);
 
   // 8. The host dir may not sit inside the repo checkout (a secret there could be committed).

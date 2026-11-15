@@ -11,7 +11,7 @@
 // (tools/host/commands/capacity.mjs) reads the files. Selftest: tools/validation/host-capacity-selftest.mjs.
 import { CPU_BUDGET_PCT, DEFAULT_UPLOAD_MBIT } from "./perf.mjs";
 
-export const TARGET_PLAYERS = 40;
+export const TARGET_PLAYERS = 16;
 export { CPU_BUDGET_PCT, DEFAULT_UPLOAD_MBIT };
 
 const mean = (xs) => xs.reduce((s, x) => s + x, 0) / xs.length;

@@ -2,5 +2,5 @@
 10:05:41.211  DEFAULT      : Creating game instance(ArmaReforger), version 1.9.0.37
 10:05:42.004  DEFAULT      : Loaded addons:
 10:05:42.004  DEFAULT      :   gproj: 'addons/data/ArmaReforger.gproj' guid: '58D0FB3206B6F859' version: '1.9.0.37'
-10:05:42.310  BACKEND      : Workshop item 79636E668EA37AC9 not found
+10:05:42.310  BACKEND      : Workshop item 4550A2B656E1B569 not found
 10:05:42.311  DEFAULT      : Could not start the game, the requested item is unavailable

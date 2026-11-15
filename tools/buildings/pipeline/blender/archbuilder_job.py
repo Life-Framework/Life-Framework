@@ -1,6 +1,7 @@
 # Headless driver for the ArchBuilder Blender add-on (tools\cli building).
 #
 #   blender --background [building.blend] --python archbuilder_job.py -- <job.json>
+#   blender --background --python archbuilder_job.py -- --serve <dir>      many jobs, one Blender (serve())
 #
 # job.json: {"mode": "generate"|"review"|"polish"|"export"|"materials", "spec": {...}, "out": "<dir>", ...}. The script
 # writes <out>/<mode>.json and exits 0, or exits 3 (--python-exit-code) on an exception, or 4 when
@@ -19,18 +20,21 @@ import time
 
 from mathutils import Vector
 
-job = json.load(open(sys.argv[sys.argv.index("--") + 1], encoding="utf-8"))
-spec = job["spec"]
-out = job["out"]
-os.makedirs(out, exist_ok=True)
-mode = job["mode"]
+# The job being run (run_job sets them; a --serve process runs many jobs, one after the other).
+job, spec, out, mode = {}, {}, "", ""
+
+
+class JobDone(Exception):
+    def __init__(self, code):
+        super().__init__(code)
+        self.code = code
 
 
 def done(report, code=0):
     with open(os.path.join(out, mode + ".json"), "w", encoding="utf-8") as fh:
         json.dump(report, fh, indent=1)
     sys.stdout.flush()
-    os._exit(code)  # skip Blender's exit handlers: the extension's timers have nothing to flush
+    raise JobDone(code)
 
 
 def archbuilder():
@@ -303,11 +307,13 @@ def materials():
             m = o.material_slots[poly.material_index].material
             if m is None or not m.name.startswith("AB_"):
                 continue
-            e = mats.setdefault(m.name, {"colour": [round(c, 4) for c in m.diffuse_color[:3]], "area": 0.0, "outside": 0.0})
+            e = mats.setdefault(m.name, {"colour": [round(c, 4) for c in m.diffuse_color[:3]], "area": 0.0, "outside": 0.0, "up": 0.0})
             n = (nm @ poly.normal).normalized()
             c = mw @ poly.center
             area = poly.area
             e["area"] += area
+            if n.z > 0.7:
+                e["up"] += area  # floors, roofs, tabletops: faces that look up
             # the centre and points part-way to each corner: one big face (a flat roof) can have
             # its centre under a rooftop unit and still be mostly open sky
             pts = [c] + [c + (mw @ me.vertices[v].co - c) * f for v in poly.vertices for f in (0.4, 0.8)]
@@ -316,6 +322,8 @@ def materials():
         ev.to_mesh_clear()
     for e in mats.values():
         e["outside_share"] = round(e["outside"] / e["area"], 3) if e["area"] else 0.0
+        e["up_share"] = round(e["up"] / e["area"], 3) if e["area"] else 0.0
+        e["up"] = round(e["up"], 2)
         e["area"] = round(e["area"], 2)
         e["outside"] = round(e["outside"], 2)
 
@@ -329,15 +337,67 @@ def materials():
         n = len(px) // 4
         means[name] = [round(sum(lin(px[i * 4 + c]) for i in range(n)) / n, 4) for c in range(3)]
         bpy.data.images.remove(im)
-    done({"materials": mats, "means": means})
+    # the rooms ride along: the lighting preset (lighting.mjs) places ceiling lights from their sizes
+    src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lf_rooms.py")
+    ns = {}
+    exec(compile(open(src, encoding="utf-8").read(), src, "exec"), ns)
+    done({"materials": mats, "means": means, "rooms": ns["find_rooms"](a, dg)})
 
 
-try:
-    {"generate": generate, "review": review, "polish": review, "export": export, "materials": materials}[mode]()
-except SystemExit:
-    raise
-except Exception:
-    import traceback
-    traceback.print_exc()
-    sys.stdout.flush()
-    os._exit(3)
+MODES = {"generate": generate, "review": review, "polish": review, "export": export, "materials": materials}
+
+
+# One job: its exit code (0 done, 3 an exception, 4 ArchBuilder not usable). The scene it works on is
+# the one open: the .blend on the command line, or in --serve the job's "blend", opened here.
+def run_job(j, open_blend=False):
+    global job, spec, out, mode
+    job, spec, out, mode = j, j["spec"], j["out"], j["mode"]
+    os.makedirs(out, exist_ok=True)
+    try:
+        if open_blend and j.get("blend"):
+            bpy.ops.wm.open_mainfile(filepath=j["blend"], load_ui=False)
+        MODES[mode]()
+        raise RuntimeError("mode %s returned no report" % mode)
+    except JobDone as d:
+        return d.code
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        return 3
+    finally:
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+
+# --serve <dir>: one Blender for every stage of a `building run` (tools/buildings/pipeline/archbuilder.mjs
+# BlenderSession). The caller writes <dir>/job-<n>.json (whole, by rename) and waits for
+# <dir>/done-<n>.json; <dir>/quit, or 15 minutes with no job, ends the process.
+def serve(d):
+    n, idle = 0, time.time()
+    while True:
+        path = os.path.join(d, "job-%d.json" % (n + 1))
+        if not os.path.exists(path):
+            if os.path.exists(os.path.join(d, "quit")) or time.time() - idle > 900:
+                sys.stdout.flush()
+                os._exit(0)
+            time.sleep(0.05)
+            continue
+        n += 1
+        with open(path, encoding="utf-8") as fh:
+            j = json.load(fh)
+        print("LF_SESSION job %d %s start" % (n, j["mode"]), flush=True)
+        code = run_job(j, open_blend=True)
+        print("LF_SESSION job %d %s end %d" % (n, j["mode"], code), flush=True)
+        with open(os.path.join(d, "done-%d.json.part" % n), "w", encoding="utf-8") as fh:
+            json.dump({"code": code}, fh)
+        os.replace(os.path.join(d, "done-%d.json.part" % n), os.path.join(d, "done-%d.json" % n))
+        idle = time.time()
+
+
+args = sys.argv[sys.argv.index("--") + 1:]
+if args[0] == "--serve":
+    serve(args[1])
+else:
+    with open(args[0], encoding="utf-8") as fh:
+        rc = run_job(json.load(fh))
+    os._exit(rc)  # skip Blender's exit handlers: the extension's timers have nothing to flush

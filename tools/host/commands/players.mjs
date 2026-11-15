@@ -6,11 +6,13 @@ import { parseAddress, queryInfo, TIMEOUT_MS } from "../a2s.mjs";
 export const help = "players [address:a2sport]   A2S query: server name, map, players and max players (default 127.0.0.1:17777)";
 
 export function formatInfo(info) {
-  return [
+  const lines = [
     `name:    ${info.name}`,
     `map:     ${info.map}`,
     `players: ${info.players}/${info.maxPlayers}`,
-  ].join("\n");
+  ];
+  if (info.passworded !== undefined) lines.push(`password: ${info.passworded ? "set (private)" : "none (public)"}`);
+  return lines.join("\n");
 }
 
 export async function main(args) {

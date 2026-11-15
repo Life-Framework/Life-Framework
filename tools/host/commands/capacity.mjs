@@ -1,14 +1,14 @@
 // `tools\cli host capacity` (#1499). The logic is tools/host/capacity.mjs.
 //
 // Reads <host>/perf/*.csv (`host perf`, #1406) and the server log's `[LFDebug:Perf] players=...` lines
-// (#1452) and prints CPU and upload per player and the estimated player count before the 40-player
+// (#1452) and prints CPU and upload per player and the estimated player count before the 16-player
 // budget is hit. Exit 0 = the budget fits, 1 = the estimate is under it, 2 = no data.
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { hostPaths, newestConsoleLog } from "../host.mjs";
 import { CPU_BUDGET_PCT, DEFAULT_UPLOAD_MBIT, estimate, measureLines, parseCsv, parsePerfLines, summaryLine, TARGET_PLAYERS } from "../capacity.mjs";
 
-export const help = "capacity [--csv <file|dir>] [--log <console.log>] [--players N] [--upload-mbit 20]   CPU and upload per player from <host>/perf/*.csv and the log's [LFDebug:Perf] players= lines, and the estimated player count before the 40-player budget (cpu under 80% of one core, upload under --upload-mbit or env LF_HOST_UPLOAD_MBIT); exit 0 fits, 1 under 40, 2 no data";
+export const help = "capacity [--csv <file|dir>] [--log <console.log>] [--players N] [--upload-mbit 20]   CPU and upload per player from <host>/perf/*.csv and the log's [LFDebug:Perf] players= lines, and the estimated player count before the 16-player budget (cpu under 80% of one core, upload under --upload-mbit or env LF_HOST_UPLOAD_MBIT); exit 0 fits, 1 under 16, 2 no data";
 
 const VALUE_FLAGS = ["--csv", "--log", "--players", "--upload-mbit"];
 
