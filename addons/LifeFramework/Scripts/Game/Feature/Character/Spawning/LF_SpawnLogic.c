@@ -21,7 +21,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//------------------------------------------------------------------------------------------------
 	int GetStartingBank()
 	{
-		return LF_DebugMoneyTopUp.StartingBank(m_bDebugMoneyTopUp, Math.Max(0, m_iStartingBank), m_iTopUpBankTarget);
+		return LF_DebugMoneyTopUp.StartingBank(IsDebugMoneyTopUp(), Math.Max(0, m_iStartingBank), m_iTopUpBankTarget);
 	}
 
 	//! Playtest only: nobody runs out of money. On spawn and every 60 s a bank under the low mark is
@@ -57,26 +57,26 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//------------------------------------------------------------------------------------------------
 	bool IsDebugTestDispatch()
 	{
-		return m_bDebugTestDispatch;
+		return LF_MissionHeader.PlaytestHelper(m_bDebugTestDispatch);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	bool IsDebugMoneyTopUp()
 	{
-		return m_bDebugMoneyTopUp;
+		return LF_MissionHeader.PlaytestHelper(m_bDebugMoneyTopUp);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	bool IsPlaytestHub()
 	{
-		return m_bPlaytestHub;
+		return LF_MissionHeader.PlaytestHelper(m_bPlaytestHub);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Tops up one player now and arms the 60 s server timer (once).
 	protected void TopUpPlayer(int playerId, IEntity character)
 	{
-		if (!m_bDebugMoneyTopUp)
+		if (!IsDebugMoneyTopUp())
 			return;
 
 		LF_DebugMoneyTopUp.Apply(LF_Utils.GetPlayerUID(playerId), character, m_iTopUpBankLow, m_iTopUpBankTarget, m_iTopUpCashLow, m_iTopUpCashTarget);
@@ -113,13 +113,13 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//------------------------------------------------------------------------------------------------
 	bool IsDebugJailMe()
 	{
-		return m_bDebugJailMe;
+		return LF_MissionHeader.PlaytestHelper(m_bDebugJailMe);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	bool GrantsTestCars()
 	{
-		return m_bGrantTestCars;
+		return LF_MissionHeader.PlaytestHelper(m_bGrantTestCars);
 	}
 
 	//! The town clerk hands the ID card over in the arrival chain (M1-18, a quest with

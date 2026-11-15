@@ -8,7 +8,7 @@ core kit ([`../README.md`](../README.md)) and is checked by `tools/validation/va
 | Project Name (30 max) | `Life Framework: Everon 1989` |
 | Mod ID (the `.gproj` GUID, also the Workshop item ID) | `B1E84D5687E11724` |
 | Requires | Life Framework (Core), `79636E668EA37AC9`, version 0.1.0 or later |
-| Scenario ID | `{C638C03B775C31BB}Missions/LF_Everon1989.conf` (name in the list: Life Framework: Everon 1989) |
+| Scenario ID | `{C638C03B775C31BB}Missions/LF_Everon1989.conf` (name in the list: Life Framework: Everon 1989; the only scenario the pack lists) |
 | Screenshots | the nine village shots in [`../screenshots/`](../screenshots/), 1280x720, each under 600 KB |
 | Change Notes | the pack 0.1.0 block in [`../changelog.md`](../changelog.md) |
 | Tags | `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989` |

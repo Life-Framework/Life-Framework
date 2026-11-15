@@ -690,7 +690,8 @@ try {
   }
   // 5. runtime budgets: learned from history, floor, seeded default, self-correcting.
   const passRuns = (kind, durS, n, machine = "local") => Array.from({ length: n }, () => ({ purpose: kind, machine, result: "pass", durS }));
-  check(q.budgetSeconds([], "test only", "local").runS === 30 && q.budgetSeconds([], "test all", "local").runS === 90 && q.budgetSeconds([], "test persistence", "local").runS === 120, "seeded budgets are not 30/90/120 s");
+  check(q.budgetSeconds([], "test only", "local").runS === 30 && q.budgetSeconds([], "test all", "local").runS === 90 && q.budgetSeconds([], "test persistence", "local").runS === 120 && q.budgetSeconds([], "test perf", "local").runS === 120, "seeded budgets are not 30/90/120 s (perf 120)");
+  check(q.testPurpose({ tier: "perf" }) === "test perf", "a perf run is not its own pool run kind `test perf`");
   check(q.budgetSeconds([], "test only", "lf-testbox", { multiplier: 2 }).runS === 60, "machine multiplier does not scale the seeded budget");
   check(q.budgetSeconds(passRuns("test only", 9, 20), "test only", "local").runS === 30, "3x p95 of 9 s runs is under the 30 s floor but was not floored");
   check(q.budgetSeconds(passRuns("test all", 20, 20), "test all", "local").runS === 60, "budget is not 3x the p95");
