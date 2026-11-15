@@ -121,7 +121,7 @@ through them. None of them moves in the PR that set up the zones.
 | 7 | `Roadmap_Test_Till`, `Roadmap_Test_Till_Counter` (Street_TillTest) | 244.5, 230.5 | A test till on a shop counter in the open: a test spot, which belongs in a grid cell | none |
 | 8 | `Roadmap_Impound_Desk` (Street_Vehicles) | 246.0, 269.0 | A desk in the car lot; it belongs in a lot office or the police station | none |
 | 9 | `Roadmap_Job_Depot` (Street_Jobs) | 155.2, 256.3 | A post-office counter in the street; it belongs in a depot or the post office | none |
-| 10 | `SquareClerkDesk` (pack Village_Dressing) | 136.0, 243.5 | The clerk's desk in the open square | none |
+| 10 | ~~`SquareClerkDesk` (pack Village_Dressing)~~ | 136.0, 243.5 | Done (town-arrival-desk): the desk and chair are gone; `Quest_Clerk` stands behind `SquareRegistryCounter` under `SquareRegistryParasol`, with the `Sign_Registry` board (REGISTRY OFFICE) beside it, facing the spawn | `arrival-desk/arrival-desk-after.png` |
 | 11 | `Roadmap_Police_WantedBoard`, `Roadmap_Police_DispatchBoard` (Street_Police) | 235..238, 242.9 | Free-standing boards in front of the police villa; they belong on a wall inside | none |
 | 12 | `Roadmap_Bank_RobKit` (Street_Bank) | 196.7, 258.5 | A debug-looking kit stand by the bank (baselined in `player-props-baseline.json`) | none |
 | 13 | `Roadmap_ChopShop` (Street_ChopShop) | 322.0, 300.0 | The chop bench in the open; it belongs in the garage | none |
