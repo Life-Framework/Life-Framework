@@ -200,7 +200,7 @@ try {
   if (pushed.game?.name !== "Life Framework | Everon 1989 (Alpha)" || pushed.game?.password !== PASSWORD || pushed.game?.maxPlayers !== 16) fail("config push did not write our game block (with their slot count)");
   const owner = state.files.get("/profile/LifeFramework/config.json");
   if (!owner || JSON.parse(owner.toString("utf8")).dayCycle === undefined) fail("config push did not upload the owner config.json to $profile:LifeFramework/");
-  if (!state.files.get("/profile/LifeFramework/staff.txt")?.toString("utf8").includes("#pending administrator")) fail("config push did not upload staff.txt");
+  if (!state.files.get("/profile/LifeFramework/staff.txt")?.toString("utf8").includes("administrator # Jasper")) fail("config push did not upload staff.txt");
   r = await run(["0grind", "config", "push", "--admins-pending"]);
   if (!/LifeFramework\/staff\.txt: unchanged/.test(r.out)) fail(`a second push re-uploads the owner config or roster: ${r.out}`);
   if (!/server_settings: unchanged/.test(r.out) || !/ServerConfig\.json: unchanged/.test(r.out)) fail(`a second push is not a no-op: ${r.out}`);
