@@ -32,7 +32,7 @@ const SURFACES = [
 ];
 
 // Surfaces that exist today without the link. Each needs a card; remove the entry when its surface is fixed.
-const KNOWN_GAPS = new Set(["workshop-flagship", "site-servers", "site-rules"]);
+const KNOWN_GAPS = new Set([]);
 
 function read(rel) { return readFileSync(join(ROOT, rel), "utf8"); }
 
