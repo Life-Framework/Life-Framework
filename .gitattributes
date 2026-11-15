@@ -34,6 +34,7 @@ addons/LF_Everon1989/Language/lf_everon1989_localization.st merge=lf-string-tabl
 addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf merge=lf-regen-localization
 addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c merge=lf-regen-tests
 docs/features.md merge=lf-markdown
+docs/features/*.md merge=lf-markdown
 docs/debug-log-triage.md merge=lf-markdown
 docs/architecture/events.md merge=lf-markdown
 tools/validation/enforce-lint-baseline.json merge=lf-lint-baseline
@@ -48,9 +49,10 @@ website/content/gallery.json merge=lf-json-keys
 agent-box/areas.json merge=lf-json-keys
 *.wav -text
 # Append-only lists features add one line to: both sides' new lines are kept (tools/merge/merge-markdown.mjs).
-addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c merge=lf-markdown
 docs/architecture/core-pack-inventory.md merge=lf-markdown
 docs/decisions.md merge=lf-markdown
+# Per-area feature docs: sections features append (the ship queue never serializes on markdown).
+addons/*/Scripts/Game/Feature/*/Feature.md merge=lf-markdown
 
 # Generated owner-config files: regenerated from the merged config classes (tools/merge/regen-config-schema.mjs).
 docs/config/config.schema.json merge=lf-regen-config-schema

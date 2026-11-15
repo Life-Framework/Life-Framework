@@ -49,7 +49,9 @@ export function conflictKind(path) {
   if (p === REGISTRY) return "regen-tests";
   if (/^addons\/LifeFramework\/Language\/everonlife_localization\.[A-Za-z0-9_]+\.conf$/.test(p)) return "regen-localization";
   if (p === STRING_TABLE) return "string-table";
-  if (p === "docs/features.md" || p === "docs/debug-log-triage.md") return "markdown";
+  if (p === "docs/features.md" || (p.startsWith("docs/features/") && p.endsWith(".md")) || p === "docs/debug-log-triage.md") return "markdown";
+  // Per-area Feature.md (#1371 failed on Ops/Feature.md): appended sections merge like the docs above.
+  if (/^addons\/[^/]+\/Scripts\/Game\/Feature\/[^/]+\/Feature\.md$/.test(p)) return "markdown";
   if (p === "tools/validation/enforce-lint-baseline.json") return "lint-baseline";
   return null;
 }
