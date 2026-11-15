@@ -169,9 +169,14 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
-3. **Verdicts.** Each head's `compiled-ok`, `green` or `red` goes to `<hub>/main-guard-state.json` (`tmp/wt/` on the
-   guard machine) and to a GitHub commit status, context `main-guard` (pending "compiled-ok", success "green", failure
-   "red"), so every machine can read it (`tools/lib/guard-pin.mjs`).
+3. **Verdicts, on GitHub.** Each head gets commit statuses every machine reads through `gh`: `main-guard/compile`
+   (success = `compiled-ok`, failure = compile red) and `main-guard/suite` (success = `green`, failure = red).
+   `<hub>/main-guard-state.json` on the guard machine is only a cache, used when GitHub has no verdict or `gh` fails
+   (`tools/lib/guard-pin.mjs`). `main-guard status` on any machine prints who runs the guard, main's head verdict
+   and the newest checked commit, all from GitHub.
+   **One guard:** the worker holds a lease, the `main-guard/lease` status on the repository's root commit ("held
+   <host> <pid> <time>", renewed every 5 min, stale after 30). `start` and the worker refuse while another machine
+   holds a fresh lease; `stop` releases it.
 4. **Reverts.** `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR `Revert #N (main guard: <what>)` with auto-merge, a
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
