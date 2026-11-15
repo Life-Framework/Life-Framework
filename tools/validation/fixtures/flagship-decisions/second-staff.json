@@ -1,0 +1,1 @@
+{ "file": "staff.txt", "append": "0123456789abcdef moderator # Someone", "expect": "staff.txt" }
