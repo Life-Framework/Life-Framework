@@ -4,7 +4,8 @@
 //   stop     `host stop` asked for it (stop file, or the mod's "stop requested" log line): the
 //            watch ends.
 //   restart  a scheduled close (Ops O8, #1267: the mod writes the restart marker, then closes
-//            like `host stop`): the watch starts the host again. Not a crash, no crash record.
+//            like `host stop`): the watch backs the saves up as backups/<time>-restart/ (#1560),
+//            then starts the host again. Not a crash, no crash record.
 //   crash    anything else: the console log is kept in backups/<time>-crash/, the saves are
 //            backed up there, the plain backups are rotated, and the host starts again (host start
 //            continues the newest save with -loadSessionSave).
@@ -114,18 +115,34 @@ export function recordCrash(dir, now = new Date(), { keep = DEFAULT_KEEP } = {})
   return { backup, logDir, pruned };
 }
 
+// A scheduled restart (#1560, refs #306): back the closing save up as backups/<time>-restart/ before
+// the host starts again. The `restart` tag is not a plain one: rotate.mjs deletes only start and
+// stop backups, so a restart backup is never pruned. Returns { backup }, null when no save exists
+// yet. Never throws: a failed backup is logged and the restart goes on.
+export function recordRestart(dir, now = new Date()) {
+  let backup = null;
+  try {
+    backup = backupSaves(dir, "restart", now);
+  } catch (e) {
+    console.log(`[LFDebug:HostWatch] restart backup of the saves failed: ${e.message}`);
+  }
+  return { backup };
+}
+
 // The supervision loop. Every effect is a seam, so the selftest drives it with fakes:
 //   launch()          -> { ok, pid?, reason? }  start the host, return once it is up
 //   isAlive()         -> bool                   the host process still runs
 //   signals(final)    -> state for decideExit   (flag files; with final, the log lines too)
 //   onCrash(n)        record the nth crash (log, backups); may return { logDir } for the alert
+//   onRestart(d)      optional: a scheduled close (not a crash, not a stop) is about to start the host
+//                     again; back the saves up first (recordRestart). A throw is logged, never blocks the start
 //   afterExit(d)      the exit was judged d (clear the flag files, print)
 //   sleep(ms), log(msg)
 //   now()             epoch ms, for the crash-loop window (default Date.now)
 //   crashLoop         { limit, windowMs } turns the crash-loop guard on (crashloop.mjs, #1263); null/absent is off
 // Ends with { reason: "stop" | "launch-failed" | "max-crashes" | "crash-loop", crashes, launches }.
 // "crash-loop" also carries `alert`, the staff message naming the crash logs; the caller sends it.
-export function watchLoop({ launch, isAlive, signals, onCrash, afterExit, sleep, log, maxRestarts = DEFAULT_MAX_CRASHES, pollMs = POLL_MS, restartDelayMs = 0, now = Date.now, crashLoop = null }) {
+export function watchLoop({ launch, isAlive, signals, onCrash, onRestart = null, afterExit, sleep, log, maxRestarts = DEFAULT_MAX_CRASHES, pollMs = POLL_MS, restartDelayMs = 0, now = Date.now, crashLoop = null }) {
   let crashes = 0;
   let launches = 0;
   const crashTimes = [];
@@ -172,6 +189,13 @@ export function watchLoop({ launch, isAlive, signals, onCrash, afterExit, sleep,
       if (crashes > maxRestarts) {
         log(`${crashes} crashes: more than --max-restarts ${maxRestarts}; the watch ends and the host stays down`);
         return { reason: "max-crashes", crashes, launches };
+      }
+    }
+    if (!d.crash && onRestart) {
+      try {
+        onRestart(d);
+      } catch (e) {
+        log(`restart backup failed: ${e.message}; starting the host anyway`);
       }
     }
     log(`restarting the host (${d.why})`);

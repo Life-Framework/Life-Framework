@@ -1722,7 +1722,11 @@ function hostPrintLines(log, from = 0, limit = 40) {
   for (const l of lines.slice(-limit)) console.log(`  ${l.trim()}`);
 }
 
-function hostJoinInfo() {
+function hostJoinInfo(port = host.GAME_PORT) {
+  if (port !== host.GAME_PORT) {
+    console.log(`join: 127.0.0.1:${port} (UDP; a scratch host on a pool session lane, this PC only)`);
+    return;
+  }
   const lan = host.lanAddresses();
   console.log(`join: direct connect to <this PC's address>:${host.GAME_PORT} (UDP)`);
   for (const a of lan) console.log(`  LAN  ${a}:${host.GAME_PORT}`);
@@ -1752,7 +1756,7 @@ function cmdHostStatus(dir) {
   console.log(`  backups:  ${backups.length ? `${backups.length}, newest ${join(p.backups, backups[backups.length - 1])}` : "none yet"}`);
   const log = host.newestConsoleLog(p.profile);
   if (log) console.log(`  log:      ${log}`);
-  if (alive) hostJoinInfo();
+  if (alive) hostJoinInfo(s.port ?? host.GAME_PORT);
   return 0;
 }
 
@@ -1780,13 +1784,29 @@ function cmdHostStart(root, dir, opts) {
     }
     if (gate.changed) console.log(`WARN  game update: ${gate.reason}; started with --force, no preflight`);
   }
-  try {
-    wt.acquireLock(root, SERVER_SLOT, { waitMs: opts.wait ? 1800000 : 0 });
-  } catch (e) {
-    console.log(`FAIL  ${e.message}`);
-    console.log("      a test or server run holds port 2001; retry when it ends, or pass --wait");
-    return 1;
+  // #1588: a caller that holds a pool session lane (LF_SERVER_SLOT_HELD=<lock>:<token>, e.g. the
+  // scratch host of agent-box/proofs/_scratch-host.mjs) hands it down through `host watch`: the host
+  // runs on that lane's port and the caller keeps the lock, so a crash restart needs no new lock and
+  // never takes server-2001 beside a live session.
+  let held = null;
+  if (process.env[pool.SLOT_ENV]) {
+    try {
+      held = pool.heldSlotFromEnv(root);
+    } catch (e) {
+      console.log(`FAIL  ${e.message}`);
+      return 1;
+    }
+    console.log(`host: on the caller's pool lane ${held.lockName} (port ${held.port})`);
+  } else {
+    try {
+      wt.acquireLock(root, SERVER_SLOT, { waitMs: opts.wait ? 1800000 : 0 });
+    } catch (e) {
+      console.log(`FAIL  ${e.message}`);
+      console.log("      a test or server run holds port 2001; retry when it ends, or pass --wait");
+      return 1;
+    }
   }
+  const port = held?.port ?? host.GAME_PORT;
   let pid = 0;
   try {
     ensureResourceDatabase(root);
@@ -1800,7 +1820,7 @@ function cmdHostStart(root, dir, opts) {
       const b = host.backupSaves(dir, "start");
       console.log(`host: backed up saves -> ${b}`);
     }
-    const args = host.hostArgs({ addons, mission, addonsDir: [join(root, "addons"), junction].join(","), profile: p.profile, loadSave });
+    const args = host.hostArgs({ addons, mission, addonsDir: [join(root, "addons"), junction].join(","), profile: p.profile, loadSave, port });
     console.log(`host: ${loadSave ? `continuing the latest save (${saves.length} save point(s))` : saves.length ? "no save of this mission yet, starting a fresh session" : "no save yet, starting a fresh session"}; mission ${mission}; addons ${addons.join(",")}`);
     console.log(`launching: ${exe}`);
     console.log(`  ${args.join(" ")}`);
@@ -1809,8 +1829,8 @@ function cmdHostStart(root, dir, opts) {
     pid = child.pid;
     child.unref();
     if (!pid) throw new Error("server did not start");
-    wt.transferLock(root, SERVER_SLOT, pid);
-    host.writeHostState(dir, { pid, root, mission, addons, loadSave, startedAt: new Date().toISOString(), exe });
+    if (!held) wt.transferLock(root, SERVER_SLOT, pid);
+    host.writeHostState(dir, { pid, root, mission, addons, loadSave, startedAt: new Date().toISOString(), exe, port, lane: held?.lockName ?? SERVER_SLOT });
 
     // Wait for the world: "Entered online game state." in the new console.log.
     const deadline = Date.now() + (opts.timeoutSec ?? 300) * 1000;
@@ -1836,7 +1856,7 @@ function cmdHostStart(root, dir, opts) {
     sleepMs(3000); // the session-start check logs just after the game state.
     console.log(`host: up (pid ${pid}); log ${log}`);
     hostPrintLines(log);
-    hostJoinInfo();
+    hostJoinInfo(port);
     console.log("stop with: tools\\cli host stop");
     return 0;
   } catch (e) {
@@ -1844,8 +1864,8 @@ function cmdHostStart(root, dir, opts) {
     return 1;
   } finally {
     // Before the transfer this process owns the lock; after it the server
-    // does, and releaseLock leaves a lock it does not own alone.
-    wt.releaseLock(root, SERVER_SLOT);
+    // does, and releaseLock leaves a lock it does not own alone. A held lane stays the caller's.
+    if (!held) wt.releaseLock(root, SERVER_SLOT);
   }
 }
 
