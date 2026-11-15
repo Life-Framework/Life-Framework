@@ -1,0 +1,4 @@
+{
+  "game": { "name": "Fixture", "password": "<set on host>", "passwordAdmin": "CHANGE-ME" },
+  "rcon": { "address": "127.0.0.1", "port": 19999, "password": "<set on host>" }
+}
