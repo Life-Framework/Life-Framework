@@ -1,0 +1,5 @@
+LF_GameModeRoleplay : "{7F729501AA82DA9A}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay_Debug.et" {
+}
+SCR_MPDestructionManager MPDestructionManager : "{9BB369F2803C6F71}Prefabs/MP/MPDestructionManager.et" {
+ coords 0 0 0
+}
