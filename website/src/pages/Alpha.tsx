@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { NextSessionPanel } from "@/components/NextSession";
 import { GoLink, PageHeader, Section, Stamp } from "@/components/ui";
 import { DISCORD_URL, blob } from "@/lib/content";
@@ -8,6 +8,47 @@ import { DISCORD_URL, blob } from "@/lib/content";
 // (time only, no player count or live status). The wipe notice and the opening gate are the doc's own words.
 
 const SERVER_NAME = "Life Framework | Everon 1989 (Alpha)";
+
+// The wipe notice (#1616). `host announce --wipe --send` writes `next.wipe: true` and `announced` to
+// content/sessions.json (#1413, #1549); the same rule as the next-session panel applies: a row that is not
+// announced, or whose time has passed, shows nothing. The wipe policy gives 24 hours' notice on Discord.
+type SessionRow = { at?: unknown; wipe?: unknown; announced?: unknown };
+const sessionFiles = import.meta.glob<{ default: { next: SessionRow | null } }>("../../content/sessions.json", { eager: true });
+const sessionRow = Object.values(sessionFiles)[0]?.default?.next;
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+// The date of the announced wipe session in the server's zone (UTC), or null when there is no notice to show.
+// Fixed text, so the prerendered page and the first client render agree.
+const wipeDate = (now: number): { iso: string; text: string } | null => {
+  if (!sessionRow || sessionRow.wipe !== true || typeof sessionRow.announced !== "string" || typeof sessionRow.at !== "string") return null;
+  const d = new Date(sessionRow.at);
+  if (Number.isNaN(d.getTime()) || d.getTime() <= now) return null;
+  return { iso: d.toISOString(), text: `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}` };
+};
+
+const WipeNotice = () => {
+  const [now, setNow] = useState(() => Date.now());
+  // The prerendered page is as old as the build: re-read the clock in the browser.
+  useEffect(() => setNow(Date.now()), []);
+  const wipe = wipeDate(now);
+  if (!wipe) return null;
+  return (
+    <div className="wrap" id="wipe-notice">
+      <div className="sheet p-5 md:p-8 mb-8" role="note">
+        <p className="kicker">Wipe announced</p>
+        <h2 className="display-3 mt-1">
+          The world is wiped before the session on <time dateTime={wipe.iso}>{wipe.text}</time>
+        </h2>
+        <p className="muted mt-3">
+          The announcement went out on Discord with at least 24 hours' notice. A wipe clears all progress, so do not count on
+          anything you built before it. Read the <GoLink to={blob("docs/community/wipe-policy.md")}>wipe policy</GoLink>.
+        </p>
+      </div>
+    </div>
+  );
+};
 
 const asking: { title: string; body: ReactNode }[] = [
   {
@@ -37,7 +78,7 @@ const asking: { title: string; body: ReactNode }[] = [
 ];
 
 const gate: { title: string; body: string }[] = [
-  { title: "Sessions at the player target", body: "Several sessions in a row reach about 40 players." },
+  { title: "Sessions at the player target", body: "Several sessions in a row fill the server's 16 slots." },
   { title: "No save loss", body: "No session lost or corrupted a save, and a restart brought every player's progress back." },
   { title: "No blocking regression", body: "No open regression stops a player from joining, playing a job, or keeping progress." },
   { title: "Trial moderators in place", body: "The staff roster names them, chosen from the playtesters, before the public opening." },
@@ -53,6 +94,7 @@ const Alpha = () => (
       </p>
     </PageHeader>
 
+    <WipeNotice />
     <NextSessionPanel />
 
     <Section id="invite" kicker="Getting in" title="Asking for an invite">

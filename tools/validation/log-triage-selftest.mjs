@@ -1,11 +1,14 @@
 // tools/validation/log-triage-selftest.mjs
-// inputs: tools/lib/log-triage.mjs, tools/host/commands/triage.mjs, tools/validation/fixtures/log-triage/**
+// inputs: tools/lib/log-triage.mjs, tools/host/commands/triage.mjs, tools/validation/fixtures/log-triage/**, docs/debug-log-triage.md
 //
 // Proves the session triage: a fixture console.log with 3 known and 2 new kinds of error line
 // groups into exactly 5 groups with the right known/new marks and counts, and
 // `tools\cli host triage <log> --triage <table>` prints the same. No game, no network.
+// It also runs the real docs/debug-log-triage.md over the lines a clean flagship start prints
+// (fixtures/log-triage/clean-start.log) and wants every group known (#1638).
 // red-proof: before tools/lib/log-triage.mjs existed this stopped at import time:
-// "Cannot find module '.../tools/lib/log-triage.mjs'" (2026-11-15, #1269).
+// "Cannot find module '.../tools/lib/log-triage.mjs'" (2026-11-15, #1269). The clean-start case failed with
+// "6 new group(s)" before the collision-repair row was added to docs/debug-log-triage.md (#1638).
 
 import { dirname, join, resolve } from "node:path";
 import { readFileSync } from "node:fs";
@@ -53,6 +56,16 @@ if (groups.length === 5 && groups[0].known) fail("new groups must be listed firs
 // Pattern parsing: a later span in the same row inherits the row's [LFDebug:Tag].
 if (!matchKnown("[LFDebug:Jobs] equipment refused: kit drawn by 5", rows)) fail("second span of a row did not inherit its [LFDebug:Jobs] tag");
 if (matchKnown("[LFDebug:Quests] equipment refused: kit drawn by 5", rows)) fail("an inherited span matched under the wrong tag");
+
+// A clean start is not a finding: the known boot lines of the real table leave no NEW group (#1638).
+{
+  const realRows = parseTriageTable(readFileSync(join(ROOT, "docs", "debug-log-triage.md"), "utf8"));
+  const clean = triageLog(readFileSync(join(FIX, "clean-start.log"), "utf8"), realRows);
+  const fresh = clean.groups.filter((g) => !g.known);
+  if (clean.total !== 7) fail(`clean-start.log: expected 7 triage lines, got ${clean.total}`);
+  if (matchKnown("[LFDebug:DebugWorld] collision repair skipped: world is unavailable", realRows)) fail("the collision-repair row vouches for its own error line");
+  if (fresh.length) fail(`clean start: ${fresh.length} new group(s) in docs/debug-log-triage.md terms: ${fresh.map((g) => g.key).join(" | ")}`);
+}
 
 // The command, end to end through the CLI.
 const run = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "triage", join(FIX, "console.log"), "--triage", join(FIX, "triage.md")], {

@@ -75,7 +75,13 @@ class LF_TestRunnerComponent : ScriptComponent
 		int failures;
 		LF_TestManager.GetInstance().SetLogicWorld(m_bLogicWorld);
 		if (m_bLogicWorld)
+		{
 			Print("[LF_Tests] minimal LOGIC world: only LOGIC-tier tests can run here");
+			// The minimal world places nothing on purpose, so LF_Systems.CheckPlaces switched off every
+			// system with catalog places (Hideouts, Jail, BankHeist, ...) at game start. A LOGIC test
+			// proves rules, not map content: drop those run-time offs so it sees the system as on.
+			LF_Systems.ClearRuntimeOff();
+		}
 #ifdef LF_TEST_ONLY
 		LF_TestManager.GetInstance().SetOnly(ReadOnlyNames());
 #endif

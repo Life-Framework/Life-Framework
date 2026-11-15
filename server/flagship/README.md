@@ -27,8 +27,12 @@ The two files the Life Framework | Everon 1989 (Alpha) server runs on, kept in g
 | `game.admins` (administrator account uids) | the host's `secrets.json`; `tools\cli staff roster admins` prints them from `staff.txt` |
 | `staff.webhookUrl` (staff notifications) | the host's `secrets.json` |
 
-The three `game.*` values are empty here and the `staff` section is absent. `tools\cli host config apply` *(planned)*
+The three `game.*` values are empty here and the `staff` section is absent. `tools\cli host config apply`
 merges the host's secrets over these files when it writes the profile copy; it refuses a repo file that holds one.
+
+`game.mods` holds the two Workshop IDs (the `.gproj` GUIDs). After publishing, `tools\cli host config apply --mods <core>,<pack>`
+confirms them for a host; `tools\cli host start --public` (the backend-listed server) refuses until it has
+(`docs/owner/host-the-flagship.md`).
 
 ## Checks
 

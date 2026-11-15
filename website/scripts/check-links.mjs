@@ -93,6 +93,31 @@ for (const [route, html] of htmlByRoute) {
   }
 }
 
+// The servers page link preview (og:description) says the next session time, or that none is announced
+// (#1615). Next session time only, no player count or status (decision 2026-11-14). The same rule as
+// src/components/NextSession.tsx: a session counts only when it has `announced` and its time has not passed.
+{
+  const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const two = (n) => String(n).padStart(2, "0");
+  const utc = (d) =>
+    `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${two(d.getUTCHours())}:${two(d.getUTCMinutes())} UTC`;
+  let next = null;
+  try {
+    next = JSON.parse(fs.readFileSync(path.join(site, "content", "sessions.json"), "utf8")).next;
+  } catch {
+    // No file: nothing announced.
+  }
+  const at = next && typeof next.announced === "string" ? new Date(next.at) : null;
+  const expected = at && !Number.isNaN(at.getTime()) && at.getTime() > Date.now() ? utc(at) : "No session announced";
+  const html = htmlByRoute.get("/servers");
+  const og = html && /<meta property="og:description" content="([^"]*)"/.exec(html)?.[1].replace(/&amp;/g, "&");
+  checked++;
+  if (!og) report("/servers", "no og:description");
+  else if (!og.includes(expected)) report("/servers", `og:description should say "${expected}", it says "${og}"`);
+  else if (/player|online|offline|\bup\b|\bdown\b/i.test(og)) report("/servers", `og:description names a player count or status: "${og}"`);
+}
+
 if (external) {
   for (const [url, from] of externals) {
     try {

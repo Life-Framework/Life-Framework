@@ -5,13 +5,14 @@
 // tools/lib/log-triage.mjs); it parses no one else's CLI text. Pure text in, text out: the command
 // (commands/summary.mjs) does the file reads and the one write, and the selftest
 // (tools/validation/host-summary-selftest.mjs) reads no host.
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseAttendance } from "./attendance.mjs";
 import { CPU_BUDGET_PCT, DEFAULT_UPLOAD_MBIT, verdict, verdictLine } from "./perf.mjs";
 import { triageLog } from "../lib/log-triage.mjs";
+import { diagnose } from "../lib/server-doctor.mjs";
 
-export const DEFAULT_TARGET = 40;
+export const DEFAULT_TARGET = 16;
 
 // A stamp starts a log line, as in attendance.mjs (never preceded by a digit or colon).
 const STAMP = /(?<![\d:])(\d{2}):(\d{2}):(\d{2})\.(\d{3})(?!\d)/g;
@@ -19,6 +20,8 @@ const READY = /Entered online game state\./;
 // The lines the mod prints just before it closes (the same two tools/host/watchdog.mjs reads).
 const LOG_STOP = /\[LFDebug:Host\] stop requested/;
 const LOG_RESTART = /\[LFDebug:Ops\] restart due: wrote/;
+// A real server console.log starts with the engine header; a log without one gets no doctor section.
+const BOOT_HEADER = /Initializing engine, version|Loaded addons:/;
 // A host log folder is logs_<stamp>; a crash backup is backups/<stamp>-crash (host.mjs stamp()).
 const STAMP_NAME = /(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})/;
 
@@ -79,6 +82,33 @@ export function parsePerfCsv(text) {
   });
 }
 
+// server-doctor's verdict on this same log, reshaped for the page; null when the log has no boot header.
+// triageText is docs/debug-log-triage.md; profile is the host profile (adds the effective-config check).
+function doctorSection(logText, { triageText, profile, serverName }) {
+  if (!BOOT_HEADER.test(logText)) return null;
+  const d = diagnose(logText, { triage: triageText, profile });
+  return {
+    verdict: d.verdict,
+    stage: d.stage,
+    line: d.line,
+    fix: d.fix,
+    mods: d.mods.map((m) => (m.version ? `${m.name} v${m.version}` : m.name)),
+    serverName: serverName || null,
+    errors: d.errors.length,
+    known: d.errors.filter((e) => e.known).map((e) => ({ line: e.line, fix: e.fix })),
+  };
+}
+
+// game.name of <root>/server.json (the name the server browser lists), or null when it is not readable.
+export function serverNameOf(root) {
+  try {
+    const n = JSON.parse(readFileSync(join(root, "server.json"), "utf8"))?.game?.name;
+    return typeof n === "string" && n.trim() ? n.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
 function duration(sec) {
   const m = Math.round(sec / 60);
   return m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`;
@@ -86,7 +116,7 @@ function duration(sec) {
 
 // The whole report as an object. Inputs: logText; triageRows (parsed triage table); perfCsv (text or
 // null); crash (array of crash folder names or null when the host folder was not checked); target.
-export function summarize({ logText, logName = "console.log", triageRows = [], perfCsv = null, crash = null, target = DEFAULT_TARGET, uploadMbit = DEFAULT_UPLOAD_MBIT }) {
+export function summarize({ logText, logName = "console.log", triageRows = [], perfCsv = null, crash = null, target = DEFAULT_TARGET, uploadMbit = DEFAULT_UPLOAD_MBIT, triageText = "", profile = null, serverName = null }) {
   const length = logLength(logText);
   const att = parseAttendance(logText);
   const lines = logText.split(/\r?\n/);
@@ -106,6 +136,7 @@ export function summarize({ logText, logName = "console.log", triageRows = [], p
   }
   return {
     log: logName,
+    doctor: doctorSection(logText, { triageText, profile, serverName }),
     length,
     attendance: att,
     target,
@@ -124,6 +155,17 @@ export function summarize({ logText, logName = "console.log", triageRows = [], p
 export function renderMarkdown(s, generated) {
   const a = s.attendance;
   const out = [`# Session report ${generated}`, ""];
+  const d = s.doctor;
+  if (d) {
+    out.push("## Server doctor", "");
+    out.push(d.verdict === "PASS" ? "- Verdict: PASS, booted (the ready line is in the log)" : `- Verdict: FAIL at stage "${d.stage}"${d.line ? `: ${d.line}` : ""}`);
+    if (d.fix) out.push(`- Fix: ${d.fix}`);
+    out.push(`- Mods loaded (${d.mods.length}): ${d.mods.length ? d.mods.join(", ") : "none listed"}`);
+    out.push(`- Server name: ${d.serverName ?? "unknown"}`);
+    out.push(`- Known lines marked: ${d.known.length} of ${d.errors} script error${d.errors === 1 ? "" : "s"}`);
+    for (const k of d.known.slice(0, 10)) out.push(`  - ${k.line}  [${k.fix}]`);
+    out.push("", "## Session", "");
+  }
   out.push(`- Log: ${s.log}`);
   out.push(s.length.start ? `- Length: ${duration(s.length.seconds)} (${s.length.start} to ${s.length.end})` : "- Length: unknown (the log has no time stamps)");
   out.push(`- Players: ${a.unique} unique, peak ${a.peak ? `${a.peak.count} at ${a.peak.at}` : "0"}, target ${s.target}: ${s.targetMet ? "reached" : "not reached"}`);
