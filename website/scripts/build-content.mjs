@@ -148,6 +148,10 @@ addRepoDoc("docs/design.md", { slug: "design", group: "Direction & decisions", o
 addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Direction & decisions", order: 3 });
 
 addRepoDoc("docs/features.md", { slug: "features", group: "Engineering reference", order: 0 });
+// The area files behind the generated index; same group, right after it.
+for (const f of fs.existsSync(path.join(repo, "docs", "features")) ? fs.readdirSync(path.join(repo, "docs", "features")).filter((n) => n.endsWith(".md")).sort() : []) {
+  addRepoDoc(`docs/features/${f}`, { slug: `features-${f.replace(/\.md$/, "")}`, group: "Engineering reference", order: 0.5 });
+}
 addRepoDoc("docs/persistence.md", { slug: "persistence", group: "Engineering reference", order: 1 });
 addRepoDoc("docs/foundation-design.md", { slug: "foundation-design", group: "Engineering reference", order: 2 });
 addRepoDoc("docs/worktrees.md", { slug: "worktrees", group: "Engineering reference", order: 3 });
