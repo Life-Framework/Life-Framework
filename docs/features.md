@@ -699,6 +699,14 @@
   server name, map and players/max. Operator tool for the session runbook and the
   opening gate's player target; nothing publishes it. `tools/host/a2s.mjs`; selftest
   `tools/validation/a2s-selftest.mjs`.
+  `host attendance [<console.log>] [--json]` (#1459, merged, in-dev) reads the
+  engine's `Creating player` and `Player disconnected` lines from the newest host log
+  (or a path) and prints the unique players (one `IdentityId`, else the name, so a
+  rejoin under a new name is the same player), the peak concurrent count and the first
+  time it was reached, and the minutes each player stayed. `--json` is the document
+  `host history` (#1409) and `host gate` (#1410) read. It handles a leave glued
+  mid-line onto another line, a missing leave, and midnight. `tools/host/attendance.mjs`;
+  selftest `tools/validation/host-attendance-selftest.mjs`.
   Joining: the host runs `-noBackend`, so every player has the NULL platform
   identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
   failed with `#EL-CC_Error_NoAccount` (nobody could join).
