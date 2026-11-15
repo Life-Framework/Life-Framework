@@ -1,17 +1,9 @@
 {
-  "_about": "Tests that still read the playtest town. tools\\cli test runs them in a second boot on DebugWorld; every other WORLD and PERSISTENCE test boots GridWorld (tools/lib/test-world.mjs, docs/architecture/three-worlds.md). Seeded from the W1 GridWorld failures (#1803) plus the town tests added since (#1804). Remove a pin when its test gains grid fixtures; the list should end empty.",
+  "_about": "Tests that still read the playtest town. tools\\cli test runs them in a second boot on DebugWorld; every other WORLD and PERSISTENCE test boots GridWorld (tools/lib/test-world.mjs, docs/architecture/three-worlds.md). Seeded from the W1 GridWorld failures (#1803) plus the town tests added since (#1804). Remove a pin when its test gains grid fixtures; the list should end empty. Slice #1808 (W7) removed 11 pins (the jail cluster and the farm plots) with the Grid_test_fixtures cell: one EL_JailCell and farm_plot_1..3. The 41 left need fixtures that are not one prefab each: shops and tills, a zone, spawn points, signs, quest givers, organization hideouts, the car lot and impound desk, and the roadmap scenarios. Each is a follow-up card; a test that is really about the town moves out of the suite instead.",
   "pins": [
     {
       "name": "counter/local-only",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
-    },
-    {
-      "name": "disconnect/cuffed",
-      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
-    },
-    {
-      "name": "disconnect/jail",
-      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
     },
     {
       "name": "e2e/narrative-loop",
@@ -38,28 +30,8 @@
       "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
     },
     {
-      "name": "farm/plot-loop",
-      "reason": "reads the town farm plots, which are not in GridWorld"
-    },
-    {
       "name": "incident/holdup",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
-    },
-    {
-      "name": "jail/online-time",
-      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
-    },
-    {
-      "name": "jail/placed-cell",
-      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
-    },
-    {
-      "name": "jail/slip",
-      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
-    },
-    {
-      "name": "jail/work",
-      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
     },
     {
       "name": "org/registry",
@@ -68,10 +40,6 @@
     {
       "name": "organizations/test-org-sign",
       "reason": "reads the town organization hideout and sign, which are not in GridWorld"
-    },
-    {
-      "name": "persist/farm-plots-roundtrip",
-      "reason": "reads the town farm plots, which are not in GridWorld"
     },
     {
       "name": "persist/store-stock",
@@ -134,10 +102,6 @@
       "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
     },
     {
-      "name": "robustness/single-jail-tick",
-      "reason": "reads the town jail (cells, work spot or the jail places), which is not in GridWorld"
-    },
-    {
       "name": "safezone/blocks",
       "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
     },
@@ -180,14 +144,6 @@
     {
       "name": "store/staff-react",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
-    },
-    {
-      "name": "systems/keep-data",
-      "reason": "checks town world gates and places, which are not in GridWorld"
-    },
-    {
-      "name": "systems/world-gates",
-      "reason": "checks town world gates and places, which are not in GridWorld"
     },
     {
       "name": "systems/world-places",
