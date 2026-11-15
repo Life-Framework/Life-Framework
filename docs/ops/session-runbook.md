@@ -67,8 +67,7 @@ Rules for the whole page:
    `secrets.json` (the join and admin passwords and the webhook URLs stay out of the repo) and the
    roster's admins; it refuses while the host runs and never prints a secret. Then check by hand
    that the name in the live `server.json` is exactly `Life Framework | Everon 1989 (Alpha)`.
-   `tools\cli host drift` *(planned)* will compare the live files with the repo; until it merges the apply
-   output is the check.
+   `tools\cli host drift` compares the live files with the repo.
 
 5. **Prove the newest backup restores.** `tools\cli host drill` boots the newest backup on a scratch
    profile on a pool machine and passes only when the save loads with its accounts (`host drill
