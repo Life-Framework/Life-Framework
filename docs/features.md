@@ -716,6 +716,14 @@
   `host history` (#1409) and `host gate` (#1410) read. It handles a leave glued
   mid-line onto another line, a missing leave, and midnight. `tools/host/attendance.mjs`;
   selftest `tools/validation/host-attendance-selftest.mjs`.
+  `host bans [--player <uid>] [--open] [--file <path>]` (#1609, merged, in-dev) reads
+  the host's `$profile:LifeFramework/ban_record.txt` (the `V1|ACTION|targetUid|unix|staffUid|duration|incidentIds|reason`
+  rows of the ban record, #1285) and prints one line per ban and unban with time, reason,
+  staff uid and incident ids; a ban a later unban of the same uid lifted shows as `closed`
+  with who closed it, and `--open` keeps only bans no later unban closed, so an appeal is
+  answered from this list. `--player` keeps one uid. A malformed or unknown-version row is
+  reported with its line number and skipped. Read only. `tools/host/bans.mjs`; selftest
+  `tools/validation/host-bans-selftest.mjs`.
   `host summary [<console.log>] [--perf <csv>] [--triage <file>] [--out <dir>]
   [--target 40] [--json]` (#1501, merged, in-dev) is the runbook's "after" step: it writes
   `<host>/sessions/<stamp>.md` with the session length, unique players and peak against
