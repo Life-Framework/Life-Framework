@@ -2,7 +2,7 @@
 // inputs: tools/host/**, tools/validation/fixtures/host-perf/**
 //
 // Proves `tools\cli host perf` (#1406): a fixture series of raw samples (CPU seconds, working set,
-// bytes sent) gives the expected CSV rows and one verdict line against the 40-player budget (ok,
+// bytes sent) gives the expected CSV rows and one verdict line against the 16-player budget (ok,
 // then over budget on upload, then on CPU); the sampling loop, driven with a fake sampler and a
 // fake clock, takes samples every N seconds for at most the `--for` span and never reads a process.
 // red-proof: before tools/host/perf.mjs existed this file died on the import:
