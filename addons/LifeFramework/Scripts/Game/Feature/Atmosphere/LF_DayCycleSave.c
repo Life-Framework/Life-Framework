@@ -120,8 +120,28 @@ class LF_DayCycleSave
 			return false;
 
 		bool applied = LF_DayCycleApply.Apply(settings, mode);
-		LF_Debug.Info(FEATURE, string.Format("day cycle: applied again after the save loaded (%1)", mode));
+		if (applied)
+			LF_Debug.Info(FEATURE, string.Format("day cycle: applied again after the save loaded (%1)", mode));
+		else
+			LF_Debug.Warn(FEATURE, string.Format("day cycle: could not apply again after the save loaded (%1), the clock keeps the save's day length", mode));
 		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! LF_StaticReset: a world that ended before its save loaded leaves no subscription or pending apply.
+	static void ResetStatics()
+	{
+		if (s_bSubscribed)
+		{
+			SCR_PersistenceSystem persistence = SCR_PersistenceSystem.GetScriptedInstance();
+			if (persistence)
+				persistence.GetOnStateChanged().Remove(OnPersistenceStateChanged);
+		}
+
+		s_bSubscribed = false;
+		s_PendingSettings = null;
+		s_sPendingMode = string.Empty;
+		s_iLoadedOverride = -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
