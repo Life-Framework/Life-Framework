@@ -1,7 +1,7 @@
-// red-proof: m_bDutyOnly 0 on the prefab actions -> [LFTEST] FAIL a siren action on the ambulance is for the on-duty medic only
+// red-proof: observed 2026-11-16: light default back to lit (m_isOn = true, SpawnLights in OnPostInit) -> `a fresh vehicle starts with every bar light off` FAIL on both service vehicles, green on the fix; also m_bDutyOnly 0 on the prefab actions -> [LFTEST] FAIL a siren action on the ambulance is for the on-duty medic only
 // tier: WORLD
 //! The ambulance's siren (#923): the prefab carries the toggle with its other light controls
-//! (the `light_switch` context, a duty-only on and off pair), its own sound project loads and is
+//! (the `driver` seat context, a duty-only on and off pair that shows greyed with a reason when off duty), its own sound project loads and is
 //! set on the manager, the police car keeps the shared siren, and an anonymous request is refused.
 class LF_Test_AmbulanceSirenWorld : LF_Test
 {
@@ -22,6 +22,15 @@ class LF_Test_AmbulanceSirenWorld : LF_Test
 		RunActions(ctx);
 		RunVehicle(ctx, AMBULANCE, true);
 		RunVehicle(ctx, POLICE, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A freshly spawned service vehicle has every bar light dark and the siren off.
+	protected void CheckLightsOff(LF_TestContext ctx, LF_SirenManagerComponent siren, string label)
+	{
+		ctx.True(siren.CountLights() > 0, label + ": the light bar registered its lights");
+		ctx.Equal(0, siren.CountLitLights(), label + ": a fresh vehicle starts with every bar light off");
+		ctx.False(siren.IsOn(), label + ": and the siren off");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -58,7 +67,8 @@ class LF_Test_AmbulanceSirenWorld : LF_Test
 				found++;
 				array<string> contexts = {};
 				action.Get("ParentContextList", contexts);
-				ctx.True(contexts.Contains("light_switch"), "a siren action sits in the light switch's context");
+				ctx.True(contexts.Contains("driver"), "a siren action sits in the driver seat's context, not the dash switch");
+				ctx.False(contexts.Contains("light_switch"), "and not in the 10 cm dash-switch context a seated driver has to aim at");
 				bool dutyOnly;
 				action.Get("m_bDutyOnly", dutyOnly);
 				ctx.True(dutyOnly, "a siren action on the ambulance is for the on-duty medic only");
@@ -100,6 +110,7 @@ class LF_Test_AmbulanceSirenWorld : LF_Test
 		if (siren)
 		{
 			ctx.Equal(ownLoop, siren.HasOwnLoop(), "own siren loop set: " + ownLoop);
+			CheckLightsOff(ctx, siren, prefab);
 			ctx.False(siren.RequestModeStr(null, LF_AmbulanceSiren.MODE_ON), "a request from nobody is refused");
 			ctx.False(siren.IsOn(), "and the siren stays off");
 		}

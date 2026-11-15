@@ -20,7 +20,7 @@ Vehicle : "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.e
    additionalActions + {
     LF_SirenModeAction "{A3D1C0DE00000923}" {
      ParentContextList {
-      "light_switch"
+      "driver"
      }
      UIInfo UIInfo "{A3D1C0DE00000924}" {
       Name "#LF-Siren_AmbulanceOn"
@@ -32,7 +32,7 @@ Vehicle : "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.e
     }
     LF_SirenModeAction "{A3D1C0DE00000925}" {
      ParentContextList {
-      "light_switch"
+      "driver"
      }
      UIInfo UIInfo "{A3D1C0DE00000926}" {
       Name "#LF-Siren_AmbulanceOff"
