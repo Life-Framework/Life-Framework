@@ -100,6 +100,9 @@ type; no per-map scripting. See `docs/design.md` §4.
   the store's origin (`STAFF_SEARCH`); a bigger store needs the radius from its boundary. A shop refuses to buy an item
   the seller carries while a store holds a copy of it apart (`LF_Stores.CarriesHeldApart`). Shelf goods spawn on any static surface under the
   slot (`SnapToSurfaceAt`), since a building's fixtures are not runtime children of the store entity.
+  The shelf points are generated from measured boards and goods footprints (`tools/buildings/pipeline/fixtures.json`,
+  `tools\cli fixtures`); `SNAP_ABOVE` and `STRAY_HEIGHT` must stay under the smallest gap between two boards
+  (`store-fixtures-selftest` checks it).
 - `LF_ShopPriceResolver` / `LF_ShopPricesConfig` / `LF_ShopRules` / `LF_ShopItem`
   — price resolution and rules scaffolding.
 - `Configs/Shop/ShopPrices.conf` — the price table.

@@ -2,7 +2,7 @@
 
 - Log: logs_2026-11-15_18-00-00/console.log
 - Length: 1 h 0 min (18:00:00 to 19:00:00)
-- Players: 3 unique, peak 3 at 18:10:00, target 40: not reached
+- Players: 3 unique, peak 3 at 18:10:00, target 16: not reached
 - Joins: 3 (0 rejoins), leaves 2, still on at the end 1
 - Restarts: 1 scheduled, 0 host stops, boots in this log 1; the log ends with: scheduled restart
 - Crashes: 1 (2026-11-15_18-45-00-crash)

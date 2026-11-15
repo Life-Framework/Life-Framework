@@ -14,7 +14,7 @@
 // red-proof: before tools/playtest/opening/b2-start.mjs existed every case printed "FAIL ... no BEAT line" (2026-11-15); with the
 // password branch of b2-start.mjs narrowed to `if (whole)`, "case 2: an empty password gives password FAIL" failed. Restored.
 
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -41,6 +41,10 @@ function makeHost(serverJson, log = "console-good.log") {
   const dir = join(scratch, `host-${++n}`);
   mkdirSync(join(dir, "profile"), { recursive: true });
   if (serverJson) cpSync(join(FIX, serverJson), join(dir, "profile", "server.json"));
+  // a save point, so the host is not "fresh": a fresh host's missing log or server.json is BLOCKED (opening-fixes-selftest), here FAIL
+  const sp = join(dir, "profile", "profile", ".save", "u", "game", "M", "playthrough000", "savepoint000");
+  mkdirSync(sp, { recursive: true });
+  writeFileSync(join(sp, "meta-info.json"), "{}");
   if (log) {
     mkdirSync(join(dir, "profile", "logs", "logs_2026-11-15_12-00-00"), { recursive: true });
     cpSync(join(FIX, log), join(dir, "profile", "logs", "logs_2026-11-15_12-00-00", "console.log"));

@@ -1,3 +1,4 @@
+// opening-run: host=tmp timeout=2700
 // Opening-day beat B7, the warnings and the close (#1603; docs/playtest/m4-opening-day.md "B7").
 //
 //   node tools/playtest/opening/b7-restart.mjs --host <dir under tmp/> [--in 6] [--warnings 3,2,1] [--timeout 900] [--queue 600]
@@ -11,6 +12,9 @@
 // other session here: while it is held the beat waits up to --queue seconds, setting the time again each try. The setup is
 // undone at the end.
 //
+// The beat stops what it started on every path (#1692): the watcher it records and the host, by pid, in a finally
+// (tools/playtest/opening/_scratch.mjs reapHost), so a failed boot leaves no server for the next beat to trip over.
+//
 // Judge: the console log of the boot that closes (run1), what `host watch` printed (watch) and the console log of the
 // boot the watchdog starts (run2). One `BEAT B7 <id> PASS|FAIL <detail>` line per check, then the SUMMARY line.
 // A warning step is expected only when it fits the time left when the ticker started (the ticker prints it).
@@ -19,6 +23,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, realpat
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
+import { reapHost, recordPid } from "./_scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const SETUP = join(ROOT, "tools", "playtest", "opening", "b7-restart-setup.mjs");
@@ -178,6 +183,7 @@ async function live(host, args) {
     }
     // `host watch` adopts the host that `host start` left running.
     const child = spawn(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "watch"], { cwd: ROOT, env: { ...process.env, LF_HOST_DIR: host }, windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+    recordPid(host, "host watch", child.pid);
     let watch = "";
     child.stdout.on("data", (d) => (watch += d));
     child.stderr.on("data", (d) => (watch += d));
@@ -199,6 +205,7 @@ async function live(host, args) {
     return printRows(judgeRestart({ run1: readLog(profile, fresh[0]), watch, run2: fresh[1] ? readLog(profile, fresh[1]) : "" }));
   } finally {
     undo();
+    reapHost({ host, say: (m) => console.error(`[b7] ${m}`) });
   }
 }
 

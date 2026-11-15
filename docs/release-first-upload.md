@@ -8,7 +8,7 @@ Background and the field values: [release-process.md](release-process.md),
 
 | Item | Workshop ID (its `.gproj` GUID) | Kit |
 |---|---|---|
-| Core, `LifeFramework` | `79636E668EA37AC9` | `docs/marketing/workshop/` |
+| Core, `LifeFramework` | `4550A2B656E1B569` | `docs/marketing/workshop/` |
 | Pack, `LF_Everon1989` | `B1E84D5687E11724` | `docs/marketing/workshop/everon-1989/` |
 
 The pack depends on the core, so the core goes first. Both are APL (decision D2); the repo stays MIT.
@@ -60,7 +60,7 @@ The release's upgrade page is [upgrades/0.1.0.md](upgrades/0.1.0.md).
    Description `description.bbcode` (page text names APL, links the repo and the install guide, lists the
    Workshop dependencies from `docs/ecosystem.md`); Change Notes from `changelog.md`.
 3. **Publish**, confirm the size, wait for the upload. Copy the page address
-   (`https://reforger.armaplatform.com/workshop/79636E668EA37AC9`) and open it once.
+   (`https://reforger.armaplatform.com/workshop/4550A2B656E1B569`) and open it once.
 
 ## 3. Publish the pack
 
@@ -78,7 +78,7 @@ The check boots a **clean** dedicated server on lf-cloud: its own empty profile 
 client with no local addons and waits for the join.
 
 ```
-tools\cli workshop boot-check 79636E668EA37AC9 B1E84D5687E11724
+tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724
 ```
 
 It prints one line: `SUMMARY workshop-boot-check ok stage=pass ...`, or the stage that failed and the log

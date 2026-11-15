@@ -9,7 +9,7 @@
 //! checks the core is there. The pack is never named: anything outside the known base set counts.
 class LF_Test_CoreOnlyBoot : LF_Test
 {
-	protected static const string CORE_GUID = "79636E668EA37AC9";
+	protected static const string CORE_GUID = "4550A2B656E1B569";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()

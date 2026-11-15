@@ -1,3 +1,4 @@
+// opening-run: host=outside timeout=1500
 // Opening-day beat B8, the clean restart and the reload (#1604; docs/playtest/m4-opening-day.md "B8").
 //
 //   node tools/playtest/opening/b8-reload.mjs --host <scratch dir>     stop, rotate the password, start, judge the boot
@@ -23,7 +24,10 @@
 //   no-missing-resource   no `Unable to find` and no `Wrong GUID/name` in it (a FAIL quotes the line)
 //   time-continues        BLOCKED by #1302 (time survives a restart is not built)
 //   player-rejoin         BLOCKED: needs clients; names the `restart-cycle` verb (#1268) for `opening --game`
-// Proof: tools/validation/opening-b8-selftest.mjs.
+// A scratch with no save whose first boot makes none (the server never printed its ready line) is BLOCKED "no save yet", not
+// FAIL (#1693). The beat stops the host by pid in a finally on every path (#1692; tools/playtest/opening/_scratch.mjs reapHost).
+// --cli <script> runs `node <script> host ...` instead of tools/cli.mjs (the selftest's stand-in).
+// Proof: tools/validation/opening-b8-selftest.mjs, tools/validation/opening-fixes-selftest.mjs.
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -32,6 +36,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../../link-safety.mjs";
 import { findSavePoints, hostDir, hostPaths, newestConsoleLog, pidAlive, readHostState } from "../../host/host.mjs";
 import { isFlagshipPath } from "./b7-restart-setup.mjs";
+import { reapHost } from "./_scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const BEAT = "B8";
@@ -113,8 +118,9 @@ function readJson(file) {
 const secretPassword = (dir) => String(readJson(join(dir, "secrets.json"))?.game?.password ?? "").trim();
 const appliedPassword = (dir) => String(readJson(join(hostPaths(dir).profile, "server.json"))?.game?.password ?? "").trim();
 
+let CLI = join(ROOT, "tools", "cli.mjs");
 function cli(args, dir, timeoutMs) {
-  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", ...args], {
+  const r = spawnSync(process.execPath, [CLI, "host", ...args], {
     cwd: ROOT,
     encoding: "utf8",
     timeout: timeoutMs,
@@ -140,7 +146,7 @@ export function runLive(dir, { timeoutSec = 300 } = {}) {
   if (!hasSave()) {
     const first = cli(["start", "--wait", "--timeout", String(timeoutSec)], dir, startMs);
     cli(["stop"], dir, 240000);
-    if (first.code !== 0 || !hasSave()) return [line("second-boot", "FAIL", `the scratch host had no save and its first boot did not make one: ${tail(first.out)}`)];
+    if (first.code !== 0 || !hasSave()) return [line("second-boot", "BLOCKED", `no save yet: the scratch host had no save and its first boot did not make one: ${tail(first.out)}`)];
   }
 
   // 2. Stop, 3. rotate.
@@ -148,7 +154,8 @@ export function runLive(dir, { timeoutSec = 300 } = {}) {
   if (stop.code !== 0 || !stopped(dir)) return [line("second-boot", "FAIL", `host stop did not close the scratch host: ${tail(stop.out)}`)];
   const before = secretPassword(dir);
   const rot = cli(["password", "rotate", dir], dir, 120000);
-  if (rot.code !== 0) out.push(line("password-rotated", "FAIL", `host password rotate exited ${rot.code}: ${tail(rot.out.split(before || "\u0000").join("<old>"))}`));
+  if (rot.code !== 0 && /has no uid yet/.test(rot.out)) out.push(line("password-rotated", "BLOCKED", `uid pending: the maintainer's uid is not in staff.txt yet (a human step), so host config apply refuses; ${tail(rot.out)}`));
+  else if (rot.code !== 0) out.push(line("password-rotated", "FAIL", `host password rotate exited ${rot.code}: ${tail(rot.out.split(before || "\u0000").join("<old>"))}`));
   else out.push(judgePassword({ before, after: secretPassword(dir), applied: appliedPassword(dir) }));
 
   // 4. The second boot, judged from its own console.log.
@@ -200,6 +207,7 @@ async function main(args) {
     return 2;
   }
   if (!existsSync(host)) mkdirSync(host, { recursive: true });
+  if (val(args, "--cli")) CLI = resolve(val(args, "--cli"));
   const timeoutSec = Number(val(args, "--timeout")) > 0 ? Number(val(args, "--timeout")) : 300;
   let dir = resolve(host);
   let copy = null;
@@ -213,6 +221,8 @@ async function main(args) {
   try {
     return report([...runLive(dir, { timeoutSec }), ...blockedLines()]);
   } finally {
+    // by pid, whatever happened above: a first boot that timed out leaves its server up
+    reapHost({ host: dir, cli: CLI, say: (m) => console.error(`[b8] ${m}`) });
     if (copy) safeRemoveTree(copy);
   }
 }

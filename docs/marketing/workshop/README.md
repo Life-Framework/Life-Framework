@@ -6,7 +6,7 @@ The click-by-click steps are in [`docs/playtest/workshop-publish.md`](../../play
 | Field | Value or file |
 |---|---|
 | Project Name (30 max) | `Life Framework (Core)` |
-| Mod ID (the `.gproj` GUID, also the Workshop item ID) | `79636E668EA37AC9` |
+| Mod ID (the `.gproj` GUID, also the Workshop item ID) | `4550A2B656E1B569` |
 | Scenario ID | none: the core has no playable scenario; the flagship scenario ships in the pack |
 | Preview Image | [`preview.jpg`](preview.jpg), 1920x1080, 478 KB. A PLACEHOLDER: it shows the village, and the core brief wants neutral art |
 | Screenshots | none until neutral art exists; the nine village shots in [`screenshots/`](screenshots/) belong on the pack page |

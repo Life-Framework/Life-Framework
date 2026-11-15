@@ -54,7 +54,7 @@ Two Workshop items (decision 2026-11-09, #367 and #375):
 
 | Item | Project Name and `.gproj` TITLE | Addon ID | Mod ID |
 |---|---|---|---|
-| Core | `Life Framework (Core)` | `LifeFramework` | `79636E668EA37AC9` |
+| Core | `Life Framework (Core)` | `LifeFramework` | `4550A2B656E1B569` |
 | Flagship pack | `Life Framework: Everon 1989` | `LF_Everon1989` | `B1E84D5687E11724` |
 
 - Versions are semver, `x.y.z`. While both items are 0.x, `tools\cli release <version>` stamps one
