@@ -3,6 +3,7 @@
 //
 //   building run <slug> [--from <stage>] [--only <stage>] [--force] [--full]   (--full: import every model again)
 //   building adopt <slug> [<file.blend>]   keep a hand-polished scene (docs/building-pipeline/polish.md)
+//   building review <slug> --shots         Blender review renders and a contact sheet, no game
 //   building status [<slug>]     building doctor     building selftest
 //
 // The spec is tools/buildings/<slug>/spec.json (tracked). Every stage writes into
@@ -507,6 +508,13 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "doctor") return cmdDoctor();
   if (sub === "status") return cmdStatus(root, rest[0]);
   if (sub === "adopt") return rest[0] ? cmdAdopt(root, rest[0], rest[1]) : say("usage: tools\\cli building adopt <slug> [<file.blend>]", 2);
+  if (sub === "review") {
+    const slug = rest.find((f) => !f.startsWith("--"));
+    if (!slug || !rest.includes("--shots")) return say("usage: tools\cli building review <slug> --shots     Blender review renders and a contact sheet (polish.md \"Review shots\")", 2);
+    const wt = await import("../../wt.mjs");
+    if (wt.isMainCheckout(root)) return say("FAIL  building review runs only in a worktree", 1);
+    return (await import("./review-shots.mjs")).reviewShots(root, slug);
+  }
   if (sub === "run") {
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) { console.log("FAIL  building runs only in a worktree"); return 1; }

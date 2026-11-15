@@ -1,0 +1,1 @@
+{ "file": "server.json", "set": { "game.maxPlayers": 40 }, "expect": "game.maxPlayers" }
