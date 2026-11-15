@@ -14,6 +14,7 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { writeFileAtomic } from "./atomic-file.mjs";
 import { dirname, join } from "node:path";
+import { readTown, testNames, withoutTown } from "./test-world.mjs";
 
 export const MAX_AUTO_SHARDS = 4;
 // A slice pays its own server boot, run folder and sync (measured 2026-11-14: 14 s on this PC, 30+ s on a
@@ -31,8 +32,10 @@ export function parseRegistry(text) {
 }
 
 // The tests a `--tier all` run executes: the PERF tier runs only under `--tier perf`, so it is not in a shard plan or a timing history.
+// The town tests (tools/test/town-tests.json) run only under `test --town`, so no shard plan, gate or timing history holds them (#1895).
 export function readRegistry(root) {
-  return parseRegistry(readFileSync(join(root, ...REGISTRY), "utf8")).filter((t) => t.tier !== "PERF");
+  const all = parseRegistry(readFileSync(join(root, ...REGISTRY), "utf8")).filter((t) => t.tier !== "PERF");
+  return withoutTown(all, { town: readTown(root), names: testNames(root) });
 }
 
 // Seconds per test from one console.log: the gap between a test's START line and the next one (or the

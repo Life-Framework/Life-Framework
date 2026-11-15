@@ -6,26 +6,6 @@
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
     {
-      "name": "e2e/narrative-loop",
-      "reason": "an end-to-end loop across town places, which are not in GridWorld"
-    },
-    {
-      "name": "e2e/pass1-write-save",
-      "reason": "an end-to-end loop across town places, which are not in GridWorld"
-    },
-    {
-      "name": "e2e/roadmap-contraband",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "e2e/roadmap-jailbreak",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "e2e/roadmap-jailing",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
       "name": "faction-spawn-points",
       "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
     },
@@ -78,30 +58,6 @@
       "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
     },
     {
-      "name": "roadmap/contraband",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/escort",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/hideout",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/jailbreak",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/jailing",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
-      "name": "roadmap/jailing-save",
-      "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
-    },
-    {
       "name": "safezone/blocks",
       "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
     },
@@ -120,10 +76,6 @@
     {
       "name": "shop/refusal-reasons",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
-    },
-    {
-      "name": "signs/coverage",
-      "reason": "reads the town signs, which are not in GridWorld"
     },
     {
       "name": "spawnhub/travel",
