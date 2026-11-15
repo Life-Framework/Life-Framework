@@ -31,7 +31,9 @@ import { buildGallery } from "./gallery.mjs";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const site = path.resolve(here, "..");
 const repo = path.resolve(site, "..");
-const outDir = path.join(site, "src", "generated");
+// LF_SITE_OUT redirects the generated files: the offline validate check writes to a per-run temp dir,
+// so two overlapping runs in one worktree never rmSync each other's src/generated/data.
+const outDir = process.env.LF_SITE_OUT ? path.resolve(process.env.LF_SITE_OUT) : path.join(site, "src", "generated");
 const dataDir = path.join(outDir, "data");
 const snapshotPath = path.join(site, "content", "github-snapshot.json");
 const updateSnapshot = process.argv.includes("--update-snapshot");
@@ -610,7 +612,7 @@ fs.mkdirSync(clipDir, { recursive: true });
 for (const c of media.clips) {
   const file = path.join(clipDir, path.basename(c.release));
   c.local = fs.existsSync(file);
-  if (!c.local) {
+  if (!c.local && !process.env.LF_SITE_OFFLINE) {
     try {
       const res = await releaseAsset(c.release);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);

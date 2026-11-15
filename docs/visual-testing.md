@@ -6,6 +6,7 @@ Use the cheapest tool that can see the problem; a game session is the last step,
 ```
 tools\cli audit placement [--area a]     numbers, no pixels, test server, about 10 s      (docs/placement-audit.md)
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
+tools\cli look grid:<slug>              a debug-grid cell; town:<area> is an area that must lie in the town (docs/architecture/world-zones.md)
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
 tools\cli look serve                     one Workbench that stays up and takes every look in turn: a few seconds a look
