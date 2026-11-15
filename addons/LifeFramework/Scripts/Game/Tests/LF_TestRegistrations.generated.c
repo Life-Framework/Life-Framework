@@ -361,6 +361,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuestTracker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Quiz(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_QuizHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
@@ -373,6 +374,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RestartVehiclePlatesReserved(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWhitelistUnreadableFileKept(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartSirenPrefab(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RestartToast(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWarnings(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestraintRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
