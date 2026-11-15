@@ -1423,6 +1423,13 @@
   schedule). `CanArmForOffer` / `CanRepairForOffer` ask `LF_Breach` on the
   server and the mirror on a client. A client offers repair to police and, on an
   organization door, to anyone; the server decides membership.
+- 🧪 **Evidence at the detonation, not the placement** (2026-11-16): placing a charge (`Arm`) files the crime
+  report, opens the scene and sounds the alarm, but the footprint card the report would leave is only
+  planned (`LF_ScenePieces.PlanFootprint`, held on the target as `LF_PendingFootprint`; `deferPieces` on
+  `LF_Dispatch.Report` and `LF_WantedReports.Report`). `Open` lays it (`LF_ScenePieces.LeaveFootprint`):
+  exactly one card per report, where the robber stood at the charge. `CancelCharge`, `Repair`, `Reset`,
+  `Apply` and `Configure` drop the plan, so a defused charge leaves nothing. Bank vault, hospital cabinet
+  and door charges all go through `Arm`, so they follow the same rule. Test `crime/breach-evidence`.
 - ✅ **Charge lifetime** (2026-11-08): a charge whose fuse cannot
   fire is dropped with `LF_Debug.Error` (`CancelCharge`) instead of leaving the
   target armed forever: no world, a placed door without
