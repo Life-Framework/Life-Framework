@@ -92,13 +92,13 @@ function checkout(dir, sha) {
   if (r.status !== 0) throw new Error(`checkout ${sha.slice(0, 8)}: ${(r.stderr || r.stdout).trim()}`);
 }
 
-// One cli command in the run worktree, at high pool priority, logged to its own file; resolves { code, text, log }.
+// One cli command in the run worktree, at high pool priority (LF_PRIORITY: `build` takes no --priority flag and read it as an addon), logged to its own file; resolves { code, text, log }.
 function runCli(root, dir, args, tag) {
   const file = join(mainRoot(root), "tmp", "logs", `main-guard-${tag}-${Date.now()}.log`);
   mkdirSync(dirname(file), { recursive: true });
   return new Promise((res) => {
     const fd = openSync(file, "a");
-    const child = spawn(process.execPath, [join(dir, "tools", "cli.mjs"), ...args, "--priority", "high"], { cwd: dir, env: { ...process.env, LF_PRIORITY: "high", LF_MAIN_GUARD_JOB: "1" }, stdio: ["ignore", fd, fd], windowsHide: true });
+    const child = spawn(process.execPath, [join(dir, "tools", "cli.mjs"), ...args], { cwd: dir, env: { ...process.env, LF_PRIORITY: "high", LF_MAIN_GUARD_JOB: "1" }, stdio: ["ignore", fd, fd], windowsHide: true });
     const timer = setTimeout(() => { try { child.kill(); } catch {} }, STEP_BUDGET_MS);
     const done = (code) => {
       clearTimeout(timer);
