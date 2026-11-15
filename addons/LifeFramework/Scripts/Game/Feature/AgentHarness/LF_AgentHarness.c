@@ -222,6 +222,8 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "spikeseen" || cmd.Verb == "spikeverge" || cmd.Verb == "spikepreview" || cmd.Verb == "spikepreviewoff" || cmd.Verb == "spikeplace" || cmd.Verb == "spikewhere")
 			return true;
+		if (cmd.Verb == LF_QuizHarness.VERB)
+			return true;
 		if (cmd.Verb == "emote")
 		{
 			// emote open|close|seen|<command>: the emote radial (LF_EmoteHarness, #982).
@@ -1495,6 +1497,16 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "ok", seen.Substring(3, seen.Length() - 3));
 			else
 				WriteResult(cmd.Id, "error", seen);
+			return;
+		}
+		if (cmd.Verb == LF_QuizHarness.VERB)
+		{
+			// The pass sits on the server: ask it through the character, which re-checks the harness gate.
+			SCR_ChimeraCharacter quizCharacter = LF_Utils.GetLocalCharacter();
+			if (!quizCharacter)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				quizCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
 			return;
 		}
 		if (cmd.Verb == "lockpick")
