@@ -64,7 +64,7 @@ class LF_Test_VehicleStateRoundTrip : LF_Test
 			ctx.True(versionContext.LoadFromString(saved), "the save parses" + tag);
 			int version;
 			versionContext.ReadValue("version", version);
-			ctx.Equal(33, version, "the save is written at version 33 (vehiclestate is payload 33)" + tag);
+			ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written at the current version (vehiclestate is payload 33)" + tag);
 
 			JsonLoadContext loadContext = new JsonLoadContext(false);
 			loadContext.LoadFromString(saved);

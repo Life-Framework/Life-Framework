@@ -103,6 +103,7 @@
     "priceProcessingSlot": 250,
     "priceParkedVehicle": 750,
     "deskRange": 5,
+    "heldGroundMaxPoints": 1000,
     "rankDefaults": {
       "officer": {
         "withdraw": true
