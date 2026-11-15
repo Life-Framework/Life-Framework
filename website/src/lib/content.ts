@@ -175,24 +175,31 @@ export const MILESTONE_PLAN: Record<string, { goal: string; plan: { label: strin
   M1: {
     goal: "A signposted test town where a stranger plays every loop on a dedicated server without asking anyone.",
     plan: { label: "M1 plan", to: "/docs/roadmap-m1-playtest-town" },
-    status: "Final playtest",
   },
   M2: {
     goal: "Moderation, medics and revive, comms, investigation and the underworld, proven in the playtest village, then placed in one Everon town.",
     plan: { label: "M2 outline", to: "/docs/roadmap-m2-outline" },
-    status: "In development",
+    status: "Built, in playtest",
   },
   M3: {
     goal: "The mod splits into the LifeFramework core and the LF_Everon1989 pack, and an owner configures it from one config.json. No new gameplay.",
     plan: { label: "M3 outline", to: "/docs/roadmap-m3-outline" },
+    status: "Published 0.1.0, in sign-off",
+  },
+  "M2.5": {
+    goal: "Get new players and testers: weekly alpha playtests, a landing page, Discord onboarding and an outreach kit the maintainer posts from.",
+    plan: { label: "M2.5 outline", to: "/docs/roadmap-m2-5-outline" },
+    status: "Running alongside",
   },
   M4: {
     goal: "Our 1989 Everon server opens to the public on the released core and pack, on 16 player slots to start.",
     plan: { label: "M4 outline", to: "/docs/roadmap-m4-outline" },
+    status: "Alpha server up",
   },
   M5: {
     goal: "The first update after launch, for the weeks when every player is new: gear that fits 1989, evenings in the village, police tools, the arrival and the relocation story.",
-    plan: { label: "Roadmap", to: "/docs/roadmap" },
+    plan: { label: "M5 outline", to: "/docs/roadmap-m5-outline" },
+    status: "In development",
   },
   M6: {
     goal: "Making a living: prices that react to selling, job levels, route jobs, salvage and a real bank.",

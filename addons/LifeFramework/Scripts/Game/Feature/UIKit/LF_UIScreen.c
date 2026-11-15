@@ -38,6 +38,7 @@ class LF_UIScreen
 	protected Widget m_wRoot;
 	protected bool m_bHasField;
 	protected bool m_bInputArmed;
+	protected bool m_bBackListening;
 	protected bool m_bCheckDeath;
 	protected bool m_bCheckLost;
 	protected bool m_bCheckDistance;
@@ -168,6 +169,7 @@ class LF_UIScreen
 			LF_Debug.Error("UIKit", "screen is open but the input driver failed: no callqueue");
 		}
 
+		BindBack();
 		FocusInitial(workspace);
 		SetActionPromptShown(false);
 
@@ -1364,10 +1366,9 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	protected void MoveFocus(InputManager inputManager, WorkspaceWidget workspace, bool fieldFocused)
 	{
-		if (inputManager.GetActionTriggered("MenuBack"))
+		if (inputManager.GetActionTriggered(LF_UIBack.ACTION))
 		{
-			LF_Debug.Info("UIKit", "closed: back");
-			Close();
+			Back();
 			return;
 		}
 
@@ -1535,7 +1536,7 @@ class LF_UIScreen
 	//! ActivateInputContext refuses to run once m_bInputArmed is false.
 	void Close()
 	{
-		if (m_bInputArmed && GetGame() && GetGame().GetCallqueue())
+		if ((m_bInputArmed || m_bBackListening) && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().CallLater(DisarmInput, 0, false);
 
 		m_bInputArmed = false;
@@ -1594,5 +1595,83 @@ class LF_UIScreen
 	{
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(ActivateInputContext);
+
+		UnbindBack();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Back (MenuBack: Escape, Backspace, gamepad B) closes the sheet. THE shared Back path of every
+	//! kit sheet: the action listener and the per-frame poll both land here, and LF_UIBack refuses
+	//! the second report of one press. A feature that must not lose the sheet (the registration form)
+	//! brings it back from GetOnClosed(); it never reads MenuBack itself.
+	//! \return true when this call closed the sheet.
+	bool Back()
+	{
+		if (!m_wRoot || LF_UIBack.IsTyping(IsFieldFocused()) || !LF_UIBack.Fresh())
+			return false;
+
+		LF_Debug.Info("UIKit", "closed: back");
+		Close();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a text field of this sheet has focus (Backspace deletes text there, it does not go Back).
+	bool IsFieldFocused()
+	{
+		if (!m_bHasField || !GetGame())
+			return false;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return false;
+
+		return EditBoxWidget.Cast(workspace.GetFocusedWidget()) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while the sheet holds its MenuBack listener (set at open, dropped one tick after Close).
+	bool HasBackHandler()
+	{
+		return m_bBackListening;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BindBack()
+	{
+		if (m_bBackListening || !GetGame())
+			return;
+
+		InputManager input = GetGame().GetInputManager();
+		if (!input)
+		{
+			LF_Debug.Warn("UIKit", "no input manager: Back is polled only");
+			return;
+		}
+
+		input.AddActionListener(LF_UIBack.ACTION, EActionTrigger.DOWN, OnBackAction);
+		m_bBackListening = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removed one tick after Close, never inside the listener's own call (as DisarmInput's call).
+	protected void UnbindBack()
+	{
+		if (!m_bBackListening)
+			return;
+
+		m_bBackListening = false;
+		if (!GetGame())
+			return;
+
+		InputManager input = GetGame().GetInputManager();
+		if (input)
+			input.RemoveActionListener(LF_UIBack.ACTION, EActionTrigger.DOWN, OnBackAction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnBackAction()
+	{
+		Back();
 	}
 }

@@ -32,6 +32,16 @@ export const LAYOUT_CHECKS = [
   "validate-prop-on-surface.mjs",
 ];
 
+// Checks that read .layer files and stay hard on a maintainer edit, each with the reason. Audited 2026-11-15: none
+// of these judges where a thing stands; a failure is a broken or unsafe layer, or says nothing about the world.
+export const LAYER_READERS_KEPT_HARD = {
+  "validate-addon-boundary.mjs": "core layers never name the pack: a build-breaking reference, not a placement",
+  "validate-en-text.mjs": "non-English literal text in a layer: a content bug, not a position",
+  "validate-npc-layer-overrides.mjs": "a layer override on a replicated NPC kicks clients on join (RplCreationError): never a layout call",
+  "validate-sound-slots.mjs": "a sound slot id a layer asks for must exist: a broken reference",
+  "validate-no-town-layout-asserts.mjs": "judges new test files, and already only warns when the town moved under an old literal",
+};
+
 export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
 
 // The scripts a world validate runs, in directory order, from what is on disk.

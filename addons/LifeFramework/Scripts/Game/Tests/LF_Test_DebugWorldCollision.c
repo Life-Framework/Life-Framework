@@ -60,7 +60,7 @@ class LF_Test_DebugWorldCollision : LF_Test
 			return;
 		s_vTraderOrigin = trader.GetOrigin();
 
-		vector center = "256 0 256";
+		vector center = "256 0 256"; // town-layout-ok: a whole-world sweep, not a position
 		GetGame().GetWorld().QueryEntitiesBySphere(center, 500, InspectEntity, null, EQueryEntitiesFlags.ALL);
 
 		ctx.True(s_iEntities > 0, "DebugWorld collision scan found entities");

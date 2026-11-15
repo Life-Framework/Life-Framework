@@ -1,258 +1,261 @@
-GenericEntity Roadmap_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+$grp GenericEntity {
+ Roadmap_Vehicle_Lot {
+  components {
+   LF_VehicleLotComponent "{E1B0E70100000003}" {
+    m_sShopId "roadmap-lot"
+    m_iCashCeiling 500
+    m_iExtraKeyPrice 25
+    m_aOffers {
+     LF_VehicleOffer "{E1B0E70100000011}" {
+      m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+      m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
+      m_iPrice 1000
+      m_sNameKey "#EL-Vehicle_S105"
+     }
+     LF_VehicleOffer "{E1B0E70100000012}" {
+      m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+      m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
+      m_iPrice 2500
+      m_sNameKey "#EL-Vehicle_UAZ469"
+     }
+     LF_VehicleOffer "{E1B0E70100000013}" {
+      m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+      m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
+      m_iPrice 4000
+      m_sNameKey "#EL-Vehicle_S1203"
+     }
+     LF_VehicleOffer "{E1B0E70100000014}" {
+      m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+      m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
+      m_iPrice 3500
+      m_sNameKey "#EL-Vehicle_UAZ452"
+     }
+     LF_VehicleOffer "{E1B0E70100000015}" {
+      m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
+      m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
+      m_iPrice 8000
+      m_sNameKey "#EL-Vehicle_M923"
+     }
+     LF_VehicleOffer "{E1B0E70100000016}" {
+      m_sPrefab "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
+      m_sSpawnPrefab "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et"
+      m_iPrice 1800
+      m_sNameKey "#EL-Vehicle_Dana2101"
+     }
+     LF_VehicleOffer "{E1B0E70100000017}" {
+      m_sPrefab "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
+      m_sSpawnPrefab "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et"
+      m_iPrice 700
+      m_sNameKey "#EL-Vehicle_SputnikT601"
+     }
+    }
+    m_bTestCarLot 1
+   }
+   LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+    m_sShopId "roadmap-lot"
+    m_vOffset -5 0 -5
+   }
+   MeshObject "{E1B0E70100000001}" {
+    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   }
+   RigidBody "{E1B0E70100000002}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{E1B0E70100000006}" {
+    ActionContexts {
+     UserActionContext "{E1B0E70100000007}" {
+      ContextName "default"
+      Position PointInfo "{E1B0E70100000008}" {
+       Offset 0 0.8 0
+      }
+      Radius 3
+     }
+    }
+    additionalActions {
+     LF_VehicleBuyAction "{E1B0E70100000021}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{E1B0E70100000022}" {
+       Name "#EL-Vehicle_Buy"
+      }
+      m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     }
+     LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{E1B0E70100000024}" {
+       Name "#EL-Vehicle_ExtraKey"
+      }
+     }
+    }
+   }
+   RplComponent "{E1B0E70100000009}" {
+    Enabled 1
+   }
+  }
+  Flags 0x403 0
+  coords 213.123 0.001 272.913
+ }
+ Roadmap_Garage {
+  components {
+   LF_VehicleGarageComponent "{A1C1080A00000001}" {
+    m_sPadId "roadmap-garage"
+   }
+   LF_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
+    m_sShopId "roadmap-garage"
+    m_vOffset 0 0 -2
+    m_iSlots 3
+    m_vSlotStep -7 0 0
+    m_vAngles 90 0 0
+   }
+   MeshObject "{A1C1080A0000000A}" {
+    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   }
+   RigidBody "{A1C1080A0000000B}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{A1C1080A00000002}" {
+    ActionContexts {
+     UserActionContext "{A1C1080A00000003}" {
+      ContextName "default"
+      Position PointInfo "{A1C1080A00000004}" {
+       Offset 0 1 2
+      }
+      Radius 3.5
+     }
+    }
+    additionalActions {
+     LF_VehicleStoreAction "{A1C1080A00000005}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{A1C1080A00000006}" {
+       Name "#EL-Vehicle_Store"
+      }
+     }
+     LF_VehicleRetrieveAction "{A1C1080A00000007}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{A1C1080A00000008}" {
+       Name "#EL-Vehicle_Retrieve"
+      }
+     }
+     LF_GarageLedgerAction "{C9A69B1164585666}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{006BD8DCF53DEDC6}" {
+       Name "#LF-Garage_ReadLedger"
+      }
+     }
+    }
+   }
+   RplComponent "{A1C1080A00000009}" {
+    Enabled 1
+   }
+  }
+  coords 238 0 256.6
+  {
+   SCR_DestructibleBuildingEntity : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
+    coords 0 0 5.9
+    angles 0 180 0
+   }
+  }
+ }
+ Roadmap_Impound_Desk {
+  components {
+   LF_ImpoundDeskComponent "{B7547E5E3F7A5535}" {
+    m_sPadId "roadmap-impound"
+   }
+   LF_VehicleSpawnPointComponent "{853E602F9A3F24EC}" {
+    m_sShopId "roadmap-impound"
+    m_vOffset 6 0 8
+    m_iSlots 3
+    m_vSlotStep -6 0 0
+    m_vAngles 180 0 0
+   }
+   MeshObject "{DE98802C17B46422}" {
+    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   }
+   RigidBody "{5F5D1789B1447AD1}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{47EB65DDFAE5E427}" {
+    ActionContexts {
+     UserActionContext "{BFA166AD194CF220}" {
+      ContextName "default"
+      Position PointInfo "{52BBA330E1E12774}" {
+       Offset 0 0.8 0
+      }
+      Radius 3
+     }
+    }
+    additionalActions {
+     LF_ImpoundCollectAction "{2D594A0A83AE40B7}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{2426F79B9E22C4CB}" {
+       Name "#LF-Impound_Collect"
+      }
+     }
+     LF_GarageLedgerAction "{AB18B805A523E985}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{3AE5CC43C788D6EE}" {
+       Name "#LF-Garage_ReadLedger"
+      }
+     }
+    }
+   }
+   RplComponent "{9C41D07E2B85F3A6}" {
+    Enabled 1
+   }
+  }
+  Flags 0x403 0
+  coords 246 0 269
+ }
+}
+LF_NpcBaseEntity CarLot_Mechanic : "{009A8952A2537BB4}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_2.et" {
+ coords 213.461 -0.005 273.969
+ angles 0 173.553 0
+}
+Vehicle Lot_Display_s1203 : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
+ coords 218.415 0 270.418
+ angles 0 -134.462 0
+}
+Vehicle Lot_Display_dana2101 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
+ coords 225.346 0 263.738
+ angles 0 -138.874 0
+}
+Vehicle Lot_Display_t601 : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
+ coords 203.798 0.001 269.268
+ angles 0 140.688 0
+}
+Vehicle Lot_Display_uaz452 : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
+ coords 221.556 0 266.979
+ angles 0 -135.686 0
+}
+Vehicle Lot_Display_uaz469 : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
+ coords 206.911 0 272.895
+ angles 0 133.421 0
+}
+Vehicle Roadmap_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIgnitionLocked 0
   }
  }
- coords 216.5 0 261
- angleY 180
-}
-GenericEntity Roadmap_Vehicle_Lot {
- components {
-  MeshObject "{E1B0E70100000001}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
-  }
-  RigidBody "{E1B0E70100000002}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  LF_VehicleLotComponent "{E1B0E70100000003}" {
-   m_sShopId "roadmap-lot"
-   m_bTestCarLot 1
-   m_iCashCeiling 500
-   m_iExtraKeyPrice 25
-   m_aOffers {
-    LF_VehicleOffer "{E1B0E70100000011}" {
-     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
-     m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
-     m_iPrice 1000
-     m_sNameKey "#EL-Vehicle_S105"
-    }
-    LF_VehicleOffer "{E1B0E70100000012}" {
-     m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
-     m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
-     m_iPrice 2500
-     m_sNameKey "#EL-Vehicle_UAZ469"
-    }
-    LF_VehicleOffer "{E1B0E70100000013}" {
-     m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
-     m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
-     m_iPrice 4000
-     m_sNameKey "#EL-Vehicle_S1203"
-    }
-    LF_VehicleOffer "{E1B0E70100000014}" {
-     m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
-     m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
-     m_iPrice 3500
-     m_sNameKey "#EL-Vehicle_UAZ452"
-    }
-    LF_VehicleOffer "{E1B0E70100000015}" {
-     m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
-     m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
-     m_iPrice 8000
-     m_sNameKey "#EL-Vehicle_M923"
-    }
-    LF_VehicleOffer "{E1B0E70100000016}" {
-     m_sPrefab "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
-     m_sSpawnPrefab "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et"
-     m_iPrice 1800
-     m_sNameKey "#EL-Vehicle_Dana2101"
-    }
-    LF_VehicleOffer "{E1B0E70100000017}" {
-     m_sPrefab "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
-     m_sSpawnPrefab "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et"
-     m_iPrice 700
-     m_sNameKey "#EL-Vehicle_SputnikT601"
-    }
-   }
-  }
-  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
-   m_sShopId "roadmap-lot"
-   m_vOffset -5 0 -5
-  }
-  ActionsManagerComponent "{E1B0E70100000006}" {
-   ActionContexts {
-    UserActionContext "{E1B0E70100000007}" {
-     ContextName "default"
-     Position PointInfo "{E1B0E70100000008}" {
-      Offset 0 0.8 0
-     }
-     Radius 3
-    }
-   }
-   additionalActions {
-    LF_VehicleBuyAction "{E1B0E70100000021}" {
-     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{E1B0E70100000022}" {
-      Name "#EL-Vehicle_Buy"
-     }
-    }
-    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{E1B0E70100000024}" {
-      Name "#EL-Vehicle_ExtraKey"
-     }
-    }
-   }
-  }
-  RplComponent "{E1B0E70100000009}" {
-   Enabled 1
-  }
- }
- Flags 0x403 0
- coords 211 0 262.5
-}
-GenericEntity Roadmap_Garage {
- components {
-  MeshObject "{A1C1080A0000000A}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
-  }
-  RigidBody "{A1C1080A0000000B}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  LF_VehicleGarageComponent "{A1C1080A00000001}" {
-   m_sPadId "roadmap-garage"
-  }
-  LF_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
-   m_sShopId "roadmap-garage"
-   m_vOffset 0 0 -2
-   m_iSlots 3
-   m_vSlotStep -7 0 0
-   m_vAngles 90 0 0
-  }
-  ActionsManagerComponent "{A1C1080A00000002}" {
-   ActionContexts {
-    UserActionContext "{A1C1080A00000003}" {
-     ContextName "default"
-     Position PointInfo "{A1C1080A00000004}" {
-      Offset 0 1.0 2.0
-     }
-     Radius 3.5
-    }
-   }
-   additionalActions {
-    LF_VehicleStoreAction "{A1C1080A00000005}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{A1C1080A00000006}" {
-      Name "#EL-Vehicle_Store"
-     }
-    }
-    LF_VehicleRetrieveAction "{A1C1080A00000007}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{A1C1080A00000008}" {
-      Name "#EL-Vehicle_Retrieve"
-     }
-    }
-    LF_GarageLedgerAction "{C9A69B1164585666}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{006BD8DCF53DEDC6}" {
-      Name "#LF-Garage_ReadLedger"
-     }
-    }
-   }
-  }
-  RplComponent "{A1C1080A00000009}" {
-   Enabled 1
-  }
- }
- coords 238 0 256.6
- {
-  GenericEntity : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
-   coords 0 0 5.9
-   angleY 180
-  }
- }
-}
-GenericEntity Roadmap_Impound_Desk {
- components {
-  MeshObject "{DE98802C17B46422}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
-  }
-  RigidBody "{5F5D1789B1447AD1}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  LF_ImpoundDeskComponent "{B7547E5E3F7A5535}" {
-   m_sPadId "roadmap-impound"
-  }
-  LF_VehicleSpawnPointComponent "{853E602F9A3F24EC}" {
-   m_sShopId "roadmap-impound"
-   m_vOffset 6 0 8
-   m_iSlots 3
-   m_vSlotStep -6 0 0
-   m_vAngles 180 0 0
-  }
-  ActionsManagerComponent "{47EB65DDFAE5E427}" {
-   ActionContexts {
-    UserActionContext "{BFA166AD194CF220}" {
-     ContextName "default"
-     Position PointInfo "{52BBA330E1E12774}" {
-      Offset 0 0.8 0
-     }
-     Radius 3
-    }
-   }
-   additionalActions {
-    LF_ImpoundCollectAction "{2D594A0A83AE40B7}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{2426F79B9E22C4CB}" {
-      Name "#LF-Impound_Collect"
-     }
-    }
-    LF_GarageLedgerAction "{AB18B805A523E985}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{3AE5CC43C788D6EE}" {
-      Name "#LF-Garage_ReadLedger"
-     }
-    }
-   }
-  }
-  RplComponent "{9C41D07E2B85F3A6}" {
-   Enabled 1
-  }
- }
- Flags 0x403 0
- coords 246 0 269
-}
-GenericEntity Lot_Display_uaz469 : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
- coords 221 0 261
- angleY 180
-}
-GenericEntity Lot_Display_s1203 : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
- coords 225.5 0 261
- angleY 180
-}
-GenericEntity Lot_Display_uaz452 : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
- coords 230 0 261
- angleY 180
-}
-LF_NpcBaseEntity CarLot_Mechanic : "{009A8952A2537BB4}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_2.et" {
- coords 213.2 -0.005 263.569
-}
-Vehicle Lot_Display_dana2101 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
- coords 233.56 0 261
- angleY 180
-}
-Vehicle Lot_Display_t601 : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
- coords 208 0 260
- angleY 180
+ coords 201.022 0 264.487
+ angles 0 132.767 0
 }
