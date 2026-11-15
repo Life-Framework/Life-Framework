@@ -21,7 +21,8 @@ const Rules = () => (
       {rules.next && <p className="mt-10 lede">{rules.next}</p>}
       <p className="mt-12 pt-6 border-t border-rule flex flex-wrap gap-x-6 gap-y-2">
         <GoLink to={blob("website/content/rules.json")}>Source file</GoLink>
-        <GoLink to="/servers">Run your own server</GoLink>
+        <GoLink to={blob("docs/owner/install.md")}>Run your own server: install guide</GoLink>
+        <GoLink to="/servers">For server owners</GoLink>
       </p>
     </div>
   </>
