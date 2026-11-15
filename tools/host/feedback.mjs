@@ -116,7 +116,41 @@ function quoted(text) {
   return text.split("\n").map((l) => `> ${l}`).join("\n");
 }
 
-function bodyFor(kind, reports, reporters) {
+/**
+ * The newest `host summary` report of `date` (YYYY-MM-DD) in `sessionsDir`, as "sessions/<name>.md",
+ * or null when there is none. Reports are named `<stamp>.md` (tools/host/host.mjs `stamp`).
+ */
+export function findSessionReport(sessionsDir, date) {
+  let names = [];
+  try {
+    names = readdirSync(sessionsDir);
+  } catch {
+    return null;
+  }
+  const hit = names.filter((f) => f.startsWith(`${date}_`) && f.endsWith(".md")).sort().pop();
+  return hit ? `sessions/${hit}` : null;
+}
+
+/** The lines that tie a draft to its session and to the other drafts of that session. */
+function linkLines(session, siblings) {
+  const out = [];
+  if (session?.date) {
+    const report = session.report
+      ? `its \`tools\\cli host summary\` report is \`${session.report}\` in the host folder.`
+      : "no `tools\\cli host summary` report was found for it; run that command and name the report here.";
+    out.push(`Session: ${session.date}; ${report}`, "");
+  }
+  if (session?.date) {
+    out.push(
+      siblings.length ? "Other drafts from this session:" : "Other drafts from this session: none",
+      ...siblings.map((t) => `- ${t}`),
+      "",
+    );
+  }
+  return out;
+}
+
+function bodyFor(kind, reports, reporters, links = []) {
   const first = reports[0];
   const more = reports.slice(1);
   const asked = [
@@ -125,6 +159,7 @@ function bodyFor(kind, reports, reporters) {
   ].join("\n");
   const foot = [
     "---",
+    ...links,
     `Reported by ${players(reporters)} in the session's feedback channel. Drafted by \`tools\\cli host feedback\`; no author names or Discord ids are kept. Check it against the session's server log before filing (\`tools\\cli host triage\`).`,
     "",
   ].join("\n");
@@ -173,8 +208,9 @@ function bodyFor(kind, reports, reporters) {
 /**
  * Drafts for an export's messages: { drafts, thanks, duplicates }. A draft is
  * { kind, label, title, reporters, reports, body }, in the order the reports first appeared.
+ * `session` ({ date, report }, optional) adds the session line and the sibling list to each body.
  */
-export function draftFeedback(messages) {
+export function draftFeedback(messages, { session = null } = {}) {
   const authors = [...new Set(messages.map((m) => m.author))];
   // Consecutive messages of one author are one report.
   const merged = [];
@@ -203,16 +239,17 @@ export function draftFeedback(messages) {
       groups.push({ head: entry, reports: [text], authors: new Set([m.author]) });
     }
   }
-  const drafts = groups.map((g) => {
+  const titles = groups.map((g) => `${g.head.kind === "feature" ? "[Feature]: " : "[Bug]: "}${firstSentence(g.reports[0])}`);
+  const drafts = groups.map((g, i) => {
     const kind = g.head.kind;
-    const prefix = kind === "feature" ? "[Feature]: " : "[Bug]: ";
+    const links = linkLines(session, titles.filter((_, j) => j !== i));
     return {
       kind,
       label: kind === "feature" ? "enhancement" : "bug",
-      title: `${prefix}${firstSentence(g.reports[0])}`,
+      title: titles[i],
       reporters: g.authors.size,
       reports: g.reports,
-      body: bodyFor(kind, g.reports, g.authors.size),
+      body: bodyFor(kind, g.reports, g.authors.size, links),
     };
   });
   return { drafts, thanks, duplicates };
