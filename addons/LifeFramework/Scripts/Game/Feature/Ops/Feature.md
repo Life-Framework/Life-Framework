@@ -29,9 +29,15 @@ slices that add them do not edit it.
 - Nothing here persists: the schedule is config, the warnings are derived from the clock.
 - Proof: `ops/events` (LOGIC, the contract); each later slice adds its own test.
 
+## Siren prefab (#1345)
+
+The siren is a placed prop, not a menu. LF_RestartSirenComponent (prefab Prefabs/Props/Ops/LF_RestartSiren.et)
+registers with LF_Places under the kind restart-siren, and the Siren piece (O7) finds it there, never by
+entity name or coordinate, so a pack on any map places its own. The component makes no sound yet.
+
 ## Config
 
-LF_RestartConfig (#1343) is the estarts owner section and nothing else: 	imes (daily HH:MM, empty =
+LF_RestartConfig (#1343) is the restarts owner section and nothing else: times (daily HH:MM, empty =
 no scheduled restarts) and warningMinutes (default 15, 5, 1). The schedule (O5) reads it; the field names
 are in the class comment. Test: config/m4-sections (LF_Test_M4ConfigSections), which also covers the
 staff and dayCycle sections declared in Feature/Moderation/ and Feature/Atmosphere/.
