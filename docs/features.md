@@ -699,6 +699,13 @@
   server name, map and players/max. Operator tool for the session runbook and the
   opening gate's player target; nothing publishes it. `tools/host/a2s.mjs`; selftest
   `tools/validation/a2s-selftest.mjs`.
+  `host verify [--newest N]` (#1454, merged, in-dev) opens each backup and checks it is not
+  empty, holds a save point a restore can load (`meta-info.json` plus save data), and has a
+  readable build stamp (`m_sGameVersion`). A good backup gets a sha256 recorded beside it
+  (`backups/<name>.sha256.json`, never inside the folder); a later run flags one whose
+  checksum changed. One line per backup (`ok`, `empty`, `nosave`, `nostamp`, `changed`,
+  `error`), exit 1 on any bad one. Read only; `host drill` is the full boot test.
+  `tools/host/verify.mjs`; selftest `tools/validation/host-verify-selftest.mjs`.
   Joining: the host runs `-noBackend`, so every player has the NULL platform
   identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
   failed with `#EL-CC_Error_NoAccount` (nobody could join).
