@@ -99,6 +99,8 @@ A line with `SCRIPT (E)`, `VME` or `Virtual Machine Exception` is a failure, and
 `Entered online game state.`. Run [`server-doctor`](#9-check-a-log-with-server-doctor) on it, or look the line up
 in the Problems table.
 
+The lines to expect and the fix for the fifteen commonest errors are on [read your server log](log-lines.md).
+
 ## 5. Know the two folders
 
 The `-profile` argument names a folder. The game puts its own profile one level down:
@@ -137,6 +139,8 @@ What logging out does to a cuffed, downed, wanted or jailed player is the `disco
 ([disconnect rules](disconnect-rules.md)).
 Which player state survives a restart (cash on hand, carried gear, hunger and thirst, warrants,
 sentences, licences) is the `persistence` section ([persistence switches](persistence-switches.md)).
+How fast the in-game day runs (the base game's clock, a shorter day, or the real clock) is the
+`dayCycle` section ([day cycle](day-cycle.md)).
 
 Restart the server after changing the file.
 

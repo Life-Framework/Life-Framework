@@ -25,6 +25,8 @@ dispatch queue and every card's brief is `tools\cli slice brief <issue>`.
   ([Widening the graph](#widening-the-graph)).
 - **Wave 3 (2026-11-15): 80 slices.** 20 cards from the gaps the outline and the decisions left
   ([`m4-slices/plan-1006-wave3.md`](m4-slices/plan-1006-wave3.md), #1405 to #1427); see [Wave 3](#wave-3-2026-11-15).
+- **Wave 4 (2026-11-15): 103 slices.** 23 cards that start on main today, 20 of them ready at creation
+  ([`m4-slices/plan-1006-wave4.md`](m4-slices/plan-1006-wave4.md), #1446 to #1468); see [Wave 4](#wave-4-2026-11-15).
 - **Models.** 56 Sonnet (`lf-builder`), 4 Opus (`lf-hard`): O8 and X3 (persistence), S6 (ban record file), S9 (GM RPC,
   replication), plus the independent reviewer on each of those.
 - **Enablers first.** K2 lets `host` subcommands live one file each in
@@ -109,6 +111,48 @@ sub-issues, so a card may depend on one as `#N` and must be file-disjoint from t
 
 Not sliced: a scripted operator restart (`host restart --in N`) would edit `LF_HostStop` beside the running close
 (O8, #1267); cut it once O8 merges.
+
+## Wave 4 (2026-11-15)
+
+The ready queue was down to one card with 18 running. Wave 4 cuts 23 cards, and 20 of them can start at once. A card
+that needs an unmerged PR's shape merges that branch in and owns none of its files (LISTING, DRIFT, PORTS, ALPHAPAGE).
+Maintainer, 2026-11-15: **no town-pass or placement-cleanup cards** (he fixes the existing placements by hand; the
+grid rule and the world-zones guard, #1443, cover new ones), and no video, trailer, filming or storyboard cards.
+
+#1006 reached GitHub's cap of 100 sub-issues after DRIFT. The last six cards are sub-issues of the epics (#230, #231,
+#232) and still carry `parent: 1006`; `slice list 1006` reads cards one level down, and `slice new --attach <epic>`
+files new ones there.
+
+| Key | Issue | Slice | Model, tier | Min | Depends |
+|---|---|---|---|---|---|
+| JOINEV | #1446 | Contract: a player spawn is an event on the bus | sonnet T2 | 30 | |
+| RECRUIT | #1447 | An approved recruit hears it at the next spawn (beat 4) | sonnet T2 | 40 | JOINEV |
+| JOINNOTE | #1448 | The alpha notice at a player's first spawn | sonnet T2 | 40 | JOINEV |
+| JNCFG | #1449 | The flagship turns the alpha notice on | haiku T1 | 30 | JOINNOTE, #1405 |
+| PRECRUIT | #1450 | Proof verb `recruit-uniform` (beat 4) | sonnet T0 | 45 | |
+| PINCIDENT | #1451 | Proof verb `incident-handled` (beat 3) | sonnet T0 | 45 | |
+| PERFLOG | #1452 | The server logs a perf line every minute | sonnet T2 | 40 | |
+| SAY | #1453 | `host say` puts an operator message on every screen | sonnet T2 | 45 | |
+| VERIFY | #1454 | `host verify` checks every backup can be read | sonnet T0 | 35 | |
+| OFFSITE | #1455 | `host offsite` copies backups to a second drive | sonnet T0 | 35 | |
+| LOGARCH | #1456 | `host logs` archives each session's logs | sonnet T0 | 35 | |
+| CRASHPACK | #1457 | `host crashpack` bundles a crash, secrets redacted | sonnet T0 | 35 | |
+| APPS | #1458 | `host applications` lists the police queue | sonnet T0 | 30 | |
+| ATTEND | #1459 | `host attendance` from the log's joins and leaves | sonnet T0 | 40 | |
+| PORTS | #1460 | `host ports` checks the game is reachable | sonnet T0 | 35 | |
+| LISTING | #1461 | `host listing` checks the server-browser entry (beat 1) | sonnet T0 | 35 | |
+| DRIFT | #1462 | `host drift`: the live config against the repo | sonnet T0 | 30 | |
+| SECRETS | #1463 | Validate fails on a committed secret (under #230) | sonnet T0 | 30 | |
+| CHEAT | #1464 | One-page session cheatsheet (under #230) | haiku T0 | 30 | |
+| OWNERALPHA | #1465 | Owner page: run a password alpha (under #230) | haiku T0 | 30 | |
+| STAFFADD | #1466 | `staff add/remove/promote` edit the roster (under #231) | sonnet T0 | 30 | |
+| POLICEDOC | #1467 | How to join the police in the alpha (under #231) | haiku T0 | 30 | |
+| ALPHAPAGE | #1468 | The site's `/alpha` page, next session time only (under #232) | sonnet T0 | 40 | |
+
+Chapters: M4 has one chapter, #1006, and every epic under it (#230, #231, #232) has cards. Still not sliced: a
+scripted operator restart (`host restart --in N`) waits for O8 (#1267). The flat horizon of the flagship world
+(`Everon1989Town`, seen in the 2026-11-15 preview shoot) is a terrain question and stays with the maintainer,
+like the placements.
 
 ## Widening the graph
 

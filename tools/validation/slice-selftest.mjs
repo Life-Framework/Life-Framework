@@ -14,13 +14,14 @@
 //      exits 0, a bad plan exits 1, all on quiet SUMMARY lines.
 // red-proof: with the merged test in statusOf forced false, "S3 is ready once S2 is in-dev" failed; with the sort's path
 // term removed, "the longest chain (X, 90m) goes before a short blocker" failed; with isShared forced false, "features.md is not a
-// conflict" failed. All restored.
+// conflict" failed. All restored. record-merged (2026-11-15): the new cases were written first and failed (mergeVerdict
+// did not exist; record took --outcome merged with an open PR); then mergeVerdict and the check in slice record went in.
 import { mkdtempSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { main } from "../commands/slice.mjs";
-import { brief, cardBody, checkPlan, conflicts, criticalPaths, ledgerRow, parseCard, parsePlan, readyOrder, renderStats, stats, statusOf, suggestModel } from "../lib/slice.mjs";
+import { brief, cardBody, checkPlan, conflicts, criticalPaths, ledgerRow, mergeVerdict, parseCard, parsePlan, readyOrder, renderStats, stats, statusOf, suggestModel } from "../lib/slice.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIX = join(HERE, "fixtures", "slice");
@@ -140,11 +141,37 @@ check(wClash.code === 1 && /#101 and N2|N2 and #101/.test(wClash.text), `a wave 
 const wGone = await waveRun("wave-gone.md", wave("N3", "tools/wave/n3.mjs", "#999"));
 check(wGone.code === 1 && wGone.text.includes("N3 depends on #999"), `a dependency on an unknown issue is refused (got ${wGone.text})`);
 const ledger = join(tmp, "ledger.jsonl");
-const r1 = await capture(["record", "105", "--model", "opus", "--outcome", "merged", "--gate", "pass", "--minutes", "41", "--type", "system", "--ledger", ledger]);
+// record --outcome merged asks gh whether the slice's PR merged (fixtures: --pr-fixture { prs: [...] }, no GitHub).
+const prFile = (name, prs) => {
+  const f = join(tmp, name);
+  writeFileSync(f, JSON.stringify({ prs }));
+  return f;
+};
+const mergedPr = prFile("pr-merged.json", [{ number: 900, state: "MERGED", mergedAt: "2026-11-15T10:00:00Z", headRefName: "ws/slice-105", body: "Refs #105" }]);
+const openPr = prFile("pr-open.json", [{ number: 901, state: "OPEN", mergedAt: null, headRefName: "ws/slice-106", body: "Refs #106" }]);
+const noPr = prFile("pr-none.json", []);
+const rec = (issue, outcome, pr, extra = []) => capture(["record", String(issue), "--model", "sonnet", "--outcome", outcome, "--gate", "pass", "--minutes", "30", "--pr-fixture", pr, "--ledger", ledger, ...extra]);
+const ledgerCount = () => (existsSync(ledger) ? readFileSync(ledger, "utf8").trim().split("\n").filter(Boolean).length : 0);
+const r1 = await capture(["record", "105", "--model", "opus", "--outcome", "merged", "--gate", "pass", "--minutes", "41", "--type", "system", "--pr-fixture", mergedPr, "--ledger", ledger]);
 const r2 = await capture(["record", "103", "--model", "sonnet", "--ledger", ledger]);
-check(r1.code === 0 && r2.code === 1 && readFileSync(ledger, "utf8").trim().split("\n").length === 1, "record appends good rows and refuses incomplete ones");
+check(r1.code === 0 && r2.code === 1 && ledgerCount() === 1, "record appends good rows and refuses incomplete ones");
 const ss = await capture(["stats", "--ledger", ledger]);
 check(ss.text.includes("by model") && /opus .*first-pass 100%.*median 41m/.test(ss.text), `stats reads the ledger (got ${ss.text})`);
+const rOpen = await rec(106, "merged", openPr);
+check(rOpen.code === 1 && ledgerCount() === 1 && rOpen.text.includes("handoff") && rOpen.text.includes("#901"), `record refuses merged while the PR is open and suggests handoff (got ${rOpen.text})`);
+const rNone = await rec(107, "merged", noPr);
+check(rNone.code === 1 && ledgerCount() === 1 && rNone.text.includes("handoff"), `record refuses merged when no PR is found (got ${rNone.text})`);
+const rForce = await rec(106, "merged", openPr, ["--force"]);
+check(rForce.code === 0 && ledgerCount() === 2, `--force records merged anyway (got ${rForce.text})`);
+const rHand = await rec(106, "handoff", openPr);
+const rHandNone = await rec(108, "handoff", noPr);
+check(rHand.code === 0 && rHandNone.code === 0 && ledgerCount() === 4, "a handoff needs no merged PR");
+const pr = (number, state, head, body, mergedAt = null) => ({ number, state, mergedAt, headRefName: head, body });
+check(mergeVerdict([pr(1, "MERGED", "ws/slice-105", "", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: a merged PR on ws/slice-<N> passes");
+check(mergeVerdict([pr(2, "MERGED", "ws/other", "Closes #105", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: a merged PR whose body refs the issue passes");
+check(!mergeVerdict([pr(3, "MERGED", "ws/other", "Refs #1050", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: #1050 is not #105");
+check(!mergeVerdict([pr(4, "CLOSED", "ws/slice-105", "Refs #105")], 105).ok, "mergeVerdict: a closed, unmerged PR does not pass");
+check(mergeVerdict([pr(5, "CLOSED", "ws/slice-105", "Refs #105"), pr(6, "MERGED", "ws/slice-105-b", "Refs #105", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: one merged PR among several passes");
 check(renderStats([]).startsWith("no slices recorded"), "empty ledger says so");
 
 if (failures.length) {

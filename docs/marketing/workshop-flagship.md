@@ -62,6 +62,7 @@ How the jobs, money, police and crime systems work, and what is allowed on a ser
 [h2]Run your own server[/h2]
 Mod IDs [b]79636E668EA37AC9[/b] (the core) and [b]B1E84D5687E11724[/b] (this pack), scenario [b]{C638C03B775C31BB}Missions/LF_Everon1989.conf[/b]. The example server folder has a ready config and a start script, and the host guide walks through it:
 [url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/playtest/workshop-host.md]Host guide[/url]
+[url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/owner/install.md]Install guide: run your own server from zero[/url]
 [url=https://github.com/Life-Framework/Life-Framework/tree/main/server/example]Example server[/url]
 
 [h2]Feedback[/h2]
