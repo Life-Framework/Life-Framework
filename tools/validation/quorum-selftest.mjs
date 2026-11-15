@@ -106,18 +106,18 @@ try {
 
   // rule on: no file, too few, strangers and a repeat, a fail
   writeRule(true);
-  let r = await mute(() => cmdPromote(work, ["--to", to, "--confirm"], { gh }));
+  let r = await mute(() => cmdPromote(work, ["--to", to, "--confirm"], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && stable() === before, `rule on without a confirmations file moved stable: ${r.out}`);
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("two.json", [res(302, "ana"), res(302, "ben")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("two.json", [res(302, "ana"), res(302, "ben")])], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && /2 of 3/.test(r.out) && stable() === before, `two confirmations promoted: ${r.out}`);
   check(issues[302].state === "open" && !issues[302].labels.includes("verified"), "issue verified without a quorum");
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("strangers.json", [res(302, "ana"), res(302, "ana"), res(302, "mallory"), res(302, "zed")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("strangers.json", [res(302, "ana"), res(302, "ana"), res(302, "mallory"), res(302, "zed")])], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && stable() === before, `strangers and a repeat promoted: ${r.out}`);
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("fail.json", [res(302, "ana"), res(302, "ben"), res(302, "cy"), res(302, "dee", "fail")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("fail.json", [res(302, "ana"), res(302, "ben"), res(302, "cy"), res(302, "dee", "fail")])], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && /failed it/.test(r.out) && stable() === before, `a failed issue promoted: ${r.out}`);
 
   // enough distinct roster testers
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("three.json", [res(302, "ana"), res(302, "ben"), res(302, "cy")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("three.json", [res(302, "ana"), res(302, "ben"), res(302, "cy")])], { gh, guardStatus: () => "green" }));
   check(r.code === 0 && /quorum met/.test(r.out), `three confirmations refused: ${r.out}`);
   check(stable() === m32, "stable did not move on a met quorum");
   check(issues[302].state === "closed" && issues[302].labels.includes("verified"), `302 after promotion: ${issues[302].state} ${issues[302].labels}`);
@@ -129,7 +129,7 @@ try {
   issues[303] = { state: "open", labels: ["needs-playtest"] };
   sh(work, "fetch", "origin");
   writeRule(false);
-  r = await mute(() => cmdPromote(work, ["--to", m33.slice(0, 12), "--confirm"], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", m33.slice(0, 12), "--confirm"], { gh, guardStatus: () => "green" }));
   check(r.code === 0 && stable() === m33, `rule off, promote failed: ${r.out}`);
 } catch (err) {
   failures.push(`selftest crashed: ${err.stack || err.message}`);
