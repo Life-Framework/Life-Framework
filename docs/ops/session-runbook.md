@@ -104,6 +104,13 @@ then `host ready: GO`, or `host ready: NO-GO` and the names of the failed checks
    It backs the saves up first, continues the latest save, and prints `host: up (pid N)` and the
    join lines. Without `--flagship` it boots the playtest header, which is not the real server.
 
+   Two things to expect that the command does not say:
+   - The first `host start` in a new worktree refreshes the resource database on a pool machine
+     (lf-cloud) before it launches: about 45 seconds of output before `host: up`. Wait for it; it
+     is not a hang.
+   - The server itself runs on **this PC**, not on a test machine, with the game port from the
+     join lines (2001 by default). Nothing else may hold that port; see the table below.
+
 2. Confirm it is up and read the first lines of the log:
 
    ```
@@ -111,8 +118,16 @@ then `host ready: GO`, or `host ready: NO-GO` and the names of the failed checks
    Select-String -Path "<log path that host status prints>" -Pattern "LFDebug:Persistence"
    ```
 
-   (The second line is PowerShell.) You want `save loaded:` with the build you expect. `save load damaged` or `saving disabled for
-   this session` means stop and see "When it goes wrong".
+   (The second line is PowerShell.) What you want depends on whether the host has a save:
+
+   - **Continuing a save** (every start after a `host stop`): `save loaded:` with the build you
+     expect.
+   - **A fresh host** (no save yet, or right after a wipe): `save loaded:` does not appear. You
+     want `save present: false` and `fresh session: no save point exists for this mission`; the
+     first `save loaded:` comes on the next start, after a stop wrote the shutdown save.
+
+   `save load damaged` or `saving disabled for this session` means stop and see "When it goes
+   wrong".
 
 3. Keep it alive. `tools\cli host watch --flagship` supervises the server: a crash (an exit
    without `host stop`) copies the console log to `backups/<time>-crash/`, backs the saves up and
@@ -214,7 +229,7 @@ Stop after two tries of a step and ask the maintainer. Do not improvise with the
 | `FAIL  game update: ...` on `host start` | Run `tools\cli host preflight`. `--force` is for the maintainer only. |
 | Preflight fails | It has already restored the backup; do not open the server. Read [game updates](game-updates.md), tell the maintainer. |
 | `host: already running` | `tools\cli host status`; if it is the server you want, leave it; otherwise `tools\cli host stop` first. |
-| `a test or server run holds port 2001` | Another run owns the port. Wait for it to end, or retry with `--wait`. |
+| `a test or server run holds port 2001` | Another run owns the port. Wait for it to end, or retry with `--wait`. `host drill` has no `--wait`: it queues for a pool lane itself and boots on that lane's port, never 2001. A drill that still says `lock 'server-2001' is held` is running a tree from before that hand-off: merge `origin/main` and run it again. |
 | `FAIL  the server exited during startup` | The command prints the last log lines. Read them with [debug-log-triage](../debug-log-triage.md); try once more; on a second failure stop and report. |
 | No `Entered online game state.` within the timeout | The server is still running. `tools\cli host status` for the log path; if it never gets there, `tools\cli host stop` and start again once. |
 | `save load damaged` or `continued save never reached the LF store` in the log | Saving is off for the session on purpose. `tools\cli host stop`, then `tools\cli host restore`, and find the cause before opening again. |
