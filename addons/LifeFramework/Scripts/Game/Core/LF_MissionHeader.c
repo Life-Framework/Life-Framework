@@ -17,6 +17,12 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("0", desc: "A police application is approved the moment it is filed, so a solo tester can try the form (the desk). Off for real servers: an administrator approves.")]
 	bool m_bLF_InstantPoliceApproval;
 
+	[Attribute("0", desc: "Testing bypass: every whitelist-gated job (police roster, playtime, application) opens to every player. Only the playtest mission sets it; the flagship header never does (validate-flagship-job-gates). The owner config jobs.testUnlockAll asks for the same switch.")]
+	bool m_bLF_TestUnlockAllJobs;
+
+	[Attribute("0", desc: "Lets the job-gate bypass (m_bLF_TestUnlockAllJobs or jobs.testUnlockAll) run on a dedicated server. Without it a dedicated server refuses the bypass and logs an error.")]
+	bool m_bLF_TestUnlockOnDedicated;
+
 	[Attribute("0", desc: "Close the playtest helpers the world's game mode switches on (test cars, bank and cash top-up, the jail-me board, the spawn hub travel globe, test dispatch calls, the near convoy drop), even when the game mode opts in. On for a mission a real server runs; off for the playtest mission and DebugWorld.")]
 	bool m_bLF_PlaytestHelpersOff;
 
