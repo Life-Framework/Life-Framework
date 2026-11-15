@@ -44,6 +44,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
+import { GRID_MISSION } from "../tools/lib/worlds.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
@@ -87,7 +88,9 @@ export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
-export const MISSIONS = ["debug", "playtest", "template"];
+export const MISSIONS = ["debug", "playtest", "grid", "template"];
+// `--mission grid` boots GridWorld (the flat annex world for WORLD tests and grid cells) through its header
+// Missions/LF_GridWorld.conf, a bare world like debug: no harness define. `debug` still boots the town.
 // `--mission template` boots the example server folder (server/example, #295): the scenario and mods
 // server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
 // `--mission template-<variant>` boots tools/server-template/variants/<variant>/server.json instead (#297):
@@ -218,7 +221,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
   const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? GRID_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
@@ -544,6 +547,20 @@ export function selftestSession() {
     parseMission(["--mission", "prod"]);
     failures.push("--mission prod was accepted");
   } catch {}
+  // Three worlds (W4, #1806): --mission grid boots GridWorld through its mission header; the default still boots the town.
+  // red-proof: 2026-11-16 written before the grid mission existed: "--mission grid was refused" and, with only the
+  // parse added, "--mission grid does not run LF_GridWorld.conf"; both failed, then passed.
+  try {
+    if (parseMission(["--mission", "grid"]) !== "grid") failures.push("parseMission grid");
+  } catch {
+    failures.push("--mission grid was refused");
+  }
+  const gs = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid" });
+  const gc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "grid" });
+  if (gs[0] !== "-server" || gs[1] !== GRID_MISSION || !/LF_GridWorld.conf$/.test(gs[1])) failures.push("--mission grid does not run LF_GridWorld.conf");
+  if (gs.includes(HARNESS_DEFINE) || gc.includes(HARNESS_DEFINE)) failures.push("--mission grid carries the harness define (it is the bare world like debug)");
+  if (serverArgs({ addonsDir: "A", profile: "SP" })[1] !== SERVER_WORLD) failures.push("the default mission no longer boots the town");
+  if (harnessFlagProblem(["--admin-client", "1"], "grid", 1) === "") failures.push("--admin-client was accepted on the grid mission, where it does nothing");
   if (laneArgs(2001).length || laneArgs(2011).join(" ") !== "-addr 127.0.0.1:2011 -a2sPort 17877") failures.push("laneArgs: lane 1 keeps the defaults, lane 2 gets -addr and its A2S port");
   // #297: the core-only template variant boots the core's header with the core alone, on both sides.
   const ts = serverArgs({ addonsDir: "A", profile: "SP", mission: "template-core-only" });
@@ -1314,7 +1331,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|grid|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -1404,7 +1421,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {
