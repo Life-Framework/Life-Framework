@@ -94,7 +94,8 @@ for (const [route, marker] of Object.entries(pages)) {
     next = null;
   }
   const when = next ? new Date(next.at) : null;
-  const future = when !== null && !Number.isNaN(when.getTime()) && when.getTime() > Date.now();
+  // A draft (no `announced`, #1537) is not shown either.
+  const future = when !== null && typeof next.announced === "string" && !Number.isNaN(when.getTime()) && when.getTime() > Date.now();
   for (const route of ["/servers", "/alpha"]) {
     const html = await (await fetch(base + route)).text();
     const said = html.includes("No session announced yet");
