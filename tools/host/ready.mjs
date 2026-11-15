@@ -11,7 +11,7 @@ import { diskReport, fmtBytes, FLOOR_BYTES } from "./disk.mjs";
 import { DRILL_RESULT_FILE, drillVerdict, readDrillResult } from "./drill.mjs";
 import { localSetting } from "../lib/local-config.mjs";
 import { SERVER_NAME } from "./announce.mjs";
-import { serverJsonPath } from "./config-apply.mjs";
+import { ownerConfigPath, serverJsonPath } from "./config-apply.mjs";
 
 export const MAX_BACKUP_HOURS = 12; // the flagship restarts every 12 h; a backup older than a restart gap is stale
 export const MAX_DRILL_DAYS = 7;
@@ -111,6 +111,50 @@ export async function configCheck({ hostDir }) {
   return { ok: true, detail: `name "${SERVER_NAME}", password set` };
 }
 
+// The live owner config (<host>/profile/profile/LifeFramework/config.json, what `host config apply` wrote): the
+// maintainer's decisions of #1405, the same values tools/validation/flagship-decisions-selftest.mjs pins in the
+// committed file. Two checks, so the owner sees which one is red: the day cycle, and the restart schedule.
+export const DAY_CYCLE_MODE = "accelerated";
+export const DAY_LENGTH_MINUTES = 120;
+export const RESTART_TIMES = ["06:00", "18:00"];
+const RESTART_KEYS = ["times", "warningMinutes"]; // restarts warn with the toast only: no siren or other key
+
+function readOwnerConfig(hostDir) {
+  const file = ownerConfigPath(hostDir);
+  if (!existsSync(file)) return { bad: `no live owner config at ${file}; run \`tools\\cli host config apply\`` };
+  try {
+    const json = JSON.parse(readFileSync(file, "utf8"));
+    if (!json || typeof json !== "object" || Array.isArray(json)) return { bad: `the live owner config is not a JSON object (${file}); run \`tools\\cli host config apply\`` };
+    return { json };
+  } catch {
+    return { bad: `the live owner config is not valid JSON (${file}); run \`tools\\cli host config apply\`` };
+  }
+}
+
+export async function dayCycleCheck({ hostDir }) {
+  const { json, bad } = readOwnerConfig(hostDir);
+  if (bad) return { ok: false, detail: bad };
+  const day = json.dayCycle;
+  const problems = [];
+  if (day?.mode !== DAY_CYCLE_MODE) problems.push(`dayCycle.mode must be "${DAY_CYCLE_MODE}"`);
+  if (day?.dayLengthMinutes !== DAY_LENGTH_MINUTES) problems.push(`dayCycle.dayLengthMinutes must be ${DAY_LENGTH_MINUTES} (a 2 hour day)`);
+  if (problems.length) return { ok: false, detail: `${problems.join("; ")}; run \`tools\\cli host config apply\`` };
+  return { ok: true, detail: `${DAY_CYCLE_MODE}, ${DAY_LENGTH_MINUTES}-minute day` };
+}
+
+export async function restartsCheck({ hostDir }) {
+  const { json, bad } = readOwnerConfig(hostDir);
+  if (bad) return { ok: false, detail: bad };
+  const r = json.restarts;
+  const problems = [];
+  const times = r?.times;
+  if (!Array.isArray(times) || times.length !== RESTART_TIMES.length || RESTART_TIMES.some((t, i) => times[i] !== t)) problems.push(`restarts.times must be exactly ${RESTART_TIMES.join(" and ")}`);
+  const extra = r && typeof r === "object" ? Object.keys(r).filter((k) => !RESTART_KEYS.includes(k)) : [];
+  if (extra.length) problems.push(`restarts.${extra.join(", restarts.")}: restarts warn with the toast only (no siren)`);
+  if (problems.length) return { ok: false, detail: `${problems.join("; ")}; run \`tools\\cli host config apply\`` };
+  return { ok: true, detail: `${RESTART_TIMES.join(" and ")}, toast only` };
+}
+
 export function defaultChecks() {
   return [
     { name: "build", run: buildCheck },
@@ -119,6 +163,8 @@ export function defaultChecks() {
     { name: "drill", run: drillCheck },
     { name: "disk", run: diskCheck },
     { name: "config", run: configCheck },
+    { name: "day cycle", run: dayCycleCheck },
+    { name: "restarts", run: restartsCheck },
   ];
 }
 
