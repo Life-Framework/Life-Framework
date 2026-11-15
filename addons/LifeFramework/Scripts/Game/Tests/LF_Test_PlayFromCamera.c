@@ -11,7 +11,7 @@ class LF_Test_PlayFromCamera : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		vector camera = "120 15 240";
+		vector camera = "40 15 40";
 		bool inWorkbench = LF_PlayFromCamera.UseCameraPose(true, true, camera);
 		if (RedProof())
 			inWorkbench = false;
