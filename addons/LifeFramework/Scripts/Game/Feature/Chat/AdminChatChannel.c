@@ -130,6 +130,12 @@ class AdminChatChannel : BaseChatChannel
 		if (!playerManager)
 			return false;
 
-		return playerManager.HasPlayerRole(playerId, EPlayerRole.ADMINISTRATOR);
+		if (playerManager.HasPlayerRole(playerId, EPlayerRole.ADMINISTRATOR))
+			return true;
+
+		// A harness session (-scrDefine LF_HARNESS) has no server.json to list game.admins in, and the engine
+		// refuses a script grant of ADMINISTRATOR, so `up --admin-client N` gives SESSION_ADMINISTRATOR
+		// (LF_HarnessStaff) and a harness build counts it. No other build does.
+		return LF_DevGate.HarnessBuild() && playerManager.HasPlayerRole(playerId, EPlayerRole.SESSION_ADMINISTRATOR);
 	}
 }
