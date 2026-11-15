@@ -8,9 +8,9 @@ class LF_ServerPerfLog
 {
 	static const string FEATURE = "Perf";
 	//! Seconds of fed time between two lines.
-	static const float INTERVAL_S = 60;
+	static const float INTERVAL_S = 60; // lf-fixed: the line is one a minute by contract (#1452), not a tuning knob
 	//! How often the poll runs; the gate decides whether a line is due.
-	static const int POLL_MS = 5000;
+	static const int POLL_MS = 5000; // lf-fixed: how often the gate is fed, not a gameplay value
 
 	protected static ref LF_ServerPerfLogGate s_Gate;
 	protected static int s_iLastTickMs;
@@ -48,6 +48,17 @@ class LF_ServerPerfLog
 		s_iLastTickMs = System.GetTickCount();
 		GetGame().GetCallqueue().CallLater(Poll, POLL_MS, true);
 		LF_Debug.Info(FEATURE, "server perf line on: one per 60 s");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stops the poll; Start() may run again afterwards.
+	static void Stop()
+	{
+		if (!s_bStarted)
+			return;
+
+		s_bStarted = false;
+		GetGame().GetCallqueue().Remove(Poll);
 	}
 
 	//------------------------------------------------------------------------------------------------
