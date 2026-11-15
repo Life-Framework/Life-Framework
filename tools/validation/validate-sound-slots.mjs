@@ -11,9 +11,9 @@
 // `LF_SoundSlots.Get("id")` in script.
 //
 // Pack-owned sounds are the folders in PACK_SOUND_DIRS (docs/architecture/core-pack-inventory.md
-// lists Sounds/Atmosphere/ as pack). The core slots file is the one place core may name them: it holds
-// each slot's default until the sounds move into the pack (#323 batch 4); the check counts those as a
-// note. Core tests may name them too.
+// lists Sounds/Atmosphere/ as pack). Since #323 batch 4 they live in LF_Everon1989: the core slots
+// file lists those slots with no default and the pack overlay fills them, so a core default that names
+// one fails like any other core file. Core tests may name them.
 //
 // red-proof: sound-slots-selftest.mjs (a fixture with a wrong GUID, a missing addon project, a
 // duplicate core id, a slot id the core file lacks and a prefab that names an atmosphere sound
@@ -83,7 +83,6 @@ export function checkSoundSlots(confs, others, ctx) {
     .filter((f) => f.slots);
   const core = parsed.find((f) => f.file === CORE_FILE);
   const coreIds = new Set();
-  let packOwnedDefaults = 0;
   if (!core) fails.push(`${CORE_FILE}: missing or not an LF_SoundSlotsConfig`);
   for (const { file, slots } of parsed) {
     for (const s of slots) {
@@ -92,7 +91,8 @@ export function checkSoundSlots(confs, others, ctx) {
       if (file === CORE_FILE) {
         if (coreIds.has(s.slot)) fails.push(`${at}: the core file lists this slot twice`);
         coreIds.add(s.slot);
-        if (PACK_SOUND_DIRS.some((d) => s.project.includes(d))) packOwnedDefaults++;
+        const dir = PACK_SOUND_DIRS.find((d) => s.project.includes(d));
+        if (dir) fails.push(`${at}: the core default names a pack-owned sound (${dir}); leave m_Project empty and fill it in the pack overlay`);
       }
       if (s.op === "remove" || !s.project) continue;
       const ref = splitRef(s.project);
@@ -121,7 +121,6 @@ export function checkSoundSlots(confs, others, ctx) {
       });
     }
   }
-  if (packOwnedDefaults) notes.push(`${packOwnedDefaults} core slot default(s) still name a pack-owned sound; they move with the sounds into the pack (#323 batch 4)`);
   if (unchecked) notes.push(`${unchecked} base game sound project(s) not checked: no game install at ENFUSION_GAME_PATH`);
   return { fails, notes, files: parsed.length, slots: coreIds.size };
 }

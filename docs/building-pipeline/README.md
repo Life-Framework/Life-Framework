@@ -210,6 +210,9 @@ run; never edit it by hand.
   (traces through the model); a fixture not in it is refused. The store spawns each copy on the surface found a short
   trace under the point, so a few centimetres off still lands on the board.
 - The item needs a price in `ShopPrices.conf`.
+- `alarm` (optional): `{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 180, "offset": [x, y, z], "reach": 10 }`,
+  a child entity (a bell box on the shop front) with `LF_AlarmMountComponent`: a walk-out's site alarm, raised at the
+  store's origin, sounds on it. `reach` must cover the box's distance from the store's origin (at most 12 m).
 
 ## Not done yet
 

@@ -161,10 +161,17 @@ export function analyze(accounts, { now = Date.now(), windowMs = 5 * HOUR } = {}
     const baseline = [...rel].reverse().find((g) => g.usage > 0) || null;
     const lastHit = groups.length ? groups.reduce((x, y) => (y.last > x.last ? y : x)) : null;
     const open = groups.filter((g) => g.resetsAt > now).sort((x, y) => y.resetsAt - x.resetsAt)[0] || null;
-    // Usage right after a hit is low because the account is blocked, not because it has room, so a 5-hour
-    // hit less than 5 h old keeps the account out of the pick until that hit plus 5 h.
+    // Usage right after a hit is low because the account is blocked, not because it has room, so the last
+    // 5-hour hit keeps the account out of the pick until its logged reset, or hit + 5 h when no reset was
+    // logged. A turn logged in a later minute than the hit proves the window reopened: not limited from then on.
     const lastFive = groups.filter((g) => g.type === "five_hour").reduce((x, y) => (!x || y.last > x.last ? y : x), null);
-    const limitedUntil = lastFive && lastFive.last + 5 * HOUR > now ? lastFive.last + 5 * HOUR : 0;
+    let limitedUntil = 0;
+    if (lastFive) {
+      const until = lastFive.resetsAt || lastFive.last + 5 * HOUR;
+      const hitMinute = Math.floor(lastFive.last / 60000) * 60000;
+      const reopened = Object.keys(a.minutes).some((k) => Number(k) > hitMinute);
+      if (until > now && !reopened) limitedUntil = until;
+    }
     return {
       label: a.label,
       email: a.email,
@@ -246,7 +253,7 @@ export function accountLine(r, { now = Date.now(), windowLabel = "5h" } = {}) {
   let est;
   if (r.blocked) est = `BLOCKED by ${typeName(r.blocked.type)} until ${clock(r.blocked.until, now)}`;
   else if (r.pct === null) est = "no observed limit to compare, headroom unknown (counted as full)";
-  else est = `â‰ˆ${Math.round(r.pct)}% of last observed limit (${M(r.baseline)}${r.baselineFrom ? `, ${r.baselineFrom}` : ` at ${clock(r.baselineAt, now)}`}; estimate)`;
+  else est = `≈${Math.round(r.pct)}% of last observed limit (${M(r.baseline)}${r.baselineFrom ? `, ${r.baselineFrom}` : ` at ${clock(r.baselineAt, now)}`}; estimate)`;
   return `${who}: ${M(r.usage)} tok/${windowLabel}, ${r.messages} msgs, ${r.active} active${split}; ${hit}; ${est}`;
 }
 
@@ -258,7 +265,7 @@ export function pickLine(r, { rows = [], now = Date.now() } = {}) {
   const skipped = rows.filter((o) => o !== r && availableAt(o) > now).map((o) => `${o.label} limited until ${clock(availableAt(o), now)}`);
   const skip = skipped.length ? `; skipped ${skipped.join(", ")}` : "";
   if (availableAt(r) > now) return `pick: ${where}  [${r.label}: every account is limited, this one is back first at ${clock(availableAt(r), now)}, ${r.active} active${skip}]`;
-  const why = r.blocked ? "all accounts blocked, soonest listed" : r.pct === null ? "headroom unknown" : `â‰ˆ${Math.round(r.headroom)}% headroom, estimate`;
+  const why = r.blocked ? "all accounts blocked, soonest listed" : r.pct === null ? "headroom unknown" : `≈${Math.round(r.headroom)}% headroom, estimate`;
   return `pick: ${where}  [${r.label}: ${why}, plan x${s.weight}, ${r.active} active, score ${s.score.toFixed(2)} = headroom x plan / (active + 1)${skip}]`;
 }
 
@@ -268,9 +275,10 @@ const HELP = `usage: tools\\cli usage --accounts [--window 5h|7d|90m] [--history
        tools\\cli usage --pick [same options]
   Usage per Claude account (Personal = ~/.claude, Gaming = ~/.claude-gaming + the laptop) over the rolling window:
   cost-weighted tokens, messages, active sessions (a log written in the last 10 min), the last rate-limit hit, and
-  â‰ˆ% of the last observed limit (an estimate from the usage before each past hit). --pick prints the provider
+  ≈% of the last observed limit (an estimate from the usage before each past hit). --pick prints the provider
   instance id for the next agent: the highest headroom x plan weight (max_20x counts 4 x max_5x) / (active sessions + 1).
-  An account whose last 5h limit hit is under 5 h old is skipped ("limited until HH:MM"), even though its usage looks low.`;
+  An account is skipped ("limited until HH:MM") from its last 5h limit hit until the logged reset (hit + 5 h when none was
+  logged), unless turns logged after the hit show the window reopened; its usage looks low while it is blocked.`;
 
 export async function main(args) {
   const opt = { windowMs: 5 * HOUR, windowLabel: "5h", history: HISTORY, laptop: LAPTOP.host, timeout: 90, json: false, pick: false, home: homedir(), ssh: process.env.LF_USAGE_SSH || "ssh" };

@@ -5,12 +5,13 @@
 // session. No Workbench here: the pure part (reading the prefab's attributes, the resting pose, the plan
 // line the plugin parses) and that the plugin still reads the directive.
 //
-// red-proof: 2026-11-14, with BASIS.Right set to the Left basis the run printed
+// red-proof: 2026-11-14, resolveGameNames pushing the bare name instead of r.ref failed "a bare game
+// path or name must resolve to {GUID}path". Earlier: with BASIS.Right set to the Left basis the run printed
 // `FAIL RestingUP Right: model axis x does not face +y` and exited 1; restored, it passes.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ITEM_STATES, RESTING, itemAttributes, itemLine, itemPlan, resolvePrefab, restingBasis } from "../visual/look-item.mjs";
+import { ITEM_STATES, RESTING, itemAttributes, itemLine, itemPlan, resolveGameNames, resolvePrefab, restingBasis } from "../visual/look-item.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const failures = [];
@@ -69,6 +70,23 @@ try {
   failures.push("a missing prefab must be refused");
 } catch {
   /* expected */
+}
+
+// A game prefab named without its GUID becomes {GUID}path (2026-11-14: "no prefab for
+// Prefabs/Props/Commercial/ShelfShop_01.et"); ours, slugs and full refs are left alone.
+{
+  const asked = [];
+  const fake = async (_root, arg) => {
+    asked.push(arg);
+    if (arg === "Prefabs/Props/Commercial/ShelfShop_01.et" || arg === "ShelfShop_01") return { path: "Prefabs/Props/Commercial/ShelfShop_01.et", ref: "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et", local: null };
+    throw new Error("no prefab");
+  };
+  const ours = "Prefabs/Items/Fence/LF_Drill.et";
+  const full = "{0123456789ABCDEF}Prefabs/X.et";
+  const out = await resolveGameNames(root, ["Prefabs/Props/Commercial/ShelfShop_01.et", "ShelfShop_01", ours, full, "Prefabs/Nope/Nothing.et"], { resolve: fake });
+  check(out[0] === "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" && out[1] === out[0], `a bare game path or name must resolve to {GUID}path, got ${out.slice(0, 2).join(", ")}`);
+  check(out[2] === ours && out[3] === full && !asked.includes(ours) && !asked.includes(full), "an addon path or a full ref must not be looked up");
+  check(out[4] === "Prefabs/Nope/Nothing.et", "an unknown name must be passed on for resolvePrefab's refusal");
 }
 
 // The plugin reads the directive the plan writes.

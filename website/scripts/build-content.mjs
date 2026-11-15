@@ -132,6 +132,7 @@ addRepoDoc("docs/owner/add-job.md", { slug: "owner-add-job", group: "For server 
 addRepoDoc("docs/owner/add-shop.md", { slug: "owner-add-shop", group: "For server owners", order: 2, title: "Add a shop" });
 addRepoDoc("docs/config/owner-config.md", { slug: "owner-config", group: "For server owners", order: 3, title: "Check your owner config" });
 addRepoDoc("docs/upgrades/README.md", { slug: "upgrades", group: "For server owners", order: 4, title: "Upgrade notes" });
+addRepoDoc("docs/upgrades/0.1.0.md", { slug: "upgrade-0-1-0", group: "For server owners", order: 5, title: "Upgrade to 0.1.0" });
 
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
 // Lands in its own PR; addRepoDoc skips a file that is not there yet.

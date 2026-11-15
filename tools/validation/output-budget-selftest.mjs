@@ -4,14 +4,16 @@
 // skipped) and feeds large transcripts through the summariser, and fails when the default
 // output goes over its line budget or a failure, a skip or a timeout is hidden.
 //
+// red-proof 2026-11-14: with the per-lane cap of 4 queue rows in cmdPoolStatus removed, "pool status stays inside 40 lines with 30 queued jobs" failed (got 66); restored.
 // red-proof: with MAX_FAILURE_LINES set to 1000 in quiet-run.mjs, "a 300-failure transcript stays
 // inside its budget" failed; with LF_VERBOSE=1 forced into the child environment, "validate stays
 // inside 14 lines" and "help stays inside 12 lines" failed. Both restored. With the RED-OK/RED PROOF OK
 // alternatives removed from KEEP_RE in quiet-run.mjs, "a passing --red run keeps its RED-OK lines" failed; restored.
-import { readdirSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { PASSTHROUGH, summarize } from "../lib/quiet-run.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -79,11 +81,39 @@ function run(args, env = {}) {
 const budgets = [
   ["help", ["help"], 12],
   ["wt help", ["wt", "help"], 6],
-  ["pool status", ["pool", "status"], 40],
 ];
 for (const [name, args, max] of budgets) {
   const r = run(args);
   check(r.lines.length <= max, `${name} stays inside ${max} lines (got ${r.lines.length})`);
+}
+// pool status prints one row per busy lane and per queued job, so its length follows the live pool:
+// 43 lines on a busy afternoon (2026-11-14) failed this check for a reason that is not a bug. The
+// budget is for a fixed pool state: a scratch checkout with only this PC, an empty hub, and a queue
+// of 30 waiting jobs (the per-lane cap of 4 must keep it short).
+{
+  const fx = mkdtempSync(join(tmpdir(), "lf-pool-budget-"));
+  try {
+    spawnSync("git", ["init", "-q", fx], { windowsHide: true });
+    writeFileSync(join(fx, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", disabled: true }, { name: "lf-cloud", disabled: true }] } }));
+    mkdirSync(join(fx, "tmp", "wt", "pool", "queue"), { recursive: true });
+    const script = join(fx, "status.mjs");
+    const pool = pathToFileURL(join(ROOT, "tools", "remote", "pool.mjs")).href;
+    writeFileSync(script, `import { cmdPoolStatus, writeTicket } from ${JSON.stringify(pool)};
+const root = process.argv[2];
+const jobs = Number(process.argv[3]);
+for (let i = 0; i < jobs; i++) writeTicket(root, { pid: process.pid, at: new Date().toISOString(), lane: i % 2 ? "test" : "session", slug: "fx-" + i, purpose: i % 2 ? "test" : "session", priority: "normal", machines: ["local"], clients: 1, profile: "lowspec" }, Date.now() + i);
+cmdPoolStatus(root, false);
+`);
+    for (const jobs of [0, 30]) {
+      const r = spawnSync(process.execPath, [script, fx, String(jobs)], { cwd: fx, encoding: "utf8", windowsHide: true, timeout: 60000, env: { ...process.env, LF_TESTBOX: "", LF_QUIET_CHILD: "1" } });
+      const lines = `${r.stdout}${r.stderr}`.split(/\r?\n/).filter((l, i, a) => l !== "" || i < a.length - 1);
+      check(r.status === 0 && lines.some((l) => l.startsWith("queue: ")), `pool status (fixture, ${jobs} queued) ran (exit ${r.status}): ${lines.slice(0, 3).join(" | ")}`);
+      check(lines.length <= 40, `pool status stays inside 40 lines with ${jobs} queued jobs (got ${lines.length})`);
+      if (jobs) check(lines.some((l) => /^queue: 30 waiting/.test(l)), "the fixture queue of 30 jobs is the one printed");
+    }
+  } finally {
+    rmSync(fx, { recursive: true, force: true });
+  }
 }
 const full = run(["help", "--verbose"]);
 check(full.lines.length > 60, `help --verbose still prints the full usage (got ${full.lines.length} lines)`);

@@ -132,6 +132,8 @@ export function buildLine(id, spec) {
     return `${id} resetcrime`;
   }
   if (spec.verb === "resetplayer") {
+    // spec.keepInventory: leave the inventory (the default empties it and issues the civilian kit).
+    if (spec.keepInventory) return `${id} resetplayer ${spec.cash === undefined ? -1 : Number(spec.cash)} keep`;
     return spec.cash === undefined ? `${id} resetplayer` : `${id} resetplayer ${Number(spec.cash)}`;
   }
   if (spec.verb === "gm") {
@@ -937,6 +939,10 @@ function selftest() {
   const clean = buildLine(8, { verb: "capture", mode: "world", name: "s", x: 1, y: 2, z: 3, ox: 4, oy: 5, oz: 6, hour: 18.5 });
   if (clean !== "8 capture world s 1 2 3 4 5 6 18.5") throw new Error(clean);
   if (buildLine(3, { verb: "time", hour: 18.5 }) !== "3 time 18.5") throw new Error("time line");
+  // resetplayer empties the inventory by default; `keep` is the opt-out and sits after the cash argument.
+  // red-proof 2026-11-14: with the keepInventory branch of buildLine removed, "resetplayer keep line" failed.
+  if (buildLine(6, { verb: "resetplayer" }) !== "6 resetplayer" || buildLine(6, { verb: "resetplayer", cash: 50 }) !== "6 resetplayer 50") throw new Error("resetplayer line");
+  if (buildLine(6, { verb: "resetplayer", keepInventory: true }) !== "6 resetplayer -1 keep" || buildLine(6, { verb: "resetplayer", cash: 50, keepInventory: true }) !== "6 resetplayer 50 keep") throw new Error("resetplayer keep line");
   if (buildLine(3, { verb: "time", hour: 12, weather: "Cloudy" }) !== "3 time 12 Cloudy") throw new Error("time weather line");
   const probeEnt = buildLine(8, { verb: "probe", mode: "ent", name: "Hospital_Bed_1", x: 1, y: 0.2, z: 3 });
   if (probeEnt !== "8 probe ent Hospital_Bed_1 1 0.2 3") throw new Error(probeEnt);
@@ -1533,7 +1539,10 @@ function main(argv) {
       return printResult(sendCommand({ verb: "resetcrime" }, 10000));
     }
     if (cmd === "resetplayer") {
-      return printResult(sendCommand(rest[0] === undefined ? { verb: "resetplayer" } : { verb: "resetplayer", cash: Number(rest[0]) }, 10000));
+      // `resetplayer [cash] [keep]`: `keep` leaves the inventory, which is emptied (civilian kit issued) by default.
+      const keepInventory = rest.includes("keep");
+      const cashArg = rest.find((a) => a !== "keep");
+      return printResult(sendCommand({ verb: "resetplayer", ...(cashArg === undefined ? {} : { cash: Number(cashArg) }), ...(keepInventory ? { keepInventory: true } : {}) }, 10000));
     }
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));

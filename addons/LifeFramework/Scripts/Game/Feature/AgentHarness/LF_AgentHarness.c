@@ -174,6 +174,8 @@ class LF_AgentCommand
 			cmd.Arg1 = "-1";
 			if (parts.Count() > 2)
 				cmd.Arg1 = parts[2];
+			if (parts.Count() > 3)
+				cmd.Arg2 = parts[3];
 			return true;
 		}
 		if (cmd.Verb == "gm")
@@ -2058,8 +2060,8 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Harness `resetplayer [cash]` (#496): cuffs, sentence, duty, faction, wanted and crime stores,
-	//! all server side behind the dev gate.
+	//! Harness `resetplayer [cash [keep]]` (#496): cuffs, sentence, duty, faction, wanted and crime stores,
+	//! and the inventory (emptied, civilian kit issued; `keep` leaves it), all server side behind the dev gate.
 	protected static void DoResetPlayer(LF_AgentCommand cmd)
 	{
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
@@ -2070,7 +2072,7 @@ class LF_AgentHarness
 		}
 
 		SCR_PlayerController.LF_ResetDispatchCount();
-		character.LF_AskHarnessResetPlayer(cmd.Id, cmd.Arg1.ToInt());
+		character.LF_AskHarnessResetPlayer(cmd.Id, cmd.Arg1.ToInt(), cmd.Arg2 == "keep");
 	}
 
 	//------------------------------------------------------------------------------------------------
