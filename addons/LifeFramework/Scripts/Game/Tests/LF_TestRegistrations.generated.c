@@ -28,6 +28,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AmbientTown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AmbulanceSiren(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AmbulanceSirenWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AmmoList(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AssetAnim(), LF_TestTier.WORLD);
