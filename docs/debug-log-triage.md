@@ -15,6 +15,11 @@ absent, classify it, fix or file it, and add the row here.
   and `error.log` (or the session list via the MCP `logs_list` / `logs_tail`).
 - Headless server (`cli dev` / `cli test`): the CLI parses the LFTEST markers
   and dumps `[LFDebug:*]` lines itself.
+- `tools\cli host triage [<console.log>]` groups a log's `[LFDebug:*]` warnings and errors,
+  `SCRIPT (E)` and `VME:` lines by normalised text, counts them, and marks each group known
+  (a row below matches) or new. Run it first; only the `NEW` groups need a verdict. The first
+  cell of a row is the pattern: `...`, `<x>` and `N` are wildcards, and a row that is only a
+  `[LFDebug:Tag] ...` does not vouch for errors or warnings (`tools/lib/log-triage.mjs`).
 - Grep for real failures: `( E )`, `SCRIPT (E)`, `VME:`, `Unable to find`,
   `Missing string ID`, `Virtual Machine Exception`. Judge by specific patterns,
   never by total error counts (vanilla noise below produces dozens of lines
