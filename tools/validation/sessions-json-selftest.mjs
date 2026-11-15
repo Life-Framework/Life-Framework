@@ -60,7 +60,14 @@ if (!existsSync(schemaPath)) {
   expect(bad(mut((n) => { delete n.at; })), "a next without at must fail");
   expect(bad(mut((n) => { delete n.build; })), "a next without build must fail");
   expect(bad(mut((n) => { delete n.wipe; })), "a next without wipe must fail");
-  expect(bad(mut((n) => { delete n.announced; })), "a next without announced must fail");
+  // #1537: `announced` is the ISO post time and is absent on a draft that was not posted.
+  expect(!bad(mut((n) => { delete n.announced; })), "a draft next without announced must pass");
+  expect(check(fx("draft"), schema).length === 0, `draft fixture must validate: ${check(fx("draft"), schema)}`);
+  expect(!("announced" in fx("draft").next), "draft fixture has no announced key");
+  expect(bad(mut((n) => { n.announced = false; })), "announced: false must fail (a draft omits the key)");
+  expect(bad(mut((n) => { n.announced = true; })), "announced: true must fail (it is the post time)");
+  expect(bad(mut((n) => { n.announced = "yesterday"; })), "an announced that is not a date must fail");
+  expect(bad(mut((n) => { n.announced = "2026-11-15T12:30:00"; })), "an announced without an offset must fail");
   expect(bad(mut((n) => { n.wipe = "true"; })), "a wipe that is a string must fail");
   expect(bad(mut((n) => { n.wipe = 1; })), "a wipe that is a number must fail");
   expect(bad(mut((n) => { n.at = "2026-11-20T20:00:00"; })), "an at without an offset must fail");

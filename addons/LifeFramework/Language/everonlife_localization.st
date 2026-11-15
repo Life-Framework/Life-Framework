@@ -6087,6 +6087,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Weapon theft"
      Comment "Offence on a wanted poster."
     }
+    CustomStringTableItem "{28833077A8307105}" {
+     Id "LF-Ops_RestartTitle"
+     Target_en_us "Server restart"
+     Comment "Toast title for the scheduled restart warning (Ops O6, #1265)."
+    }
+    CustomStringTableItem "{40655A61760C8E55}" {
+     Id "LF-Ops_RestartToast"
+     Target_en_us "The server restarts in %1 minute(s)."
+     Comment "Toast to every player at each restart warning step (Ops O6, #1265). %1 = minutes left."
+    }
     CustomStringTableItem "{5AB8DC50BD7DC910}" {
      Id "LF-OrgRight_BUY_UPGRADE"
      Target_en_us "Buy upgrades"

@@ -76,6 +76,10 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const int VEHICLE_TOWED_AT = 1800000000;
 	static const int VEHICLE_INSPECTED_AT = 1800000600;
 	static const int VEHICLE_COMPARTMENT = 1;
+	//! The ladder organization's leased site and its held ground (#751, "heldground" payload, save version 34).
+	static const string HELD_SITE = "e2e-held-ground-site";
+	static const int HELD_SECONDS = 3600;
+	static const int HELD_POINTS = 12;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -369,6 +373,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_OrganizationManager.ApplyRanks(rows);
 		ctx.True(org.Allows(ORG_OFFICER, LF_EOrganizationPermission.MANAGE_TERRITORY), "e2e officer may manage territory before the save");
 		ctx.False(org.Allows(ORG_MEMBER, LF_EOrganizationPermission.USE_STASH), "e2e member may not use the stash before the save");
+
+		// #751: the organization leases a site, opens it, and has held it an hour for 12 points.
+		ctx.True(LF_Hideout.Assign(HELD_SITE, orgId), "e2e the organization leases the held site before the save");
+		ctx.True(LF_Hideout.TryUnlock(ORG_FOUNDER, HELD_SITE), "e2e the founder unlocks the held site before the save");
+		ctx.True(LF_Hideout.SetHeldGround(HELD_SITE, orgId, HELD_SECONDS, HELD_POINTS), "e2e the organization holds its site before the save");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -512,6 +521,46 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(4, LF_JobLevels.LevelOf(uid, "MINER"), "e2e worker is miner level 4 after the restart");
 #endif
 		LF_Debug.Info(LF_JobLevels.FEATURE, string.Format("e2e restart: %1 CIVILIAN %2 xp level %3, FARMER %4 xp, MINER %5 xp; courier DELIVERY %6 xp level %7", uid, LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_CIVILIAN), LF_JobLevels.LevelOf(uid, LF_JobLevels.JOB_CIVILIAN), LF_JobLevels.XpOf(uid, LF_JobLevels.JOB_FARMER), LF_JobLevels.XpOf(uid, "MINER"), LF_CivilianJob.GetExperience(COURIER_UID), LF_CivilianJob.GetLevel(COURIER_UID)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #751 after the restart: the lease and the open lock as before; the held ground is back, or with
+	//! --legacy-save (a version 23 save, no "heldground" payload) the site loads unheld.
+	protected void VerifyHeldGround(LF_TestContext ctx)
+	{
+		string site = LF_Test_E2E_SaveStateWrite.HELD_SITE;
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(LF_Test_E2E_SaveStateWrite.ORG_FOUNDER);
+		ctx.NotNull(org, "e2e the holding organization is back after the restart");
+		if (!org)
+			return;
+
+#ifdef LF_E2E_PRE_MOVE
+		// --pre-move: a ref build from before #751 (its save version below the payload's) leased no
+		// site and held no ground; a later ref build wrote both, checked as on a plain restart.
+		if (LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("heldground"))
+		{
+			ctx.True(LF_Hideout.HeldGroundOf(site) == null, "e2e the ref build's save has no lease on the held site");
+			ctx.Equal(0, LF_Hideout.ExportHeldGround().Count(), "e2e the ref build's save loads every site unheld");
+			return;
+		}
+#endif
+		ctx.EqualStr(org.GetId(), LF_Hideout.GetOwner(site), "e2e the held site keeps its lease after the restart");
+		ctx.False(LF_Hideout.IsLocked(site), "e2e the held site keeps its open lock after the restart");
+		LF_HeldGroundRow held = LF_Hideout.HeldGroundOf(site);
+		ctx.NotNull(held, "e2e the held site is known after the restart");
+		if (!held)
+			return;
+
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.EqualStr("", held.m_sHolderOrgId, "e2e the version 23 save loads the site unheld");
+		ctx.Equal(0, held.m_iHoldSeconds, "e2e the version 23 save loads no hold time");
+		ctx.Equal(0, held.m_iHoldPoints, "e2e the version 23 save loads no points");
+#else
+		ctx.EqualStr(org.GetId(), held.m_sHolderOrgId, "e2e the organization still holds its site after the restart");
+		ctx.Equal(LF_Test_E2E_SaveStateWrite.HELD_SECONDS, held.m_iHoldSeconds, "e2e the hold time is kept after the restart");
+		ctx.Equal(LF_Test_E2E_SaveStateWrite.HELD_POINTS, held.m_iHoldPoints, "e2e the banked points are kept after the restart");
+#endif
+		LF_Debug.Info("Hideout", string.Format("e2e restart: %1 lease %2 holder '%3' hold %4 s points %5", site, LF_Hideout.GetOwner(site), held.m_sHolderOrgId, held.m_iHoldSeconds, held.m_iHoldPoints));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -681,7 +730,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #endif
 #ifndef LF_E2E_PRE_MOVE
 		// --pre-move: the ref build writes its own save version.
-		ctx.Equal(33, LF_SaveStamp.BootSaveVersion(), "e2e the save names its save version");
+		ctx.Equal(LF_TestSaveVersion.CURRENT, LF_SaveStamp.BootSaveVersion(), "e2e the save names its save version");
 #endif
 #endif
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
@@ -763,17 +812,25 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			ctx.Equal(0, garagedState.m_iInspectedAt, "e2e the version 23 save loads the car uninspected");
 			ctx.Equal(0, garagedState.m_iCompartment, "e2e the version 23 save loads the car with no compartment");
 #else
+			// --pre-move: a ref build from before #752a (its save version below the payload's) wrote no
+			// state rows and set none; a later ref build wrote them, checked as on a plain restart.
+			bool refBeforeState = false;
 #ifdef LF_E2E_PRE_MOVE
-			// --pre-move: the ref build predates #752a, wrote no state rows and set none.
-			ctx.Equal(LF_EVehicleTowState.NONE, garagedState.m_iTowState, "e2e the ref build's save loads the car untowed");
-			ctx.Equal(0, garagedState.m_iInspectedAt, "e2e the ref build's save loads the car uninspected");
-			ctx.Equal(0, garagedState.m_iCompartment, "e2e the ref build's save loads the car with no compartment");
-#else
-			ctx.Equal(LF_EVehicleTowState.TOWED, garagedState.m_iTowState, "e2e the garaged car keeps its tow state after the restart");
-			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_TOWED_AT, garagedState.m_iTowedAt, "e2e the garaged car keeps its towed-at after the restart");
-			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_INSPECTED_AT, garagedState.m_iInspectedAt, "e2e the garaged car keeps its inspection after the restart");
-			ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_COMPARTMENT, garagedState.m_iCompartment, "e2e the garaged car keeps its compartment after the restart");
+			refBeforeState = LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("vehiclestate");
 #endif
+			if (refBeforeState)
+			{
+				ctx.Equal(LF_EVehicleTowState.NONE, garagedState.m_iTowState, "e2e the ref build's save loads the car untowed");
+				ctx.Equal(0, garagedState.m_iInspectedAt, "e2e the ref build's save loads the car uninspected");
+				ctx.Equal(0, garagedState.m_iCompartment, "e2e the ref build's save loads the car with no compartment");
+			}
+			else
+			{
+				ctx.Equal(LF_EVehicleTowState.TOWED, garagedState.m_iTowState, "e2e the garaged car keeps its tow state after the restart");
+				ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_TOWED_AT, garagedState.m_iTowedAt, "e2e the garaged car keeps its towed-at after the restart");
+				ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_INSPECTED_AT, garagedState.m_iInspectedAt, "e2e the garaged car keeps its inspection after the restart");
+				ctx.Equal(LF_Test_E2E_SaveStateWrite.VEHICLE_COMPARTMENT, garagedState.m_iCompartment, "e2e the garaged car keeps its compartment after the restart");
+			}
 #endif
 			LF_Debug.Info("Vehicle", string.Format("e2e restart: %1 tow %2 towed-at %3 inspected-at %4 compartment %5", GARAGED_ID, garagedState.m_iTowState, garagedState.m_iTowedAt, garagedState.m_iInspectedAt, garagedState.m_iCompartment));
 		}
@@ -796,6 +853,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		VerifyPlaytime(ctx);
 		VerifyJobLevels(ctx);
 		VerifyOrgLadder(ctx);
+		VerifyHeldGround(ctx);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

@@ -7,6 +7,7 @@
 // og:image that exists; old addresses must redirect; an unknown path must answer 404 with
 // the not-found page. Markers prove the page body was rendered, not an empty shell.
 
+import { readFileSync } from "node:fs";
 import { startServer } from "./serve-dist.mjs";
 
 const useDist = process.argv.includes("--dist");
@@ -26,6 +27,7 @@ const pages = {
   "/join": "An open-source life and roleplay framework for Arma Reforger",
   "/devlog": "What changed, day by day",
   "/servers": "Host it, tune it, build on it",
+  "/alpha": "Join the Everon 1989 alpha",
   "/contribute": "Join the Discord",
   "/decisions": "The calls that set the taste",
   "/support": "Where the money goes",
@@ -80,6 +82,28 @@ for (const [route, marker] of Object.entries(pages)) {
   }
   if (problems.length) fail(`${route}: ${problems.join("; ")}`);
   else ok(`${route} -> 200 "${title}"`);
+}
+
+// The session panel (#1514): a future announced session shows its time; none, or one that has passed, says nothing is
+// announced yet and shows no old time. Reads the same website/content/sessions.json the build read.
+{
+  let next = null;
+  try {
+    next = JSON.parse(readFileSync(new URL("../content/sessions.json", import.meta.url), "utf8")).next ?? null;
+  } catch {
+    next = null;
+  }
+  const when = next ? new Date(next.at) : null;
+  // A draft (no `announced`, #1537) is not shown either.
+  const future = when !== null && typeof next.announced === "string" && !Number.isNaN(when.getTime()) && when.getTime() > Date.now();
+  for (const route of ["/servers", "/alpha"]) {
+    const html = await (await fetch(base + route)).text();
+    const said = html.includes("No session announced yet");
+    const timed = html.includes("<time");
+    if (future && (said || !html.includes(`dateTime="${when.toISOString()}"`))) fail(`${route}: a future session is announced but the panel does not show it`);
+    else if (!future && (!said || timed)) fail(`${route}: no upcoming session, so the panel must say "No session announced yet" and show no time`);
+    else ok(`${route} session panel matches the ${future ? "future" : "past or empty"} fixture`);
+  }
 }
 
 for (const [from, to] of Object.entries(redirects)) {
