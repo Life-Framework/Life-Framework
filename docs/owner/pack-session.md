@@ -58,6 +58,37 @@ worktree.
    (`agent-box/proofs/config-stream-proof.mjs` drives the same screen.)
 4. The server log line `[LFDebug:Config] shops: pack overlay ... set N fields` says the overlay applied.
 
+## Worked check: re-theme the town (four overlays at once)
+
+`pack check` and the owner `config.json` route each prove one overlay. This boots all four in one pack
+(issue #1005): a recoloured UI theme (`LF_UIThemeConfig`), a price change and a removed item
+(`LF_ShopPricesConfig`, `LF_ItemCatalogueConfig`), a prefab slot swap (`LF_PrefabSlotsConfig`) and a renamed
+term (`LF_TermsConfig`). The fixture is `tools/test/pack-fixtures/retheme/`; the pack it makes is generated
+and not committed.
+
+```
+node agent-box/session.mjs retheme-proof --prepare   # pack new Retheme + the fixture + regen-localization + pack check
+tools\cli session up --pack LF_Retheme --clients 1 --profile full
+node agent-box/session.mjs retheme-proof             # one PASS or FAIL line per overlay
+node agent-box/session.mjs down
+```
+
+What client 1 reads: the water line at `$31` (the core's is `$6`), the gun counter with no M9 line (shipped
+`$500`), the police application titled "Application to the Sheriff", the dropped item's marker as
+`LF_EvidenceCasing` (the harness `seen` read's `evidence=` token; the slot swap), and a picture of the price
+list whose face is the pack's paper colour. The proof then reads the logs: the economy, slot and terms overlays
+log `pack overlay ... changed N` on the server, the theme on the client (a dedicated server has no UI).
+
+Things a pack author trips on, found by this check:
+
+- A term form or any text of your own is a key in `Language/<name>_localization.st`, and the engine reads the
+  runtime tables beside it. After adding a row run `tools\cli regen-localization` (it covers a `pack new` pack
+  since #1005); without it the key shows as "Missing string ID" and the term has no words.
+- `LF_TermsConfig` is on the public surface (a pack may overlay terms).
+- A scaffolded pack in `addons/` is loaded by every launch of that worktree, so four launch-list selftests
+  (`session`, `host`, `validate-addonsdir`, `validate-rdb-fresh`) fail while it is there. Delete it
+  (`node tools/safe-rm.mjs addons/LF_Retheme`) before `validate` or `wt ship`.
+
 ## Not covered
 
 - `test --pack`: the in-game suite boots the core mission on purpose; a pack proof is a session.

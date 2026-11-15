@@ -400,6 +400,71 @@ ${clean.stderr}`);
     if (!conf.startsWith("regen:localization")) fail(`conf driver wrote ${JSON.stringify(conf)}`);
     if (!registry.startsWith("regen:tests")) fail(`registry driver wrote ${JSON.stringify(registry)}`);
   }
+
+  // Regression: the registry driver ran mid-merge and wrote the incoming side's new test files into
+  // the worktree as untracked files, so git then refused to write them ("untracked working tree
+  // files would be overwritten by merge"). The driver must generate in a temp dir and touch only %A.
+  const testsRel = "addons/LifeFramework/Scripts/Game/Tests";
+  const registryRel = `${testsRel}/LF_TestRegistrations.generated.c`;
+  const testSource = (name) => `// tier: LOGIC\nclass ${name} : LF_Test\n{\n}\n`;
+  const writeTest = (repo, name) => {
+    mkdirSync(join(repo, testsRel), { recursive: true });
+    writeFileSync(join(repo, testsRel, `${name}.c`), testSource(name));
+  };
+  const untrackedRepo = join(temp, "untracked");
+  initRepo(untrackedRepo);
+  configureDriver(untrackedRepo, "lf-regen-tests", "regen-generated.mjs");
+  writeFileSync(join(untrackedRepo, ".gitattributes"), "LF_TestRegistrations.generated.c merge=lf-regen-tests\n");
+  writeTest(untrackedRepo, "LF_Test_Old");
+  mkdirSync(join(untrackedRepo, testsRel), { recursive: true });
+  writeFileSync(join(untrackedRepo, registryRel), "base-registry\n");
+  commitAll(untrackedRepo, "base");
+  git(untrackedRepo, ["checkout", "-q", "-b", "theirs"]);
+  writeTest(untrackedRepo, "LF_Test_Incoming");
+  writeFileSync(join(untrackedRepo, registryRel), "theirs-registry\n");
+  commitAll(untrackedRepo, "theirs");
+  git(untrackedRepo, ["checkout", "-q", "master"]);
+  writeTest(untrackedRepo, "LF_Test_Local");
+  writeFileSync(join(untrackedRepo, registryRel), "ours-registry\n");
+  commitAll(untrackedRepo, "ours");
+  const untrackedMerge = git(untrackedRepo, ["merge", "theirs", "--no-edit"]);
+  const untrackedOut = `${untrackedMerge.stdout}\n${untrackedMerge.stderr}`;
+  if (untrackedMerge.status !== 0) {
+    fail(`registry driver merge should be clean (it must not write untracked test files into the worktree):\n${untrackedOut}`);
+  } else {
+    const registry = readFileSync(join(untrackedRepo, registryRel), "utf8");
+    for (const name of ["LF_Test_Old", "LF_Test_Incoming", "LF_Test_Local"]) {
+      if (!registry.includes(`new ${name}()`)) fail(`regenerated registry is missing ${name}:\n${registry}`);
+    }
+    const status = git(untrackedRepo, ["status", "--porcelain"]).stdout.trim();
+    if (status) fail(`the registry driver left the worktree dirty:\n${status}`);
+  }
+
+  // The localization driver generates the same way: real string table, scratch dir, only %A written.
+  const langRel = "addons/LifeFramework/Language";
+  const confRel = `${langRel}/everonlife_localization.en_us.conf`;
+  const locRepo = join(temp, "loc-real");
+  initRepo(locRepo);
+  configureDriver(locRepo, "lf-regen-localization", "regen-generated.mjs");
+  writeFileSync(join(locRepo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
+  mkdirSync(join(locRepo, langRel), { recursive: true });
+  writeFileSync(join(locRepo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
+  writeFileSync(join(locRepo, confRel), "base-conf\n");
+  commitAll(locRepo, "base");
+  git(locRepo, ["checkout", "-q", "-b", "theirs"]);
+  writeFileSync(join(locRepo, confRel), "theirs-conf\n");
+  commitAll(locRepo, "theirs");
+  git(locRepo, ["checkout", "-q", "master"]);
+  writeFileSync(join(locRepo, confRel), "ours-conf\n");
+  commitAll(locRepo, "ours");
+  const locMerge = git(locRepo, ["merge", "theirs", "--no-edit"]);
+  if (locMerge.status !== 0) fail(`localization driver merge should be clean:\n${locMerge.stdout}\n${locMerge.stderr}`);
+  else {
+    const conf = readFileSync(join(locRepo, confRel), "utf8");
+    if (!conf.startsWith("StringTableRuntime")) fail(`localization driver wrote ${JSON.stringify(conf.slice(0, 60))}`);
+    const locStatus = git(locRepo, ["status", "--porcelain"]).stdout.trim();
+    if (locStatus) fail(`the localization driver left the worktree dirty:\n${locStatus}`);
+  }
 } finally {
   rmSync(temp, { recursive: true, force: true });
 }

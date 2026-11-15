@@ -33,7 +33,7 @@ named but does not load as an `LF_PackManifest` also refuses.
 | Dialogue hooks and params | the dialogue config and action params | to be listed |
 | Prefab slots | `LF_PrefabSlotsConfig` (`Configs/PrefabSlots/LF_PrefabSlots.conf`): a pack patches `m_Prefab` by slot id; the slot ids are the core file's `m_sSlot` rows | class listed; slot ids to be listed (#964) |
 | Sound slots | `LF_SoundSlotsConfig` (`Configs/SoundSlots/LF_SoundSlots.conf`): a pack patches `m_Project` by slot id | class listed; slot ids to be listed (#323) |
-| Terms list | the vocabulary a pack renames | to be listed (#958) |
+| Terms list | `LF_TermsConfig` (`Configs/Terms/LF_Terms.conf`): a pack patches a term's forms by id, each form a key in its own table; the term ids are the core file's `m_sId` rows | class listed; term ids to be listed (#958) |
 | Systems list | the system ids the owner switches on and off | to be listed (#960) |
 
 A surface not yet listed is internal until it is. Adding a name is free; removing or renaming

@@ -35,7 +35,7 @@ The lead dispatches every ready slice up to account headroom (`tools\cli usage
 --pick`, in progress on another branch) and lets the test pool spread tests
 and sessions. `tools\cli slice list <parent> --ready` is the dispatch queue:
 
-- **ready** means open, not `agent:working`, and every dependency merged
+- **ready** means open, not `agent:working`, not `hold`, and every dependency merged
   (`in-dev`, `needs-playtest`, `verified` or closed: merging is enough, the
   playtest is not waited for);
 - the queue is sorted by **critical path**: the longest chain of unmerged
@@ -67,6 +67,15 @@ is merged, **one** integration agent runs the chapter's beat sheet end to end
 on `main`. Each failed beat becomes a new slice card under the chapter, not a
 fix inside the integration run.
 
+**Town placement.** Slices put their world props in debug-grid cells and never
+edit a town layer (`docs/architecture/world-zones.md`; `validate-world-zones`
+enforces it). So the plan's last slice before the integration run is a **town
+placement** card (`type: town`, `docs/process/slice-card.md` "Town placement
+card"). It depends on every other slice and runs in a `town-<N>` worktree. One
+agent places the chapter's systems in town to the polish bar and clears the
+cleanup backlog rows they touch. The integration run and the chapter's video
+then use the town; the grid cells stay as test spots.
+
 ## 5. Risk-weighted review
 
 | Tier | What | Gate |
@@ -78,7 +87,8 @@ fix inside the integration run.
 
 Today `wt ship` still runs the full gate for any `addons/` change, T1
 included; a T1 ship mode is a follow-up. Visible work gets one `look` picture
-in the PR. Polish nitpicks become
+in the PR: `look grid:<slug>` for a slice at the grid's low bar, `look <area>`
+before and after for the town pass, at the full polish bar. Polish nitpicks become
 follow-up issues; they never block the merge.
 
 ## 6. The human loop
@@ -102,7 +112,9 @@ appends one ledger row:
 tools\cli slice record <issue> --model sonnet --type capability --outcome merged|handoff|split|failed --gate pass|fail --minutes 38 [--wait 4]
 ```
 
-`--gate` is the first gate run, `--minutes` the slice's lead time from start
+`--outcome merged` is refused unless `gh` shows a merged PR for the slice (branch
+`ws/slice-<N>` or a body that refs it); record `handoff` while the PR is open, or
+pass `--force`. `--gate` is the first gate run, `--minutes` the slice's lead time from start
 to PR, `--wait` the minutes queued for the pool. The ledger is one JSONL file
 in the git common dir (`.git/lf/slice-ledger.jsonl`), so every worktree writes
 to the same file. `tools\cli slice stats` reports, overall and per model and

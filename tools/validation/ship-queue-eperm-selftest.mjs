@@ -8,6 +8,9 @@
 // survives a reader holding the file open (EPERM)" and "renameRetry with tries:1 throws EPERM/EBUSY while the file is
 // held" stays as the control; update() without its try/catch "update() does not throw when the write keeps failing";
 // readQueue returning an empty queue on a read error "readQueue throws, not an empty queue, while the file is locked".
+// No wall-clock hold: the holder keeps the file until the test signals it (a release file), and the signal comes from
+// the writer's own retry hook (writeQueue's `sleep` option), i.e. once the rename was seen failing. The old 700 ms
+// timer raced the ~1 s retry budget: under load the holder lived past it ("survives a reader ..., after 1230 ms").
 // The held-open checks run on Windows only (elsewhere a rename over an open file just works); the retry rules are pure.
 
 import { spawn, spawnSync } from "node:child_process";
@@ -62,14 +65,17 @@ const err = (code) => Object.assign(new Error(`${code}: simulated`), { code });
 const dir = mkdtempSync(join(tmpdir(), "lf-shipq-eperm-"));
 const hubOf = (root) => join(root, "tmp", "wt");
 
-// Holds `file` open for ms with the given FileShare ("Read": others read, nobody writes or replaces it;
-// "None": nobody opens it). Resolves once the handle is held; `done` resolves when it is released.
-function holdOpen(file, ms, share) {
-  const script = `$f=[System.IO.File]::Open($env:LF_HOLD,'Open','Read','${share}'); [Console]::Out.WriteLine('ready'); [Console]::Out.Flush(); Start-Sleep -Milliseconds ${ms}; $f.Close()`;
-  const child = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], { env: { ...process.env, LF_HOLD: file }, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] });
+// Holds `file` open with the given FileShare ("Read": others read, nobody writes or replaces it; "None": nobody
+// opens it) until release() is called (or 60 s pass, a leak guard). `ready` resolves once the handle is held;
+// release() lets go and returns once the handle is really closed; `done` resolves when the process has exited.
+let holdN = 0;
+function holdOpen(file, share) {
+  const rel = join(dir, `hold-${++holdN}.rel`);
+  const script = `$f=[System.IO.File]::Open($env:LF_HOLD,'Open','Read','${share}'); [Console]::Out.WriteLine('ready'); [Console]::Out.Flush(); $i=0; while(-not (Test-Path -LiteralPath $env:LF_REL) -and $i -lt 3000){Start-Sleep -Milliseconds 20; $i++}; $f.Close(); Set-Content -LiteralPath ($env:LF_REL + '.closed') -Value x`;
+  const child = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], { env: { ...process.env, LF_HOLD: file, LF_REL: rel }, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] });
   const done = new Promise((r) => child.on("exit", r));
   const ready = new Promise((res, rej) => {
-    const t = setTimeout(() => rej(new Error("the holder never reported ready")), 20000);
+    const t = setTimeout(() => rej(new Error("the holder never reported ready")), 60000);
     child.stdout.on("data", (d) => {
       if (String(d).includes("ready")) {
         clearTimeout(t);
@@ -78,7 +84,15 @@ function holdOpen(file, ms, share) {
     });
     child.on("error", rej);
   });
-  return { ready, done, child };
+  let released = false;
+  // Synchronous on purpose: the writer's retry hook is sync (the writers block the thread with Atomics.wait).
+  const release = () => {
+    if (released) return;
+    released = true;
+    writeFileSync(rel, "go");
+    for (let i = 0; i < 3000 && !existsSync(`${rel}.closed`); i++) af.sleepSync(20);
+  };
+  return { ready, done, child, release };
 }
 
 try {
@@ -93,7 +107,7 @@ try {
 
     // control: without the retry the rename fails the way the worker log shows
     {
-      const h = holdOpen(file, 1500, "Read");
+      const h = holdOpen(file, "Read");
       await h.ready;
       let code = null;
       writeFileSync(`${file}.ctl.tmp`, "{}");
@@ -104,23 +118,27 @@ try {
       }
       check(["EPERM", "EBUSY", "EACCES"].includes(code), `without the retry, a rename over a held file throws (${code})`);
       rmSync(`${file}.ctl.tmp`, { force: true });
+      h.release();
       await h.done;
     }
 
-    // the fix: the write waits the reader out
+    // the fix: the write waits the reader out. The reader lets go on the writer's first retry (so the rename
+    // was seen failing), however slow the machine is.
     {
-      const h = holdOpen(file, 700, "Read");
+      const h = holdOpen(file, "Read");
       await h.ready;
-      const t0 = Date.now();
+      let retries = 0;
       let ok = true;
+      const t0 = Date.now();
       try {
-        sq.writeQueue(hub, { ...q0, seq: 2 });
+        sq.writeQueue(hub, { ...q0, seq: 2 }, { sleep: (ms) => { retries++; h.release(); af.sleepSync(ms); } });
       } catch (e) {
         ok = false;
         console.log(`      ${e.code} ${e.message}`);
       }
       const took = Date.now() - t0;
-      check(ok, `writeQueue survives a reader holding the file open (EPERM), after ${took} ms`);
+      check(ok && retries >= 1, `writeQueue survives a reader holding the file open (EPERM), after ${retries} retry and ${took} ms`);
+      h.release();
       await h.done;
       check(JSON.parse(readFileSync(file, "utf8")).seq === 2, "the new queue is on disk");
       check(!readdirSync(hub).some((f) => f.endsWith(".tmp")), "no .tmp file is left behind");
@@ -128,7 +146,7 @@ try {
 
     // a reader that cannot open the file: an error, never an empty queue for withQueue to write back
     {
-      const h = holdOpen(file, 2500, "None");
+      const h = holdOpen(file, "None");
       await h.ready;
       let r = null;
       let code = null;
@@ -138,6 +156,7 @@ try {
         code = e.code;
       }
       check(r === null && ["EPERM", "EBUSY", "EACCES"].includes(code), `readQueue throws, not an empty queue, while the file is locked (${code ?? `got ${r?.entries?.length} entries`})`);
+      h.release();
       await h.done;
       check(sq.readQueue(hub).seq === 2, "readQueue reads it again once the lock is gone");
     }
@@ -147,7 +166,7 @@ try {
     sq.writeQueue(hub, q0);
     {
       const logs = [];
-      const h = holdOpen(file, 6000, "Read");
+      const h = holdOpen(file, "Read");
       await h.ready;
       let r;
       let threw = null;
@@ -158,14 +177,18 @@ try {
       }
       check(!threw && r === null, `update() does not throw when the write keeps failing${threw ? ` (threw ${threw.code})` : ""}`);
       check(logs.length === 1 && /gate result is kept/.test(logs[0]), `...it logs that the gate result is kept (${logs[0] ?? "no log"})`);
-      h.child.kill();
+      h.release();
       await h.done;
     }
     {
-      const h = holdOpen(file, 600, "Read");
+      // The first attempt fails for good (the reader holds past one write's whole retry budget); the reader lets
+      // go in update()'s pause between attempts, so the second attempt lands. No timer decides the order.
+      const h = holdOpen(file, "Read");
       await h.ready;
-      const r = update(dir, "a-1", { state: "passed" }, "passed", { attempts: 3, pauseMs: 1, log: () => {} });
-      check(r?.state === "passed", "update() lands after a short hold");
+      let pauses = 0;
+      const r = update(dir, "a-1", { state: "passed" }, "passed", { attempts: 3, pauseMs: 1, sleep: () => { pauses++; h.release(); }, log: () => {} });
+      check(r?.state === "passed" && pauses === 1, `update() lands on its second attempt once the reader lets go (${pauses} pause)`);
+      h.release();
       await h.done;
       check(sq.readQueue(hub).entries[0].state === "passed", "...and the entry on disk says so");
     }

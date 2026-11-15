@@ -2,10 +2,16 @@
 //
 //   slice new <parent> [--plan file] [--dry-run]   no plan: write a template plan to tmp/slices-<parent>.md;
 //                                                  with a plan: check it, then create each card as a sub-issue of
-//                                                  <parent> in dependency order (--dry-run writes tmp/slices-<parent>.cards.md)
+//                                                  <parent> in dependency order (--dry-run writes tmp/slices-<parent>.cards.md);
+//                                                  `depends: #N` names a sub-issue <parent> already has, and the owns
+//                                                  check runs against its live sub-issues too;
+//                                                  --attach <N> files the cards under N, a non-card sub-issue of
+//                                                  <parent> (an epic), when <parent> is at GitHub's 100 sub-issue cap
 //   slice list <parent> [--ready]                  the DAG, which slices are ready, ready ones by critical path
 //   slice brief <issue>                            the agent brief for one card
-//   slice record <issue> --model M --outcome O --gate pass|fail --minutes N [--wait N] [--type T]
+//   slice record <issue> --model M --outcome O --gate pass|fail --minutes N [--wait N] [--type T] [--force]
+//                                                  --outcome merged is refused unless gh shows a merged PR for the slice (ws/slice-<N> or a body that
+//                                                  refs it); --force records it anyway; --pr-fixture <json> { prs: [...] } stands in for gh
 //   slice stats                                    first-pass rate, rework and median minutes per model and slice type
 //
 // `--fixture <json>` (list, brief) reads { issues: [...] } instead of gh; `--ledger <file>` moves the ledger, which
@@ -14,14 +20,14 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { gitCommonDir, ghBin, run } from "../wt.mjs";
-import { TEMPLATE, brief, cardBody, checkPlan, ledgerRow, parseCard, parsePlan, renderList, renderStats, suggestModel, topo } from "../lib/slice.mjs";
+import { TEMPLATE, brief, cardBody, checkPlan, ledgerRow, mergeVerdict, parseCard, parsePlan, renderList, renderStats, suggestModel, topo } from "../lib/slice.mjs";
 
 export const help = "slice new|list|brief|record|stats   slice cards: scaffold a chapter's slices as sub-issues, show the DAG and the ready queue by critical path, print a slice's agent brief, log and report outcomes per model";
 
-const USAGE = `usage: tools\\cli slice new <parent> [--plan file] [--dry-run]
+const USAGE = `usage: tools\\cli slice new <parent> [--plan file] [--dry-run] [--attach <epic>] [--fixture f.json]
        tools\\cli slice list <parent> [--ready] [--fixture f.json]
        tools\\cli slice brief <issue> [--fixture f.json]
-       tools\\cli slice record <issue> --model haiku|sonnet|opus --outcome merged|handoff|split|failed --gate pass|fail --minutes N [--wait N] [--type T]
+       tools\\cli slice record <issue> --model haiku|sonnet|opus --outcome merged|handoff|split|failed --gate pass|fail --minutes N [--wait N] [--type T] [--force]
        tools\\cli slice stats [--json]`;
 
 const val = (args, name) => {
@@ -51,9 +57,26 @@ function loadFixture(file) {
   return JSON.parse(readFileSync(resolve(file), "utf8")).issues;
 }
 
+function directSubIssues(root, parent) {
+  return JSON.parse(ghRaw(root, ["api", `repos/{owner}/{repo}/issues/${parent}/sub_issues`, "--paginate", "--slurp"])).flat();
+}
+
+// A parent's cards: its own sub-issues, plus the card sub-issues of each non-card child (an epic), one level down.
+// GitHub caps a parent at 100 sub-issues, so a big chapter files later cards under its epics (slice new --attach).
 function subIssues(root, parent, fixture) {
   if (fixture) return loadFixture(fixture).filter((i) => parseCard(i.body).parent === parent || (i.parent === parent));
-  return JSON.parse(ghRaw(root, ["api", `repos/{owner}/{repo}/issues/${parent}/sub_issues`, "--paginate", "--slurp"])).flat();
+  const direct = directSubIssues(root, parent);
+  const seen = new Set(direct.map((i) => i.number));
+  const nested = [];
+  for (const child of direct) {
+    if (parseCard(child.body).isCard || (child.sub_issues_summary && !child.sub_issues_summary.total)) continue;
+    for (const i of directSubIssues(root, child.number)) {
+      if (seen.has(i.number) || !parseCard(i.body).isCard) continue;
+      seen.add(i.number);
+      nested.push(i);
+    }
+  }
+  return [...direct, ...nested];
 }
 
 export function ledgerPath(root, args) {
@@ -105,6 +128,14 @@ export async function main(args, ctx) {
       };
       const p = [...(row.issue ? [] : ["<issue>"]), ...ledgerRow(row)];
       if (p.length) throw new Error(`slice record needs ${p.join(", ")}`);
+      if (row.outcome === "merged" && !args.includes("--force")) {
+        const prFixture = val(args, "--pr-fixture");
+        const prs = prFixture
+          ? JSON.parse(readFileSync(resolve(prFixture), "utf8")).prs
+          : [["--head", `ws/slice-${row.issue}`], ["--search", `${row.issue} in:body`]].flatMap((q) => JSON.parse(ghRaw(root, ["pr", "list", "--state", "all", ...q, "--limit", "100", "--json", "number,state,mergedAt,headRefName,body"])));
+        const v = mergeVerdict(prs, row.issue);
+        if (!v.ok) throw new Error(`refusing --outcome merged: ${v.reason}`);
+      }
       const file = ledgerPath(root, args);
       mkdirSync(dirname(file), { recursive: true });
       appendFileSync(file, JSON.stringify(row) + "\n");
@@ -139,21 +170,36 @@ function newSlices(root, parent, args) {
   }
   const slices = parsePlan(readFileSync(resolve(planFile), "utf8"));
   if (!slices.length) throw new Error(`${planFile}: no "# Slice <KEY>: <title>" headings`);
-  const problems = checkPlan(slices);
+  // The parent's live sub-issues: `#N` dependencies resolve against them and the owns check covers them.
+  let existing = [];
+  let alone = "";
+  try {
+    existing = subIssues(root, parent, val(args, "--fixture")).map(toSlice).filter((s) => s.card.isCard);
+  } catch (e) {
+    if (slices.some((s) => s.card.depends.some((d) => typeof d === "number"))) throw e;
+    alone = ` (sub-issues of #${parent} unread, plan checked alone: ${e.message.split(":")[0]})`;
+  }
+  const problems = checkPlan(slices, existing);
   for (const s of slices) {
     const want = suggestModel(s.card);
     if (s.card.model && want !== s.card.model && want === "opus") problems.push(`${s.id}: risk ${s.card.risk.join(",")} routes to opus, not ${s.card.model}`);
   }
   if (problems.length) {
-    console.log(`SUMMARY slice new fail ${problems.length} problem(s) in ${planFile}`);
+    console.log(`SUMMARY slice new fail ${problems.length} problem(s) in ${planFile}${alone}`);
     for (const p of problems) console.log(`  ${p}`);
     return 1;
   }
   const ordered = topo(slices);
+  const attach = num(val(args, "--attach")) || parent;
+  if (attach !== parent) {
+    const child = directSubIssues(root, parent).find((i) => i.number === attach);
+    if (!child) throw new Error(`--attach #${attach} is not a sub-issue of #${parent}`);
+    if (parseCard(child.body).isCard) throw new Error(`--attach #${attach} is a slice card; attach under an epic`);
+  }
   if (args.includes("--dry-run")) {
     const out = join(tmp, `slices-${parent}.cards.md`);
     writeFileSync(out, ordered.map((s) => `# ${s.title}\n\n${cardBody(s, parent)}`).join("\n---\n\n"));
-    console.log(`SUMMARY slice new ok dry-run ${ordered.length} card(s) out=${out}`);
+    console.log(`SUMMARY slice new ok dry-run ${ordered.length} card(s) out=${out}${alone}`);
     return 0;
   }
   ghRaw(root, ["label", "create", "slice", "--color", "c5def5", "--description", "A slice card: one 30-45 minute agent job (docs/process/slice-card.md)", "--force"]);
@@ -163,8 +209,12 @@ function newSlices(root, parent, args) {
     const n = num(url.split("/").pop());
     numbers.set(s.id, n);
     const id = ghRaw(root, ["api", `repos/{owner}/{repo}/issues/${n}`, "--jq", ".id"]).trim();
-    ghRaw(root, ["api", "-X", "POST", `repos/{owner}/{repo}/issues/${parent}/sub_issues`, "-F", `sub_issue_id=${id}`]);
+    try {
+      ghRaw(root, ["api", "-X", "POST", `repos/{owner}/{repo}/issues/${attach}/sub_issues`, "-F", `sub_issue_id=${id}`]);
+    } catch (e) {
+      throw new Error(`#${n} created but not attached to #${attach} (${e.message}); attach it by hand, then rerun the cards after it${/100 sub-issues/.test(e.message) ? ` with --attach <epic under #${parent}>` : ""}`);
+    }
   }
-  console.log(`SUMMARY slice new ok ${ordered.length} sub-issue(s) of #${parent}: ${ordered.map((s) => `${s.id}=#${numbers.get(s.id)}`).join(" ")}`);
+  console.log(`SUMMARY slice new ok ${ordered.length} sub-issue(s) of #${attach}${attach !== parent ? ` (under #${parent})` : ""}: ${ordered.map((s) => `${s.id}=#${numbers.get(s.id)}`).join(" ")}`);
   return 0;
 }
