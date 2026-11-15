@@ -502,7 +502,7 @@ async function subIssues(i) {
       assignees: (s.assignees || []).map((a) => a.login),
       labels: (s.labels || []).map((l) => l.name),
       layer: issueLayerLine(s.body),
-      milestone: (/^M\d+/.exec(s.milestone?.title || "") || [])[0] || null,
+      milestone: (/^M\d+(?:\.\d+)?/.exec(s.milestone?.title || "") || [])[0] || null,
     }));
   } catch (err) {
     console.warn(`[content] sub-issues of #${i.number} not read (${err.message})`);
@@ -556,7 +556,8 @@ async function fetchGithub() {
   };
   const milestonesOut = [];
   const ms = all.filter((m) => /^M\d+\b/.test(m.title)).sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true }));
-  for (const m of ms) milestonesOut.push(await readMilestone(m, /^M\d+/.exec(m.title)[0]));
+  // "M2.5 Showcase and Outreach" is M2.5, not a second M2.
+  for (const m of ms) milestonesOut.push(await readMilestone(m, /^M\d+(?:\.\d+)?/.exec(m.title)[0]));
   // A track runs beside the milestone path and is never the current milestone. "Development" is one.
   const tracks = [];
   for (const m of all.filter((x) => /^development$/i.test(x.title.trim()))) tracks.push(await readMilestone(m, "Dev"));
