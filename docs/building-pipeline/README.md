@@ -12,6 +12,8 @@ taught us is in [`docs/architecture/building-pipeline-spike.md`](../architecture
 ```
 tools\cli building run <slug> [--from <stage>] [--only <stage>] [--force] [--full]   --full: compile every model again
 tools\cli building adopt <slug> [<file.blend>]   keep a scene polished by hand as the export source
+tools\cli building plan <slug>      the facts an agent brief needs: prefabs, sizes, rooms, doors, store slots, parallel parts
+tools\cli building proof <slug>     doors, scale, audit, pictures and the building's proof.json on a full session
 tools\cli building review <slug> --shots   Blender review renders and a contact sheet, no game (polish.md "Review shots")
 tools\cli building status [<slug>]
 tools\cli building doctor      Blender, the add-on, its licence, one headless generate
@@ -184,17 +186,49 @@ ArchBuilder's own material colours, not the game's textures: the game look is ch
 2. `tools\cli look <x,z> --close 14` for a first look. Its `white` flag on a building usually means an untinted
    material: the base game's `_SharedData` plaster and bitumen textures are near-white and expect a `Color` tint.
    Pick a coloured material (`AB_Stucco_Beige`, not `AB_Stucco_White`) rather than trusting the flag.
-3. The door and the PR pictures on a **full-quality** session, never lowspec: what a building's check looks at is its
-   materials, glass, LODs and doors, which the lowspec profile's lowest textures hide.
-   ```
-   node agent-box/session.mjs up --profile full
-   node agent-box/session.mjs building-proof --entity <Entity> --side s --shot
-   tools\cli shots area <x,z>
-   node agent-box/session.mjs down
-   ```
-   `building-proof` stands on the street side, checks the F key offers the vanilla door, and has the server open and
-   close it (`agent-box/proofs/building-proof.mjs`).
+3. `tools\cli building proof <slug>`: one command, on a **full-quality** session (never lowspec: a building's check
+   looks at its materials, glass, LODs and doors, which the lowspec profile's lowest textures hide). It finds the
+   placed entity in the world layers and checks, in order:
+   - the prefab resolves to its model, with colliders (`measure`);
+   - its height against the Everon buildings standing within 150 m (0.4 to 2.5 times their median);
+   - `tools\cli audit placement --strict` on its layer (the dedicated server loads the prefab);
+   - in one `session up --profile full`: every door set of `<Name>_Base.et` is offered by the F key, opens, leaves a
+     doorway a character wide clear at 0.5, 1.0 and 1.6 m (traces), and closes, with a picture shut and open; the four
+     sides, the street corner and the hall from inside;
+   - the building's own scenario, `tools/buildings/<slug>/proof.json`, in the same session.
+
+   Pictures land in `tmp/buildings/<slug>/proof/`; the last line is `SUMMARY building-proof ok|fail`. `--no-session`
+   runs the offline checks only, `--skip-audit` skips the audit, `--entity <Name>` picks one of several placements.
 4. Walking through the rooms and a second player seeing the door move stay manual (the PR's `## Manual testing`).
+
+### The scenario file
+
+`tools/buildings/<slug>/proof.json` is what this building is for, as player steps (`tools/buildings/pipeline/scenario.mjs`
+has the format). Points are building space, so it survives moving the building. A step is one of:
+
+| Step | Does |
+|---|---|
+| `{ "shot": "street", "look": [x,y,z], "from": [dx,dy,dz] }` | stands at `look + from` (the feet) facing `look`, takes a picture |
+| `{ "ui": "talk" }` | a picture of the screen |
+| `{ "pickup": "LF_Crackers" }` | the F-key pickup of the nearest copy (harness `pickup`: the vanilla `SCR_PickUpItemAction` on the client, as the key performs it) |
+| `{ "do": { "verb": "use", "className": "LF_StoreTillAction", "entityName": "$entity" } }` | any harness verb; `$entity` is the placed building's name |
+| `{ "state": "paid" }` | keeps the server's `state` fields as `paid.cash`, `paid.wanted`, ... |
+
+Any step takes `expect` (a regex on the reply), `wait` (ms after it) and `why` (printed when it fails). Then `checks`
+compare kept values (`{ "lt": ["paid.cash", "before.cash"] }`, `gt`, `eq`, `ne`, `in`) and `log` reads the server log
+(`{ "re": "paid \\d+ for 3 item" }`, or `{ "last": "alarm sounding at <([^>]+)>", "near": [x,y,z], "within": 1.5 }`).
+The supermarket's file talks to the shopkeeper, picks a torch, crackers and a water, pays, leaves clean, then walks out
+with a dressing and checks the alarm on the shop-front box.
+
+## Planning a building's work
+
+`tools\cli building plan <slug>` prints, as markdown (also `tmp/buildings/<slug>/plan.md`), what an agent brief needs
+from the spec and the export: the prefabs to place and edit as `{GUID}path`; every furniture and fixture prefab with its
+count, `measure` size and the heights things stand on; the hand-placed props; the rooms (ArchBuilder exports no room
+outlines, so a room is the span of the furniture that names it: toilet and basin a WC, desk an office, racks and pallets
+storage, gondolas and tills the sales hall) and the doors near each; every door and window with its wall; the store's
+fixtures by `pick` index, its lines, tills and alarm; which parts can go to parallel agents and which are one agent's at
+a time (`polished.blend` is a binary); and the proof list. Paste the sections a brief needs instead of retyping values.
 
 ## Changes to ArchBuilder
 
