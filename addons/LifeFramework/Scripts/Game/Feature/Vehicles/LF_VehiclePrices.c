@@ -196,6 +196,9 @@ class LF_VehiclePricesConfig
 	[Attribute("", UIWidgets.Object, "Per-vehicle base prices and overrides")]
 	ref array<ref LF_VehiclePriceEntry> m_aVehicles;
 
+	//! GUIDs (lot prefab and locked child) of vehicles an override removed (#1741).
+	protected ref array<string> m_aRemovedGuids = {};
+
 	protected static ref LF_VehiclePricesConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -426,6 +429,46 @@ class LF_VehiclePricesConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when an override removed the vehicle with this lot prefab (or locked child).
+	bool IsRemoved(ResourceName prefab)
+	{
+		string guid = LF_VehiclePriceModel.GuidOf(prefab);
+		return !guid.IsEmpty() && m_aRemovedGuids.Find(guid) != -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Records a removed entry so the lot stops offering it: a removed vehicle is unpriced, and an
+	//! unpriced offer falls back to the price written on the lot (#1741).
+	void NoteRemoved(LF_VehiclePriceEntry entry)
+	{
+		if (!entry)
+			return;
+
+		string prefabGuid = LF_VehiclePriceModel.GuidOf(entry.m_Prefab);
+		string spawnGuid = LF_VehiclePriceModel.GuidOf(entry.m_SpawnPrefab);
+		if (!prefabGuid.IsEmpty() && m_aRemovedGuids.Find(prefabGuid) == -1)
+			m_aRemovedGuids.Insert(prefabGuid);
+		if (!spawnGuid.IsEmpty() && m_aRemovedGuids.Find(spawnGuid) == -1)
+			m_aRemovedGuids.Insert(spawnGuid);
+		LF_Debug.Info("Vehicle", string.Format("vehicle %1 removed by an override; the lot no longer offers it", prefabGuid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A vehicle added back after a remove is offered again.
+	void NoteListed(LF_VehiclePriceEntry entry)
+	{
+		if (!entry)
+			return;
+
+		int at = m_aRemovedGuids.Find(LF_VehiclePriceModel.GuidOf(entry.m_Prefab));
+		if (at != -1)
+			m_aRemovedGuids.Remove(at);
+		at = m_aRemovedGuids.Find(LF_VehiclePriceModel.GuidOf(entry.m_SpawnPrefab));
+		if (at != -1)
+			m_aRemovedGuids.Remove(at);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The entry whose lot prefab or locked child has this upper-case GUID. Null when unlisted.
 	LF_VehiclePriceEntry FindByGuid(string guid)
 	{
@@ -596,10 +639,13 @@ class LF_VehiclePriceList : LF_ConfigList
 			m_Config.m_aVehicles.Set(index, entry);
 		else
 			m_Config.m_aVehicles.Insert(entry);
+
+		m_Config.NoteListed(entry);
 	}
 
 	override void RemoveAt(int index)
 	{
+		m_Config.NoteRemoved(m_Config.m_aVehicles[index]);
 		m_Config.m_aVehicles.RemoveOrdered(index);
 	}
 

@@ -128,6 +128,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DayCycleApply(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DayCycleConfig(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DayCycleSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugDispatch(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugJailMe(), LF_TestTier.LOGIC);
@@ -456,6 +457,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceTake(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SessionSlots(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SessionSpawnEvent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMAmountGuard(), LF_TestTier.LOGIC);
@@ -492,6 +494,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookPayload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
@@ -554,6 +557,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleOverrideVerbs(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleRemoveByBaseGuid(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateBadRow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_VehicleStateRoundTrip(), LF_TestTier.PERSISTENCE);
