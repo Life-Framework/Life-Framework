@@ -86,6 +86,10 @@
       }
     }
   },
+  "joinNotice": {
+    "enabled": false,
+    "key": ""
+  },
   "licences": {
     "rules": {
       "POLICE_FINE": {

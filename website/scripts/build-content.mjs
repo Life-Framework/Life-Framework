@@ -151,6 +151,7 @@ addRepoDoc("docs/features.md", { slug: "features", group: "Engineering reference
 addRepoDoc("docs/persistence.md", { slug: "persistence", group: "Engineering reference", order: 1 });
 addRepoDoc("docs/foundation-design.md", { slug: "foundation-design", group: "Engineering reference", order: 2 });
 addRepoDoc("docs/worktrees.md", { slug: "worktrees", group: "Engineering reference", order: 3 });
+addRepoDoc("docs/dev-tooling.md", { slug: "dev-tooling", group: "Engineering reference", order: 9, title: "Developer tooling reference" });
 addRepoDoc("docs/dedicated-session.md", { slug: "dedicated-session", group: "Engineering reference", order: 4 });
 addRepoDoc("docs/debug-log-triage.md", { slug: "debug-log-triage", group: "Engineering reference", order: 5 });
 addRepoDoc("docs/street-manifest.md", { slug: "street-manifest", group: "Engineering reference", order: 6 });

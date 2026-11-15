@@ -15,6 +15,7 @@ class LF_StaticReset
 	static void ResetAll()
 	{
 		LF_Places.ResetStatics();
+		LF_DayCycleSave.ResetStatics();
 		LF_PrefabSlots.ResetStatics();
 		LF_SoundSlots.ResetStatics();
 		LF_Breach.ResetStatics();
@@ -118,6 +119,7 @@ class LF_StaticReset
 		LF_Quiz.ResetStatics();
 		LF_PlacementAim.ResetStatics();
 		LF_ClipStamp.ResetStatics();
+		LF_StaffRelay.Uninstall();
 		LF_Session.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;

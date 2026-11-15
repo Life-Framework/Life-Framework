@@ -415,20 +415,43 @@ export async function configPush(client, { dir, repoDir, adminsPending = false, 
   return { ok: true, lines: lines.map(allSecrets), warnings: staged.warnings.map(redact), written };
 }
 
+// The --only token that pushes the mod's staff.txt (not a server.json game field).
+export const ONLY_STAFF = "staff";
+
 async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }) {
   // The roster's admins matter only when admins is one of the pushed fields; a pending administrator uid
-  // must not block a name or password push.
+  // must not block a name, password or staff push.
   const staged = stageServerJson(dir, { repoDir, adminsPending: adminsPending || !only.includes("admins") });
   if (!staged.ok) return { ok: false, reason: staged.reason, lines: [], warnings: [] };
   const ours = staged.server;
-  const sel = onlySettings(toServerSettings(ours), only);
+  const withStaff = only.includes(ONLY_STAFF);
+  const fields = only.filter((f) => f !== ONLY_STAFF);
+  const sel = fields.length ? onlySettings(toServerSettings(ours), fields) : { wanted: {} };
   if (sel.error) return { ok: false, reason: sel.error, lines: [], warnings: [] };
-  const cur = await client.serverSettings();
-  if (!cur.ok) return { ok: false, reason: cur.reason, status: cur.status, lines: [], warnings: [] };
-  const current = cur.data?.settings ?? {};
+  let current = {};
+  if (fields.length) {
+    const cur = await client.serverSettings();
+    if (!cur.ok) return { ok: false, reason: cur.reason, status: cur.status, lines: [], warnings: [] };
+    current = cur.data?.settings ?? {};
+  }
   const allSecrets = makeRedactor([...secretValues(ours), ...secretValues(current)]);
   const { changes, lines: settingLines } = diffSettings(current, sel.wanted);
-  const lines = [settingLines.length ? `server_settings (only ${only.join(", ")}): ${settingLines.length} to change` : `server_settings (only ${only.join(", ")}): unchanged`, ...settingLines];
+  const lines = [];
+  if (fields.length) lines.push(settingLines.length ? `server_settings (only ${fields.join(", ")}): ${settingLines.length} to change` : `server_settings (only ${fields.join(", ")}): unchanged`, ...settingLines);
+  // The mod's roster only: compared byte for byte, the owner config and ServerConfig.json are not read.
+  const extra = [];
+  if (withStaff) {
+    const bytes = staged.staff;
+    const g = await client.get(STAFF_PATH);
+    if (!g.ok && g.status !== 404) return { ok: false, reason: allSecrets(g.reason), status: g.status, lines: lines.map(allSecrets), warnings: [] };
+    if (!g.ok) {
+      extra.push({ path: STAFF_PATH, bytes });
+      lines.push(`${STAFF_PATH}: absent on the box, to upload (${bytes.length} bytes)`);
+    } else if (!g.bytes.equals(bytes)) {
+      extra.push({ path: STAFF_PATH, bytes });
+      lines.push(`${STAFF_PATH}: differs, to upload (${g.bytes.length} -> ${bytes.length} bytes)`);
+    } else lines.push(`${STAFF_PATH}: unchanged`);
+  }
   if (!yes) {
     lines.push("dry run: nothing written; add --yes to write (the change applies on the next restart)");
     return { ok: true, lines: lines.map(allSecrets), warnings: staged.warnings.map(allSecrets), written: [] };
@@ -438,6 +461,11 @@ async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }
     const p = await client.patchServerSettings(changes);
     if (!p.ok) return { ok: false, reason: allSecrets(p.reason), lines: lines.map(allSecrets), warnings: [] };
     written.push(`server_settings (${Object.keys(changes).length})`);
+  }
+  for (const e of extra) {
+    const u = await client.put(e.path, e.bytes);
+    if (!u.ok) return { ok: false, reason: allSecrets(u.reason), lines: lines.map(allSecrets), warnings: [] };
+    written.push(e.path);
   }
   lines.push(written.length ? `written: ${written.join(", ")}; restart to apply` : "nothing to write");
   return { ok: true, lines: lines.map(allSecrets), warnings: staged.warnings.map(allSecrets), written };

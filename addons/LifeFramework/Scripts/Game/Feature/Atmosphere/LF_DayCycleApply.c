@@ -30,7 +30,10 @@ class LF_DayCycleApply
 		LF_DayCycleConfig config = LF_DayCycleConfig.Get();
 		LF_DayCycleSettings settings = LF_DayCycle.Resolve(config, realClockHour);
 		if (Apply(settings, config.m_sMode))
+		{
 			ScheduleRateCheck(settings);
+			LF_DayCycleSave.Watch(settings, config.m_sMode);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -118,7 +121,8 @@ class LF_DayCycleApply
 		// A mission whose manager has auto-advance off would show no movement at any day length.
 		clock.SetIsDayAutoAdvanced(true);
 
-		if (settings.m_bSetStartHour)
+		// #1302: an accelerated day on a continued save resumes from the save (LF_DayCycleSave).
+		if (settings.m_bSetStartHour && LF_DayCycleSave.ShouldSetStartHour(mode))
 			clock.SetTimeOfTheDay(settings.m_fStartHour);
 
 		if (Math.AbsFloat(settings.m_fNightAcceleration - settings.m_fDayAcceleration) > 0.001)

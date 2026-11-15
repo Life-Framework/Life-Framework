@@ -1334,6 +1334,11 @@ StringTable {
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
     }
+    CustomStringTableItem "{AEFD273B4E3FE2B7}" {
+     Id "LF_Everon1989_AlphaNotice"
+     Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
+     Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
+    }
   }
  }
 }
