@@ -249,6 +249,7 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `build: waiting up to 900 s for the build lock, held by pid N (...)` | INFO | Another worktree's build or rdb refresh holds the hub `build` lock; this build waits without freezing the process. |
 | `resource database[ [addon]]: rdb complete after N s; stopped Workbench instead of waiting for it to exit` | INFO | The refresh Workbench wrote a complete rdb; it often freezes afterwards (`Application hangs (generated dump and waiting)`), so it is stopped once the rdb has held for 3 s. |
 | `WARN  resource database refresh[ [addon]]: Workbench ran the full 600 s without a complete rdb; stopped it` | WARN | The refresh never produced a complete rdb. Read `server/profile/rdb/logs/<newest>/console.log`. |
+| `[LFDebug:Packs] core <x.y.z> accepted by pack <id>` (server, boot) | INFO | The mission's pack manifest accepts the running core version; logged once. `toolscli release chapter --verify` reads it to prove the live server runs the released core (docs/release/chapter-release.md). |
 
 ## How to add a row
 
