@@ -76,14 +76,28 @@ beside `server.json`), then run the line yourself. `ArmaReforgerServer.exe` is n
 
 Linux, from the server folder: `./ArmaReforgerServer -config ~/lfserver/server.json -profile ~/lfserver/profile -maxFPS 60`.
 
-The first boot downloads the mod and logs `[LFDebug:...]` lines as the town comes up. Wait for:
+The first boot downloads both mods and logs `[LFDebug:...]` lines as the town comes up. Logs land under
+`<profile>\logs\`, one `logs_<date>_<time>` folder per start, each with a `console.log`. The boot worked when
+the log has these lines, in this order (other lines sit between them):
 
 ```
-[LFDebug:...] ...
+[LFDebug:Config] no owner config at $profile:LifeFramework/config.json; every section uses the shipped defaults
+[LFDebug:Persistence] system state SETUP -> ACTIVE
 Entered online game state.
+[LFDebug:Persistence] autosave scheduled every 600 seconds
+[LFDebug:Persistence] fresh session: no save point exists for this mission
 ```
 
-Logs land under `<profile>\logs\`.
+- `Entered online game state.` means the server is up. It comes about 10 to 15 seconds after the engine
+  starts, once the mods have downloaded.
+- `fresh session: no save point exists for this mission` is right for a first boot. On a later boot with
+  `-loadSessionSave` (step 8) it is replaced by `session continued from a save point (-loadSessionSave)`,
+  then `save loaded: version <N>, game build <x>, running <y>`.
+- The `no owner config` line is expected until you create `config.json` (step 6).
+
+A line with `SCRIPT (E)`, `VME` or `Virtual Machine Exception` is a failure, and so is a log that never reaches
+`Entered online game state.`. Run [`server-doctor`](#9-check-a-log-with-server-doctor) on it, or look the line up
+in the Problems table.
 
 ## 5. Know the two folders
 
@@ -144,6 +158,59 @@ then add `-loadSessionSave` to the command:
 ```
 
 Without the flag the town starts fresh. Do not delete the profile folder between runs.
+
+The stop writes the save: the log shows `[LFDebug:Persistence] save completed (SHUTDOWN)`. The next boot with
+the flag logs `session continued from a save point (-loadSessionSave)` and `save loaded: version <N>, game build <x>, running <y>`.
+
+## 9. Check a log with server-doctor
+
+`tools\cli server-doctor <profile-folder|console.log>` reads a server log and tells you, without the game
+installed, whether the boot worked. Give it your profile folder (`C:\LFServer\profile`; it takes the newest
+`console.log`) or one `console.log`. It prints:
+
+- the mods that loaded, with the version of each;
+- every script error, with the fix from [debug log triage](../debug-log-triage.md) when there is one;
+- the first-boot success lines from step 4;
+- a verdict, `PASS` or `FAIL`, and a `SUMMARY server-doctor ok|fail` line naming the stage that failed.
+
+It needs a checkout of the repository to run `tools\cli` ([setup](../setup.md)). It reads the log file only, so
+you can copy the log off the server and run it on any machine. Attach its output when you ask for help.
+
+## 10. Update
+
+A mod or game update never needs a fresh server, but take the copy first:
+
+1. Stop the server normally (Ctrl+C in its console), and wait for `save completed (SHUTDOWN)`.
+2. Copy the whole `C:\LFServer\profile` folder somewhere safe. This is your way back.
+3. Read the upgrade page for the release in [docs/upgrades](../upgrades/README.md). It says whether the save
+   changes, whether a config field moved, and what to look for.
+4. Update the server install (`steamcmd +login anonymous +app_update 1874900 validate +quit`, or Steam's
+   **Tools** library). The server downloads new mod versions from the Workshop itself on the next boot.
+5. If you keep a `config.json`, run `tools\cli config-check C:\LFServer\profile\profile\LifeFramework\config.json`.
+6. Start with `-loadSessionSave` (step 8) and look for `Entered online game state.`,
+   `session continued from a save point (-loadSessionSave)` and
+   `save loaded: version <N>, game build <x>, running <y>`. `<x>` is the game build that wrote the save and `<y>`
+   the build now installed; they differ after a game update. Then run `server-doctor` on the log.
+7. Join, and check your character, cash and job are there.
+
+The save routines for a game update, including a preflight that boots a copy before you open the server, are in
+[game updates](../ops/game-updates.md). How a release is cut, with its branches and tags, is in
+[the release process](../release-process.md).
+
+## 11. Roll back
+
+There is no one-command rollback. What you can put back is your saves and your config:
+
+1. Stop the server.
+2. Put back the profile folder you copied before the update (step 2 of "Update"). A save written by a newer build
+   may not load on an older one, so restore the copy; do not reuse the newer save.
+3. Put back your previous `config.json`.
+4. Start with `-loadSessionSave`, check the same three lines as in "Update", then run `server-doctor`.
+
+Mods are different: the server loads the version the Workshop serves. A bad release is fixed by a new, higher
+version number, not by taking the old one back, and whether a server can pin an older Workshop version is not
+settled (see "Rollback" in [the release process](../release-process.md)). If a release breaks your server,
+restore the copy and report the `server-doctor` output.
 
 ## Problems
 
