@@ -3570,6 +3570,14 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 // On a town-maintainer-* branch the ci placement audit and the layout checks are warn-only, whatever the gate tier
 // (docs/worktrees.md "Maintainer world edits"): they run, print WARN, and record their findings in
 // tmp/gate-warnings.json, which the ship queue lists in the PR body. Any other branch gets the plain checks.
+// The test sources ({ file, text }) that name an assertion's owner when a transcript has no FAIL header.
+function sourceTests(root) {
+  const dir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  return () => {
+    try { return readdirSync(dir).filter((f) => /^LF_Test_w+.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
+  };
+}
+
 function maintainerGate(root, opts = {}) {
   const branch = process.env.GITHUB_HEAD_REF || wt.currentBranch(root) || "";
   const on = worldChecks.MAINTAINER_BRANCH.test(branch);
@@ -3578,6 +3586,8 @@ function maintainerGate(root, opts = {}) {
   return {
     on,
     audit: gateWarnings.demotePlacement(branch, (a) => placementAudit(root, a, opts), record),
+    // A failing test is a warning too, at every tier (a compile error or a run with no SUMMARY still blocks).
+    test: (run, fallbackTests = []) => gateWarnings.demoteTests(branch, run, record, { fallbackTests, tests: sourceTests(root) })(),
     validate: async (o = {}) => {
       if (!on) return cmdRunArea("validate", root, o);
       const { code, text } = await gateWarnings.captureStdout(() => cmdRunArea("validate", root, o));
@@ -3612,17 +3622,18 @@ async function cmdCi(root = ROOT, opts = {}) {
       return v !== 0 || g !== 0 ? 1 : 0;
     }],
     // Both passes at once, each split over the free pool lanes (`--shards 1` runs them one after the other, whole).
-    ...(opts.shards !== undefined && String(opts.shards) !== "1" ? [["test (sharded)", async () => {
+    // maint.test: a failing test is a warning on a town-maintainer-* branch (docs/worktrees.md "Maintainer world edits").
+    ...(opts.shards !== undefined && String(opts.shards) !== "1" ? [["test (sharded)", () => maint.test(async () => {
       const core = launchAddons(root).length > 1 && !opts.skipCoreOnly;
       ensureResourceDatabase(root);
       const r = await runShardedTests(root, [{ coreOnly: false }, ...(core ? [{ coreOnly: true }] : [])], opts);
       if (r !== null) return r;
       const a = await cmdTest(true, "all", root, { ...opts, shards: undefined });
       return core ? (await cmdTest(true, "all", root, { ...opts, shards: undefined, coreOnly: true })) || a : a;
-    }]] : [
-      ["test", () => cmdTest(true, "all", root, opts)],
+    })]] : [
+      ["test", () => maint.test(() => cmdTest(true, "all", root, opts))],
       // Test 1 of the red line (#326): the core alone, the pack hidden. Only when the checkout has a pack to hide.
-      ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => cmdTest(true, "all", root, { ...opts, coreOnly: true })]] : []),
+      ...(launchAddons(root).length > 1 && !opts.skipCoreOnly ? [["test (core only)", () => maint.test(() => cmdTest(true, "all", root, { ...opts, coreOnly: true }))]] : []),
     ]),
     // After the suite: a branch that moved or added world props must pass the placement audit. It
     // takes a test lane on any pool machine, like "test" (queues, never collides with a session).
@@ -3658,7 +3669,7 @@ async function ciSlim(root, opts = {}, maint = maintainerGate(root, opts)) {
       const g = await gate;
       return v !== 0 || g !== 0 ? 1 : 0;
     }],
-    ["test (LOGIC tier)", () => cmdTest(true, "fast", root, { ...opts, shards: undefined })],
+    ["test (LOGIC tier)", () => maint.test(() => cmdTest(true, "fast", root, { ...opts, shards: undefined }))],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -3697,7 +3708,7 @@ async function ciDataOnly(root, c, opts = {}, maint = maintainerGate(root, opts)
     ["validate (static)", () => maint.validate()],
     ["config harness (static)", async () => (await import("./commands/config-gate.mjs")).runStatic(root)],
     ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), maint.audit)],
-    ["test (T1: LOGIC + related)", () => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") })],
+    ["test (T1: LOGIC + related)", () => maint.test(() => cmdTest(true, "all", root, { ...opts, shards: undefined, onlyClasses: classes.join(",") }), classes)],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
