@@ -1,0 +1,84 @@
+// Grid cell c2r4 for signs-board-quests: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_signs_board_quests_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 71
+}
+SCR_DestructibleEntity Grid_signs_board_quests_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 52 0 71
+}
+SCR_DestructibleEntity Grid_signs_board_quests_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 57 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_signs_board_quests_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 57 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_signs_board_quests_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 52 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_signs_board_quests_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 81
+ angleY 90
+}
+SCR_DestructibleEntity Grid_signs_board_quests_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 76
+ angleY 90
+}
+GenericEntity Grid_signs_board_quests_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:signs-board-quests"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 57.8 0.505 80.4
+ angleY 90
+}
+GenericEntity Grid_signs_board_quests_StartGiver : "{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et" {
+ coords 49 0 73
+ angleY 90
+}
+GenericEntity Grid_signs_board_quests_TownMap : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
+ components {
+  LF_SignComponent "{CB0DD0E500C1A1EE}" {
+   m_sSignId "town_map"
+  }
+ }
+ coords 55 0 73
+ angles 0 270 0
+}
+GenericEntity Grid_signs_board_quests_PostOffice : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "post_office"
+   m_vRimColor 0.06 0.18 0.5
+   m_vPaintColor 0.95 0.72 0.08
+   m_vTextColor 0.06 0.18 0.5
+  }
+ }
+ coords 56 0.505 80
+ angleY 180
+}
+GenericEntity Grid_signs_board_quests_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
+ components {
+  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
+   m_sTargetId "Grid_signs_board_quests_EvidenceLocker"
+  }
+ }
+ coords 53 0 76
+}
+GenericEntity Grid_signs_board_quests_HideoutDoor : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
+   m_sHideoutId "Grid_signs_board_quests_Hideout"
+   m_bOrganizationHideout 1
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 51 0.001 76
+}

@@ -50,15 +50,7 @@
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
     {
-      "name": "places/evidence-locker",
-      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
-    },
-    {
       "name": "places/org-hideout",
-      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
-    },
-    {
-      "name": "playtest/offers",
       "reason": "reads a town place found through LF_Places, which is not in GridWorld"
     },
     {
@@ -68,10 +60,6 @@
     {
       "name": "prefab/moved-path",
       "reason": "reads a town place found through LF_Places, which is not in GridWorld"
-    },
-    {
-      "name": "quests/arrival-chain",
-      "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
     },
     {
       "name": "respawn/ward",
@@ -104,10 +92,6 @@
     {
       "name": "safezone/blocks",
       "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
-    },
-    {
-      "name": "security/quest-turnin-takes-items",
-      "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
     },
     {
       "name": "shop/buy-partial-funds",
@@ -152,10 +136,6 @@
     {
       "name": "systems/world-places",
       "reason": "checks town world gates and places, which are not in GridWorld"
-    },
-    {
-      "name": "townboard/board-world",
-      "reason": "reads the town board and the post office sign through LF_Places, which are not in GridWorld"
     },
     {
       "name": "vehicles/key-inventory",
