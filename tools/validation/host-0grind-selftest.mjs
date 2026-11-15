@@ -53,6 +53,7 @@ const state = {
     ["/profile/.save/game/C638C03B775C31BB-LF_Everon1989/playthrough000/savepoint000/data.bin", Buffer.from([1, 2, 3, 4, 5])],
   ]),
 };
+state.system = { armareforger_battleye_rcon_password: "beRcon-77", armareforger_a2s_enabled: true, restart_on_failure: false, armareforger_load_session_save: false, armareforger_hack_postgame_session_clear: true, armareforger_hack_autorecover_sessions_crash: true };
 const calls = [];
 
 function listing(path) {
@@ -81,6 +82,11 @@ const server = createServer((req, res) => {
     const p = url.pathname.replace(/^\/v2/, "");
     if (p === "/service/leak") return json(500, { success: false, reason: `internal error for token ${TOKEN}` });
     if (p === `/service/${SID}` && req.method === "GET") return json(200, { success: true, data: { status: "running", alias: "LF flagship" } });
+    if (p === `/armareforger/${SID}/system_settings` && req.method === "PATCH") {
+      const c = JSON.parse(body.toString("utf8"));
+      Object.assign(state.system, c);
+      return json(200, { success: true, data: { changed: Object.keys(c) } });
+    }
     if (/^\/armareforger\/298627\/(start|stop|restart)$/.test(p)) return json(200, { success: true, data: null });
     if (p === `/armareforger/${SID}/server_settings` && req.method === "GET") return json(200, { success: true, data: { settings: state.settings } });
     if (p === `/armareforger/${SID}/server_settings` && req.method === "PATCH") {
@@ -88,7 +94,7 @@ const server = createServer((req, res) => {
       Object.assign(state.settings, c);
       return json(200, { success: true, data: { changed: Object.keys(c) } });
     }
-    if (p === `/armareforger/${SID}/system_settings`) return json(200, { success: true, data: { settings: { armareforger_battleye_rcon_password: "beRcon-77", armareforger_a2s_enabled: true, restart_on_failure: false, armareforger_load_session_save: true, armareforger_hack_postgame_session_clear: true } } });
+    if (p === `/armareforger/${SID}/system_settings`) return json(200, { success: true, data: { settings: state.system } });
     if (p === `/armareforger/${SID}/rcon`) return json(200, { success: true, data: `Processing Command: ${JSON.parse(body.toString("utf8")).command}` });
     if (p === `/service/${SID}/filesystem/files`) return json(200, { success: true, data: listing(url.searchParams.get("path")) });
     if (p === `/service/${SID}/filesystem/file` && req.method === "GET") {
@@ -142,7 +148,8 @@ try {
   if (calls[0]?.auth !== `Bearer ${TOKEN}`) fail("the API call does not send Authorization: Bearer <token>");
   if (!/a2s: 127\.0\.0\.1:9 no answer/.test(r.out)) fail("status does not report the A2S query");
   if (!/WARNING System: Restart on Failure is off/.test(r.out) || !/deletes ALL saves/.test(r.out)) fail(`status does not warn about Restart on Failure off and a save-wiping toggle: ${r.out}`);
-  if (/Loading Session Save is off/.test(r.out)) fail("status warns about session save loading while it is on");
+  if (!/Loading Session Save is off/.test(r.out)) fail("status does not warn about session save loading while it is off");
+  if (!/Auto-Recovering from Max Sessions Bug is on/.test(r.out)) fail("status does not warn about the save-deleting auto-recover option");
 
   // ---- 401 prints the panel clicks
   const badToken = join(work, "bad");
@@ -195,6 +202,37 @@ try {
   r = await run(["0grind", "config", "push", "--admins-pending"]);
   if (!/LifeFramework\/staff\.txt: unchanged/.test(r.out)) fail(`a second push re-uploads the owner config or roster: ${r.out}`);
   if (!/server_settings: unchanged/.test(r.out) || !/ServerConfig\.json: unchanged/.test(r.out)) fail(`a second push is not a no-op: ${r.out}`);
+
+  // ---- config push --only: just those server_settings keys, scenario, mods and files untouched
+  Object.assign(state.settings, { server_name: "0grind default", password: "", scenario_id: "{X}Missions/Default.conf", mods: ["keep"] });
+  const putsBefore = writes().filter((c) => c.method === "PUT").length;
+  const w2 = writes().length;
+  r = await run(["0grind", "config", "push", "--admins-pending", "--only", "name,password"]);
+  if (r.code !== 0 || writes().length !== w2 || !/only name, password/.test(r.out)) fail(`config push --only dry run wrote or failed: ${r.out}`);
+  r = await run(["0grind", "config", "push", "--admins-pending", "--only", "name,password", "--yes"]);
+  const onlyPatch = writes().filter((c) => c.method === "PATCH").pop();
+  const onlySent = onlyPatch ? JSON.parse(onlyPatch.body.toString("utf8")) : {};
+  if (r.code !== 0 || Object.keys(onlySent).sort().join() !== "password,server_name") fail(`config push --only sent ${Object.keys(onlySent).join(",")} instead of server_name and password: ${r.out}`);
+  if (state.settings.scenario_id !== "{X}Missions/Default.conf" || state.settings.mods[0] !== "keep") fail("config push --only changed the scenario or the mods");
+  if (writes().filter((c) => c.method === "PUT").length !== putsBefore) fail("config push --only wrote a file to the box");
+  r = await run(["0grind", "config", "push", "--only", "name,password"]);
+  if (r.code !== 0 || !/only name, password/.test(r.out)) fail(`config push --only needs --admins-pending for fields that are not admins: ${r.out}`);
+  r = await run(["0grind", "config", "push", "--admins-pending", "--only", "bogus"]);
+  if (r.code === 0 || !/not a game field/.test(r.out)) fail("config push --only accepted an unknown field");
+
+  // ---- system fix: the flagship's System-page settings
+  const w3 = writes().length;
+  r = await run(["0grind", "system", "fix"]);
+  if (r.code !== 0 || writes().length !== w3 || !/armareforger_load_session_save: false -> true/.test(r.out) || !/dry run/.test(r.out)) fail(`system fix without --yes wrote or hid the diff: ${r.out}`);
+  r = await run(["0grind", "system", "fix", "--yes"]);
+  const sysPatch = writes().filter((c) => c.method === "PATCH" && c.path.endsWith("/system_settings")).pop();
+  const sysSent = sysPatch ? JSON.parse(sysPatch.body.toString("utf8")) : {};
+  if (r.code !== 0 || sysSent.restart_on_failure !== true || sysSent.armareforger_load_session_save !== true || sysSent.armareforger_hack_autorecover_sessions_crash !== false || sysSent.armareforger_hack_postgame_session_clear !== false) fail(`system fix --yes sent ${JSON.stringify(sysSent)}`);
+  if ("armareforger_a2s_enabled" in sysSent) fail("system fix re-sent a setting that was already right");
+  r = await run(["0grind", "status"]);
+  if (/WARNING/.test(r.out)) fail(`status still warns after system fix: ${r.out}`);
+  r = await run(["0grind", "system", "fix"]);
+  if (!/already as the flagship needs/.test(r.out)) fail("a second system fix is not a no-op");
 
   // ---- logs pull: the newest folder with a console.log, host-shaped
   r = await run(["0grind", "logs", "pull"]);
