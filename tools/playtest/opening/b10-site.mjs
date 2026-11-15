@@ -81,7 +81,8 @@ const BANNED_MARKUP = /<[^>]+\b(?:class|id|role|aria-label)\s*=\s*"[^"]*\b(?:sta
 export function checkPage(html, sessions, now = new Date()) {
   const errs = [];
   const text = pageText(html);
-  const at = sessions?.next?.at ? new Date(sessions.next.at) : null;
+  // A draft (no announced time, #1537) is not shown: the page says nothing is scheduled until it is posted.
+  const at = sessions?.next?.at && typeof sessions.next.announced === "string" ? new Date(sessions.next.at) : null;
   const ahead = at && !Number.isNaN(at.getTime()) && at.getTime() >= now.getTime();
   if (ahead) {
     const want = utcText(at);
