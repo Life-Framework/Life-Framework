@@ -21,6 +21,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadWorld } from "./layers.mjs";
 import { boundsGapVerdict, layerEntityPrefabs } from "../tools/lib/layer-prefabs.mjs";
+import { judgeStrict } from "../tools/lib/town-findings.mjs";
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
@@ -517,7 +518,7 @@ export function readJson(file, fallback) {
 
 function parseArgs(argv) {
   const out = { _: [], flags: {} };
-  const valued = new Set(["top", "area", "layer", "from", "out"]);
+  const valued = new Set(["top", "area", "layer", "from", "out", "hard-layer"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a.startsWith("--")) {
@@ -575,11 +576,15 @@ async function placement(argv) {
   console.log(lines.slice(0, 3 + world.length + top).join("\n"));
   if (res.ranked.length > top) console.log(`  ... ${res.ranked.length - top} more`);
   console.log(`report: ${join(outDir, "report.txt")} (json beside it)`);
-  // --strict holds the town to the bar; with --annex the debug grid is listed but never fails it
-  // (docs/architecture/world-zones.md).
-  const townRanked = res.ranked.filter((r) => !inAnnex(r));
-  if (flags.strict && townRanked.length < res.ranked.length) console.log(`audit placement: ${res.ranked.length - townRanked.length} flagged in the debug grid; --strict counts the town only`);
-  return testFailed || (flags.strict && (townRanked.length || world.length)) ? 1 : 0;
+  // --strict: the town is hand-edited and never blocks anyone (maintainer rule 2026-11-15), so a flagged town
+  // entity prints as WARN on every branch. What blocks is a flagged entity in a non-town layer the branch itself
+  // adds or moves (--hard-layer A.layer,B.layer; without it every non-town layer, measured with --annex).
+  // docs/architecture/world-zones.md, tools/lib/town-findings.mjs.
+  if (!flags.strict) return testFailed ? 1 : 0;
+  const hardLayers = flags["hard-layer"] ? String(flags["hard-layer"]).split(",").filter(Boolean) : null;
+  const verdict = judgeStrict(res.ranked, world, { hardLayers });
+  for (const l of verdict.lines) console.log(l);
+  return testFailed || verdict.fail ? 1 : 0;
 }
 
 // The fixture layer (agent-box/fixtures/place-budget/Fixture.layer): a crate and its twin 1 cm apart, a barrel
