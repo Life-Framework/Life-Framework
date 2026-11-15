@@ -570,9 +570,11 @@ class LF_SignComponent : ScriptComponent
 
 #ifdef WORKBENCH
 	// World Editor preview (docs/tooling/sign-editing.md). The game prints the face in play mode only,
-	// so in edit mode a sign whose mesh samples $rendertarget showed nothing. Here the editor prints
-	// the same face through the same BuildFace, and writes the sign's text as world-space debug text
-	// when the face cannot print or the sign is selected. None of this is compiled into the game.
+	// so in edit mode a sign whose mesh samples $rendertarget shows nothing. BuildFace does run in
+	// edit mode (lf-cloud 2026-11-16: "face printed" for every sign), but the World Editor viewport
+	// never draws the render target, so the editor writes the sign's text as world-space debug text
+	// on the face instead: the title, or the whole card while the sign is selected. The text comes
+	// from the same catalog and the same FaceText as the game. None of this is compiled into the game.
 	protected static const int WB_MENU_EDIT = 1;
 	protected static const int WB_MENU_RELOAD = 2;
 	protected static int s_iWbGeneration;
@@ -593,25 +595,14 @@ class LF_SignComponent : ScriptComponent
 		if (m_iWbGeneration != s_iWbGeneration)
 		{
 			m_iWbGeneration = s_iWbGeneration;
-			WbRebuild();
+			m_Sign = null;
+			m_bResolved = false;
 		}
 
-		bool selected = WbIsSelected(owner);
-		if (m_wFaceRoot && !selected)
+		if (m_sSignId.IsEmpty())
 			return;
 
-		WbDrawText(owner, selected);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Print the face again from the current attributes and catalog.
-	protected void WbRebuild()
-	{
-		ClearFace();
-		m_Sign = null;
-		m_bResolved = false;
-		if (m_bShowFace && !m_sSignId.IsEmpty() && GetGame().GetWorkspace())
-			BuildFace();
+		WbDrawText(owner, WbIsSelected(owner));
 	}
 
 	//------------------------------------------------------------------------------------------------
