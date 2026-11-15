@@ -18,16 +18,16 @@ checkout.
 | `tools\cli host preflight` | After a game update only: it backs up, boots the new build and passes. A failure restores the backup; read [game updates](game-updates.md). |
 | `tools\cli host backup` | `host: backed up saves -> <folder>`. |
 | `tools\cli host verify` *(planned)* | Every backup `ok`, none `empty` or `changed`; exit 0. |
-| `tools\cli host drill` | The newest backup boots on a scratch profile and the log shows `save loaded:`. Weekly and after a preflight. |
+| `tools\cli host drill` | The newest backup boots on a scratch profile and the log shows `save loaded:`. Weekly and after a preflight. It queues for a pool lane by itself (no `--wait`) and may run on a pool machine. |
 | `tools\cli host applications` *(planned)* | The open police applications, oldest first, then the officers on trial. Read only; approve in game. |
-| `tools\cli host announce --at <iso time>` | The post is printed and the next session is written to `website/content/sessions.json`. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
+| `tools\cli host announce --at <time> --build <build>` | The post is printed and the next session is written to `website/content/sessions.json` (a tracked file: `git checkout -- website/content/sessions.json` after a dry run, commit it for a real one). `--build` is the installed game build, e.g. `1.9.0.37`; needed until the host has a save. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
 
 ## Start
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host start --flagship --wait` | `host: up (pid N)` and the join lines. |
-| `tools\cli host status` | The log path, then `save loaded:` in the log with the build you expect. `save load damaged` means stop. |
+| `tools\cli host start --flagship --wait` | `host: up (pid N)` and the join lines. The first start in a new worktree spends about 45 s refreshing the resource database first, and the server runs on this PC. |
+| `tools\cli host status` | The log path, then `save loaded:` in the log with the build you expect. On a fresh host (no save yet) it is `save present: false` and `fresh session: no save point exists for this mission` instead. `save load damaged` means stop. |
 | `tools\cli host watch --flagship` | The server restarts after a crash or a scheduled close; it ends after `host stop`. |
 | Join with the server password and walk to the plaza | You spawn in. If you cannot, the session is not open. |
 
@@ -73,7 +73,7 @@ Never wipe before the announcement is out.
 
 | Command | Success looks like |
 |---|---|
-| `tools\cli host announce --at <iso time> --wipe` | Refuses a time less than 24 hours away; otherwise prints the post and records the notice. |
+| `tools\cli host announce --at <time> --build <build> --wipe` | Refuses a time less than 24 hours away; otherwise prints the post and records the notice. |
 | `tools\cli host stop` | The host is down; `wipe` refuses while it runs. |
 | `tools\cli host wipe --confirm <host dir name>` | A `wipe` backup, the saves moved aside (nothing deleted), a line in `backups/wipes.log`, and how to restore. |
 | `tools\cli host start --flagship --wait` | A fresh world comes up. |

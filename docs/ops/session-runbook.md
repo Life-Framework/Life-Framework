@@ -24,13 +24,24 @@ Rules for the whole page:
 
 1. **Pick the time and announce it.** The player-facing wording and the Discord steps are in the
    [session playbook](../playtest/session-playbook.md).
-   `tools\cli host announce --at <iso time> [--build <version>] [--wipe]` prints the post and writes
-   the next session to `website/content/sessions.json`; `--send` posts it through the Discord
-   tooling (maintainer only). The website shows the next session time only, so the time in the post
-   is the one that counts.
+   `tools\cli host announce --at <iso time> --build <build> [--wipe]` prints the post and writes
+   the next session to `website/content/sessions.json`; with `--send` (maintainer only) it posts
+   through the Discord tooling. Without `--send` it is a draft: nothing is posted. The website
+   shows the next session time only, so the time in the post is the one that counts.
 
-   A wipe is announced **at least 24 hours ahead**, with `--wipe`; `host wipe` refuses without that
-   notice. Policy: [wipe policy](../community/wipe-policy.md).
+   - **`--build` is needed on a fresh host.** The command reads the build from the newest host
+     save, and a new host has none, so it stops with `no build: pass --build <version>`. The
+     number is the installed game build, the file version of `ArmaReforgerServer.exe` (the Steam
+     folder, or `ENFUSION_SERVER_PATH`), for example `1.9.0.37`. After the first save,
+     `host status` prints `save and game are both <build>` and `--build` can be left out.
+   - **It edits a tracked file, even as a draft.** The command rewrites
+     `website/content/sessions.json` in your worktree, so the checkout is dirty afterwards. If
+     that was a dry run, put the file back with `git checkout -- website/content/sessions.json`.
+     If it was the real announcement, commit the file on purpose in a PR; do not leave it
+     modified.
+
+   A wipe is announced **at least 24 hours ahead**, with `--wipe`; the command refuses a time
+   less than 24 hours away. Policy: [wipe policy](../community/wipe-policy.md).
 
 2. **Check what changed.** After any Arma Reforger update, run the preflight before opening the
    server. It backs the save up, boots it on the new build, and restores it if it does not load:
@@ -78,6 +89,13 @@ Rules for the whole page:
    It backs the saves up first, continues the latest save, and prints `host: up (pid N)` and the
    join lines. Without `--flagship` it boots the playtest header, which is not the real server.
 
+   Two things to expect that the command does not say:
+   - The first `host start` in a new worktree refreshes the resource database on a pool machine
+     (lf-cloud) before it launches: about 45 seconds of output before `host: up`. Wait for it; it
+     is not a hang.
+   - The server itself runs on **this PC**, not on a test machine, with the game port from the
+     join lines (2001 by default). Nothing else may hold that port; see the table below.
+
 2. Confirm it is up and read the first lines of the log:
 
    ```
@@ -85,8 +103,16 @@ Rules for the whole page:
    Select-String -Path "<log path that host status prints>" -Pattern "LFDebug:Persistence"
    ```
 
-   (The second line is PowerShell.) You want `save loaded:` with the build you expect. `save load damaged` or `saving disabled for
-   this session` means stop and see "When it goes wrong".
+   (The second line is PowerShell.) What you want depends on whether the host has a save:
+
+   - **Continuing a save** (every start after a `host stop`): `save loaded:` with the build you
+     expect.
+   - **A fresh host** (no save yet, or right after a wipe): `save loaded:` does not appear. You
+     want `save present: false` and `fresh session: no save point exists for this mission`; the
+     first `save loaded:` comes on the next start, after a stop wrote the shutdown save.
+
+   `save load damaged` or `saving disabled for this session` means stop and see "When it goes
+   wrong".
 
 3. Keep it alive. `tools\cli host watch --flagship` supervises the server: a crash (an exit
    without `host stop`) copies the console log to `backups/<time>-crash/`, backs the saves up and
@@ -194,7 +220,7 @@ Stop after two tries of a step and ask the maintainer. Do not improvise with the
 | `FAIL  game update: ...` on `host start` | Run `tools\cli host preflight`. `--force` is for the maintainer only. |
 | Preflight fails | It has already restored the backup; do not open the server. Read [game updates](game-updates.md), tell the maintainer. |
 | `host: already running` | `tools\cli host status`; if it is the server you want, leave it; otherwise `tools\cli host stop` first. |
-| `a test or server run holds port 2001` | Another run owns the port. Wait for it to end, or retry with `--wait`. |
+| `a test or server run holds port 2001` | Another run owns the port. Wait for it to end, or retry with `--wait`. `host drill` has no `--wait`: it queues for a pool lane itself and boots on that lane's port, never 2001. A drill that still says `lock 'server-2001' is held` is running a tree from before that hand-off: merge `origin/main` and run it again. |
 | `FAIL  the server exited during startup` | The command prints the last log lines. Read them with [debug-log-triage](../debug-log-triage.md); try once more; on a second failure stop and report. |
 | No `Entered online game state.` within the timeout | The server is still running. `tools\cli host status` for the log path; if it never gets there, `tools\cli host stop` and start again once. |
 | `save load damaged` or `continued save never reached the LF store` in the log | Saving is off for the session on purpose. `tools\cli host stop`, then `tools\cli host restore`, and find the cause before opening again. |

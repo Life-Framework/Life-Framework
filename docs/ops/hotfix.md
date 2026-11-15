@@ -71,8 +71,8 @@ telling players first (step 6).
    reports an error the repo copy did not, stop: the file was changed by hand or a
    secret was merged into the wrong key.
 6. **Warn, then restart.** The server only picks up `config.json` at boot.
-   - Post the restart on Discord (`tools\cli host announce --at <iso time>` drafts the post;
-     `--send` posts it, maintainer only).
+   - Post the restart on Discord (`tools\cli host announce --at <time>`; `--build` is
+     needed only while the host has no save, see the [session runbook](session-runbook.md)).
    - The flagship restarts at 06:00 and 18:00 server time (`restarts` in `config.json`), and
      players get an in-game toast at 15, 5 and 1 minute before, with no siren. For an
      unscheduled restart, say the time in Discord and restart at it.

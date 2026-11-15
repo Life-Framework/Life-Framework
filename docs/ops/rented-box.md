@@ -64,6 +64,18 @@ The game listens on UDP 2001 and the A2S query on UDP 17777 (`server/example/ser
       HTTPS clone at `stable`, never a token or password on a rented machine ([worktrees](../worktrees.md) "A
       rented box"). A box with only the start script (below) boots the server but cannot run `host backup`,
       `host restore` or `host prune`; copy the profile by hand there.
+- [ ] **What the box clone needs.** Clone the whole repo: every `host` command imports `tools/` and
+      `agent-box/`, and `host start` loads the mods from `addons/` (about 1.1 GB; a sparse clone of
+      `tools server docs` fails at import). `website/` is needed only by `host announce`, which writes
+      `website/content/sessions.json`. The server must be where `ENFUSION_SERVER_PATH` points: it defaults to
+      the Steam path (`C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server`), so a box with the
+      server in another folder sets `ENFUSION_SERVER_PATH` (env var, or `lf.local.json`) to that folder.
+- [ ] **Box mode.** A plain clone is a main checkout, which `host start|watch|autostart` refuse (on the
+      maintainer's PC it is the world-editor copy). Run `toolscli host box on` once: it writes
+      `.lf-host-box` (git-ignored) and lifts that refusal for the host commands only; `LF_HOST_BOX=1` does the same
+      for one shell, but the scheduled task of step 6 carries no environment, so use the marker there.
+      `toolscli host box check` lists what the clone still lacks (`addons/`, the server folder); `host start`
+      prints the same list in one `FAIL host start:` line. `host box off` removes the marker.
 - [ ] Copy the flagship folder: `server/flagship/` from the repo at `stable` (the live branch,
       [release-process](../release-process.md)). It holds `server.json` and `config.json` once C1 (#1321)
       merges; until then start from `server/example/`.
@@ -83,8 +95,8 @@ servers stopped.
 
 On the old host (the maintainer's PC):
 
-1. [ ] Announce the downtime on Discord, with the time (`tools\cli host announce --at <iso time>` drafts the
-       post; `--send` posts it, maintainer only).
+1. [ ] Announce the downtime on Discord, with the time (`tools\cli host announce --at <time>`; see the
+       [session runbook](session-runbook.md) for `--build` and the `sessions.json` edit).
 2. [ ] `tools\cli host stop --wait` so the engine writes the shutdown save.
 3. [ ] `tools\cli host backup` and note the folder name it prints. This is the copy that travels.
 4. [ ] Copy the whole `backups/<that folder>` to the new box (scp, or an archive). Leave the old profile
@@ -121,6 +133,8 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
       and a stop through `host stop` must not trigger a restart.
 - [ ] Kill the server process by hand once. It is back, with the crash backup, inside a minute, and the log
       shows `save loaded:`.
+- [ ] **After a reboot.** `toolscli host autostart install` registers the scheduled task that runs `host watch
+      --flagship` at logon; it needs box mode on (step 4) in a plain clone. Check it with `host autostart status`.
 - [ ] **Restart schedule.** The flagship restarts at 06:00 and 18:00 server time, with in-game warnings at 15, 5
       and 1 minute ([m4-slice-plan](../roadmap/m4-slice-plan.md), "Decisions"). The times are set in
       `server/flagship/config.json` (`restarts.times`), and the in-world warning counts down to them.
