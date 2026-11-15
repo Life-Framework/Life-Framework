@@ -1,7 +1,9 @@
 # M2.5 Showcase and Outreach (outline)
 
-M2.5 runs right after M2 closes. Its job is to get new players and playtesters,
-because the Discord is small. It covers videos, the demo, the landing page,
+M2.5 runs alongside M4 and M5 (maintainer, 2026-11-15), now that both Workshop
+items are up. Its job is to get new players, playtesters and contributors,
+because the community is small. The weekly alpha playtest is on Saturdays at
+19:00 UK time. It covers videos, the demo, the landing page,
 Discord onboarding, an outreach kit, and a roster of trusted testers. The
 maintainer set the shape on 2026-11-10. Epic #566. Read it with
 [direction](../direction.md), [decisions](../decisions.md), and the
