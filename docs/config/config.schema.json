@@ -624,6 +624,7 @@
         },
         "heldGroundMaxPoints": {
           "type": "integer",
+          "description": "Most points an organization banks by holding its hideout (#751); a saved total above it is clamped on load",
           "default": 1000,
           "minimum": 0,
           "maximum": 1000000
