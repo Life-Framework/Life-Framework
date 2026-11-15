@@ -1,0 +1,20 @@
+{
+  "pack": "Retheme",
+  "overlays": [
+    "Configs/UITheme.conf",
+    "Configs/Catalogue.conf",
+    "Configs/ShopPrices.conf",
+    "Configs/PrefabSlots.conf",
+    "Configs/Terms.conf"
+  ],
+  "metaGuids": {
+    "Configs/UITheme.conf": "C99AC8C4B133E01A",
+    "Configs/Catalogue.conf": "BD948813E33DDE0B",
+    "Configs/PrefabSlots.conf": "043589C1AEE5529B",
+    "Configs/Terms.conf": "8C4F26BB1BFCF91F"
+  },
+  "strings": [
+    { "guid": "51DA0544CC710DA6", "id": "LF_Retheme-Police", "en_us": "Sheriff", "comment": "Retheme pack: the police term, singular." },
+    { "guid": "6B9E32008E4DC8F4", "id": "LF_Retheme-Police_Plural", "en_us": "Sheriffs", "comment": "Retheme pack: the police term, plural." }
+  ]
+}
