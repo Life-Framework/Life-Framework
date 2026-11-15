@@ -30,6 +30,9 @@ class LF_OrgConfig
 	static const int DEFAULT_PRICE_PROCESSING_SLOT = 250;
 	static const int DEFAULT_PRICE_PARKED_VEHICLE = 750;
 	static const float DEFAULT_DESK_RANGE = 5;
+	static const int DEFAULT_HELD_GROUND_MAX_POINTS = 1000;
+	static const int HELD_GROUND_POINTS_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int HELD_GROUND_POINTS_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	[Attribute("250", UIWidgets.Auto, "Carried cash the founder hands over at the registry desk to found an organization", params: "0 10000000")]
 	int m_iFoundingFee;
@@ -57,6 +60,9 @@ class LF_OrgConfig
 
 	[Attribute("5", UIWidgets.Auto, "Metres a player may stand from an organization desk when the server moves fund cash", params: "1 30")]
 	float m_fDeskRange;
+
+	[Attribute("1000", UIWidgets.Auto, "Most points an organization banks by holding its hideout (#751); a saved total above it is clamped on load", params: "0 1000000")]
+	int m_iHeldGroundMaxPoints;
 
 	[Attribute("", UIWidgets.Object, "Rights of the default ranks a new organization starts with, one entry per rank id (founder, officer, member). A rank with no entry keeps its shipped rights. Applies to organizations founded after the change; a saved organization keeps its own ranks")]
 	ref array<ref LF_OrgRankDefault> m_aRankDefaults;
@@ -148,7 +154,7 @@ class LF_OrgConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "rankDefaults"};
+		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "heldGroundMaxPoints", "rankDefaults"};
 		reader.WarnUnknownKeys(ownerKeys);
 		int nameMin = m_iNameMin;
 		int nameMax = m_iNameMax;
@@ -160,6 +166,7 @@ class LF_OrgConfig
 		reader.ReadInt("priceExtraStorage", m_iPriceExtraStorage, FEE_MIN, FEE_MAX);
 		reader.ReadInt("priceProcessingSlot", m_iPriceProcessingSlot, FEE_MIN, FEE_MAX);
 		reader.ReadInt("priceParkedVehicle", m_iPriceParkedVehicle, FEE_MIN, FEE_MAX);
+		reader.ReadInt("heldGroundMaxPoints", m_iHeldGroundMaxPoints, HELD_GROUND_POINTS_MIN, HELD_GROUND_POINTS_MAX);
 		reader.ReadFloat("deskRange", m_fDeskRange, DESK_RANGE_MIN, DESK_RANGE_MAX);
 
 		if (m_iNameMin > m_iNameMax)
@@ -315,6 +322,17 @@ class LF_OrgConfig
 			return DEFAULT_DESK_RANGE;
 
 		return config.m_fDeskRange;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Most points a held hideout banks (#751). The saved points are clamped to it on load.
+	static int HeldGroundMaxPoints()
+	{
+		LF_OrgConfig config = Get();
+		if (!config || config.m_iHeldGroundMaxPoints < 0)
+			return DEFAULT_HELD_GROUND_MAX_POINTS;
+
+		return config.m_iHeldGroundMaxPoints;
 	}
 }
 
