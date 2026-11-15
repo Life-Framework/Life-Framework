@@ -4,7 +4,7 @@
 export const MARKER = "<!-- slice-card v1 -->";
 export const TIERS = ["T0", "T1", "T2"];
 export const MODELS = ["haiku", "sonnet", "opus"];
-export const TYPES = ["capability", "system", "data", "visual", "tooling", "docs"];
+export const TYPES = ["capability", "system", "data", "visual", "tooling", "docs", "town"];
 export const RISKS = ["persistence", "replication", "money", "inventory"];
 export const DONE_LABELS = ["in-dev", "needs-playtest", "verified"];
 export const RUNNING_LABEL = "agent:working";
@@ -31,6 +31,8 @@ export const ROUTING = {
   visual: "sonnet",
   capability: "sonnet",
   system: "sonnet",
+  // The chapter-close town-placement pass (docs/architecture/world-zones.md).
+  town: "sonnet",
 };
 export const AGENT_OF = { haiku: "lf-scout", sonnet: "lf-builder", opus: "lf-hard" };
 
@@ -362,7 +364,9 @@ export const TEMPLATE = (parent) => `# Slices for #${parent}
 // --- the brief -------------------------------------------------------------------------------------------------------
 
 export function brief(issue, card, worktreeSlug) {
-  const slug = worktreeSlug || `slice-${issue.number}`;
+  // A town-placement pass runs in a town- worktree: that slug is what validate-world-zones lets edit town layers.
+  const town = card.type === "town";
+  const slug = worktreeSlug || (town ? `town-${issue.number}` : `slice-${issue.number}`);
   const gate = {
     T0: "validate only (wt ship runs just validate when addons/ is untouched)",
     T1: "light gate: validate plus the targeted test; wt ship still runs the full gate for an addons/ change",
@@ -377,6 +381,9 @@ export function brief(issue, card, worktreeSlug) {
     `Owns only: ${card.owns.join(", ")}. Shared append-only files (features.md, string tables, triage) are fine. Anything else: stop and report.`,
     `Timebox: ${card.minutes || BUDGET.minutes} min / ${card.calls || BUDGET.calls} calls, hard. At the limit ship what passes, write tmp/handoff-${slug}.md, and say SPLIT with the rest as new cards; never extend.`,
     `Machines: ${card.machines.join(", ") || "none"}.`,
+    town
+      ? "Town pass: place this chapter's systems in town to the polish bar (the polish skill, docs/architecture/world-zones.md); look <area> before and after, audit placement --area <area> --strict clean."
+      : `World props: a grid cell only (tools\\cli grid place ${slug} <prefab>...); never edit a town layer, validate-world-zones refuses it (docs/architecture/world-zones.md).`,
     "",
     "Loop:",
     `1. tools\\cli wt new ${slug} --wait; gh issue edit ${issue.number} --add-label ${RUNNING_LABEL}.`,
