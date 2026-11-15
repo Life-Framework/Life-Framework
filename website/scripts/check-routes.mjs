@@ -26,6 +26,7 @@ const pages = {
   "/join": "An open-source life and roleplay framework for Arma Reforger",
   "/devlog": "What changed, day by day",
   "/servers": "Host it, tune it, build on it",
+  "/alpha": "Join the Everon 1989 alpha",
   "/contribute": "Join the Discord",
   "/decisions": "The calls that set the taste",
   "/support": "Where the money goes",

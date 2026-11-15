@@ -1,0 +1,3 @@
+# fixture roster
+1111-aaaa administrator # Jasper
+2222-bbbb moderator # Someone
