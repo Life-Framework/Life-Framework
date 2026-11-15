@@ -121,6 +121,7 @@
 ### Player report to staff — `Feature/Moderation/LF_IncidentFlags.c` (#241, 2026-11-09)
 - ✅ `/report` in chat flags the reporter's incidents (either party) from the last `m_iReportWindowMinutes` (10) in `LF_Incident.conf`; online admins get a toast; a per-player cooldown `m_iReportCooldownSeconds` (120) refuses spam, and a report with nothing to flag does not start it. Flagged incidents head the Game Master list (sent even outside the camera radius, marker "!!") and persist (`incidentflags` payload, save version 17) until an admin types `!handled <number>` in admin chat, which is logged `[LFDebug:IncidentReport]`. Tests `incident/report`, `persist/incident-flags-roundtrip`.
 - ⚠️ The payphone staff line waits for comms routing.
+- ✅ (2026-11-15, #1284) Staff relay, `Feature/Moderation/LF_StaffRelay.c`: `LF_OnAdminAction` and the new `LF_OnIncidentFlagged` (published by `LF_IncidentFlags.Report` after the rows exist) each send one short line through `LF_StaffWebhook.Send`. Throttled per kind: events collect for 5 s from the first, then one line goes out (its own line for one event, a count for more), so ten flags in a window are one message. Tests `incident/flagged-event`, `moderation/staff-relay` (captured sender). ⚠️ `LF_StaffRelay.Install()` is not called from the game mode yet, so nothing relays live until that one-line hook lands.
 
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
