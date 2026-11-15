@@ -1,4 +1,5 @@
 import { arrive, clientBox, clientSees, parseState, sessionDir } from "../session.mjs";
+import { DESK, TASER } from "./taser-proof.mjs";
 
 // #1857 the taser's down state, on a running `up --clients 2 --profile full` session: client 1 draws
 // the taser and hits client 2; client 2's body ragdolls (read on the owner, client 2, and on the
@@ -6,8 +7,6 @@ import { arrive, clientBox, clientSees, parseState, sessionDir } from "../sessio
 // body lies PRONE while it settles, and the vanilla wake-up stands it up (ALIVE, no ragdoll).
 // Client 1 shoots a frame sequence of client 2 from the side: hit, limp, still down, getting up, up.
 // The hit is the harness `shoot` verb (see taser-proof.mjs): it enters where a dart's damage does.
-const TASER = "Roadmap_Police_Taser";
-const DESK = "Roadmap_Police_Desk";
 const STUN_SECONDS = 8; // LF_StunWeaponComponent.m_fStunSeconds on Handgun_Taser.et
 
 export function parsePeerBody(line, id) {
