@@ -1,0 +1,4 @@
+12:00:01 DEFAULT : Entered online game state.
+12:00:02 SCRIPT : [LFDebug:Persistence] save loaded: version 32, game build 1.9.0.37, running 1.9.0.37
+12:00:02 SCRIPT : [LFDebug:Persistence] applied 0 account record(s)
+12:03:10 SCRIPT : [LFDebug:Persistence] save completed (SHUTDOWN)

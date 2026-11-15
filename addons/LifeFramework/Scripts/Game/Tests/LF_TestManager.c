@@ -12,6 +12,10 @@ class LF_TestManager
 	protected ref array<ref LF_Test> m_aTests = {};
 	protected ref array<string> m_aOnly = {};
 	protected bool m_bRed;
+	protected bool m_bLogicWorld;
+
+	//! The minimal world tools\cli test boots when every selected test is LOGIC (tools/lib/test-world.mjs).
+	static const string LOGIC_WORLD = "Worlds/TestLogic/TestLogic.ent";
 
 	//------------------------------------------------------------------------------------------------
 	static LF_TestManager GetInstance()
@@ -51,6 +55,32 @@ class LF_TestManager
 	void SetRed(bool on)
 	{
 		m_bRed = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Set by the runner placed in the minimal LOGIC world (Worlds/TestLogic): it has no terrain,
+	//! village or annex, so a WORLD or PERSISTENCE test fails by name instead of running, and a
+	//! LOGIC test that fails there carries a hint that it may need the WORLD tier.
+	void SetLogicWorld(bool on)
+	{
+		m_bLogicWorld = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why a test of this tier cannot run in the minimal LOGIC world, or "" when it can.
+	static string LogicWorldRefusal(LF_TestTier tier, string name)
+	{
+		if (tier == LF_TestTier.LOGIC)
+			return "";
+
+		return string.Format("%1 is tier=%2 and needs DebugWorld; this run booted the minimal LOGIC world %3 (run it without --world, or with --world Worlds/DebugWorld/DebugWorld.ent)", name, TierName(tier), LOGIC_WORLD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line a LOGIC test that fails in the minimal world prints under its failures.
+	static string LogicWorldHint(string name)
+	{
+		return string.Format("hint: %1 ran in the minimal LOGIC world %2 (no terrain, village or annex); if it needs world content, its tier is WORLD, not LOGIC", name, LOGIC_WORLD);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -156,6 +186,19 @@ class LF_TestManager
 
 			total++;
 			string name = EscapeXml(test.GetName());
+			if (m_bLogicWorld)
+			{
+				string refusal = LogicWorldRefusal(test.Tier(), name);
+				if (refusal != "")
+				{
+					failures++;
+					PrintFormat("[LFTEST] FAIL %1 (wrong world)", name);
+					PrintFormat("[LFTEST]   - %1", refusal);
+					cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"wrong world\">%2</failure></testcase>\n", name, refusal);
+					continue;
+				}
+			}
+
 			PrintFormat("[LFTEST] START %1", name);
 
 			LF_TestContext ctx = new LF_TestContext();
@@ -198,12 +241,16 @@ class LF_TestManager
 					PrintFormat("[LFTEST]   - %1", failure);
 					body += string.Format("%1\n", EscapeXml(failure));
 				}
+				if (m_bLogicWorld)
+					PrintFormat("[LFTEST]   - %1", LogicWorldHint(name));
 				cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"assertion failed\">%2</failure></testcase>\n", name, body);
 			}
 			else if (ctx.AssertionCount() == 0)
 			{
 				failures++;
 				PrintFormat("[LFTEST] FAIL %1 (no assertions executed)", name);
+				if (m_bLogicWorld)
+					PrintFormat("[LFTEST]   - %1", LogicWorldHint(name));
 				cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"no assertions executed\"/></testcase>\n", name);
 			}
 			else

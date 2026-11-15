@@ -9,6 +9,7 @@
 //!   breach=<id>:open=O:yaw=Y                     one entry per breach target within the radius: the replicated open flag and the yaw its swing child stands at here
 //!   npc=<name>:d=M:stun=S:up=Y:wear=A+B          one entry per town NPC within the radius: its replicated stun flag, how upright it stands (1 standing, 0 lying) and the clothing in its loadout slots
 //!   bags=N                                        loose LF_MoneyBag entities within the radius
+//!   evidence=<prefab>:d=M                         one entry per scene-evidence entity (an LF_Evidence* prefab: marker, casing, bag) within the radius, nearest first: the prefab this client's copy was spawned from, so a pack's slot swap is read on the client
 //!   chop=P                                        the chop shop's replicated percent, -2 with no yard in range
 //!   toast=last toast shown, dispatches=N and lastdispatch=radio calls this client heard
 //! A value is what this client's copy of the entity says; a broken RplProp or a missed BumpMe shows here.
@@ -31,6 +32,8 @@ class LF_HarnessSeen
 	protected static ref array<string> s_aBreachText = {};
 	protected static ref array<EntityID> s_aBreaches = {};
 	protected static ref array<float> s_aBreachAt = {};
+	protected static ref array<float> s_aEvidenceDist = {};
+	protected static ref array<string> s_aEvidenceText = {};
 	protected static int s_iBags;
 	protected static int s_iChop;
 
@@ -123,6 +126,12 @@ class LF_HarnessSeen
 		string prefab = LF_Utils.GetPrefabName(entity);
 		if (prefab.Contains("LF_MoneyBag"))
 			s_iBags++;
+
+		if (prefab.Contains("Prefabs/Investigation/LF_Evidence"))
+		{
+			float evidenceAt = vector.Distance(s_vOrigin, entity.GetOrigin());
+			InsertSorted(s_aEvidenceDist, s_aEvidenceText, evidenceAt, string.Format("%1:d=%2", Short(prefab), Math.Round(evidenceAt * 10) / 10));
+		}
 
 		LF_NpcBaseEntity npc = LF_NpcBaseEntity.Cast(entity);
 		if (npc)
@@ -227,6 +236,8 @@ class LF_HarnessSeen
 		s_aBreachText.Clear();
 		s_aBreaches.Clear();
 		s_aBreachAt.Clear();
+		s_aEvidenceDist.Clear();
+		s_aEvidenceText.Clear();
 		s_iBags = 0;
 		s_iChop = -2;
 		GetGame().GetWorld().QueryEntitiesBySphere(s_vOrigin, radius, CollectEntity, null, EQueryEntitiesFlags.ALL);
@@ -244,6 +255,6 @@ class LF_HarnessSeen
 		string dispatch = SCR_PlayerController.LF_GetLastDispatch();
 		dispatch.Replace(" ", "_");
 		string seen = string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
-		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " breach=" + Join(s_aBreachText) + " npc=" + Join(s_aNpcText);
+		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " breach=" + Join(s_aBreachText) + " npc=" + Join(s_aNpcText) + " evidence=" + Join(s_aEvidenceText);
 	}
 }
