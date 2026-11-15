@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "dayCycle": {
+    "mode": "accelerated",
+    "dayLengthMinutes": 120
+  },
+  "restarts": {
+    "times": [
+      "06:00",
+      "18:00"
+    ],
+    "warningMinutes": [
+      15,
+      5,
+      1
+    ]
+  }
+}

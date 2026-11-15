@@ -1,7 +1,7 @@
 import { GoLink, Figure, PageHeader, Section, ClipPlayer } from "@/components/ui";
 import { JoinCta } from "@/components/JoinCta";
 import { RunYourOwn } from "@/components/RunYourOwn";
-import { siteData, still } from "@/lib/content";
+import { blob, siteData, still } from "@/lib/content";
 
 // The page every outreach post links to (#568). Routes: /join and /join/<source>, where <source> is
 // a community's tag from content/outreach-sources.json. The page is the same for every source; the tag
@@ -93,8 +93,15 @@ const Join = () => {
           <h3 className="heading mb-2">Joining the alpha server</h3>
           <p>
             In the server browser, look for <strong>Life Framework | Everon 1989 (Alpha)</strong>. It has a password. We do not
-            print it here: ask for it in the Discord, in <span className="font-mono">#playtest-feedback</span>, and a staff member
-            will send it. The next session time is announced in the Discord.
+            print it here: ask for it in the Discord and a staff member will send it. The password is the only gate. The next
+            session time is announced in the Discord.
+          </p>
+          <p className="mt-3">
+            It is an alpha. Progress can be wiped, and a wipe comes with at least 24 hours' notice on Discord. Read the{" "}
+            <GoLink to={blob("docs/community/wipe-policy.md")}>wipe policy</GoLink> before a long build.
+          </p>
+          <p className="mt-3">
+            <GoLink to="/alpha">How to ask for an invite</GoLink>
           </p>
         </div>
         {ANALYTICS_ON ? (

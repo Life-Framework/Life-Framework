@@ -182,11 +182,13 @@ modded class SCR_PlayerController
 		// A playtest mission approves on submit and skips the gates with it.
 		LF_MissionHeader header = LF_MissionHeader.GetCurrent();
 		bool playtest = header && header.m_bLF_InstantPoliceApproval;
+		// A harness session (LF_HARNESS) can turn approve-on-submit off and the playtime gate off to prove the staff path.
+		playtest = LF_HarnessStaff.InstantApproval(playtest);
 		string refusal;
 		if (playtest)
-			refusal = LF_PoliceApplications.Submit(uid, applicant, why, availability, onRoster);
+			refusal = LF_PoliceApplicationRelay.File(uid, applicant, why, availability, onRoster, LF_Playtime.Total(uid), 0, 0, now);
 		else
-			refusal = LF_PoliceApplications.SubmitGated(uid, applicant, why, availability, onRoster, LF_Playtime.Total(uid), LF_PoliceConfig.ApplyMinPlaytimeHours(), LF_PoliceConfig.ApplyRejectCooldownHours(), now);
+			refusal = LF_PoliceApplicationRelay.File(uid, applicant, why, availability, onRoster, LF_Playtime.Total(uid), LF_HarnessStaff.ApplyMinPlaytimeHours(LF_PoliceConfig.ApplyMinPlaytimeHours()), LF_PoliceConfig.ApplyRejectCooldownHours(), now);
 		if (!refusal.IsEmpty())
 		{
 			int secondsLeft = LF_PoliceApplications.GetLastSecondsLeft();

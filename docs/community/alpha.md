@@ -67,7 +67,7 @@ What to expect:
 The alpha opens to the public when all four hold:
 
 - [ ] **Sessions at the player target.** Several sessions in a row reach the
-  player target (about 40 players).
+  player target (16 players, a full server: the alpha runs on 16 slots).
 - [ ] **No save loss.** No session in the alpha lost or corrupted a save, and a
   restart brought every player's progress back.
 - [ ] **No blocking regression.** No open issue labelled `regression` stops a
@@ -77,6 +77,9 @@ The alpha opens to the public when all four hold:
   playtesters, on probation (#313), and they work from `docs/community/moderator-guide.md`.
   At the start of the alpha only the maintainer is an administrator, so this item
   is not a condition for the first invites.
+
+The sheet the maintainer fills in on #555, with the evidence each line needs, is
+[the opening-gate checklist](opening-gate.md).
 
 When the four are checked, the maintainer removes the password and announces the
 opening on Discord. Progress is kept from that day, as in the wipe policy.
