@@ -53,12 +53,40 @@ class LF_SirenModeAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		return View(user) != LF_ESirenActionView.HIDDEN;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A duty-only action shows to a seated driver who is off duty too, greyed with the reason, so the
+	//! menu is never silently empty.
+	override bool CanBePerformedScript(IEntity user)
+	{
+		LF_ESirenActionView view = View(user);
+		if (view == LF_ESirenActionView.NEEDS_DUTY && m_Manager)
+			SetCannotPerformReason(m_Manager.DutyReasonKey());
+
+		return view == LF_ESirenActionView.SHOWN;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected LF_ESirenActionView View(IEntity user)
+	{
 		if (!LF_Systems.IsEnabled("SirenLights"))
-			return false;
+			return LF_ESirenActionView.HIDDEN;
 
-		if (m_bDutyOnly && (!m_Manager || !m_Manager.MayOperate(user) || m_Manager.IsModeName(m_Mode)))
-			return false;
+		if (!m_bDutyOnly)
+			return LF_SirenActionRules.View(SeatAllows(user), true, false);
 
+		if (!m_Manager)
+			return LF_ESirenActionView.HIDDEN;
+
+		return LF_SirenActionRules.View(SeatAllows(user), m_Manager.MayOperate(user), m_Manager.IsModeName(m_Mode));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether this user sits where the action applies (the pilot seat of the owner vehicle).
+	protected bool SeatAllows(IEntity user)
+	{
 		ChimeraCharacter character = ChimeraCharacter.Cast(user);
 		// See if character is in vehicle
 		if (character && character.IsInVehicle())
