@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{261FB4A2156DE473}Configs/Shop/LF_ShopPrices_GeneralStore.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -170,8 +170,9 @@ through them. None of them moves in the PR that set up the zones.
 Two more notes for the first pass:
 
 - `Shops.layer` is a legacy annex layer, so the guard and `validate-player-props` treat it as grid.
-  Its general store (`Shop_GeneralStore_Debug`, the till and radio on it, near 179, 244) stands in
-  town. The town pass either moves the store into a real shop building and renames the layer's town
-  part, or moves the debug store into a grid cell.
+  Its general store (`Shop_GeneralStore_Debug`, the till, radio, clerk and alarm box) stands in town:
+  since town-general-store (2026-11-15) inside the village shop house (`Village_GeneralStore`, pack
+  `GeneralStore.et`, near 180.6, 233.6). Renaming the layer's town part is still open; the store
+  stays a core entity because the suite boots the core world.
 - The farm stand, the market stalls and the job stands outdoors are where such things belong; the
   scan listed them and they are not on the backlog.
