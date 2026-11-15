@@ -142,7 +142,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "spikeplace" || spec.verb === "spikewhere" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "nuggets" || spec.verb === "crate" || spec.verb === "parceldrop" || spec.verb === "pistol" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys" || spec.verb === "spikeverge" || spec.verb === "spikedrop" || spec.verb === "spikecar" || spec.verb === "spikecheck" || spec.verb === "slopecar" || spec.verb === "slopecheck" || spec.verb === "slopedrive" || spec.verb === "spikeseen" || spec.verb === "spikepreview" || spec.verb === "spikepreviewoff" || spec.verb === "spikeplace" || spec.verb === "spikewhere" || spec.verb === "animhold" || spec.verb === "animoff" || spec.verb === "animseen" || spec.verb === "quizclear") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "sound") {
@@ -934,6 +934,8 @@ function selftest() {
   if ((check.status ?? 1) !== 0) throw new Error(check.stderr || "life-agent-box MCP server failed to parse");
   const use = buildLine(4, { verb: "use", className: "LF_ShopAction", entityName: "Trader_01" });
   if (use !== "4 use LF_ShopAction Trader_01") throw new Error(use);
+  const quizClear = buildLine(9, { verb: "quizclear" });
+  if (quizClear !== "9 quizclear") throw new Error(quizClear);
   const input = buildLine(5, { verb: "input", action: "MenuSelect" });
   if (input !== "5 input MenuSelect") throw new Error(input);
   const world = buildLine(8, { verb: "capture", mode: "world", name: "atm_pad", x: 128, y: 1, z: 133 });
@@ -1440,6 +1442,7 @@ function usage() {
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
   node agent-box/harness.mjs reload [config|dialogue|config,dialogue]
+  node agent-box/harness.mjs quizclear   (server, LF_HARNESS build only: forget this client's rules-quiz pass)
   node agent-box/harness.mjs dialogue [caption <#key>|shown]
   node agent-box/harness.mjs input <MenuAction>
   node agent-box/harness.mjs open DebugMenu
@@ -1558,7 +1561,7 @@ function main(argv) {
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "spikeplace" || cmd === "spikewhere" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "nuggets" || cmd === "crate" || cmd === "parceldrop" || cmd === "pistol" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys" || cmd === "spikeverge" || cmd === "spikedrop" || cmd === "spikecar" || cmd === "spikecheck" || cmd === "slopecar" || cmd === "slopecheck" || cmd === "slopedrive" || cmd === "spikeseen" || cmd === "spikepreview" || cmd === "spikepreviewoff" || cmd === "spikeplace" || cmd === "spikewhere" || cmd === "animhold" || cmd === "animoff" || cmd === "animseen" || cmd === "quizclear") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {
