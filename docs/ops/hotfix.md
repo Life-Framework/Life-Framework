@@ -4,8 +4,7 @@ A price is wrong, a wage is too high, the day length needs a nudge. This page is
 route from "the flagship needs a different value" to "it is live", and what to do
 instead when the fix is not a value (#1324).
 
-Every `host` command here is on `main` (`tools\cli host help` lists them). One command, `server-doctor`,
-is marked *(planned)* because it has not merged; use the step beside it until it does.
+Every command here is on `main` (`tools\cli host help` lists the `host` ones).
 
 ## Where the live files are
 
@@ -91,8 +90,8 @@ telling players first (step 6).
    apply, then start, because the apply refuses while the host runs.
 7. **Verify.**
 
-   `tools\cli server-doctor` *(planned)* (#1271, #1272) will read the newest log, list the loaded
-   mods and the effective config, and end in PASS or FAIL. Until it merges use
+   `tools\cli server-doctor` (#1271, #1272) reads the newest log, lists the loaded
+   mods and the effective config, and ends in PASS or FAIL. For a quick look, use
    `tools\cli host status` for the newest log and `tools\cli host triage` on it: no new error
    group, and the first-boot success lines are there:
 
