@@ -4,11 +4,15 @@
 // Proves the backup a scheduled restart takes (#1560, refs #306): when the host closes on the restart
 // marker (#1267) and the watch starts it again, backups/<time>-restart/ holds the closing save
 // BEFORE the start is called; a `host stop` exit leaves no restart backup; a crash keeps its crash
-// backup and gets no restart one. A restart backup is never pruned: rotate.mjs deletes only the plain
-// start and stop backups.
+// backup and gets no restart one. A restart backup rotates like a start or stop one (rotate.mjs,
+// #1560); a crash, wipe, preflight, manual or replaced-by-restore backup is never pruned. `host watch`
+// wires the seam: its main() takes the restart backup on a scheduled close.
 // red-proof: before watchLoop took an onRestart seam and watchdog.mjs exported recordRestart, this
 // file failed "recordRestart is not exported" and "a scheduled restart took no restart backup" (2026-11-15).
+// Wire and rotation (2026-11-15), watch.mjs without onRestart and `restart` not plain: "host watch took 0 restart
+// backups on a scheduled close", "a restart backup beyond N is not pruned", "the prune plan deletes 7, expected the 10 oldest".
 
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve, dirname } from "node:path";
@@ -18,7 +22,7 @@ import { safeRemoveTree } from "../link-safety.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const wd = await import(pathToFileURL(join(ROOT, "tools", "host", "watchdog.mjs")).href);
 const { hostPaths, findSavePoints } = await import(pathToFileURL(join(ROOT, "tools", "host", "host.mjs")).href);
-const { isPlainBackup, planPrune } = await import(pathToFileURL(join(ROOT, "tools", "host", "rotate.mjs")).href);
+const { isPlainBackup, planPrune, pruneBackups } = await import(pathToFileURL(join(ROOT, "tools", "host", "rotate.mjs")).href);
 
 const failures = [];
 const fail = (m) => failures.push(m);
@@ -146,19 +150,58 @@ try {
     if (!thrown.some((m) => /disk full/.test(m))) fail("a failing restart backup was not logged");
   }
 
-  // 7. Rotation never deletes a restart backup, however many plain ones it prunes (#1260), and
-  //    the plain test still names only the start and stop tags.
+  // 7. A restart backup rotates like a start or stop one (#1560); a crash backup never does.
   const rot = fixture("rotate");
-  for (let i = 0; i < 6; i++) mkdirSync(join(rot.paths.backups, `2026-11-14_10-0${i}-00-stop`), { recursive: true });
-  for (let i = 0; i < 3; i++) mkdirSync(join(rot.paths.backups, `2026-11-14_11-0${i}-00-start`), { recursive: true });
-  mkdirSync(join(rot.paths.backups, "2026-11-14_09-00-00-restart"), { recursive: true });
-  mkdirSync(join(rot.paths.backups, "2026-11-14_09-30-00-restart-2"), { recursive: true });
-  mkdirSync(join(rot.paths.backups, "2026-11-14_09-45-00-crash"), { recursive: true });
+  const mk = (n) => mkdirSync(join(rot.paths.backups, n), { recursive: true });
+  for (let i = 0; i < 6; i++) mk(`2026-11-14_10-0${i}-00-stop`);
+  for (let i = 0; i < 3; i++) mk(`2026-11-14_11-0${i}-00-start`);
+  mk("2026-11-14_09-00-00-restart");
+  mk("2026-11-14_09-30-00-restart-2");
+  mk("2026-11-14_09-45-00-crash");
+  mk("2026-11-14_09-50-00-wipe");
+  mk("2026-11-14_09-55-00-manual");
+  mk("2026-11-14_09-58-00-replaced-by-restore");
+  mk("2026-11-14_09-59-00-preflight-1.8.0.13-to-1.9.0.37");
+  mk("2026-11-15_06-00-00-restart");
   const plan = planPrune(rot.paths.backups, 2);
-  if (plan.delete.some((n) => /restart|crash/.test(n))) fail(`a prune would delete a restart or crash backup: ${plan.delete.filter((n) => /restart|crash/.test(n))}`);
-  if (plan.delete.length !== 7) fail(`the prune plan deletes ${plan.delete.length}, expected the 7 oldest start/stop ones`);
-  if (isPlainBackup("2026-11-14_09-00-00-restart") || isPlainBackup("2026-11-14_09-30-00-restart-2")) fail("a restart backup counts as a plain backup, so rotation could delete it");
-  if (!isPlainBackup("2026-11-14_10-00-00-stop") || !isPlainBackup("2026-11-14_10-00-00-start-2")) fail("a start or stop backup is no longer plain");
+  // 12 plain (2 old restart, 6 stop, 3 start, 1 new restart): the 10 oldest go, the newest two stay.
+  if (plan.delete.length !== 10) fail(`the prune plan deletes ${plan.delete.length}, expected the 10 oldest plain ones`);
+  for (const n of ["2026-11-14_09-00-00-restart", "2026-11-14_09-30-00-restart-2"]) if (!plan.delete.includes(n)) fail(`a restart backup beyond N is not pruned: ${n}`);
+  if (!plan.keep.includes("2026-11-15_06-00-00-restart")) fail("the newest restart backup is not kept");
+  for (const t of ["crash", "wipe", "manual", "replaced-by-restore", "preflight-1.8.0.13-to-1.9.0.37"]) {
+    if (plan.delete.some((n) => n.endsWith(`-${t}`))) fail(`a prune would delete a ${t} backup`);
+  }
+  const done = pruneBackups(rot.paths.backups, 2);
+  if (done.deleted.length !== 10) fail(`pruneBackups deleted ${done.deleted.length}, expected 10`);
+  if (!existsSync(join(rot.paths.backups, "2026-11-14_09-45-00-crash"))) fail("pruneBackups deleted the crash backup");
+  if (existsSync(join(rot.paths.backups, "2026-11-14_09-00-00-restart"))) fail("pruneBackups kept a restart backup beyond N");
+  if (!isPlainBackup("2026-11-14_09-00-00-restart") || !isPlainBackup("2026-11-14_09-30-00-restart-2")) fail("a restart backup is not plain, so rotation never counts it");
+  if (isPlainBackup("2026-11-14_09-45-00-crash") || isPlainBackup("2026-11-14_09-50-00-wipe")) fail("a crash or wipe backup counts as plain");
+
+  // 8. `host watch` wires the seam: main() with a host that exits on the restart marker takes the
+  //    restart backup before it calls `host start` again (a stub cli that fails ends the watch there).
+  const watchMod = await import(pathToFileURL(join(ROOT, "tools", "host", "commands", "watch.mjs")).href);
+  const w = fixture("watch");
+  const stubRoot = join(base, "stub-root");
+  mkdirSync(join(stubRoot, "tools"), { recursive: true });
+  writeFileSync(join(stubRoot, "tools", "cli.mjs"), "process.exit(1);");
+  const child = spawn(process.execPath, ["-e", "setTimeout(() => {}, 1500)"], { stdio: "ignore", windowsHide: true });
+  writeFileSync(w.paths.state, JSON.stringify({ pid: child.pid }));
+  writeFileSync(join(w.paths.profile, ...wd.RESTART_MARKER), "scheduled restart");
+  const lines = [];
+  const realLog = console.log;
+  console.log = (m) => lines.push(String(m));
+  let code;
+  try {
+    code = await watchMod.main([], { hostDir: w.dir, root: stubRoot });
+  } finally {
+    console.log = realLog;
+  }
+  const watched = backupsOf(w.paths, "restart");
+  if (watched.length !== 1) fail(`host watch took ${watched.length} restart backups on a scheduled close, expected 1 (watch.mjs passes no onRestart?) ${lines.join(" | ")}`);
+  else if (!findSavePoints(join(w.paths.backups, watched[0])).length) fail("the restart backup host watch took holds no save point");
+  if (code !== 1) fail(`host watch returned ${code} after the stubbed start failed, expected 1`);
+  if (backupsOf(w.paths, "crash").length) fail("host watch recorded a scheduled close as a crash");
 } finally {
   safeRemoveTree(base);
 }
@@ -167,4 +210,4 @@ if (failures.length) {
   for (const f of failures) console.log(`FAIL  ${f}`);
   process.exit(1);
 }
-console.log("host-restart-backup-selftest ok");
+console.log("SUMMARY host-restart-backup-selftest ok");
