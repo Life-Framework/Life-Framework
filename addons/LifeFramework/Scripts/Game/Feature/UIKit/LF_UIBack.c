@@ -10,7 +10,7 @@ class LF_UIBack
 {
 	static const string ACTION = "MenuBack";
 	//! Two reports of one physical press (listener and poll) land inside this window.
-	static const int DEBOUNCE_MS = 150;
+	static const int DEBOUNCE_MS = 150; // lf-fixed: input debounce, the same window as LF_UIMenuInput
 
 	//! Backspace alone (keyboard:KC_BACK, chimeraInputCommon.conf). Backspace is also one of MenuBack's
 	//! sources, so a press with a text field focused reports both and must delete text, not close.
