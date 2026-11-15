@@ -45,6 +45,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BankApplySnapshot(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankRobKit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BankTeller(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_BanRecord(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
@@ -124,6 +125,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CuffingOpenState(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CuffingRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DayCycleConfig(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugDispatch(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugJailMe(), LF_TestTier.LOGIC);

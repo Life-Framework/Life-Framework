@@ -43,6 +43,13 @@ This is the flagship content pack for [b]Life Framework (Core)[/b], an open-sour
 [*]With friends: one of you hosts it from the Scenarios list, or you join a server that runs it. Look for [b]Life Framework | Everon 1989 (Alpha)[/b] in the server browser.
 [/list]
 
+[h2]The alpha server[/h2]
+[list]
+[*]The alpha server is invite-only. It has a join password, and staff send it by direct message on Discord.
+[*]The save can be wiped at any time during the alpha. Every wipe is announced on Discord at least 24 hours ahead.
+[*]The server restarts at 06:00 and 18:00 server time, with a warning in game before each. A game day on it lasts two real hours.
+[/list]
+
 [h2]What to try[/h2]
 [list]
 [*]Fill in form R-89 when you arrive, then ask the clerk on the square for your ID card.
@@ -59,12 +66,6 @@ This is the flagship content pack for [b]Life Framework (Core)[/b], an open-sour
 How the jobs, money, police and crime systems work, and what is allowed on a server, is written down in one place:
 [url=https://life-framework.org/rules]life-framework.org/rules[/url]
 
-[h2]Run your own server[/h2]
-Mod IDs [b]79636E668EA37AC9[/b] (the core) and [b]B1E84D5687E11724[/b] (this pack), scenario [b]{C638C03B775C31BB}Missions/LF_Everon1989.conf[/b]. The example server folder has a ready config and a start script, and the host guide walks through it:
-[url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/playtest/workshop-host.md]Host guide[/url]
-[url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/owner/install.md]Install guide: run your own server from zero[/url]
-[url=https://github.com/Life-Framework/Life-Framework/tree/main/server/example]Example server[/url]
-
 [h2]Feedback[/h2]
 Tell us what broke, what confused you and what you liked. One report per problem, with what you did, what you expected and what happened. Screenshots help.
 [list]
@@ -72,6 +73,12 @@ Tell us what broke, what confused you and what you liked. One report per problem
 [*]Issues: [url=https://github.com/Life-Framework/Life-Framework/issues]github.com/Life-Framework/Life-Framework/issues[/url]
 [*]Website: [url=https://life-framework.org]life-framework.org[/url]
 [/list]
+
+[h2]Run your own server[/h2]
+Mod IDs [b]79636E668EA37AC9[/b] (the core) and [b]B1E84D5687E11724[/b] (this pack), scenario [b]{C638C03B775C31BB}Missions/LF_Everon1989.conf[/b]. The example server folder has a ready config and a start script, and the host guide walks through it:
+[url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/owner/install.md]Install guide: run your own server from zero[/url]
+[url=https://github.com/Life-Framework/Life-Framework/blob/main/docs/playtest/workshop-host.md]Host guide[/url]
+[url=https://github.com/Life-Framework/Life-Framework/tree/main/server/example]Example server[/url]
 
 [h2]Licence[/h2]
 This Workshop build is licensed under the Arma Public License (APL). The source on GitHub is MIT. Base-game assets belong to Bohemia Interactive. Full credits are in the repository.
@@ -90,6 +97,9 @@ Before publishing:
 |---|---|
 | Server name (`game.name`) | `Life Framework | Everon 1989 (Alpha)` |
 | Scenario ID (`game.scenarioId`) | `{C638C03B775C31BB}Missions/LF_Everon1989.conf` |
+| Join password (`game.password`) | Set. The alpha is invite-only; staff send the password on Discord. |
+| Restarts | 06:00 and 18:00 server time (`restarts.times` in `server/flagship/config.json`) |
+| Day length | 2 real hours (`dayCycle`: `accelerated`, `dayLengthMinutes` 120) |
 | Mods (`game.mods`) | `79636E668EA37AC9` Life Framework (Core), then `B1E84D5687E11724` Life Framework: Everon 1989 |
 
 The scenario's own line in the browser is `m_sDescription` in
