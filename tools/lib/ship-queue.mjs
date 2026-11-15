@@ -172,12 +172,12 @@ export function readQueue(hubDir) {
 
 // Temp file + rename. On Windows the rename fails with EPERM/EBUSY/EACCES while a status or wait reader has
 // the file open, so it is retried (10 tries over about 1 s, tools/lib/atomic-file.mjs) before it throws.
-export function writeQueue(hubDir, q) {
+export function writeQueue(hubDir, q, opts = {}) {
   mkdirSync(hubDir, { recursive: true });
   const done = q.entries.filter((e) => DONE.includes(e.state)).sort((a, b) => String(b.endedAt).localeCompare(String(a.endedAt))).slice(0, KEEP_DONE);
   const live = q.entries.filter((e) => !DONE.includes(e.state));
   const p = statePath(hubDir);
-  writeFileAtomic(p, JSON.stringify({ ...q, entries: [...live, ...done] }, null, 2) + "\n", { tmp:`${p}.tmp` });
+  writeFileAtomic(p, JSON.stringify({ ...q, entries: [...live, ...done] }, null, 2) + "\n", { tmp: `${p}.tmp`, ...opts }); // opts: retry tuning (tries, sleep), for the selftest
 }
 
 // Add or replace the entry for a slug. A slug still queued is replaced (same seq, so it keeps its place);
