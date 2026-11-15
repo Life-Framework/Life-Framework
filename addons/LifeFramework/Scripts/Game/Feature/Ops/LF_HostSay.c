@@ -7,9 +7,9 @@ class LF_HostSay
 {
 	static const string FEATURE = "Ops";
 	static const string SAY_FILE = "$profile:LifeFramework/host_say.txt";
-	static const int POLL_MS = 10000;
+	static const int POLL_MS = 10000; // lf-fixed: the operator tool's promised read latency, not tuning
 	static const int MAX_LENGTH = 200;
-	static const float TOAST_SECONDS = 12.0;
+	static const float TOAST_SECONDS = 12.0; // lf-fixed: long enough to read one operator line, not tuning
 	static const string TOAST_TITLE = "#LF-HostSay_Title";
 	static const string TOAST_MESSAGE = "#LF-HostSay_Message";
 
@@ -34,6 +34,17 @@ class LF_HostSay
 		s_bRunning = true;
 		GetGame().GetCallqueue().CallLater(Poll, POLL_MS, true);
 		Log(true, string.Format("watching %1 for tools\\cli host say", SAY_FILE));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stops the poll; StartIfServer() can start it again.
+	static void Stop()
+	{
+		if (!s_bRunning)
+			return;
+
+		GetGame().GetCallqueue().Remove(Poll);
+		s_bRunning = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
